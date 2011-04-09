@@ -36,7 +36,6 @@
 #include <glib-object.h>
 #include <gio/gio.h>
 
-#include <lib/eel-gconf-extensions.h>
 #include <lib/rb-util.h>
 #include <lib/rb-debug.h>
 #include <shell/rb-plugin.h>
@@ -85,6 +84,7 @@ typedef struct
 	GList *sources;
 	GList *categories;
 
+	GSettings *settings;
 	RBShell *shell;
 	RhythmDB *db;
 	RBDisplayPageModel *display_page_model;
@@ -1258,8 +1258,9 @@ get_root_property (GDBusConnection *connection,
 		} else if (g_strcmp0 (property_name, "Path") == 0) {
 			return g_variant_new_string (object_path);
 		} else if (g_strcmp0 (property_name, "DisplayName") == 0) {
-			char *share_name = eel_gconf_get_string (CONF_DAAP_SHARE_NAME);
+			char *share_name = g_settings_get_string (plugin->settings, "share-name");
 			if (share_name == NULL || share_name[0] == '\0') {
+				g_free (share_name);
 				share_name = g_strdup ("@REALNAME@'s Rhythmbox on @HOSTNAME@");
 			}
 			v = g_variant_new_string (share_name);
@@ -1427,6 +1428,8 @@ impl_activate (RBPlugin *bplugin,
 		      NULL);
 	plugin->shell = g_object_ref (shell);
 
+	plugin->settings = g_settings_new ("org.gnome.rhythmbox.sharing");
+
 	plugin->node_info = g_dbus_node_info_new_for_xml (media_server2_spec, &error);
 	if (error != NULL) {
 		g_warning ("Unable to parse MediaServer2 spec: %s", error->message);
@@ -1516,6 +1519,11 @@ impl_deactivate	(RBPlugin *bplugin,
 	if (plugin->entry_reg_id != 0) {
 		g_dbus_connection_unregister_subtree (plugin->connection, plugin->entry_reg_id);
 		plugin->entry_reg_id = 0;
+	}
+
+	if (plugin->settings != NULL) {
+		g_object_unref (plugin->settings);
+		plugin->settings = NULL;
 	}
 
 	if (plugin->display_page_model != NULL) {

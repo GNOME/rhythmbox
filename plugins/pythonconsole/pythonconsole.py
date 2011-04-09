@@ -38,7 +38,7 @@ import re
 import traceback
 import gobject
 
-from gi.repository import Gtk, Gdk, Pango, GConf
+from gi.repository import Gtk, Gdk, Pango
 from gi.repository import RB
 
 try:
@@ -128,11 +128,16 @@ class PythonConsolePlugin(RB.Plugin):
 		self.window.grab_focus()
 
 	def enable_debugging(self, action, shell):
-		msg = _("After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in GConf, it will use the default password ('rhythmbox').")
+		pwd_path = os.path.join(rb.user_data_dir(), "rpdb2_password")
+		msg = _("After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in the file %s, it will use the default password ('rhythmbox').") % pwd_path
 		dialog = Gtk.MessageDialog(None, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK_CANCEL, msg)
 		if dialog.run() == Gtk.RESPONSE_OK:
-			gconfclient = GConf.Client.get_default()
-			password = gconfclient.get_string('/apps/rhythmbox/plugins/pythonconsole/rpdb2_password') or "rhythmbox"
+			password = "rhythmbox"
+			if os.path.exists(pwd_path):
+				pwd_file = open(pwd_path)
+				password = pwd_file.read().rstrip()
+				pwd_file.close()
+
 			def start_debugger(password):
 				rpdb2.start_embedded_debugger(password)
 				return False

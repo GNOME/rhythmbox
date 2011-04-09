@@ -29,7 +29,7 @@
 import os, re
 
 import rb
-from gi.repository import Gtk, GConf
+from gi.repository import Gtk, Gio
 from gi.repository import RB
 
 import LyricsParse
@@ -49,10 +49,6 @@ LYRIC_TITLE_STRIP=["\(live[^\)]*\)", "\(acoustic[^\)]*\)", "\([^\)]*mix\)", "\([
 LYRIC_TITLE_REPLACE=[("/", "-"), (" & ", " and ")]
 LYRIC_ARTIST_REPLACE=[("/", "-"), (" & ", " and ")]
 STREAM_SONG_TITLE='rb:stream-song-title'
-
-gconf_keys = {	'engines' : '/apps/rhythmbox/plugins/lyrics/engines',
-		'folder': '/apps/rhythmbox/plugins/lyrics/folder'
-	     }
 
 def create_lyrics_view():
 	tview = Gtk.TextView()
@@ -125,7 +121,8 @@ def extract_artist_and_title(stream_song_title):
 	return (artist, title)
 	
 def build_cache_path(artist, title):
-	folder = GConf.Client.get_default().get_string(gconf_keys['folder'])
+	settings = Gio.Settings("org.gnome.rhythmbox.plugins.lyrics")
+	folder = settings['folder']
 	if folder is None or folder == "":
 		folder = os.path.join(RB.user_cache_dir(), "lyrics")
 
@@ -173,7 +170,7 @@ class LyricGrabber(object):
 				else:
 					self.callback(_("No lyrics found"))
 
-			parser = LyricsParse.Parser(gconf_keys, self.artist, self.title)
+			parser = LyricsParse.Parser(self.artist, self.title)
 			parser.get_lyrics(lyric_callback)
 
 class LyricPane(object):
@@ -385,7 +382,7 @@ class LyricsDisplayPlugin(RB.Plugin):
 
 	def create_configure_dialog(self):
 		builder_file = self.find_file("lyrics-prefs.ui")
-		dialog = LyricsConfigureDialog (builder_file, gconf_keys).get_dialog()
+		dialog = LyricsConfigureDialog (builder_file).get_dialog()
 		dialog.present()
 		return dialog
 

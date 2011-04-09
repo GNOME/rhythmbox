@@ -38,7 +38,6 @@
 #endif
 
 #include "rhythmdb.h"
-#include "eel-gconf-extensions.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
 #include "rb-plugin.h"
@@ -62,9 +61,6 @@
 #define g_mount_unmount_with_operation(m,f,mo,ca,cb,ud) g_mount_unmount(m,f,ca,cb,ud)
 #endif
 
-#define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/mtp/paned_position"
-#define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/mtp/show_browser"
-
 static void rb_mtp_source_constructed (GObject *object);
 static void rb_mtp_source_dispose (GObject *object);
 static void rb_mtp_source_finalize (GObject *object);
@@ -77,8 +73,6 @@ static void rb_mtp_source_get_property (GObject *object,
 			                guint prop_id,
 			                GValue *value,
 			                GParamSpec *pspec);
-static char *impl_get_browser_key (RBSource *source);
-static char *impl_get_paned_key (RBBrowserSource *source);
 
 static void impl_delete (RBSource *asource);
 static gboolean impl_show_popup (RBDisplayPage *page);
@@ -185,7 +179,6 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
-	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 	RBMediaPlayerSourceClass *mps_class = RB_MEDIA_PLAYER_SOURCE_CLASS (klass);
 
 	object_class->constructed = rb_mtp_source_constructed;
@@ -198,7 +191,6 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	page_class->get_ui_actions = impl_get_ui_actions;
 
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_get_browser_key = impl_get_browser_key;
 
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -207,8 +199,6 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_delete = impl_delete;
-
-	browser_source_class->impl_get_paned_key = impl_get_paned_key;
 
 	rms_class->impl_track_added = impl_track_added;
 	rms_class->impl_track_add_error = impl_track_add_error;
@@ -546,18 +536,6 @@ rb_mtp_source_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_mtp_source_parent_class)->finalize (object);
 }
 
-static char *
-impl_get_browser_key (RBSource *source)
-{
-	return g_strdup (CONF_STATE_SHOW_BROWSER);
-}
-
-static char *
-impl_get_paned_key (RBBrowserSource *source)
-{
-	return g_strdup (CONF_STATE_PANED_POSITION);
-}
-
 RBSource *
 rb_mtp_source_new (RBShell *shell,
 		   RBPlugin *plugin,
@@ -571,6 +549,7 @@ rb_mtp_source_new (RBShell *shell,
 	RBMtpSource *source = NULL;
 	RhythmDBEntryType *entry_type;
 	RhythmDB *db = NULL;
+	GSettings *settings;
 	char *name = NULL;
 
 	g_object_get (shell, "db", &db, NULL);
@@ -585,6 +564,7 @@ rb_mtp_source_new (RBShell *shell,
 	g_free (name);
 	g_object_unref (db);
 
+	settings = g_settings_new ("org.gnome.rhythmbox.plugins.mtpdevice");
 	source = RB_MTP_SOURCE (g_object_new (RB_TYPE_MTP_SOURCE,
 					      "plugin", plugin,
 					      "entry-type", entry_type,
@@ -597,7 +577,9 @@ rb_mtp_source_new (RBShell *shell,
 #else
 					      "udi", udi,
 #endif
+					      "settings", g_settings_get_child (settings, "source"),
 					      NULL));
+	g_object_unref (settings);
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 

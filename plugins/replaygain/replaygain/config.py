@@ -28,16 +28,8 @@
 import gobject
 import rb
 from gi.repository import Gtk
-from gi.repository import GConf
+from gi.repository import Gio
 from gi.repository import RB
-
-GCONF_DIR = '/apps/rhythmbox/plugins/replaygain'
-
-GCONF_KEYS = {
-	'mode': GCONF_DIR + '/mode',
-	'preamp': GCONF_DIR + '/preamp',
-	'limiter': GCONF_DIR + '/limiter'
-}
 
 # modes
 REPLAYGAIN_MODE_RADIO = 0
@@ -52,7 +44,7 @@ class ReplayGainConfigDialog(Gtk.Dialog):
 		Gtk.Dialog.__init__(self)
 		self.set_border_width(12)
 
-		self.gconf = GConf.Client.get_default()
+		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.replaygain")
 
 		ui_file = plugin.find_file("replaygain-prefs.ui")
 		self.builder = Gtk.Builder()
@@ -69,11 +61,11 @@ class ReplayGainConfigDialog(Gtk.Dialog):
 		label.set_use_markup(True)
 
 		combo = self.builder.get_object("replaygainmode")
-		combo.set_active(self.gconf.get_int(GCONF_KEYS['mode']))
-		combo.connect("changed", self.mode_changed_cb)
+		combo.props.id_column = 1
+		self.settings.bind("mode", combo, "active-id", Gio.SettingsBindFlags.DEFAULT)
 
 		preamp = self.builder.get_object("preamp")
-		preamp.set_value(self.gconf.get_float(GCONF_KEYS['preamp']))
+		self.settings.bind("preamp", preamp.props.adjustment, "value", Gio.SettingsBindFlags.GET)
 		preamp.connect("value-changed", self.preamp_changed_cb)
 
 		preamp.add_mark(-15.0, Gtk.PositionType.BOTTOM, _("-15.0 dB"))
@@ -81,23 +73,14 @@ class ReplayGainConfigDialog(Gtk.Dialog):
 		preamp.add_mark(15.0, Gtk.PositionType.BOTTOM, _("15.0 dB"))
 
 		limiter = self.builder.get_object("limiter")
-		limiter.set_active(self.gconf.get_bool(GCONF_KEYS['limiter']))
-		limiter.connect("toggled", self.limiter_changed_cb)
-
-
-	def mode_changed_cb(self, combo):
-		v = combo.get_active()
-		print "replaygain mode changed to %d" % v
-		self.gconf.set_int(GCONF_KEYS['mode'], v)
+		self.settings.bind("limiter", limiter, "active", Gio.SettingsBindFlags.DEFAULT)
 
 	def preamp_changed_cb(self, preamp):
+		RB.settings_delayed_sync(self.settings, self.sync_preamp, preamp)
+
+	def sync_preamp(self, settings, preamp):
 		v = preamp.get_value()
 		print "preamp gain changed to %f" % v
-		self.gconf.set_float(GCONF_KEYS['preamp'], v)
-
-	def limiter_changed_cb(self, limiter):
-		v = limiter.get_active()
-		print "limiter changed to %d" % v
-		self.gconf.set_bool(GCONF_KEYS['limiter'], v)
+		settings['preamp'] = v
 
 gobject.type_register(ReplayGainConfigDialog)

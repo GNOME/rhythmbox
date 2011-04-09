@@ -46,7 +46,6 @@
 #include "rb-dialog.h"
 #include "rb-file-helpers.h"
 #include "rb-builder-helpers.h"
-#include "eel-gconf-extensions.h"
 #include "rb-daap-source.h"
 #include "rb-daap-sharing.h"
 #include "rb-daap-src.h"
@@ -55,11 +54,6 @@
 #include "rb-display-page-group.h"
 
 #include <libdmapsharing/dmap.h>
-
-/* preferences */
-#define CONF_DAAP_PREFIX  	CONF_PREFIX "/plugins/daap"
-#define CONF_ENABLE_BROWSING 	CONF_DAAP_PREFIX "/enable_browsing"
-#define CONF_ENABLE_REMOTE	CONF_DAAP_PREFIX "/enable_remote"
 
 #define DAAP_DBUS_PATH	"/org/gnome/Rhythmbox/DAAP"
 #define DAAP_DBUS_IFACE "org.gnome.Rhythmbox.DAAP"
@@ -97,8 +91,8 @@ struct RBDaapPluginPrivate
 
 	GHashTable *source_lookup;
 
-	guint enable_browsing_notify_id;
-	guint enable_remote_notify_id;
+	GSettings *settings;
+	GSettings *dacp_settings;
 
 	GdkPixbuf *daap_share_pixbuf;
 	GdkPixbuf *daap_share_locked_pixbuf;
@@ -133,14 +127,12 @@ static void rb_daap_plugin_cmd_connect (GtkAction *action, RBDaapPlugin *plugin)
 static void create_pixbufs (RBDaapPlugin *plugin);
 static void start_browsing (RBDaapPlugin *plugin);
 static void stop_browsing (RBDaapPlugin *plugin);
-static void enable_browsing_changed_cb (GConfClient *client,
-					guint cnxn_id,
-					GConfEntry *entry,
-					RBDaapPlugin *plugin);
-static void enable_remote_changed_cb (GConfClient *client,
-					guint cnxn_id,
-					GConfEntry *entry,
-					RBDaapPlugin *plugin);
+static void settings_changed_cb (GSettings *settings,
+				 const char *key,
+				 RBDaapPlugin *plugin);
+static void dacp_settings_changed_cb (GSettings *settings,
+				      const char *key,
+				      RBDaapPlugin *plugin);
 static void libdmapsharing_debug (const char *domain,
 				  GLogLevelFlags level,
 				  const char *message,
@@ -259,12 +251,9 @@ impl_activate (RBPlugin *bplugin,
 {
 	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (bplugin);
 	gboolean no_registration;
-	gboolean enabled = TRUE;
-	gboolean remote_enabled = TRUE;
-	GConfValue *value;
-	GConfClient *client = eel_gconf_client_get_global ();
 	GtkUIManager *uimanager = NULL;
 	char *uifile;
+	GSettings *daap_settings;
 
 	plugin->priv->shutdown = FALSE;
 	plugin->priv->shell = g_object_ref (shell);
@@ -274,39 +263,17 @@ impl_activate (RBPlugin *bplugin,
 			    libdmapsharing_debug,
 			    NULL);
 
-	value = gconf_client_get_without_default (client,
-						  CONF_ENABLE_BROWSING, NULL);
-	if (value != NULL) {
-		enabled = gconf_value_get_bool (value);
-		gconf_value_free (value);
-	}
+	plugin->priv->settings = g_settings_new ("org.gnome.rhythmbox.sharing");
+	g_signal_connect_object (plugin->priv->settings, "changed", G_CALLBACK (settings_changed_cb), plugin, 0);
 
-	if (enabled) {
+	daap_settings = g_setting_new ("org.gnome.rhythmbox.plugins.daap");
+	plugin->priv->dacp_settings = g_settings_get_child (daap_settings, "dacp");
+	g_object_unref (daap_settings);
+	g_signal_connect_object (plugin->priv->dacp_settings, "changed", G_CALLBACK (dacp_settings_changed_cb), plugin, 0);
+
+	if (g_settings_get_boolean (plugin->priv->settings, "enable-browsing")) {
 		start_browsing (plugin);
 	}
-
-	plugin->priv->enable_browsing_notify_id =
-		eel_gconf_notification_add (CONF_ENABLE_BROWSING,
-					    (GConfClientNotifyFunc) enable_browsing_changed_cb,
-					    plugin);
-
-	/* Check if Remote (DACP) lookup is enabled */
-	value = gconf_client_get_without_default (client,
-						  CONF_ENABLE_REMOTE, NULL);
-	if (value != NULL) {
-		remote_enabled = gconf_value_get_bool (value);
-		gconf_value_free (value);
-	}
-
-	plugin->priv->dacp_share = rb_daap_create_dacp_share (RB_PLUGIN (plugin));
-	if (remote_enabled) {
-		dacp_share_start_lookup (plugin->priv->dacp_share);
-	}
-
-	plugin->priv->enable_remote_notify_id =
-		eel_gconf_notification_add (CONF_ENABLE_REMOTE,
-					    (GConfClientNotifyFunc) enable_remote_changed_cb,
-					    plugin);
 
 	create_pixbufs (plugin);
 
@@ -348,6 +315,11 @@ impl_activate (RBPlugin *bplugin,
 	if (plugin->priv->sharing)
 		rb_daap_sharing_init (shell);
 
+	plugin->priv->dacp_share = rb_daap_create_dacp_share (RB_PLUGIN (plugin));
+	if (g_settings_get_boolean (plugin->priv->dacp_settings, "enable-remote")) {
+		dacp_share_start_lookup (plugin->priv->dacp_share);
+	}
+
 	register_daap_dbus_iface (plugin);
 }
 
@@ -370,17 +342,12 @@ impl_deactivate	(RBPlugin *bplugin,
 		stop_browsing (plugin);
 	}
 
-	if (plugin->priv->enable_browsing_notify_id != EEL_GCONF_UNDEFINED_CONNECTION) {
-		eel_gconf_notification_remove (plugin->priv->enable_browsing_notify_id);
-		plugin->priv->enable_browsing_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
+	if (plugin->priv->settings) {
+		g_object_unref (plugin->priv->settings);
+		plugin->priv->settings = NULL;
 	}
 
 	g_object_unref (plugin->priv->dacp_share);
-
-	if (plugin->priv->enable_remote_notify_id != EEL_GCONF_UNDEFINED_CONNECTION) {
-		eel_gconf_notification_remove (plugin->priv->enable_remote_notify_id);
-		plugin->priv->enable_remote_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
-	}
 
 	g_object_get (shell,
 		      "ui-manager", &uimanager,
@@ -655,32 +622,36 @@ stop_browsing (RBDaapPlugin *plugin)
 }
 
 static void
-enable_browsing_changed_cb (GConfClient *client,
-			    guint cnxn_id,
-			    GConfEntry *entry,
-			    RBDaapPlugin *plugin)
+dacp_settings_changed_cb (GSettings *settings, const char *key, RBDaapPlugin *plugin)
 {
-	gboolean enabled = eel_gconf_get_boolean (CONF_ENABLE_BROWSING);
-
-	if (enabled) {
-		start_browsing (plugin);
-	} else {
-		stop_browsing (plugin);
+	if (g_strcmp0 (key, "enable-remote") == 0) {
+		if (g_settings_get_boolean (settings, key)) {
+			dacp_share_start_lookup (plugin->priv->dacp_share);
+		} else {
+			dacp_share_stop_lookup (plugin->priv->dacp_share);
+		}
 	}
 }
 
 static void
-enable_remote_changed_cb (GConfClient *client,
-			    guint cnxn_id,
-			    GConfEntry *entry,
-			    RBDaapPlugin *plugin)
+settings_changed_cb (GSettings *settings, const char *key, RBDaapPlugin *plugin)
 {
-	gboolean enabled = eel_gconf_get_boolean (CONF_ENABLE_REMOTE);
+	if (g_strcmp0 (key, "enable-browsing") == 0) {
+		if (g_settings_get_boolean (settings, key)) {
+			start_browsing (plugin);
+		} else {
+			stop_browsing (plugin);
+		}
+	} else if (g_strcmp0 (key, "enable-sharing") == 0) {
+		GtkToggleButton *password_check;
+		GtkWidget *password_entry;
+		gboolean enabled = g_settings_get_boolean (settings, key);
 
-	if (enabled) {
-		dacp_share_start_lookup (plugin->priv->dacp_share);
-	} else {
-		dacp_share_stop_lookup (plugin->priv->dacp_share);
+		password_check = GTK_TOGGLE_BUTTON (gtk_builder_get_object (plugin->priv->builder, "daap_password_check"));
+		password_entry = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_password_entry"));
+
+		gtk_widget_set_sensitive (password_entry, enabled && gtk_toggle_button_get_active (password_check));
+		gtk_widget_set_sensitive (GTK_WIDGET (password_check), enabled);
 	}
 }
 
@@ -809,66 +780,23 @@ preferences_response_cb (GtkWidget *dialog, gint response, RBPlugin *plugin)
 }
 
 static void
-share_check_button_toggled_cb (GtkToggleButton *button,
-			       GtkBuilder *builder)
-{
-	gboolean b;
-	GtkToggleButton *password_check;
-	GtkWidget *password_entry;
-
-	b = gtk_toggle_button_get_active (button);
-
-	eel_gconf_set_boolean (CONF_DAAP_ENABLE_SHARING, b);
-
-	password_check = GTK_TOGGLE_BUTTON (gtk_builder_get_object (builder, "daap_password_check"));
-	password_entry = GTK_WIDGET (gtk_builder_get_object (builder, "daap_password_entry"));
-
-	gtk_widget_set_sensitive (password_entry, b && gtk_toggle_button_get_active (password_check));
-	gtk_widget_set_sensitive (GTK_WIDGET (password_check), b);
-}
-
-static void
-remote_check_button_toggled_cb (GtkToggleButton *button,
-			       gpointer data)
-{
-	gboolean b;
-
-	b = gtk_toggle_button_get_active (button);
-
-	eel_gconf_set_boolean (CONF_ENABLE_REMOTE, b);
-}
-
-static void
-password_check_button_toggled_cb (GtkToggleButton *button,
-				  GtkWidget *widget)
-{
-	gboolean b;
-
-	b = gtk_toggle_button_get_active (button);
-
-	eel_gconf_set_boolean (CONF_DAAP_REQUIRE_PASSWORD, b);
-
-	gtk_widget_set_sensitive (widget, b);
-}
-
-static void
 forget_remotes_button_toggled_cb (GtkToggleButton *button,
-				  gpointer data)
+				  RBDaapPlugin *plugin)
 {
-	eel_gconf_unset (CONF_KNOWN_REMOTES);
+	g_settings_reset (plugin->priv->dacp_settings, "known-remotes");
 }
 
 static gboolean
 share_name_entry_focus_out_event_cb (GtkEntry *entry,
 				     GdkEventFocus *event,
-				     gpointer data)
+				     RBDaapPlugin *plugin)
 {
 	gboolean    changed;
 	const char *name;
 	char       *old_name;
 
 	name = gtk_entry_get_text (entry);
-	old_name = eel_gconf_get_string (CONF_DAAP_SHARE_NAME);
+	old_name = g_settings_get_string (plugin->priv->settings, "share-name");
 
 	if (name == NULL && old_name == NULL) {
 		changed = FALSE;
@@ -880,8 +808,9 @@ share_name_entry_focus_out_event_cb (GtkEntry *entry,
 		changed = FALSE;
 	}
 
-	if (changed)
-		eel_gconf_set_string (CONF_DAAP_SHARE_NAME, name);
+	if (changed) {
+		g_settings_set_string (plugin->priv->settings, "share-name", name);
+	}
 
 	g_free (old_name);
 
@@ -891,14 +820,14 @@ share_name_entry_focus_out_event_cb (GtkEntry *entry,
 static gboolean
 share_password_entry_focus_out_event_cb (GtkEntry *entry,
 					 GdkEventFocus *event,
-					 gpointer data)
+					 RBDaapPlugin *plugin)
 {
 	gboolean    changed;
 	const char *pw;
 	char       *old_pw;
 
 	pw = gtk_entry_get_text (entry);
-	old_pw = eel_gconf_get_string (CONF_DAAP_SHARE_PASSWORD);
+	old_pw = g_settings_get_string (plugin->priv->settings, "share-password");
 
 	if (pw == NULL && old_pw == NULL) {
 		changed = FALSE;
@@ -910,8 +839,9 @@ share_password_entry_focus_out_event_cb (GtkEntry *entry,
 		changed = FALSE;
 	}
 
-	if (changed)
-		eel_gconf_set_string (CONF_DAAP_SHARE_PASSWORD, pw);
+	if (changed) {
+		g_settings_set_string (plugin->priv->settings, "share-password", pw);
+	}
 
 	g_free (old_pw);
 
@@ -927,9 +857,6 @@ update_config_widget (RBDaapPlugin *plugin)
 	GtkWidget *password_entry;
 	GtkWidget *password_check;
 	GtkWidget *forget_remotes_button;
-	gboolean sharing_enabled;
-	gboolean remote_enabled;
-	gboolean require_password;
 	char *name;
 	char *password;
 
@@ -940,37 +867,44 @@ update_config_widget (RBDaapPlugin *plugin)
 	password_entry = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_password_entry"));
 	forget_remotes_button = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "forget_remotes_button"));
 
-	sharing_enabled = eel_gconf_get_boolean (CONF_DAAP_ENABLE_SHARING);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), sharing_enabled);
-	g_signal_connect (check, "toggled", G_CALLBACK (share_check_button_toggled_cb), plugin->priv->builder);
+	g_settings_bind (plugin->priv->settings, "enable-sharing", check, "active", G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (plugin->priv->dacp_settings, "enable-remote", remote_check, "active", G_SETTINGS_BIND_DEFAULT);
 
-	remote_enabled = eel_gconf_get_boolean (CONF_ENABLE_REMOTE);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (remote_check), remote_enabled);
-	g_signal_connect (remote_check, "toggled", G_CALLBACK (remote_check_button_toggled_cb), plugin->priv->builder);
+	/*g_signal_connect (check, "toggled", G_CALLBACK (share_check_button_toggled_cb), plugin->priv->builder);*/
 
-	require_password = eel_gconf_get_boolean (CONF_DAAP_REQUIRE_PASSWORD);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (password_check), require_password);
-	g_signal_connect (password_check, "toggled", G_CALLBACK (password_check_button_toggled_cb), password_entry);
+	/* probably needs rethinking to deal with remotes.. */
+	g_settings_bind (plugin->priv->settings, "require-password", password_check, "active", G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (plugin->priv->settings, "require-password", password_entry, "sensitive", G_SETTINGS_BIND_NO_SENSITIVITY);
 
-	g_signal_connect (forget_remotes_button, "clicked", G_CALLBACK (forget_remotes_button_toggled_cb), NULL);
+	g_signal_connect_object (forget_remotes_button, "clicked", G_CALLBACK (forget_remotes_button_toggled_cb), plugin, 0);
 
-	name = eel_gconf_get_string (CONF_DAAP_SHARE_NAME);
-	if (name == NULL || name[0] == '\0')
+	name = g_settings_get_string (plugin->priv->settings, "share-name");
+	if (name == NULL || name[0] == '\0') {
+		g_free (name);
 		name = rb_daap_sharing_default_share_name ();
-	if (name != NULL)
+	}
+	if (name != NULL) {
 		gtk_entry_set_text (GTK_ENTRY (name_entry), name);
-	g_free (name);
-	g_signal_connect (name_entry, "focus-out-event",
-			  G_CALLBACK (share_name_entry_focus_out_event_cb), NULL);
+		g_free (name);
+	}
+	g_signal_connect_object (name_entry,
+				 "focus-out-event",
+				 G_CALLBACK (share_name_entry_focus_out_event_cb),
+				 plugin,
+				 0);
 
-	password = eel_gconf_get_string (CONF_DAAP_SHARE_PASSWORD);
-	if (password != NULL)
+	password = g_settings_get_string (plugin->priv->settings, "share-password");
+	if (password != NULL) {
 		gtk_entry_set_text (GTK_ENTRY (password_entry), password);
-	g_free (password);
-	g_signal_connect (password_entry, "focus-out-event",
-			  G_CALLBACK (share_password_entry_focus_out_event_cb), NULL);
+		g_free (password);
+	}
+	g_signal_connect_object (password_entry,
+				 "focus-out-event",
+				 G_CALLBACK (share_password_entry_focus_out_event_cb),
+				 plugin,
+				 0);
 
-	gtk_widget_set_sensitive (password_entry, require_password);
+	/*gtk_widget_set_sensitive (password_entry, require_password);*/
 }
 
 static GtkWidget *

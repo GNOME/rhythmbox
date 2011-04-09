@@ -35,7 +35,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <lib/eel-gconf-extensions.h>
 #include <lib/rb-builder-helpers.h>
 #include <lib/rb-debug.h>
 #include <sources/rb-display-page-group.h>
@@ -45,17 +44,12 @@
 #include "rb-audioscrobbler-service.h"
 #include "rb-audioscrobbler-profile-page.h"
 
-
 #define RB_TYPE_AUDIOSCROBBLER_PLUGIN		(rb_audioscrobbler_plugin_get_type ())
 #define RB_AUDIOSCROBBLER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_AUDIOSCROBBLER_PLUGIN, RBAudioscrobblerPlugin))
 #define RB_AUDIOSCROBBLER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_AUDIOSCROBBLER_PLUGIN, RBAudioscrobblerPluginClass))
 #define RB_IS_AUDIOSCROBBLER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_AUDIOSCROBBLER_PLUGIN))
 #define RB_IS_AUDIOSCROBBLER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_AUDIOSCROBBLER_PLUGIN))
 #define RB_AUDIOSCROBBLER_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_AUDIOSCROBBLER_PLUGIN, RBAudioscrobblerPluginClass))
-
-#define CONF_AUDIOSCROBBLER_PREFIX CONF_PREFIX "/plugins/audioscrobbler"
-#define CONF_LASTFM_ENABLED CONF_AUDIOSCROBBLER_PREFIX "/Last.fm/enabled"
-#define CONF_LIBREFM_ENABLED CONF_AUDIOSCROBBLER_PREFIX "/Libre.fm/enabled"
 
 typedef struct
 {
@@ -65,13 +59,13 @@ typedef struct
 	GtkWidget *config_dialog;
 
 	/* Last.fm */
+	GSettings *lastfm_settings;
 	GtkWidget *lastfm_enabled_check;
-	guint lastfm_enabled_notification_id;
 	RBDisplayPage *lastfm_page;
 
 	/* Libre.fm */
+	GSettings *librefm_settings;
 	GtkWidget *librefm_enabled_check;
-	guint librefm_enabled_notification_id;
 	RBDisplayPage *librefm_page;
 } RBAudioscrobblerPlugin;
 
@@ -83,8 +77,6 @@ typedef struct
 G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
 GType	rb_audioscrobbler_plugin_get_type		(void) G_GNUC_CONST;
 
-
-
 static void rb_audioscrobbler_plugin_init (RBAudioscrobblerPlugin *plugin);
 static void rb_audioscrobbler_plugin_finalize (GObject *object);
 static void impl_activate (RBPlugin *plugin, RBShell *shell);
@@ -95,16 +87,14 @@ void config_dialog_response_cb (GtkWidget *dialog, gint response,
                                 RBAudioscrobblerPlugin *plugin);
 void lastfm_enabled_check_toggled_cb (GtkToggleButton *togglebutton,
                                       RBAudioscrobblerPlugin *plugin);
-static void lastfm_enabled_changed_cb (GConfClient *client,
-                                       guint cnxn_id,
-                                       GConfEntry *entry,
-                                       RBAudioscrobblerPlugin *plugin);
+static void lastfm_settings_changed_cb (GSettings *settings,
+					const char *key,
+					RBAudioscrobblerPlugin *plugin);
 void librefm_enabled_check_toggled_cb (GtkToggleButton *togglebutton,
                                        RBAudioscrobblerPlugin *plugin);
-static void librefm_enabled_changed_cb (GConfClient *client,
-                                        guint cnxn_id,
-                                        GConfEntry *entry,
-                                        RBAudioscrobblerPlugin *plugin);
+static void librefm_settings_changed_cb (GSettings *settings,
+					 const char *key,
+					 RBAudioscrobblerPlugin *plugin);
 
 RB_PLUGIN_REGISTER(RBAudioscrobblerPlugin, rb_audioscrobbler_plugin)
 
@@ -139,19 +129,23 @@ static void
 impl_activate (RBPlugin *bplugin,
 	       RBShell *shell)
 {
+	gboolean enabled;
 	RBAudioscrobblerPlugin *plugin;
+
 	plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
 
 	plugin->shell = shell;
 	init_config_dialog (plugin);
 
-	plugin->lastfm_enabled_notification_id =
-		eel_gconf_notification_add (CONF_LASTFM_ENABLED,
-		                            (GConfClientNotifyFunc) lastfm_enabled_changed_cb,
-		                            plugin);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plugin->lastfm_enabled_check),
-	                              eel_gconf_get_boolean (CONF_LASTFM_ENABLED));
-	if (eel_gconf_get_boolean (CONF_LASTFM_ENABLED) == TRUE) {
+	plugin->lastfm_settings = g_settings_new_with_path (AUDIOSCROBBLER_SETTINGS_SCHEMA,
+							    AUDIOSCROBBLER_SETTINGS_PATH "/Last.fm");
+	g_signal_connect_object (plugin->lastfm_settings,
+				 "changed",
+				 G_CALLBACK (lastfm_settings_changed_cb),
+				 plugin, 0);
+	enabled = g_settings_get_boolean (plugin->lastfm_settings, AUDIOSCROBBLER_SERVICE_ENABLED_KEY);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plugin->lastfm_enabled_check), enabled);
+	if (enabled) {
 		RBAudioscrobblerService *lastfm;
 		lastfm = rb_audioscrobbler_service_new_lastfm ();
 		plugin->lastfm_page = rb_audioscrobbler_profile_page_new (plugin->shell,
@@ -160,13 +154,15 @@ impl_activate (RBPlugin *bplugin,
 		g_object_unref (lastfm);
 	}
 
-	plugin->librefm_enabled_notification_id =
-		eel_gconf_notification_add (CONF_LIBREFM_ENABLED,
-		                            (GConfClientNotifyFunc) librefm_enabled_changed_cb,
-		                            plugin);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plugin->librefm_enabled_check),
-	                              eel_gconf_get_boolean (CONF_LIBREFM_ENABLED));
-	if (eel_gconf_get_boolean (CONF_LIBREFM_ENABLED) == TRUE) {
+	plugin->librefm_settings = g_settings_new_with_path (AUDIOSCROBBLER_SETTINGS_SCHEMA,
+							     AUDIOSCROBBLER_SETTINGS_PATH "/Libre.fm");
+	g_signal_connect_object (plugin->librefm_settings,
+				 "changed",
+				 G_CALLBACK (librefm_settings_changed_cb),
+				 plugin, 0);
+	enabled = g_settings_get_boolean (plugin->librefm_settings, AUDIOSCROBBLER_SERVICE_ENABLED_KEY);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plugin->librefm_enabled_check), enabled);
+	if (enabled) {
 		RBAudioscrobblerService *librefm;
 		librefm = rb_audioscrobbler_service_new_librefm ();
 		plugin->librefm_page = rb_audioscrobbler_profile_page_new (plugin->shell,
@@ -187,9 +183,19 @@ impl_deactivate	(RBPlugin *bplugin,
 		plugin->config_dialog = NULL;
 	}
 
+	if (plugin->lastfm_settings != NULL) {
+		g_object_unref (plugin->lastfm_settings);
+		plugin->lastfm_settings = NULL;
+	}
+
 	if (plugin->lastfm_page != NULL) {
 		rb_display_page_delete_thyself (plugin->lastfm_page);
 		plugin->lastfm_page = NULL;
+	}
+
+	if (plugin->librefm_settings != NULL) {
+		g_object_unref (plugin->librefm_settings);
+		plugin->librefm_settings = NULL;
 	}
 
 	if (plugin->librefm_page != NULL) {
@@ -251,19 +257,22 @@ void
 lastfm_enabled_check_toggled_cb (GtkToggleButton *togglebutton,
                                  RBAudioscrobblerPlugin *plugin)
 {
-	eel_gconf_set_boolean (CONF_LASTFM_ENABLED,
-			       gtk_toggle_button_get_active (togglebutton));
+	g_settings_set_boolean (plugin->lastfm_settings,
+				AUDIOSCROBBLER_SERVICE_ENABLED_KEY,
+				gtk_toggle_button_get_active (togglebutton));
 }
 
 static void
-lastfm_enabled_changed_cb (GConfClient *client,
-                           guint cnxn_id,
-                           GConfEntry *entry,
-                           RBAudioscrobblerPlugin *plugin)
+lastfm_settings_changed_cb (GSettings *settings,
+			    const char *key,
+			    RBAudioscrobblerPlugin *plugin)
 {
 	gboolean enabled;
-	enabled = gconf_value_get_bool (entry->value);
+	if (g_strcmp0 (key, AUDIOSCROBBLER_SERVICE_ENABLED_KEY) != 0) {
+		return;
+	}
 
+	enabled = g_settings_get_boolean (settings, key);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plugin->lastfm_enabled_check),
 	                              enabled);
 	if (enabled == TRUE && plugin->lastfm_page == NULL) {
@@ -283,19 +292,22 @@ void
 librefm_enabled_check_toggled_cb (GtkToggleButton *togglebutton,
                                   RBAudioscrobblerPlugin *plugin)
 {
-	eel_gconf_set_boolean (CONF_LIBREFM_ENABLED,
-			       gtk_toggle_button_get_active (togglebutton));
+	g_settings_set_boolean (plugin->librefm_settings,
+				AUDIOSCROBBLER_SERVICE_ENABLED_KEY,
+				gtk_toggle_button_get_active (togglebutton));
 }
 
 static void
-librefm_enabled_changed_cb (GConfClient *client,
-                            guint cnxn_id,
-                            GConfEntry *entry,
-                            RBAudioscrobblerPlugin *plugin)
+librefm_settings_changed_cb (GSettings *settings,
+			     const char *key,
+			     RBAudioscrobblerPlugin *plugin)
 {
 	gboolean enabled;
-	enabled = gconf_value_get_bool (entry->value);
+	if (g_strcmp0 (key, AUDIOSCROBBLER_SERVICE_ENABLED_KEY) != 0) {
+		return;
+	}
 
+	enabled = g_settings_get_boolean (settings, key);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plugin->librefm_enabled_check),
 	                              enabled);
 

@@ -35,11 +35,9 @@
 #include <json-glib/json-glib.h>
 #include <math.h>
 
-#include <lib/eel-gconf-extensions.h>
 #include <lib/rb-debug.h>
 #include <lib/rb-builder-helpers.h>
 #include <lib/rb-file-helpers.h>
-#include <lib/rb-preferences.h>
 #include <lib/rb-util.h>
 #include <sources/rb-display-page-tree.h>
 #include <sources/rb-display-page-group.h>
@@ -51,13 +49,13 @@
 #include "rb-audioscrobbler-radio-source.h"
 #include "rb-audioscrobbler-radio-track-entry-type.h"
 
-#define CONF_AUDIOSCROBBLER_ENABLE_SCROBBLING CONF_PLUGINS_PREFIX "/audioscrobbler/%s/scrobbling_enabled"
 #define AUDIOSCROBBLER_PROFILE_PAGE_POPUP_PATH "/AudioscrobblerProfilePagePopup"
 
 struct _RBAudioscrobblerProfilePagePrivate {
 	RBAudioscrobblerService *service;
 	RBAudioscrobblerAccount *account;
 	RBAudioscrobbler *audioscrobbler;
+	GSettings *settings;
 
 	/* Used to request the user's profile data */
 	RBAudioscrobblerUser *user;
@@ -150,9 +148,8 @@ static void login_status_change_cb (RBAudioscrobblerAccount *account,
 /* scrobbling enabled preference */
 void scrobbling_enabled_check_toggled_cb (GtkToggleButton *togglebutton,
                                           RBAudioscrobblerProfilePage *page);
-static void scrobbling_enabled_changed_cb (GConfClient *client,
-                                           guint cnxn_id,
-                                           GConfEntry *entry,
+static void scrobbler_settings_changed_cb (GSettings *settings,
+					   const char *key,
                                            RBAudioscrobblerProfilePage *page);
 
 /* callbacks from scrobbler object */
@@ -339,8 +336,8 @@ rb_audioscrobbler_profile_page_constructed (GObject *object)
 {
 	RBAudioscrobblerProfilePage *page;
 	RBShell *shell;
+	char *scrobbler_settings;
 	RBShellPlayer *shell_player;
-	char *scrobbling_enabled_conf_key;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_profile_page_parent_class, constructed, object);
 
@@ -398,23 +395,26 @@ rb_audioscrobbler_profile_page_constructed (GObject *object)
 	                  "login-status-changed",
 	                  (GCallback)login_status_change_cb,
 	                  page);
+	/* scrobbler settings */
+	scrobbler_settings = g_strconcat (AUDIOSCROBBLER_SETTINGS_PATH "/",
+					  rb_audioscrobbler_service_get_name (page->priv->service),
+					  NULL);
+	page->priv->settings = g_settings_new_with_path (AUDIOSCROBBLER_SETTINGS_SCHEMA,
+							 scrobbler_settings);
 	login_status_change_cb (page->priv->account,
 	                        rb_audioscrobbler_account_get_login_status (page->priv->account),
 	                        page);
 
-	/* scrobbling enabled gconf stuff */
-	scrobbling_enabled_conf_key = g_strdup_printf (CONF_AUDIOSCROBBLER_ENABLE_SCROBBLING,
-	                                               rb_audioscrobbler_service_get_name (page->priv->service));
-	page->priv->scrobbling_enabled_notification_id =
-		eel_gconf_notification_add (scrobbling_enabled_conf_key,
-				            (GConfClientNotifyFunc) scrobbling_enabled_changed_cb,
-				            page);
+	g_signal_connect_object (page->priv->settings,
+				 "changed",
+				 G_CALLBACK (scrobbler_settings_changed_cb),
+				 page, 0);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (page->priv->scrobbling_enabled_check),
-	                              eel_gconf_get_boolean (scrobbling_enabled_conf_key));
-
+				      g_settings_get_boolean (page->priv->settings,
+							      AUDIOSCROBBLER_SCROBBLING_ENABLED_KEY));
 
 	g_object_unref (shell);
-	g_free (scrobbling_enabled_conf_key);
+	g_free (scrobbler_settings);
 }
 
 static void
@@ -444,9 +444,9 @@ rb_audioscrobbler_profile_page_dispose (GObject* object)
 		page->priv->user = NULL;
 	}
 
-	if (page->priv->scrobbling_enabled_notification_id != 0) {
-		eel_gconf_notification_remove (page->priv->scrobbling_enabled_notification_id);
-		page->priv->scrobbling_enabled_notification_id = 0;
+	if (page->priv->settings != NULL) {
+		g_object_unref (page->priv->settings);
+		page->priv->settings = NULL;
 	}
 
 	if (page->priv->button_to_popup_menu_map != NULL) {
@@ -694,7 +694,6 @@ login_status_change_cb (RBAudioscrobblerAccount *account,
 {
 	const char *username;
 	const char *session_key;
-	char *scrobbling_enabled_conf_key;
 	char *label_text = NULL;
 	char *button_text = NULL;
 	gboolean show_login_bar;
@@ -710,10 +709,8 @@ login_status_change_cb (RBAudioscrobblerAccount *account,
 	}
 
 	/* create new scrobbler if new user has logged in and scrobbling is enabled */
-	scrobbling_enabled_conf_key = g_strdup_printf (CONF_AUDIOSCROBBLER_ENABLE_SCROBBLING,
-	                                               rb_audioscrobbler_service_get_name (page->priv->service));
 	if (status == RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGED_IN &&
-	    eel_gconf_get_boolean (scrobbling_enabled_conf_key)) {
+	    g_settings_get_boolean (page->priv->settings, AUDIOSCROBBLER_SCROBBLING_ENABLED_KEY)) {
 		RBShell *shell;
 		RBShellPlayer *shell_player;
 		g_object_get (page, "shell", &shell, NULL);
@@ -799,7 +796,6 @@ login_status_change_cb (RBAudioscrobblerAccount *account,
 		gtk_widget_hide (page->priv->profile_window);
 	}
 
-	g_free (scrobbling_enabled_conf_key);
 	g_free (label_text);
 	g_free (button_text);
 }
@@ -808,22 +804,22 @@ void
 scrobbling_enabled_check_toggled_cb (GtkToggleButton *togglebutton,
                                      RBAudioscrobblerProfilePage *page)
 {
-	char *conf_key;
-
-	conf_key = g_strdup_printf (CONF_AUDIOSCROBBLER_ENABLE_SCROBBLING,
-	                            rb_audioscrobbler_service_get_name (page->priv->service));
-	eel_gconf_set_boolean (conf_key,
-			       gtk_toggle_button_get_active (togglebutton));
-	g_free (conf_key);
+	g_settings_set_boolean (page->priv->settings,
+				AUDIOSCROBBLER_SCROBBLING_ENABLED_KEY,
+				gtk_toggle_button_get_active (togglebutton));
 }
 
 static void
-scrobbling_enabled_changed_cb (GConfClient *client,
-                               guint cnxn_id,
-                               GConfEntry *entry,
+scrobbler_settings_changed_cb (GSettings *settings,
+			       const char *key,
                                RBAudioscrobblerProfilePage *page)
 {
-	gboolean enabled = gconf_value_get_bool (entry->value);
+	gboolean enabled;
+	if (g_strcmp0 (key, AUDIOSCROBBLER_SCROBBLING_ENABLED_KEY) != 0) {
+		return;
+	}
+
+	enabled = g_settings_get_boolean (settings, key);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (page->priv->scrobbling_enabled_check),
 	                              enabled);
 

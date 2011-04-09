@@ -21,16 +21,13 @@
 import gobject
 
 import rb
-from gi.repository import Gtk, GConf
+from gi.repository import Gtk, Gio
 
-gconf_keys = {	'format' : '/apps/rhythmbox/plugins/jamendo/format',
-		'sorting': '/apps/rhythmbox/plugins/jamendo/sorting'
-	     }
-format_list = ['ogg3', 'mp32']
+# format_list = ['ogg3', 'mp32']
 
 class JamendoConfigureDialog (object):
 	def __init__(self, builder_file):
-		self.gconf = GConf.Client.get_default()
+		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.jamendo")
 
 		builder = Gtk.Builder()
 		builder.add_from_file(builder_file)
@@ -38,7 +35,9 @@ class JamendoConfigureDialog (object):
 		self.dialog = builder.get_object('preferences_dialog')
 		self.audio_combobox = builder.get_object("audio_combobox")
 
-		format_text = self.gconf.get_string(gconf_keys['format'])
+		# probably should just bind this, but too lazy
+
+		format_text = self.settings['format']
 		if not format_text:
 			format_text = "ogg3"
 		try:
@@ -58,4 +57,4 @@ class JamendoConfigureDialog (object):
 
 	def audio_combobox_changed (self, combobox):
 		format = self.audio_combobox.get_active()
-		self.gconf.set_string(gconf_keys['format'], format_list[format])
+		self.settings['format'] = format_list[format]

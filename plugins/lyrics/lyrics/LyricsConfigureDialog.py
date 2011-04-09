@@ -31,12 +31,11 @@ import gobject
 from os import system, path
 
 import rb
-from gi.repository import Gtk, GConf
+from gi.repository import Gtk, Gio
 
 class LyricsConfigureDialog (object):
-	def __init__(self, builder_file, gconf_keys):
-		self.gconf = GConf.Client.get_default()
-		self.gconf_keys = gconf_keys
+	def __init__(self, builder_file):
+		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.lyrics")
 
 		builder = Gtk.Builder()
 		builder.add_from_file(builder_file)
@@ -49,7 +48,6 @@ class LyricsConfigureDialog (object):
 		self.choose_button.connect("clicked", self.choose_callback)
 		self.dialog.connect("response", self.dialog_response)
 
-		# set fields from gconf
 		engines, self.folder = self.get_prefs()
 		if self.folder is None:
 			self.folder = '~/.lyrics'
@@ -78,21 +76,20 @@ class LyricsConfigureDialog (object):
 
 
 	def set_values(self):
-		engines = []
+		sites = []
 		for s in lyrics_sites:
 			check = self.site_checks[s['id']]
 			if check is None:
 				continue
 
 			if check.get_active():
-				engines.append(s['id'])
+				sites.append(s['id'])
 
 		if len(self.path_display.get_text()) is not 0:
 			self.folder = self.path_display.get_text()
 
-		# XXX can't set gconf string lists; doesn't matter, none of the sites work anyway
-		# self.gconf.set_list(self.gconf_keys['engines'], GConf.ValueType.STRING, engines)
-		self.gconf.set_string(self.gconf_keys['folder'], self.folder)
+		self.settings['sites'] = sites
+		self.settings['folder'] = self.folder
 
 	def choose_callback(self, widget):
 		def response_handler(widget, response):
@@ -119,12 +116,12 @@ class LyricsConfigureDialog (object):
 	
 	def get_prefs (self):
 		try:
-			engines = rb.get_gconf_string_list(self.gconf_keys['engines'])
+			sites = self.settings['sites']
 		except gobject.GError, e:
 			print e
 			engines = []
-		folder = GConf.Client.get_default().get_string(self.gconf_keys['folder'])
+		folder = self.settings['folder']
 
-		print "lyric engines: " + str (engines)
+		print "lyric sites: " + str (sites)
 		print "lyric folder: " + folder
-		return (engines, folder)
+		return (sites, folder)

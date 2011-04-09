@@ -41,17 +41,14 @@
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
 #include <gtk/gtk.h>
-#include <gconf/gconf-value.h>
 
 #include <libsoup/soup.h>
 #include <libsoup/soup-gnome.h>
 
-#include "eel-gconf-extensions.h"
 #include "rb-audioscrobbler.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
 #include "rb-builder-helpers.h"
-#include "rb-preferences.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
 #include "rb-source.h"

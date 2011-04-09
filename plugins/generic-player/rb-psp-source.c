@@ -37,7 +37,6 @@
 
 #include "mediaplayerid.h"
 
-#include "eel-gconf-extensions.h"
 #include "rb-psp-source.h"
 #include "rb-debug.h"
 #include "rb-util.h"

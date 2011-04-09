@@ -41,7 +41,6 @@
 
 #include "rb-plugin.h"
 #include "rhythmdb.h"
-#include "eel-gconf-extensions.h"
 #include "rb-shell.h"
 #include "rb-audiocd-source.h"
 #include "rb-util.h"
@@ -452,6 +451,7 @@ rb_audiocd_source_new (RBPlugin *plugin,
 		       GVolume *volume)
 {
 	GObject *source;
+	GSettings *settings;
 	RhythmDBEntryType *entry_type;
 	RhythmDB *db;
 	char *name;
@@ -473,13 +473,16 @@ rb_audiocd_source_new (RBPlugin *plugin,
 	g_object_unref (db);
 	g_free (name);
 
+	settings = g_settings_new ("org.gnome.rhythmbox.plugins.audiocd");
 	source = g_object_new (RB_TYPE_AUDIOCD_SOURCE,
 			       "entry-type", entry_type,
 			       "volume", volume,
 			       "shell", shell,
-			       "sorting-key", NULL,
 			       "plugin", plugin,
+			       "show-browser", FALSE,
+			       "settings", g_settings_get_child (settings, "source"),
 			       NULL);
+	g_object_unref (settings);
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 

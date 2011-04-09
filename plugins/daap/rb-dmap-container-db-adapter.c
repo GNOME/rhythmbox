@@ -171,7 +171,10 @@ rb_dmap_container_db_adapter_new (RBPlaylistManager *playlist_manager)
 	 * general-purpose RBPlaylistSource class:
 	 */
 	if (playlists != NULL && playlists->data != NULL) {
-		g_list_foreach (playlists, (GFunc) assign_id, NULL);
+		GList *l;
+		for (l = playlists; l != NULL; l = l->next) {
+			assign_id (playlist_manager, RB_SOURCE (l->data));
+		}
 	}
 	
 	g_signal_connect (G_OBJECT (playlist_manager),

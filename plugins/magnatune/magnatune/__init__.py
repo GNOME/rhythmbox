@@ -37,7 +37,7 @@ import gnomekeyring as keyring
 
 import rb
 from gi.repository import RB
-from gi.repository import GConf, Gtk
+from gi.repository import Gtk, Gio
 # XXX use GnomeKeyring when available
 
 from MagnatuneSource import MagnatuneSource
@@ -70,18 +70,8 @@ class MagnatuneEntryType(RB.RhythmDBEntryType):
 		return
 
 class Magnatune(RB.Plugin):
-	client = GConf.Client.get_default()
 
 	format_list = ['ogg', 'flac', 'wav', 'mp3-vbr', 'mp3-cbr']
-
-	gconf_keys = {
-		'format': "/apps/rhythmbox/plugins/magnatune/format",
-		'pay': "/apps/rhythmbox/plugins/magnatune/pay",
-		'ccauthtoken': "/apps/rhythmbox/plugins/magnatune/ccauthtoken",
-		'continue': "/apps/rhythmbox/plugins/magnatune/continue",
-		'account_type': "/apps/rhythmbox/plugins/magnatune/account_type"
-	}
-
 
 	#
 	# Core methods
@@ -96,6 +86,8 @@ class Magnatune(RB.Plugin):
 
 		self.entry_type = MagnatuneEntryType()
 		self.db.register_entry_type(self.entry_type)
+
+		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
 
 		theme = Gtk.IconTheme.get_default()
 		rb.append_plugin_source_path(theme, "/icons")
@@ -203,7 +195,7 @@ class Magnatune(RB.Plugin):
 
 		if dialog == None:
 			def fill_account_details():
-				account_type = self.client.get_string(self.gconf_keys['account_type'])
+				account_type = self.settings['account_type'])
 				builder.get_object("no_account_radio").set_active(account_type == "none")
 				builder.get_object("stream_account_radio").set_active(account_type == "stream")
 				builder.get_object("download_account_radio").set_active(account_type == "download")
@@ -230,7 +222,7 @@ class Magnatune(RB.Plugin):
 				print "account type radiobutton toggled: " + button.get_name()
 				account_type = {"no_account_radio": "none", "stream_account_radio": "stream", "download_account_radio": "download"}
 				if button.get_active():
-					self.client.set_string(self.gconf_keys['account_type'], account_type[button.get_name()])
+					self.settings['account_type'] = account_type[button.get_name()]
 					if account_type[button.get_name()] == 'none':
 						builder.get_object("username_label").set_sensitive(False)
 						builder.get_object("username_entry").set_sensitive(False)
@@ -266,7 +258,7 @@ class Magnatune(RB.Plugin):
 
 
 			self.configure_callback_dic = {
-				"rb_magnatune_audio_combobox_changed_cb" : lambda w: self.client.set_string(self.gconf_keys['format'], self.format_list[w.get_active()]),
+				"rb_magnatune_audio_combobox_changed_cb" : lambda w: self.settings['format'] = self.format_list[w.get_active()],
 
 				"rb_magnatune_radio_account_toggled_cb" : account_type_toggled,
 				"rb_magnatune_username_changed_cb" : account_details_changed,
@@ -282,7 +274,7 @@ class Magnatune(RB.Plugin):
 			for name in ("no_account_radio", "stream_account_radio", "download_account_radio"):
 				builder.get_object(name).set_name(name)
 
-			builder.get_object("audio_combobox").set_active(self.format_list.index(self.client.get_string(self.gconf_keys['format'])))
+			builder.get_object("audio_combobox").set_active(self.format_list.index(self.settings['format']))
 
 			builder.connect_signals(self.configure_callback_dic)
 			dialog.connect("response", close_button_pressed)

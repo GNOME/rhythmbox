@@ -2,20 +2,6 @@
 <interface>
   <requires lib="gtk+" version="2.14"/>
   <!-- interface-naming-policy project-wide -->
-  <object class="GtkListStore" id="replaygainmodemodel">
-    <columns>
-      <!-- column-name name -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Radio (equal loudness for all tracks)</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Album (ideal loudness for all tracks)</col>
-      </row>
-    </data>
-  </object>
   <object class="GtkAdjustment" id="preampadjustment">
     <property name="lower">-15</property>
     <property name="upper">25</property>
@@ -159,5 +145,23 @@
         <property name="position">2</property>
       </packing>
     </child>
+  </object>
+  <object class="GtkListStore" id="replaygainmodemodel">
+    <columns>
+      <!-- column-name display -->
+      <column type="gchararray"/>
+      <!-- column-name setting -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Radio (equal loudness for all tracks)</col>
+        <col id="1" translatable="no">radio</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Album (ideal loudness for all tracks)</col>
+        <col id="1" translatable="no">album</col>
+      </row>
+    </data>
   </object>
 </interface>

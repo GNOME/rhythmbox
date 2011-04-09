@@ -24,7 +24,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-from gi.repository import GConf
+import ConfigParser
 
 # utility things for dealing with last.fm
 
@@ -35,11 +35,18 @@ API_KEY = '27151108bfce62e12c1f6341437e0e83'
 
 NO_ACCOUNT_ERROR = _("This information is only available to Last.fm users. Ensure the Last.fm plugin is enabled, select Last.fm in the side pane, and log in.")
 
-USERNAME_GCONF_KEY = "/apps/rhythmbox/audioscrobbler/username"
-
 def user_has_account():
-    username = GConf.Client.get_default().get_string(USERNAME_GCONF_KEY)
-    return (username is not None and username != "")
+    session_file = os.path.join(RB.user_data_dir(), "audioscrobbler", "sessions")
+
+    if os.path.exists(session_file) == False:
+	return False
+
+    sessions = ConfigParser.RawConfigParser()
+    sessions.read(session_file)
+    try:
+	return (sessions.get('Last.fm', 'username') != "")
+    except:
+	return False
 
 def datasource_link(path):
     return "<a href='http://last.fm/'><img src='%s/img/lastfm.png'></a>" % path

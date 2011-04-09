@@ -28,7 +28,7 @@ import gzip
 import datetime
 
 import rb
-from gi.repository import Gtk, Gdk, GConf
+from gi.repository import Gtk, Gdk, Gio
 from gi.repository import RB
 
 from JamendoSaxHandler import JamendoSaxHandler
@@ -60,7 +60,7 @@ class JamendoSource(RB.BrowserSource):
 
 	def __init__(self):
 
-		RB.BrowserSource.__init__(self, name=_("Jamendo"))
+		RB.BrowserSource.__init__(self, name=_("Jamendo"), settings=Gio.Settings("org.gnome.rhythmbox.plugins.jamendo").get_child("source"))
 
 		# catalogue stuff
 		self.__db = None
@@ -83,6 +83,8 @@ class JamendoSource(RB.BrowserSource):
 
 		self.__local_catalogue_path = os.path.join(self.__jamendo_dir, "dbdump.xml")
 		self.__local_catalogue_temp = os.path.join(self.__jamendo_dir, "dbdump.xml.tmp")
+
+		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.jamendo")
 
 	def do_set_property(self, property, value):
 		if property.name == 'plugin':
@@ -139,11 +141,6 @@ class JamendoSource(RB.BrowserSource):
 			self.__update_id = gobject.timeout_add_seconds(6 * 60 * 60, self.__update_catalogue)
 			self.__update_catalogue()
 
-			sort_key = GConf.Client.get_default().get_string(JamendoConfigureDialog.gconf_keys['sorting'])
-			if not sort_key:
-				sort_key = "Artist,ascending"
-			self.get_entry_view().set_sorting_type(sort_key)
-
 
 	def do_delete_thyself(self):
 		if self.__update_id != 0:
@@ -161,8 +158,6 @@ class JamendoSource(RB.BrowserSource):
 		if self.__catalogue_check:
 			self.__catalogue_check.cancel()
 			self.__catalogue_check = None
-
-		GConf.Client.get_default().set_string(JamendoConfigureDialog.gconf_keys['sorting'], self.get_entry_view().get_sorting_type())
 
 
 	#
@@ -282,7 +277,7 @@ class JamendoSource(RB.BrowserSource):
 	# Download album
 	def download_album (self):
 		tracks = self.get_entry_view().get_selected_entries()
-		format = GConf.Client.get_default().get_string(JamendoConfigureDialog.gconf_keys['format'])
+		format = self.settings['format']
 		if not format or format not in JamendoConfigureDialog.format_list:
 			format = 'ogg3'
 

@@ -36,7 +36,7 @@ import gnomekeyring as keyring
 
 import rb
 from gi.repository import RB
-from gi.repository import Gtk, GConf
+from gi.repository import Gtk, Gio
 # XXX use GnomeKeyring when introspection is available
 
 from TrackListHandler import TrackListHandler
@@ -61,11 +61,9 @@ class MagnatuneSource(RB.BrowserSource):
 		'plugin': (RB.Plugin, 'plugin', 'plugin', gobject.PARAM_WRITABLE|gobject.PARAM_CONSTRUCT_ONLY),
 	}
 
-	__client = GConf.Client.get_default()
-
-
 	def __init__(self):
-		RB.BrowserSource.__init__(self, name=_("Magnatune"))
+		self.__settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
+		RB.BrowserSource.__init__(self, name=_("Magnatune"), settings=self.__settings.get_child("source"))
 
 		# source state
 		self.__activated = False
@@ -212,14 +210,15 @@ class MagnatuneSource(RB.BrowserSource):
 				urls.add(url)
 
 	def download_album(self):
-		if self.__client.get_string(self.__plugin.gconf_keys['account_type']) != 'download':
+		if selt.__settings['account_type'] != 'download':
 			# The user doesn't have a download account, so redirect them to the purchase page.
 			self.purchase_redirect()
 			return
 
 		try:
 			# Just use the first library location
-			library_location = rb.get_gconf_string_list("/apps/rhythmbox/library_locations")[0];
+			library = Gio.Settings("org.gnome.rhythmbox.rhythmdb")
+			library_location = library['locations'][0]
 		except IndexError, e:
 			RB.error_dialog(title = _("Couldn't purchase album"),
 				        message = _("You must have a library location set to purchase an album."))
@@ -304,7 +303,7 @@ class MagnatuneSource(RB.BrowserSource):
 
 		def load_catalogue():
 			def got_items(result, items):
-				account_type = self.__client.get_string(self.__plugin.gconf_keys['account_type'])
+				account_type = self.__settings['account_type']
 				username = ""
 				password = ""
 				if account_type == 'none':
@@ -431,7 +430,7 @@ class MagnatuneSource(RB.BrowserSource):
 			l.get_url(url, auth_data_cb, (username, password))
 
 		def auth_data_cb(data, (username, password)):
-			buy_album_handler = BuyAlbumHandler(self.__client.get_string(self.__plugin.gconf_keys['format']))
+			buy_album_handler = BuyAlbumHandler(self.__settings['format'])
 			auth_parser = xml.sax.make_parser()
 			auth_parser.setContentHandler(buy_album_handler)
 
@@ -499,7 +498,8 @@ class MagnatuneSource(RB.BrowserSource):
 
 		def unzip_album():
 			# just use the first library location
-			library_location = gio.File(uri=rb.get_gconf_string_list("/apps/rhythmbox/library_locations")[0]);
+			library = Gio.Settings("org.gnome.rhythmbox.rhythmdb")
+			library_location = gio.File(library['locations'][0])
 
 			album = zipfile.ZipFile(dest.get_path())
 			for track in album.namelist():

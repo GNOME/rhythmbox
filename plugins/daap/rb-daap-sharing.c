@@ -32,6 +32,7 @@
 
 #include <string.h>
 
+#include <gio/gio.h>
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
 
@@ -41,16 +42,11 @@
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-playlist-manager.h"
-#include "eel-gconf-extensions.h"
-#include "rb-preferences.h"
 
 #include <libdmapsharing/dmap.h>
 
 static DAAPShare *share = NULL;
-static guint enable_sharing_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
-static guint require_password_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
-static guint share_name_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
-static guint share_password_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
+static GSettings *settings = NULL;
 
 char *
 rb_daap_sharing_default_share_name ()
@@ -63,6 +59,20 @@ rb_daap_sharing_default_share_name ()
 	}
 
 	return g_strdup_printf (_("%s's Music"), real_name);
+}
+
+static gboolean
+share_name_get_mapping (GValue *value, GVariant *variant, gpointer data)
+{
+	const char *name;
+	name = g_variant_get_string (variant, NULL);
+
+	if (name != NULL || name[0] != '\0') {
+		g_value_set_string (value, name);
+	} else {
+		g_value_take_string (value, rb_daap_sharing_default_share_name ());
+	}
+	return TRUE;
 }
 
 static void
@@ -79,7 +89,7 @@ create_share (RBShell *shell)
 	g_assert (share == NULL);
 	rb_debug ("initialize daap sharing");
 
-	name = eel_gconf_get_string (CONF_DAAP_SHARE_NAME);
+	name = g_settings_get_string (settings, "share-name");
 	if (name == NULL || *name == '\0') {
 		g_free (name);
 		name = rb_daap_sharing_default_share_name ();
@@ -91,14 +101,23 @@ create_share (RBShell *shell)
 	db = DMAP_DB (rb_rhythmdb_dmap_db_adapter_new (rdb, RHYTHMDB_ENTRY_TYPE_SONG));
 	container_db = DMAP_CONTAINER_DB (rb_dmap_container_db_adapter_new (playlist_manager));
 
-	require_password = eel_gconf_get_boolean (CONF_DAAP_REQUIRE_PASSWORD);
+	require_password = g_settings_get_boolean (settings, "require-password");
 	if (require_password) {
-		password = eel_gconf_get_string (CONF_DAAP_SHARE_PASSWORD);
+		password = g_settings_get_string (settings, "share-password");
 	} else {
 		password = NULL;
 	}
 
 	share = daap_share_new (name, password, db, container_db, NULL);
+
+	g_settings_bind_with_mapping (settings, "share-name",
+				      share, "name",
+				      G_SETTINGS_BIND_GET,
+				      share_name_get_mapping, NULL,
+				      NULL, NULL);
+	if (g_settings_get_boolean (settings, "require-password")) {
+		g_settings_bind (settings, "share-password", share, "password", G_SETTINGS_BIND_DEFAULT);
+	}
 
 	g_object_unref (db);
 	g_object_unref (container_db);
@@ -110,99 +129,34 @@ create_share (RBShell *shell)
 }
 
 static void
-enable_sharing_changed_cb (GConfClient *client,
-			   guint cnxn_id,
-		     	   GConfEntry *entry,
-		  	   RBShell *shell)
+sharing_settings_changed_cb (GSettings *settings, const char *key, RBShell *shell)
 {
-	gboolean enabled;
+	if (g_strcmp0 (key, "enable-sharing") == 0) {
+		gboolean enabled;
 
-	enabled = eel_gconf_get_boolean (CONF_DAAP_ENABLE_SHARING);
-
-	if (enabled) {
-		if (share == NULL) {
-			create_share (shell);
+		enabled = g_settings_get_boolean (settings, key);
+		if (enabled) {
+			if (share == NULL) {
+				create_share (shell);
+			}
+		} else {
+			if (share != NULL) {
+				rb_debug ("shutting down daap share");
+				g_object_unref (share);
+				share = NULL;
+			}
 		}
-	} else {
-		rb_debug ("shutdown daap sharing");
+	} else if (g_strcmp0 (key, "require-password") == 0) {
 
-		if (share) {
-			g_object_unref (share);
+		if (share != NULL) {
+			if (g_settings_get_boolean (settings, key)) {
+				g_settings_bind (settings, "share-password", share, "password", G_SETTINGS_BIND_DEFAULT);
+			} else {
+				g_settings_unbind (share, "password");
+				g_object_set (share, "password", NULL, NULL);
+			}
 		}
-		share = NULL;
 	}
-}
-
-static void
-require_password_changed_cb (GConfClient *client,
-			     guint cnxn_id,
-			     GConfEntry *entry,
-			     RBShell *shell)
-{
-	gboolean required;
-	char    *password;
-
-	if (share == NULL) {
-		return;
-	}
-
-	required = eel_gconf_get_boolean (CONF_DAAP_REQUIRE_PASSWORD);
-
-	if (required) {
-		password = eel_gconf_get_string (CONF_DAAP_SHARE_PASSWORD);
-	} else {
-		password = NULL;
-	}
-
-	g_object_set (G_OBJECT (share), "password", password, NULL);
-	g_free (password);
-}
-
-static void
-share_name_changed_cb (GConfClient *client,
-		       guint cnxn_id,
-		       GConfEntry *entry,
-		       RBShell *shell)
-{
-	char *name;
-
-	if (share == NULL) {
-		return;
-	}
-
-	name = eel_gconf_get_string (CONF_DAAP_SHARE_NAME);
-	if (name == NULL || name[0] == '\0') {
-		g_free (name);
-		name = rb_daap_sharing_default_share_name ();
-	}
-
-	g_object_set (G_OBJECT (share), "name", name, NULL);
-	g_free (name);
-}
-
-static void
-share_password_changed_cb (GConfClient *client,
-			   guint cnxn_id,
-			   GConfEntry *entry,
-			   RBShell *shell)
-{
-	gboolean require_password;
-	char    *password;
-
-	if (share == NULL) {
-		return;
-	}
-
-	require_password = eel_gconf_get_boolean (CONF_DAAP_REQUIRE_PASSWORD);
-
-	/* Don't do anything unless we require a password */
-	if (! require_password) {
-		return;
-	}
-
-	password = eel_gconf_get_string (CONF_DAAP_SHARE_PASSWORD);
-	g_object_set (G_OBJECT (share), "password", password, NULL);
-	g_free (password);
 }
 
 void
@@ -210,26 +164,13 @@ rb_daap_sharing_init (RBShell *shell)
 {
 	g_object_ref (shell);
 
-	if (eel_gconf_get_boolean (CONF_DAAP_ENABLE_SHARING)) {
+	settings = g_settings_new ("org.gnome.rhythmbox.sharing");
+
+	if (g_settings_get_boolean (settings, "enable-sharing")) {
 		create_share (shell);
 	}
 
-	enable_sharing_notify_id =
-		eel_gconf_notification_add (CONF_DAAP_ENABLE_SHARING,
-					    (GConfClientNotifyFunc) enable_sharing_changed_cb,
-					    shell);
-	require_password_notify_id =
-		eel_gconf_notification_add (CONF_DAAP_REQUIRE_PASSWORD,
-					    (GConfClientNotifyFunc) require_password_changed_cb,
-					    shell);
-	share_name_notify_id =
-		eel_gconf_notification_add (CONF_DAAP_SHARE_NAME,
-					    (GConfClientNotifyFunc) share_name_changed_cb,
-					    shell);
-	share_password_notify_id =
-		eel_gconf_notification_add (CONF_DAAP_SHARE_PASSWORD,
-					    (GConfClientNotifyFunc) share_password_changed_cb,
-					    shell);
+	g_signal_connect_object (settings, "changed", G_CALLBACK (sharing_settings_changed_cb), share, 0);
 }
 
 void
@@ -242,21 +183,9 @@ rb_daap_sharing_shutdown (RBShell *shell)
 		share = NULL;
 	}
 
-	if (enable_sharing_notify_id != EEL_GCONF_UNDEFINED_CONNECTION) {
-		eel_gconf_notification_remove (enable_sharing_notify_id);
-		enable_sharing_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
-	}
-	if (require_password_notify_id != EEL_GCONF_UNDEFINED_CONNECTION) {
-		eel_gconf_notification_remove (require_password_notify_id);
-		require_password_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
-	}
-	if (share_name_notify_id != EEL_GCONF_UNDEFINED_CONNECTION) {
-		eel_gconf_notification_remove (share_name_notify_id);
-		share_name_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
-	}
-	if (share_password_notify_id != EEL_GCONF_UNDEFINED_CONNECTION) {
-		eel_gconf_notification_remove (share_password_notify_id);
-		share_password_notify_id = EEL_GCONF_UNDEFINED_CONNECTION;
+	if (settings) {
+		g_object_unref (settings);
+		settings = NULL;
 	}
 
 	g_object_unref (shell);

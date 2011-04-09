@@ -477,7 +477,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	gtk_box_pack_start (GTK_BOX (main_vbox), source->priv->password_info_bar, FALSE, FALSE, 0);
 
 	/* entry view */
-	source->priv->track_view = rb_entry_view_new (db, G_OBJECT (shell_player), NULL, FALSE, FALSE);
+	source->priv->track_view = rb_entry_view_new (db, G_OBJECT (shell_player), FALSE, FALSE);
 	rb_entry_view_append_column (source->priv->track_view, RB_ENTRY_VIEW_COL_TITLE, TRUE);
 	rb_entry_view_append_column (source->priv->track_view, RB_ENTRY_VIEW_COL_ARTIST, FALSE);
 	rb_entry_view_append_column (source->priv->track_view, RB_ENTRY_VIEW_COL_ALBUM, FALSE);

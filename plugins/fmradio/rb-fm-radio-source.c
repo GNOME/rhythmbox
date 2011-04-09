@@ -51,9 +51,9 @@ static void     rb_fm_radio_source_init        (RBFMRadioSource *self);
 static void	rb_fm_radio_source_constructed (GObject *object);
 static void     rb_fm_radio_source_dispose     (GObject *object);
 static void     rb_fm_radio_source_do_query    (RBFMRadioSource *self);
-static void     rb_fm_radio_source_songs_view_sort_order_changed (
-						RBEntryView *view,
-						RBFMRadioSource *self);
+static void     rb_fm_radio_source_songs_view_sort_order_changed (GObject *obj,
+								  GParamSpec *pspec,
+								  RBFMRadioSource *self);
 static void      rb_fm_radio_source_songs_view_show_popup (
 						RBEntryView *view,
 						gboolean over_entry,
@@ -174,7 +174,6 @@ rb_fm_radio_source_constructed (GObject *object)
 
 	self->priv->stations = rb_entry_view_new (self->priv->db,
 						  G_OBJECT (self->priv->player),
-						  NULL,
 						  FALSE, FALSE);
 	rb_entry_view_append_column (self->priv->stations,
 				     RB_ENTRY_VIEW_COL_TITLE, TRUE);
@@ -183,8 +182,8 @@ rb_fm_radio_source_constructed (GObject *object)
 	rb_entry_view_append_column (self->priv->stations,
 				     RB_ENTRY_VIEW_COL_LAST_PLAYED, TRUE);
 
-	g_signal_connect_object (G_OBJECT (self->priv->stations),
-				 "sort-order-changed",
+	g_signal_connect_object (self->priv->stations,
+				 "notify::sort-order",
 				 G_CALLBACK (rb_fm_radio_source_songs_view_sort_order_changed),
 				 self, 0);
 	/* sort order */
@@ -286,10 +285,9 @@ rb_fm_radio_source_do_query (RBFMRadioSource *self)
 }
 
 static void
-rb_fm_radio_source_songs_view_sort_order_changed (RBEntryView *view,
-						  RBFMRadioSource *self)
+rb_fm_radio_source_songs_view_sort_order_changed (GObject *object, GParamSpec *pspec, RBFMRadioSource *self)
 {
-	rb_entry_view_resort_model (view);
+	rb_entry_view_resort_model (RB_ENTRY_VIEW (object));
 }
 
 static void

@@ -35,7 +35,6 @@
 #include <gtk/gtk.h>
 #include <gpod/itdb.h>
 
-#include "eel-gconf-extensions.h"
 #include "rb-ipod-source.h"
 #include "rb-ipod-db.h"
 #include "rb-ipod-helpers.h"
@@ -56,15 +55,9 @@
 #include "rb-podcast-entry-types.h"
 #include "rb-stock-icons.h"
 
-#define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/ipod/paned_position"
-#define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/ipod/show_browser"
-
 static void rb_ipod_source_constructed (GObject *object);
 static void rb_ipod_source_class_init (RBiPodSourceClass *klass);
 static void rb_ipod_source_dispose (GObject *object);
-
-static char *impl_get_browser_key (RBSource *source);
-static char *impl_get_paned_key (RBBrowserSource *source);
 
 static void impl_delete (RBSource *asource);
 static void rb_ipod_load_songs (RBiPodSource *source);
@@ -166,7 +159,6 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBMediaPlayerSourceClass *mps_class = RB_MEDIA_PLAYER_SOURCE_CLASS (klass);
 	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
-	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
 	object_class->constructed = rb_ipod_source_constructed;
 	object_class->dispose = rb_ipod_source_dispose;
@@ -179,7 +171,6 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	page_class->get_ui_actions = impl_get_ui_actions;
 
 	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_get_browser_key  = impl_get_browser_key;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -199,8 +190,6 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	rms_class->impl_track_added = impl_track_added;
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
 	rms_class->impl_get_mime_types = impl_get_mime_types;
-
-	browser_source_class->impl_get_paned_key = impl_get_paned_key;
 
 	g_object_class_install_property (object_class,
 					 PROP_DEVICE_INFO,
@@ -366,6 +355,7 @@ rb_ipod_source_new (RBPlugin *plugin,
 	RhythmDBEntryType *entry_type;
 	RhythmDB *db;
 	GVolume *volume;
+	GSettings *settings;
 	char *name;
 	char *path;
 
@@ -388,13 +378,16 @@ rb_ipod_source_new (RBPlugin *plugin,
 	g_free (name);
 	g_free (path);
 
+	settings = g_settings_new ("org.gnome.rhythmbox.plugins.ipod");
 	source = RB_IPOD_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
 				               "plugin", plugin,
 					       "entry-type", entry_type,
 					       "mount", mount,
 					       "shell", shell,
 					       "device-info", device_info,
+					       "settings", g_settings_get_child (settings, "source"),
 					       NULL));
+	g_object_unref (settings);
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
         g_object_unref (entry_type);
@@ -1231,18 +1224,6 @@ impl_get_ui_actions (RBDisplayPage *page)
 	actions = g_list_prepend (actions, g_strdup ("MediaPlayerSourceSync"));
 
 	return actions;
-}
-
-static char *
-impl_get_browser_key (RBSource *source)
-{
-	return g_strdup (CONF_STATE_SHOW_BROWSER);
-}
-
-static char *
-impl_get_paned_key (RBBrowserSource *source)
-{
-	return g_strdup (CONF_STATE_PANED_POSITION);
 }
 
 static gboolean

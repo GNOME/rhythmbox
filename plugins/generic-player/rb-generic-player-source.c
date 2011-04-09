@@ -39,7 +39,6 @@
 
 #include "mediaplayerid.h"
 
-#include "eel-gconf-extensions.h"
 #include "rb-generic-player-source.h"
 #include "rb-generic-player-playlist-source.h"
 #include "rb-removable-media-manager.h"
@@ -361,6 +360,7 @@ rb_generic_player_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, M
 	RhythmDBEntryType *ignore_type;
 	RhythmDB *db;
 	GVolume *volume;
+	GSettings *settings;
 	char *name;
 	char *path;
 
@@ -403,6 +403,7 @@ rb_generic_player_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, M
 	g_object_unref (volume);
 	g_free (path);
 
+	settings = g_settings_new ("org.gnome.rhythmbox.plugins.generic-player");
 	source = RB_GENERIC_PLAYER_SOURCE (g_object_new (RB_TYPE_GENERIC_PLAYER_SOURCE,
 							 "plugin", plugin,
 							 "entry-type", entry_type,
@@ -411,7 +412,9 @@ rb_generic_player_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, M
 							 "mount", mount,
 							 "shell", shell,
 							 "device-info", device_info,
+							 "settings", g_settings_get_child (settings, "source"),
 							 NULL));
+	g_object_unref (settings);
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 

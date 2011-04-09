@@ -84,7 +84,7 @@ class ContextView (gobject.GObject):
         self.load_top_five (self.ds['artist'])
 
         # Set currently displayed tab
-        # TODO: make this persistent via gconf key
+        # TODO: make this persistent via gsettings key
         self.current = 'artist'
         self.tab[self.current].activate ()
 

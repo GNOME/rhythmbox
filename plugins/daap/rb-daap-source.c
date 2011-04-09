@@ -41,14 +41,12 @@
 
 #include "rhythmdb.h"
 #include "rb-shell.h"
-#include "eel-gconf-extensions.h"
 #include "rb-daap-source.h"
 #include "rb-stock-icons.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "rb-dialog.h"
-#include "rb-preferences.h"
 #include "rb-daap-src.h"
 #include "rb-daap-record-factory.h"
 #include "rb-rhythmdb-dmap-db-adapter.h"
@@ -78,16 +76,9 @@ static void rb_daap_source_selected (RBDisplayPage *page);
 static gboolean rb_daap_source_show_popup (RBDisplayPage *page);
 static void rb_daap_source_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
 
-static char * rb_daap_source_get_browser_key (RBSource *source);
-static char * rb_daap_source_get_paned_key (RBBrowserSource *source);
-
 static void rb_daap_entry_type_class_init (RBDAAPEntryTypeClass *klass);
 static void rb_daap_entry_type_init (RBDAAPEntryType *etype);
 GType rb_daap_entry_type_get_type (void);
-
-#define CONF_STATE_SORTING CONF_PREFIX "/state/daap/sorting"
-#define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/daap/paned_position"
-#define CONF_STATE_SHOW_BROWSER CONF_PREFIX "/state/daap/show_browser"
 
 struct RBDAAPSourcePrivate
 {
@@ -190,9 +181,7 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_get_browser_key = rb_daap_source_get_browser_key;
 
-	browser_source_class->impl_get_paned_key = rb_daap_source_get_paned_key;
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 
 	g_object_class_install_property (object_class,
@@ -313,6 +302,7 @@ rb_daap_source_new (RBShell *shell,
 	GdkPixbuf *icon;
 	RhythmDB *db;
 	char *entry_type_name;
+	GSettings *settings;
 
 	g_object_get (shell, "db", &db, NULL);
 	entry_type_name = g_strdup_printf ("daap:%s:%s:%s", service_name, name, host);
@@ -328,6 +318,8 @@ rb_daap_source_new (RBShell *shell,
 	g_free (entry_type_name);
 
 	icon = rb_daap_plugin_get_icon (RB_DAAP_PLUGIN (plugin), password_protected, FALSE);
+
+	settings = g_settings_new ("org.gnome.rhythmbox.plugins.daap");
 	source = RB_SOURCE (g_object_new (RB_TYPE_DAAP_SOURCE,
 					  "service-name", service_name,
 					  "name", name,
@@ -337,10 +329,11 @@ rb_daap_source_new (RBShell *shell,
 					  "pixbuf", icon,
 					  "shell", shell,
 					  "visibility", TRUE,
-					  "sorting-key", CONF_STATE_SORTING,
 					  "password-protected", password_protected,
 					  "plugin", RB_PLUGIN (plugin),
+					  "settings", g_settings_get_child (settings, "source"),
 					  NULL));
+	g_object_unref (settings);
 
 	if (icon != NULL) {
 		g_object_unref (icon);
@@ -520,7 +513,7 @@ connection_connecting_cb (DMAPConnection       *connection,
 	icon = rb_daap_plugin_get_icon (RB_DAAP_PLUGIN (plugin),
 					source->priv->password_protected,
 					is_connected);
-	g_object_set (source, "icon", icon, NULL);
+	g_object_set (source, "pixbuf", icon, NULL);
 	if (icon != NULL) {
 		g_object_unref (icon);
 	}
@@ -606,13 +599,16 @@ rb_daap_source_connection_cb (DMAPConnection   *connection,
 	for (l = playlists; l != NULL; l = g_slist_next (l)) {
 		DMAPPlaylist *playlist = l->data;
 		RBSource *playlist_source;
-		char *sorting_name;
+		char *settings_name;
 
-		/* Construct a unique sorting name for this playlist, as <Share Name>_<Playlist> */
-		sorting_name = g_strjoin (NULL, daap_source->priv->service_name, "_", playlist->name, NULL);
+		/* Construct a unique settings name for this playlist, as <Share Name>_<Playlist> */
+		/* XXX disabled for now, not sure it's a good idea */
+		/*settings_name = g_strjoin (NULL, daap_source->priv->service_name, "_", playlist->name, NULL); */
 
-		playlist_source = rb_static_playlist_source_new (shell, playlist->name, sorting_name, FALSE, entry_type);
-		g_free (sorting_name);
+		settings_name = "/org/gnome/rhythmbox/plugins/daap/source";
+
+		playlist_source = rb_static_playlist_source_new (shell, playlist->name, settings_name, FALSE, entry_type);
+		/*g_free (settings_name);*/
 
 		g_list_foreach (playlist->uris, (GFunc)_add_location_to_playlist, playlist_source);
 
@@ -779,18 +775,6 @@ rb_daap_source_get_headers (RBDAAPSource *source,
 	}
 
 	return dmap_connection_get_headers (source->priv->connection, uri);
-}
-
-static char *
-rb_daap_source_get_browser_key (RBSource *source)
-{
-	return g_strdup (CONF_STATE_SHOW_BROWSER);
-}
-
-static char *
-rb_daap_source_get_paned_key (RBBrowserSource *source)
-{
-	return g_strdup (CONF_STATE_PANED_POSITION);
 }
 
 static void

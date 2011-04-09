@@ -29,8 +29,8 @@ import gobject
 import gst
 
 import rb
-from gi.repository import GConf
 from gi.repository import RB
+from gi.repository import Gio
 
 import config
 
@@ -52,10 +52,9 @@ class ReplayGainPlayer(object):
 
 		self.shell_player = shell.props.shell_player
 		self.player = self.shell_player.props.player
-		self.gconf = GConf.Client.get_default()
+		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.replaygain")
 
-		self.gconf.add_dir(config.GCONF_DIR, GConf.ClientPreloadType.PRELOAD_NONE)
-		self.gconf.notify_add(config.GCONF_KEYS['limiter'], self.limiter_changed_cb, None)
+		self.settings.connect("changed::limiter", self.limiter_changed_cb)
 
 		self.previous_gain = []
 		self.fallback_gain = 0.0
@@ -80,13 +79,13 @@ class ReplayGainPlayer(object):
 
 	def set_rgvolume(self, rgvolume):
 		# set preamp level
-		preamp = self.gconf.get_float(config.GCONF_KEYS['preamp'])
+		preamp = self.settings['preamp']
 		rgvolume.props.pre_amp = preamp
 
 		# set mode
 		# there may eventually be a 'guess' mode here that tries to figure out
 		# what to do based on the upcoming tracks
-		mode = self.gconf.get_int(config.GCONF_KEYS['mode'])
+		mode = self.settings['mode']
 		if mode == config.REPLAYGAIN_MODE_ALBUM:
 			rgvolume.props.album_mode = 1
 		else:
@@ -219,9 +218,9 @@ class ReplayGainPlayer(object):
 		self.set_rgvolume(rgvolume)
 		return [rgvolume]
 
-	def limiter_changed_cb(self, client, id, entry, d):
+	def limiter_changed_cb(self, settings, key):
 		if self.rglimiter is not None:
-			limiter = self.gconf.get_bool(config.GCONF_KEYS['limiter'])
+			limiter = settings['limiter']
 			print "limiter setting is now %s" % str(limiter)
 			self.rglimiter.props.enabled = limiter
 

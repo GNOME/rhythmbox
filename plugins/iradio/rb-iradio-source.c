@@ -44,12 +44,10 @@
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "totem-pl-parser.h"
-#include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-station-properties-dialog.h"
 #include "rb-uri-dialog.h"
 #include "rb-debug.h"
-#include "eel-gconf-extensions.h"
 #include "rb-shell-player.h"
 #include "rb-player.h"
 #include "rb-metadata.h"
@@ -79,24 +77,10 @@ static void rb_iradio_source_get_property (GObject *object,
 static void rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
 						  gboolean over_entry,
 						  RBIRadioSource *source);
-static void paned_size_allocate_cb (GtkWidget *widget,
-				    GtkAllocation *allocation,
-		                    RBIRadioSource *source);
-static void rb_iradio_source_state_pref_changed (GConfClient *client,
-						 guint cnxn_id,
-						 GConfEntry *entry,
-						 RBIRadioSource *source);
-static void rb_iradio_source_first_time_changed (GConfClient *client,
-						 guint cnxn_id,
-						 GConfEntry *entry,
-						 RBIRadioSource *source);
-static void rb_iradio_source_show_browser (RBIRadioSource *source,
-					   gboolean show);
-static void rb_iradio_source_state_prefs_sync (RBIRadioSource *source);
 static void genre_selected_cb (RBPropertyView *propview, const char *name,
 			       RBIRadioSource *iradio_source);
 static void genre_selection_reset_cb (RBPropertyView *propview, RBIRadioSource *iradio_source);
-static void rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view, RBIRadioSource *source);
+static void rb_iradio_source_songs_view_sort_order_changed_cb (GObject *object, GParamSpec *pspec, RBIRadioSource *source);
 static char *guess_uri_scheme (const char *uri);
 
 /* entry type */
@@ -110,7 +94,6 @@ static GList *impl_get_ui_actions (RBDisplayPage *page);
 static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
 
 /* source methods */
-static char *impl_get_browser_key (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_search (RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_delete (RBSource *source);
@@ -141,16 +124,11 @@ static void playing_source_changed_cb (RBShellPlayer *player,
 				       RBSource *source,
 				       RBIRadioSource *iradio_source);
 
-#define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
-#define CMD_PATH_CURRENT_STATION "/commands/CurrentStation"
-#define CMD_PATH_SONG_INFO    "/commands/SongInfo"
-
-#define CONF_UI_IRADIO_DIR CONF_PREFIX "/ui/iradio"
-#define CONF_UI_IRADIO_COLUMNS_SETUP CONF_PREFIX "/ui/iradio/columns_setup"
-#define CONF_STATE_IRADIO_DIR CONF_PREFIX "/state/iradio"
-#define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/iradio/paned_position"
-#define CONF_STATE_IRADIO_SORTING CONF_PREFIX "/state/iradio/sorting"
-#define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/iradio/show_browser"
+enum
+{
+	PROP_0,
+	PROP_SHOW_BROWSER
+};
 
 struct RBIRadioSourcePrivate
 {
@@ -168,15 +146,13 @@ struct RBIRadioSourcePrivate
 	RhythmDBQuery *search_query;
 	RBSourceSearch *default_search;
 
-	guint prefs_notify_id;
-	guint first_time_notify_id;
-	gboolean firstrun_done;
-
 	RBShellPlayer *player;
 
 	gint info_available_id;
 
 	gboolean dispose_has_run;
+
+	GSettings *settings;
 };
 
 #define RB_IRADIO_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IRADIO_SOURCE, RBIRadioSourcePrivate))
@@ -232,12 +208,15 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_delete = impl_delete;
-	source_class->impl_get_browser_key  = impl_get_browser_key;
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_search = impl_search;
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
+
+	g_object_class_override_property (object_class,
+					  PROP_SHOW_BROWSER,
+					  "show-browser");
 
 	g_type_class_add_private (klass, sizeof (RBIRadioSourcePrivate));
 }
@@ -304,9 +283,6 @@ rb_iradio_source_dispose (GObject *object)
 		source->priv->search_query = NULL;
 	}
 
-	eel_gconf_notification_remove (source->priv->prefs_notify_id);
-	eel_gconf_notification_remove (source->priv->first_time_notify_id);
-
 	G_OBJECT_CLASS (rb_iradio_source_parent_class)->dispose (object);
 }
 
@@ -316,6 +292,7 @@ rb_iradio_source_constructed (GObject *object)
 	RBIRadioSource *source;
 	RBShell *shell;
 	GtkAction *action;
+	GSettings *settings;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_iradio_source_parent_class, constructed, object);
 	source = RB_IRADIO_SOURCE (object);
@@ -328,6 +305,27 @@ rb_iradio_source_constructed (GObject *object)
 		      "shell-player", &source->priv->player,
 		      NULL);
 	g_object_unref (shell);
+
+	settings = g_settings_new ("org.gnome.rhythmbox.plugins.iradio");
+	if (g_settings_get_boolean (settings, "initial-stations-loaded") == FALSE) {
+		RBPlugin *plugin;
+		char *file;
+
+		g_object_get (source, "plugin", &plugin, NULL);
+		file = rb_plugin_find_file (plugin, "iradio-initial.xspf");
+		if (file != NULL) {
+			char *uri = g_filename_to_uri (file, NULL, NULL);
+			if (uri != NULL) {
+				rb_iradio_source_add_from_playlist (source, uri);
+				g_free (uri);
+			}
+		}
+		g_free (file);
+		g_object_unref (plugin);
+	}
+
+	source->priv->settings = g_settings_get_child (settings, "source");
+	g_object_unref (settings);
 
 	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
 									     "IRadioActions",
@@ -344,7 +342,6 @@ rb_iradio_source_constructed (GObject *object)
 
 	/* set up stations view */
 	source->priv->stations = rb_entry_view_new (source->priv->db, G_OBJECT (source->priv->player),
-						    CONF_STATE_IRADIO_SORTING,
 						    FALSE, FALSE);
 
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_TITLE, TRUE);
@@ -354,7 +351,7 @@ rb_iradio_source_constructed (GObject *object)
 /*	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_PLAY_COUNT, FALSE);*/
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
 	g_signal_connect_object (source->priv->stations,
-				 "sort-order-changed",
+				 "notify::sort-order",
 				 G_CALLBACK (rb_iradio_source_songs_view_sort_order_changed_cb),
 				 source, 0);
 
@@ -371,10 +368,6 @@ rb_iradio_source_constructed (GObject *object)
 			   stations_view_drag_types, 2,
 			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
 
-	g_signal_connect_object (source->priv->stations,
-				 "size_allocate",
-				 G_CALLBACK (paned_size_allocate_cb),
-				 source, 0);
 	g_signal_connect_object (source->priv->stations, "show_popup",
 				 G_CALLBACK (rb_iradio_source_songs_show_popup_cb), source, 0);
 
@@ -401,20 +394,12 @@ rb_iradio_source_constructed (GObject *object)
 
 	gtk_box_pack_start (GTK_BOX (source->priv->vbox), source->priv->paned, TRUE, TRUE, 0);
 
-	source->priv->prefs_notify_id =
-		eel_gconf_notification_add (CONF_STATE_IRADIO_DIR,
-					    (GConfClientNotifyFunc) rb_iradio_source_state_pref_changed,
-					    source);
-	source->priv->firstrun_done = eel_gconf_get_boolean (CONF_FIRST_TIME);
-
-	source->priv->first_time_notify_id =
-		eel_gconf_notification_add (CONF_FIRST_TIME,
-					    (GConfClientNotifyFunc) rb_iradio_source_first_time_changed,
-					    source);
+	rb_source_bind_settings (RB_SOURCE (source),
+				 GTK_WIDGET (source->priv->stations),
+				 source->priv->paned,
+				 GTK_WIDGET (source->priv->genres));
 
 	gtk_widget_show_all (GTK_WIDGET (source));
-
-	rb_iradio_source_state_prefs_sync (source);
 
 	g_signal_connect_object (source->priv->player, "playing-source-changed",
 				 G_CALLBACK (playing_source_changed_cb),
@@ -431,9 +416,12 @@ rb_iradio_source_set_property (GObject *object,
 			       const GValue *value,
 			       GParamSpec *pspec)
 {
-	/*RBIRadioSource *source = RB_IRADIO_SOURCE (object);*/
+	RBIRadioSource *source = RB_IRADIO_SOURCE (object);
 
 	switch (prop_id) {
+	case PROP_SHOW_BROWSER:
+		gtk_widget_set_visible (GTK_WIDGET (source->priv->genres), g_value_get_boolean (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -446,9 +434,12 @@ rb_iradio_source_get_property (GObject *object,
 			       GValue *value,
 			       GParamSpec *pspec)
 {
-	/*RBIRadioSource *source = RB_IRADIO_SOURCE (object);*/
+	RBIRadioSource *source = RB_IRADIO_SOURCE (object);
 
 	switch (prop_id) {
+	case PROP_SHOW_BROWSER:
+		g_value_set_boolean (value, gtk_widget_get_visible (GTK_WIDGET (source->priv->genres)));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -621,12 +612,6 @@ impl_get_status (RBDisplayPage *page,
 	rb_streaming_source_get_progress (RB_STREAMING_SOURCE (source), progress_text, progress);
 }
 
-static char *
-impl_get_browser_key (RBSource *asource)
-{
-	return g_strdup (CONF_STATE_SHOW_BROWSER);
-}
-
 static void
 impl_delete (RBSource *asource)
 {
@@ -704,43 +689,12 @@ impl_add_uri (RBSource *source,
 }
 
 static void
-paned_size_allocate_cb (GtkWidget *widget,
-			GtkAllocation *allocation,
-		        RBIRadioSource *source)
-{
-	/* save state */
-	rb_debug ("paned size allocate");
-	eel_gconf_set_integer (CONF_STATE_PANED_POSITION,
-			       gtk_paned_get_position (GTK_PANED (source->priv->paned)));
-}
-
-static void
-rb_iradio_source_state_prefs_sync (RBIRadioSource *source)
-{
-	rb_debug ("syncing state");
-	gtk_paned_set_position (GTK_PANED (source->priv->paned),
-				eel_gconf_get_integer (CONF_STATE_PANED_POSITION));
-	rb_iradio_source_show_browser (source,
-				       eel_gconf_get_boolean (CONF_STATE_SHOW_BROWSER));
-}
-
-static void
-rb_iradio_source_state_pref_changed (GConfClient *client,
-				     guint cnxn_id,
-				     GConfEntry *entry,
-				     RBIRadioSource *source)
-{
-	rb_debug ("state prefs changed");
-	rb_iradio_source_state_prefs_sync (source);
-}
-
-static void
-rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view,
+rb_iradio_source_songs_view_sort_order_changed_cb (GObject *object,
+						   GParamSpec *pspec,
 						   RBIRadioSource *source)
 {
 	rb_debug ("sort order changed");
-
-	rb_entry_view_resort_model (view);
+	rb_entry_view_resort_model (RB_ENTRY_VIEW (object));
 }
 
 static void
@@ -785,19 +739,6 @@ genre_selection_reset_cb (RBPropertyView *propview,
 	rb_iradio_source_do_query (iradio_source);
 
 	rb_source_notify_filter_changed (RB_SOURCE (iradio_source));
-}
-
-static void
-rb_iradio_source_show_browser (RBIRadioSource *source,
-			       gboolean show)
-{
-	GtkWidget *genreswidget = GTK_WIDGET (source->priv->genres);
-
-	if (show == TRUE) {
-		gtk_widget_show (genreswidget);
-	} else {
-		gtk_widget_hide (genreswidget);
-	}
 }
 
 static void
@@ -938,37 +879,6 @@ rb_iradio_source_add_from_playlist (RBIRadioSource *source,
 	}
 	g_object_unref (parser);
 	g_free (real_uri);
-}
-
-static void
-rb_iradio_source_first_time_changed (GConfClient *client,
-				     guint cnxn_id,
-				     GConfEntry *entry,
-				     RBIRadioSource *source)
-{
-	char *uri;
-	char *file;
-	RBPlugin *plugin;
-
-	if (source->priv->firstrun_done || !gconf_value_get_bool (entry->value))
-		return;
-
-	g_object_get (source, "plugin", &plugin, NULL);
-	file = rb_plugin_find_file (plugin, "iradio-initial.xspf");
-	if (file != NULL) {
-		GFile *f;
-
-		f = g_file_new_for_path (file);
-		uri = g_file_get_uri (f);
-
-		rb_iradio_source_add_from_playlist (source, uri);
-
-		g_object_unref (f);
-		g_free (uri);
-	}
-	g_free (file);
-
-	source->priv->firstrun_done = TRUE;
 }
 
 static void

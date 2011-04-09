@@ -31,6 +31,13 @@
 
 #include <glib-object.h>
 
+/* not sure these belong here */
+#define AUDIOSCROBBLER_SETTINGS_SCHEMA "org.gnome.rhythmbox.plugins.audioscrobbler.service"
+#define AUDIOSCROBBLER_SETTINGS_PATH "/org/gnome/rhythmbox/plugins/audioscrobbler"
+#define AUDIOSCROBBLER_SERVICE_ENABLED_KEY "enabled"
+#define AUDIOSCROBBLER_SCROBBLING_ENABLED_KEY "scrobbling-enabled"
+
+
 G_BEGIN_DECLS
 
 #define RB_TYPE_AUDIOSCROBBLER_SERVICE         (rb_audioscrobbler_service_get_type ())

@@ -29,24 +29,25 @@ import re
 import gobject
 
 import rb
-from gi.repository import GConf
+from gi.repository import Gio
 
 from LyricsSites import lyrics_sites
 
 class Parser (object):
-	def __init__(self, gconf_keys, artist, title):
+	def __init__(self, artist, title):
 		self.title = title
 		self.artist = artist
 
 		try:
-			self.engines = rb.get_gconf_string_list(gconf_keys['engines'])
+			settings = Gio.Settings("org.gnome.rhythmbox.plugins.lyrics")
+			self.sites = settings['sites']
 		except gobject.GError, e:
 			print e
-			self.engines = []
+			self.sites = []
 
 	def searcher(self, plexer, callback, *data):
 		for site in lyrics_sites:
-			if site['id'] not in self.engines:
+			if site['id'] not in self.sites:
 				print site['id'] + " search is disabled"
 				continue
 

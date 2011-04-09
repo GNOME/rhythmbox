@@ -33,7 +33,6 @@ import time
 import thread
 
 from gi.repository import RB
-from gi.repository import GConf
 
 # rb classes
 from Loader import Loader
@@ -67,21 +66,6 @@ def entry_equal(a, b):
 	if (a is None or b is None):
 		return False
 	return a.get_string(RB.RhythmDBPropType.LOCATION) == b.get_string(RB.RhythmDBPropType.LOCATION)
-
-def get_gconf_string_list(key):
-	gconf = GConf.Client().get_default()
-	l = gconf.get_without_default(key)
-	if l is None or \
-	    l.type != GConf.ValueType.LIST or \
-	    l.get_list_type() != GConf.ValueType.STRING:
-		return []
-	sl = []
-	for e in l.get_list():
-		sl.append(e.get_string())
-
-	return sl
-
-
 
 class _rbdebugfile:
 	def __init__(self, fn):

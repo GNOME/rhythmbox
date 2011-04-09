@@ -27,9 +27,10 @@
 import urllib
 import xml.dom.minidom as dom
 import re
+import ConfigParser
+import os
 
 import rb
-from gi.repository import GConf
 from gi.repository import RB
 
 # this API key belongs to jonathan@d14n.org
@@ -51,11 +52,18 @@ DISC_NUMBER_REGEXS = (
 	" cd *[0-9]+$"
 )
 
-USERNAME_GCONF_KEY = "/apps/rhythmbox/audioscrobbler/username"
-
 def user_has_account():
-    username = GConf.Client.get_default().get_string(USERNAME_GCONF_KEY)
-    return (username is not None and username != "")
+    session_file = os.path.join(RB.user_data_dir(), "audioscrobbler", "sessions")
+
+    if os.path.exists(session_file) == False:
+	return False
+
+    sessions = ConfigParser.RawConfigParser()
+    sessions.read(session_file)
+    try:
+	return (sessions.get('Last.fm', 'username') != "")
+    except:
+	return False
 
 class LastFMCoverArtSearch (object):
 	def __init__(self):

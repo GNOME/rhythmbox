@@ -38,10 +38,6 @@
 
 G_BEGIN_DECLS
 
-/* preferences */
-#define CONF_DACP_PREFIX  	CONF_PREFIX "/plugins/daap"
-#define CONF_KNOWN_REMOTES 	CONF_DACP_PREFIX "/known_remotes"
-
 #define RB_TYPE_DACP_PAIRING_PAGE         (rb_dacp_pairing_page_get_type ())
 #define RB_DACP_PAIRING_PAGE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_DACP_PAIRING_PAGE, RBDACPPairingPage))
 #define RB_DACP_PAIRING_PAGE_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_DACP_PAIRING_PAGE, RBDACPPairingPageClass))

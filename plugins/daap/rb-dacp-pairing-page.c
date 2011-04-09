@@ -40,14 +40,12 @@
 #include "rhythmdb.h"
 #include "rb-shell.h"
 #include "rb-display-page-group.h"
-#include "eel-gconf-extensions.h"
 #include "rb-stock-icons.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "rb-builder-helpers.h"
 #include "rb-dialog.h"
-#include "rb-preferences.h"
 #include "rb-playlist-manager.h"
 #include "rb-shell-player.h"
 #include "rb-display-page-model.h"
@@ -82,8 +80,8 @@ static void dacp_remote_added (DACPShare *share, gchar *service_name, gchar *dis
 static void dacp_remote_removed (DACPShare *share, gchar *service_name, RBDaapPlugin *plugin);
 
 /* DACPShare signals */
-static gboolean dacp_lookup_guid (DACPShare *share, gchar *guid);
-static void     dacp_add_guid    (DACPShare *share, gchar *guid);
+static gboolean dacp_lookup_guid (DACPShare *share, gchar *guid, GSettings *settings);
+static void     dacp_add_guid    (DACPShare *share, gchar *guid, GSettings *settings);
 
 static void dacp_player_updated (RBDACPPlayer *player, DACPShare *share);
 
@@ -440,6 +438,8 @@ rb_daap_create_dacp_share (RBPlugin *plugin)
 	DMAPContainerDb *container_db;
 	RBPlaylistManager *playlist_manager;
 	RBShell *shell;
+	GSettings *share_settings;
+	GSettings *settings;
 	gchar *name;
 
 	g_object_get (plugin, "shell", &shell, NULL);
@@ -453,23 +453,26 @@ rb_daap_create_dacp_share (RBPlugin *plugin)
 
 	player = DACP_PLAYER (rb_dacp_player_new (shell));
 
-	name = eel_gconf_get_string (CONF_DAAP_SHARE_NAME);
+	share_settings = g_settings_new ("org.gnome.rhythmbox.sharing");
+	name = g_settings_get_string (share_settings, "share-name");
 	if (name == NULL || *name == '\0') {
 		g_free (name);
 		name = rb_daap_sharing_default_share_name ();
 	}
+	g_object_unref (share_settings);
 
 	share = dacp_share_new (name, player, db, container_db);
 
+	settings = g_settings_new ("org.gnome.rhythmbox.plugins.daap.dacp");
 	g_signal_connect_object (share,
 				 "add-guid",
 				 G_CALLBACK (dacp_add_guid),
-				 RB_DAAP_PLUGIN (plugin),
+				 settings,
 				 0);
 	g_signal_connect_object (share,
 				 "lookup-guid",
 				 G_CALLBACK (dacp_lookup_guid),
-				 RB_DAAP_PLUGIN (plugin),
+				 settings,
 				 0);
 
 	g_signal_connect_object (share,
@@ -507,32 +510,40 @@ dacp_player_updated (RBDACPPlayer *player,
 
 static void
 dacp_add_guid (DACPShare *share,
-               gchar *guid)
+               gchar *guid,
+	       GSettings *settings)
 {
-	GSList *known_guids;
+	GVariantBuilder *vb;
+	GVariantIter iter;
+	GVariant *v;
+	const char *g;
 
-	known_guids = eel_gconf_get_string_list (CONF_KNOWN_REMOTES);
-	if (g_slist_find_custom (known_guids, guid, (GCompareFunc) g_strcmp0)) {
-		g_slist_free (known_guids);
-		return;
+	v = g_settings_get_value (settings, "known-remotes");
+
+	vb = g_variant_builder_new (G_VARIANT_TYPE ("as"));
+	g_variant_iter_init (&iter, v);
+	while (g_variant_iter_loop (&iter, "s", &g)) {
+		g_variant_builder_add (vb, "s", g);
 	}
-	known_guids = g_slist_insert_sorted (known_guids, guid, (GCompareFunc) g_strcmp0);
-	eel_gconf_set_string_list (CONF_KNOWN_REMOTES, known_guids);
 
-	g_slist_free (known_guids);
+	g_variant_builder_add (vb, "s", guid);
+	g_variant_unref (v);
+
+	g_settings_set_value (settings, "known-remotes", g_variant_builder_end (vb));
+	g_variant_builder_unref (vb);
 }
 
 static gboolean
 dacp_lookup_guid (DACPShare *share,
-                  gchar *guid)
+                  gchar *guid,
+		  GSettings *settings)
 {
-	GSList *known_guids;
-	int found;
+	char **guids;
+	gboolean found;
 
-	known_guids = eel_gconf_get_string_list (CONF_KNOWN_REMOTES);
-	found = g_slist_find_custom (known_guids, guid, (GCompareFunc) g_strcmp0) != NULL;
-
-	g_slist_free (known_guids);
+	guids = g_settings_get_strv (settings, "known-remotes");
+	found = rb_str_in_strv (guid, (const char **)guids);
+	g_strfreev (guids);
 
 	return found;
 }
