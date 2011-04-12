@@ -266,7 +266,7 @@ impl_activate (RBPlugin *bplugin,
 	plugin->priv->settings = g_settings_new ("org.gnome.rhythmbox.sharing");
 	g_signal_connect_object (plugin->priv->settings, "changed", G_CALLBACK (settings_changed_cb), plugin, 0);
 
-	daap_settings = g_setting_new ("org.gnome.rhythmbox.plugins.daap");
+	daap_settings = g_settings_new ("org.gnome.rhythmbox.plugins.daap");
 	plugin->priv->dacp_settings = g_settings_get_child (daap_settings, "dacp");
 	g_object_unref (daap_settings);
 	g_signal_connect_object (plugin->priv->dacp_settings, "changed", G_CALLBACK (dacp_settings_changed_cb), plugin, 0);
