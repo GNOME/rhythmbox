@@ -145,14 +145,6 @@ impl_activate (RBPlugin *bplugin,
 				 plugin, 0);
 	enabled = g_settings_get_boolean (plugin->lastfm_settings, AUDIOSCROBBLER_SERVICE_ENABLED_KEY);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plugin->lastfm_enabled_check), enabled);
-	if (enabled) {
-		RBAudioscrobblerService *lastfm;
-		lastfm = rb_audioscrobbler_service_new_lastfm ();
-		plugin->lastfm_page = rb_audioscrobbler_profile_page_new (plugin->shell,
-									  RB_PLUGIN (plugin),
-									  lastfm);
-		g_object_unref (lastfm);
-	}
 
 	plugin->librefm_settings = g_settings_new_with_path (AUDIOSCROBBLER_SETTINGS_SCHEMA,
 							     AUDIOSCROBBLER_SETTINGS_PATH "/Libre.fm");
@@ -162,14 +154,6 @@ impl_activate (RBPlugin *bplugin,
 				 plugin, 0);
 	enabled = g_settings_get_boolean (plugin->librefm_settings, AUDIOSCROBBLER_SERVICE_ENABLED_KEY);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (plugin->librefm_enabled_check), enabled);
-	if (enabled) {
-		RBAudioscrobblerService *librefm;
-		librefm = rb_audioscrobbler_service_new_librefm ();
-		plugin->librefm_page = rb_audioscrobbler_profile_page_new (plugin->shell,
-		                                                           RB_PLUGIN (plugin),
-		                                                           librefm);
-		g_object_unref (librefm);
-	}
 }
 
 static void
