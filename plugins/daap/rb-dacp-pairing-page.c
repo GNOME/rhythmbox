@@ -439,6 +439,7 @@ rb_daap_create_dacp_share (RBPlugin *plugin)
 	RBPlaylistManager *playlist_manager;
 	RBShell *shell;
 	GSettings *share_settings;
+	GSettings *daap_settings;
 	GSettings *settings;
 	gchar *name;
 
@@ -463,7 +464,10 @@ rb_daap_create_dacp_share (RBPlugin *plugin)
 
 	share = dacp_share_new (name, player, db, container_db);
 
-	settings = g_settings_new ("org.gnome.rhythmbox.plugins.daap.dacp");
+	daap_settings = g_settings_new ("org.gnome.rhythmbox.plugins.daap");
+	settings = g_settings_get_child (daap_settings, "dacp");
+	g_object_unref (daap_settings);
+
 	g_signal_connect_object (share,
 				 "add-guid",
 				 G_CALLBACK (dacp_add_guid),
