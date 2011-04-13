@@ -244,7 +244,7 @@ do_notify (RBNotificationPlugin *plugin,
 						   1);
 	}
 
-	if (notify_notification_show (plugin->notification, &error) == FALSE) {
+	if (notify_notification_show (notification, &error) == FALSE) {
 		g_warning ("Failed to send notification (%s): %s", primary, error->message);
 		g_error_free (error);
 	}
