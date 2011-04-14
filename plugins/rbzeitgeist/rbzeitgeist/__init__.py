@@ -68,9 +68,9 @@ class ZeitgeistPlugin(RB.Plugin):
         # we don't want the PROP_MIMETYPE, as it doesn't contain mimetype
         # of the audio file itself
         song = {
-            "album": entry.get_string(RB.RhythmDBPropType.PROP_ALBUM),
-            "artist": entry.get_string(RB.RhythmDBPropType.PROP_ARTIST),
-            "title":  entry.get_string(RB.RhythmDBPropType.PROP_TITLE),
+            "album": entry.get_string(RB.RhythmDBPropType.ALBUM),
+            "artist": entry.get_string(RB.RhythmDBPropType.ARTIST),
+            "title":  entry.get_string(RB.RhythmDBPropType.TITLE),
             "location": entry.get_playback_uri(),
         }
         return song
