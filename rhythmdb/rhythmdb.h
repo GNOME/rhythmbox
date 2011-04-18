@@ -412,6 +412,7 @@ void		rhythmdb_do_full_query_async_parsed	(RhythmDB *db,
 							 RhythmDBQueryResults *results,
 							 RhythmDBQuery *query);
 
+RhythmDBQuery * rhythmdb_query_new_empty		(RhythmDB *db);
 RhythmDBQuery *	rhythmdb_query_parse			(RhythmDB *db, ...);
 void		rhythmdb_query_append			(RhythmDB *db, RhythmDBQuery *query, ...);
 void		rhythmdb_query_append_params		(RhythmDB *db, RhythmDBQuery *query, RhythmDBQueryType type, RhythmDBPropType prop, const GValue *value);

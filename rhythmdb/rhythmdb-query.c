@@ -58,6 +58,22 @@
 #define RB_PARSE_YEAR_LESS RB_PARSE_LESS
 
 /**
+ * rhythmdb_query_new_empty:
+ * @db: a #RhythmDB instance
+ *
+ * Creates an empty query.  Only really useful for callers
+ * using introspection.
+ *
+ * Return value: (transfer full): a new query, must be freed
+ * with rhythmdb_query_free()
+ */
+RhythmDBQuery *
+rhythmdb_query_new_empty (RhythmDB *db)
+{
+	return rhythmdb_query_parse (db, RHYTHMDB_QUERY_END);
+}
+
+/**
  * rhythmdb_query_copy:
  * @array: the query to copy.
  *
