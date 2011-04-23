@@ -223,8 +223,8 @@ rhythmdb_dbus_register (RhythmDB *db)
 								      RHYTHMDB_OBJECT_PATH,
 								      ifaceinfo,
 								      &rhythmdb_interface_vtable,
-								      g_object_ref (db),
-								      (GDestroyNotify) g_object_unref,
+								      db,
+								      NULL,
 								      NULL);
 }
 
