@@ -25,7 +25,7 @@ rhythmbox_SOURCES = main.c
 lib_LTLIBRARIES = librhythmbox-core.la
 
 INCLUDES = 						\
-        -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
+	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib                        	\
@@ -41,7 +41,7 @@ INCLUDES = 						\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
-	-DRB_PLUGIN_DIR=\"$(PLUGINDIR)\"		\
+	-DLIBDIR=\""$(libdir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(DBUS_CFLAGS)					\
@@ -58,7 +58,6 @@ shellinclude_HEADERS =					\
 	rb-removable-media-manager.h			\
 	rb-history.h					\
 	rb-play-order.h					\
-	rb-plugin.h					\
 	rb-track-transfer-batch.h			\
 	rb-track-transfer-queue.h
 
@@ -97,15 +96,7 @@ librhythmbox_core_la_SOURCES =				\
 	rb-statusbar.c					\
 	rb-statusbar.h					\
 	rb-track-transfer-batch.c			\
-	rb-track-transfer-queue.c			\
-	\
-	rb-plugin.c					\
-	rb-module.h					\
-	rb-module.c					\
-	rb-plugin-manager.h				\
-	rb-plugin-manager.c				\
-	rb-plugins-engine.h				\
-	rb-plugins-engine.c
+	rb-track-transfer-queue.c
 
 librhythmbox_core_la_LIBADD =				\
 	$(top_builddir)/sources/libsources.la	        \
@@ -130,19 +121,6 @@ librhythmbox_core_la_LDFLAGS = 				\
 	-version-info $(RHYTHMBOX_CORE_CURRENT):$(RHYTHMBOX_CORE_REVISION):$(RHYTHMBOX_CORE_AGE)	\
 	-export-dynamic -no-undefined
 librhythmbox_core_la_LIBTOOLFLAGS = --tag=disable-static
-
-if ENABLE_PYTHON
-
-librhythmbox_core_la_SOURCES +=				\
-	rb-python-module.h				\
-	rb-python-module.c				\
-	rb-python-plugin.h				\
-	rb-python-plugin.c
-
-INCLUDES += $(PYGOBJECT_CFLAGS) $(PYTHON_CFLAGS)
-
-librhythmbox_core_la_LIBADD += $(PYTHON_LIBS)
-endif
 
 rb-shell-glue.h: rb-shell.xml Makefile
 	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell --mode=glib-server --output=$@ $<

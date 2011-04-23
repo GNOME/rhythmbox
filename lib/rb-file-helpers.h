@@ -43,6 +43,8 @@ char *		rb_find_user_data_file	(const char *name,
 					 GError **error);
 char *		rb_find_user_cache_file	(const char *name,
 					 GError **error);
+char *		rb_find_plugin_data_file (GObject *plugin,
+					 const char *name);
 
 char *		rb_canonicalise_uri	(const char *uri);
 

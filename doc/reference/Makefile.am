@@ -157,7 +157,6 @@ INCLUDES=\
 	$(RHYTHMBOX_CFLAGS)
 	
 if ENABLE_PYTHON
-BINDING_LIBS = $(top_builddir)/bindings/python/rb.la
 MORE_GTKDOC_LIBS = $(PYTHON_LIBS)
 endif
 

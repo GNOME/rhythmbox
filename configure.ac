@@ -58,12 +58,13 @@ AVAHI_REQS=0.6
 LIBSOUP_REQS=2.26.0
 GUDEV_REQS=143
 LIBMTP_REQS=0.3.0
-PYGOBJECT_REQUIRED=2.15.4
+LIBPEAS_REQS=0.7.3
 
 GNOME_MEDIA_PROFILES_REQS=2.91.0
 LIBNOTIFY_REQS=0.7.0
 BRASERO_MIN_REQS=2.31.5
 WEBKIT_MIN_REQS=1.3.9
+PYGOBJECT_REQUIRED=2.28
 
 GLIB_GSETTINGS
 
@@ -103,7 +104,9 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  gio-unix-2.0 >= $GLIB_REQS		\
 		  libgnome-media-profiles-3.0 >= $GNOME_MEDIA_PROFILES_REQS \
 		  libsoup-2.4 >= $LIBSOUP_REQS		\
-		  libsoup-gnome-2.4 >= $LIBSOUP_REQS)
+		  libsoup-gnome-2.4 >= $LIBSOUP_REQS	\
+		  libpeas-1.0 >= $LIBPEAS_REQS
+		  libpeas-gtk-1.0 >= $LIBPEAS_REQS)
 
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
 if test x$have_totem_plparser != xyes; then
@@ -636,94 +639,27 @@ AC_SUBST(PLUGINDIR)
 dnl ================================================================
 dnl Python plugins
 dnl ================================================================
+AM_PATH_PYTHON
 
-AC_MSG_CHECKING([whether Python plugin support is requested])
+
 AC_ARG_ENABLE([python],
-	AS_HELP_STRING([--enable-python],[Enable python support]),
-	[enable_python=$enableval have_python=$enableval],
-	[enable_python=autodetect have_python=yes])
-AC_MSG_RESULT([$have_python])
+              AS_HELP_STRING([--enable-python[=@<:@no/auto/yes@:>@]],[Build with python support]),
+              [enable_python=$enableval],
+              [enable_python="auto"])
 
-if test "x$have_python" != "xyes"; then
-	if test "x$enable_python" = "xyes"; then
-		AC_MSG_ERROR([Python not found])
-	elif test "x$enable_python" = "xautodetect"; then
-		enable_python=no
-		AC_MSG_WARN([Python not found, disabling python support])
-	fi
+if test "x$enable_python" = "xauto"; then
+	PKG_CHECK_EXISTS([pygobject-2.0 >= $PYGOBJECT_REQUIRED],
+	                 [enable_python=yes],[enable_python=no])
 fi
 
-if test "x$have_python" != "xno"; then
-	AM_PATH_PYTHON([2.3],[],[have_python=no])
-	if test "x$PYTHON" = "x:"; then
-		have_python=no
-	fi
+if test "x$enable_python" = "xyes"; then
+	PKG_CHECK_MODULES(PYTHON, [pygobject-2.0 >= $PYGOBJECT_REQUIRED])
+
+	pyoverridesdir=`$PKG_CONFIG --variable=overridesdir pygobject-2.0`
+	AC_SUBST(pyoverridesdir)
 fi
 
-if test "x$have_python" != "xno"; then
-	PY_PREFIX=`$PYTHON -c 'import sys ; print sys.prefix'`
-	PY_EXEC_PREFIX=`$PYTHON -c 'import sys ; print sys.exec_prefix'`
-	PYTHON_LIBS="-lpython$PYTHON_VERSION"
-	if test -d $PY_EXEC_PREFIX/lib64/python$PYTHON_VERSION ; then
-		PYTHON_LIB_LOC="-L$PY_EXEC_PREFIX/lib64/python$PYTHON_VERSION/config"
-		PYTHON_MAKEFILE="$PY_EXEC_PREFIX/lib64/python$PYTHON_VERSION/config/Makefile"
-	else
-		PYTHON_LIB_LOC="-L$PY_EXEC_PREFIX/lib/python$PYTHON_VERSION/config"
-		PYTHON_MAKEFILE="$PY_EXEC_PREFIX/lib/python$PYTHON_VERSION/config/Makefile"
-	fi
-	PYTHON_CFLAGS="-I$PY_PREFIX/include/python$PYTHON_VERSION"
-	PYTHON_BASEMODLIBS=`sed -n -e 's/^BASEMODLIBS=\(.*\)/\1/p' $PYTHON_MAKEFILE`
-	PYTHON_OTHER_LIBS=`sed -n -e 's/^LIBS=\(.*\)/\1/p' $PYTHON_MAKEFILE`
-	PYTHON_EXTRA_LIBS="$PYTHON_BASEMODLIBS $PYTHON_OTHER_LIBS"
-	AC_SUBST([PYTHON_LIBS])
-	AC_SUBST([PYTHON_LIB_LOC])
-	AC_SUBST([PYTHON_CFLAGS])
-	AC_SUBST([PYTHON_EXTRA_LIBS])
-
-	GST_PYTHON_REQUIRED=0.10.1
-	PKG_CHECK_MODULES([PYGOBJECT], [
-		gst-python-0.10 >= $GST_PYTHON_REQUIRED
-		pygobject-2.0 >= $PYGOBJECT_REQUIRED],
-		[],
-		[
-		have_python=no
-		if test "x$enable_python" = "xyes"; then
-			AC_MSG_ERROR([$PYGOBJECT_PKG_ERRORS])
-		elif test "x$enable_python" = "xautodetect"; then
-			enable_python=no
-			AC_MSG_WARN([$PYGOBJECT_PKG_ERRORS])
-			AC_MSG_WARN([Disabling python support])
-		fi
-		])
-
-	AC_SUBST([PYGOBJECT_CFLAGS])
-	AC_SUBST([PYGOBJECT_LIBS])
-fi
-
-if test "x$have_python" != "xno"; then
-	AC_MSG_CHECKING([for gst-python defs])
-	GST_PYTHON_DEFSDIR=`$PKG_CONFIG --variable=defsdir gst-python-0.10`
-	AC_MSG_RESULT([$GST_PYTHON_DEFSDIR])
-
-	AC_MSG_CHECKING([for pygobject codegen])
-	PYGOBJECT_CODEGEN="$PYTHON `$PKG_CONFIG --variable=codegendir pygobject-2.0`/codegen.py"
-	AC_MSG_RESULT([$PYGOBJECT_CODEGEN])
-
-	AC_MSG_CHECKING([for pygobject h2def])
-	PYGOBJECT_H2DEF="$PYTHON `$PKG_CONFIG --variable=codegendir pygobject-2.0`/h2def.py"
-	AC_MSG_RESULT([$PYGOBJECT_H2DEF])
-
-	AC_SUBST([GST_PYTHON_DEFSDIR])
-	AC_SUBST([PYGOBJECT_CODEGEN])
-	AC_SUBST([PYGOBJECT_H2DEF])
-fi
-
-if test "x$have_python" != "xno" -a "x$enable_python" != "xno"; then
-	enable_python=yes
-	AC_DEFINE([ENABLE_PYTHON],[1],[Define to compile with python plugin support])
-fi
-
-AM_CONDITIONAL([ENABLE_PYTHON],[test "x$enable_python" = "xyes"])
+AM_CONDITIONAL(ENABLE_PYTHON, test x"$enable_python" = "xyes")
 
 dnl ================================================================
 dnl Vala plugins

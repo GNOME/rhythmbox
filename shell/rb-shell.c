@@ -47,6 +47,10 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
+#include <girepository.h>
+
+#include <libpeas/peas.h>
+#include <libpeas-gtk/peas-gtk.h>
 
 #ifdef HAVE_MMKEYS
 #include <X11/XF86keysym.h>
@@ -82,8 +86,6 @@
 #include "rb-play-queue-source.h"
 #include "rb-missing-files-source.h"
 #include "rb-import-errors-source.h"
-#include "rb-plugins-engine.h"
-#include "rb-plugin-manager.h"
 #include "rb-util.h"
 #include "rb-display-page-model.h"
 #include "rb-song-info.h"
@@ -94,6 +96,8 @@
 #include "rb-podcast-entry-types.h"
 
 #include "eggsmclient.h"
+
+#define UNINSTALLED_PLUGINS_LOCATION "plugins"
 
 #define PLAYING_ENTRY_NOTIFY_TIME 4
 
@@ -330,6 +334,10 @@ struct _RBShellPrivate
 	gboolean party_mode;
 
 	GSettings *settings;
+
+	GSettings *plugin_settings;
+	PeasEngine *plugin_engine;
+	PeasExtensionSet *activatable;
 };
 
 
@@ -1040,6 +1048,19 @@ rb_shell_shutdown (RBShell *shell)
 	display = gtk_widget_get_display (shell->priv->window);
 	gtk_widget_hide (shell->priv->window);
 	gdk_display_sync (display);
+
+	if (shell->priv->plugin_engine != NULL) {
+		g_object_unref (shell->priv->plugin_engine);
+		shell->priv->plugin_engine = NULL;
+	}
+	if (shell->priv->activatable != NULL) {
+		g_object_unref (shell->priv->activatable);
+		shell->priv->activatable = NULL;
+	}
+	if (shell->priv->plugin_settings != NULL) {
+		g_object_unref (shell->priv->plugin_settings);
+		shell->priv->plugin_settings = NULL;
+	}
 }
 
 static void
@@ -1508,6 +1529,124 @@ construct_load_ui (RBShell *shell)
 	rb_profile_end ("loading ui");
 }
 
+static void
+extension_added_cb (PeasExtensionSet *set, PeasPluginInfo *info, PeasExtension *extension, RBShell *shell)
+{
+	rb_debug ("activating extension %s", peas_plugin_info_get_name (info));
+	peas_extension_call (extension, "activate");
+}
+
+static void
+extension_removed_cb (PeasExtensionSet *set, PeasPluginInfo *info, PeasExtension *extension, RBShell *shell)
+{
+	rb_debug ("deactivating extension %s", peas_plugin_info_get_name (info));
+	peas_extension_call (extension, "deactivate");
+}
+
+static void
+construct_plugins (RBShell *shell)
+{
+	char *typelib_dir;
+	char *plugindir;
+	char *plugindatadir;
+	const GList *plugins;
+	const GList *l;
+	GError *error = NULL;
+
+	if (shell->priv->disable_plugins) {
+		return;
+	}
+
+	rb_profile_start ("loading plugins");
+	shell->priv->plugin_settings = g_settings_new ("org.gnome.rhythmbox.plugins");
+
+	shell->priv->plugin_engine = peas_engine_new ();
+	/* need an #ifdef for this? */
+	peas_engine_enable_loader (shell->priv->plugin_engine, "python");
+
+	typelib_dir = g_build_filename (LIBDIR,
+					"girepository-1.0",
+					NULL);
+	if (g_irepository_require_private (g_irepository_get_default (),
+					   typelib_dir, "MPID", "3.0", 0, &error) == FALSE) {
+		g_clear_error (&error);
+		if (g_irepository_require (g_irepository_get_default (), "MPID", "3.0", 0, &error) == FALSE) {
+			g_warning ("Could not load MPID typelib: %s", error->message);
+			g_clear_error (&error);
+		}
+	}
+
+	if (g_irepository_require_private (g_irepository_get_default (),
+					   typelib_dir, "RB", "3.0", 0, &error) == FALSE) {
+		g_clear_error (&error);
+		if (g_irepository_require (g_irepository_get_default (), "RB", "3.0", 0, &error) == FALSE) {
+			g_warning ("Could not load RB typelib: %s", error->message);
+			g_clear_error (&error);
+		}
+	}
+	g_free (typelib_dir);
+
+	if (g_irepository_require (g_irepository_get_default (), "Peas", "1.0", 0, &error) == FALSE) {
+		g_warning ("Could not load Peas typelib: %s", error->message);
+		g_clear_error (&error);
+	}
+
+	if (g_irepository_require (g_irepository_get_default (), "PeasGtk", "1.0", 0, &error) == FALSE) {
+		g_warning ("Could not load PeasGtk typelib: %s", error->message);
+		g_clear_error (&error);
+	}
+
+	plugindir = g_build_filename (rb_user_data_dir (), "plugins", NULL);
+	rb_debug ("plugin search path: %s", plugindir);
+	peas_engine_add_search_path (shell->priv->plugin_engine,
+				     plugindir,
+				     plugindir);
+	g_free (plugindir);
+
+	plugindir = g_build_filename (LIBDIR, "rhythmbox", "plugins", NULL);
+	plugindatadir = g_build_filename (DATADIR, "rhythmbox", "plugins", NULL);
+	rb_debug ("plugin search path: %s / %s", plugindir, plugindatadir);
+	peas_engine_add_search_path (shell->priv->plugin_engine,
+				     plugindir,
+				     /*plugindatadir*/ plugindir);
+	g_free (plugindir);
+	g_free (plugindatadir);
+
+#ifdef USE_UNINSTALLED_DIRS
+	plugindir = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "..", UNINSTALLED_PLUGINS_LOCATION, NULL);
+	rb_debug ("plugin search path: %s", plugindir);
+	peas_engine_add_search_path (shell->priv->plugin_engine,
+				     plugindir,
+				     plugindir);
+	g_free (plugindir);
+#endif
+
+	shell->priv->activatable = peas_extension_set_new (shell->priv->plugin_engine,
+							   PEAS_TYPE_ACTIVATABLE,
+							   "object", shell,
+							   NULL);
+	g_signal_connect (shell->priv->activatable, "extension-added", G_CALLBACK (extension_added_cb), shell);
+	g_signal_connect (shell->priv->activatable, "extension-removed", G_CALLBACK (extension_removed_cb), shell);
+
+	g_settings_bind (shell->priv->plugin_settings,
+			 "active-plugins",
+			 shell->priv->plugin_engine,
+			 "loaded-plugins",
+			 G_SETTINGS_BIND_DEFAULT);
+
+	/* load builtin plugins */
+	plugins = peas_engine_get_plugin_list (shell->priv->plugin_engine);
+	for (l = plugins; l != NULL; l = l->next) {
+		PeasPluginInfo *info = PEAS_PLUGIN_INFO (l->data);
+		if (peas_plugin_info_is_builtin (info) &&
+		    g_strcmp0 (peas_plugin_info_get_module_name (info), "rb") != 0) {
+			peas_engine_load_plugin (shell->priv->plugin_engine, info);
+		}
+	}
+
+	rb_profile_end ("loading plugins");
+}
+
 static gboolean
 _scan_idle (RBShell *shell)
 {
@@ -1574,15 +1713,14 @@ rb_shell_constructed (GObject *object)
 
 	construct_load_ui (shell);
 
+	construct_plugins (shell);
+
 	rb_shell_sync_window_state (shell, FALSE);
 	rb_shell_sync_smalldisplay (shell);
 	rb_shell_sync_party_mode (shell);
 	rb_shell_sync_toolbar_state (shell);
 
 	rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
-
-	if (!shell->priv->disable_plugins)
-		rb_plugins_engine_init (shell);
 
 	/* by now we've added the built in sources and any sources from plugins,
 	 * so we can consider the fixed page groups loaded
@@ -2468,7 +2606,7 @@ rb_shell_cmd_plugins (GtkAction *action,
 					 G_CALLBACK (rb_shell_plugins_response_cb),
 					 NULL, 0);
 
-		manager = rb_plugin_manager_new ();
+		manager = peas_gtk_plugin_manager_new (NULL);
 		gtk_widget_show_all (GTK_WIDGET (manager));
 		gtk_container_add (GTK_CONTAINER (content_area),
 				   manager);
@@ -2599,8 +2737,6 @@ rb_shell_quit (RBShell *shell,
 
 	/* Stop the playing source, if any */
 	rb_shell_player_stop (shell->priv->player_shell);
-
-	rb_plugins_engine_shutdown ();
 
 	rb_podcast_manager_shutdown (shell->priv->podcast_manager);
 

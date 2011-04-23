@@ -38,6 +38,8 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
+#include <libpeas/peas.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <config.h>
@@ -303,6 +305,59 @@ rb_find_user_cache_file (const char *name,
 			 GError **error)
 {
 	return rb_find_user_file (rb_user_cache_dir (), name, error);
+}
+
+/**
+ * rb_find_plugin_data_file:
+ * @plugin: the plugin object
+ * @name: name of the file to find
+ *
+ * Locates a file under the plugin's data directory.
+ *
+ * Returns: allocated string containing the location of the file
+ */
+char *
+rb_find_plugin_data_file (GObject *object, const char *name)
+{
+	PeasPluginInfo *info;
+	char *ret = NULL;
+	const char *plugin_name = "<unknown>";
+
+	g_object_get (object, "plugin-info", &info, NULL);
+	if (info != NULL) {
+		char *tmp;
+
+		tmp = g_build_filename (peas_plugin_info_get_data_dir (info), name, NULL);
+		if (g_file_test (tmp, G_FILE_TEST_EXISTS)) {
+			ret = tmp;
+		} else {
+			g_free (tmp);
+		}
+
+		plugin_name = peas_plugin_info_get_name (info);
+	}
+	
+	if (ret == NULL) {
+		const char *f;
+		f = rb_file (name);
+		if (f != NULL) {
+			ret = g_strdup (f);
+		}
+	}
+
+	rb_debug ("found '%s' when searching for file '%s' for plugin '%s'",
+		  ret, name, plugin_name);
+
+	/* ensure it's an absolute path */
+	if (ret != NULL && ret[0] != '/') {
+		char *pwd = g_get_current_dir ();
+		char *path = g_strconcat (pwd, G_DIR_SEPARATOR_S, ret, NULL);
+		g_free (ret);
+		g_free (pwd);
+		ret = path;
+	}
+
+	return ret;
 }
 
 /**

@@ -29,7 +29,7 @@
 #include "config.h"
 
 #include "rb-display-page.h"
-#include "rb-plugin.h"
+#include "rb-shell.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 
@@ -58,7 +58,7 @@ struct _RBDisplayPagePrivate
 	GdkPixbuf *pixbuf;
 	RBDisplayPage *parent;
 
-	RBPlugin *plugin;
+	GObject *plugin;
 	RBShell *shell;
 
 	gboolean deleted;
@@ -685,9 +685,9 @@ rb_display_page_class_init (RBDisplayPageClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_PLUGIN,
 					 g_param_spec_object ("plugin",
-							      "RBPlugin",
-							      "RBPlugin instance for the plugin that created the page",
-							      RB_TYPE_PLUGIN,
+							      "plugin instance",
+							      "plugin instance that created the page",
+							      G_TYPE_OBJECT,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 	/**
 	 * RBDisplayPage::deleted:

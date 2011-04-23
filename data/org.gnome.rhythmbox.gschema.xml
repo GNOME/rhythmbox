@@ -256,11 +256,6 @@
       <summary>List of active plugin names.</summary>
       <description>List of active plugin names. These plugins will be loaded on startup if available.</description>
     </key>
-    <key name="hidden-plugins" type="as">
-      <default>['audiocd','cd-recorder','generic-player','iradio','mmkeys','mpris']</default>
-      <summary>List of hidden plugin names.</summary>
-      <description>List of hidden plugin names. These plugins will not be shown in the plugin configuration dialog.</description>
-    </key>
   </schema>
 
   <schema id="org.gnome.rhythmbox.plugins.audiocd" path="/org/gnome/rhythmbox/plugins/audiocd/">
@@ -311,6 +306,11 @@
     <child name="source" schema="org.gnome.rhythmbox.source"/>
   </schema>
 
+  <schema id="org.gnome.rhythmbox.plugins.iradio.source" extends="org.gnome.rhythmbox.source">
+    <override name="sorting">('Title',true)</override>
+    <override name="paned-position">200</override>
+    <override name="show-browser">true</override>
+  </schema>
   <schema id="org.gnome.rhythmbox.plugins.iradio" path="/org/gnome/rhythmbox/plugins/iradio/">
     <key name="initial-stations-loaded" type="b">
       <default>false</default>
@@ -318,7 +318,7 @@
       <description>Whether the initial station list has been loaded</description>
     </key>
 
-    <child name='source' schema='org.gnome.rhythmbox.source'/>
+    <child name='source' schema='org.gnome.rhythmbox.plugins.iradio.source'/>
   </schema>
 
   <enum id="org.gnome.rhythmbox.plugins.jamendo.audio-format">

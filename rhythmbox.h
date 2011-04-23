@@ -48,7 +48,6 @@
 #include <shell/rb-removable-media-manager.h>
 #include <shell/rb-history.h>
 #include <shell/rb-play-order.h>
-#include <shell/rb-plugin.h>
 #include <sources/rb-display-page.h>
 #include <sources/rb-display-page-group.h>
 #include <sources/rb-display-page-model.h>

@@ -43,7 +43,6 @@
 #include "rb-source.h"
 #include "rb-util.h"
 #include "rb-static-playlist-source.h"
-#include "rb-plugin.h"
 #include "rb-play-order.h"
 
 static void rb_source_class_init (RBSourceClass *klass);
@@ -263,7 +262,7 @@ rb_source_class_init (RBSourceClass *klass)
 							      "settings",
 							      "GSettings instance",
 							      G_TYPE_SETTINGS,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 	/**
 	 * RBSource:show-browser:
 	 *
