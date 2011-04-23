@@ -53,6 +53,7 @@ typedef struct
 
 RbIpodDb *rb_ipod_db_new (GMount *mount);
 GType rb_ipod_db_get_type (void);
+void _rb_ipod_db_register_type (GTypeModule *module);
 
 void rb_ipod_db_save_async (RbIpodDb *db);
 

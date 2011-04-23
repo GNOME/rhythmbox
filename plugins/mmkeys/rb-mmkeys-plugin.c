@@ -4,7 +4,7 @@
  *  Copyright (C) 2002, 2003 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2002,2003 Colin Walters <walters@debian.org>
  *  Copyright (C) 2007  James Livingston  <doclivingston@gmail.com>
- *  Copyright (C) 2007  Jonathan Matthew  <jonathan@kaolin.wh9.net>
+ *  Copyright (C) 2007  Jonathan Matthew  <jonathan@d14n.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,8 @@
 #include <gio/gio.h>
 #include <glib.h>
 
+#include "rb-plugin-macros.h"
 #include "rb-util.h"
-#include "rb-plugin.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
@@ -62,7 +62,7 @@
 
 typedef struct
 {
-	RBPlugin parent;
+	PeasExtensionBase parent;
 
 	enum {
 		NONE = 0,
@@ -76,14 +76,12 @@ typedef struct
 
 typedef struct
 {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 } RBMMKeysPluginClass;
 
+RB_DEFINE_PLUGIN(RB_TYPE_MMKEYS_PLUGIN, RBMMKeysPlugin, rb_mmkeys_plugin,)
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
-GType	rb_mmkeys_plugin_get_type		(void) G_GNUC_CONST;
-
-RB_PLUGIN_REGISTER(RBMMKeysPlugin, rb_mmkeys_plugin)
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
 static void
 rb_mmkeys_plugin_init (RBMMKeysPlugin *plugin)
@@ -365,8 +363,7 @@ first_call_complete (GObject *proxy, GAsyncResult *res, RBMMKeysPlugin *plugin)
 }
 
 static void
-impl_activate (RBPlugin *bplugin,
-	       RBShell *shell)
+impl_activate (PeasActivatable *pplugin)
 {
 	GDBusConnection *bus;
 	RBMMKeysPlugin *plugin;
@@ -374,11 +371,9 @@ impl_activate (RBPlugin *bplugin,
 
 	rb_debug ("activating media player keys plugin");
 
-	plugin = RB_MMKEYS_PLUGIN (bplugin);
-	g_object_get (shell,
-		      "shell-player", &plugin->shell_player,
-		      NULL);
-	plugin->shell = g_object_ref (shell);
+	plugin = RB_MMKEYS_PLUGIN (pplugin);
+	g_object_get (plugin, "object", &plugin->shell, NULL);
+	g_object_get (plugin->shell, "shell-player", &plugin->shell_player, NULL);
 
 	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
 	if (plugin->grab_type == NONE && bus != NULL) {
@@ -436,12 +431,11 @@ final_call_complete (GObject *proxy, GAsyncResult *res, gpointer nothing)
 }
 
 static void
-impl_deactivate	(RBPlugin *bplugin,
-		 RBShell *shell)
+impl_deactivate	(PeasActivatable *pplugin)
 {
 	RBMMKeysPlugin *plugin;
 
-	plugin = RB_MMKEYS_PLUGIN (bplugin);
+	plugin = RB_MMKEYS_PLUGIN (pplugin);
 	if (plugin->shell_player != NULL) {
 		g_object_unref (plugin->shell_player);
 		plugin->shell_player = NULL;
@@ -477,12 +471,11 @@ impl_deactivate	(RBPlugin *bplugin,
 #endif
 }
 
-
-static void
-rb_mmkeys_plugin_class_init (RBMMKeysPluginClass *klass)
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
 {
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
+	rb_mmkeys_plugin_register_type (G_TYPE_MODULE (module));
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_MMKEYS_PLUGIN);
 }

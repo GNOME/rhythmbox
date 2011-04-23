@@ -102,8 +102,12 @@ rb_dacp_player_iface_init (gpointer iface, gpointer data)
 	dacp_player->cue_play            = rb_dacp_player_cue_play;
 }
 
-G_DEFINE_TYPE_WITH_CODE (RBDACPPlayer, rb_dacp_player, G_TYPE_OBJECT,
-                         G_IMPLEMENT_INTERFACE (DACP_TYPE_PLAYER, rb_dacp_player_iface_init))
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDACPPlayer,
+				rb_dacp_player,
+				G_TYPE_OBJECT,
+				0,
+				G_IMPLEMENT_INTERFACE_DYNAMIC (DACP_TYPE_PLAYER,
+							       rb_dacp_player_iface_init))
 
 static void
 rb_dacp_player_init (RBDACPPlayer *object)
@@ -151,6 +155,11 @@ rb_dacp_player_class_init (RBDACPPlayerClass *klass)
 			      G_TYPE_NONE, 0);
 
 	object_class->finalize = rb_dacp_player_finalize;
+}
+
+static void
+rb_dacp_player_class_finalize (RBDACPPlayerClass *klass)
+{
 }
 
 static void
@@ -368,4 +377,10 @@ rb_dacp_player_cue_play (DACPPlayer *player, GList *records, guint index)
 		g_free (location);
 		current++;
 	}
+}
+
+void
+_rb_dacp_player_register_type (GTypeModule *module)
+{
+	rb_dacp_player_register_type (module);
 }

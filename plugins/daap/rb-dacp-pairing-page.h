@@ -32,7 +32,6 @@
 
 #include "rb-shell.h"
 #include "rb-display-page.h"
-#include "rb-plugin.h"
 
 #include <libdmapsharing/dmap.h>
 
@@ -59,7 +58,7 @@ typedef struct {
 
 GType 		rb_dacp_pairing_page_get_type 	(void);
 
-RBDACPPairingPage *rb_dacp_pairing_page_new 	(RBPlugin *plugin,
+RBDACPPairingPage *rb_dacp_pairing_page_new 	(GObject *plugin,
 						 RBShell *shell,
 						 DACPShare *dacp_share,
 						 const char *display_name,
@@ -68,7 +67,9 @@ RBDACPPairingPage *rb_dacp_pairing_page_new 	(RBPlugin *plugin,
 void           rb_dacp_pairing_page_remote_found (RBDACPPairingPage *page);
 void           rb_dacp_pairing_page_remote_lost (RBDACPPairingPage *page);
 
-DACPShare     *rb_daap_create_dacp_share       (RBPlugin *plugin);
+DACPShare     *rb_daap_create_dacp_share       (GObject *plugin);
+
+void           _rb_dacp_pairing_page_register_type (GTypeModule *module);
 
 G_END_DECLS
 

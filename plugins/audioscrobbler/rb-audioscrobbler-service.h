@@ -60,6 +60,7 @@ typedef struct {
 } RBAudioscrobblerServiceClass;
 
 GType rb_audioscrobbler_service_get_type (void);
+void _rb_audioscrobbler_service_register_type (GTypeModule *module);
 
 RBAudioscrobblerService *rb_audioscrobbler_service_new_lastfm (void);
 RBAudioscrobblerService *rb_audioscrobbler_service_new_librefm (void);

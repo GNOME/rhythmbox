@@ -29,7 +29,6 @@
 #define __RB_GENERIC_PLAYER_SOURCE_H
 
 #include "rb-shell.h"
-#include "rb-plugin.h"
 #include "rb-media-player-source.h"
 #include "rhythmdb.h"
 
@@ -66,12 +65,11 @@ typedef struct
 	char *		(*impl_build_filename) (RBGenericPlayerSource *source, RhythmDBEntry *entry);
 } RBGenericPlayerSourceClass;
 
-RBRemovableMediaSource *rb_generic_player_source_new			(RBPlugin *plugin,
+RBRemovableMediaSource *rb_generic_player_source_new			(GObject *plugin,
 									 RBShell *shell,
 									 GMount *mount,
 									 MPIDDevice *device_info);
 GType			rb_generic_player_source_get_type		(void);
-GType			rb_generic_player_source_register_type		(GTypeModule *module);
 
 char *			rb_generic_player_source_get_mount_path		(RBGenericPlayerSource *source);
 char *			rb_generic_player_source_uri_from_playlist_uri  (RBGenericPlayerSource *source,
@@ -93,6 +91,8 @@ void			rb_generic_player_source_delete_entries		(RBGenericPlayerSource *source,
 void			rb_generic_player_source_add_playlist		(RBGenericPlayerSource *source,
 									 RBShell *shell,
 									 RBSource *playlist);
+
+void			_rb_generic_player_source_register_type		(GTypeModule *module);
 
 G_END_DECLS
 

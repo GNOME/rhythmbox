@@ -5,5 +5,6 @@ plugin_PYTHON = \
 		Coroutine.py		\
 		URLCache.py		\
 		stringmatch.py		\
-		__init__.py
+		rb.py
 
+plugin_DATA = rb.plugin

@@ -31,7 +31,6 @@
 #include "rb-shell.h"
 #include "rb-media-player-source.h"
 #include "rhythmdb.h"
-#include "rb-plugin.h"
 #include "mediaplayerid.h"
 #include "rb-ipod-db.h"
 
@@ -54,12 +53,12 @@ typedef struct
 	RBMediaPlayerSourceClass parent;
 } RBiPodSourceClass;
 
-RBMediaPlayerSource	*rb_ipod_source_new		(RBPlugin *plugin,
+RBMediaPlayerSource	*rb_ipod_source_new		(GObject *plugin,
 							 RBShell *shell,
 							 GMount *mount,
 							 MPIDDevice *device_info);
 GType			rb_ipod_source_get_type		(void);
-GType                   rb_ipod_source_register_type    (GTypeModule *module);
+void                    _rb_ipod_source_register_type   (GTypeModule *module);
 
 Itdb_Playlist *		rb_ipod_source_new_playlist	(RBiPodSource *source);
 void			rb_ipod_source_remove_playlist	(RBiPodSource *ipod_source,

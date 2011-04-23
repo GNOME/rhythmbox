@@ -41,7 +41,7 @@
 
 #include <gst/gst.h>
 
-#include "rb-plugin.h"
+#include "rb-plugin-macros.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
@@ -50,6 +50,7 @@
 #include "rb-audiocd-source.h"
 #include "rb-player.h"
 #include "rb-encoder.h"
+#include "rb-file-helpers.h"
 
 
 #define RB_TYPE_AUDIOCD_PLUGIN		(rb_audiocd_plugin_get_type ())
@@ -61,7 +62,7 @@
 
 typedef struct
 {
-	RBPlugin    parent;
+	PeasExtensionBase parent;
 
 	RBShell    *shell;
 	guint       ui_merge_id;
@@ -72,48 +73,21 @@ typedef struct
 
 typedef struct
 {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 } RBAudioCdPluginClass;
 
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 GType	rb_audiocd_plugin_get_type		(void) G_GNUC_CONST;
 
 static void rb_audiocd_plugin_init (RBAudioCdPlugin *plugin);
-static void rb_audiocd_plugin_finalize (GObject *object);
-static void impl_activate (RBPlugin *plugin, RBShell *shell);
-static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
-RB_PLUGIN_REGISTER(RBAudioCdPlugin, rb_audiocd_plugin)
-
-static void
-rb_audiocd_plugin_class_init (RBAudioCdPluginClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-
-	object_class->finalize = rb_audiocd_plugin_finalize;
-
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
-
-	RB_PLUGIN_REGISTER_TYPE(rb_audiocd_source);
-}
+RB_DEFINE_PLUGIN(RB_TYPE_AUDIOCD_PLUGIN, RBAudioCdPlugin, rb_audiocd_plugin,)
 
 static void
 rb_audiocd_plugin_init (RBAudioCdPlugin *plugin)
 {
 	rb_debug ("RBAudioCdPlugin initialising");
-}
-
-static void
-rb_audiocd_plugin_finalize (GObject *object)
-{
-/*
-	RBAudioCdPlugin *plugin = RB_AUDIOCD_PLUGIN (object);
-*/
-	rb_debug ("RBAudioCdPlugin finalising");
-	G_OBJECT_CLASS (rb_audiocd_plugin_parent_class)->finalize (object);
 }
 
 static void
@@ -249,12 +223,15 @@ create_source_cb (RBRemovableMediaManager *rmm,
 {
 	RBSource *source = NULL;
 	GVolume *volume = NULL;
+	RBShell *shell;
+
+	g_object_get (plugin, "object", &shell, NULL);
 
 	if (rb_audiocd_is_mount_audiocd (mount)) {
 
 		volume = g_mount_get_volume (mount);
 		if (volume != NULL) {
-			source = rb_audiocd_source_new (RB_PLUGIN (plugin), plugin->shell, volume);
+			source = rb_audiocd_source_new (G_OBJECT (plugin), shell, volume);
 			g_object_unref (volume);
 		}
 	}
@@ -269,9 +246,9 @@ create_source_cb (RBRemovableMediaManager *rmm,
 			char *filename;
 			GtkUIManager *uimanager;
 
-			g_object_get (plugin->shell, "ui-manager", &uimanager, NULL);
+			g_object_get (shell, "ui-manager", &uimanager, NULL);
 
-			filename = rb_plugin_find_file (RB_PLUGIN (plugin), "audiocd-ui.xml");
+			filename = rb_find_plugin_data_file (G_OBJECT (plugin), "audiocd-ui.xml");
 			if (filename != NULL) {
 				plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager, filename, NULL);
 				gtk_ui_manager_ensure_update (uimanager);
@@ -284,25 +261,26 @@ create_source_cb (RBRemovableMediaManager *rmm,
 		}
 	}
 
+	g_object_unref (shell);
 	return source;
 }
 
 static void
-impl_activate (RBPlugin *plugin,
-	       RBShell  *shell)
+impl_activate (PeasActivatable *plugin)
 {
 	RBAudioCdPlugin         *pi = RB_AUDIOCD_PLUGIN (plugin);
 	RBRemovableMediaManager *rmm;
 	gboolean                 scanned;
 	GObject                 *shell_player;
 	RBPlayer                *player_backend;
+	RBShell                 *shell;
 
 	pi->sources = g_hash_table_new_full (g_direct_hash,
 					     g_direct_equal,
 					     g_object_unref,
 					     g_object_unref);
 
-	pi->shell = shell;
+	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell, "removable-media-manager", &rmm, NULL);
 
 
@@ -359,6 +337,8 @@ impl_activate (RBPlugin *plugin,
 	g_signal_connect_object (shell_player, "playing-uri-changed",
 				 G_CALLBACK (rb_audiocd_plugin_playing_uri_changed_cb),
 				 plugin, 0);
+
+	g_object_unref (shell);
 }
 
 static void
@@ -374,14 +354,15 @@ _delete_cb (GVolume         *volume,
 }
 
 static void
-impl_deactivate	(RBPlugin *bplugin,
-		 RBShell  *shell)
+impl_deactivate	(PeasActivatable *bplugin)
 {
 	RBAudioCdPlugin         *plugin = RB_AUDIOCD_PLUGIN (bplugin);
 	RBRemovableMediaManager *rmm = NULL;
 	GtkUIManager            *uimanager = NULL;
+	RBShell                 *shell;
 
-	g_object_get (G_OBJECT (shell),
+	g_object_get (plugin, "object", &shell, NULL);
+	g_object_get (shell,
 		      "removable-media-manager", &rmm,
 		      "ui-manager", &uimanager,
 		      NULL);
@@ -397,4 +378,15 @@ impl_deactivate	(RBPlugin *bplugin,
 
 	g_object_unref (uimanager);
 	g_object_unref (rmm);
+	g_object_unref (shell);
+}
+
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
+{
+	rb_audiocd_plugin_register_type (G_TYPE_MODULE (module));
+	_rb_audiocd_source_register_type (G_TYPE_MODULE (module));
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_AUDIOCD_PLUGIN);
 }

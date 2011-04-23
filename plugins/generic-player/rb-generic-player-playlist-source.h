@@ -51,7 +51,6 @@ typedef struct
 } RBGenericPlayerPlaylistSourceClass;
 
 GType		rb_generic_player_playlist_source_get_type	(void);
-GType		rb_generic_player_playlist_source_register_type	(GTypeModule *module);
 
 RBSource *	rb_generic_player_playlist_source_new (RBShell *shell,
 						       RBGenericPlayerSource *source,
@@ -59,6 +58,8 @@ RBSource *	rb_generic_player_playlist_source_new (RBShell *shell,
 						       const char *device_root,
 						       RhythmDBEntryType *entry_type);
 void		rb_generic_player_playlist_delete_from_player (RBGenericPlayerPlaylistSource *source);
+
+void		_rb_generic_player_playlist_source_register_type (GTypeModule *module);
 
 G_END_DECLS
 

@@ -110,9 +110,9 @@ enum {
 	PROP_PASSWORD_PROTECTED
 };
 
-G_DEFINE_TYPE (RBDAAPSource, rb_daap_source, RB_TYPE_BROWSER_SOURCE);
+G_DEFINE_DYNAMIC_TYPE (RBDAAPSource, rb_daap_source, RB_TYPE_BROWSER_SOURCE);
 
-G_DEFINE_TYPE (RBDAAPEntryType, rb_daap_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+G_DEFINE_DYNAMIC_TYPE (RBDAAPEntryType, rb_daap_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
 
 static char *
 rb_daap_entry_type_get_playback_uri (RhythmDBEntryType *etype, RhythmDBEntry *entry)
@@ -132,6 +132,11 @@ rb_daap_entry_type_class_init (RBDAAPEntryTypeClass *klass)
 {
 	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
 	etype_class->get_playback_uri = rb_daap_entry_type_get_playback_uri;
+}
+
+static void
+rb_daap_entry_type_class_finalize (RBDAAPEntryTypeClass *klass)
+{
 }
 
 static void
@@ -221,6 +226,11 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 }
 
 static void
+rb_daap_source_class_finalize (RBDAAPSourceClass *klass)
+{
+}
+
+static void
 rb_daap_source_init (RBDAAPSource *source)
 {
 	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source,
@@ -290,7 +300,7 @@ rb_daap_source_get_property (GObject *object,
 
 RBSource *
 rb_daap_source_new (RBShell *shell,
-		    RBPlugin *plugin,
+		    GObject *plugin,
 		    const char *service_name,
 		    const char *name,
 		    const char *host,
@@ -330,7 +340,7 @@ rb_daap_source_new (RBShell *shell,
 					  "shell", shell,
 					  "visibility", TRUE,
 					  "password-protected", password_protected,
-					  "plugin", RB_PLUGIN (plugin),
+					  "plugin", G_OBJECT (plugin),
 					  "settings", g_settings_get_child (settings, "source"),
 					  NULL));
 	g_object_unref (settings);
@@ -478,7 +488,7 @@ connection_connecting_cb (DMAPConnection       *connection,
 {
 	GdkPixbuf *icon;
 	gboolean   is_connected;
-	RBPlugin  *plugin;
+	GObject *plugin;
 
 	rb_debug ("DAAP connection status: %d/%f", state, progress);
 
@@ -526,16 +536,14 @@ connection_disconnected_cb (DMAPConnection   *connection,
 			    RBDAAPSource     *source)
 {
 	GdkPixbuf *icon;
-	RBPlugin  *plugin;
-	gboolean   daap_shutdown;
+	GObject   *plugin;
 
 	rb_debug ("DAAP connection disconnected");
 
 	g_object_get (source, "plugin", &plugin, NULL);
 	g_assert (plugin != NULL);
 
-	g_object_get (plugin, "shutdown", &daap_shutdown, NULL);
-	if (daap_shutdown == FALSE) {
+	if (rb_daap_plugin_shutdown (RB_DAAP_PLUGIN (plugin)) == FALSE) {
 
 		icon = rb_daap_plugin_get_icon (RB_DAAP_PLUGIN (plugin),
 						source->priv->password_protected,
@@ -798,4 +806,11 @@ rb_daap_source_get_status (RBDisplayPage *page,
 	}
 
 	RB_DISPLAY_PAGE_CLASS (rb_daap_source_parent_class)->get_status (page, text, progress_text, progress);
+}
+
+void
+_rb_daap_source_register_type (GTypeModule *module)
+{
+	rb_daap_source_register_type (module);
+	rb_daap_entry_type_register_type (module);
 }

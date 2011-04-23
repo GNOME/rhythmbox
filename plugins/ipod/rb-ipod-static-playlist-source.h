@@ -46,7 +46,7 @@ typedef struct
 } RBIpodStaticPlaylistSourceClass;
 
 GType		rb_ipod_static_playlist_source_get_type 	(void);
-GType           rb_ipod_static_playlist_source_register_type    (GTypeModule *module);
+void		_rb_ipod_static_playlist_source_register_type   (GTypeModule *module);
 
 RBIpodStaticPlaylistSource *	rb_ipod_static_playlist_source_new (RBShell *shell,
 								    RBiPodSource *source,

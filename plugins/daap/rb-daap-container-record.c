@@ -145,6 +145,11 @@ rb_daap_container_record_class_init (RBDAAPContainerRecordClass *klass)
 }
 
 static void
+rb_daap_container_record_class_finalize (RBDAAPContainerRecordClass *klass)
+{
+}
+
+static void
 rb_daap_container_record_daap_iface_init (gpointer iface, gpointer data)
 {
 	DMAPContainerRecordIface *dmap_container_record = iface;
@@ -157,10 +162,15 @@ rb_daap_container_record_daap_iface_init (gpointer iface, gpointer data)
 	dmap_container_record->get_entries = rb_daap_container_record_get_entries;
 }
 
-G_DEFINE_TYPE_WITH_CODE (RBDAAPContainerRecord, rb_daap_container_record, G_TYPE_OBJECT, 
-			 G_IMPLEMENT_INTERFACE (DMAP_TYPE_CONTAINER_RECORD, rb_daap_container_record_daap_iface_init))
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDAAPContainerRecord,
+				rb_daap_container_record,
+				G_TYPE_OBJECT,
+				0,
+				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_CONTAINER_RECORD,
+							       rb_daap_container_record_daap_iface_init))
 
-static void rb_daap_container_record_finalize (GObject *object)
+static void
+rb_daap_container_record_finalize (GObject *object)
 {
 	RBDAAPContainerRecord *record = RB_DAAP_CONTAINER_RECORD (object);
 
@@ -180,4 +190,10 @@ rb_daap_container_record_new (char *name, RBPlaylistSource *source)
 	record->priv->name = name;
 
 	return record;
+}
+
+void
+_rb_daap_container_record_register_type (GTypeModule *module)
+{
+	rb_daap_container_record_register_type (module);
 }

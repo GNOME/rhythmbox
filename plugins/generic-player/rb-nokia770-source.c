@@ -42,21 +42,11 @@
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "rhythmdb.h"
-#include "rb-plugin.h"
 
 
 static char * impl_uri_from_playlist_uri (RBGenericPlayerSource *source, const char *uri);
 
-
-typedef struct {
-#ifdef __SUNPRO_C
-   int x;  /* To build with Solaris forte compiler */
-#endif
-} RBNokia770SourcePrivate;
-
-RB_PLUGIN_DEFINE_TYPE (RBNokia770Source, rb_nokia770_source, RB_TYPE_GENERIC_PLAYER_SOURCE)
-#define NOKIA770_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_NOKIA770_SOURCE, RBNokia770SourcePrivate))
-
+G_DEFINE_DYNAMIC_TYPE (RBNokia770Source, rb_nokia770_source, RB_TYPE_GENERIC_PLAYER_SOURCE)
 
 #define NOKIA_INTERNAL_MOUNTPOINT "file:///media/mmc1/"
 
@@ -66,8 +56,11 @@ rb_nokia770_source_class_init (RBNokia770SourceClass *klass)
 	RBGenericPlayerSourceClass *generic_class = RB_GENERIC_PLAYER_SOURCE_CLASS (klass);
 
 	generic_class->impl_uri_from_playlist_uri = impl_uri_from_playlist_uri;
+}
 
-	g_type_class_add_private (klass, sizeof (RBNokia770SourcePrivate));
+static void
+rb_nokia770_source_class_finalize (RBNokia770SourceClass *klass)
+{
 }
 
 static void
@@ -77,7 +70,7 @@ rb_nokia770_source_init (RBNokia770Source *source)
 }
 
 RBRemovableMediaSource *
-rb_nokia770_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
+rb_nokia770_source_new (GObject *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBNokia770Source *source;
 	RhythmDBEntryType *entry_type;
@@ -158,3 +151,8 @@ rb_nokia770_is_mount_player (GMount *mount, MPIDDevice *device_info)
 	return result;
 }
 
+void
+_rb_nokia770_source_register_type (GTypeModule *module)
+{
+	rb_nokia770_source_register_type (module);
+}

@@ -33,12 +33,12 @@ INCLUDES = 						\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE			\
 	$(NULL)
 
-plugin_in_files = cd-recorder.rb-plugin.in
+plugin_in_files = cd-recorder.plugin.in
 
-%.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+%.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-BUILT_SOURCES =							\
-	$(plugin_in_files:.rb-plugin.in=.rb-plugin) 		\
+BUILT_SOURCES =						\
+	$(plugin_in_files:.plugin.in=.plugin) 		\
 	$(NULL)
 
 plugin_DATA = 			\

@@ -50,7 +50,7 @@
 #include <libxml/uri.h>
 #include <libxml/xmlsave.h>
 
-#include "rb-plugin.h"
+#include "rb-plugin-macros.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
 #include "rb-source.h"
@@ -67,9 +67,8 @@
 
 typedef struct
 {
-	RBPlugin        parent;
+	PeasExtensionBase parent;
 
-	RBShell        *shell;
 	GtkActionGroup *action_group;
 	guint           ui_merge_id;
 
@@ -79,16 +78,14 @@ typedef struct
 
 typedef struct
 {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 } RBDiscRecorderPluginClass;
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
-GType	rb_disc_recorder_plugin_get_type		(void) G_GNUC_CONST;
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
+
+RB_DEFINE_PLUGIN(RB_TYPE_DISC_RECORDER_PLUGIN, RBDiscRecorderPlugin, rb_disc_recorder_plugin,)
 
 static void rb_disc_recorder_plugin_init (RBDiscRecorderPlugin *plugin);
-static void rb_disc_recorder_plugin_finalize (GObject *object);
-static void impl_activate (RBPlugin *plugin, RBShell *shell);
-static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 static void cmd_burn_source (GtkAction          *action,
 			     RBDiscRecorderPlugin *pi);
 static void cmd_duplicate_cd (GtkAction          *action,
@@ -102,8 +99,6 @@ static GtkActionEntry rb_disc_recorder_plugin_actions [] = {
 	  N_("Create a copy of this audio CD"),
 	  G_CALLBACK (cmd_duplicate_cd) },
 };
-
-RB_PLUGIN_REGISTER(RBDiscRecorderPlugin, rb_disc_recorder_plugin)
 
 #define RB_RECORDER_ERROR rb_disc_recorder_error_quark ()
 
@@ -127,29 +122,9 @@ typedef enum
 } RBRecorderError;
 
 static void
-rb_disc_recorder_plugin_class_init (RBDiscRecorderPluginClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-
-	object_class->finalize = rb_disc_recorder_plugin_finalize;
-
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
-}
-
-static void
 rb_disc_recorder_plugin_init (RBDiscRecorderPlugin *pi)
 {
 	rb_debug ("RBDiscRecorderPlugin initialized");
-}
-
-static void
-rb_disc_recorder_plugin_finalize (GObject *object)
-{
-	rb_debug ("RBDiscRecorderPlugin finalized");
-
-	G_OBJECT_CLASS (rb_disc_recorder_plugin_parent_class)->finalize (object);
 }
 
 static gboolean
@@ -163,6 +138,7 @@ rb_disc_recorder_plugin_start_burning (RBDiscRecorderPlugin *pi,
 	char **args, *xid_str;
 	GError *error = NULL;
 	gboolean ret;
+	RBShell *shell;
 	
 	array = g_ptr_array_new ();
 	g_ptr_array_add (array, "brasero");
@@ -172,7 +148,10 @@ rb_disc_recorder_plugin_start_burning (RBDiscRecorderPlugin *pi,
 		g_ptr_array_add (array, "-r");
 	g_ptr_array_add (array, (gpointer) path);
 
-	g_object_get (pi->shell, "window", &main_window, NULL);
+	g_object_get (pi, "object", &shell, NULL);
+	g_object_get (shell, "window", &main_window, NULL);
+	g_object_unref (shell);
+
 	window = gtk_widget_get_window (main_window);
 	if (window) {
 		int xid;
@@ -606,8 +585,12 @@ update_source (RBDiscRecorderPlugin *pi,
 	/* for now restrict to playlist sources */
 	playlist_active = RB_IS_PLAYLIST_SOURCE (selected_page);
 
-	page_type = G_OBJECT_TYPE_NAME (selected_page);
-	is_audiocd_active = g_str_equal (page_type, "RBAudioCdSource");
+	if (selected_page != NULL) {
+		page_type = G_OBJECT_TYPE_NAME (selected_page);
+		is_audiocd_active = g_str_equal (page_type, "RBAudioCdSource");
+	} else {
+		is_audiocd_active = FALSE;
+	}
 
 	burn_action = gtk_action_group_get_action (pi->action_group,
 						   "MusicPlaylistBurnToDiscPlaylist");
@@ -671,21 +654,21 @@ static struct ui_paths {
 };
 
 static void
-impl_activate (RBPlugin *plugin,
-	       RBShell  *shell)
+impl_activate (PeasActivatable *plugin)
 {
 	RBDiscRecorderPlugin *pi = RB_DISC_RECORDER_PLUGIN (plugin);
 	GtkUIManager         *uimanager = NULL;
 	GtkAction            *action;
+	RBShell              *shell;
 	int                   i;
+
+	g_object_get (pi, "object", &shell, NULL);
 
 	pi->enabled = TRUE;
 
 	rb_debug ("RBDiscRecorderPlugin activating");
 
 	brasero_media_library_start ();
-
-	pi->shell = shell;
 
 	g_object_get (shell,
 		      "ui-manager", &uimanager,
@@ -737,14 +720,18 @@ impl_activate (RBPlugin *plugin,
 	g_object_set (action, "short-label", _("Copy CD"), NULL);
 
 	update_source (pi, shell);
+
+	g_object_unref (shell);
 }
 
 static void
-impl_deactivate	(RBPlugin *plugin,
-		 RBShell  *shell)
+impl_deactivate	(PeasActivatable *plugin)
 {
 	RBDiscRecorderPlugin *pi = RB_DISC_RECORDER_PLUGIN (plugin);
-	GtkUIManager       *uimanager = NULL;
+	GtkUIManager         *uimanager = NULL;
+	RBShell              *shell;
+
+	g_object_get (pi, "object", &shell, NULL);
 
 	pi->enabled = FALSE;
 
@@ -769,5 +756,15 @@ impl_deactivate	(RBPlugin *plugin,
 	g_object_unref (uimanager);
 
 	/* NOTE: don't deactivate libbrasero-media as it could be in use somewhere else */
+
+	g_object_unref (shell);
 }
 
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
+{
+	rb_disc_recorder_plugin_register_type (G_TYPE_MODULE (module));
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_DISC_RECORDER_PLUGIN);
+}

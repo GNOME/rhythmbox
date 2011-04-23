@@ -67,6 +67,8 @@ void          rb_daap_record_set_transcode_format (DAAPRecord *record,
 GInputStream *rb_daap_record_read            (DAAPRecord *record,
 						 GError **err);
 
+void          _rb_daap_record_register_type  (GTypeModule *module);
+
 #endif /* __RB_DAAP_RECORD */
 
 G_END_DECLS

@@ -53,7 +53,6 @@
 #include "rb-shell-player.h"
 #include "rb-source.h"
 #include "rb-cut-and-paste-code.h"
-#include "rb-plugin.h"
 #include "rb-util.h"
 #include "rb-podcast-entry-types.h"
 #include "rb-marshal.h"
@@ -137,8 +136,6 @@ static int	     rb_audioscrobbler_save_queue (RBAudioscrobbler *audioscrobbler);
 static void	     rb_audioscrobbler_print_queue (RBAudioscrobbler *audioscrobbler, gboolean submission);
 static void	     rb_audioscrobbler_free_queue_entries (RBAudioscrobbler *audioscrobbler, GQueue **queue);
 
-static void	     rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass);
-static void	     rb_audioscrobbler_init (RBAudioscrobbler *audioscrobbler);
 static void	     rb_audioscrobbler_get_property (GObject *object,
 						    guint prop_id,
 						    GValue *value,
@@ -197,7 +194,7 @@ enum
 
 static guint rb_audioscrobbler_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBAudioscrobbler, rb_audioscrobbler, G_TYPE_OBJECT)
+G_DEFINE_DYNAMIC_TYPE (RBAudioscrobbler, rb_audioscrobbler, G_TYPE_OBJECT)
 
 
 static void
@@ -321,6 +318,11 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 		              G_TYPE_STRING);
 
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerPrivate));
+}
+
+static void
+rb_audioscrobbler_class_finalize (RBAudioscrobblerClass *klass)
+{
 }
 
 static void
@@ -1278,4 +1280,10 @@ rb_audioscrobbler_nowplaying_cb (SoupSession *session, SoupMessage *msg, gpointe
 	}
 
 	g_idle_add ((GSourceFunc) idle_unref_cb, audioscrobbler);
+}
+
+void
+_rb_audioscrobbler_register_type (GTypeModule *module)
+{
+	rb_audioscrobbler_register_type (module);
 }

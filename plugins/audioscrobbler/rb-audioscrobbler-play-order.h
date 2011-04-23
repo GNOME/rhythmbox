@@ -52,6 +52,7 @@ typedef struct
 } RBAudioscrobblerPlayOrderClass;
 
 GType			rb_audioscrobbler_play_order_get_type	(void);
+void			_rb_audioscrobbler_play_order_register_type (GTypeModule *module);
 
 RBPlayOrder *		rb_audioscrobbler_play_order_new	(RBShellPlayer *player);
 

@@ -1,20 +1,28 @@
 # Search Lyrics Python Plugin
 
-SUBDIRS = lyrics
-
 plugindir = $(PLUGINDIR)/lyrics
+plugin_PYTHON =				\
+       LyricsParse.py			\
+       LyricsSites.py			\
+       LyricsConfigureDialog.py		\
+       lyrics.py			\
+       LyrcParser.py			\
+       AstrawebParser.py		\
+       LeoslyricsParser.py		\
+       LyricWikiParser.py		\
+       WinampcnParser.py		\
+       TerraParser.py			\
+       DarkLyricsParser.py
 
-%.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
-plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
+%.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
+plugin_in_files = lyrics.plugin.in
 
-plugin_in_files = lyrics.rb-plugin.in
-
+gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA =	\
 		lyrics-prefs.ui
 
-gtkbuilderdir = $(plugindir)
 EXTRA_DIST = $(plugin_in_files) $(gtkbuilder_DATA)
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)
-

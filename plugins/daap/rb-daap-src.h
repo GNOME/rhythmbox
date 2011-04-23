@@ -36,7 +36,7 @@
 G_BEGIN_DECLS
 
 GType rb_daap_src_get_type (void);
-void rb_daap_src_set_plugin (RBPlugin *plugin);
+void rb_daap_src_set_plugin (GObject *plugin);
 
 G_END_DECLS
 

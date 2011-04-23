@@ -39,7 +39,7 @@
 #include <lib/rb-util.h>
 #include <lib/rb-debug.h>
 #include <lib/eggdesktopfile.h>
-#include <shell/rb-plugin.h>
+#include <plugins/rb-plugin-macros.h>
 #include <shell/rb-shell.h>
 #include <shell/rb-shell-player.h>
 #include <backends/rb-player.h>
@@ -60,7 +60,7 @@
 
 typedef struct
 {
-	RBPlugin parent;
+	PeasExtensionBase parent;
 
 	GDBusConnection *connection;
 	GDBusNodeInfo *node_info;
@@ -69,7 +69,6 @@ typedef struct
 	guint player_id;
 	guint playlists_id;
 
-	RBShell *shell;
 	RBShellPlayer *player;
 	RhythmDB *db;
 	RBDisplayPageModel *page_model;
@@ -87,16 +86,13 @@ typedef struct
 
 typedef struct
 {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 } RBMprisPluginClass;
 
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
-GType	rb_mpris_plugin_get_type		(void) G_GNUC_CONST;
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
-RB_PLUGIN_REGISTER(RBMprisPlugin, rb_mpris_plugin)
-#define RB_MPRIS_PLUGIN_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_MPRIS_PLUGIN, RBMprisPluginPrivate))
-
+RB_DEFINE_PLUGIN(RB_TYPE_MPRIS_PLUGIN, RBMprisPlugin, rb_mpris_plugin,)
 
 static void
 rb_mpris_plugin_init (RBMprisPlugin *plugin)
@@ -213,6 +209,8 @@ handle_root_method_call (GDBusConnection *connection,
 			 GDBusMethodInvocation *invocation,
 			 RBMprisPlugin *plugin)
 {
+	RBShell *shell;
+
 	if (g_strcmp0 (object_path, MPRIS_OBJECT_NAME) != 0 ||
 	    g_strcmp0 (interface_name, MPRIS_ROOT_INTERFACE) != 0) {
 		g_dbus_method_invocation_return_error (invocation,
@@ -225,10 +223,14 @@ handle_root_method_call (GDBusConnection *connection,
 	}
 
 	if (g_strcmp0 (method_name, "Raise") == 0) {
-		rb_shell_present (plugin->shell, GDK_CURRENT_TIME, NULL);
+		g_object_get (plugin, "object", &shell, NULL);
+		rb_shell_present (shell, GDK_CURRENT_TIME, NULL);
+		g_object_unref (shell);
 		g_dbus_method_invocation_return_value (invocation, NULL);
 	} else if (g_strcmp0 (method_name, "Quit") == 0) {
-		rb_shell_quit (plugin->shell, NULL);
+		g_object_get (plugin, "object", &shell, NULL);
+		rb_shell_quit (shell, NULL);
+		g_object_unref (shell);
 		g_dbus_method_invocation_return_value (invocation, NULL);
 	} else {
 		g_dbus_method_invocation_return_error (invocation,
@@ -677,8 +679,12 @@ handle_player_method_call (GDBusConnection *connection,
 		handle_result (invocation, ret, error);
 	} else if (g_strcmp0 (method_name, "OpenUri") == 0) {
 		const char *uri;
+		RBShell *shell;
+
 		g_variant_get (parameters, "(&s)", &uri);
-		ret = rb_shell_load_uri (plugin->shell, uri, TRUE, &error);
+		g_object_get (plugin, "object", &shell, NULL);
+		ret = rb_shell_load_uri (shell, uri, TRUE, &error);
+		g_object_unref (shell);
 		handle_result (invocation, ret, error);
 	} else {
 		g_dbus_method_invocation_return_error (invocation,
@@ -969,7 +975,10 @@ activate_source_by_id (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter
 			    -1);
 	id = g_object_get_data (G_OBJECT (page), MPRIS_PLAYLIST_ID_ITEM);
 	if (g_strcmp0 (data->playlist_id, id) == 0) {
-		rb_shell_activate_source (data->plugin->shell, RB_SOURCE (page), RB_SHELL_ACTIVATION_ALWAYS_PLAY, NULL);
+		RBShell *shell;
+		g_object_get (data->plugin, "object", &shell, NULL);
+		rb_shell_activate_source (shell, RB_SOURCE (page), RB_SHELL_ACTIVATION_ALWAYS_PLAY, NULL);
+		g_object_unref (shell);
 		return TRUE;
 	}
 	return FALSE;
@@ -1361,28 +1370,29 @@ name_lost_cb (GDBusConnection *connection, const char *name, RBMprisPlugin *plug
 }
 
 static void
-impl_activate (RBPlugin *bplugin,
-	       RBShell *shell)
+impl_activate (PeasActivatable *bplugin)
 {
 	RBMprisPlugin *plugin;
 	GtkUIManager *ui_manager;
 	GDBusInterfaceInfo *ifaceinfo;
 	GError *error = NULL;
+	RBShell *shell;
 
 	rb_debug ("activating MPRIS plugin");
 
 	plugin = RB_MPRIS_PLUGIN (bplugin);
+	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell,
 		      "shell-player", &plugin->player,
 		      "ui-manager", &ui_manager,
 		      "db", &plugin->db,
 		      "display-page-model", &plugin->page_model,
 		      NULL);
-	plugin->shell = g_object_ref (shell);
 
 	plugin->connection = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
 	if (error != NULL) {
 		g_warning ("Unable to connect to D-Bus session bus: %s", error->message);
+		g_object_unref (shell);
 		return;
 	}
 
@@ -1390,6 +1400,7 @@ impl_activate (RBPlugin *bplugin,
 	plugin->node_info = g_dbus_node_info_new_for_xml (mpris_introspection_xml, &error);
 	if (error != NULL) {
 		g_warning ("Unable to read MPRIS interface specificiation: %s", error->message);
+		g_object_unref (shell);
 		return;
 	}
 
@@ -1503,11 +1514,11 @@ impl_activate (RBPlugin *bplugin,
 					      (GBusNameLostCallback) name_lost_cb,
 					      g_object_ref (plugin),
 					      g_object_unref);
+	g_object_unref (shell);
 }
 
 static void
-impl_deactivate	(RBPlugin *bplugin,
-		 RBShell *shell)
+impl_deactivate	(PeasActivatable *bplugin)
 {
 	RBMprisPlugin *plugin;
 
@@ -1544,10 +1555,6 @@ impl_deactivate	(RBPlugin *bplugin,
 		g_object_unref (plugin->player);
 		plugin->player = NULL;
 	}
-	if (plugin->shell != NULL) {
-		g_object_unref (plugin->shell);
-		plugin->shell = NULL;
-	}
 	if (plugin->db != NULL) {
 		g_object_unref (plugin->db);
 		plugin->db = NULL;
@@ -1568,12 +1575,11 @@ impl_deactivate	(RBPlugin *bplugin,
 	}
 }
 
-
-static void
-rb_mpris_plugin_class_init (RBMprisPluginClass *klass)
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
 {
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
+	rb_mpris_plugin_register_type (G_TYPE_MODULE (module));
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_MPRIS_PLUGIN);
 }

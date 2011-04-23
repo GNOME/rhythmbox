@@ -58,8 +58,6 @@ struct _RBAudioscrobblerServicePrivate {
 
 #define RB_AUDIOSCROBBLER_SERVICE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_SERVICE, RBAudioscrobblerServicePrivate))
 
-static void rb_audioscrobbler_service_class_init (RBAudioscrobblerServiceClass *klass);
-static void rb_audioscrobbler_service_init (RBAudioscrobblerService *service);
 static void rb_audioscrobbler_service_finalize (GObject *object);
 static void rb_audioscrobbler_service_get_property (GObject *object,
                                                     guint prop_id,
@@ -82,7 +80,7 @@ enum
 	PROP_API_SECRET,
 };
 
-G_DEFINE_TYPE (RBAudioscrobblerService, rb_audioscrobbler_service, G_TYPE_OBJECT)
+G_DEFINE_DYNAMIC_TYPE (RBAudioscrobblerService, rb_audioscrobbler_service, G_TYPE_OBJECT)
 
 RBAudioscrobblerService *
 rb_audioscrobbler_service_new_lastfm (void)
@@ -179,6 +177,11 @@ rb_audioscrobbler_service_class_init (RBAudioscrobblerServiceClass *klass)
                                                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerServicePrivate));
+}
+
+static void
+rb_audioscrobbler_service_class_finalize (RBAudioscrobblerServiceClass *klass)
+{
 }
 
 static void
@@ -322,4 +325,10 @@ const char *
 rb_audioscrobbler_service_get_api_secret (RBAudioscrobblerService *service)
 {
 	return service->priv->api_secret;
+}
+
+void
+_rb_audioscrobbler_service_register_type (GTypeModule *module)
+{
+	rb_audioscrobbler_service_register_type (module);
 }

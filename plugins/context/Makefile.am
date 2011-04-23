@@ -1,15 +1,22 @@
 # Context Pane Python Plugin
 
-SUBDIRS = context
-
 plugindir = $(PLUGINDIR)/context
+plugindatadir = $(PLUGINDATADIR)/context
+plugin_PYTHON = 			\
+	AlbumTab.py			\
+	ArtistTab.py			\
+	ContextView.py			\
+	LastFM.py			\
+	LinksTab.py			\
+	LyricsTab.py			\
+	context.py
 
-plugin_in_files = context.rb-plugin.in
-%.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+plugin_in_files = context.plugin.in
+%.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
+plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
-tmpldir = $(plugindir)/tmpl
+tmpldir = $(plugindatadir)/tmpl
 tmpl_DATA = \
 	tmpl/album-tmpl.html		\
 	tmpl/artist-tmpl.html		\
@@ -18,7 +25,7 @@ tmpl_DATA = \
 	tmpl/lyrics-tmpl.html		\
 	tmpl/main.css
 
-imgdir = $(plugindir)/img
+imgdir = $(plugindatadir)/img
 img_DATA = \
 	img/lastfm.png			\
 	img/spinner.gif			\

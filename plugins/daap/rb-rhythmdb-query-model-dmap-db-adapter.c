@@ -127,6 +127,11 @@ rb_rhythmdb_query_model_dmap_db_adapter_class_init (RBRhythmDBQueryModelDMAPDbAd
 }
 
 static void
+rb_rhythmdb_query_model_dmap_db_adapter_class_finalize (RBRhythmDBQueryModelDMAPDbAdapterClass *klass)
+{
+}
+
+static void
 rb_rhythmdb_query_model_dmap_db_adapter_interface_init (gpointer iface, gpointer data)
 {
 	DMAPDbIface *dmap_db = iface;
@@ -139,18 +144,28 @@ rb_rhythmdb_query_model_dmap_db_adapter_interface_init (gpointer iface, gpointer
 	dmap_db->count = rb_rhythmdb_query_model_dmap_db_adapter_count;
 }
 
-G_DEFINE_TYPE_WITH_CODE (RBRhythmDBQueryModelDMAPDbAdapter, rb_rhythmdb_query_model_dmap_db_adapter, G_TYPE_OBJECT, 
-			 G_IMPLEMENT_INTERFACE (DMAP_TYPE_DB, rb_rhythmdb_query_model_dmap_db_adapter_interface_init))
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBRhythmDBQueryModelDMAPDbAdapter,
+				rb_rhythmdb_query_model_dmap_db_adapter,
+				G_TYPE_OBJECT,
+				0,
+				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_DB,
+							       rb_rhythmdb_query_model_dmap_db_adapter_interface_init))
 
 RBRhythmDBQueryModelDMAPDbAdapter *
 rb_rhythmdb_query_model_dmap_db_adapter_new (RhythmDBQueryModel *model)
 {
 	RBRhythmDBQueryModelDMAPDbAdapter *db;
 
-	db = RB_RHYTHMDB_QUERY_MODEL_DMAP_DB_ADAPTER (g_object_new (RB_TYPE_DMAP_DB_ADAPTER,
+	db = RB_RHYTHMDB_QUERY_MODEL_DMAP_DB_ADAPTER (g_object_new (RB_TYPE_RHYTHMDB_QUERY_MODEL_DMAP_DB_ADAPTER,
 					       NULL));
 
 	db->priv->model = model;
 
 	return db;
+}
+
+void
+_rb_rhythmdb_query_model_dmap_db_adapter_register_type (GTypeModule *module)
+{
+	rb_rhythmdb_query_model_dmap_db_adapter_register_type (module);
 }

@@ -105,7 +105,7 @@ enum {
 	PROP_SERVICE_NAME
 };
 
-G_DEFINE_TYPE (RBDACPPairingPage, rb_dacp_pairing_page, RB_TYPE_DISPLAY_PAGE)
+G_DEFINE_DYNAMIC_TYPE (RBDACPPairingPage, rb_dacp_pairing_page, RB_TYPE_DISPLAY_PAGE)
 
 static gboolean
 entry_insert_text_cb (GtkWidget *entry, gchar *text, gint len, gint *position, RBDACPPairingPage *page)
@@ -227,6 +227,11 @@ rb_dacp_pairing_page_class_init (RBDACPPairingPageClass *klass)
 }
 
 static void
+rb_dacp_pairing_page_class_finalize (RBDACPPairingPageClass *klass)
+{
+}
+
+static void
 rb_dacp_pairing_page_init (RBDACPPairingPage *page)
 {
 	page->priv = G_TYPE_INSTANCE_GET_PRIVATE (page,
@@ -242,12 +247,12 @@ impl_constructed (GObject *object)
 	GtkWidget *passcode_widget;
 	GtkWidget *close_pairing_button;
 	PangoFontDescription *font;
-	RBPlugin *plugin;
+	GObject *plugin;
 	int i;
 
 	g_object_get (page, "plugin", &plugin, NULL);
 
-	builder_filename = rb_plugin_find_file (RB_PLUGIN (plugin), "daap-prefs.ui");
+	builder_filename = rb_find_plugin_data_file (G_OBJECT (plugin), "daap-prefs.ui");
 	g_assert (builder_filename != NULL);
 
 	page->priv->builder = rb_builder_load (builder_filename, NULL);
@@ -328,7 +333,7 @@ impl_get_property (GObject *object,
 }
 
 RBDACPPairingPage *
-rb_dacp_pairing_page_new (RBPlugin *plugin,
+rb_dacp_pairing_page_new (GObject *plugin,
 			  RBShell *shell,
 			  DACPShare *dacp_share,
 			  const char *display_name,
@@ -339,7 +344,7 @@ rb_dacp_pairing_page_new (RBPlugin *plugin,
 	int icon_size;
 	GdkPixbuf *icon_pixbuf;
 
-	icon_filename = rb_plugin_find_file (plugin, "remote-icon.png");
+	icon_filename = rb_find_plugin_data_file (plugin, "remote-icon.png");
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
 	icon_pixbuf = gdk_pixbuf_new_from_file_at_size (icon_filename, icon_size, icon_size, NULL);
 
@@ -429,7 +434,7 @@ remote_paired_cb (DACPShare *share, gchar *service_name, gboolean connected, RBD
 }
 
 DACPShare *
-rb_daap_create_dacp_share (RBPlugin *plugin)
+rb_daap_create_dacp_share (GObject *plugin)
 {
 	DACPShare *share;
 	DACPPlayer *player;
@@ -443,7 +448,7 @@ rb_daap_create_dacp_share (RBPlugin *plugin)
 	GSettings *settings;
 	gchar *name;
 
-	g_object_get (plugin, "shell", &shell, NULL);
+	g_object_get (plugin, "object", &shell, NULL);
 
 	g_object_get (shell,
 	              "db", &rdb,
@@ -501,6 +506,7 @@ rb_daap_create_dacp_share (RBPlugin *plugin)
 	g_object_unref (rdb);
 	g_object_unref (playlist_manager);
 	g_object_unref (player);
+	g_object_unref (shell);
 
 	return share;
 }
@@ -609,7 +615,7 @@ dacp_remote_added (DACPShare    *share,
 
 	rb_debug ("Remote %s (%s) found", service_name, display_name);
 
-	g_object_get (plugin, "shell", &shell, NULL);
+	g_object_get (plugin, "object", &shell, NULL);
 
 	GDK_THREADS_ENTER ();
 
@@ -626,7 +632,7 @@ dacp_remote_added (DACPShare    *share,
 			rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (page_group), NULL);
 		}
 
-		page = rb_dacp_pairing_page_new (RB_PLUGIN (plugin), shell, share, display_name, service_name);
+		page = rb_dacp_pairing_page_new (G_OBJECT (plugin), shell, share, display_name, service_name);
 
 		rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (page), RB_DISPLAY_PAGE (page_group));
 	} else {
@@ -634,6 +640,8 @@ dacp_remote_added (DACPShare    *share,
 	}
 
 	GDK_THREADS_LEAVE ();
+
+	g_object_unref (shell);
 }
 
 static void
@@ -646,7 +654,7 @@ dacp_remote_removed (DACPShare       *share,
 
 	rb_debug ("Remote '%s' went away", service_name);
 
-	g_object_get (plugin, "shell", &shell, NULL);
+	g_object_get (plugin, "object", &shell, NULL);
 
 	GDK_THREADS_ENTER ();
 
@@ -656,4 +664,12 @@ dacp_remote_removed (DACPShare       *share,
 	}
 
 	GDK_THREADS_LEAVE ();
+
+	g_object_unref (shell);
+}
+
+void
+_rb_dacp_pairing_page_register_type (GTypeModule *module)
+{
+	rb_dacp_pairing_page_register_type (module);
 }

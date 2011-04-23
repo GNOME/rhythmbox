@@ -110,7 +110,7 @@ static void rb_daap_src_get_property (GObject *object,
 static GstStateChangeReturn rb_daap_src_change_state (GstElement *element, GstStateChange transition);
 
 void
-rb_daap_src_set_plugin (RBPlugin *plugin)
+rb_daap_src_set_plugin (GObject *plugin)
 {
 	g_assert (RB_IS_DAAP_PLUGIN (plugin));
 	daap_plugin = RB_DAAP_PLUGIN (plugin);

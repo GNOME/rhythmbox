@@ -1,5 +1,6 @@
 
 plugindir = $(PLUGINDIR)/fmradio
+plugindatadir = $(PLUGINDATADIR)/fmradio
 plugin_LTLIBRARIES = libfmradio.la
 
 libfmradio_la_SOURCES = \
@@ -34,16 +35,15 @@ INCLUDES = \
   $(WARN_CFLAGS) \
   -D_XOPEN_SOURCE -D_BSD_SOURCE
 
-plugin_in_files = fmradio.rb-plugin.in
-%.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+plugin_in_files = fmradio.plugin.in
+%.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-uixmldir = $(plugindir)
+uixmldir = $(plugindatadir)
 uixml_DATA = fmradio-ui.xml
 
-plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
+plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
 EXTRA_DIST = $(uixml_DATA) $(plugin_in_files)
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)
-

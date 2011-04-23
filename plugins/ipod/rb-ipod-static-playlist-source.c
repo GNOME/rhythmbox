@@ -25,7 +25,6 @@
 #include <gtk/gtk.h>
 #include <gpod/itdb.h>
 
-#include "rb-plugin.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rhythmdb.h"
@@ -60,9 +59,7 @@ typedef struct
 	gboolean	was_reordered;
 } RBIpodStaticPlaylistSourcePrivate;
 
-RB_PLUGIN_DEFINE_TYPE(RBIpodStaticPlaylistSource,
-		      rb_ipod_static_playlist_source,
-		      RB_TYPE_STATIC_PLAYLIST_SOURCE)
+G_DEFINE_DYNAMIC_TYPE(RBIpodStaticPlaylistSource, rb_ipod_static_playlist_source, RB_TYPE_STATIC_PLAYLIST_SOURCE)
 
 #define IPOD_STATIC_PLAYLIST_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IPOD_STATIC_PLAYLIST_SOURCE, RBIpodStaticPlaylistSourcePrivate))
 
@@ -126,6 +123,11 @@ rb_ipod_static_playlist_source_class_init (RBIpodStaticPlaylistSourceClass *klas
 							       G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RBIpodStaticPlaylistSourcePrivate));
+}
+
+static void
+rb_ipod_static_playlist_source_class_finalize (RBIpodStaticPlaylistSourceClass *klass)
+{
 }
 
 static void
@@ -298,4 +300,10 @@ source_name_changed_cb (RBIpodStaticPlaylistSource *source,
 		rb_ipod_db_rename_playlist (priv->ipod_db, priv->itdb_playlist, name);
 	}
 	g_free (name);
+}
+
+void
+_rb_ipod_static_playlist_source_register_type (GTypeModule *module)
+{
+	rb_ipod_static_playlist_source_register_type (module);
 }

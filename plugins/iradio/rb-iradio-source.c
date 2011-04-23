@@ -51,7 +51,6 @@
 #include "rb-shell-player.h"
 #include "rb-player.h"
 #include "rb-metadata.h"
-#include "rb-plugin.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-source-search-basic.h"
 
@@ -151,8 +150,6 @@ struct RBIRadioSourcePrivate
 	gint info_available_id;
 
 	gboolean dispose_has_run;
-
-	GSettings *settings;
 };
 
 #define RB_IRADIO_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IRADIO_SOURCE, RBIRadioSourcePrivate))
@@ -169,9 +166,9 @@ static const GtkTargetEntry stations_view_drag_types[] = {
 	{  "_NETSCAPE_URL", 0, 1 },
 };
 
-G_DEFINE_TYPE (RBIRadioSource, rb_iradio_source, RB_TYPE_STREAMING_SOURCE);
+G_DEFINE_DYNAMIC_TYPE (RBIRadioSource, rb_iradio_source, RB_TYPE_STREAMING_SOURCE);
 
-G_DEFINE_TYPE (RBIRadioEntryType, rb_iradio_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+G_DEFINE_DYNAMIC_TYPE (RBIRadioEntryType, rb_iradio_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
 
 static void
 rb_iradio_entry_type_class_init (RBIRadioEntryTypeClass *klass)
@@ -179,6 +176,11 @@ rb_iradio_entry_type_class_init (RBIRadioEntryTypeClass *klass)
 	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
 	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
 	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
+}
+
+static void
+rb_iradio_entry_type_class_finalize (RBIRadioEntryTypeClass *klass)
+{
 }
 
 static void
@@ -219,6 +221,11 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 					  "show-browser");
 
 	g_type_class_add_private (klass, sizeof (RBIRadioSourcePrivate));
+}
+
+static void
+rb_iradio_source_class_finalize (RBIRadioSourceClass *klass)
+{
 }
 
 static void
@@ -308,11 +315,11 @@ rb_iradio_source_constructed (GObject *object)
 
 	settings = g_settings_new ("org.gnome.rhythmbox.plugins.iradio");
 	if (g_settings_get_boolean (settings, "initial-stations-loaded") == FALSE) {
-		RBPlugin *plugin;
+		GObject *plugin;
 		char *file;
 
 		g_object_get (source, "plugin", &plugin, NULL);
-		file = rb_plugin_find_file (plugin, "iradio-initial.xspf");
+		file = rb_find_plugin_data_file (plugin, "iradio-initial.xspf");
 		if (file != NULL) {
 			char *uri = g_filename_to_uri (file, NULL, NULL);
 			if (uri != NULL) {
@@ -323,9 +330,6 @@ rb_iradio_source_constructed (GObject *object)
 		g_free (file);
 		g_object_unref (plugin);
 	}
-
-	source->priv->settings = g_settings_get_child (settings, "source");
-	g_object_unref (settings);
 
 	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
 									     "IRadioActions",
@@ -375,6 +379,7 @@ rb_iradio_source_constructed (GObject *object)
 	source->priv->genres = rb_property_view_new (source->priv->db,
 						     RHYTHMDB_PROP_GENRE,
 						     _("Genre"));
+	gtk_widget_set_no_show_all (GTK_WIDGET (source->priv->genres), TRUE);
 	g_signal_connect_object (source->priv->genres,
 				 "property-selected",
 				 G_CALLBACK (genre_selected_cb),
@@ -447,11 +452,12 @@ rb_iradio_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_iradio_source_new (RBShell *shell, RBPlugin *plugin)
+rb_iradio_source_new (RBShell *shell, GObject *plugin)
 {
 	RBSource *source;
 	RhythmDBEntryType *entry_type;
 	RhythmDB *db;
+	GSettings *settings;
 
 	g_object_get (shell, "db", &db, NULL);
 
@@ -467,13 +473,16 @@ rb_iradio_source_new (RBShell *shell, RBPlugin *plugin)
 	}
 	g_object_unref (db);
 
+	settings = g_settings_new ("org.gnome.rhythmbox.plugins.iradio");
 	source = RB_SOURCE (g_object_new (RB_TYPE_IRADIO_SOURCE,
 					  "name", _("Radio"),
 					  "shell", shell,
 					  "entry-type", entry_type,
 					  "plugin", plugin,
 					  "search-type", RB_SOURCE_SEARCH_INCREMENTAL,
+					  "settings", g_settings_get_child (settings, "source"),
 					  NULL));
+	g_object_unref (settings);
 	rb_shell_register_entry_type_for_source (shell, source, entry_type);
 	return source;
 }
@@ -633,7 +642,7 @@ static void
 impl_song_properties (RBSource *asource)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
-	RBPlugin *plugin;
+	GObject *plugin;
 	GtkWidget *dialog;
 
 	g_object_get (source, "plugin", &plugin, NULL);
@@ -1123,3 +1132,9 @@ playing_source_changed_cb (RBShellPlayer *player,
 	g_object_unref (backend);
 }
 
+void
+_rb_iradio_source_register_type (GTypeModule *module)
+{
+	rb_iradio_entry_type_register_type (module);
+	rb_iradio_source_register_type (module);
+}

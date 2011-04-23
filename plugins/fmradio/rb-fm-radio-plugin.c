@@ -32,11 +32,12 @@
 #include <glib/gi18n-lib.h>
 
 #include "rb-debug.h"
-#include "rb-plugin.h"
 
+#include "rb-plugin-macros.h"
 #include "rb-fm-radio-source.h"
 #include "rb-radio-tuner.h"
 #include "rb-display-page-group.h"
+#include "rb-file-helpers.h"
 
 #define RB_TYPE_FM_RADIO_PLUGIN         (rb_fm_radio_plugin_get_type ())
 #define RB_FM_RADIO_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_FM_RADIO_PLUGIN, RBFMRadioPlugin))
@@ -49,22 +50,19 @@ typedef struct _RBFMRadioPlugin RBFMRadioPlugin;
 typedef struct _RBFMRadioPluginClass RBFMRadioPluginClass;
 
 struct _RBFMRadioPlugin {
-	RBPlugin parent;
+	PeasExtensionBase parent;
 	RBSource *source;
 	guint ui_merge_id;
 };
 
 struct _RBFMRadioPluginClass {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 };
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 GType rb_fm_radio_plugin_get_type (void) G_GNUC_CONST;
 
-static void impl_activate (RBPlugin *plugin, RBShell *shell);
-static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
-
-RB_PLUGIN_REGISTER (RBFMRadioPlugin, rb_fm_radio_plugin);
+RB_DEFINE_PLUGIN (RB_TYPE_FM_RADIO_PLUGIN, RBFMRadioPlugin, rb_fm_radio_plugin,)
 
 static void
 rb_fm_radio_plugin_init (RBFMRadioPlugin *plugin)
@@ -73,19 +71,12 @@ rb_fm_radio_plugin_init (RBFMRadioPlugin *plugin)
 }
 
 static void
-rb_fm_radio_plugin_finalize (GObject *object)
-{
-	rb_debug ("RBIRadioPlugin finalising");
-
-	G_OBJECT_CLASS (rb_fm_radio_plugin_parent_class)->finalize (object);
-}
-
-static void
-impl_activate (RBPlugin *plugin, RBShell *shell)
+impl_activate (PeasActivatable *plugin)
 {
 	RBFMRadioPlugin *pi = RB_FM_RADIO_PLUGIN (plugin);
 	RBRadioTuner *tuner;
 	GtkUIManager *uimanager;
+	RBShell *shell;
 	char *filename;
 
 	tuner = rb_radio_tuner_new (NULL, NULL);
@@ -94,11 +85,14 @@ impl_activate (RBPlugin *plugin, RBShell *shell)
 
 	rb_radio_tuner_set_mute (tuner, TRUE);
 	rb_radio_tuner_update (tuner);
+
+	g_object_get (plugin, "object", &shell, NULL);
 	pi->source = rb_fm_radio_source_new (shell, tuner);
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (pi->source), RB_DISPLAY_PAGE_GROUP_LIBRARY);	/* devices? */
+
 	g_object_unref (tuner);
 
-	filename = rb_plugin_find_file (plugin, "fmradio-ui.xml");
+	filename = rb_find_plugin_data_file (G_OBJECT (plugin), "fmradio-ui.xml");
 	if (filename != NULL) {
 		g_object_get (shell, "ui-manager", &uimanager, NULL);
 		pi->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
@@ -109,14 +103,16 @@ impl_activate (RBPlugin *plugin, RBShell *shell)
 	} else {
 		g_warning ("Unable to find file: fmradio-ui.xml");
 	}
-	
+
+	g_object_unref (shell);
 }
 
 static void
-impl_deactivate (RBPlugin *plugin, RBShell *shell)
+impl_deactivate (PeasActivatable *plugin)
 {
 	RBFMRadioPlugin *pi = RB_FM_RADIO_PLUGIN (plugin);
 	GtkUIManager *uimanager;
+	RBShell *shell;
 
 	if (pi->source) {
 		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (pi->source));
@@ -124,24 +120,24 @@ impl_deactivate (RBPlugin *plugin, RBShell *shell)
 	}
 
 	if (pi->ui_merge_id) {
+		g_object_get (plugin, "object", &shell, NULL);
 		g_object_get (shell, "ui-manager", &uimanager, NULL);
+		g_object_unref (shell);
+
 		gtk_ui_manager_remove_ui (uimanager, pi->ui_merge_id);
 		g_object_unref (uimanager);
 		pi->ui_merge_id = 0;
 	}
 }
 
-static void
-rb_fm_radio_plugin_class_init (RBFMRadioPluginClass *klass)
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
 {
-        GObjectClass *object_class = G_OBJECT_CLASS (klass);
-        RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
+	rb_fm_radio_plugin_register_type (G_TYPE_MODULE (module));
+	_rb_fm_radio_source_register_type (G_TYPE_MODULE (module));
+	_rb_radio_tuner_register_type (G_TYPE_MODULE (module));
 
-        object_class->finalize = rb_fm_radio_plugin_finalize;
-
-        plugin_class->activate = impl_activate;
-        plugin_class->deactivate = impl_deactivate;
-
-	RB_PLUGIN_REGISTER_TYPE (rb_radio_tuner);
-	RB_PLUGIN_REGISTER_TYPE (rb_fm_radio_source);
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_FM_RADIO_PLUGIN);
 }

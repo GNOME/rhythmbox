@@ -60,6 +60,8 @@ GType		rb_iradio_source_search_get_type	(void);
 
 RBSourceSearch *rb_iradio_source_search_new 		(void);
 
+void		_rb_iradio_source_search_register_type	(GTypeModule *module);
+
 G_END_DECLS
 
 #endif	/* __RB_IRADIO_SOURCE_SEARCH_H */

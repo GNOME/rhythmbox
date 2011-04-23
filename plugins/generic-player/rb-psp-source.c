@@ -43,39 +43,32 @@
 #include "rb-file-helpers.h"
 #include "rb-auto-playlist-source.h"
 #include "rhythmdb.h"
-#include "rb-plugin.h"
 
 
 static void rb_psp_source_create_playlists (RBGenericPlayerSource *source);
 
-typedef struct
-{
-  char garbage_so_its_not_empty; /* To avoid run-time warnings. FIXME remove if no private needed */
-} RBPspSourcePrivate;
-
-
-RB_PLUGIN_DEFINE_TYPE (RBPspSource, rb_psp_source, RB_TYPE_GENERIC_PLAYER_SOURCE)
-#define PSP_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PSP_SOURCE, RBPspSourcePrivate))
+G_DEFINE_DYNAMIC_TYPE (RBPspSource, rb_psp_source, RB_TYPE_GENERIC_PLAYER_SOURCE)
 
 
 static void
 rb_psp_source_class_init (RBPspSourceClass *klass)
 {
 	RBGenericPlayerSourceClass *generic_class = RB_GENERIC_PLAYER_SOURCE_CLASS (klass);
-
 	generic_class->impl_load_playlists = rb_psp_source_create_playlists;
+}
 
-	g_type_class_add_private (klass, sizeof (RBPspSourcePrivate));
+static void
+rb_psp_source_class_finalize (RBPspSourceClass *klass)
+{
 }
 
 static void
 rb_psp_source_init (RBPspSource *source)
 {
-
 }
 
 RBRemovableMediaSource *
-rb_psp_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
+rb_psp_source_new (GObject *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBPspSource *source;
 	RhythmDBEntryType *entry_type;
@@ -288,3 +281,8 @@ rb_psp_is_mount_player (GMount *mount, MPIDDevice *device_info)
 	return result;
 }
 
+void
+_rb_psp_source_register_type (GTypeModule *module)
+{
+	rb_psp_source_register_type (module);
+}

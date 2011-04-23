@@ -53,6 +53,11 @@ rb_daap_record_factory_class_init (RBDAAPRecordFactoryClass *klass)
 }
 
 static void
+rb_daap_record_factory_class_finalize (RBDAAPRecordFactoryClass *klass)
+{
+}
+
+static void
 rb_daap_record_factory_interface_init (gpointer iface, gpointer data)
 {
 	DMAPRecordFactoryIface *factory = iface;
@@ -62,9 +67,12 @@ rb_daap_record_factory_interface_init (gpointer iface, gpointer data)
 	factory->create = rb_daap_record_factory_create;
 }
 
-G_DEFINE_TYPE_WITH_CODE (RBDAAPRecordFactory, rb_daap_record_factory, G_TYPE_OBJECT, 
-			 G_IMPLEMENT_INTERFACE (DMAP_TYPE_RECORD_FACTORY,
-					        rb_daap_record_factory_interface_init))
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDAAPRecordFactory,
+				rb_daap_record_factory,
+				G_TYPE_OBJECT,
+				0,
+				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_RECORD_FACTORY,
+							       rb_daap_record_factory_interface_init))
 
 RBDAAPRecordFactory *
 rb_daap_record_factory_new (void)
@@ -74,4 +82,10 @@ rb_daap_record_factory_new (void)
 	factory = RB_DAAP_RECORD_FACTORY (g_object_new (RB_TYPE_DAAP_RECORD_FACTORY, NULL));
 
 	return factory;
+}
+
+void
+_rb_daap_record_factory_register_type (GTypeModule *module)
+{
+	rb_daap_record_factory_register_type (module);
 }

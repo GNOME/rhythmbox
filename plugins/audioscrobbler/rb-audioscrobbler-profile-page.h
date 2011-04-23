@@ -32,7 +32,6 @@
 #include <sources/rb-display-page.h>
 #include <sources/rb-source.h>
 #include <shell/rb-shell.h>
-#include <shell/rb-plugin.h>
 
 #include "rb-audioscrobbler-service.h"
 
@@ -60,8 +59,9 @@ typedef struct
 } RBAudioscrobblerProfilePageClass;
 
 GType 		rb_audioscrobbler_profile_page_get_type (void);
+void 		_rb_audioscrobbler_profile_page_register_type (GTypeModule *module);
 RBDisplayPage  *rb_audioscrobbler_profile_page_new (RBShell *shell,
-						    RBPlugin *plugin,
+						    GObject *plugin,
 						    RBAudioscrobblerService *service);
 void 		rb_audioscrobbler_profile_page_remove_radio_station (RBAudioscrobblerProfilePage *page,
 								     RBSource *station);

@@ -35,7 +35,6 @@
 #include "rb-generic-player-playlist-source.h"
 #include "rb-generic-player-source.h"
 #include "rb-debug.h"
-#include "rb-plugin.h"
 #include "rb-file-helpers.h"
 #include "rb-util.h"
 
@@ -50,7 +49,7 @@ typedef struct
 	gboolean loading;
 } RBGenericPlayerPlaylistSourcePrivate;
 
-RB_PLUGIN_DEFINE_TYPE(RBGenericPlayerPlaylistSource,
+G_DEFINE_DYNAMIC_TYPE(RBGenericPlayerPlaylistSource,
 		      rb_generic_player_playlist_source,
 		      RB_TYPE_STATIC_PLAYLIST_SOURCE)
 
@@ -77,8 +76,6 @@ impl_save_to_xml (RBPlaylistSource *source, xmlNodePtr node)
 {
 	/* do nothing; just to prevent weirdness */
 }
-
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,29,1)
 
 static void
 set_field_from_property (TotemPlPlaylist *playlist,
@@ -126,33 +123,6 @@ save_playlist_foreach (GtkTreeModel *model,
 	g_free (uri);
 	return FALSE;
 }
-
-#else
-
-static void
-save_playlist_entry (GtkTreeModel *model, GtkTreeIter *iter,
-		     char **uri, char **title,
-		     gboolean *custom_title,
-		     SavePlaylistData *data)
-{
-	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (data->source);
-	RhythmDBEntry *entry;
-	const char *host_uri;
-
-	entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (model),
-						    iter);
-	if (entry == NULL) {
-		return;
-	}
-
-	host_uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-	*uri = rb_generic_player_source_uri_to_playlist_uri (priv->player_source, host_uri, data->playlist_type);
-	*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
-	*custom_title = TRUE;
-	rhythmdb_entry_unref (entry);
-}
-
-#endif
 
 /* this probably belongs more in totem than here */
 static const char *
@@ -244,7 +214,6 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 	parser = totem_pl_parser_new ();
 	data.source = source;
 	data.playlist_type = playlist_type;
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,29,1)
 	data.playlist = totem_pl_playlist_new ();
 
 	gtk_tree_model_foreach (GTK_TREE_MODEL (query_model),
@@ -257,20 +226,7 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 	result = totem_pl_parser_save (parser, data.playlist, file, name, playlist_type, &error);
 	g_object_unref (data.playlist);
 	data.playlist = NULL;
-#else
-	if (rb_debug_matches ("totem_pl_parser_write_with_title", "totem-pl-parser.c")) {
-		g_object_set (parser, "debug", TRUE, NULL);
-	}
 
-	result = totem_pl_parser_write_with_title (parser,
-						   GTK_TREE_MODEL (query_model),
-						   (TotemPlParserIterFunc) save_playlist_entry,
-						   temp_path,
-						   name,
-						   playlist_type,
-						   &data,
-						   &error);
-#endif
 	if (result == FALSE) {
 		/* XXX report this more usefully */
 		g_warning ("Playlist save failed: %s", error ? error->message : "<no error>");
@@ -601,3 +557,13 @@ rb_generic_player_playlist_source_class_init (RBGenericPlayerPlaylistSourceClass
 	g_type_class_add_private (klass, sizeof (RBGenericPlayerPlaylistSourcePrivate));
 }
 
+static void
+rb_generic_player_playlist_source_class_finalize (RBGenericPlayerPlaylistSourceClass *klass)
+{
+}
+
+void
+_rb_generic_player_playlist_source_register_type (GTypeModule *module)
+{
+	rb_generic_player_playlist_source_register_type (module);
+}

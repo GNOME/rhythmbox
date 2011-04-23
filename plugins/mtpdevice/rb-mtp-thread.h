@@ -87,6 +87,7 @@ typedef void (*RBMtpCreateFolderCallback) (uint32_t folder_id, gpointer user_dat
 
 GType		rb_mtp_thread_get_type (void);
 RBMtpThread *	rb_mtp_thread_new (void);
+void            _rb_mtp_thread_register_type (GTypeModule *module);
 
 void		rb_mtp_thread_report_errors (RBMtpThread *thread, gboolean use_dialog);
 

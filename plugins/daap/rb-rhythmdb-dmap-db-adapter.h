@@ -56,6 +56,8 @@ typedef struct {
 RBRhythmDBDMAPDbAdapter *rb_rhythmdb_dmap_db_adapter_new (RhythmDB *db, RhythmDBEntryType *entry_type);
 GType rb_rhythmdb_dmap_db_adapter_get_type (void);
 
+void _rb_rhythmdb_dmap_db_adapter_register_type (GTypeModule *module);
+
 #endif /* _RB_RHYTHMDB_DMAP_DB_ADAPTER */
 
 G_END_DECLS

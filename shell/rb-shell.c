@@ -1608,7 +1608,7 @@ construct_plugins (RBShell *shell)
 	rb_debug ("plugin search path: %s / %s", plugindir, plugindatadir);
 	peas_engine_add_search_path (shell->priv->plugin_engine,
 				     plugindir,
-				     /*plugindatadir*/ plugindir);
+				     plugindatadir);
 	g_free (plugindir);
 	g_free (plugindatadir);
 

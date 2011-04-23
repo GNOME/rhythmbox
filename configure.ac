@@ -634,7 +634,9 @@ PLUGIN_LIBTOOL_FLAGS="-module -avoid-version"
 AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
 
 PLUGINDIR='${libdir}/rhythmbox/plugins'
+PLUGINDATADIR='${datadir}/rhythmbox/plugins'
 AC_SUBST(PLUGINDIR)
+AC_SUBST(PLUGINDATADIR)
 
 dnl ================================================================
 dnl Python plugins
@@ -829,25 +831,19 @@ plugins/mtpdevice/Makefile
 plugins/iradio/Makefile
 plugins/lirc/Makefile
 plugins/lyrics/Makefile
-plugins/lyrics/lyrics/Makefile
 plugins/sample-python/Makefile
 plugins/sample-vala/Makefile
 plugins/pythonconsole/Makefile
 plugins/artdisplay/Makefile
-plugins/artdisplay/artdisplay/Makefile
 plugins/magnatune/Makefile
-plugins/magnatune/magnatune/Makefile
 plugins/jamendo/Makefile
-plugins/jamendo/jamendo/Makefile
 plugins/generic-player/Makefile
 plugins/rb/Makefile
 plugins/power-manager/Makefile
 plugins/mmkeys/Makefile
 plugins/context/Makefile
-plugins/context/context/Makefile
 plugins/sendto/Makefile
 plugins/replaygain/Makefile
-plugins/replaygain/replaygain/Makefile
 plugins/mpris/Makefile
 plugins/dbus-media-server/Makefile
 plugins/rbzeitgeist/Makefile

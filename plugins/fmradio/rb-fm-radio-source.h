@@ -29,7 +29,6 @@
 #define RB_FM_RADIO_SOURCE_H
 
 #include "rb-shell.h"
-#include "rb-plugin.h"
 #include "rb-source.h"
 #include "rb-radio-tuner.h"
 
@@ -57,7 +56,6 @@ struct _RBFMRadioSourceClass {
 };
 
 GType     rb_fm_radio_source_get_type	       (void);
-GType     rb_fm_radio_source_register_type     (GTypeModule *plugin);
 
 RBSource *rb_fm_radio_source_new               (RBShell *shell,
 						RBRadioTuner *tuner);
@@ -66,6 +64,7 @@ void	  rb_fm_radio_source_add_station       (RBFMRadioSource *source,
 						const char *frequency,
 						const char *title);
 
+void      _rb_fm_radio_source_register_type    (GTypeModule *module);
 G_END_DECLS
 
 #endif /* RB_FM_RADIO_SOURCE_H */

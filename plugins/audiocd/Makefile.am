@@ -1,4 +1,5 @@
 plugindir = $(PLUGINDIR)/audiocd
+plugindatadir = $(PLUGINDATADIR)/audiocd
 plugin_LTLIBRARIES = libaudiocd.la
 
 libaudiocd_la_SOURCES =					\
@@ -53,19 +54,19 @@ endif
 libaudiocd_la_LIBADD += $(NULL)
 
 
-gtkbuilderdir = $(plugindir)
+gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA = 					\
 	album-info.ui					\
 	multiple-album.ui
 
-uixmldir = $(plugindir)
+uixmldir = $(plugindatadir)
 uixml_DATA = audiocd-ui.xml
 
-plugin_in_files = audiocd.rb-plugin.in
+plugin_in_files = audiocd.plugin.in
 
-%.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+%.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
+plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
 EXTRA_DIST = $(gtkbuilder_DATA) $(uixml_DATA) $(plugin_in_files) sj-metadata-marshal.list
 

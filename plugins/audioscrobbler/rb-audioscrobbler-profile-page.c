@@ -117,8 +117,6 @@ struct _RBAudioscrobblerProfilePagePrivate {
 };
 
 
-static void rb_audioscrobbler_profile_page_class_init (RBAudioscrobblerProfilePageClass *klass);
-static void rb_audioscrobbler_profile_page_init (RBAudioscrobblerProfilePage *page);
 static void rb_audioscrobbler_profile_page_constructed (GObject *object);
 static void rb_audioscrobbler_profile_page_dispose (GObject* object);
 static void rb_audioscrobbler_profile_page_finalize (GObject *object);
@@ -253,10 +251,10 @@ static GtkActionEntry profile_actions [] =
 };
 
 
-G_DEFINE_TYPE (RBAudioscrobblerProfilePage, rb_audioscrobbler_profile_page, RB_TYPE_DISPLAY_PAGE)
+G_DEFINE_DYNAMIC_TYPE (RBAudioscrobblerProfilePage, rb_audioscrobbler_profile_page, RB_TYPE_DISPLAY_PAGE)
 
 RBDisplayPage *
-rb_audioscrobbler_profile_page_new (RBShell *shell, RBPlugin *plugin, RBAudioscrobblerService *service)
+rb_audioscrobbler_profile_page_new (RBShell *shell, GObject *plugin, RBAudioscrobblerService *service)
 {
 	RBDisplayPage *page;
 	RhythmDB *db;
@@ -270,7 +268,7 @@ rb_audioscrobbler_profile_page_new (RBShell *shell, RBPlugin *plugin, RBAudioscr
 	g_object_get (service, "name", &name, NULL);
 
 	icon_name = g_strconcat (rb_audioscrobbler_service_get_name (service), "-icon.png", NULL);
-	icon_path = rb_plugin_find_file (plugin, icon_name);
+	icon_path = rb_find_plugin_data_file (plugin, icon_name);
 	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
 	icon_pixbuf = gdk_pixbuf_new_from_file_at_size (icon_path, icon_size, icon_size, NULL);
 
@@ -320,6 +318,11 @@ rb_audioscrobbler_profile_page_class_init (RBAudioscrobblerProfilePageClass *kla
                                                               G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerProfilePagePrivate));
+}
+
+static void
+rb_audioscrobbler_profile_page_class_finalize (RBAudioscrobblerProfilePageClass *klass)
+{
 }
 
 static void
@@ -528,7 +531,7 @@ init_login_ui (RBAudioscrobblerProfilePage *page)
 static void
 init_profile_ui (RBAudioscrobblerProfilePage *page)
 {
-	RBPlugin *plugin;
+	GObject *plugin;
 	char *builder_file;
 	GtkBuilder *builder;
 	GtkWidget *combo_container;
@@ -536,7 +539,7 @@ init_profile_ui (RBAudioscrobblerProfilePage *page)
 
 	g_object_get (page, "plugin", &plugin, NULL);
 
-	builder_file = rb_plugin_find_file (plugin, "audioscrobbler-profile.ui");
+	builder_file = rb_find_plugin_data_file (plugin, "audioscrobbler-profile.ui");
 	g_assert (builder_file != NULL);
 	builder = rb_builder_load (builder_file, page);
 
@@ -598,13 +601,13 @@ init_actions (RBAudioscrobblerProfilePage *page)
 	char *ui_file;
 	RBShell *shell;
 	RBShellPlayer *player;
-	RBPlugin *plugin;
+	GObject *plugin;
 	GtkUIManager *ui_manager;
 	RhythmDBEntry *entry;
 	char *group_name;
 
 	g_object_get (page, "shell", &shell, "plugin", &plugin, "ui-manager", &ui_manager, NULL);
-	ui_file = rb_plugin_find_file (plugin, "audioscrobbler-profile-ui.xml");
+	ui_file = rb_find_plugin_data_file (plugin, "audioscrobbler-profile-ui.xml");
 	page->priv->ui_merge_id = gtk_ui_manager_add_ui_from_file (ui_manager, ui_file, NULL);
 
 	page->priv->profile_action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (page),
@@ -1950,4 +1953,10 @@ impl_delete_thyself (RBDisplayPage *bpage)
 	gtk_ui_manager_remove_action_group (ui_manager, page->priv->service_action_group);
 
 	g_object_unref (ui_manager);
+}
+
+void
+_rb_audioscrobbler_profile_page_register_type (GTypeModule *module)
+{
+	rb_audioscrobbler_profile_page_register_type (module);
 }

@@ -72,6 +72,7 @@ typedef struct
 } RBAudioscrobblerAccountClass;
 
 GType                           rb_audioscrobbler_account_get_type (void);
+void				_rb_audioscrobbler_account_register_type (GTypeModule *module);
 
 RBAudioscrobblerAccount *       rb_audioscrobbler_account_new (RBAudioscrobblerService *service);
 

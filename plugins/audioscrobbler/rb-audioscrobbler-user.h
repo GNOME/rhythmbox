@@ -88,6 +88,8 @@ typedef struct
 } RBAudioscrobblerUserClass;
 
 GType rb_audioscrobbler_user_get_type (void);
+void _rb_audioscrobbler_user_register_type (GTypeModule *module);
+
 RBAudioscrobblerUser *rb_audioscrobbler_user_new (RBAudioscrobblerService *service);
 
 void rb_audioscrobbler_user_set_authentication_details (RBAudioscrobblerUser *user,

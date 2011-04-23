@@ -1,4 +1,7 @@
-SUBDIRS = 						\
+pluginincludedir = $(includedir)/rhythmbox/plugins
+plugininclude_HEADERS = rb-plugin-macros.h
+
+SUBDIRS =						\
 	audiocd						\
 	dbus-media-server				\
 	generic-player					\
@@ -8,30 +11,31 @@ SUBDIRS = 						\
 	power-manager					\
 	sample
 
-if WITH_LIRC
-SUBDIRS += lirc
-endif
-
 if ENABLE_PYTHON
-SUBDIRS += 						\
-	pythonconsole					\
-	sample-python					\
+SUBDIRS +=						\
 	artdisplay					\
+	context						\
+	im-status					\
+	jamendo						\
 	lyrics						\
 	magnatune					\
-	jamendo						\
-	coherence					\
-	im-status					\
-	context						\
-	sendto						\
-	replaygain					\
+	pythonconsole					\
 	rbzeitgeist					\
+	replaygain					\
+	sample-python					\
+	sendto						\
 	rb
+
+# coherence
 endif
 
 if ENABLE_VALA
 SUBDIRS +=						\
 	sample-vala
+endif
+
+if WITH_LIRC
+SUBDIRS += lirc
 endif
 
 if USE_IPOD

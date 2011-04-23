@@ -47,6 +47,7 @@
 #include "rb-debug.h"
 #include "rb-display-page-tree.h"
 #include "rb-util.h"
+#include "rb-file-helpers.h"
 
 
 /* radio type stuff */
@@ -195,8 +196,6 @@ struct _RBAudioscrobblerRadioSourcePrivate
 
 #define RB_AUDIOSCROBBLER_RADIO_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_RADIO_SOURCE, RBAudioscrobblerRadioSourcePrivate))
 
-static void rb_audioscrobbler_radio_source_class_init (RBAudioscrobblerRadioSourceClass *klass);
-static void rb_audioscrobbler_radio_source_init (RBAudioscrobblerRadioSource *source);
 static void rb_audioscrobbler_radio_source_constructed (GObject *object);
 static void rb_audioscrobbler_radio_source_dispose (GObject *object);
 static void rb_audioscrobbler_radio_source_finalize (GObject *object);
@@ -295,7 +294,7 @@ static GtkActionEntry rb_audioscrobbler_radio_source_actions [] =
 	  G_CALLBACK (delete_station_action_cb) }
 };
 
-G_DEFINE_TYPE (RBAudioscrobblerRadioSource, rb_audioscrobbler_radio_source, RB_TYPE_STREAMING_SOURCE)
+G_DEFINE_DYNAMIC_TYPE (RBAudioscrobblerRadioSource, rb_audioscrobbler_radio_source, RB_TYPE_STREAMING_SOURCE)
 
 RBSource *
 rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfilePage *parent,
@@ -307,7 +306,7 @@ rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfilePage *parent,
 {
 	RBSource *source;
 	RBShell *shell;
-	RBPlugin *plugin;
+	GObject *plugin;
 	RhythmDB *db;
 
 	g_object_get (parent, "shell", &shell, "plugin", &plugin, NULL);
@@ -414,6 +413,11 @@ rb_audioscrobbler_radio_source_class_init (RBAudioscrobblerRadioSourceClass *kla
 }
 
 static void
+rb_audioscrobbler_radio_source_class_finalize (RBAudioscrobblerRadioSourceClass *klass)
+{
+}
+
+static void
 rb_audioscrobbler_radio_source_init (RBAudioscrobblerRadioSource *source)
 {
 	source->priv = RB_AUDIOSCROBBLER_RADIO_SOURCE_GET_PRIVATE (source);
@@ -435,7 +439,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	GtkWidget *error_info_bar_content_area;
 	GtkWidget *password_info_bar_label;
 	GtkWidget *password_info_bar_content_area;
-	RBPlugin *plugin;
+	GObject *plugin;
 	GtkUIManager *ui_manager;
 	char *ui_file;
 
@@ -511,7 +515,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 
 	/* merge ui */
 	g_object_get (source, "plugin", &plugin, "ui-manager", &ui_manager, NULL);
-	ui_file = rb_plugin_find_file (plugin, "audioscrobbler-radio-ui.xml");
+	ui_file = rb_find_plugin_data_file (plugin, "audioscrobbler-radio-ui.xml");
 	source->priv->ui_merge_id = gtk_ui_manager_add_ui_from_file (ui_manager, ui_file, NULL);
 
 	/* actions */
@@ -1545,4 +1549,10 @@ impl_delete_thyself (RBDisplayPage *page)
 	g_object_unref (shell);
 	g_object_unref (ui_manager);
 	g_object_unref (db);
+}
+
+void
+_rb_audioscrobbler_radio_source_register_type (GTypeModule *module)
+{
+	rb_audioscrobbler_radio_source_register_type (module);
 }

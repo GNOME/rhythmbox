@@ -112,7 +112,7 @@ enum
 
 static guint rb_audioscrobbler_account_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBAudioscrobblerAccount, rb_audioscrobbler_account, G_TYPE_OBJECT)
+G_DEFINE_DYNAMIC_TYPE (RBAudioscrobblerAccount, rb_audioscrobbler_account, G_TYPE_OBJECT)
 
 RBAudioscrobblerAccount *
 rb_audioscrobbler_account_new (RBAudioscrobblerService *service)
@@ -186,6 +186,11 @@ rb_audioscrobbler_account_class_init (RBAudioscrobblerAccountClass *klass)
 			      RB_TYPE_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS);
 
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerAccountPrivate));
+}
+
+static void
+rb_audioscrobbler_account_class_finalize (RBAudioscrobblerAccountClass *klass)
+{
 }
 
 static void
@@ -728,4 +733,10 @@ rb_audioscrobbler_account_login_status_get_type (void)
 	}
 
 	return etype;
+}
+
+void
+_rb_audioscrobbler_account_register_type (GTypeModule *module)
+{
+	rb_audioscrobbler_account_register_type (module);
 }

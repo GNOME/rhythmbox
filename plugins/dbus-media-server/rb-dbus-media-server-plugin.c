@@ -38,7 +38,7 @@
 
 #include <lib/rb-util.h>
 #include <lib/rb-debug.h>
-#include <shell/rb-plugin.h>
+#include <plugins/rb-plugin-macros.h>
 #include <shell/rb-shell.h>
 #include <shell/rb-shell-player.h>
 #include <sources/rb-display-page-model.h>
@@ -66,7 +66,7 @@
 
 typedef struct
 {
-	RBPlugin parent;
+	PeasExtensionBase parent;
 
 	GDBusNodeInfo *node_info;
 	guint name_own_id;
@@ -85,14 +85,13 @@ typedef struct
 	GList *categories;
 
 	GSettings *settings;
-	RBShell *shell;
 	RhythmDB *db;
 	RBDisplayPageModel *display_page_model;
 } RBMediaServer2Plugin;
 
 typedef struct
 {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 } RBMediaServer2PluginClass;
 
 typedef struct
@@ -120,17 +119,14 @@ typedef struct
 	RBMediaServer2Plugin *plugin;
 } SourceRegistrationData;
 
+RB_DEFINE_PLUGIN(RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN, RBMediaServer2Plugin, rb_dbus_media_server_plugin,)
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
-GType	rb_dbus_media_server_plugin_get_type		(void) G_GNUC_CONST;
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
 static void unregister_source_container (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data, gboolean deactivating);
 static void emit_source_property_updates (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data);
 static void emit_category_container_property_updates (RBMediaServer2Plugin *plugin, CategoryRegistrationData *category_data);
 static void emit_root_property_updates (RBMediaServer2Plugin *plugin);
-
-RB_PLUGIN_REGISTER(RBMediaServer2Plugin, rb_dbus_media_server_plugin)
-
 
 static void
 rb_dbus_media_server_plugin_init (RBMediaServer2Plugin *plugin)
@@ -1411,22 +1407,22 @@ name_lost_cb (GDBusConnection *connection, const char *name, RBMediaServer2Plugi
 }
 
 static void
-impl_activate (RBPlugin *bplugin,
-	       RBShell *shell)
+impl_activate (PeasActivatable *bplugin)
 {
 	RBMediaServer2Plugin *plugin;
 	GDBusInterfaceInfo *container_iface;
 	RBSource *source;
 	GError *error = NULL;
+	RBShell *shell;
 
 	rb_debug ("activating DBus MediaServer2 plugin");
 
 	plugin = RB_DBUS_MEDIA_SERVER_PLUGIN (bplugin);
+	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell,
 		      "db", &plugin->db,
 		      "display-page-model", &plugin->display_page_model,
 		      NULL);
-	plugin->shell = g_object_ref (shell);
 
 	plugin->settings = g_settings_new ("org.gnome.rhythmbox.sharing");
 
@@ -1434,6 +1430,7 @@ impl_activate (RBPlugin *bplugin,
 	if (error != NULL) {
 		g_warning ("Unable to parse MediaServer2 spec: %s", error->message);
 		g_clear_error (&error);
+		g_object_unref (shell);
 		return;
 	}
 
@@ -1441,6 +1438,7 @@ impl_activate (RBPlugin *bplugin,
 	if (error != NULL) {
 		g_warning ("Unable to connect to D-Bus: %s", error->message);
 		g_clear_error (&error);
+		g_object_unref (shell);
 		return;
 	}
 
@@ -1474,6 +1472,7 @@ impl_activate (RBPlugin *bplugin,
 	if (error != NULL) {
 		g_warning ("Unable to register MediaServer2 entry subtree: %s", error->message);
 		g_clear_error (&error);
+		g_object_unref (shell);
 		return;
 	}
 
@@ -1485,11 +1484,11 @@ impl_activate (RBPlugin *bplugin,
 					      (GBusNameLostCallback) name_lost_cb,
 					      g_object_ref (plugin),
 					      g_object_unref);
+	g_object_unref (shell);
 }
 
 static void
-impl_deactivate	(RBPlugin *bplugin,
-		 RBShell *shell)
+impl_deactivate	(PeasActivatable *bplugin)
 {
 	RBMediaServer2Plugin *plugin;
 	GList *l;
@@ -1534,10 +1533,6 @@ impl_deactivate	(RBPlugin *bplugin,
 		plugin->display_page_model = NULL;
 	}
 
-	if (plugin->shell != NULL) {
-		g_object_unref (plugin->shell);
-		plugin->shell = NULL;
-	}
 	if (plugin->db != NULL) {
 		g_object_unref (plugin->db);
 		plugin->db = NULL;
@@ -1555,11 +1550,11 @@ impl_deactivate	(RBPlugin *bplugin,
 }
 
 
-static void
-rb_dbus_media_server_plugin_class_init (RBMediaServer2PluginClass *klass)
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
 {
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
+	rb_dbus_media_server_plugin_register_type (G_TYPE_MODULE (module));
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN);
 }

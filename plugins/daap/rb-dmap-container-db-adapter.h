@@ -59,6 +59,8 @@ RBDMAPContainerDbAdapter *rb_dmap_container_db_adapter_new (
 				RBPlaylistManager *playlist_manager);
 GType rb_dmap_container_db_adapter_get_type (void);
 
+void _rb_dmap_container_db_adapter_register_type (GTypeModule *module);
+
 #endif /* _RB_DMAP_CONTAINER_DB_ADAPTER */
 
 G_END_DECLS

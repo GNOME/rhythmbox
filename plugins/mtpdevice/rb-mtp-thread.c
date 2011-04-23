@@ -38,7 +38,7 @@
 #include "rb-dialog.h"
 #include "rb-debug.h"
 
-G_DEFINE_TYPE(RBMtpThread, rb_mtp_thread, G_TYPE_OBJECT)
+G_DEFINE_DYNAMIC_TYPE(RBMtpThread, rb_mtp_thread, G_TYPE_OBJECT)
 
 
 typedef struct {
@@ -912,6 +912,11 @@ rb_mtp_thread_class_init (RBMtpThreadClass *klass)
 	object_class->finalize = impl_finalize;
 }
 
+static void
+rb_mtp_thread_class_finalize (RBMtpThreadClass *klass)
+{
+}
+
 RBMtpThread *
 rb_mtp_thread_new (void)
 {
@@ -949,3 +954,8 @@ rb_mtp_thread_error_get_type (void)
 	return etype;
 }
 
+void
+_rb_mtp_thread_register_type (GTypeModule *module)
+{
+	rb_mtp_thread_register_type (module);
+}

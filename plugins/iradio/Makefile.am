@@ -1,6 +1,7 @@
 NULL =
 
 plugindir = $(PLUGINDIR)/iradio
+plugindatadir = $(PLUGINDATADIR)/iradio
 plugin_LTLIBRARIES = libiradio.la
 
 libiradio_la_SOURCES = 					\
@@ -38,31 +39,33 @@ INCLUDES = 						\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
-gtkbuilderdir = $(plugindir)
+gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA = \
 	station-properties.ui
 
-uixmldir = $(plugindir)
+uixmldir = $(plugindatadir)
 uixml_DATA = iradio-ui.xml
 
-plugin_in_files = iradio.rb-plugin.in
+xspfdir = $(plugindatadir)
+xspf_DATA = iradio-initial.xspf
 
-%.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+plugin_in_files = iradio.plugin.in
+
+%.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
 BUILT_SOURCES =							\
-	$(plugin_in_files:.rb-plugin.in=.rb-plugin) 	\
+	$(plugin_in_files:.plugin.in=.plugin) 	\
 	$(NULL)
 
 plugin_DATA = 			\
 	$(BUILT_SOURCES)	\
-	iradio-initial.xspf	\
 	$(NULL)
 
 EXTRA_DIST = 			\
 	$(gtkbuilder_DATA)	\
 	$(uixml_DATA)		\
 	$(plugin_in_files)	\
-	iradio-initial.xspf	\
+	$(xspf_DATA)		\
 	$(NULL)
 
 CLEANFILES = 			\

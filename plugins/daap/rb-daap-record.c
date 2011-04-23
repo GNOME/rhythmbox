@@ -344,6 +344,11 @@ rb_daap_record_class_init (RBDAAPRecordClass *klass)
 }
 
 static void
+rb_daap_record_class_finalize (RBDAAPRecordClass *klass)
+{
+}
+
+static void
 rb_daap_record_daap_iface_init (gpointer iface, gpointer data)
 {
 	DAAPRecordIface *daap_record = iface;
@@ -362,11 +367,15 @@ rb_daap_record_dmap_iface_init (gpointer iface, gpointer data)
 	g_assert (G_TYPE_FROM_INTERFACE (dmap_record) == DMAP_TYPE_RECORD);
 }
 
-G_DEFINE_TYPE_WITH_CODE (RBDAAPRecord, rb_daap_record, G_TYPE_OBJECT,
-			 G_IMPLEMENT_INTERFACE (DAAP_TYPE_RECORD, rb_daap_record_daap_iface_init)
-			 G_IMPLEMENT_INTERFACE (DMAP_TYPE_RECORD, rb_daap_record_dmap_iface_init))
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDAAPRecord,
+				rb_daap_record,
+				G_TYPE_OBJECT,
+				0,
+				G_IMPLEMENT_INTERFACE_DYNAMIC (DAAP_TYPE_RECORD, rb_daap_record_daap_iface_init)
+				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_RECORD, rb_daap_record_dmap_iface_init))
 
-static void rb_daap_record_finalize (GObject *object)
+static void
+rb_daap_record_finalize (GObject *object)
 {
 	RBDAAPRecord *record = RB_DAAP_RECORD (object);
 
@@ -381,7 +390,8 @@ static void rb_daap_record_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_daap_record_parent_class)->finalize (object);
 }
 
-RBDAAPRecord *rb_daap_record_new (RhythmDBEntry *entry)
+RBDAAPRecord *
+rb_daap_record_new (RhythmDBEntry *entry)
 {
 	RBDAAPRecord *record = NULL;
 	record = RB_DAAP_RECORD (g_object_new (RB_TYPE_DAAP_RECORD, NULL));
@@ -456,4 +466,10 @@ RBDAAPRecord *rb_daap_record_new (RhythmDBEntry *entry)
 	}
 
 	return record;
+}
+
+void
+_rb_daap_record_register_type (GTypeModule *module)
+{
+	rb_daap_record_register_type (module);
 }

@@ -1,6 +1,7 @@
 NULL =
 
 plugindir = $(PLUGINDIR)/daap
+plugindatadir = $(PLUGINDATADIR)/daap
 plugin_LTLIBRARIES = libdaap.la
 
 libdaap_la_SOURCES = \
@@ -69,28 +70,29 @@ libdaap_la_LIBADD += $(GNOME_KEYRING_LIBS)
 INCLUDES += $(GNOME_KEYRING_CFLAGS)
 endif
 
-gtkbuilderdir = $(plugindir)
+gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA = daap-prefs.ui
 
-uixmldir = $(plugindir)
+uixmldir = $(plugindatadir)
 uixml_DATA = daap-ui.xml
 
-plugin_in_files = daap.rb-plugin.in
+plugin_in_files = daap.plugin.in
 
-%.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+%.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-BUILT_SOURCES =							\
-	$(plugin_in_files:.rb-plugin.in=.rb-plugin) 		\
+plugin_files = $(plugin_in_files:.plugin.in=.plugin)
+
+BUILT_SOURCES = $(plugin_files)
+
+plugin_DATA = $(plugin_files)
+
+plugindata_DATA = 					\
+	$(top_srcdir)/plugins/daap/remote-icon.png	\
 	$(NULL)
 
-plugin_DATA = 			\
-	$(BUILT_SOURCES)	\
-	$(top_srcdir)/plugins/daap/remote-icon.png		\
-	$(NULL)
-
-EXTRA_DIST = 			\
-	$(gtkbuilder_DATA)	\
-	$(top_srcdir)/plugins/daap/remote-icon.png		\
+EXTRA_DIST = 						\
+	$(gtkbuilder_DATA)				\
+	$(top_srcdir)/plugins/daap/remote-icon.png	\
 	$(uixml_DATA)		\
 	$(plugin_in_files)	\
 	$(NULL)

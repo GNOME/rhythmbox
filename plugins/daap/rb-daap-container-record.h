@@ -70,6 +70,8 @@ DMAPDb *rb_daap_container_record_get_entries     (DMAPContainerRecord *record);
 RBDAAPContainerRecord *rb_daap_container_record_new (char *name,
 						     RBPlaylistSource *model);
 
+void          _rb_daap_container_record_register_type   (GTypeModule *module);
+
 #endif /* __RB_DAAP_CONTAINER_RECORD */
 
 G_END_DECLS

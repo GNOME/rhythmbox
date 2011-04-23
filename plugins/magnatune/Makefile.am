@@ -1,15 +1,19 @@
 # Magnatune Store Python Plugin
 
-SUBDIRS = magnatune
-
 plugindir = $(PLUGINDIR)/magnatune
+plugindatadir = $(PLUGINDATADIR)/magnatune
+plugin_PYTHON =                       \
+       MagnatuneSource.py             \
+       BuyAlbumHandler.py             \
+       TrackListHandler.py            \
+       magnatune.py
 
-%.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
-plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
+%.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
+plugin_in_files = magnatune.plugin.in
 
-plugin_in_files = magnatune.rb-plugin.in
-
+gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA =	\
 		magnatune-loading.ui			\
 		magnatune-prefs.ui			\
@@ -22,8 +26,6 @@ context = places
 icondir = $(themedir)/$(size)/$(context)
 icon_DATA = icons/hicolor/$(size)/$(context)/magnatune.png
 
-gtkbuilderdir = $(plugindir)
 EXTRA_DIST = $(plugin_in_files) $(gtkbuilder_DATA) $(icon_DATA)
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)
-

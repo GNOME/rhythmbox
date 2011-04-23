@@ -456,7 +456,7 @@ rb_mtp_sink_class_init (RBMTPSinkClass *klass)
 					 g_param_spec_object ("device-thread",
 							      "device-thread",
 							      "device handling thread",
-							      RB_TYPE_MTP_THREAD,
+							      G_TYPE_OBJECT,
 							      G_PARAM_READWRITE));
 }
 

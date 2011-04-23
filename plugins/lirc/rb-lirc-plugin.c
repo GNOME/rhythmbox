@@ -39,11 +39,12 @@
 #include <gmodule.h>
 #include <lirc/lirc_client.h>
 
-#include "rb-plugin.h"
+#include "rb-plugin-macros.h"
 #include "rb-shell.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-shell-player.h"
+#include "rb-file-helpers.h"
 
 #define RB_TYPE_LIRC_PLUGIN		(rb_lirc_plugin_get_type ())
 #define RB_LIRC_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_LIRC_PLUGIN, RBLircPlugin))
@@ -69,8 +70,7 @@
 
 typedef struct
 {
-	RBPlugin parent;
-	RBShell *shell;
+	PeasExtensionBase parent;
 	RBShellPlayer *shell_player;
 	struct lirc_config *lirc_config;
 	GIOChannel *lirc_channel;
@@ -78,25 +78,14 @@ typedef struct
 
 typedef struct
 {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 } RBLircPluginClass;
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
-GType	rb_lirc_plugin_get_type		(void) G_GNUC_CONST;
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
 static void rb_lirc_plugin_init (RBLircPlugin *plugin);
-static void impl_activate (RBPlugin *plugin, RBShell *shell);
-static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
-RB_PLUGIN_REGISTER(RBLircPlugin, rb_lirc_plugin)
-
-static void
-rb_lirc_plugin_class_init (RBLircPluginClass *klass)
-{
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
-}
+RB_DEFINE_PLUGIN (RB_TYPE_LIRC_PLUGIN, RBLircPlugin, rb_lirc_plugin,)
 
 static void
 rb_lirc_plugin_init (RBLircPlugin *plugin)
@@ -176,7 +165,11 @@ rb_lirc_plugin_read_code (GIOChannel *source,
 				rb_shell_player_set_mute (plugin->shell_player, !mute, NULL);
 			}
 		} else if (strcmp (str,RB_IR_COMMAND_QUIT) == 0) {
-			rb_shell_quit (plugin->shell, NULL);
+			RBShell *shell;
+
+			g_object_get (plugin, "object", &shell, NULL);
+			rb_shell_quit (shell, NULL);
+			g_object_unref (shell);
 			/* the plugin will have been deactivated, so we can't continue the loop */
 			break;
 		}
@@ -188,31 +181,33 @@ rb_lirc_plugin_read_code (GIOChannel *source,
 }
 
 static void
-impl_activate (RBPlugin *rbplugin,
-	       RBShell *shell)
+impl_activate (PeasActivatable *bplugin)
 {
 	int fd;
 	char *path;
-	RBLircPlugin *plugin = RB_LIRC_PLUGIN (rbplugin);
+	RBLircPlugin *plugin = RB_LIRC_PLUGIN (bplugin);
+	RBShell *shell;
 
-	plugin->shell = g_object_ref (shell);
+	g_object_get (plugin, "object", &shell, NULL);
 
-	g_object_get (G_OBJECT (shell), "shell-player", &plugin->shell_player, NULL);
+	g_object_get (shell, "shell-player", &plugin->shell_player, NULL);
 
 	rb_debug ("Activating lirc plugin");
 
 	fd = lirc_init ("Rhythmbox", 1);
 	if (fd < 0) {
 		rb_debug ("Couldn't initialize lirc");
+		g_object_unref (shell);
 		return;
 	}
 
 	/* Load the default Rhythmbox setup */
-	path = rb_plugin_find_file (rbplugin, "rhythmbox_lirc_default");
+	path = rb_find_plugin_data_file (G_OBJECT (plugin), "rhythmbox_lirc_default");
 	if (path == NULL || lirc_readconfig (path, &plugin->lirc_config, NULL) == -1) {
 		g_free (path);
 		close (fd);
 		rb_debug ("Couldn't read lirc configuration");
+		g_object_unref (shell);
 		return;
 	}
 	g_free (path);
@@ -224,13 +219,14 @@ impl_activate (RBPlugin *rbplugin,
 	g_io_channel_set_buffered (plugin->lirc_channel, FALSE);
 	g_io_add_watch (plugin->lirc_channel, G_IO_IN | G_IO_ERR | G_IO_HUP,
 			(GIOFunc) rb_lirc_plugin_read_code, plugin);
+
+	g_object_unref (shell);
 }
 
 static void
-impl_deactivate	(RBPlugin *rbplugin,
-		 RBShell *shell)
+impl_deactivate	(PeasActivatable *bplugin)
 {
-	RBLircPlugin *plugin = RB_LIRC_PLUGIN (rbplugin);
+	RBLircPlugin *plugin = RB_LIRC_PLUGIN (bplugin);
 	GError *error = NULL;
 
 	rb_debug ("Deactivating lirc plugin");
@@ -256,10 +252,13 @@ impl_deactivate	(RBPlugin *rbplugin,
 		g_object_unref (G_OBJECT (plugin->shell_player));
 		plugin->shell_player = NULL;
 	}
-
-	if (plugin->shell) {
-		g_object_unref (G_OBJECT (plugin->shell));
-		plugin->shell = NULL;
-	}
 }
 
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
+{
+	rb_lirc_plugin_register_type (G_TYPE_MODULE (module));
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_LIRC_PLUGIN);
+}

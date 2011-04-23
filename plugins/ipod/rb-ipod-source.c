@@ -41,7 +41,6 @@
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
 #include "rb-builder-helpers.h"
-#include "rb-plugin.h"
 #include "rb-removable-media-manager.h"
 #include "rb-ipod-static-playlist-source.h"
 #include "rb-util.h"
@@ -56,7 +55,6 @@
 #include "rb-stock-icons.h"
 
 static void rb_ipod_source_constructed (GObject *object);
-static void rb_ipod_source_class_init (RBiPodSourceClass *klass);
 static void rb_ipod_source_dispose (GObject *object);
 
 static void impl_delete (RBSource *asource);
@@ -145,9 +143,7 @@ enum
 	PROP_DEVICE_SERIAL
 };
 
-RB_PLUGIN_DEFINE_TYPE(RBiPodSource,
-		      rb_ipod_source,
-		      RB_TYPE_MEDIA_PLAYER_SOURCE)
+G_DEFINE_DYNAMIC_TYPE(RBiPodSource, rb_ipod_source, RB_TYPE_MEDIA_PLAYER_SOURCE)
 
 #define IPOD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IPOD_SOURCE, RBiPodSourcePrivate))
 
@@ -201,6 +197,11 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	g_object_class_override_property (object_class, PROP_DEVICE_SERIAL, "serial");
 
 	g_type_class_add_private (klass, sizeof (RBiPodSourcePrivate));
+}
+
+static void
+rb_ipod_source_class_finalize (RBiPodSourceClass *klass)
+{
 }
 
 static void
@@ -346,7 +347,7 @@ rb_ipod_source_dispose (GObject *object)
 }
 
 RBMediaPlayerSource *
-rb_ipod_source_new (RBPlugin *plugin,
+rb_ipod_source_new (GObject *plugin,
 		    RBShell *shell,
 		    GMount *mount,
 		    MPIDDevice *device_info)
@@ -1993,7 +1994,7 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	const gchar *mp;
 	char *builder_file;
 	Itdb_Device *ipod_dev;
-	RBPlugin *plugin;
+	GObject *plugin;
 	GList *output_formats;
 	GList *t;
 	GString *str;
@@ -2006,7 +2007,7 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	}
 
 	g_object_get (source, "plugin", &plugin, NULL);
-	builder_file = rb_plugin_find_file (plugin, "ipod-info.ui");
+	builder_file = rb_find_plugin_data_file (plugin, "ipod-info.ui");
 	g_object_unref (plugin);
 
 	if (builder_file == NULL) {
@@ -2161,4 +2162,10 @@ impl_get_entries (RBMediaPlayerSource *source, const char *category, GHashTable 
 			_rb_media_player_source_add_to_map (map, entry);
 		}
 	}
+}
+
+void
+_rb_ipod_source_register_type (GTypeModule *module)
+{
+	rb_ipod_source_register_type (module);
 }

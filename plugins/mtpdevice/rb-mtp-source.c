@@ -40,7 +40,6 @@
 #include "rhythmdb.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
-#include "rb-plugin.h"
 #include "rb-builder-helpers.h"
 #include "rb-removable-media-manager.h"
 #include "rb-static-playlist-source.h"
@@ -157,9 +156,7 @@ typedef struct
 
 } RBMtpSourcePrivate;
 
-RB_PLUGIN_DEFINE_TYPE(RBMtpSource,
-		       rb_mtp_source,
-		       RB_TYPE_MEDIA_PLAYER_SOURCE)
+G_DEFINE_DYNAMIC_TYPE(RBMtpSource, rb_mtp_source, RB_TYPE_MEDIA_PLAYER_SOURCE)
 
 #define MTP_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_MTP_SOURCE, RBMtpSourcePrivate))
 
@@ -240,6 +237,11 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	g_object_class_override_property (object_class, PROP_DEVICE_SERIAL, "serial");
 
 	g_type_class_add_private (klass, sizeof (RBMtpSourcePrivate));
+}
+
+static void
+rb_mtp_source_class_finalize (RBMtpSourceClass *klass)
+{
 }
 
 static void
@@ -538,7 +540,7 @@ rb_mtp_source_finalize (GObject *object)
 
 RBSource *
 rb_mtp_source_new (RBShell *shell,
-		   RBPlugin *plugin,
+		   GObject *plugin,
 #if defined(HAVE_GUDEV)
 		   GUdevDevice *udev_device,
 #else
@@ -1535,14 +1537,14 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	int num_podcasts;
 	char *device_name;
 	char *builder_file;
-	RBPlugin *plugin;
+	GObject *plugin;
 	char *text;
 	GList *output_formats;
 	GList *t;
 	GString *str;
 
 	g_object_get (source, "plugin", &plugin, NULL);
-	builder_file = rb_plugin_find_file (plugin, "mtp-info.ui");
+	builder_file = rb_find_plugin_data_file (G_OBJECT (plugin), "mtp-info.ui");
 	g_object_unref (plugin);
 
 	if (builder_file == NULL) {
@@ -1733,3 +1735,9 @@ find_mount_for_device (GUdevDevice *device)
 }
 
 #endif
+
+void
+_rb_mtp_source_register_type (GTypeModule *module)
+{
+	rb_mtp_source_register_type (module);
+}

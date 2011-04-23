@@ -48,11 +48,12 @@
 #include <dbus/dbus-glib-lowlevel.h>
 #endif
 
+#include "rb-plugin-macros.h"
 #include "rb-source.h"
 #include "rb-display-page-group.h"
 #include "rb-display-page-tree.h"
 #include "rb-mtp-source.h"
-#include "rb-plugin.h"
+#include "rb-mtp-thread.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
 #include "rb-util.h"
@@ -71,9 +72,8 @@
 
 typedef struct
 {
-	RBPlugin parent;
+	PeasExtensionBase parent;
 
-	RBShell *shell;
 	GtkActionGroup *action_group;
 	guint ui_merge_id;
 
@@ -89,17 +89,13 @@ typedef struct
 
 typedef struct
 {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 } RBMtpPluginClass;
 
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
-GType rb_mtp_plugin_get_type (void) G_GNUC_CONST;
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
 static void rb_mtp_plugin_init (RBMtpPlugin *plugin);
-static void rb_mtp_plugin_finalize (GObject *object);
-static void impl_activate (RBPlugin *plugin, RBShell *shell);
-static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
 #if defined(HAVE_GUDEV)
 static RBSource* create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device, RBMtpPlugin *plugin);
@@ -116,7 +112,7 @@ static void rb_mtp_plugin_properties (GtkAction *action, RBSource *source);
 GType rb_mtp_src_get_type (void);
 GType rb_mtp_sink_get_type (void);
 
-RB_PLUGIN_REGISTER(RBMtpPlugin, rb_mtp_plugin)
+RB_DEFINE_PLUGIN(RB_TYPE_MTP_PLUGIN, RBMtpPlugin, rb_mtp_plugin,)
 
 static GtkActionEntry rb_mtp_plugin_actions [] =
 {
@@ -129,25 +125,6 @@ static GtkActionEntry rb_mtp_plugin_actions [] =
 };
 
 static void
-rb_mtp_plugin_class_init (RBMtpPluginClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-
-	object_class->finalize = rb_mtp_plugin_finalize;
-
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
-
-	/* register types used by the plugin */
-	RB_PLUGIN_REGISTER_TYPE (rb_mtp_source);
-
-	/* ensure the gstreamer elements get linked in */
-	rb_mtp_src_get_type ();
-	rb_mtp_sink_get_type ();
-}
-
-static void
 rb_mtp_plugin_init (RBMtpPlugin *plugin)
 {
 	rb_debug ("RBMtpPlugin initialising");
@@ -155,20 +132,13 @@ rb_mtp_plugin_init (RBMtpPlugin *plugin)
 }
 
 static void
-rb_mtp_plugin_finalize (GObject *object)
-{
-	rb_debug ("RBMtpPlugin finalising");
-
-	G_OBJECT_CLASS (rb_mtp_plugin_parent_class)->finalize (object);
-}
-
-static void
-impl_activate (RBPlugin *bplugin, RBShell *shell)
+impl_activate (PeasActivatable *bplugin)
 {
 	RBMtpPlugin *plugin = RB_MTP_PLUGIN (bplugin);
 	GtkUIManager *uimanager = NULL;
 	RBRemovableMediaManager *rmm;
 	char *file = NULL;
+	RBShell *shell;
 #if defined(HAVE_GUDEV)
 	gboolean rmm_scanned = FALSE;
 #else
@@ -176,7 +146,7 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 	LIBMTP_raw_device_t *mtp_devices;
 #endif
 
-	plugin->shell = shell;
+	g_object_get (plugin, "object", &shell, NULL);
 
 	g_object_get (shell,
 		     "ui-manager", &uimanager,
@@ -189,13 +159,14 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 	gtk_action_group_set_translation_domain (plugin->action_group,
 						 GETTEXT_PACKAGE);
 	_rb_action_group_add_display_page_actions (plugin->action_group,
-						   G_OBJECT (plugin->shell),
+						   G_OBJECT (shell),
 						   rb_mtp_plugin_actions,
 						   G_N_ELEMENTS (rb_mtp_plugin_actions));
 	gtk_ui_manager_insert_action_group (uimanager, plugin->action_group, 0);
-	file = rb_plugin_find_file (bplugin, "mtp-ui.xml");
+	file = rb_find_plugin_data_file (G_OBJECT (bplugin), "mtp-ui.xml");
 	plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager, file, NULL);
 	g_object_unref (uimanager);
+	g_object_unref (shell);
 
 	/* device detection */
 #if defined(HAVE_GUDEV)
@@ -243,12 +214,14 @@ impl_activate (RBPlugin *bplugin, RBShell *shell)
 }
 
 static void
-impl_deactivate (RBPlugin *bplugin, RBShell *shell)
+impl_deactivate (PeasActivatable *bplugin)
 {
 	RBMtpPlugin *plugin = RB_MTP_PLUGIN (bplugin);
 	GtkUIManager *uimanager = NULL;
 	RBRemovableMediaManager *rmm = NULL;
+	RBShell *shell;
 
+	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell,
 		      "ui-manager", &uimanager,
 		      "removable-media-manager", &rmm,
@@ -283,6 +256,7 @@ impl_deactivate (RBPlugin *bplugin, RBShell *shell)
 
 	g_object_unref (uimanager);
 	g_object_unref (rmm);
+	g_object_unref (shell);
 }
 
 static void
@@ -371,6 +345,7 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device_obj, RBMt
 		    device_list[i].product_id == model) {
 			LIBMTP_raw_device_t rawdevice;
 			RBSource *source;
+			RBShell *shell;
 
 			rb_debug ("found libmtp device list entry (model: %s, vendor: %s)",
 				  device_list[i].vendor, device_list[i].product);
@@ -379,12 +354,14 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device_obj, RBMt
 			rawdevice.bus_location = busnum;
 			rawdevice.devnum = devnum;
 
-			source = rb_mtp_source_new (plugin->shell, RB_PLUGIN (plugin), device, &rawdevice);
+			g_object_get (plugin, "object", &shell, NULL);
+			source = rb_mtp_source_new (shell, G_OBJECT (plugin), device, &rawdevice);
 
 			plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
 			g_signal_connect_object (G_OBJECT (source),
 						"deleted", G_CALLBACK (source_deleted_cb),
 						plugin, 0);
+			g_object_unref (shell);
 			return source;
 		}
 	}
@@ -425,15 +402,18 @@ rb_mtp_plugin_maybe_add_source (RBMtpPlugin *plugin, const char *udi, LIBMTP_raw
 		rb_debug ("detected MTP device: device number %d (bus location %u)", raw_devices[i].devnum, raw_devices[i].bus_location);
 		if (raw_devices[i].devnum == device_num) {
 			RBSource *source;
+			RBShell *shell;
 
 			rb_debug ("device matched, creating a source");
-			source = RB_SOURCE (rb_mtp_source_new (plugin->shell, RB_PLUGIN (plugin), udi, &raw_devices[i]));
+			g_object_get (plugin, "object", &shell, NULL);
+			source = RB_SOURCE (rb_mtp_source_new (shell, G_OBJECT (plugin), udi, &raw_devices[i]));
 
-			rb_shell_append_display_page (plugin->shell, RB_DISPLAY_PAGE (source), RB_DISPLAY_PAGE_GROUP_DEVICES);
+			rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (source), RB_DISPLAY_PAGE_GROUP_DEVICES);
 			plugin->mtp_sources = g_list_prepend (plugin->mtp_sources, source);
 			g_signal_connect_object (source,
 						"deleted", G_CALLBACK (source_deleted_cb),
 						plugin, 0);
+			g_object_unref (shell);
 		}
 	}
 }
@@ -513,3 +493,19 @@ rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin)
 }
 
 #endif
+
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
+{
+	rb_mtp_plugin_register_type (G_TYPE_MODULE (module));
+	_rb_mtp_source_register_type (G_TYPE_MODULE (module));
+	_rb_mtp_thread_register_type (G_TYPE_MODULE (module));
+
+	/* ensure the gstreamer elements get linked in */
+	rb_mtp_src_get_type ();
+	rb_mtp_sink_get_type ();
+
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_MTP_PLUGIN);
+}

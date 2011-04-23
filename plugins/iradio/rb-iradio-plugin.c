@@ -38,11 +38,12 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "rb-plugin.h"
+#include "rb-plugin-macros.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
 #include "rb-dialog.h"
 #include "rb-iradio-source.h"
+#include "rb-iradio-source-search.h"
 #include "rb-file-helpers.h"
 #include "rb-display-page-group.h"
 
@@ -56,25 +57,21 @@
 
 typedef struct
 {
-	RBPlugin parent;
+	PeasExtensionBase parent;
+
 	RBSource *source;
 	guint ui_merge_id;
 } RBIRadioPlugin;
 
 typedef struct
 {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 } RBIRadioPluginClass;
 
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
-GType	rb_iradio_plugin_get_type		(void) G_GNUC_CONST;
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
-
-static void impl_activate (RBPlugin *plugin, RBShell *shell);
-static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
-
-RB_PLUGIN_REGISTER(RBIRadioPlugin, rb_iradio_plugin)
+RB_DEFINE_PLUGIN(RB_TYPE_IRADIO_PLUGIN, RBIRadioPlugin, rb_iradio_plugin,)
 
 static void
 rb_iradio_plugin_init (RBIRadioPlugin *plugin)
@@ -83,31 +80,19 @@ rb_iradio_plugin_init (RBIRadioPlugin *plugin)
 }
 
 static void
-rb_iradio_plugin_finalize (GObject *object)
-{
-/*
-	RBIRadioPlugin *plugin = RB_IRADIO_PLUGIN (object);
-*/
-	rb_debug ("RBIRadioPlugin finalising");
-
-	G_OBJECT_CLASS (rb_iradio_plugin_parent_class)->finalize (object);
-}
-
-
-
-static void
-impl_activate (RBPlugin *plugin,
-	       RBShell *shell)
+impl_activate (PeasActivatable *plugin)
 {
 	RBIRadioPlugin *pi = RB_IRADIO_PLUGIN (plugin);
 	GtkUIManager *uimanager;
 	char *filename;
+	RBShell *shell;
 
-	pi->source = rb_iradio_source_new (shell, plugin);
+	g_object_get (pi, "object", &shell, NULL);
+	pi->source = rb_iradio_source_new (shell, G_OBJECT (plugin));
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (pi->source), RB_DISPLAY_PAGE_GROUP_LIBRARY);
 
 	g_object_get (shell, "ui-manager", &uimanager, NULL);
-	filename = rb_plugin_find_file (plugin, "iradio-ui.xml");
+	filename = rb_find_plugin_data_file (G_OBJECT (plugin), "iradio-ui.xml");
 	if (filename != NULL) {
 		pi->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
                                                              filename,
@@ -118,14 +103,17 @@ impl_activate (RBPlugin *plugin,
 
 	g_free (filename);
 	g_object_unref (uimanager);
+	g_object_unref (shell);
 }
 
 static void
-impl_deactivate	(RBPlugin *plugin,
-		 RBShell *shell)
+impl_deactivate	(PeasActivatable *plugin)
 {
 	RBIRadioPlugin *pi = RB_IRADIO_PLUGIN (plugin);
 	GtkUIManager *uimanager;
+	RBShell *shell;
+
+	g_object_get (pi, "object", &shell, NULL);
 
 	g_object_get (shell, "ui-manager", &uimanager, NULL);
 	gtk_ui_manager_remove_ui (uimanager, pi->ui_merge_id);
@@ -133,18 +121,17 @@ impl_deactivate	(RBPlugin *plugin,
 
 	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (pi->source));
 	pi->source = NULL;
+
+	g_object_unref (shell);
 }
 
-
-static void
-rb_iradio_plugin_class_init (RBIRadioPluginClass *klass)
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-
-	object_class->finalize = rb_iradio_plugin_finalize;
-
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
+	rb_iradio_plugin_register_type (G_TYPE_MODULE (module));
+	_rb_iradio_source_register_type (G_TYPE_MODULE (module));
+	_rb_iradio_source_search_register_type (G_TYPE_MODULE (module));
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_IRADIO_PLUGIN);
 }
-

@@ -48,6 +48,8 @@ RhythmDBEntryType *rb_audioscrobbler_radio_track_get_entry_type (void);
 
 void rb_audioscrobbler_radio_track_register_entry_type (RhythmDB *db);
 
+void _rb_audioscrobbler_radio_track_entry_type_register_type (GTypeModule *module);
+
 G_END_DECLS
 
 #endif /* #ifndef __RB_AUDIOSCROBBLER_RADIO_TRACK_ENTRY_TYPE_H */

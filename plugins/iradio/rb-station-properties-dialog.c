@@ -39,7 +39,6 @@
 #include "rb-builder-helpers.h"
 #include "rb-dialog.h"
 #include "rb-rating.h"
-#include "rb-plugin.h"
 #include "rb-util.h"
 
 static void rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass);
@@ -80,7 +79,7 @@ static void rb_station_properties_dialog_location_changed_cb (GtkEntry *entry,
 
 struct RBStationPropertiesDialogPrivate
 {
-	RBPlugin    *plugin;
+	GObject     *plugin;
 	RBEntryView *entry_view;
 	RhythmDB    *db;
 	RhythmDBEntry *current_entry;
@@ -107,9 +106,7 @@ enum
 	PROP_PLUGIN
 };
 
-G_DEFINE_TYPE (RBStationPropertiesDialog,
-	       rb_station_properties_dialog,
-	       GTK_TYPE_DIALOG)
+G_DEFINE_DYNAMIC_TYPE (RBStationPropertiesDialog, rb_station_properties_dialog, GTK_TYPE_DIALOG)
 
 static void
 rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass)
@@ -133,15 +130,20 @@ rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_PLUGIN,
 					 g_param_spec_object ("plugin",
-					                      "RBPlugin",
-					                      "RBPlugin to use to find files",
-					                      RB_TYPE_PLUGIN,
+					                      "plugin instance",
+					                      "plugin instance to use to find files",
+					                      G_TYPE_OBJECT,
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	object_class->dispose = rb_station_properties_dialog_dispose;
 	object_class->finalize = rb_station_properties_dialog_finalize;
 
 	g_type_class_add_private (klass, sizeof (RBStationPropertiesDialogPrivate));
+}
+
+static void
+rb_station_properties_dialog_class_finalize (RBStationPropertiesDialogClass *klass)
+{
 }
 
 static void
@@ -172,7 +174,7 @@ rb_station_properties_dialog_constructed (GObject *object)
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
 	gtk_box_set_spacing (GTK_BOX (content_area), 2);
 
-	builder_file = rb_plugin_find_file (dialog->priv->plugin, "station-properties.ui");
+	builder_file = rb_find_plugin_data_file (dialog->priv->plugin, "station-properties.ui");
 	g_assert (builder_file != NULL);
 	builder = rb_builder_load (builder_file, dialog);
 	g_free (builder_file);
@@ -310,7 +312,7 @@ rb_station_properties_dialog_get_property (GObject *object,
 }
 
 GtkWidget *
-rb_station_properties_dialog_new (RBPlugin *plugin, RBEntryView *entry_view)
+rb_station_properties_dialog_new (GObject *plugin, RBEntryView *entry_view)
 {
 	RBStationPropertiesDialog *dialog;
 
@@ -599,4 +601,10 @@ static void
 rb_station_properties_dialog_location_changed_cb (GtkEntry *entry,
 						  RBStationPropertiesDialog *dialog)
 {
+}
+
+void
+_rb_station_properties_dialog_register_type (GTypeModule *module)
+{
+	rb_station_properties_dialog_register_type (module);
 }

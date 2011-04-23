@@ -32,7 +32,6 @@
 
 #include "rb-shell.h"
 #include "rb-browser-source.h"
-#include "rb-plugin.h"
 
 #include <gst/gst.h>
 #include <libsoup/soup.h>
@@ -61,7 +60,7 @@ typedef struct {
 GType			rb_daap_source_get_type		(void);
 
 RBSource *		rb_daap_source_new 		(RBShell *shell,
-							 RBPlugin *plugin,
+							 GObject *plugin,
 							 const char *service_name,
 							 const char *name,
 							 const char *host,
@@ -72,6 +71,8 @@ void			rb_daap_source_disconnect 	(RBDAAPSource *daap_source);
 
 SoupMessageHeaders *	rb_daap_source_get_headers	(RBDAAPSource *source,
 							 const gchar *uri);
+
+void			_rb_daap_source_register_type	(GTypeModule *module);
 
 G_END_DECLS
 

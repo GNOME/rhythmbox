@@ -1,15 +1,22 @@
 # Art Display Python Plugin
 
-SUBDIRS = artdisplay
-
 plugindir = $(PLUGINDIR)/artdisplay
+plugindatadir = $(PLUGINDATADIR)/artdisplay
+plugin_PYTHON = 			\
+	EmbeddedCoverArtSearch.py	\
+	PodcastCoverArtSearch.py	\
+	LastFMCoverArtSearch.py		\
+	LocalCoverArtSearch.py		\
+	CoverArtDatabase.py		\
+	MusicBrainzCoverArtSearch.py	\
+	artdisplay.py
 
-plugin_in_files = artdisplay.rb-plugin.in
-%.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+plugin_in_files = artdisplay.plugin.in
+%.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
+plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
-artworkdir = $(plugindir)
+artworkdir = $(plugindatadir)
 artwork_DATA = rhythmbox-missing-artwork.svg lastfm_red_small.png
 
 EXTRA_DIST = $(plugin_in_files) $(artwork_DATA)

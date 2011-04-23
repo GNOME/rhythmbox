@@ -37,7 +37,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "rb-plugin.h"
+#include "rb-plugin-macros.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
 #include "rb-dialog.h"
@@ -52,82 +52,48 @@
 
 typedef struct
 {
-	gpointer dummy;
-} RBSamplePluginPrivate;
-
-typedef struct
-{
-	RBPlugin parent;
-	RBSamplePluginPrivate *priv;
+	PeasExtensionBase parent;
 } RBSamplePlugin;
 
 typedef struct
 {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 } RBSamplePluginClass;
 
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
-GType	rb_sample_plugin_get_type		(void) G_GNUC_CONST;
-
-
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
 static void rb_sample_plugin_init (RBSamplePlugin *plugin);
-static void rb_sample_plugin_finalize (GObject *object);
-static void impl_activate (RBPlugin *plugin, RBShell *shell);
-static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
-RB_PLUGIN_REGISTER(RBSamplePlugin, rb_sample_plugin)
-#define RB_SAMPLE_PLUGIN_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_SAMPLE_PLUGIN, RBSamplePluginPrivate))
-
-
-static void
-rb_sample_plugin_class_init (RBSamplePluginClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-
-	object_class->finalize = rb_sample_plugin_finalize;
-
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
-	
-	g_type_class_add_private (object_class, sizeof (RBSamplePluginPrivate));
-}
+RB_DEFINE_PLUGIN(RB_TYPE_SAMPLE_PLUGIN, RBSamplePlugin, rb_sample_plugin,)
 
 static void
 rb_sample_plugin_init (RBSamplePlugin *plugin)
 {
-	plugin->priv = RB_SAMPLE_PLUGIN_GET_PRIVATE (plugin);
-
 	rb_debug ("RBSamplePlugin initialising");
 }
 
 static void
-rb_sample_plugin_finalize (GObject *object)
+impl_activate (PeasActivatable *plugin)
 {
-/*
-	RBSamplePlugin *plugin = RB_SAMPLE_PLUGIN (object);
-*/
-	rb_debug ("RBSamplePlugin finalising");
+	RBShell *shell;
 
-	G_OBJECT_CLASS (rb_sample_plugin_parent_class)->finalize (object);
-}
-
-
-
-static void
-impl_activate (RBPlugin *plugin,
-	       RBShell *shell)
-{
+	g_object_get (plugin, "object", &shell, NULL);
 	rb_error_dialog (NULL, _("Sample Plugin"), "Sample plugin activated, with shell %p", shell);
+	g_object_unref (shell);
 }
 
 static void
-impl_deactivate	(RBPlugin *plugin,
-		 RBShell *shell)
+impl_deactivate	(PeasActivatable *plugin)
 {
 	rb_error_dialog (NULL, _("Sample Plugin"), "Sample plugin deactivated");
 }
 
-
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
+{
+	rb_sample_plugin_register_type (G_TYPE_MODULE (module));
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_SAMPLE_PLUGIN);
+}

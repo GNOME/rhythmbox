@@ -1,6 +1,7 @@
 NULL =
 
 plugindir = $(PLUGINDIR)/audioscrobbler
+plugindatadir = $(PLUGINDATADIR)/audioscrobbler
 plugin_LTLIBRARIES = libaudioscrobbler.la
 
 libaudioscrobbler_la_SOURCES = \
@@ -55,26 +56,29 @@ INCLUDES = 						\
 	$(GNOME_KEYRING_CFLAGS)				\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
-gtkbuilderdir = $(plugindir)
+gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA =					\
 	audioscrobbler-preferences.ui			\
 	audioscrobbler-profile.ui
 
-uixmldir = $(plugindir)
+uixmldir = $(plugindatadir)
 uixml_DATA =						\
 	audioscrobbler-profile-ui.xml			\
 	audioscrobbler-radio-ui.xml
 
-plugin_in_files = audioscrobbler.rb-plugin.in
+plugin_in_files = audioscrobbler.plugin.in
 
-%.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+%.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-BUILT_SOURCES =							\
-	$(plugin_in_files:.rb-plugin.in=.rb-plugin) 		\
+BUILT_SOURCES =						\
+	$(plugin_in_files:.plugin.in=.plugin) 		\
 	$(NULL)
 
-plugin_DATA = 					\
-	$(BUILT_SOURCES)			\
+plugin_DATA =							\
+	$(BUILT_SOURCES)					\
+	$(NULL)
+
+plugindata_DATA = 						\
 	$(top_srcdir)/plugins/audioscrobbler/Last.fm-icon.png	\
 	$(top_srcdir)/plugins/audioscrobbler/Libre.fm-icon.png	\
 	$(NULL)

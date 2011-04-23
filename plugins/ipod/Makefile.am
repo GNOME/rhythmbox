@@ -1,4 +1,5 @@
 plugindir = $(PLUGINDIR)/ipod
+plugindatadir = $(PLUGINDATADIR)/ipod
 plugin_LTLIBRARIES = libipod.la
 
 libipod_la_SOURCES = \
@@ -31,6 +32,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/sources/sync                   	\
 	-I$(top_srcdir)/podcast                    	\
 	-I$(top_srcdir)/shell				\
+	-I$(top_srcdir)/plugins				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
@@ -38,16 +40,16 @@ INCLUDES = 						\
 	$(IPOD_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
-plugin_in_files = ipod.rb-plugin.in
+plugin_in_files = ipod.plugin.in
 
-%.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+%.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-uixmldir = $(plugindir)
+uixmldir = $(plugindatadir)
 uixml_DATA = ipod-ui.xml
 
-plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
+plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
-gtkbuilderdir = $(plugindir)
+gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA = 					\
 	ipod-info.ui	 				\
 	ipod-init.ui

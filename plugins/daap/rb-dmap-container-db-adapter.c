@@ -48,7 +48,6 @@ typedef struct ForeachAdapterData {
 static guint find_by_id (gconstpointer a, gconstpointer b)
 {
 	return GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (a), "daap_id")) != GPOINTER_TO_UINT (b);
-
 }
 
 static DMAPContainerRecord *
@@ -137,6 +136,11 @@ rb_dmap_container_db_adapter_class_init (RBDMAPContainerDbAdapterClass *klass)
 }
 
 static void
+rb_dmap_container_db_adapter_class_finalize (RBDMAPContainerDbAdapterClass *klass)
+{
+}
+
+static void
 rb_dmap_container_db_adapter_interface_init (gpointer iface, gpointer data)
 {
 	DMAPContainerDbIface *dmap_db = iface;
@@ -148,8 +152,12 @@ rb_dmap_container_db_adapter_interface_init (gpointer iface, gpointer data)
 	dmap_db->count = rb_dmap_container_db_adapter_count;
 }
 
-G_DEFINE_TYPE_WITH_CODE (RBDMAPContainerDbAdapter, rb_dmap_container_db_adapter, G_TYPE_OBJECT, 
-			 G_IMPLEMENT_INTERFACE (DMAP_TYPE_CONTAINER_DB, rb_dmap_container_db_adapter_interface_init))
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDMAPContainerDbAdapter,
+				rb_dmap_container_db_adapter,
+				G_TYPE_OBJECT,
+				0,
+				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_CONTAINER_DB,
+							       rb_dmap_container_db_adapter_interface_init))
 
 static void
 assign_id (RBPlaylistManager *mgr,
@@ -193,4 +201,10 @@ rb_dmap_container_db_adapter_new (RBPlaylistManager *playlist_manager)
 	db->priv->playlist_manager = playlist_manager;
 
 	return db;
+}
+
+void
+_rb_dmap_container_db_adapter_register_type (GTypeModule *module)
+{
+	rb_dmap_container_db_adapter_register_type (module);
 }

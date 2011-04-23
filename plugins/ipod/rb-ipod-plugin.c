@@ -44,7 +44,7 @@
 #include "rb-source.h"
 #include "rb-ipod-source.h"
 #include "rb-ipod-static-playlist-source.h"
-#include "rb-plugin.h"
+#include "rb-plugin-macros.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
 #include "rb-util.h"
@@ -62,7 +62,7 @@
 
 typedef struct
 {
-	RBPlugin parent;
+	PeasExtensionBase parent;
 
 	RBShell *shell;
 	GtkActionGroup *action_group;
@@ -73,17 +73,13 @@ typedef struct
 
 typedef struct
 {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 } RBIpodPluginClass;
 
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
-GType	rb_ipod_plugin_get_type		(void) G_GNUC_CONST;
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
 static void rb_ipod_plugin_init (RBIpodPlugin *plugin);
-static void rb_ipod_plugin_finalize (GObject *object);
-static void impl_activate (RBPlugin *plugin, RBShell *shell);
-static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
 static RBSource * create_source_cb (RBRemovableMediaManager *rmm,
 				    GMount *mount,
@@ -95,7 +91,7 @@ static void  rb_ipod_plugin_cmd_playlist_rename (GtkAction *action, RBSource *so
 static void  rb_ipod_plugin_cmd_playlist_delete (GtkAction *action, RBSource *source);
 static void  rb_ipod_plugin_cmd_properties (GtkAction *action, RBSource *source);
 
-RB_PLUGIN_REGISTER(RBIpodPlugin, rb_ipod_plugin)
+RB_DEFINE_PLUGIN(RB_TYPE_IPOD_PLUGIN, RBIpodPlugin, rb_ipod_plugin,)
 
 
 static GtkActionEntry rb_ipod_plugin_actions [] =
@@ -117,23 +113,6 @@ static GtkActionEntry rb_ipod_plugin_actions [] =
 	  G_CALLBACK (rb_ipod_plugin_cmd_playlist_delete) },
 };
 
-
-static void
-rb_ipod_plugin_class_init (RBIpodPluginClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-
-	object_class->finalize = rb_ipod_plugin_finalize;
-
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
-
-	/* register types used by the plugin */
-	RB_PLUGIN_REGISTER_TYPE (rb_ipod_source);
-	RB_PLUGIN_REGISTER_TYPE (rb_ipod_static_playlist_source);
-}
-
 static void
 rb_ipod_plugin_init (RBIpodPlugin *plugin)
 {
@@ -141,26 +120,16 @@ rb_ipod_plugin_init (RBIpodPlugin *plugin)
 }
 
 static void
-rb_ipod_plugin_finalize (GObject *object)
-{
-	/*RBIpodPlugin *plugin = RB_IPOD_PLUGIN (object);*/
-
-	rb_debug ("RBIpodPlugin finalising");
-
-	G_OBJECT_CLASS (rb_ipod_plugin_parent_class)->finalize (object);
-}
-
-static void
-impl_activate (RBPlugin *bplugin,
-	       RBShell *shell)
+impl_activate (PeasActivatable *bplugin)
 {
 	RBIpodPlugin *plugin = RB_IPOD_PLUGIN (bplugin);
 	RBRemovableMediaManager *rmm = NULL;
 	GtkUIManager *uimanager = NULL;
+	RBShell *shell;
 	gboolean scanned;
 	char *file;
 
-	plugin->shell = shell;
+	g_object_get (plugin, "object", &shell, NULL);
 
 	g_object_get (G_OBJECT (shell),
 		      "removable-media-manager", &rmm,
@@ -178,7 +147,7 @@ impl_activate (RBPlugin *bplugin,
 						   rb_ipod_plugin_actions,
 						   G_N_ELEMENTS (rb_ipod_plugin_actions));
 	gtk_ui_manager_insert_action_group (uimanager, plugin->action_group, 0);
-	file = rb_plugin_find_file (bplugin, "ipod-ui.xml");
+	file = rb_find_plugin_data_file (G_OBJECT (bplugin), "ipod-ui.xml");
 	plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
 							       file,
 							       NULL);
@@ -194,19 +163,22 @@ impl_activate (RBPlugin *bplugin,
 	if (scanned)
 		rb_removable_media_manager_scan (rmm);
 
-	g_object_unref (G_OBJECT (rmm));
-	g_object_unref (G_OBJECT (uimanager));
+	g_object_unref (rmm);
+	g_object_unref (uimanager);
+	g_object_unref (shell);
 }
 
 static void
-impl_deactivate	(RBPlugin *bplugin,
-		 RBShell *shell)
+impl_deactivate	(PeasActivatable *bplugin)
 {
 	RBIpodPlugin *plugin = RB_IPOD_PLUGIN (bplugin);
 	RBRemovableMediaManager *rmm = NULL;
 	GtkUIManager *uimanager = NULL;
+	RBShell *shell;
 
-	g_object_get (G_OBJECT (shell),
+	g_object_get (plugin, "object", &shell, NULL);
+
+	g_object_get (shell,
 		      "removable-media-manager", &rmm,
 		      "ui-manager", &uimanager,
 		      NULL);
@@ -220,8 +192,9 @@ impl_deactivate	(RBPlugin *bplugin,
 	g_list_free (plugin->ipod_sources);
 	plugin->ipod_sources = NULL;
 
-	g_object_unref (G_OBJECT (uimanager));
-	g_object_unref (G_OBJECT (rmm));
+	g_object_unref (uimanager);
+	g_object_unref (rmm);
+	g_object_unref (shell);
 }
 
 static void
@@ -234,6 +207,8 @@ static RBSource *
 create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *device_info, RBIpodPlugin *plugin)
 {
 	RBSource *src;
+	RBShell *shell;
+
 	if (!rb_ipod_helpers_is_ipod (mount, device_info)) {
 		return NULL;
 	}
@@ -241,7 +216,7 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 	if (rb_ipod_helpers_needs_init (mount)) {
 		gboolean inited;
 		gchar *builder_file;
-		builder_file = rb_plugin_find_file (RB_PLUGIN (plugin), "ipod-init.ui");
+		builder_file = rb_find_plugin_data_file (G_OBJECT (plugin), "ipod-init.ui");
 		inited = rb_ipod_helpers_show_first_time_dialog (mount,
 								 builder_file);
 		g_free (builder_file);
@@ -250,10 +225,12 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 		}
 	}
 
-	src = RB_SOURCE (rb_ipod_source_new (RB_PLUGIN (plugin),
-					     plugin->shell,
+	g_object_get (plugin, "object", &shell, NULL);
+	src = RB_SOURCE (rb_ipod_source_new (G_OBJECT (plugin),
+					     shell,
 					     mount,
 					     device_info));
+	g_object_unref (shell);
 
 	plugin->ipod_sources = g_list_prepend (plugin->ipod_sources, src);
 	g_signal_connect_object (G_OBJECT (src),
@@ -330,3 +307,14 @@ rb_ipod_plugin_cmd_playlist_new (GtkAction *action, RBSource *source)
 	rb_ipod_source_new_playlist (RB_IPOD_SOURCE (source));
 }
 
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
+{
+	rb_ipod_plugin_register_type (G_TYPE_MODULE (module));
+	_rb_ipod_source_register_type (G_TYPE_MODULE (module));
+	_rb_ipod_static_playlist_source_register_type (G_TYPE_MODULE (module));
+	_rb_ipod_db_register_type (G_TYPE_MODULE (module));
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_IPOD_PLUGIN);
+}

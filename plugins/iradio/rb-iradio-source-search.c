@@ -33,7 +33,7 @@
 static void	rb_iradio_source_search_class_init (RBIRadioSourceSearchClass *klass);
 static void	rb_iradio_source_search_init (RBIRadioSourceSearch *search);
 
-G_DEFINE_TYPE (RBIRadioSourceSearch, rb_iradio_source_search, RB_TYPE_SOURCE_SEARCH)
+G_DEFINE_DYNAMIC_TYPE (RBIRadioSourceSearch, rb_iradio_source_search, RB_TYPE_SOURCE_SEARCH)
 
 static RhythmDBQuery *
 impl_create_query (RBSourceSearch *bsearch, RhythmDB *db, const char *search_text)
@@ -57,6 +57,11 @@ rb_iradio_source_search_class_init (RBIRadioSourceSearchClass *klass)
 }
 
 static void
+rb_iradio_source_search_class_finalize (RBIRadioSourceSearchClass *klass)
+{
+}
+
+static void
 rb_iradio_source_search_init (RBIRadioSourceSearch *search)
 {
 	/* nothing */
@@ -69,3 +74,8 @@ rb_iradio_source_search_new ()
 	return g_object_new (RB_TYPE_IRADIO_SOURCE_SEARCH, NULL);
 }
 
+void
+_rb_iradio_source_search_register_type (GTypeModule *module)
+{
+	rb_iradio_source_search_register_type (module);
+}

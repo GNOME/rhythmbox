@@ -47,7 +47,6 @@
 #include "rb-file-helpers.h"
 #include "rhythmdb.h"
 #include "rb-dialog.h"
-#include "rb-plugin.h"
 #include "rhythmdb-import-job.h"
 #include "rb-import-errors-source.h"
 #include "rb-builder-helpers.h"
@@ -130,7 +129,7 @@ typedef struct
 
 } RBGenericPlayerSourcePrivate;
 
-RB_PLUGIN_DEFINE_TYPE(RBGenericPlayerSource, rb_generic_player_source, RB_TYPE_MEDIA_PLAYER_SOURCE)
+G_DEFINE_DYNAMIC_TYPE (RBGenericPlayerSource, rb_generic_player_source, RB_TYPE_MEDIA_PLAYER_SOURCE)
 #define GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_GENERIC_PLAYER_SOURCE, RBGenericPlayerSourcePrivate))
 
 static void
@@ -198,6 +197,11 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 
 
 	g_type_class_add_private (klass, sizeof (RBGenericPlayerSourcePrivate));
+}
+
+static void
+rb_generic_player_source_class_finalize (RBGenericPlayerSourceClass *klass)
+{
 }
 
 static void
@@ -352,7 +356,7 @@ impl_dispose (GObject *object)
 }
 
 RBRemovableMediaSource *
-rb_generic_player_source_new (RBPlugin *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
+rb_generic_player_source_new (GObject *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBGenericPlayerSource *source;
 	RhythmDBEntryType *entry_type;
@@ -1251,13 +1255,13 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	char *vendor_name;
 	char *model_name;
 	char *serial_id;
-	RBPlugin *plugin;
+	GObject *plugin;
 	char *text;
 	GList *output_formats;
 	GList *t;
 
 	g_object_get (source, "plugin", &plugin, NULL);
-	builder_file = rb_plugin_find_file (plugin, "generic-player-info.ui");
+	builder_file = rb_find_plugin_data_file (plugin, "generic-player-info.ui");
 	g_object_unref (plugin);
 
 	if (builder_file == NULL) {
@@ -1384,4 +1388,10 @@ impl_remove_playlists (RBMediaPlayerSource *source)
 	}
 
 	g_list_free (playlists);
+}
+
+void
+_rb_generic_player_source_register_type (GTypeModule *module)
+{
+	rb_generic_player_source_register_type (module);
 }

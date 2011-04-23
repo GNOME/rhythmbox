@@ -134,8 +134,6 @@ struct _RBAudioscrobblerUserPrivate {
 
 #define RB_AUDIOSCROBBLER_USER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_USER, RBAudioscrobblerUserPrivate))
 
-static void rb_audioscrobbler_user_class_init (RBAudioscrobblerUserClass *klass);
-static void rb_audioscrobbler_user_init (RBAudioscrobblerUser *user);
 static void rb_audioscrobbler_user_constructed (GObject *object);
 static void rb_audioscrobbler_user_dispose (GObject* object);
 static void rb_audioscrobbler_user_finalize (GObject *object);
@@ -242,7 +240,7 @@ enum {
 
 static guint rb_audioscrobbler_user_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBAudioscrobblerUser, rb_audioscrobbler_user, G_TYPE_OBJECT)
+G_DEFINE_DYNAMIC_TYPE (RBAudioscrobblerUser, rb_audioscrobbler_user, G_TYPE_OBJECT)
 
 RBAudioscrobblerUser *
 rb_audioscrobbler_user_new (RBAudioscrobblerService *service)
@@ -339,6 +337,11 @@ rb_audioscrobbler_user_class_init (RBAudioscrobblerUserClass *klass)
 		              G_TYPE_PTR_ARRAY);
 
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerUserPrivate));
+}
+
+static void
+rb_audioscrobbler_user_class_finalize (RBAudioscrobblerUserClass *klass)
+{
 }
 
 static void
@@ -1788,4 +1791,10 @@ ban_track_response_cb (SoupSession *session,
 	/* Don't know if there's anything to do here,
 	 * might want a debug message indicating success or failure?
 	 */
+}
+
+void
+_rb_audioscrobbler_user_register_type (GTypeModule *module)
+{
+	rb_audioscrobbler_user_register_type (module);
 }

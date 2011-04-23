@@ -28,7 +28,8 @@
 #ifndef __RB_DAAP_PLUGIN_H
 #define __RB_DAAP_PLUGIN_H
 
-#include "rb-plugin.h"
+#include <libpeas/peas.h>
+
 #include "rb-daap-source.h"
 
 G_BEGIN_DECLS
@@ -40,19 +41,8 @@ G_BEGIN_DECLS
 #define RB_IS_DAAP_PLUGIN_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_DAAP_PLUGIN))
 #define RB_DAAP_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_DAAP_PLUGIN, RBDaapPluginClass))
 
-typedef struct RBDaapPluginPrivate RBDaapPluginPrivate;
-
-typedef struct
-{
-	RBPlugin parent;
-
-	RBDaapPluginPrivate *priv;
-} RBDaapPlugin;
-
-typedef struct
-{
-	RBPluginClass parent;
-} RBDaapPluginClass;
+typedef struct _RBDaapPlugin RBDaapPlugin;
+typedef struct _RBDaapPluginClass RBDaapPluginClass;
 
 GType		rb_daap_plugin_get_type		(void);
 
@@ -62,8 +52,8 @@ GdkPixbuf *	rb_daap_plugin_get_icon 	(RBDaapPlugin *plugin,
 
 RBDAAPSource *	rb_daap_plugin_find_source_for_uri (RBDaapPlugin *plugin,
 						 const char *uri);
+gboolean	rb_daap_plugin_shutdown		(RBDaapPlugin *plugin);
 
 G_END_DECLS
 
 #endif /* __RB_DAAP_PLUGIN_H */
-

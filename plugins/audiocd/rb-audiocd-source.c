@@ -39,7 +39,6 @@
 #include <gst/gst.h>
 #include <gst/cdda/gstcddabasesrc.h>
 
-#include "rb-plugin.h"
 #include "rhythmdb.h"
 #include "rb-shell.h"
 #include "rb-audiocd-source.h"
@@ -47,6 +46,7 @@
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-builder-helpers.h"
+#include "rb-file-helpers.h"
 
 #ifdef HAVE_SJ_METADATA_GETTER
 #include "sj-metadata-getter.h"
@@ -139,18 +139,16 @@ typedef struct
 	GtkActionGroup *action_group;
 } RBAudioCdSourcePrivate;
 
-RB_PLUGIN_DEFINE_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
+G_DEFINE_DYNAMIC_TYPE (RBAudioCdSource, rb_audiocd_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE)
 #define AUDIOCD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOCD_SOURCE, RBAudioCdSourcePrivate))
 
 /* entry type */
 typedef struct _RhythmDBEntryType RBAudioCdEntryType;
 typedef struct _RhythmDBEntryTypeClass RBAudioCdEntryTypeClass;
 
-static void rb_audiocd_entry_type_class_init (RBAudioCdEntryTypeClass *klass);
-static void rb_audiocd_entry_type_init (RBAudioCdEntryType *etype);
 GType rb_audiocd_entry_type_get_type (void);
 
-G_DEFINE_TYPE (RBAudioCdEntryType, rb_audiocd_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+G_DEFINE_DYNAMIC_TYPE (RBAudioCdEntryType, rb_audiocd_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
 
 #ifdef HAVE_SJ_METADATA_GETTER
 static AlbumDetails* multiple_album_dialog (GList *albums, RBAudioCdSource *source);
@@ -173,6 +171,11 @@ rb_audiocd_entry_type_class_init (RBAudioCdEntryTypeClass *klass)
 	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
 	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
 	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
+}
+
+static void
+rb_audiocd_entry_type_class_finalize (RBAudioCdEntryTypeClass *klass)
+{
 }
 
 static void
@@ -229,6 +232,11 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 					  "search-type");
 
 	g_type_class_add_private (klass, sizeof (RBAudioCdSourcePrivate));
+}
+
+static void
+rb_audiocd_source_class_finalize (RBAudioCdSourceClass *klass)
+{
 }
 
 static void
@@ -304,7 +312,7 @@ rb_audiocd_source_constructed (GObject *object)
 	GtkTreeViewColumn *extract;
 	GtkWidget *widget;
 	GtkAction *action;
-	RBPlugin *plugin;
+	GObject *plugin;
 	RBShell *shell;
 	char *ui_file;
 	int toggle_width;
@@ -379,7 +387,7 @@ rb_audiocd_source_constructed (GObject *object)
 
 	/* set up the album info widgets */
 	g_object_get (source, "plugin", &plugin, NULL);
-	ui_file = rb_plugin_find_file (plugin, "album-info.ui");
+	ui_file = rb_find_plugin_data_file (G_OBJECT (plugin), "album-info.ui");
 	g_object_unref (plugin);
 
 	if (ui_file == NULL) {
@@ -446,7 +454,7 @@ rb_audiocd_source_constructed (GObject *object)
 }
 
 RBSource *
-rb_audiocd_source_new (RBPlugin *plugin,
+rb_audiocd_source_new (GObject *plugin,
 		       RBShell *shell,
 		       GVolume *volume)
 {
@@ -732,7 +740,7 @@ multiple_album_dialog (GList *albums, RBAudioCdSource *source)
 	GtkBuilder *builder;
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *text_renderer;
-	RBPlugin *plugin;
+	GObject *plugin;
 	char *builder_file;
 
 	gdk_threads_enter ();
@@ -741,7 +749,7 @@ multiple_album_dialog (GList *albums, RBAudioCdSource *source)
 	g_assert (plugin != NULL);
 
 	/* create dialog */
-	builder_file = rb_plugin_find_file (plugin, "multiple-album.ui");
+	builder_file = rb_find_plugin_data_file (plugin, "multiple-album.ui");
 	g_object_unref (plugin);
 
 	if (builder_file == NULL) {
@@ -1437,4 +1445,11 @@ copy_tracks_cmd (GtkAction *action, RBAudioCdSource *source)
 
 	g_object_unref (model);
 	g_object_unref (library);
+}
+
+void
+_rb_audiocd_source_register_type (GTypeModule *module)
+{
+	rb_audiocd_source_register_type (module);
+	rb_audiocd_entry_type_register_type (module);
 }

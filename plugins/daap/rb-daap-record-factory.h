@@ -62,6 +62,8 @@ RBDAAPRecordFactory *rb_daap_record_factory_new      (void);
 
 DMAPRecord            *rb_daap_record_factory_create   (DMAPRecordFactory *factory, gpointer user_data);
 
+void                   _rb_daap_record_factory_register_type (GTypeModule *module);
+
 #endif /* __RB_DAAP_RECORD_FACTORY */
 
 G_END_DECLS

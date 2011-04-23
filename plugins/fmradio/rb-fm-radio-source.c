@@ -93,9 +93,9 @@ static GtkActionEntry rb_fm_radio_source_actions[] = {
 	  G_CALLBACK (rb_fm_radio_source_cmd_new_station) },
 };
 
-RB_PLUGIN_DEFINE_TYPE (RBFMRadioSource, rb_fm_radio_source, RB_TYPE_SOURCE);
+G_DEFINE_DYNAMIC_TYPE (RBFMRadioSource, rb_fm_radio_source, RB_TYPE_SOURCE);
 
-G_DEFINE_TYPE (RBFMRadioEntryType, rb_fm_radio_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+G_DEFINE_DYNAMIC_TYPE (RBFMRadioEntryType, rb_fm_radio_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
 
 static char *
 rb_fm_radio_source_get_playback_uri (RhythmDBEntryType *etype, RhythmDBEntry *entry)
@@ -110,6 +110,11 @@ rb_fm_radio_entry_type_class_init (RBFMRadioEntryTypeClass *klass)
 	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
 	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
 	etype_class->get_playback_uri = rb_fm_radio_source_get_playback_uri;
+}
+
+static void
+rb_fm_radio_entry_type_class_finalize (RBFMRadioEntryTypeClass *klass)
+{
 }
 
 static void
@@ -137,6 +142,11 @@ rb_fm_radio_source_class_init (RBFMRadioSourceClass *class)
 	source_class->impl_get_entry_view = impl_get_entry_view;
 
 	g_type_class_add_private (class, sizeof (RBFMRadioSourcePrivate));
+}
+
+static void
+rb_fm_radio_source_class_finalize (RBFMRadioSourceClass *class)
+{
 }
 
 static void
@@ -447,4 +457,11 @@ impl_get_entry_view (RBSource *source)
 	RBFMRadioSource *self = (RBFMRadioSource *)source;
 
 	return self->priv->stations;
+}
+
+void
+_rb_fm_radio_source_register_type (GTypeModule *module)
+{
+	rb_fm_radio_source_register_type (module);
+	rb_fm_radio_entry_type_register_type (module);
 }

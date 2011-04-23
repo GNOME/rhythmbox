@@ -32,7 +32,7 @@
 
 static void rb_audioscrobbler_play_order_class_init (RBAudioscrobblerPlayOrderClass *klass);
 
-G_DEFINE_TYPE (RBAudioscrobblerPlayOrder, rb_audioscrobbler_play_order, RB_TYPE_PLAY_ORDER)
+G_DEFINE_DYNAMIC_TYPE (RBAudioscrobblerPlayOrder, rb_audioscrobbler_play_order, RB_TYPE_PLAY_ORDER)
 
 RBPlayOrder *
 rb_audioscrobbler_play_order_new (RBShellPlayer *player)
@@ -93,3 +93,14 @@ rb_audioscrobbler_play_order_class_init (RBAudioscrobblerPlayOrderClass *klass)
 	porder->get_previous = rb_audioscrobbler_play_order_get_previous;
 }
 
+
+static void
+rb_audioscrobbler_play_order_class_finalize (RBAudioscrobblerPlayOrderClass *klass)
+{
+}
+
+void
+_rb_audioscrobbler_play_order_register_type (GTypeModule *module)
+{
+	rb_audioscrobbler_play_order_register_type (module);
+}

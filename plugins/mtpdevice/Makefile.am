@@ -1,6 +1,7 @@
 NULL =
 
 plugindir = $(PLUGINDIR)/mtpdevice
+plugindatadir = $(PLUGINDATADIR)/mtpdevice
 plugin_LTLIBRARIES = libmtpdevice.la
 
 libmtpdevice_la_SOURCES = \
@@ -33,6 +34,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/sources                    	\
 	-I$(top_srcdir)/sources/sync                   	\
 	-I$(top_srcdir)/podcast                    	\
+	-I$(top_srcdir)/plugins                    	\
 	-I$(top_srcdir)/shell				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
@@ -43,16 +45,16 @@ INCLUDES = 						\
 	$(MTP_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
-plugin_in_files = mtpdevice.rb-plugin.in
+plugin_in_files = mtpdevice.plugin.in
 
-%.rb-plugin: %.rb-plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
+%.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-uixmldir = $(plugindir)
+uixmldir = $(plugindatadir)
 uixml_DATA = mtp-ui.xml
 
-plugin_DATA = $(plugin_in_files:.rb-plugin.in=.rb-plugin)
+plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
-gtkbuilderdir = $(plugindir)
+gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA = 					\
 	mtp-info.ui
 

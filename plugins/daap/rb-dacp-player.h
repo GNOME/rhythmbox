@@ -66,6 +66,8 @@ GType rb_dacp_player_get_type (void) G_GNUC_CONST;
 
 RBDACPPlayer *rb_dacp_player_new (RBShell *shell);
 
+void _rb_dacp_player_register_type (GTypeModule *module);
+
 G_END_DECLS
 
 #endif /* _RB_DACP_PLAYER_H_ */

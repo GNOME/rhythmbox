@@ -40,18 +40,29 @@
 
 #include <libsoup/soup.h>
 
+#include <libpeas-gtk/peas-gtk.h>
+
+#include "rb-plugin-macros.h"
 #include "rb-daap-plugin.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
 #include "rb-dialog.h"
 #include "rb-file-helpers.h"
 #include "rb-builder-helpers.h"
+#include "rb-uri-dialog.h"
+#include "rb-display-page-group.h"
+
+#include "rb-daap-container-record.h"
+#include "rb-daap-record-factory.h"
+#include "rb-daap-record.h"
 #include "rb-daap-source.h"
 #include "rb-daap-sharing.h"
 #include "rb-daap-src.h"
 #include "rb-dacp-pairing-page.h"
-#include "rb-uri-dialog.h"
-#include "rb-display-page-group.h"
+#include "rb-dacp-player.h"
+#include "rb-dmap-container-db-adapter.h"
+#include "rb-rhythmdb-dmap-db-adapter.h"
+#include "rb-rhythmdb-query-model-dmap-db-adapter.h"
 
 #include <libdmapsharing/dmap.h>
 
@@ -72,10 +83,9 @@ static const char *rb_daap_dbus_iface =
 "  </interface>"
 "</node>";
 
-
-struct RBDaapPluginPrivate
+struct _RBDaapPlugin
 {
-	RBShell *shell;
+	PeasExtensionBase parent;
 
 	GtkBuilder *builder;
 	GtkWidget *preferences;
@@ -101,26 +111,16 @@ struct RBDaapPluginPrivate
 	guint dbus_intf_id;
 };
 
-enum
+struct _RBDaapPluginClass
 {
-	PROP_0,
-	PROP_SHUTDOWN,
-	PROP_SHELL
+	PeasExtensionBaseClass parent;
 };
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
 
-static void rb_daap_plugin_get_property (GObject *object,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *pspec);
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
 static void rb_daap_plugin_init (RBDaapPlugin *plugin);
-static void rb_daap_plugin_dispose (GObject *object);
-static void impl_activate (RBPlugin *plugin, RBShell *shell);
-static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
-static GtkWidget* impl_create_configure_dialog (RBPlugin *plugin);
 static void rb_daap_plugin_cmd_disconnect (GtkAction *action, RBSource *source);
 static void rb_daap_plugin_cmd_connect (GtkAction *action, RBDaapPlugin *plugin);
 
@@ -141,7 +141,13 @@ static void libdmapsharing_debug (const char *domain,
 static void register_daap_dbus_iface (RBDaapPlugin *plugin);
 static void unregister_daap_dbus_iface (RBDaapPlugin *plugin);
 
-RB_PLUGIN_REGISTER(RBDaapPlugin, rb_daap_plugin)
+static void peas_gtk_configurable_iface_init (PeasGtkConfigurableInterface *iface);
+
+RB_DEFINE_PLUGIN(RB_TYPE_DAAP_PLUGIN,
+		 RBDaapPlugin,
+		 rb_daap_plugin,
+		 (G_IMPLEMENT_INTERFACE_DYNAMIC (PEAS_GTK_TYPE_CONFIGURABLE,
+						peas_gtk_configurable_iface_init)))
 
 static GtkActionEntry rb_daap_plugin_actions [] =
 {
@@ -158,146 +164,67 @@ static GtkActionEntry rb_daap_source_actions[] =
 };
 
 static void
-rb_daap_plugin_class_init (RBDaapPluginClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-
-	object_class->dispose = rb_daap_plugin_dispose;
-	object_class->get_property = rb_daap_plugin_get_property;
-
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
-	plugin_class->create_configure_dialog = impl_create_configure_dialog;
-
-	g_object_class_install_property (object_class,
-					 PROP_SHUTDOWN,
-					 g_param_spec_boolean ("shutdown",
-							       "shutdown",
-							       "Whether the DAAP plugin has been shut down",
-							       FALSE,
-							       G_PARAM_READABLE));
-
-	g_object_class_install_property (object_class,
-	                                 PROP_SHELL,
-	                                 g_param_spec_object ("shell",
-	                                                      "Shell",
-	                                                      "The Rhythmbox Shell",
-	                                                      RB_TYPE_SHELL,
-	                                                      G_PARAM_READABLE));
-
-	g_type_class_add_private (object_class, sizeof (RBDaapPluginPrivate));
-}
-
-static void
 rb_daap_plugin_init (RBDaapPlugin *plugin)
 {
+	GSettings *daap_settings;
+
 	rb_debug ("RBDaapPlugin initialising");
-	plugin->priv = G_TYPE_INSTANCE_GET_PRIVATE (plugin, RB_TYPE_DAAP_PLUGIN, RBDaapPluginPrivate);
+	rb_daap_src_set_plugin (G_OBJECT (plugin));
 
-	rb_daap_src_set_plugin (RB_PLUGIN (plugin));
+	plugin->settings = g_settings_new ("org.gnome.rhythmbox.sharing");
+
+	daap_settings = g_settings_new ("org.gnome.rhythmbox.plugins.daap");
+	plugin->dacp_settings = g_settings_get_child (daap_settings, "dacp");
+	g_object_unref (daap_settings);
 }
 
 static void
-rb_daap_plugin_dispose (GObject *object)
-{
-	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (object);
-
-	rb_debug ("RBDaapPlugin dispose");
-
-	if (plugin->priv->preferences) {
-		gtk_widget_destroy (plugin->priv->preferences);
-		plugin->priv->preferences = NULL;
-	}
-
-	if (plugin->priv->builder) {
-		g_object_unref (plugin->priv->builder);
-		plugin->priv->builder = NULL;
-	}
-
-	if (plugin->priv->bus) {
-		g_object_unref (plugin->priv->bus);
-		plugin->priv->bus = NULL;
-	}
-
-	G_OBJECT_CLASS (rb_daap_plugin_parent_class)->dispose (object);
-}
-
-
-static void
-rb_daap_plugin_get_property (GObject *object,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *pspec)
-{
-	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (object);
-
-	switch (prop_id) {
-	case PROP_SHUTDOWN:
-		g_value_set_boolean (value, plugin->priv->shutdown);
-		break;
-	case PROP_SHELL:
-		g_value_take_object (value, plugin->priv->shell);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
-static void
-impl_activate (RBPlugin *bplugin,
-	       RBShell *shell)
+impl_activate (PeasActivatable *bplugin)
 {
 	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (bplugin);
 	gboolean no_registration;
 	GtkUIManager *uimanager = NULL;
 	char *uifile;
-	GSettings *daap_settings;
+	RBShell *shell;
 
-	plugin->priv->shutdown = FALSE;
-	plugin->priv->shell = g_object_ref (shell);
+	plugin->shutdown = FALSE;
 
 	g_log_set_handler ("libdmapsharing",
 			    G_LOG_LEVEL_MASK,
 			    libdmapsharing_debug,
 			    NULL);
 
-	plugin->priv->settings = g_settings_new ("org.gnome.rhythmbox.sharing");
-	g_signal_connect_object (plugin->priv->settings, "changed", G_CALLBACK (settings_changed_cb), plugin, 0);
+	g_object_get (plugin, "object", &shell, NULL);
 
-	daap_settings = g_settings_new ("org.gnome.rhythmbox.plugins.daap");
-	plugin->priv->dacp_settings = g_settings_get_child (daap_settings, "dacp");
-	g_object_unref (daap_settings);
-	g_signal_connect_object (plugin->priv->dacp_settings, "changed", G_CALLBACK (dacp_settings_changed_cb), plugin, 0);
+	g_signal_connect_object (plugin->settings, "changed", G_CALLBACK (settings_changed_cb), plugin, 0);
 
-	if (g_settings_get_boolean (plugin->priv->settings, "enable-browsing")) {
+	g_signal_connect_object (plugin->dacp_settings, "changed", G_CALLBACK (dacp_settings_changed_cb), plugin, 0);
+
+	if (g_settings_get_boolean (plugin->settings, "enable-browsing")) {
 		start_browsing (plugin);
 	}
 
 	create_pixbufs (plugin);
 
-	g_object_get (shell,
-		      "ui-manager", &uimanager,
-		      NULL);
+	g_object_get (shell, "ui-manager", &uimanager, NULL);
 
 	/* add actions */
-	plugin->priv->daap_action_group = gtk_action_group_new ("DaapActions");
-	gtk_action_group_set_translation_domain (plugin->priv->daap_action_group,
+	plugin->daap_action_group = gtk_action_group_new ("DaapActions");
+	gtk_action_group_set_translation_domain (plugin->daap_action_group,
 						 GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (plugin->priv->daap_action_group,
+	gtk_action_group_add_actions (plugin->daap_action_group,
 				      rb_daap_plugin_actions, G_N_ELEMENTS (rb_daap_plugin_actions),
 				      plugin);
-	_rb_action_group_add_display_page_actions (plugin->priv->daap_action_group,
+	_rb_action_group_add_display_page_actions (plugin->daap_action_group,
 						   G_OBJECT (shell),
 						   rb_daap_source_actions,
 						   G_N_ELEMENTS (rb_daap_source_actions));
-	gtk_ui_manager_insert_action_group (uimanager, plugin->priv->daap_action_group, 0);
+	gtk_ui_manager_insert_action_group (uimanager, plugin->daap_action_group, 0);
 
 	/* add UI */
-	uifile = rb_plugin_find_file (bplugin, "daap-ui.xml");
+	uifile = rb_find_plugin_data_file (G_OBJECT (plugin), "daap-ui.xml");
 	if (uifile != NULL) {
-		plugin->priv->daap_ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager, uifile, NULL);
+		plugin->daap_ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager, uifile, NULL);
 		g_free (uifile);
 	}
 
@@ -308,70 +235,82 @@ impl_activate (RBPlugin *bplugin,
 	 * This flag is only used to run multiple instances at the same time, and
 	 * sharing from two instances would be silly
 	 */
-	g_object_get (G_OBJECT (shell),
-		      "no-registration", &no_registration,
-		      NULL);
-	plugin->priv->sharing = !no_registration;
-	if (plugin->priv->sharing)
+	g_object_get (shell, "no-registration", &no_registration, NULL);
+	plugin->sharing = !no_registration;
+	if (plugin->sharing)
 		rb_daap_sharing_init (shell);
 
-	plugin->priv->dacp_share = rb_daap_create_dacp_share (RB_PLUGIN (plugin));
-	if (g_settings_get_boolean (plugin->priv->dacp_settings, "enable-remote")) {
-		dacp_share_start_lookup (plugin->priv->dacp_share);
+	plugin->dacp_share = rb_daap_create_dacp_share (G_OBJECT (plugin));
+	if (g_settings_get_boolean (plugin->dacp_settings, "enable-remote")) {
+		dacp_share_start_lookup (plugin->dacp_share);
 	}
 
 	register_daap_dbus_iface (plugin);
+
+	g_object_unref (shell);
 }
 
 static void
-impl_deactivate	(RBPlugin *bplugin,
-		 RBShell *shell)
+impl_deactivate	(PeasActivatable *bplugin)
 {
 	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (bplugin);
 	GtkUIManager *uimanager = NULL;
+	RBShell *shell;
 
 	rb_debug ("Shutting down DAAP plugin");
 
-	unregister_daap_dbus_iface (plugin);
-	plugin->priv->shutdown = TRUE;
+	g_object_get (plugin, "object", &shell, NULL);
 
-	if (plugin->priv->sharing)
+	unregister_daap_dbus_iface (plugin);
+	plugin->shutdown = TRUE;
+
+	if (plugin->sharing)
 		rb_daap_sharing_shutdown (shell);
 
-	if (plugin->priv->mdns_browser) {
+	if (plugin->mdns_browser) {
 		stop_browsing (plugin);
 	}
 
-	if (plugin->priv->settings) {
-		g_object_unref (plugin->priv->settings);
-		plugin->priv->settings = NULL;
+	if (plugin->settings) {
+		g_object_unref (plugin->settings);
+		plugin->settings = NULL;
 	}
 
-	g_object_unref (plugin->priv->dacp_share);
+	g_object_unref (plugin->dacp_share);
 
-	g_object_get (shell,
-		      "ui-manager", &uimanager,
-		      NULL);
+	g_object_get (shell, "ui-manager", &uimanager, NULL);
 
-	gtk_ui_manager_remove_ui (uimanager, plugin->priv->daap_ui_merge_id);
-	gtk_ui_manager_remove_action_group (uimanager, plugin->priv->daap_action_group);
+	gtk_ui_manager_remove_ui (uimanager, plugin->daap_ui_merge_id);
+	gtk_ui_manager_remove_action_group (uimanager, plugin->daap_action_group);
 
 	g_object_unref (uimanager);
 
-	if (plugin->priv->daap_share_pixbuf != NULL) {
-		g_object_unref (plugin->priv->daap_share_pixbuf);
-		plugin->priv->daap_share_pixbuf = NULL;
+	if (plugin->daap_share_pixbuf != NULL) {
+		g_object_unref (plugin->daap_share_pixbuf);
+		plugin->daap_share_pixbuf = NULL;
 	}
 
-	if (plugin->priv->daap_share_locked_pixbuf != NULL) {
-		g_object_unref (plugin->priv->daap_share_locked_pixbuf);
-		plugin->priv->daap_share_locked_pixbuf = NULL;
+	if (plugin->daap_share_locked_pixbuf != NULL) {
+		g_object_unref (plugin->daap_share_locked_pixbuf);
+		plugin->daap_share_locked_pixbuf = NULL;
 	}
 
-	if (plugin->priv->shell) {
-		g_object_unref (plugin->priv->shell);
-		plugin->priv->shell = NULL;
+	if (plugin->preferences) {
+		gtk_widget_destroy (plugin->preferences);
+		plugin->preferences = NULL;
 	}
+
+	if (plugin->builder) {
+		g_object_unref (plugin->builder);
+		plugin->builder = NULL;
+	}
+
+	if (plugin->bus) {
+		g_object_unref (plugin->bus);
+		plugin->bus = NULL;
+	}
+
+	g_object_unref (shell);
 }
 
 /* DAAP share icons */
@@ -440,13 +379,13 @@ create_pixbufs (RBDaapPlugin *plugin)
 	theme = gtk_icon_theme_get_default ();
 
 	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-	plugin->priv->daap_share_pixbuf =
+	plugin->daap_share_pixbuf =
 		gtk_icon_theme_load_icon (theme, "gnome-fs-network", size, 0, NULL);
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &size, NULL);
 	emblem = gtk_icon_theme_load_icon (theme, "stock_lock", size, 0, NULL);
 
-	plugin->priv->daap_share_locked_pixbuf = composite_icons (plugin->priv->daap_share_pixbuf, emblem);
+	plugin->daap_share_locked_pixbuf = composite_icons (plugin->daap_share_pixbuf, emblem);
 
 	if (emblem != NULL) {
 		g_object_unref (emblem);
@@ -460,15 +399,15 @@ rb_daap_plugin_get_icon (RBDaapPlugin *plugin,
 {
 	GdkPixbuf *icon;
 
-	g_return_val_if_fail (plugin->priv->daap_share_pixbuf != NULL, NULL);
-	g_return_val_if_fail (plugin->priv->daap_share_locked_pixbuf != NULL, NULL);
+	g_return_val_if_fail (plugin->daap_share_pixbuf != NULL, NULL);
+	g_return_val_if_fail (plugin->daap_share_locked_pixbuf != NULL, NULL);
 
 	if (password_protected == FALSE) {
-		icon = g_object_ref (plugin->priv->daap_share_pixbuf);
+		icon = g_object_ref (plugin->daap_share_pixbuf);
 	} else if (connected) {
-		icon = g_object_ref (plugin->priv->daap_share_pixbuf);
+		icon = g_object_ref (plugin->daap_share_pixbuf);
 	} else {
-		icon = g_object_ref (plugin->priv->daap_share_locked_pixbuf);
+		icon = g_object_ref (plugin->daap_share_locked_pixbuf);
 	}
 
 	return icon;
@@ -482,7 +421,7 @@ find_source_by_service_name (RBDaapPlugin *plugin,
 {
 	RBSource *source;
 
-	source = g_hash_table_lookup (plugin->priv->source_lookup, service_name);
+	source = g_hash_table_lookup (plugin->source_lookup, service_name);
 
 	return source;
 }
@@ -490,9 +429,10 @@ find_source_by_service_name (RBDaapPlugin *plugin,
 static void
 mdns_service_added (DMAPMdnsBrowser *browser,
 		    DMAPMdnsBrowserService *service,
-		    RBDaapPlugin	*plugin)
+		    RBDaapPlugin *plugin)
 {
 	RBSource *source;
+	RBShell *shell;
 
 	rb_debug ("New service: %s name=%s host=%s port=%u password=%d",
 		   service->service_name,
@@ -506,11 +446,23 @@ mdns_service_added (DMAPMdnsBrowser *browser,
 	source = find_source_by_service_name (plugin, service->service_name);
 
 	if (source == NULL) {
-		source = rb_daap_source_new (plugin->priv->shell, RB_PLUGIN (plugin), service->service_name, service->name, service->host, service->port, service->password_protected);
-		g_hash_table_insert (plugin->priv->source_lookup, g_strdup (service->service_name), source);
-		rb_shell_append_display_page (plugin->priv->shell, RB_DISPLAY_PAGE (source), RB_DISPLAY_PAGE_GROUP_SHARED);
+		g_object_get (plugin, "object", &shell, NULL);
+
+		source = rb_daap_source_new (shell,
+					     G_OBJECT (plugin),
+					     service->service_name,
+					     service->name,
+					     service->host,
+					     service->port,
+					     service->password_protected);
+		g_hash_table_insert (plugin->source_lookup, g_strdup (service->service_name), source);
+		rb_shell_append_display_page (shell,
+					      RB_DISPLAY_PAGE (source),
+					      RB_DISPLAY_PAGE_GROUP_SHARED);
+
+		g_object_unref (shell);
 	} else {
-		g_object_set (G_OBJECT (source),
+		g_object_set (source,
 			      "name", service->name,
 			      "host", service->host,
 			      "port", service->port,
@@ -534,7 +486,7 @@ mdns_service_removed (DMAPMdnsBrowser *browser,
 
 	rb_debug ("DAAP source '%s' went away", service_name);
 	if (source != NULL) {
-		g_hash_table_remove (plugin->priv->source_lookup, service_name);
+		g_hash_table_remove (plugin->source_lookup, service_name);
 	}
 
 	GDK_THREADS_LEAVE ();
@@ -559,35 +511,35 @@ start_browsing (RBDaapPlugin *plugin)
 {
 	GError *error;
 
-	if (plugin->priv->mdns_browser != NULL) {
+	if (plugin->mdns_browser != NULL) {
 		return;
 	}
 
-	plugin->priv->mdns_browser = dmap_mdns_browser_new (DMAP_MDNS_BROWSER_SERVICE_TYPE_DAAP);
-	if (plugin->priv->mdns_browser == NULL) {
+	plugin->mdns_browser = dmap_mdns_browser_new (DMAP_MDNS_BROWSER_SERVICE_TYPE_DAAP);
+	if (plugin->mdns_browser == NULL) {
 		g_warning ("Unable to start mDNS browsing");
 		return;
 	}
 
-	g_signal_connect_object (plugin->priv->mdns_browser,
+	g_signal_connect_object (plugin->mdns_browser,
 				 "service-added",
 				 G_CALLBACK (mdns_service_added),
 				 plugin,
 				 0);
-	g_signal_connect_object (plugin->priv->mdns_browser,
+	g_signal_connect_object (plugin->mdns_browser,
 				 "service-removed",
 				 G_CALLBACK (mdns_service_removed),
 				 plugin,
 				 0);
 
 	error = NULL;
-	dmap_mdns_browser_start (plugin->priv->mdns_browser, &error);
+	dmap_mdns_browser_start (plugin->mdns_browser, &error);
 	if (error != NULL) {
 		g_warning ("Unable to start mDNS browsing: %s", error->message);
 		g_error_free (error);
 	}
 
-	plugin->priv->source_lookup = g_hash_table_new_full ((GHashFunc)g_str_hash,
+	plugin->source_lookup = g_hash_table_new_full ((GHashFunc)g_str_hash,
 							     (GEqualFunc)g_str_equal,
 							     (GDestroyNotify)g_free,
 							     (GDestroyNotify)remove_source);
@@ -598,27 +550,27 @@ stop_browsing (RBDaapPlugin *plugin)
 {
 	GError *error;
 
-	if (plugin->priv->mdns_browser == NULL) {
+	if (plugin->mdns_browser == NULL) {
 		return;
 	}
 
 	rb_debug ("Destroying DAAP source lookup");
 
-	g_hash_table_destroy (plugin->priv->source_lookup);
-	plugin->priv->source_lookup = NULL;
+	g_hash_table_destroy (plugin->source_lookup);
+	plugin->source_lookup = NULL;
 
-	g_signal_handlers_disconnect_by_func (plugin->priv->mdns_browser, mdns_service_added, plugin);
-	g_signal_handlers_disconnect_by_func (plugin->priv->mdns_browser, mdns_service_removed, plugin);
+	g_signal_handlers_disconnect_by_func (plugin->mdns_browser, mdns_service_added, plugin);
+	g_signal_handlers_disconnect_by_func (plugin->mdns_browser, mdns_service_removed, plugin);
 
 	error = NULL;
-	dmap_mdns_browser_stop (plugin->priv->mdns_browser, &error);
+	dmap_mdns_browser_stop (plugin->mdns_browser, &error);
 	if (error != NULL) {
 		g_warning ("Unable to stop mDNS browsing: %s", error->message);
 		g_error_free (error);
 	}
 
-	g_object_unref (plugin->priv->mdns_browser);
-	plugin->priv->mdns_browser = NULL;
+	g_object_unref (plugin->mdns_browser);
+	plugin->mdns_browser = NULL;
 }
 
 static void
@@ -626,9 +578,9 @@ dacp_settings_changed_cb (GSettings *settings, const char *key, RBDaapPlugin *pl
 {
 	if (g_strcmp0 (key, "enable-remote") == 0) {
 		if (g_settings_get_boolean (settings, key)) {
-			dacp_share_start_lookup (plugin->priv->dacp_share);
+			dacp_share_start_lookup (plugin->dacp_share);
 		} else {
-			dacp_share_stop_lookup (plugin->priv->dacp_share);
+			dacp_share_stop_lookup (plugin->dacp_share);
 		}
 	}
 }
@@ -647,8 +599,8 @@ settings_changed_cb (GSettings *settings, const char *key, RBDaapPlugin *plugin)
 		GtkWidget *password_entry;
 		gboolean enabled = g_settings_get_boolean (settings, key);
 
-		password_check = GTK_TOGGLE_BUTTON (gtk_builder_get_object (plugin->priv->builder, "daap_password_check"));
-		password_entry = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_password_entry"));
+		password_check = GTK_TOGGLE_BUTTON (gtk_builder_get_object (plugin->builder, "daap_password_check"));
+		password_entry = GTK_WIDGET (gtk_builder_get_object (plugin->builder, "daap_password_entry"));
 
 		gtk_widget_set_sensitive (password_entry, enabled && gtk_toggle_button_get_active (password_check));
 		gtk_widget_set_sensitive (GTK_WIDGET (password_check), enabled);
@@ -764,26 +716,28 @@ rb_daap_plugin_find_source_for_uri (RBDaapPlugin *plugin, const char *uri)
 	s = strchr (ip, ':');
 	*s = '\0';
 
-	source = (RBDAAPSource *)g_hash_table_find (plugin->priv->source_lookup, (GHRFunc)source_host_find, ip);
+	source = (RBDAAPSource *)g_hash_table_find (plugin->source_lookup, (GHRFunc)source_host_find, ip);
 
 	g_free (ip);
 
 	return source;
 }
 
+gboolean
+rb_daap_plugin_shutdown (RBDaapPlugin *plugin)
+{
+	return plugin->shutdown;
+}
+
 /* preferences dialog */
 
-static void
-preferences_response_cb (GtkWidget *dialog, gint response, RBPlugin *plugin)
-{
-	gtk_widget_hide (dialog);
-}
+/* should move this to a separate class really */
 
 static void
 forget_remotes_button_toggled_cb (GtkToggleButton *button,
 				  RBDaapPlugin *plugin)
 {
-	g_settings_reset (plugin->priv->dacp_settings, "known-remotes");
+	g_settings_reset (plugin->dacp_settings, "known-remotes");
 }
 
 static gboolean
@@ -796,7 +750,7 @@ share_name_entry_focus_out_event_cb (GtkEntry *entry,
 	char       *old_name;
 
 	name = gtk_entry_get_text (entry);
-	old_name = g_settings_get_string (plugin->priv->settings, "share-name");
+	old_name = g_settings_get_string (plugin->settings, "share-name");
 
 	if (name == NULL && old_name == NULL) {
 		changed = FALSE;
@@ -809,7 +763,7 @@ share_name_entry_focus_out_event_cb (GtkEntry *entry,
 	}
 
 	if (changed) {
-		g_settings_set_string (plugin->priv->settings, "share-name", name);
+		g_settings_set_string (plugin->settings, "share-name", name);
 	}
 
 	g_free (old_name);
@@ -827,7 +781,7 @@ share_password_entry_focus_out_event_cb (GtkEntry *entry,
 	char       *old_pw;
 
 	pw = gtk_entry_get_text (entry);
-	old_pw = g_settings_get_string (plugin->priv->settings, "share-password");
+	old_pw = g_settings_get_string (plugin->settings, "share-password");
 
 	if (pw == NULL && old_pw == NULL) {
 		changed = FALSE;
@@ -840,7 +794,7 @@ share_password_entry_focus_out_event_cb (GtkEntry *entry,
 	}
 
 	if (changed) {
-		g_settings_set_string (plugin->priv->settings, "share-password", pw);
+		g_settings_set_string (plugin->settings, "share-password", pw);
 	}
 
 	g_free (old_pw);
@@ -860,25 +814,25 @@ update_config_widget (RBDaapPlugin *plugin)
 	char *name;
 	char *password;
 
-	check = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_enable_check"));
-	remote_check = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "dacp_enable_check"));
-	password_check = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_password_check"));
-	name_entry = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_name_entry"));
-	password_entry = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_password_entry"));
-	forget_remotes_button = GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "forget_remotes_button"));
+	check = GTK_WIDGET (gtk_builder_get_object (plugin->builder, "daap_enable_check"));
+	remote_check = GTK_WIDGET (gtk_builder_get_object (plugin->builder, "dacp_enable_check"));
+	password_check = GTK_WIDGET (gtk_builder_get_object (plugin->builder, "daap_password_check"));
+	name_entry = GTK_WIDGET (gtk_builder_get_object (plugin->builder, "daap_name_entry"));
+	password_entry = GTK_WIDGET (gtk_builder_get_object (plugin->builder, "daap_password_entry"));
+	forget_remotes_button = GTK_WIDGET (gtk_builder_get_object (plugin->builder, "forget_remotes_button"));
 
-	g_settings_bind (plugin->priv->settings, "enable-sharing", check, "active", G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (plugin->priv->dacp_settings, "enable-remote", remote_check, "active", G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (plugin->settings, "enable-sharing", check, "active", G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (plugin->dacp_settings, "enable-remote", remote_check, "active", G_SETTINGS_BIND_DEFAULT);
 
-	/*g_signal_connect (check, "toggled", G_CALLBACK (share_check_button_toggled_cb), plugin->priv->builder);*/
+	/*g_signal_connect (check, "toggled", G_CALLBACK (share_check_button_toggled_cb), plugin->builder);*/
 
 	/* probably needs rethinking to deal with remotes.. */
-	g_settings_bind (plugin->priv->settings, "require-password", password_check, "active", G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (plugin->priv->settings, "require-password", password_entry, "sensitive", G_SETTINGS_BIND_NO_SENSITIVITY);
+	g_settings_bind (plugin->settings, "require-password", password_check, "active", G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (plugin->settings, "require-password", password_entry, "sensitive", G_SETTINGS_BIND_NO_SENSITIVITY);
 
 	g_signal_connect_object (forget_remotes_button, "clicked", G_CALLBACK (forget_remotes_button_toggled_cb), plugin, 0);
 
-	name = g_settings_get_string (plugin->priv->settings, "share-name");
+	name = g_settings_get_string (plugin->settings, "share-name");
 	if (name == NULL || name[0] == '\0') {
 		g_free (name);
 		name = rb_daap_sharing_default_share_name ();
@@ -893,7 +847,7 @@ update_config_widget (RBDaapPlugin *plugin)
 				 plugin,
 				 0);
 
-	password = g_settings_get_string (plugin->priv->settings, "share-password");
+	password = g_settings_get_string (plugin->settings, "share-password");
 	if (password != NULL) {
 		gtk_entry_set_text (GTK_ENTRY (password_entry), password);
 		g_free (password);
@@ -908,52 +862,27 @@ update_config_widget (RBDaapPlugin *plugin)
 }
 
 static GtkWidget *
-make_config_widget (RBDaapPlugin *plugin)
+impl_create_configure_widget (PeasGtkConfigurable *bplugin)
 {
 	char *builder_file;
+	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (bplugin);
 
-	builder_file = rb_plugin_find_file (RB_PLUGIN (plugin), "daap-prefs.ui");
+	builder_file = rb_find_plugin_data_file (G_OBJECT (plugin), "daap-prefs.ui");
 	if (builder_file == NULL) {
 		return NULL;
 	}
 
-	plugin->priv->builder = rb_builder_load (builder_file, NULL);
+	plugin->builder = rb_builder_load (builder_file, NULL);
 	g_free (builder_file);
 
 	update_config_widget (plugin);
-	return GTK_WIDGET (gtk_builder_get_object (plugin->priv->builder, "daap_vbox"));
+	return GTK_WIDGET (gtk_builder_get_object (plugin->builder, "daap_vbox"));
 }
 
-
-static GtkWidget*
-impl_create_configure_dialog (RBPlugin *bplugin)
+static void
+peas_gtk_configurable_iface_init (PeasGtkConfigurableInterface *iface)
 {
-	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (bplugin);
-
-	if (plugin->priv->preferences == NULL) {
-		GtkWidget *widget;
-
-		widget = make_config_widget (plugin);
-
-		plugin->priv->preferences = gtk_dialog_new_with_buttons (_("DAAP Music Sharing Preferences"),
-								   NULL,
-								   GTK_DIALOG_DESTROY_WITH_PARENT,
-								   GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
-								   NULL);
-		g_signal_connect (G_OBJECT (plugin->priv->preferences),
-				  "response",
-				  G_CALLBACK (preferences_response_cb),
-				  plugin);
-		gtk_widget_hide_on_delete (plugin->priv->preferences);
-
-		gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (plugin->priv->preferences))),
-				   widget);
-	} else {
-		update_config_widget (plugin);
-	}
-
-	gtk_widget_show_all (plugin->priv->preferences);
-	return plugin->priv->preferences;
+	iface->create_configure_widget = impl_create_configure_widget;
 }
 
 /* DAAP DBus interface */
@@ -968,7 +897,7 @@ daap_dbus_method_call (GDBusConnection *connection,
 		       GDBusMethodInvocation *invocation,
 		       RBDaapPlugin *plugin)
 {
-	if (plugin->priv->shutdown) {
+	if (plugin->shutdown) {
 		rb_debug ("ignoring %s call", method_name);
 		return;
 	}
@@ -989,7 +918,7 @@ daap_dbus_method_call (GDBusConnection *connection,
 
 		g_variant_get (parameters, "(&s)", &service_name);
 		rb_debug ("removing DAAP source %s", service_name);
-		mdns_service_removed (plugin->priv->mdns_browser, service_name, plugin);
+		mdns_service_removed (plugin->mdns_browser, service_name, plugin);
 
 		g_dbus_method_invocation_return_value (invocation, NULL);
 	}
@@ -1008,14 +937,14 @@ register_daap_dbus_iface (RBDaapPlugin *plugin)
 	GDBusNodeInfo *node_info;
 	GDBusInterfaceInfo *iface_info;
 
-	if (plugin->priv->dbus_intf_id != 0) {
+	if (plugin->dbus_intf_id != 0) {
 		rb_debug ("DAAP DBus interface already registered");
 		return;
 	}
 
-	if (plugin->priv->bus == NULL) {
-		plugin->priv->bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
-		if (plugin->priv->bus == NULL) {
+	if (plugin->bus == NULL) {
+		plugin->bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
+		if (plugin->bus == NULL) {
 			rb_debug ("Unable to register DAAP DBus interface: %s", error->message);
 			g_clear_error (&error);
 			return;
@@ -1030,8 +959,8 @@ register_daap_dbus_iface (RBDaapPlugin *plugin)
 	}
 
 	iface_info = g_dbus_node_info_lookup_interface (node_info, DAAP_DBUS_IFACE);
-	plugin->priv->dbus_intf_id =
-		g_dbus_connection_register_object (plugin->priv->bus,
+	plugin->dbus_intf_id =
+		g_dbus_connection_register_object (plugin->bus,
 						   DAAP_DBUS_PATH,
 						   iface_info,
 						   &daap_dbus_vtable,
@@ -1049,17 +978,38 @@ register_daap_dbus_iface (RBDaapPlugin *plugin)
 static void
 unregister_daap_dbus_iface (RBDaapPlugin *plugin)
 {
-	if (plugin->priv->dbus_intf_id == 0) {
+	if (plugin->dbus_intf_id == 0) {
 		rb_debug ("DAAP DBus interface not registered");
 		return;
 	}
 
-	if (plugin->priv->bus == NULL) {
+	if (plugin->bus == NULL) {
 		rb_debug ("no bus connection");
 		return;
 	}
 
-	g_dbus_connection_unregister_object (plugin->priv->bus, plugin->priv->dbus_intf_id);
-	plugin->priv->dbus_intf_id = 0;
+	g_dbus_connection_unregister_object (plugin->bus, plugin->dbus_intf_id);
+	plugin->dbus_intf_id = 0;
 }
 
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
+{
+	rb_daap_plugin_register_type (G_TYPE_MODULE (module));
+	_rb_daap_container_record_register_type (G_TYPE_MODULE (module));
+	_rb_daap_record_factory_register_type (G_TYPE_MODULE (module));
+	_rb_daap_record_register_type (G_TYPE_MODULE (module));
+	_rb_daap_source_register_type (G_TYPE_MODULE (module));
+	_rb_dacp_pairing_page_register_type (G_TYPE_MODULE (module));
+	_rb_dacp_player_register_type (G_TYPE_MODULE (module));
+	_rb_dmap_container_db_adapter_register_type (G_TYPE_MODULE (module));
+	_rb_rhythmdb_dmap_db_adapter_register_type (G_TYPE_MODULE (module));
+	_rb_rhythmdb_query_model_dmap_db_adapter_register_type (G_TYPE_MODULE (module));
+
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_DAAP_PLUGIN);
+	peas_object_module_register_extension_type (module,
+						    PEAS_GTK_TYPE_CONFIGURABLE,
+						    RB_TYPE_DAAP_PLUGIN);
+}

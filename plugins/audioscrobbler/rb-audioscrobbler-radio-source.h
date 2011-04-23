@@ -77,6 +77,8 @@ typedef struct
 } RBAudioscrobblerRadioSourceClass;
 
 GType rb_audioscrobbler_radio_source_get_type (void);
+void _rb_audioscrobbler_radio_source_register_type (GTypeModule *module);
+
 RBSource *rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfilePage *parent,
                                               RBAudioscrobblerService *service,
                                               const char *username,

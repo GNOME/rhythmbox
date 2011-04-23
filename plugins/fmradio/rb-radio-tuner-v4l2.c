@@ -40,7 +40,6 @@
 #include <glib.h>
 
 #include "rb-debug.h"
-#include "rb-plugin.h"
 #include "rb-radio-tuner.h"
 
 struct _RBRadioTunerPrivate {
@@ -51,7 +50,7 @@ struct _RBRadioTunerPrivate {
 	guint32 freq_mul;
 };
 
-RB_PLUGIN_DEFINE_TYPE (RBRadioTuner, rb_radio_tuner, G_TYPE_OBJECT);
+G_DEFINE_DYNAMIC_TYPE (RBRadioTuner, rb_radio_tuner, G_TYPE_OBJECT);
 
 static void rb_radio_tuner_finalize (GObject *object);
 
@@ -63,6 +62,11 @@ rb_radio_tuner_class_init (RBRadioTunerClass *class)
 	object_class->finalize = rb_radio_tuner_finalize;
 
 	g_type_class_add_private (class, sizeof (RBRadioTunerPrivate));
+}
+
+static void
+rb_radio_tuner_class_finalize (RBRadioTunerClass *class)
+{
 }
 
 static void
@@ -226,4 +230,10 @@ rb_radio_tuner_set_mute (RBRadioTuner *self, gboolean mute)
 	control.id = V4L2_CID_AUDIO_MUTE;
 	control.value = !!mute;
 	return ioctl (self->priv->fd, VIDIOC_S_CTRL, &control) >= 0;
+}
+
+void
+_rb_radio_tuner_register_type (GTypeModule *module)
+{
+	rb_radio_tuner_register_type (module);
 }

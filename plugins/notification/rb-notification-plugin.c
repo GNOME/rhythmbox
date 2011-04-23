@@ -37,7 +37,7 @@
 #include <libnotify/notify.h>
 
 #include "rb-util.h"
-#include "rb-plugin.h"
+#include "rb-plugin-macros.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
@@ -54,7 +54,7 @@
 
 typedef struct
 {
-	RBPlugin parent;
+	PeasExtensionBase parent;
 
 	/* current playing data */
 	char *current_title;
@@ -67,20 +67,17 @@ typedef struct
 	gboolean notify_supports_persistence;
 
 	RBShellPlayer *shell_player;
-	RBShell *shell;
 	RhythmDB *db;
 } RBNotificationPlugin;
 
 typedef struct
 {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 } RBNotificationPluginClass;
 
-GType	rb_notification_plugin_get_type		(void) G_GNUC_CONST;
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule  *module);
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
-
-RB_PLUGIN_REGISTER(RBNotificationPlugin, rb_notification_plugin)
+RB_DEFINE_PLUGIN(RB_TYPE_NOTIFICATION_PLUGIN, RBNotificationPlugin, rb_notification_plugin,)
 
 static gchar *
 markup_escape (const char *text)
@@ -534,24 +531,24 @@ db_stream_metadata_cb (RhythmDB *db,
 /* plugin infrastructure */
 
 static void
-impl_activate (RBPlugin *bplugin,
-	       RBShell *shell)
+impl_activate (PeasActivatable *bplugin)
 {
 	RBNotificationPlugin *plugin;
 	GDBusConnection *bus;
+	RBShell *shell;
 
 	rb_debug ("activating notification plugin");
 
 	plugin = RB_NOTIFICATION_PLUGIN (bplugin);
+	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell,
 		      "shell-player", &plugin->shell_player,
 		      "db", &plugin->db,
 		      NULL);
-	plugin->shell = g_object_ref (shell);
 
 	/* connect various things */
-	g_signal_connect_object (plugin->shell, "notify-playing-entry", G_CALLBACK (shell_notify_playing_cb), plugin, 0);
-	g_signal_connect_object (plugin->shell, "notify-custom", G_CALLBACK (shell_notify_custom_cb), plugin, 0);
+	g_signal_connect_object (shell, "notify-playing-entry", G_CALLBACK (shell_notify_playing_cb), plugin, 0);
+	g_signal_connect_object (shell, "notify-custom", G_CALLBACK (shell_notify_custom_cb), plugin, 0);
 
 	g_signal_connect_object (plugin->shell_player, "playing-song-changed", G_CALLBACK (playing_entry_changed_cb), plugin, 0);
 
@@ -590,15 +587,19 @@ impl_activate (RBPlugin *bplugin,
 	}
 
 	/* hook into shell preferences so we can poke stuff into the general prefs page? */
+
+	g_object_unref (shell);
 }
 
 static void
-impl_deactivate	(RBPlugin *bplugin,
-		 RBShell *shell)
+impl_deactivate	(PeasActivatable *bplugin)
 {
 	RBNotificationPlugin *plugin;
+	RBShell *shell;
 
 	plugin = RB_NOTIFICATION_PLUGIN (bplugin);
+
+	g_object_get (plugin, "object", &shell, NULL);
 
 	cleanup_notification (plugin);
 
@@ -618,10 +619,8 @@ impl_deactivate	(RBPlugin *bplugin,
 		plugin->db = NULL;
 	}
 
-	g_signal_handlers_disconnect_by_func (plugin->shell, shell_notify_playing_cb, plugin);
-	g_signal_handlers_disconnect_by_func (plugin->shell, shell_notify_custom_cb, plugin);
-	g_object_unref (plugin->shell);
-	plugin->shell = NULL;
+	g_signal_handlers_disconnect_by_func (shell, shell_notify_playing_cb, plugin);
+	g_signal_handlers_disconnect_by_func (shell, shell_notify_custom_cb, plugin);
 
 	/* forget what's playing */
 	g_free (plugin->current_title);
@@ -630,6 +629,8 @@ impl_deactivate	(RBPlugin *bplugin,
 	plugin->current_title = NULL;
 	plugin->current_album_and_artist = NULL;
 	plugin->notify_art_path = NULL;
+
+	g_object_unref (shell);
 }
 
 static void
@@ -637,11 +638,11 @@ rb_notification_plugin_init (RBNotificationPlugin *plugin)
 {
 }
 
-static void
-rb_notification_plugin_class_init (RBNotificationPluginClass *klass)
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
 {
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
+	rb_notification_plugin_register_type (G_TYPE_MODULE (module));
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_NOTIFICATION_PLUGIN);
 }

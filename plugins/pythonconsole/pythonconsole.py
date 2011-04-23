@@ -36,9 +36,8 @@ import string
 import sys
 import re
 import traceback
-import gobject
 
-from gi.repository import Gtk, Gdk, Pango
+from gi.repository import Gtk, Gdk, GObject, Pango, Peas
 from gi.repository import RB
 
 try:
@@ -60,14 +59,19 @@ ui_str = """
 </ui>
 """
 
-class PythonConsolePlugin(RB.Plugin):
+class PythonConsolePlugin(GObject.Object, Peas.Activatable):
+	__gtype_name__ = 'PythonConsolePlugin'
+
+	object = GObject.property (type = GObject.Object)
+
 	def __init__(self):
-		RB.Plugin.__init__(self)
+		GObject.Object.__init__(self)
 		self.window = None
 			
-	def activate(self, shell):
+	def do_activate(self):
 		data = dict()
-		manager = shell.get_player().get_property('ui-manager')
+		shell = self.object
+		manager = shell.props.ui_manager
 		
 		data['action_group'] = Gtk.ActionGroup(name='PythonConsolePluginActions')
 
@@ -92,10 +96,11 @@ class PythonConsolePlugin(RB.Plugin):
 		
 		shell.set_data('PythonConsolePluginInfo', data)
 	
-	def deactivate(self, shell):
+	def do_deactivate(self):
+		shell = self.object
 		data = shell.get_data('PythonConsolePluginInfo')
 
-		manager = shell.get_player().get_property('ui-manager')
+		manager = shell.props.ui_manager
 		manager.remove_ui(data['ui_id'])
 		manager.remove_action_group(data['action_group'])
 		manager.ensure_update()
@@ -142,7 +147,7 @@ class PythonConsolePlugin(RB.Plugin):
 				rpdb2.start_embedded_debugger(password)
 				return False
 
-			gobject.idle_add(start_debugger, password)
+			GObject.idle_add(start_debugger, password)
 		dialog.destroy()
 	
 	def destroy_console(self, *args):
@@ -232,7 +237,7 @@ class PythonConsole(Gtk.ScrolledWindow):
 				cur = self.get_end_iter()
 				
 			buffer.place_cursor(cur)
-			gobject.idle_add(self.scroll_to_end)
+			GObject.idle_add(self.scroll_to_end)
 			return True
 		
 		elif event.keyval == Gdk.KEY_Return:
@@ -276,7 +281,7 @@ class PythonConsole(Gtk.ScrolledWindow):
 			cur = self.get_end_iter()
 			buffer.move_mark(inp_mark, cur)
 			buffer.place_cursor(cur)
-			gobject.idle_add(self.scroll_to_end)
+			GObject.idle_add(self.scroll_to_end)
 			return True
 
 		elif event.keyval == Gdk.KEY_KP_Down or \
@@ -284,7 +289,7 @@ class PythonConsole(Gtk.ScrolledWindow):
 			# Next entry from history
 			view.emit_stop_by_name("key_press_event")
 			self.history_down()
-			gobject.idle_add(self.scroll_to_end)
+			GObject.idle_add(self.scroll_to_end)
 			return True
 
 		elif event.keyval == Gdk.KEY_KP_Up or \
@@ -292,7 +297,7 @@ class PythonConsole(Gtk.ScrolledWindow):
 			# Previous entry from history
 			view.emit_stop_by_name("key_press_event")
 			self.history_up()
-			gobject.idle_add(self.scroll_to_end)
+			GObject.idle_add(self.scroll_to_end)
 			return True
 
 		elif event.keyval == Gdk.KEY_KP_Left or \
@@ -371,7 +376,7 @@ class PythonConsole(Gtk.ScrolledWindow):
 			start_iter = Gtk.TextIter()
 			start_iter = buffer.get_iter_at_offset(offset)
 			buffer.apply_tag(tag, start_iter, self.get_end_iter())
-		gobject.idle_add(self.scroll_to_end)
+		GObject.idle_add(self.scroll_to_end)
  	
  	def eval(self, command, display_command = False):
 		buffer = self.view.get_buffer()

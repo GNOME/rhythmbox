@@ -39,7 +39,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include "rb-plugin.h"
+#include "rb-plugin-macros.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
 #include "rb-dialog.h"
@@ -62,9 +62,8 @@
 
 typedef struct
 {
-	RBPlugin parent;
+	PeasExtensionBase parent;
 
-	RBShell *shell;
 	guint ui_merge_id;
 
 	GList *player_sources;
@@ -73,23 +72,19 @@ typedef struct
 
 typedef struct
 {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 } RBGenericPlayerPluginClass;
 
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
-GType	rb_generic_player_plugin_get_type		(void) G_GNUC_CONST;
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule  *module);
 
 static void rb_generic_player_plugin_init (RBGenericPlayerPlugin *plugin);
-static void rb_generic_player_plugin_finalize (GObject *object);
-static void impl_activate (RBPlugin *plugin, RBShell *shell);
-static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
 
 static void rb_generic_player_plugin_new_playlist (GtkAction *action, RBSource *source);
 static void rb_generic_player_plugin_delete_playlist (GtkAction *action, RBSource *source);
 static void rb_generic_player_plugin_properties (GtkAction *action, RBSource *source);
 
-RB_PLUGIN_REGISTER(RBGenericPlayerPlugin, rb_generic_player_plugin)
+RB_DEFINE_PLUGIN(RB_TYPE_GENERIC_PLAYER_PLUGIN, RBGenericPlayerPlugin, rb_generic_player_plugin,)
 
 static GtkActionEntry rb_generic_player_plugin_actions[] = {
 	{ "GenericPlayerSourceNewPlaylist", RB_STOCK_PLAYLIST_NEW, N_("New Playlist"), NULL,
@@ -104,37 +99,9 @@ static GtkActionEntry rb_generic_player_plugin_actions[] = {
 };
 
 static void
-rb_generic_player_plugin_class_init (RBGenericPlayerPluginClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-
-	object_class->finalize = rb_generic_player_plugin_finalize;
-
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
-
-	RB_PLUGIN_REGISTER_TYPE(rb_generic_player_source);
-	RB_PLUGIN_REGISTER_TYPE(rb_generic_player_playlist_source);
-	RB_PLUGIN_REGISTER_TYPE(rb_psp_source);
-	RB_PLUGIN_REGISTER_TYPE(rb_nokia770_source);
-}
-
-static void
 rb_generic_player_plugin_init (RBGenericPlayerPlugin *plugin)
 {
 	rb_debug ("RBGenericPlayerPlugin initialising");
-}
-
-static void
-rb_generic_player_plugin_finalize (GObject *object)
-{
-/*
-	RBGenericPlayerPlugin *plugin = RB_GENERIC_PLAYER_PLUGIN (object);
-*/
-	rb_debug ("RBGenericPlayerPlugin finalising");
-
-	G_OBJECT_CLASS (rb_generic_player_plugin_parent_class)->finalize (object);
 }
 
 static void
@@ -184,20 +151,23 @@ static RBSource *
 create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *device_info, RBGenericPlayerPlugin *plugin)
 {
 	RBSource *source = NULL;
+	RBShell *shell;
+
+	g_object_get (plugin, "object", &shell, NULL);
 
 	if (rb_psp_is_mount_player (mount, device_info))
-		source = RB_SOURCE (rb_psp_source_new (RB_PLUGIN (plugin), plugin->shell, mount, device_info));
+		source = RB_SOURCE (rb_psp_source_new (G_OBJECT (plugin), shell, mount, device_info));
 	if (source == NULL && rb_nokia770_is_mount_player (mount, device_info))
-		source = RB_SOURCE (rb_nokia770_source_new (RB_PLUGIN (plugin), plugin->shell, mount, device_info));
+		source = RB_SOURCE (rb_nokia770_source_new (G_OBJECT (plugin), shell, mount, device_info));
 	if (source == NULL && rb_generic_player_is_mount_player (mount, device_info))
-		source = RB_SOURCE (rb_generic_player_source_new (RB_PLUGIN (plugin), plugin->shell, mount, device_info));
+		source = RB_SOURCE (rb_generic_player_source_new (G_OBJECT (plugin), shell, mount, device_info));
 
 	if (plugin->actions == NULL) {
 		plugin->actions = gtk_action_group_new ("GenericPlayerActions");
 		gtk_action_group_set_translation_domain (plugin->actions, GETTEXT_PACKAGE);
 
 		_rb_action_group_add_display_page_actions (plugin->actions,
-							   G_OBJECT (plugin->shell),
+							   G_OBJECT (shell),
 							   rb_generic_player_plugin_actions,
 							   G_N_ELEMENTS (rb_generic_player_plugin_actions));
 	}
@@ -207,16 +177,16 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 			GtkUIManager *uimanager = NULL;
 			char *file = NULL;
 
-			g_object_get (G_OBJECT (plugin->shell), "ui-manager", &uimanager, NULL);
+			g_object_get (shell, "ui-manager", &uimanager, NULL);
 
 			gtk_ui_manager_insert_action_group (uimanager, plugin->actions, 0);
 
-			file = rb_plugin_find_file (RB_PLUGIN (plugin), "generic-player-ui.xml");
+			file = rb_find_plugin_data_file (G_OBJECT (plugin), "generic-player-ui.xml");
 			plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
 									       file,
 									       NULL);
 			g_free (file);
-			g_object_unref (G_OBJECT (uimanager));
+			g_object_unref (uimanager);
 		}
 
 		plugin->player_sources = g_list_prepend (plugin->player_sources, source);
@@ -225,23 +195,22 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 					 plugin, 0);
 	}
 
+	g_object_unref (shell);
 	return source;
 }
 
 
 
 static void
-impl_activate (RBPlugin *plugin,
-	       RBShell *shell)
+impl_activate (PeasActivatable *plugin)
 {
 	RBGenericPlayerPlugin *pi = RB_GENERIC_PLAYER_PLUGIN (plugin);
 	RBRemovableMediaManager *rmm;
+	RBShell *shell;
 	gboolean scanned;
 
-	pi->shell = shell;
-	g_object_get (G_OBJECT (shell),
-		      "removable-media-manager", &rmm,
-		      NULL);
+	g_object_get (plugin, "object", &shell, NULL);
+	g_object_get (shell, "removable-media-manager", &rmm, NULL);
 
 	/* watch for new removable media.  use connect_after so
 	 * plugins for more specific device types can get in first.
@@ -251,22 +220,24 @@ impl_activate (RBPlugin *plugin,
 				pi);
 
 	/* only scan if we're being loaded after the initial scan has been done */
-	g_object_get (G_OBJECT (rmm), "scanned", &scanned, NULL);
+	g_object_get (rmm, "scanned", &scanned, NULL);
 	if (scanned)
 		rb_removable_media_manager_scan (rmm);
 
-	g_object_unref (G_OBJECT (rmm));
+	g_object_unref (rmm);
+	g_object_unref (shell);
 }
 
 static void
-impl_deactivate	(RBPlugin *bplugin,
-		 RBShell *shell)
+impl_deactivate	(PeasActivatable *bplugin)
 {
 	RBGenericPlayerPlugin *plugin = RB_GENERIC_PLAYER_PLUGIN (bplugin);
-	RBRemovableMediaManager *rmm = NULL;
-	GtkUIManager *uimanager = NULL;
+	RBRemovableMediaManager *rmm;
+	GtkUIManager *uimanager;
+	RBShell *shell;
 
-	g_object_get (G_OBJECT (shell),
+	g_object_get (plugin, "object", &shell, NULL);
+	g_object_get (shell,
 		      "removable-media-manager", &rmm,
 		      "ui-manager", &uimanager,
 		      NULL);
@@ -282,8 +253,9 @@ impl_deactivate	(RBPlugin *bplugin,
 		plugin->ui_merge_id = 0;
 	}
 
-	g_object_unref (G_OBJECT (uimanager));
-	g_object_unref (G_OBJECT (rmm));
+	g_object_unref (uimanager);
+	g_object_unref (rmm);
+	g_object_unref (shell);
 }
 
 static void
@@ -291,4 +263,18 @@ rb_generic_player_plugin_properties (GtkAction *action, RBSource *source)
 {
 	g_return_if_fail (RB_IS_GENERIC_PLAYER_SOURCE (source));
 	rb_media_player_source_show_properties (RB_MEDIA_PLAYER_SOURCE (source));
+}
+
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
+{
+	rb_generic_player_plugin_register_type (G_TYPE_MODULE (module));
+	_rb_generic_player_source_register_type (G_TYPE_MODULE (module));
+	_rb_generic_player_playlist_source_register_type (G_TYPE_MODULE (module));
+	_rb_nokia770_source_register_type (G_TYPE_MODULE (module));
+	_rb_psp_source_register_type (G_TYPE_MODULE (module));
+
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_GENERIC_PLAYER_PLUGIN);
 }

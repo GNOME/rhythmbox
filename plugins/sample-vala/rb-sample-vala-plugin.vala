@@ -1,22 +1,22 @@
 using GLib;
 using RB;
-using RhythmDB;
 
-class SampleValaPlugin: RB.Plugin {
-	public override void activate (RB.Shell shell) {
+class SampleValaPlugin: Peas.ExtensionBase, Peas.Activatable {
+	public override void activate () {
 		stdout.printf ("Hello world\n");
 	}
 
-	public override void deactivate (RB.Shell shell) {
+	public override void deactivate () {
 		stdout.printf ("Goodbye world\n");
 	}
 }
 
 
 [ModuleInit]
-public GLib.Type register_rb_plugin (GLib.TypeModule module)
+public void peas_register_types (GLib.TypeModule module) {
 {
+	var objmodule = module as Peas.ObjectModule;
 	stdout.printf ("Registering plugin %s\n", "SampleValaPlugin");
 
-	return typeof (SampleValaPlugin);
+	objmodule.register_extension_type (typeof (Peas.Activatable), typeof (SampleValaPlugin));
 }

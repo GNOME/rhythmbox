@@ -114,7 +114,7 @@ typedef struct {
 
 } RbIpodDbPrivate;
 
-G_DEFINE_TYPE (RbIpodDb, rb_ipod_db, G_TYPE_OBJECT)
+G_DEFINE_DYNAMIC_TYPE (RbIpodDb, rb_ipod_db, G_TYPE_OBJECT)
 
 #define IPOD_DB_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IPOD_DB, RbIpodDbPrivate))
 
@@ -233,6 +233,11 @@ rb_ipod_db_class_init (RbIpodDbClass *klass)
 			      0);
 
 	g_type_class_add_private (klass, sizeof (RbIpodDbPrivate));
+}
+
+static void
+rb_ipod_db_class_finalize (RbIpodDbClass *klass)
+{
 }
 
 enum _RbIpodDelayedActionType {
@@ -954,4 +959,10 @@ rb_ipod_db_get_database_version (RbIpodDb *ipod_db)
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
 	return priv->itdb->version;
+}
+
+void
+_rb_ipod_db_register_type (GTypeModule *module)
+{
+	rb_ipod_db_register_type (module);
 }

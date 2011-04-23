@@ -31,11 +31,9 @@
 typedef struct _RhythmDBEntryType RBAudioscrobblerRadioEntryType;
 typedef struct _RhythmDBEntryTypeClass RBAudioscrobblerRadioEntryTypeClass;
 
-static void rb_audioscrobbler_radio_entry_type_class_init (RBAudioscrobblerRadioEntryTypeClass *klass);
-static void rb_audioscrobbler_radio_entry_type_init (RBAudioscrobblerRadioEntryType *etype);
 GType rb_audioscrobbler_radio_entry_type_get_type (void);
 
-G_DEFINE_TYPE (RBAudioscrobblerRadioEntryType, rb_audioscrobbler_radio_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+G_DEFINE_DYNAMIC_TYPE (RBAudioscrobblerRadioEntryType, rb_audioscrobbler_radio_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
 
 static RhythmDBEntryType *radio_track_entry_type = NULL;
 
@@ -55,6 +53,11 @@ rb_audioscrobbler_radio_entry_type_class_init (RBAudioscrobblerRadioEntryTypeCla
 {
 	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
 	etype_class->destroy_entry = track_data_destroy;
+}
+
+static void
+rb_audioscrobbler_radio_entry_type_class_finalize (RBAudioscrobblerRadioEntryTypeClass *klass)
+{
 }
 
 static void
@@ -82,4 +85,10 @@ rb_audioscrobbler_radio_track_register_entry_type (RhythmDB *db)
 	                                       NULL);
 
 	rhythmdb_register_entry_type (db, radio_track_entry_type);
+}
+
+void
+_rb_audioscrobbler_radio_track_entry_type_register_type (GTypeModule *module)
+{
+	rb_audioscrobbler_radio_entry_type_register_type (module);
 }

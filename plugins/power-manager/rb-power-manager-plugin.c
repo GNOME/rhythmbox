@@ -37,8 +37,9 @@
 #include <gdk/gdkx.h>
 #include <gio/gio.h>
 
-#include "rb-plugin.h"
+#include "rb-plugin-macros.h"
 #include "rb-debug.h"
+#include "rb-shell.h"
 
 #define RB_TYPE_GPM_PLUGIN		(rb_gpm_plugin_get_type ())
 #define RB_GPM_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_GPM_PLUGIN, RBGPMPlugin))
@@ -49,36 +50,22 @@
 
 typedef struct
 {
-	RBPlugin parent;
+	PeasExtensionBase parent;
 
 	GDBusProxy *proxy;
 	guint32 cookie;
 	gint handler_id;
 	gint timeout_id;
-	RBShell *shell;
 } RBGPMPlugin;
 
 typedef struct
 {
-	RBPluginClass parent_class;
+	PeasExtensionBaseClass parent_class;
 } RBGPMPluginClass;
 
-G_MODULE_EXPORT GType register_rb_plugin (GTypeModule *module);
-GType	rb_gpm_plugin_get_type		(void) G_GNUC_CONST;
+G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
-static void rb_gpm_plugin_init (RBGPMPlugin *plugin);
-static void impl_activate (RBPlugin *plugin, RBShell *shell);
-static void impl_deactivate (RBPlugin *plugin, RBShell *shell);
-
-RB_PLUGIN_REGISTER(RBGPMPlugin, rb_gpm_plugin)
-
-static void
-rb_gpm_plugin_class_init (RBGPMPluginClass *klass)
-{
-	RBPluginClass *plugin_class = RB_PLUGIN_CLASS (klass);
-	plugin_class->activate = impl_activate;
-	plugin_class->deactivate = impl_deactivate;
-}
+RB_DEFINE_PLUGIN(RB_TYPE_GPM_PLUGIN, RBGPMPlugin, rb_gpm_plugin,)
 
 static void
 rb_gpm_plugin_init (RBGPMPlugin *plugin)
@@ -149,6 +136,7 @@ inhibit_done (GObject *proxy, GAsyncResult *res, RBGPMPlugin *plugin)
 
 		g_variant_unref (result);
 	}
+	g_object_unref (plugin);
 }
 
 static gboolean
@@ -157,6 +145,7 @@ inhibit (RBGPMPlugin *plugin)
 	GtkWindow *window;
 	gulong xid = 0;
 	GError *error = NULL;
+	RBShell *shell;
 
 	plugin->timeout_id = 0;
 	if (plugin->cookie != 0) {
@@ -170,7 +159,11 @@ inhibit (RBGPMPlugin *plugin)
 
 	rb_debug ("inhibiting");
 	g_object_ref (plugin);
-	g_object_get (plugin->shell, "window", &window, NULL);
+
+	g_object_get (plugin, "object", &shell, NULL);
+	g_object_get (shell, "window", &window, NULL);
+	g_object_unref (shell);
+
 	xid = gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (window)));
 	g_dbus_proxy_call (plugin->proxy,
 			   "Inhibit",
@@ -185,6 +178,7 @@ inhibit (RBGPMPlugin *plugin)
 		g_clear_error (&error);
 	}
 
+	g_object_unref (window);
 	return FALSE;
 }
 
@@ -208,6 +202,7 @@ uninhibit_done (GObject *proxy, GAsyncResult *res, RBGPMPlugin *plugin)
 
 		g_variant_unref (result);
 	}
+	g_object_unref (plugin);
 }
 
 static gboolean
@@ -232,7 +227,7 @@ uninhibit (RBGPMPlugin *plugin)
 			   -1,
 			   NULL,
 			   (GAsyncReadyCallback) uninhibit_done,
-			   plugin);
+			   g_object_ref (plugin));
 	return FALSE;
 }
 
@@ -253,17 +248,16 @@ playing_changed_cb (GObject *player, gboolean playing, RBGPMPlugin *plugin)
 }
 
 static void
-impl_activate (RBPlugin *rbplugin,
-	       RBShell *shell)
+impl_activate (PeasActivatable *bplugin)
 {
 	RBGPMPlugin *plugin;
 	GObject *shell_player;
 	gboolean playing;
+	RBShell *shell;
 
-	plugin = RB_GPM_PLUGIN (rbplugin);
+	plugin = RB_GPM_PLUGIN (bplugin);
 
-	plugin->shell = g_object_ref (shell);
-
+	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell, "shell-player", &shell_player, NULL);
 
 	plugin->handler_id = g_signal_connect_object (shell_player,
@@ -277,16 +271,17 @@ impl_activate (RBPlugin *rbplugin,
 	}
 
 	g_object_unref (shell_player);
+	g_object_unref (shell);
 }
 
 static void
-impl_deactivate (RBPlugin *rbplugin,
-		 RBShell *shell)
+impl_deactivate (PeasActivatable *bplugin)
 {
 	RBGPMPlugin *plugin;
 	GObject *shell_player;
+	RBShell *shell;
 
-	plugin = RB_GPM_PLUGIN (rbplugin);
+	plugin = RB_GPM_PLUGIN (bplugin);
 
 	if (plugin->timeout_id != 0) {
 		g_source_remove (plugin->timeout_id);
@@ -298,6 +293,7 @@ impl_deactivate (RBPlugin *rbplugin,
 		plugin->cookie = 0;
 	}
 
+	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell, "shell-player", &shell_player, NULL);
 
 	if (plugin->handler_id != 0) {
@@ -305,11 +301,20 @@ impl_deactivate (RBPlugin *rbplugin,
 		plugin->handler_id = 0;
 	}
 
-	g_object_unref (plugin->shell);
+	g_object_unref (shell);
 	g_object_unref (shell_player);
 
 	if (plugin->proxy != NULL) {
 		g_object_unref (plugin->proxy);
 		plugin->proxy = NULL;
 	}
+}
+
+G_MODULE_EXPORT void
+peas_register_types (PeasObjectModule *module)
+{
+	rb_gpm_plugin_register_type (G_TYPE_MODULE (module));
+	peas_object_module_register_extension_type (module,
+						    PEAS_TYPE_ACTIVATABLE,
+						    RB_TYPE_GPM_PLUGIN);
 }

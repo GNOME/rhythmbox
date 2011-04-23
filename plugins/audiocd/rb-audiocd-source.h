@@ -51,11 +51,11 @@ typedef struct
 	RBRemovableMediaSourceClass parent;
 } RBAudioCdSourceClass;
 
-RBSource *		rb_audiocd_source_new			(RBPlugin *plugin,
+RBSource *		rb_audiocd_source_new			(GObject *plugin,
 								 RBShell  *shell,
 								 GVolume  *volume);
 GType			rb_audiocd_source_get_type		(void);
-GType			rb_audiocd_source_register_type		(GTypeModule *module);
+void			_rb_audiocd_source_register_type	(GTypeModule *module);
 
 gboolean		rb_audiocd_is_mount_audiocd		(GMount *mount);
 

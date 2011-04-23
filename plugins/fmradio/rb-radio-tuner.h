@@ -67,7 +67,6 @@ struct _RBRadioTunerClass {
 };
 
 GType         rb_radio_tuner_get_type      (void);
-GType         rb_radio_tuner_register_type (GTypeModule *module);
 
 RBRadioTuner *rb_radio_tuner_new           (const gchar *devname,
 					    GError **err);
@@ -77,6 +76,7 @@ gboolean      rb_radio_tuner_set_frequency (RBRadioTuner *self,
 gboolean      rb_radio_tuner_set_mute      (RBRadioTuner *self,
 					    gboolean mute);
 
+void          _rb_radio_tuner_register_type (GTypeModule *module);
 G_END_DECLS
 
 #endif /* RB_RADIO_TUNER_H */
