@@ -29,9 +29,9 @@ lib/rb-util.c
 metadata/rb-metadata-dbus-client.c
 metadata/rb-metadata-gst.c
 [type: gettext/ini]plugins/artdisplay/artdisplay.plugin.in
-plugins/artdisplay/artdisplay/CoverArtDatabase.py
-plugins/artdisplay/artdisplay/LastFMCoverArtSearch.py
-plugins/artdisplay/artdisplay/__init__.py
+plugins/artdisplay/artdisplay.py
+plugins/artdisplay/CoverArtDatabase.py
+plugins/artdisplay/LastFMCoverArtSearch.py
 [type: gettext/ini]plugins/audiocd/audiocd.plugin.in
 [type: gettext/glade]plugins/audiocd/album-info.ui
 [type: gettext/glade]plugins/audiocd/multiple-album.ui
@@ -54,12 +54,12 @@ plugins/audioscrobbler/rb-audioscrobbler.c
 [type: gettext/ini]plugins/brasero-disc-recorder/cd-recorder.plugin.in
 plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c
 [type: gettext/ini]plugins/context/context.plugin.in
-plugins/context/context/AlbumTab.py
-plugins/context/context/ArtistTab.py
-plugins/context/context/ContextView.py
-plugins/context/context/LastFM.py
-plugins/context/context/LinksTab.py
-plugins/context/context/LyricsTab.py
+plugins/context/AlbumTab.py
+plugins/context/ArtistTab.py
+plugins/context/ContextView.py
+plugins/context/LastFM.py
+plugins/context/LinksTab.py
+plugins/context/LyricsTab.py
 plugins/context/tmpl/album-tmpl.html
 plugins/context/tmpl/artist-tmpl.html
 plugins/context/tmpl/loading.html
@@ -83,7 +83,6 @@ plugins/generic-player/rb-generic-player-source.c
 plugins/generic-player/rb-nokia770-source.c
 plugins/generic-player/rb-psp-source.c
 [type: gettext/ini]plugins/im-status/im-status.plugin.in
-plugins/im-status/im-status/__init__.py
 [type: gettext/ini]plugins/ipod/ipod.plugin.in
 [type: gettext/glade]plugins/ipod/ipod-info.ui
 [type: gettext/glade]plugins/ipod/ipod-init.ui
@@ -94,29 +93,26 @@ plugins/ipod/rb-ipod-source.c
 [type: gettext/glade]plugins/jamendo/jamendo-prefs.ui
 [type: gettext/glade]plugins/jamendo/jamendo-loading.ui
 [type: gettext/ini]plugins/jamendo/jamendo.plugin.in
-plugins/jamendo/jamendo/__init__.py
-plugins/jamendo/jamendo/JamendoConfigureDialog.py
-plugins/jamendo/jamendo/JamendoSaxHandler.py
-plugins/jamendo/jamendo/JamendoSource.py
+plugins/jamendo/JamendoConfigureDialog.py
+plugins/jamendo/JamendoSaxHandler.py
+plugins/jamendo/JamendoSource.py
 plugins/iradio/rb-iradio-source.c
 plugins/iradio/rb-station-properties-dialog.c
 [type: gettext/glade]plugins/iradio/station-properties.ui
 [type: gettext/ini]plugins/lirc/lirc.plugin.in
 plugins/lirc/rb-lirc-plugin.c
-plugins/lyrics/lyrics/__init__.py
-plugins/lyrics/lyrics/AstrawebParser.py
-plugins/lyrics/lyrics/LeoslyricsParser.py
-plugins/lyrics/lyrics/LyrcParser.py
-plugins/lyrics/lyrics/LyricsConfigureDialog.py
-plugins/lyrics/lyrics/LyricsParse.py
-plugins/lyrics/lyrics/LyricsSites.py
+plugins/lyrics/AstrawebParser.py
+plugins/lyrics/LeoslyricsParser.py
+plugins/lyrics/LyrcParser.py
+plugins/lyrics/LyricsConfigureDialog.py
+plugins/lyrics/LyricsParse.py
+plugins/lyrics/LyricsSites.py
 [type: gettext/ini]plugins/lyrics/lyrics.plugin.in
 [type: gettext/glade]plugins/lyrics/lyrics-prefs.ui
 [type: gettext/glade]plugins/magnatune/magnatune-loading.ui
 [type: gettext/glade]plugins/magnatune/magnatune-prefs.ui
 [type: gettext/ini]plugins/magnatune/magnatune.plugin.in
-plugins/magnatune/magnatune/MagnatuneSource.py
-plugins/magnatune/magnatune/__init__.py
+plugins/magnatune/MagnatuneSource.py
 [type: gettext/ini]plugins/mmkeys/mmkeys.plugin.in
 [type: gettext/ini]plugins/mtpdevice/mtpdevice.plugin.in
 [type: gettext/glade]plugins/mtpdevice/mtp-info.ui
@@ -131,12 +127,11 @@ plugins/notification/rb-notification-plugin.c
 plugins/power-manager/rb-power-manager-plugin.c
 plugins/pythonconsole/pythonconsole.py
 [type: gettext/ini]plugins/pythonconsole/pythonconsole.plugin.in
-plugins/rb/rb/__init__.py
 [type: gettext/ini]plugins/rbzeitgeist/rbzeitgeist.plugin.in
 [type: gettext/ini]plugins/replaygain/replaygain.plugin.in
 [type: gettext/glade]plugins/replaygain/replaygain-prefs.ui
-plugins/replaygain/replaygain/config.py
-plugins/replaygain/replaygain/player.py
+plugins/replaygain/config.py
+plugins/replaygain/player.py
 plugins/sample-python/sample-python.py
 [type: gettext/ini]plugins/sample-python/sample-python.plugin.in
 plugins/sample/rb-sample-plugin.c
