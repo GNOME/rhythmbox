@@ -1712,7 +1712,7 @@ rb_entry_view_insert_column_custom (RBEntryView *view,
 	g_object_set_data_full (G_OBJECT (column), "rb-entry-view-key",
 				g_strdup (key), g_free);
 
-	rb_debug ("appending column: %p (%s)", column, title);
+	rb_debug ("appending column: %p (title: %s, key: %s)", column, title, key);
 
 	gtk_tree_view_insert_column (GTK_TREE_VIEW (view->priv->treeview), column, position);
 
@@ -2406,7 +2406,7 @@ rb_entry_view_sync_columns_visible (RBEntryView *view)
 		int i;
 		for (i = 0; view->priv->visible_columns[i] != NULL && *(view->priv->visible_columns[i]); i++) {
 			int value = rhythmdb_propid_from_nice_elt_name (view->priv->db, (const xmlChar *)view->priv->visible_columns[i]);
-			rb_debug ("visible columns: %s => %d\n", view->priv->visible_columns[i], value);
+			rb_debug ("visible columns: %s => %d", view->priv->visible_columns[i], value);
 
 			if ((value >= 0) && (value < RHYTHMDB_NUM_PROPERTIES))
 				visible_properties = g_list_prepend (visible_properties, GINT_TO_POINTER (value));
@@ -2522,7 +2522,11 @@ rb_entry_view_resort_model (RBEntryView *view)
 {
 	struct RBEntryViewColumnSortData *sort_data;
 
-	g_assert (view->priv->sorting_column);
+	if (view->priv->sorting_column == NULL) {
+		rb_debug ("can't sort yet, the sorting column isn't here");
+		return;
+	}
+
 	sort_data = g_hash_table_lookup (view->priv->column_sort_data_map,
 					 view->priv->sorting_column);
 	g_assert (sort_data);
