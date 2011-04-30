@@ -325,6 +325,8 @@ rb_iradio_source_constructed (GObject *object)
 			if (uri != NULL) {
 				rb_iradio_source_add_from_playlist (source, uri);
 				g_free (uri);
+
+				g_settings_set_boolean (settings, "initial-stations-loaded", TRUE);
 			}
 		}
 		g_free (file);
