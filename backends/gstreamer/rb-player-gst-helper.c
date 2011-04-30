@@ -153,23 +153,57 @@ rb_gst_process_embedded_image (const GstTagList *taglist, const char *tag)
 	GdkPixbufLoader *loader;
 	GdkPixbuf *pixbuf;
 	GError *error = NULL;
-	const GValue *val;
+	const GValue *val = NULL;
+	guint i;
 
-	val = gst_tag_list_get_value_index (taglist, tag, 0);
+	for (i = 0; ; i++) {
+		const GValue *value;
+		const char *media_type;
+		GstStructure *caps_struct;
+		int imgtype;
+
+		value = gst_tag_list_get_value_index (taglist, tag, i);
+		if (value == NULL) {
+			break;
+		}
+
+		buf = gst_value_get_buffer (value);
+		if (buf == NULL) {
+			rb_debug ("apparently couldn't get image buffer");
+			continue;
+		}
+
+		caps_struct = gst_caps_get_structure (buf->caps, 0);
+
+		media_type = gst_structure_get_name (caps_struct);
+		/* other things to ignore? */
+		if (g_strcmp0 (media_type, "text/uri-list") == 0) {
+			rb_debug ("ignoring text/uri-list image tag");
+			continue;
+		}
+
+		gst_structure_get_enum (caps_struct, "image-type", GST_TYPE_TAG_IMAGE_TYPE, &imgtype);
+		rb_debug ("image type %d", imgtype);
+		if (imgtype == GST_TAG_IMAGE_TYPE_UNDEFINED) {
+			if (val == NULL) {
+				rb_debug ("got undefined image type");
+				val = value;
+			}
+		} else if (imgtype == GST_TAG_IMAGE_TYPE_FRONT_COVER) {
+			rb_debug ("got front cover image");
+			val = value;
+		}
+	}
+
 	if (val == NULL) {
-		rb_debug ("no value for tag %s in the tag list" , tag);
+		rb_debug ("couldn't find an image to process");
 		return NULL;
 	}
 
-	buf = gst_value_get_buffer (val);
-	if (buf == NULL) {
-		rb_debug ("apparently couldn't get image buffer");
-		return NULL;
-	}
-
-	/* probably should check media type?  text/uri-list won't work too well in a pixbuf loader */
+	rb_debug ("found image at value %u for tag %s", i, tag);
 
 	loader = gdk_pixbuf_loader_new ();
+	buf = gst_value_get_buffer (val);
 	rb_debug ("sending %d bytes to pixbuf loader", buf->size);
 	if (gdk_pixbuf_loader_write (loader, buf->data, buf->size, &error) == FALSE) {
 		rb_debug ("pixbuf loader doesn't like the data: %s", error->message);
