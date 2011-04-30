@@ -72,8 +72,8 @@ static void rb_removable_media_manager_get_property (GObject *object,
 					      GValue *value,
 					      GParamSpec *pspec);
 
-static void rb_removable_media_manager_cmd_scan_media (GtkAction *action,
-						       RBRemovableMediaManager *manager);
+static void rb_removable_media_manager_cmd_check_devices (GtkAction *action,
+							  RBRemovableMediaManager *manager);
 static void rb_removable_media_manager_cmd_eject_medium (GtkAction *action,
 					       RBRemovableMediaManager *mgr);
 static gboolean rb_removable_media_manager_source_can_eject (RBRemovableMediaManager *mgr);
@@ -150,9 +150,9 @@ static GtkActionEntry rb_removable_media_manager_actions [] =
 	{ "RemovableSourceEject", GNOME_MEDIA_EJECT, N_("_Eject"), NULL,
 	  N_("Eject this medium"),
 	  G_CALLBACK (rb_removable_media_manager_cmd_eject_medium) },
-	{ "MusicScanMedia", NULL, N_("_Scan Removable Media"), NULL,
-	  N_("Scan for new Removable Media"),
-	  G_CALLBACK (rb_removable_media_manager_cmd_scan_media) },
+	{ "MusicCheckDevices", NULL, N_("_Check for New Devices"), NULL,
+	  N_("Check for new media storage devices that have not been automatically detected"),
+	  G_CALLBACK (rb_removable_media_manager_cmd_check_devices) },
 };
 static guint rb_removable_media_manager_n_actions = G_N_ELEMENTS (rb_removable_media_manager_actions);
 
@@ -842,7 +842,7 @@ rb_removable_media_manager_cmd_eject_medium (GtkAction *action, RBRemovableMedia
 }
 
 static void
-rb_removable_media_manager_cmd_scan_media (GtkAction *action, RBRemovableMediaManager *manager)
+rb_removable_media_manager_cmd_check_devices (GtkAction *action, RBRemovableMediaManager *manager)
 {
 	rb_removable_media_manager_scan (manager);
 }
