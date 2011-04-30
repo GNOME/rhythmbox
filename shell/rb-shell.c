@@ -2150,7 +2150,7 @@ rb_shell_playlist_created_cb (RBPlaylistManager *mgr,
 			      RBShell *shell)
 {
 	g_settings_set_boolean (shell->priv->settings, "small-display", FALSE);
-	g_settings_set_boolean (shell->priv->settings, "sourcelist-hidden", FALSE);
+	g_settings_set_boolean (shell->priv->settings, "display-page-tree-visible", TRUE);
 
 	rb_shell_sync_window_state (shell, FALSE);
 }
