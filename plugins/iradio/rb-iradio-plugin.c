@@ -44,6 +44,7 @@
 #include "rb-dialog.h"
 #include "rb-iradio-source.h"
 #include "rb-iradio-source-search.h"
+#include "rb-station-properties-dialog.h"
 #include "rb-file-helpers.h"
 #include "rb-display-page-group.h"
 
@@ -131,6 +132,7 @@ peas_register_types (PeasObjectModule *module)
 	rb_iradio_plugin_register_type (G_TYPE_MODULE (module));
 	_rb_iradio_source_register_type (G_TYPE_MODULE (module));
 	_rb_iradio_source_search_register_type (G_TYPE_MODULE (module));
+	_rb_station_properties_dialog_register_type (G_TYPE_MODULE (module));
 	peas_object_module_register_extension_type (module,
 						    PEAS_TYPE_ACTIVATABLE,
 						    RB_TYPE_IRADIO_PLUGIN);
