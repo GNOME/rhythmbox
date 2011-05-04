@@ -652,7 +652,7 @@ new_daap_share_location_added_cb (RBURIDialog *dialog,
 
 	rb_debug ("adding manually specified DAAP share at %s", location);
 	service.name = (char *) location;
-	service.host = (char *) location;
+	service.host = (char *) host;
 	service.service_name = service.name;
 	service.port = port;
 	service.password_protected = FALSE;
