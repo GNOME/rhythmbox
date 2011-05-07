@@ -1537,7 +1537,6 @@ impl_deactivate	(PeasActivatable *bplugin)
 		plugin->playlists_id = 0;
 	}
 
-	/* probably remove signal handlers? */
 	if (plugin->property_emit_id != 0) {
 		g_source_remove (plugin->property_emit_id);
 		plugin->property_emit_id = 0;
@@ -1552,14 +1551,41 @@ impl_deactivate	(PeasActivatable *bplugin)
 	}
 
 	if (plugin->player != NULL) {
+		g_signal_handlers_disconnect_by_func (plugin->player,
+						      G_CALLBACK (play_order_changed_cb),
+						      plugin);
+		g_signal_handlers_disconnect_by_func (plugin->player,
+						      G_CALLBACK (volume_changed_cb),
+						      plugin);
+		g_signal_handlers_disconnect_by_func (plugin->player,
+						      G_CALLBACK (playing_changed_cb),
+						      plugin);
+		g_signal_handlers_disconnect_by_func (plugin->player,
+						      G_CALLBACK (playing_entry_changed_cb),
+						      plugin);
+		g_signal_handlers_disconnect_by_func (plugin->player,
+						      G_CALLBACK (playing_source_changed_cb),
+						      plugin);
+		g_signal_handlers_disconnect_by_func (plugin->player,
+						      G_CALLBACK (elapsed_nano_changed_cb),
+						      plugin);
 		g_object_unref (plugin->player);
 		plugin->player = NULL;
 	}
 	if (plugin->db != NULL) {
+		g_signal_handlers_disconnect_by_func (plugin->db,
+						      G_CALLBACK (entry_extra_metadata_notify_cb),
+						      plugin);
+		g_signal_handlers_disconnect_by_func (plugin->db,
+						      G_CALLBACK (entry_changed_cb),
+						      plugin);
 		g_object_unref (plugin->db);
 		plugin->db = NULL;
 	}
 	if (plugin->page_model != NULL) {
+		g_signal_handlers_disconnect_by_func (plugin->page_model,
+						      G_CALLBACK (display_page_inserted_cb),
+						      plugin);
 		g_object_unref (plugin->page_model);
 		plugin->page_model = NULL;
 	}
