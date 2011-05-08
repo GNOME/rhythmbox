@@ -1600,6 +1600,35 @@ rb_player_gst_xfade_handle_missing_plugin_message (RBPlayerGstXFade *player, RBX
 	}
 }
 
+static void
+start_waiting_eos_streams (RBPlayerGstXFade *player)
+{
+	GList *l;
+	GList *to_start = NULL;
+
+	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	for (l = player->priv->streams; l != NULL; l = l->next) {
+		RBXFadeStream *pstream = l->data;
+		if (pstream->state == WAITING_EOS) {
+			to_start = g_list_prepend (to_start, g_object_ref (pstream));
+		}
+	}
+	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+
+	for (l = to_start; l != NULL; l = l->next) {
+		RBXFadeStream *pstream = l->data;
+		GError *error = NULL;
+
+		rb_debug ("starting stream %s on EOS from previous", pstream->uri);
+		if (link_and_unblock_stream (pstream, &error) == FALSE) {
+			emit_stream_error (pstream, error);
+		}
+
+		g_object_unref (pstream);
+	}
+	g_list_free (to_start);
+}
+
 /* gstreamer message bus callback */
 static gboolean
 rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *player)
@@ -1766,6 +1795,12 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				stream->state = PENDING_REMOVE;
 
 				unlink_blocked_cb (stream->src_pad, TRUE, stream);
+
+				/* start playing any streams that were waiting on an EOS
+				 * if they finished preroll between when we posted the EOS
+				 * message on the stream thread and now.
+				 */
+				start_waiting_eos_streams (player);
 			} else {
 				/* no need to emit EOS here, we already know what to do next */
 				rb_debug ("got EOS message for stream %s in REUSING state", stream->uri);
@@ -1921,9 +1956,6 @@ stream_src_event_cb (GstPad *pad, GstEvent *event, RBXFadeStream *stream)
 {
 	GstMessage *msg;
 	GstStructure *s;
-	RBPlayerGstXFade *player;
-	GList *l;
-	GList *to_start = NULL;
 
 	switch (GST_EVENT_TYPE (event)) {
 	case GST_EVENT_EOS:
@@ -1935,28 +1967,7 @@ stream_src_event_cb (GstPad *pad, GstEvent *event, RBXFadeStream *stream)
 		/* start playing any streams that were waiting on an EOS
 		 * (are we really allowed to do this on a stream thread?)
 		 */
-		player = stream->player;
-		g_static_rec_mutex_lock (&player->priv->stream_list_lock);
-		for (l = player->priv->streams; l != NULL; l = l->next) {
-			RBXFadeStream *pstream = l->data;
-			if (pstream->state == WAITING_EOS) {
-				to_start = g_list_prepend (to_start, g_object_ref (pstream));
-			}
-		}
-		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
-
-		for (l = to_start; l != NULL; l = l->next) {
-			RBXFadeStream *pstream = l->data;
-			GError *error = NULL;
-
-			rb_debug ("starting stream %s on EOS from previous", pstream->uri);
-			if (link_and_unblock_stream (pstream, &error) == FALSE) {
-				emit_stream_error (pstream, error);
-			}
-
-			g_object_unref (pstream);
-		}
-		g_list_free (to_start);
+		start_waiting_eos_streams (stream->player);
 		break;
 
 	case GST_EVENT_NEWSEGMENT:
