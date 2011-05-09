@@ -10,23 +10,23 @@
 # maria <maria.majadas@hispalinux.es>, 2006, 2007.
 # Francisco Javier F. Serrador <serrador@tecknolabs.com>, 2004, 2005, 2006.
 # Claudio Saavedra <csaavedra@alumnos.utalca.cl>, 2007.
-# Jorge González <jorgegonz@svn.gnome.org>, 2007, 2008, 2010, 2011.
 # Daniel Mustieles <daniel.mustieles@gmail.com>, 2011.
+# Jorge González <jorgegonz@svn.gnome.org>, 2007, 2008, 2010, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-05-01 01:35+0000\n"
-"PO-Revision-Date: 2011-05-04 15:48+0200\n"
-"Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
+"POT-Creation-Date: 2011-05-08 11:06+0000\n"
+"PO-Revision-Date: 2011-05-09 17:51+0200\n"
+"Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:710
 #, c-format
@@ -36,7 +36,7 @@ msgstr ""
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:502
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2723
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2734
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Falló al abrir el dispositivo de salida: %s"
@@ -61,36 +61,36 @@ msgid "Failed to start new stream"
 msgstr "Ocurrió un error al inicializar un nuevo flujo"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2648
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2659
 #, c-format
 msgid "Failed to open output device"
 msgstr "Falló al abrir el dispositivo de salida"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3001
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3074
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3012
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3085
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Ocurrió un error al crear el elemento GStreamer; compruebe su instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3015
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3026
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Ocurrió un error al crear un elemento de salida de audio; compruebe su "
 "instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3048
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3090
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3116
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3125
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3134
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3059
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3101
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3127
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3136
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3145
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Ocurrió un error al enlazar la tubería de GStreamer; compruebe su instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3229
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3240
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Ocurrió un error al crear una tubería de GStreamer para reproducir %s"
@@ -3661,7 +3661,6 @@ msgid "Eject this medium"
 msgstr "Expulsa este soporte"
 
 #: ../shell/rb-removable-media-manager.c:153
-#| msgid "Check for _new episodes:"
 msgid "_Check for New Devices"
 msgstr "_Comprobar si hay _nuevos dispositivos"
 
@@ -3915,7 +3914,7 @@ msgstr "La canción actual no se puede buscar"
 
 #: ../shell/rb-shell-player.c:3802
 msgid "Pause playback"
-msgstr "Pausar la resproducción"
+msgstr "Pausar la reproducción"
 
 #: ../shell/rb-shell-player.c:3804
 msgid "Stop playback"
