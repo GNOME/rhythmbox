@@ -429,16 +429,24 @@ ask_password (RBDAAPSource *source, const char *name, const char *keyring)
 #endif
 	}
 
+	if (! password) {
+		rb_daap_source_disconnect (source);
+	}
+
 	return password;
 }
 
-static char *
-connection_auth_cb (DMAPConnection   *connection,
-		    const char       *name,
-		    RBDAAPSource     *source)
+static void
+connection_auth_cb (DMAPConnection *connection,
+                    const char     *name,
+                    SoupSession    *session,
+                    SoupMessage    *msg,
+                    SoupAuth       *auth,
+                    gboolean        retrying,
+		    RBDAAPSource   *source)
 {
-#ifdef WITH_GNOME_KEYRING
 	gchar *password = NULL;
+#ifdef WITH_GNOME_KEYRING
 	GnomeKeyringResult keyringret;
 	gchar *keyring;
 	GList *list;
@@ -473,11 +481,10 @@ connection_auth_cb (DMAPConnection   *connection,
 	if (list)
 		gnome_keyring_network_password_list_free (list); */
 	g_free (keyring);
-	return password;
 #else
-	return ask_password (source, name, NULL);
+	password = ask_password (source, name, NULL);
 #endif
-
+	dmap_connection_authenticate_message (connection, session, msg, auth, password);
 }
 
 static void
@@ -494,7 +501,6 @@ connection_connecting_cb (DMAPConnection       *connection,
 
 	switch (state) {
 	case DMAP_GET_INFO:
-	case DMAP_GET_PASSWORD:
 	case DMAP_LOGIN:
 		source->priv->connection_status = _("Connecting to music share");
 		break;
@@ -656,7 +662,6 @@ rb_daap_source_selected (RBDisplayPage *page)
 	daap_source->priv->connection = daap_connection_new (name,
 							     daap_source->priv->host,
 							     daap_source->priv->port,
-							     daap_source->priv->password_protected,
 							     db,
 							     factory);
 	g_object_unref (entry_type);
