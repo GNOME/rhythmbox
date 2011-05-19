@@ -119,7 +119,7 @@ rb_daap_record_set_property (GObject *object,
 			record->priv->genre = g_value_dup_string (value);
 			break;
 		case PROP_MEDIAKIND:
-			record->priv->mediakind = g_value_get_int (value);
+			record->priv->mediakind = g_value_get_enum (value);
 			break;
 		case PROP_FORMAT:
 			g_free (record->priv->format);
@@ -201,7 +201,7 @@ rb_daap_record_get_property (GObject *object,
 			g_value_set_string (value, record->priv->genre);
 			break;
 		case PROP_MEDIAKIND:
-			g_value_set_int (value, record->priv->mediakind);
+			g_value_set_enum (value, record->priv->mediakind);
 			break;
 		case PROP_FORMAT:
 			g_value_set_string (value, record->priv->format);
@@ -436,9 +436,6 @@ rb_daap_record_new (RhythmDBEntry *entry)
 		record->priv->mediakind = DMAP_MEDIA_KIND_MUSIC;
 		record->priv->real_format = g_strdup (ext);
 		record->priv->format = g_strdup (record->priv->real_format);
-
-		/* Only support songs */
-		record->priv->mediakind = 1;
 
 		record->priv->track    = rhythmdb_entry_get_ulong
 						(entry, RHYTHMDB_PROP_TRACK_NUMBER);
