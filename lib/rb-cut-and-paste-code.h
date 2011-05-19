@@ -25,9 +25,6 @@
 
 G_BEGIN_DECLS
 
-char      *eel_strdup_strftime         (const char *format,
-			                struct tm *time_pieces);
-
 GdkPixbuf *eel_create_colorized_pixbuf (GdkPixbuf *src,
 					int red_value,
 					int green_value,
