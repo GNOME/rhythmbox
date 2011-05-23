@@ -42,10 +42,6 @@ INCLUDES = 						\
 	-DUSE_TOTEM_PL_PARSER				\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
-if HAVE_MUSICBRAINZ
-libaudiocd_la_LIBADD += $(MUSICBRAINZ_LIBS)
-INCLUDES += $(MUSICBRAINZ_CFLAGS)
-endif
 if HAVE_MUSICBRAINZ3
 libaudiocd_la_LIBADD +=$(MUSICBRAINZ3_LIBS)
 INCLUDES += $(MUSICBRAINZ3_CFLAGS)
@@ -76,7 +72,6 @@ SJ_FILES =									\
 	sj-metadata-gvfs.c sj-metadata-gvfs.h					\
 	sj-metadata-getter.c sj-metadata-getter.h				\
 	sj-metadata-musicbrainz3.c sj-metadata-musicbrainz3.h			\
-	sj-metadata-musicbrainz.c sj-metadata-musicbrainz.h			\
 	sj-structures.c sj-structures.h						\
 	sj-metadata-marshal.list
 
@@ -94,10 +89,6 @@ libaudiocd_la_SOURCES +=							\
 	sj-structures.h sj-structures.c						\
 	sj-error.h sj-error.c							\
 	$(MARSHALFILES)
-
-if HAVE_MUSICBRAINZ
-libaudiocd_la_SOURCES += sj-metadata-musicbrainz.c sj-metadata-musicbrainz.h
-endif
 
 if HAVE_MUSICBRAINZ3
 libaudiocd_la_SOURCES += sj-metadata-musicbrainz3.c sj-metadata-musicbrainz3.h
