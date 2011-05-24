@@ -344,7 +344,8 @@ build_device_state (RBSyncState *state)
 	rb_media_player_source_get_entries (state->priv->source, SYNC_CATEGORY_MUSIC, entries);
 	/*klass->impl_get_entries (source, SYNC_CATEGORY_MUSIC, entries);*/
 	state->total_music_size = _sum_entry_size (entries);
-	if (rb_sync_settings_has_enabled_groups (state->priv->sync_settings, SYNC_CATEGORY_MUSIC)) {
+	if (rb_sync_settings_sync_category (state->priv->sync_settings, SYNC_CATEGORY_MUSIC) ||
+	    rb_sync_settings_has_enabled_groups (state->priv->sync_settings, SYNC_CATEGORY_MUSIC)) {
 		_g_hash_table_transfer_all (device, entries);
 	}
 	g_hash_table_destroy (entries);
@@ -355,7 +356,8 @@ build_device_state (RBSyncState *state)
 	rb_media_player_source_get_entries (state->priv->source, SYNC_CATEGORY_PODCAST, entries);
 	/*klass->impl_get_entries (source, SYNC_CATEGORY_PODCAST, entries);*/
 	state->total_podcast_size = _sum_entry_size (entries);
-	if (rb_sync_settings_has_enabled_groups (state->priv->sync_settings, SYNC_CATEGORY_PODCAST)) {
+	if (rb_sync_settings_sync_category (state->priv->sync_settings, SYNC_CATEGORY_PODCAST) ||
+	    rb_sync_settings_has_enabled_groups (state->priv->sync_settings, SYNC_CATEGORY_PODCAST)) {
 		_g_hash_table_transfer_all (device, entries);
 	}
 	g_hash_table_destroy (entries);
