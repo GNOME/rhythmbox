@@ -188,16 +188,16 @@ rb_dacp_player_get_property (GObject *object,
 			break;
 		case PROP_REPEAT_STATE:
 			rb_shell_player_get_playback_state (player->priv->shell_player, &shuffle, &repeat);
-			g_value_set_enum (value, repeat ? REPEAT_ALL : REPEAT_NONE);
+			g_value_set_enum (value, repeat ? DACP_REPEAT_ALL : DACP_REPEAT_NONE);
 			break;
 		case PROP_PLAY_STATE:
 			entry = rb_shell_player_get_playing_entry (player->priv->shell_player);
 			if (entry) {
 				g_object_get (player->priv->shell_player, "playing", &playing, NULL);
-				g_value_set_enum (value, playing ? PLAY_PLAYING : PLAY_PAUSED);
+				g_value_set_enum (value, playing ? DACP_PLAY_PLAYING : DACP_PLAY_PAUSED);
 				rhythmdb_entry_unref (entry);
 			} else {
-				g_value_set_enum (value, PLAY_STOPPED);
+				g_value_set_enum (value, DACP_PLAY_STOPPED);
 			}
 			break;
 		case PROP_VOLUME:
@@ -234,7 +234,7 @@ rb_dacp_player_set_property (GObject *object,
 			break;
 		case PROP_REPEAT_STATE:
 			rb_shell_player_get_playback_state (player->priv->shell_player, &shuffle, &repeat);
-			rb_shell_player_set_playback_state (player->priv->shell_player, shuffle, g_value_get_enum (value) != REPEAT_NONE);
+			rb_shell_player_set_playback_state (player->priv->shell_player, shuffle, g_value_get_enum (value) != DACP_REPEAT_NONE);
 			break;
 		case PROP_VOLUME:
 			volume = ((double) g_value_get_ulong (value))  / 100.0;
