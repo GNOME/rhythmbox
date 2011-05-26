@@ -434,22 +434,6 @@
                     <property name="position">1</property>
                   </packing>
                 </child>
-                <child>
-                  <object class="GtkTable" id="recent_tracks_table">
-                    <property name="visible">True</property>
-                    <property name="homogeneous">True</property>
-                    <signal name="realize" handler="list_table_realize_cb"/>
-                    <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
-                    <child>
-                      <placeholder/>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -485,22 +469,6 @@
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkTable" id="top_artists_table">
-                    <property name="visible">True</property>
-                    <property name="homogeneous">True</property>
-                    <signal name="realize" handler="list_table_realize_cb"/>
-                    <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
-                    <child>
-                      <placeholder/>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
@@ -540,20 +508,6 @@
                     <property name="position">1</property>
                   </packing>
                 </child>
-                <child>
-                  <object class="GtkTable" id="recommended_artists_table">
-                    <property name="visible">True</property>
-                    <property name="homogeneous">True</property>
-                    <signal name="realize" handler="list_table_realize_cb"/>
-                    <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
-                    <child>
-                      <placeholder/>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -591,20 +545,6 @@
                     <property name="position">1</property>
                   </packing>
                 </child>
-                <child>
-                  <object class="GtkTable" id="top_tracks_table">
-                    <property name="visible">True</property>
-                    <property name="homogeneous">True</property>
-                    <signal name="realize" handler="list_table_realize_cb"/>
-                    <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
-                    <child>
-                      <placeholder/>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -640,20 +580,6 @@
                     <property name="expand">False</property>
                     <property name="fill">False</property>
                     <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkTable" id="loved_tracks_table">
-                    <property name="visible">True</property>
-                    <property name="homogeneous">True</property>
-                    <signal name="realize" handler="list_table_realize_cb"/>
-                    <signal name="size_allocate" handler="list_table_size_allocate_cb"/>
-                    <child>
-                      <placeholder/>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>

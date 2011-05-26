@@ -41,6 +41,7 @@
 #include <lib/rb-util.h>
 #include <sources/rb-display-page-tree.h>
 #include <sources/rb-display-page-group.h>
+#include <widgets/eggwrapbox.h>
 
 #include "rb-audioscrobbler-profile-page.h"
 #include "rb-audioscrobbler.h"
@@ -95,15 +96,15 @@ struct _RBAudioscrobblerProfilePagePrivate {
 
 	/* Profile data lists */
 	GtkWidget *recent_tracks_area;
-	GtkWidget *recent_tracks_table;
+	GtkWidget *recent_tracks_wrap_box;
 	GtkWidget *top_tracks_area;
-	GtkWidget *top_tracks_table;
+	GtkWidget *top_tracks_wrap_box;
 	GtkWidget *loved_tracks_area;
-	GtkWidget *loved_tracks_table;
+	GtkWidget *loved_tracks_wrap_box;
 	GtkWidget *top_artists_area;
-	GtkWidget *top_artists_table;
+	GtkWidget *top_artists_wrap_box;
 	GtkWidget *recommended_artists_area;
-	GtkWidget *recommended_artists_table;
+	GtkWidget *recommended_artists_wrap_box;
 
 	GHashTable *button_to_popup_menu_map;
 	GHashTable *popup_menu_to_data_map;
@@ -208,19 +209,13 @@ static void recommended_artists_updated_cb (RBAudioscrobblerUser *user,
 
 /* UI creation for profile data lists, eg top artists, loved tracks */
 static void set_user_list (RBAudioscrobblerProfilePage *page,
-                           GtkWidget *list_table,
+                           GtkWidget *list_wrap_box,
                            GPtrArray *list_data);
 static GtkWidget *create_list_button (RBAudioscrobblerProfilePage *page,
                                       RBAudioscrobblerUserData *data,
                                       int max_sibling_image_width);
 static GtkWidget *create_popup_menu (RBAudioscrobblerProfilePage *page,
                                      RBAudioscrobblerUserData *data);
-static void list_table_pack_start (GtkTable *list_table, GtkWidget *child);
-void list_table_realize_cb (GtkWidget *table,
-                            gpointer user_data);
-void list_table_size_allocate_cb (GtkWidget *layout,
-                                  GtkAllocation *allocation,
-                                  gpointer user_data);
 
 /* callbacks from data list buttons and related popup menus */
 static void list_item_clicked_cb (GtkButton *button, RBAudioscrobblerProfilePage *page);
@@ -572,19 +567,49 @@ init_profile_ui (RBAudioscrobblerProfilePage *page)
 
 	/* lists of data */
 	page->priv->recent_tracks_area = GTK_WIDGET (gtk_builder_get_object (builder, "recent_tracks_area"));
-	page->priv->recent_tracks_table = GTK_WIDGET (gtk_builder_get_object (builder, "recent_tracks_table"));
+	page->priv->recent_tracks_wrap_box = egg_wrap_box_new (EGG_WRAP_ALLOCATE_HOMOGENEOUS,
+	                                                       EGG_WRAP_BOX_SPREAD_EXPAND,
+	                                                       EGG_WRAP_BOX_SPREAD_START,
+	                                                       2, 2);
+	gtk_box_pack_end (GTK_BOX (page->priv->recent_tracks_area),
+	                  page->priv->recent_tracks_wrap_box,
+	                  TRUE, TRUE, 0);
 
 	page->priv->top_tracks_area = GTK_WIDGET (gtk_builder_get_object (builder, "top_tracks_area"));
-	page->priv->top_tracks_table = GTK_WIDGET (gtk_builder_get_object (builder, "top_tracks_table"));
+	page->priv->top_tracks_wrap_box = egg_wrap_box_new (EGG_WRAP_ALLOCATE_HOMOGENEOUS,
+	                                                    EGG_WRAP_BOX_SPREAD_EXPAND,
+	                                                    EGG_WRAP_BOX_SPREAD_START,
+	                                                    2, 2);
+	gtk_box_pack_end (GTK_BOX (page->priv->top_tracks_area),
+	                  page->priv->top_tracks_wrap_box,
+	                  TRUE, TRUE, 0);
 
 	page->priv->loved_tracks_area = GTK_WIDGET (gtk_builder_get_object (builder, "loved_tracks_area"));
-	page->priv->loved_tracks_table = GTK_WIDGET (gtk_builder_get_object (builder, "loved_tracks_table"));
-
+	page->priv->loved_tracks_wrap_box = egg_wrap_box_new (EGG_WRAP_ALLOCATE_HOMOGENEOUS,
+	                                                      EGG_WRAP_BOX_SPREAD_EXPAND,
+	                                                      EGG_WRAP_BOX_SPREAD_START,
+	                                                      2, 2);
+	gtk_box_pack_end (GTK_BOX (page->priv->loved_tracks_area),
+	                  page->priv->loved_tracks_wrap_box,
+	                  TRUE, TRUE, 0);
+	
 	page->priv->top_artists_area = GTK_WIDGET (gtk_builder_get_object (builder, "top_artists_area"));
-	page->priv->top_artists_table = GTK_WIDGET (gtk_builder_get_object (builder, "top_artists_table"));
+	page->priv->top_artists_wrap_box = egg_wrap_box_new (EGG_WRAP_ALLOCATE_HOMOGENEOUS,
+	                                                     EGG_WRAP_BOX_SPREAD_EXPAND,
+	                                                     EGG_WRAP_BOX_SPREAD_START,
+	                                                     2, 2);
+	gtk_box_pack_end (GTK_BOX (page->priv->top_artists_area),
+	                  page->priv->top_artists_wrap_box,
+	                  TRUE, TRUE, 0);
 
 	page->priv->recommended_artists_area = GTK_WIDGET (gtk_builder_get_object (builder, "recommended_artists_area"));
-	page->priv->recommended_artists_table = GTK_WIDGET (gtk_builder_get_object (builder, "recommended_artists_table"));
+	page->priv->recommended_artists_wrap_box = egg_wrap_box_new (EGG_WRAP_ALLOCATE_HOMOGENEOUS,
+	                                                             EGG_WRAP_BOX_SPREAD_EXPAND,
+	                                                             EGG_WRAP_BOX_SPREAD_START,
+	                                                             2, 2);
+	gtk_box_pack_end (GTK_BOX (page->priv->recommended_artists_area),
+	                  page->priv->recommended_artists_wrap_box,
+	                  TRUE, TRUE, 0);
 
 	/* pack profile into main vbox */
 	gtk_box_pack_start (GTK_BOX (page->priv->main_vbox), page->priv->profile_window, TRUE, TRUE, 0);
@@ -1402,7 +1427,7 @@ recent_tracks_updated_cb (RBAudioscrobblerUser *user,
                           GPtrArray *recent_tracks,
                           RBAudioscrobblerProfilePage *page)
 {
-	set_user_list (page, page->priv->recent_tracks_table, recent_tracks);
+	set_user_list (page, page->priv->recent_tracks_wrap_box, recent_tracks);
 
 	if (recent_tracks != NULL && recent_tracks->len != 0) {
 		gtk_widget_show_all (page->priv->recent_tracks_area);
@@ -1416,7 +1441,7 @@ top_tracks_updated_cb (RBAudioscrobblerUser *user,
                        GPtrArray *top_tracks,
                        RBAudioscrobblerProfilePage *page)
 {
-	set_user_list (page, page->priv->top_tracks_table, top_tracks);
+	set_user_list (page, page->priv->top_tracks_wrap_box, top_tracks);
 
 	if (top_tracks != NULL && top_tracks->len != 0) {
 		gtk_widget_show_all (page->priv->top_tracks_area);
@@ -1430,7 +1455,7 @@ loved_tracks_updated_cb (RBAudioscrobblerUser *user,
                          GPtrArray *loved_tracks,
                          RBAudioscrobblerProfilePage *page)
 {
-	set_user_list (page, page->priv->loved_tracks_table, loved_tracks);
+	set_user_list (page, page->priv->loved_tracks_wrap_box, loved_tracks);
 
 	if (loved_tracks != NULL && loved_tracks->len != 0) {
 		gtk_widget_show_all (page->priv->loved_tracks_area);
@@ -1444,7 +1469,7 @@ top_artists_updated_cb (RBAudioscrobblerUser *user,
                         GPtrArray *top_artists,
                         RBAudioscrobblerProfilePage *page)
 {
-	set_user_list (page, page->priv->top_artists_table, top_artists);
+	set_user_list (page, page->priv->top_artists_wrap_box, top_artists);
 
 	if (top_artists != NULL && top_artists->len != 0) {
 		gtk_widget_show_all (page->priv->top_artists_area);
@@ -1458,7 +1483,7 @@ recommended_artists_updated_cb (RBAudioscrobblerUser *user,
                                 GPtrArray *recommended_artists,
                                 RBAudioscrobblerProfilePage *page)
 {
-	set_user_list (page, page->priv->recommended_artists_table, recommended_artists);
+	set_user_list (page, page->priv->recommended_artists_wrap_box, recommended_artists);
 
 	if (recommended_artists != NULL && recommended_artists->len != 0) {
 		gtk_widget_show_all (page->priv->recommended_artists_area);
@@ -1467,18 +1492,18 @@ recommended_artists_updated_cb (RBAudioscrobblerUser *user,
 	}
 }
 
-/* Creates a list of buttons packed in a table for a list of data
+/* Creates a list of buttons packed in a wrap box for a list of data
  * eg user's top tracks or recommended artists
  */
 static void
 set_user_list (RBAudioscrobblerProfilePage *page,
-               GtkWidget *list_table,
+               GtkWidget *list_wrap_box,
                GPtrArray *list_data)
 {
 	GList *button_node;
 
 	/* delete all existing buttons */
-	for (button_node = gtk_container_get_children (GTK_CONTAINER (list_table));
+	for (button_node = gtk_container_get_children (GTK_CONTAINER (list_wrap_box));
 	     button_node != NULL;
 	     button_node = g_list_next (button_node)) {
 		GtkMenu *menu;
@@ -1491,10 +1516,6 @@ set_user_list (RBAudioscrobblerProfilePage *page,
 	if (list_data != NULL) {
 		int i;
 		int max_image_width;
-
-		if (gtk_widget_get_realized (list_table) == FALSE) {
-			rb_debug ("table has not been realized yet. it will need resized later");
-		}
 
 		/* get the width of the widest image */
 		max_image_width = 0;
@@ -1522,7 +1543,10 @@ set_user_list (RBAudioscrobblerProfilePage *page,
 			g_hash_table_insert (page->priv->button_to_popup_menu_map, button, g_object_ref_sink (menu));
 			g_hash_table_insert (page->priv->popup_menu_to_data_map, menu, data);
 
-			list_table_pack_start (GTK_TABLE (list_table), button);
+			egg_wrap_box_insert_child (EGG_WRAP_BOX (list_wrap_box),
+			                           button,
+			                           -1,
+			                           EGG_WRAP_BOX_H_EXPAND);
 		}
 	}
 }
@@ -1674,113 +1698,6 @@ create_popup_menu (RBAudioscrobblerProfilePage *page,
 	gtk_widget_show_all (menu);
 
 	return menu;
-}
-
-/* packs a widget into a GtkTable, from left to right then top to bottom */
-static void
-list_table_pack_start (GtkTable *list_table, GtkWidget *child)
-{
-	GList *children;
-	int num_children;
-	int num_columns;
-
-	children = gtk_container_get_children (GTK_CONTAINER (list_table));
-	num_children = g_list_length (children);
-	g_object_get (list_table, "n-columns", &num_columns, NULL);
-
-	gtk_table_attach (list_table,
-	                  child,
-	                  num_children % num_columns, num_children % num_columns + 1,
-	                  num_children / num_columns, num_children / num_columns + 1,
-	                  GTK_FILL | GTK_EXPAND, GTK_FILL,
-	                  0, 0);
-
-	g_list_free (children);
-}
-
-void
-list_table_realize_cb (GtkWidget *table,
-                       gpointer user_data)
-{
-	rb_debug ("table has been realized. queueing resize");
-	gtk_widget_queue_resize (table);
-}
-
-/* resizes a GtkTable for a particular size allocation */
-void
-list_table_size_allocate_cb (GtkWidget *table,
-                             GtkAllocation *allocation,
-                             gpointer user_data)
-{
-	GList *children;
-	int num_children;
-	int child_width;
-	GList *i;
-	int current_num_columns;
-	int spacing;
-	int new_num_columns;
-
-	children = gtk_container_get_children (GTK_CONTAINER (table));
-	num_children = g_list_length (children);
-	if (num_children == 0)
-		return;
-
-	/* find the desired width of the widest child */
-	child_width = 1;
-	for (i = children; i != NULL; i = i->next) {
-		int min_width;
-
-		gtk_widget_get_preferred_width (i->data, &min_width, NULL);
-		if (min_width > child_width) {
-			child_width = min_width;
-		}
-	}
-
-	g_object_get (table, "n-columns", &current_num_columns, NULL);
-
-	/* calculate the number of columns there should be */
-	spacing = gtk_table_get_default_col_spacing (GTK_TABLE (table));
-	new_num_columns = allocation->width / (child_width + spacing);
-	if (new_num_columns == 0) {
-		new_num_columns = 1;
-	}
-
-	/* if there's a change in the number of columns we need to move children around */
-	if (new_num_columns != current_num_columns) {
-		int new_num_rows;
-
-		new_num_rows = (int)ceil ((double)num_children / (double)new_num_columns);
-
-		/* remove each child from the table, reffing it first so that it is not destroyed */
-		for (i = children; i != NULL; i = i->next) {
-			g_object_ref (i->data);
-			gtk_container_remove (GTK_CONTAINER (table), i->data);
-		}
-
-		/* resize the table */
-		gtk_table_resize (GTK_TABLE (table), new_num_columns, new_num_rows);
-
-		/* Don't know why, but g_table_resize doesn't always update these properties properly.
-		 * Looking at gtktable.c this is even stranger, as setting either of these properties
-		 * will simply call gtk_table_resize which should then set the values.
-		 * Perhaps worthwhile looking into in the future, but this works for now.
-		 * Possibly useful to note that AppResizer in libslab stores its own value for the number of columns
-		 * instead of using the table's n-columns property, perhaps as a workaround to this.
-		 * So does Banshee's TileView, which appears to be a C# port of libslab's code */
-		g_object_set (table, "n-columns", new_num_columns, "n-rows", new_num_rows, NULL);
-
-		/* re-attach each child to the table */
-		for (i = g_list_last (children); i != NULL; i = i->prev) {
-
-			list_table_pack_start (GTK_TABLE (table), i->data);
-			g_object_unref (i->data);
-		}
-	}
-
-	/* ensure the table will shrink to the correct size */
-	gtk_widget_set_size_request (table, 0, -1);
-
-	g_list_free (children);
 }
 
 /* popup the appropriate menu */

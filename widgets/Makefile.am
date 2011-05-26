@@ -38,7 +38,11 @@ librbwidgets_la_SOURCES =				\
 	rb-query-creator.h				\
 	rb-query-creator-private.h			\
 	rb-query-creator-properties.c			\
-	rb-uri-dialog.c
+	rb-uri-dialog.c				\
+	eggwrapbox.c				\
+	eggwrapbox.h				\
+	eggwrapbox-enums.c				\
+	eggwrapbox-enums.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
