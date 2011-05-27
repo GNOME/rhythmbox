@@ -1,6 +1,7 @@
 # Search Lyrics Python Plugin
 
 plugindir = $(PLUGINDIR)/lyrics
+plugindatadir = $(PLUGINDATADIR)/lyrics
 plugin_PYTHON =				\
        LyricsParse.py			\
        LyricsSites.py			\
