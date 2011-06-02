@@ -144,7 +144,7 @@ do_notify (RBNotificationPlugin *plugin,
 			rb_debug ("notification server supports actions");
 			plugin->notify_supports_actions = TRUE;
 
-			if (g_list_find_custom (caps, "x-gnome-icon-buttons", (GCompareFunc)g_strcmp0) != NULL) {
+			if (g_list_find_custom (caps, "action-icons", (GCompareFunc)g_strcmp0) != NULL) {
 				rb_debug ("notifiction server supports icon buttons");
 				plugin->notify_supports_icon_buttons = TRUE;
 			}
