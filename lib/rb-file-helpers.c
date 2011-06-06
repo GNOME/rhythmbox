@@ -111,30 +111,6 @@ rb_file (const char *filename)
 }
 
 /**
- * rb_dot_dir:
- *
- * Deprecated.
- *
- * Return value: user's ~/.gnome2/rhythmbox/ dir
- */
-const char *
-rb_dot_dir (void)
-{
-	if (dot_dir == NULL) {
-		dot_dir = g_build_filename (g_get_home_dir (),
-					    ".gnome2",
-					    "rhythmbox",
-					    NULL);
-
-		/* since we don't write any new files in this directory, we shouldn't
-		 * create it if it doesn't already exist.
-		 */
-	}
-	
-	return dot_dir;
-}
-
-/**
  * rb_user_data_dir:
  *
  * This will create the rhythmbox user data directory, using the XDG Base
@@ -206,105 +182,36 @@ rb_music_dir (void)
 	return dir;
 }
 
-static char *
-rb_find_user_file (const char *dir,
-		   const char *name,
-		   GError **error)
-{
-	GError *temp_err = NULL;
-	char *srcpath;
-	char *destpath;
-	GFile *src;
-	GFile *dest;
-	char *use_path;
-
-	/* if the file exists in the target dir, return the path */
-	destpath = g_build_filename (dir, name, NULL);
-	dest = g_file_new_for_path (destpath);
-	if (g_file_query_exists (dest, NULL) == TRUE) {
-		g_object_unref (dest);
-		rb_debug ("found user dir path for '%s': %s", name, destpath);
-		return destpath;
-	}
-
-	/* doesn't exist in the target dir, so try to move it from the .gnome2 dir */
-	srcpath = g_build_filename (rb_dot_dir (), name, NULL);
-	src = g_file_new_for_path (srcpath);
-
-	if (g_file_query_exists (src, NULL)) {
-		g_file_move (src, dest, G_FILE_COPY_NONE, NULL, NULL, NULL, &temp_err);
-		if (temp_err != NULL) {
-			rb_debug ("failed to move user file '%s' from .gnome2 dir, returning .gnome2 path %s: %s",
-				  name, srcpath, temp_err->message);
-
-			use_path = g_file_get_path (src);
-			g_set_error (error,
-				     temp_err->domain,
-				     temp_err->code,
-				     _("Unable to move %s to %s: %s"),
-				     srcpath, destpath, temp_err->message);
-			g_error_free (temp_err);
-		} else {
-			rb_debug ("moved user file '%s' from .gnome2 dir, returning user dir path %s",
-				  name, destpath);
-			use_path = g_file_get_path (dest);
-		}
-	} else {
-		rb_debug ("no existing file for '%s', returning user dir path %s", name, destpath);
-		use_path = g_file_get_path (dest);
-	}
-
-	g_free (srcpath);
-	g_free (destpath);
-
-	g_object_unref (src);
-	g_object_unref (dest);
-
-	return use_path;
-}
-
 /**
  * rb_find_user_data_file:
  * @name: name of file to find
- * @error: returns error information
  *
- * Determines the full path to use for user-specific files, such as rhythmdb.xml.
- * This first checks in the user data directory (see @rb_user_data_dir).
- * If the file does not exist in the user data directory, it then checks the
- * old .gnome2 directory, moving the file to the user data directory if found there.
- * If an error occurs while moving the file, this will be reported through @error 
- * and the .gnome2 path will be returned.
+ * Determines the full path to use for user-specific files, such as rhythmdb.xml,
+ * within the user data directory (see @rb_user_data_dir).
  *
  * Returns: allocated string containing the location of the file to use, even if
  *  an error occurred.
  */
 char *
-rb_find_user_data_file (const char *name,
-			GError **error)
+rb_find_user_data_file (const char *name)
 {
-	return rb_find_user_file (rb_user_data_dir (), name, error);
+	return g_build_filename (rb_user_data_dir (), name, NULL);
 }
 
 /**
  * rb_find_user_cache_file:
  * @name: name of file to find
- * @error: returns error information
  *
- * Determines the full path to use for user-specific cached files.
- * This first checks in the user cache directory (see @rb_user_cache_dir).
- * If the file does not exist in the user cache directory, it then checks the
- * old .gnome2 directory, moving the file to the user cache directory if found there.
- * If an error occurs while moving the file, this will be reported through @error 
- * and the .gnome2 path will be returned.
+ * Determines the full path to use for user-specific cached files
+ * within the user cache directory.
  *
  * Returns: allocated string containing the location of the file to use, even if
  *  an error occurred.
  */
 char *
-rb_find_user_cache_file (const char *name,
-			 GError **error)
+rb_find_user_cache_file (const char *name)
 {
-	return rb_find_user_file (rb_user_cache_dir (), name, error);
+	return g_build_filename (rb_user_cache_dir (), name, NULL);
 }
 
 /**

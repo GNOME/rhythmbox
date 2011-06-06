@@ -103,7 +103,6 @@ main (int argc, char **argv)
 	RBShell *rb_shell;
 	gboolean activated;
 	gboolean autostarted;
-	char *accel_map_file = NULL;
 	char *desktop_file_path;
 
 	GOptionContext *context;
@@ -260,18 +259,6 @@ main (int argc, char **argv)
 #else
 		rb_file_helpers_init (FALSE);
 #endif
-
-		/* XXX not sure what to do with this.  should we move it to
-		 * the config dir, or leave it where it is?
-		 */
-		accel_map_file = g_build_filename (g_get_home_dir (),
-						   ".gnome2",
-						   "accels",
-						   "rhythmbox",
-						   NULL);
-		gtk_accel_map_load (accel_map_file);
-
-
 		rb_debug ("Going to create a new shell");
 
 		rb_stock_icons_init ();
@@ -344,10 +331,6 @@ main (int argc, char **argv)
 
 	rb_debug ("THE END");
 	rb_profile_end ("starting rhythmbox");
-
-	if (accel_map_file != NULL) {
-		gtk_accel_map_save (accel_map_file);
-	}
 
 	gdk_threads_leave ();
 

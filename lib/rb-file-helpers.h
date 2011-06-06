@@ -34,15 +34,12 @@
 G_BEGIN_DECLS
 
 const char *	rb_file			(const char *filename);
-const char *	rb_dot_dir		(void);
 const char *	rb_user_data_dir	(void);
 const char *	rb_user_cache_dir	(void);
 const char *	rb_music_dir		(void);
 
-char *		rb_find_user_data_file	(const char *name,
-					 GError **error);
-char *		rb_find_user_cache_file	(const char *name,
-					 GError **error);
+char *		rb_find_user_data_file	(const char *name);
+char *		rb_find_user_cache_file	(const char *name);
 char *		rb_find_plugin_data_file (GObject *plugin,
 					 const char *name);
 

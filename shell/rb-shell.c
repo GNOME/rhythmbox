@@ -1183,7 +1183,6 @@ rb_shell_create_mount_op_cb (RhythmDB *db, RBShell *shell)
 static void
 construct_db (RBShell *shell)
 {
-	GError *error = NULL;
 	char *pathname;
 
 	/* Initialize the database */
@@ -1193,13 +1192,7 @@ construct_db (RBShell *shell)
 	if (shell->priv->rhythmdb_file) {
 		pathname = g_strdup (shell->priv->rhythmdb_file);
 	} else {
-		pathname = rb_find_user_data_file ("rhythmdb.xml", &error);
-		if (error != NULL) {
-			rb_error_dialog (GTK_WINDOW (shell->priv->window),
-					 _("Unable to move user data files"),
-					 "%s", error->message);
-			g_error_free (error);
-		}
+		pathname = rb_find_user_data_file ("rhythmdb.xml");
 	}
 
 #ifdef WITH_RHYTHMDB_TREE
@@ -1400,7 +1393,6 @@ static void
 construct_sources (RBShell *shell)
 {
 	RBDisplayPage *page_group;
-	GError *error = NULL;
 	char *pathname;
 
 	rb_profile_start ("constructing sources");
@@ -1426,13 +1418,7 @@ construct_sources (RBShell *shell)
 	if (shell->priv->playlists_file) {
 		pathname = g_strdup (shell->priv->playlists_file);
 	} else {
-		pathname = rb_find_user_data_file ("playlists.xml", &error);
-		if (error != NULL) {
-			rb_error_dialog (GTK_WINDOW (shell->priv->window),
-					 _("Unable to move user data files"),
-					 "%s", error->message);
-			g_error_free (error);
-		}
+		pathname = rb_find_user_data_file ("playlists.xml");
 	}
 
 	/* Initialize playlist manager */

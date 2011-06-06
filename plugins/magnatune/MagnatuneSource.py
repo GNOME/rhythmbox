@@ -122,9 +122,13 @@ class MagnatuneSource(RB.BrowserSource):
 			self.__db = shell.props.db
 			self.__entry_type = self.props.entry_type
 
-			# move files from old ~/.gnome2 paths
 			if not magnatune_in_progress_dir.query_exists(None):
-				self.__move_data_files()
+				magnatune_in_progress_path = magnatune_in_progress_dir.get_path()
+				os.mkdir(magnatune_in_progress_path, 0700)
+
+			if not magnatune_cache_dir.query_exists(None):
+				magnatune_cache_path = magnatune_cache_dir.get_path()
+				os.mkdir(magnatune_cache_path, 0700)
 
 			self.__activated = True
 			self.__show_loading_screen(True)
@@ -551,36 +555,5 @@ class MagnatuneSource(RB.BrowserSource):
 		url = self.__art_dict[sku]
 		self.__db.emit_entry_extra_metadata_notify(entry, 'rb:coverArt-uri', url)
 		return False
-
-	def __move_data_files(self):
-		# create cache and data directories
-		magnatune_in_progress_path = magnatune_in_progress_dir.get_path()
-		magnatune_cache_path = magnatune_cache_dir.get_path()
-
-		# (we know they don't already exist, and we know the parent dirs do)
-		os.mkdir(magnatune_in_progress_path, 0700)
-		if os.path.exists(magnatune_cache_path) is False:
-			os.mkdir(magnatune_cache_path, 0700)
-
-		# move song info to cache dir
-		old_magnatune_dir = os.path.join(RB.dot_dir(), 'magnatune')
-		if os.path.exists(old_magnatune_dir) is False:
-			print "old magnatune directory does not exist"
-			return
-
-		old_song_info = os.path.join(old_magnatune_dir, 'song_info.xml')
-		if os.path.exists(old_song_info):
-			print "moving existing song_info.xml to cache dir"
-			os.rename(old_song_info, magnatune_song_info)
-		else:
-			print "no song_info.xml found (%s)" % old_song_info
-
-		# move in progress downloads to data dir
-		otherfiles = os.listdir(old_magnatune_dir)
-		for f in otherfiles:
-			print "moving file %s to new in-progress dir" % f
-			os.rename(os.path.join(old_magnatune_dir, f),
-				  os.path.join(magnatune_in_progress_path, f))
-
 
 gobject.type_register(MagnatuneSource)

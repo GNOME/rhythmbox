@@ -44,7 +44,6 @@ from urllib import unquote, pathname2url
 
 ART_SEARCHES_LOCAL = [LocalCoverArtSearch, EmbeddedCoverArtSearch]
 ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, LastFMCoverArtSearch, MusicBrainzCoverArtSearch]
-OLD_ART_FOLDER = '~/.gnome2/rhythmbox/covers'
 
 ART_FOLDER = os.path.join(RB.user_cache_dir(), 'covers')
 ART_CACHE_EXTENSION_JPG = 'jpg'
@@ -127,12 +126,6 @@ class CoverArtDatabase (object):
 	def build_art_cache_filename (self, db, entry, extension):
 		artist, album = get_search_props(db, entry)
 		art_folder = os.path.expanduser (ART_FOLDER)
-		old_art_folder = os.path.expanduser (OLD_ART_FOLDER)
-		if not os.path.exists (art_folder) and os.path.exists (old_art_folder):
-			parent = os.path.dirname(os.path.abspath(art_folder))
-			if not os.path.exists (parent):
-				os.makedirs (parent)
-			os.rename (old_art_folder, art_folder)
 		if not os.path.exists (art_folder):
 			os.makedirs (art_folder)
 
