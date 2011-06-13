@@ -68,10 +68,10 @@ enum {
 typedef struct _GossipCellRendererExpanderPriv GossipCellRendererExpanderPriv;
 
 struct _GossipCellRendererExpanderPriv {
-	GtkStateFlags        style_flags;
 	gint                 expander_size;
 
 	guint                activatable : 1;
+	GtkExpanderStyle     expander_style;
 };
 
 G_DEFINE_TYPE (GossipCellRendererExpander, gossip_cell_renderer_expander, GTK_TYPE_CELL_RENDERER)
@@ -83,7 +83,6 @@ gossip_cell_renderer_expander_init (GossipCellRendererExpander *expander)
 
 	priv = GET_PRIV (expander);
 
-	priv->style_flags = 0;
 	priv->expander_size = 12;
 	priv->activatable = TRUE;
 
@@ -153,7 +152,7 @@ gossip_cell_renderer_expander_get_property (GObject    *object,
 
 	switch (param_id) {
 	case PROP_EXPANDER_STYLE:
-		g_value_set_enum (value, priv->style_flags & GTK_STATE_FLAG_ACTIVE ? GTK_EXPANDER_EXPANDED : GTK_EXPANDER_COLLAPSED);
+		g_value_set_enum (value, priv->expander_style);
 		break;
 
 	case PROP_EXPANDER_SIZE:
@@ -184,11 +183,7 @@ gossip_cell_renderer_expander_set_property (GObject      *object,
 
 	switch (param_id) {
 	case PROP_EXPANDER_STYLE:
-		if (g_value_get_enum (value) == GTK_EXPANDER_EXPANDED) {
-			priv->style_flags |= GTK_STATE_FLAG_ACTIVE;
-		} else {
-			priv->style_flags &= ~(GTK_STATE_FLAG_ACTIVE);
-		}
+		priv->expander_style = g_value_get_enum (value);
 		break;
 
 	case PROP_EXPANDER_SIZE:
@@ -271,6 +266,7 @@ gossip_cell_renderer_expander_render (GtkCellRenderer      *cell,
 	GtkStyleContext                *style_context;
 	gint                            x_offset, y_offset;
 	gint                            xpad, ypad;
+	GtkStateFlags                   state;
 
 	expander = (GossipCellRendererExpander*) cell;
 	priv = GET_PRIV (expander);
@@ -281,14 +277,28 @@ gossip_cell_renderer_expander_render (GtkCellRenderer      *cell,
 	gtk_cell_renderer_get_padding (cell, &xpad, &ypad);
 
 	style_context = gtk_widget_get_style_context (widget);
-	gtk_style_context_set_state (style_context, priv->style_flags);
 
-	gtk_render_expander (gtk_widget_get_style_context (widget),
+	gtk_style_context_save (style_context);
+	gtk_style_context_add_class (style_context, GTK_STYLE_CLASS_EXPANDER);
+
+	state = gtk_cell_renderer_get_state (cell, widget, flags);
+
+	if (priv->expander_style == GTK_EXPANDER_COLLAPSED) {
+		state |= GTK_STATE_FLAG_NORMAL;
+	} else {
+		state |= GTK_STATE_FLAG_ACTIVE;
+	}
+
+	gtk_style_context_set_state (style_context, state);
+
+	gtk_render_expander (style_context,
 			     cr,
 			     cell_area->x + x_offset + xpad,
 			     cell_area->y + y_offset + ypad,
 			     priv->expander_size,
 			     priv->expander_size);
+
+	gtk_style_context_restore (style_context);
 }
 
 static gboolean
@@ -333,10 +343,8 @@ gossip_cell_renderer_expander_activate (GtkCellRenderer      *cell,
 
 	if (gtk_tree_view_row_expanded (GTK_TREE_VIEW (widget), path)) {
 		gtk_tree_view_collapse_row (GTK_TREE_VIEW (widget), path);
-		priv->style_flags &= ~(GTK_STATE_FLAG_ACTIVE);
 	} else {
 		gtk_tree_view_expand_row (GTK_TREE_VIEW (widget), path, FALSE);
-		priv->style_flags |= ~(GTK_STATE_FLAG_ACTIVE);
 	}
 
 	gtk_tree_path_free (path);
