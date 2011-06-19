@@ -356,6 +356,9 @@ rb_audioscrobbler_dispose (GObject *object)
 	
 	rb_debug ("disposing audioscrobbler");
 
+	/* Save any remaining entries */
+	rb_audioscrobbler_save_queue (audioscrobbler);
+
 	if (audioscrobbler->priv->offline_play_notify_id != 0) {
 		RhythmDB *db;
 
@@ -402,9 +405,6 @@ rb_audioscrobbler_finalize (GObject *object)
 	g_return_if_fail (RB_IS_AUDIOSCROBBLER (object));
 
 	audioscrobbler = RB_AUDIOSCROBBLER (object);
-
-	/* Save any remaining entries */
-	rb_audioscrobbler_save_queue (audioscrobbler);
 
 	g_free (audioscrobbler->priv->sessionid);
 	g_free (audioscrobbler->priv->username);
