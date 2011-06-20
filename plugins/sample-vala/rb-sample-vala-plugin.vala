@@ -14,7 +14,6 @@ class SampleValaPlugin: Peas.ExtensionBase, Peas.Activatable {
 
 [ModuleInit]
 public void peas_register_types (GLib.TypeModule module) {
-{
 	var objmodule = module as Peas.ObjectModule;
 	stdout.printf ("Registering plugin %s\n", "SampleValaPlugin");
 
