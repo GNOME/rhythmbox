@@ -156,9 +156,9 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
 
   def set_status (self):
     subs = {
-        'artist': self.current_artist,
-        'album': self.current_album,
-        'title': self.current_title
+        'artist': unicode (self.current_artist, encoding='utf-8'),
+        'album': unicode (self.current_album, encoding='utf-8'),
+        'title': unicode (self.current_title, encoding='utf-8')
     }
     if self.current_artist:
       if self.current_title:
