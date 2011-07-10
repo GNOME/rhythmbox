@@ -39,7 +39,6 @@ plugins/audiocd/rb-audiocd-source.c
 plugins/audiocd/sj-error.c
 plugins/audiocd/sj-metadata-getter.c
 plugins/audiocd/sj-metadata-gvfs.c
-plugins/audiocd/sj-metadata-musicbrainz.c
 plugins/audiocd/sj-metadata.c
 plugins/audiocd/sj-structures.c
 [type: gettext/ini]plugins/audioscrobbler/audioscrobbler.plugin.in
@@ -176,6 +175,7 @@ sources/rb-static-playlist-source.c
 sources/rb-streaming-source.c
 sources/sync/rb-sync-settings-ui.c
 sources/sync/rb-sync-state-ui.c
+widgets/eggwrapbox.c
 widgets/rb-alert-dialog.c
 widgets/rb-cell-renderer-pixbuf.c
 widgets/rb-dialog.c
@@ -183,8 +183,8 @@ widgets/rb-entry-view.c
 widgets/rb-header.c
 widgets/rb-library-browser.c
 widgets/rb-property-view.c
-widgets/rb-query-creator-properties.c
 widgets/rb-query-creator.c
+widgets/rb-query-creator-properties.c
 widgets/rb-rating-helper.c
 widgets/rb-search-entry.c
 widgets/rb-song-info.c
