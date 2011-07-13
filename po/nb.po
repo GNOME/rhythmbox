@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox 2.90.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-07 21:36+0200\n"
-"PO-Revision-Date: 2011-06-07 21:39+0200\n"
+"POT-Creation-Date: 2011-07-13 15:59+0200\n"
+"PO-Revision-Date: 2011-07-13 16:26+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
 "Language: \n"
@@ -294,7 +294,7 @@ msgstr "Avspillingsmotor"
 
 #: ../data/ui/playback-prefs.ui.h:3
 msgid "_Crossfade between tracks"
-msgstr ""
+msgstr "_Kryssmiks mellom spor"
 
 #: ../data/ui/playlist-save.ui.h:1
 msgid "<b>Playlist format</b>"
@@ -578,7 +578,7 @@ msgstr "Ikke gjenkjent oppstartsalternativ: %d"
 #: ../lib/eggdesktopfile.c:1383
 #, c-format
 msgid "Can't pass document URIs to a 'Type=Link' desktop entry"
-msgstr ""
+msgstr "Kan ikke sende dokument-URIer til en skrivebordsoppføring med «Type=Link»"
 
 #: ../lib/eggdesktopfile.c:1404
 #, c-format
@@ -1323,7 +1323,7 @@ msgstr "Feil under innstilling av stasjon: uventet svar"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:852
 msgid "Error tuning station: invalid response"
-msgstr ""
+msgstr "Feil ved innstilling av stasjon: ugyldig svar"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1244
 #, c-format
@@ -1333,7 +1333,7 @@ msgstr "Feil under innstilling av stasjon: %s"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1316
 #, c-format
 msgid "Password for streaming %s radio using the deprecated API"
-msgstr ""
+msgstr "Passord for %s radiostrøm bruker gammelt API"
 
 #. We could be calling either radio.tune or radio.getPlaylist methods.
 #. * "Tuning station" seems like a user friendly message to display for both cases.
@@ -2519,7 +2519,7 @@ msgstr "Kan ikke laste katalog"
 #: ../plugins/magnatune/MagnatuneSource.py:259
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
-msgstr ""
+msgstr "Rhythmbox forsto ikke Magnatune-katalogen. Vennligst rapporter feilen."
 
 #: ../plugins/magnatune/MagnatuneSource.py:296
 #: ../plugins/magnatune/MagnatuneSource.py:396
@@ -2562,7 +2562,7 @@ msgstr "Nedlasting fullført"
 
 #: ../plugins/magnatune/MagnatuneSource.py:479
 msgid "All Magnatune downloads have been completed."
-msgstr ""
+msgstr "Alle Magnatune-nedlastinger er fullført."
 
 #: ../plugins/mmkeys/mmkeys.plugin.in.h:1
 msgid "Control Rhythmbox using key shortcuts"
@@ -2696,7 +2696,7 @@ msgstr "Python-feilsøker"
 
 #: ../plugins/pythonconsole/pythonconsole.py:85
 msgid "Enable remote python debugging with rpdb2"
-msgstr ""
+msgstr "Slå på ekstern feilsøking i python med rpdb2"
 
 #: ../plugins/pythonconsole/pythonconsole.py:122
 msgid "You can access the main window through the 'shell' variable :"
@@ -4299,13 +4299,17 @@ msgstr "Synkroniser mediespiller med biblioteket"
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
-msgstr "Du har ikke valgt noen musikk, spillelister eller podcaster som skal overføres til denne enheten."
+msgstr ""
+"Du har ikke valgt noen musikk, spillelister eller podcaster som skal "
+"overføres til denne enheten."
 
 #: ../sources/rb-media-player-source.c:605
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
-msgstr "Ikke nok plass på enheten til å overføre valgt musikk, spilleliste og podcaster."
+msgstr ""
+"Ikke nok plass på enheten til å overføre valgt musikk, spilleliste og "
+"podcaster."
 
 #: ../sources/rb-media-player-source.c:656
 #, c-format
@@ -4419,7 +4423,7 @@ msgstr "Kant for bilde/etikett"
 
 #: ../widgets/rb-alert-dialog.c:88
 msgid "Width of border around the label and image in the alert dialog"
-msgstr ""
+msgstr "Bredde på kanten rundt etiketten og bildet i varslingsdialogen"
 
 #: ../widgets/rb-alert-dialog.c:97
 msgid "Alert Type"
@@ -4534,6 +4538,14 @@ msgstr[1] "%d (%d)"
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
+
+#: ../widgets/rb-query-creator.c:210
+msgid "Create Automatic Playlist"
+msgstr "Opprett automatisk spilleliste"
+
+#: ../widgets/rb-query-creator.c:212
+msgid "Edit Automatic Playlist"
+msgstr "Rediger automatisk spilleliste"
 
 #: ../widgets/rb-query-creator-properties.c:77
 msgctxt "query-criteria"
@@ -4821,14 +4833,6 @@ msgstr "dager"
 #: ../widgets/rb-query-creator-properties.c:271
 msgid "weeks"
 msgstr "uker"
-
-#: ../widgets/rb-query-creator.c:210
-msgid "Create Automatic Playlist"
-msgstr "Opprett automatisk spilleliste"
-
-#: ../widgets/rb-query-creator.c:212
-msgid "Edit Automatic Playlist"
-msgstr "Rediger automatisk spilleliste"
 
 #: ../widgets/rb-rating-helper.c:304
 msgid "No Stars"
