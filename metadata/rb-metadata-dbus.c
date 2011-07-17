@@ -49,7 +49,7 @@ const char *rb_metadata_iface_xml = "				\
       <arg direction='out' type='b' name='hasAudio'/>		\
       <arg direction='out' type='b' name='hasVideo'/>		\
       <arg direction='out' type='b' name='hasOtherData'/>	\
-      <arg direction='out' type='s' name='mimeType'/>		\
+      <arg direction='out' type='s' name='mediaType'/>		\
       <arg direction='out' type='b' name='ok'/>			\
       <arg direction='out' type='i' name='errorCode'/>		\
       <arg direction='out' type='s' name='errorString'/>	\

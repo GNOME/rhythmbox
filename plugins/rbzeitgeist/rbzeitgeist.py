@@ -67,7 +67,7 @@ class ZeitgeistPlugin(GObject.Object, Peas.Activatable):
 
     @staticmethod
     def get_song_info(db, entry):
-        # we don't want the PROP_MIMETYPE, as it doesn't contain mimetype
+        # we don't want the PROP_MEDIA_TYPE, as it doesn't contain mimetype
         # of the audio file itself
         song = {
             "album": entry.get_string(RB.RhythmDBPropType.ALBUM),

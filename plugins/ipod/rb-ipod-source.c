@@ -53,6 +53,7 @@
 #include "rb-podcast-manager.h"
 #include "rb-podcast-entry-types.h"
 #include "rb-stock-icons.h"
+#include "rb-gst-media-types.h"
 
 static void rb_ipod_source_constructed (GObject *object);
 static void rb_ipod_source_dispose (GObject *object);
@@ -64,19 +65,18 @@ static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
 static GList* impl_get_ui_actions (RBDisplayPage *page);
 
-static GList * impl_get_mime_types (RBRemovableMediaSource *source);
 static gboolean impl_track_added (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
 				  const char *dest,
 				  guint64 filesize,
-				  const char *mimetype);
+				  const char *media_type);
 static char* impl_build_dest_uri (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
-				  const char *mimetype,
+				  const char *media_type,
 				  const char *extension);
 static gchar* ipod_get_filename_for_uri (const gchar *mount_point,
 					 const gchar *uri_str,
-					 const gchar *mimetype,
+					 const gchar *media_type,
 					 const gchar *extension);
 static gchar* ipod_path_from_unix_path (const gchar *mount_point,
 					const gchar *unix_path);
@@ -185,7 +185,6 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
 	rms_class->impl_track_added = impl_track_added;
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
-	rms_class->impl_get_mime_types = impl_get_mime_types;
 
 	g_object_class_install_property (object_class,
 					 PROP_DEVICE_INFO,
@@ -282,6 +281,7 @@ rb_ipod_source_constructed (GObject *object)
 	RBiPodSource *source;
 	RBEntryView *songs;
 	RhythmDB *db;
+	GstEncodingTarget *target;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_ipod_source_parent_class, constructed, object);
 	source = RB_IPOD_SOURCE (object);
@@ -300,6 +300,14 @@ rb_ipod_source_constructed (GObject *object)
                                  source, 0);
 
         g_object_unref (db);
+
+	/* is there model-specific data we need to pay attention to here?
+	 * maybe load a target from the device too?
+	 */
+	target = gst_encoding_target_new ("ipod", "device", "ipod", NULL);
+	gst_encoding_target_add_profile (target, rb_gst_get_encoding_profile ("audio/mpeg"));
+	gst_encoding_target_add_profile (target, rb_gst_get_encoding_profile ("audio/x-aac"));
+	g_object_set (source, "encoding-target", target, NULL);
 
         rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
 }
@@ -700,7 +708,7 @@ load_ipod_playlists (RBiPodSource *source)
 }
 
 static Itdb_Track *
-create_ipod_song_from_entry (RhythmDBEntry *entry, guint64 filesize, const char *mimetype)
+create_ipod_song_from_entry (RhythmDBEntry *entry, guint64 filesize, const char *media_type)
 {
 	Itdb_Track *track;
 
@@ -717,7 +725,7 @@ create_ipod_song_from_entry (RhythmDBEntry *entry, guint64 filesize, const char 
 	track->sort_albumartist = rhythmdb_entry_dup_string (entry,
 	                                       	       	     RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME);
 	track->genre = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_GENRE);
-	track->filetype = g_strdup (mimetype);
+	track->filetype = g_strdup (media_type);		/* XXX mapping required? */
 	track->size = filesize;
 	track->tracklen = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 	track->tracklen *= 1000;
@@ -1375,7 +1383,7 @@ impl_remove_playlists (RBMediaPlayerSource *source)
 static char *
 impl_build_dest_uri (RBRemovableMediaSource *source,
 		     RhythmDBEntry *entry,
-		     const char *mimetype,
+		     const char *media_type,
 		     const char *extension)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
@@ -1390,7 +1398,7 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 	mount_path = rb_ipod_db_get_mount_path (priv->ipod_db);
 	dest = ipod_get_filename_for_uri (mount_path,  uri,
-					  mimetype, extension);
+					  media_type, extension);
 	if (dest != NULL) {
 		char *dest_uri;
 
@@ -1589,7 +1597,7 @@ impl_track_added (RBRemovableMediaSource *source,
 		  RhythmDBEntry *entry,
 		  const char *dest,
 		  guint64 filesize,
-		  const char *mimetype)
+		  const char *media_type)
 {
 	RBiPodSource *isource = RB_IPOD_SOURCE (source);
 	RhythmDB *db;
@@ -1597,7 +1605,7 @@ impl_track_added (RBRemovableMediaSource *source,
 
 	db = get_db_for_source (isource);
 
-	song = create_ipod_song_from_entry (entry, filesize, mimetype);
+	song = create_ipod_song_from_entry (entry, filesize, media_type);
 	if (song != NULL) {
 		RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 		char *filename;
@@ -1816,7 +1824,7 @@ generate_ipod_filename (const gchar *mount_point, const gchar *filename)
 static gchar *
 ipod_get_filename_for_uri (const gchar *mount_point,
 			   const gchar *uri_str,
-			   const gchar *mimetype,
+			   const gchar *media_type,
 			   const gchar *extension)
 {
 	gchar *escaped;
@@ -1927,18 +1935,6 @@ impl_delete_thyself (RBDisplayPage *page)
 	priv->ipod_db = NULL;
 
 	RB_DISPLAY_PAGE_CLASS (rb_ipod_source_parent_class)->delete_thyself (page);
-}
-
-static GList *
-impl_get_mime_types (RBRemovableMediaSource *source)
-{
-	GList *ret = NULL;
-
-	/* FIXME: we should really query MPID for this */
-	ret = g_list_prepend (ret, g_strdup ("audio/aac"));
-	ret = g_list_prepend (ret, g_strdup ("audio/mpeg"));
-
-	return ret;
 }
 
 Itdb_Playlist *

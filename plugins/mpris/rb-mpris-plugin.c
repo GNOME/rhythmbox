@@ -1239,7 +1239,7 @@ entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry, GValueArray *changes, RBMp
 				case RHYTHMDB_PROP_FIRST_SEEN:
 				case RHYTHMDB_PROP_LAST_SEEN:
 				case RHYTHMDB_PROP_LAST_PLAYED:
-				case RHYTHMDB_PROP_MIMETYPE:
+				case RHYTHMDB_PROP_MEDIA_TYPE:
 				case RHYTHMDB_PROP_PLAYBACK_ERROR:
 					break;
 

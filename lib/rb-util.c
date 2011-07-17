@@ -1005,27 +1005,6 @@ rb_uri_list_parse (const char *uri_list)
 }
 
 /**
- * rb_mime_get_friendly_name:
- * @mime_type: a MIME type
- *
- * Returns a human-friendly description of the MIME type @mime_type.
- *
- * Return value: type description, must be freed by caller
- */
-char*
-rb_mime_get_friendly_name (const char *mime_type)
-{
-	gchar *name = NULL;
-	
-	if (name == NULL && mime_type)
-		name = g_content_type_get_description (mime_type);
-	if (name == NULL)
-		name = g_strdup (_("Unknown"));
-
-	return name;
-}
-
-/**
  * rb_signal_accumulator_object_handled: (skip):
  * @hint: a #GSignalInvocationHint
  * @return_accu: holds the accumulated return value

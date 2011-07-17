@@ -426,7 +426,7 @@ rb_daap_record_new (RhythmDBEntry *entry)
 						(entry, RHYTHMDB_PROP_GENRE);
 
 		/* FIXME: Support transcoding: */
-		/* FIXME: we should use RHYTHMDB_PROP_MIMETYPE instead */
+		/* FIXME: we should use RHYTHMDB_PROP_MEDIA_TYPE instead */
 		ext = strrchr (record->priv->location, '.');
 		if (ext == NULL) {
 			ext = "mp3";

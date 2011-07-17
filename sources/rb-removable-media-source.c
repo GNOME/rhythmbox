@@ -43,6 +43,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <gst/pbutils/encoding-target.h>
 
 #include "rhythmdb.h"
 #include "rb-removable-media-source.h"
@@ -55,18 +56,6 @@
 #include "rb-file-helpers.h"
 #include "rb-track-transfer-batch.h"
 #include "rb-track-transfer-queue.h"
-
-#if !GLIB_CHECK_VERSION(2,22,0)
-#define g_mount_unmount_with_operation_finish g_mount_unmount_finish
-#define g_mount_unmount_with_operation(m,f,mo,ca,cb,ud) g_mount_unmount(m,f,ca,cb,ud)
-
-#define g_mount_eject_with_operation_finish g_mount_eject_finish
-#define g_mount_eject_with_operation(m,f,mo,ca,cb,ud) g_mount_eject(m,f,ca,cb,ud)
-
-#define g_volume_eject_with_operation_finish g_volume_eject_finish
-#define g_volume_eject_with_operation(v,f,mo,ca,cb,ud) g_volume_eject(v,f,ca,cb,ud)
-#endif
-
 
 /* arbitrary length limit for file extensions */
 #define EXTENSION_LENGTH_LIMIT	8
@@ -98,6 +87,7 @@ typedef struct
 {
 	GVolume *volume;
 	GMount *mount;
+	GstEncodingTarget *encoding_target;
 } RBRemovableMediaSourcePrivate;
 
 G_DEFINE_TYPE (RBRemovableMediaSource, rb_removable_media_source, RB_TYPE_BROWSER_SOURCE)
@@ -108,6 +98,7 @@ enum
 	PROP_0,
 	PROP_VOLUME,
 	PROP_MOUNT,
+	PROP_ENCODING_TARGET
 };
 
 static void
@@ -167,6 +158,18 @@ rb_removable_media_source_class_init (RBRemovableMediaSourceClass *klass)
 							      "GIO Mount",
 							      G_TYPE_MOUNT,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBRemovableMediaSource:encoding-target
+	 *
+	 * The #GstEncodingTarget for this device
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_ENCODING_TARGET,
+					 gst_param_spec_mini_object ("encoding-target",
+								     "encoding target",
+								     "GstEncodingTarget",
+								     GST_TYPE_ENCODING_TARGET,
+								     G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RBRemovableMediaSourcePrivate));
 }
@@ -292,6 +295,12 @@ rb_removable_media_source_set_property (GObject *object,
 			g_object_ref (priv->mount);
 		}
 		break;
+	case PROP_ENCODING_TARGET:
+		if (priv->encoding_target) {
+			g_object_unref (priv->encoding_target);
+		}
+		priv->encoding_target = GST_ENCODING_TARGET (gst_value_dup_mini_object (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -312,6 +321,9 @@ rb_removable_media_source_get_property (GObject *object,
 		break;
 	case PROP_MOUNT:
 		g_value_set_object (value, priv->mount);
+		break;
+	case PROP_ENCODING_TARGET:
+		g_value_set_object (value, priv->encoding_target);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -387,9 +399,9 @@ static RBTrackTransferBatch *
 impl_paste (RBSource *bsource, GList *entries)
 {
 	RBRemovableMediaSource *source = RB_REMOVABLE_MEDIA_SOURCE (bsource);
+	RBRemovableMediaSourcePrivate *priv = REMOVABLE_MEDIA_SOURCE_GET_PRIVATE (bsource);
 	RBTrackTransferQueue *xferq;
 	RBShell *shell;
-	GList *mime_types;
 	GList *l;
 	RhythmDBEntryType *our_entry_type;
 	RBTrackTransferBatch *batch;
@@ -402,9 +414,7 @@ impl_paste (RBSource *bsource, GList *entries)
 	g_object_get (shell, "track-transfer-queue", &xferq, NULL);
 	g_object_unref (shell);
 
-	mime_types = rb_removable_media_source_get_mime_types (source);
-	batch = rb_track_transfer_batch_new (mime_types, NULL, NULL, G_OBJECT (source));
-	rb_list_deep_free (mime_types);
+	batch = rb_track_transfer_batch_new (priv->encoding_target, NULL, G_OBJECT (source));
 
 	g_signal_connect_object (batch, "get-dest-uri", G_CALLBACK (get_dest_uri_cb), source, 0);
 	g_signal_connect_object (batch, "track-done", G_CALLBACK (track_done_cb), source, 0);
@@ -607,7 +617,7 @@ impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data)
  * rb_removable_media_source_build_dest_uri:
  * @source: an #RBRemovableMediaSource
  * @entry: the #RhythmDBEntry to build a URI for
- * @mimetype: destination media type
+ * @media_type: destination media type
  * @extension: extension associated with destination media type
  *
  * Constructs a URI to use as the destination for a transfer or transcoding
@@ -624,7 +634,7 @@ impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data)
 char *
 rb_removable_media_source_build_dest_uri (RBRemovableMediaSource *source,
 					  RhythmDBEntry *entry,
-					  const char *mimetype,
+					  const char *media_type,
 					  const char *extension)
 {
 	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
@@ -632,7 +642,7 @@ rb_removable_media_source_build_dest_uri (RBRemovableMediaSource *source,
 	char *sane_uri = NULL;
 
 	if (klass->impl_build_dest_uri) {
-		uri = klass->impl_build_dest_uri (source, entry, mimetype, extension);
+		uri = klass->impl_build_dest_uri (source, entry, media_type, extension);
 	} else {
 		uri = NULL;
 	}
@@ -642,38 +652,12 @@ rb_removable_media_source_build_dest_uri (RBRemovableMediaSource *source,
 	g_free(uri);
 	uri = sane_uri;
 
-	rb_debug ("Built dest URI for mime='%s', extension='%s': '%s'",
-		  mimetype,
+	rb_debug ("Built dest URI for media type='%s', extension='%s': '%s'",
+		  media_type,
 		  extension,
 		  uri);
 
 	return uri;
-}
-
-/**
- * rb_removable_media_source_get_mime_types:
- * @source: an #RBRemovableMediaSource
- *
- * Returns a #GList of allocated media type strings describing the
- * formats supported by the device.  If possible, these should be
- * sorted in order of preference, as the first entry in the list
- * for which an encoder is available will be used.
- *
- * Common media types include "audio/mpeg" for MP3, "application/ogg"
- * for Ogg Vorbis, "audio/x-flac" for FLAC, and "audio/x-aac" for
- * MP4/AAC.
- *
- * Return value: (element-type utf8) (transfer full): list of media types
- */
-GList *
-rb_removable_media_source_get_mime_types (RBRemovableMediaSource *source)
-{
-	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
-
-	if (klass->impl_get_mime_types)
-		return klass->impl_get_mime_types (source);
-	else
-		return NULL;
 }
 
 /**
@@ -689,27 +673,15 @@ rb_removable_media_source_get_mime_types (RBRemovableMediaSource *source)
 GList *
 rb_removable_media_source_get_format_descriptions (RBRemovableMediaSource *source)
 {
-	GList *mime;
+	GstEncodingTarget *target;
+	const GList *l;
 	GList *desc = NULL;
-	GList *t;
-
-	mime = rb_removable_media_source_get_mime_types (source);
-	for (t = mime; t != NULL; t = t->next) {
-		const char *mimetype;
-		char *content_type;
-
-		mimetype = t->data;
-		content_type = g_content_type_from_mime_type (mimetype);
-		if (content_type != NULL) {
-			char *description;
-			description = g_content_type_get_description (content_type);
-			desc = g_list_append (desc, description);
-		} else {
-			desc = g_list_append (desc, g_strdup (mimetype));
-		}
+	g_object_get (source, "encoding-target", &target, NULL);
+	for (l = gst_encoding_target_get_profiles (target); l != NULL; l = l->next) {
+		GstEncodingProfile *profile = l->data;
+		desc = g_list_append (desc, g_strdup (gst_encoding_profile_get_description (profile)));
 	}
-
-	rb_list_deep_free (mime);
+	g_object_unref (target);
 	return desc;
 }
 
@@ -815,7 +787,7 @@ rb_removable_media_source_should_paste (RBRemovableMediaSource *source,
  * @entry: the source #RhythmDBEntry for the transfer
  * @uri: the destination URI
  * @filesize: size of the destination file
- * @mimetype: media type of the destination file
+ * @media_type: media type of the destination file
  *
  * This is called when a transfer to the device has completed.
  * If the source's impl_track_added method returns %TRUE, the destination
@@ -830,13 +802,13 @@ rb_removable_media_source_track_added (RBRemovableMediaSource *source,
 				       RhythmDBEntry *entry,
 				       const char *uri,
 				       guint64 filesize,
-				       const char *mimetype)
+				       const char *media_type)
 {
 	RBRemovableMediaSourceClass *klass = RB_REMOVABLE_MEDIA_SOURCE_GET_CLASS (source);
 	gboolean add_to_db = TRUE;
 
 	if (klass->impl_track_added)
-		add_to_db = klass->impl_track_added (source, entry, uri, filesize, mimetype);
+		add_to_db = klass->impl_track_added (source, entry, uri, filesize, media_type);
 
 	if (add_to_db) {
 		RhythmDBEntryType *entry_type;
@@ -1048,15 +1020,8 @@ rb_removable_media_source_eject (RBRemovableMediaSource *source)
  * impl_build_dest_uri:
  * @source: the source
  * @entry: entry to build URI for
- * @mimetype: destination media type
+ * @media_type: destination media type
  * @extension: extension for destination media type
  *
  * Return value: (transfer full): destination URI for the entry
- */
-
-/**
- * impl_get_mime_types:
- * @source: the source
- *
- * Return value: (element-type utf8) (transfer full): list of media types
  */

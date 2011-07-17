@@ -1,9 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * Based on Sound-Juicer's ripping code
- *
- * Copyright (C) 2003 Ross Burton <ross@burtonini.com>
- * Copyright (C) 2006 James Livingston <doclivingston@gmail.com>
+ * Copyright (C) 2010 Jonathan Matthew  <jonathan@d14n.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -35,10 +32,10 @@
 #include <gst/gst.h>
 #include <gst/tag/tag.h>
 #include <string.h>
-#include <libgnome-media-profiles/gnome-media-profiles.h>
 #include <gtk/gtk.h>
 #include <gio/gio.h>
 #include <gst/pbutils/missing-plugins.h>
+#include <gst/pbutils/encoding-profile.h>
 
 #include "rhythmdb.h"
 #include "rb-encoder.h"
@@ -46,14 +43,15 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
+#include "rb-gst-media-types.h"
 
-static void rb_encoder_gst_class_init (RBEncoderGstClass *klass);
-static void rb_encoder_gst_init       (RBEncoderGst *encoder);
-static void rb_encoder_gst_finalize   (GObject *object);
+static void rb_encoder_gst_init (RBEncoderGst *encoder);
 static void rb_encoder_init (RBEncoderIface *iface);
 
 struct _RBEncoderGstPrivate {
-	GstElement *enc;
+	GstEncodingProfile *profile;
+
+	GstElement *encodebin;
 	GstElement *pipeline;
 
 	gboolean transcoding;
@@ -66,7 +64,7 @@ struct _RBEncoderGstPrivate {
 	gint64 total_length;
 	guint progress_id;
 	char *dest_uri;
-	char *dest_mediatype;
+	char *dest_media_type;
 
 	GOutputStream *outstream;
 
@@ -76,144 +74,6 @@ struct _RBEncoderGstPrivate {
 G_DEFINE_TYPE_WITH_CODE(RBEncoderGst, rb_encoder_gst, G_TYPE_OBJECT,
 			G_IMPLEMENT_INTERFACE(RB_TYPE_ENCODER,
 					      rb_encoder_init))
-#define RB_ENCODER_GST_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_ENCODER_GST, RBEncoderGstPrivate))
-
-static void rb_encoder_gst_encode (RBEncoder *encoder,
-				   RhythmDBEntry *entry,
-				   const char *dest,
-				   const char *dest_media_type);
-static void rb_encoder_gst_cancel (RBEncoder *encoder);
-static gboolean rb_encoder_gst_get_media_type (RBEncoder *encoder,
-					       RhythmDBEntry *entry,
-					       GList *dest_media_types,
-					       char **media_type,
-					       char **extension);
-static gboolean rb_encoder_gst_get_missing_plugins (RBEncoder *encoder,
-						    const char *media_type,
-						    char ***details);
-static void rb_encoder_gst_emit_completed (RBEncoderGst *encoder);
-
-
-static const char *
-get_entry_media_type (RhythmDBEntry *entry)
-{
-	const char *entry_media_type;
-
-	/* hackish mapping of gstreamer container media types to actual
-	 * encoding media types; this should be unnecessary when we do proper
-	 * (deep) typefinding.
-	 */
-	entry_media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
-	if (rb_safe_strcmp (entry_media_type, "audio/x-wav") == 0) {
-		/* if it has a bitrate, assume it's mp3-in-wav */
-		if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE) != 0) {
-			entry_media_type = "audio/mpeg";
-		}
-	} else if (rb_safe_strcmp (entry_media_type, "application/x-id3") == 0) {
-		entry_media_type = "audio/mpeg";
-	} else if (rb_safe_strcmp (entry_media_type, "audio/x-flac") == 0) {
-		entry_media_type = "audio/flac";
-	}
-
-	return entry_media_type;
-}
-
-static void
-rb_encoder_gst_class_init (RBEncoderGstClass *klass)
-{
-        GObjectClass *object_class = (GObjectClass *) klass;
-	GstCaps *caps;
-
-        object_class->finalize = rb_encoder_gst_finalize;
-
-        g_type_class_add_private (klass, sizeof (RBEncoderGstPrivate));
-
-	/* create the media type -> GstCaps lookup table
-	 *
-	 * The strings are static data for now, but if we allow dynamic changing
-	 * we need to change this to use g_strdup/g_free
-	 */
-	klass->media_caps_table = g_hash_table_new_full (g_str_hash, g_str_equal,
-							 NULL,
-							 (GDestroyNotify)gst_caps_unref);
-
-	/* M4A/AAC */
-	caps = gst_caps_new_simple ("audio/mpeg",
-				    "mpegversion", G_TYPE_INT, 4,
-				    NULL);
-	g_hash_table_insert (klass->media_caps_table, "audio/aac", caps);
-	g_hash_table_insert (klass->media_caps_table, "audio/x-m4a", caps);
-
-	/* MP3 */
-	caps = gst_caps_new_simple ("audio/mpeg",
-				    "mpegversion", G_TYPE_INT, 1,
-				    "layer", G_TYPE_INT, 3,
-				    NULL);
-	g_hash_table_insert (klass->media_caps_table, "audio/mpeg", caps);
-
-	/* hack for HAL's application/ogg reporting, assume it's audio/vorbis */
-	caps = gst_caps_new_simple ("audio/x-vorbis",
-				    NULL);
-	g_hash_table_insert (klass->media_caps_table, "application/ogg", caps);
-
-	/* FLAC */
-	caps = gst_caps_new_simple ("audio/x-flac", NULL);
-	g_hash_table_insert (klass->media_caps_table, "audio/flac", caps);
-
-	/* create the media type -> extension fallback mapping table */
-	klass->media_extension_table = g_hash_table_new (g_str_hash, g_str_equal);
-	g_hash_table_insert (klass->media_extension_table, "audio/mpeg", "mp3");
-	g_hash_table_insert (klass->media_extension_table, "audio/x-vorbis", "ogg");
-	g_hash_table_insert (klass->media_extension_table, "audio/x-flac", "flac");
-	g_hash_table_insert (klass->media_extension_table, "audio/x-m4a", "m4a");
-}
-
-static void
-rb_encoder_gst_init (RBEncoderGst *encoder)
-{
-        encoder->priv = RB_ENCODER_GST_GET_PRIVATE (encoder);
-}
-
-static void
-rb_encoder_init (RBEncoderIface *iface)
-{
-	iface->encode = rb_encoder_gst_encode;
-	iface->cancel = rb_encoder_gst_cancel;
-	iface->get_media_type = rb_encoder_gst_get_media_type;
-	iface->get_missing_plugins = rb_encoder_gst_get_missing_plugins;
-}
-
-static void
-rb_encoder_gst_finalize (GObject *object)
-{
-	RBEncoderGst *encoder = RB_ENCODER_GST (object);
-
-	if (encoder->priv->progress_id != 0)
-		g_source_remove (encoder->priv->progress_id);
-
-	if (encoder->priv->pipeline) {
-		gst_element_set_state (encoder->priv->pipeline, GST_STATE_NULL);
-		g_object_unref (encoder->priv->pipeline);
-		encoder->priv->pipeline = NULL;
-	}
-
-	if (encoder->priv->outstream) {
-		g_output_stream_close (encoder->priv->outstream, NULL, NULL);
-		g_object_unref (encoder->priv->outstream);
-		encoder->priv->outstream = NULL;
-	}
-
-	g_free (encoder->priv->dest_uri);
-	g_free (encoder->priv->dest_mediatype);
-
-        G_OBJECT_CLASS (rb_encoder_gst_parent_class)->finalize (object);
-}
-
-RBEncoder*
-rb_encoder_gst_new (void)
-{
-	return RB_ENCODER (g_object_new (RB_TYPE_ENCODER_GST, NULL));
-}
 
 static void
 set_error (RBEncoderGst *encoder, GError *error)
@@ -250,8 +110,9 @@ rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 		encoder->priv->progress_id = 0;
 	}
 
-	/* emit an error if no audio pad has been found and it wasn't due to an
-	 * error */
+	/* emit an error if no audio pad has been found
+	 * and it wasn't due to an error
+	 */
 	if (encoder->priv->error == NULL &&
 	    encoder->priv->transcoding &&
 	    encoder->priv->decoded_pads == 0) {
@@ -283,7 +144,7 @@ rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 	g_object_unref (file);
 
 	encoder->priv->completion_emitted = TRUE;
-	_rb_encoder_emit_completed (RB_ENCODER (encoder), dest_size, encoder->priv->dest_mediatype, encoder->priv->error);
+	_rb_encoder_emit_completed (RB_ENCODER (encoder), dest_size, encoder->priv->dest_media_type, encoder->priv->error);
 }
 
 static void
@@ -313,7 +174,7 @@ bus_watch_cb (GstBus *bus, GstMessage *message, gpointer data)
 	GError *error = NULL;
 
 	/* ref ourselves, in case one of the signal handler unrefs us */
-	g_object_ref (G_OBJECT (encoder));
+	g_object_ref (encoder);
 
 	switch (GST_MESSAGE_TYPE (message)) {
 	case GST_MESSAGE_ERROR:
@@ -358,7 +219,7 @@ bus_watch_cb (GstBus *bus, GstMessage *message, gpointer data)
 		break;
 	}
 
-	g_object_unref (G_OBJECT (encoder));
+	g_object_unref (encoder);
 	return TRUE;
 }
 
@@ -426,70 +287,6 @@ start_pipeline (RBEncoderGst *encoder)
 	}
 }
 
-static const char *GST_ENCODING_PROFILE = "audioconvert ! audioresample ! %s";
-
-static GstElement*
-add_encoding_pipeline (RBEncoderGst *encoder,
-		       GMAudioProfile *profile,
-		       GError **error)
-{
-	GstElement *queue, *encoding_bin, *queue2;
-	GstPad *pad;
-	char *tmp;
-
-	queue = gst_element_factory_make ("queue2", NULL);
-	if (queue == NULL) {
-		g_set_error (error,
-			     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,
-			     "Could not create queue2 element");
-		return NULL;
-	}
-	gst_bin_add (GST_BIN (encoder->priv->pipeline), queue);
-
-	queue2 = gst_element_factory_make ("queue2", NULL);
-	if (queue2 == NULL) {
-		g_set_error (error,
-			     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,
-			     "Could not create queue2 element");
-		return NULL;
-	}
-	gst_bin_add (GST_BIN (encoder->priv->pipeline), queue2);
-
-	/* Nice big buffers... */
-	g_object_set (queue, "max-size-time", 30 * GST_SECOND, "max-size-buffers", 0, "max-size-bytes", 0, NULL);
-
-	tmp = g_strdup_printf (GST_ENCODING_PROFILE, gm_audio_profile_get_pipeline (profile));
-	rb_debug ("constructing encoding bin from pipeline string %s", tmp);
-	encoding_bin = GST_ELEMENT (gst_parse_launch (tmp, error));
-	g_free (tmp);
-
-	if (encoding_bin == NULL) {
-		rb_debug ("unable to construct encoding bin");
-		return NULL;
-	}
-
-	/* find pads and ghost them if necessary */
-	if ((pad = gst_bin_find_unconnected_pad (GST_BIN (encoding_bin), GST_PAD_SRC)))
-		gst_element_add_pad (encoding_bin, gst_ghost_pad_new ("src", pad));
-	if ((pad = gst_bin_find_unconnected_pad (GST_BIN (encoding_bin), GST_PAD_SINK)))
-		gst_element_add_pad (encoding_bin, gst_ghost_pad_new ("sink", pad));
-
-	gst_bin_add (GST_BIN (encoder->priv->pipeline), encoding_bin);
-
-	if (gst_element_link_many (queue, encoding_bin, queue2, NULL) == FALSE) {
-		g_set_error (error,
-			     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,
-			     "Could not link encoding bin to queues");
-		return NULL;
-	}
-
-	/* store the first element of the encoding graph. new_decoded_pad_cb
-	 * will link to this once a decoded pad is found */
-	encoder->priv->enc = queue;
-
-	return queue2;
-}
-
 static void
 add_string_tag (GstTagList *tags, GstTagMergeMode mode, const char *tag, RhythmDBEntry *entry, RhythmDBPropType property)
 {
@@ -506,9 +303,11 @@ add_tags_from_entry (RBEncoderGst *encoder,
 		     GError **error)
 {
 	GstTagList *tags;
-	gboolean result = TRUE;
+	GstTagSetter *tag_setter;
+	GstIterator *iter;
 	gulong day;
 	gdouble bpm;
+	gboolean done;
 
 	tags = gst_tag_list_new ();
 
@@ -549,43 +348,32 @@ add_tags_from_entry (RBEncoderGst *encoder,
 		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND, GST_TAG_BEATS_PER_MINUTE, bpm, NULL);
 	}
 
-	{
-		GstIterator *iter;
-		gboolean done;
-
-		iter = gst_bin_iterate_all_by_interface (GST_BIN (encoder->priv->pipeline), GST_TYPE_TAG_SETTER);
-		done = FALSE;
-		while (!done) {
-			GstTagSetter *tagger = NULL;
-			GstTagSetter **tagger_ptr = &tagger;
-
-			switch (gst_iterator_next (iter, (gpointer*)tagger_ptr)) {
-			case GST_ITERATOR_OK:
-				gst_tag_setter_merge_tags (tagger, tags, GST_TAG_MERGE_REPLACE_ALL);
-				break;
-			case GST_ITERATOR_RESYNC:
-				gst_iterator_resync (iter);
-				break;
-			case GST_ITERATOR_ERROR:
-				g_set_error (error,
-					     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,
-					     "Could not add tags to tag-setter");
-				result = FALSE;
-				done = TRUE;
-				break;
-			case GST_ITERATOR_DONE:
-				done = TRUE;
-				break;
-			}
-
-			if (tagger)
-				gst_object_unref (tagger);
+	/* XXX encodebin isn't a tag setter yet */
+	/*
+	gst_tag_setter_merge_tags (GST_TAG_SETTER (encoder->priv->encodebin), tags, GST_TAG_MERGE_REPLACE_ALL);
+	*/
+	iter = gst_bin_iterate_all_by_interface (GST_BIN (encoder->priv->encodebin), GST_TYPE_TAG_SETTER);
+	done = FALSE;
+	while (!done) {
+		switch (gst_iterator_next (iter, (gpointer) & tag_setter)) {
+		case GST_ITERATOR_OK:
+			gst_tag_setter_merge_tags (tag_setter, tags, GST_TAG_MERGE_REPLACE_ALL);
+			gst_object_unref (tag_setter);
+			break;
+		case GST_ITERATOR_RESYNC:
+			gst_iterator_resync (iter);
+			break;
+		case GST_ITERATOR_ERROR:
+			done = TRUE;
+			break;
+		case GST_ITERATOR_DONE:
+			done = TRUE;
+			break;
 		}
-		gst_iterator_free (iter);
 	}
 
 	gst_tag_list_free (tags);
-	return result;
+	return TRUE;
 }
 
 static void
@@ -609,8 +397,7 @@ new_decoded_pad_cb (GstElement *decodebin, GstPad *new_pad, gboolean arg1, RBEnc
 	/* only process audio data */
 	if (strncmp (caps_string, "audio/", 6) == 0) {
 		encoder->priv->decoded_pads++;
-		enc_sinkpad = gst_element_get_static_pad (encoder->priv->enc,
-				"sink");
+		enc_sinkpad = gst_element_get_static_pad (encoder->priv->encodebin, "audio_0");
 		if (gst_pad_link (new_pad, enc_sinkpad) != GST_PAD_LINK_OK)
 			rb_debug ("error linking pads");
 	}
@@ -620,7 +407,7 @@ new_decoded_pad_cb (GstElement *decodebin, GstPad *new_pad, gboolean arg1, RBEnc
 
 static GstElement *
 add_decoding_pipeline (RBEncoderGst *encoder,
-			GError **error)
+		       GError **error)
 {
 	GstElement *decodebin;
 
@@ -629,11 +416,11 @@ add_decoding_pipeline (RBEncoderGst *encoder,
 	encoder->priv->transcoding = TRUE;
 	decodebin = gst_element_factory_make ("decodebin2", NULL);
 	if (decodebin == NULL) {
+		rb_debug ("couldn't create decodebin2");
 		g_set_error (error,
 				RB_ENCODER_ERROR,
 				RB_ENCODER_ERROR_INTERNAL,
-				"Could not create decodebin");
-
+				"Could not create decodebin2");
 		return NULL;
 	}
 
@@ -722,201 +509,6 @@ attach_output_pipeline (RBEncoderGst *encoder,
 	return TRUE;
 }
 
-static gboolean
-encoder_match_media_type (RBEncoderGst *rbencoder, GstElement *encoder, const gchar *media_type)
-{
-	GstPad *srcpad;
-	GstCaps *element_caps = NULL;
-	GstCaps *desired_caps = NULL;
-	GstCaps *intersect_caps = NULL;
-	gboolean match = FALSE;
-	char *tmp;
-
-	srcpad = gst_element_get_static_pad (encoder, "src");
-	element_caps = gst_pad_get_caps (srcpad);
-
-	if (element_caps == NULL) {
-		g_warning ("couldn't create any element caps");
-		goto end;
-	}
-
-	desired_caps = g_hash_table_lookup (RB_ENCODER_GST_GET_CLASS (rbencoder)->media_caps_table, media_type);
-	if (desired_caps != NULL) {
-		gst_caps_ref (desired_caps);
-	} else {
-		desired_caps = gst_caps_new_simple (media_type, NULL);
-	}
-
-	if (desired_caps == NULL) {
-		g_warning ("couldn't create any desired caps for media type: %s", media_type);
-		goto end;
-	}
-
-	intersect_caps = gst_caps_intersect (desired_caps, element_caps);
-	match = !gst_caps_is_empty (intersect_caps);
-
-	tmp = gst_caps_to_string (desired_caps);
-	rb_debug ("desired caps are: %s", tmp);
-	g_free (tmp);
-
-	tmp = gst_caps_to_string (element_caps);
-	rb_debug ("element caps are: %s", tmp);
-	g_free (tmp);
-
-	tmp = gst_caps_to_string (intersect_caps);
-	rb_debug ("intersect caps are: %s", tmp);
-	g_free (tmp);
-
-end:
-	if (intersect_caps != NULL)
-		gst_caps_unref (intersect_caps);
-	if (desired_caps != NULL)
-		gst_caps_unref (desired_caps);
-	if (element_caps != NULL)
-		gst_caps_unref (element_caps);
-	if (srcpad != NULL)
-		gst_object_unref (GST_OBJECT (srcpad));
-
-	return match;
-}
-
-static GstElement *
-profile_bin_find_encoder (GstBin *profile_bin)
-{
-	GstElementFactory *factory;
-	GstElement *encoder = NULL;
-	GstIterator *iter;
-	gboolean done = FALSE;
-
-	iter = gst_bin_iterate_elements (profile_bin);
-	while (!done) {
-		gpointer data;
-
-		switch (gst_iterator_next (iter, &data)) {
-			case GST_ITERATOR_OK:
-				factory = gst_element_get_factory (GST_ELEMENT (data));
-				if (rb_safe_strcmp (factory->details.klass,
-						"Codec/Encoder/Audio") == 0) {
-					encoder = GST_ELEMENT (data);
-					done = TRUE;
-				}
-				break;
-			case GST_ITERATOR_RESYNC:
-				gst_iterator_resync (iter);
-				break;
-			case GST_ITERATOR_ERROR:
-				/* !?? */
-				rb_debug ("iterator error");
-				done = TRUE;
-				break;
-			case GST_ITERATOR_DONE:
-				done = TRUE;
-				break;
-		}
-	}
-	gst_iterator_free (iter);
-
-	if (encoder == NULL) {
-		rb_debug ("unable to find encoder element");
-	}
-	return encoder;
-}
-
-static const char *
-get_media_type_from_profile (RBEncoderGst *rbencoder, GMAudioProfile *profile)
-{
-	GHashTableIter iter;
-	GstElement *pipeline;
-	GstElement *encoder;
-	char *pipeline_description;
-	GError *error = NULL;
-	gpointer key;
-	gpointer value;
-
-	pipeline_description =
-		g_strdup_printf ("fakesrc ! %s ! fakesink",
-			gm_audio_profile_get_pipeline (profile));
-	pipeline = gst_parse_launch (pipeline_description, &error);
-	g_free (pipeline_description);
-	if (error) {
-		g_warning ("unable to get media type for profile %s: %s",
-			   gm_audio_profile_get_name (profile),
-			   error->message);
-		g_clear_error (&error);
-		return NULL;
-	}
-
-	encoder = profile_bin_find_encoder (GST_BIN (pipeline));
-	if (encoder == NULL) {
-		g_object_unref (pipeline);
-		g_warning ("Unable to get media type for profile %s: couldn't find encoder",
-			   gm_audio_profile_get_name (profile));
-		return NULL;
-	}
-
-	g_hash_table_iter_init (&iter, RB_ENCODER_GST_GET_CLASS (rbencoder)->media_caps_table);
-	while (g_hash_table_iter_next (&iter, &key, &value)) {
-		const char *media_type = (const char *)key;
-		if (encoder_match_media_type (rbencoder, encoder, media_type)) {
-			return media_type;
-		}
-	}
-
-	g_warning ("couldn't identify media type for profile %s", gm_audio_profile_get_name (profile));
-	return NULL;
-}
-
-static GMAudioProfile*
-get_profile_from_media_type (RBEncoderGst *rbencoder, const char *media_type)
-{
-	GList *profiles, *walk;
-	gchar *pipeline_description;
-	GstElement *pipeline;
-	GstElement *encoder;
-	GMAudioProfile *profile;
-	GMAudioProfile *matching_profile = NULL;
-	GError *error = NULL;
-
-	rb_debug ("Looking up profile for media type '%s'", media_type);
-
-	profiles = gm_audio_profile_get_active_list ();
-	for (walk = profiles; walk; walk = g_list_next (walk)) {
-		profile = (GMAudioProfile *) walk->data;
-		pipeline_description =
-			g_strdup_printf ("fakesrc ! %s ! fakesink",
-				gm_audio_profile_get_pipeline (profile));
-		pipeline = gst_parse_launch (pipeline_description, &error);
-		g_free (pipeline_description);
-		if (error) {
-			g_error_free (error);
-			error = NULL;
-			continue;
-		}
-
-		encoder = profile_bin_find_encoder (GST_BIN (pipeline));
-		if (encoder == NULL) {
-			g_object_unref (pipeline);
-			continue;
-		}
-
-		if (encoder_match_media_type (rbencoder, encoder, media_type)) {
-			matching_profile = profile;
-			gst_object_unref (GST_OBJECT (encoder));
-			gst_object_unref (GST_OBJECT (pipeline));
-			break;
-		}
-
-		gst_object_unref (GST_OBJECT (encoder));
-		gst_object_unref (GST_OBJECT (pipeline));
-	}
-
-	if (matching_profile)
-		g_object_ref (matching_profile);
-	g_list_free (profiles);
-
-	return matching_profile;
-}
-
 static GstElement *
 create_pipeline_and_source (RBEncoderGst *encoder,
 			    RhythmDBEntry *entry,
@@ -981,25 +573,14 @@ transcode_track (RBEncoderGst *encoder,
 		 const char *dest,
 		 GError **error)
 {
-	/* src ! decodebin ! queue ! encoding_profile ! queue ! sink */
-	GMAudioProfile *profile;
-	GstElement *src, *decoder, *end;
+	/* src ! decodebin2 ! encodebin ! sink */
+	GstElement *src;
+	GstElement *decoder;
 
 	g_assert (encoder->priv->pipeline == NULL);
-	g_assert (encoder->priv->dest_mediatype != NULL);
+	g_assert (encoder->priv->profile != NULL);
 
-	rb_debug ("transcoding to %s, media type %s", dest, encoder->priv->dest_mediatype);
-	profile = get_profile_from_media_type (encoder, encoder->priv->dest_mediatype);
-	if (profile == NULL) {
-		g_set_error (error,
-			     RB_ENCODER_ERROR,
-			     RB_ENCODER_ERROR_FORMAT_UNSUPPORTED,
-			     "Unable to locate encoding profile for media-type %s",
-			     encoder->priv->dest_mediatype);
-		goto error;
-	}
-
-	rb_debug ("selected profile %s", gm_audio_profile_get_name (profile));
+	rb_debug ("transcoding to %s, profile %s", dest, gst_encoding_profile_get_name (encoder->priv->profile));
 
 	src = create_pipeline_and_source (encoder, entry, error);
 	if (src == NULL)
@@ -1018,11 +599,24 @@ transcode_track (RBEncoderGst *encoder,
 		goto error;
 	}
 
-	end = add_encoding_pipeline (encoder, profile, error);
-	if (end == NULL)
+	encoder->priv->encodebin = gst_element_factory_make ("encodebin", NULL);
+	if (encoder->priv->encodebin == NULL) {
+		rb_debug ("unable to create encodebin");
+		g_set_error (error,
+				RB_ENCODER_ERROR,
+				RB_ENCODER_ERROR_INTERNAL,
+				"Could not create encodebin");
 		goto error;
+	}
+	g_object_set (encoder->priv->encodebin,
+		      "profile", encoder->priv->profile,
+		      "queue-bytes-max", 0,
+		      "queue-buffers-max", 0,
+		      "queue-time-max", 30 * GST_SECOND,
+		      NULL);
+	gst_bin_add (GST_BIN (encoder->priv->pipeline), encoder->priv->encodebin);
 
-	if (!attach_output_pipeline (encoder, end, dest, error))
+	if (!attach_output_pipeline (encoder, encoder->priv->encodebin, dest, error))
 		goto error;
 	if (!add_tags_from_entry (encoder, entry, error))
 		goto error;
@@ -1030,37 +624,34 @@ transcode_track (RBEncoderGst *encoder,
 	start_pipeline (encoder);
 	return TRUE;
 error:
-	if (profile)
-		g_object_unref (profile);
-
 	return FALSE;
 }
 
 static void
-rb_encoder_gst_cancel (RBEncoder *encoder)
+impl_cancel (RBEncoder *bencoder)
 {
-	RBEncoderGstPrivate *priv = RB_ENCODER_GST (encoder)->priv;
+	RBEncoderGst *encoder = RB_ENCODER_GST (bencoder);
 
-	if (priv->pipeline != NULL) {
-		gst_element_set_state (priv->pipeline, GST_STATE_NULL);
-		g_object_unref (priv->pipeline);
-		priv->pipeline = NULL;
+	if (encoder->priv->pipeline != NULL) {
+		gst_element_set_state (encoder->priv->pipeline, GST_STATE_NULL);
+		g_object_unref (encoder->priv->pipeline);
+		encoder->priv->pipeline = NULL;
 	}
 
-	if (priv->outstream != NULL) {
+	if (encoder->priv->outstream != NULL) {
 		GError *error = NULL;
 		GFile *f;
-		g_output_stream_close (priv->outstream, NULL, &error);
+		g_output_stream_close (encoder->priv->outstream, NULL, &error);
 		if (error != NULL) {
 			rb_debug ("error closing output stream: %s", error->message);
 			g_error_free (error);
 		}
-		g_object_unref (priv->outstream);
-		priv->outstream = NULL;
+		g_object_unref (encoder->priv->outstream);
+		encoder->priv->outstream = NULL;
 
 		/* try to delete the output file, since it's incomplete */
 		error = NULL;
-		f = g_file_new_for_uri (priv->dest_uri);
+		f = g_file_new_for_uri (encoder->priv->dest_uri);
 		if (g_file_delete (f, NULL, &error) == FALSE) {
 			rb_debug ("error deleting incomplete output file: %s", error->message);
 			g_error_free (error);
@@ -1068,38 +659,34 @@ rb_encoder_gst_cancel (RBEncoder *encoder)
 		g_object_unref (f);
 	}
 
-	if (priv->error == NULL) {
+	if (encoder->priv->error == NULL) {
 		/* should never be displayed to the user anyway */
-		priv->error = g_error_new (G_IO_ERROR, G_IO_ERROR_CANCELLED, " ");
+		encoder->priv->error = g_error_new (G_IO_ERROR, G_IO_ERROR_CANCELLED, " ");
 	}
 
-	priv->cancelled = TRUE;
-	rb_encoder_gst_emit_completed (RB_ENCODER_GST (encoder));
+	encoder->priv->cancelled = TRUE;
+	rb_encoder_gst_emit_completed (encoder);
 }
 
 static gboolean
 cancel_idle (RBEncoder *encoder)
 {
-	rb_encoder_gst_cancel (encoder);
+	impl_cancel (encoder);
 	g_object_unref (encoder);
 	return FALSE;
 }
 
 static void
-rb_encoder_gst_encode (RBEncoder *bencoder,
-		       RhythmDBEntry *entry,
-		       const char *dest,
-		       const char *dest_media_type)
+impl_encode (RBEncoder *bencoder,
+	     RhythmDBEntry *entry,
+	     const char *dest,
+	     GstEncodingProfile *profile)
 {
 	RBEncoderGst *encoder = RB_ENCODER_GST (bencoder);
-	const char *entry_media_type;
-	GError *error = NULL;
 	gboolean result;
+	GError *error = NULL;
 
 	g_return_if_fail (encoder->priv->pipeline == NULL);
-	g_return_if_fail (dest_media_type != NULL);
-
-	entry_media_type = get_entry_media_type (entry);
 
 	if (rb_uri_create_parent_dirs (dest, &error) == FALSE) {
 		error = g_error_new_literal (RB_ENCODER_ERROR,
@@ -1112,7 +699,7 @@ rb_encoder_gst_encode (RBEncoder *bencoder,
 		return;
 	}
 
-	g_free (encoder->priv->dest_mediatype);
+	g_free (encoder->priv->dest_media_type);
 	g_free (encoder->priv->dest_uri);
 	encoder->priv->dest_uri = g_strdup (dest);
 
@@ -1120,17 +707,18 @@ rb_encoder_gst_encode (RBEncoder *bencoder,
 	g_object_ref (encoder);
 
 	/* if destination and source media types are the same, copy it */
-	if (g_strcmp0 (entry_media_type, dest_media_type) == 0) {
-		rb_debug ("source file already has required media type %s, copying rather than transcoding", dest_media_type);
+	if (profile == NULL) {
 		encoder->priv->total_length = rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE);
 		encoder->priv->position_format = GST_FORMAT_BYTES;
+		encoder->priv->dest_media_type = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
 
 		result = copy_track (encoder, entry, dest, &error);
-		encoder->priv->dest_mediatype = g_strdup (entry_media_type);
 	} else {
+		gst_encoding_profile_ref (profile);
+		encoder->priv->profile = profile;
 		encoder->priv->total_length = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION);
 		encoder->priv->position_format = GST_FORMAT_TIME;
-		encoder->priv->dest_mediatype = g_strdup (dest_media_type);
+		encoder->priv->dest_media_type = rb_gst_encoding_profile_get_media_type (profile);
 
 		result = transcode_track (encoder, entry, dest, &error);
 	}
@@ -1147,169 +735,145 @@ rb_encoder_gst_encode (RBEncoder *bencoder,
 	g_object_unref (encoder);
 }
 
-static char *
-get_extension_for_media_type (RBEncoder *encoder, const char *media_type)
-{
-	char *ext;
-	GMAudioProfile *profile;
-
-	profile = get_profile_from_media_type (RB_ENCODER_GST (encoder), media_type);
-	if (profile) {
-		ext = g_strdup (gm_audio_profile_get_extension (profile));
-		rb_debug ("got extension %s from profile", ext);
-		g_object_unref (profile);
-	} else {
-		GHashTable *map = RB_ENCODER_GST_GET_CLASS (encoder)->media_extension_table;
-		ext = g_strdup (g_hash_table_lookup (map, media_type));
-		rb_debug ("got extension %s from fallback extension map", ext);
-	}
-
-	return ext;
-}
-
 static gboolean
-rb_encoder_gst_get_media_type (RBEncoder *encoder,
-			       RhythmDBEntry *entry,
-			       GList *dest_media_types,
-			       char **media_type,
-			       char **extension)
+impl_get_missing_plugins (RBEncoder *encoder,
+			  GstEncodingProfile *profile,
+			  char ***details,
+			  char ***descriptions)
 {
-	GList *l;
-	GMAudioProfile *profile;
-	const char *src_media_type;
+	GstElement *encodebin;
+	GstBus *bus;
+	GstPad *pad;
+	gboolean ret;
 
-	src_media_type = get_entry_media_type (entry);
-	g_return_val_if_fail (src_media_type != NULL, FALSE);
+	ret = FALSE;
+	rb_debug ("trying to check profile %s for missing plugins", gst_encoding_profile_get_name (profile));
 
-	if (media_type != NULL)
-		*media_type = NULL;
-	if (extension != NULL)
-		*extension = NULL;
-
-
-	/* if we don't have any destination format requirements,
-	 * use preferred encoding for raw files, otherwise accept as is
-	 */
-	if (dest_media_types == NULL) {
-		if (g_str_has_prefix (src_media_type, "audio/x-raw")) {
-			/* hopefully encodebin stuff will land before i need to replace this with something gsettings wise */
-			const char *profile_name = "cdlossy"; /* eel_gconf_get_string (CONF_LIBRARY_PREFERRED_FORMAT); */
-			const char *mt;
-			profile = gm_audio_profile_lookup (profile_name);
-
-			mt = get_media_type_from_profile (RB_ENCODER_GST (encoder), profile);
-			if (mt == NULL) {
-				/* ugh */
-				return FALSE;
-			}
-			rb_debug ("selected preferred media type %s (extension %s)",
-				  mt,
-				  gm_audio_profile_get_extension (profile));
-			if (media_type != NULL)
-				*media_type = g_strdup (mt);
-			if (extension != NULL)
-				*extension = g_strdup (gm_audio_profile_get_extension (profile));
-		} else {
-			if (media_type != NULL)
-				*media_type = g_strdup (src_media_type);
-
-			if (extension != NULL)
-				*extension = get_extension_for_media_type (encoder, src_media_type);
-		}
-		return TRUE;
-	}
-
-	/* check if the source media type is in the destination list */
-	if (rb_string_list_contains (dest_media_types, src_media_type)) {
-		rb_debug ("found source media type %s in destination type list", src_media_type);
-		if (media_type != NULL)
-			*media_type = g_strdup (src_media_type);
-		if (extension != NULL)
-			*extension = get_extension_for_media_type (encoder, src_media_type);
-		return TRUE;
-	}
-
-	/* now find the type in the destination media type list that we have a
-	 * profile for.
-	 */
-	for (l = dest_media_types; l != NULL; l = g_list_next (l)) {
-		GMAudioProfile *profile;
-		const char *mt;
-
-		mt = (const char *)l->data;
-		profile = get_profile_from_media_type (RB_ENCODER_GST (encoder), mt);
-		if (profile) {
-			rb_debug ("selected destination media type %s (extension %s)",
-				  mt,
-				  gm_audio_profile_get_extension (profile));
-			if (extension != NULL)
-				*extension = g_strdup (gm_audio_profile_get_extension (profile));
-
-			if (media_type != NULL)
-				*media_type = g_strdup (mt);
-			g_object_unref (profile);
-			return TRUE;
-		}
-	}
-
-	return FALSE;
-}
-
-static int
-add_element_if_missing (char ***details, int index, const char *element_name)
-{
-	GstElementFactory *factory;
-	factory = gst_element_factory_find (element_name);
-	if (factory != NULL) {
-		rb_debug ("element factory %s is available", element_name);
-		gst_object_unref (factory);
-	} else {
-		rb_debug ("element factory %s not available, adding detail string", element_name);
-		(*details)[index++] = gst_missing_element_installer_detail_new (element_name);
-	}
-	return index;
-}
-
-static gboolean
-rb_encoder_gst_get_missing_plugins (RBEncoder *encoder,
-				    const char *media_type,
-				    char ***details)
-{
-	/*
-	 * since encoding profiles use explicit element names, we need to
-	 * check for and request installation of exactly the element names
-	 * used in the profile, rather than requesting an encoder for a media
-	 * type.  parsing the profile pipeline description is too much work,
-	 * so we'll just use the element names from the default profiles.
-	 *
-	 * mp3: 	lame, id3v2mux
-	 * aac:		faac, ffmux_mp4
-	 * ogg vorbis:	vorbisenc, oggmux
-	 * flac:	flacenc
-	 * mp2:		twolame, id3v2mux   (we don't have a media type for this)
-	 */
-
-	int i = 0;
-	*details = g_new0(char *, 3);
-
-	if (g_strcmp0 (media_type, "audio/mpeg") == 0) {
-		i = add_element_if_missing (details, i, "lame");
-		i = add_element_if_missing (details, i, "id3v2mux");
-	} else if (g_strcmp0 (media_type, "audio/x-aac") == 0) {
-		i = add_element_if_missing (details, i, "faac");
-		i = add_element_if_missing (details, i, "ffmux_mp4");
-	} else if (g_strcmp0 (media_type, "application/ogg") == 0) {
-		i = add_element_if_missing (details, i, "vorbisenc");
-		i = add_element_if_missing (details, i, "oggmux");
-	} else if (g_strcmp0 (media_type, "audio/x-flac") == 0) {
-		i = add_element_if_missing (details, i, "flacenc");
-	} else {
-		rb_debug ("unable to provide missing plugin details for unknown media type %s",
-			  media_type);
-		g_strfreev (*details);
-		*details = NULL;
+	encodebin = gst_element_factory_make ("encodebin", NULL);
+	if (encodebin == NULL) {
+		g_warning ("Unable to create encodebin");
 		return FALSE;
 	}
-	rb_debug ("have %d missing plugin detail strings", i);
-	return TRUE;
+
+	bus = gst_bus_new ();
+	gst_element_set_bus (encodebin, bus);
+	gst_bus_set_flushing (bus, FALSE);		/* necessary? */
+
+	g_object_set (encodebin, "profile", profile, NULL);
+	pad = gst_element_get_static_pad (encodebin, "audio_0");
+	if (pad == NULL) {
+		GstMessage *message;
+		GList *messages = NULL;
+		GList *m;
+		int i;
+
+		rb_debug ("didn't get request pad, profile %s doesn't work", gst_encoding_profile_get_name (profile));
+		message = gst_bus_pop (bus);
+		while (message != NULL) {
+			if (gst_is_missing_plugin_message (message)) {
+				messages = g_list_append (messages, message);
+			} else {
+				gst_message_unref (message);
+			}
+			message = gst_bus_pop (bus);
+		}
+
+		if (messages != NULL) {
+			if (details != NULL) {
+				*details = g_new0(char *, g_list_length (messages)+1);
+			}
+			if (descriptions != NULL) {
+				*descriptions = g_new0(char *, g_list_length (messages)+1);
+			}
+			i = 0;
+			for (m = messages; m != NULL; m = m->next) {
+				char *str;
+				if (details != NULL) {
+					str = gst_missing_plugin_message_get_installer_detail (m->data);
+					rb_debug ("missing plugin for profile %s: %s",
+						  gst_encoding_profile_get_name (profile),
+						  str);
+					(*details)[i] = str;
+				}
+				if (descriptions != NULL) {
+					str = gst_missing_plugin_message_get_description (m->data);
+					(*descriptions)[i] = str;
+				}
+				i++;
+			}
+
+			ret = TRUE;
+			rb_list_destroy_free (messages, (GDestroyNotify)gst_message_unref);
+		}
+
+	} else {
+		rb_debug ("got request pad, profile %s works", gst_encoding_profile_get_name (profile));
+		gst_element_release_request_pad (encodebin, pad);
+		gst_object_unref (pad);
+	}
+
+	gst_object_unref (encodebin);
+	gst_object_unref (bus);
+	return ret;
+}
+
+static void
+impl_finalize (GObject *object)
+{
+	RBEncoderGst *encoder = RB_ENCODER_GST (object);
+
+	if (encoder->priv->progress_id != 0)
+		g_source_remove (encoder->priv->progress_id);
+
+	if (encoder->priv->pipeline) {
+		gst_element_set_state (encoder->priv->pipeline, GST_STATE_NULL);
+		g_object_unref (encoder->priv->pipeline);
+		encoder->priv->pipeline = NULL;
+	}
+
+	if (encoder->priv->outstream) {
+		g_output_stream_close (encoder->priv->outstream, NULL, NULL);
+		g_object_unref (encoder->priv->outstream);
+		encoder->priv->outstream = NULL;
+	}
+
+	if (encoder->priv->profile) {
+		gst_encoding_profile_unref (encoder->priv->profile);
+		encoder->priv->profile = NULL;
+	}
+
+	g_free (encoder->priv->dest_uri);
+	g_free (encoder->priv->dest_media_type);
+
+        G_OBJECT_CLASS (rb_encoder_gst_parent_class)->finalize (object);
+}
+
+static void
+rb_encoder_gst_init (RBEncoderGst *encoder)
+{
+        encoder->priv = (G_TYPE_INSTANCE_GET_PRIVATE ((encoder), RB_TYPE_ENCODER_GST, RBEncoderGstPrivate));
+}
+
+static void
+rb_encoder_init (RBEncoderIface *iface)
+{
+	iface->encode = impl_encode;
+	iface->cancel = impl_cancel;
+	iface->get_missing_plugins = impl_get_missing_plugins;
+}
+
+static void
+rb_encoder_gst_class_init (RBEncoderGstClass *klass)
+{
+        GObjectClass *object_class = (GObjectClass *) klass;
+
+        object_class->finalize = impl_finalize;
+
+        g_type_class_add_private (klass, sizeof (RBEncoderGstPrivate));
+}
+
+RBEncoder*
+rb_encoder_gst_new (void)
+{
+	return RB_ENCODER (g_object_new (RB_TYPE_ENCODER_GST, NULL));
 }

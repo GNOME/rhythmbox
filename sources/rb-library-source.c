@@ -51,11 +51,10 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <glib-object.h>
+#include <gst/pbutils/install-plugins.h>
 
 #include "rb-track-transfer-batch.h"
 #include "rb-track-transfer-queue.h"
-#include <libgnome-media-profiles/gnome-media-profiles.h>
-#include <libgnome-media-profiles/audio-profile-choose.h>
 
 #include "rhythmdb.h"
 #include "rb-debug.h"
@@ -67,6 +66,7 @@
 #include "rb-auto-playlist-source.h"
 #include "rb-encoder.h"
 #include "rb-missing-plugins.h"
+#include "rb-gst-media-types.h"
 
 static void rb_library_source_class_init (RBLibrarySourceClass *klass);
 static void rb_library_source_init (RBLibrarySource *source);
@@ -92,8 +92,6 @@ static void impl_add_uri (RBSource *source,
 
 static void library_settings_changed_cb (GSettings *settings, const char *key, RBLibrarySource *source);
 static void db_settings_changed_cb (GSettings *settings, const char *key, RBLibrarySource *source);
-static void rb_library_source_edit_profile_clicked_cb (GtkButton *button,
-						       RBLibrarySource *source);
 static gboolean rb_library_source_library_location_cb (GtkEntry *entry,
 						       GdkEventFocus *event,
 						       RBLibrarySource *source);
@@ -104,7 +102,9 @@ static void rb_library_source_filename_changed_cb (GtkComboBox *box,
 						   RBLibrarySource *source);
 static void rb_library_source_format_changed_cb (GtkWidget *widget,
 						 RBLibrarySource *source);
-static void layout_example_label_update (RBLibrarySource *source);
+static void rb_library_source_install_plugins_cb (GtkWidget *widget,
+						  RBLibrarySource *source);
+static void update_layout_example_label (RBLibrarySource *source);
 static RhythmDBImportJob *maybe_create_import_job (RBLibrarySource *source);
 
 typedef struct {
@@ -148,6 +148,8 @@ struct RBLibrarySourcePrivate
 	GtkWidget *layout_filename_menu;
 	GtkWidget *preferred_format_menu;
 	GtkWidget *layout_example_label;
+	GtkWidget *install_plugins_button;
+	GtkTreeModel *profile_model;
 
 	GList *import_jobs;
 	guint start_import_job_id;
@@ -185,8 +187,6 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_true_function;
 
 	g_type_class_add_private (klass, sizeof (RBLibrarySourcePrivate));
-
-	gnome_media_profiles_init (gconf_client_get_default ());
 }
 
 static void
@@ -354,14 +354,9 @@ rb_library_source_new (RBShell *shell)
 }
 
 static void
-rb_library_source_edit_profile_clicked_cb (GtkButton *button, RBLibrarySource *source)
+rb_library_source_profile_settings_clicked_cb (GtkButton *button, RBLibrarySource *source)
 {
-	GtkWidget *dialog;
-
-	dialog = gm_audio_profiles_edit_new (gconf_client_get_default (),
-					     GTK_WINDOW (source->priv->shell_prefs));
-	gtk_widget_show_all (dialog);
-	gtk_dialog_run (GTK_DIALOG (dialog));
+	/* do something.  not much idea what yet. */
 }
 
 static void
@@ -455,7 +450,7 @@ update_layout_path (RBLibrarySource *source)
 		gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->layout_path_menu), active);
 	}
 
-	layout_example_label_update (source);
+	update_layout_example_label (source);
 }
 
 static void
@@ -478,17 +473,38 @@ update_layout_filename (RBLibrarySource *source)
 
 	gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->layout_filename_menu), active);
 
-	layout_example_label_update (source);
+	update_layout_example_label (source);
 }
 
 static void
-update_preferred_format (RBLibrarySource *source)
+update_preferred_media_type (RBLibrarySource *source)
 {
-	char *str = g_settings_get_string (source->priv->settings, "preferred-format");
-	if (str) {
-		gm_audio_profile_choose_set_active (source->priv->preferred_format_menu, str);
-		g_free (str);
+	GtkTreeIter iter;
+	gboolean done;
+	char *str;
+
+	done = FALSE;
+	str = g_settings_get_string (source->priv->settings, "preferred-media-type");
+	if (gtk_tree_model_get_iter_first (source->priv->profile_model, &iter)) {
+		do {
+			char *media_type;
+
+			gtk_tree_model_get (source->priv->profile_model, &iter,
+					    0, &media_type,
+					    -1);
+			if (g_strcmp0 (media_type, str) == 0) {
+				gtk_combo_box_set_active_iter (GTK_COMBO_BOX (source->priv->preferred_format_menu), &iter);
+				done = TRUE;
+			}
+			g_free (media_type);
+		} while (done == FALSE && gtk_tree_model_iter_next (source->priv->profile_model, &iter));
 	}
+
+	if (done == FALSE) {
+		gtk_combo_box_set_active_iter (GTK_COMBO_BOX (source->priv->preferred_format_menu), NULL);
+	}
+
+	g_free (str);
 }
 
 static void
@@ -509,9 +525,9 @@ library_settings_changed_cb (GSettings *settings, const char *key, RBLibrarySour
 	} else if (g_strcmp0 (key, "layout-filename") == 0) {
 		rb_debug ("layout filename changed");
 		update_layout_filename (source);
-	} else if (g_strcmp0 (key, "preferred-format") == 0) {
-		rb_debug ("preferred format changed");
-		update_preferred_format (source);
+	} else if (g_strcmp0 (key, "preferred-media-type") == 0) {
+		rb_debug ("preferred media type changed");
+		update_preferred_media_type (source);
 	}
 }
 
@@ -519,9 +535,12 @@ static GtkWidget *
 impl_get_config_widget (RBDisplayPage *asource, RBShellPreferences *prefs)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
+	GtkCellRenderer *renderer;
+	GstEncodingTarget *target;
 	GtkBuilder *builder;
 	GObject *tmp;
 	GObject *label;
+	const GList *p;
 	int i;
 
 	if (source->priv->config_widget)
@@ -582,17 +601,42 @@ impl_get_config_widget (RBDisplayPage *asource, RBShellPreferences *prefs)
 						_(library_layout_filenames[i].title));
 	}
 
-	tmp = gtk_builder_get_object (builder, "edit_profile_button");
+	/* not implemented yet */
+	tmp = gtk_builder_get_object (builder, "profile_settings_button");
 	g_signal_connect (tmp,
 			  "clicked",
-			  G_CALLBACK (rb_library_source_edit_profile_clicked_cb),
+			  G_CALLBACK (rb_library_source_profile_settings_clicked_cb),
 			  asource);
+	gtk_widget_set_sensitive (GTK_WIDGET (tmp), FALSE);
 
-	tmp = gtk_builder_get_object (builder, "preferred_format_menu_box");
-	label = gtk_builder_get_object (builder, "preferred_format_menu_label");
-	source->priv->preferred_format_menu = gm_audio_profile_choose_new ();
-	gtk_box_pack_start (GTK_BOX (tmp), source->priv->preferred_format_menu, TRUE, TRUE, 0);
-	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->preferred_format_menu);
+	target = rb_gst_get_default_encoding_target ();
+	source->priv->profile_model = GTK_TREE_MODEL (gtk_tree_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER));
+	for (p = gst_encoding_target_get_profiles (target); p != NULL; p = p->next) {
+		GstEncodingProfile *profile = GST_ENCODING_PROFILE (p->data);
+		char *media_type;
+
+		media_type = rb_gst_encoding_profile_get_media_type (profile);
+		if (media_type == NULL) {
+			continue;
+		}
+		gtk_tree_store_insert_with_values (GTK_TREE_STORE (source->priv->profile_model),
+						   NULL,
+						   NULL,
+						   -1,
+						   0, media_type,
+						   1, gst_encoding_profile_get_description (profile),
+						   2, profile,
+						   -1);
+		g_free (media_type);
+	}
+
+	source->priv->preferred_format_menu = GTK_WIDGET (gtk_builder_get_object (builder, "format_select_combo"));
+	gtk_combo_box_set_model (GTK_COMBO_BOX (source->priv->preferred_format_menu), source->priv->profile_model);
+	gtk_combo_box_set_entry_text_column (GTK_COMBO_BOX (source->priv->preferred_format_menu), 1);
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (source->priv->preferred_format_menu), renderer, TRUE);
+	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (source->priv->preferred_format_menu), renderer, "text", 1, NULL);
+
 	g_signal_connect (G_OBJECT (source->priv->preferred_format_menu),
 			  "changed",
 			  G_CALLBACK (rb_library_source_format_changed_cb),
@@ -600,8 +644,12 @@ impl_get_config_widget (RBDisplayPage *asource, RBShellPreferences *prefs)
 
 	source->priv->layout_example_label = GTK_WIDGET (gtk_builder_get_object (builder, "layout_example_label"));
 
+	source->priv->install_plugins_button = GTK_WIDGET (gtk_builder_get_object (builder, "install_plugins_button"));
+	gtk_widget_set_no_show_all (source->priv->install_plugins_button, TRUE);
+	g_signal_connect (G_OBJECT (source->priv->install_plugins_button), "clicked", G_CALLBACK (rb_library_source_install_plugins_cb), source);
+
 	update_library_locations (source);
-	update_preferred_format (source);
+	update_preferred_media_type (source);
 
 	update_layout_path (source);
 	update_layout_filename (source);
@@ -715,12 +763,85 @@ rb_library_source_filename_changed_cb (GtkComboBox *box, RBLibrarySource *source
 static void
 rb_library_source_format_changed_cb (GtkWidget *widget, RBLibrarySource *source)
 {
-	GMAudioProfile *profile;
+	GtkTreeIter iter;
+	char *media_type = NULL;
+	GstEncodingProfile *profile;
+	RBEncoder *encoder;
 
-	profile = gm_audio_profile_choose_get_active (widget);
-	g_settings_set_string (source->priv->settings, "preferred-format", gm_audio_profile_get_id (profile));
-	
-	layout_example_label_update (source);
+	/* get selected media type */
+	if (gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter) == FALSE)
+		return;
+	gtk_tree_model_get (GTK_TREE_MODEL (source->priv->profile_model),
+			    &iter,
+			    0, &media_type,
+			    2, &profile,
+			    -1);
+
+	g_settings_set_string (source->priv->settings, "preferred-media-type", media_type);
+
+	update_layout_example_label (source);
+
+	/* indicate whether additional plugins are required to encode in this format */
+	encoder = rb_encoder_new ();
+	if (rb_encoder_get_missing_plugins (encoder, profile, NULL, NULL)) {
+		rb_debug ("additional plugins are required to encode %s", media_type);
+		gtk_widget_set_visible (source->priv->install_plugins_button, TRUE);
+		/* not a great way to handle this situation; probably should describe
+		 * the plugins that are missing when automatic install isn't available.
+		 */
+		gtk_widget_set_sensitive (source->priv->install_plugins_button,
+					gst_install_plugins_supported ());
+	} else {
+		rb_debug ("can encode %s", media_type);
+		gtk_widget_set_visible (source->priv->install_plugins_button, FALSE);
+	}
+	g_free (media_type);
+}
+
+static void
+plugin_install_done_cb (gpointer inst, gboolean retry, RBLibrarySource *source)
+{
+	rb_library_source_format_changed_cb (source->priv->preferred_format_menu, source);
+}
+
+static void
+rb_library_source_install_plugins_cb (GtkWidget *widget, RBLibrarySource *source)
+{
+	char *media_type;
+	GstEncodingProfile *profile;
+	RBEncoder *encoder;
+	char **details;
+	GClosure *closure;
+
+	/* get profile */
+	media_type = g_settings_get_string (source->priv->settings, "preferred-media-type");
+	profile = rb_gst_get_encoding_profile (media_type);
+	if (profile == NULL) {
+		g_warning ("no encoding profile available for %s, so how can we install plugins?",
+			   media_type);
+		g_free (media_type);
+		return;
+	}
+	g_free (media_type);
+
+	/* get plugin details */
+	encoder = rb_encoder_new ();
+	if (rb_encoder_get_missing_plugins (encoder, profile, &details, NULL) == FALSE) {
+		/* what? */
+		g_object_unref (encoder);
+		return;
+	}
+
+	/* attempt installation */
+	closure = g_cclosure_new ((GCallback) plugin_install_done_cb,
+				  g_object_ref (source),
+				  (GClosureNotify) g_object_unref);
+	g_closure_set_marshal (closure, g_cclosure_marshal_VOID__BOOLEAN);
+
+	rb_missing_plugins_install ((const char **)details, TRUE, closure);
+
+	g_closure_sink (closure);
+	g_strfreev (details);
 }
 
 /*
@@ -918,7 +1039,7 @@ filepath_parse_pattern (RBLibrarySource *source,
 				break;
 			default:
 				string = g_strdup_printf ("%%t%c", *p);
- 			}
+			}
 
 			break;
 
@@ -940,7 +1061,7 @@ filepath_parse_pattern (RBLibrarySource *source,
 }
 
 static void
-layout_example_label_update (RBLibrarySource *source)
+update_layout_example_label (RBLibrarySource *source)
 {
 	char *file_pattern;
 	char *path_pattern;
@@ -950,11 +1071,11 @@ layout_example_label_update (RBLibrarySource *source)
 	char *format;
 	char *tmp;
 	gboolean strip_chars;
-	GMAudioProfile *profile;
+	char *media_type;
 	RhythmDBEntryType *entry_type;
 	RhythmDBEntry *sample_entry;
 
-  	profile = gm_audio_profile_choose_get_active (source->priv->preferred_format_menu);
+	media_type = g_settings_get_string (source->priv->settings, "preferred-media-type");
 
 	file_pattern = g_settings_get_string (source->priv->settings, "layout-filename");
 	if (file_pattern == NULL) {
@@ -989,9 +1110,10 @@ layout_example_label_update (RBLibrarySource *source)
 			      "</b> ",
 			      example,
 			      ".",
-			      profile ? gm_audio_profile_get_extension (profile) : "ogg",
+			      media_type ? rb_gst_media_type_to_extension (media_type) : "ogg",
 			      "</i></small>", NULL);
 	g_free (example);
+	g_free (media_type);
 
 	gtk_label_set_markup (GTK_LABEL (source->priv->layout_example_label), format);
 	g_free (format);
@@ -1086,7 +1208,7 @@ impl_can_paste (RBSource *asource)
 	can_paste &= (str != NULL);
 	g_free (str);
 
-	str = g_settings_get_string (source->priv->settings, "preferred-format");
+	str = g_settings_get_string (source->priv->settings, "preferred-media-type");
 	can_paste &= (str != NULL);
 	g_free (str);
 
@@ -1162,6 +1284,9 @@ impl_paste (RBSource *asource, GList *entries)
 	RhythmDBEntryType *source_entry_type;
 	RBTrackTransferBatch *batch;
 	gboolean start_batch = FALSE;
+	GstEncodingTarget *target;
+	GstEncodingProfile *profile;
+	char *preferred_media_type;
 
 	if (impl_can_paste (asource) == FALSE) {
 		g_warning ("RBLibrarySource impl_paste called when layout settings unset");
@@ -1175,7 +1300,25 @@ impl_paste (RBSource *asource, GList *entries)
 	g_object_get (shell, "track-transfer-queue", &xferq, NULL);
 	g_object_unref (shell);
 
-	batch = rb_track_transfer_batch_new (NULL, NULL, NULL, G_OBJECT (source));
+	target = gst_encoding_target_new ("rhythmbox-library", "device", "", NULL);
+
+	/* set up profile for user's preferred format */
+	preferred_media_type = g_settings_get_string (source->priv->settings, "preferred-media-type");
+	profile = rb_gst_get_encoding_profile (preferred_media_type);
+	g_free (preferred_media_type);
+	/* have a preset as part of the user settings too?  would that work for containerful streams,
+	 * where the interesting settings are on the stream inside the container?
+	 */
+	if (profile != NULL) {
+		gst_encoding_target_add_profile (target, profile);
+	}
+
+	/* set up profile for copying, which accepts any format */
+	profile = GST_ENCODING_PROFILE (gst_encoding_audio_profile_new (gst_caps_new_any (), NULL, NULL, 1));
+	gst_encoding_profile_set_name (profile, "copy");
+	gst_encoding_target_add_profile (target, profile);
+
+	batch = rb_track_transfer_batch_new (target, NULL, G_OBJECT (source));
 	g_signal_connect_object (batch, "get-dest-uri", G_CALLBACK (get_dest_uri_cb), source, 0);
 	g_signal_connect_object (batch, "track-done", G_CALLBACK (track_done_cb), source, 0);
 

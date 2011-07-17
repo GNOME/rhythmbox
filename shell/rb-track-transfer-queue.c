@@ -35,8 +35,13 @@
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-alert-dialog.h"
+#include "rb-gst-media-types.h"
+#include "rb-missing-plugins.h"
 
 #include <glib/gi18n.h>
+
+#include <gst/gst.h>
+#include <gst/pbutils/install-plugins.h>
 
 enum
 {
@@ -236,14 +241,6 @@ batch_progress (RBTrackTransferBatch *batch,
 	g_signal_emit (queue, signals[TRANSFER_PROGRESS], 0, done, total, fraction, estimate_time_left (queue, fraction));
 }
 
-#if 0
-static void
-missing_plugins_retry_cb (gpointer inst, gboolean retry, RBTrackTransferQueue *queue)
-{
-	_rb_track_transfer_batch_start (queue->priv->current, G_OBJECT (queue));
-}
-#endif
-
 static void
 actually_start_batch (RBTrackTransferQueue *queue)
 {
@@ -262,29 +259,65 @@ actually_start_batch (RBTrackTransferQueue *queue)
 	_rb_track_transfer_batch_start (queue->priv->current, G_OBJECT (queue));
 }
 
-static void
-error_response_cb (GtkDialog *dialog, gint response, RBTrackTransferQueue *queue)
+static GPtrArray *
+get_missing_plugin_strings (GList *profiles, gboolean get_descriptions)
 {
-	_rb_track_transfer_batch_cancel (queue->priv->current);
-	g_object_unref (queue->priv->current);
-	queue->priv->current = NULL;
+	RBEncoder *encoder;
+	GPtrArray *strings;
+	GList *l;
 
+	encoder = rb_encoder_new ();
+	strings = g_ptr_array_new_with_free_func (g_free);
+	for (l = profiles; l != NULL; l = l->next) {
+		GstEncodingProfile *profile = GST_ENCODING_PROFILE (l->data);
+		char **details, **descriptions;
+		char **d;
+		int i;
+
+		rb_encoder_get_missing_plugins (encoder, profile, &details, &descriptions);
+		d = get_descriptions ? descriptions : details;
+		for (i = 0; d[i] != NULL; i++) {
+			g_ptr_array_add (strings, g_strdup (d[i]));
+		}
+		g_strfreev (details);
+		g_strfreev (descriptions);
+	}
+	g_ptr_array_add (strings, NULL);
+	g_object_unref (encoder);
+
+	return strings;
+}
+
+static void
+missing_plugins_retry_cb (gpointer inst, gboolean retry, RBTrackTransferQueue *queue)
+{
+	rb_debug ("plugin install finished (retry %d), checking media types again", retry);
+	g_queue_push_head (queue->priv->batch_queue, queue->priv->current);
+	queue->priv->current = NULL;
 	start_next_batch (queue);
-	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 static void
 missing_encoder_response_cb (GtkDialog *dialog, gint response, RBTrackTransferQueue *queue)
 {
+	GClosure *retry;
+	GstEncodingTarget *target;
+	GPtrArray *details;
+	GList *profiles;
+	const GList *l;
+	RBEncoder *encoder;
+
 	switch (response) {
 	case GTK_RESPONSE_YES:
 		/* 'continue' -> start the batch */
+		rb_debug ("starting batch regardless of missing plugins");
 		actually_start_batch (queue);
 		break;
 
 	case GTK_RESPONSE_CANCEL:
 	case GTK_RESPONSE_DELETE_EVENT:
 		/* 'cancel' -> cancel the batch and start the next one */
+		rb_debug ("cancelling batch");
 		_rb_track_transfer_batch_cancel (queue->priv->current);
 		g_object_unref (queue->priv->current);
 		queue->priv->current = NULL;
@@ -292,40 +325,55 @@ missing_encoder_response_cb (GtkDialog *dialog, gint response, RBTrackTransferQu
 		start_next_batch (queue);
 		break;
 
-#if 0
 	case GTK_RESPONSE_ACCEPT:
-		/* 'install an encoder' -> try to install an encoder */
-		/*
-		 * probably need RBEncoder API to get missing plugin installer details
-		 * for a specific pipeline or profile or something.
-		 * since gnome-media profiles use specific element names, installing by
-		 * caps won't necessarily install something that works.  guh.
-		 */
+		/* 'install plugins' -> try to install encoder/muxer */
 
+		/* get profiles that need plugins installed */
+		profiles = NULL;
+		encoder = rb_encoder_new ();
+		g_object_get (queue->priv->current, "encoding-target", &target, NULL);
+		for (l = gst_encoding_target_get_profiles (target); l != NULL; l = l->next) {
+			GstEncodingProfile *profile = GST_ENCODING_PROFILE (l->data);
+			char *profile_media_type;
+			profile_media_type = rb_gst_encoding_profile_get_media_type (profile);
+			if ((rb_gst_media_type_is_lossless (profile_media_type) == FALSE) &&
+			    rb_encoder_get_missing_plugins (encoder, profile, NULL, NULL)) {
+				profiles = g_list_append (profiles, profile);
+			}
+			g_free (profile_media_type);
+		}
+		g_object_unref (encoder);
+		g_object_unref (target);
+
+		if (profiles == NULL) {
+			rb_debug ("apparently we don't need any plugins any more");
+			actually_start_batch (queue);
+			break;
+		}
+
+		rb_debug ("attempting plugin installation");
+		details = get_missing_plugin_strings (profiles, FALSE);
 		retry = g_cclosure_new ((GCallback) missing_plugins_retry_cb,
 					g_object_ref (queue),
 					(GClosureNotify) g_object_unref);
 		g_closure_set_marshal (retry, g_cclosure_marshal_VOID__BOOLEAN);
-		g_signal_emit (queue,
-			       signals[MISSING_PLUGINS], 0,
-			       details, descriptions, retry,
-			       &processing);
-		if (processing) {
+		if (rb_missing_plugins_install ((const char **)details->pdata, FALSE, retry)) {
 			rb_debug ("attempting to install missing plugins for transcoding");
 		} else {
 			rb_debug ("proceeding without the missing plugins for transcoding");
+			actually_start_batch (queue);
 		}
 
 		g_closure_sink (retry);
+		g_ptr_array_free (details, TRUE);
+		g_list_free (profiles);
 		break;
-#endif
 
 	default:
 		g_assert_not_reached ();
 	}
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
-	g_object_unref (dialog);
 }
 
 static void
@@ -333,6 +381,11 @@ start_next_batch (RBTrackTransferQueue *queue)
 {
 	int count;
 	int total;
+	gboolean can_continue;
+	GtkWidget *dialog;
+	GtkWindow *window;
+	GList *profiles = NULL;
+	char *message;
 
 	if (queue->priv->current != NULL) {
 		return;
@@ -350,66 +403,86 @@ start_next_batch (RBTrackTransferQueue *queue)
 	queue->priv->overwrite_decision = OVERWRITE_PROMPT;
 	g_object_get (queue->priv->current, "total-entries", &total, NULL);
 
-	count = rb_track_transfer_batch_check_media_types (queue->priv->current);
-	rb_debug ("%d tracks in the batch, %d of which cannot be transferred", total, count);
-	if (total == 0) {
-		rb_debug ("what is this batch doing here anyway");
-	} else if (count == total) {
-		GtkWindow *window;
-		GtkWidget *dialog;
-		g_object_get (queue->priv->shell, "window", &window, NULL);
-		/* once we do encoder installation this should turn into a
-		 * normal confirmation dialog with no 'continue' option.
-		 */
-		dialog = rb_alert_dialog_new (window,
-					      0,
-					      GTK_MESSAGE_ERROR,
-					      GTK_BUTTONS_CANCEL,
-					      _("Unable to transfer tracks"),
-					      _("None of the tracks to be transferred "
-					        "are in a format supported by the target "
-						"device, and no encoders are available "
-						"for the supported formats."));
-		rb_alert_dialog_set_details_label (RB_ALERT_DIALOG (dialog), NULL);
-		g_object_unref (window);
-		g_signal_connect_object (dialog, "response", G_CALLBACK (error_response_cb), queue, 0);
-		gtk_widget_show (dialog);
-		return;
+	count = 0;
+	can_continue = rb_track_transfer_batch_check_profiles (queue->priv->current,
+							       &profiles,
+							       &count);
 
-	} else if (count > 0) {
-		GtkWindow *window;
-		GtkWidget *dialog;
-		char *text;
-
-
-		rb_debug ("can't find a supported media type for %d/%d files, prompting", count, total);
-		text = g_strdup_printf (_("%d of the %d files to be transferred are not in a format supported"
-					  " by the target device, and no encoders are available for the"
-					  " supported formats."),
-					count, total);
-		g_object_get (queue->priv->shell, "window", &window, NULL);
-		dialog = rb_alert_dialog_new (window,
-					      0,
-					      GTK_MESSAGE_WARNING,
-					      GTK_BUTTONS_NONE,
-					      _("Unable to transfer all tracks. Do you want to continue?"),
-					      text);
-		g_object_unref (window);
-		g_free (text);
-
-		rb_alert_dialog_set_details_label (RB_ALERT_DIALOG (dialog), NULL);
-		gtk_dialog_add_buttons (GTK_DIALOG (dialog),
-					_("_Cancel"), GTK_RESPONSE_CANCEL,
-					_("C_ontinue"), GTK_RESPONSE_YES,
-					/*_("_Install an encoder"), GTK_RESPONSE_ACCEPT,*/
-					NULL);
-
-		g_signal_connect_object (dialog, "response", G_CALLBACK (missing_encoder_response_cb), queue, 0);
-		gtk_widget_show (dialog);
+	if (can_continue && count == 0 && profiles == NULL) {
+		/* no problems, go ahead */
+		actually_start_batch (queue);
 		return;
 	}
 
-	actually_start_batch (queue);
+	if (profiles == NULL) {
+		if (total == 1) {
+			message = g_strdup (_("This file cannot be transferred as it is not in a "
+					      "format supported by the target device and no suitable "
+					      "encoding profiles are available."));
+		} else {
+			message = g_strdup_printf (_("%d of the %d files cannot be transferred as "
+						     "they must be converted into a format supported "
+						     "by the target device but no suitable encoding "
+						     "profiles are available."), count, total);
+		}
+	} else {
+		GPtrArray *descriptions;
+		GstEncodingTarget *target;
+		char *plugins;
+		gboolean is_library;
+
+		descriptions = get_missing_plugin_strings (profiles, TRUE);
+		plugins = g_strjoinv ("\n", (char **)descriptions->pdata);
+
+		/* this is a tiny bit hackish */
+		g_object_get (queue->priv->current, "encoding-target", &target, NULL);
+		is_library = (g_strcmp0 (gst_encoding_target_get_name (target), "rhythmbox-library") == 0);
+		gst_encoding_target_unref (target);
+
+		if (is_library) {
+			/* XXX should provide the option of picking a different format? */
+			message = g_strdup_printf (_("Additional software is required to encode media "
+						     "in your preferred format:\n%s"), plugins);
+		} else if (total == 1) {
+			message = g_strdup_printf (_("Additional software is required to convert this "
+						     "file into a format supported by the target "
+						     "device:\n%s"), plugins);
+		} else {
+			message = g_strdup_printf (_("Additional software is required to convert %d "
+						     "of the %d files to be transferred into a format "
+						     "supported by the target device:\n%s"),
+						     count, total, plugins);
+		}
+
+		g_free (plugins);
+		g_ptr_array_free (descriptions, TRUE);
+	}
+
+	g_object_get (queue->priv->shell, "window", &window, NULL);
+	dialog = rb_alert_dialog_new (window,
+				      0,
+				      GTK_MESSAGE_ERROR,
+				      GTK_BUTTONS_NONE,
+				      _("Unable to transfer tracks"),
+				      message);
+	g_object_unref (window);
+	g_free (message);
+
+	gtk_dialog_add_button (GTK_DIALOG (dialog), _("_Cancel the transfer"), GTK_RESPONSE_CANCEL);
+	if (can_continue) {
+		gtk_dialog_add_button (GTK_DIALOG (dialog), _("_Skip these files"), GTK_RESPONSE_YES);
+	}
+	if (profiles != NULL && gst_install_plugins_supported ()) {
+		gtk_dialog_add_button (GTK_DIALOG (dialog), _("_Install"), GTK_RESPONSE_ACCEPT);
+	}
+
+	rb_alert_dialog_set_details_label (RB_ALERT_DIALOG (dialog), NULL);
+	g_signal_connect_object (dialog, "response", G_CALLBACK (missing_encoder_response_cb), queue, 0);
+	gtk_widget_show (dialog);
+
+	if (profiles != NULL) {
+		g_list_free (profiles);
+	}
 }
 
 /**

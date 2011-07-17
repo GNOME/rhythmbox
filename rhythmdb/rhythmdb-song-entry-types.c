@@ -125,14 +125,14 @@ static gboolean
 song_can_sync_metadata (RhythmDBEntryType *entry_type,
 			RhythmDBEntry *entry)
 {
-	const char *mimetype;
+	const char *media_type;
 	gboolean can_sync;
 	RhythmDB *db;
 
 	g_object_get (entry_type, "db", &db, NULL);
 
-	mimetype = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
-	can_sync = rb_metadata_can_save (db->priv->metadata, mimetype);
+	media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
+	can_sync = rb_metadata_can_save (db->priv->metadata, media_type);
 
 	g_object_unref (db);
 	return can_sync;

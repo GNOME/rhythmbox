@@ -620,7 +620,7 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 	entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST, FALSE, NULL);
 	entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM, FALSE, NULL);
 	entry_set_string_prop (db, entry, RHYTHMDB_PROP_GENRE, FALSE, NULL);
-	entry_set_string_prop (db, entry, RHYTHMDB_PROP_MIMETYPE, TRUE, "audio/x-raw-int");
+	entry_set_string_prop (db, entry, RHYTHMDB_PROP_MEDIA_TYPE, TRUE, "audio/x-raw-int");
 
 	extra_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioCDEntryData);
 	extra_data->extract = TRUE;

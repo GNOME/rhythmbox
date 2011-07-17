@@ -73,7 +73,7 @@ rb_metadata_dbus_load (GVariant *parameters,
 
 	rb_debug ("loading metadata from %s", uri);
 	rb_metadata_load (svc->metadata, uri, &error);
-	mediatype = rb_metadata_get_mime (svc->metadata);
+	mediatype = rb_metadata_get_media_type (svc->metadata);
 	rb_debug ("metadata load finished (type %s)", mediatype);
 
 	rb_metadata_get_missing_plugins (svc->metadata, &missing_plugins, &plugin_descriptions);
@@ -284,7 +284,7 @@ test_load (const char *uri)
 		rv = -1;
 	} else {
 		int i;
-		g_print ("mimetype: %s\n", rb_metadata_get_mime (md));
+		g_print ("media type: %s\n", rb_metadata_get_media_type (md));
 		for (i=0; i<RB_METADATA_FIELD_LAST; i++) {
 			GValue v = {0,};
 			GValue sv = {0,};

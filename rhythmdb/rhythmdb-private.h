@@ -97,7 +97,7 @@ struct _RhythmDBEntry {
 	RBRefString *location;
 	RBRefString *mountpoint;
 	guint64 file_size;
-	RBRefString *mimetype;
+	RBRefString *media_type;
 	gulong mtime;
 	gulong first_seen;
 	gulong last_seen;

@@ -51,6 +51,7 @@
 #include "rb-player.h"
 #include "rb-encoder.h"
 #include "rb-sync-settings.h"
+#include "rb-gst-media-types.h"
 
 #include "rb-mtp-source.h"
 #include "rb-mtp-thread.h"
@@ -77,19 +78,18 @@ static void impl_delete (RBSource *asource);
 static gboolean impl_show_popup (RBDisplayPage *page);
 static GList* impl_get_ui_actions (RBDisplayPage *page);
 
-static GList * impl_get_mime_types (RBRemovableMediaSource *source);
 static gboolean impl_track_added (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
 				  const char *dest,
 				  guint64 filesize,
-				  const char *mimetype);
+				  const char *media_type);
 static gboolean impl_track_add_error (RBRemovableMediaSource *source,
 				      RhythmDBEntry *entry,
 				      const char *dest,
 				      GError *error);
 static char* impl_build_dest_uri (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
-				  const char *mimetype,
+				  const char *media_type,
 				  const char *extension);
 static void impl_eject (RBRemovableMediaSource *source);
 static gboolean impl_can_eject (RBRemovableMediaSource *source);
@@ -143,7 +143,6 @@ typedef struct
 	char *udi;
 #endif
 	uint16_t supported_types[LIBMTP_FILETYPE_UNKNOWN+1];
-	GList *mediatypes;
 	gboolean album_art_supported;
 
 	/* device information */
@@ -200,7 +199,6 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	rms_class->impl_track_added = impl_track_added;
 	rms_class->impl_track_add_error = impl_track_add_error;
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
-	rms_class->impl_get_mime_types = impl_get_mime_types;
 	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
 	rms_class->impl_can_eject = impl_can_eject;
 	rms_class->impl_eject = impl_eject;
@@ -757,7 +755,8 @@ device_opened_idle (DeviceOpenedData *data)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (data->source);
 	int i;
-	gboolean has_mp3 = FALSE;
+	GstEncodingTarget *target;
+	GList *profiles = NULL;
 
 	if (data->name != NULL) {
 		g_object_set (data->source, "name", data->name, NULL);
@@ -771,69 +770,71 @@ device_opened_idle (DeviceOpenedData *data)
 
 	for (i = 0; i < data->num_types; i++) {
 		const char *mediatype;
-
+		gboolean prepend;
 		if (i <= LIBMTP_FILETYPE_UNKNOWN) {
 			priv->supported_types[data->types[i]] = 1;
 		}
 
-		/* this has to work with the remapping done in
-		 * rb-removable-media-source.c:impl_paste.
-		 */
+		mediatype = NULL;
+		prepend = FALSE;
 		switch (data->types[i]) {
 		case LIBMTP_FILETYPE_WAV:
-			mediatype = "audio/x-wav";
+			/*mediatype = "audio/x-wav";*/
+			/* don't bother including this? */
 			break;
 		case LIBMTP_FILETYPE_MP3:
-			/* special handling for mp3: always put it at the front of the list
-			 * if it's supported.
-			 */
-			has_mp3 = TRUE;
-			mediatype = NULL;
+			mediatype = "audio/mpeg";
+			prepend = TRUE;		/* always goes first if supported */
 			break;
 		case LIBMTP_FILETYPE_WMA:
-			mediatype = "audio/x-ms-wma";
+			mediatype = "audio/x-wma";
 			break;
 		case LIBMTP_FILETYPE_OGG:
-			mediatype = "application/ogg";
+			mediatype = "audio/x-vorbis";
 			break;
 		case LIBMTP_FILETYPE_MP4:
 		case LIBMTP_FILETYPE_M4A:
 		case LIBMTP_FILETYPE_AAC:
-			mediatype = "audio/aac";
+			mediatype = "audio/x-aac";
 			break;
 		case LIBMTP_FILETYPE_WMV:
-			mediatype = "audio/x-ms-wmv";
+			mediatype = "audio/x-ms-wmv";		/* media type? */
 			break;
 		case LIBMTP_FILETYPE_ASF:
-			mediatype = "video/x-ms-asf";
+			mediatype = "video/x-ms-asf";		/* media type? */
 			break;
 		case LIBMTP_FILETYPE_FLAC:
-			mediatype = "audio/flac";
+			mediatype = "audio/x-flac";
 			break;
 
 		case LIBMTP_FILETYPE_JPEG:
 			rb_debug ("JPEG (album art) supported");
-			mediatype = NULL;
 			priv->album_art_supported = TRUE;
 			break;
 
 		default:
 			rb_debug ("unknown libmtp filetype %s supported", LIBMTP_Get_Filetype_Description (data->types[i]));
-			mediatype = NULL;
 			break;
 		}
 
 		if (mediatype != NULL) {
-			rb_debug ("media type %s supported", mediatype);
-			priv->mediatypes = g_list_prepend (priv->mediatypes,
-							   g_strdup (mediatype));
+			GstEncodingProfile *profile;
+			profile = rb_gst_get_encoding_profile (mediatype);
+			if (profile != NULL) {
+				rb_debug ("media type %s supported", mediatype);
+				if (prepend) {
+					profiles = g_list_prepend (profiles, profile);
+				} else {
+					profiles = g_list_append (profiles, profile);
+				}
+			} else {
+				rb_debug ("no encoding profile for supported media type %s", mediatype);
+			}
 		}
 	}
 
-	if (has_mp3) {
-		rb_debug ("audio/mpeg supported");
-		priv->mediatypes = g_list_prepend (priv->mediatypes, g_strdup ("audio/mpeg"));
-	}
+	target = gst_encoding_target_new ("mtpdevice", "device", "", profiles);
+	g_object_set (data->source, "encoding-target", target, NULL);
 
 	g_object_unref (data->source);
 	free (data->types);
@@ -973,17 +974,17 @@ gdate_to_char (GDate* date)
 }
 
 static LIBMTP_filetype_t
-mimetype_to_filetype (RBMtpSource *source, const char *mimetype)
+media_type_to_filetype (RBMtpSource *source, const char *media_type)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 
-	if (!strcmp (mimetype, "audio/mpeg") || !strcmp (mimetype, "application/x-id3")) {
+	if (!strcmp (media_type, "audio/mpeg")) {
 		return LIBMTP_FILETYPE_MP3;
-	}  else if (!strcmp (mimetype, "audio/x-wav")) {
+	}  else if (!strcmp (media_type, "audio/x-wav")) {
 		return  LIBMTP_FILETYPE_WAV;
-	} else if (!strcmp (mimetype, "application/ogg")) {
+	} else if (!strcmp (media_type, "audio/x-vorbis")) {
 		return LIBMTP_FILETYPE_OGG;
-	} else if (!strcmp (mimetype, "audio/x-m4a") || !strcmp (mimetype, "video/quicktime")) {
+	} else if (!strcmp (media_type, "audio/x-aac")) {
 		/* try a few different filetypes that might work */
 		if (priv->supported_types[LIBMTP_FILETYPE_M4A])
 			return LIBMTP_FILETYPE_M4A;
@@ -992,14 +993,14 @@ mimetype_to_filetype (RBMtpSource *source, const char *mimetype)
 		else
 			return LIBMTP_FILETYPE_AAC;
 
-	} else if (!strcmp (mimetype, "audio/x-ms-wma") || !strcmp (mimetype, "audio/x-ms-asf")) {
+	} else if (!strcmp (media_type, "audio/x-wma")) {
 		return LIBMTP_FILETYPE_WMA;
-	} else if (!strcmp (mimetype, "video/x-ms-asf")) {
+	} else if (!strcmp (media_type, "video/x-ms-asf")) {
 		return LIBMTP_FILETYPE_ASF;
-	} else if (!strcmp (mimetype, "audio/x-flac")) {
+	} else if (!strcmp (media_type, "audio/x-flac")) {
 		return LIBMTP_FILETYPE_FLAC;
 	} else {
-		rb_debug ("\"%s\" is not a supported mimetype", mimetype);
+		rb_debug ("\"%s\" is not a supported media_type", media_type);
 		return LIBMTP_FILETYPE_UNKNOWN;
 	}
 }
@@ -1084,19 +1085,12 @@ request_album_art_idle (RequestAlbumArtData *data)
 	return FALSE;
 }
 
-static GList *
-impl_get_mime_types (RBRemovableMediaSource *source)
-{
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-	return rb_string_list_copy (priv->mediatypes);
-}
-
 static gboolean
 impl_track_added (RBRemovableMediaSource *source,
 		  RhythmDBEntry *entry,
 		  const char *dest,
 		  guint64 filesize,
-		  const char *mimetype)
+		  const char *media_type)
 {
 	LIBMTP_track_t *track = NULL;
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
@@ -1244,21 +1238,21 @@ prepare_encoder_sink_cb (RBEncoderFactory *factory,
 static char *
 impl_build_dest_uri (RBRemovableMediaSource *source,
 		     RhythmDBEntry *entry,
-		     const char *mimetype,
+		     const char *media_type,
 		     const char *extension)
 {
 	gulong id;
 	char *uri;
 	LIBMTP_filetype_t filetype;
 
-	if (mimetype == NULL) {
-		mimetype = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
+	if (media_type == NULL) {
+		media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
 	}
-	filetype = mimetype_to_filetype (RB_MTP_SOURCE (source), mimetype);
+	filetype = media_type_to_filetype (RB_MTP_SOURCE (source), media_type);
 	rb_debug ("using libmtp filetype %d (%s) for source media type %s",
 		  filetype,
 		  LIBMTP_Get_Filetype_Description (filetype),
-		  mimetype);
+		  media_type);
 
 	/* the prepare-sink callback needs the entry ID to set up the
 	 * upload data, and we want to use the supplied extension for

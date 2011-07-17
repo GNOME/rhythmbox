@@ -13,6 +13,9 @@ playlistsdir = $(datadir)/rhythmbox
 
 man_MANS = rhythmbox.1 rhythmbox-client.1
 
+profilesdir = $(datadir)
+profiles_DATA = rhythmbox.gep
+
 # GSettings schemas
 # (summaries and descriptions are not translated, so no .xml.in)
 gsettings_SCHEMAS = org.gnome.rhythmbox.gschema.xml
@@ -52,6 +55,7 @@ EXTRA_DIST = $(service_in_files)    \
 	     $(schema_DATA)	    \
 	     $(man_MANS)            \
 	     $(playlists_in_files)  \
+	     $(profiles_DATA)       \
 	     rhythmbox.desktop.in.in \
 	     rhythmbox-device.desktop.in.in
 

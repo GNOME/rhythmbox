@@ -31,6 +31,8 @@
 
 #include <glib-object.h>
 
+#include <gst/pbutils/encoding-profile.h>
+
 #include <rhythmdb/rhythmdb.h>
 
 G_BEGIN_DECLS
@@ -74,16 +76,12 @@ struct _RBEncoderIface
 	void		(*encode)	(RBEncoder *encoder,
 					 RhythmDBEntry *entry,
 					 const char *dest,
-					 const char *dest_media_type);
+					 GstEncodingProfile *profile);
 	void		(*cancel)	(RBEncoder *encoder);
-	gboolean	(*get_media_type) (RBEncoder *encoder,
-					 RhythmDBEntry *entry,
-					 GList *dest_media_types,
-					 char **media_type,
-					 char **extension);
 	gboolean	(*get_missing_plugins) (RBEncoder *encoder,
-					 const char *media_type,
-					 char ***details);
+					 GstEncodingProfile *profile,
+					 char ***details,
+					 char ***descriptions);
 
 	/* signals */
 	void (*progress) (RBEncoder *encoder,  double fraction);
@@ -115,17 +113,13 @@ GType 		rb_encoder_get_type 	(void);
 void		rb_encoder_encode	(RBEncoder *encoder,
 					 RhythmDBEntry *entry,
 					 const char *dest,
-					 const char *dest_media_type);
+					 GstEncodingProfile *profile);
 void		rb_encoder_cancel	(RBEncoder *encoder);
 
-gboolean	rb_encoder_get_media_type (RBEncoder *encoder,
-					 RhythmDBEntry *entry,
-					 GList *dest_media_types,
-					 char **media_type,
-					 char **extension);
 gboolean	rb_encoder_get_missing_plugins (RBEncoder *encoder,
-					 const char *media_type,
-					 char ***details);
+					 GstEncodingProfile *profile,
+					 char ***details,
+					 char ***descriptions);
 
 /* only to be used by subclasses */
 void	_rb_encoder_emit_progress (RBEncoder *encoder, double fraction);

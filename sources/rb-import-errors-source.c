@@ -241,13 +241,14 @@ rb_import_errors_source_constructed (GObject *object)
 	rhythmdb_query_free (query);
 
 	/* set up info bar for triggering codec installation */
-	source->priv->infobar = gtk_info_bar_new_with_buttons (_("Install Plugins"), GTK_RESPONSE_OK, NULL);
+	source->priv->infobar = gtk_info_bar_new_with_buttons (_("Install Additional Software"), GTK_RESPONSE_OK, NULL);
 	g_signal_connect_object (source->priv->infobar,
 				 "response",
 				 G_CALLBACK (infobar_response_cb),
 				 source, 0);
 
-	label = gtk_label_new (_("Additional GStreamer plugins are required to play some of these files."));
+	label = gtk_label_new (_("Additional software is required to play some of these files."));
+	gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
 	gtk_container_add (GTK_CONTAINER (gtk_info_bar_get_content_area (GTK_INFO_BAR (source->priv->infobar))),
 			   label);
 

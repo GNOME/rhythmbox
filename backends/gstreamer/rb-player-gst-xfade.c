@@ -144,9 +144,7 @@
 #include <gst/gst.h>
 #include <gst/controller/gstcontroller.h>
 #include <gst/base/gstbasetransform.h>
-#if GST_CHECK_VERSION(0,10,25)
 #include <gst/interfaces/streamvolume.h>
-#endif
 #include <gst/pbutils/pbutils.h>
 
 #include "rb-player.h"
@@ -339,7 +337,7 @@ typedef struct
 
 	gint64 seek_target;
 
-	GstController *fader;
+	GstInterpolationControlSource *fader;
 	StreamState state;
 	RBPlayerPlayType play_type;
 	gint64 crossfade;
@@ -1010,21 +1008,21 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time)
 	stream->fade_end = end;
 	g_object_set (stream->volume, "volume", start, NULL);
 
-	gst_controller_unset_all (stream->fader, "volume");
+	gst_interpolation_control_source_unset_all (stream->fader);
 
 	g_value_init (&v, G_TYPE_DOUBLE);
 	g_value_set_double (&v, start);
-	if (gst_controller_set (stream->fader, "volume", pos, &v) == FALSE) {
+	if (gst_interpolation_control_source_set (stream->fader, pos, &v) == FALSE) {
 		rb_debug ("controller didn't like our start point");
 	}
-	if (gst_controller_set (stream->fader, "volume", 0, &v) == FALSE) {
+	if (gst_interpolation_control_source_set (stream->fader, 0, &v) == FALSE) {
 		rb_debug ("controller didn't like our 0 start point");
 	}
 	g_value_unset (&v);
 
 	g_value_init (&v, G_TYPE_DOUBLE);
 	g_value_set_double (&v, end);
-	if (gst_controller_set (stream->fader, "volume", pos + time, &v) == FALSE) {
+	if (gst_interpolation_control_source_set (stream->fader, pos + time, &v) == FALSE) {
 		rb_debug ("controller didn't like our end point");
 	}
 	g_value_unset (&v);
@@ -2007,6 +2005,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	GstCaps *caps;
 	GValueArray *stream_filters = NULL;
 	GstElement *tail;
+	GstController *controller;
 
 	rb_debug ("creating new stream for %s (stream data %p)", uri, stream_data);
 	stream = g_object_new (RB_TYPE_XFADE_STREAM, NULL, NULL);
@@ -2099,13 +2098,16 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				 G_CALLBACK (volume_changed_cb),
 				 player, 0);
 
-	stream->fader = gst_object_control_properties (G_OBJECT (stream->volume), "volume", NULL);
-	if (stream->fader == NULL) {
+	controller = gst_object_control_properties (G_OBJECT (stream->volume), "volume", NULL);
+	if (controller == NULL) {
 		rb_debug ("unable to create volume controller");
 		g_object_unref (stream);
 		return NULL;
 	}
-	gst_controller_set_interpolation_mode (stream->fader, "volume", GST_INTERPOLATE_LINEAR);
+
+	stream->fader = gst_interpolation_control_source_new ();
+	gst_interpolation_control_source_set_interpolation_mode (stream->fader, GST_INTERPOLATE_LINEAR);
+	gst_controller_set_control_source (controller, "volume", GST_CONTROL_SOURCE (stream->fader));
 
 	stream->preroll = gst_element_factory_make ("queue", NULL);
 	if (stream->preroll == NULL) {
@@ -2283,7 +2285,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 			rb_debug ("stream isn't fading; setting volume to 1.0");
 			g_value_init (&v, G_TYPE_DOUBLE);
 			g_value_set_double (&v, 1.0);
-			if (gst_controller_set (stream->fader, "volume", 0, &v) == FALSE) {
+			if (gst_interpolation_control_source_set (stream->fader, 0, &v) == FALSE) {
 				rb_debug ("controller didn't like our start point");
 			}
 			g_value_unset (&v);
@@ -2591,16 +2593,12 @@ emit_volume_changed_idle (RBPlayerGstXFade *player)
 {
 	double vol;
 
-#if GST_CHECK_VERSION(0,10,25)
 	if (gst_element_implements_interface (player->priv->volume_handler, GST_TYPE_STREAM_VOLUME)) {
 		vol = gst_stream_volume_get_volume (GST_STREAM_VOLUME (player->priv->volume_handler),
 						    GST_STREAM_VOLUME_FORMAT_CUBIC);
 	} else {
 		vol = player->priv->cur_volume;
 	}
-#else
-	vol = player->priv->cur_volume;
-#endif
 
 	_rb_player_emit_volume_changed (RB_PLAYER (player), vol);
 	return FALSE;
@@ -3597,7 +3595,6 @@ rb_player_gst_xfade_set_volume (RBPlayer *iplayer, float volume)
 		gdouble v = (gdouble)volume;
 
 		/* maybe use a controller here for smoother changes? */
-#if GST_CHECK_VERSION(0,10,25)
 		if (gst_element_implements_interface (player->priv->volume_handler,
 						      GST_TYPE_STREAM_VOLUME)) {
 			gst_stream_volume_set_volume (GST_STREAM_VOLUME (player->priv->volume_handler),
@@ -3605,9 +3602,6 @@ rb_player_gst_xfade_set_volume (RBPlayer *iplayer, float volume)
 		} else {
 			g_object_set (player->priv->volume_handler, "volume", v, NULL);
 		}
-#else
-		g_object_set (player->priv->volume_handler, "volume", v, NULL);
-#endif
 		player->priv->volume_applied = player->priv->volume_changed;
 	}
 	player->priv->cur_volume = volume;
@@ -3619,11 +3613,9 @@ rb_player_gst_xfade_get_volume (RBPlayer *iplayer)
 {
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
 
-#if GST_CHECK_VERSION(0,10,25)
 	if (gst_element_implements_interface (player->priv->volume_handler, GST_TYPE_STREAM_VOLUME))
 		return gst_stream_volume_get_volume (GST_STREAM_VOLUME (player->priv->volume_handler),
 						     GST_STREAM_VOLUME_FORMAT_CUBIC);
-#endif
 
 	return player->priv->cur_volume;
 }

@@ -67,6 +67,7 @@
 #include "rb-string-value-map.h"
 #include "rb-async-queue-watch.h"
 #include "rb-podcast-entry-types.h"
+#include "rb-gst-media-types.h"
 
 #define PROP_ENTRY(p,t,n) { RHYTHMDB_PROP_ ## p, "RHYTHMDB_PROP_" #p "", t, n }
 
@@ -102,7 +103,7 @@ static const RhythmDBPropertyDef rhythmdb_properties[] = {
 	PROP_ENTRY(TRACK_PEAK, G_TYPE_DOUBLE, "replaygain-track-peak"),
 	PROP_ENTRY(ALBUM_GAIN, G_TYPE_DOUBLE, "replaygain-album-gain"),
 	PROP_ENTRY(ALBUM_PEAK, G_TYPE_DOUBLE, "replaygain-album-peak"),
-	PROP_ENTRY(MIMETYPE, G_TYPE_STRING, "mimetype"),
+	PROP_ENTRY(MEDIA_TYPE, G_TYPE_STRING, "media-type"),
 	PROP_ENTRY(TITLE_SORT_KEY, G_TYPE_STRING, "title-sort-key"),
 	PROP_ENTRY(GENRE_SORT_KEY, G_TYPE_STRING, "genre-sort-key"),
 	PROP_ENTRY(ARTIST_SORT_KEY, G_TYPE_STRING, "artist-sort-key"),
@@ -1663,7 +1664,7 @@ rhythmdb_entry_allocate (RhythmDB *db,
 	ret->artist_sortname = rb_refstring_ref (db->priv->empty_string);
 	ret->album_sortname = rb_refstring_ref (db->priv->empty_string);
 	ret->album_artist_sortname = rb_refstring_ref (db->priv->empty_string);
-	ret->mimetype = rb_refstring_ref (db->priv->octet_stream_str);
+	ret->media_type = rb_refstring_ref (db->priv->octet_stream_str);
 
 	ret->flags |= RHYTHMDB_ENTRY_LAST_PLAYED_DIRTY |
 		      RHYTHMDB_ENTRY_FIRST_SEEN_DIRTY |
@@ -1858,7 +1859,7 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 	rb_refstring_unref (entry->musicbrainz_albumartistid);
 	rb_refstring_unref (entry->artist_sortname);
 	rb_refstring_unref (entry->album_sortname);
-	rb_refstring_unref (entry->mimetype);
+	rb_refstring_unref (entry->media_type);
 
 	g_free (entry);
 }
@@ -1914,15 +1915,15 @@ set_props_from_metadata (RhythmDB *db,
 			 GFileInfo *fileinfo,
 			 RBMetaData *metadata)
 {
-	const char *mime;
+	const char *media_type;
 	GValue val = {0,};
 
 	g_value_init (&val, G_TYPE_STRING);
-	mime = rb_metadata_get_mime (metadata);
-	if (mime) {
-		g_value_set_string (&val, mime);
+	media_type = rb_metadata_get_media_type (metadata);
+	if (media_type) {
+		g_value_set_string (&val, media_type);
 		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_MIMETYPE, &val);
+					     RHYTHMDB_PROP_MEDIA_TYPE, &val);
 	}
 	g_value_unset (&val);
 
@@ -2348,7 +2349,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 		 * that matches one of the media types we don't care about,
 		 * as well as anything that doesn't contain audio.
 		 */
-		const char *media_type = rb_metadata_get_mime (event->metadata);
+		const char *media_type = rb_metadata_get_media_type (event->metadata);
 		if (media_type != NULL && media_type[0] != '\0') {
 			if (rhythmdb_ignore_media_type (media_type) ||
 			    rb_metadata_has_audio (event->metadata) == FALSE) {
@@ -3452,11 +3453,11 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 		case RHYTHMDB_PROP_FILE_SIZE:
 			entry->file_size = g_value_get_uint64 (value);
 			break;
-		case RHYTHMDB_PROP_MIMETYPE:
-			if (entry->mimetype != NULL) {
-				rb_refstring_unref (entry->mimetype);
+		case RHYTHMDB_PROP_MEDIA_TYPE:
+			if (entry->media_type != NULL) {
+				rb_refstring_unref (entry->media_type);
 			}
-			entry->mimetype = rb_refstring_new (g_value_get_string (value));
+			entry->media_type = rb_refstring_new (g_value_get_string (value));
 			break;
 		case RHYTHMDB_PROP_MTIME:
 			entry->mtime = g_value_get_ulong (value);
@@ -4783,8 +4784,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get (entry->album_artist);
 	case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME:
 		return rb_refstring_get (entry->album_artist_sortname);
-	case RHYTHMDB_PROP_MIMETYPE:
-		return rb_refstring_get (entry->mimetype);
+	case RHYTHMDB_PROP_MEDIA_TYPE:
+		return rb_refstring_get (entry->media_type);
 	case RHYTHMDB_PROP_TITLE_SORT_KEY:
 		return rb_refstring_get_sort_key (entry->title);
 	case RHYTHMDB_PROP_ALBUM_SORT_KEY:
@@ -4919,8 +4920,8 @@ rhythmdb_entry_get_refstring (RhythmDBEntry *entry,
 		return rb_refstring_ref (entry->album_sortname);
 	case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME:
 		return rb_refstring_ref (entry->album_artist_sortname);
-	case RHYTHMDB_PROP_MIMETYPE:
-		return rb_refstring_ref (entry->mimetype);
+	case RHYTHMDB_PROP_MEDIA_TYPE:
+		return rb_refstring_ref (entry->media_type);
 	case RHYTHMDB_PROP_MOUNTPOINT:
 		return rb_refstring_ref (entry->mountpoint);
 	case RHYTHMDB_PROP_LAST_PLAYED_STR:
@@ -5357,15 +5358,11 @@ rhythmdb_entry_change_get_type (void)
 gboolean
 rhythmdb_entry_is_lossless (RhythmDBEntry *entry)
 {
-	const char *mime_type;
+	const char *media_type;
 
 	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE) != 0)
 		return FALSE;
        
-	/* possible performance improvement here, if it proves necessary:
-	 * keep references to the refstrings for all lossless media types here,
-	 * and use pointer comparisons rather than string comparisons to check entries.
-	 */
-	mime_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
-	return (g_str_equal (mime_type, "audio/x-flac"));
+	media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
+	return rb_gst_media_type_is_lossless (media_type);
 }

@@ -38,6 +38,7 @@
 
 #include <lib/rb-util.h>
 #include <lib/rb-debug.h>
+#include <lib/rb-gst-media-types.h>
 #include <plugins/rb-plugin-macros.h>
 #include <shell/rb-shell.h>
 #include <shell/rb-shell-player.h>
@@ -223,7 +224,7 @@ entry_property_maps (RhythmDBPropType prop)
 {
 	switch (prop) {
 		case RHYTHMDB_PROP_TITLE:
-		case RHYTHMDB_PROP_MIMETYPE:
+		case RHYTHMDB_PROP_MEDIA_TYPE:
 		case RHYTHMDB_PROP_FILE_SIZE:
 		case RHYTHMDB_PROP_ALBUM:
 		case RHYTHMDB_PROP_ARTIST:
@@ -268,12 +269,8 @@ get_entry_property_value (RhythmDBEntry *entry, const char *property_name)
 
 	} else if (g_strcmp0 (property_name, "MIMEType") == 0) {
 		const char *media_type;
-		/* ugh */
-		media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE);
-		if (g_strcmp0 (media_type, "application/x-id3") == 0) {
-			media_type = "audio/mpeg";
-		}
-		return g_variant_new_string (media_type);
+		media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
+		return g_variant_new_string (rb_gst_media_type_to_mime_type (media_type));
 	} else if (g_strcmp0 (property_name, "Size") == 0) {
 		return g_variant_new_int64 (rhythmdb_entry_get_uint64 (entry, RHYTHMDB_PROP_FILE_SIZE));
 	} else if (g_strcmp0 (property_name, "Artist") == 0) {

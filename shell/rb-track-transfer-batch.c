@@ -30,6 +30,8 @@
 
 #include <glib/gi18n.h>
 
+#include <gst/pbutils/install-plugins.h>
+
 #include "rb-source.h"
 #include "rb-track-transfer-batch.h"
 #include "rb-track-transfer-queue.h"
@@ -37,6 +39,7 @@
 #include "rb-marshal.h"
 #include "rb-debug.h"
 #include "rb-util.h"
+#include "rb-gst-media-types.h"
 
 enum
 {
@@ -54,8 +57,7 @@ enum
 enum
 {
 	PROP_0,
-	PROP_MEDIA_TYPES,
-	PROP_MEDIA_TYPES_STRV,
+	PROP_ENCODING_TARGET,
 	PROP_SOURCE,
 	PROP_DESTINATION,
 	PROP_TOTAL_ENTRIES,
@@ -75,7 +77,8 @@ struct _RBTrackTransferBatchPrivate
 {
 	RBTrackTransferQueue *queue;
 
-	GList *media_types;
+	GstEncodingTarget *target;
+	GList *missing_plugin_profiles;
 
 	RBSource *source;
 	RBSource *destination;
@@ -107,13 +110,13 @@ G_DEFINE_TYPE (RBTrackTransferBatch, rb_track_transfer_batch, G_TYPE_OBJECT)
 
 /**
  * rb_track_transfer_batch_new:
- * @media_types: array containing media type strings describing allowable output formats
- * @media_type_list: (element-type utf8): GList containing media type strings.
+ * @target: a #GstEncodingTarget describing allowable encodings (or NULL for defaults)
  * @source: the #RBSource from which the entries are to be transferred
  * @destination: the #RBSource to which the entries are to be transferred
  *
- * Creates a new transfer batch with the specified output types.  Only one of media_types
- * and media_types_list may be specified.
+ * Creates a new transfer batch with the specified encoding target.  If no target
+ * is specified, the default target will be used with the user's preferred
+ * encoding type.
  *
  * One or more entries must be added to the batch (using #rb_track_transfer_batch_add)
  * before the batch can be started (#rb_track_transfer_manager_start_batch).
@@ -121,29 +124,17 @@ G_DEFINE_TYPE (RBTrackTransferBatch, rb_track_transfer_batch, G_TYPE_OBJECT)
  * Return value: new #RBTrackTransferBatch object
  */
 RBTrackTransferBatch *
-rb_track_transfer_batch_new (GList *media_types,
-			     const char * const *media_types_strv,
+rb_track_transfer_batch_new (GstEncodingTarget *target,
 			     GObject *source,
 			     GObject *destination)
 {
 	GObject *obj;
 
-	/* can't specify both, can specify neither */
-	g_assert (media_types == NULL || media_types_strv == NULL);
-
-	if (media_types != NULL) {
-		obj = g_object_new (RB_TYPE_TRACK_TRANSFER_BATCH,
-				    "media-types", media_types,
-				    "source", source,
-				    "destination", destination,
-				    NULL);
-	} else {
-		obj = g_object_new (RB_TYPE_TRACK_TRANSFER_BATCH,
-				    "media-types-strv", &media_types_strv,
-				    "source", source,
-				    "destination", destination,
-				    NULL);
-	}
+	obj = g_object_new (RB_TYPE_TRACK_TRANSFER_BATCH,
+			    "encoding-target", target,
+			    "source", source,
+			    "destination", destination,
+			    NULL);
 	return RB_TRACK_TRANSFER_BATCH (obj);
 }
 
@@ -160,38 +151,131 @@ rb_track_transfer_batch_add (RBTrackTransferBatch *batch, RhythmDBEntry *entry)
 	batch->priv->entries = g_list_append (batch->priv->entries, rhythmdb_entry_ref (entry));
 }
 
+static gboolean
+select_profile_for_entry (RBTrackTransferBatch *batch, RhythmDBEntry *entry, GstEncodingProfile **rprofile, gboolean allow_missing)
+{
+	/* probably want a way to pass in some policy about lossless encoding
+	 * here.  possibilities:
+	 * - convert everything to lossy
+	 * - if transcoding is required, use lossy
+	 * - keep lossless encoded files lossless
+	 * - if transcoding is required, use lossless
+	 * - convert everything to lossless
+	 *
+	 * of course this only applies to targets that include lossless profiles..
+	 */
+
+	const char *media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
+	const GList *p;
+
+	for (p = gst_encoding_target_get_profiles (batch->priv->target); p != NULL; p = p->next) {
+		GstEncodingProfile *profile = GST_ENCODING_PROFILE (p->data);
+		char *profile_media_type;
+		gboolean skip;
+
+		if (g_str_has_prefix (media_type, "audio/x-raw") == FALSE &&
+		    rb_gst_media_type_matches_profile (profile, media_type)) {
+			/* source file is already in a supported encoding, so just copy it */
+			*rprofile = NULL;
+			return TRUE;
+		}
+
+		skip = FALSE;
+		/* ignore lossless encodings for now */
+		profile_media_type = rb_gst_encoding_profile_get_media_type (profile);
+		if (profile_media_type == NULL) {
+			if (g_str_has_prefix (media_type, "audio/x-raw")) {
+				skip = TRUE;
+			}
+		} else if (rb_gst_media_type_is_lossless (profile_media_type)) {
+			skip = TRUE;
+		} else if (allow_missing == FALSE) {
+			if (g_list_find (batch->priv->missing_plugin_profiles, profile)) {
+				skip = TRUE;
+			}
+		}
+
+		if (skip == FALSE && *rprofile == NULL) {
+			*rprofile = profile;
+		}
+		g_free (profile_media_type);
+	}
+
+	return (*rprofile != NULL);
+}
+
 /**
- * rb_track_transfer_batch_check_media_types:
+ * rb_track_transfer_batch_check_profiles:
  * @batch: a #RBTrackTransferBatch
+ * @missing_plugin_profiles: holds a #GList of #GstEncodingProfiles on return
+ * @error_count: holds the number of entries that cannot be transferred on return
  *
  * Checks that all entries in the batch can be transferred in a format
- * supported by the destination.
+ * supported by the destination.  If no encoding profile is available for
+ * some entries, but installing additional plugins could make a profile
+ * available, a list of profiles that require additional plugins is returned.
  *
- * Return value: number of entries that cannot be transferred
+ * Return value: %TRUE if some entries can be transferred without additional plugins
  */
-guint
-rb_track_transfer_batch_check_media_types (RBTrackTransferBatch *batch)
+gboolean
+rb_track_transfer_batch_check_profiles (RBTrackTransferBatch *batch, GList **missing_plugin_profiles, int *error_count)
 {
 	RBEncoder *encoder = rb_encoder_new ();
-	guint count = 0;
-	GList *l;
+	gboolean ret = FALSE;
+	const GList *l;
+
+	rb_debug ("checking profiles");
+
+	/* first, figure out which profiles that we care about would require additional plugins to use */
+	g_list_free (batch->priv->missing_plugin_profiles);
+	batch->priv->missing_plugin_profiles = NULL;
+
+	for (l = gst_encoding_target_get_profiles (batch->priv->target); l != NULL; l = l->next) {
+		GstEncodingProfile *profile = GST_ENCODING_PROFILE (l->data);
+		char *profile_media_type;
+		profile_media_type = rb_gst_encoding_profile_get_media_type (profile);
+		if ((rb_gst_media_type_is_lossless (profile_media_type) == FALSE) &&
+		    rb_encoder_get_missing_plugins (encoder, profile, NULL, NULL)) {
+			batch->priv->missing_plugin_profiles = g_list_append (batch->priv->missing_plugin_profiles, profile);
+		}
+		g_free (profile_media_type);
+	}
+	g_object_unref (encoder);
+
+	rb_debug ("have %d profiles with missing plugins", g_list_length (batch->priv->missing_plugin_profiles));
 
 	for (l = batch->priv->entries; l != NULL; l = l->next) {
 		RhythmDBEntry *entry = (RhythmDBEntry *)l->data;
-		/* check that we can transfer this entry to the device */
-		if (rb_encoder_get_media_type (encoder,
-					       entry,
-					       batch->priv->media_types,
-					       NULL,
-					       NULL) == FALSE) {
+		GstEncodingProfile *profile;
+
+		profile = NULL;
+		if (select_profile_for_entry (batch, entry, &profile, FALSE) == TRUE) {
+			if (profile != NULL) {
+				rb_debug ("found profile %s for %s",
+					  gst_encoding_profile_get_name (profile),
+					  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+			} else {
+				rb_debug ("copying entry %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+			}
+			ret = TRUE;
+			continue;
+		}
+
+		(*error_count)++;
+		if (select_profile_for_entry (batch, entry, &profile, TRUE) == FALSE) {
 			rb_debug ("unable to transfer %s (media type %s)",
 				  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
-				  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MIMETYPE));
-			count++;
+				  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE));
+		} else {
+			rb_debug ("require additional plugins to transfer %s (media type %s)",
+				  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
+				  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE));
+			if (*missing_plugin_profiles == NULL) {
+				*missing_plugin_profiles = g_list_copy (batch->priv->missing_plugin_profiles);
+			}
 		}
 	}
-	g_object_unref (encoder);
-	return count;
+	return ret;
 }
 
 /**
@@ -384,11 +468,31 @@ encoder_overwrite_cb (RBEncoder *encoder, GFile *file, RBTrackTransferBatch *bat
 	return overwrite;
 }
 
+static char *
+get_extension_from_location (RhythmDBEntry *entry)
+{
+	char *extension = NULL;
+	const char *ext;
+	GFile *f;
+	char *b;
+
+	f = g_file_new_for_uri (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+	b = g_file_get_basename (f);
+	g_object_unref (f);
+
+	ext = strrchr (b, '.');
+	if (ext != NULL) {
+		extension = g_strdup (ext+1);
+	}
+	g_free (b);
+
+	return extension;
+}
+
 static gboolean
 start_next (RBTrackTransferBatch *batch)
 {
-	char *media_type = NULL;
-	char *extension = NULL;
+	GstEncodingProfile *profile = NULL;
 
 	if (batch->priv->cancelled == TRUE) {
 		return FALSE;
@@ -402,6 +506,7 @@ start_next (RBTrackTransferBatch *batch)
 
 	batch->priv->current_fraction = 0.0;
 	batch->priv->current_encoder = rb_encoder_new ();
+
 	g_signal_connect_object (batch->priv->current_encoder, "progress",
 				 G_CALLBACK (encoder_progress_cb),
 				 batch, 0);
@@ -420,6 +525,8 @@ start_next (RBTrackTransferBatch *batch)
 		gulong duration;
 		double fraction;
 		GList *n;
+		char *media_type;
+		char *extension;
 
 		n = batch->priv->entries;
 		batch->priv->entries = g_list_remove_link (batch->priv->entries, n);
@@ -443,20 +550,24 @@ start_next (RBTrackTransferBatch *batch)
 			fraction = 1.0 / ((double)count);
 		}
 
-		g_free (media_type);
-		g_free (extension);
-		media_type = NULL;
-		extension = NULL;
-		if (rb_encoder_get_media_type (batch->priv->current_encoder,
-					       entry,
-					       batch->priv->media_types,
-					       &media_type,
-					       &extension) == FALSE) {
-			rb_debug ("skipping entry %s, can't find a destination format",
+		profile = NULL;
+		if (select_profile_for_entry (batch, entry, &profile, FALSE) == FALSE) {
+			rb_debug ("skipping entry %s, can't find an encoding profile",
 				  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 			rhythmdb_entry_unref (entry);
 			batch->priv->total_fraction += fraction;
 			continue;
+		}
+
+		if (profile != NULL) {
+			media_type = rb_gst_encoding_profile_get_media_type (profile);
+			extension = g_strdup (rb_gst_media_type_to_extension (media_type));
+		} else {
+			media_type = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
+			extension = g_strdup (rb_gst_media_type_to_extension (media_type));
+			if (extension == NULL) {
+				extension = get_extension_from_location (entry);
+			}
 		}
 
 		g_free (batch->priv->current_dest_uri);
@@ -466,6 +577,9 @@ start_next (RBTrackTransferBatch *batch)
 			       media_type,
 			       extension,
 			       &batch->priv->current_dest_uri);
+		g_free (media_type);
+		g_free (extension);
+
 		if (batch->priv->current_dest_uri == NULL) {
 			rb_debug ("unable to build destination URI for %s, skipping",
 				  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
@@ -490,10 +604,8 @@ start_next (RBTrackTransferBatch *batch)
 		rb_encoder_encode (batch->priv->current_encoder,
 				   batch->priv->current,
 				   batch->priv->current_dest_uri,
-				   media_type);
+				   profile);
 	}
-	g_free (media_type);
-	g_free (extension);
 
 	return TRUE;
 }
@@ -515,19 +627,9 @@ impl_set_property (GObject *object,
 		   GParamSpec *pspec)
 {
 	RBTrackTransferBatch *batch = RB_TRACK_TRANSFER_BATCH (object);
-	const char * const *strv;
-	int i;
 	switch (prop_id) {
-	case PROP_MEDIA_TYPES:
-		batch->priv->media_types = rb_string_list_copy (g_value_get_pointer (value));
-		break;
-	case PROP_MEDIA_TYPES_STRV:
-		strv = g_value_get_boxed (value);
-		if (strv != NULL) {
-			for (i = 0; strv[i] != NULL; i++) {
-				batch->priv->media_types = g_list_append (batch->priv->media_types, g_strdup (strv[i]));
-			}
-		}
+	case PROP_ENCODING_TARGET:
+		batch->priv->target = GST_ENCODING_TARGET (gst_value_dup_mini_object (value));
 		break;
 	case PROP_SOURCE:
 		batch->priv->source = g_value_dup_object (value);
@@ -549,8 +651,8 @@ impl_get_property (GObject *object,
 {
 	RBTrackTransferBatch *batch = RB_TRACK_TRANSFER_BATCH (object);
 	switch (prop_id) {
-	case PROP_MEDIA_TYPES:
-		g_value_set_pointer (value, batch->priv->media_types);
+	case PROP_ENCODING_TARGET:
+		gst_value_set_mini_object (value, GST_MINI_OBJECT (batch->priv->target));
 		break;
 	case PROP_SOURCE:
 		g_value_set_object (value, batch->priv->source);
@@ -614,6 +716,11 @@ impl_dispose (GObject *object)
 		batch->priv->destination = NULL;
 	}
 
+	if (batch->priv->target != NULL) {
+		gst_encoding_target_unref (batch->priv->target);
+		batch->priv->target = NULL;
+	}
+
 	G_OBJECT_CLASS (rb_track_transfer_batch_parent_class)->dispose (object);
 }
 
@@ -622,10 +729,11 @@ impl_finalize (GObject *object)
 {
 	RBTrackTransferBatch *batch = RB_TRACK_TRANSFER_BATCH (object);
 
-	rb_list_deep_free (batch->priv->media_types);
 	rb_list_destroy_free (batch->priv->entries, (GDestroyNotify) rhythmdb_entry_unref);
 	rb_list_destroy_free (batch->priv->done_entries, (GDestroyNotify) rhythmdb_entry_unref);
-	rhythmdb_entry_unref (batch->priv->current);
+	if (batch->priv->current != NULL) {
+		rhythmdb_entry_unref (batch->priv->current);
+	}
 
 	G_OBJECT_CLASS (rb_track_transfer_batch_parent_class)->finalize (object);
 }
@@ -641,32 +749,18 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 	object_class->dispose = impl_dispose;
 
 	/**
-	 * RBTrackTransferBatch:media-types
+	 * RBTrackTransferBatch:encoding-target
 	 *
-	 * Array of media type strings describing the acceptable
-	 * destination formats.  If NULL, no format conversion will
-	 * be done.
+	 * A GstEncodingTarget describing allowable target formats.
+	 * If NULL, the default set of profiles will be used.
 	 */
 	g_object_class_install_property (object_class,
-					 PROP_MEDIA_TYPES_STRV,
-					 g_param_spec_boxed ("media-types-strv",
-							     "media types",
-							     "Set of allowable destination media types",
-							     G_TYPE_STRV,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	/**
-	 * RBTrackTransferBatch:media-types
-	 *
-	 * GList of media type strings describing the acceptable
-	 * destination formats.  If NULL, no format conversion will
-	 * be done.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_MEDIA_TYPES,
-					 g_param_spec_pointer ("media-types",
-							       "media types",
-							       "Set of allowable destination media types",
-							       G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+					 PROP_ENCODING_TARGET,
+					 gst_param_spec_mini_object ("encoding-target",
+								     "encoding target",
+								     "GstEncodingTarget",
+								     GST_TYPE_ENCODING_TARGET,
+								     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
 	 * RBTrackTransferBatch:source
 	 *

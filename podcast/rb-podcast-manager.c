@@ -1335,7 +1335,7 @@ rb_podcast_manager_save_metadata (RBPodcastManager *pd, RhythmDBEntry *entry)
 	RBMetaData *md = rb_metadata_new ();
 	GError *error = NULL;
 	GValue val = { 0, };
-	const char *mime;
+	const char *media_type;
 	const char *uri;
 	char **missing_plugins;
 	char **plugin_descriptions;
@@ -1388,11 +1388,11 @@ rb_podcast_manager_save_metadata (RBPodcastManager *pd, RhythmDBEntry *entry)
 		return;
 	}
 
-	mime = rb_metadata_get_mime (md);
-	if (mime) {
+	media_type = rb_metadata_get_media_type (md);
+	if (media_type) {
 		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_string (&val, mime);
-		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_MIMETYPE, &val);
+		g_value_set_string (&val, media_type);
+		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_MEDIA_TYPE, &val);
 		g_value_unset (&val);
 	}
 

@@ -68,12 +68,12 @@ print_metadata_string (RBMetaData *md, RBMetaDataField field, const char *name)
 static gboolean
 check_can_save_cb (gpointer mt)
 {
-	char *mimetype = (char *)mt;
+	char *media_type = (char *)mt;
 
-	if (rb_metadata_can_save (md, mimetype)) {
-		printf ("Can save %s\n", mimetype);
+	if (rb_metadata_can_save (md, media_type)) {
+		printf ("Can save %s\n", media_type);
 	} else {
-		printf ("Unable to save %s\n", mimetype);
+		printf ("Unable to save %s\n", media_type);
 	}
 
 	return FALSE;
@@ -111,7 +111,7 @@ load_metadata_cb (gpointer file)
 		g_clear_error (&error);
 	}
 
-	printf ("type: %s\n", rb_metadata_get_mime (md));
+	printf ("type: %s\n", rb_metadata_get_media_type (md));
 	for (f =(RBMetaDataField)0; f < RB_METADATA_FIELD_LAST; f++)
 		print_metadata_string (md, f, rb_metadata_get_field_name (f));
 

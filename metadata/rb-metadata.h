@@ -126,7 +126,7 @@ const char *	rb_metadata_get_field_name (RBMetaDataField field);
 
 RBMetaData *	rb_metadata_new		(void);
 
-gboolean	rb_metadata_can_save	(RBMetaData *md, const char *mimetype);
+gboolean	rb_metadata_can_save	(RBMetaData *md, const char *media_type);
 char **		rb_metadata_get_saveable_types (RBMetaData *md);
 
 void		rb_metadata_reset	(RBMetaData *md);
@@ -139,7 +139,7 @@ void		rb_metadata_save	(RBMetaData *md,
 					 const char *uri,
 					 GError **error);
 
-const char *	rb_metadata_get_mime	(RBMetaData *md);
+const char *	rb_metadata_get_media_type	(RBMetaData *md);
 
 gboolean	rb_metadata_has_missing_plugins (RBMetaData *md);
 

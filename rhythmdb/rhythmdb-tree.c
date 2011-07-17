@@ -115,8 +115,8 @@ static void rhythmdb_hash_tree_foreach (RhythmDB *adb,
 					gpointer data);
 
 /* Update both of those! */
-#define RHYTHMDB_TREE_XML_VERSION "1.7"
-#define RHYTHMDB_TREE_XML_VERSION_INT 170
+#define RHYTHMDB_TREE_XML_VERSION "1.8"
+#define RHYTHMDB_TREE_XML_VERSION_INT 180
 
 static void destroy_tree_property (RhythmDBTreeProperty *prop);
 static RhythmDBTreeProperty *get_or_create_album (RhythmDBTree *db, RhythmDBTreeProperty *artist,
@@ -400,6 +400,9 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 						rb_debug ("reloading all file metadata to get sortnames, album artist, comments, bpm and updating mountpoints");
 						ctx->reload_all_metadata = TRUE;
 						ctx->update_local_mountpoints = TRUE;
+					case 170:
+						rb_debug ("reloading all file metadata to get new media types");
+						ctx->reload_all_metadata = TRUE;
 					case RHYTHMDB_TREE_XML_VERSION_INT:
 						/* current version */
 						break;
@@ -1060,8 +1063,8 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_FILE_SIZE:
 			save_entry_uint64(ctx, elt_name, entry->file_size);
 			break;
-		case RHYTHMDB_PROP_MIMETYPE:
-			save_entry_string(ctx, elt_name, rb_refstring_get (entry->mimetype));
+		case RHYTHMDB_PROP_MEDIA_TYPE:
+			save_entry_string(ctx, elt_name, rb_refstring_get (entry->media_type));
 			break;
 		case RHYTHMDB_PROP_MTIME:
 			save_entry_ulong (ctx, elt_name, entry->mtime, FALSE);
@@ -1352,9 +1355,9 @@ rhythmdb_tree_entry_new_internal (RhythmDB *rdb, RhythmDBEntry *entry)
 		g_warning ("Entry %s has missing genre", rb_refstring_get (entry->location));
 		entry->genre = rb_refstring_new (_("Unknown"));
 	}
-	if (entry->mimetype == NULL) {
-		g_warning ("Entry %s has missing mimetype", rb_refstring_get (entry->location));
-		entry->mimetype = rb_refstring_new ("unknown/unknown");
+	if (entry->media_type == NULL) {
+		g_warning ("Entry %s has missing media type", rb_refstring_get (entry->location));
+		entry->media_type = rb_refstring_new ("unknown/unknown");
 	}
 
 	/* Initialize the tree structure. */

@@ -1,0 +1,46 @@
+[GStreamer Encoding Target]
+name = rhythmbox
+category = muh
+description = Common encoding profiles for Rhythmbox
+
+[profile-mp3]
+name = mp3
+description = MPEG Layer 3 Audio
+format = application/x-id3
+type = container
+
+[streamprofile-mp3-1]
+parent = mp3
+type = audio
+format = audio/mpeg, mpegversion=1, layer=3
+presence = 1
+
+[profile-oggvorbis]
+name = oggvorbis
+description = Ogg Vorbis
+format = application/ogg
+type = container
+
+[streamprofile-oggvorbis-1]
+parent = oggvorbis
+type = audio
+format = audio/x-vorbis
+presence = 1
+
+[profile-flac]
+name = flac
+description = FLAC
+format = audio/x-flac
+type = audio
+
+[profile-m4a]
+name = m4a
+description = MPEG 4 Audio
+format = video/quicktime, variant=iso
+type = container
+
+[streamprofile-m4a-1]
+parent = m4a
+type = audio
+format = audio/mpeg, mpegversion=4, stream-format=raw
+presence = 1

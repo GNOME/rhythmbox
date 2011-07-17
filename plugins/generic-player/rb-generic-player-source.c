@@ -50,6 +50,7 @@
 #include "rhythmdb-import-job.h"
 #include "rb-import-errors-source.h"
 #include "rb-builder-helpers.h"
+#include "rb-gst-media-types.h"
 #include "rb-sync-settings.h"
 #include "rb-missing-plugins.h"
 
@@ -74,10 +75,9 @@ static gboolean impl_can_paste (RBSource *source);
 static gboolean impl_can_delete (RBSource *source);
 static void impl_delete (RBSource *source);
 
-static GList* impl_get_mime_types (RBRemovableMediaSource *source);
 static char* impl_build_dest_uri (RBRemovableMediaSource *source,
 				  RhythmDBEntry *entry,
-				  const char *mimetype,
+				  const char *media_type,
 				  const char *extension);
 static guint64 impl_get_capacity (RBMediaPlayerSource *source);
 static guint64 impl_get_free_space (RBMediaPlayerSource *source);
@@ -164,7 +164,6 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	mps_class->impl_remove_playlists = impl_remove_playlists;
 
 	rms_class->impl_build_dest_uri = impl_build_dest_uri;
-	rms_class->impl_get_mime_types = impl_get_mime_types;
 	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
 
 	klass->impl_get_mount_path = default_get_mount_path;
@@ -218,6 +217,7 @@ impl_constructed (GObject *object)
 	RhythmDBEntryType *entry_type;
 	GMount *mount;
 	char **playlist_formats;
+	char **output_formats;
 	char *mount_name;
 	RBShell *shell;
 	GFile *root;
@@ -268,6 +268,26 @@ impl_constructed (GObject *object)
 	}
 	g_strfreev (playlist_formats);
 	g_object_unref (entry_type);
+
+	g_object_get (priv->device_info, "output-formats", &output_formats, NULL);
+	if (output_formats != NULL) {
+		GstEncodingTarget *target;
+		int i;
+
+		target = gst_encoding_target_new ("generic-player", "device", "", NULL);
+		for (i = 0; output_formats[i] != NULL; i++) {
+			const char *media_type = rb_gst_mime_type_to_media_type (output_formats[i]);
+			if (media_type != NULL) {
+				GstEncodingProfile *profile;
+				profile = rb_gst_get_encoding_profile (media_type);
+				if (profile != NULL) {
+					gst_encoding_target_add_profile (target, profile);
+				}
+			}
+		}
+		g_object_set (source, "encoding-target", target, NULL);
+	}
+	g_strfreev (output_formats);
 
         rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
 	load_songs (source);
@@ -963,26 +983,10 @@ sanitize_path (const char *str)
 	return res;
 }
 
-static GList *
-impl_get_mime_types (RBRemovableMediaSource *source)
-{
-	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
-	GList *list = NULL;
-	char **output_formats;
-	char **mime;
-
-	g_object_get (priv->device_info, "output-formats", &output_formats, NULL);
-	for (mime = output_formats; mime && *mime != NULL; mime++) {
-		list = g_list_prepend (list, g_strdup (*mime));
-	}
-	g_strfreev (output_formats);
-	return g_list_reverse (list);
-}
-
 static char *
 impl_build_dest_uri (RBRemovableMediaSource *source,
 		     RhythmDBEntry *entry,
-		     const char *mimetype,
+		     const char *media_type,
 		     const char *extension)
 {
 	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);

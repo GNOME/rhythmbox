@@ -37,15 +37,10 @@
  * @short_description: audio transcoder interface
  *
  * The RBEncoder interface provides transcoding between audio formats based on
- * media types.  Media types are conceptually similar to MIME types, and overlap
- * in many cases, but the media type for an encoding is not always the same as the
- * MIME type for files using that encoding.
- *
- * The encoder picks the output format from a list provided by the caller,
- * limited by the available codecs.  It operatees asynchronously and provides
- * status updates in the form of signals.
- *
- * A new encoder instance should be created for each file that is transcoded.
+ * encoding profiles.  The encoder implementation operates asynchronously and
+ * provides status updates in the form of signals emitted on the main thread.
+ * A new encoder instance should be created for each file that is transcoded
+ * or copied.
  */
 
 static void rb_encoder_factory_class_init (RBEncoderFactoryClass *klass);
@@ -226,24 +221,22 @@ rb_encoder_factory_get ()
  * @encoder: the #RBEncoder
  * @entry: the #RhythmDBEntry to transcode
  * @dest: destination file URI
- * @dest_media_type: destination media type, or NULL to just copy it
+ * @profile: encoding profile to use, or NULL to just copy
  *
- * Initiates encoding, transcoding to the specified media type if it doesn't match
- * the current media type of the entry.  The caller should use rb_encoder_get_media_type
- * to select a destination media type.
+ * Initiates encoding, transcoding to the specified profile if specified.
  *
- * Encoding and error reporting takes places asynchronously.  The caller should wait
+ * Encoding and error reporting takes place asynchronously.  The caller should wait
  * for the 'completed' signal which indicates it has either completed or failed.
  */
 void
 rb_encoder_encode (RBEncoder *encoder,
 		   RhythmDBEntry *entry,
 		   const char *dest,
-		   const char *dest_media_type)
+		   GstEncodingProfile *profile)
 {
 	RBEncoderIface *iface = RB_ENCODER_GET_IFACE (encoder);
 
-	iface->encode (encoder, entry, dest, dest_media_type);
+	iface->encode (encoder, entry, dest, profile);
 }
 
 /**
@@ -263,49 +256,25 @@ rb_encoder_cancel (RBEncoder *encoder)
 }
 
 /**
- * rb_encoder_get_media_type:
- * @encoder: a #RBEncoder
- * @entry: the source #RhythmDBEntry
- * @dest_media_types: (element-type utf8): media type strings in order of preference
- * @media_type: (out callee-allocates) (allow-none): returns the selected media type, if any
- * @extension: (out callee-allocates) (allow-none): returns the file extension associated with the selected media type, if any
- *
- * Identifies the first media type in the list that the encoder can actually encode to.
- * The file extension (eg. '.mp3' for audio/mpeg) associated with the selected type is
- * also returned.
- *
- * Return value: TRUE if a format was identified
- */
-gboolean
-rb_encoder_get_media_type (RBEncoder *encoder,
-			   RhythmDBEntry *entry,
-			   GList *dest_media_types,
-			   char **media_type,
-			   char **extension)
-{
-	RBEncoderIface *iface = RB_ENCODER_GET_IFACE (encoder);
-
-	return iface->get_media_type (encoder, entry, dest_media_types, media_type, extension);
-}
-
-/**
  * rb_encoder_get_missing_plugins:
  * @encoder: a #RBEncoder
- * @media_type: the media type required
+ * @profile: an encoding profile
  * @details: (out callee-allocates): returns plugin installer detail strings
+ * @descriptions: (out callee-allocates): returns plugin descriptions
  *
- * Retrieves the plugin installer detail strings for any missing plugins
- * required to encode the specified media type.
+ * Retrieves the plugin installer detail strings and descriptions
+ * for any missing plugins required to use the specified encoding profile.
  *
  * Return value: %TRUE if some detail strings are returned, %FALSE otherwise
  */
 gboolean
 rb_encoder_get_missing_plugins (RBEncoder *encoder,
-				const char *media_type,
-				char ***details)
+				GstEncodingProfile *profile,
+				char ***details,
+				char ***descriptions)
 {
 	RBEncoderIface *iface = RB_ENCODER_GET_IFACE (encoder);
-	return iface->get_missing_plugins (encoder, media_type, details);
+	return iface->get_missing_plugins (encoder, profile, details, descriptions);
 }
 
 /**

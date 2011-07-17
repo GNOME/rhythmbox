@@ -152,11 +152,12 @@
       <summary>File name of tracks</summary>
       <description>The path used to store track in, under the chosen library. Various substitutions are done</description>
     </key>
-    <key name="preferred-format" type="s">
-      <default>'cdlossy'</default>
-      <summary>id of gnome-media audio profile</summary>
-      <description>The ID of the preferred gnome audio profile, used for ripping CDs</description>
+    <key name="preferred-media-type" type="s">
+      <default>'audio/x-vorbis'</default>
+      <summary>Preferred media type for encoding audio extracted from CD</summary>
+      <description>Preferred media type for encoding audio extracted from CD. 'audio/x-vorbis' for Ogg Vorbis, or 'audio/mpeg' for MP3, for example. This is not a MIME type.</description>
     </key>
+    <!-- and something about presets too -->
     <key name="strip-chars" type="b">
       <default>false</default>
       <summary>Strip special characters</summary>

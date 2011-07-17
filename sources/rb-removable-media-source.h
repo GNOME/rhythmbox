@@ -55,14 +55,13 @@ struct _RBRemovableMediaSourceClass
 
 	char*		(*impl_build_dest_uri)	(RBRemovableMediaSource *source,
 						 RhythmDBEntry *entry,
-						 const char *mimetype,
+						 const char *media_type,
 						 const char *extension);
-	GList*		(*impl_get_mime_types)	(RBRemovableMediaSource *source);
 	gboolean	(*impl_track_added)	(RBRemovableMediaSource *source,
 						 RhythmDBEntry *entry,
 						 const char *uri,
 						 guint64 dest_size,
-						 const char *mimetype);
+						 const char *media_type);
 	gboolean	(*impl_track_add_error) (RBRemovableMediaSource *source,
 						 RhythmDBEntry *entry,
 						 const char *uri,
@@ -80,18 +79,17 @@ GType			rb_removable_media_source_get_type	(void);
 
 char*		rb_removable_media_source_build_dest_uri 	(RBRemovableMediaSource *source,
 								 RhythmDBEntry *entry,
-								 const char *mimetype,
+								 const char *media_type,
 								 const char *extension);
 void		rb_removable_media_source_track_added		(RBRemovableMediaSource *source,
 								 RhythmDBEntry *entry,
 								 const char *uri,
 								 guint64 filesize,
-								 const char *mimetype);
+								 const char *media_type);
 void		rb_removable_media_source_track_add_error	(RBRemovableMediaSource *source,
 								 RhythmDBEntry *entry,
 								 const char *uri,
 								 GError *error);
-GList *		rb_removable_media_source_get_mime_types	(RBRemovableMediaSource *source);
 GList *		rb_removable_media_source_get_format_descriptions (RBRemovableMediaSource *source);
 gboolean	rb_removable_media_source_should_paste		(RBRemovableMediaSource *source,
 								 RhythmDBEntry *entry);

@@ -46,7 +46,7 @@ AC_CHECK_SIZEOF(long)
 GTK_REQS=2.91.4
 
 DBUS_MIN_REQS=0.35
-GST_0_10_REQS=0.10.20
+GST_0_10_REQS=0.10.32
 GDK_PIXBUF_REQS=2.18.0
 GLIB_REQS=2.26.0
 LIBGPOD_REQS=0.6
@@ -59,7 +59,6 @@ GUDEV_REQS=143
 LIBMTP_REQS=0.3.0
 LIBPEAS_REQS=0.7.3
 
-GNOME_MEDIA_PROFILES_REQS=2.91.0
 LIBNOTIFY_REQS=0.7.0
 BRASERO_MIN_REQS=2.31.5
 WEBKIT_MIN_REQS=1.3.9
@@ -101,7 +100,6 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  glib-2.0 >= $GLIB_REQS		\
 		  gio-2.0 >= $GLIB_REQS			\
 		  gio-unix-2.0 >= $GLIB_REQS		\
-		  libgnome-media-profiles-3.0 >= $GNOME_MEDIA_PROFILES_REQS \
 		  libsoup-2.4 >= $LIBSOUP_REQS		\
 		  libsoup-gnome-2.4 >= $LIBSOUP_REQS	\
 		  libpeas-1.0 >= $LIBPEAS_REQS
@@ -263,10 +261,12 @@ dnl And we can also ask for the right version of gstreamer
 PKG_CHECK_MODULES(GSTREAMER_0_10, \
 	gstreamer-0.10 >= $GST_0_10_REQS
 	gstreamer-base-0.10 >= $GST_0_10_REQS
-	gstreamer-plugins-base-0.10 >= $GST_0_10_REQS)
+	gstreamer-plugins-base-0.10 >= $GST_0_10_REQS
+	gstreamer-interfaces-0.10 >= $GST_0_10_REQS
+	gstreamer-pbutils-0.10 >= $GST_0_10_REQS)
 
 RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $GSTREAMER_0_10_CFLAGS"
-RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $GSTREAMER_0_10_LIBS -lgstinterfaces-0.10"
+RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $GSTREAMER_0_10_LIBS"
 
 AC_ARG_WITH(mdns,
    AC_HELP_STRING([--with-mdns=auto|avahi],
@@ -352,7 +352,7 @@ have_sj_metadata_getter=no
 AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
 				[don't build with MusicBrainz support]))
 if test x"$enable_musicbrainz" != "xno"; then
-	PKG_CHECK_MODULES(MUSICBRAINZ3, libmusicbrainz3 >= $MUSICBRAINZ3_REQS, [have_musicbrainz3=yes], [have_musicbrainz3=no])
+	PKG_CHECK_MODULES(MUSICBRAINZ3, libmusicbrainz3 >= $MUSICBRAINZ3_REQS gconf-2.0, [have_musicbrainz3=yes], [have_musicbrainz3=no])
 
 	AC_SUBST(MUSICBRAINZ3_CFLAGS)
 	AC_SUBST(MUSICBRAINZ3_LIBS)
@@ -589,7 +589,7 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 	PKG_CHECK_EXISTS(gtk+-2.0 >= 2.20.0, [CFLAGS="$CFLAGS -DGSEAL_ENABLE"], [])
 
 	dnl disable deprecated stuff
-	CFLAGS="$CFLAGS $DISABLE_DEPRECATED"
+	dnl CFLAGS="$CFLAGS $DISABLE_DEPRECATED"
 else
 	AC_MSG_RESULT(no)
 fi

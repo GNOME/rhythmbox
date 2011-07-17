@@ -129,12 +129,10 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return RB_METADATA_FIELD_ARTIST_SORTNAME;
 	else if (!strcmp (tag, GST_TAG_ALBUM_SORTNAME))
 		return RB_METADATA_FIELD_ALBUM_SORTNAME;
-#if GST_CHECK_VERSION(0,10,25)
 	else if (!strcmp (tag, GST_TAG_ALBUM_ARTIST))
 		return RB_METADATA_FIELD_ALBUM_ARTIST;
 	else if (!strcmp (tag, GST_TAG_ALBUM_ARTIST_SORTNAME))
 		return RB_METADATA_FIELD_ALBUM_ARTIST_SORTNAME;
-#endif
 	else
 		return -1;
 }
@@ -208,69 +206,11 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 		return GST_TAG_ARTIST_SORTNAME;
 	case RB_METADATA_FIELD_ALBUM_SORTNAME:
 		return GST_TAG_ALBUM_SORTNAME;
-#if GST_CHECK_VERSION(0,10,25)
 	case RB_METADATA_FIELD_ALBUM_ARTIST:
 		return GST_TAG_ALBUM_ARTIST;
 	case RB_METADATA_FIELD_ALBUM_ARTIST_SORTNAME:
 		return GST_TAG_ALBUM_ARTIST_SORTNAME;
-#endif
 	default:
 		return NULL;
 	}
 }
-
-
-/* don't like this much, but it's all we can do for now.
- * these media types are copied from gst-plugins-base/gst-libs/gst/pbutils/descriptions.c.
- * these are only the media types that don't start with 'audio/' or 'video/', which are
- * identified fairly accurately by the filters for those prefixes.
- */
-static const char *container_formats[] = {
-	"application/ogg",
-	"application/vnd.rn-realmedia",
-	"application/x-id3",
-	"application/x-ape",
-	"application/x-icy"
-};
-
-
-RBGstMediaType
-rb_metadata_gst_get_missing_plugin_type (GstMessage *message)
-{
-	const char *media_type;
-	const char *missing_type;
-	const GstStructure *structure;
-	const GstCaps *caps;
-	const GValue *val;
-	int i;
-
-	structure = gst_message_get_structure (message);
-	missing_type = gst_structure_get_string (structure, "type");
-	if (missing_type == NULL || strcmp (missing_type, "decoder") != 0) {
-		rb_debug ("missing plugin is not a decoder");
-		return MEDIA_TYPE_NONE;
-	}
-
-	val = gst_structure_get_value (structure, "detail");
-	caps = gst_value_get_caps (val);
-
-	media_type = gst_structure_get_name (gst_caps_get_structure (caps, 0));
-	for (i = 0; i < G_N_ELEMENTS (container_formats); i++) {
-		if (strcmp (media_type, container_formats[i]) == 0) {
-			rb_debug ("missing plugin is a container demuxer");
-			return MEDIA_TYPE_CONTAINER;
-		}
-	}
-
-	if (g_str_has_prefix (media_type, "audio/")) {
-		rb_debug ("missing plugin is an audio decoder");
-		return MEDIA_TYPE_AUDIO;
-	} else if (g_str_has_prefix (media_type, "video/")) {
-		rb_debug ("missing plugin is (probably) a video decoder");
-		return MEDIA_TYPE_VIDEO;
-	} else {
-		rb_debug ("missing plugin is neither a video nor audio decoder");
-		return MEDIA_TYPE_OTHER;
-	}
-}
-

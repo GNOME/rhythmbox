@@ -262,13 +262,12 @@ static void
 rb_feed_podcast_properties_dialog_update_language (RBFeedPodcastPropertiesDialog *dialog)
 {
 	const char *language;
-#if GST_CHECK_VERSION(0,10,26)
 	char *separator;
 	char *iso636lang;
 	const char *langname;
-#endif
+
 	language = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_LANG);
-#if GST_CHECK_VERSION(0,10,26)
+
 	/* language tag is language[-subcode]; we only care about the language bit */
 	iso636lang = g_strdup (language);
 	separator = strchr (iso636lang, '-');
@@ -284,7 +283,7 @@ rb_feed_podcast_properties_dialog_update_language (RBFeedPodcastPropertiesDialog
 		gtk_label_set_text (GTK_LABEL (dialog->priv->language), langname);
 		return;
 	}
-#endif
+
 	gtk_label_set_text (GTK_LABEL (dialog->priv->language), language);
 }
 

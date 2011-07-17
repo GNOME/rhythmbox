@@ -41,6 +41,8 @@ librb_la_SOURCES =					\
 	rb-async-queue-watch.h				\
 	rb-text-helpers.c				\
 	rb-text-helpers.h				\
+	rb-gst-media-types.c				\
+	rb-gst-media-types.h				\
 	rb-missing-plugins.c				\
 	rb-missing-plugins.h
 

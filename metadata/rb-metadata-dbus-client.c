@@ -84,7 +84,7 @@ static char **saveable_types = NULL;
 
 struct RBMetaDataPrivate
 {
-	char       *mimetype;
+	char       *media_type;
 	char      **missing_plugins;
 	char      **plugin_descriptions;
 	gboolean    has_audio;
@@ -120,7 +120,7 @@ rb_metadata_finalize (GObject *object)
 
 	md = RB_METADATA (object);
 
-	g_free (md->priv->mimetype);
+	g_free (md->priv->media_type);
 	if (md->priv->metadata)
 		g_hash_table_destroy (md->priv->metadata);
 
@@ -351,8 +351,8 @@ start_metadata_service (GError **error)
 void
 rb_metadata_reset (RBMetaData *md)
 {
-	g_free (md->priv->mimetype);
-	md->priv->mimetype = NULL;
+	g_free (md->priv->media_type);
+	md->priv->media_type = NULL;
 
 	if (md->priv->metadata)
 		g_hash_table_destroy (md->priv->metadata);
@@ -370,7 +370,7 @@ rb_metadata_reset (RBMetaData *md)
  *
  * Reads metadata information from the specified URI.
  * Once this has returned successfully (with *error == NULL),
- * rb_metadata_get, rb_metadata_get_mime, rb_metadata_has_missing_plugins,
+ * rb_metadata_get, rb_metadata_get_media_type, rb_metadata_has_missing_plugins,
  * and rb_metadata_get_missing_plugins can usefully be called.
  */
 void
@@ -419,7 +419,7 @@ rb_metadata_load (RBMetaData *md,
 			       &md->priv->has_audio,
 			       &md->priv->has_video,
 			       &md->priv->has_other_data,
-			       &md->priv->mimetype,
+			       &md->priv->media_type,
 			       &ok,
 			       &error_code,
 			       &error_string,
@@ -476,18 +476,18 @@ rb_metadata_load (RBMetaData *md,
 }
 
 /**
- * rb_metadata_get_mime:
+ * rb_metadata_get_media_type:
  * @md: a #RBMetaData
  *
  * Returns the type of the file from which metadata was read.
- * This isn't really a MIME type, but it looks like one.
+ * This may look like a MIME type, but it isn't.
  *
- * Return value: MIME type-ish string
+ * Return value: media type string
  */
 const char *
-rb_metadata_get_mime (RBMetaData *md)
+rb_metadata_get_media_type (RBMetaData *md)
 {
-	return md->priv->mimetype;
+	return md->priv->media_type;
 }
 
 /**
@@ -597,7 +597,7 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 /**
  * rb_metadata_can_save:
  * @md: a #RBMetaData
- * @mimetype: the MIME type-ish string to check
+ * @media_type: the media type string to check
  *
  * Checks if the metadata writer is capable of updating file metadata
  * for a given media type.
@@ -605,7 +605,7 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
  * Return value: TRUE if the file metadata for the given media type can be updated
  */
 gboolean
-rb_metadata_can_save (RBMetaData *md, const char *mimetype)
+rb_metadata_can_save (RBMetaData *md, const char *media_type)
 {
 	GError *error = NULL;
 	gboolean result = FALSE;
@@ -622,7 +622,7 @@ rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 
 	if (saveable_types != NULL) {
 		for (i = 0; saveable_types[i] != NULL; i++) {
-			if (g_str_equal (mimetype, saveable_types[i])) {
+			if (g_str_equal (media_type, saveable_types[i])) {
 				result = TRUE;
 				break;
 			}

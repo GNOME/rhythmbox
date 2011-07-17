@@ -36,9 +36,7 @@
 #include <glib/gi18n.h>
 #include <gdk/gdk.h>
 #include <gst/tag/tag.h>
-#if GST_CHECK_VERSION(0,10,25)
 #include <gst/interfaces/streamvolume.h>
-#endif
 #include <gst/pbutils/pbutils.h>
 
 #include "rb-debug.h"
@@ -177,16 +175,12 @@ emit_volume_changed_idle (RBPlayerGst *player)
 {
 	double vol;
 
-#if GST_CHECK_VERSION(0,10,25)
 	if (gst_element_implements_interface (player->priv->playbin, GST_TYPE_STREAM_VOLUME)) {
 		vol = gst_stream_volume_get_volume (GST_STREAM_VOLUME (player->priv->playbin),
 						    GST_STREAM_VOLUME_FORMAT_CUBIC);
 	} else {
 		vol = player->priv->cur_volume;
 	}
-#else
-	vol = player->priv->cur_volume;
-#endif
 
 	_rb_player_emit_volume_changed (RB_PLAYER (player), vol);
 	return FALSE;
@@ -321,15 +315,11 @@ set_playbin_volume (RBPlayerGst *player, float volume)
 	 * we still get another one anyway.
 	 */
 	g_signal_handlers_block_by_func (player->priv->playbin, volume_notify_cb, player);
-#if GST_CHECK_VERSION(0,10,25)
 	if (gst_element_implements_interface (player->priv->playbin, GST_TYPE_STREAM_VOLUME))
 		gst_stream_volume_set_volume (GST_STREAM_VOLUME (player->priv->playbin),
 					      GST_STREAM_VOLUME_FORMAT_CUBIC, volume);
 	else
 		g_object_set (player->priv->playbin, "volume", volume, NULL);
-#else
-	g_object_set (player->priv->playbin, "volume", volume, NULL);
-#endif
 	g_signal_handlers_unblock_by_func (player->priv->playbin, volume_notify_cb, player);
 }
 
