@@ -534,7 +534,6 @@ static void
 impl_activate (PeasActivatable *bplugin)
 {
 	RBNotificationPlugin *plugin;
-	GDBusConnection *bus;
 	RBShell *shell;
 
 	rb_debug ("activating notification plugin");
@@ -560,31 +559,6 @@ impl_activate (PeasActivatable *bplugin)
 				 G_CALLBACK (db_stream_metadata_cb), plugin, 0);
 	g_signal_connect_object (plugin->db, "entry_extra_metadata_notify::" RHYTHMDB_PROP_STREAM_SONG_ALBUM,
 				 G_CALLBACK (db_stream_metadata_cb), plugin, 0);
-
-	/* create resident notification on startup when running in GNOME Shell */
-	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
-	if (bus != NULL) {
-		GVariant *result;
-		result = g_dbus_connection_call_sync (bus,
-						      "org.freedesktop.DBus",
-						      "/org/freedesktop/DBus",
-						      "org.freedesktop.DBus",
-						      "GetNameOwner",
-						      g_variant_new ("(s)", "org.gnome.Shell"),
-						      G_VARIANT_TYPE ("(s)"),
-						      G_DBUS_CALL_FLAGS_NONE,
-						      -1,
-						      NULL,
-						      NULL);
-		if (result != NULL) {
-			rb_debug ("GNOME Shell is running");
-			notify_playing_entry (plugin, FALSE);
-			g_variant_unref (result);
-		} else {
-			rb_debug ("GNOME Shell isn't running");
-		}
-		g_object_unref (bus);
-	}
 
 	/* hook into shell preferences so we can poke stuff into the general prefs page? */
 
