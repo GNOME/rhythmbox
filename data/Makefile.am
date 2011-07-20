@@ -13,7 +13,7 @@ playlistsdir = $(datadir)/rhythmbox
 
 man_MANS = rhythmbox.1 rhythmbox-client.1
 
-profilesdir = $(datadir)
+profilesdir = $(datadir)/rhythmbox
 profiles_DATA = rhythmbox.gep
 
 # GSettings schemas
