@@ -381,6 +381,7 @@ rb_iradio_source_constructed (GObject *object)
 	source->priv->genres = rb_property_view_new (source->priv->db,
 						     RHYTHMDB_PROP_GENRE,
 						     _("Genre"));
+	gtk_widget_show_all (GTK_WIDGET (source->priv->genres));
 	gtk_widget_set_no_show_all (GTK_WIDGET (source->priv->genres), TRUE);
 	g_signal_connect_object (source->priv->genres,
 				 "property-selected",
