@@ -467,7 +467,7 @@ model_row_inserted_cb (GtkTreeModel *model,
 		gtk_tree_model_get (model, iter,
 				    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
 				    -1);
-		expand = retrieve_expander_state (RB_DISPLAY_PAGE_GROUP (page));
+		expand = retrieve_expander_state (display_page_tree, RB_DISPLAY_PAGE_GROUP (page));
 	}
 
 	if (expand) {
