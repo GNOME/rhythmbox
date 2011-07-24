@@ -423,6 +423,19 @@ find_in_real_model (RBDisplayPageModel *page_model, RBDisplayPage *page, GtkTree
 	}
 }
 
+static void
+walk_up_to_page_group (GtkTreeModel *model, GtkTreeIter *page_group, GtkTreeIter *page)
+{
+	GtkTreeIter walk_iter;
+	GtkTreeIter group_iter;
+
+	walk_iter = *page;
+	do {
+		group_iter = walk_iter;
+	} while (gtk_tree_model_iter_parent (model, &walk_iter, &group_iter));
+	*page_group = group_iter;
+}
+
 static int
 compare_rows (GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, RBDisplayPageModel *page_model)
 {
@@ -454,15 +467,10 @@ compare_rows (GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, RBDisplayPage
 		/* walk up the tree until we find the group, then get its category
 		 * to figure out how to sort the pages
 		 */
-		GtkTreeIter walk_iter;
 		GtkTreeIter group_iter;
 		RBDisplayPage *group_page;
 		RBDisplayPageGroupCategory category;
-
-		walk_iter = *a;
-		do {
-			group_iter = walk_iter;
-		} while (gtk_tree_model_iter_parent (model, &walk_iter, &group_iter));
+		walk_up_to_page_group (model, &group_iter, a);
 		gtk_tree_model_get (model, &group_iter, RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &group_page, -1);
 		g_object_get (group_page, "category", &category, NULL);
 		g_object_unref (group_page);
@@ -526,7 +534,7 @@ rb_display_page_model_is_row_visible (GtkTreeModel *model,
 }
 
 static void
-update_group_visibility_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBDisplayPageModel *page_model)
+update_group_visibility (GtkTreeModel *model, GtkTreeIter *iter, RBDisplayPageModel *page_model)
 {
 	RBDisplayPage *page;
 
@@ -534,7 +542,26 @@ update_group_visibility_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter 
 			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
 			    -1);
 	if (RB_IS_DISPLAY_PAGE_GROUP (page)) {
-		g_object_set (page, "visibility", gtk_tree_model_iter_has_child (model, iter), NULL);
+		gboolean has_children = FALSE;
+		gboolean current;
+		GtkTreeIter children;
+
+		if (gtk_tree_model_iter_children (model, &children, iter)) {
+			do {
+				has_children |= rb_display_page_model_is_row_visible (model, &children, page_model);
+			} while (gtk_tree_model_iter_next (model, &children));
+		}
+
+		g_object_get (page, "visibility", &current, NULL);
+
+		if (current != has_children) {
+			char *name;
+			g_object_get (page, "name", &name, NULL);
+			rb_debug ("page group %s changing visibility from %d to %d", name, current, has_children);
+			g_free (name);
+
+			g_object_set (page, "visibility", has_children, NULL);
+		}
 	}
 	g_object_unref (page);
 }
@@ -583,6 +610,13 @@ page_notify_cb (GObject *object,
 	path = gtk_tree_model_get_path (model, &iter);
 	gtk_tree_model_row_changed (model, path, &iter);
 	gtk_tree_path_free (path);
+
+	/* update the page group's visibility */
+	if (g_strcmp0 (pspec->name, "visibility") == 0 && RB_IS_DISPLAY_PAGE_GROUP (page) == FALSE) {
+		GtkTreeIter group_iter;
+		walk_up_to_page_group (model, &group_iter, &iter);
+		update_group_visibility (model, &group_iter, page_model);
+	}
 }
 
 
@@ -599,6 +633,9 @@ void
 rb_display_page_model_add_page (RBDisplayPageModel *page_model, RBDisplayPage *page, RBDisplayPage *parent)
 {
 	GtkTreeModel *model;
+	GtkTreeIter parent_iter;
+	GtkTreeIter group_iter;
+	GtkTreeIter *parent_iter_ptr;
 	GtkTreeIter iter;
 	char *name;
 
@@ -609,26 +646,27 @@ rb_display_page_model_add_page (RBDisplayPageModel *page_model, RBDisplayPage *p
 
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (page_model));
 	if (parent != NULL) {
-		GtkTreeIter parent_iter;
-
 		rb_debug ("inserting source %s with parent %p", name, parent);
 		g_assert (find_in_real_model (page_model, parent, &parent_iter));
-		gtk_tree_store_append (GTK_TREE_STORE (model), &iter, &parent_iter);
+		parent_iter_ptr = &parent_iter;
 	} else {
 		rb_debug ("appending page %s with no parent", name);
 		g_object_set (page, "visibility", FALSE, NULL);	/* hide until it has some content */
-		gtk_tree_store_append (GTK_TREE_STORE (model), &iter, NULL);
+		parent_iter_ptr = NULL;
 	}
 	g_free (name);
 
-	gtk_tree_store_set (GTK_TREE_STORE (model), &iter,
-			    RB_DISPLAY_PAGE_MODEL_COLUMN_PLAYING, FALSE,
-			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, page,
-			    -1);
+	gtk_tree_store_insert_with_values (GTK_TREE_STORE (model), &iter, parent_iter_ptr, G_MAXINT,
+				           RB_DISPLAY_PAGE_MODEL_COLUMN_PLAYING, FALSE,
+					   RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, page,
+					   -1);
 
 	g_signal_connect_object (page, "notify::name", G_CALLBACK (page_notify_cb), page_model, 0);
 	g_signal_connect_object (page, "notify::visibility", G_CALLBACK (page_notify_cb), page_model, 0);
 	g_signal_connect_object (page, "notify::pixbuf", G_CALLBACK (page_notify_cb), page_model, 0);
+
+	walk_up_to_page_group (model, &group_iter, &iter);
+	update_group_visibility (model, &group_iter, page_model);
 }
 
 /**
@@ -753,9 +791,6 @@ rb_display_page_model_new (void)
 						     "child-model", store,
 						     "virtual-root", NULL,
 						     NULL));
-
-	/* hide groups when they're empty */
-	g_signal_connect_object (store, "row-has-child-toggled", G_CALLBACK (update_group_visibility_cb), model, 0);
 	g_object_unref (store);
 
 	gtk_tree_model_filter_set_visible_func (GTK_TREE_MODEL_FILTER (model),
