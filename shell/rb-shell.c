@@ -2595,6 +2595,7 @@ rb_shell_cmd_plugins (GtkAction *action,
 		manager = peas_gtk_plugin_manager_new (NULL);
 		gtk_widget_show_all (GTK_WIDGET (manager));
 		gtk_box_pack_start (GTK_BOX (content_area), manager, TRUE, TRUE, 0);
+		gtk_window_set_default_size (GTK_WINDOW (shell->priv->plugins), 600, 400);
 	}
 
 	gtk_window_present (GTK_WINDOW (shell->priv->plugins));
