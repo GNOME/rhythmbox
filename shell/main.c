@@ -120,6 +120,11 @@ main (int argc, char **argv)
 		{ NULL }
 	};
 
+	/* disable multidevice so clutter-gtk events work.
+	 * this needs to be done before gtk_open, so the visualizer
+	 * plugin can't do it.
+	 */
+	gdk_disable_multidevice ();
 	g_thread_init (NULL);
 
 	rb_profile_start ("starting rhythmbox");
