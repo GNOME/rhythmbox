@@ -734,6 +734,32 @@ AC_SUBST(DMAPSHARING_CFLAGS)
 AC_SUBST(DMAPSHARING_LIBS)
 
 dnl ================================================================
+dnl clutter for visualizer plugin
+dnl ================================================================
+AC_ARG_ENABLE(visualizer,
+              AC_HELP_STRING([--disable-visualizer],
+                             [Disable visualizer plugin support]),,
+              enable_visualizer=auto)
+if test "x$enable_visualizer" != "xno"; then
+	PKG_CHECK_MODULES(CLUTTER,
+			  clutter-1.0 >= 1.2			\
+			  clutter-x11-1.0 >= 1.2		\
+			  clutter-gst-1.0 >= 1.0		\
+			  clutter-gtk-1.0 >= 1.0		\
+			  mx-1.0 >= 1.0.1,
+			  have_clutter=yes,
+			  have_clutter=no)
+	if test "x$have_clutter" = "xno" -a "x$enable_visualizer" = "xyes"; then
+		AC_MSG_ERROR([Visualizer support explicitly requested, but clutter couldn't be found])
+	fi
+fi
+
+AM_CONDITIONAL(USE_CLUTTER, test x"$have_clutter" = "xyes")
+
+AC_SUBST(CLUTTER_CFLAGS)
+AC_SUBST(CLUTTER_LIBS)
+
+dnl ================================================================
 dnl Dependencies for Last.fm plugin
 dnl ================================================================
 AC_ARG_ENABLE(lastfm,
@@ -837,6 +863,7 @@ plugins/mpris/Makefile
 plugins/dbus-media-server/Makefile
 plugins/rbzeitgeist/Makefile
 plugins/notification/Makefile
+plugins/visualizer/Makefile
 bindings/Makefile
 bindings/vala/Makefile
 bindings/gi/Makefile

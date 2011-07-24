@@ -1,0 +1,56 @@
+*
+{
+  font-size: 13;
+  color: #FFFFFF;
+}
+
+MxBoxLayout.TrackInfoBox
+{
+  padding: 7 7 7 7;
+  border-image: url("visualizer-box.png") 7 7 7 7;
+}
+
+MxBoxLayout.ControlsBox
+{
+  padding: 7 7 7 7;
+  border-image: url("visualizer-box.png") 7 7 7 7;
+}
+
+MxFrame.TrackInfoImage
+{
+  padding: 7 7 7 7;
+  border-image: url("visualizer-box.png") 7 7 7 7;
+}
+
+MxButton
+{
+  -mx-border-image-transition-duration: 120;
+  padding: 5 13 5 13;
+  border-image: url("button.png") 11 5 13 5;
+}
+
+MxButton:disabled
+{
+  -mx-border-image-transition-duration: 0;
+  border-image: url("button-disabled.png") 10;
+  color: #adaead;
+}
+
+MxButton:hover
+{
+  -mx-border-image-transition-duration: 0;
+  border-image: url("button-hover.png") 10;
+}
+
+MxButton:focus
+{
+  -mx-border-image-transition-duration: 0;
+  border-image: url("button-focus.png") 10;
+}
+
+MxButton:active, MxButton:checked
+{
+  -mx-border-image-transition-duration: 0;
+  padding: 6 13 4 13;
+  border-image: url("button-active.png") 10;
+}

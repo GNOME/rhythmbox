@@ -58,6 +58,10 @@ if ENABLE_FM_RADIO
 SUBDIRS += fmradio
 endif
 
+if USE_CLUTTER
+SUBDIRS += visualizer
+endif
+
 if ENABLE_LASTFM
 SUBDIRS += audioscrobbler
 endif
