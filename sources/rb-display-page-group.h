@@ -40,6 +40,7 @@ typedef enum {
 	RB_DISPLAY_PAGE_GROUP_CATEGORY_REMOVABLE,
 	RB_DISPLAY_PAGE_GROUP_CATEGORY_PERSISTENT,
 	RB_DISPLAY_PAGE_GROUP_CATEGORY_TRANSIENT,
+	RB_DISPLAY_PAGE_GROUP_CATEGORY_TOOLS,
 	RB_DISPLAY_PAGE_GROUP_CATEGORY_LAST
 } RBDisplayPageGroupCategory;
 
@@ -78,6 +79,7 @@ GType          rb_display_page_group_get_type    (void);
 #define RB_DISPLAY_PAGE_GROUP_DEVICES           (RB_DISPLAY_PAGE (rb_display_page_group_get_by_id ("devices")))
 #define RB_DISPLAY_PAGE_GROUP_SHARED            (RB_DISPLAY_PAGE (rb_display_page_group_get_by_id ("shared")))
 #define RB_DISPLAY_PAGE_GROUP_STORES            (RB_DISPLAY_PAGE (rb_display_page_group_get_by_id ("stores")))
+#define RB_DISPLAY_PAGE_GROUP_TOOLS             (RB_DISPLAY_PAGE (rb_display_page_group_get_by_id ("tools")))
 
 void                rb_display_page_group_add_core_groups       (GObject *shell,
 								 RBDisplayPageModel *page_model);

@@ -191,6 +191,7 @@ impl_activate (RBDisplayPage *page)
  * @RB_DISPLAY_PAGE_GROUP_CATEGORY_PERSISTENT: Persistent multiple-instance sources (e.g. playlists)
  * @RB_DISPLAY_PAGE_GROUP_CATEGORY_REMOVABLE: Sources representing removable devices
  * @RB_DISPLAY_PAGE_GROUP_CATEGORY_TRANSIENT: Transient sources (e.g. network shares)
+ * @RB_DISPLAY_PAGE_GROUP_CATEGORY_TOOLS: Utility (ie non-source) pages
  *
  * Predefined categories of page group. The order they're defined here is the order they
  * appear in the page tree.
@@ -208,6 +209,7 @@ rb_display_page_group_category_get_type (void)
 			ENUM_ENTRY (RB_DISPLAY_PAGE_GROUP_CATEGORY_PERSISTENT, "persistent"),
 			ENUM_ENTRY (RB_DISPLAY_PAGE_GROUP_CATEGORY_REMOVABLE, "removable"),
 			ENUM_ENTRY (RB_DISPLAY_PAGE_GROUP_CATEGORY_TRANSIENT, "transient"),
+			ENUM_ENTRY (RB_DISPLAY_PAGE_GROUP_CATEGORY_TOOLS, "tools"),
 			{ 0, 0, 0 }
 		};
 
