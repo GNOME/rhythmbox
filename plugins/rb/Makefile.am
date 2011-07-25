@@ -8,3 +8,5 @@ plugin_PYTHON = \
 		rb.py
 
 plugin_DATA = rb.plugin
+
+EXTRA_DIST = $(plugin_DATA)

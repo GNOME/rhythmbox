@@ -108,7 +108,7 @@ namespace RhythmDB
 		public unowned string get_playback_uri (Entry entry);
 		public void update_availability (Entry entry, EntryAvailability avail);
 		public bool can_sync_metadata (Entry entry);
-		public void sync_metadata (Entry entry, GLib.SList<EntryChange> changes, ref GLib.Error? err = null);
+		public void sync_metadata (Entry entry, GLib.SList<EntryChange> changes, ref GLib.Error? err);
 	}
 
 	[Compact]

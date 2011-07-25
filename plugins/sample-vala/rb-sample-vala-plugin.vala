@@ -2,12 +2,16 @@ using GLib;
 using RB;
 
 class SampleValaPlugin: Peas.ExtensionBase, Peas.Activatable {
-	public override void activate () {
+	public void activate () {
 		stdout.printf ("Hello world\n");
 	}
 
-	public override void deactivate () {
+	public void deactivate () {
 		stdout.printf ("Goodbye world\n");
+	}
+
+	public void update_state () {
+		stdout.printf ("Update world\n");
 	}
 }
 

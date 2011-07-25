@@ -834,8 +834,6 @@ sources/sync/Makefile
 plugins/Makefile
 plugins/sample/Makefile
 plugins/audiocd/Makefile
-plugins/coherence/Makefile
-plugins/coherence/upnp_coherence/Makefile
 plugins/audioscrobbler/Makefile
 plugins/brasero-disc-recorder/Makefile
 plugins/daap/Makefile

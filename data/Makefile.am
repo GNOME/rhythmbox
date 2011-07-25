@@ -52,7 +52,7 @@ update-icon-cache:
 	fi
 
 EXTRA_DIST = $(service_in_files)    \
-	     $(schema_DATA)	    \
+	     $(gsettings_SCHEMAS)   \
 	     $(man_MANS)            \
 	     $(playlists_in_files)  \
 	     $(profiles_DATA)       \

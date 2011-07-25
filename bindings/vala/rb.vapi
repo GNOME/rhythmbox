@@ -114,22 +114,22 @@ namespace RB {
 	public class ShellPlayer : Gtk.HBox {
 
 		[CCode (cname = "rb_shell_player_pause")]
-		public bool pause(ref GLib.Error? err = null);
+		public bool pause(ref GLib.Error? err);
 
 		[CCode (cname = "rb_shell_player_play")]
-		public bool play(ref GLib.Error? err = null);
+		public bool play(ref GLib.Error? err);
 
 		[CCode (cname = "rb_shell_player_stop")]
 		public bool stop();
 
 		[CCode (cname = "rb_shell_player_get_playing")]
-		public bool get_playing(ref bool playing, ref GLib.Error? err = null);
+		public bool get_playing(ref bool playing, ref GLib.Error? err);
 
 		[CCode (cname = "rb_shell_player_do_next")]
-		public bool do_next(ref GLib.Error? err = null);
+		public bool do_next(ref GLib.Error? err);
 
 		[CCode (cname = "rb_shell_player_do_previous")]
-		public bool do_previous(ref GLib.Error? err = null);
+		public bool do_previous(ref GLib.Error? err);
 
 		public virtual signal void playing_changed(bool playing);
 	}
