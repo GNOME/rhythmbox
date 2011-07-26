@@ -10,23 +10,23 @@
 # maria <maria.majadas@hispalinux.es>, 2006, 2007.
 # Francisco Javier F. Serrador <serrador@tecknolabs.com>, 2004, 2005, 2006.
 # Claudio Saavedra <csaavedra@alumnos.utalca.cl>, 2007.
-# Daniel Mustieles <daniel.mustieles@gmail.com>, 2011.
 # Jorge González <jorgegonz@svn.gnome.org>, 2007, 2008, 2010, 2011.
+# Daniel Mustieles <daniel.mustieles@gmail.com>, 2011.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-07-17 12:50+0000\n"
-"PO-Revision-Date: 2011-07-17 19:48+0200\n"
-"Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
-"Language-Team: Español; Castellano <gnome-es-list@gnome.org>\n"
+"POT-Creation-Date: 2011-07-24 14:19+0000\n"
+"PO-Revision-Date: 2011-07-26 10:54+0200\n"
+"Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
+"Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bits\n"
+"Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
-"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:497
 #, c-format
@@ -216,6 +216,7 @@ msgid "_Play count"
 msgstr "_Número de reproducciones"
 
 #: ../data/ui/general-prefs.ui.h:23
+#: ../plugins/visualizer/rb-visualizer-menu.c:138
 msgid "_Quality"
 msgstr "Cal_idad"
 
@@ -264,7 +265,6 @@ msgid "_Preferred format:"
 msgstr "Formato _preferido:"
 
 #: ../data/ui/library-prefs.ui.h:10
-#| msgid "Starting %s"
 msgid "_Settings"
 msgstr "_Configuración"
 
@@ -693,8 +693,8 @@ msgstr "%d %b %Y"
 #: ../plugins/generic-player/rb-generic-player-source.c:1023
 #: ../plugins/ipod/rb-ipod-source.c:414
 #: ../plugins/jamendo/JamendoSaxHandler.py:73
-#: ../plugins/iradio/rb-iradio-source.c:556
-#: ../plugins/iradio/rb-iradio-source.c:1051
+#: ../plugins/iradio/rb-iradio-source.c:557
+#: ../plugins/iradio/rb-iradio-source.c:1052
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/mtpdevice/rb-mtp-source.c:625
 #: ../plugins/mtpdevice/rb-mtp-source.c:1112
@@ -781,16 +781,13 @@ msgstr "Falló al crear un elemento de origen; compruebe su instalación"
 
 #: ../metadata/rb-metadata-gst.c:632
 #, c-format
-#| msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgid ""
 "Failed to create the 'decodebin2' element; check your GStreamer installation"
 msgstr ""
-"Falló al crear el elemento «decodebin2»; compruebe su instalación de "
-"GStreamer"
+"Falló al crear el elemento «decodebin2»; compruebe su instalación de GStreamer"
 
 #: ../metadata/rb-metadata-gst.c:641
 #, c-format
-#| msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
 "installation"
@@ -2125,23 +2122,23 @@ msgstr "Nueva"
 msgid "Genre"
 msgstr "Género"
 
-#: ../plugins/iradio/rb-iradio-source.c:480
+#: ../plugins/iradio/rb-iradio-source.c:481
 msgid "Radio"
 msgstr "Radio"
 
-#: ../plugins/iradio/rb-iradio-source.c:620
+#: ../plugins/iradio/rb-iradio-source.c:621
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d emisora"
 msgstr[1] "%d emisoras"
 
-#: ../plugins/iradio/rb-iradio-source.c:963
+#: ../plugins/iradio/rb-iradio-source.c:964
 #: ../plugins/iradio/rb-station-properties-dialog.c:403
 msgid "New Internet Radio Station"
 msgstr "Emisora de radio de Internet nueva"
 
-#: ../plugins/iradio/rb-iradio-source.c:963
+#: ../plugins/iradio/rb-iradio-source.c:964
 msgid "URL of internet radio station:"
 msgstr "URL de la emisora de radio de Internet:"
 
@@ -2738,17 +2735,21 @@ msgstr "Siguiente"
 
 #. Translators: by Artist
 #: ../plugins/notification/rb-notification-plugin.c:312
+#: ../plugins/visualizer/rb-visualizer-fullscreen.c:165
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "por <i>%s</i>"
 
 #. Translators: from Album
 #: ../plugins/notification/rb-notification-plugin.c:314
+#: ../plugins/visualizer/rb-visualizer-fullscreen.c:167
+#: ../plugins/visualizer/rb-visualizer-fullscreen.c:231
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:367
+#: ../plugins/visualizer/rb-visualizer-fullscreen.c:225
 #: ../widgets/rb-header.c:586
 msgid "Not Playing"
 msgstr "No se reproduce nada"
@@ -2922,6 +2923,53 @@ msgstr "Enviar las pistas seleccionadas por correo-e o mensajería instantánea"
 msgid "Send tracks"
 msgstr "Enviar pistas"
 
+#: ../plugins/visualizer/rb-visualizer-menu.c:39
+#| msgid "Quality"
+msgid "Low quality"
+msgstr "Baja calidad"
+
+#: ../plugins/visualizer/rb-visualizer-menu.c:40
+#| msgid "Normal"
+msgid "Normal quality"
+msgstr "Calidad normal"
+
+#: ../plugins/visualizer/rb-visualizer-menu.c:41
+#| msgid "Quality"
+msgid "High quality"
+msgstr "Alta calidad"
+
+#: ../plugins/visualizer/rb-visualizer-menu.c:173
+#| msgid "Enable visual effects?"
+msgid "_Visual Effect"
+msgstr "Efectos _visuales"
+
+#: ../plugins/visualizer/rb-visualizer-page.c:76
+#| msgid "Enable visual effects?"
+msgid "Visual Effects"
+msgstr "Efectos visuales"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:369
+msgid "Fullscreen"
+msgstr "Pantalla completa"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:370
+#| msgid "Enable visual effects?"
+msgid "Toggle fullscreen visual effects"
+msgstr "Conmutar los efectos visuales a pantalla completa"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:395
+#| msgid "%s plays"
+msgid "Display"
+msgstr "Pantalla"
+
+#: ../plugins/visualizer/visualizer.plugin.in.h:1
+msgid "Displays visualizations"
+msgstr "Mostrar las visualizaciones"
+
+#: ../plugins/visualizer/visualizer.plugin.in.h:2
+msgid "Visualization"
+msgstr "Visualización"
+
 #: ../podcast/rb-podcast-main-source.c:117
 msgid "New Episodes"
 msgstr "Episodios nuevos"
@@ -2990,8 +3038,8 @@ msgid ""
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
 msgstr ""
-"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el "
-"URL, o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
+"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el URL, "
+"o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
 "todas formas?"
 
 #: ../podcast/rb-podcast-manager.c:1244
@@ -3498,7 +3546,7 @@ msgstr "Ruta para el archivo de listas de reproducción que usar"
 msgid "[URI...]"
 msgstr "[URI…]"
 
-#: ../shell/main.c:153
+#: ../shell/main.c:158
 #, c-format
 msgid ""
 "%s\n"
@@ -4143,36 +4191,36 @@ msgstr "Página web de Rhythmbox"
 msgid "Configure Plugins"
 msgstr "Configurar complementos"
 
-#: ../shell/rb-shell.c:2664
+#: ../shell/rb-shell.c:2665
 msgid "Import Folder into Library"
 msgstr "Importar carpeta en la fonoteca"
 
-#: ../shell/rb-shell.c:2683
+#: ../shell/rb-shell.c:2684
 msgid "Import File into Library"
 msgstr "Importar archivo en la fonoteca"
 
-#: ../shell/rb-shell.c:3214 ../shell/rb-shell.c:3571
+#: ../shell/rb-shell.c:3215 ../shell/rb-shell.c:3572
 #: ../sources/rb-play-queue-source.c:636
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ninguna fuente registrada puede manejar URIs %s"
 
-#: ../shell/rb-shell.c:3691
+#: ../shell/rb-shell.c:3692
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Ninguna fuente registrada coincide con el URI %s"
 
-#: ../shell/rb-shell.c:3724 ../shell/rb-shell.c:3767
+#: ../shell/rb-shell.c:3725 ../shell/rb-shell.c:3768
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI de la canción desconocida: %s"
 
-#: ../shell/rb-shell.c:3776
+#: ../shell/rb-shell.c:3777
 #, c-format
 msgid "Unknown property %s"
 msgstr "Propiedad %s desconocida"
 
-#: ../shell/rb-shell.c:3790
+#: ../shell/rb-shell.c:3791
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "El tipo de la propiedad %s es inválido para la propiedad %s"
@@ -4215,9 +4263,6 @@ msgid "Replace _All"
 msgstr "Reempla_zar todas"
 
 #: ../shell/rb-track-transfer-queue.c:419
-#| msgid ""
-#| "%d of the %d files to be transferred are not in a format supported by the "
-#| "target device, and no encoders are available for the supported formats."
 msgid ""
 "This file cannot be transferred as it is not in a format supported by the "
 "target device and no suitable encoding profiles are available."
@@ -4228,9 +4273,6 @@ msgstr ""
 
 #: ../shell/rb-track-transfer-queue.c:423
 #, c-format
-#| msgid ""
-#| "%d of the %d files to be transferred are not in a format supported by the "
-#| "target device, and no encoders are available for the supported formats."
 msgid ""
 "%d of the %d files cannot be transferred as they must be converted into a "
 "format supported by the target device but no suitable encoding profiles are "
@@ -4286,7 +4328,6 @@ msgid "_Skip these files"
 msgstr "_Omitir estos archivos"
 
 #: ../shell/rb-track-transfer-queue.c:476
-#| msgid "_Initialize"
 msgid "_Install"
 msgstr "_Instalar"
 
@@ -4371,8 +4412,6 @@ msgid "Install Additional Software"
 msgstr "Instalar software adicional"
 
 #: ../sources/rb-import-errors-source.c:250
-#| msgid ""
-#| "Additional GStreamer plugins are required to play some of these files."
 msgid "Additional software is required to play some of these files."
 msgstr ""
 "Se requiere software adicional para reproducir algunos de estos archivos."
@@ -5296,9 +5335,6 @@ msgstr "Dirección desconocida"
 #~ msgid "Small"
 #~ msgstr "Pequeña"
 
-#~ msgid "Normal"
-#~ msgstr "Normal"
-
 #~ msgid "Large"
 #~ msgstr "Alta"
 
@@ -5307,9 +5343,6 @@ msgstr "Dirección desconocida"
 
 #~ msgid "Embedded"
 #~ msgstr "Empotrado"
-
-#~ msgid "Fullscreen"
-#~ msgstr "Pantalla completa"
 
 #~ msgid "Desktop"
 #~ msgstr "Escritorio"
@@ -5325,9 +5358,6 @@ msgstr "Dirección desconocida"
 
 #~ msgid "Unable to start visualization"
 #~ msgstr "No se pudo iniciar la visualización"
-
-#~ msgid "Enable visual effects?"
-#~ msgstr "¿Activar efectos visuales?"
 
 #~ msgid ""
 #~ "It seems you are running Rhythmbox remotely.\n"
@@ -5353,12 +5383,6 @@ msgstr "Dirección desconocida"
 
 #~ msgid "Visualization:"
 #~ msgstr "Visualización:"
-
-#~ msgid "Displays visualizations"
-#~ msgstr "Mostrar las visualizaciones"
-
-#~ msgid "Visualization"
-#~ msgstr "Visualización"
 
 #~ msgid "Internal GStreamer problem; file a bug"
 #~ msgstr "Problema interno de GStreamer, archive un error"
