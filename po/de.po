@@ -19,8 +19,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-07-17 12:50+0000\n"
-"PO-Revision-Date: 2011-07-17 17:41+0100\n"
+"POT-Creation-Date: 2011-07-24 14:19+0000\n"
+"PO-Revision-Date: 2011-07-31 18:35+0100\n"
 "Last-Translator: Mario Blättermann <mariobl@freenet.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -222,6 +222,7 @@ msgid "_Play count"
 msgstr "_Wiedergaben"
 
 #: ../data/ui/general-prefs.ui.h:23
+#: ../plugins/visualizer/rb-visualizer-menu.c:138
 msgid "_Quality"
 msgstr "_Qualität"
 
@@ -701,8 +702,8 @@ msgstr "%d. %B %Y"
 #: ../plugins/generic-player/rb-generic-player-source.c:1023
 #: ../plugins/ipod/rb-ipod-source.c:414
 #: ../plugins/jamendo/JamendoSaxHandler.py:73
-#: ../plugins/iradio/rb-iradio-source.c:556
-#: ../plugins/iradio/rb-iradio-source.c:1051
+#: ../plugins/iradio/rb-iradio-source.c:557
+#: ../plugins/iradio/rb-iradio-source.c:1052
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/mtpdevice/rb-mtp-source.c:625
 #: ../plugins/mtpdevice/rb-mtp-source.c:1112
@@ -2146,23 +2147,23 @@ msgstr "Neu"
 msgid "Genre"
 msgstr "Genre"
 
-#: ../plugins/iradio/rb-iradio-source.c:480
+#: ../plugins/iradio/rb-iradio-source.c:481
 msgid "Radio"
 msgstr "Radio"
 
-#: ../plugins/iradio/rb-iradio-source.c:620
+#: ../plugins/iradio/rb-iradio-source.c:621
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d Sender"
 msgstr[1] "%d Sender"
 
-#: ../plugins/iradio/rb-iradio-source.c:963
+#: ../plugins/iradio/rb-iradio-source.c:964
 #: ../plugins/iradio/rb-station-properties-dialog.c:403
 msgid "New Internet Radio Station"
 msgstr "Internet-Radiosender anlegen"
 
-#: ../plugins/iradio/rb-iradio-source.c:963
+#: ../plugins/iradio/rb-iradio-source.c:964
 msgid "URL of internet radio station:"
 msgstr "Adresse des Internet-Radiosenders:"
 
@@ -2761,17 +2762,21 @@ msgstr "Nächster"
 
 #. Translators: by Artist
 #: ../plugins/notification/rb-notification-plugin.c:312
+#: ../plugins/visualizer/rb-visualizer-fullscreen.c:165
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "von <i>%s</i>"
 
 #. Translators: from Album
 #: ../plugins/notification/rb-notification-plugin.c:314
+#: ../plugins/visualizer/rb-visualizer-fullscreen.c:167
+#: ../plugins/visualizer/rb-visualizer-fullscreen.c:231
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "aus <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:367
+#: ../plugins/visualizer/rb-visualizer-fullscreen.c:225
 #: ../widgets/rb-header.c:586
 msgid "Not Playing"
 msgstr "Keine Wiedergabe"
@@ -2950,6 +2955,46 @@ msgstr "Ausgewählte Titel per E-Mail oder Sofortnachricht versenden"
 #: ../plugins/sendto/sendto.plugin.in.h:2
 msgid "Send tracks"
 msgstr "Titel senden"
+
+#: ../plugins/visualizer/rb-visualizer-menu.c:39
+msgid "Low quality"
+msgstr "Niedrige Qualität"
+
+#: ../plugins/visualizer/rb-visualizer-menu.c:40
+msgid "Normal quality"
+msgstr "Normale Qualität"
+
+#: ../plugins/visualizer/rb-visualizer-menu.c:41
+msgid "High quality"
+msgstr "Hohe Qualität"
+
+#: ../plugins/visualizer/rb-visualizer-menu.c:173
+msgid "_Visual Effect"
+msgstr "_Visueller Effekt"
+
+#: ../plugins/visualizer/rb-visualizer-page.c:76
+msgid "Visual Effects"
+msgstr "Visuelle Effekte"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:369
+msgid "Fullscreen"
+msgstr "Vollbild"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:370
+msgid "Toggle fullscreen visual effects"
+msgstr "Visuelle Effekte im Vollbildmodus an-/ausschalten"
+
+#: ../plugins/visualizer/rb-visualizer-plugin.c:395
+msgid "Display"
+msgstr "Anzeige"
+
+#: ../plugins/visualizer/visualizer.plugin.in.h:1
+msgid "Displays visualizations"
+msgstr "Zeigt Visualisierungen an"
+
+#: ../plugins/visualizer/visualizer.plugin.in.h:2
+msgid "Visualization"
+msgstr "Visualisierung"
 
 #: ../podcast/rb-podcast-main-source.c:117
 msgid "New Episodes"
@@ -3531,7 +3576,7 @@ msgstr "Pfad zu den verwendeten Wiedergablistendateien"
 msgid "[URI...]"
 msgstr "[Adresse …]"
 
-#: ../shell/main.c:153
+#: ../shell/main.c:158
 #, c-format
 msgid ""
 "%s\n"
@@ -4176,36 +4221,36 @@ msgstr "Rhythmbox Website"
 msgid "Configure Plugins"
 msgstr "Plugins konfigurieren"
 
-#: ../shell/rb-shell.c:2664
+#: ../shell/rb-shell.c:2665
 msgid "Import Folder into Library"
 msgstr "Ordner in Musiksammlung aufnehmen"
 
-#: ../shell/rb-shell.c:2683
+#: ../shell/rb-shell.c:2684
 msgid "Import File into Library"
 msgstr "Datei in Musiksammlung aufnehmen"
 
-#: ../shell/rb-shell.c:3214 ../shell/rb-shell.c:3571
+#: ../shell/rb-shell.c:3215 ../shell/rb-shell.c:3572
 #: ../sources/rb-play-queue-source.c:636
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Keine registrierte Quelle kann die Adresse %s verarbeiten"
 
-#: ../shell/rb-shell.c:3691
+#: ../shell/rb-shell.c:3692
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Keine registrierte Quelle passt auf die Adresse %s"
 
-#: ../shell/rb-shell.c:3724 ../shell/rb-shell.c:3767
+#: ../shell/rb-shell.c:3725 ../shell/rb-shell.c:3768
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Unbekannte Lied-Adresse: %s"
 
-#: ../shell/rb-shell.c:3776
+#: ../shell/rb-shell.c:3777
 #, c-format
 msgid "Unknown property %s"
 msgstr "Unbekannte Eigenschaft %s"
 
-#: ../shell/rb-shell.c:3790
+#: ../shell/rb-shell.c:3791
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Ungültiger Typ %s für Eigenschaft %s"
