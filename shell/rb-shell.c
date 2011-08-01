@@ -1482,7 +1482,6 @@ construct_load_ui (RBShell *shell)
 			 G_SETTINGS_BIND_DEFAULT);
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), toolbar, FALSE, FALSE, 0);
 	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), toolbar, 1);
-	gtk_widget_show (toolbar);
 
 	shell->priv->volume_button = gtk_volume_button_new ();
 	g_signal_connect (shell->priv->volume_button, "value-changed",
