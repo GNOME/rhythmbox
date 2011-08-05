@@ -473,6 +473,7 @@ emit_container_updated_cb (RBMediaServer2Plugin *plugin)
 				emit_property_value_property_updates (plugin, prop_data, value);
 			}
 			rb_list_destroy_free (prop_data->updated_values, (GDestroyNotify)rb_refstring_unref);
+			prop_data->updated_values = NULL;
 
 			if (prop_data->updated) {
 				emit_updated (plugin->connection, prop_data->dbus_path);
@@ -816,7 +817,6 @@ emit_property_value_property_updates (RBMediaServer2Plugin *plugin, SourceProper
 
 	emit_updated (plugin->connection, path);
 
-	g_free (encoded);
 	g_free (path);
 }
 
@@ -1034,23 +1034,6 @@ prop_model_row_deleted_cb (RhythmDBPropertyModel *prop_model,
 	emit_updated_in_idle (prop_data->source_data->plugin);
 }
 
-static void
-disconnect_property_query_model_signals (SourcePropertyRegistrationData *prop_data, RhythmDBQueryModel *query_model)
-{
-	g_signal_handlers_disconnect_by_func (query_model, prop_model_row_inserted_cb, prop_data);
-	g_signal_handlers_disconnect_by_func (query_model, prop_model_row_changed_cb, prop_data);
-	g_signal_handlers_disconnect_by_func (query_model, prop_model_row_deleted_cb, prop_data);
-}
-
-static void
-connect_property_query_model_signals (SourcePropertyRegistrationData *prop_data, RhythmDBQueryModel *query_model)
-{
-	g_signal_connect (query_model, "row-inserted", G_CALLBACK (prop_model_row_inserted_cb), prop_data);
-	g_signal_connect (query_model, "row-changed", G_CALLBACK (prop_model_row_changed_cb), prop_data);
-	g_signal_connect (query_model, "row-deleted", G_CALLBACK (prop_model_row_deleted_cb), prop_data);
-}
-
-
 static char **
 enumerate_property_value_subtree (GDBusConnection *connection,
 				  const char *sender,
@@ -1122,7 +1105,9 @@ register_property_container (GDBusConnection *connection,
 
 	data->model = rhythmdb_property_model_new (source_data->plugin->db, property);
 	g_object_set (data->model, "query-model", source_data->base_query_model, NULL);
-	connect_property_query_model_signals (data, source_data->base_query_model);
+	g_signal_connect (data->model, "row-inserted", G_CALLBACK (prop_model_row_inserted_cb), data);
+	g_signal_connect (data->model, "row-changed", G_CALLBACK (prop_model_row_changed_cb), data);
+	g_signal_connect (data->model, "row-deleted", G_CALLBACK (prop_model_row_deleted_cb), data);
 
 	data->dbus_subtree_id =
 		g_dbus_connection_register_subtree (connection,
@@ -1757,11 +1742,6 @@ base_query_model_updated_cb (RBSource *source, GParamSpec *pspec, SourceRegistra
 	GList *l;
 
 	if (source_data->base_query_model != NULL) {
-		for (l = source_data->properties; l != NULL; l = l->next) {
-			SourcePropertyRegistrationData *prop_data = l->data;
-			disconnect_property_query_model_signals (prop_data, source_data->base_query_model);
-		}
-
 		disconnect_query_model_signals (source_data);
 		g_object_unref (source_data->base_query_model);
 	}
@@ -1771,7 +1751,7 @@ base_query_model_updated_cb (RBSource *source, GParamSpec *pspec, SourceRegistra
 
 	for (l = source_data->properties; l != NULL; l = l->next) {
 		SourcePropertyRegistrationData *prop_data = l->data;
-		connect_property_query_model_signals (prop_data, source_data->base_query_model);
+		g_object_set (prop_data->model, "query-model", source_data->base_query_model, NULL);
 	}
 
 	source_updated (source_data, TRUE);
