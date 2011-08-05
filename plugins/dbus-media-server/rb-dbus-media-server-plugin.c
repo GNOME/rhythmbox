@@ -45,6 +45,7 @@
 #include <sources/rb-display-page-model.h>
 #include <sources/rb-playlist-source.h>
 #include <sources/rb-removable-media-source.h>
+#include <rhythmdb/rhythmdb-property-model.h>
 
 #define RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN	(rb_dbus_media_server_plugin_get_type ())
 #define RB_DBUS_MEDIA_SERVER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN, RBMediaServer2Plugin))
@@ -117,15 +118,33 @@ typedef struct
 	char *dbus_path;
 	char *parent_dbus_path;
 
+	gboolean flat;
+	guint all_tracks_reg_id[2];
+	GList *properties;
+
 	RBMediaServer2Plugin *plugin;
 } SourceRegistrationData;
+
+typedef struct
+{
+	SourceRegistrationData *source_data;
+	char *dbus_path;
+	char *display_name;
+	guint dbus_object_id[2];
+	guint dbus_subtree_id;
+	RhythmDBPropType property;
+	RhythmDBPropertyModel *model;
+	gboolean updated;
+	GList *updated_values;
+} SourcePropertyRegistrationData;
 
 RB_DEFINE_PLUGIN(RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN, RBMediaServer2Plugin, rb_dbus_media_server_plugin,)
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
 static void unregister_source_container (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data, gboolean deactivating);
-static void emit_source_property_updates (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data);
+static void emit_source_tracks_property_updates (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data);
+static void emit_property_value_property_updates (RBMediaServer2Plugin *plugin, SourcePropertyRegistrationData *source_data, RBRefString *value);
 static void emit_category_container_property_updates (RBMediaServer2Plugin *plugin, CategoryRegistrationData *category_data);
 static void emit_root_property_updates (RBMediaServer2Plugin *plugin);
 
@@ -240,14 +259,14 @@ entry_property_maps (RhythmDBPropType prop)
 }
 
 static GVariant *
-get_entry_property_value (RhythmDBEntry *entry, const char *property_name)
+get_entry_property_value (RhythmDBEntry *entry, const char *property_name, RhythmDBPropType context)
 {
 	GVariant *v;
 
 	if (g_strcmp0 (property_name, "Parent") == 0) {
 		return g_variant_new_object_path (RB_MEDIASERVER2_ROOT);
 	} else if (g_strcmp0 (property_name, "Type") == 0) {
-		return g_variant_new_string ("audio");		/* .music? */
+		return g_variant_new_string ("music");
 	} else if (g_strcmp0 (property_name, "Path") == 0) {
 		char *path;
 
@@ -257,7 +276,36 @@ get_entry_property_value (RhythmDBEntry *entry, const char *property_name)
 		g_free (path);
 		return v;
 	} else if (g_strcmp0 (property_name, "DisplayName") == 0) {
-		return g_variant_new_string (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
+		char *display;
+		/* need to consider disc numbers in here too */
+		switch (context) {
+		case RHYTHMDB_PROP_ARTIST:
+			/* use <album> <track> <title> */
+			display = g_strdup_printf ("%s: %lu. %s",
+						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM),
+						   rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER),
+						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
+			break;
+		case RHYTHMDB_PROP_ALBUM:
+			/* use <track> <artist> <title> */
+			display = g_strdup_printf ("%lu. %s - %s",
+						   rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER),
+						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
+						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
+			break;
+		case RHYTHMDB_PROP_GENRE:
+		default:
+			/* use <album> <track> <artist> <title> */
+			display = g_strdup_printf ("%s: %lu. %s - %s",
+						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM),
+						   rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER),
+						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
+						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
+			break;
+		}
+		v = g_variant_new_string (display);
+		g_free (display);
+		return v;
 	} else if (g_strcmp0 (property_name, "URLs") == 0) {
 		const char *urls[] = { NULL, NULL };
 		char *url;
@@ -322,7 +370,7 @@ get_entry_property (GDBusConnection *connection,
 		return NULL;
 	}
 
-	return get_entry_property_value (entry, property_name);
+	return get_entry_property_value (entry, property_name, RHYTHMDB_PROP_ENTRY_ID);
 }
 
 static const GDBusInterfaceVTable entry_vtable =
@@ -408,17 +456,43 @@ emit_updated (GDBusConnection *connection, const char *path)
 static gboolean
 emit_container_updated_cb (RBMediaServer2Plugin *plugin)
 {
-	GList *l;
+	GList *l, *ll, *lll;
 
 	rb_debug ("emitting updates");
 	/* source containers */
 	for (l = plugin->sources; l != NULL; l = l->next) {
 		SourceRegistrationData *source_data = l->data;
+
+		/* property containers */
+		for (ll = source_data->properties; ll != NULL; ll = ll->next) {
+			SourcePropertyRegistrationData *prop_data = ll->data;
+
+			/* emit value updates */
+			for (lll = prop_data->updated_values; lll != NULL; lll = lll->next) {
+				RBRefString *value = lll->data;
+				emit_property_value_property_updates (plugin, prop_data, value);
+			}
+			rb_list_destroy_free (prop_data->updated_values, (GDestroyNotify)rb_refstring_unref);
+
+			if (prop_data->updated) {
+				emit_updated (plugin->connection, prop_data->dbus_path);
+				prop_data->updated = FALSE;
+			}
+		}
+
 		if (source_data->updated) {
-			emit_source_property_updates (plugin, source_data);
-			emit_updated (plugin->connection, source_data->dbus_path);
+			emit_source_tracks_property_updates (plugin, source_data);
+			if (source_data->flat) {
+				emit_updated (plugin->connection, source_data->dbus_path);
+			} else {
+				char *path;
+				path = g_strdup_printf ("%s/all", source_data->dbus_path);
+				emit_updated (plugin->connection, path);
+				g_free (path);
+			}
 			source_data->updated = FALSE;
 		}
+
 	}
 
 	/* source categories */
@@ -443,18 +517,657 @@ emit_container_updated_cb (RBMediaServer2Plugin *plugin)
 	return FALSE;
 }
 
+static void
+emit_updated_in_idle (RBMediaServer2Plugin *plugin)
+{
+	if (plugin->emit_updated_id == 0) {
+		plugin->emit_updated_id =
+			g_idle_add ((GSourceFunc)emit_container_updated_cb, plugin);
+	}
+}
+
+
+/* property value source subcontainers (source/year/1995) */
+
+static char *
+encode_property_value (const char *value)
+{
+	char *encoded;
+	const char *hex = "0123456789ABCDEF";
+	char *d;
+	char c;
+
+	encoded = g_malloc0 (strlen (value) * 3 + 1);
+	d = encoded;
+	while (*value != '\0') {
+		c = *value++;
+		if (g_ascii_isalnum (c)) {
+			*d++ = c;
+		} else {
+			guint8 v = (guint8)c;
+			*d++ = '_';
+			*d++ = hex[(v >> 4) & 0x0f];
+			*d++ = hex[v & 0x0f];
+		}
+	}
+
+	return encoded;
+}
+
+#define XDIGIT(c) ((c) <= '9' ? (c) - '0' : ((c) & 0x4F) - 'A' + 10)
+#define HEXCHAR(s) ((XDIGIT (s[1]) << 4) + XDIGIT (s[2]))
+
+static char *
+decode_property_value (char *encoded)
+{
+	char *decoded;
+	char *e;
+	char *d;
+
+	decoded = g_malloc0 (strlen (encoded) + 1);
+	d = decoded;
+	e = encoded;
+	while (*e != '\0') {
+		if (*e != '_') {
+			*d++ = *e++;
+		} else if (e[1] != '\0' && e[2] != '\0') {
+			*d++ = HEXCHAR(e);
+			e += 3;
+		} else {
+			/* broken */
+			break;
+		}
+	}
+
+	return decoded;
+}
+
+static char *
+extract_property_value (RhythmDB *db, const char *object_path)
+{
+	char **bits;
+	char *value;
+	int nbits;
+
+	bits = g_strsplit (object_path, "/", 0);
+	nbits = g_strv_length (bits);
+
+	value = decode_property_value (bits[nbits-1]);
+	g_strfreev (bits);
+	return value;
+}
+
+static void
+property_value_method_call (GDBusConnection *connection,
+			    const char *sender,
+			    const char *object_path,
+			    const char *interface_name,
+			    const char *method_name,
+			    GVariant *parameters,
+			    GDBusMethodInvocation *invocation,
+			    SourcePropertyRegistrationData *data)
+{
+	GVariantBuilder *list;
+	RhythmDB *db;
+	char *value;
+
+	if (g_strcmp0 (interface_name, MEDIA_SERVER2_CONTAINER_IFACE_NAME) != 0) {
+		rb_debug ("method call on unexpected interface %s", interface_name);
+		return;
+	}
+
+	db = data->source_data->plugin->db;
+	value = extract_property_value (db, object_path);
+
+	if (g_strcmp0 (method_name, "ListChildren") == 0 ||
+	    g_strcmp0 (method_name, "ListItems") == 0) {
+		RhythmDBQuery *base;
+		RhythmDBQuery *query;
+		RhythmDBQueryModel *query_model;
+		GtkTreeModel *model;
+		GtkTreeIter iter;
+		guint list_offset;
+		guint list_max;
+		char **filter;
+		guint count = 0;
+
+		/* consider caching query models? */
+		g_object_get (data->source_data->base_query_model, "query", &base, NULL);
+		query = rhythmdb_query_copy (base);
+
+		rhythmdb_query_append (db,
+				       query,
+				       RHYTHMDB_QUERY_PROP_EQUALS, data->property, value,
+				       RHYTHMDB_QUERY_END);
+		/* maybe use a result list? */
+		query_model = rhythmdb_query_model_new_empty (db);
+		rhythmdb_do_full_query_parsed (db, RHYTHMDB_QUERY_RESULTS (query_model), query);
+		rhythmdb_query_free (query);
+
+		g_variant_get (parameters, "(uu^as)", &list_offset, &list_max, &filter);
+		list = g_variant_builder_new (G_VARIANT_TYPE ("aa{sv}"));
+
+		if (rb_str_in_strv ("*", (const char **)filter)) {
+			g_strfreev (filter);
+			filter = g_strdupv ((char **)all_entry_properties);
+		}
+
+		model = GTK_TREE_MODEL (query_model);
+		if (gtk_tree_model_get_iter_first (model, &iter)) {
+			do {
+				RhythmDBEntry *entry;
+				GVariantBuilder *eb;
+				int i;
+				if (list_max > 0 && count == list_max) {
+					break;
+				}
+
+				entry = rhythmdb_query_model_iter_to_entry (query_model, &iter);
+				if (entry == NULL) {
+					continue;
+				}
+
+				if (list_offset > 0) {
+					list_offset--;
+					continue;
+				}
+
+				eb = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+				for (i = 0; filter[i] != NULL; i++) {
+					GVariant *v;
+					v = get_entry_property_value (entry, filter[i], data->property);
+					if (v != NULL) {
+						g_variant_builder_add (eb, "{sv}", filter[i], v);
+					}
+				}
+
+				g_variant_builder_add (list, "a{sv}", eb);
+				count++;
+
+			} while (gtk_tree_model_iter_next (model, &iter));
+		}
+		g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+		g_variant_builder_unref (list);
+
+		g_strfreev (filter);
+	} else if (g_strcmp0 (method_name, "ListContainers") == 0) {
+		list = g_variant_builder_new (G_VARIANT_TYPE ("aa{sv}"));
+		g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+		g_variant_builder_unref (list);
+	} else if (g_strcmp0 (method_name, "SearchObjects") == 0) {
+		g_dbus_method_invocation_return_value (invocation, NULL);
+	} else {
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
+	}
+
+	g_free (value);
+}
+
+static guint
+get_property_value_count (SourcePropertyRegistrationData *data, const char *value)
+{
+	guint entry_count = 0;
+	GtkTreeIter iter;
+
+	if (rhythmdb_property_model_iter_from_string (data->model, value, &iter)) {
+		gtk_tree_model_get (GTK_TREE_MODEL (data->model), &iter,
+				    RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER, &entry_count,
+				    -1);
+	}
+	return entry_count;
+}
+
+static GVariant *
+get_property_value_property (GDBusConnection *connection,
+			     const char *sender,
+			     const char *object_path,
+			     const char *interface_name,
+			     const char *property_name,
+			     GError **error,
+			     SourcePropertyRegistrationData *data)
+{
+	RhythmDB *db;
+	GVariant *v = NULL;
+	char *value;
+
+	db = data->source_data->plugin->db;
+	value = extract_property_value (db, object_path);
+
+	if (g_strcmp0 (interface_name, MEDIA_SERVER2_OBJECT_IFACE_NAME) == 0) {
+		if (g_strcmp0 (property_name, "Parent") == 0) {
+			v = g_variant_new_object_path (data->dbus_path);
+		} else if (g_strcmp0 (property_name, "Type") == 0) {
+			v = g_variant_new_string ("container");
+		} else if (g_strcmp0 (property_name, "Path") == 0) {
+			v = g_variant_new_string (object_path);
+		} else if (g_strcmp0 (property_name, "DisplayName") == 0) {
+			v = g_variant_new_string (value);
+		}
+	} else if (g_strcmp0 (interface_name, MEDIA_SERVER2_CONTAINER_IFACE_NAME) == 0) {
+
+		if (g_strcmp0 (property_name, "ChildCount") == 0 ||
+		    g_strcmp0 (property_name, "ItemCount") == 0) {
+			v = g_variant_new_uint32 (get_property_value_count (data, value));
+		} else if (g_strcmp0 (property_name, "ContainerCount") == 0) {
+			v = g_variant_new_uint32 (0);
+		} else if (g_strcmp0 (property_name, "Searchable") == 0) {
+			v = g_variant_new_boolean (FALSE);
+		}
+	}
+
+	if (v == NULL) {
+		g_set_error (error,
+			     G_DBUS_ERROR,
+			     G_DBUS_ERROR_NOT_SUPPORTED,
+			     "Property %s.%s not supported",
+			     interface_name,
+			     property_name);
+	}
+	g_free (value);
+	return v;
+}
+
+static void
+emit_property_value_property_updates (RBMediaServer2Plugin *plugin, SourcePropertyRegistrationData *data, RBRefString *value)
+{
+	GError *error = NULL;
+	const char *invalidated[] = { NULL };
+	GVariantBuilder *properties;
+	GVariant *parameters;
+	GVariant *v;
+	char *encoded;
+	char *path;
+
+	rb_debug ("updating properties for %s/%s", data->dbus_path, rb_refstring_get (value));
+	properties = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+
+	v = g_variant_new_uint32 (get_property_value_count (data, rb_refstring_get (value)));
+	g_variant_builder_add (properties, "{sv}", "ItemCount", v);
+	g_variant_builder_add (properties, "{sv}", "ChildCount", v);
+	g_variant_builder_add (properties, "{sv}", "ContainerCount", g_variant_new_uint32 (0));
+
+	encoded = encode_property_value (rb_refstring_get (value));
+	path = g_strdup_printf ("%s/%s", data->dbus_path, encoded);
+	g_free (encoded);
+
+	parameters = g_variant_new ("(sa{sv}^as)",
+				    MEDIA_SERVER2_CONTAINER_IFACE_NAME,
+				    properties,
+				    invalidated);
+	g_variant_builder_unref (properties);
+	g_dbus_connection_emit_signal (plugin->connection,
+				       NULL,
+				       path,
+				       "org.freedesktop.DBus.Properties",
+				       "PropertiesChanged",
+				       parameters,
+				       &error);
+	if (error != NULL) {
+		g_warning ("Unable to send property changes for MediaServer2 container %s: %s",
+			   path,
+			   error->message);
+		g_clear_error (&error);
+	}
+
+	emit_updated (plugin->connection, path);
+
+	g_free (encoded);
+	g_free (path);
+}
+
+static const GDBusInterfaceVTable property_value_vtable =
+{
+	(GDBusInterfaceMethodCallFunc) property_value_method_call,
+	(GDBusInterfaceGetPropertyFunc) get_property_value_property,
+	NULL
+};
+
+/* property-based source subcontainers (source/year/) */
+
+static void
+property_container_method_call (GDBusConnection *connection,
+				const char *sender,
+				const char *object_path,
+				const char *interface_name,
+				const char *method_name,
+				GVariant *parameters,
+				GDBusMethodInvocation *invocation,
+				SourcePropertyRegistrationData *data)
+{
+	GVariantBuilder *list;
+
+	if (g_strcmp0 (interface_name, MEDIA_SERVER2_CONTAINER_IFACE_NAME) != 0) {
+		rb_debug ("method call on unexpected interface %s", interface_name);
+		return;
+	}
+
+	if (g_strcmp0 (method_name, "ListChildren") == 0 ||
+	    g_strcmp0 (method_name, "ListContainers") == 0) {
+		GtkTreeModel *model;
+		GtkTreeIter iter;
+		guint list_offset;
+		guint list_max;
+		const char **filter;
+		guint count = 0;
+		gboolean all_props;
+
+		g_variant_get (parameters, "(uu^as)", &list_offset, &list_max, &filter);
+		list = g_variant_builder_new (G_VARIANT_TYPE ("aa{sv}"));
+
+		all_props = rb_str_in_strv ("*", filter);
+
+		model = GTK_TREE_MODEL (data->model);
+		if (gtk_tree_model_get_iter_first (model, &iter)) {
+			/* skip 'all' row */
+			while (gtk_tree_model_iter_next (model, &iter)) {
+				char *value;
+				guint value_count;
+				GVariantBuilder *eb;
+				if (list_max > 0 && count == list_max) {
+					break;
+				}
+
+				if (list_offset > 0) {
+					list_offset--;
+					continue;
+				}
+
+				gtk_tree_model_get (model, &iter,
+						    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &value,
+						    RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER, &value_count,
+						    -1);
+
+				eb = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+				if (all_props || rb_str_in_strv ("Parent", filter)) {
+					g_variant_builder_add (eb, "{sv}", "Parent", g_variant_new_object_path (object_path));
+				}
+				if (all_props || rb_str_in_strv ("Type", filter)) {
+					g_variant_builder_add (eb, "{sv}", "Type", g_variant_new_string ("container"));
+				}
+				if (all_props || rb_str_in_strv ("Path", filter)) {
+					char *encoded;
+					char *value_path;
+					encoded = encode_property_value (value);
+					value_path = g_strdup_printf ("%s/%s", object_path, encoded);
+					g_variant_builder_add (eb, "{sv}", "Path", g_variant_new_string (value_path));
+					g_free (encoded);
+					g_free (value_path);
+				}
+				if (all_props || rb_str_in_strv ("DisplayName", filter)) {
+					g_variant_builder_add (eb, "{sv}", "DisplayName", g_variant_new_string (value));
+				}
+				if (all_props || rb_str_in_strv ("ChildCount", filter)) {
+					g_variant_builder_add (eb, "{sv}", "ChildCount", g_variant_new_uint32 (value_count));
+				}
+				if (all_props || rb_str_in_strv ("ItemCount", filter)) {
+					g_variant_builder_add (eb, "{sv}", "ItemCount", g_variant_new_uint32 (value_count));
+				}
+				if (all_props || rb_str_in_strv ("ContainerCount", filter)) {
+					g_variant_builder_add (eb, "{sv}", "ContainerCount", g_variant_new_uint32 (0));
+				}
+				if (all_props || rb_str_in_strv ("Searchable", filter)) {
+					g_variant_builder_add (eb, "{sv}", "Searchable", g_variant_new_boolean (FALSE));
+				}
+
+				g_variant_builder_add (list, "a{sv}", eb);
+				g_free (value);
+				count++;
+			}
+		}
+		g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+		g_variant_builder_unref (list);
+
+		g_strfreev ((char **)filter);
+	} else if (g_strcmp0 (method_name, "ListItems") == 0) {
+		list = g_variant_builder_new (G_VARIANT_TYPE ("aa{sv}"));
+		g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+		g_variant_builder_unref (list);
+	} else if (g_strcmp0 (method_name, "SearchObjects") == 0) {
+		g_dbus_method_invocation_return_value (invocation, NULL);
+	} else {
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
+	}
+}
+
+static GVariant *
+get_property_container_property (GDBusConnection *connection,
+				 const char *sender,
+				 const char *object_path,
+				 const char *interface_name,
+				 const char *property_name,
+				 GError **error,
+				 SourcePropertyRegistrationData *data)
+{
+	if (g_strcmp0 (interface_name, MEDIA_SERVER2_OBJECT_IFACE_NAME) == 0) {
+		if (g_strcmp0 (property_name, "Parent") == 0) {
+			return g_variant_new_object_path (data->source_data->dbus_path);
+		} else if (g_strcmp0 (property_name, "Type") == 0) {
+			return g_variant_new_string ("container");
+		} else if (g_strcmp0 (property_name, "Path") == 0) {
+			return g_variant_new_string (object_path);
+		} else if (g_strcmp0 (property_name, "DisplayName") == 0) {
+			return g_variant_new_string (data->display_name);
+		}
+	} else if (g_strcmp0 (interface_name, MEDIA_SERVER2_CONTAINER_IFACE_NAME) == 0) {
+
+		if (g_strcmp0 (property_name, "ChildCount") == 0 ||
+		    g_strcmp0 (property_name, "ContainerCount") == 0) {
+			/* don't include the 'all' row */
+			guint count;
+			count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (data->model), NULL) - 1;
+			return g_variant_new_uint32 (count);
+		} else if (g_strcmp0 (property_name, "ItemCount") == 0) {
+			return g_variant_new_uint32 (0);
+		} else if (g_strcmp0 (property_name, "Searchable") == 0) {
+			return g_variant_new_boolean (FALSE);
+		}
+	}
+	g_set_error (error,
+		     G_DBUS_ERROR,
+		     G_DBUS_ERROR_NOT_SUPPORTED,
+		     "Property %s.%s not supported",
+		     interface_name,
+		     property_name);
+	return NULL;
+}
+
+static const GDBusInterfaceVTable property_vtable =
+{
+	(GDBusInterfaceMethodCallFunc) property_container_method_call,
+	(GDBusInterfaceGetPropertyFunc) get_property_container_property,
+	NULL
+};
+
+static void
+prop_model_row_inserted_cb (GtkTreeModel *model,
+			    GtkTreePath *path,
+			    GtkTreeIter *iter,
+			    SourcePropertyRegistrationData *prop_data)
+{
+	prop_data->updated = TRUE;
+	emit_updated_in_idle (prop_data->source_data->plugin);
+}
+
+static void
+prop_model_row_changed_cb (GtkTreeModel *model,
+			   GtkTreePath *path,
+			   GtkTreeIter *iter,
+			   SourcePropertyRegistrationData *prop_data)
+{
+	char *value;
+	RBRefString *refstring;
+	GList *l;
+
+	gtk_tree_model_get (model, iter,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &value,
+			    -1);
+	refstring = rb_refstring_new (value);
+	g_free (value);
+
+	for (l = prop_data->updated_values; l != NULL; l = l->next) {
+		if (refstring == (RBRefString *)l->data) {
+			return;
+		}
+	}
+
+	prop_data->updated_values = g_list_prepend (prop_data->updated_values, refstring);
+	prop_data->updated = TRUE;
+	emit_updated_in_idle (prop_data->source_data->plugin);
+}
+
+static void
+prop_model_row_deleted_cb (RhythmDBPropertyModel *prop_model,
+			   GtkTreePath *path,
+			   SourcePropertyRegistrationData *prop_data)
+{
+	prop_data->updated = TRUE;
+	emit_updated_in_idle (prop_data->source_data->plugin);
+}
+
+static void
+disconnect_property_query_model_signals (SourcePropertyRegistrationData *prop_data, RhythmDBQueryModel *query_model)
+{
+	g_signal_handlers_disconnect_by_func (query_model, prop_model_row_inserted_cb, prop_data);
+	g_signal_handlers_disconnect_by_func (query_model, prop_model_row_changed_cb, prop_data);
+	g_signal_handlers_disconnect_by_func (query_model, prop_model_row_deleted_cb, prop_data);
+}
+
+static void
+connect_property_query_model_signals (SourcePropertyRegistrationData *prop_data, RhythmDBQueryModel *query_model)
+{
+	g_signal_connect (query_model, "row-inserted", G_CALLBACK (prop_model_row_inserted_cb), prop_data);
+	g_signal_connect (query_model, "row-changed", G_CALLBACK (prop_model_row_changed_cb), prop_data);
+	g_signal_connect (query_model, "row-deleted", G_CALLBACK (prop_model_row_deleted_cb), prop_data);
+}
+
+
+static char **
+enumerate_property_value_subtree (GDBusConnection *connection,
+				  const char *sender,
+				  const char *object_path,
+				  SourcePropertyRegistrationData *data)
+{
+	return (char **)g_new0(char *, 1);
+}
+
+static GDBusInterfaceInfo **
+introspect_property_value_subtree (GDBusConnection *connection,
+				   const char *sender,
+				   const char *object_path,
+				   const char *node,
+				   SourcePropertyRegistrationData *data)
+{
+	GPtrArray *p;
+	GDBusInterfaceInfo *i;
+
+	p = g_ptr_array_new ();
+
+	i = g_dbus_node_info_lookup_interface (data->source_data->plugin->node_info, MEDIA_SERVER2_OBJECT_IFACE_NAME);
+	g_ptr_array_add (p, g_dbus_interface_info_ref (i));
+
+	i = g_dbus_node_info_lookup_interface (data->source_data->plugin->node_info, MEDIA_SERVER2_CONTAINER_IFACE_NAME);
+	g_ptr_array_add (p, g_dbus_interface_info_ref (i));
+
+	g_ptr_array_add (p, NULL);
+
+	return (GDBusInterfaceInfo **)g_ptr_array_free (p, FALSE);
+}
+
+static const GDBusInterfaceVTable *
+dispatch_property_value_subtree (GDBusConnection *connection,
+				 const char *sender,
+				 const char *object_path,
+				 const char *interface_name,
+				 const char *node,
+				 gpointer *out_user_data,
+				 SourcePropertyRegistrationData *data)
+{
+	*out_user_data = data;
+	return &property_value_vtable;
+}
+
+static const GDBusSubtreeVTable property_subtree_vtable =
+{
+	(GDBusSubtreeEnumerateFunc) enumerate_property_value_subtree,
+	(GDBusSubtreeIntrospectFunc) introspect_property_value_subtree,
+	(GDBusSubtreeDispatchFunc) dispatch_property_value_subtree
+};
+
+static void
+register_property_container (GDBusConnection *connection,
+			     SourceRegistrationData *source_data,
+			     RhythmDBPropType property,
+			     const char *display_name)
+{
+	SourcePropertyRegistrationData *data;
+	GDBusInterfaceInfo *iface;
+
+	data = g_new0 (SourcePropertyRegistrationData, 1);
+	data->source_data = source_data;
+	data->property = property;
+	data->display_name = g_strdup (display_name);
+	data->dbus_path = g_strdup_printf ("%s/%s",
+					   source_data->dbus_path,
+					   rhythmdb_nice_elt_name_from_propid (source_data->plugin->db, property));
+
+	data->model = rhythmdb_property_model_new (source_data->plugin->db, property);
+	g_object_set (data->model, "query-model", source_data->base_query_model, NULL);
+	connect_property_query_model_signals (data, source_data->base_query_model);
+
+	data->dbus_subtree_id =
+		g_dbus_connection_register_subtree (connection,
+						    data->dbus_path,
+						    &property_subtree_vtable,
+						    G_DBUS_SUBTREE_FLAGS_DISPATCH_TO_UNENUMERATED_NODES,
+						    data,
+						    NULL,
+						    NULL);
+
+	iface = g_dbus_node_info_lookup_interface (source_data->plugin->node_info, MEDIA_SERVER2_OBJECT_IFACE_NAME);
+	data->dbus_object_id[0] =
+		g_dbus_connection_register_object (connection,
+						   data->dbus_path,
+						   iface,
+						   &property_vtable,
+						   data,
+						   NULL,
+						   NULL);
+
+	iface = g_dbus_node_info_lookup_interface (source_data->plugin->node_info, MEDIA_SERVER2_CONTAINER_IFACE_NAME);
+	data->dbus_object_id[1] =
+		g_dbus_connection_register_object (connection,
+						   data->dbus_path,
+						   iface,
+						   &property_vtable,
+						   data,
+						   NULL,
+						   NULL);
+
+	source_data->properties = g_list_append (source_data->properties, data);
+}
+
 
 /* source containers */
 
 static void
-source_method_call (GDBusConnection *connection,
-		    const char *sender,
-		    const char *object_path,
-		    const char *interface_name,
-		    const char *method_name,
-		    GVariant *parameters,
-		    GDBusMethodInvocation *invocation,
-		    SourceRegistrationData *source_data)
+source_tracks_method_call (GDBusConnection *connection,
+			   const char *sender,
+			   const char *object_path,
+			   const char *interface_name,
+			   const char *method_name,
+			   GVariant *parameters,
+			   GDBusMethodInvocation *invocation,
+			   SourceRegistrationData *source_data)
 {
 	GVariantBuilder *list;
 
@@ -503,7 +1216,7 @@ source_method_call (GDBusConnection *connection,
 				eb = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
 				for (i = 0; filter[i] != NULL; i++) {
 					GVariant *v;
-					v = get_entry_property_value (entry, filter[i]);
+					v = get_entry_property_value (entry, filter[i], RHYTHMDB_PROP_ENTRY_ID);
 					if (v != NULL) {
 						g_variant_builder_add (eb, "{sv}", filter[i], v);
 					}
@@ -535,29 +1248,37 @@ source_method_call (GDBusConnection *connection,
 }
 
 static GVariant *
-get_source_property (GDBusConnection *connection,
-		     const char *sender,
-		     const char *object_path,
-		     const char *interface_name,
-		     const char *property_name,
-		     GError **error,
-		     SourceRegistrationData *source_data)
+get_source_tracks_property (GDBusConnection *connection,
+			    const char *sender,
+			    const char *object_path,
+			    const char *interface_name,
+			    const char *property_name,
+			    GError **error,
+			    SourceRegistrationData *source_data)
 {
 	GVariant *v;
 	char *name;
 
 	if (g_strcmp0 (interface_name, MEDIA_SERVER2_OBJECT_IFACE_NAME) == 0) {
 		if (g_strcmp0 (property_name, "Parent") == 0) {
-			return g_variant_new_object_path (source_data->parent_dbus_path);
+			if (source_data->flat) {
+				return g_variant_new_object_path (source_data->parent_dbus_path);
+			} else {
+				return g_variant_new_object_path (source_data->dbus_path);
+			}
 		} else if (g_strcmp0 (property_name, "Type") == 0) {
 			return g_variant_new_string ("container");
 		} else if (g_strcmp0 (property_name, "Path") == 0) {
 			return g_variant_new_string (object_path);
 		} else if (g_strcmp0 (property_name, "DisplayName") == 0) {
-			g_object_get (source_data->source, "name", &name, NULL);
-			v = g_variant_new_string (name);
-			g_free (name);
-			return v;
+			if (source_data->flat) {
+				g_object_get (source_data->source, "name", &name, NULL);
+				v = g_variant_new_string (name);
+				g_free (name);
+				return v;
+			} else {
+				return g_variant_new_string (_("All Tracks"));
+			}
 		}
 	} else if (g_strcmp0 (interface_name, MEDIA_SERVER2_CONTAINER_IFACE_NAME) == 0) {
 
@@ -582,15 +1303,15 @@ get_source_property (GDBusConnection *connection,
 }
 
 static void
-add_source_property (RBMediaServer2Plugin *plugin, GVariantBuilder *properties, const char *iface, const char *property, SourceRegistrationData *source_data)
+add_source_tracks_property (RBMediaServer2Plugin *plugin, GVariantBuilder *properties, const char *iface, const char *property, SourceRegistrationData *source_data)
 {
 	GVariant *v;
-	v = get_source_property (plugin->connection, NULL, source_data->dbus_path, iface, property, NULL, source_data);
+	v = get_source_tracks_property (plugin->connection, NULL, source_data->dbus_path, iface, property, NULL, source_data);
 	g_variant_builder_add (properties, "{sv}", property, v);
 }
 
 static void
-emit_source_property_updates (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data)
+emit_source_tracks_property_updates (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data)
 {
 	GError *error = NULL;
 	const char *invalidated[] = { NULL };
@@ -599,9 +1320,9 @@ emit_source_property_updates (RBMediaServer2Plugin *plugin, SourceRegistrationDa
 
 	rb_debug ("updating properties for source %s", source_data->dbus_path);
 	properties = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
-	add_source_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ItemCount", source_data);
-	add_source_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ChildCount", source_data);
-	add_source_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ContainerCount", source_data);
+	add_source_tracks_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ItemCount", source_data);
+	add_source_tracks_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ChildCount", source_data);
+	add_source_tracks_property (plugin, properties, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "ContainerCount", source_data);
 
 	parameters = g_variant_new ("(sa{sv}^as)",
 				    MEDIA_SERVER2_CONTAINER_IFACE_NAME,
@@ -623,10 +1344,198 @@ emit_source_property_updates (RBMediaServer2Plugin *plugin, SourceRegistrationDa
 	}
 }
 
-static const GDBusInterfaceVTable source_vtable =
+static const GDBusInterfaceVTable source_tracks_vtable =
 {
-	(GDBusInterfaceMethodCallFunc) source_method_call,
-	(GDBusInterfaceGetPropertyFunc) get_source_property,
+	(GDBusInterfaceMethodCallFunc) source_tracks_method_call,
+	(GDBusInterfaceGetPropertyFunc) get_source_tracks_property,
+	NULL
+};
+
+
+static void
+source_properties_method_call (GDBusConnection *connection,
+			       const char *sender,
+			       const char *object_path,
+			       const char *interface_name,
+			       const char *method_name,
+			       GVariant *parameters,
+			       GDBusMethodInvocation *invocation,
+			       SourceRegistrationData *source_data)
+{
+	GVariantBuilder *list;
+	guint value_count;
+
+	if (g_strcmp0 (interface_name, MEDIA_SERVER2_CONTAINER_IFACE_NAME) != 0) {
+		rb_debug ("method call on unexpected interface %s", interface_name);
+		return;
+	}
+
+	if (g_strcmp0 (method_name, "ListChildren") == 0 ||
+	    g_strcmp0 (method_name, "ListContainers") == 0) {
+		GList *l;
+		guint list_offset;
+		guint list_max;
+		const char **filter;
+		guint count = 0;
+		gboolean all_props;
+		GVariantBuilder *eb;
+
+		g_variant_get (parameters, "(uu^as)", &list_offset, &list_max, &filter);
+		list = g_variant_builder_new (G_VARIANT_TYPE ("aa{sv}"));
+
+		all_props = rb_str_in_strv ("*", filter);
+
+		/* 'all tracks' container */
+		if (list_offset == 0) {
+			eb = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+			value_count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source_data->base_query_model), NULL);
+			if (all_props || rb_str_in_strv ("Parent", filter)) {
+				g_variant_builder_add (eb, "{sv}", "Parent", g_variant_new_object_path (object_path));
+			}
+			if (all_props || rb_str_in_strv ("Type", filter)) {
+				g_variant_builder_add (eb, "{sv}", "Type", g_variant_new_string ("container"));
+			}
+			if (all_props || rb_str_in_strv ("Path", filter)) {
+				char *path;
+				path = g_strdup_printf ("%s/all", object_path);
+				g_variant_builder_add (eb, "{sv}", "Path", g_variant_new_string (path));
+				g_free (path);
+			}
+			if (all_props || rb_str_in_strv ("DisplayName", filter)) {
+				g_variant_builder_add (eb, "{sv}", "DisplayName", g_variant_new_string (_("All Tracks")));
+			}
+			if (all_props || rb_str_in_strv ("ChildCount", filter)) {
+				g_variant_builder_add (eb, "{sv}", "ChildCount", g_variant_new_uint32 (value_count));
+			}
+			if (all_props || rb_str_in_strv ("ItemCount", filter)) {
+				g_variant_builder_add (eb, "{sv}", "ItemCount", g_variant_new_uint32 (value_count));
+			}
+			if (all_props || rb_str_in_strv ("ContainerCount", filter)) {
+				g_variant_builder_add (eb, "{sv}", "ContainerCount", g_variant_new_uint32 (0));
+			}
+			if (all_props || rb_str_in_strv ("Searchable", filter)) {
+				g_variant_builder_add (eb, "{sv}", "Searchable", g_variant_new_boolean (FALSE));
+			}
+
+			g_variant_builder_add (list, "a{sv}", eb);
+			count++;
+		} else {
+			list_offset--;
+		}
+
+		/* property-based containers */
+		for (l = source_data->properties; l != NULL; l = l->next) {
+			SourcePropertyRegistrationData *prop_data = l->data;
+			if (list_max > 0 && count == list_max) {
+				break;
+			}
+
+			if (list_offset > 0) {
+				list_offset--;
+				continue;
+			}
+
+			value_count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (prop_data->model), NULL) - 1;
+
+			eb = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+			if (all_props || rb_str_in_strv ("Parent", filter)) {
+				g_variant_builder_add (eb, "{sv}", "Parent", g_variant_new_object_path (object_path));
+			}
+			if (all_props || rb_str_in_strv ("Type", filter)) {
+				g_variant_builder_add (eb, "{sv}", "Type", g_variant_new_string ("container"));
+			}
+			if (all_props || rb_str_in_strv ("Path", filter)) {
+				g_variant_builder_add (eb, "{sv}", "Path", g_variant_new_string (prop_data->dbus_path));
+			}
+			if (all_props || rb_str_in_strv ("DisplayName", filter)) {
+				g_variant_builder_add (eb, "{sv}", "DisplayName", g_variant_new_string (prop_data->display_name));
+			}
+			if (all_props || rb_str_in_strv ("ChildCount", filter)) {
+				g_variant_builder_add (eb, "{sv}", "ChildCount", g_variant_new_uint32 (value_count));
+			}
+			if (all_props || rb_str_in_strv ("ItemCount", filter)) {
+				g_variant_builder_add (eb, "{sv}", "ItemCount", g_variant_new_uint32 (value_count));
+			}
+			if (all_props || rb_str_in_strv ("ContainerCount", filter)) {
+				g_variant_builder_add (eb, "{sv}", "ContainerCount", g_variant_new_uint32 (0));
+			}
+			if (all_props || rb_str_in_strv ("Searchable", filter)) {
+				g_variant_builder_add (eb, "{sv}", "Searchable", g_variant_new_boolean (FALSE));
+			}
+
+			g_variant_builder_add (list, "a{sv}", eb);
+			count++;
+		}
+
+		g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+		g_variant_builder_unref (list);
+
+		g_strfreev ((char **)filter);
+	} else if (g_strcmp0 (method_name, "ListItems") == 0) {
+		list = g_variant_builder_new (G_VARIANT_TYPE ("aa{sv}"));
+		g_dbus_method_invocation_return_value (invocation, g_variant_new ("(aa{sv})", list));
+		g_variant_builder_unref (list);
+	} else if (g_strcmp0 (method_name, "SearchObjects") == 0) {
+		g_dbus_method_invocation_return_value (invocation, NULL);
+	} else {
+		g_dbus_method_invocation_return_error (invocation,
+						       G_DBUS_ERROR,
+						       G_DBUS_ERROR_NOT_SUPPORTED,
+						       "Method %s.%s not supported",
+						       interface_name,
+						       method_name);
+	}
+}
+
+static GVariant *
+get_source_properties_property (GDBusConnection *connection,
+				const char *sender,
+				const char *object_path,
+				const char *interface_name,
+				const char *property_name,
+				GError **error,
+				SourceRegistrationData *source_data)
+{
+	GVariant *v;
+	char *name;
+
+	if (g_strcmp0 (interface_name, MEDIA_SERVER2_OBJECT_IFACE_NAME) == 0) {
+		if (g_strcmp0 (property_name, "Parent") == 0) {
+			return g_variant_new_object_path (source_data->parent_dbus_path);
+		} else if (g_strcmp0 (property_name, "Type") == 0) {
+			return g_variant_new_string ("container");
+		} else if (g_strcmp0 (property_name, "Path") == 0) {
+			return g_variant_new_string (object_path);
+		} else if (g_strcmp0 (property_name, "DisplayName") == 0) {
+			g_object_get (source_data->source, "name", &name, NULL);
+			v = g_variant_new_string (name);
+			g_free (name);
+			return v;
+		}
+	} else if (g_strcmp0 (interface_name, MEDIA_SERVER2_CONTAINER_IFACE_NAME) == 0) {
+
+		if (g_strcmp0 (property_name, "ChildCount") == 0 ||
+		    g_strcmp0 (property_name, "ContainerCount") == 0) {
+			return g_variant_new_uint32 (g_list_length (source_data->properties) + 1);
+		} else if (g_strcmp0 (property_name, "ItemCount") == 0) {
+			return g_variant_new_uint32 (0);
+		} else if (g_strcmp0 (property_name, "Searchable") == 0) {
+			return g_variant_new_boolean (FALSE);
+		}
+	}
+	g_set_error (error,
+		     G_DBUS_ERROR,
+		     G_DBUS_ERROR_NOT_SUPPORTED,
+		     "Property %s.%s not supported",
+		     interface_name,
+		     property_name);
+	return NULL;
+}
+
+static const GDBusInterfaceVTable source_properties_vtable =
+{
+	(GDBusInterfaceMethodCallFunc) source_properties_method_call,
+	(GDBusInterfaceGetPropertyFunc) get_source_properties_property,
 	NULL
 };
 
@@ -636,13 +1545,11 @@ static void
 add_source_container (GVariantBuilder *list, SourceRegistrationData *source_data, const char **filter)
 {
 	GVariantBuilder *i;
-	int entry_count;
 	gboolean all_props;
 
 	i = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
 	all_props = rb_str_in_strv ("*", filter);
 
-	entry_count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source_data->base_query_model), NULL);
 
 	if (all_props || rb_str_in_strv ("Parent", filter)) {
 		g_variant_builder_add (i, "{sv}", "Parent", g_variant_new_object_path (source_data->parent_dbus_path));
@@ -659,14 +1566,29 @@ add_source_container (GVariantBuilder *list, SourceRegistrationData *source_data
 		g_variant_builder_add (i, "{sv}", "DisplayName", g_variant_new_string (name));
 		g_free (name);
 	}
-	if (all_props || rb_str_in_strv ("ChildCount", filter)) {
-		g_variant_builder_add (i, "{sv}", "ChildCount", g_variant_new_uint32 (entry_count));
-	}
-	if (all_props || rb_str_in_strv ("ItemCount", filter)) {
-		g_variant_builder_add (i, "{sv}", "ItemCount", g_variant_new_uint32 (entry_count));
-	}
-	if (all_props || rb_str_in_strv ("ContainerCount", filter)) {
-		g_variant_builder_add (i, "{sv}", "ContainerCount", g_variant_new_uint32 (0));
+	if (source_data->flat) {
+		int entry_count;
+		entry_count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source_data->base_query_model), NULL);
+		if (all_props || rb_str_in_strv ("ChildCount", filter)) {
+			g_variant_builder_add (i, "{sv}", "ChildCount", g_variant_new_uint32 (entry_count));
+		}
+		if (all_props || rb_str_in_strv ("ItemCount", filter)) {
+			g_variant_builder_add (i, "{sv}", "ItemCount", g_variant_new_uint32 (entry_count));
+		}
+		if (all_props || rb_str_in_strv ("ContainerCount", filter)) {
+			g_variant_builder_add (i, "{sv}", "ContainerCount", g_variant_new_uint32 (0));
+		}
+	} else {
+		int child_count = g_list_length (source_data->properties) + 1;
+		if (all_props || rb_str_in_strv ("ChildCount", filter)) {
+			g_variant_builder_add (i, "{sv}", "ChildCount", g_variant_new_uint32 (child_count));
+		}
+		if (all_props || rb_str_in_strv ("ContainerCount", filter)) {
+			g_variant_builder_add (i, "{sv}", "ContainerCount", g_variant_new_uint32 (child_count));
+		}
+		if (all_props || rb_str_in_strv ("ItemCount", filter)) {
+			g_variant_builder_add (i, "{sv}", "ItemCount", g_variant_new_uint32 (0));
+		}
 	}
 	if (all_props || rb_str_in_strv ("Searchable", filter)) {
 		g_variant_builder_add (i, "{sv}", "Searchable", g_variant_new_boolean (FALSE));
@@ -764,10 +1686,7 @@ source_updated (SourceRegistrationData *source_data, gboolean count_changed)
 		}
 	}
 
-	if (source_data->plugin->emit_updated_id == 0) {
-		source_data->plugin->emit_updated_id =
-			g_idle_add ((GSourceFunc)emit_container_updated_cb, source_data->plugin);
-	}
+	emit_updated_in_idle (source_data->plugin);
 }
 
 /* signal handlers for source container updates */
@@ -786,13 +1705,33 @@ row_deleted_cb (GtkTreeModel *model, GtkTreePath *path, SourceRegistrationData *
 
 static void
 entry_prop_changed_cb (RhythmDBQueryModel *model,
+		       RhythmDBEntry *entry,
 		       RhythmDBPropType prop,
 		       const GValue *old,
 		       const GValue *new_value,
 		       SourceRegistrationData *source_data)
 {
-	if (entry_property_maps (prop)) {
-		source_updated (source_data, FALSE);
+	GList *l;
+
+	if (entry_property_maps (prop) == FALSE) {
+		return;
+	}
+
+	source_updated (source_data, FALSE);
+	for (l = source_data->properties; l != NULL; l = l->next) {
+		SourcePropertyRegistrationData *prop_data = l->data;
+		RBRefString *value;
+
+		/* property model signal handlers will take care of this */
+		if (prop == prop_data->property)
+			continue;
+
+		prop_data->updated = TRUE;
+		value = rhythmdb_entry_get_refstring (entry, prop);
+		if (g_list_find (prop_data->updated_values, value) == NULL) {
+			prop_data->updated_values =
+				g_list_prepend (prop_data->updated_values, value);
+		}
 	}
 }
 
@@ -815,13 +1754,25 @@ connect_query_model_signals (SourceRegistrationData *source_data)
 static void
 base_query_model_updated_cb (RBSource *source, GParamSpec *pspec, SourceRegistrationData *source_data)
 {
+	GList *l;
+
 	if (source_data->base_query_model != NULL) {
+		for (l = source_data->properties; l != NULL; l = l->next) {
+			SourcePropertyRegistrationData *prop_data = l->data;
+			disconnect_property_query_model_signals (prop_data, source_data->base_query_model);
+		}
+
 		disconnect_query_model_signals (source_data);
 		g_object_unref (source_data->base_query_model);
 	}
 
 	g_object_get (source, "base-query-model", &source_data->base_query_model, NULL);
 	connect_query_model_signals (source_data);
+
+	for (l = source_data->properties; l != NULL; l = l->next) {
+		SourcePropertyRegistrationData *prop_data = l->data;
+		connect_property_query_model_signals (prop_data, source_data->base_query_model);
+	}
 
 	source_updated (source_data, TRUE);
 }
@@ -845,11 +1796,12 @@ source_deleted_cb (RBDisplayPage *page, RBMediaServer2Plugin *plugin)
 }
 
 
-static void
+static SourceRegistrationData *
 register_source_container (RBMediaServer2Plugin *plugin,
 			   RBSource *source,
 			   const char *dbus_path,
-			   const char *parent_dbus_path)
+			   const char *parent_dbus_path,
+			   gboolean flat)
 {
 	SourceRegistrationData *source_data;
 	GDBusInterfaceInfo *container_iface;
@@ -859,9 +1811,19 @@ register_source_container (RBMediaServer2Plugin *plugin,
 	source_data->dbus_path = g_strdup (dbus_path);
 	source_data->parent_dbus_path = g_strdup (parent_dbus_path);
 	source_data->plugin = plugin;
+	source_data->flat = flat;
 
 	container_iface = g_dbus_node_info_lookup_interface (plugin->node_info, MEDIA_SERVER2_CONTAINER_IFACE_NAME);
-	register_object (plugin, &source_vtable, container_iface, dbus_path, source_data, source_data->dbus_reg_id);
+	if (flat) {
+		register_object (plugin, &source_tracks_vtable, container_iface, dbus_path, source_data, source_data->dbus_reg_id);
+	} else {
+		char *tracks_path;
+
+		register_object (plugin, &source_properties_vtable, container_iface, dbus_path, source_data, source_data->dbus_reg_id);
+
+		tracks_path = g_strdup_printf ("%s/all", dbus_path);
+		register_object (plugin, &source_tracks_vtable, container_iface, tracks_path, source_data, source_data->all_tracks_reg_id);
+	}
 
 	g_object_get (source, "base-query-model", &source_data->base_query_model, NULL);
 	connect_query_model_signals (source_data);
@@ -874,6 +1836,8 @@ register_source_container (RBMediaServer2Plugin *plugin,
 
 	/* emit 'updated' signal on parent container */
 	g_dbus_connection_emit_signal (plugin->connection, NULL, parent_dbus_path, MEDIA_SERVER2_CONTAINER_IFACE_NAME, "Updated", NULL, NULL);
+
+	return source_data;
 }
 
 static void
@@ -1369,7 +2333,7 @@ display_page_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *i
 			    -1);
 	if (RB_IS_SOURCE (page)) {
 		RBSource *source = RB_SOURCE (page);
-		/* figure out if this is a source can publish */
+		/* figure out if this is a source we can publish */
 		for (l = plugin->categories; l != NULL; l = l->next) {
 			CategoryRegistrationData *category_data = l->data;
 
@@ -1379,7 +2343,7 @@ display_page_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *i
 							     category_data->dbus_path,
 							     (gintptr) source);
 				rb_debug ("adding new source %s to category %s", dbus_path, category_data->name);
-				register_source_container (plugin, source, dbus_path, category_data->dbus_path);
+				register_source_container (plugin, source, dbus_path, category_data->dbus_path, TRUE);
 				g_free (dbus_path);
 			}
 		}
@@ -1408,6 +2372,7 @@ impl_activate (PeasActivatable *bplugin)
 {
 	RBMediaServer2Plugin *plugin;
 	GDBusInterfaceInfo *container_iface;
+	SourceRegistrationData *source_data;
 	RBSource *source;
 	GError *error = NULL;
 	RBShell *shell;
@@ -1446,7 +2411,11 @@ impl_activate (PeasActivatable *bplugin)
 
 	/* register fixed sources (library, podcasts, etc.) */
 	g_object_get (shell, "library-source", &source, NULL);
-	register_source_container (plugin, source, RB_MEDIASERVER2_LIBRARY, RB_MEDIASERVER2_ROOT);
+	source_data = register_source_container (plugin, source, RB_MEDIASERVER2_LIBRARY, RB_MEDIASERVER2_ROOT, FALSE);
+	register_property_container (plugin->connection, source_data, RHYTHMDB_PROP_ARTIST, _("Artists"));
+	register_property_container (plugin->connection, source_data, RHYTHMDB_PROP_ALBUM, _("Albums"));
+	register_property_container (plugin->connection, source_data, RHYTHMDB_PROP_GENRE, _("Genres"));
+	/* year won't work yet */
 	g_object_unref (source);
 
 	/* watch for user-creatable sources (playlists, devices) */
