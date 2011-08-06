@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-07-24 14:19+0000\n"
-"PO-Revision-Date: 2011-07-26 10:54+0200\n"
+"POT-Creation-Date: 2011-08-05 12:36+0000\n"
+"PO-Revision-Date: 2011-08-06 12:56+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -561,7 +561,7 @@ msgstr "Organice y reproduzca su colección de música"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
 #: ../data/rhythmbox-device.desktop.in.in.h:3 ../shell/rb-shell.c:1229
-#: ../shell/rb-shell.c:2336
+#: ../shell/rb-shell.c:2335
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -784,7 +784,8 @@ msgstr "Falló al crear un elemento de origen; compruebe su instalación"
 msgid ""
 "Failed to create the 'decodebin2' element; check your GStreamer installation"
 msgstr ""
-"Falló al crear el elemento «decodebin2»; compruebe su instalación de GStreamer"
+"Falló al crear el elemento «decodebin2»; compruebe su instalación de "
+"GStreamer"
 
 #: ../metadata/rb-metadata-gst.c:641
 #, c-format
@@ -1465,8 +1466,9 @@ msgstr ""
 "Mostrar información relacionada con el artista y canción actualmente en "
 "reproducción."
 
-#: ../plugins/context/AlbumTab.py:55 ../sources/rb-auto-playlist-source.c:105
-#: ../sources/rb-browser-source.c:151
+#: ../plugins/context/AlbumTab.py:55
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2416
+#: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:151
 #: ../sources/rb-static-playlist-source.c:125
 msgid "Albums"
 msgstr "Álbumes"
@@ -1705,7 +1707,24 @@ msgstr ""
 "Proporciona una implementación de la especificación de interfaz MediaServer2 "
 "D-Bus"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1457
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1280
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1405
+#| msgid "Show _All Tracks"
+msgid "All Tracks"
+msgstr "Todas las pistas"
+
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2415
+#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:150
+#: ../sources/rb-static-playlist-source.c:124
+msgid "Artists"
+msgstr "Artistas"
+
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2417
+#| msgid "Genre"
+msgid "Genres"
+msgstr "Géneros"
+
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2426
 #: ../shell/rb-playlist-manager.c:1081 ../sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "Listas de reproducción"
@@ -2924,27 +2943,22 @@ msgid "Send tracks"
 msgstr "Enviar pistas"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:39
-#| msgid "Quality"
 msgid "Low quality"
 msgstr "Baja calidad"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:40
-#| msgid "Normal"
 msgid "Normal quality"
 msgstr "Calidad normal"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:41
-#| msgid "Quality"
 msgid "High quality"
 msgstr "Alta calidad"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:173
-#| msgid "Enable visual effects?"
 msgid "_Visual Effect"
 msgstr "Efectos _visuales"
 
 #: ../plugins/visualizer/rb-visualizer-page.c:76
-#| msgid "Enable visual effects?"
 msgid "Visual Effects"
 msgstr "Efectos visuales"
 
@@ -2953,12 +2967,10 @@ msgid "Fullscreen"
 msgstr "Pantalla completa"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:370
-#| msgid "Enable visual effects?"
 msgid "Toggle fullscreen visual effects"
 msgstr "Conmutar los efectos visuales a pantalla completa"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:395
-#| msgid "%s plays"
 msgid "Display"
 msgstr "Pantalla"
 
@@ -3038,8 +3050,8 @@ msgid ""
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
 msgstr ""
-"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el URL, "
-"o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
+"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el "
+"URL, o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
 "todas formas?"
 
 #: ../podcast/rb-podcast-manager.c:1244
@@ -3951,7 +3963,7 @@ msgstr "Pausar la reproducción"
 msgid "Stop playback"
 msgstr "Detener reproducción"
 
-#: ../shell/rb-shell-preferences.c:166 ../shell/rb-shell.c:2531
+#: ../shell/rb-shell-preferences.c:166 ../shell/rb-shell.c:2530
 msgid "Couldn't display help"
 msgstr "No se ha podido mostrar la ayuda"
 
@@ -4107,21 +4119,21 @@ msgstr "Barra de esta_do"
 msgid "Change the visibility of the statusbar"
 msgstr "Cambiar la visibilidad de la barra de estado"
 
-#: ../shell/rb-shell.c:1507
+#: ../shell/rb-shell.c:1506
 msgid "Change the music volume"
 msgstr "Cambiar el volumen de la música"
 
-#: ../shell/rb-shell.c:2054
+#: ../shell/rb-shell.c:2053
 msgid "Error while saving song information"
 msgstr "Error al guardar la información de la canción"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2356
+#: ../shell/rb-shell.c:2355
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausado)"
 
-#: ../shell/rb-shell.c:2449
+#: ../shell/rb-shell.c:2448
 msgid "translator-credits"
 msgstr ""
 "Jorge González <jorgegonz@svn.gnome.org>, 2007-2010\n"
@@ -4132,7 +4144,7 @@ msgstr ""
 "Germán Poo-Caamaño <gpoo@ubiobio.cl>, 2003\n"
 "Xan López <xan@dimensis.com>, 2002"
 
-#: ../shell/rb-shell.c:2452
+#: ../shell/rb-shell.c:2451
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -4144,7 +4156,7 @@ msgstr ""
 "la Free Software Foundation; ya sea en la versión 2 de la Licencia, o\n"
 "(a su elección) cualquier versión posterior.\n"
 
-#: ../shell/rb-shell.c:2456
+#: ../shell/rb-shell.c:2455
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -4156,7 +4168,7 @@ msgstr ""
 "MERCANTILIDAD o IDONEIDAD PARA UN PROPÓSITO PARTICULAR. Vea\n"
 "la Licencia Pública General de GNU para más detalles.\n"
 
-#: ../shell/rb-shell.c:2460
+#: ../shell/rb-shell.c:2459
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -4167,60 +4179,60 @@ msgstr ""
 "Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2467
+#: ../shell/rb-shell.c:2466
 msgid "Maintainers:"
 msgstr "Desarrolladores:"
 
-#: ../shell/rb-shell.c:2470
+#: ../shell/rb-shell.c:2469
 msgid "Former Maintainers:"
 msgstr "Desarrolladores anteriores:"
 
-#: ../shell/rb-shell.c:2473
+#: ../shell/rb-shell.c:2472
 msgid "Contributors:"
 msgstr "Colaboradores:"
 
-#: ../shell/rb-shell.c:2475
+#: ../shell/rb-shell.c:2474
 msgid "Music management and playback software for GNOME."
 msgstr "Software de organización y reproducción de música para GNOME."
 
-#: ../shell/rb-shell.c:2484
+#: ../shell/rb-shell.c:2483
 msgid "Rhythmbox Website"
 msgstr "Página web de Rhythmbox"
 
-#: ../shell/rb-shell.c:2576
+#: ../shell/rb-shell.c:2575
 msgid "Configure Plugins"
 msgstr "Configurar complementos"
 
-#: ../shell/rb-shell.c:2665
+#: ../shell/rb-shell.c:2664
 msgid "Import Folder into Library"
 msgstr "Importar carpeta en la fonoteca"
 
-#: ../shell/rb-shell.c:2684
+#: ../shell/rb-shell.c:2683
 msgid "Import File into Library"
 msgstr "Importar archivo en la fonoteca"
 
-#: ../shell/rb-shell.c:3215 ../shell/rb-shell.c:3572
+#: ../shell/rb-shell.c:3214 ../shell/rb-shell.c:3571
 #: ../sources/rb-play-queue-source.c:636
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ninguna fuente registrada puede manejar URIs %s"
 
-#: ../shell/rb-shell.c:3692
+#: ../shell/rb-shell.c:3691
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Ninguna fuente registrada coincide con el URI %s"
 
-#: ../shell/rb-shell.c:3725 ../shell/rb-shell.c:3768
+#: ../shell/rb-shell.c:3724 ../shell/rb-shell.c:3767
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI de la canción desconocida: %s"
 
-#: ../shell/rb-shell.c:3777
+#: ../shell/rb-shell.c:3776
 #, c-format
 msgid "Unknown property %s"
 msgstr "Propiedad %s desconocida"
 
-#: ../shell/rb-shell.c:3791
+#: ../shell/rb-shell.c:3790
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "El tipo de la propiedad %s es inválido para la propiedad %s"
@@ -4340,11 +4352,6 @@ msgstr "Transfiriendo pista %d de %d (%.0f%%)"
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Transfiriendo pista %d de %d"
-
-#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:150
-#: ../sources/rb-static-playlist-source.c:124
-msgid "Artists"
-msgstr "Artistas"
 
 #: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:150
 #: ../sources/rb-static-playlist-source.c:124
