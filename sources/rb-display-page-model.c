@@ -681,14 +681,18 @@ rb_display_page_model_remove_page (RBDisplayPageModel *page_model,
 				   RBDisplayPage *page)
 {
 	GtkTreeIter iter;
+	GtkTreeIter group_iter;
 	GtkTreeModel *model;
 
 	g_assert (find_in_real_model (page_model, page, &iter));
 
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (page_model));
 
+	walk_up_to_page_group (model, &group_iter, &iter);
 	gtk_tree_store_remove (GTK_TREE_STORE (model), &iter);
 	g_signal_handlers_disconnect_by_func (page, G_CALLBACK (page_notify_cb), page_model);
+
+	update_group_visibility (model, &group_iter, page_model);
 }
 
 
