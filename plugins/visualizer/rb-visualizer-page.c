@@ -300,6 +300,7 @@ impl_constructed (GObject *object)
 {
 	RBVisualizerPage *page;
 	ClutterInitError err;
+	GstElement *colorspace;
 	GstElement *realsink;
 	GstElement *capsfilter;
 	GstCaps *caps;
@@ -328,6 +329,7 @@ impl_constructed (GObject *object)
 	/* actual sink */
 	realsink = clutter_gst_video_sink_new (CLUTTER_TEXTURE (page->texture));
 
+	colorspace = gst_element_factory_make ("ffmpegcolorspace", NULL);
 	/* capsfilter to force rgb format (without this we end up using ayuv) */
 	capsfilter = gst_element_factory_make ("capsfilter", NULL);
 	caps = gst_caps_from_string ("video/x-raw-rgb,bpp=(int)24,depth=(int)24,"
@@ -336,10 +338,11 @@ impl_constructed (GObject *object)
 	g_object_set (capsfilter, "caps", caps, NULL);
 	gst_caps_unref (caps);
 
-	gst_bin_add_many (GST_BIN (page->sink), capsfilter, realsink, NULL);
+	gst_bin_add_many (GST_BIN (page->sink), colorspace, capsfilter, realsink, NULL);
+	gst_element_link (colorspace, capsfilter);
 	gst_element_link (capsfilter, realsink);
 
-	pad = gst_element_get_static_pad (capsfilter, "sink");
+	pad = gst_element_get_static_pad (colorspace, "sink");
 	gst_element_add_pad (page->sink, gst_ghost_pad_new ("sink", pad));
 	gst_object_unref (pad);
 
