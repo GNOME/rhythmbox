@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-07-24 14:19+0000\n"
-"PO-Revision-Date: 2011-07-27 22:54+0200\n"
+"POT-Creation-Date: 2011-08-05 12:36+0000\n"
+"PO-Revision-Date: 2011-08-09 19:41+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -555,7 +555,7 @@ msgstr "Přehrávat a organizovat vaši hudební kolekce"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
 #: ../data/rhythmbox-device.desktop.in.in.h:3 ../shell/rb-shell.c:1229
-#: ../shell/rb-shell.c:2336
+#: ../shell/rb-shell.c:2335
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -1456,8 +1456,9 @@ msgstr "Kontextový panel"
 msgid "Show information related to the currently playing artist and song."
 msgstr "Zobrazit informace vztahující se k právě přehrávané skladbě a umělci."
 
-#: ../plugins/context/AlbumTab.py:55 ../sources/rb-auto-playlist-source.c:105
-#: ../sources/rb-browser-source.c:151
+#: ../plugins/context/AlbumTab.py:55
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2416
+#: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:151
 #: ../sources/rb-static-playlist-source.c:125
 msgid "Albums"
 msgstr "Alba"
@@ -1695,7 +1696,24 @@ msgid ""
 "Provides an implementation of the MediaServer2 D-Bus interface specification"
 msgstr "Poskytuje implementaci specifikace rozhraní MediaServer2 D-Bus"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1457
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1280
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1405
+#| msgid "Show _All Tracks"
+msgid "All Tracks"
+msgstr "Všechny stopy"
+
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2415
+#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:150
+#: ../sources/rb-static-playlist-source.c:124
+msgid "Artists"
+msgstr "Umělci"
+
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2417
+#| msgid "Genre"
+msgid "Genres"
+msgstr "Žánry"
+
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2426
 #: ../shell/rb-playlist-manager.c:1081 ../sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "Seznamy skladeb"
@@ -2901,7 +2919,6 @@ msgid "Send tracks"
 msgstr "Odeslané stopy"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:39
-#| msgid "Quality"
 msgid "Low quality"
 msgstr "Nízká kvalita"
 
@@ -2910,7 +2927,6 @@ msgid "Normal quality"
 msgstr "Normální kvalita"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:41
-#| msgid "Quality"
 msgid "High quality"
 msgstr "Vysoká kvalita"
 
@@ -2931,7 +2947,6 @@ msgid "Toggle fullscreen visual effects"
 msgstr "Přepnout vizuální efekty na celou obrazovku"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:395
-#| msgid "%s plays"
 msgid "Display"
 msgstr "Zobrazit"
 
@@ -3928,7 +3943,7 @@ msgstr "Pozastavit přehrávání"
 msgid "Stop playback"
 msgstr "Zastavit přehrávání"
 
-#: ../shell/rb-shell-preferences.c:166 ../shell/rb-shell.c:2531
+#: ../shell/rb-shell-preferences.c:166 ../shell/rb-shell.c:2530
 msgid "Couldn't display help"
 msgstr "Nepodařilo se zobrazit nápovědu"
 
@@ -4084,21 +4099,21 @@ msgstr "_Stavová lišta"
 msgid "Change the visibility of the statusbar"
 msgstr "Změnit viditelnost stavové lišty"
 
-#: ../shell/rb-shell.c:1507
+#: ../shell/rb-shell.c:1506
 msgid "Change the music volume"
 msgstr "Změnit hlasitost hudby"
 
-#: ../shell/rb-shell.c:2054
+#: ../shell/rb-shell.c:2053
 msgid "Error while saving song information"
 msgstr "Chyba při ukládání informací o skladbě"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2356
+#: ../shell/rb-shell.c:2355
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pozastaveno)"
 
-#: ../shell/rb-shell.c:2449
+#: ../shell/rb-shell.c:2448
 msgid "translator-credits"
 msgstr ""
 "Michal Bukovjan <bukm@centrum.cz>\n"
@@ -4108,7 +4123,7 @@ msgstr ""
 "Petr Kovář <pknbe@volny.cz>\n"
 "Marek Černocký <marek@manet.cz>"
 
-#: ../shell/rb-shell.c:2452
+#: ../shell/rb-shell.c:2451
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -4120,7 +4135,7 @@ msgstr ""
 "Free Software Foundation; buď verze 2 této licence, nebo\n"
 "(dle vlastního uvážení) kterékoliv pozdější verze.\n"
 
-#: ../shell/rb-shell.c:2456
+#: ../shell/rb-shell.c:2455
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -4132,7 +4147,7 @@ msgstr ""
 " PRODEJNOSTI anebo VHODNOSTI PRO URČITÝ ÚČEL. Další podrobnosti\n"
 " hledejte v GNU General Public License.\n"
 
-#: ../shell/rb-shell.c:2460
+#: ../shell/rb-shell.c:2459
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -4143,60 +4158,60 @@ msgstr ""
 "Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2467
+#: ../shell/rb-shell.c:2466
 msgid "Maintainers:"
 msgstr "Správci:"
 
-#: ../shell/rb-shell.c:2470
+#: ../shell/rb-shell.c:2469
 msgid "Former Maintainers:"
 msgstr "Dřívější správci:"
 
-#: ../shell/rb-shell.c:2473
+#: ../shell/rb-shell.c:2472
 msgid "Contributors:"
 msgstr "Přispěvatelé:"
 
-#: ../shell/rb-shell.c:2475
+#: ../shell/rb-shell.c:2474
 msgid "Music management and playback software for GNOME."
 msgstr "Software pro správu a přehrávání hudby pro prostředí GNOME."
 
-#: ../shell/rb-shell.c:2484
+#: ../shell/rb-shell.c:2483
 msgid "Rhythmbox Website"
 msgstr "Webová stránka Rhythmboxu"
 
-#: ../shell/rb-shell.c:2576
+#: ../shell/rb-shell.c:2575
 msgid "Configure Plugins"
 msgstr "Nastavit přídavné moduly"
 
-#: ../shell/rb-shell.c:2665
+#: ../shell/rb-shell.c:2664
 msgid "Import Folder into Library"
 msgstr "Importovat složku do kolekce"
 
-#: ../shell/rb-shell.c:2684
+#: ../shell/rb-shell.c:2683
 msgid "Import File into Library"
 msgstr "Importovat soubor do kolekce"
 
-#: ../shell/rb-shell.c:3215 ../shell/rb-shell.c:3572
+#: ../shell/rb-shell.c:3214 ../shell/rb-shell.c:3571
 #: ../sources/rb-play-queue-source.c:636
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Žádné registrované zdroje nemohou obsluhovat URI %s"
 
-#: ../shell/rb-shell.c:3692
+#: ../shell/rb-shell.c:3691
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Žádný registrovaný zdroj neodpovídá adrese URI %s"
 
-#: ../shell/rb-shell.c:3725 ../shell/rb-shell.c:3768
+#: ../shell/rb-shell.c:3724 ../shell/rb-shell.c:3767
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Neznámé URI skladby: %s"
 
-#: ../shell/rb-shell.c:3777
+#: ../shell/rb-shell.c:3776
 #, c-format
 msgid "Unknown property %s"
 msgstr "Neznámá vlastnost %s"
 
-#: ../shell/rb-shell.c:3791
+#: ../shell/rb-shell.c:3790
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Neplatný typ vlastnosti %s pro vlastnost %s"
@@ -4315,11 +4330,6 @@ msgstr "Přenáší se stopa %d z %d (%.0f%%)"
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Přenáší se stopa %d z %d"
-
-#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:150
-#: ../sources/rb-static-playlist-source.c:124
-msgid "Artists"
-msgstr "Umělci"
 
 #: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:150
 #: ../sources/rb-static-playlist-source.c:124
