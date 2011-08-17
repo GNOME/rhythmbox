@@ -963,6 +963,12 @@ else
 	AC_MSG_NOTICE([   iTunes detection browser plugin (for podcasts) disabled])
 fi
 
+if test "x$have_clutter" = xyes; then
+	AC_MSG_NOTICE([** Visualizer plugin enabled])
+else
+	AC_MSG_NOTICE([   Visualizer plugin disabled])
+fi
+
 if test "x$have_json_glib" = xyes; then
 	AC_MSG_NOTICE([** Last.fm support enabled])
 else
