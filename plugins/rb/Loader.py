@@ -24,8 +24,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import gobject, glib
-from gi.repository import Gdk, Gio
+from gi.repository import GObject, GLib, Gdk, Gio
 import sys
 
 def callback_with_gdk_lock(callback, data, args):
@@ -98,10 +97,10 @@ class ChunkLoader(object):
 			print "error reading file %s" % (self.uri)
 			sys.excepthook(*sys.exc_info())
 			stream.close()
-			gobject.idle_add(self._error_idle_cb, e)
+			GObject.idle_add(self._error_idle_cb, e)
 
 		if (self._callback_gdk(data) is not False) and data:
-			stream.read_async (self.chunksize, glib.PRIORITY_DEFAULT, self._cancel, self._read_cb, None)
+			stream.read_async (self.chunksize, GLib.PRIORITY_DEFAULT, self._cancel, self._read_cb, None)
 		else:
 			# finished or cancelled by callback
 			stream.close()
@@ -115,14 +114,14 @@ class ChunkLoader(object):
 			sys.excepthook(*sys.exc_info())
 			self._callback_gdk(e)
 
-		stream.read_async(self.chunksize, glib.PRIORITY_DEFAULT, self._cancel, self._read_cb, None)
+		stream.read_async(self.chunksize, GLib.PRIORITY_DEFAULT, self._cancel, self._read_cb, None)
 
 	def _info_cb(self, file, result):
 		try:
 			info = file.query_info_finish(result)
 			self.total = info.get_attribute_uint64(Gio.FILE_ATTRIBUTE_STANDARD_SIZE)
 
-			file.read_async(glib.PRIORITY_DEFAULT, self._cancel, self._open_cb, None)
+			file.read_async(GLib.PRIORITY_DEFAULT, self._cancel, self._open_cb, None)
 		except Exception, e:
 			print "error checking size of source file %s" % (self.uri)
 			sys.excepthook(*sys.exc_info())
@@ -143,9 +142,9 @@ class ChunkLoader(object):
 
 			file = gio.File(uri)
 			if want_size:
-				file.query_info_async(Gio.FILE_ATTRIBUTE_STANDARD_SIZE, Gio.FileQueryInfoFlags.NONE, glib.PRIORITY_DEFAULT, self._cancel, self._info_cb, None)
+				file.query_info_async(Gio.FILE_ATTRIBUTE_STANDARD_SIZE, Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, self._cancel, self._info_cb, None)
 			else:
-				file.read_async(glib.PRIORITY_DEFAULT, self._cancel, self._open_cb, None)
+				file.read_async(GLib.PRIORITY_DEFAULT, self._cancel, self._open_cb, None)
 		except Exception, e:
 			print "error reading file %s: %s" % (uri, e.message)
 			self._callback(e)
@@ -179,7 +178,7 @@ class UpdateCheck(object):
 			self.local_mod = lfi.get_attribute_uint64(Gio.FILE_ATTRIBUTE_TIME_MODIFIED)
 
 			rf = Gio.file_new_for_uri(remote)
-			rf.query_info_async(Gio.FILE_ATTRIBUTE_TIME_MODIFIED, Gio.FileQueryInfoFlags.NONE, glib.PRIORITY_DEFAULT, self._cancel, self._file_info_cb, None)
+			rf.query_info_async(Gio.FILE_ATTRIBUTE_TIME_MODIFIED, Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, self._cancel, self._file_info_cb, None)
 		except Exception, e:
 			sys.excepthook(*sys.exc_info())
 			self.callback(True, *self.args)

@@ -27,22 +27,22 @@
 
 import os
 import itertools
-import gobject
 import gi
 
 import rb
-from gi.repository import GdkPixbuf
+from gi.repository import GObject, GdkPixbuf
 from gi.repository import RB
 
 from PodcastCoverArtSearch import PodcastCoverArtSearch
 from MusicBrainzCoverArtSearch import MusicBrainzCoverArtSearch
 from LastFMCoverArtSearch import LastFMCoverArtSearch
-from EmbeddedCoverArtSearch import EmbeddedCoverArtSearch
+# temporarily disabled, needs GStreamer introspection improvements
+# from EmbeddedCoverArtSearch import EmbeddedCoverArtSearch
 from LocalCoverArtSearch import LocalCoverArtSearch
 
 from urllib import unquote, pathname2url
 
-ART_SEARCHES_LOCAL = [LocalCoverArtSearch, EmbeddedCoverArtSearch]
+ART_SEARCHES_LOCAL = [LocalCoverArtSearch] # , EmbeddedCoverArtSearch]
 ART_SEARCHES_REMOTE = [PodcastCoverArtSearch, LastFMCoverArtSearch, MusicBrainzCoverArtSearch]
 
 ART_FOLDER = os.path.join(RB.user_cache_dir(), 'covers')
@@ -355,7 +355,7 @@ class CoverArtDatabase (object):
 				l.write(data)
 				l.close()
 				return l.get_pixbuf()
-			except gobject.GError, e:
+			except GObject.GError, e:
 				print "error reading image: %s" % str(e)
 				import sys
 				sys.excepthook(*sys.exc_info())

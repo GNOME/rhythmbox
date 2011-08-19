@@ -24,7 +24,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import gobject
 import gi
 
 from warnings import warn
@@ -32,7 +31,7 @@ from warnings import warn
 from CoverArtDatabase import CoverArtDatabase
 
 import rb
-from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, Peas
+from gi.repository import GObject, Gtk, Gdk, GdkPixbuf, Gio, Peas
 from gi.repository import RB
 
 FADE_STEPS = 10
@@ -88,7 +87,7 @@ def merge_with_background (pixbuf, bgcolor, pad_if_not_near_square):
 
 class FadingImage (Gtk.Misc):
 	__gsignals__ = {
-		'get-max-size' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_INT, ())
+		'get-max-size' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_INT, ())
 	}
 	def __init__ (self, missing_image):
 		Gtk.Misc.__init__(self)
@@ -109,7 +108,7 @@ class FadingImage (Gtk.Misc):
 		self.icon_theme.disconnect(self.tc_id)
 		for id in self.resize_id, self.fade_id, self.anim_id:
 			if id != 0:
-				gobject.source_remove (id)
+				GObject.source_remove (id)
 
 	def screen_changed (self, widget, old_screen):
 		if old_screen:
@@ -152,7 +151,7 @@ class FadingImage (Gtk.Misc):
 
 	def size_allocate_cb (self, widget, allocation):
 		if self.resize_id == 0:
-			self.resize_id = gobject.idle_add (self.after_resize)
+			self.resize_id = GObject.idle_add (self.after_resize)
 
 		max_size = self.emit ('get-max-size')
 		self.size = min (self.get_allocated_width (), max_size)
@@ -235,7 +234,7 @@ class FadingImage (Gtk.Misc):
 			self.fade_id = 0
 		self.merged_pixbuf = None
 		if first_time:
-			self.fade_id = gobject.timeout_add ((FADE_TOTAL_TIME / FADE_STEPS), self.fade_art, False)
+			self.fade_id = GObject.timeout_add ((FADE_TOTAL_TIME / FADE_STEPS), self.fade_art, False)
 			return False
 		self.queue_resize ()
 		return (self.fade_step <= 0.999)
@@ -246,7 +245,7 @@ class FadingImage (Gtk.Misc):
 		x, y, w, h = self.anim_rect ()
 		self.queue_draw_area (max (x, 0), max (y, 0), w, h)
 		if first_time:
-			self.anim_id = gobject.timeout_add (int (1000 / THROBBER_RATE), self.animation_advance, counter, False)
+			self.anim_id = GObject.timeout_add (int (1000 / THROBBER_RATE), self.animation_advance, counter, False)
 			return False
 		return True
 
@@ -262,24 +261,24 @@ class FadingImage (Gtk.Misc):
 		self.fade_step = 0.0
 		self.anim = None
 		if self.fade_id != 0:
-			gobject.source_remove (self.fade_id)
+			GObject.source_remove (self.fade_id)
 			self.fade_id = 0
 		if self.old_pixbuf is not None:
-			self.fade_id = gobject.timeout_add (working and WORKING_DELAY or (FADE_TOTAL_TIME / FADE_STEPS), self.fade_art, working)
+			self.fade_id = GObject.timeout_add (working and WORKING_DELAY or (FADE_TOTAL_TIME / FADE_STEPS), self.fade_art, working)
 		if working and self.anim_id == 0 and self.anim_frames:
-			self.anim_id = gobject.timeout_add (WORKING_DELAY, self.animation_advance, [0], True)
+			self.anim_id = GObject.timeout_add (WORKING_DELAY, self.animation_advance, [0], True)
 		if not working and self.anim_id != 0:
-			gobject.source_remove (self.anim_id)
+			GObject.source_remove (self.anim_id)
 			self.anim_id = 0
 		self.queue_resize ()
 
-gobject.type_register (FadingImage)
+GObject.type_register (FadingImage)
 
 
 class ArtDisplayWidget (FadingImage):
 	__gsignals__ = {
-			'pixbuf-dropped' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (RB.RhythmDBEntry, GdkPixbuf.Pixbuf)),
-			'uri-dropped' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (RB.RhythmDBEntry, gobject.TYPE_STRING))
+			'pixbuf-dropped' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, (RB.RhythmDBEntry, GdkPixbuf.Pixbuf)),
+			'uri-dropped' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, (RB.RhythmDBEntry, GObject.TYPE_STRING))
 			}
 
 	def __init__ (self, missing_image):
@@ -365,15 +364,15 @@ class ArtDisplayWidget (FadingImage):
 			self.emit ('uri-dropped', entry, uris[0])
 		elif text:
 			self.emit ('uri-dropped', entry, text)
-gobject.type_register (ArtDisplayWidget)
+GObject.type_register (ArtDisplayWidget)
 
 
-class ArtDisplayPlugin (gobject.GObject, Peas.Activatable):
+class ArtDisplayPlugin (GObject.GObject, Peas.Activatable):
 	__gtype_name__ = 'ArtDisplayPlugin'
-	object = gobject.property(type=gobject.GObject)
+	object = GObject.property(type=GObject.GObject)
 
 	def __init__ (self):
-		gobject.GObject.__init__ (self)
+		GObject.GObject.__init__ (self)
 
 	def do_activate (self):
 		shell = self.object
@@ -445,7 +444,8 @@ class ArtDisplayPlugin (gobject.GObject, Peas.Activatable):
 	def on_get_pixbuf_completed(self, entry, pixbuf, uri, tooltip_image, tooltip_text):
 		# Set the pixbuf for the entry returned from the art db
 		if rb.entry_equal(entry, self.current_entry):
-			self.current_pixbuf = pixbuf
+			if self.current_pixbuf is None or pixbuf is not None:
+				self.current_pixbuf = pixbuf
 
 			if tooltip_image is None:
 				pb = None
@@ -454,7 +454,7 @@ class ArtDisplayPlugin (gobject.GObject, Peas.Activatable):
 			else:
 				f = rb.find_plugin_file (self, tooltip_image)
 				pb = GdkPixbuf.Pixbuf.new_from_file(f)
-			self.art_widget.set (entry, pixbuf, uri, pb, tooltip_text, False)
+			self.art_widget.set (entry, self.current_pixbuf, uri, pb, tooltip_text, False)
 
 		if pixbuf:
 			# This might be from a playing-changed signal,
@@ -468,7 +468,7 @@ class ArtDisplayPlugin (gobject.GObject, Peas.Activatable):
 					db.emit_entry_extra_metadata_notify (entry, "rb:coverArt-uri", uri)
 					self.emitting_uri_notify = False
 				return False
-			gobject.idle_add(idle_emit_art)
+			GObject.idle_add(idle_emit_art)
 
 	def cover_art_request (self, db, entry):
 		a = [None]
@@ -483,13 +483,14 @@ class ArtDisplayPlugin (gobject.GObject, Peas.Activatable):
 		return a[0]
 
 	def cover_art_notify (self, db, entry, field, metadata):
-		if entry != self.current_entry:
+		if rb.entry_equal(entry, self.current_entry) is False:
 			return
 		if not isinstance (metadata, GdkPixbuf.Pixbuf):
 			return
 		self.art_db.cancel_get_pixbuf (entry)
 		if self.current_pixbuf == metadata:
 			return
+		self.current_pixbuf = metadata
 
 		# cache the pixbuf so we can provide a url
 		uri = self.art_db.cache_pixbuf (db, entry, metadata)
@@ -499,7 +500,7 @@ class ArtDisplayPlugin (gobject.GObject, Peas.Activatable):
 		self.emitting_uri_notify = False
 
 	def cover_art_uri_notify (self, db, entry, field, metadata):
-		if entry != self.current_entry:
+		if rb.entry_equal(entry, self.current_entry) is False:
 			return
 
 		if self.emitting_uri_notify:

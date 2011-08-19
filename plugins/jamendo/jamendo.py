@@ -29,13 +29,11 @@
 # Parts from "Magnatune Rhythmbox plugin" (stolen from rhythmbox's __init__.py)
 #     Copyright (C), 2006 Adam Zimmerman <adam_zimmerman@sfu.ca>
 
-import gobject
-
 from JamendoSource import JamendoSource
 from JamendoConfigureDialog import JamendoConfigureDialog
 
 import rb
-from gi.repository import Gtk, Gio, Peas
+from gi.repository import GObject, Gtk, Gio, Peas
 from gi.repository import RB
 
 popup_ui = """
@@ -64,9 +62,9 @@ class JamendoEntryType(RB.RhythmDBEntryType):
 	def do_sync_metadata(self, entry, changes):
 		return
 
-class Jamendo(gobject.GObject, Peas.Activatable):
+class Jamendo(GObject.GObject, Peas.Activatable):
 	__gtype_name__ = 'Jamendo'
-	object = gobject.property(type=gobject.GObject)
+	object = GObject.property(type=GObject.GObject)
 
 	#
 	# Core methods
@@ -87,7 +85,7 @@ class Jamendo(gobject.GObject, Peas.Activatable):
 
 		group = RB.DisplayPageGroup.get_by_id ("stores")
 		settings = Gio.Settings("org.gnome.rhythmbox.plugins.jamendo")
-		self.source = gobject.new (JamendoSource,
+		self.source = GObject.new (JamendoSource,
 					   shell=shell,
 					   entry_type=self.entry_type,
 					   plugin=self,

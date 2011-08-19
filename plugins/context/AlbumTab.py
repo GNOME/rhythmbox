@@ -24,7 +24,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import gobject
 import os
 import cgi
 import urllib
@@ -35,18 +34,18 @@ import LastFM
 
 import rb
 from gi.repository import RB
-from gi.repository import Gtk
+from gi.repository import GObject, Gtk
 from gi.repository import WebKit
 
-class AlbumTab (gobject.GObject):
+class AlbumTab (GObject.GObject):
 
     __gsignals__ = {
-        'switch-tab' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
-                                (gobject.TYPE_STRING,))
+        'switch-tab' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,
+                                (GObject.TYPE_STRING,))
     }
     
     def __init__ (self, shell, buttons, ds, view):
-        gobject.GObject.__init__ (self)
+        GObject.GObject.__init__ (self)
         self.shell      = shell
         self.sp         = shell.props.shell_player
         self.db         = shell.props.db
@@ -89,10 +88,10 @@ class AlbumTab (gobject.GObject):
 
         self.artist = artist
 
-class AlbumView (gobject.GObject):
+class AlbumView (GObject.GObject):
 
     def __init__ (self, shell, plugin, webview, ds):
-        gobject.GObject.__init__ (self)
+        GObject.GObject.__init__ (self)
         self.webview = webview
         self.ds      = ds
         self.shell   = shell
@@ -138,14 +137,14 @@ class AlbumView (gobject.GObject):
         self.load_view ()
 
 
-class AlbumDataSource (gobject.GObject):
+class AlbumDataSource (GObject.GObject):
     
     __gsignals__ = {
-        'albums-ready' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
+        'albums-ready' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ())
     }
 
     def __init__ (self, info_cache, ranking_cache):
-        gobject.GObject.__init__ (self)
+        GObject.GObject.__init__ (self)
         self.albums = None
         self.error = None
         self.artist = None

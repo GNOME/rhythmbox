@@ -24,12 +24,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import gobject
 import os
 import cgi
 import urllib
 
-from gi.repository import Gtk
+from gi.repository import GObject, Gtk
 from gi.repository import RB
 from gi.repository import WebKit
 
@@ -38,15 +37,15 @@ from gettext import gettext as _
 from mako.template import Template
 
 
-class LinksTab (gobject.GObject):
+class LinksTab (GObject.GObject):
 
     __gsignals__ = {
-        'switch-tab' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
-                                (gobject.TYPE_STRING,))
+        'switch-tab' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,
+                                (GObject.TYPE_STRING,))
     }
 
     def __init__ (self, shell, buttons, ds, view):
-        gobject.GObject.__init__ (self)
+        GObject.GObject.__init__ (self)
         self.shell      = shell
         self.sp         = shell.props.shell_player
         self.db         = shell.props.db
@@ -90,10 +89,10 @@ class LinksTab (gobject.GObject):
         self.view.load_links (self.datasource)
 
 
-class LinksView (gobject.GObject):
+class LinksView (GObject.GObject):
 
     def __init__ (self, shell, plugin, webview):
-        gobject.GObject.__init__ (self)
+        GObject.GObject.__init__ (self)
         self.shell    = shell
         self.plugin   = plugin
         self.webview  = webview
@@ -121,10 +120,10 @@ class LinksView (gobject.GObject):
         self.webview.load_string (self.file, 'text/html', 'utf-8', self.basepath)
 
 
-class LinksDataSource (gobject.GObject):
+class LinksDataSource (GObject.GObject):
 
     def __init__ (self, db):
-        gobject.GObject.__init__ (self)
+        GObject.GObject.__init__ (self)
 
         self.db = db
         self.entry = None

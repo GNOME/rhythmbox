@@ -26,12 +26,11 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import os
-import gobject
 import glib
 import gi
 
 from gi.repository import RB
-from gi.repository import Gio
+from gi.repository import GObject, Gio
 
 IMAGE_NAMES = ["cover", "album", "albumart", ".folder", "folder"]
 ITEMS_PER_NOTIFICATION = 10

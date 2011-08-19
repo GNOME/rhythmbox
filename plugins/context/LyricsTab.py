@@ -24,25 +24,24 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import gobject
 import urllib
 import re, os
 import cgi
 from mako.template import Template
 
 import rb
-from gi.repository import Gtk
+from gi.repository import GObject, Gtk
 from gi.repository import RB
 
-class LyricsTab (gobject.GObject):
+class LyricsTab (GObject.GObject):
     
     __gsignals__ = {
-        'switch-tab' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
-                                (gobject.TYPE_STRING,))
+        'switch-tab' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,
+                                (GObject.TYPE_STRING,))
     }
 
     def __init__ (self, shell, toolbar, ds, view):
-        gobject.GObject.__init__ (self)
+        GObject.GObject.__init__ (self)
         self.shell      = shell
         self.sp         = shell.props.shell_player
         self.db         = shell.props.db
@@ -75,10 +74,10 @@ class LyricsTab (gobject.GObject):
         self.datasource.fetch_lyrics (entry)
         self.view.loading (self.datasource.get_artist(), self.datasource.get_title())
 
-class LyricsView (gobject.GObject):
+class LyricsView (GObject.GObject):
 
     def __init__ (self, shell, plugin, webview, ds):
-        gobject.GObject.__init__ (self)
+        GObject.GObject.__init__ (self)
         self.webview = webview
         self.ds      = ds
         self.shell   = shell
@@ -131,14 +130,14 @@ class LyricsView (gobject.GObject):
                                           stylesheet = self.styles)
         self.load_view ()
 
-class LyricsDataSource (gobject.GObject):
+class LyricsDataSource (GObject.GObject):
     
     __gsignals__ = {
-        'lyrics-ready' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (RB.RhythmDBEntry, gobject.TYPE_STRING,)),
+        'lyrics-ready' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, (RB.RhythmDBEntry, GObject.TYPE_STRING,)),
     }
 
     def __init__ (self, db):
-        gobject.GObject.__init__ (self)
+        GObject.GObject.__init__ (self)
         self.db = db
         self.db.connect ('entry-extra-metadata-notify::rb:lyrics', self.lyrics_notify)
 

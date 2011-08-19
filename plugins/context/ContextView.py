@@ -24,7 +24,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import gobject
 import os
 
 import ArtistTab as at
@@ -33,7 +32,7 @@ import LyricsTab as lt
 import LinksTab as lit
 
 import rb
-from gi.repository import Gtk, Gdk, Pango, Gio
+from gi.repository import GObject, Gtk, Gdk, Pango, Gio
 from gi.repository import RB
 from gi.repository import WebKit
 
@@ -45,10 +44,10 @@ context_ui = """
 </ui>
 """
 
-class ContextView (gobject.GObject):
+class ContextView (GObject.GObject):
 
     def __init__ (self, shell, plugin):
-        gobject.GObject.__init__ (self)
+        GObject.GObject.__init__ (self)
         self.shell = shell
         self.sp = shell.props.shell_player
         self.db = shell.props.db
@@ -192,7 +191,7 @@ class ContextView (gobject.GObject):
     def playing_changed_cb (self, playing, user_data):
         # this sometimes happens on a streaming thread, so we need to
         # move it to the main thread
-        gobject.idle_add (self.playing_changed_idle_cb)
+        GObject.idle_add (self.playing_changed_idle_cb)
 
     def playing_changed_idle_cb (self):
         if self.sp is None:
@@ -248,7 +247,7 @@ class ContextView (gobject.GObject):
         self.label.set_padding(0,4)
 
         #----- set up top 5 tree view -----#
-        self.top_five_list = Gtk.ListStore (gobject.TYPE_STRING, gobject.TYPE_STRING)
+        self.top_five_list = Gtk.ListStore (GObject.TYPE_STRING, GObject.TYPE_STRING)
         top_five_view = Gtk.TreeView.new_with_model(self.top_five_list)
 
         top_five_tvc1 = Gtk.TreeViewColumn()

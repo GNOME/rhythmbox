@@ -26,7 +26,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import os
-import gobject
 import xml
 import urllib
 import urlparse
@@ -36,7 +35,7 @@ import gnomekeyring as keyring
 
 import rb
 from gi.repository import RB
-from gi.repository import Gtk, Gio
+from gi.repository import GObject, Gtk, Gio
 # XXX use GnomeKeyring when introspection is available
 
 from TrackListHandler import TrackListHandler
@@ -65,7 +64,7 @@ class MagnatuneSource(RB.BrowserSource):
 		# source state
 		self.__activated = False
 		self.__db = None
-		self.__notify_id = 0 # gobject.idle_add id for status notifications
+		self.__notify_id = 0 # GObject.idle_add id for status notifications
 		self.__info_screen = None # the loading screen
 
 		# track data
@@ -76,7 +75,7 @@ class MagnatuneSource(RB.BrowserSource):
 		# catalogue stuff
 		self.__updating = True # whether we're loading the catalog right now
 		self.__has_loaded = False # whether the catalog has been loaded yet
-		self.__update_id = 0 # gobject.idle_add id for catalog updates
+		self.__update_id = 0 # GObject.idle_add id for catalog updates
 		self.__catalogue_loader = None
 		self.__catalogue_check = None
 		self.__load_progress = (0, 0) # (complete, total)
@@ -134,7 +133,7 @@ class MagnatuneSource(RB.BrowserSource):
 			self.__show_loading_screen(True)
 
 			# start our catalogue updates
-			self.__update_id = gobject.timeout_add_seconds(6 * 60 * 60, self.__update_catalogue)
+			self.__update_id = GObject.timeout_add_seconds(6 * 60 * 60, self.__update_catalogue)
 			self.__update_catalogue()
 
 	def do_impl_can_delete(self):
@@ -148,11 +147,11 @@ class MagnatuneSource(RB.BrowserSource):
 
 	def do_delete_thyself(self):
 		if self.__update_id != 0:
-			gobject.source_remove(self.__update_id)
+			GObject.source_remove(self.__update_id)
 			self.__update_id = 0
 
 		if self.__notify_id != 0:
-			gobject.source_remove(self.__notify_id)
+			GObject.source_remove(self.__notify_id)
 			self.__notify_id = 0
 
 		if self.__catalogue_loader is not None:
@@ -384,7 +383,7 @@ class MagnatuneSource(RB.BrowserSource):
 			return False
 
 		if self.__notify_id == 0:
-			self.__notify_id = gobject.idle_add(change_idle_cb)
+			self.__notify_id = GObject.idle_add(change_idle_cb)
 
 	#
 	# internal purchasing code
@@ -548,7 +547,7 @@ class MagnatuneSource(RB.BrowserSource):
 		if entry.get_entry_type() != self.__db.entry_type_get_by_name("MagnatuneEntryType"):
 			return
 
-		gobject.idle_add(self.emit_cover_art_uri, entry)
+		GObject.idle_add(self.emit_cover_art_uri, entry)
 
 	def emit_cover_art_uri(self, entry):
 		sku = self.__sku_dict[self.__db.entry_get_string(entry, RB.RhythmDBPropType.LOCATION)]
@@ -556,4 +555,4 @@ class MagnatuneSource(RB.BrowserSource):
 		self.__db.emit_entry_extra_metadata_notify(entry, 'rb:coverArt-uri', url)
 		return False
 
-gobject.type_register(MagnatuneSource)
+GObject.type_register(MagnatuneSource)

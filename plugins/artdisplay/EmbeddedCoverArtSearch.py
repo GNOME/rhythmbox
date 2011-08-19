@@ -24,11 +24,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import gst
-import gobject
-
 import rb
-from gi.repository import GdkPixbuf
+from gi.repository import GObject, GdkPixbuf, Gst
 from gi.repository import RB
 
 class EmbeddedCoverArtSearch (object):
@@ -37,19 +34,20 @@ class EmbeddedCoverArtSearch (object):
 
 	def _tag_cb (self, bus, message):
 		taglist = message.parse_tag()
-		for tag in (gst.TAG_IMAGE, gst.TAG_PREVIEW_IMAGE):
+		for tag in (Gst.TAG_IMAGE, Gst.TAG_PREVIEW_IMAGE):
 			if tag not in taglist.keys():
 				continue
 
 			print "got image tag %s" % tag
 			try:
+				buf = taglist.get_buffer_index(tag, 0)
 				loader = GdkPixbuf.PixbufLoader()
-				if loader.write(taglist[tag]) and loader.close():
+				if loader.write(buf.data) and loader.close():
 					print "successfully extracted pixbuf"
 					self.got_pixbuf = True
 					self.callback(self, self.entry, loader.get_pixbuf(), *self.args)
 					return
-			except gobject.GError:
+			except GObject.GError:
 				continue
 
 	def _state_changed_cb (self, bus, message):
@@ -57,16 +55,16 @@ class EmbeddedCoverArtSearch (object):
 			return
 
 		old, new, pending = message.parse_state_changed()
-		if ((new, pending) == (gst.STATE_PAUSED, gst.STATE_VOID_PENDING)):
+		if ((new, pending) == (Gst.State.PAUSED, Gst.State.VOID_PENDING)):
 			print "pipeline has gone to PAUSED"
-			self.pipeline.set_state(gst.STATE_NULL)
+			self.pipeline.set_state(Gst.State.NULL)
 			if self.got_pixbuf is False:
 				self.callback(self, self.entry, None, *self.args)
 
 	def _error_cb (self, bus, message):
 		error = message.parse_error()
 		print "got error: %s" % error[1]
-		self.pipeline.set_state(gst.STATE_NULL)
+		self.pipeline.set_state(Gst.State.NULL)
 		self.callback(self, self.entry, None, *self.args)
 
 	def _decoded_pad_cb (self, decodebin, pad, last):
@@ -74,7 +72,7 @@ class EmbeddedCoverArtSearch (object):
 			return
 
 		caps = pad.get_caps()
-		if caps[0].get_name() in ('audio/x-raw-float', 'audio/x-raw-int'):
+		if caps.get_structure(0).get_name() in ('audio/x-raw-float', 'audio/x-raw-int'):
 			print "linking decoded audio pad to fakesink"
 			pad.link(self.sinkpad)
 
@@ -100,7 +98,7 @@ class EmbeddedCoverArtSearch (object):
 		self.got_pixbuf = False
 
 		# set up pipeline and bus callbacks
-		self.pipeline = gst.Pipeline()
+		self.pipeline = Gst.Pipeline()
 		bus = self.pipeline.get_bus()
 		bus.add_signal_watch()
 		bus.connect("message::tag", self._tag_cb)
@@ -108,17 +106,19 @@ class EmbeddedCoverArtSearch (object):
 		bus.connect("message::error", self._error_cb)
 
 		# create elements
-		self.src = gst.element_make_from_uri(gst.URI_SRC, uri)
-		self.decodebin = gst.element_factory_make("decodebin2")
-		self.sink = gst.element_factory_make("fakesink")
+		self.src = Gst.Element.make_from_uri(Gst.URIType.SRC, uri, None)
+		self.decodebin = Gst.ElementFactory.make("decodebin2", None)
+		self.sink = Gst.ElementFactory.make("fakesink", None)
 		self.decodebin.connect('new-decoded-pad', self._decoded_pad_cb)
 
-		self.pipeline.add(self.src, self.decodebin, self.sink)
+		self.pipeline.add(self.src)
+		self.pipeline.add(self.decodebin)
+		self.pipeline.add(self.sink)
 		self.src.link(self.decodebin)
 
 		self.sinkpad = self.sink.get_pad('sink')
 
-		self.pipeline.set_state(gst.STATE_PAUSED)
+		self.pipeline.set_state(Gst.State.PAUSED)
 
 
 	def search_next (self):

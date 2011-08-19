@@ -26,10 +26,9 @@
 
 import urllib
 import re
-import gobject
 
 import rb
-from gi.repository import Gio
+from gi.repository import GObject, Gio
 
 from LyricsSites import lyrics_sites
 
@@ -41,7 +40,7 @@ class Parser (object):
 		try:
 			settings = Gio.Settings("org.gnome.rhythmbox.plugins.lyrics")
 			self.sites = settings['sites']
-		except gobject.GError, e:
+		except GObject.GError, e:
 			print e
 			self.sites = []
 

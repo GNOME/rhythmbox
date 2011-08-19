@@ -27,7 +27,6 @@
 
 from LyricsSites import lyrics_sites
 
-import gobject
 from os import system, path
 
 import rb
@@ -110,7 +109,7 @@ class LyricsConfigureDialog (GObject.Object, PeasGtk.Configurable):
 	def get_prefs (self):
 		try:
 			sites = self.settings['sites']
-		except gobject.GError, e:
+		except GObject.GError, e:
 			print e
 			engines = []
 		folder = self.settings['folder']

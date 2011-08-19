@@ -22,13 +22,12 @@
 #     Copyright (C), 2006 Adam Zimmerman <adam_zimmerman@sfu.ca>
 
 import os
-import gobject
 import xml
 import gzip
 import datetime
 
 import rb
-from gi.repository import Gtk, Gdk, Gio
+from gi.repository import GObject, Gtk, Gdk, Gio
 from gi.repository import RB
 
 from JamendoSaxHandler import JamendoSaxHandler
@@ -123,17 +122,17 @@ class JamendoSource(RB.BrowserSource):
 			self.__show_loading_screen (True)
 
 			# start our catalogue updates
-			self.__update_id = gobject.timeout_add_seconds(6 * 60 * 60, self.__update_catalogue)
+			self.__update_id = GObject.timeout_add_seconds(6 * 60 * 60, self.__update_catalogue)
 			self.__update_catalogue()
 
 
 	def do_delete_thyself(self):
 		if self.__update_id != 0:
-			gobject.source_remove (self.__update_id)
+			GObject.source_remove (self.__update_id)
 			self.__update_id = 0
 
 		if self.__notify_id != 0:
-			gobject.source_remove (self.__notify_id)
+			GObject.source_remove (self.__notify_id)
 			self.__notify_id = 0
 
 		if self.__catalogue_loader:
@@ -256,7 +255,7 @@ class JamendoSource(RB.BrowserSource):
 			return False
 
 		if self.__notify_id == 0:
-			self.__notify_id = gobject.idle_add(change_idle_cb)
+			self.__notify_id = GObject.idle_add(change_idle_cb)
 
 
 	# Download album
@@ -318,7 +317,7 @@ class JamendoSource(RB.BrowserSource):
 		if entry.get_entry_type() != self.__db.entry_type_get_by_name("JamendoEntryType"):
 			return
 
-		gobject.idle_add(self.emit_cover_art_uri, entry)
+		GObject.idle_add(self.emit_cover_art_uri, entry)
 
 	def emit_cover_art_uri (self, entry):
 		stream = self.__db.entry_get_string (entry, RB.RhythmDBPropType.LOCATION)
@@ -328,4 +327,4 @@ class JamendoSource(RB.BrowserSource):
 		self.__db.emit_entry_extra_metadata_notify (entry, "rb:coverArt-uri", str(url))
 		return False
 
-gobject.type_register(JamendoSource)
+GObject.type_register(JamendoSource)

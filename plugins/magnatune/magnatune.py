@@ -25,8 +25,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import gobject
-
 import urllib
 import zipfile
 import sys, os.path
@@ -37,7 +35,7 @@ import gnomekeyring as keyring
 
 import rb
 from gi.repository import RB
-from gi.repository import Gtk, Gio, Peas, PeasGtk
+from gi.repository import GObject, Gtk, Gio, Peas, PeasGtk
 # XXX use GnomeKeyring when available
 
 from MagnatuneSource import MagnatuneSource
@@ -69,14 +67,14 @@ class MagnatuneEntryType(RB.RhythmDBEntryType):
 	def sync_metadata(self, entry, changes):
 		return
 
-class Magnatune(gobject.GObject, Peas.Activatable):
+class Magnatune(GObject.GObject, Peas.Activatable):
 	__gtype_name__ = 'Magnatune'
-	object = gobject.property(type=gobject.GObject)
+	object = GObject.property(type=GObject.GObject)
 
 	format_list = ['ogg', 'flac', 'wav', 'mp3-vbr', 'mp3-cbr']
 
 	def __init__(self):
-		gobject.GObject.__init__(self)
+		GObject.GObject.__init__(self)
 
 	def do_activate(self):
 		shell = self.object
@@ -95,7 +93,7 @@ class Magnatune(gobject.GObject, Peas.Activatable):
 
 		group = RB.DisplayPageGroup.get_by_id ("stores")
 		settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
-		self.source = gobject.new(MagnatuneSource,
+		self.source = GObject.new(MagnatuneSource,
 					  shell=shell,
 					  entry_type=self.entry_type,
 					  pixbuf=icon,
@@ -153,12 +151,12 @@ class Magnatune(gobject.GObject, Peas.Activatable):
 		self.source.playing_entry_changed(entry)
 
 
-class MagnatuneConfig(gobject.GObject, PeasGtk.Configurable):
+class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 	__gtype_name__ = 'MagnatuneConfig'
-	object = gobject.property(type=gobject.GObject)
+	object = GObject.property(type=GObject.GObject)
 
 	def __init__(self):
-		gobject.GObject.__init__(self)
+		GObject.GObject.__init__(self)
 
 	def do_create_configure_widget(self):
 		# We use a dictionary so we can modify these values from within inner functions

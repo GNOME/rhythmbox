@@ -24,7 +24,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import gobject
 import re, os
 import cgi
 import urllib
@@ -36,18 +35,18 @@ import rb
 import LastFM
 
 from gi.repository import WebKit
-from gi.repository import Gtk
+from gi.repository import GObject, Gtk
 from gi.repository import RB
     
-class ArtistTab (gobject.GObject):
+class ArtistTab (GObject.GObject):
     
     __gsignals__ = {
-        'switch-tab' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
-                                (gobject.TYPE_STRING,))
+        'switch-tab' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE,
+                                (GObject.TYPE_STRING,))
     }
 
     def __init__ (self, shell, buttons, ds, view):
-        gobject.GObject.__init__ (self)
+        GObject.GObject.__init__ (self)
         self.shell      = shell
         self.sp         = shell.props.shell_player
         self.db         = shell.props.db
@@ -91,10 +90,10 @@ class ArtistTab (gobject.GObject):
             self.view.load_view()
         self.artist = artist
 
-class ArtistView (gobject.GObject):
+class ArtistView (GObject.GObject):
 
     def __init__ (self, shell, plugin, webview, ds):
-        gobject.GObject.__init__ (self)
+        GObject.GObject.__init__ (self)
         self.webview  = webview
         self.ds       = ds
         self.shell    = shell
@@ -147,17 +146,17 @@ class ArtistView (gobject.GObject):
             print "Problem in info ready: %s" % e
     
 
-class ArtistDataSource (gobject.GObject):
+class ArtistDataSource (GObject.GObject):
     
     __gsignals__ = {
-        'artist-info-ready'       : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-        'artist-similar-ready'    : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-        'artist-top-tracks-ready' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
-        'artist-top-albums-ready' : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()),
+        'artist-info-ready'       : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ()),
+        'artist-similar-ready'    : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ()),
+        'artist-top-tracks-ready' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ()),
+        'artist-top-albums-ready' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, ()),
     }
 
     def __init__ (self, info_cache, ranking_cache):
-        gobject.GObject.__init__ (self)
+        GObject.GObject.__init__ (self)
 
         self.current_artist = None
         self.error = None

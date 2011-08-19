@@ -25,12 +25,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 #
 
-import gobject
-import gst
-
 import rb
 from gi.repository import RB
-from gi.repository import Gio
+from gi.repository import GObject, Gio, Gst
 
 import config
 
@@ -42,7 +39,7 @@ class ReplayGainPlayer(object):
 		missing = []
 		required = ("rgvolume", "rglimiter")
 		for e in required:
-			if gst.element_factory_find(e) is None:
+			if Gst.ElementFactory.find(e) is None:
 				missing.append(e)
 
 		if len(missing) > 0:
@@ -62,7 +59,7 @@ class ReplayGainPlayer(object):
 
 		# we use different means to hook into the playback pipeline depending on
 		# the playback backend in use
-		if gobject.signal_lookup("get-stream-filters", self.player):
+		if GObject.signal_lookup("get-stream-filters", self.player):
 			self.setup_xfade_mode()
 			self.deactivate_backend = self.deactivate_xfade_mode
 		else:
@@ -144,8 +141,8 @@ class ReplayGainPlayer(object):
 		print "bouncing rgvolume state to reset tags"
 		# somehow need to decide whether we've already got a gain value for the new track
 		#self.resetting_rgvolume = True
-		rgvolume.set_state(gst.STATE_READY)
-		rgvolume.set_state(gst.STATE_PLAYING)
+		rgvolume.set_state(Gst.State.READY)
+		rgvolume.set_state(Gst.State.PLAYING)
 		#self.resetting_rgvolume = False
 		pad.set_blocked_async(False, self.rgvolume_reset_done, rgvolume)
 
@@ -162,9 +159,9 @@ class ReplayGainPlayer(object):
 
 	def setup_playbin2_mode(self):
 		print "using output filter for rgvolume and rglimiter"
-		self.rgvolume = gst.element_factory_make("rgvolume")
+		self.rgvolume = Gst.ElementFactory.make("rgvolume", None)
 		self.rgvolume.connect("notify::target-gain", self.playbin2_target_gain_cb)
-		self.rglimiter = gst.element_factory_make("rglimiter")
+		self.rglimiter = Gst.ElementFactory.make("rglimiter", None)
 
 		# on track changes, we need to reset the rgvolume state, otherwise it
 		# carries over the tags from the previous track
@@ -177,19 +174,10 @@ class ReplayGainPlayer(object):
 		else:
 			playbin.connect("notify::uri", self.playbin2_uri_notify_cb)
 
-		# try to work around bug #621632
-		if gobject.pygobject_version > (2,21,1):
-			print "working around pygobject/gst-python refcount bug.."
-			self.player.add_filter(self.rgvolume)
-			self.player.add_filter(self.rglimiter)
-			self.rgfilter = None
-		else:
-			self.rgfilter = gst.Bin()
-			self.rgfilter.add(self.rgvolume, self.rglimiter)
-			self.rgvolume.link(self.rglimiter)
-			self.rgfilter.add_pad(gst.GhostPad("sink", self.rgvolume.get_static_pad("sink")))
-			self.rgfilter.add_pad(gst.GhostPad("src", self.rglimiter.get_static_pad("src")))
-			self.player.add_filter(self.rgfilter)
+		# work around bug #621632 by adding these as separate filters
+		self.player.add_filter(self.rgvolume)
+		self.player.add_filter(self.rglimiter)
+		self.rgfilter = None
 
 	def deactivate_playbin2_mode(self):
 		if self.rgfilter == None:
@@ -213,7 +201,7 @@ class ReplayGainPlayer(object):
 
 	def create_stream_filter_cb(self, player, uri):
 		print "creating rgvolume instance for stream %s" % uri
-		rgvolume = gst.element_factory_make("rgvolume")
+		rgvolume = Gst.ElementFactory.make("rgvolume", None)
 		rgvolume.connect("notify::target-gain", self.xfade_target_gain_cb)
 		self.set_rgvolume(rgvolume)
 		return [rgvolume]
@@ -229,7 +217,7 @@ class ReplayGainPlayer(object):
 		self.stream_filter_id = self.player.connect("get-stream-filters", self.create_stream_filter_cb)
 
 		# and add rglimiter as an output filter
-		self.rglimiter = gst.element_factory_make("rglimiter")
+		self.rglimiter = Gst.ElementFactory.make("rglimiter", None)
 		self.player.add_filter(self.rglimiter)
 
 	def deactivate_xfade_mode(self):
