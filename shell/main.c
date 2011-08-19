@@ -59,7 +59,7 @@
 #include <libgda/libgda.h>
 #endif
 
-#include <gobject-introspection-1.0/girepository.h>
+#include <girepository.h>
 
 #include "rb-refstring.h"
 #include "rb-shell.h"
