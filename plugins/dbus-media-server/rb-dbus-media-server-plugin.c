@@ -1712,7 +1712,7 @@ entry_prop_changed_cb (RhythmDBQueryModel *model,
 			continue;
 
 		prop_data->updated = TRUE;
-		value = rhythmdb_entry_get_refstring (entry, prop);
+		value = rhythmdb_entry_get_refstring (entry, prop_data->property);
 		if (g_list_find (prop_data->updated_values, value) == NULL) {
 			prop_data->updated_values =
 				g_list_prepend (prop_data->updated_values, value);
