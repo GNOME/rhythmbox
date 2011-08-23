@@ -63,6 +63,7 @@ class LyricsConfigureDialog (GObject.Object, PeasGtk.Configurable):
 			site_id = s['id']
 			checkbutton = Gtk.CheckButton(label = s['name'])
 			checkbutton.set_active(s['id'] in engines)
+			checkbutton.connect("toggled", self.set_sites)
 			self.site_checks[site_id] = checkbutton
 			site_box.pack_start(checkbutton, True, True, 0)
 
@@ -70,7 +71,7 @@ class LyricsConfigureDialog (GObject.Object, PeasGtk.Configurable):
 
 		return self.config
 
-	def set_values(self):
+	def set_sites(self, widget):
 		sites = []
 		for s in lyrics_sites:
 			check = self.site_checks[s['id']]
@@ -80,11 +81,9 @@ class LyricsConfigureDialog (GObject.Object, PeasGtk.Configurable):
 			if check.get_active():
 				sites.append(s['id'])
 
-		if len(self.path_display.get_text()) is not 0:
-			self.folder = self.path_display.get_text()
-
+		print "setting lyrics sites: " + str(sites)
 		self.settings['sites'] = sites
-		self.settings['folder'] = self.folder
+
 
 	def choose_callback(self, widget):
 		def response_handler(widget, response):
@@ -92,10 +91,11 @@ class LyricsConfigureDialog (GObject.Object, PeasGtk.Configurable):
 				path = self.chooser.get_filename()
 				self.chooser.destroy()
 				self.path_display.set_text(path)
+				self.settings['folder'] = path
 			else:
 				self.chooser.destroy()
 
-		buttons = (Gtk.STOCK_CLOSE, Gtk.ResponseTypeCLOSE,
+		buttons = (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE,
 				Gtk.STOCK_OK, Gtk.ResponseType.OK)
 		self.chooser = Gtk.FileChooserDialog(title=_("Choose lyrics folder..."),
 					parent=None,
