@@ -336,7 +336,8 @@ missing_encoder_response_cb (GtkDialog *dialog, gint response, RBTrackTransferQu
 			GstEncodingProfile *profile = GST_ENCODING_PROFILE (l->data);
 			char *profile_media_type;
 			profile_media_type = rb_gst_encoding_profile_get_media_type (profile);
-			if ((rb_gst_media_type_is_lossless (profile_media_type) == FALSE) &&
+			if (profile_media_type != NULL &&
+			    (rb_gst_media_type_is_lossless (profile_media_type) == FALSE) &&
 			    rb_encoder_get_missing_plugins (encoder, profile, NULL, NULL)) {
 				profiles = g_list_append (profiles, profile);
 			}

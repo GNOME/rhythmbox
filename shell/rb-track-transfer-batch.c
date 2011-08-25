@@ -234,7 +234,8 @@ rb_track_transfer_batch_check_profiles (RBTrackTransferBatch *batch, GList **mis
 		GstEncodingProfile *profile = GST_ENCODING_PROFILE (l->data);
 		char *profile_media_type;
 		profile_media_type = rb_gst_encoding_profile_get_media_type (profile);
-		if ((rb_gst_media_type_is_lossless (profile_media_type) == FALSE) &&
+		if (profile_media_type != NULL &&
+		    (rb_gst_media_type_is_lossless (profile_media_type) == FALSE) &&
 		    rb_encoder_get_missing_plugins (encoder, profile, NULL, NULL)) {
 			batch->priv->missing_plugin_profiles = g_list_append (batch->priv->missing_plugin_profiles, profile);
 		}
