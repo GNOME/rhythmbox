@@ -24,7 +24,7 @@ msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-07-24 14:19+0000\n"
+"POT-Creation-Date: 2011-08-05 12:36+0000\n"
 "PO-Revision-Date: 2011-08-02 18:33+0200\n"
 "Last-Translator: Bruno Brouard <annoa.b@gmail.com>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
@@ -569,7 +569,7 @@ msgstr "Lire et organiser votre collection musicale"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
 #: ../data/rhythmbox-device.desktop.in.in.h:3 ../shell/rb-shell.c:1229
-#: ../shell/rb-shell.c:2336
+#: ../shell/rb-shell.c:2335
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -1476,8 +1476,9 @@ msgstr ""
 "Affiche des informations en relation avec l'artiste et le morceau en cours "
 "de lecture."
 
-#: ../plugins/context/AlbumTab.py:55 ../sources/rb-auto-playlist-source.c:105
-#: ../sources/rb-browser-source.c:151
+#: ../plugins/context/AlbumTab.py:55
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2416
+#: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:151
 #: ../sources/rb-static-playlist-source.c:125
 msgid "Albums"
 msgstr "Albums"
@@ -1721,7 +1722,22 @@ msgid ""
 msgstr ""
 "Apporte une implémentation de la spécification d'interface D-Bus MediaServer2"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1457
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1280
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1405
+msgid "All Tracks"
+msgstr "Tous les morceaux"
+
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2415
+#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:150
+#: ../sources/rb-static-playlist-source.c:124
+msgid "Artists"
+msgstr "Artistes"
+
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2417
+msgid "Genres"
+msgstr "Genres"
+
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2426
 #: ../shell/rb-playlist-manager.c:1081 ../sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "Listes de lecture"
@@ -2815,8 +2831,7 @@ msgstr "Activer le débogage Python à distance avec rpdb2"
 
 #: ../plugins/pythonconsole/pythonconsole.py:122
 msgid "You can access the main window through the 'shell' variable :"
-msgstr ""
-"Vous pouvez contrôler la fenêtre principale via la variable « shell » :"
+msgstr "Vous pouvez contrôler la fenêtre principale via la variable « shell » :"
 
 #: ../plugins/pythonconsole/pythonconsole.py:137
 #, python-format
@@ -3983,7 +3998,7 @@ msgstr "Met la lecture en pause"
 msgid "Stop playback"
 msgstr "Arrête la lecture"
 
-#: ../shell/rb-shell-preferences.c:166 ../shell/rb-shell.c:2531
+#: ../shell/rb-shell-preferences.c:166 ../shell/rb-shell.c:2530
 msgid "Couldn't display help"
 msgstr "Impossible d'afficher l'aide"
 
@@ -4141,21 +4156,21 @@ msgstr "B_arre d'état"
 msgid "Change the visibility of the statusbar"
 msgstr "Modifie la visibilité de la barre d'état"
 
-#: ../shell/rb-shell.c:1507
+#: ../shell/rb-shell.c:1506
 msgid "Change the music volume"
 msgstr "Modifie le volume sonore"
 
-#: ../shell/rb-shell.c:2054
+#: ../shell/rb-shell.c:2053
 msgid "Error while saving song information"
 msgstr "Erreur lors de l'enregistrement des informations du morceau"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2356
+#: ../shell/rb-shell.c:2355
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (en pause)"
 
-#: ../shell/rb-shell.c:2449
+#: ../shell/rb-shell.c:2448
 msgid "translator-credits"
 msgstr ""
 "Christophe Fergeau <teuf@users.sourceforge.net>\n"
@@ -4172,7 +4187,7 @@ msgstr ""
 "Laurent Pomarede <laurent.pomarede+gnomefr@gmail.com>\n"
 "Bruno Brouard <annoa.b@gmail.com>"
 
-#: ../shell/rb-shell.c:2452
+#: ../shell/rb-shell.c:2451
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -4185,7 +4200,7 @@ msgstr ""
 "que publiée par la Free Software Foundation ; version 2 de la licence, ou \n"
 "encore (à votre choix) toute version ultérieure.\n"
 
-#: ../shell/rb-shell.c:2456
+#: ../shell/rb-shell.c:2455
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -4197,7 +4212,7 @@ msgstr ""
 "COMMERCIABILITÉ ou DE CONFORMITÉ À UNE UTILISATION PARTICULIÈRE. \n"
 "Voir la Licence Publique Générale GNU pour plus de détails.\n"
 
-#: ../shell/rb-shell.c:2460
+#: ../shell/rb-shell.c:2459
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -4207,60 +4222,60 @@ msgstr ""
 "avec Rhythmbox ; sinon, écrivez à la Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA\n"
 
-#: ../shell/rb-shell.c:2467
+#: ../shell/rb-shell.c:2466
 msgid "Maintainers:"
 msgstr "Mainteneurs :"
 
-#: ../shell/rb-shell.c:2470
+#: ../shell/rb-shell.c:2469
 msgid "Former Maintainers:"
 msgstr "Anciens mainteneurs :"
 
-#: ../shell/rb-shell.c:2473
+#: ../shell/rb-shell.c:2472
 msgid "Contributors:"
 msgstr "Contributeurs :"
 
-#: ../shell/rb-shell.c:2475
+#: ../shell/rb-shell.c:2474
 msgid "Music management and playback software for GNOME."
 msgstr "Gestionnaire de musique et lecteur audio pour GNOME."
 
-#: ../shell/rb-shell.c:2484
+#: ../shell/rb-shell.c:2483
 msgid "Rhythmbox Website"
 msgstr "Site Web de Rhythmbox"
 
-#: ../shell/rb-shell.c:2576
+#: ../shell/rb-shell.c:2575
 msgid "Configure Plugins"
 msgstr "Configurer les greffons"
 
-#: ../shell/rb-shell.c:2665
+#: ../shell/rb-shell.c:2664
 msgid "Import Folder into Library"
 msgstr "Importe un dossier dans la bibliothèque"
 
-#: ../shell/rb-shell.c:2684
+#: ../shell/rb-shell.c:2683
 msgid "Import File into Library"
 msgstr "Importe un fichier dans la bibliothèque"
 
-#: ../shell/rb-shell.c:3215 ../shell/rb-shell.c:3572
+#: ../shell/rb-shell.c:3214 ../shell/rb-shell.c:3571
 #: ../sources/rb-play-queue-source.c:636
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Aucune source enregistrée ne peut prendre en charge l'URI %s"
 
-#: ../shell/rb-shell.c:3692
+#: ../shell/rb-shell.c:3691
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Aucune source enregistrée ne correspond à l'URI %s"
 
-#: ../shell/rb-shell.c:3725 ../shell/rb-shell.c:3768
+#: ../shell/rb-shell.c:3724 ../shell/rb-shell.c:3767
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI du morceau inconnu : %s"
 
-#: ../shell/rb-shell.c:3777
+#: ../shell/rb-shell.c:3776
 #, c-format
 msgid "Unknown property %s"
 msgstr "Propriété %s inconnue"
 
-#: ../shell/rb-shell.c:3791
+#: ../shell/rb-shell.c:3790
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Type de propriété %s non valide pour la propriété %s"
@@ -4380,11 +4395,6 @@ msgstr "Transfert de la piste %d sur %d (%.0f%%)"
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Transfert de la piste %d sur %d"
-
-#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:150
-#: ../sources/rb-static-playlist-source.c:124
-msgid "Artists"
-msgstr "Artistes"
 
 #: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:150
 #: ../sources/rb-static-playlist-source.c:124
@@ -5116,4 +5126,3 @@ msgstr "Sur le bureau"
 #: ../widgets/rb-song-info.c:1259
 msgid "Unknown location"
 msgstr "Emplacement inconnu"
-
