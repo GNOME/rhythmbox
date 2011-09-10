@@ -44,6 +44,9 @@ static void rb_search_entry_changed_cb (GtkEditable *editable,
 			                RBSearchEntry *entry);
 static void rb_search_entry_activate_cb (GtkEntry *gtkentry,
 					 RBSearchEntry *entry);
+static void rb_search_entry_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
+static void rb_search_entry_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
+static void button_clicked_cb (GtkButton *button, RBSearchEntry *entry);
 static gboolean rb_search_entry_focus_out_event_cb (GtkWidget *widget,
 				                    GdkEventFocus *event,
 				                    RBSearchEntry *entry);
@@ -51,12 +54,17 @@ static void rb_search_entry_clear_cb (GtkEntry *entry,
 				      GtkEntryIconPosition icon_pos,
 				      GdkEvent *event,
 				      RBSearchEntry *search_entry);
+static void rb_search_entry_check_style (RBSearchEntry *entry);
 
 struct RBSearchEntryPrivate
 {
+	GtkWidget *label;
 	GtkWidget *entry;
+	GtkWidget *button;
 
+	gboolean explicit_mode;
 	gboolean clearing;
+	gboolean searching;
 
 	guint timeout;
 
@@ -88,6 +96,12 @@ enum
 	LAST_SIGNAL
 };
 
+enum
+{
+	PROP_0,
+	PROP_EXPLICIT_MODE
+};
+
 static guint rb_search_entry_signals[LAST_SIGNAL] = { 0 };
 
 static void
@@ -96,6 +110,8 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = rb_search_entry_finalize;
+	object_class->set_property = rb_search_entry_set_property;
+	object_class->get_property = rb_search_entry_get_property;
 
 	/**
 	 * RBSearchEntry::search:
@@ -135,13 +151,26 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 			      1,
 			      G_TYPE_STRING);
 
+	/**
+	 * RBSearchEntry:explicit-mode:
+	 *
+	 * If TRUE, show a button and only emit the 'search' signal when
+	 * the user presses it rather than when they stop typing.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_EXPLICIT_MODE,
+					 g_param_spec_boolean ("explicit-mode",
+							       "explicit mode",
+							       "whether in explicit search mode or not",
+							       FALSE,
+							       G_PARAM_READWRITE));
+
 	g_type_class_add_private (klass, sizeof (RBSearchEntryPrivate));
 }
 
 static void
 rb_search_entry_init (RBSearchEntry *entry)
 {
-	GtkWidget *label;
 	GtkSettings *settings;
 	char *theme;
 
@@ -154,9 +183,11 @@ rb_search_entry_init (RBSearchEntry *entry)
 	g_free (theme);
 
 	/* this string can only be so long, or there wont be a search entry :) */
-	label = gtk_label_new_with_mnemonic (_("_Search:"));
-	gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_RIGHT);
-	gtk_box_pack_start (GTK_BOX (entry), label, FALSE, TRUE, 0);
+	entry->priv->label = gtk_label_new_with_mnemonic (_("_Search:"));
+	gtk_label_set_justify (GTK_LABEL (entry->priv->label), GTK_JUSTIFY_RIGHT);
+	gtk_box_pack_start (GTK_BOX (entry), entry->priv->label, FALSE, TRUE, 0);
+	gtk_widget_set_no_show_all (entry->priv->label, TRUE);
+	gtk_widget_show (entry->priv->label);
 
 	entry->priv->entry = gtk_entry_new ();
 	gtk_entry_set_icon_from_stock (GTK_ENTRY (entry->priv->entry),
@@ -170,7 +201,7 @@ rb_search_entry_init (RBSearchEntry *entry)
 				 G_CALLBACK (rb_search_entry_clear_cb),
 				 entry, 0);
 
-	gtk_label_set_mnemonic_widget (GTK_LABEL (label),
+	gtk_label_set_mnemonic_widget (GTK_LABEL (entry->priv->label),
 				       entry->priv->entry);
 
 	gtk_box_pack_start (GTK_BOX (entry), entry->priv->entry, TRUE, TRUE, 0);
@@ -187,6 +218,47 @@ rb_search_entry_init (RBSearchEntry *entry)
 				 "activate",
 				 G_CALLBACK (rb_search_entry_activate_cb),
 				 entry, 0);
+
+	entry->priv->button = gtk_button_new_with_label (_("Search"));
+	gtk_box_pack_start (GTK_BOX (entry), entry->priv->button, FALSE, FALSE, 0);
+	gtk_widget_set_no_show_all (entry->priv->button, TRUE);
+	g_signal_connect_object (entry->priv->button,
+				 "clicked",
+				 G_CALLBACK (button_clicked_cb),
+				 entry, 0);
+}
+
+static void
+rb_search_entry_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	RBSearchEntry *entry = RB_SEARCH_ENTRY (object);
+
+	switch (prop_id) {
+	case PROP_EXPLICIT_MODE:
+		entry->priv->explicit_mode = g_value_get_boolean (value);
+		gtk_widget_set_visible (entry->priv->label, entry->priv->explicit_mode == FALSE);
+		gtk_widget_set_visible (entry->priv->button, entry->priv->explicit_mode == TRUE);
+		rb_search_entry_check_style (entry);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_search_entry_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	RBSearchEntry *entry = RB_SEARCH_ENTRY (object);
+
+	switch (prop_id) {
+	case PROP_EXPLICIT_MODE:
+		g_value_set_boolean (value, entry->priv->explicit_mode);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -270,6 +342,7 @@ rb_search_entry_check_style (RBSearchEntry *entry)
 	GdkRGBA bg_color = {0,};
 	GdkRGBA fg_color = {0,};
 	const gchar* text;
+	gboolean searching;
 
 	if (entry->priv->is_a11y_theme)
 		return;
@@ -286,8 +359,14 @@ rb_search_entry_check_style (RBSearchEntry *entry)
 		fg_color = fallback_fg_color;
 	}
 
-	text = gtk_entry_get_text (GTK_ENTRY (entry->priv->entry));
-	if (text && *text) {
+	if (entry->priv->explicit_mode) {
+		searching = entry->priv->searching;
+	} else {
+		text = gtk_entry_get_text (GTK_ENTRY (entry->priv->entry));
+		searching = (text && *text);
+	}
+
+	if (searching) {
 		gtk_widget_override_color (entry->priv->entry, GTK_STATE_NORMAL, &fg_color);
 		gtk_widget_override_background_color (entry->priv->entry, GTK_STATE_NORMAL, &bg_color);
 		gtk_widget_override_cursor (entry->priv->entry, &fg_color, &fg_color);
@@ -304,10 +383,13 @@ static void
 rb_search_entry_changed_cb (GtkEditable *editable,
 			    RBSearchEntry *entry)
 {
-	rb_search_entry_check_style (entry);
+	const char *text;
 
-	if (entry->priv->clearing == TRUE)
+	if (entry->priv->clearing == TRUE) {
+		entry->priv->searching = FALSE;
+		rb_search_entry_check_style (entry);
 		return;
+	}
 
 	if (entry->priv->timeout != 0) {
 		g_source_remove (entry->priv->timeout);
@@ -315,19 +397,29 @@ rb_search_entry_changed_cb (GtkEditable *editable,
 	}
 
 	/* emit it now if we're clearing the entry */
-	if (gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)))
+	text = gtk_entry_get_text (GTK_ENTRY (entry->priv->entry));
+	if (text != NULL && text[0] != '\0') {
+		gtk_widget_set_sensitive (entry->priv->button, TRUE);
 		entry->priv->timeout = g_timeout_add (300, (GSourceFunc) rb_search_entry_timeout_cb, entry);
-	else
+	} else {
+		entry->priv->searching = FALSE;
+		gtk_widget_set_sensitive (entry->priv->button, FALSE);
 		rb_search_entry_timeout_cb (entry);
+	}
+	rb_search_entry_check_style (entry);
 }
 
 static gboolean
 rb_search_entry_timeout_cb (RBSearchEntry *entry)
 {
+	const char *text;
 	gdk_threads_enter ();
 
-	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[SEARCH], 0,
-		       gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)));
+	text = gtk_entry_get_text (GTK_ENTRY (entry->priv->entry));
+
+	if (entry->priv->explicit_mode == FALSE) {
+		g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[SEARCH], 0, text);
+	}
 	entry->priv->timeout = 0;
 
 	gdk_threads_leave ();
@@ -346,8 +438,10 @@ rb_search_entry_focus_out_event_cb (GtkWidget *widget,
 	g_source_remove (entry->priv->timeout);
 	entry->priv->timeout = 0;
 
-	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[SEARCH], 0,
-		       gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)));
+	if (entry->priv->explicit_mode == FALSE) {
+		g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[SEARCH], 0,
+			       gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)));
+	}
 
 	return FALSE;
 }
@@ -363,14 +457,29 @@ rb_search_entry_focus_out_event_cb (GtkWidget *widget,
 gboolean
 rb_search_entry_searching (RBSearchEntry *entry)
 {
-	return strcmp ("", gtk_entry_get_text (GTK_ENTRY (entry->priv->entry))) != 0;
+	if (entry->priv->explicit_mode) {
+		return entry->priv->searching;
+	} else {
+		return strcmp ("", gtk_entry_get_text (GTK_ENTRY (entry->priv->entry))) != 0;
+	}
 }
 
 static void
 rb_search_entry_activate_cb (GtkEntry *gtkentry,
 			     RBSearchEntry *entry)
 {
+	entry->priv->searching = TRUE;
+	rb_search_entry_check_style (entry);
 	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[ACTIVATE], 0,
+		       gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)));
+}
+
+static void
+button_clicked_cb (GtkButton *button, RBSearchEntry *entry)
+{
+	entry->priv->searching = TRUE;
+	rb_search_entry_check_style (entry);
+	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[SEARCH], 0,
 		       gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)));
 }
 
