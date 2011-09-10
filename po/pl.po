@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-08 22:13+0200\n"
-"PO-Revision-Date: 2011-09-08 22:14+0200\n"
+"POT-Creation-Date: 2011-09-10 15:58+0200\n"
+"PO-Revision-Date: 2011-09-10 15:59+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -689,7 +689,6 @@ msgstr "%d %b %Y"
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
 #: ../plugins/generic-player/rb-generic-player-source.c:1023
 #: ../plugins/ipod/rb-ipod-source.c:414
-#: ../plugins/jamendo/JamendoSaxHandler.py:73
 #: ../plugins/iradio/rb-iradio-source.c:557
 #: ../plugins/iradio/rb-iradio-source.c:1052
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
@@ -1830,6 +1829,27 @@ msgstr "Wyświetla właściwości urządzenia"
 msgid "Advanced"
 msgstr "Zaawansowane"
 
+#: ../plugins/grilo/grilo.plugin.in.h:1
+msgid "Browse various local and Internet media sources"
+msgstr "Przeglądanie różnych lokalnych i internetowych źródeł multimediów"
+
+#: ../plugins/grilo/grilo.plugin.in.h:2
+msgid "Grilo media browser"
+msgstr "Przeglądarka multimediów Grilo"
+
+#: ../plugins/grilo/rb-grilo-source.c:348
+msgid "Browse"
+msgstr "Przeglądaj"
+
+#: ../plugins/grilo/rb-grilo-source.c:392
+msgid "Fetch more tracks"
+msgstr "Pobiera więcej ścieżek"
+
+#: ../plugins/grilo/rb-grilo-source.c:840
+#, c-format
+msgid "Only showing %d results"
+msgstr "Wyświetlanie tylko %d wyników"
+
 #: ../plugins/im-status/im-status.plugin.in.h:1
 msgid "IM Status"
 msgstr "Stan komunikatora"
@@ -1972,148 +1992,6 @@ msgstr "Radio internetowe"
 #: ../plugins/iradio/iradio.plugin.in.h:2
 msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "Obsługa usług nadawczych przesyłanych przez Internet"
-
-#: ../plugins/jamendo/jamendo-prefs.ui.h:1
-msgid "<b>Download</b>"
-msgstr "<b>Pobieranie</b>"
-
-#: ../plugins/jamendo/jamendo-prefs.ui.h:2
-msgid "MP3 (200Kbps)"
-msgstr "MP3 (200Kbps)"
-
-#: ../plugins/jamendo/jamendo-prefs.ui.h:3
-msgid "Ogg Vorbis (300Kbps)"
-msgstr "Ogg Vorbis (300Kbps)"
-
-#: ../plugins/jamendo/jamendo-prefs.ui.h:4
-msgid "Visit Jamendo at "
-msgstr "Odwiedź Jamendo na"
-
-#: ../plugins/jamendo/jamendo-prefs.ui.h:5
-msgid "_Format:"
-msgstr "_Format:"
-
-#: ../plugins/jamendo/jamendo-prefs.ui.h:6
-msgid "http://www.jamendo.com/"
-msgstr "http://www.jamendo.com/"
-
-#. This text comes from http://www.jamendo.com/en/static/concept/ and was already translated in many languages. You should take a look on this site and check if you can't reuse it.
-#: ../plugins/jamendo/jamendo-loading.ui.h:2
-msgid ""
-"     * A legal framework protecting the artists (thanks to the Creative "
-"Commons licenses)."
-msgstr ""
-"    * Strukturę prawną chroniącą wykonawców (dzięki licencji Creative "
-"Commons)."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:3
-msgid ""
-"     * An adaptive music recommendation system based on iRATE to help "
-"listeners discover new artists based on their tastes\n"
-"       and on other criteria such as their location."
-msgstr ""
-"    * Inteligentny system rekomendacji muzyki oparty o iRATE, pomagający "
-"słuchaczom odkrywać nowych wykonawców w oparciu o swoje gusta\n"
-" oraz inne kryteria, takie jak miejsce zamieszkania."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:5
-msgid "     * Free, simple and quick access to the music, for everyone."
-msgstr "    * Darmowy, prosty i szybki dostęp do muzyki dla wszystkich."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:6
-msgid "     * The possibility of making direct donations to the artists."
-msgstr "    * Możliwość dokonywania bezpośrednich wpłat dla wykonawców."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:7
-msgid "     * The use of the latest Peer-to-Peer technologies"
-msgstr "    * Użycie najnowszych technologii sieci Peer-to-Peer."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:8
-msgid "<b>Jamendo</b>"
-msgstr "<b>Jamendo</b>"
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:9
-msgid ""
-"Jamendo is a new model for artists to promote, publish, and be paid for "
-"their music."
-msgstr ""
-"Jamendo to nowy sposób dla wykonawców na promocję, publikację i czerpanie "
-"dochodu ze swojej twórczości."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:10
-msgid "Jamendo is the only platform that joins together :"
-msgstr "Jamendo jest jedyną platformą łączącą w sobie jednocześnie:"
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:11
-msgid ""
-"Jamendo users can discover and share albums, but also review them or start a "
-"discussion on the forums.\n"
-"Albums are democratically rated based on the visitors’ reviews.\n"
-"If they fancy an artist they can support him by making a donation."
-msgstr ""
-"Użytkownicy Jamendo mogą odkrywać i dzielić się albumami, a także opiniować "
-"je lub dyskutować o nich na forum.\n"
-"Albumy oceniane są demokratycznie, na podstawie opinii odwiedzających.\n"
-"Jeśli spodoba im się twórczość jakiegoś wykonawcy, mogą wpłacić dla niego "
-"pieniądze."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:14
-msgid ""
-"On Jamendo, the artists distribute their music under Creative Commons "
-"licenses.\n"
-"In a nutshell, they allow you to download, remix and share their music "
-"freely.\n"
-"It's a \"Some rights reserved\" agreement, perfectly suited for the new "
-"century."
-msgstr ""
-"W serwisie Jamendo twórczość udostępniana jest na licencjach Creative "
-"Commons.\n"
-"Mówiąc w skrócie, wykonawcy zezwalają na darmowe pobieranie, remiksowanie i "
-"dzielenie się utworami.\n"
-"To umowa oparta na zasadzie \"pewne prawa zastrzeżone\", idealnie pasująca "
-"do nowego stulecia."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:17
-msgid ""
-"These new rules make Jamendo able to use the new powerful means of digital "
-"distribution like\n"
-"Peer-to-Peer networks such as BitTorrent or eMule to legally distribute "
-"albums at near-zero cost."
-msgstr ""
-"Te nowe zasady pozwalają Jamendo na użycie nowych, potężnych środków "
-"cyfrowej dystrybucji - sieci\n"
-"Peer-to-Peer takich jak BitTorrent czy eMule, aby legalnie rozpowszechniać "
-"albumy po niemal zerowych kosztach."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:19
-msgid "You can find more information at http://www.jamendo.com/"
-msgstr "Więcej informacji można znaleźć na stronie http://www.jamendo.com/"
-
-#: ../plugins/jamendo/jamendo.plugin.in.h:1
-msgid ""
-"Adds support to Rhythmbox for playing and downloading albums from Jamendo"
-msgstr ""
-"Dodaje obsługę odtwarzania i pobierania albumów z Jamendo w programie "
-"Rhythmbox"
-
-#: ../plugins/jamendo/jamendo.plugin.in.h:2
-#: ../plugins/jamendo/JamendoSource.py:58
-msgid "Jamendo"
-msgstr "Jamendo"
-
-#: ../plugins/jamendo/JamendoSource.py:110
-msgid "Loading Jamendo catalog"
-msgstr "Wczytywanie katalogu Jamendo"
-
-#: ../plugins/jamendo/JamendoSource.py:284
-#, python-format
-msgid "Error looking up p2plink for album %s on jamendo.com"
-msgstr "Błąd podczas wyszukiwania p2plink dla wykonawcy %s na jamendo.com"
-
-#: ../plugins/jamendo/JamendoSource.py:308
-#, python-format
-msgid "Error looking up artist %s on jamendo.com"
-msgstr "Błąd podczas wyszukiwania wykonawcy %s na jamendo.com"
 
 #: ../plugins/iradio/rb-iradio-source.c:159
 msgid "New Internet _Radio Station..."
@@ -5056,13 +4934,17 @@ msgstr[1] "%d gwiazdki"
 msgstr[2] "%d gwiazdek"
 
 #. this string can only be so long, or there wont be a search entry :)
-#: ../widgets/rb-search-entry.c:157
+#: ../widgets/rb-search-entry.c:186
 msgid "_Search:"
 msgstr "Wys_zukiwanie:"
 
-#: ../widgets/rb-search-entry.c:167
+#: ../widgets/rb-search-entry.c:198
 msgid "Clear the search text"
 msgstr "Czyści pole wyszukiwania"
+
+#: ../widgets/rb-search-entry.c:222
+msgid "Search"
+msgstr "Wyszukaj"
 
 #: ../widgets/rb-song-info.c:371
 msgid "Song Properties"
