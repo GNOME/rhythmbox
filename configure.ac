@@ -849,7 +849,6 @@ plugins/sample-vala/Makefile
 plugins/pythonconsole/Makefile
 plugins/artdisplay/Makefile
 plugins/magnatune/Makefile
-plugins/jamendo/Makefile
 plugins/generic-player/Makefile
 plugins/rb/Makefile
 plugins/power-manager/Makefile

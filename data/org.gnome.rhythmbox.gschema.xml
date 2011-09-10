@@ -322,19 +322,6 @@
     <child name='source' schema='org.gnome.rhythmbox.plugins.iradio.source'/>
   </schema>
 
-  <enum id="org.gnome.rhythmbox.plugins.jamendo.audio-format">
-    <value nick="ogg3" value="0"/>
-    <value nick="mp32" value="1"/>
-  </enum>
-  <schema id="org.gnome.rhythmbox.plugins.jamendo" path="/org/gnome/rhythmbox/plugins/jamendo/">
-    <key name="format" enum="org.gnome.rhythmbox.plugins.jamendo.audio-format">
-      <default>'ogg3'</default>
-      <summary>Audio format to use for Jamendo downloads</summary>
-      <description>Audio format to use for Jamendo downloads</description>
-    </key>
-    <child name="source" schema="org.gnome.rhythmbox.source"/>
-  </schema>
-
   <schema id="org.gnome.rhythmbox.plugins.lyrics" path="/org/gnome/rhythmbox/plugins/lyrics/">
     <key name="sites" type="as">
       <default>['lyrc.com.ar']</default>	<!-- do we have any that work? -->

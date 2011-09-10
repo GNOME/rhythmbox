@@ -16,7 +16,6 @@ SUBDIRS +=						\
 	artdisplay					\
 	context						\
 	im-status					\
-	jamendo						\
 	lyrics						\
 	magnatune					\
 	pythonconsole					\
