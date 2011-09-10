@@ -25,8 +25,6 @@ SUBDIRS +=						\
 	sample-python					\
 	sendto						\
 	rb
-
-# coherence
 endif
 
 if ENABLE_VALA
