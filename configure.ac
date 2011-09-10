@@ -58,6 +58,7 @@ LIBSOUP_REQS=2.26.0
 GUDEV_REQS=143
 LIBMTP_REQS=0.3.0
 LIBPEAS_REQS=0.7.3
+GRILO_REQS=0.1.17
 
 LIBNOTIFY_REQS=0.7.0
 BRASERO_MIN_REQS=2.31.5
@@ -784,6 +785,27 @@ AC_SUBST(JSON_GLIB_CFLAGS)
 AC_SUBST(JSON_GLIB_LIBS)
 
 dnl ================================================================
+dnl grilo plugin
+dnl ================================================================
+AC_ARG_ENABLE(grilo,
+	      AC_HELP_STRING([--disable-grilo],
+			     [Disable Grilo support]),,
+	      enable_grilo=auto)
+if test "x$enable_grilo" != "xno"; then
+	PKG_CHECK_MODULES(GRILO, grilo-0.1 >= $GRILO_REQS, have_grilo=yes, have_grilo=no)
+	if test "x$have_grilo" = "xno" -a "x$enable_grilo" = "xyes"; then
+		AC_MSG_ERROR([Grilo support explicitly requested, but grilo couldn not be found])
+	fi
+	if test "x$have_grilo" = "xyes"; then
+		AC_DEFINE(HAVE_GRILO, 1, [Define if Grilo support is enabled])
+	fi
+fi
+
+AM_CONDITIONAL(ENABLE_GRILO, test x"$have_grilo" = "xyes")
+AC_SUBST(GRILO_CFLAGS)
+AC_SUBST(GRILO_LIBS)
+
+dnl ================================================================
 dnl end-game
 dnl ================================================================
 
@@ -861,6 +883,7 @@ plugins/dbus-media-server/Makefile
 plugins/rbzeitgeist/Makefile
 plugins/notification/Makefile
 plugins/visualizer/Makefile
+plugins/grilo/Makefile
 bindings/Makefile
 bindings/vala/Makefile
 bindings/gi/Makefile

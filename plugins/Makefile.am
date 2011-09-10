@@ -66,3 +66,7 @@ endif
 if USE_NOTIFY
 SUBDIRS += notification
 endif
+
+if ENABLE_GRILO
+SUBDIRS += grilo
+endif
