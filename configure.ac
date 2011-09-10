@@ -9,7 +9,7 @@ AM_INIT_AUTOMAKE([1.9 dist-bzip2 no-dist-gzip])
 
 AC_SUBST(ACLOCAL_AMFLAGS, "-I macros")
 
-AM_MAINTAINER_MODE
+AM_MAINTAINER_MODE([enable])
 GNOME_MAINTAINER_MODE_DEFINES
 
 # plugin API versioning
