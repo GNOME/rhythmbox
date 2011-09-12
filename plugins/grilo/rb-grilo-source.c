@@ -586,8 +586,15 @@ create_entry_for_media (RhythmDB *db, RhythmDBEntryType *entry_type, GrlData *da
 		}
 	}
 
-	/* rating and play count? */
+	if (grl_data_has_key (data, GRL_METADATA_KEY_TRACK_NUMBER)) {
+		GValue v = {0,};
+		g_value_init (&v, G_TYPE_ULONG);
+		g_value_set_ulong (&v, grl_data_get_int (data, GRL_METADATA_KEY_TRACK_NUMBER));
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &v);
+		g_value_unset (&v);
+	}
 
+	/* rating and play count? */
 
 	entry_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBGriloEntryData);
 	entry_data->grilo_data = g_object_ref (data);
