@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-08-05 12:36+0000\n"
-"PO-Revision-Date: 2011-08-09 19:41+0200\n"
+"POT-Creation-Date: 2011-09-10 13:38+0000\n"
+"PO-Revision-Date: 2011-09-12 12:40+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -685,7 +685,6 @@ msgstr "%e. %b %Y"
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
 #: ../plugins/generic-player/rb-generic-player-source.c:1023
 #: ../plugins/ipod/rb-ipod-source.c:414
-#: ../plugins/jamendo/JamendoSaxHandler.py:73
 #: ../plugins/iradio/rb-iradio-source.c:557
 #: ../plugins/iradio/rb-iradio-source.c:1052
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
@@ -801,11 +800,11 @@ msgstr "Přebal"
 msgid "Fetch album covers from the Internet"
 msgstr "Načítat přebaly alb z Internetu"
 
-#: ../plugins/artdisplay/artdisplay.py:343
+#: ../plugins/artdisplay/artdisplay.py:342
 msgid "Searching... drop artwork here"
 msgstr "Vyhledává se… upusťte grafiku zde"
 
-#: ../plugins/artdisplay/artdisplay.py:348
+#: ../plugins/artdisplay/artdisplay.py:347
 msgid "Drop artwork here"
 msgstr "Upustit grafické dílo zde"
 
@@ -922,7 +921,7 @@ msgid "Title"
 msgstr "Název"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:780
-#: ../plugins/context/ArtistTab.py:56 ../sources/rb-library-source.c:120
+#: ../plugins/context/ArtistTab.py:55 ../sources/rb-library-source.c:120
 #: ../widgets/rb-entry-view.c:1437 ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Umělec"
@@ -1456,40 +1455,40 @@ msgstr "Kontextový panel"
 msgid "Show information related to the currently playing artist and song."
 msgstr "Zobrazit informace vztahující se k právě přehrávané skladbě a umělci."
 
-#: ../plugins/context/AlbumTab.py:55
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2416
+#: ../plugins/context/AlbumTab.py:54
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2396
 #: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:151
 #: ../sources/rb-static-playlist-source.c:125
 msgid "Albums"
 msgstr "Alba"
 
 #. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
-#: ../plugins/context/AlbumTab.py:118
+#: ../plugins/context/AlbumTab.py:117
 #, python-format
 msgid "Loading top albums for %s"
 msgstr "Načítají se nejlepší alba umělce %s"
 
-#: ../plugins/context/ArtistTab.py:116
+#: ../plugins/context/ArtistTab.py:115
 #, python-format
 msgid "Loading biography for %s"
 msgstr "Načítá se biografie umělce %s"
 
 #. Add button to toggle visibility of pane
-#: ../plugins/context/ContextView.py:91
+#: ../plugins/context/ContextView.py:90
 msgid "Toggle Conte_xt Pane"
 msgstr "Přepnout konte_xtový panel"
 
-#: ../plugins/context/ContextView.py:92
+#: ../plugins/context/ContextView.py:91
 msgid "Change the visibility of the context pane"
 msgstr "Změnit viditelnost kontextového panelu"
 
 #. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
-#: ../plugins/context/ContextView.py:210
+#: ../plugins/context/ContextView.py:209
 #, python-format
 msgid "Top songs by %s"
 msgstr "Nejlepší skladby od %s"
 
-#: ../plugins/context/ContextView.py:243
+#: ../plugins/context/ContextView.py:242
 msgid "Nothing Playing"
 msgstr "Nic se nepřehrává"
 
@@ -1502,24 +1501,24 @@ msgstr ""
 "povolen zásuvný modul Last.fm, vyberte jej v postranním panelu a přihlaste "
 "se."
 
-#: ../plugins/context/LinksTab.py:55
+#: ../plugins/context/LinksTab.py:54
 msgid "Links"
 msgstr "Odkazy"
 
-#: ../plugins/context/LinksTab.py:184
+#: ../plugins/context/LinksTab.py:183
 msgid "No artist specified."
 msgstr "Neuveden žádný umělec."
 
-#: ../plugins/context/LyricsTab.py:51
+#: ../plugins/context/LyricsTab.py:50
 msgid "Lyrics"
 msgstr "Text"
 
-#: ../plugins/context/LyricsTab.py:102
+#: ../plugins/context/LyricsTab.py:101
 #, python-format
 msgid "Loading lyrics for %s by %s"
 msgstr "Načítá se text pro %s od %s"
 
-#: ../plugins/context/LyricsTab.py:120
+#: ../plugins/context/LyricsTab.py:119
 msgid "Lyrics not found"
 msgstr "Text nenalezen"
 
@@ -1696,24 +1695,22 @@ msgid ""
 "Provides an implementation of the MediaServer2 D-Bus interface specification"
 msgstr "Poskytuje implementaci specifikace rozhraní MediaServer2 D-Bus"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1280
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1405
-#| msgid "Show _All Tracks"
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1265
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1390
 msgid "All Tracks"
 msgstr "Všechny stopy"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2415
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2395
 #: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:150
 #: ../sources/rb-static-playlist-source.c:124
 msgid "Artists"
 msgstr "Umělci"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2417
-#| msgid "Genre"
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2397
 msgid "Genres"
 msgstr "Žánry"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2426
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2406
 #: ../shell/rb-playlist-manager.c:1081 ../sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "Seznamy skladeb"
@@ -1826,6 +1823,28 @@ msgstr "Zobrazit vlastnosti zařízení"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1595
 msgid "Advanced"
 msgstr "Pokročilé"
+
+#: ../plugins/grilo/grilo.plugin.in.h:1
+msgid "Browse various local and Internet media sources"
+msgstr "Procházet různorodé místní a Internetové zdroje médií"
+
+#: ../plugins/grilo/grilo.plugin.in.h:2
+msgid "Grilo media browser"
+msgstr "Procházení médií Grilo"
+
+#: ../plugins/grilo/rb-grilo-source.c:348
+#| msgid "_Browse"
+msgid "Browse"
+msgstr "Procházet"
+
+#: ../plugins/grilo/rb-grilo-source.c:392
+msgid "Fetch more tracks"
+msgstr "Získat více stop"
+
+#: ../plugins/grilo/rb-grilo-source.c:840
+#, c-format
+msgid "Only showing %d results"
+msgstr "Zobrazeno pouze %d výsledků"
 
 #: ../plugins/im-status/im-status.plugin.in.h:1
 msgid "IM Status"
@@ -1968,141 +1987,6 @@ msgstr "Internetové rádio"
 msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "Podpora pro služby vysílání přenášené přes Internet"
 
-#: ../plugins/jamendo/jamendo-prefs.ui.h:1
-msgid "<b>Download</b>"
-msgstr "<b>Stáhnout</b>"
-
-#: ../plugins/jamendo/jamendo-prefs.ui.h:2
-msgid "MP3 (200Kbps)"
-msgstr "MP3 (200 kb/s)"
-
-#: ../plugins/jamendo/jamendo-prefs.ui.h:3
-msgid "Ogg Vorbis (300Kbps)"
-msgstr "Ogg Vorbis (300 kb/s)"
-
-#: ../plugins/jamendo/jamendo-prefs.ui.h:4
-msgid "Visit Jamendo at "
-msgstr "Navštivte Jamendo na "
-
-#: ../plugins/jamendo/jamendo-prefs.ui.h:5
-msgid "_Format:"
-msgstr "_Formát:"
-
-#: ../plugins/jamendo/jamendo-prefs.ui.h:6
-msgid "http://www.jamendo.com/"
-msgstr "http://www.jamendo.com/"
-
-#. This text comes from http://www.jamendo.com/en/static/concept/ and was already translated in many languages. You should take a look on this site and check if you can't reuse it.
-#: ../plugins/jamendo/jamendo-loading.ui.h:2
-msgid ""
-"     * A legal framework protecting the artists (thanks to the Creative "
-"Commons licenses)."
-msgstr "     * Legální systém hájící umělce (díky licencím Creative Commons)."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:3
-msgid ""
-"     * An adaptive music recommendation system based on iRATE to help "
-"listeners discover new artists based on their tastes\n"
-"       and on other criteria such as their location."
-msgstr ""
-"     * Přizpůsobivý systém doporučování založený na iRATE, který posluchačům "
-"pomáhá objevovat nové umělce dle jejich vkusu\n"
-"       a jiných kritérií, jako je například jejich poloha."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:5
-msgid "     * Free, simple and quick access to the music, for everyone."
-msgstr "     * Svobodný, snadný a rychlý přístup k hudbě pro každého."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:6
-msgid "     * The possibility of making direct donations to the artists."
-msgstr "     * Možnost přímého odměňování umělců."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:7
-msgid "     * The use of the latest Peer-to-Peer technologies"
-msgstr "     * Použití nejnovějších technologií „peer to peer“."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:8
-msgid "<b>Jamendo</b>"
-msgstr "<b>Jamendo</b>"
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:9
-msgid ""
-"Jamendo is a new model for artists to promote, publish, and be paid for "
-"their music."
-msgstr ""
-"Jamendo je nový model pro umělce k propagaci, publikování a vydělávání "
-"jejich muzikou."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:10
-msgid "Jamendo is the only platform that joins together :"
-msgstr "Jamendo je jen platforma, která spojuje dohromady:"
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:11
-msgid ""
-"Jamendo users can discover and share albums, but also review them or start a "
-"discussion on the forums.\n"
-"Albums are democratically rated based on the visitors’ reviews.\n"
-"If they fancy an artist they can support him by making a donation."
-msgstr ""
-"Uživatelé Jamenda mohou objevovat a sdílet alba, ale také mohou psát recenze "
-"nebo diskutovat na fórech.\n"
-"Alba jsou demokraticky hodnocena dle recenzí návštěvníků.\n"
-"Mají-li návštěvníci nějakého umělce rádi, mohou ho odměnit, a tak ho "
-"podpořit."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:14
-msgid ""
-"On Jamendo, the artists distribute their music under Creative Commons "
-"licenses.\n"
-"In a nutshell, they allow you to download, remix and share their music "
-"freely.\n"
-"It's a \"Some rights reserved\" agreement, perfectly suited for the new "
-"century."
-msgstr ""
-"Na Jamendo umělci distribuují svou hudbu pod licencemi Creative Commnos.\n"
-"Prakticky tak povolují svobodně stahovat, remixovat a sdílet svou hudbu.\n"
-"To je úmluva „Některá práva vyhrazena“, velmi vhodná pro nové století."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:17
-msgid ""
-"These new rules make Jamendo able to use the new powerful means of digital "
-"distribution like\n"
-"Peer-to-Peer networks such as BitTorrent or eMule to legally distribute "
-"albums at near-zero cost."
-msgstr ""
-"Tato nová pravidla umožňují Jamendu používat nové účinné možnosti digitální "
-"distribuce podobné\n"
-"sítím „Peer to peer“, jako je BitTorrent nebo eMule, k legální distribuci "
-"alb za téměř nulovou cenu."
-
-#: ../plugins/jamendo/jamendo-loading.ui.h:19
-msgid "You can find more information at http://www.jamendo.com/"
-msgstr "Více informací můžete najít na http://www.jamendo.com/"
-
-#: ../plugins/jamendo/jamendo.plugin.in.h:1
-msgid ""
-"Adds support to Rhythmbox for playing and downloading albums from Jamendo"
-msgstr "Přidává do Rhythmboxu podporu pro přehrávání a stahování alb z Jamendo"
-
-#: ../plugins/jamendo/jamendo.plugin.in.h:2
-#: ../plugins/jamendo/JamendoSource.py:59
-msgid "Jamendo"
-msgstr "Jamendo"
-
-#: ../plugins/jamendo/JamendoSource.py:111
-msgid "Loading Jamendo catalog"
-msgstr "Načítá se katalog Jamendo"
-
-#: ../plugins/jamendo/JamendoSource.py:285
-#, python-format
-msgid "Error looking up p2plink for album %s on jamendo.com"
-msgstr "Chyba při vyhledávání umělce %s přes p2plink na jamendo.com"
-
-#: ../plugins/jamendo/JamendoSource.py:309
-#, python-format
-msgid "Error looking up artist %s on jamendo.com"
-msgstr "Chyba při vyhledávání umělce %s na jamendo.com"
-
 #: ../plugins/iradio/rb-iradio-source.c:159
 msgid "New Internet _Radio Station..."
 msgstr "Nová stanice internetového _rádia…"
@@ -2180,7 +2064,7 @@ msgstr "Ovládání aplikace Rhythmbox pomocí infračerveného dálkového ovla
 msgid "LIRC "
 msgstr "LIRC "
 
-#: ../plugins/lyrics/LyricsConfigureDialog.py:101
+#: ../plugins/lyrics/LyricsConfigureDialog.py:100
 msgid "Choose lyrics folder..."
 msgstr "Vybrat složku textů…"
 
@@ -2570,42 +2454,42 @@ msgstr ""
 msgid "Magnatune Store"
 msgstr "Obchod Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:102
+#: ../plugins/magnatune/MagnatuneSource.py:101
 msgid "Loading Magnatune catalog"
 msgstr "Načítá se katalog Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:109
+#: ../plugins/magnatune/MagnatuneSource.py:108
 msgid "Downloading Magnatune Album(s)"
 msgstr "Stahují se alba z Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:207
+#: ../plugins/magnatune/MagnatuneSource.py:206
 msgid "Couldn't purchase album"
 msgstr "Nepodařilo se koupit album"
 
-#: ../plugins/magnatune/MagnatuneSource.py:208
+#: ../plugins/magnatune/MagnatuneSource.py:207
 msgid "You must have a library location set to purchase an album."
 msgstr "Ke koupi alba musíte mít nastavené umístění kolekce."
 
-#: ../plugins/magnatune/MagnatuneSource.py:258
+#: ../plugins/magnatune/MagnatuneSource.py:257
 msgid "Unable to load catalog"
 msgstr "Nelze načíst katalog"
 
-#: ../plugins/magnatune/MagnatuneSource.py:259
+#: ../plugins/magnatune/MagnatuneSource.py:258
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
 "Rhythmboxu se nepodařilo porozumět katalogu Magnatune, nahlaste prosím chybu."
 
-#: ../plugins/magnatune/MagnatuneSource.py:296
-#: ../plugins/magnatune/MagnatuneSource.py:396
+#: ../plugins/magnatune/MagnatuneSource.py:295
+#: ../plugins/magnatune/MagnatuneSource.py:395
 msgid "Couldn't get account details"
 msgstr "Nelze získat podrobnosti o účtu"
 
-#: ../plugins/magnatune/MagnatuneSource.py:445
+#: ../plugins/magnatune/MagnatuneSource.py:444
 msgid "Download Error"
 msgstr "Chyba stahování"
 
-#: ../plugins/magnatune/MagnatuneSource.py:446
+#: ../plugins/magnatune/MagnatuneSource.py:445
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2616,11 +2500,11 @@ msgstr ""
 "Server Magnatune vrátil:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:448 ../widgets/rb-entry-view.c:1601
+#: ../plugins/magnatune/MagnatuneSource.py:447 ../widgets/rb-entry-view.c:1601
 msgid "Error"
 msgstr "Chyba"
 
-#: ../plugins/magnatune/MagnatuneSource.py:449
+#: ../plugins/magnatune/MagnatuneSource.py:448
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -2631,11 +2515,11 @@ msgstr ""
 "Text chyby je:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:479
+#: ../plugins/magnatune/MagnatuneSource.py:478
 msgid "Finished Downloading"
 msgstr "Stahování dokončeno"
 
-#: ../plugins/magnatune/MagnatuneSource.py:479
+#: ../plugins/magnatune/MagnatuneSource.py:478
 msgid "All Magnatune downloads have been completed."
 msgstr "Všechna stahování z Magnatune byla dokončena."
 
@@ -2859,7 +2743,7 @@ msgstr "0,0 dB"
 msgid "15.0 dB"
 msgstr "15,0 dB"
 
-#: ../plugins/replaygain/player.py:49
+#: ../plugins/replaygain/player.py:46
 #, python-format
 msgid ""
 "The GStreamer elements required for ReplayGain processing are not available. "
@@ -2868,7 +2752,7 @@ msgstr ""
 "Části systému GStreamer požadované pro zpracování funkcí ReplayGain nejsou "
 "dostupné. Konkrétně schází: %s"
 
-#: ../plugins/replaygain/player.py:50
+#: ../plugins/replaygain/player.py:47
 msgid "ReplayGain GStreamer plugins not available"
 msgstr "Zásuvný modul ReplayGain GStreamer není dostupný"
 
@@ -4254,7 +4138,7 @@ msgstr "Přes_kočit vše"
 msgid "Replace _All"
 msgstr "Nahr_adit vše"
 
-#: ../shell/rb-track-transfer-queue.c:419
+#: ../shell/rb-track-transfer-queue.c:420
 msgid ""
 "This file cannot be transferred as it is not in a format supported by the "
 "target device and no suitable encoding profiles are available."
@@ -4262,7 +4146,7 @@ msgstr ""
 "Tento soubor nemůže být přenesen, protože není ve formátu podporovaném "
 "cílovým zařízením a není k dispozici žádný vhodný profil kódování."
 
-#: ../shell/rb-track-transfer-queue.c:423
+#: ../shell/rb-track-transfer-queue.c:424
 #, c-format
 msgid ""
 "%d of the %d files cannot be transferred as they must be converted into a "
@@ -4273,7 +4157,7 @@ msgstr ""
 "zařízením a není k dispozici žádný vhodný profil kódování."
 
 #. XXX should provide the option of picking a different format?
-#: ../shell/rb-track-transfer-queue.c:444
+#: ../shell/rb-track-transfer-queue.c:445
 #, c-format
 msgid ""
 "Additional software is required to encode media in your preferred format:\n"
@@ -4283,7 +4167,7 @@ msgstr ""
 "software:\n"
 "%s"
 
-#: ../shell/rb-track-transfer-queue.c:447
+#: ../shell/rb-track-transfer-queue.c:448
 #, c-format
 msgid ""
 "Additional software is required to convert this file into a format supported "
@@ -4294,7 +4178,7 @@ msgstr ""
 "zapotřebí dodatečný software:\n"
 "%s"
 
-#: ../shell/rb-track-transfer-queue.c:451
+#: ../shell/rb-track-transfer-queue.c:452
 #, c-format
 msgid ""
 "Additional software is required to convert %d of the %d files to be "
@@ -4305,28 +4189,28 @@ msgstr ""
 "zapotřebí dodatečný software:\n"
 "%s"
 
-#: ../shell/rb-track-transfer-queue.c:466
+#: ../shell/rb-track-transfer-queue.c:467
 msgid "Unable to transfer tracks"
 msgstr "Nelze přenést stopy"
 
-#: ../shell/rb-track-transfer-queue.c:471
+#: ../shell/rb-track-transfer-queue.c:472
 msgid "_Cancel the transfer"
 msgstr "_Přerušit přenos"
 
-#: ../shell/rb-track-transfer-queue.c:473
+#: ../shell/rb-track-transfer-queue.c:474
 msgid "_Skip these files"
 msgstr "Tyto soubory pře_skočit"
 
-#: ../shell/rb-track-transfer-queue.c:476
+#: ../shell/rb-track-transfer-queue.c:477
 msgid "_Install"
 msgstr "_Instalovat"
 
-#: ../shell/rb-track-transfer-queue.c:574
+#: ../shell/rb-track-transfer-queue.c:575
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "Přenáší se stopa %d z %d (%.0f%%)"
 
-#: ../shell/rb-track-transfer-queue.c:577
+#: ../shell/rb-track-transfer-queue.c:578
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Přenáší se stopa %d z %d"
@@ -5039,13 +4923,18 @@ msgstr[1] "%d hvězdičky"
 msgstr[2] "%d hvězdiček"
 
 #. this string can only be so long, or there wont be a search entry :)
-#: ../widgets/rb-search-entry.c:157
+#: ../widgets/rb-search-entry.c:186
 msgid "_Search:"
 msgstr "_Hledat:"
 
-#: ../widgets/rb-search-entry.c:167
+#: ../widgets/rb-search-entry.c:198
 msgid "Clear the search text"
 msgstr "Vymazat hledaný text"
+
+#: ../widgets/rb-search-entry.c:222
+#| msgid "_Search:"
+msgid "Search"
+msgstr "Hledat"
 
 #: ../widgets/rb-song-info.c:371
 msgid "Song Properties"
