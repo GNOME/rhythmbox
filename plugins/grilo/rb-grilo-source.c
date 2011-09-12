@@ -844,7 +844,9 @@ grilo_media_browse_cb (GrlMediaSource *grilo_source, guint operation_id, GrlMedi
 			} else {
 				char *text;
 
-				text = g_strdup_printf (_("Only showing %d results"),
+				text = g_strdup_printf (ngettext ("Only showing %d result",
+								  "Only showing %d results",
+								  source->priv->media_browse_position),
 							source->priv->media_browse_position);
 				gtk_label_set_text (GTK_LABEL (source->priv->info_bar_label), text);
 				g_free (text);
