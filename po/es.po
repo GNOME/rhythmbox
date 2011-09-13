@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-09-10 13:38+0000\n"
-"PO-Revision-Date: 2011-09-11 18:16+0200\n"
+"POT-Creation-Date: 2011-09-13 11:22+0000\n"
+"PO-Revision-Date: 2011-09-13 17:39+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -783,8 +783,7 @@ msgstr "Falló al crear un elemento de origen; compruebe su instalación"
 msgid ""
 "Failed to create the 'decodebin2' element; check your GStreamer installation"
 msgstr ""
-"Falló al crear el elemento «decodebin2»; compruebe su instalación de "
-"GStreamer"
+"Falló al crear el elemento «decodebin2»; compruebe su instalación de GStreamer"
 
 #: ../metadata/rb-metadata-gst.c:641
 #, c-format
@@ -1466,7 +1465,7 @@ msgstr ""
 "reproducción."
 
 #: ../plugins/context/AlbumTab.py:54
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2396
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2371
 #: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:151
 #: ../sources/rb-static-playlist-source.c:125
 msgid "Albums"
@@ -1706,22 +1705,22 @@ msgstr ""
 "Proporciona una implementación de la especificación de interfaz MediaServer2 "
 "D-Bus"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1265
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1390
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1240
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1365
 msgid "All Tracks"
 msgstr "Todas las pistas"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2395
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2370
 #: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:150
 #: ../sources/rb-static-playlist-source.c:124
 msgid "Artists"
 msgstr "Artistas"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2397
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2372
 msgid "Genres"
 msgstr "Géneros"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2406
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2381
 #: ../shell/rb-playlist-manager.c:1081 ../sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "Listas de reproducción"
@@ -1845,7 +1844,6 @@ msgid "Grilo media browser"
 msgstr "Explorador de medios Grilo"
 
 #: ../plugins/grilo/rb-grilo-source.c:348
-#| msgid "_Browse"
 msgid "Browse"
 msgstr "Examinar"
 
@@ -1853,10 +1851,13 @@ msgstr "Examinar"
 msgid "Fetch more tracks"
 msgstr "Obtener más pistas"
 
-#: ../plugins/grilo/rb-grilo-source.c:840
+#: ../plugins/grilo/rb-grilo-source.c:847
 #, c-format
-msgid "Only showing %d results"
-msgstr "Mostrando sólo %d resultados"
+#| msgid "Only showing %d results"
+msgid "Only showing %d result"
+msgid_plural "Only showing %d results"
+msgstr[0] "Mostrando sólo %d resultado"
+msgstr[1] "Mostrando sólo %d resultados"
 
 #: ../plugins/im-status/im-status.plugin.in.h:1
 msgid "IM Status"
@@ -2928,8 +2929,8 @@ msgid ""
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
 msgstr ""
-"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el "
-"URL, o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
+"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el URL, "
+"o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
 "todas formas?"
 
 #: ../podcast/rb-podcast-manager.c:1244
@@ -4942,7 +4943,6 @@ msgid "Clear the search text"
 msgstr "Limpiar el texto de búsqueda"
 
 #: ../widgets/rb-search-entry.c:222
-#| msgid "_Search:"
 msgid "Search"
 msgstr "Buscar"
 
