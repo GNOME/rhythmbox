@@ -224,7 +224,8 @@ char *all_entry_properties[] = {
 	"DLNAProfile",
 	"Duration",
 	"Bitrate",
-	"AlbumArt"
+	"AlbumArt",
+	"TrackNumber"
 };
 
 /* not used yet, since album art isn't exposed
@@ -251,6 +252,7 @@ entry_property_maps (RhythmDBPropType prop)
 		case RHYTHMDB_PROP_GENRE:
 		case RHYTHMDB_PROP_DURATION:
 		case RHYTHMDB_PROP_BITRATE:
+		case RHYTHMDB_PROP_TRACK_NUMBER:
 			return TRUE;
 
 		default:
@@ -259,7 +261,7 @@ entry_property_maps (RhythmDBPropType prop)
 }
 
 static GVariant *
-get_entry_property_value (RhythmDBEntry *entry, const char *property_name, RhythmDBPropType context)
+get_entry_property_value (RhythmDBEntry *entry, const char *property_name)
 {
 	GVariant *v;
 
@@ -276,36 +278,7 @@ get_entry_property_value (RhythmDBEntry *entry, const char *property_name, Rhyth
 		g_free (path);
 		return v;
 	} else if (g_strcmp0 (property_name, "DisplayName") == 0) {
-		char *display;
-		/* need to consider disc numbers in here too */
-		switch (context) {
-		case RHYTHMDB_PROP_ARTIST:
-			/* use <album> <track> <title> */
-			display = g_strdup_printf ("%s: %lu. %s",
-						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM),
-						   rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER),
-						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
-			break;
-		case RHYTHMDB_PROP_ALBUM:
-			/* use <track> <artist> <title> */
-			display = g_strdup_printf ("%lu. %s - %s",
-						   rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER),
-						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
-						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
-			break;
-		case RHYTHMDB_PROP_GENRE:
-		default:
-			/* use <album> <track> <artist> <title> */
-			display = g_strdup_printf ("%s: %lu. %s - %s",
-						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM),
-						   rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER),
-						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
-						   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
-			break;
-		}
-		v = g_variant_new_string (display);
-		g_free (display);
-		return v;
+		return g_variant_new_string (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
 	} else if (g_strcmp0 (property_name, "URLs") == 0) {
 		const char *urls[] = { NULL, NULL };
 		char *url;
@@ -339,6 +312,8 @@ get_entry_property_value (RhythmDBEntry *entry, const char *property_name, Rhyth
 		return g_variant_new_int32 (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DURATION));
 	} else if (g_strcmp0 (property_name, "Bitrate") == 0) {
 		return g_variant_new_int32 (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_BITRATE));
+	} else if (g_strcmp0 (property_name, "TrackNumber") == 0) {
+		return g_variant_new_int32 (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER));
 	}
 
 	/* not yet: DLNAProfile, AlbumArt */
@@ -370,7 +345,7 @@ get_entry_property (GDBusConnection *connection,
 		return NULL;
 	}
 
-	return get_entry_property_value (entry, property_name, RHYTHMDB_PROP_ENTRY_ID);
+	return get_entry_property_value (entry, property_name);
 }
 
 static const GDBusInterfaceVTable entry_vtable =
@@ -676,7 +651,7 @@ property_value_method_call (GDBusConnection *connection,
 				eb = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
 				for (i = 0; filter[i] != NULL; i++) {
 					GVariant *v;
-					v = get_entry_property_value (entry, filter[i], data->property);
+					v = get_entry_property_value (entry, filter[i]);
 					if (v != NULL) {
 						g_variant_builder_add (eb, "{sv}", filter[i], v);
 					}
@@ -1201,7 +1176,7 @@ source_tracks_method_call (GDBusConnection *connection,
 				eb = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
 				for (i = 0; filter[i] != NULL; i++) {
 					GVariant *v;
-					v = get_entry_property_value (entry, filter[i], RHYTHMDB_PROP_ENTRY_ID);
+					v = get_entry_property_value (entry, filter[i]);
 					if (v != NULL) {
 						g_variant_builder_add (eb, "{sv}", filter[i], v);
 					}
