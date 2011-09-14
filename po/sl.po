@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-09-10 13:38+0000\n"
-"PO-Revision-Date: 2011-09-11 22:19+0100\n"
-"Last-Translator: Martin Srebotnjak  <miles@filmsi.net>\n"
+"POT-Creation-Date: 2011-09-13 20:30+0000\n"
+"PO-Revision-Date: 2011-09-14 15:44+0100\n"
+"Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -1470,7 +1470,7 @@ msgid "Show information related to the currently playing artist and song."
 msgstr "Prikaži podatke povezane s trenutno predvajajočim izvajalcem in skladbo."
 
 #: ../plugins/context/AlbumTab.py:54
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2396
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2371
 #: ../sources/rb-auto-playlist-source.c:105
 #: ../sources/rb-browser-source.c:151
 #: ../sources/rb-static-playlist-source.c:125
@@ -1703,23 +1703,23 @@ msgstr "Vmesnik D-Bus MediaServer2 "
 msgid "Provides an implementation of the MediaServer2 D-Bus interface specification"
 msgstr "Zagotovi podprtje določila vmesnika D-Bus MediaServer2"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1265
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1390
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1240
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1365
 msgid "All Tracks"
 msgstr "Vsi posnetki"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2395
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2370
 #: ../sources/rb-auto-playlist-source.c:104
 #: ../sources/rb-browser-source.c:150
 #: ../sources/rb-static-playlist-source.c:124
 msgid "Artists"
 msgstr "Izvajalci"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2397
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2372
 msgid "Genres"
 msgstr "Zvrsti"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2406
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2381
 #: ../shell/rb-playlist-manager.c:1081
 #: ../sources/rb-display-page-group.c:92
 msgid "Playlists"
@@ -1850,7 +1850,6 @@ msgid "Grilo media browser"
 msgstr "Brskalnik predstavnih vsebin Grilo"
 
 #: ../plugins/grilo/rb-grilo-source.c:348
-#| msgid "_Browse"
 msgid "Browse"
 msgstr "Prebrskaj"
 
@@ -1858,10 +1857,14 @@ msgstr "Prebrskaj"
 msgid "Fetch more tracks"
 msgstr "Pridobi več posnetkov"
 
-#: ../plugins/grilo/rb-grilo-source.c:840
+#: ../plugins/grilo/rb-grilo-source.c:847
 #, c-format
-msgid "Only showing %d results"
-msgstr "Prikazanih je le %d zadetkov"
+msgid "Only showing %d result"
+msgid_plural "Only showing %d results"
+msgstr[0] "Prikazanih je le %d zadetkov."
+msgstr[1] "Prikazan je le %d zadetek"
+msgstr[2] "Prikazana sta le %d zadetka"
+msgstr[3] "Prikazani so le %d zadetki"
 
 #: ../plugins/im-status/im-status.plugin.in.h:1
 msgid "IM Status"
@@ -4852,7 +4855,6 @@ msgid "Clear the search text"
 msgstr "Počisti besedilo iskanja"
 
 #: ../widgets/rb-search-entry.c:222
-#| msgid "_Search:"
 msgid "Search"
 msgstr "Poišči"
 
@@ -4875,3 +4877,4 @@ msgstr "Na namizju"
 #: ../widgets/rb-song-info.c:1259
 msgid "Unknown location"
 msgstr "Neznano mesto"
+
