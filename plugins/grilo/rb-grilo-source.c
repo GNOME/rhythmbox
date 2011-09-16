@@ -972,7 +972,9 @@ browser_selection_changed_cb (GtkTreeSelection *selection, RBGriloSource *source
 		return;
 	}
 
-	rb_search_entry_clear (source->priv->search_entry);
+	if (source->priv->search_entry != NULL) {
+		rb_search_entry_clear (source->priv->search_entry);
+	}
 
 	gtk_tree_model_get (GTK_TREE_MODEL (source->priv->browser_model), &iter,
 			    0, &container,
