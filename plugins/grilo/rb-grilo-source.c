@@ -270,6 +270,7 @@ rb_grilo_source_constructed (GObject *object)
 	GtkCellRenderer *renderer;
 	GtkTreeSelection *selection;
 	GtkWidget *scrolled;
+	GtkWidget *browserbox;
 	GtkWidget *vbox;
 	GtkWidget *mainbox;
 	GtkAdjustment *adjustment;
@@ -367,23 +368,22 @@ rb_grilo_source_constructed (GObject *object)
 	adjustment = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (scrolled));
 	g_signal_connect (adjustment, "changed", G_CALLBACK (scroll_adjust_changed_cb), source);
 	g_signal_connect (adjustment, "value-changed", G_CALLBACK (scroll_adjust_value_changed_cb), source);
-	gtk_container_add (GTK_CONTAINER (scrolled), source->priv->browser_view);
 
-	mainbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
-	gtk_box_pack_start (GTK_BOX (source), mainbox, TRUE, TRUE, 0);
+	browserbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
 
 	/* search bar (if the source supports searching) */
 	if (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source->priv->grilo_source)) & GRL_OP_SEARCH) {
-		GtkWidget *align;
-
-		align = gtk_alignment_new (1.0, 0.5, 0.5, 1.0);
 		source->priv->search_entry = rb_search_entry_new ();
 		g_object_set (source->priv->search_entry, "explicit-mode", TRUE, NULL);
 		g_signal_connect (source->priv->search_entry, "search", G_CALLBACK (search_cb), source);
 		g_signal_connect (source->priv->search_entry, "activate", G_CALLBACK (search_cb), source);
-		gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (source->priv->search_entry));
-		gtk_box_pack_start (GTK_BOX (mainbox), align, FALSE, FALSE, 0);
+		gtk_box_pack_start (GTK_BOX (browserbox), GTK_WIDGET (source->priv->search_entry), FALSE, FALSE, 6);
 	}
+	gtk_container_add (GTK_CONTAINER (scrolled), source->priv->browser_view);
+	gtk_box_pack_start (GTK_BOX (browserbox), scrolled, TRUE, TRUE, 0);
+
+	mainbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
+	gtk_box_pack_start (GTK_BOX (source), mainbox, TRUE, TRUE, 0);
 
 	/* info bar */
 	source->priv->info_bar_label = gtk_label_new ("");
@@ -399,7 +399,7 @@ rb_grilo_source_constructed (GObject *object)
 	/* don't allow the browser to be hidden? */
 	source->priv->paned = gtk_hpaned_new ();
 	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (source->priv->entry_view), source->priv->paned, NULL);
-	gtk_paned_pack1 (GTK_PANED (source->priv->paned), scrolled, FALSE, FALSE);
+	gtk_paned_pack1 (GTK_PANED (source->priv->paned), browserbox, FALSE, FALSE);
 
 	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (source->priv->entry_view), TRUE, TRUE, 0);
