@@ -88,12 +88,6 @@ static void impl_selected (RBDisplayPage *page);
 
 static RBEntryView *impl_get_entry_view (RBSource *source);
 
-typedef struct
-{
-	GrlData *grilo_data;
-	GrlData *grilo_container;
-} RBGriloEntryData;
-
 struct _RBGriloSourcePrivate
 {
 	GrlMediaSource *grilo_source;
@@ -137,10 +131,6 @@ struct _RBGriloSourcePrivate
 G_DEFINE_DYNAMIC_TYPE (RBGriloSource, rb_grilo_source, RB_TYPE_SOURCE)
 
 /* entry type */
-typedef struct _RhythmDBEntryType RBGriloEntryType;
-typedef struct _RhythmDBEntryTypeClass RBGriloEntryTypeClass;
-
-GType rb_grilo_entry_type_get_type (void);
 
 G_DEFINE_DYNAMIC_TYPE (RBGriloEntryType, rb_grilo_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
 
@@ -338,6 +328,7 @@ rb_grilo_source_constructed (GObject *object)
 
 	source->priv->grilo_keys = g_list_prepend (source->priv->grilo_keys, GRL_METADATA_KEY_CHILDCOUNT);
 	source->priv->grilo_keys = g_list_prepend (source->priv->grilo_keys, GRL_METADATA_KEY_URL);
+	source->priv->grilo_keys = g_list_prepend (source->priv->grilo_keys, GRL_METADATA_KEY_THUMBNAIL);
 
 	/* probably add an image column too? */
 	source->priv->browser_model = gtk_tree_store_new (4, GRL_TYPE_MEDIA, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT);

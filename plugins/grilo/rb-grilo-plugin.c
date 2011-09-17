@@ -38,6 +38,7 @@
 #include "rb-plugin-macros.h"
 #include "rb-debug.h"
 #include "rb-shell.h"
+#include "rb-shell-player.h"
 #include "rb-grilo-source.h"
 #include "rb-display-page-group.h"
 
@@ -65,6 +66,9 @@ typedef struct
 
 	GrlPluginRegistry *registry;
 	GHashTable *sources;
+	RhythmDB *db;
+	RBShellPlayer *shell_player;
+	gulong emit_cover_art_id;
 } RBGriloPlugin;
 
 typedef struct
@@ -128,11 +132,94 @@ grilo_source_added_cb (GrlPluginRegistry *registry, GrlMediaPlugin *grilo_plugin
 	g_object_unref (shell);
 }
 
+static const char *
+get_cover_art_uri (RhythmDBEntry *entry)
+{
+	RhythmDBEntryType *entry_type;
+	RBGriloEntryData *data;
+
+	entry_type = rhythmdb_entry_get_entry_type (entry);
+	if (RB_IS_GRILO_ENTRY_TYPE (entry_type) == FALSE) {
+		return NULL;
+	}
+
+	data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBGriloEntryData);
+	return grl_data_get_string (data->grilo_data, GRL_METADATA_KEY_THUMBNAIL);
+}
+
+static GValue *
+cover_art_uri_request_cb (RhythmDB *db, RhythmDBEntry *entry, RBGriloPlugin *plugin)
+{
+	const char *uri;
+
+	uri = get_cover_art_uri (entry);
+	if (uri != NULL) {
+		GValue *value = g_new0 (GValue, 1);
+		g_value_init (value, G_TYPE_STRING);
+		rb_debug ("cover art uri: %s", uri);
+		g_value_set_string (value, uri);
+		return value;
+	} else {
+		return NULL;
+	}
+}
+
+static void
+extra_metadata_gather_cb (RhythmDB *db, RhythmDBEntry *entry, RBStringValueMap *map, RBGriloPlugin *plugin)
+{
+	const char *uri;
+
+	uri = get_cover_art_uri (entry);
+	if (uri != NULL) {
+		GValue v = {0,};
+		g_value_init (&v, G_TYPE_STRING);
+		rb_debug ("cover art uri: %s", uri);
+		rb_string_value_map_set (map, "rb:coverArt-uri", &v);
+		g_value_unset (&v);
+	}
+}
+
+static gboolean
+emit_cover_art_cb (RBGriloPlugin *plugin)
+{
+	const char *uri;
+	RhythmDBEntry *entry;
+	GValue v = {0,};
+
+	entry = rb_shell_player_get_playing_entry (plugin->shell_player);
+	uri = get_cover_art_uri (entry);
+	rb_debug ("emitting cover art uri: %s", uri);
+
+	g_value_init (&v, G_TYPE_STRING);
+	g_value_set_string (&v, uri);
+	rhythmdb_emit_entry_extra_metadata_notify (plugin->db, entry, "rb:coverArt-uri", &v);
+	g_value_unset (&v);
+
+	plugin->emit_cover_art_id = 0;
+	return FALSE;
+}
+
+static void
+playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBGriloPlugin *plugin)
+{
+	if (entry == NULL || get_cover_art_uri (entry) == NULL) {
+		if (plugin->emit_cover_art_id != 0) {
+			g_source_remove (plugin->emit_cover_art_id);
+			plugin->emit_cover_art_id = 0;
+		}
+	} else {
+		if (plugin->emit_cover_art_id == 0) {
+			plugin->emit_cover_art_id = g_idle_add ((GSourceFunc)emit_cover_art_cb, plugin);
+		}
+	}
+}
+
 static void
 impl_activate (PeasActivatable *plugin)
 {
 	RBGriloPlugin *pi = RB_GRILO_PLUGIN (plugin);
 	GError *error = NULL;
+	RBShell *shell;
 
 	pi->sources = g_hash_table_new_full (g_direct_hash,
 					     g_direct_equal,
@@ -146,6 +233,18 @@ impl_activate (PeasActivatable *plugin)
 		g_warning ("Failed to load Grilo plugins: %s", error->message);
 		g_clear_error (&error);
 	}
+
+	g_object_get (plugin, "object", &shell, NULL);
+	g_object_get (shell,
+		      "db", &pi->db,
+		      "shell-player", &pi->shell_player,
+		      NULL);
+	g_object_unref (shell);
+
+	g_signal_connect (pi->db, "entry-extra-metadata-request::" RHYTHMDB_PROP_COVER_ART_URI, G_CALLBACK (cover_art_uri_request_cb), pi);
+	g_signal_connect (pi->db, "entry-extra-metadata-gather" , G_CALLBACK (extra_metadata_gather_cb), pi);
+
+	g_signal_connect (pi->shell_player, "playing-song-changed", G_CALLBACK (playing_song_changed_cb), pi);
 }
 
 static void
@@ -171,6 +270,19 @@ impl_deactivate	(PeasActivatable *bplugin)
 
 	g_object_unref (plugin->registry);
 	plugin->registry = NULL;
+
+	g_signal_handlers_disconnect_by_func (plugin->db, G_CALLBACK (cover_art_uri_request_cb), plugin);
+	g_signal_handlers_disconnect_by_func (plugin->db, G_CALLBACK (extra_metadata_gather_cb), plugin);
+	g_object_unref (plugin->db);
+	plugin->db = NULL;
+
+	if (plugin->emit_cover_art_id != 0) {
+		g_source_remove (plugin->emit_cover_art_id);
+		plugin->emit_cover_art_id = 0;
+	}
+	g_signal_handlers_disconnect_by_func (plugin->shell_player, G_CALLBACK (playing_song_changed_cb), plugin);
+	g_object_unref (plugin->shell_player);
+	plugin->shell_player = NULL;
 }
 
 G_MODULE_EXPORT void

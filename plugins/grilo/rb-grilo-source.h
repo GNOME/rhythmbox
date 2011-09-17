@@ -42,6 +42,13 @@ G_BEGIN_DECLS
 #define RB_IS_GRILO_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_GRILO_SOURCE))
 #define RB_GRILO_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_GRILO_SOURCE, RBGriloSourceClass))
 
+#define RB_TYPE_GRILO_ENTRY_TYPE         (rb_grilo_entry_type_get_type ())
+#define RB_GRILO_ENTRY_TYPE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_GRILO_ENTRY_TYPE, RBGriloEntryType))
+#define RB_GRILO_ENTRY_TYPE_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_GRILO_ENTRY_TYPE, RBGriloEntryTypeClass))
+#define RB_IS_GRILO_ENTRY_TYPE(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_GRILO_ENTRY_TYPE))
+#define RB_IS_GRILO_ENTRY_TYPE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_GRILO_ENTRY_TYPE))
+#define RB_GRILO_ENTRY_TYPE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_GRILO_ENTRY_TYPE, RBGriloEntryTypeClass))
+
 typedef struct _RBGriloSourcePrivate RBGriloSourcePrivate;
 
 typedef struct
@@ -55,10 +62,22 @@ typedef struct
 	RBSourceClass parent;
 } RBGriloSourceClass;
 
+typedef struct _RhythmDBEntryType RBGriloEntryType;
+typedef struct _RhythmDBEntryTypeClass RBGriloEntryTypeClass;
+
+typedef struct
+{
+	GrlData *grilo_data;
+	GrlData *grilo_container;
+} RBGriloEntryData;
+
 RBSource *		rb_grilo_source_new	(GObject *plugin,
 						 GrlMediaSource *grilo_source);
 GType			rb_grilo_source_get_type (void);
 void			_rb_grilo_source_register_type	(GTypeModule *module);
+
+
+GType 			rb_grilo_entry_type_get_type (void);
 
 G_END_DECLS
 
