@@ -323,7 +323,7 @@ rb_removable_media_source_get_property (GObject *object,
 		g_value_set_object (value, priv->mount);
 		break;
 	case PROP_ENCODING_TARGET:
-		g_value_set_object (value, priv->encoding_target);
+		gst_value_set_mini_object (value, GST_MINI_OBJECT (priv->encoding_target));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -677,11 +677,13 @@ rb_removable_media_source_get_format_descriptions (RBRemovableMediaSource *sourc
 	const GList *l;
 	GList *desc = NULL;
 	g_object_get (source, "encoding-target", &target, NULL);
-	for (l = gst_encoding_target_get_profiles (target); l != NULL; l = l->next) {
-		GstEncodingProfile *profile = l->data;
-		desc = g_list_append (desc, g_strdup (gst_encoding_profile_get_description (profile)));
+	if (target != NULL) {
+		for (l = gst_encoding_target_get_profiles (target); l != NULL; l = l->next) {
+			GstEncodingProfile *profile = l->data;
+			desc = g_list_append (desc, g_strdup (gst_encoding_profile_get_description (profile)));
+		}
+		g_object_unref (target);
 	}
-	g_object_unref (target);
 	return desc;
 }
 
