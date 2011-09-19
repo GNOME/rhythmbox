@@ -1,6 +1,7 @@
 bULL =
 
 plugindir = $(PLUGINDIR)/visualizer
+plugindatadir = $(PLUGINDATADIR)/visualizer
 plugin_LTLIBRARIES = libvisualizer.la
 
 libvisualizer_la_SOURCES =			\
@@ -35,7 +36,7 @@ INCLUDES = 						\
 	$(CLUTTER_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
-mxthemedir = $(plugindir)
+mxthemedir = $(plugindatadir)
 mxtheme_DATA = 						\
 	visualizer.css					\
 	button-active.png				\
