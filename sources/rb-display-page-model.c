@@ -638,6 +638,7 @@ rb_display_page_model_add_page (RBDisplayPageModel *page_model, RBDisplayPage *p
 	GtkTreeIter *parent_iter_ptr;
 	GtkTreeIter iter;
 	char *name;
+	GList *child, *children;
 
 	g_return_if_fail (RB_IS_DISPLAY_PAGE_MODEL (page_model));
 	g_return_if_fail (RB_IS_DISPLAY_PAGE (page));
@@ -646,8 +647,17 @@ rb_display_page_model_add_page (RBDisplayPageModel *page_model, RBDisplayPage *p
 
 	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (page_model));
 	if (parent != NULL) {
+		if (find_in_real_model (page_model, parent, &parent_iter) == FALSE) {
+			/* it's okay for a page to create and add its own children
+			 * in its constructor, but we need to defer adding the children
+			 * until the parent is added.
+			 */
+			rb_debug ("parent %p for source %s isn't in the model yet", parent, name);
+			_rb_display_page_add_pending_child (parent, page);
+			g_free (name);
+			return;
+		}
 		rb_debug ("inserting source %s with parent %p", name, parent);
-		g_assert (find_in_real_model (page_model, parent, &parent_iter));
 		parent_iter_ptr = &parent_iter;
 	} else {
 		rb_debug ("appending page %s with no parent", name);
@@ -667,6 +677,12 @@ rb_display_page_model_add_page (RBDisplayPageModel *page_model, RBDisplayPage *p
 
 	walk_up_to_page_group (model, &group_iter, &iter);
 	update_group_visibility (model, &group_iter, page_model);
+
+	children = _rb_display_page_get_pending_children (page);
+	for (child = children; child != NULL; child = child->next) {
+		rb_display_page_model_add_page (page_model, RB_DISPLAY_PAGE (child->data), page);
+	}
+	g_list_free (children);
 }
 
 /**

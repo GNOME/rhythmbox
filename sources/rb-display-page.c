@@ -62,6 +62,8 @@ struct _RBDisplayPagePrivate
 	RBShell *shell;
 
 	gboolean deleted;
+
+	GList *pending_children;
 };
 
 enum
@@ -84,6 +86,20 @@ enum
 };
 
 static guint signals[LAST_SIGNAL] = { 0 };
+
+void
+_rb_display_page_add_pending_child (RBDisplayPage *page, RBDisplayPage *child)
+{
+	page->priv->pending_children = g_list_append (page->priv->pending_children, child);
+}
+
+GList *
+_rb_display_page_get_pending_children (RBDisplayPage *page)
+{
+	GList *c = page->priv->pending_children;
+	page->priv->pending_children = NULL;
+	return c;
+}
 
 /**
  * rb_display_age_receive_drag:

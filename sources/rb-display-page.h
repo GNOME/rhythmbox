@@ -109,4 +109,9 @@ void		_rb_action_group_add_display_page_actions (GtkActionGroup *group,
 							 GtkActionEntry *actions,
 							 int num_actions);
 
+/* things for the display page model */
+
+void		_rb_display_page_add_pending_child	(RBDisplayPage *page, RBDisplayPage *child);
+GList *		_rb_display_page_get_pending_children	(RBDisplayPage *page);
+
 #endif /* RB_DISPLAY_PAGE_H */
