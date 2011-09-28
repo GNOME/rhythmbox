@@ -30,7 +30,7 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
-	-D_XOPEN_SOURCE -D_BSD_SOURCE
+	-D_BSD_SOURCE
 
 
 plugin_in_files = sample-vala.plugin.in

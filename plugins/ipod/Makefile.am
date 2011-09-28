@@ -38,7 +38,7 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(IPOD_CFLAGS)					\
-	-D_XOPEN_SOURCE -D_BSD_SOURCE
+	-D_BSD_SOURCE
 
 plugin_in_files = ipod.plugin.in
 

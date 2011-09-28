@@ -47,7 +47,8 @@ INCLUDES = 						\
 	$(DBUS_CFLAGS)					\
 	$(GUDEV_CFLAGS)					\
 	$(WEBKIT_FLAGS)				\
-	-D_XOPEN_SOURCE -D__EXTENSIONS__ -D_BSD_SOURCE
+	-D__EXTENSIONS__ -D_BSD_SOURCE
+
 
 shellincludedir = $(includedir)/rhythmbox/shell
 shellinclude_HEADERS =					\

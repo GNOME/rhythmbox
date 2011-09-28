@@ -30,7 +30,7 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(LIBBRASERO_MEDIA_CFLAGS)			\
-	-D_XOPEN_SOURCE -D_BSD_SOURCE			\
+	-D_BSD_SOURCE			\
 	$(NULL)
 
 plugin_in_files = cd-recorder.plugin.in

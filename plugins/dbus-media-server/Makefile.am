@@ -24,7 +24,7 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
-	-D_XOPEN_SOURCE -D_BSD_SOURCE			\
+	-D_BSD_SOURCE			\
 	$(NULL)
 
 plugin_in_files = dbus-media-server.plugin.in

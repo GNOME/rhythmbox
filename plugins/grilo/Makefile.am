@@ -29,7 +29,7 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(GRILO_CFLAGS)					\
-	-D_XOPEN_SOURCE -D_BSD_SOURCE
+	-D_BSD_SOURCE
 
 libgrilo_la_LIBADD += $(NULL)
 

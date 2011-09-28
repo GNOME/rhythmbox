@@ -38,7 +38,7 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(RHYTHMBOX_CFLAGS)				\
-	-D_XOPEN_SOURCE -D_BSD_SOURCE
+	-D_BSD_SOURCE
 
 uixmldir = $(plugindatadir)
 uixml_DATA = generic-player-ui.xml

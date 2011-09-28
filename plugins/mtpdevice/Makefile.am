@@ -43,7 +43,7 @@ INCLUDES = 						\
 	$(GUDEV_CFLAGS)					\
 	$(HAL_CFLAGS)					\
 	$(MTP_CFLAGS)					\
-	-D_XOPEN_SOURCE -D_BSD_SOURCE
+	-D_BSD_SOURCE
 
 plugin_in_files = mtpdevice.plugin.in
 
