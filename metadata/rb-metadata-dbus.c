@@ -38,7 +38,7 @@
 
 const char *rb_metadata_iface_xml = "				\
 <node>								\
-  <interface name='org.gnome.Rhythmbox.Metadata'>		\
+  <interface name='org.gnome.Rhythmbox3.Metadata'>		\
     <method name='ping'>					\
       <arg direction='out' type='b' name='ok'/>			\
     </method>							\

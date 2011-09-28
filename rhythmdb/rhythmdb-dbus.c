@@ -33,12 +33,12 @@
 #include "rhythmdb.h"
 #include "rhythmdb-private.h"
 
-static const char *RHYTHMDB_OBJECT_PATH = "/org/gnome/Rhythmbox/RhythmDB";
-static const char *RHYTHMDB_INTERFACE_NAME = "org.gnome.Rhythmbox.RhythmDB";
+static const char *RHYTHMDB_OBJECT_PATH = "/org/gnome/Rhythmbox3/RhythmDB";
+static const char *RHYTHMDB_INTERFACE_NAME = "org.gnome.Rhythmbox3.RhythmDB";
 
 static const char *rhythmdb_dbus_spec =
 "<node>"
-"  <interface name='org.gnome.Rhythmbox.RhythmDB'>"
+"  <interface name='org.gnome.Rhythmbox3.RhythmDB'>"
 "    <method name='GetEntryProperties'>"
 "      <arg name='uri' type='s'/>"
 "      <arg name='properties' type='a{sv}' direction='out'/>"

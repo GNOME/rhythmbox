@@ -64,35 +64,35 @@
 #define RB_PLAYLIST_MGR_VERSION (xmlChar *) "1.0"
 #define RB_PLAYLIST_MGR_PL (xmlChar *) "rhythmdb-playlists"
 
-#define RB_PLAYLIST_MANAGER_IFACE_NAME "org.gnome.Rhythmbox.PlaylistManager"
-#define RB_PLAYLIST_MANAGER_DBUS_PATH "/org/gnome/Rhythmbox/PlaylistManager"
+#define RB_PLAYLIST_MANAGER_IFACE_NAME "org.gnome.Rhythmbox3.PlaylistManager"
+#define RB_PLAYLIST_MANAGER_DBUS_PATH "/org/gnome/Rhythmbox3/PlaylistManager"
 
 static const char *rb_playlist_manager_dbus_spec =
 "<node>"
-"  <interface name='org.gnome.Rhythmbox.PlaylistManager'>"
-"    <method name='getPlaylists'>"
+"  <interface name='org.gnome.Rhythmbox3.PlaylistManager'>"
+"    <method name='GetPlaylists'>"
 "      <arg type='as' direction='out'/>"
 "    </method>"
-"    <method name='createPlaylist'>"
+"    <method name='CreatePlaylist'>"
 "      <arg type='s' name='name'/>"
 "    </method>"
-"    <method name='deletePlaylist'>"
+"    <method name='DeletePlaylist'>"
 "      <arg type='s' name='name'/>"
 "    </method>"
-"    <method name='addToPlaylist'>"
+"    <method name='AddToPlaylist'>"
 "      <arg type='s' name='playlist'/>"
 "      <arg type='s' name='uri'/>"
 "    </method>"
-"    <method name='removeFromPlaylist'>"
+"    <method name='RemoveFromPlaylist'>"
 "      <arg type='s' name='playlist'/>"
 "      <arg type='s' name='uri'/>"
 "    </method>"
-"    <method name='exportPlaylist'>"
+"    <method name='ExportPlaylist'>"
 "      <arg type='s' name='playlist'/>"
 "      <arg type='s' name='uri'/>"
 "      <arg type='b' name='mp3_format'/>"
 "    </method>"
-"    <method name='importPlaylist'>"
+"    <method name='ImportPlaylist'>"
 "      <arg type='s' name='uri'/>"
 "    </method>"
 "  </interface>"
@@ -1623,14 +1623,14 @@ playlist_manager_method_call (GDBusConnection *connection,
 		return;
 	}
 
-	if (g_strcmp0 (method_name, "getPlaylists") == 0) {
+	if (g_strcmp0 (method_name, "GetPlaylists") == 0) {
 		char **names;
 
 		rb_playlist_manager_get_playlist_names (mgr, &names, NULL);
 		g_dbus_method_invocation_return_value (invocation,
 						       g_variant_new_strv ((const char * const *)names, -1));
 		g_strfreev (names);
-	} else if (g_strcmp0 (method_name, "createPlaylist") == 0) {
+	} else if (g_strcmp0 (method_name, "CreatePlaylist") == 0) {
 		g_variant_get (parameters, "(&s)", &name);
 		if (rb_playlist_manager_create_static_playlist (mgr, name, &error)) {
 			g_dbus_method_invocation_return_value (invocation, NULL);
@@ -1638,7 +1638,7 @@ playlist_manager_method_call (GDBusConnection *connection,
 			g_dbus_method_invocation_return_gerror (invocation, error);
 			g_clear_error (&error);
 		}
-	} else if (g_strcmp0 (method_name, "deletePlaylist") == 0) {
+	} else if (g_strcmp0 (method_name, "DeletePlaylist") == 0) {
 		g_variant_get (parameters, "(&s)", &name);
 		if (rb_playlist_manager_delete_playlist (mgr, name, &error)) {
 			g_dbus_method_invocation_return_value (invocation, NULL);
@@ -1646,7 +1646,7 @@ playlist_manager_method_call (GDBusConnection *connection,
 			g_dbus_method_invocation_return_gerror (invocation, error);
 			g_clear_error (&error);
 		}
-	} else if (g_strcmp0 (method_name, "addToPlaylist") == 0) {
+	} else if (g_strcmp0 (method_name, "AddToPlaylist") == 0) {
 		g_variant_get (parameters, "(ss)", &name, &uri);
 		if (rb_playlist_manager_add_to_playlist (mgr, name, uri, &error)) {
 			g_dbus_method_invocation_return_value (invocation, NULL);
@@ -1654,7 +1654,7 @@ playlist_manager_method_call (GDBusConnection *connection,
 			g_dbus_method_invocation_return_gerror (invocation, error);
 			g_clear_error (&error);
 		}
-	} else if (g_strcmp0 (method_name, "removeFromPlaylist") == 0) {
+	} else if (g_strcmp0 (method_name, "RemoveFromPlaylist") == 0) {
 		g_variant_get (parameters, "(ss)", &name, &uri);
 		if (rb_playlist_manager_remove_from_playlist (mgr, name, uri, &error)) {
 			g_dbus_method_invocation_return_value (invocation, NULL);
@@ -1662,7 +1662,7 @@ playlist_manager_method_call (GDBusConnection *connection,
 			g_dbus_method_invocation_return_gerror (invocation, error);
 			g_clear_error (&error);
 		}
-	} else if (g_strcmp0 (method_name, "exportPlaylist") == 0) {
+	} else if (g_strcmp0 (method_name, "ExportPlaylist") == 0) {
 		gboolean m3u_format;
 		g_variant_get (parameters, "(ssb)", &name, &uri, &m3u_format);
 		if (rb_playlist_manager_export_playlist (mgr, name, uri, m3u_format, &error)) {
@@ -1671,7 +1671,7 @@ playlist_manager_method_call (GDBusConnection *connection,
 			g_dbus_method_invocation_return_gerror (invocation, error);
 			g_clear_error (&error);
 		}
-	} else if (g_strcmp0 (method_name, "importPlaylist") == 0) {
+	} else if (g_strcmp0 (method_name, "ImportPlaylist") == 0) {
 		g_variant_get (parameters, "(s)", &uri);
 		if (rb_playlist_manager_parse_file (mgr, uri, &error)) {
 			g_dbus_method_invocation_return_value (invocation, NULL);

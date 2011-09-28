@@ -34,9 +34,9 @@
 
 G_BEGIN_DECLS
 
-#define RB_METADATA_DBUS_NAME		"org.gnome.Rhythmbox.Metadata"
-#define RB_METADATA_DBUS_OBJECT_PATH	"/org/gnome/Rhythmbox/MetadataService"
-#define RB_METADATA_DBUS_INTERFACE	"org.gnome.Rhythmbox.Metadata"
+#define RB_METADATA_DBUS_NAME		"org.gnome.Rhythmbox3.Metadata"
+#define RB_METADATA_DBUS_OBJECT_PATH	"/org/gnome/Rhythmbox3/MetadataService"
+#define RB_METADATA_DBUS_INTERFACE	"org.gnome.Rhythmbox3.Metadata"
 
 /* Timeouts in milliseconds.  If a metadata operation takes longer than this,
  * the metadata process will be killed and the operation will fail.  We use a
