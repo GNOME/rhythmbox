@@ -348,7 +348,7 @@ class LyricsDisplayPlugin(GObject.Object, Peas.Activatable):
 		self.action_group = Gtk.ActionGroup (name='SongLyricsPluginActions')
 		self.action_group.add_action_with_accel (self.action, "<control>L")
 		
-		uim = shell.get_ui_manager ()
+		uim = shell.props.ui_manager
 		uim.insert_action_group (self.action_group, 0)
 		self.ui_id = uim.add_ui_from_string (ui_str)
 		uim.ensure_update ()
@@ -365,7 +365,7 @@ class LyricsDisplayPlugin(GObject.Object, Peas.Activatable):
 	def do_deactivate (self):
 		shell = self.object
 			
-		uim = shell.get_ui_manager()
+		uim = shell.props.ui_manager
 		uim.remove_ui (self.ui_id)
 		uim.remove_action_group (self.action_group)
 

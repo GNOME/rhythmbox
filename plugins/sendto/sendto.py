@@ -61,15 +61,17 @@ class SendToPlugin (GObject.Object, Peas.Activatable):
 
         self.__action_group = Gtk.ActionGroup(name='SendToActionGroup')
         self.__action_group.add_action(self.__action)
-        shell.get_ui_manager().insert_action_group(self.__action_group, -1)
 
-        self.__ui_id = shell.get_ui_manager().add_ui_from_string(ui_definition)
+	uim = shell.props.ui_manager
+        uim.insert_action_group(self.__action_group, -1)
+        uim.add_ui_from_string(ui_definition)
 
     def do_deactivate(self):
 	shell = self.object
-        shell.get_ui_manager().remove_action_group(self.__action_group)
-        shell.get_ui_manager().remove_ui(self.__ui_id)
-        shell.get_ui_manager().ensure_update()
+	uim = shell.props.ui_manager
+        uim.remove_action_group(self.__action_group)
+        uim.remove_ui(self.__ui_id)
+        uim.ensure_update()
 
         del self.__action_group
         del self.__action

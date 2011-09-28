@@ -92,7 +92,7 @@ class ContextView (GObject.GObject):
                         self.toggle_visibility, True)
         self.action_group = Gtk.ActionGroup(name='ContextPluginActions')
         self.action_group.add_toggle_actions([self.action])
-        uim = self.shell.get_ui_manager()
+        uim = self.shell.props.ui_manager
         uim.insert_action_group (self.action_group, 0)
         self.ui_id = uim.add_ui_from_string(context_ui)
         uim.ensure_update()
@@ -117,7 +117,7 @@ class ContextView (GObject.GObject):
 	self.websettings = None
 	self.buttons = None
 	self.top_five_list = None
-        uim = shell.get_ui_manager ()
+        uim = shell.props.ui_manager
         uim.remove_ui (self.ui_id)
         uim.remove_action_group (self.action_group)
 
