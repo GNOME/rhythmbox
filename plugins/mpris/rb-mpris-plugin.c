@@ -1342,7 +1342,7 @@ display_page_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *i
 		if (is_local) {
 			char *id;
 
-			id = g_strdup_printf ("/org/gnome/Rhythmbox/Playlist/%p", page);
+			id = g_strdup_printf ("/org/gnome/Rhythmbox3/Playlist/%p", page);
 			g_object_set_data_full (G_OBJECT (page), MPRIS_PLAYLIST_ID_ITEM, id, g_free);
 
 			plugin->playlist_count++;
@@ -1507,7 +1507,7 @@ impl_activate (PeasActivatable *bplugin)
 	g_object_unref (ui_manager);
 
 	plugin->name_own_id = g_bus_own_name (G_BUS_TYPE_SESSION,
-					      MPRIS_BUS_NAME_PREFIX ".rhythmbox",
+					      MPRIS_BUS_NAME_PREFIX ".rhythmbox3",
 					      G_BUS_NAME_OWNER_FLAGS_NONE,
 					      NULL,
 					      (GBusNameAcquiredCallback) name_acquired_cb,
