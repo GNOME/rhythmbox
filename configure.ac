@@ -63,7 +63,7 @@ GRILO_REQS=0.1.17
 LIBNOTIFY_REQS=0.7.0
 BRASERO_MIN_REQS=2.31.5
 WEBKIT_MIN_REQS=1.3.9
-PYGOBJECT_REQUIRED=2.28
+PYGOBJECT_REQUIRED=2.90.2
 
 GLIB_GSETTINGS
 
@@ -640,14 +640,14 @@ AC_ARG_ENABLE([python],
               [enable_python="auto"])
 
 if test "x$enable_python" = "xauto"; then
-	PKG_CHECK_EXISTS([pygobject-2.0 >= $PYGOBJECT_REQUIRED],
+	PKG_CHECK_EXISTS([pygobject-3.0 >= $PYGOBJECT_REQUIRED],
 	                 [enable_python=yes],[enable_python=no])
 fi
 
 if test "x$enable_python" = "xyes"; then
-	PKG_CHECK_MODULES(PYTHON, [pygobject-2.0 >= $PYGOBJECT_REQUIRED])
+	PKG_CHECK_MODULES(PYTHON, [pygobject-3.0 >= $PYGOBJECT_REQUIRED])
 
-	pyoverridesdir=`$PKG_CONFIG --variable=overridesdir pygobject-2.0`
+	pyoverridesdir=`$PKG_CONFIG --variable=overridesdir pygobject-3.0`
 	AC_SUBST(pyoverridesdir)
 fi
 
