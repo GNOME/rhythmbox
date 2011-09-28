@@ -84,14 +84,14 @@ typedef struct _RBShellPrivate RBShellPrivate;
 
 struct _RBShell
 {
-        GObject parent;
+        GtkApplication parent;
 
 	RBShellPrivate *priv;
 };
 
 struct _RBShellClass
 {
-        GObjectClass parent_class;
+        GtkApplicationClass parent_class;
 
 	/* signals */
 	gboolean (*visibility_changing)	(RBShell *shell, gboolean initial, gboolean visible);
@@ -103,13 +103,7 @@ struct _RBShellClass
 
 GType		rb_shell_get_type	(void);
 
-RBShell *	rb_shell_new		(gboolean no_registration,
-					 gboolean no_update,
-					 gboolean dry_run,
-					 gboolean autostarted,
-					 gboolean disable_plugins,
-					 char *rhythmdb,
-					 char *playlists);
+RBShell *	rb_shell_new		(gboolean autostarted, int *argc, char ***argv);
 
 gboolean        rb_shell_present        (RBShell *shell, guint32 timestamp, GError **error);
 
@@ -123,12 +117,6 @@ gboolean        rb_shell_add_uri        (RBShell *shell,
 
 gboolean        rb_shell_load_uri       (RBShell *shell, const char *uri, gboolean play, GError **error);
 
-GObject *       rb_shell_get_player     (RBShell *shell);
-const char *    rb_shell_get_player_path(RBShell *shell);
-GObject *	rb_shell_get_playlist_manager (RBShell *shell);
-const char *	rb_shell_get_playlist_manager_path (RBShell *shell);
-GObject *	rb_shell_get_ui_manager (RBShell *shell);
-
 void            rb_shell_toggle_visibility (RBShell *shell);
 
 gboolean        rb_shell_get_song_properties (RBShell *shell,
@@ -141,17 +129,6 @@ gboolean        rb_shell_set_song_property (RBShell *shell,
 					    const char *propname,
 					    const GValue *value,
 					    GError **error);
-
-gboolean	rb_shell_add_to_queue (RBShell *shell,
-				       const gchar *uri,
-				       GError **error);
-
-gboolean	rb_shell_remove_from_queue (RBShell *shell,
-					    const gchar *uri,
-					    GError **error);
-
-gboolean	rb_shell_clear_queue (RBShell *shell,
-				      GError **error);
 
 gboolean	rb_shell_quit (RBShell *shell,
 			       GError **error);

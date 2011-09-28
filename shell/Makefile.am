@@ -123,13 +123,6 @@ librhythmbox_core_la_LDFLAGS = 				\
 	-export-dynamic -no-undefined
 librhythmbox_core_la_LIBTOOLFLAGS = --tag=disable-static
 
-rb-shell-glue.h: rb-shell.xml Makefile
-	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell --mode=glib-server --output=$@ $<
-rb-shell-binding.h: rb-shell.xml Makefile
-	$(LIBTOOL) --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell --mode=glib-client --output=$@ $<
-
-BUILT_SOURCES += rb-shell-glue.h rb-shell-binding.h
-EXTRA_DIST += rb-shell.xml
 
 rhythmbox_LDADD = 					\
 	librhythmbox-core.la				\

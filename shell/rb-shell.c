@@ -52,6 +52,8 @@
 #include <libpeas/peas.h>
 #include <libpeas-gtk/peas-gtk.h>
 
+#include <gst/gst.h>
+
 #ifdef HAVE_MMKEYS
 #include <X11/XF86keysym.h>
 #endif /* HAVE_MMKEYS */
@@ -113,6 +115,9 @@ static void rb_shell_get_property (GObject *object,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *pspec);
+static void rb_shell_activate (GApplication *app);
+static void rb_shell_open (GApplication *app, GFile **files, int n_files, const char *hint);
+static gboolean rb_shell_local_command_line (GApplication *app, gchar ***args, int *exit_status);
 static gboolean rb_shell_get_visibility (RBShell *shell);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEventWindowState *event,
@@ -244,16 +249,14 @@ enum
 	VISIBILITY_CHANGED,
 	VISIBILITY_CHANGING,
 	CREATE_SONG_INFO,
-	REMOVABLE_MEDIA_SCAN_FINISHED,
 	NOTIFY_PLAYING_ENTRY,
 	NOTIFY_CUSTOM,
-	DATABASE_LOAD_COMPLETE,
 	LAST_SIGNAL
 };
 
 static guint rb_shell_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBShell, rb_shell, G_TYPE_OBJECT)
+G_DEFINE_TYPE (RBShell, rb_shell, GTK_TYPE_APPLICATION)
 
 struct _RBShellPrivate
 {
@@ -404,771 +407,54 @@ static GtkToggleActionEntry rb_shell_toggle_entries [] =
 static guint rb_shell_n_toggle_entries = G_N_ELEMENTS (rb_shell_toggle_entries);
 
 static void
-rb_shell_class_init (RBShellClass *klass)
+rb_shell_activate (GApplication *app)
 {
-        GObjectClass *object_class = (GObjectClass *) klass;
-
-	object_class->set_property = rb_shell_set_property;
-	object_class->get_property = rb_shell_get_property;
-        object_class->finalize = rb_shell_finalize;
-	object_class->constructed = rb_shell_constructed;
-
-	klass->visibility_changing = rb_shell_visibility_changing;
-
-	/**
-	 * RBShell:no-registration:
-	 *
-	 * If %TRUE, disable single-instance features.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_NO_REGISTRATION,
-					 g_param_spec_boolean ("no-registration",
-							       "no-registration",
-							       "Whether or not to register",
-							       FALSE,
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	/**
-	 * RBShell:no-update:
-	 *
-	 * If %TRUE, don't update the database.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_NO_UPDATE,
-					 g_param_spec_boolean ("no-update",
-							       "no-update",
-							       "Whether or not to update the library",
-							       FALSE,
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	/**
-	 * RBShell:dry-run:
-	 *
-	 * If TRUE, don't write back file metadata changes.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_DRY_RUN,
-					 g_param_spec_boolean ("dry-run",
-							       "dry-run",
-							       "Whether or not this is a dry run",
-							       FALSE,
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	/**
-	 * RBShell:rhythmdb-file:
-	 *
-	 * The path to the rhythmdb file
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_RHYTHMDB_FILE,
-					 g_param_spec_string ("rhythmdb-file",
-							      "rhythmdb-file",
-							      "The RhythmDB file to use",
-#ifdef WITH_RHYTHMDB_TREE
-							      "rhythmdb.xml",
-#elif defined(WITH_RHYTHMDB_GDA)
-							      "rhythmdb.sqlite", /* FIXME: correct extension? */
-#endif
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	/**
-	 * RBShell:playlists-file:
-	 *
-	 * The path to the playlist file
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_PLAYLISTS_FILE,
-					 g_param_spec_string ("playlists-file",
-							      "playlists-file",
-							      "The playlists file to use",
-							      "playlists.xml",
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-
-	/**
-	 * RBShell:selected-page:
-	 *
-	 * The currently selected display page
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_SELECTED_PAGE,
-					 g_param_spec_object ("selected-page",
-							      "selected-page",
-							      "Display page which is currently selected",
-							      RB_TYPE_DISPLAY_PAGE,
-							      G_PARAM_READABLE));
-	/**
-	 * RBShell:db:
-	 *
-	 * The #RhythmDB instance
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_DB,
-					 g_param_spec_object ("db",
-							      "RhythmDB",
-							      "RhythmDB object",
-							      RHYTHMDB_TYPE,
-							      G_PARAM_READABLE));
-	/**
-	 * RBShell:ui-manager:
-	 *
-	 * The #GtkUIManager instance
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_UI_MANAGER,
-					 g_param_spec_object ("ui-manager",
-							      "GtkUIManager",
-							      "GtkUIManager object",
-							      GTK_TYPE_UI_MANAGER,
-							      G_PARAM_READABLE));
-	/**
-	 * RBShell:clipboard:
-	 *
-	 * The #RBShellClipboard instance
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_CLIPBOARD,
-					 g_param_spec_object ("clipboard",
-							      "RBShellClipboard",
-							      "RBShellClipboard object",
-							      RB_TYPE_SHELL_CLIPBOARD,
-							      G_PARAM_READABLE));
-	/**
-	 * RBShell:playlist-manager:
-	 *
-	 * The #RBPlaylistManager instance
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_PLAYLIST_MANAGER,
-					 g_param_spec_object ("playlist-manager",
-							      "RBPlaylistManager",
-							      "RBPlaylistManager object",
-							      RB_TYPE_PLAYLIST_MANAGER,
-							      G_PARAM_READABLE));
-	/**
-	 * RBShell:shell-player:
-	 *
-	 * The #RBShellPlayer instance
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_SHELL_PLAYER,
-					 g_param_spec_object ("shell-player",
-							      "RBShellPlayer",
-							      "RBShellPlayer object",
-							      RB_TYPE_SHELL_PLAYER,
-							      G_PARAM_READABLE));
-	/**
-	 * RBShell:removable-media-manager:
-	 *
-	 * The #RBRemovableMediaManager instance
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_REMOVABLE_MEDIA_MANAGER,
-					 g_param_spec_object ("removable-media-manager",
-							      "RBRemovableMediaManager",
-							      "RBRemovableMediaManager object",
-							      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
-							      G_PARAM_READABLE));
-	/**
-	 * RBShell:window:
-	 *
-	 * The main Rhythmbox window.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_WINDOW,
-					 g_param_spec_object ("window",
-							      "GtkWindow",
-							      "GtkWindow object",
-							      GTK_TYPE_WINDOW,
-							      G_PARAM_READABLE));
-	/**
-	 * RBShell:prefs:
-	 *
-	 * The #RBShellPreferences instance
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_PREFS,
-					 g_param_spec_object ("prefs",
-							      "RBShellPreferences",
-							      "RBShellPreferences object",
-							      RB_TYPE_SHELL_PREFERENCES,
-							      G_PARAM_READABLE));
-	/**
-	 * RBShell:queue-source:
-	 *
-	 * The play queue source
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_QUEUE_SOURCE,
-					 g_param_spec_object ("queue-source",
-							      "queue-source",
-							      "Queue source",
-							      RB_TYPE_PLAY_QUEUE_SOURCE,
-							      G_PARAM_READABLE));
-	/**
-	 * RBShell:library-source:
-	 *
-	 * The library source
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_LIBRARY_SOURCE,
-					 g_param_spec_object ("library-source",
-							      "library-source",
-							      "Library source",
-							      RB_TYPE_LIBRARY_SOURCE,
-							      G_PARAM_READABLE));
-	/**
-	 * RBShell:display-page-model:
-	 *
-	 * The model underlying the display page tree
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_DISPLAY_PAGE_MODEL,
-					 g_param_spec_object ("display-page-model",
-							      "display-page-model",
-							      "RBDisplayPageModel",
-							      RB_TYPE_DISPLAY_PAGE_MODEL,
-							      G_PARAM_READABLE));
-
-	/**
-	 * RBShell:display-page-tree:
-	 *
-	 * The #RBDisplayPageTree instance
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_DISPLAY_PAGE_TREE,
-					 g_param_spec_object ("display-page-tree",
-							      "display-page-tree",
-							      "RBDisplayPageTree",
-							      RB_TYPE_DISPLAY_PAGE_TREE,
-							      G_PARAM_READABLE));
-
-	/**
-	 * RBShell:visibility:
-	 *
-	 * Whether the main window is currently visible.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_VISIBILITY,
-					 g_param_spec_boolean ("visibility",
-							       "visibility",
-							       "Current window visibility",
-							       TRUE,
-							       G_PARAM_READWRITE));
-	/**
-	 * RBShell:source-header:
-	 *
-	 * The #RBSourceHeader instance
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_SOURCE_HEADER,
-					 g_param_spec_object ("source-header",
-							      "source header widget",
-							      "RBSourceHeader",
-							      RB_TYPE_SOURCE_HEADER,
-							      G_PARAM_READABLE));
-
-	/**
-	 * RBShell:track-transfer-queue:
-	 *
-	 * The #RBTrackTransferQueue instance
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_TRACK_TRANSFER_QUEUE,
-					 g_param_spec_object ("track-transfer-queue",
-							      "RBTrackTransferQueue",
-							      "RBTrackTransferQueue object",
-							      RB_TYPE_TRACK_TRANSFER_QUEUE,
-							      G_PARAM_READABLE));
-	/**
-	 * RBShell:autostarted:
-	 *
-	 * Whether Rhythmbox was automatically started by the session manager
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_AUTOSTARTED,
-					 g_param_spec_boolean ("autostarted",
-							       "autostarted",
-							       "TRUE if autostarted",
-							       FALSE,
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	/**
-	 * RBShell:disable-plugins:
-	 *
-	 * If %TRUE, disable plugins
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_DISABLE_PLUGINS,
-					 g_param_spec_boolean ("disable-plugins",
-							       "disable-plugins",
-							       "Whether or not to disable plugins",
-							       FALSE,
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	/**
-	 * RBShell::visibility-changed:
-	 * @shell: the #RBShell
-	 * @visibile: new visibility
-	 *
-	 * Emitted after the visibility of the main Rhythmbox window has
-	 * changed.
-	 */
-	rb_shell_signals[VISIBILITY_CHANGED] =
-		g_signal_new ("visibility_changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellClass, visibility_changed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOOLEAN,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_BOOLEAN);
-	/**
-	 * RBShell::visibility-changing:
-	 * @shell: the #RBShell
-	 * @initial: if %TRUE, this is the initial visibility for the window
-	 * @visible: new shell visibility
-	 *
-	 * Emitted before the visibility of the main window changes.  The return
-	 * value overrides the visibility setting.  If multiple signal handlers
-	 * are attached, the last one wins.
-	 */
-	rb_shell_signals[VISIBILITY_CHANGING] =
-		g_signal_new ("visibility_changing",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellClass, visibility_changing),
-			      NULL, NULL,
-			      rb_marshal_BOOLEAN__BOOLEAN_BOOLEAN,
-			      G_TYPE_BOOLEAN,
-			      2,
-			      G_TYPE_BOOLEAN,
-			      G_TYPE_BOOLEAN);
-
-	/**
-	 * RBShell::create-song-info:
-	 * @shell: the #RBShell
-	 * @song_info: the new #RBSongInfo window
-	 * @multi: if %TRUE, the song info window is for multiple entries
-	 *
-	 * Emitted when creating a new #RBSongInfo window.  Signal handlers can
-	 * add pages to the song info window notebook to display additional
-	 * information.
-	 */
-	rb_shell_signals[CREATE_SONG_INFO] =
-		g_signal_new ("create_song_info",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellClass, create_song_info),
-			      NULL, NULL,
-			      rb_marshal_VOID__OBJECT_BOOLEAN,
-			      G_TYPE_NONE,
-			      2,
-			      RB_TYPE_SONG_INFO, G_TYPE_BOOLEAN);
-	/**
-	 * RBShell::removable-media-scan-finished:
-	 * @shell: the #RBShell
-	 *
-	 * Emitted when the initial scan for removable media devices is
-	 * complete.  This is intended to allow plugins to request a
-	 * device scan only if the scan on startup has already been done,
-	 * but it isn't very useful for that.
-	 * See #RBRemovableMediaManager:scanned for a better approach to
-	 * this problem.
-	 */
-	rb_shell_signals[REMOVABLE_MEDIA_SCAN_FINISHED] =
-		g_signal_new ("removable_media_scan_finished",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellClass, removable_media_scan_finished),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
-	/**
-	 * RBShell::notify-playing-entry:
-	 * @shell: the #RBShell
-	 *
-	 * Emitted when a notification should be displayed showing the current
-	 * playing entry.
-	 */
-	rb_shell_signals[NOTIFY_PLAYING_ENTRY] =
-		g_signal_new ("notify-playing-entry",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      0,
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOOLEAN,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_BOOLEAN);
-	/**
-	 * RBShell::notify-custom:
-	 * @shell: the #RBShell
-	 * @timeout: length of time (in seconds) to display the notification
-	 * @primary: main notification text
-	 * @secondary: secondary notification text
-	 * @image_uri: URI for an image to include in the notification (optional)
-	 * @requested: if %TRUE, the notification was triggered by an explicit user action
-	 *
-	 * Emitted when a custom notification should be displayed to the user.
-	 */
-	rb_shell_signals[NOTIFY_CUSTOM] =
-		g_signal_new ("notify-custom",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      0,
-			      NULL, NULL,
-			      rb_marshal_VOID__UINT_STRING_STRING_STRING_BOOLEAN,
-			      G_TYPE_NONE,
-			      5,
-			      G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
-	/**
-	 * RBShell::database-load-complete:
-	 * @shell: the #RBShell
-	 *
-	 * Emitted when the database has been loaded.  This is intended to allow
-	 * DBus clients that start a new instance of the application to wait until
-	 * a reasonable amount of state has been loaded before making further requests.
-	 */
-	rb_shell_signals[DATABASE_LOAD_COMPLETE] =
-		g_signal_new ("database-load-complete",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellClass, database_load_complete),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
-
-	g_type_class_add_private (klass, sizeof (RBShellPrivate));
+	rb_shell_present (RB_SHELL (app), gtk_get_current_event_time (), NULL);
 }
 
 static void
-rb_shell_init (RBShell *shell)
+rb_shell_open (GApplication *app, GFile **files, int n_files, const char *hint)
 {
-	shell->priv = G_TYPE_INSTANCE_GET_PRIVATE (shell, RB_TYPE_SHELL, RBShellPrivate);
+	int i;
 
-	rb_user_data_dir ();
+	for (i = 0; i < n_files; i++) {
+		char *uri;
 
-        rb_shell_session_init (shell);
-}
+		uri = g_file_get_uri (files[i]);
 
-static void
-rb_shell_set_property (GObject *object,
-		       guint prop_id,
-		       const GValue *value,
-		       GParamSpec *pspec)
-{
-	RBShell *shell = RB_SHELL (object);
-
-	switch (prop_id)
-	{
-	case PROP_NO_REGISTRATION:
-		shell->priv->no_registration = g_value_get_boolean (value);
-		break;
-	case PROP_NO_UPDATE:
-		shell->priv->no_update = g_value_get_boolean (value);
-		break;
-	case PROP_DRY_RUN:
-		shell->priv->dry_run = g_value_get_boolean (value);
-		if (shell->priv->dry_run)
-			shell->priv->no_registration = TRUE;
-		break;
-	case PROP_RHYTHMDB_FILE:
-		g_free (shell->priv->rhythmdb_file);
-		shell->priv->rhythmdb_file = g_value_dup_string (value);
-		break;
-	case PROP_PLAYLISTS_FILE:
-		g_free (shell->priv->playlists_file);
-		shell->priv->playlists_file = g_value_dup_string (value);
-		break;
-	case PROP_VISIBILITY:
-		rb_shell_set_visibility (shell, FALSE, g_value_get_boolean (value));
-		break;
-	case PROP_AUTOSTARTED:
-		shell->priv->autostarted = g_value_get_boolean (value);
-		break;
-	case PROP_DISABLE_PLUGINS:
-		shell->priv->disable_plugins = g_value_get_boolean (value);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
-static void
-rb_shell_get_property (GObject *object,
-		       guint prop_id,
-		       GValue *value,
-		       GParamSpec *pspec)
-{
-	RBShell *shell = RB_SHELL (object);
-
-	switch (prop_id)
-	{
-	case PROP_NO_REGISTRATION:
-		g_value_set_boolean (value, shell->priv->no_registration);
-		break;
-	case PROP_NO_UPDATE:
-		g_value_set_boolean (value, shell->priv->no_update);
-		break;
-	case PROP_DRY_RUN:
-		g_value_set_boolean (value, shell->priv->dry_run);
-		break;
-	case PROP_RHYTHMDB_FILE:
-		g_value_set_string (value, shell->priv->rhythmdb_file);
-		break;
-	case PROP_PLAYLISTS_FILE:
-		g_value_set_string (value, shell->priv->playlists_file);
-		break;
-	case PROP_DB:
-		g_value_set_object (value, shell->priv->db);
-		break;
-	case PROP_UI_MANAGER:
-		g_value_set_object (value, shell->priv->ui_manager);
-		break;
-	case PROP_CLIPBOARD:
-		g_value_set_object (value, shell->priv->clipboard_shell);
-		break;
-	case PROP_PLAYLIST_MANAGER:
-		g_value_set_object (value, shell->priv->playlist_manager);
-		break;
-	case PROP_SHELL_PLAYER:
-		g_value_set_object (value, shell->priv->player_shell);
-		break;
-	case PROP_REMOVABLE_MEDIA_MANAGER:
-		g_value_set_object (value, shell->priv->removable_media_manager);
-		break;
-	case PROP_SELECTED_PAGE:
-		g_value_set_object (value, shell->priv->selected_page);
-		break;
-	case PROP_WINDOW:
-		g_value_set_object (value, shell->priv->window);
-		break;
-	case PROP_PREFS:
-		/* create the preferences window the first time we need it */
-		if (shell->priv->prefs == NULL) {
-			GtkWidget *content;
-
-			shell->priv->prefs = rb_shell_preferences_new (shell->priv->sources);
-
-			gtk_window_set_transient_for (GTK_WINDOW (shell->priv->prefs),
-						      GTK_WINDOW (shell->priv->window));
-			content = gtk_dialog_get_content_area (GTK_DIALOG (shell->priv->prefs));
-			gtk_widget_show_all (content);
+		/*
+		 * rb_uri_exists won't work if the location isn't mounted.
+		 * however, things that are interesting to mount are generally
+		 * non-local, so we'll process them anyway.
+		 */
+		if (rb_uri_is_local (uri) == FALSE || rb_uri_exists (uri)) {
+			rb_shell_load_uri (RB_SHELL (app), uri, TRUE, NULL);
 		}
-		g_value_set_object (value, shell->priv->prefs);
-		break;
-	case PROP_QUEUE_SOURCE:
-		g_value_set_object (value, shell->priv->queue_source);
-		break;
-	case PROP_LIBRARY_SOURCE:
-		g_value_set_object (value, shell->priv->library_source);
-		break;
-	case PROP_DISPLAY_PAGE_MODEL:
-		g_value_set_object (value, shell->priv->display_page_model);
-		break;
-	case PROP_DISPLAY_PAGE_TREE:
-		g_value_set_object (value, shell->priv->display_page_tree);
-		break;
-	case PROP_VISIBILITY:
-		g_value_set_boolean (value, rb_shell_get_visibility (shell));
-		break;
-	case PROP_SOURCE_HEADER:
-		g_value_set_object (value, shell->priv->source_header);
-		break;
-	case PROP_TRACK_TRANSFER_QUEUE:
-		g_value_set_object (value, shell->priv->track_transfer_queue);
-		break;
-	case PROP_AUTOSTARTED:
-		g_value_set_boolean (value, shell->priv->autostarted);
-		break;
-	case PROP_DISABLE_PLUGINS:
-		g_value_set_boolean (value, shell->priv->disable_plugins);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
+		g_free (uri);
 	}
-}
-
-static gboolean
-rb_shell_sync_state (RBShell *shell)
-{
-	if (shell->priv->dry_run) {
-		rb_debug ("in dry-run mode, not syncing state");
-		return FALSE;
-	}
-
-	if (!shell->priv->load_complete) {
-		rb_debug ("load incomplete, not syncing state");
-		return FALSE;
-	}
-
-	rb_debug ("saving playlists");
-	rb_playlist_manager_save_playlists (shell->priv->playlist_manager,
-					    TRUE);
-
-	rb_debug ("saving db");
-	rhythmdb_save (shell->priv->db);
-	return FALSE;
-}
-
-static gboolean
-idle_save_rhythmdb (RBShell *shell)
-{
-	rhythmdb_save (shell->priv->db);
-
-	shell->priv->save_db_id = 0;
-
-	return FALSE;
-}
-
-static gboolean
-idle_save_playlist_manager (RBShell *shell)
-{
-	GDK_THREADS_ENTER ();
-	rb_playlist_manager_save_playlists (shell->priv->playlist_manager,
-					    FALSE);
-	GDK_THREADS_LEAVE ();
-
-	return TRUE;
 }
 
 static void
-rb_shell_shutdown (RBShell *shell)
+load_state_changed_cb (GActionGroup *action_group, const char *action_name, GVariant *state, GPtrArray *files)
 {
-	GdkDisplay *display;
+	gboolean loaded;
+	gboolean scanned;
 
-	if (shell->priv->shutting_down)
+	if (g_strcmp0 (action_name, "LoadURI") != 0) {
 		return;
-	shell->priv->shutting_down = TRUE;
-
-	/* Hide the main window and tray icon as soon as possible */
-	display = gtk_widget_get_display (shell->priv->window);
-	gtk_widget_hide (shell->priv->window);
-	gdk_display_sync (display);
-
-	if (shell->priv->plugin_engine != NULL) {
-		g_object_unref (shell->priv->plugin_engine);
-		shell->priv->plugin_engine = NULL;
 	}
-	if (shell->priv->activatable != NULL) {
-		g_object_unref (shell->priv->activatable);
-		shell->priv->activatable = NULL;
-	}
-	if (shell->priv->plugin_settings != NULL) {
-		g_object_unref (shell->priv->plugin_settings);
-		shell->priv->plugin_settings = NULL;
+
+	g_variant_get (state, "(bb)", &loaded, &scanned);
+	if (loaded) {
+		rb_debug ("opening files now");
+		g_signal_handlers_disconnect_by_func (action_group, load_state_changed_cb, files);
+
+		g_application_open (G_APPLICATION (action_group), (GFile **)files->pdata, files->len, "");
+		g_ptr_array_free (files, TRUE);
 	}
 }
 
-static void
-rb_shell_finalize (GObject *object)
-{
-        RBShell *shell = RB_SHELL (object);
 
-	rb_debug ("Finalizing shell");
-
-	rb_shell_player_stop (shell->priv->player_shell);
-
-	if (shell->priv->settings != NULL) {
-		rb_settings_delayed_sync (shell->priv->settings, NULL, NULL, NULL);
-		g_object_unref (shell->priv->settings);
-	}
-
-	g_free (shell->priv->cached_title);
-
-	if (shell->priv->save_playlist_id > 0) {
-		g_source_remove (shell->priv->save_playlist_id);
-		shell->priv->save_playlist_id = 0;
-	}
-
-	if (shell->priv->save_db_id > 0) {
-		g_source_remove (shell->priv->save_db_id);
-		shell->priv->save_db_id = 0;
-	}
-
-	if (shell->priv->queue_sidebar != NULL) {
-		g_object_unref (shell->priv->queue_sidebar);
-	}
-
-	rb_debug ("shutting down playlist manager");
-	rb_playlist_manager_shutdown (shell->priv->playlist_manager);
-
-	rb_debug ("unreffing playlist manager");
-	g_object_unref (shell->priv->playlist_manager);
-
-	rb_debug ("unreffing removable media manager");
-	g_object_unref (shell->priv->removable_media_manager);
-	g_object_unref (shell->priv->track_transfer_queue);
-
-	rb_debug ("unreffing podcast manager");
-	g_object_unref (shell->priv->podcast_manager);
-
-	rb_debug ("unreffing clipboard shell");
-	g_object_unref (shell->priv->clipboard_shell);
-
-	rb_debug ("destroying prefs");
-	if (shell->priv->prefs != NULL)
-		gtk_widget_destroy (shell->priv->prefs);
-
-	g_free (shell->priv->rhythmdb_file);
-
-	g_free (shell->priv->playlists_file);
-
-	rb_debug ("destroying window");
-	gtk_widget_destroy (shell->priv->window);
-
-	g_list_free (shell->priv->sources);
-	shell->priv->sources = NULL;
-
-	g_hash_table_destroy (shell->priv->sources_hash);
-
-	rb_debug ("shutting down DB");
-	rhythmdb_shutdown (shell->priv->db);
-
-	rb_debug ("unreffing DB");
-	g_object_unref (shell->priv->db);
-
-        G_OBJECT_CLASS (rb_shell_parent_class)->finalize (object);
-
-	rb_debug ("shell shutdown complete");
-}
-
-/**
- * rb_shell_new:
- * @no_registration: if %TRUE, single-instance features are disabled
- * @no_update: if %TRUE, don't update the database file
- * @dry_run: if %TRUE, don't write back file metadata changes
- * @autostarted: %TRUE if autostarted by the session manager
- * @disable_plugins: %TRUE if the plugins should be disabled
- * @rhythmdb: path to the database file
- * @playlists: path to the playlist file
- *
- * Creates the Rhythmbox shell.  This is effectively a singleton, so it doesn't
- * make sense to call this from anywhere other than main.c.
- *
- * Return value: the #RBShell instance
- */
-RBShell *
-rb_shell_new (gboolean no_registration,
-	      gboolean no_update,
-	      gboolean dry_run,
-	      gboolean autostarted,
-	      gboolean disable_plugins,
-	      char *rhythmdb,
-	      char *playlists)
-{
-	return g_object_new (RB_TYPE_SHELL,
-			  "no-registration", no_registration,
-			  "no-update", no_update,
-			  "dry-run", dry_run, "rhythmdb-file", rhythmdb,
-			  "playlists-file", playlists,
-			  "autostarted", autostarted,
-			  "disable-plugins", disable_plugins,
-			  NULL);
-}
 
 static GMountOperation *
 rb_shell_create_mount_op_cb (RhythmDB *db, RBShell *shell)
@@ -1632,60 +918,70 @@ construct_plugins (RBShell *shell)
 	rb_profile_end ("loading plugins");
 }
 
+static void
+emit_action_state_update (RBShell *shell, const char *action)
+{
+	GDBusConnection *bus;
+	GVariant *state;
+
+
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+
+	state = g_action_group_get_action_state (G_ACTION_GROUP (shell), action);
+	g_signal_emit_by_name (shell, "action-state-changed::LoadURI", "LoadURI", state);
+	if (bus != NULL) {
+		g_dbus_connection_emit_signal (bus,
+					       NULL,
+					       "/org/gnome/Rhythmbox3",
+					       "org.gtk.Actions",
+					       "StateChanged",
+					       g_variant_new ("(sv)", action, state),
+					       NULL);
+		g_object_unref (bus);
+	}
+	g_variant_unref (state);
+}
+
 static gboolean
 _scan_idle (RBShell *shell)
 {
+	gboolean loaded, scanned;
+
 	GDK_THREADS_ENTER ();
 	rb_removable_media_manager_scan (shell->priv->removable_media_manager);
 	GDK_THREADS_LEAVE ();
-	g_signal_emit (shell, rb_shell_signals[REMOVABLE_MEDIA_SCAN_FINISHED], 0);
+
+	if (shell->priv->no_registration == FALSE) {
+		g_variant_get (g_action_group_get_action_state (G_ACTION_GROUP (shell), "LoadURI"), "(bb)", &loaded, &scanned);
+		g_action_group_change_action_state (G_ACTION_GROUP (shell), "LoadURI", g_variant_new ("(bb)", loaded, TRUE));
+		emit_action_state_update (shell, "LoadURI");
+	}
+
 	return FALSE;
 }
 
 static void
-rb_shell_constructed (GObject *object)
+rb_shell_startup (GApplication *app)
 {
-	RBShell *shell;
-	GtkAction *action;
-
-	RB_CHAIN_GOBJECT_METHOD (rb_shell_parent_class, constructed, object);
-
-	shell = RB_SHELL (object);
+	RBShell *shell = RB_SHELL (app);
+	GtkAction *gtkaction;
 
 	rb_debug ("Constructing shell");
 	rb_profile_start ("constructing shell");
 
-	shell->priv->settings = g_settings_new ("org.gnome.rhythmbox");
-
-	shell->priv->actiongroup = gtk_action_group_new ("MainActions");
-	gtk_action_group_set_translation_domain (shell->priv->actiongroup,
-						 GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (shell->priv->actiongroup,
-				      rb_shell_actions,
-				      rb_shell_n_actions, shell);
-	gtk_action_group_add_toggle_actions (shell->priv->actiongroup,
-					     rb_shell_toggle_entries,
-					     rb_shell_n_toggle_entries,
-					     shell);
-
-	construct_db (shell);
-
-	/* initialize shell services */
-	construct_widgets (shell);
-
 	g_signal_connect_object (shell->priv->settings, "changed", G_CALLBACK (settings_changed_cb), shell, 0);
 
-	action = gtk_action_group_get_action (shell->priv->actiongroup, "ViewSidePane");
+	gtkaction = gtk_action_group_get_action (shell->priv->actiongroup, "ViewSidePane");
 	g_settings_bind (shell->priv->settings, "display-page-tree-visible",
-			 action, "active",
+			 gtkaction, "active",
 			 G_SETTINGS_BIND_DEFAULT);
 	g_settings_bind (shell->priv->settings, "display-page-tree-visible",
 			 shell->priv->sidebar_container, "visible",
 			 G_SETTINGS_BIND_DEFAULT);
 
-	action = gtk_action_group_get_action (shell->priv->actiongroup, "ViewToolbar");
+	gtkaction = gtk_action_group_get_action (shell->priv->actiongroup, "ViewToolbar");
 	g_settings_bind (shell->priv->settings, "toolbar-visible",
-			 action, "active",
+			 gtkaction, "active",
 			 G_SETTINGS_BIND_DEFAULT);
 
 	rb_debug ("shell: syncing with settings");
@@ -1745,6 +1041,933 @@ rb_shell_constructed (GObject *object)
 	}
 
 	rb_profile_end ("constructing shell");
+
+	/* window-based usage counting doesn't work for us, just hold the app until
+	 * we're asked to quit.
+	 */
+	g_application_hold (app);
+}
+
+static gboolean
+rb_shell_local_command_line (GApplication *app, gchar ***args, int *exit_status)
+{
+	RBShell *shell;
+	GError *error = NULL;
+	gboolean scanned;
+	gboolean loaded;
+	GPtrArray *files;
+	int n_files;
+	int i;
+
+	n_files = g_strv_length (*args) - 1;
+
+	shell = RB_SHELL (app);
+	if (shell->priv->no_registration) {
+		if (n_files > 0) {
+			g_warning ("Unable to open files on the commandline with --no-registration");
+		}
+		rb_shell_startup (app);
+		return TRUE;
+	}
+
+	if (!g_application_register (app, NULL, &error)) {
+		g_critical ("%s", error->message);
+		g_error_free (error);
+		*exit_status = 1;
+		return TRUE;
+	}
+
+	if (n_files <= 0) {
+		g_application_activate (app);
+		*exit_status = 0;
+		return TRUE;
+	}
+
+	files = g_ptr_array_new_with_free_func (g_object_unref);
+	for (i = 0; i < n_files; i++) {
+		g_ptr_array_add (files, g_file_new_for_commandline_arg ((*args)[i + 1]));
+	}
+
+	g_variant_get (g_action_group_get_action_state (G_ACTION_GROUP (app), "LoadURI"), "(bb)", &loaded, &scanned);
+	if (loaded) {
+		rb_debug ("opening files immediately");
+		g_application_open (app, (GFile **)files->pdata, files->len, "");
+		g_ptr_array_free (files, TRUE);
+	} else {
+		rb_debug ("opening files once db is loaded");
+		g_signal_connect (app, "action-state-changed::LoadURI", G_CALLBACK (load_state_changed_cb), files);
+	}
+
+	return TRUE;
+}
+static void
+rb_shell_class_init (RBShellClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GApplicationClass *app_class = G_APPLICATION_CLASS (klass);
+
+	object_class->set_property = rb_shell_set_property;
+	object_class->get_property = rb_shell_get_property;
+        object_class->finalize = rb_shell_finalize;
+	object_class->constructed = rb_shell_constructed;
+
+	app_class->activate = rb_shell_activate;
+	app_class->open = rb_shell_open;
+	app_class->local_command_line = rb_shell_local_command_line;
+	app_class->startup = rb_shell_startup;
+
+	klass->visibility_changing = rb_shell_visibility_changing;
+
+	/**
+	 * RBShell:no-registration:
+	 *
+	 * If %TRUE, disable single-instance features.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_NO_REGISTRATION,
+					 g_param_spec_boolean ("no-registration",
+							       "no-registration",
+							       "Whether or not to register",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBShell:no-update:
+	 *
+	 * If %TRUE, don't update the database.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_NO_UPDATE,
+					 g_param_spec_boolean ("no-update",
+							       "no-update",
+							       "Whether or not to update the library",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBShell:dry-run:
+	 *
+	 * If TRUE, don't write back file metadata changes.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_DRY_RUN,
+					 g_param_spec_boolean ("dry-run",
+							       "dry-run",
+							       "Whether or not this is a dry run",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBShell:rhythmdb-file:
+	 *
+	 * The path to the rhythmdb file
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_RHYTHMDB_FILE,
+					 g_param_spec_string ("rhythmdb-file",
+							      "rhythmdb-file",
+							      "The RhythmDB file to use",
+							      "rhythmdb.xml",
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	/**
+	 * RBShell:playlists-file:
+	 *
+	 * The path to the playlist file
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_PLAYLISTS_FILE,
+					 g_param_spec_string ("playlists-file",
+							      "playlists-file",
+							      "The playlists file to use",
+							      "playlists.xml",
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBShell:selected-page:
+	 *
+	 * The currently selected display page
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_SELECTED_PAGE,
+					 g_param_spec_object ("selected-page",
+							      "selected-page",
+							      "Display page which is currently selected",
+							      RB_TYPE_DISPLAY_PAGE,
+							      G_PARAM_READABLE));
+	/**
+	 * RBShell:db:
+	 *
+	 * The #RhythmDB instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_DB,
+					 g_param_spec_object ("db",
+							      "RhythmDB",
+							      "RhythmDB object",
+							      RHYTHMDB_TYPE,
+							      G_PARAM_READABLE));
+	/**
+	 * RBShell:ui-manager:
+	 *
+	 * The #GtkUIManager instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_UI_MANAGER,
+					 g_param_spec_object ("ui-manager",
+							      "GtkUIManager",
+							      "GtkUIManager object",
+							      GTK_TYPE_UI_MANAGER,
+							      G_PARAM_READABLE));
+	/**
+	 * RBShell:clipboard:
+	 *
+	 * The #RBShellClipboard instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_CLIPBOARD,
+					 g_param_spec_object ("clipboard",
+							      "RBShellClipboard",
+							      "RBShellClipboard object",
+							      RB_TYPE_SHELL_CLIPBOARD,
+							      G_PARAM_READABLE));
+	/**
+	 * RBShell:playlist-manager:
+	 *
+	 * The #RBPlaylistManager instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_PLAYLIST_MANAGER,
+					 g_param_spec_object ("playlist-manager",
+							      "RBPlaylistManager",
+							      "RBPlaylistManager object",
+							      RB_TYPE_PLAYLIST_MANAGER,
+							      G_PARAM_READABLE));
+	/**
+	 * RBShell:shell-player:
+	 *
+	 * The #RBShellPlayer instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_SHELL_PLAYER,
+					 g_param_spec_object ("shell-player",
+							      "RBShellPlayer",
+							      "RBShellPlayer object",
+							      RB_TYPE_SHELL_PLAYER,
+							      G_PARAM_READABLE));
+	/**
+	 * RBShell:removable-media-manager:
+	 *
+	 * The #RBRemovableMediaManager instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_REMOVABLE_MEDIA_MANAGER,
+					 g_param_spec_object ("removable-media-manager",
+							      "RBRemovableMediaManager",
+							      "RBRemovableMediaManager object",
+							      RB_TYPE_REMOVABLE_MEDIA_MANAGER,
+							      G_PARAM_READABLE));
+	/**
+	 * RBShell:window:
+	 *
+	 * The main Rhythmbox window.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_WINDOW,
+					 g_param_spec_object ("window",
+							      "GtkWindow",
+							      "GtkWindow object",
+							      GTK_TYPE_WINDOW,
+							      G_PARAM_READABLE));
+	/**
+	 * RBShell:prefs:
+	 *
+	 * The #RBShellPreferences instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_PREFS,
+					 g_param_spec_object ("prefs",
+							      "RBShellPreferences",
+							      "RBShellPreferences object",
+							      RB_TYPE_SHELL_PREFERENCES,
+							      G_PARAM_READABLE));
+	/**
+	 * RBShell:queue-source:
+	 *
+	 * The play queue source
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_QUEUE_SOURCE,
+					 g_param_spec_object ("queue-source",
+							      "queue-source",
+							      "Queue source",
+							      RB_TYPE_PLAY_QUEUE_SOURCE,
+							      G_PARAM_READABLE));
+	/**
+	 * RBShell:library-source:
+	 *
+	 * The library source
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_LIBRARY_SOURCE,
+					 g_param_spec_object ("library-source",
+							      "library-source",
+							      "Library source",
+							      RB_TYPE_LIBRARY_SOURCE,
+							      G_PARAM_READABLE));
+	/**
+	 * RBShell:display-page-model:
+	 *
+	 * The model underlying the display page tree
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_DISPLAY_PAGE_MODEL,
+					 g_param_spec_object ("display-page-model",
+							      "display-page-model",
+							      "RBDisplayPageModel",
+							      RB_TYPE_DISPLAY_PAGE_MODEL,
+							      G_PARAM_READABLE));
+
+	/**
+	 * RBShell:display-page-tree:
+	 *
+	 * The #RBDisplayPageTree instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_DISPLAY_PAGE_TREE,
+					 g_param_spec_object ("display-page-tree",
+							      "display-page-tree",
+							      "RBDisplayPageTree",
+							      RB_TYPE_DISPLAY_PAGE_TREE,
+							      G_PARAM_READABLE));
+
+	/**
+	 * RBShell:visibility:
+	 *
+	 * Whether the main window is currently visible.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_VISIBILITY,
+					 g_param_spec_boolean ("visibility",
+							       "visibility",
+							       "Current window visibility",
+							       TRUE,
+							       G_PARAM_READWRITE));
+	/**
+	 * RBShell:source-header:
+	 *
+	 * The #RBSourceHeader instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_SOURCE_HEADER,
+					 g_param_spec_object ("source-header",
+							      "source header widget",
+							      "RBSourceHeader",
+							      RB_TYPE_SOURCE_HEADER,
+							      G_PARAM_READABLE));
+
+	/**
+	 * RBShell:track-transfer-queue:
+	 *
+	 * The #RBTrackTransferQueue instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_TRACK_TRANSFER_QUEUE,
+					 g_param_spec_object ("track-transfer-queue",
+							      "RBTrackTransferQueue",
+							      "RBTrackTransferQueue object",
+							      RB_TYPE_TRACK_TRANSFER_QUEUE,
+							      G_PARAM_READABLE));
+	/**
+	 * RBShell:autostarted:
+	 *
+	 * Whether Rhythmbox was automatically started by the session manager
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_AUTOSTARTED,
+					 g_param_spec_boolean ("autostarted",
+							       "autostarted",
+							       "TRUE if autostarted",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBShell:disable-plugins:
+	 *
+	 * If %TRUE, disable plugins
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_DISABLE_PLUGINS,
+					 g_param_spec_boolean ("disable-plugins",
+							       "disable-plugins",
+							       "Whether or not to disable plugins",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	/**
+	 * RBShell::visibility-changed:
+	 * @shell: the #RBShell
+	 * @visibile: new visibility
+	 *
+	 * Emitted after the visibility of the main Rhythmbox window has
+	 * changed.
+	 */
+	rb_shell_signals[VISIBILITY_CHANGED] =
+		g_signal_new ("visibility_changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellClass, visibility_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__BOOLEAN,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_BOOLEAN);
+	/**
+	 * RBShell::visibility-changing:
+	 * @shell: the #RBShell
+	 * @initial: if %TRUE, this is the initial visibility for the window
+	 * @visible: new shell visibility
+	 *
+	 * Emitted before the visibility of the main window changes.  The return
+	 * value overrides the visibility setting.  If multiple signal handlers
+	 * are attached, the last one wins.
+	 */
+	rb_shell_signals[VISIBILITY_CHANGING] =
+		g_signal_new ("visibility_changing",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellClass, visibility_changing),
+			      NULL, NULL,
+			      rb_marshal_BOOLEAN__BOOLEAN_BOOLEAN,
+			      G_TYPE_BOOLEAN,
+			      2,
+			      G_TYPE_BOOLEAN,
+			      G_TYPE_BOOLEAN);
+
+	/**
+	 * RBShell::create-song-info:
+	 * @shell: the #RBShell
+	 * @song_info: the new #RBSongInfo window
+	 * @multi: if %TRUE, the song info window is for multiple entries
+	 *
+	 * Emitted when creating a new #RBSongInfo window.  Signal handlers can
+	 * add pages to the song info window notebook to display additional
+	 * information.
+	 */
+	rb_shell_signals[CREATE_SONG_INFO] =
+		g_signal_new ("create_song_info",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellClass, create_song_info),
+			      NULL, NULL,
+			      rb_marshal_VOID__OBJECT_BOOLEAN,
+			      G_TYPE_NONE,
+			      2,
+			      RB_TYPE_SONG_INFO, G_TYPE_BOOLEAN);
+	/**
+	 * RBShell::notify-playing-entry:
+	 * @shell: the #RBShell
+	 *
+	 * Emitted when a notification should be displayed showing the current
+	 * playing entry.
+	 */
+	rb_shell_signals[NOTIFY_PLAYING_ENTRY] =
+		g_signal_new ("notify-playing-entry",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__BOOLEAN,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_BOOLEAN);
+	/**
+	 * RBShell::notify-custom:
+	 * @shell: the #RBShell
+	 * @timeout: length of time (in seconds) to display the notification
+	 * @primary: main notification text
+	 * @secondary: secondary notification text
+	 * @image_uri: URI for an image to include in the notification (optional)
+	 * @requested: if %TRUE, the notification was triggered by an explicit user action
+	 *
+	 * Emitted when a custom notification should be displayed to the user.
+	 */
+	rb_shell_signals[NOTIFY_CUSTOM] =
+		g_signal_new ("notify-custom",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,
+			      NULL, NULL,
+			      rb_marshal_VOID__UINT_STRING_STRING_STRING_BOOLEAN,
+			      G_TYPE_NONE,
+			      5,
+			      G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
+	g_type_class_add_private (klass, sizeof (RBShellPrivate));
+}
+
+static void
+rb_shell_init (RBShell *shell)
+{
+	shell->priv = G_TYPE_INSTANCE_GET_PRIVATE (shell, RB_TYPE_SHELL, RBShellPrivate);
+
+	rb_user_data_dir ();
+	rb_refstring_system_init ();
+
+#ifdef USE_UNINSTALLED_DIRS
+	rb_file_helpers_init (TRUE);
+#else
+	rb_file_helpers_init (FALSE);
+#endif
+	rb_stock_icons_init ();
+
+        rb_shell_session_init (shell);
+
+	g_setenv ("PULSE_PROP_media.role", "music", TRUE);
+}
+
+static void
+rb_shell_set_property (GObject *object,
+		       guint prop_id,
+		       const GValue *value,
+		       GParamSpec *pspec)
+{
+	RBShell *shell = RB_SHELL (object);
+
+	switch (prop_id)
+	{
+	case PROP_NO_REGISTRATION:
+		shell->priv->no_registration = g_value_get_boolean (value);
+		break;
+	case PROP_NO_UPDATE:
+		shell->priv->no_update = g_value_get_boolean (value);
+		break;
+	case PROP_DRY_RUN:
+		shell->priv->dry_run = g_value_get_boolean (value);
+		if (shell->priv->dry_run)
+			shell->priv->no_registration = TRUE;
+		break;
+	case PROP_RHYTHMDB_FILE:
+		g_free (shell->priv->rhythmdb_file);
+		shell->priv->rhythmdb_file = g_value_dup_string (value);
+		break;
+	case PROP_PLAYLISTS_FILE:
+		g_free (shell->priv->playlists_file);
+		shell->priv->playlists_file = g_value_dup_string (value);
+		break;
+	case PROP_VISIBILITY:
+		rb_shell_set_visibility (shell, FALSE, g_value_get_boolean (value));
+		break;
+	case PROP_AUTOSTARTED:
+		shell->priv->autostarted = g_value_get_boolean (value);
+		break;
+	case PROP_DISABLE_PLUGINS:
+		shell->priv->disable_plugins = g_value_get_boolean (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_shell_get_property (GObject *object,
+		       guint prop_id,
+		       GValue *value,
+		       GParamSpec *pspec)
+{
+	RBShell *shell = RB_SHELL (object);
+
+	switch (prop_id)
+	{
+	case PROP_NO_REGISTRATION:
+		g_value_set_boolean (value, shell->priv->no_registration);
+		break;
+	case PROP_NO_UPDATE:
+		g_value_set_boolean (value, shell->priv->no_update);
+		break;
+	case PROP_DRY_RUN:
+		g_value_set_boolean (value, shell->priv->dry_run);
+		break;
+	case PROP_RHYTHMDB_FILE:
+		g_value_set_string (value, shell->priv->rhythmdb_file);
+		break;
+	case PROP_PLAYLISTS_FILE:
+		g_value_set_string (value, shell->priv->playlists_file);
+		break;
+	case PROP_DB:
+		g_value_set_object (value, shell->priv->db);
+		break;
+	case PROP_UI_MANAGER:
+		g_value_set_object (value, shell->priv->ui_manager);
+		break;
+	case PROP_CLIPBOARD:
+		g_value_set_object (value, shell->priv->clipboard_shell);
+		break;
+	case PROP_PLAYLIST_MANAGER:
+		g_value_set_object (value, shell->priv->playlist_manager);
+		break;
+	case PROP_SHELL_PLAYER:
+		g_value_set_object (value, shell->priv->player_shell);
+		break;
+	case PROP_REMOVABLE_MEDIA_MANAGER:
+		g_value_set_object (value, shell->priv->removable_media_manager);
+		break;
+	case PROP_SELECTED_PAGE:
+		g_value_set_object (value, shell->priv->selected_page);
+		break;
+	case PROP_WINDOW:
+		g_value_set_object (value, shell->priv->window);
+		break;
+	case PROP_PREFS:
+		/* create the preferences window the first time we need it */
+		if (shell->priv->prefs == NULL) {
+			GtkWidget *content;
+
+			shell->priv->prefs = rb_shell_preferences_new (shell->priv->sources);
+
+			gtk_window_set_transient_for (GTK_WINDOW (shell->priv->prefs),
+						      GTK_WINDOW (shell->priv->window));
+			content = gtk_dialog_get_content_area (GTK_DIALOG (shell->priv->prefs));
+			gtk_widget_show_all (content);
+		}
+		g_value_set_object (value, shell->priv->prefs);
+		break;
+	case PROP_QUEUE_SOURCE:
+		g_value_set_object (value, shell->priv->queue_source);
+		break;
+	case PROP_LIBRARY_SOURCE:
+		g_value_set_object (value, shell->priv->library_source);
+		break;
+	case PROP_DISPLAY_PAGE_MODEL:
+		g_value_set_object (value, shell->priv->display_page_model);
+		break;
+	case PROP_DISPLAY_PAGE_TREE:
+		g_value_set_object (value, shell->priv->display_page_tree);
+		break;
+	case PROP_VISIBILITY:
+		g_value_set_boolean (value, rb_shell_get_visibility (shell));
+		break;
+	case PROP_SOURCE_HEADER:
+		g_value_set_object (value, shell->priv->source_header);
+		break;
+	case PROP_TRACK_TRANSFER_QUEUE:
+		g_value_set_object (value, shell->priv->track_transfer_queue);
+		break;
+	case PROP_AUTOSTARTED:
+		g_value_set_boolean (value, shell->priv->autostarted);
+		break;
+	case PROP_DISABLE_PLUGINS:
+		g_value_set_boolean (value, shell->priv->disable_plugins);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static gboolean
+rb_shell_sync_state (RBShell *shell)
+{
+	if (shell->priv->dry_run) {
+		rb_debug ("in dry-run mode, not syncing state");
+		return FALSE;
+	}
+
+	if (!shell->priv->load_complete) {
+		rb_debug ("load incomplete, not syncing state");
+		return FALSE;
+	}
+
+	rb_debug ("saving playlists");
+	rb_playlist_manager_save_playlists (shell->priv->playlist_manager,
+					    TRUE);
+
+	rb_debug ("saving db");
+	rhythmdb_save (shell->priv->db);
+	return FALSE;
+}
+
+static gboolean
+idle_save_rhythmdb (RBShell *shell)
+{
+	rhythmdb_save (shell->priv->db);
+
+	shell->priv->save_db_id = 0;
+
+	return FALSE;
+}
+
+static gboolean
+idle_save_playlist_manager (RBShell *shell)
+{
+	GDK_THREADS_ENTER ();
+	rb_playlist_manager_save_playlists (shell->priv->playlist_manager,
+					    FALSE);
+	GDK_THREADS_LEAVE ();
+
+	return TRUE;
+}
+
+static void
+rb_shell_shutdown (RBShell *shell)
+{
+	GdkDisplay *display;
+
+	if (shell->priv->shutting_down)
+		return;
+	shell->priv->shutting_down = TRUE;
+
+	/* Hide the main window and tray icon as soon as possible */
+	display = gtk_widget_get_display (shell->priv->window);
+	gtk_widget_hide (shell->priv->window);
+	gdk_display_sync (display);
+
+	if (shell->priv->plugin_engine != NULL) {
+		g_object_unref (shell->priv->plugin_engine);
+		shell->priv->plugin_engine = NULL;
+	}
+	if (shell->priv->activatable != NULL) {
+		g_object_unref (shell->priv->activatable);
+		shell->priv->activatable = NULL;
+	}
+	if (shell->priv->plugin_settings != NULL) {
+		g_object_unref (shell->priv->plugin_settings);
+		shell->priv->plugin_settings = NULL;
+	}
+}
+
+static void
+rb_shell_finalize (GObject *object)
+{
+        RBShell *shell = RB_SHELL (object);
+
+	rb_debug ("Finalizing shell");
+
+	rb_shell_player_stop (shell->priv->player_shell);
+
+	if (shell->priv->settings != NULL) {
+		rb_settings_delayed_sync (shell->priv->settings, NULL, NULL, NULL);
+		g_object_unref (shell->priv->settings);
+	}
+
+	g_free (shell->priv->cached_title);
+
+	if (shell->priv->save_playlist_id > 0) {
+		g_source_remove (shell->priv->save_playlist_id);
+		shell->priv->save_playlist_id = 0;
+	}
+
+	if (shell->priv->save_db_id > 0) {
+		g_source_remove (shell->priv->save_db_id);
+		shell->priv->save_db_id = 0;
+	}
+
+	if (shell->priv->queue_sidebar != NULL) {
+		g_object_unref (shell->priv->queue_sidebar);
+	}
+
+	if (shell->priv->playlist_manager != NULL) {
+		rb_debug ("shutting down playlist manager");
+		rb_playlist_manager_shutdown (shell->priv->playlist_manager);
+
+		rb_debug ("unreffing playlist manager");
+		g_object_unref (shell->priv->playlist_manager);
+	}
+
+	if (shell->priv->removable_media_manager != NULL) {
+		rb_debug ("unreffing removable media manager");
+		g_object_unref (shell->priv->removable_media_manager);
+		g_object_unref (shell->priv->track_transfer_queue);
+	}
+
+	if (shell->priv->podcast_manager != NULL) {
+		rb_debug ("unreffing podcast manager");
+		g_object_unref (shell->priv->podcast_manager);
+	}
+
+	if (shell->priv->clipboard_shell != NULL) {
+		rb_debug ("unreffing clipboard shell");
+		g_object_unref (shell->priv->clipboard_shell);
+	}
+
+	if (shell->priv->prefs != NULL) {
+		rb_debug ("destroying prefs");
+		gtk_widget_destroy (shell->priv->prefs);
+	}
+
+	g_free (shell->priv->rhythmdb_file);
+
+	g_free (shell->priv->playlists_file);
+
+	rb_debug ("destroying window");
+	gtk_widget_destroy (shell->priv->window);
+
+	g_list_free (shell->priv->sources);
+	shell->priv->sources = NULL;
+
+	if (shell->priv->sources_hash != NULL) {
+		g_hash_table_destroy (shell->priv->sources_hash);
+	}
+
+	if (shell->priv->db != NULL) {
+		rb_debug ("shutting down DB");
+		rhythmdb_shutdown (shell->priv->db);
+
+		rb_debug ("unreffing DB");
+		g_object_unref (shell->priv->db);
+	}
+
+	rb_file_helpers_shutdown ();
+	rb_stock_icons_shutdown ();
+	rb_refstring_system_shutdown ();
+
+        G_OBJECT_CLASS (rb_shell_parent_class)->finalize (object);
+
+	rb_debug ("shell shutdown complete");
+}
+
+/**
+ * rb_shell_new:
+ * @autostarted: %TRUE if autostarted by the session manager
+ * @argc: a pointer to the number of command line arguments
+ * @argv: a pointer to the array of command line arguments
+ *
+ * Creates the Rhythmbox shell.  This is effectively a singleton, so it doesn't
+ * make sense to call this from anywhere other than main.c.
+ *
+ * Return value: the #RBShell instance
+ */
+RBShell *
+rb_shell_new (gboolean autostarted, int *argc, char ***argv)
+{
+	GOptionContext *context;
+	gboolean debug = FALSE;
+	char *debug_match = NULL;
+	gboolean no_update = FALSE;
+	gboolean no_registration = FALSE;
+	gboolean dry_run = FALSE;
+	gboolean disable_plugins = FALSE;
+	char *rhythmdb_file = NULL;
+	char *playlists_file = NULL;
+	GError *error = NULL;
+
+	const GOptionEntry options []  = {
+		{ "debug",           'd', 0, G_OPTION_ARG_NONE,         &debug,           N_("Enable debug output"), NULL },
+		{ "debug-match",     'D', 0, G_OPTION_ARG_STRING,       &debug_match,     N_("Enable debug output matching a specified string"), NULL },
+		{ "no-update",	       0, 0, G_OPTION_ARG_NONE,         &no_update,       N_("Do not update the library with file changes"), NULL },
+		{ "no-registration", 'n', 0, G_OPTION_ARG_NONE,         &no_registration, N_("Do not register the shell"), NULL },
+		{ "dry-run",	       0, 0, G_OPTION_ARG_NONE,         &dry_run,         N_("Don't save any data permanently (implies --no-registration)"), NULL },
+		{ "disable-plugins",   0, 0, G_OPTION_ARG_NONE,		&disable_plugins, N_("Disable loading of plugins"), NULL },
+		{ "rhythmdb-file",     0, 0, G_OPTION_ARG_STRING,       &rhythmdb_file,   N_("Path for database file to use"), NULL },
+		{ "playlists-file",    0, 0, G_OPTION_ARG_STRING,       &playlists_file,   N_("Path for playlists file to use"), NULL },
+		{ NULL }
+	};
+
+	context = g_option_context_new (NULL);
+	g_option_context_add_main_entries (context, options, GETTEXT_PACKAGE);
+	g_option_context_add_group (context, gst_init_get_option_group ());
+	g_option_context_add_group (context, egg_sm_client_get_option_group ());
+	g_option_context_add_group (context, gtk_get_option_group (TRUE));
+
+	if (g_option_context_parse (context, argc, argv, &error) == FALSE) {
+		g_print (_("%s\nRun '%s --help' to see a full list of available command line options.\n"),
+			 error->message, (*argv)[0]);
+		g_error_free (error);
+		g_option_context_free (context);
+		exit (1);
+	}
+	g_option_context_free (context);
+
+	if (!debug && debug_match)
+		rb_debug_init_match (debug_match);
+	else
+		rb_debug_init (debug);
+
+	return g_object_new (RB_TYPE_SHELL,
+			     "application-id", "org.gnome.Rhythmbox3",
+			     "flags", G_APPLICATION_HANDLES_OPEN,
+			     "autostarted", autostarted,
+			     "no-registration", no_registration,
+			     "no-update", no_update,
+			     "dry-run", dry_run,
+			     "rhythmdb-file", rhythmdb_file,
+			     "playlists-file", playlists_file,
+			     "disable-plugins", disable_plugins,
+			     NULL);
+}
+
+static void
+load_uri_action_cb (GSimpleAction *action, GVariant *parameters, RBShell *shell)
+{
+	const char *uri;
+	gboolean play;
+
+	g_variant_get (parameters, "(&sb)", &uri, &play);
+
+	rb_shell_load_uri (shell, uri, play, NULL);
+}
+
+static void
+activate_source_action_cb (GSimpleAction *action, GVariant *parameters, RBShell *shell)
+{
+	const char *source;
+	guint play;
+
+	g_variant_get (parameters, "(&su)", &source, &play);
+	rb_shell_activate_source_by_uri (shell, source, play, NULL);
+}
+
+static void
+quit_action_cb (GSimpleAction *action, GVariant *parameters, RBShell *shell)
+{
+	rb_shell_quit (shell, NULL);
+}
+
+static void
+rb_shell_constructed (GObject *object)
+{
+	RBShell *shell;
+	GSimpleActionGroup *actions;
+	GSimpleAction *action;
+
+	gtk_init (NULL, NULL);
+
+	RB_CHAIN_GOBJECT_METHOD (rb_shell_parent_class, constructed, object);
+
+	shell = RB_SHELL (object);
+
+	/* create application actions */
+	actions = g_simple_action_group_new ();
+	action = g_simple_action_new_stateful ("LoadURI", G_VARIANT_TYPE ("(sb)"), g_variant_new ("(bb)", FALSE, FALSE));
+	g_signal_connect_object (action, "activate", G_CALLBACK (load_uri_action_cb), shell, 0);
+	g_simple_action_group_insert (actions, G_ACTION (action));
+	g_object_unref (action);
+
+	action = g_simple_action_new ("ActivateSource", G_VARIANT_TYPE ("(su)"));
+	g_signal_connect_object (action, "activate", G_CALLBACK (activate_source_action_cb), shell, 0);
+	g_simple_action_group_insert (actions, G_ACTION (action));
+	g_object_unref (action);
+
+	action = g_simple_action_new ("Quit", NULL);
+	g_signal_connect_object (action, "activate", G_CALLBACK (quit_action_cb), shell, 0);
+	g_simple_action_group_insert (actions, G_ACTION (action));
+	g_object_unref (action);
+
+	g_application_set_action_group (G_APPLICATION (shell), G_ACTION_GROUP (actions));
+
+	/* construct enough of the rest of it to display the window if required */
+
+	shell->priv->settings = g_settings_new ("org.gnome.rhythmbox");
+
+	shell->priv->actiongroup = gtk_action_group_new ("MainActions");
+	gtk_action_group_set_translation_domain (shell->priv->actiongroup,
+						 GETTEXT_PACKAGE);
+	gtk_action_group_add_actions (shell->priv->actiongroup,
+				      rb_shell_actions,
+				      rb_shell_n_actions, shell);
+	gtk_action_group_add_toggle_actions (shell->priv->actiongroup,
+					     rb_shell_toggle_entries,
+					     rb_shell_n_toggle_entries,
+					     shell);
+
+	construct_db (shell);
+
+	construct_widgets (shell);
 }
 
 static gboolean
@@ -2727,7 +2950,8 @@ rb_shell_quit (RBShell *shell,
 
 	rb_shell_shutdown (shell);
 	rb_shell_sync_state (shell);
-	g_object_unref (G_OBJECT (shell));
+
+	g_application_release (G_APPLICATION (shell));
 
 	g_timeout_add_seconds (10, quit_timeout, NULL);
 	return TRUE;
@@ -2736,6 +2960,7 @@ rb_shell_quit (RBShell *shell,
 static gboolean
 idle_handle_load_complete (RBShell *shell)
 {
+	gboolean loaded, scanned;
 	GDK_THREADS_ENTER ();
 
 	rb_debug ("load complete");
@@ -2745,7 +2970,11 @@ idle_handle_load_complete (RBShell *shell)
 	shell->priv->load_complete = TRUE;
 	shell->priv->save_playlist_id = g_timeout_add_seconds (10, (GSourceFunc) idle_save_playlist_manager, shell);
 
-	g_signal_emit (shell, rb_shell_signals[DATABASE_LOAD_COMPLETE], 0);
+	if (shell->priv->no_registration == FALSE) {
+		g_variant_get (g_action_group_get_action_state (G_ACTION_GROUP (shell), "LoadURI"), "(bb)", &loaded, &scanned);
+		g_action_group_change_action_state (G_ACTION_GROUP (shell), "LoadURI", g_variant_new ("(bb)", TRUE, scanned));
+		emit_action_state_update (shell, "LoadURI");
+	}
 
 	rhythmdb_start_action_thread (shell->priv->db);
 
@@ -3468,153 +3697,6 @@ gboolean
 rb_shell_get_party_mode (RBShell *shell)
 {
 	return shell->priv->party_mode;
-}
-
-/**
- * rb_shell_get_player:
- * @shell: the #RBShell
- *
- * Returns the #RBShellPlayer object
- *
- * Return value: (transfer none): the #RBShellPlayer object
- */
-GObject *
-rb_shell_get_player (RBShell *shell)
-{
-	return G_OBJECT (shell->priv->player_shell);
-}
-
-/**
- * rb_shell_get_player_path:
- * @shell: the #RBShell
- *
- * Returns the DBus object path for the #RBShellPlayer
- *
- * Return value: the DBus object path for the #RBShellPlayer
- */
-const char *
-rb_shell_get_player_path (RBShell *shell)
-{
-	return "/org/gnome/Rhythmbox/Player";
-}
-
-/**
- * rb_shell_get_playlist_manager:
- * @shell: the #RBShell
- *
- * Returns the #RBPlaylistManager object
- *
- * Return value: (transfer none): the #RBPlaylistManager object
- */
-GObject *
-rb_shell_get_playlist_manager (RBShell *shell)
-{
-	return G_OBJECT (shell->priv->playlist_manager);
-}
-
-/**
- * rb_shell_get_playlist_manager_path:
- * @shell: the #RBShell
- *
- * Returns the DBus path for the #RBPlaylistManager object
- *
- * Return value: the DBus object path for the #RBPlaylistManager
- */
-const char *
-rb_shell_get_playlist_manager_path (RBShell *shell)
-{
-	return "/org/gnome/Rhythmbox/PlaylistManager";
-}
-
-/**
- * rb_shell_get_ui_manager:
- * @shell: the #RBShell
- *
- * Returns the main #GtkUIManager object
- *
- * Return value: (transfer none): the main #GtkUIManager object
- */
-GObject *
-rb_shell_get_ui_manager (RBShell *shell)
-{
-	return G_OBJECT (shell->priv->ui_manager);
-}
-
-/**
- * rb_shell_add_to_queue:
- * @shell: the #RBShell
- * @uri: the URI to add to the play queue
- * @error: not used
- *
- * Adds the specified URI to the play queue.  This only works if URI is already
- * in the database.
- *
- * Return value: not used
- */
-gboolean
-rb_shell_add_to_queue (RBShell *shell,
-		       const gchar *uri,
-		       GError **error)
-{
-	RhythmDBEntry *entry;
-
-	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
-	if (entry == NULL) {
-		RBSource *source;
-		source = rb_shell_guess_source_for_uri (shell, uri);
-		if (source != NULL) {
-			rb_source_add_uri (source, uri, NULL, NULL, NULL, NULL, NULL);
-		} else {
-			g_set_error (error,
-				     RB_SHELL_ERROR,
-				     RB_SHELL_ERROR_NO_SOURCE_FOR_URI,
-				     _("No registered source can handle URI %s"),
-				     uri);
-			return FALSE;
-		}
-	}
-	rb_static_playlist_source_add_location (RB_STATIC_PLAYLIST_SOURCE (shell->priv->queue_source),
-						uri, -1);
-	return TRUE;
-}
-
-/**
- * rb_shell_remove_from_queue:
- * @shell: the #RBShell
- * @uri: the URI to remove from the play queue
- * @error: not used
- *
- * Removes the specified URI from the play queue.  If the URI is not
- * in the play queue, nothing happens.
- *
- * Return value: not used.
- */
-gboolean
-rb_shell_remove_from_queue (RBShell *shell,
-			    const gchar *uri,
-			    GError **error)
-{
-	if (rb_playlist_source_location_in_map (RB_PLAYLIST_SOURCE (shell->priv->queue_source), uri))
-		rb_static_playlist_source_remove_location (RB_STATIC_PLAYLIST_SOURCE (shell->priv->queue_source),
-							   uri);
-	return TRUE;
-}
-
-/**
- * rb_shell_clear_queue:
- * @shell: the #RBShell
- * @error: not used
- *
- * Removes all entries from the play queue.
- *
- * Return value: not used
- */
-gboolean
-rb_shell_clear_queue (RBShell *shell,
-		      GError **error)
-{
-	rb_play_queue_source_clear_queue (RB_PLAY_QUEUE_SOURCE (shell->priv->queue_source));
-	return TRUE;
 }
 
 /**

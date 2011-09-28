@@ -30,7 +30,7 @@ all-local: gschemas.compiled
 
 # Dbus service file
 servicedir = $(datadir)/dbus-1/services
-service_in_files = org.gnome.Rhythmbox.service.in
+service_in_files = org.gnome.Rhythmbox3.service.in
 service_DATA = $(service_in_files:.service.in=.service)
 
 # Rule to make the service file with bindir expanded
@@ -62,7 +62,7 @@ EXTRA_DIST = $(service_in_files)    \
 CLEANFILES = 					\
 	rhythmbox.desktop			\
 	rhythmbox-device.desktop		\
-	org.gnome.Rhythmbox.service		\
+	org.gnome.Rhythmbox3.service		\
 	playlists.xml				\
 	rhythmbox.desktop.in			\
 	rhythmbox-device.desktop.in		\

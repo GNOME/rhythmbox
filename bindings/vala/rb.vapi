@@ -19,7 +19,6 @@ namespace RB {
 
 		public void add_widget (Gtk.Widget widget, RB.ShellUILocation location);
 		public void remove_widget (Gtk.Widget widget, RB.ShellUILocation location);
-		public GLib.Object get_ui_manager ();
 
 		[NoAccessorMethod]
 		public RhythmDB.DB db { owned get; }

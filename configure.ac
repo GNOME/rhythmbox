@@ -45,7 +45,6 @@ AC_CHECK_SIZEOF(long)
 
 GTK_REQS=2.91.4
 
-DBUS_MIN_REQS=0.35
 GST_0_10_REQS=0.10.32
 GDK_PIXBUF_REQS=2.18.0
 GLIB_REQS=2.26.0
@@ -144,14 +143,14 @@ AC_ARG_WITH(hal,
 	      AC_HELP_STRING([--without-hal],
 			     [Disable HAL support]))
 if test "x$with_hal" != "xno"; then
-  PKG_CHECK_MODULES(HAL, hal >= 0.5 hal < 0.6, enable_hal=yes, enable_hal=no)
+  PKG_CHECK_MODULES(HAL, hal >= 0.5 hal < 0.6 dbus-glib-1, enable_hal=yes, enable_hal=no)
   if test "x$enable_hal" != "xyes" -a "x$with_hal" = "xyes"; then
       AC_MSG_ERROR([HAL support explicitly requested but HAL couldn't be found])
   fi
 
   if test "x$enable_hal" = "xyes"; then
-  	AC_DEFINE(HAVE_HAL, 1, [Define if you have HAL support])
-	AC_SUBST(HAL_CFLAGS)
+    AC_DEFINE(HAVE_HAL, 1, [Define if you have HAL support])
+    AC_SUBST(HAL_CFLAGS)
     AC_SUBST(HAL_LIBS)
   fi	
 fi
@@ -470,13 +469,6 @@ AC_SUBST(mkdir_p) if test x"$mkdir_p" = "x"; then
   MKINSTALLDIRS="mkinstalldirs"
 fi
 AC_SUBST(MKINSTALLDIRS)
-
-dnl DBUS
-PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $DBUS_MIN_REQS)
-
-DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_API_SUBJECT_TO_CHANGE"
-DBUS_GLIB_BIN="`$PKG_CONFIG --variable=exec_prefix dbus-glib-1`/bin"
-AC_SUBST(DBUS_GLIB_BIN)
 
 AM_GCONF_SOURCE_2
 
