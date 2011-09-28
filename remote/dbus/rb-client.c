@@ -33,12 +33,9 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <glib-object.h>
-#include <dbus/dbus-glib.h>
 #include <gio/gio.h>
 
 #include "rb-debug.h"
-#include "rb-shell-binding.h"
-#include "rb-shell-player-binding.h"
 
 static gboolean debug = FALSE;
 
@@ -47,13 +44,10 @@ static gboolean quit = FALSE;
 static gboolean check_running = FALSE;
 
 static gboolean no_present = FALSE;
-static gboolean hide = FALSE;
 
 static gboolean next = FALSE;
 static gboolean previous = FALSE;
 static gint32 seek = 0;
-
-static gboolean notify = FALSE;
 
 static gboolean play = FALSE;
 static gboolean do_pause = FALSE;
@@ -75,8 +69,8 @@ static gdouble set_volume = -1.0;
 static gboolean volume_up = FALSE;
 static gboolean volume_down = FALSE;
 static gboolean print_volume = FALSE;
-static gboolean mute = FALSE;
-static gboolean unmute = FALSE;
+/*static gboolean mute = FALSE;
+static gboolean unmute = FALSE; */
 static gdouble set_rating = -1.0;
 
 static gchar **other_stuff = NULL;
@@ -89,13 +83,10 @@ static GOptionEntry args[] = {
 	{ "check-running", 0, 0, G_OPTION_ARG_NONE, &check_running, N_("Check if Rhythmbox is already running"), NULL },
 
 	{ "no-present", 0, 0, G_OPTION_ARG_NONE, &no_present, N_("Don't present an existing Rhythmbox window"), NULL },
-	{ "hide", 0, 0, G_OPTION_ARG_NONE, &hide, N_("Hide the Rhythmbox window"), NULL },
 
 	{ "next", 0, 0, G_OPTION_ARG_NONE, &next, N_("Jump to next song"), NULL },
 	{ "previous", 0, 0, G_OPTION_ARG_NONE, &previous, N_("Jump to previous song"), NULL },
 	{ "seek", 0, 0, G_OPTION_ARG_INT64, &seek, N_("Seek in current track"), NULL },
-
-	{ "notify", 0, 0, G_OPTION_ARG_NONE, &notify, N_("Show notification of the playing song"), NULL },
 
 	{ "play", 0, 0, G_OPTION_ARG_NONE, &play, N_("Resume playback if currently paused"), NULL },
 	{ "pause", 0, 0, G_OPTION_ARG_NONE, &do_pause, N_("Pause playback if currently playing"), NULL },
@@ -116,17 +107,14 @@ static GOptionEntry args[] = {
 	{ "volume-up", 0, 0, G_OPTION_ARG_NONE, &volume_up, N_("Increase the playback volume"), NULL },
 	{ "volume-down", 0, 0, G_OPTION_ARG_NONE, &volume_down, N_("Decrease the playback volume"), NULL },
 	{ "print-volume", 0, 0, G_OPTION_ARG_NONE, &print_volume, N_("Print the current playback volume"), NULL },
-	{ "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
-	{ "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
+/*	{ "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
+	{ "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL }, */
 	{ "set-rating", 0, 0, G_OPTION_ARG_DOUBLE, &set_rating, N_("Set the rating of the current song"), NULL },
 
 	{ G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &other_stuff, NULL, NULL },
 
 	{ NULL }
 };
-
-static gboolean db_load_complete = FALSE;
-static gboolean scan_finished = FALSE;
 
 static gboolean
 annoy (GError **error)
@@ -142,11 +130,12 @@ annoy (GError **error)
 
 
 static char *
-rb_make_duration_string (guint duration)
+rb_make_duration_string (gint64 duration)
 {
 	char *str;
 	int hours, minutes, seconds;
 
+	duration /= G_USEC_PER_SEC;
 	hours = duration / (60 * 60);
 	minutes = (duration - (hours * 60 * 60)) / 60;
 	seconds = duration % 60;
@@ -189,7 +178,7 @@ rb_make_duration_string (guint duration)
  * %st -- stream title
  */
 static char *
-parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
+parse_pattern (const char *pattern, GHashTable *properties, gint64 elapsed)
 {
 	/* p is the pattern iterator, i is a general purpose iterator */
 	const char *p;
@@ -204,7 +193,8 @@ parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
 	p = pattern;
 	while (*p) {
 		char *string = NULL;
-		const GValue *value = NULL;
+		const char **strv = NULL;
+		GVariant *value = NULL;
 
 		/* If not a % marker, copy and continue */
 		if (*p != '%') {
@@ -227,62 +217,80 @@ parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
 			 */
 			switch (*++p) {
 			case 't':
-				value = g_hash_table_lookup (properties, "album");
+				value = g_hash_table_lookup (properties, "xesam:album");
 				if (value)
-					string = g_value_dup_string (value);
+					string = g_variant_dup_string (value, NULL);
 				break;
 			case 'T':
-				value = g_hash_table_lookup (properties, "album-folded");
+				value = g_hash_table_lookup (properties, "xesam:album");
 				if (value)
-					string = g_value_dup_string (value);
+					string = g_utf8_strdown (g_variant_get_string (value, NULL), -1);
 				break;
 			case 'a':
-				value = g_hash_table_lookup (properties, "artist");
-				if (value)
-					string = g_value_dup_string (value);
+				value = g_hash_table_lookup (properties, "xesam:artist");
+				if (value) {
+					strv = g_variant_get_strv (value, NULL);
+					string = g_strdup (strv[0]);
+				}
 				break;
 			case 'A':
-				value = g_hash_table_lookup (properties, "artist-folded");
-				if (value)
-					string = g_value_dup_string (value);
+				value = g_hash_table_lookup (properties, "xesam:artist");
+				if (value) {
+					strv = g_variant_get_strv (value, NULL);
+					string = g_utf8_strdown (strv[0], -1);
+				}
 				break;
 			case 's':
-				value = g_hash_table_lookup (properties, "mb-artistsortname");
+				value = g_hash_table_lookup (properties, "rhythmbox:albumArtistSortname");
 				if (value)
-					string = g_value_dup_string (value);
+					string = g_variant_dup_string (value, NULL);
 				break;
 			case 'S':
-				value = g_hash_table_lookup (properties, "mb-artistsortname");
+				value = g_hash_table_lookup (properties, "rhythmbox:albumArtistSortname");
 				if (value)
-					string = g_utf8_strdown (g_value_get_string (value), -1);
+					string = g_utf8_strdown (g_variant_get_string (value, NULL), -1);
 				break;
 			case 'y':
 				/* Release year */
-				value = g_hash_table_lookup (properties, "year");
-				if (value)
-					string = g_strdup_printf ("%u", g_value_get_uint (value));
+				value = g_hash_table_lookup (properties, "xesam:contentCreated");
+				if (value) {
+					const char *iso8601;
+					GTimeVal tv;
+
+					iso8601 = g_variant_get_string (value, NULL);
+					if (g_time_val_from_iso8601 (iso8601, &tv)) {
+						GDate d;
+						g_date_set_time_val (&d, &tv);
+
+						string = g_strdup_printf ("%u", g_date_get_year (&d));
+					}
+				}
 				break;
 				/* Disc number */
 			case 'n':
-				value = g_hash_table_lookup (properties, "disc-number");
+				value = g_hash_table_lookup (properties, "xesam:discNumber");
 				if (value)
-					string = g_strdup_printf ("%u", g_value_get_uint (value));
+					string = g_strdup_printf ("%u", g_variant_get_int32 (value));
 				break;
 			case 'N':
-				value = g_hash_table_lookup (properties, "disc-number");
+				value = g_hash_table_lookup (properties, "xesam:discNumber");
 				if (value)
-					string = g_strdup_printf ("%02u", g_value_get_uint (value));
+					string = g_strdup_printf ("%02u", g_variant_get_int32 (value));
 				break;
 				/* genre */
 			case 'g':
-				value = g_hash_table_lookup (properties, "genre");
-				if (value)
-					string = g_value_dup_string (value);
+				value = g_hash_table_lookup (properties, "xesam:genre");
+				if (value) {
+					strv = g_variant_get_strv (value, NULL);
+					string = g_strdup (strv[0]);
+				}
 				break;
 			case 'G':
-				value = g_hash_table_lookup (properties, "genre-folded");
-				if (value)
-					string = g_value_dup_string (value);
+				value = g_hash_table_lookup (properties, "xesam:genre");
+				if (value) {
+					strv = g_variant_get_strv (value, NULL);
+					string = g_utf8_strdown (strv[0], -1);
+				}
 				break;
 			default:
 				string = g_strdup_printf ("%%a%c", *p);
@@ -296,52 +304,60 @@ parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
 			 */
 			switch (*++p) {
 			case 't':
-				value = g_hash_table_lookup (properties, "title");
+				value = g_hash_table_lookup (properties, "rhythmbox:streamTitle");
+				if (value == NULL)
+					value = g_hash_table_lookup (properties, "xesam:title");
 				if (value)
-					string = g_value_dup_string (value);
+					string = g_variant_dup_string (value, NULL);
 				break;
 			case 'T':
-				value = g_hash_table_lookup (properties, "title-folded");
+				value = g_hash_table_lookup (properties, "rhythmbox:streamTitle");
+				if (value == NULL)
+					value = g_hash_table_lookup (properties, "xesam:title");
 				if (value)
-					string = g_value_dup_string (value);
+					string = g_utf8_strdown (g_variant_get_string (value, NULL), -1);
 				break;
 			case 'a':
-				value = g_hash_table_lookup (properties, "artist");
-				if (value)
-					string = g_value_dup_string (value);
+				value = g_hash_table_lookup (properties, "xesam:artist");
+				if (value) {
+					strv = g_variant_get_strv (value, NULL);
+					string = g_strdup (strv[0]);
+				}
 				break;
 			case 'A':
-				value = g_hash_table_lookup (properties, "artist-folded");
-				if (value)
-					string = g_value_dup_string (value);
+				value = g_hash_table_lookup (properties, "xesam:artist");
+				if (value) {
+					strv = g_variant_get_strv (value, NULL);
+					string = g_utf8_strdown (strv[0], -1);
+				}
 				break;
 			case 's':
-				value = g_hash_table_lookup (properties, "mb-artistsortname");
+				value = g_hash_table_lookup (properties, "rhythmbox:artistSortname");
 				if (value)
-					string = g_value_dup_string (value);
+					string = g_variant_dup_string (value, NULL);
 				break;
 			case 'S':
-				value = g_hash_table_lookup (properties, "mb-artistsortname");
+				value = g_hash_table_lookup (properties, "rhythmbox:artistSortname");
 				if (value)
-					string = g_utf8_strdown (g_value_get_string (value), -1);
+					string = g_utf8_strdown (g_variant_get_string (value, NULL), -1);
 				break;
 			case 'n':
 				/* Track number */
-				value = g_hash_table_lookup (properties, "track-number");
+				value = g_hash_table_lookup (properties, "xesam:trackNumber");
 				if (value)
-					string = g_strdup_printf ("%u", g_value_get_uint (value));
+					string = g_strdup_printf ("%u", g_variant_get_int32 (value));
 				break;
 			case 'N':
 				/* Track number, zero-padded */
-				value = g_hash_table_lookup (properties, "track-number");
+				value = g_hash_table_lookup (properties, "xesam:trackNumber");
 				if (value)
-					string = g_strdup_printf ("%02u", g_value_get_uint (value));
+					string = g_strdup_printf ("%02u", g_variant_get_int32 (value));
 				break;
 			case 'd':
 				/* Track duration */
-				value = g_hash_table_lookup (properties, "duration");
+				value = g_hash_table_lookup (properties, "xesam:length");
 				if (value)
-					string = rb_make_duration_string (g_value_get_uint (value));
+					string = rb_make_duration_string (g_variant_get_int64 (value));
 				break;
 			case 'e':
 				/* Track elapsed time */
@@ -349,9 +365,9 @@ parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
 				break;
 			case 'b':
 				/* Track bitrate */
-				value = g_hash_table_lookup (properties, "bitrate");
+				value = g_hash_table_lookup (properties, "xesam:audioBitrate");
 				if (value)
-					string = g_strdup_printf ("%u", g_value_get_uint (value));
+					string = g_strdup_printf ("%u", g_variant_get_int32 (value) / 1024);
 				break;
 
 			default:
@@ -366,16 +382,18 @@ parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
 			 */
 			switch (*++p) {
 			case 't':
-				value = g_hash_table_lookup (properties, "rb:stream-song-title");
-				if (value)
-					string = g_value_dup_string (value);
+				value = g_hash_table_lookup (properties, "rhythmbox:streamTitle");
+				if (value) {
+					value = g_hash_table_lookup (properties, "xesam:title");
+					if (value) {
+						string = g_variant_dup_string (value, NULL);
+					}
+				}
 				break;
 			default:
 				string = g_strdup_printf ("%%s%c", *p);
  			}
-
 			break;
-
 
 		default:
 			string = g_strdup_printf ("%%%c", *p);
@@ -394,83 +412,59 @@ parse_pattern (const char *pattern, GHashTable *properties, guint elapsed)
 }
 
 
-
-static gboolean
-create_rb_shell_proxies (DBusGConnection *bus, DBusGProxy **shell_proxy, DBusGProxy **player_proxy, GError **error)
-{
-	DBusGProxy *sp;
-
-	rb_debug ("creating shell proxy");
-	sp = dbus_g_proxy_new_for_name_owner (bus,
-					      "org.gnome.Rhythmbox",
-					      "/org/gnome/Rhythmbox/Shell",
-					      "org.gnome.Rhythmbox.Shell",
-					      error);
-	if (*error) {
-		*shell_proxy = NULL;
-		return ((*error)->code == DBUS_GERROR_NAME_HAS_NO_OWNER);
-	}
-	dbus_g_proxy_add_signal (sp, "removableMediaScanFinished", G_TYPE_INVALID);
-	dbus_g_proxy_add_signal (sp, "databaseLoadComplete", G_TYPE_INVALID);
-
-	rb_debug ("creating player proxy");
-	*player_proxy = dbus_g_proxy_new_from_proxy (sp,
-						     "org.gnome.Rhythmbox.Player",
-						     "/org/gnome/Rhythmbox/Player");
-	if (*player_proxy == NULL) {
-		g_object_unref (G_OBJECT (sp));
-		*shell_proxy = NULL;
-		*player_proxy = NULL;
-		return FALSE;
-	}
-
-	*shell_proxy = sp;
-	return TRUE;
-}
-
 static GHashTable *
-get_playing_song_info (DBusGProxy *shell_proxy, DBusGProxy *player_proxy, GError **error)
+get_playing_song_info (GDBusProxy *mpris)
 {
-	char *playing_uri;
 	GHashTable *properties;
+	GVariant *prop;
+	GVariant *metadata;
+	GVariantIter iter;
+	GVariant *value;
+	char *key;
+	GError *error = NULL;
 
-	org_gnome_Rhythmbox_Player_get_playing_uri (player_proxy, &playing_uri, error);
-	if (*error != NULL) {
+	prop = g_dbus_proxy_call_sync (mpris,
+				       "org.freedesktop.DBus.Properties.Get",
+				       g_variant_new ("(ss)", "org.mpris.MediaPlayer2.Player", "Metadata"),
+				       G_DBUS_CALL_FLAGS_NONE,
+				       -1,
+				       NULL,
+				       &error);
+	if (annoy (&error)) {
 		return NULL;
 	}
 
-	if (!playing_uri || playing_uri[0] == '\0') {
-		return NULL;
+	g_variant_get (prop, "(v)", &metadata);
+
+	properties = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, (GDestroyNotify) g_variant_unref);
+	g_variant_iter_init (&iter, metadata);
+	while (g_variant_iter_loop (&iter, "{sv}", &key, &value)) {
+		g_hash_table_insert (properties, g_strdup (key), g_variant_ref (value));
 	}
 
-	rb_debug ("playing song is %s", playing_uri);
-	org_gnome_Rhythmbox_Shell_get_song_properties (shell_proxy, playing_uri, &properties, error);
-	if (*error != NULL) {
-		return NULL;
-	}
-
+	g_variant_unref (prop);
 	return properties;
 }
 
 static void
-print_playing_song (DBusGProxy *shell_proxy, DBusGProxy *player_proxy, const char *format)
+print_playing_song (GDBusProxy *mpris, const char *format)
 {
 	GHashTable *properties;
-	guint elapsed = 0;
-	GError *error = NULL;
+	GVariant *v;
+	gint64 elapsed = 0;
 	char *string;
 
-	properties = get_playing_song_info (shell_proxy, player_proxy, &error);
-	if (annoy (&error)) {
-		return;
-	}
+	properties = get_playing_song_info (mpris);
 	if (properties == NULL) {
 		g_print ("%s\n", _("Not playing"));
 		return;
 	}
-	
-	org_gnome_Rhythmbox_Player_get_elapsed (player_proxy, &elapsed, &error);
-	annoy (&error);
+
+	v = g_dbus_proxy_get_cached_property (mpris, "Position");
+	if (v != NULL) {
+		elapsed = g_variant_get_int64 (v);
+		g_variant_unref (v);
+	}
 
 	string = parse_pattern (format, properties, elapsed);
 	g_print ("%s\n", string);
@@ -479,22 +473,18 @@ print_playing_song (DBusGProxy *shell_proxy, DBusGProxy *player_proxy, const cha
 }
 
 static void
-print_playing_song_default (DBusGProxy *shell_proxy, DBusGProxy *player_proxy)
+print_playing_song_default (GDBusProxy *mpris)
 {
 	GHashTable *properties;
 	char *string;
-	GError *error = NULL;
 
-	properties = get_playing_song_info (shell_proxy, player_proxy, &error);
-	if (annoy (&error)) {
-		return;
-	}
+	properties = get_playing_song_info (mpris);
 	if (properties == NULL) {
 		g_print ("%s\n", _("Not playing"));
 		return;
 	}
 
-	if (g_hash_table_lookup (properties, "rb:stream-song-title") != NULL) {
+	if (g_hash_table_lookup (properties, "rhythmbox:streamTitle") != NULL) {
 		string = parse_pattern ("%st (%tt)", properties, 0);
 	} else {
 		string = parse_pattern ("%ta - %tt", properties, 0);
@@ -506,73 +496,104 @@ print_playing_song_default (DBusGProxy *shell_proxy, DBusGProxy *player_proxy)
 }
 
 static void
-rate_song (DBusGProxy *shell_proxy, DBusGProxy *player_proxy, gdouble song_rating)
+rate_song (GDBusProxy *mpris, gdouble song_rating)
 {
+	GHashTable *properties;
+	GVariantBuilder props;
+	GVariant *v;
 	GError *error = NULL;
-	char *playing_uri;
-	GValue *value = NULL;
 
-	org_gnome_Rhythmbox_Player_get_playing_uri (player_proxy, &playing_uri, &error);
-	if (annoy (&error)) {
+	properties = get_playing_song_info (mpris);
+	if (properties == NULL) {
+		rb_debug ("can't set rating when not playing");
 		return;
 	}
 
-	if (!playing_uri || playing_uri[0] == '\0') {
+	v = g_hash_table_lookup (properties, "xesam:uri");
+	if (v == NULL) {
+		rb_debug ("can't set rating, no uri");
 		return;
 	}
 
-	rb_debug ("rating song %s: %f", playing_uri, song_rating);
+	g_variant_builder_init (&props, G_VARIANT_TYPE ("a{sv}"));
+	g_variant_builder_add (&props, "{sv}", "rating", g_variant_new_double (song_rating));
 
-	value = g_new0 (GValue, 1);
-	g_value_init (value, G_TYPE_DOUBLE);
-	g_value_set_double (value, song_rating);
-	org_gnome_Rhythmbox_Shell_set_song_property (shell_proxy, playing_uri, "rating", value, &error);
-	annoy (&error);
-
-	g_free (value);
-	g_free (playing_uri);
+	g_dbus_connection_call_sync (g_dbus_proxy_get_connection (mpris),
+				     "org.gnome.Rhythmbox3",
+				     "/org/gnome/Rhythmbox3/RhythmDB",
+				     "org.gnome.Rhythmbox3.RhythmDB",
+				     "SetEntryProperties",
+				     g_variant_new ("(sa{sv})", v, g_variant_builder_end (&props)),
+				     NULL,
+				     G_DBUS_CALL_FLAGS_NONE,
+				     -1,
+				     NULL,
+				     &error);
+	if (error != NULL) {
+		g_warning ("Error setting rating on %s: %s",
+			   g_variant_get_string (v, NULL),
+			   error->message);
+		g_clear_error (&error);
+	}
+	g_hash_table_destroy (properties);
 }
 
 static void
-maybe_unblock (GMainLoop *loop)
+state_changed_cb (GActionGroup *action, const char *action_name, GVariant *state, GMainLoop *loop)
 {
-	if (db_load_complete && scan_finished) {
-		/* FIXME - we're not really ready to accept playback control just yet.
-		 * the library (at least) needs to populate itself with the database contents,
-		 * which takes some non-zero amount of time.  this hack makes things work
-		 * somewhat reliably.
-		 */
-		g_usleep (G_USEC_PER_SEC);
-		g_main_loop_quit (loop);
+	if (g_strcmp0 (action_name, "LoadURI") == 0) {
+		gboolean loaded, scanned;
+
+		g_variant_get (state, "(bb)", &loaded, &scanned);
+		if (loaded && scanned) {
+			/* give it a tiny bit longer to populate sources etc. */
+			g_timeout_add (1500, (GSourceFunc) g_main_loop_quit, loop);
+		}
 	}
 }
 
 static void
-scan_finished_cb (DBusGProxy *proxy, GMainLoop *loop)
+state_changed_signal_cb (GDBusProxy *proxy, const char *sender_name, const char *signal_name, GVariant *parameters, GMainLoop *loop)
 {
-	rb_debug ("removable media scan finished");
-	scan_finished = TRUE;
-	maybe_unblock (loop);
+	const char *action;
+	GVariant *state;
+	if (g_strcmp0 (signal_name, "StateChanged") != 0) {
+		return;
+	}
+
+	g_variant_get (parameters, "(sv)", &action, &state);
+	if (g_strcmp0 (action, "LoadURI") == 0) {
+		GApplication *app;
+		app = g_object_get_data (G_OBJECT (proxy), "actual-app");
+		state_changed_cb (G_ACTION_GROUP (app), action, state, loop);
+	}
+	g_variant_unref (state);
 }
 
-static void
-db_load_complete_cb (DBusGProxy *proxy, GMainLoop *loop)
+static gboolean
+proxy_has_name_owner (GDBusProxy *proxy)
 {
-	rb_debug ("database load complete");
-	db_load_complete = TRUE;
-	maybe_unblock (loop);
+	gboolean has_owner;
+	char *owner = g_dbus_proxy_get_name_owner (proxy);
+
+	has_owner = (owner != NULL);
+	g_free (owner);
+	return has_owner;
 }
+
 
 int
 main (int argc, char **argv)
 {
 	GOptionContext *context;
-	gboolean ok;
 	GError *error = NULL;
-	DBusGConnection *bus;
-	DBusGProxy *shell_proxy = NULL;
-	DBusGProxy *player_proxy = NULL;
-	gboolean is_playing;
+	GDBusConnection *bus;
+	GDBusProxy *mpris;
+	GDBusProxy *queue;
+	GApplication *app;
+	gboolean loaded;
+	gboolean scanned;
+	GVariant *state;
 
 #ifdef ENABLE_NLS
 	/* initialize i18n */
@@ -588,84 +609,104 @@ main (int argc, char **argv)
 	/* parse arguments */
 	context = g_option_context_new (NULL);
 	g_option_context_add_main_entries (context, args, NULL);
-	ok = g_option_context_parse (context, &argc, &argv, &error);
+	g_option_context_parse (context, &argc, &argv, &error);
 	if (annoy (&error))
 		exit (1);
 
 	rb_debug_init (debug);
 
-	/* get dbus connection and proxy for rhythmbox shell */
-	bus = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
-	if (annoy (&error))
-		exit (1);
+	app = g_application_new ("org.gnome.Rhythmbox3", G_APPLICATION_IS_LAUNCHER);
+	if (g_application_register (app, NULL, &error) == FALSE) {
+		if (check_running) {
+			rb_debug ("no running instance found");
+			exit (2);
+		} else if (quit) {
+			rb_debug ("no existing instance to quit");
+			exit (0);
+		}
 
-	if (!create_rb_shell_proxies (bus, &shell_proxy, &player_proxy, &error)) {
-		annoy (&error);
-		exit (1);
+		rb_debug ("uh.. what?");
+		exit (0);
 	}
-	g_clear_error (&error);
+
 
 	/* are we just checking if it's running? */
 	if (check_running) {
-		if (shell_proxy) {
-			rb_debug ("running instance found");
-			exit (0);
-		} else {
-			rb_debug ("no running instance found");
-			exit (2);
-		}
-	}
-
-	/* 1. activate or quit */
-	if (quit) {
-		if (shell_proxy) {
-			rb_debug ("quitting existing instance");
-			dbus_g_proxy_call_no_reply (shell_proxy, "quit", G_TYPE_INVALID);
-		} else {
-			rb_debug ("no existing instance to quit");
-		}
-
+		rb_debug ("running instance found");
 		exit (0);
 	}
-	if (shell_proxy == NULL) {
-		DBusGProxy *bus_proxy;
+
+	/* wait until it's ready to accept control */
+	state = g_action_group_get_action_state (G_ACTION_GROUP (app), "LoadURI");
+	if (state == NULL) {
+		rb_debug ("couldn't get app startup state");
+		exit (0);
+	}
+
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+	g_variant_get (state, "(bb)", &loaded, &scanned);
+	if ((loaded && scanned) == FALSE) {
 		GMainLoop *loop;
-		guint start_service_reply;
+		GDBusProxy *app_proxy;
 
-		if (no_start) {
-			rb_debug ("no existing instance, and can't start one");
-			exit (0);
-		}
-
-		rb_debug ("starting new instance");
-		bus_proxy = dbus_g_proxy_new_for_name (bus,
-						       "org.freedesktop.DBus",
-						       "/org/freedesktop/DBus",
-						       "org.freedesktop.DBus");
-
-		if (!dbus_g_proxy_call (bus_proxy, "StartServiceByName", &error,
-					G_TYPE_STRING, "org.gnome.Rhythmbox",
-					G_TYPE_UINT, 0,
-					G_TYPE_INVALID,
-					G_TYPE_UINT, &start_service_reply,
-					G_TYPE_INVALID)) {
-			g_warning ("%s", error->message);
-			exit (1);
-		}
-
-		/* hopefully we can get a proxy for the rb shell now.. */
-		if (!create_rb_shell_proxies (bus, &shell_proxy, &player_proxy, &error)) {
-			annoy (&error);
-			exit (1);
-		}
-		g_clear_error (&error);
-
-		/* wait for it to load enough state to be useful */
-		rb_debug ("waiting for database load and removable media scan to finish");
+		rb_debug ("waiting for app startup");
 		loop = g_main_loop_new (NULL, FALSE);
-		dbus_g_proxy_connect_signal (shell_proxy, "removableMediaScanFinished", G_CALLBACK (scan_finished_cb), loop, NULL);
-		dbus_g_proxy_connect_signal (shell_proxy, "databaseLoadComplete", G_CALLBACK (db_load_complete_cb), loop, NULL);
-		g_main_loop_run (loop);
+		g_signal_connect (app, "action-state-changed", G_CALLBACK (state_changed_cb), loop);
+
+		/* dbus implementation of GApplication doesn't do action state updates yet */
+		app_proxy = g_dbus_proxy_new_sync (bus, G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START, NULL,
+						   "org.gnome.Rhythmbox3",
+						   "/org/gnome/Rhythmbox3",
+						   "org.gtk.Actions",
+						   NULL,
+						   &error);
+		if (app_proxy == NULL || proxy_has_name_owner (app_proxy) == FALSE) {
+			g_warning ("unable to wait for app startup: %s", error->message);
+			g_clear_error (&error);
+		} else {
+			g_object_set_data (G_OBJECT (app_proxy), "actual-app", app);
+			g_signal_connect (app_proxy, "g-signal", G_CALLBACK (state_changed_signal_cb), loop);
+			g_main_loop_run (loop);
+			rb_debug ("app is now started enough");
+		}
+	}
+
+	/* create proxies */
+	mpris = g_dbus_proxy_new_sync (bus,
+				       G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START,
+				       NULL,
+				       "org.mpris.MediaPlayer2.rhythmbox3",
+				       "/org/mpris/MediaPlayer2",
+				       "org.mpris.MediaPlayer2.Player",
+				       NULL,
+				       &error);
+	if (mpris == NULL || proxy_has_name_owner (mpris) == FALSE) {
+		g_warning ("MPRIS D-Bus interface not available, some things won't work");
+		if (next || previous || (seek != 0) || play || do_pause || play_pause || stop || volume_up || volume_down || (set_volume > -0.01)) {
+			exit (1);
+		}
+	}
+
+	queue = g_dbus_proxy_new_sync (bus,
+				       G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START,
+				       NULL,
+				       "org.gnome.Rhythmbox3",
+				       "/org/gnome/Rhythmbox3/PlayQueue",
+				       "org.gnome.Rhythmbox3.PlayQueue",
+				       NULL,
+				       &error);
+	if (queue == NULL || proxy_has_name_owner (queue) == FALSE) {
+		g_warning ("Play queue interface not available, some things won't work");
+		if (enqueue || clear_queue) {
+			exit (1);
+		}
+	}
+
+	/* activate or quit */
+	if (quit) {
+		rb_debug ("quitting existing instance");
+		g_action_group_activate_action (G_ACTION_GROUP (app), "Quit", NULL);
+		exit (0);
 	}
 
 	/* don't present if we're doing something else */
@@ -673,50 +714,57 @@ main (int argc, char **argv)
 	    clear_queue ||
 	    play_uri || other_stuff ||
 	    play || do_pause || play_pause || stop ||
-	    print_playing || print_playing_format || notify ||
-	    (set_volume > -0.01) || volume_up || volume_down || print_volume || mute || unmute || (set_rating > -0.01))
+	    print_playing || print_playing_format ||
+	    (set_volume > -0.01) || volume_up || volume_down || print_volume /*|| mute || unmute*/ || (set_rating > -0.01))
 		no_present = TRUE;
 
-	/* 2. present or hide */
-	if (hide || !no_present) {
-		DBusGProxy *properties_proxy;
-		GValue value = {0,};
-
-		rb_debug ("setting visibility property");
-		g_value_init (&value, G_TYPE_BOOLEAN);
-		g_value_set_boolean (&value, !hide);
-		properties_proxy = dbus_g_proxy_new_from_proxy (shell_proxy,
-								"org.freedesktop.DBus.Properties",
-							        "/org/gnome/Rhythmbox/Shell");
-		dbus_g_proxy_call_no_reply (properties_proxy, "Set",
-					    G_TYPE_STRING, "org.gnome.Rhythmbox.Shell",
-					    G_TYPE_STRING, "visibility",
-					    G_TYPE_VALUE, &value,
-					    G_TYPE_INVALID);
-		g_object_unref (G_OBJECT (properties_proxy));
+	/* present */
+	if (!no_present) {
+		g_application_activate (app);
 	}
 
-	/* 3. skip to next or previous track */
+	/* set song rating */
+	if (set_rating >= 0.0 && set_rating <= 5.0) {
+		rb_debug ("rate song");
+
+		rate_song (mpris, set_rating);
+	}
+
+	/* skip to next or previous track */
 	if (next) {
 		rb_debug ("next track");
-		org_gnome_Rhythmbox_Player_next (player_proxy, &error);
+		g_dbus_proxy_call_sync (mpris, "Next", NULL, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &error);
 		annoy (&error);
 	} else if (previous) {
 		rb_debug ("previous track");
-		org_gnome_Rhythmbox_Player_previous (player_proxy, &error);
+		g_dbus_proxy_call_sync (mpris, "Previous", NULL, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &error);
 		annoy (&error);
 	}
 
 	/* seek in track */
 	if (seek != 0) {
+		GHashTable *properties;
 		rb_debug ("seek");
-		org_gnome_Rhythmbox_Player_seek (player_proxy, seek, &error);
-		annoy (&error);
+
+		properties = get_playing_song_info (mpris);
+		if (properties != NULL) {
+			GVariant *v = g_hash_table_lookup (properties, "mpris:trackid");
+			if (v != NULL) {
+				g_dbus_proxy_call_sync (mpris,
+							"SetPosition",
+							g_variant_new ("(ox)", g_variant_get_string (v, NULL), seek),
+							G_DBUS_CALL_FLAGS_NONE,
+							-1,
+							NULL,
+							&error);
+				annoy (&error);
+			}
+		}
 	}
 
-	/* 4. add/enqueue */
+	/* add/enqueue */
 	if (clear_queue) {
-		org_gnome_Rhythmbox_Shell_clear_queue (shell_proxy, &error);
+		g_dbus_proxy_call_sync (queue, "ClearQueue", NULL, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &error);
 		annoy (&error);
 	}
 	if (other_stuff) {
@@ -734,12 +782,12 @@ main (int argc, char **argv)
 
 			if (enqueue) {
 				rb_debug ("enqueueing %s", fileuri);
-				org_gnome_Rhythmbox_Shell_add_to_queue (shell_proxy, fileuri, &error);
+				g_dbus_proxy_call_sync (queue, "AddToQueue", g_variant_new ("(s)", fileuri), G_DBUS_CALL_FLAGS_NONE, -1, NULL, &error);
+				annoy (&error);
 			} else {
 				rb_debug ("importing %s", fileuri);
-				org_gnome_Rhythmbox_Shell_load_ur_i (shell_proxy, fileuri, FALSE, &error);
+				g_action_group_activate_action (G_ACTION_GROUP (app), "LoadURI", g_variant_new ("(sb)", fileuri, FALSE));
 			}
-			annoy (&error);
 			g_free (fileuri);
 			g_object_unref (file);
 		}
@@ -747,14 +795,14 @@ main (int argc, char **argv)
 
 	/* select/activate/play source */
 	if (select_source) {
-		org_gnome_Rhythmbox_Shell_activate_source (shell_proxy, select_source, 0, &error);
-		annoy (&error);
+		rb_debug ("selecting source %s", select_source);
+		g_action_group_activate_action (G_ACTION_GROUP (app), "ActivateSource", g_variant_new ("(su)", select_source, 0));
 	} else if (activate_source) {
-		org_gnome_Rhythmbox_Shell_activate_source (shell_proxy, activate_source, 1, &error);
-		annoy (&error);
+		rb_debug ("activating source %s", activate_source);
+		g_action_group_activate_action (G_ACTION_GROUP (app), "ActivateSource", g_variant_new ("(su)", activate_source, 1));
 	} else if (play_source) {
-		org_gnome_Rhythmbox_Shell_activate_source (shell_proxy, play_source, 2, &error);
-		annoy (&error);
+		rb_debug ("playing source %s", play_source);
+		g_action_group_activate_action (G_ACTION_GROUP (app), "ActivateSource", g_variant_new ("(su)", play_source, 2));
 	}
 
 	/* play uri */
@@ -768,21 +816,28 @@ main (int argc, char **argv)
 			g_warning ("couldn't convert \"%s\" to a URI", play_uri);
 		} else {
 			rb_debug ("loading and playing %s", fileuri);
-			org_gnome_Rhythmbox_Shell_load_ur_i (shell_proxy, fileuri, TRUE, &error);
+			g_action_group_activate_action (G_ACTION_GROUP (app), "LoadURI", g_variant_new ("(sb)", fileuri, TRUE));
 			annoy (&error);
 		}
 		g_free (fileuri);
 		g_object_unref (file);
 	}
 
-	/* 5. play/pause/stop */
-	org_gnome_Rhythmbox_Player_get_playing (player_proxy, &is_playing, &error);
-	if (!annoy (&error)) {
-		rb_debug ("playback state: %d", is_playing);
+	/* play/pause/stop */
+	if (mpris) {
+		GVariant *v;
+		gboolean is_playing = FALSE;
+
+		v = g_dbus_proxy_get_cached_property (mpris, "PlaybackStatus");
+		if (v != NULL) {
+			is_playing = (g_strcmp0 (g_variant_get_string (v, NULL), "Playing") == 0);
+			g_variant_unref (v);
+		}
+
 		if (play || do_pause || play_pause) {
 			if (is_playing != play || play_pause) {
-				rb_debug ("calling playPause to change playback state");
-				org_gnome_Rhythmbox_Player_play_pause (player_proxy, FALSE, &error);
+				rb_debug ("calling PlayPause to change playback state");
+				g_dbus_proxy_call_sync (mpris, "PlayPause", NULL, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &error);
 				annoy (&error);
 			} else {
 				rb_debug ("no need to change playback state");
@@ -792,57 +847,66 @@ main (int argc, char **argv)
 		}
 	}
 
-	/* 6. get/set volume, mute/unmute */
+	/* get/set volume, mute/unmute */
 	if (set_volume > -0.01) {
-		org_gnome_Rhythmbox_Player_set_volume (player_proxy, set_volume, &error);
+		g_dbus_proxy_call_sync (mpris,
+					"org.freedesktop.DBus.Properties.Set",
+					g_variant_new ("(ssv)", "org.mpris.MediaPlayer2.Player", "Volume", g_variant_new_double (set_volume)),
+					G_DBUS_CALL_FLAGS_NONE,
+					-1,
+					NULL,
+					&error);
 		annoy (&error);
 	} else if (volume_up || volume_down) {
-		org_gnome_Rhythmbox_Player_set_volume_relative (player_proxy, volume_up ? 0.1 : -0.1, &error);
-		annoy (&error);
+		GVariant *v;
+
+		v = g_dbus_proxy_get_cached_property (mpris, "Volume");
+		if (v != NULL) {
+
+			set_volume = g_variant_get_double (v) + (volume_up ? 0.1 : -0.1);
+			g_dbus_proxy_call_sync (mpris,
+						"org.freedesktop.DBus.Properties.Set",
+						g_variant_new ("(ssv)", "org.mpris.MediaPlayer2.Player", "Volume", g_variant_new_double (set_volume)),
+						G_DBUS_CALL_FLAGS_NONE,
+						-1,
+						NULL,
+						&error);
+			annoy (&error);
+
+			g_variant_unref (v);
+		}
+	}
+	/* no mute for now? */
+	/*
 	} else if (unmute || mute) {
 		org_gnome_Rhythmbox_Player_set_mute (player_proxy, unmute ? FALSE : TRUE, &error);
 		annoy (&error);
 	}
+	*/
 
 	if (print_volume) {
-		gboolean mute = FALSE;
 		gdouble volume = 1.0;
-
-		org_gnome_Rhythmbox_Player_get_mute (player_proxy, &mute, &error);
-		annoy (&error);
-		org_gnome_Rhythmbox_Player_get_volume (player_proxy, &volume, &error);
-		annoy (&error);
-
-		if (mute)
-			g_print (_("Playback is muted.\n"));
+		GVariant *v = g_dbus_proxy_get_cached_property (mpris, "Volume");
+		if (v != NULL) {
+			volume = g_variant_get_double (v);
+			g_variant_unref (v);
+		}
 		g_print (_("Playback volume is %f.\n"), volume);
 	}
 
-	/* 7. print playing song */
+	/* print playing song */
 	if (print_playing_format) {
-		print_playing_song (shell_proxy, player_proxy, print_playing_format);
+		print_playing_song (mpris, print_playing_format);
 	} else if (print_playing) {
-		print_playing_song_default (shell_proxy, player_proxy);
+		print_playing_song_default (mpris);
 	}
 
-	/* 8. display notification about playing song */
-	if (notify) {
-		rb_debug ("show notification");
-		org_gnome_Rhythmbox_Shell_notify (shell_proxy, TRUE, &error);
-		annoy (&error);
+	if (mpris) {
+		g_object_unref (mpris);
 	}
 
-	/* 9. set song rate */
-	if (set_rating >= 0.0 && set_rating <= 5.0) {
-		rb_debug ("rate song");
-
-		rate_song (shell_proxy, player_proxy, set_rating);
-	}
-
-	g_object_unref (shell_proxy);
-	g_object_unref (player_proxy);
+	g_dbus_connection_flush_sync (bus, NULL, NULL);
 	g_option_context_free (context);
 
 	return 0;
 }
-
