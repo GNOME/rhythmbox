@@ -86,7 +86,6 @@ main (int argc, char **argv)
 
 	/* TODO: kill this function */
 	rb_threads_init ();
-	gdk_threads_enter ();
 
 	new_argc = argc;
 	new_argv = argv;
@@ -95,8 +94,6 @@ main (int argc, char **argv)
 	g_application_run (G_APPLICATION (shell), new_argc, new_argv);
 
 	g_object_unref (shell);
-
-	gdk_threads_leave ();
 
 	exit (0);
 }
