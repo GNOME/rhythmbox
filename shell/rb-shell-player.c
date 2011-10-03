@@ -2466,6 +2466,12 @@ rb_shell_player_sync_control_state (RBShellPlayer *player)
 }
 
 static void
+sync_volume_cb (GSettings *settings, RBShellPlayer *player)
+{
+	g_settings_set_double (player->priv->settings, "volume", player->priv->volume);
+}
+
+static void
 rb_shell_player_sync_volume (RBShellPlayer *player,
 			     gboolean notify,
 			     gboolean set_volume)
@@ -2492,9 +2498,7 @@ rb_shell_player_sync_volume (RBShellPlayer *player,
 				      player->priv->mute ? 0.0 : player->priv->volume);
 	}
 
-	g_settings_set_double (player->priv->settings,
-			       "volume",
-			       player->priv->volume);
+	rb_settings_delayed_sync (player->priv->settings, (RBDelayedSyncFunc) sync_volume_cb, g_object_ref (player), g_object_unref);
 
 	entry = rb_shell_player_get_playing_entry (player);
 	if (entry != NULL) {
