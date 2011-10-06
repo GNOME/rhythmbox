@@ -3,6 +3,9 @@ backends/gstreamer/rb-encoder-gst.c
 backends/gstreamer/rb-player-gst.c
 backends/gstreamer/rb-player-gst-xfade.c
 backends/rb-player.c
+data/playlists.xml.in
+data/rhythmbox.desktop.in.in
+data/rhythmbox-device.desktop.in.in
 [type: gettext/glade]data/ui/create-playlist.ui
 [type: gettext/glade]data/ui/general-prefs.ui
 [type: gettext/glade]data/ui/library-prefs.ui
@@ -17,9 +20,6 @@ backends/rb-player.c
 [type: gettext/glade]data/ui/sync-dialog.ui
 [type: gettext/glade]data/ui/sync-state.ui
 [type: gettext/glade]data/ui/uri-new.ui
-data/playlists.xml.in
-data/rhythmbox.desktop.in.in
-data/rhythmbox-device.desktop.in.in
 lib/eggdesktopfile.c
 lib/eggsmclient.c
 lib/rb-cut-and-paste-code.c
@@ -31,29 +31,29 @@ metadata/rb-metadata-gst.c
 plugins/artdisplay/artdisplay.py
 plugins/artdisplay/CoverArtDatabase.py
 plugins/artdisplay/LastFMCoverArtSearch.py
-[type: gettext/ini]plugins/audiocd/audiocd.plugin.in
 [type: gettext/glade]plugins/audiocd/album-info.ui
+[type: gettext/ini]plugins/audiocd/audiocd.plugin.in
 [type: gettext/glade]plugins/audiocd/multiple-album.ui
 plugins/audiocd/rb-audiocd-plugin.c
 plugins/audiocd/rb-audiocd-source.c
 plugins/audiocd/sj-error.c
+plugins/audiocd/sj-metadata.c
 plugins/audiocd/sj-metadata-getter.c
 plugins/audiocd/sj-metadata-gvfs.c
-plugins/audiocd/sj-metadata.c
 plugins/audiocd/sj-structures.c
 [type: gettext/ini]plugins/audioscrobbler/audioscrobbler.plugin.in
 [type: gettext/glade]plugins/audioscrobbler/audioscrobbler-preferences.ui
 [type: gettext/glade]plugins/audioscrobbler/audioscrobbler-profile.ui
+plugins/audioscrobbler/rb-audioscrobbler.c
 plugins/audioscrobbler/rb-audioscrobbler-entry.c
 plugins/audioscrobbler/rb-audioscrobbler-plugin.c
 plugins/audioscrobbler/rb-audioscrobbler-profile-page.c
 plugins/audioscrobbler/rb-audioscrobbler-radio-source.c
-plugins/audioscrobbler/rb-audioscrobbler.c
 [type: gettext/ini]plugins/brasero-disc-recorder/cd-recorder.plugin.in
 plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c
-[type: gettext/ini]plugins/context/context.plugin.in
 plugins/context/AlbumTab.py
 plugins/context/ArtistTab.py
+[type: gettext/ini]plugins/context/context.plugin.in
 plugins/context/ContextView.py
 plugins/context/LastFM.py
 plugins/context/LinksTab.py
@@ -74,8 +74,8 @@ plugins/daap/rb-rhythmdb-dmap-db-adapter.c
 plugins/dbus-media-server/rb-dbus-media-server-plugin.c
 [type: gettext/ini]plugins/fmradio/fmradio.plugin.in
 plugins/fmradio/rb-fm-radio-source.c
-[type: gettext/ini]plugins/generic-player/generic-player.plugin.in
 [type: gettext/glade]plugins/generic-player/generic-player-info.ui
+[type: gettext/ini]plugins/generic-player/generic-player.plugin.in
 plugins/generic-player/rb-generic-player-plugin.c
 plugins/generic-player/rb-generic-player-source.c
 plugins/generic-player/rb-nokia770-source.c
@@ -84,9 +84,9 @@ plugins/generic-player/rb-psp-source.c
 plugins/grilo/rb-grilo-plugin.c
 plugins/grilo/rb-grilo-source.c
 [type: gettext/ini]plugins/im-status/im-status.plugin.in
-[type: gettext/ini]plugins/ipod/ipod.plugin.in
 [type: gettext/glade]plugins/ipod/ipod-info.ui
 [type: gettext/glade]plugins/ipod/ipod-init.ui
+[type: gettext/ini]plugins/ipod/ipod.plugin.in
 plugins/ipod/rb-ipod-helpers.c
 plugins/ipod/rb-ipod-plugin.c
 plugins/ipod/rb-ipod-source.c
@@ -101,12 +101,14 @@ plugins/lyrics/LeoslyricsParser.py
 plugins/lyrics/LyrcParser.py
 plugins/lyrics/LyricsConfigureDialog.py
 plugins/lyrics/LyricsParse.py
-plugins/lyrics/LyricsSites.py
 [type: gettext/ini]plugins/lyrics/lyrics.plugin.in
 [type: gettext/glade]plugins/lyrics/lyrics-prefs.ui
+plugins/lyrics/lyrics.py
+plugins/lyrics/LyricsSites.py
 [type: gettext/glade]plugins/magnatune/magnatune-loading.ui
-[type: gettext/glade]plugins/magnatune/magnatune-prefs.ui
 [type: gettext/ini]plugins/magnatune/magnatune.plugin.in
+[type: gettext/glade]plugins/magnatune/magnatune-prefs.ui
+plugins/magnatune/magnatune.py
 plugins/magnatune/MagnatuneSource.py
 [type: gettext/ini]plugins/mmkeys/mmkeys.plugin.in
 [type: gettext/ini]plugins/mtpdevice/mtpdevice.plugin.in
@@ -120,20 +122,20 @@ plugins/mtpdevice/rb-mtp-thread.c
 plugins/notification/rb-notification-plugin.c
 [type: gettext/ini]plugins/power-manager/power-manager.plugin.in
 plugins/power-manager/rb-power-manager-plugin.c
-plugins/pythonconsole/pythonconsole.py
 [type: gettext/ini]plugins/pythonconsole/pythonconsole.plugin.in
+plugins/pythonconsole/pythonconsole.py
 [type: gettext/ini]plugins/rbzeitgeist/rbzeitgeist.plugin.in
-[type: gettext/ini]plugins/replaygain/replaygain.plugin.in
-[type: gettext/glade]plugins/replaygain/replaygain-prefs.ui
 plugins/replaygain/config.py
 plugins/replaygain/player.py
-plugins/sample-python/sample-python.py
+[type: gettext/ini]plugins/replaygain/replaygain.plugin.in
+[type: gettext/glade]plugins/replaygain/replaygain-prefs.ui
 [type: gettext/ini]plugins/sample-python/sample-python.plugin.in
+plugins/sample-python/sample-python.py
 plugins/sample/rb-sample-plugin.c
 [type: gettext/ini]plugins/sample/sample.plugin.in
 [type: gettext/ini]plugins/sample-vala/sample-vala.plugin.in
-plugins/sendto/sendto.py
 [type: gettext/ini]plugins/sendto/sendto.plugin.in
+plugins/sendto/sendto.py
 plugins/visualizer/rb-visualizer-fullscreen.c
 plugins/visualizer/rb-visualizer-menu.c
 plugins/visualizer/rb-visualizer-page.c
@@ -146,18 +148,18 @@ podcast/rb-podcast-parse.c
 podcast/rb-podcast-properties-dialog.c
 podcast/rb-podcast-source.c
 remote/dbus/rb-client.c
+rhythmdb/rhythmdb.c
 rhythmdb/rhythmdb-monitor.c
 rhythmdb/rhythmdb-property-model.c
 rhythmdb/rhythmdb-tree.c
-rhythmdb/rhythmdb.c
 shell/main.c
-shell/rb-play-order.c
 shell/rb-playlist-manager.c
+shell/rb-play-order.c
 shell/rb-removable-media-manager.c
+shell/rb-shell.c
 shell/rb-shell-clipboard.c
 shell/rb-shell-player.c
 shell/rb-shell-preferences.c
-shell/rb-shell.c
 shell/rb-source-header.c
 shell/rb-statusbar.c
 shell/rb-track-transfer-queue.c
@@ -169,8 +171,8 @@ sources/rb-import-errors-source.c
 sources/rb-library-source.c
 sources/rb-media-player-source.c
 sources/rb-missing-files-source.c
-sources/rb-play-queue-source.c
 sources/rb-playlist-source.c
+sources/rb-play-queue-source.c
 sources/rb-removable-media-source.c
 sources/rb-source.c
 sources/rb-static-playlist-source.c

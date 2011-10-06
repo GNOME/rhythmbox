@@ -87,8 +87,8 @@ class ContextView (GObject.GObject):
         self.tab[self.current].activate ()
 
         # Add button to toggle visibility of pane
-        self.action = ('ToggleContextView','gtk-info', _('Toggle Conte_xt Pane'),
-                        None, _('Change the visibility of the context pane'),
+        self.action = ('ToggleContextView','gtk-info', _("Toggle Conte_xt Pane"),
+                        None, _("Change the visibility of the context pane"),
                         self.toggle_visibility, True)
         self.action_group = Gtk.ActionGroup(name='ContextPluginActions')
         self.action_group.add_toggle_actions([self.action])
@@ -206,7 +206,7 @@ class ContextView (GObject.GObject):
         if self.current_artist != playing_artist:
             self.current_artist = playing_artist.replace ('&', '&amp;')
             # Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
-            self.label.set_markup(_('Top songs by %s') % ('<i>' + self.current_artist + '</i>'))
+            self.label.set_markup(_("Top songs by %s") % ('<i>' + self.current_artist + '</i>'))
             self.ds['artist'].fetch_top_tracks (self.current_artist)
 
         self.tab[self.current].reload()
@@ -239,7 +239,7 @@ class ContextView (GObject.GObject):
     def init_gui(self):
         self.vbox = Gtk.VBox()
         frame = Gtk.Frame()
-        self.label = Gtk.Label(_('Nothing Playing'))
+        self.label = Gtk.Label(_("Nothing Playing"))
         frame.set_shadow_type(Gtk.ShadowType.IN)
         frame.set_label_align(0.0,0.0)
         frame.set_label_widget(self.label)

@@ -340,8 +340,8 @@ class LyricsDisplayPlugin(GObject.Object, Peas.Activatable):
 
 	def do_activate (self):
 		shell = self.object
-		self.action = Gtk.Action (name='ViewSongLyrics', label=_('Song L_yrics'),
-					  tooltip=_('Display lyrics for the playing song'),
+		self.action = Gtk.Action (name='ViewSongLyrics', label=_("Song L_yrics"),
+					  tooltip=_("Display lyrics for the playing song"),
 					  stock_id='rb-song-lyrics')
 		self.activate_id = self.action.connect ('activate', self.show_song_lyrics, shell)
 		

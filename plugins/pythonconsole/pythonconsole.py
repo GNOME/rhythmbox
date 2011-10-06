@@ -75,13 +75,13 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 		
 		data['action_group'] = Gtk.ActionGroup(name='PythonConsolePluginActions')
 
-		action = Gtk.Action(name='PythonConsole', label=_('_Python Console'),
+		action = Gtk.Action(name='PythonConsole', label=_("_Python Console"),
 		                    tooltip=_("Show Rhythmbox's python console"),
 		                    stock_id='gnome-mime-text-x-python')
 		action.connect('activate', self.show_console, shell)
 		data['action_group'].add_action(action)
 
-		action = Gtk.Action(name='PythonDebugger', label=_('Python Debugger'),
+		action = Gtk.Action(name='PythonDebugger', label=_("Python Debugger"),
 				    tooltip=_("Enable remote python debugging with rpdb2"),
 				    stock_id=None)
 		if have_rpdb2:
@@ -119,8 +119,8 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 			                        destroy_cb = self.destroy_console)
 			console.set_size_request(600, 400)
 			console.eval('print "' + \
-			             _('You can access the main window ' \
-			             'through the \'shell\' variable :') +  
+			             _("You can access the main window " \
+			             "through the \'shell\' variable :") +  
 			             '\\n%s" % shell', False)
 	
 			self.window = Gtk.Window()

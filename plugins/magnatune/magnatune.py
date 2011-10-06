@@ -108,17 +108,17 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 		# Add the popup menu actions
 		self.action_group = Gtk.ActionGroup(name='MagnatunePluginActions')
 
-		action = Gtk.Action(name='MagnatuneDownloadAlbum', label=_('Download Album'),
+		action = Gtk.Action(name='MagnatuneDownloadAlbum', label=_("Download Album"),
 				tooltip=_("Download this album from Magnatune"),
 				stock_id='gtk-save')
 		action.connect('activate', lambda a: shell.props.selected_page.download_album())
 		self.action_group.add_action(action)
-		action = Gtk.Action(name='MagnatuneArtistInfo', label=_('Artist Information'),
+		action = Gtk.Action(name='MagnatuneArtistInfo', label=_("Artist Information"),
 				tooltip=_("Get information about this artist"),
 				stock_id='gtk-info')
 		action.connect('activate', lambda a: shell.props.selected_page.display_artist_info())
 		self.action_group.add_action(action)
-		action = Gtk.Action(name='MagnatuneCancelDownload', label=_('Cancel Downloads'),
+		action = Gtk.Action(name='MagnatuneCancelDownload', label=_("Cancel Downloads"),
 				tooltip=_("Stop downloading purchased albums"),
 				stock_id='gtk-stop')
 		action.connect('activate', lambda a: shell.props.selected_page.cancel_downloads())

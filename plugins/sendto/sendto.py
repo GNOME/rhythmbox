@@ -53,8 +53,8 @@ class SendToPlugin (GObject.Object, Peas.Activatable):
         GObject.Object.__init__(self)
 
     def do_activate(self):
-        self.__action = Gtk.Action(name='SendTo', label=_('Send to...'),
-                                tooltip=_('Send files by mail, instant message...'),
+        self.__action = Gtk.Action(name='SendTo', label=_("Send to..."),
+                                tooltip=_("Send files by mail, instant message..."),
                                 stock_id='')
 	shell = self.object
         self.__action.connect('activate', self.send_to, shell)
