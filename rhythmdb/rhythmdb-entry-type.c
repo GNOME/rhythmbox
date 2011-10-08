@@ -121,7 +121,7 @@ rhythmdb_entry_update_availability (RhythmDBEntry *entry, RhythmDBEntryAvailabil
 	RhythmDBEntryType *etype = rhythmdb_entry_get_entry_type (entry);
 	RhythmDBEntryTypeClass *klass = RHYTHMDB_ENTRY_TYPE_GET_CLASS (etype);
 
-	if (klass->get_playback_uri) {
+	if (klass->update_availability) {
 		(klass->update_availability) (etype, entry, avail);
 	} else {
 		/* do nothing? */
