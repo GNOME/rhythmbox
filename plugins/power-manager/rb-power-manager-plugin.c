@@ -98,7 +98,7 @@ create_dbus_proxy (RBGPMPlugin *plugin)
 		return TRUE;
 	}
 
-	plugin->proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
+	plugin->proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
 						       G_DBUS_PROXY_FLAGS_NONE,
 						       NULL,
 						       "org.gnome.SessionManager",
