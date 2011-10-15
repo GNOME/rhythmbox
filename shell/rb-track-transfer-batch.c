@@ -166,11 +166,14 @@ select_profile_for_entry (RBTrackTransferBatch *batch, RhythmDBEntry *entry, Gst
 	 */
 
 	const char *media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
+	GstEncodingProfile *lossless = NULL;
+	gboolean found_lossy = FALSE;
 	const GList *p;
 
 	for (p = gst_encoding_target_get_profiles (batch->priv->target); p != NULL; p = p->next) {
 		GstEncodingProfile *profile = GST_ENCODING_PROFILE (p->data);
 		char *profile_media_type;
+		gboolean is_missing;
 		gboolean skip;
 
 		if (g_str_has_prefix (media_type, "audio/x-raw") == FALSE &&
@@ -181,7 +184,8 @@ select_profile_for_entry (RBTrackTransferBatch *batch, RhythmDBEntry *entry, Gst
 		}
 
 		skip = FALSE;
-		/* ignore lossless encodings for now */
+		is_missing = (g_list_find (batch->priv->missing_plugin_profiles, profile) != NULL);
+
 		profile_media_type = rb_gst_encoding_profile_get_media_type (profile);
 		if (profile_media_type == NULL) {
 			if (g_str_has_prefix (media_type, "audio/x-raw")) {
@@ -189,8 +193,15 @@ select_profile_for_entry (RBTrackTransferBatch *batch, RhythmDBEntry *entry, Gst
 			}
 		} else if (rb_gst_media_type_is_lossless (profile_media_type)) {
 			skip = TRUE;
-		} else if (allow_missing == FALSE) {
-			if (g_list_find (batch->priv->missing_plugin_profiles, profile)) {
+			if (allow_missing == FALSE && is_missing) {
+				/* ignore entirely */
+			} else if (lossless == NULL) {
+				/* remember the first lossless profile that works */
+				lossless = profile;
+			}
+		} else {
+			found_lossy = TRUE;
+			if (allow_missing == FALSE && is_missing) {
 				skip = TRUE;
 			}
 		}
@@ -199,6 +210,11 @@ select_profile_for_entry (RBTrackTransferBatch *batch, RhythmDBEntry *entry, Gst
 			*rprofile = profile;
 		}
 		g_free (profile_media_type);
+	}
+
+	/* if we only found a lossless encoding, use it */
+	if (*rprofile == NULL && found_lossy == FALSE && lossless != NULL) {
+		*rprofile = lossless;
 	}
 
 	return (*rprofile != NULL);
