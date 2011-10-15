@@ -92,7 +92,7 @@ load_metadata_cb (gpointer file)
 		if (uri[0] == '/') {
 			uri = g_filename_to_uri (uri, NULL, NULL);
 		} else {
-			char buf[600];
+			char buf[1024];
 			if (getcwd (buf, sizeof (buf)) != NULL) {
 				char *filename;
 
