@@ -24,9 +24,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import glib
 import rb
-from gi.repository import Gtk, GObject, Peas
+from gi.repository import Gtk, GObject, GLib, Peas
 from gi.repository import RB
 
 ui_definition = """
@@ -64,7 +63,7 @@ class SendToPlugin (GObject.Object, Peas.Activatable):
 
 	uim = shell.props.ui_manager
         uim.insert_action_group(self.__action_group, -1)
-        uim.add_ui_from_string(ui_definition)
+        self.__ui_id = uim.add_ui_from_string(ui_definition)
 
     def do_deactivate(self):
 	shell = self.object
@@ -82,5 +81,5 @@ class SendToPlugin (GObject.Object, Peas.Activatable):
             return
 
         entries = page.get_entry_view().get_selected_entries()
-        cmdline = ['nautilus-sendto'] + [entry.get_playback_uri() for entry in entries]
-        glib.spawn_async(argv=cmdline, flags=glib.SPAWN_SEARCH_PATH)
+        cmdline = 'nautilus-sendto ' + " ".join(entry.get_playback_uri() for entry in entries)
+        GLib.spawn_command_line_async(cmdline)
