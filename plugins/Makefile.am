@@ -17,13 +17,14 @@ SUBDIRS +=						\
 	context						\
 	im-status					\
 	lyrics						\
-	magnatune					\
 	pythonconsole					\
 	rbzeitgeist					\
 	replaygain					\
 	sample-python					\
 	sendto						\
 	rb
+
+# magnatune
 endif
 
 if ENABLE_VALA
