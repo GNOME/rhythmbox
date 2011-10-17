@@ -26,11 +26,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import os
-import glib
-import gi
 
 from gi.repository import RB
-from gi.repository import GObject, Gio
+from gi.repository import GObject, GLib, Gio
 
 IMAGE_NAMES = ["cover", "album", "albumart", ".folder", "folder"]
 ITEMS_PER_NOTIFICATION = 10
@@ -78,7 +76,7 @@ class LocalCoverArtSearch:
 				if ct is not None and ct.startswith("image/") and readable:
 					results.append(f.get_name())
 
-			fileenum.next_files_async(ITEMS_PER_NOTIFICATION, glib.PRIORITY_DEFAULT, None, self._enum_dir_cb, (results, on_search_completed_cb, entry, args))
+			fileenum.next_files_async(ITEMS_PER_NOTIFICATION, GLib.PRIORITY_DEFAULT, None, self._enum_dir_cb, (results, on_search_completed_cb, entry, args))
 		except Exception, e:
 			print "okay, probably done: %s" % e
 			import sys
@@ -89,7 +87,7 @@ class LocalCoverArtSearch:
 	def _enum_children_cb(self, parent, result, (on_search_completed_cb, entry, args)):
 		try:
 			enumfiles = parent.enumerate_children_finish(result)
-			enumfiles.next_files_async(ITEMS_PER_NOTIFICATION, glib.PRIORITY_DEFAULT, None, self._enum_dir_cb, ([], on_search_completed_cb, entry, args))
+			enumfiles.next_files_async(ITEMS_PER_NOTIFICATION, GLib.PRIORITY_DEFAULT, None, self._enum_dir_cb, ([], on_search_completed_cb, entry, args))
 		except Exception, e:
 			print "okay, probably done: %s" % e
 			import sys
@@ -196,14 +194,14 @@ class LocalCoverArtSearch:
 				enum.close()
 				return
 
-			enum.next_files_async(ITEMS_PER_NOTIFICATION, glib.PRIORITY_DEFAULT, None, self._save_dir_cb, (db, entry, parent, pixbuf))
+			enum.next_files_async(ITEMS_PER_NOTIFICATION, GLib.PRIORITY_DEFAULT, None, self._save_dir_cb, (db, entry, parent, pixbuf))
 		except Exception, e:
 			print "Error reading \"%s\": %s" % (dir, e)
 
 	def _save_enum_children_cb (self, parent, result, (db, entry, pixbuf)):
 		try:
 			enum = parent.enumerate_children_finish(result)
-			enum.next_files_async(ITEMS_PER_NOTIFICATION, glib.PRIORITY_DEFAULT, None, self._save_dir_cb, (db, entry, parent, pixbuf))
+			enum.next_files_async(ITEMS_PER_NOTIFICATION, GLib.PRIORITY_DEFAULT, None, self._save_dir_cb, (db, entry, parent, pixbuf))
 		except Exception, e:
 			return
 
@@ -220,6 +218,6 @@ class LocalCoverArtSearch:
 		print 'checking whether to save local art for %s' % uri
 		parent = f.get_parent()
 		try:
-			parent.enumerate_children_async("standard::content-type,access::can-read,standard::name", Gio.FileQueryInfoFlags.NONE, glib.PRIORITY_DEFAULT, None, self._save_enum_children_cb, (db, entry, pixbuf))
+			parent.enumerate_children_async("standard::content-type,access::can-read,standard::name", Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, None, self._save_enum_children_cb, (db, entry, pixbuf))
 		except Exception, e:
 			print "unable to scan directory %s: %s" % (parent.get_uri(), e)
