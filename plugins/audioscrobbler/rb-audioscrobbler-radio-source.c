@@ -491,6 +491,8 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 
 	gtk_box_pack_start (GTK_BOX (main_vbox), GTK_WIDGET (source->priv->track_view), TRUE, TRUE, 0);
 
+	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (source->priv->track_view), NULL, NULL);
+
 	/* query model */
 	source->priv->track_model = rhythmdb_query_model_new_empty (db);
 	rb_entry_view_set_model (source->priv->track_view, source->priv->track_model);
