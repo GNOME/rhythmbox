@@ -29,7 +29,7 @@
 #define __RB_AUDIOCD_SOURCE_H
 
 #include "rb-shell.h"
-#include "rb-removable-media-source.h"
+#include "rb-source.h"
 #include "rhythmdb.h"
 
 G_BEGIN_DECLS
@@ -41,14 +41,18 @@ G_BEGIN_DECLS
 #define RB_IS_AUDIOCD_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_AUDIOCD_SOURCE))
 #define RB_AUDIOCD_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_AUDIOCD_SOURCE, RBAudioCdSourceClass))
 
+typedef struct _RBAudioCdSourcePrivate RBAudioCdSourcePrivate;
+
 typedef struct
 {
-	RBRemovableMediaSource parent;
+	RBSource parent;
+
+	RBAudioCdSourcePrivate *priv;
 } RBAudioCdSource;
 
 typedef struct
 {
-	RBRemovableMediaSourceClass parent;
+	RBSourceClass parent;
 } RBAudioCdSourceClass;
 
 RBSource *		rb_audiocd_source_new			(GObject *plugin,

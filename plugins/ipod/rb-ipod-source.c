@@ -42,6 +42,7 @@
 #include "rb-file-helpers.h"
 #include "rb-builder-helpers.h"
 #include "rb-removable-media-manager.h"
+#include "rb-device-source.h"
 #include "rb-ipod-static-playlist-source.h"
 #include "rb-util.h"
 #include "rhythmdb.h"
@@ -54,6 +55,10 @@
 #include "rb-podcast-entry-types.h"
 #include "rb-stock-icons.h"
 #include "rb-gst-media-types.h"
+#include "rb-transfer-target.h"
+
+static void rb_ipod_device_source_init (RBDeviceSourceInterface *interface);
+static void rb_ipod_source_transfer_target_init (RBTransferTargetInterface *interface);
 
 static void rb_ipod_source_constructed (GObject *object);
 static void rb_ipod_source_dispose (GObject *object);
@@ -65,12 +70,12 @@ static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
 static GList* impl_get_ui_actions (RBDisplayPage *page);
 
-static gboolean impl_track_added (RBRemovableMediaSource *source,
+static gboolean impl_track_added (RBTransferTarget *target,
 				  RhythmDBEntry *entry,
 				  const char *dest,
 				  guint64 filesize,
 				  const char *media_type);
-static char* impl_build_dest_uri (RBRemovableMediaSource *source,
+static char* impl_build_dest_uri (RBTransferTarget *target,
 				  RhythmDBEntry *entry,
 				  const char *media_type,
 				  const char *extension);
@@ -115,6 +120,7 @@ typedef struct _PlayedEntry PlayedEntry;
 
 typedef struct
 {
+	GMount *mount;
 	RbIpodDb *ipod_db;
 	GHashTable *entry_map;
 
@@ -140,10 +146,17 @@ enum
 {
 	PROP_0,
 	PROP_DEVICE_INFO,
-	PROP_DEVICE_SERIAL
+	PROP_DEVICE_SERIAL,
+	PROP_MOUNT
 };
 
-G_DEFINE_DYNAMIC_TYPE(RBiPodSource, rb_ipod_source, RB_TYPE_MEDIA_PLAYER_SOURCE)
+G_DEFINE_DYNAMIC_TYPE_EXTENDED(
+	RBiPodSource,
+	rb_ipod_source,
+	RB_TYPE_MEDIA_PLAYER_SOURCE,
+	0,
+	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_DEVICE_SOURCE, rb_ipod_device_source_init)
+	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_TRANSFER_TARGET, rb_ipod_source_transfer_target_init))
 
 #define IPOD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IPOD_SOURCE, RBiPodSourcePrivate))
 
@@ -154,7 +167,6 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBMediaPlayerSourceClass *mps_class = RB_MEDIA_PLAYER_SOURCE_CLASS (klass);
-	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
 
 	object_class->constructed = rb_ipod_source_constructed;
 	object_class->dispose = rb_ipod_source_dispose;
@@ -182,10 +194,6 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	mps_class->impl_remove_playlists = impl_remove_playlists;
 	mps_class->impl_show_properties = impl_show_properties;
 
-	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
-	rms_class->impl_track_added = impl_track_added;
-	rms_class->impl_build_dest_uri = impl_build_dest_uri;
-
 	g_object_class_install_property (object_class,
 					 PROP_DEVICE_INFO,
 					 g_param_spec_object ("device-info",
@@ -193,9 +201,29 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 							      "device information object",
 							      MPID_TYPE_DEVICE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_MOUNT,
+					 g_param_spec_object ("mount",
+							      "mount",
+							      "GMount object",
+							      G_TYPE_MOUNT,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_override_property (object_class, PROP_DEVICE_SERIAL, "serial");
 
 	g_type_class_add_private (klass, sizeof (RBiPodSourcePrivate));
+}
+
+static void
+rb_ipod_device_source_init (RBDeviceSourceInterface *interface)
+{
+	/* nothing */
+}
+
+static void
+rb_ipod_source_transfer_target_init (RBTransferTargetInterface *interface)
+{
+	interface->track_added = impl_track_added;
+	interface->build_dest_uri = impl_build_dest_uri;
 }
 
 static void
@@ -214,6 +242,9 @@ rb_ipod_source_set_property (GObject *object,
 	switch (prop_id) {
 	case PROP_DEVICE_INFO:
 		priv->device_info = g_value_dup_object (value);
+		break;
+	case PROP_MOUNT:
+		priv->mount = g_value_dup_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -239,6 +270,9 @@ rb_ipod_source_get_property (GObject *object,
 			g_object_get (priv->device_info, "serial", &serial, NULL);
 			g_value_take_string (value, serial);
 		}
+		break;
+	case PROP_MOUNT:
+		g_value_set_object (value, priv->mount);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -285,6 +319,8 @@ rb_ipod_source_constructed (GObject *object)
 
 	RB_CHAIN_GOBJECT_METHOD (rb_ipod_source_parent_class, constructed, object);
 	source = RB_IPOD_SOURCE (object);
+
+	rb_device_source_set_display_details (RB_DEVICE_SOURCE (source));
 
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
@@ -349,6 +385,11 @@ rb_ipod_source_dispose (GObject *object)
 				 (GFunc)g_free, NULL);
 		g_queue_free (priv->offline_plays);
 		priv->offline_plays = NULL;
+	}
+
+	if (priv->mount) {
+		g_object_unref (priv->mount);
+		priv->mount = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_ipod_source_parent_class)->dispose (object);
@@ -1202,10 +1243,8 @@ static void
 rb_ipod_load_songs (RBiPodSource *source)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
-	GMount *mount;
 
-	g_object_get (source, "mount", &mount, NULL);
- 	priv->ipod_db = rb_ipod_db_new (mount);
+	priv->ipod_db = rb_ipod_db_new (priv->mount);
 	priv->entry_map = g_hash_table_new (g_direct_hash, g_direct_equal);
 
 	if ((priv->ipod_db != NULL) && (priv->entry_map != NULL)) {
@@ -1221,7 +1260,6 @@ rb_ipod_load_songs (RBiPodSource *source)
                                   NULL);
 		priv->load_idle_id = g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
 	}
-	g_object_unref (mount);
 }
 
 static GList*
@@ -1381,12 +1419,12 @@ impl_remove_playlists (RBMediaPlayerSource *source)
 }
 
 static char *
-impl_build_dest_uri (RBRemovableMediaSource *source,
+impl_build_dest_uri (RBTransferTarget *target,
 		     RhythmDBEntry *entry,
 		     const char *media_type,
 		     const char *extension)
 {
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (target);
 	const char *uri;
 	char *dest;
 	const char *mount_path;
@@ -1593,17 +1631,17 @@ add_to_podcasts (RBiPodSource *source, Itdb_Track *song)
 }
 
 static gboolean
-impl_track_added (RBRemovableMediaSource *source,
+impl_track_added (RBTransferTarget *target,
 		  RhythmDBEntry *entry,
 		  const char *dest,
 		  guint64 filesize,
 		  const char *media_type)
 {
-	RBiPodSource *isource = RB_IPOD_SOURCE (source);
+	RBiPodSource *source = RB_IPOD_SOURCE (target);
 	RhythmDB *db;
 	Itdb_Track *song;
 
-	db = get_db_for_source (isource);
+	db = get_db_for_source (source);
 
 	song = create_ipod_song_from_entry (entry, filesize, media_type);
 	if (song != NULL) {
@@ -1619,13 +1657,13 @@ impl_track_added (RBRemovableMediaSource *source,
 		g_free (filename);
 
 		if (song->mediatype == ITDB_MEDIATYPE_PODCAST) {
-			add_to_podcasts (isource, song);
+			add_to_podcasts (source, song);
 		}
 		device = rb_ipod_db_get_device (priv->ipod_db);
 		if (device && itdb_device_supports_artwork (device)) {
-			request_artwork (isource, entry, db, song);
+			request_artwork (source, entry, db, song);
 		}
-		add_ipod_song_to_db (isource, db, song);
+		add_ipod_song_to_db (source, db, song);
 		rb_ipod_db_add_track (priv->ipod_db, song);
 	}
 
@@ -2086,7 +2124,7 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	gtk_label_set_text (GTK_LABEL (widget), itdb_device_get_sysinfo (ipod_dev, "VisibleBuildID"));
 
 	str = g_string_new ("");
-	output_formats = rb_removable_media_source_get_format_descriptions (RB_REMOVABLE_MEDIA_SOURCE (source));
+	output_formats = rb_transfer_target_get_format_descriptions (RB_TRANSFER_TARGET (source));
 	for (t = output_formats; t != NULL; t = t->next) {
 		if (t != output_formats) {
 			g_string_append (str, "\n");

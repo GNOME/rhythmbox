@@ -48,7 +48,7 @@
 
 #include "rb-removable-media-manager.h"
 #include "rb-library-source.h"
-#include "rb-removable-media-source.h"
+#include "rb-device-source.h"
 
 #include "rb-shell.h"
 #include "rb-shell-player.h"
@@ -644,7 +644,7 @@ static void
 rb_removable_media_manager_add_volume (RBRemovableMediaManager *mgr, GVolume *volume)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
-	RBRemovableMediaSource *source = NULL;
+	RBSource *source = NULL;
 	GMount *mount;
 
 	g_assert (volume != NULL);
@@ -677,18 +677,17 @@ rb_removable_media_manager_add_volume (RBRemovableMediaManager *mgr, GVolume *vo
 
 	if (source) {
 		g_hash_table_insert (priv->volume_mapping, volume, source);
-		rb_removable_media_manager_append_media_source (mgr, RB_SOURCE (source));
+		rb_removable_media_manager_append_media_source (mgr, source);
 	} else {
 		rb_debug ("Unhandled media");
 	}
-
 }
 
 static void
 rb_removable_media_manager_remove_volume (RBRemovableMediaManager *mgr, GVolume *volume)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
-	RBRemovableMediaSource *source;
+	RBSource *source;
 
 	g_assert (volume != NULL);
 
@@ -703,7 +702,7 @@ static void
 rb_removable_media_manager_add_mount (RBRemovableMediaManager *mgr, GMount *mount)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
-	RBRemovableMediaSource *source = NULL;
+	RBSource *source = NULL;
 	GVolume *volume;
 	GFile *mount_root;
 	char *mountpoint;
@@ -753,7 +752,7 @@ rb_removable_media_manager_add_mount (RBRemovableMediaManager *mgr, GMount *moun
 
 	if (source) {
 		g_hash_table_insert (priv->mount_mapping, mount, source);
-		rb_removable_media_manager_append_media_source (mgr, RB_SOURCE (source));
+		rb_removable_media_manager_append_media_source (mgr, source);
 	} else {
 		rb_debug ("Unhandled media");
 	}
@@ -765,7 +764,7 @@ static void
 rb_removable_media_manager_remove_mount (RBRemovableMediaManager *mgr, GMount *mount)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
-	RBRemovableMediaSource *source;
+	RBSource *source;
 
 	g_assert (mount != NULL);
 
@@ -830,25 +829,19 @@ rb_removable_media_manager_source_can_eject (RBRemovableMediaManager *mgr)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 
-	if (RB_IS_REMOVABLE_MEDIA_SOURCE (priv->selected_source) == FALSE) {
+	if (RB_IS_DEVICE_SOURCE (priv->selected_source) == FALSE) {
 		return FALSE;
 	}
-
-	return rb_removable_media_source_can_eject (RB_REMOVABLE_MEDIA_SOURCE (priv->selected_source));
+	return rb_device_source_can_eject (RB_DEVICE_SOURCE (priv->selected_source));
 }
 
 static void
 rb_removable_media_manager_cmd_eject_medium (GtkAction *action, RBRemovableMediaManager *mgr)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
-	RBRemovableMediaSource *source;
-
-	if (RB_IS_REMOVABLE_MEDIA_SOURCE (priv->selected_source) == FALSE) {
-		return;
+	if (RB_IS_DEVICE_SOURCE (priv->selected_source)) {
+		rb_device_source_eject (RB_DEVICE_SOURCE (priv->selected_source));
 	}
-
-	source = RB_REMOVABLE_MEDIA_SOURCE (priv->selected_source);
-	rb_removable_media_source_eject (source);
 }
 
 static void

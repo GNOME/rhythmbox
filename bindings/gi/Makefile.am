@@ -86,8 +86,6 @@ rb_introspection_sources = \
 		sources/rb-source-search.c \
 		sources/rb-browser-source.h \
 		sources/rb-browser-source.c \
-		sources/rb-removable-media-source.h \
-		sources/rb-removable-media-source.c \
 		sources/rb-media-player-source.h \
 		sources/rb-media-player-source.c \
 		sources/rb-playlist-source.h \
@@ -99,6 +97,10 @@ rb_introspection_sources = \
 		sources/rb-static-playlist-source.c \
 		sources/rb-source-search-basic.h \
 		sources/rb-source-search-basic.c \
+		sources/rb-device-source.h \
+		sources/rb-device-source.c \
+		sources/rb-transfer-target.h \
+		sources/rb-transfer-target.c \
 		widgets/rb-entry-view.h \
 		widgets/rb-entry-view.c \
 		widgets/rb-property-view.h \

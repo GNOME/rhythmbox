@@ -29,7 +29,6 @@
 #define __RB_MTP_SOURCE_H
 
 #include "rb-shell.h"
-#include "rb-removable-media-source.h"
 #include "rb-media-player-source.h"
 #include "rhythmdb.h"
 #include <libmtp.h>

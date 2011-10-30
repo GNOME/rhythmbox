@@ -35,6 +35,7 @@
 
 #include "rb-shell.h"
 #include "rb-media-player-source.h"
+#include "rb-transfer-target.h"
 #include "rb-sync-settings.h"
 #include "rb-sync-settings-ui.h"
 #include "rb-sync-state.h"
@@ -44,9 +45,7 @@
 #include "rb-file-helpers.h"
 #include "rb-builder-helpers.h"
 #include "rb-playlist-manager.h"
-#include "rb-podcast-manager.h"
 #include "rb-util.h"
-#include "rb-segmented-bar.h"
 
 typedef struct {
 	RBSyncSettings *sync_settings;
@@ -67,9 +66,10 @@ typedef struct {
 	/* sync state */
 	RBSyncState *sync_state;
 
+	GstEncodingTarget *encoding_target;
 } RBMediaPlayerSourcePrivate;
 
-G_DEFINE_TYPE (RBMediaPlayerSource, rb_media_player_source, RB_TYPE_REMOVABLE_MEDIA_SOURCE);
+G_DEFINE_TYPE (RBMediaPlayerSource, rb_media_player_source, RB_TYPE_BROWSER_SOURCE);
 
 #define MEDIA_PLAYER_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_MEDIA_PLAYER_SOURCE, RBMediaPlayerSourcePrivate))
 
@@ -90,6 +90,11 @@ static void rb_media_player_source_constructed (GObject *object);
 static void sync_cmd (GtkAction *action, RBSource *source);
 static gboolean sync_idle_delete_entries (RBMediaPlayerSource *source);
 
+static gboolean impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data);
+static void impl_delete_thyself (RBDisplayPage *page);
+
+static char *impl_get_delete_action (RBSource *source);
+
 static GtkActionEntry rb_media_player_source_actions[] = {
 	{ "MediaPlayerSourceSync", GTK_STOCK_REFRESH, N_("Sync with Library"), NULL,
 	  N_("Synchronize media player with the library"),
@@ -99,7 +104,8 @@ static GtkActionEntry rb_media_player_source_actions[] = {
 enum
 {
 	PROP_0,
-	PROP_DEVICE_SERIAL
+	PROP_DEVICE_SERIAL,
+	PROP_ENCODING_TARGET
 };
 
 static GtkActionGroup *action_group = NULL;
@@ -130,12 +136,26 @@ static void
 rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
+	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
+	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
 	object_class->dispose = rb_media_player_source_dispose;
-
 	object_class->set_property = rb_media_player_source_set_property;
 	object_class->get_property = rb_media_player_source_get_property;
 	object_class->constructed = rb_media_player_source_constructed;
+
+	page_class->receive_drag = impl_receive_drag;
+	page_class->delete_thyself = impl_delete_thyself;
+
+	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_get_delete_action = impl_get_delete_action;
+	source_class->impl_delete = NULL;
+
+	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 
 	klass->impl_get_entries = NULL;
 	klass->impl_get_capacity = NULL;
@@ -151,6 +171,18 @@ rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass)
 							      "device serial number",
 							      NULL,
 							      G_PARAM_READABLE));
+	/**
+	 * RBMediaPlayerSource:encoding-target
+	 *
+	 * The #GstEncodingTarget for this device
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_ENCODING_TARGET,
+					 gst_param_spec_mini_object ("encoding-target",
+								     "encoding target",
+								     "GstEncodingTarget",
+								     GST_TYPE_ENCODING_TARGET,
+								     G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RBMediaPlayerSourcePrivate));
 }
@@ -170,6 +202,11 @@ rb_media_player_source_dispose (GObject *object)
 		priv->sync_state = NULL;
 	}
 
+	if (priv->encoding_target) {
+		gst_encoding_target_unref (priv->encoding_target);
+		priv->encoding_target = NULL;
+	}
+
 	G_OBJECT_CLASS (rb_media_player_source_parent_class)->dispose (object);
 }
 
@@ -184,8 +221,14 @@ rb_media_player_source_set_property (GObject *object,
 			     const GValue *value,
 			     GParamSpec *pspec)
 {
-	/*RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (object);*/
+	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (object);
 	switch (prop_id) {
+	case PROP_ENCODING_TARGET:
+		if (priv->encoding_target) {
+			gst_encoding_target_unref (priv->encoding_target);
+		}
+		priv->encoding_target = GST_ENCODING_TARGET (gst_value_dup_mini_object (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -198,10 +241,13 @@ rb_media_player_source_get_property (GObject *object,
 			     GValue *value,
 			     GParamSpec *pspec)
 {
-	/*RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (object);*/
+	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (object);
 	switch (prop_id) {
 	case PROP_DEVICE_SERIAL:
 		/* not actually supported in the base class */
+		break;
+	case PROP_ENCODING_TARGET:
+		gst_value_set_mini_object (value, GST_MINI_OBJECT (priv->encoding_target));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -760,6 +806,118 @@ static void
 sync_cmd (GtkAction *action, RBSource *source)
 {
 	rb_media_player_source_sync (RB_MEDIA_PLAYER_SOURCE (source));
+}
+
+static RhythmDB *
+get_db_for_source (RBSource *source)
+{
+	RBShell *shell;
+	RhythmDB *db;
+
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "db", &db, NULL);
+	g_object_unref (shell);
+
+	return db;
+}
+
+gboolean
+impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data)
+{
+	GList *entries;
+	RhythmDB *db;
+	char *type;
+
+	entries = NULL;
+	type = gdk_atom_name (gtk_selection_data_get_data_type (data));
+        db = get_db_for_source (RB_SOURCE (page));
+
+	if (strcmp (type, "text/uri-list") == 0) {
+		GList *list;
+		GList *i;
+
+		rb_debug ("parsing uri list");
+		list = rb_uri_list_parse ((const char *) gtk_selection_data_get_data (data));
+
+		for (i = list; i != NULL; i = g_list_next (i)) {
+			char *uri;
+			RhythmDBEntry *entry;
+
+			if (i->data == NULL)
+				continue;
+
+			uri = i->data;
+			entry = rhythmdb_entry_lookup_by_location (db, uri);
+
+			if (entry == NULL) {
+				/* add to the library */
+				rb_debug ("received drop of unknown uri: %s", uri);
+			} else {
+				/* add to list of entries to copy */
+				entries = g_list_prepend (entries, entry);
+			}
+			g_free (uri);
+		}
+		g_list_free (list);
+	} else if (strcmp (type, "application/x-rhythmbox-entry") == 0) {
+		char **list;
+		char **i;
+
+		rb_debug ("parsing entry ids");
+		list = g_strsplit ((const char*) gtk_selection_data_get_data (data), "\n", -1);
+		for (i = list; *i != NULL; i++) {
+			RhythmDBEntry *entry;
+			gulong id;
+
+			id = atoi (*i);
+			entry = rhythmdb_entry_lookup_by_id (db, id);
+			if (entry != NULL)
+				entries = g_list_prepend (entries, entry);
+		}
+
+		g_strfreev (list);
+	} else {
+		rb_debug ("received unknown drop type");
+	}
+
+	g_object_unref (db);
+	g_free (type);
+
+	if (entries) {
+		entries = g_list_reverse (entries);
+		if (rb_source_can_paste (RB_SOURCE (page))) {
+			rb_transfer_target_transfer (RB_TRANSFER_TARGET (page), entries);
+		}
+		g_list_free (entries);
+	}
+
+	return TRUE;
+}
+
+static char *
+impl_get_delete_action (RBSource *source)
+{
+	return g_strdup ("EditDelete");
+}
+
+static void
+impl_delete_thyself (RBDisplayPage *page)
+{
+	RhythmDB *db;
+	RBShell *shell;
+	RhythmDBEntryType *entry_type;
+
+	g_object_get (page, "shell", &shell, NULL);
+	g_object_get (shell, "db", &db, NULL);
+	g_object_unref (shell);
+
+	g_object_get (page, "entry-type", &entry_type, NULL);
+	rb_debug ("deleting all entries of type '%s'", rhythmdb_entry_type_get_name (entry_type));
+	rhythmdb_entry_delete_by_type (db, entry_type);
+	g_object_unref (entry_type);
+
+	rhythmdb_commit (db);
+	g_object_unref (db);
 }
 
 /* annotations for methods */

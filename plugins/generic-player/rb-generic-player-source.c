@@ -42,6 +42,8 @@
 #include "rb-generic-player-source.h"
 #include "rb-generic-player-playlist-source.h"
 #include "rb-removable-media-manager.h"
+#include "rb-transfer-target.h"
+#include "rb-device-source.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
@@ -53,6 +55,9 @@
 #include "rb-gst-media-types.h"
 #include "rb-sync-settings.h"
 #include "rb-missing-plugins.h"
+
+static void rb_generic_player_device_source_init (RBDeviceSourceInterface *interface);
+static void rb_generic_player_source_transfer_target_init (RBTransferTargetInterface *interface);
 
 static void impl_constructed (GObject *object);
 static void impl_dispose (GObject *object);
@@ -72,10 +77,11 @@ static void impl_delete_thyself (RBDisplayPage *page);
 static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
 
 static gboolean impl_can_paste (RBSource *source);
+static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
 static gboolean impl_can_delete (RBSource *source);
 static void impl_delete (RBSource *source);
 
-static char* impl_build_dest_uri (RBRemovableMediaSource *source,
+static char* impl_build_dest_uri (RBTransferTarget *target,
 				  RhythmDBEntry *entry,
 				  const char *media_type,
 				  const char *extension);
@@ -102,6 +108,7 @@ static char * default_uri_to_playlist_uri (RBGenericPlayerSource *source,
 enum
 {
 	PROP_0,
+	PROP_MOUNT,
 	PROP_IGNORE_ENTRY_TYPE,
 	PROP_ERROR_ENTRY_TYPE,
 	PROP_DEVICE_INFO
@@ -126,10 +133,18 @@ typedef struct
 	gboolean read_only;
 
 	MPIDDevice *device_info;
+	GMount *mount;
 
 } RBGenericPlayerSourcePrivate;
 
-G_DEFINE_DYNAMIC_TYPE (RBGenericPlayerSource, rb_generic_player_source, RB_TYPE_MEDIA_PLAYER_SOURCE)
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (
+	RBGenericPlayerSource,
+	rb_generic_player_source,
+	RB_TYPE_MEDIA_PLAYER_SOURCE,
+	0,
+	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_DEVICE_SOURCE, rb_generic_player_device_source_init)
+	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_TRANSFER_TARGET, rb_generic_player_source_transfer_target_init))
+
 #define GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_GENERIC_PLAYER_SOURCE, RBGenericPlayerSourcePrivate))
 
 static void
@@ -139,7 +154,6 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBMediaPlayerSourceClass *mps_class = RB_MEDIA_PLAYER_SOURCE_CLASS (klass);
-	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
 
 	object_class->set_property = impl_set_property;
 	object_class->get_property = impl_get_property;
@@ -154,6 +168,7 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	source_class->impl_delete = impl_delete;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_paste = impl_can_paste;
+	source_class->impl_paste = impl_paste;
 
 	mps_class->impl_get_entries = impl_get_entries;
 	mps_class->impl_get_capacity = impl_get_capacity;
@@ -162,9 +177,6 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	mps_class->impl_show_properties = impl_show_properties;
 	mps_class->impl_add_playlist = impl_add_playlist;
 	mps_class->impl_remove_playlists = impl_remove_playlists;
-
-	rms_class->impl_build_dest_uri = impl_build_dest_uri;
-	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
 
 	klass->impl_get_mount_path = default_get_mount_path;
 	klass->impl_load_playlists = default_load_playlists;
@@ -192,10 +204,27 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 							      "device information object",
 							      MPID_TYPE_DEVICE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-
+	g_object_class_install_property (object_class,
+					 PROP_MOUNT,
+					 g_param_spec_object ("mount",
+							      "mount",
+							      "GMount object",
+							      G_TYPE_MOUNT,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBGenericPlayerSourcePrivate));
+}
+
+static void
+rb_generic_player_device_source_init (RBDeviceSourceInterface *interface)
+{
+	/* nothing */
+}
+
+static void
+rb_generic_player_source_transfer_target_init (RBTransferTargetInterface *interface)
+{
+	interface->build_dest_uri = impl_build_dest_uri;
 }
 
 static void
@@ -215,7 +244,6 @@ impl_constructed (GObject *object)
 	RBGenericPlayerSource *source;
 	RBGenericPlayerSourcePrivate *priv;
 	RhythmDBEntryType *entry_type;
-	GMount *mount;
 	char **playlist_formats;
 	char **output_formats;
 	char *mount_name;
@@ -229,13 +257,15 @@ impl_constructed (GObject *object)
 
 	priv = GET_PRIVATE (source);
 
+	rb_device_source_set_display_details (RB_DEVICE_SOURCE (source));
+
 	g_object_get (source,
 		      "shell", &shell,
 		      "entry-type", &entry_type,
 		      NULL);
 
 	g_object_get (shell, "db", &priv->db, NULL);
-	
+
 	priv->import_errors = rb_import_errors_source_new (shell,
 							   priv->error_type,
 							   entry_type,
@@ -243,10 +273,8 @@ impl_constructed (GObject *object)
 
 	g_object_unref (shell);
 
-	g_object_get (source, "mount", &mount, NULL);
-
-	root = g_mount_get_root (mount);
-	mount_name = g_mount_get_name (mount);
+	root = g_mount_get_root (priv->mount);
+	mount_name = g_mount_get_name (priv->mount);
 
 	info = g_file_query_filesystem_info (root, G_FILE_ATTRIBUTE_FILESYSTEM_READONLY, NULL, &error);
 	if (error != NULL) {
@@ -260,7 +288,6 @@ impl_constructed (GObject *object)
 
 	g_free (mount_name);
 	g_object_unref (root);
-	g_object_unref (mount);
 
 	g_object_get (priv->device_info, "playlist-formats", &playlist_formats, NULL);
 	if (playlist_formats != NULL && g_strv_length (playlist_formats) > 0) {
@@ -308,6 +335,9 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 	case PROP_DEVICE_INFO:
 		priv->device_info = g_value_dup_object (value);
 		break;
+	case PROP_MOUNT:
+		priv->mount = g_value_dup_object (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -328,6 +358,9 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 		break;
 	case PROP_DEVICE_INFO:
 		g_value_set_object (value, priv->device_info);
+		break;
+	case PROP_MOUNT:
+		g_value_set_object (value, priv->mount);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -372,10 +405,15 @@ impl_dispose (GObject *object)
 		priv->device_info = NULL;
 	}
 
+	if (priv->mount != NULL) {
+		g_object_unref (priv->mount);
+		priv->mount = NULL;
+	}
+
 	G_OBJECT_CLASS (rb_generic_player_source_parent_class)->dispose (object);
 }
 
-RBRemovableMediaSource *
+RBSource *
 rb_generic_player_source_new (GObject *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBGenericPlayerSource *source;
@@ -442,7 +480,7 @@ rb_generic_player_source_new (GObject *plugin, RBShell *shell, GMount *mount, MP
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
-	return RB_REMOVABLE_MEDIA_SOURCE (source);
+	return RB_SOURCE (source);
 }
 
 static void
@@ -478,7 +516,7 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 	RBShell *shell;
 
 	GDK_THREADS_ENTER ();
-	
+
 	g_object_get (source, "shell", &shell, NULL);
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (priv->import_errors), RB_DISPLAY_PAGE (source));
 	g_object_unref (shell);
@@ -488,7 +526,7 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 
 	g_object_unref (priv->import_job);
 	priv->import_job = NULL;
-	
+
 	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 
 	GDK_THREADS_LEAVE ();
@@ -555,18 +593,13 @@ default_get_mount_path (RBGenericPlayerSource *source)
 	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 
 	if (priv->mount_path == NULL) {
-		GMount *mount;
 		GFile *root;
 
-		g_object_get (source, "mount", &mount, NULL);
-
-		root = g_mount_get_root (mount);
+		root = g_mount_get_root (priv->mount);
 		if (root != NULL) {
 			priv->mount_path = g_file_get_uri (root);
 			g_object_unref (root);
 		}
-
-		g_object_unref (mount);
 	}
 
 	return g_strdup (priv->mount_path);
@@ -848,6 +881,12 @@ impl_can_paste (RBSource *source)
 	return (priv->read_only == FALSE);
 }
 
+static RBTrackTransferBatch *
+impl_paste (RBSource *source, GList *entries)
+{
+	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries);
+}
+
 static gboolean
 impl_can_delete (RBSource *source)
 {
@@ -984,12 +1023,12 @@ sanitize_path (const char *str)
 }
 
 static char *
-impl_build_dest_uri (RBRemovableMediaSource *source,
+impl_build_dest_uri (RBTransferTarget *target,
 		     RhythmDBEntry *entry,
 		     const char *media_type,
 		     const char *extension)
 {
-	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (target);
 	const char *in_artist;
 	char *artist, *album, *title;
 	gulong track_number, disc_number;
@@ -1082,7 +1121,7 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	}
 	g_strfreev (audio_folders);
 
-	mount_path = rb_generic_player_source_get_mount_path (RB_GENERIC_PLAYER_SOURCE (source));
+	mount_path = rb_generic_player_source_get_mount_path (RB_GENERIC_PLAYER_SOURCE (target));
 	path = g_build_filename (mount_path, folders, file, NULL);
 	g_free (file);
 	g_free (mount_path);
@@ -1331,7 +1370,7 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	g_free (serial_id);
 
 	str = g_string_new ("");
-	output_formats = rb_removable_media_source_get_format_descriptions (RB_REMOVABLE_MEDIA_SOURCE (source));
+	output_formats = rb_transfer_target_get_format_descriptions (RB_TRANSFER_TARGET (source));
 	for (t = output_formats; t != NULL; t = t->next) {
 		if (t != output_formats) {
 			g_string_append (str, "\n");

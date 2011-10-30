@@ -65,7 +65,7 @@ typedef struct
 	char *		(*impl_build_filename) (RBGenericPlayerSource *source, RhythmDBEntry *entry);
 } RBGenericPlayerSourceClass;
 
-RBRemovableMediaSource *rb_generic_player_source_new			(GObject *plugin,
+RBSource *		rb_generic_player_source_new			(GObject *plugin,
 									 RBShell *shell,
 									 GMount *mount,
 									 MPIDDevice *device_info);

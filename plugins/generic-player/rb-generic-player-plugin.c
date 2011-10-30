@@ -156,11 +156,11 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 	g_object_get (plugin, "object", &shell, NULL);
 
 	if (rb_psp_is_mount_player (mount, device_info))
-		source = RB_SOURCE (rb_psp_source_new (G_OBJECT (plugin), shell, mount, device_info));
+		source = rb_psp_source_new (G_OBJECT (plugin), shell, mount, device_info);
 	if (source == NULL && rb_nokia770_is_mount_player (mount, device_info))
-		source = RB_SOURCE (rb_nokia770_source_new (G_OBJECT (plugin), shell, mount, device_info));
+		source = rb_nokia770_source_new (G_OBJECT (plugin), shell, mount, device_info);
 	if (source == NULL && rb_generic_player_is_mount_player (mount, device_info))
-		source = RB_SOURCE (rb_generic_player_source_new (G_OBJECT (plugin), shell, mount, device_info));
+		source = rb_generic_player_source_new (G_OBJECT (plugin), shell, mount, device_info);
 
 	if (plugin->actions == NULL) {
 		plugin->actions = gtk_action_group_new ("GenericPlayerActions");

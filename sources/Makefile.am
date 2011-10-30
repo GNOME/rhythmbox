@@ -14,13 +14,14 @@ sourceinclude_HEADERS = 		\
 	rb-display-page-tree.h		\
 	rb-display-page-model.h		\
 	rb-browser-source.h		\
-	rb-removable-media-source.h	\
 	rb-media-player-source.h	\
 	rb-playlist-source.h		\
 	rb-playlist-xml.h		\
 	rb-auto-playlist-source.h	\
 	rb-static-playlist-source.h	\
-	rb-source-search-basic.h
+	rb-source-search-basic.h	\
+	rb-device-source.h		\
+	rb-transfer-target.h
 
 libsources_la_SOURCES = 		\
 	$(sourceinclude_HEADERS)	\
@@ -34,7 +35,6 @@ libsources_la_SOURCES = 		\
 	rb-browser-source.c		\
 	rb-library-source.c		\
 	rb-library-source.h		\
-	rb-removable-media-source.c	\
 	rb-media-player-source.c	\
 	rb-playlist-source.c            \
 	rb-auto-playlist-source.c	\
@@ -46,6 +46,8 @@ libsources_la_SOURCES = 		\
 	rb-import-errors-source.c	\
 	rb-import-errors-source.h	\
 	rb-source-search-basic.c	\
+	rb-device-source.c		\
+	rb-transfer-target.c		\
 	$(NULL)
 
 INCLUDES =						\

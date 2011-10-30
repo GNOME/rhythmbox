@@ -67,7 +67,7 @@ rb_psp_source_init (RBPspSource *source)
 {
 }
 
-RBRemovableMediaSource *
+RBSource *
 rb_psp_source_new (GObject *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
 {
 	RBPspSource *source;
@@ -106,7 +106,7 @@ rb_psp_source_new (GObject *plugin, RBShell *shell, GMount *mount, MPIDDevice *d
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
-	return RB_REMOVABLE_MEDIA_SOURCE (source);
+	return RB_SOURCE (source);
 }
 
 static GFile *

@@ -44,7 +44,7 @@
 #include <shell/rb-shell-player.h>
 #include <sources/rb-display-page-model.h>
 #include <sources/rb-playlist-source.h>
-#include <sources/rb-removable-media-source.h>
+#include <sources/rb-device-source.h>
 #include <rhythmdb/rhythmdb-property-model.h>
 
 #define RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN	(rb_dbus_media_server_plugin_get_type ())
@@ -2273,7 +2273,7 @@ is_shareable_playlist (RBSource *source)
 static gboolean
 is_shareable_device (RBSource *source)
 {
-	return RB_IS_REMOVABLE_MEDIA_SOURCE (source);
+	return RB_IS_DEVICE_SOURCE (source);
 }
 */
 

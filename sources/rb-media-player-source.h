@@ -31,7 +31,7 @@
 #include <glib.h>
 
 #include <shell/rb-shell.h>
-#include <sources/rb-removable-media-source.h>
+#include <sources/rb-browser-source.h>
 #include <rhythmdb/rhythmdb.h>
 
 G_BEGIN_DECLS
@@ -50,12 +50,12 @@ typedef void (*RBMediaPlayerSourceDeleteCallback) (RBMediaPlayerSource *source, 
 
 struct _RBMediaPlayerSource
 {
-	RBRemovableMediaSource parent_instance;
+	RBBrowserSource parent_instance;
 };
 
 struct _RBMediaPlayerSourceClass
 {
-	RBRemovableMediaSourceClass parent_class;
+	RBBrowserSourceClass parent_class;
 
 	/* class members */
 	void		(*impl_get_entries)	(RBMediaPlayerSource *source, const char *category, GHashTable *map);

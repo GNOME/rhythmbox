@@ -43,6 +43,8 @@
 #include "rb-builder-helpers.h"
 #include "rb-removable-media-manager.h"
 #include "rb-static-playlist-source.h"
+#include "rb-transfer-target.h"
+#include "rb-device-source.h"
 #include "rb-util.h"
 #include "rb-refstring.h"
 #include "rhythmdb.h"
@@ -64,6 +66,8 @@
 static void rb_mtp_source_constructed (GObject *object);
 static void rb_mtp_source_dispose (GObject *object);
 static void rb_mtp_source_finalize (GObject *object);
+static void rb_mtp_device_source_init (RBDeviceSourceInterface *interface);
+static void rb_mtp_source_transfer_target_init (RBTransferTargetInterface *interface);
 
 static void rb_mtp_source_set_property (GObject *object,
 			                guint prop_id,
@@ -75,24 +79,26 @@ static void rb_mtp_source_get_property (GObject *object,
 			                GParamSpec *pspec);
 
 static void impl_delete (RBSource *asource);
+static RBTrackTransferBatch *impl_paste (RBSource *asource, GList *entries);
 static gboolean impl_show_popup (RBDisplayPage *page);
 static GList* impl_get_ui_actions (RBDisplayPage *page);
 
-static gboolean impl_track_added (RBRemovableMediaSource *source,
+static gboolean impl_track_added (RBTransferTarget *target,
 				  RhythmDBEntry *entry,
 				  const char *dest,
 				  guint64 filesize,
 				  const char *media_type);
-static gboolean impl_track_add_error (RBRemovableMediaSource *source,
+static gboolean impl_track_add_error (RBTransferTarget *target,
 				      RhythmDBEntry *entry,
 				      const char *dest,
 				      GError *error);
-static char* impl_build_dest_uri (RBRemovableMediaSource *source,
+static char *impl_build_dest_uri (RBTransferTarget *target,
 				  RhythmDBEntry *entry,
 				  const char *media_type,
 				  const char *extension);
-static void impl_eject (RBRemovableMediaSource *source);
-static gboolean impl_can_eject (RBRemovableMediaSource *source);
+
+static void impl_eject (RBDeviceSource *source);
+static gboolean impl_can_eject (RBDeviceSource *source);
 
 static void mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source);
 static void mtp_tracklist_cb (LIBMTP_track_t *tracks, RBMtpSource *source);
@@ -155,7 +161,13 @@ typedef struct
 
 } RBMtpSourcePrivate;
 
-G_DEFINE_DYNAMIC_TYPE(RBMtpSource, rb_mtp_source, RB_TYPE_MEDIA_PLAYER_SOURCE)
+G_DEFINE_DYNAMIC_TYPE_EXTENDED(
+	RBMtpSource,
+	rb_mtp_source,
+	RB_TYPE_MEDIA_PLAYER_SOURCE,
+	0,
+	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_DEVICE_SOURCE, rb_mtp_device_source_init)
+	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_TRANSFER_TARGET, rb_mtp_source_transfer_target_init))
 
 #define MTP_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_MTP_SOURCE, RBMtpSourcePrivate))
 
@@ -174,7 +186,6 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
-	RBRemovableMediaSourceClass *rms_class = RB_REMOVABLE_MEDIA_SOURCE_CLASS (klass);
 	RBMediaPlayerSourceClass *mps_class = RB_MEDIA_PLAYER_SOURCE_CLASS (klass);
 
 	object_class->constructed = rb_mtp_source_constructed;
@@ -195,13 +206,7 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_delete = impl_delete;
-
-	rms_class->impl_track_added = impl_track_added;
-	rms_class->impl_track_add_error = impl_track_add_error;
-	rms_class->impl_build_dest_uri = impl_build_dest_uri;
-	rms_class->impl_should_paste = rb_removable_media_source_should_paste_no_duplicate;
-	rms_class->impl_can_eject = impl_can_eject;
-	rms_class->impl_eject = impl_eject;
+	source_class->impl_paste = impl_paste;
 
 	mps_class->impl_get_entries = impl_get_entries;
 	mps_class->impl_get_capacity = impl_get_capacity;
@@ -235,6 +240,21 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	g_object_class_override_property (object_class, PROP_DEVICE_SERIAL, "serial");
 
 	g_type_class_add_private (klass, sizeof (RBMtpSourcePrivate));
+}
+
+static void
+rb_mtp_device_source_init (RBDeviceSourceInterface *interface)
+{
+	interface->can_eject = impl_can_eject;
+	interface->eject = impl_eject;
+}
+
+static void
+rb_mtp_source_transfer_target_init (RBTransferTargetInterface *interface)
+{
+	interface->build_dest_uri = impl_build_dest_uri;
+	interface->track_added = impl_track_added;
+	interface->track_add_error = impl_track_add_error;
 }
 
 static void
@@ -570,7 +590,6 @@ rb_mtp_source_new (RBShell *shell,
 					      "entry-type", entry_type,
 					      "shell", shell,
 					      "visibility", TRUE,
-					      "volume", NULL,
 					      "raw-device", device,
 #if defined(HAVE_GUDEV)
 					      "udev-device", udev_device,
@@ -1017,6 +1036,12 @@ impl_delete (RBSource *source)
 	rb_list_destroy_free (sel, (GDestroyNotify) rhythmdb_entry_unref);
 }
 
+static RBTrackTransferBatch *
+impl_paste (RBSource *source, GList *entries)
+{
+	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries);
+}
+
 static gboolean
 impl_show_popup (RBDisplayPage *page)
 {
@@ -1086,14 +1111,14 @@ request_album_art_idle (RequestAlbumArtData *data)
 }
 
 static gboolean
-impl_track_added (RBRemovableMediaSource *source,
+impl_track_added (RBTransferTarget *target,
 		  RhythmDBEntry *entry,
 		  const char *dest,
 		  guint64 filesize,
 		  const char *media_type)
 {
 	LIBMTP_track_t *track = NULL;
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (target);
 	RhythmDB *db;
 	RhythmDBEntry *mtp_entry;
 
@@ -1104,9 +1129,9 @@ impl_track_added (RBRemovableMediaSource *source,
 	}
 	g_hash_table_remove (priv->track_transfer_map, dest);
 
-	db = get_db_for_source (RB_MTP_SOURCE (source));
+	db = get_db_for_source (RB_MTP_SOURCE (target));
 	/* entry_map takes ownership of the track here */
-	mtp_entry = add_mtp_track_to_db (RB_MTP_SOURCE (source), db, track);
+	mtp_entry = add_mtp_track_to_db (RB_MTP_SOURCE (target), db, track);
 	g_object_unref (db);
 
 	if (strcmp (track->album, _("Unknown")) != 0) {
@@ -1116,21 +1141,21 @@ impl_track_added (RBRemovableMediaSource *source,
 	if (priv->album_art_supported) {
 		RequestAlbumArtData *artdata;
 		artdata = g_new0 (RequestAlbumArtData, 1);
-		artdata->source = g_object_ref (source);
+		artdata->source = g_object_ref (target);
 		artdata->entry = rhythmdb_entry_ref (mtp_entry);
 		g_idle_add ((GSourceFunc) request_album_art_idle, artdata);
 	}
-	queue_free_space_update (RB_MTP_SOURCE (source));
+	queue_free_space_update (RB_MTP_SOURCE (target));
 	return FALSE;
 }
 
 static gboolean
-impl_track_add_error (RBRemovableMediaSource *source,
+impl_track_add_error (RBTransferTarget *target,
 		      RhythmDBEntry *entry,
 		      const char *dest,
 		      GError *error)
 {
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (target);
 	/* we don't actually do anything with the error here, we just need to clean up the transfer map */
 	LIBMTP_track_t *track = g_hash_table_lookup (priv->track_transfer_map, dest);
 	if (track != NULL) {
@@ -1236,7 +1261,7 @@ prepare_encoder_sink_cb (RBEncoderFactory *factory,
 }
 
 static char *
-impl_build_dest_uri (RBRemovableMediaSource *source,
+impl_build_dest_uri (RBTransferTarget *target,
 		     RhythmDBEntry *entry,
 		     const char *media_type,
 		     const char *extension)
@@ -1248,7 +1273,7 @@ impl_build_dest_uri (RBRemovableMediaSource *source,
 	if (media_type == NULL) {
 		media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
 	}
-	filetype = media_type_to_filetype (RB_MTP_SOURCE (source), media_type);
+	filetype = media_type_to_filetype (RB_MTP_SOURCE (target), media_type);
 	rb_debug ("using libmtp filetype %d (%s) for source media type %s",
 		  filetype,
 		  LIBMTP_Get_Filetype_Description (filetype),
@@ -1607,7 +1632,7 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	gtk_label_set_text (GTK_LABEL (widget), priv->manufacturer);
 
 	str = g_string_new ("");
-	output_formats = rb_removable_media_source_get_format_descriptions (RB_REMOVABLE_MEDIA_SOURCE (source));
+	output_formats = rb_transfer_target_get_format_descriptions (RB_TRANSFER_TARGET (source));
 	for (t = output_formats; t != NULL; t = t->next) {
 		if (t != output_formats) {
 			g_string_append (str, "\n");
@@ -1669,13 +1694,13 @@ prepare_encoder_source_cb (RBEncoderFactory *factory,
 }
 
 static gboolean
-impl_can_eject (RBRemovableMediaSource *source)
+impl_can_eject (RBDeviceSource *source)
 {
 	return TRUE;
 }
 
 static void
-impl_eject (RBRemovableMediaSource *source)
+impl_eject (RBDeviceSource *source)
 {
 	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
 }

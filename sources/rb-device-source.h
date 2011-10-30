@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2006 James Livingston  <doclivingston@gmail.com>
+ *  Copyright (C) 2011 Jonathan Matthew  <jonathan@d14n.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,44 +25,39 @@
  *
  */
 
-#ifndef __RB_PSP_SOURCE_H
-#define __RB_PSP_SOURCE_H
+#ifndef RB_DEVICE_SOURCE_H
+#define RB_DEVICE_SOURCE_H
 
-#include "mediaplayerid.h"
-
-#include "rb-shell.h"
-#include "rb-generic-player-source.h"
-#include "rhythmdb.h"
+#include <glib-object.h>
 
 G_BEGIN_DECLS
 
-#define RB_TYPE_PSP_SOURCE         (rb_psp_source_get_type ())
-#define RB_PSP_SOURCE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_PSP_SOURCE, RBPspSource))
-#define RB_PSP_SOURCE_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_PSP_SOURCE, RBPspSourceClass))
-#define RB_IS_PSP_SOURCE(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_PSP_SOURCE))
-#define RB_IS_PSP_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_PSP_SOURCE))
-#define RB_PSP_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_PSP_SOURCE, RBPspSourceClass))
+#define RB_TYPE_DEVICE_SOURCE         (rb_device_source_get_type ())
+#define RB_DEVICE_SOURCE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_DEVICE_SOURCE, RBDeviceSource))
+#define RB_IS_DEVICE_SOURCE(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_DEVICE_SOURCE))
+#define RB_DEVICE_SOURCE_GET_IFACE(o) (G_TYPE_INSTANCE_GET_INTERFACE ((o), RB_TYPE_DEVICE_SOURCE, RBDeviceSourceInterface))
 
-typedef struct
+typedef struct _RBDeviceSource RBDeviceSource;
+typedef struct _RBDeviceSourceInterface RBDeviceSourceInterface;
+
+struct _RBDeviceSourceInterface
 {
-	RBGenericPlayerSource parent;
-} RBPspSource;
+	GTypeInterface g_iface;
 
-typedef struct
-{
-	RBGenericPlayerSourceClass parent;
-} RBPspSourceClass;
+	gboolean	(*can_eject)		(RBDeviceSource *source);
+	void		(*eject)		(RBDeviceSource *source);
+};
 
-RBSource *		rb_psp_source_new		(GObject *plugin,
-							 RBShell *shell,
-							 GMount *mount,
-							 MPIDDevice *device_info);
-GType			rb_psp_source_get_type		(void);
+GType		rb_device_source_get_type	(void);
 
-gboolean		rb_psp_is_mount_player		(GMount *mount, MPIDDevice *device_info);
+gboolean	rb_device_source_can_eject	(RBDeviceSource *source);
+void		rb_device_source_eject		(RBDeviceSource *source);
 
-void			_rb_psp_source_register_type	(GTypeModule *module);
+int		rb_device_source_want_uri	(RBDeviceSource *source, const char *uri);
+gboolean	rb_device_source_uri_is_source	(RBDeviceSource *source, const char *uri);
+
+void		rb_device_source_set_display_details (RBDeviceSource *source);
 
 G_END_DECLS
 
-#endif /* __RB_PSP_SOURCE_H */
+#endif  /* RB_DEVICE_SOURCE_H */
