@@ -58,9 +58,9 @@ struct _RBBrowserSourceClass
 {
 	RBSourceClass parent;
 
-	void		(*impl_pack_paned)		(RBBrowserSource *source, GtkWidget *paned);
-	gboolean	(*impl_has_drop_support)	(RBBrowserSource *source);
-	void		(*impl_show_entry_popup)	(RBBrowserSource *source);
+	void		(*pack_content)		(RBBrowserSource *source, GtkWidget *content);
+	gboolean	(*has_drop_support)	(RBBrowserSource *source);
+	void		(*show_entry_popup)	(RBBrowserSource *source);
 };
 
 typedef gboolean	(*RBBrowserSourceFeatureFunc)	(RBBrowserSource *source);

@@ -81,7 +81,6 @@ static void rb_mtp_source_get_property (GObject *object,
 static void impl_delete (RBSource *asource);
 static RBTrackTransferBatch *impl_paste (RBSource *asource, GList *entries);
 static gboolean impl_show_popup (RBDisplayPage *page);
-static GList* impl_get_ui_actions (RBDisplayPage *page);
 
 static gboolean impl_track_added (RBTransferTarget *target,
 				  RhythmDBEntry *entry,
@@ -195,9 +194,6 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	object_class->get_property = rb_mtp_source_get_property;
 
 	page_class->show_popup = impl_show_popup;
-	page_class->get_ui_actions = impl_get_ui_actions;
-
-	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -597,6 +593,7 @@ rb_mtp_source_new (RBShell *shell,
 					      "udi", udi,
 #endif
 					      "settings", g_settings_get_child (settings, "source"),
+					      "toolbar-path", "/MTPSourceToolBar",
 					      NULL));
 	g_object_unref (settings);
 
@@ -1047,17 +1044,6 @@ impl_show_popup (RBDisplayPage *page)
 {
 	_rb_display_page_show_popup (page, "/MTPSourcePopup");
 	return TRUE;
-}
-
-static GList *
-impl_get_ui_actions (RBDisplayPage *page)
-{
-	GList *actions = NULL;
-
-	actions = g_list_prepend (actions, g_strdup ("RemovableSourceEject"));
-	actions = g_list_prepend (actions, g_strdup ("MediaPlayerSourceSync"));
-
-	return actions;
 }
 
 static RhythmDB *

@@ -55,6 +55,7 @@ struct _RBDisplayPagePrivate
 {
 	char *name;
 	gboolean visible;
+	gboolean selected;
 	GdkPixbuf *pixbuf;
 	RBDisplayPage *parent;
 
@@ -76,6 +77,7 @@ enum
 	PROP_VISIBLE,
 	PROP_PARENT,
 	PROP_PLUGIN,
+	PROP_SELECTED,
 };
 
 enum
@@ -201,6 +203,9 @@ rb_display_page_selected (RBDisplayPage *page)
 
 	if (klass->selected)
 		klass->selected (page);
+
+	page->priv->selected = TRUE;
+	g_object_notify (G_OBJECT (page), "selected");
 }
 
 /**
@@ -216,6 +221,9 @@ rb_display_page_deselected (RBDisplayPage *page)
 
 	if (klass->deselected)
 		klass->deselected (page);
+
+	page->priv->selected = FALSE;
+	g_object_notify (G_OBJECT (page), "selected");
 }
 
 /**
@@ -256,26 +264,6 @@ rb_display_page_get_config_widget (RBDisplayPage *page,
 	} else {
 		return NULL;
 	}
-}
-
-/**
- * rb_display_page_get_ui_actions:
- * @page: a #RBDisplayPage
- *
- * Returns a list of UI action names.  Items for
- * these actions will be added to the toolbar.
- *
- * Return value: (element-type utf8) (transfer full): list of action names
- */
-GList *
-rb_display_page_get_ui_actions (RBDisplayPage *page)
-{
-	RBDisplayPageClass *klass = RB_DISPLAY_PAGE_GET_CLASS (page);
-
-	if (klass->get_ui_actions)
-		return klass->get_ui_actions (page);
-	else
-		return NULL;
 }
 
 /**
@@ -521,6 +509,9 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 	case PROP_PLUGIN:
 		g_value_set_object (value, page->priv->plugin);
 		break;
+	case PROP_SELECTED:
+		g_value_set_boolean (value, page->priv->selected);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -563,6 +554,16 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 
 static void
 impl_delete_thyself (RBDisplayPage *page)
+{
+}
+
+static void
+impl_selected (RBDisplayPage *page)
+{
+}
+
+static void
+impl_deselected (RBDisplayPage *page)
 {
 }
 
@@ -619,6 +620,8 @@ rb_display_page_class_init (RBDisplayPageClass *klass)
 	object_class->set_property = impl_set_property;
 	object_class->get_property = impl_get_property;
 
+	klass->selected = impl_selected;
+	klass->deselected = impl_deselected;
 	klass->delete_thyself = impl_delete_thyself;
 
 	/**
@@ -706,6 +709,18 @@ rb_display_page_class_init (RBDisplayPageClass *klass)
 							      G_TYPE_OBJECT,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 	/**
+	 * RBDisplayPage:selected:
+	 *
+	 * TRUE when the page is selected in the page tree.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_SELECTED,
+					 g_param_spec_boolean ("selected",
+							       "selected",
+							       "Whether the page is currently selected",
+							       FALSE,
+							       G_PARAM_READABLE));
+	/**
 	 * RBDisplayPage::deleted:
 	 * @page: the #RBDisplayPage
 	 *
@@ -755,11 +770,4 @@ rb_display_page_class_init (RBDisplayPageClass *klass)
  * @prefs: a #RBShellPreferences
  *
  * Return value: (transfer none): configuration widget
- */
-
-/**
- * impl_get_ui_actions:
- * @source: a #RBSource
- *
- * Return value: (element-type utf8) (transfer full): list of action names
  */

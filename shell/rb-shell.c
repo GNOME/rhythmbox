@@ -76,7 +76,6 @@
 #include "rb-track-transfer-queue.h"
 #include "rb-shell-clipboard.h"
 #include "rb-shell-player.h"
-#include "rb-source-header.h"
 #include "rb-statusbar.h"
 #include "rb-shell-preferences.h"
 #include "rb-library-source.h"
@@ -237,7 +236,6 @@ enum
 	PROP_LIBRARY_SOURCE,
 	PROP_DISPLAY_PAGE_MODEL,
 	PROP_DISPLAY_PAGE_TREE,
-	PROP_SOURCE_HEADER,
 	PROP_VISIBILITY,
 	PROP_TRACK_TRANSFER_QUEUE,
 	PROP_AUTOSTARTED,
@@ -304,7 +302,6 @@ struct _RBShellPrivate
 
 	RBShellPlayer *player_shell;
 	RBShellClipboard *clipboard_shell;
-	RBSourceHeader *source_header;
 	RBStatusbar *statusbar;
 	RBPlaylistManager *playlist_manager;
 	RBRemovableMediaManager *removable_media_manager;
@@ -402,7 +399,10 @@ static GtkToggleActionEntry rb_shell_toggle_entries [] =
 	  G_CALLBACK (rb_shell_view_queue_as_sidebar_changed_cb) },
         { "ViewStatusbar", NULL, N_("S_tatusbar"), NULL,
 	  N_("Change the visibility of the statusbar"),
-	  G_CALLBACK (rb_shell_view_statusbar_changed_cb), TRUE }
+	  G_CALLBACK (rb_shell_view_statusbar_changed_cb), TRUE },
+        { "ViewBrowser", NULL, N_("_Browse"), "<control>B",
+	  N_("Change the visibility of the browser"),
+	  NULL, TRUE }
 };
 static guint rb_shell_n_toggle_entries = G_N_ELEMENTS (rb_shell_toggle_entries);
 
@@ -558,9 +558,6 @@ construct_widgets (RBShell *shell)
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->actiongroup,
 							       shell->priv->ui_manager,
 							       shell->priv->db);
-	shell->priv->source_header = rb_source_header_new (shell->priv->ui_manager,
-							   shell->priv->actiongroup);
-	gtk_widget_show_all (GTK_WIDGET (shell->priv->source_header));
 
 	shell->priv->display_page_tree = rb_display_page_tree_new (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->display_page_tree));
@@ -625,9 +622,6 @@ construct_widgets (RBShell *shell)
 					 "resize", FALSE,
 					 NULL);
 
-		gtk_box_pack_start (GTK_BOX (vbox2),
-				    GTK_WIDGET (shell->priv->source_header),
-				    FALSE, FALSE, 3);
 		gtk_box_pack_start (GTK_BOX (vbox2),
 				    shell->priv->notebook,
 				    TRUE, TRUE, 0);
@@ -1350,19 +1344,6 @@ rb_shell_class_init (RBShellClass *klass)
 							       TRUE,
 							       G_PARAM_READWRITE));
 	/**
-	 * RBShell:source-header:
-	 *
-	 * The #RBSourceHeader instance
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_SOURCE_HEADER,
-					 g_param_spec_object ("source-header",
-							      "source header widget",
-							      "RBSourceHeader",
-							      RB_TYPE_SOURCE_HEADER,
-							      G_PARAM_READABLE));
-
-	/**
 	 * RBShell:track-transfer-queue:
 	 *
 	 * The #RBTrackTransferQueue instance
@@ -1641,9 +1622,6 @@ rb_shell_get_property (GObject *object,
 		break;
 	case PROP_VISIBILITY:
 		g_value_set_boolean (value, rb_shell_get_visibility (shell));
-		break;
-	case PROP_SOURCE_HEADER:
-		g_value_set_object (value, shell->priv->source_header);
 		break;
 	case PROP_TRACK_TRANSFER_QUEUE:
 		g_value_set_object (value, shell->priv->track_transfer_queue);
@@ -1964,6 +1942,11 @@ rb_shell_constructed (GObject *object)
 					     rb_shell_toggle_entries,
 					     rb_shell_n_toggle_entries,
 					     shell);
+
+	/* Translators: this is the short label for the 'import folder' action */
+	gtk_action_set_short_label (gtk_action_group_get_action (shell->priv->actiongroup, "MusicImportFolder"), C_("Library", "Import"));
+	/* Translators: this is the short label for the 'view all tracks' action */
+	gtk_action_set_short_label (gtk_action_group_get_action (shell->priv->actiongroup, "ViewAll"), _("Show All"));
 
 	construct_db (shell);
 
@@ -2466,22 +2449,8 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 }
 
 static void
-merge_source_ui_cb (const char *action,
-		    RBShell *shell)
-{
-	gtk_ui_manager_add_ui (shell->priv->ui_manager,
-			       shell->priv->source_ui_merge_id,
-			       "/ToolBar",
-			       action,
-			       action,
-			       GTK_UI_MANAGER_AUTO,
-			       FALSE);
-}
-
-static void
 rb_shell_select_page (RBShell *shell, RBDisplayPage *page)
 {
-	GList *actions;
 	int pagenum;
 
 	if (shell->priv->selected_page == page)
@@ -2515,23 +2484,16 @@ rb_shell_select_page (RBShell *shell, RBDisplayPage *page)
 		RBSource *source = RB_SOURCE (page);
 		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, source);
 		rb_shell_player_set_selected_source (shell->priv->player_shell, source);
-		rb_source_header_set_source (shell->priv->source_header, source);
 		g_object_set (shell->priv->playlist_manager, "source", source, NULL);
 		g_object_set (shell->priv->removable_media_manager, "source", source, NULL);
 	} else {
 		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, NULL);
 		rb_shell_player_set_selected_source (shell->priv->player_shell, NULL);	/* ? */
-		rb_source_header_set_source (shell->priv->source_header, NULL);
 
 		/* clear playlist-manager:source? */
 		/* clear removable-media-manager:source? */
 	}
 	rb_statusbar_set_page (shell->priv->statusbar, page);
-
-	/* merge the page-specific UI */
-	actions = rb_display_page_get_ui_actions (page);
-	g_list_foreach (actions, (GFunc)merge_source_ui_cb, shell);
-	rb_list_deep_free (actions);
 
 	g_object_notify (G_OBJECT (shell), "selected-page");
 }
@@ -3144,8 +3106,6 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 	rb_shell_sync_statusbar_visibility (shell);
 	rb_shell_sync_toolbar_state (shell);
 
-	rb_source_header_sync_control_state (shell->priv->source_header);
-
 	action = gtk_action_group_get_action (shell->priv->actiongroup,
 					      "ViewSmallDisplay");
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
@@ -3238,8 +3198,6 @@ rb_shell_cmd_view_all (GtkAction *action,
 		rb_debug ("view all");
 
 		rb_source_reset_filters (source);
-		rb_source_header_clear_search (shell->priv->source_header);
-		rb_source_header_focus_search_box (shell->priv->source_header);
 	}
 }
 

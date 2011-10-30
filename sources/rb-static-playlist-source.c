@@ -58,6 +58,7 @@
 #include "rb-file-helpers.h"
 #include "rb-playlist-xml.h"
 #include "rb-source-search-basic.h"
+#include "rb-source-toolbar.h"
 
 static void rb_static_playlist_source_constructed (GObject *object);
 static void rb_static_playlist_source_dispose (GObject *object);
@@ -78,7 +79,6 @@ static void impl_delete (RBSource *source);
 static void impl_search (RBSource *asource, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_reset_filters (RBSource *asource);
 static gboolean impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data);
-static GList *impl_get_search_actions (RBSource *source);
 static guint impl_want_uri (RBSource *source, const char *uri);
 
 static GPtrArray *construct_query_from_selection (RBStaticPlaylistSource *source);
@@ -120,10 +120,10 @@ static void rb_static_playlist_source_rows_reordered (GtkTreeModel *model,
 
 static GtkRadioActionEntry rb_static_playlist_source_radio_actions [] =
 {
-	{ "StaticPlaylistSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), RHYTHMDB_PROP_SEARCH_MATCH },
-	{ "StaticPlaylistSearchArtists", NULL, N_("Artists"), NULL, N_("Search artists"), RHYTHMDB_PROP_ARTIST_FOLDED },
-	{ "StaticPlaylistSearchAlbums", NULL, N_("Albums"), NULL, N_("Search albums"), RHYTHMDB_PROP_ALBUM_FOLDED },
-	{ "StaticPlaylistSearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), RHYTHMDB_PROP_TITLE_FOLDED }
+	{ "StaticPlaylistSearchAll", NULL, N_("Search all fields"), NULL, NULL, RHYTHMDB_PROP_SEARCH_MATCH },
+	{ "StaticPlaylistSearchArtists", NULL, N_("Search artists"), NULL, NULL, RHYTHMDB_PROP_ARTIST_FOLDED },
+	{ "StaticPlaylistSearchAlbums", NULL, N_("Search albums"), NULL, NULL, RHYTHMDB_PROP_ALBUM_FOLDED },
+	{ "StaticPlaylistSearchTitles", NULL, N_("Search titles"), NULL, NULL, RHYTHMDB_PROP_TITLE_FOLDED }
 };
 
 enum
@@ -143,9 +143,8 @@ typedef struct
 	RhythmDBQueryModel *base_model;
 	RhythmDBQueryModel *filter_model;
 
-	GtkWidget *paned;
+	RBSourceToolbar *toolbar;
 	RBLibraryBrowser *browser;
-	gboolean browser_shown;
 
 	RBSourceSearch *default_search;
 	RhythmDBQuery *search_query;
@@ -180,9 +179,7 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	source_class->impl_delete = impl_delete;
 	source_class->impl_search = impl_search;
 	source_class->impl_reset_filters = impl_reset_filters;
-	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_property_views = impl_get_property_views;
-	source_class->impl_get_search_actions = impl_get_search_actions;
 	source_class->impl_want_uri = impl_want_uri;
 
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
@@ -283,6 +280,9 @@ rb_static_playlist_source_constructed (GObject *object)
 	RBEntryView *songs;
 	RBShell *shell;
 	RhythmDBEntryType *entry_type;
+	GtkUIManager *ui_manager;
+	GtkWidget *grid;
+	GtkWidget *paned;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_static_playlist_source_parent_class, constructed, object);
 
@@ -298,7 +298,9 @@ rb_static_playlist_source_constructed (GObject *object)
 				 G_CALLBACK (rb_static_playlist_source_filter_entry_drop),
 				 source, 0);
 
-	priv->paned = gtk_vpaned_new ();
+	paned = gtk_vpaned_new ();
+	gtk_widget_set_hexpand (paned, TRUE);
+	gtk_widget_set_vexpand (paned, TRUE);
 
 	g_object_get (source, "shell", &shell, NULL);
 	priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
@@ -319,6 +321,7 @@ rb_static_playlist_source_constructed (GObject *object)
 	}
 	priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
 
+	g_object_get (shell, "ui-manager", &ui_manager, NULL);
 	g_object_unref (shell);
 
 	g_object_get (source, "entry-type", &entry_type, NULL);
@@ -328,7 +331,7 @@ rb_static_playlist_source_constructed (GObject *object)
 		g_object_unref (entry_type);
 	}
 
-	gtk_paned_pack1 (GTK_PANED (priv->paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
+	gtk_paned_pack1 (GTK_PANED (paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
 	g_signal_connect_object (priv->browser, "notify::output-model",
 				 G_CALLBACK (rb_static_playlist_source_browser_changed_cb),
 				 source, 0);
@@ -340,10 +343,22 @@ rb_static_playlist_source_constructed (GObject *object)
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
 	g_object_ref (songs);
 	gtk_container_remove (GTK_CONTAINER (source), GTK_WIDGET (songs));
-	gtk_paned_pack2 (GTK_PANED (priv->paned), GTK_WIDGET (songs), TRUE, FALSE);
-	gtk_container_add (GTK_CONTAINER (source), priv->paned);
+	gtk_paned_pack2 (GTK_PANED (paned), GTK_WIDGET (songs), TRUE, FALSE);
 
-	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (songs), priv->paned, GTK_WIDGET (priv->browser));
+	/* set up search box / toolbar */
+	priv->toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	rb_source_toolbar_add_search_entry (priv->toolbar, "/StaticPlaylistSourceSearchMenu", NULL);
+	g_object_unref (ui_manager);
+
+	/* put it all together */
+	grid = gtk_grid_new ();
+	gtk_grid_set_column_spacing (GTK_GRID (grid), 6);
+	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
+	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (priv->toolbar), 0, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (grid), paned, 0, 1, 1, 1);
+	gtk_container_add (GTK_CONTAINER (source), grid);
+
+	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (songs), paned, GTK_WIDGET (priv->browser));
 	g_object_unref (songs);
 
 	/* watch these to find out when things are dropped into the entry view */
@@ -395,7 +410,7 @@ rb_static_playlist_source_new (RBShell *shell, const char *name, const char *set
 					"shell", shell,
 					"is-local", local,
 					"entry-type", entry_type,
-					"search-type", RB_SOURCE_SEARCH_INCREMENTAL,
+					"toolbar-path", "/StaticPlaylistSourceToolBar",
 					NULL));
 }
 
@@ -547,6 +562,8 @@ impl_reset_filters (RBSource *source)
 		rhythmdb_query_free (priv->search_query);
 		priv->search_query = NULL;
 	}
+
+	rb_source_toolbar_clear_search_entry (priv->toolbar);
 
 	if (changed) {
 		rb_static_playlist_source_do_query (RB_STATIC_PLAYLIST_SOURCE (source));
@@ -990,19 +1007,6 @@ rb_static_playlist_source_filter_entry_drop (RhythmDBQueryModel *model,
 	}
 	rb_debug ("preventing drop of entry %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 	return FALSE;
-}
-
-static GList *
-impl_get_search_actions (RBSource *source)
-{
-	GList *actions = NULL;
-
-	actions = g_list_prepend (actions, g_strdup ("StaticPlaylistSearchTitles"));
-	actions = g_list_prepend (actions, g_strdup ("StaticPlaylistSearchAlbums"));
-	actions = g_list_prepend (actions, g_strdup ("StaticPlaylistSearchArtists"));
-	actions = g_list_prepend (actions, g_strdup ("StaticPlaylistSearchAll"));
-
-	return actions;
 }
 
 static guint

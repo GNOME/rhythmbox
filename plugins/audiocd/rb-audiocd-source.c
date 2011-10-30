@@ -48,6 +48,7 @@
 #include "rb-dialog.h"
 #include "rb-builder-helpers.h"
 #include "rb-file-helpers.h"
+#include "rb-source-toolbar.h"
 #include "rb-shell-player.h"
 
 #ifdef HAVE_SJ_METADATA_GETTER
@@ -58,7 +59,6 @@
 enum
 {
 	PROP_0,
-	PROP_SEARCH_TYPE,
 	PROP_VOLUME,
 };
 
@@ -71,7 +71,6 @@ static void impl_get_property (GObject *object, guint prop_id, GValue *value, GP
 
 static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
-static GList* impl_get_ui_actions (RBDisplayPage *page);
 
 
 static guint impl_want_uri (RBSource *source, const char *uri);
@@ -167,11 +166,9 @@ static GtkActionEntry rb_audiocd_source_actions[] = {
 	{ "AudioCdCopyTracks", GTK_STOCK_CDROM, N_("_Extract to Library"), NULL,
 	  N_("Copy tracks to the library"),
 	  G_CALLBACK (copy_tracks_cmd) },
-#if defined(HAVE_SJ_METADATA_GETTER)
 	{ "AudioCdSourceReloadMetadata", GTK_STOCK_REFRESH, N_("Reload"), NULL,
 	N_("Reload Album Information"),
 	G_CALLBACK (reload_metadata_cmd) },
-#endif
 };
 
 static void
@@ -226,10 +223,7 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 
 	page_class->show_popup = impl_show_popup;
 	page_class->delete_thyself = impl_delete_thyself;
-	page_class->get_ui_actions = impl_get_ui_actions;
 
-	/* don't bother showing the browser/search bits */
-	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
@@ -238,9 +232,6 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;	/* shouldn't need this. */
 	source_class->impl_want_uri = impl_want_uri;
 
-	g_object_class_override_property (object_class,
-					  PROP_SEARCH_TYPE,
-					  "search-type");
 	g_object_class_install_property (object_class,
 					 PROP_VOLUME,
 					 g_param_spec_object ("volume",
@@ -334,6 +325,7 @@ rb_audiocd_source_constructed (GObject *object)
 	RBEntryView *entry_view;
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *extract;
+	GtkUIManager *ui_manager;
 	GtkBuilder *builder;
 	GtkWidget *grid;
 	GtkWidget *widget;
@@ -346,6 +338,7 @@ rb_audiocd_source_constructed (GObject *object)
 	RhythmDBQueryModel *query_model;
 	RhythmDBQuery *query;
 	RhythmDBEntryType *entry_type;
+	RBSourceToolbar *toolbar;
 	char *ui_file;
 	int toggle_width;
 #if defined(HAVE_SJ_METADATA_GETTER)
@@ -362,6 +355,7 @@ rb_audiocd_source_constructed (GObject *object)
 	g_object_get (shell,
 		      "db", &db,
 		      "shell-player", &shell_player,
+		      "ui-manager", &ui_manager,
 		      NULL);
 
 	source->priv->action_group =
@@ -384,6 +378,9 @@ rb_audiocd_source_constructed (GObject *object)
 	action = gtk_action_group_get_action (source->priv->action_group, "AudioCdSourceReloadMetadata");
 	g_object_set (action, "visible", FALSE, NULL);
 #endif
+	/* source toolbar */
+	toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	g_object_unref (ui_manager);
 
 	g_object_get (source, "entry-type", &entry_type, NULL);
 	query = rhythmdb_query_parse (db,
@@ -496,8 +493,9 @@ rb_audiocd_source_constructed (GObject *object)
 
 	grid = gtk_grid_new ();
 	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
-	gtk_grid_attach (GTK_GRID (grid), infogrid, 0, 0, 1, 1);
-	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (entry_view), 0, 1, 1, 1);
+	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (toolbar), 0, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (grid), infogrid, 0, 1, 1, 1);
+	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (entry_view), 0, 2, 1, 1);
 	g_object_unref (builder);
 
 	gtk_widget_show_all (grid);
@@ -545,6 +543,7 @@ rb_audiocd_source_new (GObject *plugin,
 			       "plugin", plugin,
 			       "show-browser", FALSE,
 			       "settings", g_settings_get_child (settings, "source"),
+			       "toolbar-path", "/AudioCdSourceToolBar",
 			       NULL);
 	g_object_unref (settings);
 
@@ -559,9 +558,6 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 	RBAudioCdSource *source = RB_AUDIOCD_SOURCE (object);
 
 	switch (prop_id) {
-	case PROP_SEARCH_TYPE:
-		/* ignored */
-		break;
 	case PROP_VOLUME:
 		source->priv->volume = g_value_dup_object (value);
 		break;
@@ -577,9 +573,6 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 	RBAudioCdSource *source = RB_AUDIOCD_SOURCE (object);
 
 	switch (prop_id) {
-	case PROP_SEARCH_TYPE:
-		g_value_set_enum (value, RB_SOURCE_SEARCH_NONE);
-		break;
 	case PROP_VOLUME:
 		g_value_set_object (value, source->priv->volume);
 		break;
@@ -1183,21 +1176,6 @@ impl_show_popup (RBDisplayPage *page)
 {
 	_rb_display_page_show_popup (page, "/AudioCdSourcePopup");
 	return TRUE;
-}
-
-static GList *
-impl_get_ui_actions (RBDisplayPage *page)
-{
-	GList *actions = NULL;
-
-	actions = g_list_prepend (actions, g_strdup ("AudioCdCopyTracks"));
-	actions = g_list_prepend (actions, g_strdup ("RemovableSourceEject"));
-
-#ifdef HAVE_SJ_METADATA_GETTER
-	actions = g_list_prepend (actions, g_strdup ("AudioCdSourceReloadMetadata"));
-#endif
-
-	return actions;
 }
 
 static guint

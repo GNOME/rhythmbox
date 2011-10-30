@@ -48,6 +48,7 @@
 #include "rb-display-page-tree.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
+#include "rb-source-toolbar.h"
 
 
 /* radio type stuff */
@@ -264,7 +265,6 @@ static gboolean emit_coverart_uri_cb (RBAudioscrobblerRadioSource *source);
 /* RBDisplayPage implementations */
 static void impl_selected (RBDisplayPage *page);
 static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
-static GList *impl_get_ui_actions (RBDisplayPage *page);
 static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
 
@@ -308,6 +308,7 @@ rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfilePage *parent,
 	RBShell *shell;
 	GObject *plugin;
 	RhythmDB *db;
+	char *toolbar_path;
 
 	g_object_get (parent, "shell", &shell, "plugin", &plugin, NULL);
 	g_object_get (shell, "db", &db, NULL);
@@ -315,6 +316,8 @@ rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfilePage *parent,
 	if (RHYTHMDB_ENTRY_TYPE_AUDIOSCROBBLER_RADIO_TRACK == NULL) {
 		rb_audioscrobbler_radio_track_register_entry_type (db);
 	}
+
+	g_object_get (parent, "toolbar-path", &toolbar_path, NULL);
 
 	source = g_object_new (RB_TYPE_AUDIOSCROBBLER_RADIO_SOURCE,
 	                       "shell", shell,
@@ -326,11 +329,13 @@ rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfilePage *parent,
                                "username", username,
 	                       "session-key", session_key,
 	                       "station-url", station_url,
+			       "toolbar-path", toolbar_path,
 	                       NULL);
 
 	g_object_unref (shell);
 	g_object_unref (plugin);
 	g_object_unref (db);
+	g_free (toolbar_path);
 
 	return source;
 }
@@ -352,7 +357,6 @@ rb_audioscrobbler_radio_source_class_init (RBAudioscrobblerRadioSourceClass *kla
 	page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	page_class->selected = impl_selected;
 	page_class->get_status = impl_get_status;
-	page_class->get_ui_actions = impl_get_ui_actions;
 	page_class->show_popup = impl_show_popup;
 	page_class->delete_thyself = impl_delete_thyself;
 
@@ -441,6 +445,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	GtkWidget *password_info_bar_content_area;
 	GObject *plugin;
 	GtkUIManager *ui_manager;
+	RBSourceToolbar *toolbar;
 	char *ui_file;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_radio_source_parent_class, constructed, object);
@@ -450,11 +455,17 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	g_object_get (shell,
 		      "db", &db,
 		      "shell-player", &shell_player,
+		      "ui-manager", &ui_manager,
 		      NULL);
 
 	main_vbox = gtk_vbox_new (FALSE, 4);
 	gtk_widget_show (main_vbox);
 	gtk_container_add (GTK_CONTAINER (source), main_vbox);
+
+	/* toolbar */
+	toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	gtk_box_pack_start (GTK_BOX (main_vbox), GTK_WIDGET (toolbar), FALSE, FALSE, 0);
+	gtk_widget_show_all (GTK_WIDGET (toolbar));
 
 	/* error info bar */
 	source->priv->error_info_bar = gtk_info_bar_new ();
@@ -516,7 +527,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 				 source, 0);
 
 	/* merge ui */
-	g_object_get (source, "plugin", &plugin, "ui-manager", &ui_manager, NULL);
+	g_object_get (source, "plugin", &plugin, NULL);
 	ui_file = rb_find_plugin_data_file (plugin, "audioscrobbler-radio-ui.xml");
 	source->priv->ui_merge_id = gtk_ui_manager_add_ui_from_file (ui_manager, ui_file, NULL);
 
@@ -1459,6 +1470,8 @@ impl_selected (RBDisplayPage *page)
 {
 	RBAudioscrobblerRadioSource *source = RB_AUDIOSCROBBLER_RADIO_SOURCE (page);
 
+	RB_DISPLAY_PAGE_CLASS (rb_audioscrobbler_radio_source_parent_class)->selected (page);
+
 	/* if the query model is empty then attempt to add some tracks to it */
 	if (rhythmdb_query_model_get_duration (source->priv->track_model) == 0) {
 		tune (source);
@@ -1494,14 +1507,6 @@ static RBSourceEOFType
 impl_handle_eos (RBSource *asource)
 {
 	return RB_SOURCE_EOF_NEXT;
-}
-
-static GList *
-impl_get_ui_actions (RBDisplayPage *page)
-{
-	RBAudioscrobblerRadioSource *source = RB_AUDIOSCROBBLER_RADIO_SOURCE (page);
-
-	return rb_display_page_get_ui_actions (RB_DISPLAY_PAGE (source->priv->parent));
 }
 
 static gboolean

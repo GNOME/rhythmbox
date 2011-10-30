@@ -70,10 +70,10 @@ rb_podcast_main_source_new (RBShell *shell, RBPodcastManager *podcast_manager)
 					  "name", _("Podcasts"),
 					  "shell", shell,
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
-					  "search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					  "podcast-manager", podcast_manager,
 					  "base-query", base_query,
 					  "settings", g_settings_get_child (settings, "source"),
+					  "toolbar-path", "/PodcastSourceToolBar",
 					  NULL));
 	g_object_unref (settings);
 

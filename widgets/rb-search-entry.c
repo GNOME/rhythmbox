@@ -35,9 +35,11 @@
 #include <gtk/gtk.h>
 
 #include "rb-search-entry.h"
+#include "rb-util.h"
 
 static void rb_search_entry_class_init (RBSearchEntryClass *klass);
 static void rb_search_entry_init (RBSearchEntry *entry);
+static void rb_search_entry_constructed (GObject *object);
 static void rb_search_entry_finalize (GObject *object);
 static gboolean rb_search_entry_timeout_cb (RBSearchEntry *entry);
 static void rb_search_entry_changed_cb (GtkEditable *editable,
@@ -54,14 +56,14 @@ static void rb_search_entry_clear_cb (GtkEntry *entry,
 				      GtkEntryIconPosition icon_pos,
 				      GdkEvent *event,
 				      RBSearchEntry *search_entry);
-static void rb_search_entry_check_style (RBSearchEntry *entry);
+static void rb_search_entry_update_icons (RBSearchEntry *entry);
 
 struct RBSearchEntryPrivate
 {
-	GtkWidget *label;
 	GtkWidget *entry;
 	GtkWidget *button;
 
+	gboolean has_popup;
 	gboolean explicit_mode;
 	gboolean clearing;
 	gboolean searching;
@@ -84,22 +86,21 @@ G_DEFINE_TYPE (RBSearchEntry, rb_search_entry, GTK_TYPE_HBOX)
  *
  * Signals are emitted when the search text changes,
  * arbitrarily rate-limited to one every 300ms.
- *
- * When the text entry widget is non-empty, its colours are
- * changed to display the text in black on yellow.
  */
 
 enum
 {
 	SEARCH,
 	ACTIVATE,
+	SHOW_POPUP,
 	LAST_SIGNAL
 };
 
 enum
 {
 	PROP_0,
-	PROP_EXPLICIT_MODE
+	PROP_EXPLICIT_MODE,
+	PROP_HAS_POPUP
 };
 
 static guint rb_search_entry_signals[LAST_SIGNAL] = { 0 };
@@ -109,6 +110,7 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->constructed = rb_search_entry_constructed;
 	object_class->finalize = rb_search_entry_finalize;
 	object_class->set_property = rb_search_entry_set_property;
 	object_class->get_property = rb_search_entry_get_property;
@@ -152,6 +154,22 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 			      G_TYPE_STRING);
 
 	/**
+	 * RBSearchEntry::show-popup:
+	 * @entry: the #RBSearchEntry
+	 *
+	 * Emitted when a popup menu should be shown
+	 */
+	rb_search_entry_signals[SHOW_POPUP] =
+		g_signal_new ("show-popup",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBSearchEntryClass, show_popup),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
+
+	/**
 	 * RBSearchEntry:explicit-mode:
 	 *
 	 * If TRUE, show a button and only emit the 'search' signal when
@@ -164,6 +182,18 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 							       "whether in explicit search mode or not",
 							       FALSE,
 							       G_PARAM_READWRITE));
+	/**
+	 * RBSearchEntry:has-popup:
+	 *
+	 * If TRUE, show a primary icon and emit the show-popup when clicked.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_HAS_POPUP,
+					 g_param_spec_boolean ("has-popup",
+							       "has popup",
+							       "whether to display the search menu icon",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBSearchEntryPrivate));
 }
@@ -171,10 +201,19 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 static void
 rb_search_entry_init (RBSearchEntry *entry)
 {
+	entry->priv = RB_SEARCH_ENTRY_GET_PRIVATE (entry);
+}
+
+static void
+rb_search_entry_constructed (GObject *object)
+{
+	RBSearchEntry *entry;
 	GtkSettings *settings;
 	char *theme;
 
-	entry->priv = RB_SEARCH_ENTRY_GET_PRIVATE (entry);
+	RB_CHAIN_GOBJECT_METHOD (rb_search_entry_parent_class, constructed, object);
+
+	entry = RB_SEARCH_ENTRY (object);
 
 	settings = gtk_settings_get_for_screen (gtk_widget_get_screen (GTK_WIDGET (entry)));
 	g_object_get (settings, "gtk-theme-name", &theme, NULL);
@@ -182,27 +221,27 @@ rb_search_entry_init (RBSearchEntry *entry)
 					strncmp (theme, "LowContrast", strlen ("LowContrast")) == 0;
 	g_free (theme);
 
-	/* this string can only be so long, or there wont be a search entry :) */
-	entry->priv->label = gtk_label_new_with_mnemonic (_("_Search:"));
-	gtk_label_set_justify (GTK_LABEL (entry->priv->label), GTK_JUSTIFY_RIGHT);
-	gtk_box_pack_start (GTK_BOX (entry), entry->priv->label, FALSE, TRUE, 0);
-	gtk_widget_set_no_show_all (entry->priv->label, TRUE);
-	gtk_widget_show (entry->priv->label);
-
 	entry->priv->entry = gtk_entry_new ();
-	gtk_entry_set_icon_from_stock (GTK_ENTRY (entry->priv->entry),
-				       GTK_ENTRY_ICON_SECONDARY,
-				       GTK_STOCK_CLEAR);
-	gtk_entry_set_icon_tooltip_text (GTK_ENTRY (entry->priv->entry),
-					 GTK_ENTRY_ICON_SECONDARY,
-					 _("Clear the search text"));
 	g_signal_connect_object (GTK_ENTRY (entry->priv->entry),
 				 "icon-press",
 				 G_CALLBACK (rb_search_entry_clear_cb),
 				 entry, 0);
 
-	gtk_label_set_mnemonic_widget (GTK_LABEL (entry->priv->label),
-				       entry->priv->entry);
+	gtk_entry_set_icon_tooltip_text (GTK_ENTRY (entry->priv->entry),
+					 GTK_ENTRY_ICON_SECONDARY,
+					 _("Clear the search text"));
+	if (entry->priv->has_popup) {
+		gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->priv->entry),
+						   GTK_ENTRY_ICON_PRIMARY,
+						   "edit-find-symbolic");
+		gtk_entry_set_icon_tooltip_text (GTK_ENTRY (entry->priv->entry),
+						 GTK_ENTRY_ICON_PRIMARY,
+						 _("Select the search type"));
+	} else {
+		gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->priv->entry),
+						   GTK_ENTRY_ICON_SECONDARY,
+						   "edit-find-symbolic");
+	}
 
 	gtk_box_pack_start (GTK_BOX (entry), entry->priv->entry, TRUE, TRUE, 0);
 
@@ -236,9 +275,11 @@ rb_search_entry_set_property (GObject *object, guint prop_id, const GValue *valu
 	switch (prop_id) {
 	case PROP_EXPLICIT_MODE:
 		entry->priv->explicit_mode = g_value_get_boolean (value);
-		gtk_widget_set_visible (entry->priv->label, entry->priv->explicit_mode == FALSE);
 		gtk_widget_set_visible (entry->priv->button, entry->priv->explicit_mode == TRUE);
-		rb_search_entry_check_style (entry);
+		rb_search_entry_update_icons (entry);
+		break;
+	case PROP_HAS_POPUP:
+		entry->priv->has_popup = g_value_get_boolean (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -254,6 +295,9 @@ rb_search_entry_get_property (GObject *object, guint prop_id, GValue *value, GPa
 	switch (prop_id) {
 	case PROP_EXPLICIT_MODE:
 		g_value_set_boolean (value, entry->priv->explicit_mode);
+		break;
+	case PROP_HAS_POPUP:
+		g_value_set_boolean (value, entry->priv->has_popup);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -284,12 +328,14 @@ rb_search_entry_finalize (GObject *object)
  * Return value: new search entry widget.
  */
 RBSearchEntry *
-rb_search_entry_new (void)
+rb_search_entry_new (gboolean has_popup)
 {
 	RBSearchEntry *entry;
 
 	entry = RB_SEARCH_ENTRY (g_object_new (RB_TYPE_SEARCH_ENTRY,
 					       "spacing", 5,
+					       "has-popup", has_popup,
+					       "hexpand", TRUE,
 					       NULL));
 
 	g_return_val_if_fail (entry->priv != NULL, NULL);
@@ -334,30 +380,25 @@ rb_search_entry_set_text (RBSearchEntry *entry, const char *text)
 			    text ? text : "");
 }
 
-static void
-rb_search_entry_check_style (RBSearchEntry *entry)
+/**
+ * rb_search_entry_set_placeholder:
+ * @entry: a #RBSearchEntry
+ * @text: placeholder text
+ *
+ * Sets the placeholder text in the search entry box.
+ */
+void
+rb_search_entry_set_placeholder (RBSearchEntry *entry, const char *text)
 {
-	static const GdkRGBA fallback_bg_color = { 0.9686, 0.9686, 0.7451, 1.0}; /* yellow-ish */
-	static const GdkRGBA fallback_fg_color = { 0, 0, 0, 1.0 }; /* black. */
-	GdkRGBA bg_color = {0,};
-	GdkRGBA fg_color = {0,};
-	const gchar* text;
+	gtk_entry_set_placeholder_text (GTK_ENTRY (entry->priv->entry), text);
+}
+
+static void
+rb_search_entry_update_icons (RBSearchEntry *entry)
+{
+	const char *text;
+	const char *icon;
 	gboolean searching;
-
-	if (entry->priv->is_a11y_theme)
-		return;
-
-	/* allow user style to override the colors */
-	if (gtk_style_context_lookup_color (gtk_widget_get_style_context (GTK_WIDGET (entry)),
-					    "rb-search-active-bg",
-					    &bg_color) == FALSE) {
-		bg_color = fallback_bg_color;
-	}
-	if (gtk_style_context_lookup_color (gtk_widget_get_style_context (GTK_WIDGET (entry)),
-					    "rb-search-active-fg",
-					    &fg_color) == FALSE) {
-		fg_color = fallback_fg_color;
-	}
 
 	if (entry->priv->explicit_mode) {
 		searching = entry->priv->searching;
@@ -367,16 +408,16 @@ rb_search_entry_check_style (RBSearchEntry *entry)
 	}
 
 	if (searching) {
-		gtk_widget_override_color (entry->priv->entry, GTK_STATE_NORMAL, &fg_color);
-		gtk_widget_override_background_color (entry->priv->entry, GTK_STATE_NORMAL, &bg_color);
-		gtk_widget_override_cursor (entry->priv->entry, &fg_color, &fg_color);
+		icon = "edit-clear-symbolic";
+	} else if (entry->priv->has_popup) {
+		/* we already use 'find' as the primary icon */
+		icon = NULL;
 	} else {
-		gtk_widget_override_color (entry->priv->entry, GTK_STATE_NORMAL, NULL);
-		gtk_widget_override_background_color (entry->priv->entry, GTK_STATE_NORMAL, NULL);
-		gtk_widget_override_cursor (entry->priv->entry, NULL, NULL);
+		icon = "edit-find-symbolic";
 	}
-
-	gtk_widget_queue_draw (GTK_WIDGET (entry));
+	gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->priv->entry),
+					   GTK_ENTRY_ICON_SECONDARY,
+					   icon);
 }
 
 static void
@@ -387,7 +428,7 @@ rb_search_entry_changed_cb (GtkEditable *editable,
 
 	if (entry->priv->clearing == TRUE) {
 		entry->priv->searching = FALSE;
-		rb_search_entry_check_style (entry);
+		rb_search_entry_update_icons (entry);
 		return;
 	}
 
@@ -406,7 +447,7 @@ rb_search_entry_changed_cb (GtkEditable *editable,
 		gtk_widget_set_sensitive (entry->priv->button, FALSE);
 		rb_search_entry_timeout_cb (entry);
 	}
-	rb_search_entry_check_style (entry);
+	rb_search_entry_update_icons (entry);
 }
 
 static gboolean
@@ -469,7 +510,7 @@ rb_search_entry_activate_cb (GtkEntry *gtkentry,
 			     RBSearchEntry *entry)
 {
 	entry->priv->searching = TRUE;
-	rb_search_entry_check_style (entry);
+	rb_search_entry_update_icons (entry);
 	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[ACTIVATE], 0,
 		       gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)));
 }
@@ -478,7 +519,7 @@ static void
 button_clicked_cb (GtkButton *button, RBSearchEntry *entry)
 {
 	entry->priv->searching = TRUE;
-	rb_search_entry_check_style (entry);
+	rb_search_entry_update_icons (entry);
 	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[SEARCH], 0,
 		       gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)));
 }
@@ -501,5 +542,9 @@ rb_search_entry_clear_cb (GtkEntry *entry,
 			  GdkEvent *event,
 			  RBSearchEntry *search_entry)
 {
-	rb_search_entry_set_text (search_entry, "");
+	if (icon_pos == GTK_ENTRY_ICON_PRIMARY) {
+		g_signal_emit (G_OBJECT (search_entry), rb_search_entry_signals[SHOW_POPUP], 0);
+	} else {
+		rb_search_entry_set_text (search_entry, "");
+	}
 }

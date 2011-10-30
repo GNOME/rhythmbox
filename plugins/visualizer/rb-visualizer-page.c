@@ -207,6 +207,8 @@ impl_selected (RBDisplayPage *bpage)
 	RBVisualizerPage *page = RB_VISUALIZER_PAGE (bpage);
 	ClutterActor *stage;
 
+	RB_DISPLAY_PAGE_CLASS (rb_visualizer_page_parent_class)->selected (bpage);
+
 	if (page->embed == NULL) {
 		page->embed = gtk_clutter_embed_new ();
 
@@ -227,6 +229,8 @@ static void
 impl_deselected (RBDisplayPage *bpage)
 {
 	RBVisualizerPage *page = RB_VISUALIZER_PAGE (bpage);
+
+	RB_DISPLAY_PAGE_CLASS (rb_visualizer_page_parent_class)->deselected (bpage);
 
 	if (page->fullscreen == NULL) {
 		g_signal_emit (page, signals[STOP], 0);

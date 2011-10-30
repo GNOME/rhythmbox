@@ -184,7 +184,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
 
-	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_true_function;
+	browser_source_class->has_drop_support = (RBBrowserSourceFeatureFunc) rb_true_function;
 
 	g_type_class_add_private (klass, sizeof (RBLibrarySourcePrivate));
 }
@@ -341,6 +341,7 @@ rb_library_source_new (RBShell *shell)
 					  "shell", shell,
 					  "pixbuf", icon,
 					  "populate", FALSE,		/* wait until the database is loaded */
+					  "toolbar-path", "/LibrarySourceToolBar",
 					  "settings", g_settings_get_child (settings, "source"),
 					  NULL));
 	if (icon != NULL) {

@@ -12,6 +12,7 @@ widgetinclude_HEADERS =					\
 	rb-library-browser.h				\
 	rb-segmented-bar.h				\
 	rb-song-info.h					\
+	rb-source-toolbar.h				\
 	rb-uri-dialog.h
 
 librbwidgets_la_SOURCES =				\
@@ -38,11 +39,12 @@ librbwidgets_la_SOURCES =				\
 	rb-query-creator.h				\
 	rb-query-creator-private.h			\
 	rb-query-creator-properties.c			\
-	rb-uri-dialog.c				\
-	eggwrapbox.c				\
-	eggwrapbox.h				\
+	rb-uri-dialog.c					\
+	eggwrapbox.c					\
+	eggwrapbox.h					\
 	eggwrapbox-enums.c				\
-	eggwrapbox-enums.h
+	eggwrapbox-enums.h				\
+	rb-source-toolbar.c
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

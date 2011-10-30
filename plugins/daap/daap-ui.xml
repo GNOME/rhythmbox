@@ -7,6 +7,12 @@
     </menu>
   </menubar>
 
+  <toolbar name="DAAPSourceToolBar">
+    <toolitem name="Browse" action="ViewBrowser"/>
+    <toolitem name="ViewAll" action="ViewAll"/>
+    <toolitem name="Disconnect" action="DaapSourceDisconnect"/>
+  </toolbar>
+
   <popup name="DAAPSourcePopup">
     <menuitem name="DAAPSrcPopupDisconnect" action="DaapSourceDisconnect"/>
   </popup>

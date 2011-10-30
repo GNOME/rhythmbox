@@ -64,6 +64,7 @@
 #include "rb-cut-and-paste-code.h"
 #include "rb-source-search-basic.h"
 #include "rb-cell-renderer-pixbuf.h"
+#include "rb-source-toolbar.h"
 
 static void podcast_cmd_new_podcast		(GtkAction *action,
 						 RBPodcastSource *source);
@@ -86,7 +87,6 @@ struct _RBPodcastSourcePrivate
 
 	guint prefs_notify_id;
 
-	GtkWidget *vbox;
 	GtkWidget *paned;
 
 	RhythmDBPropertyModel *feed_model;
@@ -132,9 +132,9 @@ static GtkActionEntry rb_podcast_source_actions [] =
 
 static GtkRadioActionEntry rb_podcast_source_radio_actions [] =
 {
-	{ "PodcastSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), RHYTHMDB_PROP_SEARCH_MATCH },
-	{ "PodcastSearchFeeds", NULL, N_("Feeds"), NULL, N_("Search podcast feeds"), RHYTHMDB_PROP_ALBUM_FOLDED },
-	{ "PodcastSearchEpisodes", NULL, N_("Episodes"), NULL, N_("Search podcast episodes"), RHYTHMDB_PROP_TITLE_FOLDED }
+	{ "PodcastSearchAll", NULL, N_("Search all fields"), NULL, NULL, RHYTHMDB_PROP_SEARCH_MATCH },
+	{ "PodcastSearchFeeds", NULL, N_("Search podcast feeds"), NULL, NULL, RHYTHMDB_PROP_ALBUM_FOLDED },
+	{ "PodcastSearchEpisodes", NULL, N_("Search podcast episodes"), NULL, NULL, RHYTHMDB_PROP_TITLE_FOLDED }
 };
 
 static const GtkTargetEntry posts_view_drag_types[] = {
@@ -523,6 +523,11 @@ podcast_cmd_update_feed (GtkAction *action, RBPodcastSource *source)
 	rb_debug ("Update action");
 
 	feeds = rb_string_list_copy (source->priv->selected_feeds);
+	if (feeds == NULL) {
+		rb_podcast_manager_update_feeds (source->priv->podcast_mgr);
+		return;
+	}
+
 	for (l = feeds; l != NULL; l = g_list_next (l)) {
 		const char *location = l->data;
 
@@ -943,10 +948,10 @@ rb_podcast_source_new (RBShell *shell,
 					  "name", name,
 					  "shell", shell,
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
-					  "search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					  "podcast-manager", podcast_manager,
 					  "base-query", base_query,
 					  "settings", g_settings_get_child (settings, "source"),
+					  "toolbar-path", "/PodcastSourceToolBar",
 					  NULL));
 	g_object_unref (settings);
 
@@ -1105,29 +1110,6 @@ impl_get_entry_view (RBSource *asource)
 	return source->priv->posts;
 }
 
-static GList *
-impl_get_search_actions (RBSource *source)
-{
-	GList *actions = NULL;
-
-	actions = g_list_prepend (actions, g_strdup ("PodcastSearchEpisodes"));
-	actions = g_list_prepend (actions, g_strdup ("PodcastSearchFeeds"));
-	actions = g_list_prepend (actions, g_strdup ("PodcastSearchAll"));
-
-	return actions;
-}
-
-static GList *
-impl_get_ui_actions (RBDisplayPage *page)
-{
-	GList *actions = NULL;
-
-	actions = g_list_prepend (actions, g_strdup ("PodcastUpdateAllFeeds"));
-	actions = g_list_prepend (actions, g_strdup ("MusicNewPodcast"));
-
-	return actions;
-}
-
 static RBSourceEOFType
 impl_handle_eos (RBSource *asource)
 {
@@ -1280,6 +1262,9 @@ impl_constructed (GObject *object)
 	GtkAction *action;
 	GSettings *settings;
 	int position;
+	GtkUIManager *ui_manager;
+	GtkWidget *grid;
+	RBSourceToolbar *toolbar;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_source_parent_class, constructed, object);
 	source = RB_PODCAST_SOURCE (object);
@@ -1288,6 +1273,7 @@ impl_constructed (GObject *object)
 	g_object_get (shell,
 		      "db", &source->priv->db,
 		      "shell-player", &shell_player,
+		      "ui-manager", &ui_manager,
 		      NULL);
 
 	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
@@ -1304,12 +1290,12 @@ impl_constructed (GObject *object)
 					      "MusicNewPodcast");
 	/* Translators: this is the toolbar button label
 	   for New Podcast Feed action. */
-	g_object_set (action, "short-label", C_("Podcast", "New"), NULL);
+	g_object_set (action, "short-label", C_("Podcast", "Add"), NULL);
 
 	action = gtk_action_group_get_action (source->priv->action_group,
-					      "PodcastUpdateAllFeeds");
+					      "PodcastFeedUpdate");
 	/* Translators: this is the toolbar button label
-	   for Update All Feeds action. */
+	   for Update Feed action. */
 	g_object_set (action, "short-label", _("Update"), NULL);
 
 	if (gtk_action_group_get_action (source->priv->action_group,
@@ -1529,13 +1515,23 @@ impl_constructed (GObject *object)
 			   posts_view_drag_types, 2,
 			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
 
+	/* set up toolbar */
+	toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	rb_source_toolbar_add_search_entry (toolbar, "/PodcastSourceSearchMenu", NULL);
+
 	/* pack the feed and post views into the source */
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned),
 			 GTK_WIDGET (source->priv->feeds), FALSE, FALSE);
 	gtk_paned_pack2 (GTK_PANED (source->priv->paned),
 			 GTK_WIDGET (source->priv->posts), TRUE, FALSE);
 
-	gtk_box_pack_start (GTK_BOX (source->priv->vbox), source->priv->paned, TRUE, TRUE, 0);
+	grid = gtk_grid_new ();
+	gtk_grid_set_column_spacing (GTK_GRID (grid), 6);
+	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
+	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (toolbar), 0, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (grid), source->priv->paned, 0, 1, 1, 1);
+
+	gtk_container_add (GTK_CONTAINER (source), grid);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
 
@@ -1552,10 +1548,10 @@ impl_constructed (GObject *object)
 				 GTK_WIDGET (source->priv->feeds));
 
 	g_object_unref (settings);
+	g_object_unref (ui_manager);
 
 	rb_podcast_source_do_query (source);
 }
-
 
 static void
 impl_dispose (GObject *object)
@@ -1621,9 +1617,6 @@ rb_podcast_source_init (RBPodcastSource *source)
 						    RBPodcastSourcePrivate);
 
 	source->priv->selected_feeds = NULL;
-	source->priv->vbox = gtk_vbox_new (FALSE, 5);
-
-	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
 
 	icon_theme = gtk_icon_theme_get_default ();
 	source->priv->error_pixbuf = gtk_icon_theme_load_icon (icon_theme,
@@ -1648,18 +1641,15 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 
 	page_class->get_status = impl_get_status;
 	page_class->receive_drag = impl_receive_drag;
-	page_class->get_ui_actions = impl_get_ui_actions;
 	page_class->show_popup = impl_show_popup;
 
 	source_class->impl_add_to_queue = impl_add_to_queue;
 	source_class->impl_can_add_to_queue = impl_can_add_to_queue;
-	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_delete = impl_delete;
 	source_class->impl_get_entry_view = impl_get_entry_view;
-	source_class->impl_get_search_actions = impl_get_search_actions;
 	source_class->impl_handle_eos = impl_handle_eos;
 	source_class->impl_search = impl_search;
 	source_class->impl_song_properties = impl_song_properties;

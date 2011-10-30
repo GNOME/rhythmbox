@@ -62,7 +62,7 @@ GType		rb_static_playlist_source_get_type 	(void);
 
 RBSource *	rb_static_playlist_source_new		(RBShell *shell,
 							 const char *name,
-							 const char *sorting_name,
+							 const char *settings_name,
 							 gboolean local,
 							 RhythmDBEntryType *entry_type);
 

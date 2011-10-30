@@ -475,6 +475,7 @@ rb_generic_player_source_new (GObject *plugin, RBShell *shell, GMount *mount, MP
 							 "shell", shell,
 							 "device-info", device_info,
 							 "settings", g_settings_get_child (settings, "source"),
+							 "toolbar-path", "/GenericPlayerSourceToolBar",
 							 NULL));
 	g_object_unref (settings);
 

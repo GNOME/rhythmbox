@@ -41,6 +41,7 @@
 #include "rb-stock-icons.h"
 #include "rb-playlist-xml.h"
 #include "rb-source-search-basic.h"
+#include "rb-source-toolbar.h"
 
 /**
  * SECTION:rb-auto-playlist-source
@@ -78,7 +79,6 @@ static gboolean impl_show_popup (RBDisplayPage *page);
 static gboolean impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data);
 static void impl_search (RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_reset_filters (RBSource *asource);
-static GList *impl_get_search_actions (RBSource *source);
 
 /* playlist methods */
 static void impl_save_contents_to_xml (RBPlaylistSource *source,
@@ -100,10 +100,10 @@ static void rb_auto_playlist_source_browser_changed_cb (RBLibraryBrowser *entry,
 
 static GtkRadioActionEntry rb_auto_playlist_source_radio_actions [] =
 {
-	{ "AutoPlaylistSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), RHYTHMDB_PROP_SEARCH_MATCH },
-	{ "AutoPlaylistSearchArtists", NULL, N_("Artists"), NULL, N_("Search artists"), RHYTHMDB_PROP_ARTIST_FOLDED },
-	{ "AutoPlaylistSearchAlbums", NULL, N_("Albums"), NULL, N_("Search albums"), RHYTHMDB_PROP_ALBUM_FOLDED },
-	{ "AutoPlaylistSearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), RHYTHMDB_PROP_TITLE_FOLDED }
+	{ "AutoPlaylistSearchAll", NULL, N_("Search all fields"), NULL, NULL, RHYTHMDB_PROP_SEARCH_MATCH },
+	{ "AutoPlaylistSearchArtists", NULL, N_("Search artists"), NULL, NULL, RHYTHMDB_PROP_ARTIST_FOLDED },
+	{ "AutoPlaylistSearchAlbums", NULL, N_("Search albums"), NULL, NULL, RHYTHMDB_PROP_ALBUM_FOLDED },
+	{ "AutoPlaylistSearchTitles", NULL, N_("Search titles"), NULL, NULL, RHYTHMDB_PROP_TITLE_FOLDED }
 };
 
 enum
@@ -130,6 +130,7 @@ struct _RBAutoPlaylistSourcePrivate
 
 	GtkWidget *paned;
 	RBLibraryBrowser *browser;
+	RBSourceToolbar *toolbar;
 
 	RBSourceSearch *default_search;
 	RhythmDBQuery *search_query;
@@ -161,11 +162,9 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
 	source_class->impl_reset_filters = impl_reset_filters;
 	source_class->impl_get_property_views = impl_get_property_views;
-	source_class->impl_get_search_actions = impl_get_search_actions;
 
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
 
@@ -250,6 +249,8 @@ rb_auto_playlist_source_constructed (GObject *object)
 	RBAutoPlaylistSourcePrivate *priv;
 	RBShell *shell;
 	RhythmDBEntryType *entry_type;
+	GtkUIManager *ui_manager;
+	GtkWidget *grid;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_auto_playlist_source_parent_class, constructed, object);
 
@@ -291,13 +292,26 @@ rb_auto_playlist_source_constructed (GObject *object)
 	}
 	priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
 
+
+	/* set up toolbar */
+	g_object_get (shell, "ui-manager", &ui_manager, NULL);
+	priv->toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	rb_source_toolbar_add_search_entry (priv->toolbar, "/AutoPlaylistSourceSearchMenu", NULL);
+
+	g_object_unref (ui_manager);
 	g_object_unref (shell);
 
 	/* reparent the entry view */
 	g_object_ref (songs);
 	gtk_container_remove (GTK_CONTAINER (source), GTK_WIDGET (songs));
 	gtk_paned_pack2 (GTK_PANED (priv->paned), GTK_WIDGET (songs), TRUE, FALSE);
-	gtk_container_add (GTK_CONTAINER (source), priv->paned);
+
+	grid = gtk_grid_new ();
+	gtk_grid_set_column_spacing (GTK_GRID (grid), 6);
+	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
+	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (priv->toolbar), 0, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (grid), priv->paned, 0, 1, 1, 1);
+	gtk_container_add (GTK_CONTAINER (source), grid);
 
 	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (songs), priv->paned, GTK_WIDGET (priv->browser));
 	g_object_unref (songs);
@@ -326,7 +340,7 @@ rb_auto_playlist_source_new (RBShell *shell, const char *name, gboolean local)
 					"shell", shell,
 					"is-local", local,
 					"entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
-					"search-type", RB_SOURCE_SEARCH_INCREMENTAL,
+					"toolbar-path", "/AutoPlaylistSourceToolBar",
 					NULL));
 }
 
@@ -496,6 +510,8 @@ impl_reset_filters (RBSource *source)
 		rhythmdb_query_free (priv->search_query);
 		priv->search_query = NULL;
 	}
+
+	rb_source_toolbar_clear_search_entry (priv->toolbar);
 
 	if (changed)
 		rb_auto_playlist_source_do_query (RB_AUTO_PLAYLIST_SOURCE (source), FALSE);
@@ -912,18 +928,5 @@ rb_auto_playlist_source_browser_changed_cb (RBLibraryBrowser *browser,
 	g_object_unref (query_model);
 
 	rb_source_notify_filter_changed (RB_SOURCE (source));
-}
-
-static GList *
-impl_get_search_actions (RBSource *source)
-{
-	GList *actions = NULL;
-
-	actions = g_list_prepend (actions, g_strdup ("AutoPlaylistSearchTitles"));
-	actions = g_list_prepend (actions, g_strdup ("AutoPlaylistSearchAlbums"));
-	actions = g_list_prepend (actions, g_strdup ("AutoPlaylistSearchArtists"));
-	actions = g_list_prepend (actions, g_strdup ("AutoPlaylistSearchAll"));
-
-	return actions;
 }
 

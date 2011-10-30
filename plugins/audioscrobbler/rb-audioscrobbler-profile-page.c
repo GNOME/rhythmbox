@@ -115,6 +115,7 @@ struct _RBAudioscrobblerProfilePagePrivate {
 	char *love_action_name;
 	char *ban_action_name;
 	char *download_action_name;
+	char *toolbar_path;
 };
 
 
@@ -229,13 +230,13 @@ static void list_item_listen_top_fans_activated_cb (GtkMenuItem *menuitem,
 /* RBDisplayPage implementations */
 static void impl_selected (RBDisplayPage *page);
 static void impl_deselected (RBDisplayPage *page);
-static GList *impl_get_ui_actions (RBDisplayPage *page);
 static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
 
 enum {
 	PROP_0,
-	PROP_SERVICE
+	PROP_SERVICE,
+	PROP_TOOLBAR_PATH
 };
 
 static GtkActionEntry profile_actions [] =
@@ -300,7 +301,6 @@ rb_audioscrobbler_profile_page_class_init (RBAudioscrobblerProfilePageClass *kla
 	page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	page_class->selected = impl_selected;
 	page_class->deselected = impl_deselected;
-	page_class->get_ui_actions = impl_get_ui_actions;
 	page_class->show_popup = impl_show_popup;
 	page_class->delete_thyself = impl_delete_thyself;
 
@@ -311,6 +311,13 @@ rb_audioscrobbler_profile_page_class_init (RBAudioscrobblerProfilePageClass *kla
 	                                                      "Audioscrobbler service for this page",
 	                                                      RB_TYPE_AUDIOSCROBBLER_SERVICE,
                                                               G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_TOOLBAR_PATH,
+					 g_param_spec_string ("toolbar-path",
+							      "toolbar path",
+							      "toolbar UI path",
+							      NULL,
+							      G_PARAM_READABLE));
 
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerProfilePagePrivate));
 }
@@ -469,6 +476,7 @@ rb_audioscrobbler_profile_page_finalize (GObject *object)
 	g_free (page->priv->love_action_name);
 	g_free (page->priv->ban_action_name);
 	g_free (page->priv->download_action_name);
+	g_free (page->priv->toolbar_path);
 
 	G_OBJECT_CLASS (rb_audioscrobbler_profile_page_parent_class)->finalize (object);
 }
@@ -479,7 +487,11 @@ rb_audioscrobbler_profile_page_get_property (GObject *object,
                                                GValue *value,
                                                GParamSpec *pspec)
 {
+	RBAudioscrobblerProfilePage *page = RB_AUDIOSCROBBLER_PROFILE_PAGE (object);
 	switch (prop_id) {
+	case PROP_TOOLBAR_PATH:
+		g_value_set_string (value, page->priv->toolbar_path);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -679,6 +691,13 @@ init_actions (RBAudioscrobblerProfilePage *page)
 		rhythmdb_entry_unref (entry);
 	}
 	g_object_unref (player);
+
+	/* set up toolbar */
+	page->priv->toolbar_path = g_strdup_printf ("/%sSourceToolBar", rb_audioscrobbler_service_get_name (page->priv->service));
+	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, "/ui", "AudioscrobblerToolBar", NULL, GTK_UI_MANAGER_TOOLBAR, TRUE);
+	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, page->priv->toolbar_path, "Love", page->priv->love_action_name, GTK_UI_MANAGER_TOOLITEM, FALSE);
+	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, page->priv->toolbar_path, "Ban", page->priv->ban_action_name, GTK_UI_MANAGER_TOOLITEM, FALSE);
+	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, page->priv->toolbar_path, "Download", page->priv->download_action_name, GTK_UI_MANAGER_TOOLITEM, FALSE);
 
 	g_free (ui_file);
 	g_object_unref (shell);
@@ -1814,6 +1833,8 @@ impl_selected (RBDisplayPage *bpage)
 {
 	RBAudioscrobblerProfilePage *page = RB_AUDIOSCROBBLER_PROFILE_PAGE (bpage);
 
+	RB_DISPLAY_PAGE_CLASS (rb_audioscrobbler_profile_page_parent_class)->selected (bpage);
+
 	/* attempt to update now and again every 5 minutes */
 	rb_audioscrobbler_user_update (page->priv->user);
 	page->priv->update_timeout_id = g_timeout_add_seconds (300,
@@ -1826,21 +1847,10 @@ impl_deselected (RBDisplayPage *bpage)
 {
 	RBAudioscrobblerProfilePage *page = RB_AUDIOSCROBBLER_PROFILE_PAGE (bpage);
 
+	RB_DISPLAY_PAGE_CLASS (rb_audioscrobbler_profile_page_parent_class)->deselected (bpage);
+
 	g_source_remove (page->priv->update_timeout_id);
 	page->priv->update_timeout_id = 0;
-}
-
-static GList *
-impl_get_ui_actions (RBDisplayPage *bpage)
-{
-	RBAudioscrobblerProfilePage *page = RB_AUDIOSCROBBLER_PROFILE_PAGE (bpage);
-	GList *actions = NULL;
-
-	actions = g_list_append (actions, g_strdup (page->priv->love_action_name));
-	actions = g_list_append (actions, g_strdup (page->priv->ban_action_name));
-	actions = g_list_append (actions, g_strdup (page->priv->download_action_name));
-
-	return actions;
 }
 
 static gboolean

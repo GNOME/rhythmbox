@@ -103,13 +103,6 @@
     <toolitem name="Repeat" action="ControlRepeat"/>
     <toolitem name="Shuffle" action="ControlShuffle"/>
     <separator/>
-    <toolitem name="Browse" action="ViewBrowser"/>
-    <separator/>
-    <placeholder name="PluginPlaceholder" />
-  </toolbar>
-
-  <toolbar name="SearchBar">
-    <placeholder name="PluginPlaceholder" />
   </toolbar>
 
   <popup name="BrowserSourceViewPopup">
@@ -132,6 +125,71 @@
     <separator/>
     <menuitem name="PropertiesLibraryPopup" action="MusicProperties"/>
   </popup>
+
+  <popup name="BrowserSourceSearchMenu">
+    <menuitem name="SearchAll" action="BrowserSourceSearchAll"/>
+    <menuitem name="SearchArtists" action="BrowserSourceSearchArtists"/>
+    <menuitem name="SearchAlbums" action="BrowserSourceSearchAlbums"/>
+    <menuitem name="SearchTitles" action="BrowserSourceSearchTitles"/>
+    <placeholder name="PluginPlaceholder"/>
+  </popup>
+
+  <popup name="AutoPlaylistSourceSearchMenu">
+    <menuitem name="SearchAll" action="AutoPlaylistSearchAll"/>
+    <menuitem name="SearchArtists" action="AutoPlaylistSearchArtists"/>
+    <menuitem name="SearchAlbums" action="AutoPlaylistSearchAlbums"/>
+    <menuitem name="SearchTitles" action="AutoPlaylistSearchTitles"/>
+    <placeholder name="PluginPlaceholder"/>
+  </popup>
+
+  <popup name="StaticPlaylistSourceSearchMenu">
+    <menuitem name="SearchAll" action="StaticPlaylistSearchAll"/>
+    <menuitem name="SearchArtists" action="StaticPlaylistSearchArtists"/>
+    <menuitem name="SearchAlbums" action="StaticPlaylistSearchAlbums"/>
+    <menuitem name="SearchTitles" action="StaticPlaylistSearchTitles"/>
+    <placeholder name="PluginPlaceholder"/>
+  </popup>
+
+  <popup name="PodcastSourceSearchMenu">
+    <menuitem name="SearchAll" action="PodcastSearchAll"/>
+    <menuitem name="SearchFeeds" action="PodcastSearchFeeds"/>
+    <menuitem name="SearchEpisodes" action="PodcastSearchEpisodes"/>
+    <placeholder name="PluginPlaceholder"/>
+  </popup>
+
+  <toolbar name="LibrarySourceToolBar">
+    <toolitem name="Browse" action="ViewBrowser"/>
+    <toolitem name="ViewAll" action="ViewAll"/>
+    <toolitem name="LibraryImport" action="MusicImportFolder"/>
+    <placeholder name="PluginPlaceholder"/>
+  </toolbar>
+
+  <toolbar name="QueueSourceToolBar">
+    <toolitem name="ShuffleQueue" action="ShuffleQueue"/>
+    <toolitem name="Clear" action="ClearQueue"/>
+    <placeholder name="PluginPlaceholder"/>
+  </toolbar>
+
+  <toolbar name="StaticPlaylistSourceToolBar">
+    <toolitem name="Browse" action="ViewBrowser"/>
+    <toolitem name="ViewAll" action="ViewAll"/>
+    <placeholder name="PluginPlaceholder"/>
+  </toolbar>
+
+  <toolbar name="AutoPlaylistSourceToolBar">
+    <toolitem name="Browse" action="ViewBrowser"/>
+    <toolitem name="ViewAll" action="ViewAll"/>
+    <toolitem name="Edit" action="EditAutomaticPlaylist"/>
+    <placeholder name="PluginPlaceholder"/>
+  </toolbar>
+
+  <toolbar name="PodcastSourceToolBar">
+    <toolitem name="Browse" action="ViewBrowser"/>
+    <toolitem name="ViewAll" action="ViewAll"/>
+    <toolitem name="NewPodcast" action="MusicNewPodcast"/>
+    <toolitem name="UpdateFeed" action="PodcastFeedUpdate"/>
+    <placeholder name="PluginPlaceholder"/>
+  </toolbar>
 
   <popup name="ImportErrorsViewPopup">
     <menuitem name="DeleteLibraryPopup" action="EditRemove"/>
@@ -260,6 +318,7 @@
     <separator/>
     <menuitem name="PlaylistSourceSavePlaylistPopup" action="MusicPlaylistSavePlaylist"/>
   </popup>
+
 
   <popup name="MissingFilesViewPopup">
     <menuitem name="DeleteMissingFilesPopup" action="EditRemove"/>

@@ -34,6 +34,7 @@
 #include <sources/rb-display-page.h>
 #include <sources/rb-source-search.h>
 #include <widgets/rb-entry-view.h>
+#include <widgets/rb-search-entry.h>
 #include <shell/rb-shell-preferences.h>
 #include <shell/rb-track-transfer-batch.h>
 #include <rhythmdb/rhythmdb-import-job.h>
@@ -47,12 +48,6 @@ typedef enum {
 	RB_SOURCE_EOF_NEXT,
 } RBSourceEOFType;
 
-typedef enum {
-	RB_SOURCE_SEARCH_NONE,
-	RB_SOURCE_SEARCH_INCREMENTAL,
-	RB_SOURCE_SEARCH_EXPLICIT,
-} RBSourceSearchType;
-
 typedef struct _RBSource	RBSource;
 typedef struct _RBSourceClass	RBSourceClass;
 typedef struct _RBSourcePrivate	RBSourcePrivate;
@@ -61,9 +56,6 @@ typedef void (*RBSourceActionCallback) (GtkAction *action, RBSource *source);
 
 GType rb_source_eof_type_get_type (void);
 #define RB_TYPE_SOURCE_EOF_TYPE	(rb_source_eof_type_get_type())
-
-GType rb_source_search_type_get_type (void);
-#define RB_TYPE_SOURCE_SEARCH_TYPE (rb_source_search_type_get_type())
 
 #define RB_TYPE_SOURCE         (rb_source_get_type ())
 #define RB_SOURCE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_SOURCE, RBSource))
@@ -92,8 +84,6 @@ struct _RBSourceClass
 	void (*filter_changed)	(RBSource *source);
 
 	/* methods */
-
-	gboolean	(*impl_can_browse)	(RBSource *source);
 
 	RBEntryView *	(*impl_get_entry_view)	(RBSource *source);
 	GList *		(*impl_get_property_views)	(RBSource *source);
@@ -133,10 +123,7 @@ struct _RBSourceClass
 	gboolean	(*impl_can_pause)	(RBSource *source);
 	RBSourceEOFType	(*impl_handle_eos)	(RBSource *source);
 
-	gboolean	(*impl_have_url)	(RBSource *source);
-
 	void		(*impl_delete_thyself)	(RBSource *source);
-	GList *		(*impl_get_search_actions) (RBSource *source);
 	char *		(*impl_get_delete_action) (RBSource *source);
 };
 
@@ -148,8 +135,6 @@ void		rb_source_update_play_statistics(RBSource *source, RhythmDB *db,
 						 RhythmDBEntry *entry);
 
 /* general interface */
-
-gboolean	rb_source_can_browse		(RBSource *source);
 
 RBEntryView *	rb_source_get_entry_view	(RBSource *source);
 
@@ -195,7 +180,6 @@ void		rb_source_add_uri		(RBSource *source,
 gboolean	rb_source_can_pause		(RBSource *source);
 RBSourceEOFType	rb_source_handle_eos		(RBSource *source);
 
-GList *		rb_source_get_search_actions	(RBSource *source);
 char *		rb_source_get_delete_action	(RBSource *source);
 
 GList *		rb_source_gather_selected_properties (RBSource *source, RhythmDBPropType prop);

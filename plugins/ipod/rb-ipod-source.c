@@ -68,7 +68,6 @@ static void rb_ipod_load_songs (RBiPodSource *source);
 
 static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
-static GList* impl_get_ui_actions (RBDisplayPage *page);
 
 static gboolean impl_track_added (RBTransferTarget *target,
 				  RhythmDBEntry *entry,
@@ -176,9 +175,7 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 
 	page_class->delete_thyself = impl_delete_thyself;
 	page_class->show_popup = impl_show_popup;
-	page_class->get_ui_actions = impl_get_ui_actions;
 
-	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -436,6 +433,7 @@ rb_ipod_source_new (GObject *plugin,
 					       "shell", shell,
 					       "device-info", device_info,
 					       "settings", g_settings_get_child (settings, "source"),
+					       "toolbar-path", "/iPodSourceToolBar",
 					       NULL));
 	g_object_unref (settings);
 
@@ -1260,17 +1258,6 @@ rb_ipod_load_songs (RBiPodSource *source)
                                   NULL);
 		priv->load_idle_id = g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
 	}
-}
-
-static GList*
-impl_get_ui_actions (RBDisplayPage *page)
-{
-	GList *actions = NULL;
-
-	actions = g_list_prepend (actions, g_strdup ("RemovableSourceEject"));
-	actions = g_list_prepend (actions, g_strdup ("MediaPlayerSourceSync"));
-
-	return actions;
 }
 
 static gboolean

@@ -69,7 +69,6 @@ static RBSourceEOFType default_handle_eos (RBSource *source);
 static RBEntryView *default_get_entry_view (RBSource *source);
 static void default_add_to_queue (RBSource *source, RBSource *queue);
 static void default_move_to_trash (RBSource *source);
-static GList * default_get_search_actions (RBSource *source);
 static char *default_get_delete_action (RBSource *source);
 
 static void rb_source_post_entry_deleted_cb (GtkTreeModel *model,
@@ -109,9 +108,10 @@ struct _RBSourcePrivate
 	guint update_visibility_id;
 	guint update_status_id;
 	RhythmDBEntryType *entry_type;
-	RBSourceSearchType search_type;
 
 	GSettings *settings;
+
+	char *toolbar_path;
 };
 
 enum
@@ -122,9 +122,9 @@ enum
 	PROP_ENTRY_TYPE,
 	PROP_BASE_QUERY_MODEL,
 	PROP_PLAY_ORDER,
-	PROP_SEARCH_TYPE,
 	PROP_SETTINGS,
-	PROP_SHOW_BROWSER
+	PROP_SHOW_BROWSER,
+	PROP_TOOLBAR_PATH
 };
 
 enum
@@ -149,7 +149,6 @@ rb_source_class_init (RBSourceClass *klass)
 	page_class->activate = default_activate;
 	page_class->get_status = default_get_status;
 
-	klass->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 	klass->impl_get_property_views = default_get_property_views;
 	klass->impl_can_rename = default_can_rename;
 	klass->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
@@ -165,7 +164,6 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_handle_eos = default_handle_eos;
 	klass->impl_try_playlist = default_try_playlist;
 	klass->impl_add_to_queue = default_add_to_queue;
-	klass->impl_get_search_actions = default_get_search_actions;
 	klass->impl_get_delete_action = default_get_delete_action;
 	klass->impl_move_to_trash = default_move_to_trash;
 
@@ -237,20 +235,6 @@ rb_source_class_init (RBSourceClass *klass)
 							      G_PARAM_READABLE));
 
 	/**
-	 * RBSource:search-type:
-	 *
-	 * The type of searching this source provides, as a RBSourceSearchType value.
-	 * This is used by the RBSourceHeader to modify the search box widget.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_SEARCH_TYPE,
-					 g_param_spec_enum ("search-type",
-							    "search-type",
-							    "search type",
-							    RB_TYPE_SOURCE_SEARCH_TYPE,
-							    RB_SOURCE_SEARCH_NONE,
-							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
-	/**
 	 * RBSource:settings:
 	 *
 	 * The #GSettings instance storing settings for the source.  The instance must
@@ -276,6 +260,22 @@ rb_source_class_init (RBSourceClass *klass)
 							       "whether the browser widget should be shown",
 							       TRUE,
 							       G_PARAM_READWRITE));
+	/**
+	 * RBSource:toolbar-path:
+	 *
+	 * UI manager path for a toolbar to display at the top of the source.
+	 * The #RBSource class doesn't actually display the toolbar anywhere.
+	 * Adding the toolbar to a container is the responsibility of a subclass
+	 * such as #RBBrowserSource.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_TOOLBAR_PATH,
+					 g_param_spec_string ("toolbar-path",
+							      "toolbar path",
+							      "toolbar UI path",
+							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
 	/**
 	 * RBSource::filter-changed:
 	 * @source: the #RBSource
@@ -345,6 +345,8 @@ rb_source_finalize (GObject *object)
 			  G_OBJECT (source->priv->query_model)->ref_count);
 		g_object_unref (source->priv->query_model);
 	}
+
+	g_free (source->priv->toolbar_path);
 
 	G_OBJECT_CLASS (rb_source_parent_class)->finalize (object);
 }
@@ -443,14 +445,14 @@ rb_source_set_property (GObject *object,
 	case PROP_ENTRY_TYPE:
 		source->priv->entry_type = g_value_get_object (value);
 		break;
-	case PROP_SEARCH_TYPE:
-		source->priv->search_type = g_value_get_enum (value);
-		break;
 	case PROP_SETTINGS:
 		source->priv->settings = g_value_dup_object (value);
 		break;
 	case PROP_SHOW_BROWSER:
 		/* not connected to anything here */
+		break;
+	case PROP_TOOLBAR_PATH:
+		source->priv->toolbar_path = g_value_dup_string (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -482,14 +484,14 @@ rb_source_get_property (GObject *object,
 	case PROP_PLAY_ORDER:
 		g_value_set_object (value, NULL);		/* ? */
 		break;
-	case PROP_SEARCH_TYPE:
-		g_value_set_enum (value, source->priv->search_type);
-		break;
 	case PROP_SETTINGS:
 		g_value_set_object (value, source->priv->settings);
 		break;
 	case PROP_SHOW_BROWSER:
 		g_value_set_boolean (value, FALSE);
+		break;
+	case PROP_TOOLBAR_PATH:
+		g_value_set_string (value, source->priv->toolbar_path);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -531,22 +533,6 @@ default_get_status (RBDisplayPage *page,
 	} else {
 		*text = g_strdup ("");
 	}
-}
-
-/**
- * rb_source_can_browse:
- * @source: a #RBSource
- *
- * Determines whether the source has a browser
- *
- * Return value: TRUE if this source has a browser
- */
-gboolean
-rb_source_can_browse (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	return klass->impl_can_browse (source);
 }
 
 /**
@@ -1166,31 +1152,6 @@ default_get_entry_view (RBSource *source)
 	return NULL;
 }
 
-static GList *
-default_get_search_actions (RBSource *source)
-{
-	return NULL;
-}
-
-/**
- * rb_source_get_search_actions:
- * @source: a #RBSource
- *
- * Returns a list of UI action names. Buttons for these
- * actions will be added to the search bar.  The source
- * must identify the selected search action when constructing
- * a database query for searching
- *
- * Return value: (element-type utf8) (transfer full): list of search actions
- */
-GList *
-rb_source_get_search_actions (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	return klass->impl_get_search_actions (source);
-}
-
 static char *
 default_get_delete_action (RBSource *source)
 {
@@ -1482,26 +1443,6 @@ rb_source_eof_type_get_type (void)
 
 	return etype;
 }
-
-GType
-rb_source_search_type_get_type (void)
-{
-	static GType etype = 0;
-
-	if (etype == 0) {
-		static const GEnumValue values[] = {
-			ENUM_ENTRY (RB_SOURCE_SEARCH_NONE, "none"),
-			ENUM_ENTRY (RB_SOURCE_SEARCH_INCREMENTAL, "incremental"),
-			ENUM_ENTRY (RB_SOURCE_SEARCH_EXPLICIT, "explicit"),
-			{ 0, 0, 0 }
-		};
-
-		etype = g_enum_register_static ("RBSourceSearchType", values);
-	}
-
-	return etype;
-}
-
 /* introspection annotations for vmethods */
 
 /**
@@ -1538,9 +1479,3 @@ rb_source_search_type_get_type (void)
  * @entries: (element-type RB.RhythmDBEntry) (transfer none): list of entries to paste
  */
 
-/**
- * impl_get_search_actions:
- * @source: a #RBSource
- *
- * Return value: (element-type utf8) (transfer full): list of action names
- */

@@ -57,15 +57,18 @@ struct _RBSearchEntryClass
 
 	void (*search) (RBSearchEntry *view, const char *text);
 	void (*activate) (RBSearchEntry *entry, const char *text);
+	void (*show_popup) (RBSearchEntry *entry);
 };
 
 GType		rb_search_entry_get_type (void);
 
-RBSearchEntry *	rb_search_entry_new      (void);
+RBSearchEntry *	rb_search_entry_new      (gboolean has_popup);
 
 void		rb_search_entry_clear    (RBSearchEntry *entry);
 
 void		rb_search_entry_set_text (RBSearchEntry *entry, const char *text);
+
+void		rb_search_entry_set_placeholder (RBSearchEntry *entry, const char *text);
 
 gboolean	rb_search_entry_searching(RBSearchEntry *entry);
 

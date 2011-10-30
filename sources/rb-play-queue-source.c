@@ -98,7 +98,6 @@ static void rb_play_queue_source_cmd_clear (GtkAction *action,
 					    RBPlayQueueSource *source);
 static void rb_play_queue_source_cmd_shuffle (GtkAction *action,
 					      RBPlayQueueSource *source);
-static GList *impl_get_ui_actions (RBDisplayPage *page);
 static gboolean impl_show_popup (RBDisplayPage *page);
 
 static void rb_play_queue_dbus_method_call (GDBusConnection *connection,
@@ -211,12 +210,10 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 	object_class->finalize = rb_play_queue_source_finalize;
 	object_class->dispose  = rb_play_queue_source_dispose;
 
-	page_class->get_ui_actions = impl_get_ui_actions;
 	page_class->show_popup = impl_show_popup;
 
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 
 	playlist_class->impl_show_entry_view_popup = impl_show_entry_view_popup;
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
@@ -284,6 +281,9 @@ rb_play_queue_source_constructed (GObject *object)
 					      "ClearQueue");
 	/* Translators: this is the toolbutton label for Clear Queue action */
 	g_object_set (G_OBJECT (action), "short-label", _("Clear"), NULL);
+
+	/* Translators: this is the toolbutton label for the 'shuffle queue' action */
+	gtk_action_set_short_label (gtk_action_group_get_action (priv->action_group, "ShuffleQueue"), C_("Queue", "Shuffle"));
 
 	priv->sidebar = rb_entry_view_new (db, shell_player, TRUE, TRUE);
 	g_object_unref (shell_player);
@@ -389,6 +389,8 @@ rb_play_queue_source_new (RBShell *shell)
 					"shell", shell,
 					"is-local", TRUE,
 					"entry-type", NULL,
+					"toolbar-path", "/QueueSourceToolBar",
+					"show-browser", FALSE,
 					NULL));
 }
 
@@ -578,15 +580,6 @@ impl_show_popup (RBDisplayPage *page)
 {
 	_rb_display_page_show_popup (page, PLAY_QUEUE_SOURCE_POPUP_PATH);
 	return TRUE;
-}
-
-static GList *
-impl_get_ui_actions (RBDisplayPage *page)
-{
-	GList *actions = NULL;
-
-	actions = g_list_prepend (actions, g_strdup ("ClearQueue"));
-	return actions;
 }
 
 static void

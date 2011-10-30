@@ -101,7 +101,6 @@ rb_missing_files_source_class_init (RBMissingFilesSourceClass *klass)
 
 	page_class->get_status = impl_get_status;
 
-	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;
 

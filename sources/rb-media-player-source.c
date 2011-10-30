@@ -155,7 +155,7 @@ rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass)
 	source_class->impl_get_delete_action = impl_get_delete_action;
 	source_class->impl_delete = NULL;
 
-	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
+	browser_source_class->has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 
 	klass->impl_get_entries = NULL;
 	klass->impl_get_capacity = NULL;

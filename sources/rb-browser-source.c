@@ -60,6 +60,7 @@
 #include "rb-debug.h"
 #include "rb-song-info.h"
 #include "rb-search-entry.h"
+#include "rb-source-toolbar.h"
 #include "rb-shell-preferences.h"
 
 static void rb_browser_source_class_init (RBBrowserSourceClass *klass);
@@ -90,9 +91,8 @@ static void impl_delete (RBSource *source);
 static void impl_search (RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_reset_filters (RBSource *source);
 static void impl_song_properties (RBSource *source);
-static GList *impl_get_search_actions (RBSource *source);
 static void default_show_entry_popup (RBBrowserSource *source);
-static void default_pack_paned (RBBrowserSource *source, GtkWidget *paned);
+static void default_pack_content (RBBrowserSource *source, GtkWidget *content);
 
 void rb_browser_source_browser_views_activated_cb (GtkWidget *widget,
 						 RBBrowserSource *source);
@@ -111,9 +111,8 @@ struct RBBrowserSourcePrivate
 	RhythmDB *db;
 
 	RBLibraryBrowser *browser;
-
 	RBEntryView *songs;
-	GtkWidget *paned;
+	RBSourceToolbar *toolbar;
 
 	RhythmDBQueryModel *cached_all_query;
 	RhythmDBQuery *search_query;
@@ -146,10 +145,10 @@ static GtkActionEntry rb_browser_source_actions [] =
 
 static GtkRadioActionEntry rb_browser_source_radio_actions [] =
 {
-	{ "BrowserSourceSearchAll", NULL, N_("All"), NULL, N_("Search all fields"), RHYTHMDB_PROP_SEARCH_MATCH },
-	{ "BrowserSourceSearchArtists", NULL, N_("Artists"), NULL, N_("Search artists"), RHYTHMDB_PROP_ARTIST_FOLDED },
-	{ "BrowserSourceSearchAlbums", NULL, N_("Albums"), NULL, N_("Search albums"), RHYTHMDB_PROP_ALBUM_FOLDED },
-	{ "BrowserSourceSearchTitles", NULL, N_("Titles"), NULL, N_("Search titles"), RHYTHMDB_PROP_TITLE_FOLDED }
+	{ "BrowserSourceSearchAll", NULL, N_("Search all fields"), NULL, NULL, RHYTHMDB_PROP_SEARCH_MATCH },
+	{ "BrowserSourceSearchArtists", NULL, N_("Search artists"), NULL, NULL, RHYTHMDB_PROP_ARTIST_FOLDED },
+	{ "BrowserSourceSearchAlbums", NULL, N_("Search albums"), NULL, NULL, RHYTHMDB_PROP_ALBUM_FOLDED },
+	{ "BrowserSourceSearchTitles", NULL, N_("Search titles"), NULL, NULL, RHYTHMDB_PROP_TITLE_FOLDED }
 };
 
 static const GtkTargetEntry songs_view_drag_types[] = {
@@ -162,7 +161,6 @@ enum
 	PROP_0,
 	PROP_BASE_QUERY_MODEL,
 	PROP_POPULATE,
-	PROP_SEARCH_TYPE,
 	PROP_SHOW_BROWSER
 };
 
@@ -181,7 +179,6 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 	object_class->set_property = rb_browser_source_set_property;
 	object_class->get_property = rb_browser_source_get_property;
 
-	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_get_property_views = impl_get_property_views;
@@ -193,11 +190,10 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_delete = impl_delete;
-	source_class->impl_get_search_actions = impl_get_search_actions;
 
-	klass->impl_pack_paned = default_pack_paned;
-	klass->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
-	klass->impl_show_entry_popup = default_show_entry_popup;
+	klass->pack_content = default_pack_content;
+	klass->has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
+	klass->show_entry_popup = default_show_entry_popup;
 
 	g_object_class_override_property (object_class,
 					  PROP_BASE_QUERY_MODEL,
@@ -211,9 +207,6 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 							       TRUE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
-	g_object_class_override_property (object_class,
-					  PROP_SEARCH_TYPE,
-					  "search-type");
 	g_object_class_override_property (object_class,
 					  PROP_SHOW_BROWSER,
 					  "show-browser");
@@ -291,7 +284,7 @@ rb_browser_source_songs_show_popup_cb (RBEntryView *view,
 	if (over_entry) {
 		RBBrowserSourceClass *klass = RB_BROWSER_SOURCE_GET_CLASS (source);
 
-		klass->impl_show_entry_popup (source);
+		klass->show_entry_popup (source);
 	} else {
 		rb_display_page_show_popup (RB_DISPLAY_PAGE (source));
 	}
@@ -310,7 +303,10 @@ rb_browser_source_constructed (GObject *object)
 	RBBrowserSourceClass *klass;
 	RBShell *shell;
 	GObject *shell_player;
+	GtkUIManager *ui_manager;
 	RhythmDBEntryType *entry_type;
+	GtkWidget *content;
+	GtkWidget *paned;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_browser_source_parent_class, constructed, object);
 
@@ -323,6 +319,7 @@ rb_browser_source_constructed (GObject *object)
 	g_object_get (shell,
 		      "db", &source->priv->db,
 		      "shell-player", &shell_player,
+		      "ui-manager", &ui_manager,
 		      NULL);
 
 	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
@@ -351,12 +348,12 @@ rb_browser_source_constructed (GObject *object)
 
 	source->priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
 
-	source->priv->paned = gtk_vpaned_new ();
+	paned = gtk_vpaned_new ();
 
 	source->priv->browser = rb_library_browser_new (source->priv->db, entry_type);
 	gtk_widget_set_no_show_all (GTK_WIDGET (source->priv->browser), TRUE);
-	gtk_paned_pack1 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->browser), TRUE, FALSE);
-	gtk_container_child_set (GTK_CONTAINER (source->priv->paned),
+	gtk_paned_pack1 (GTK_PANED (paned), GTK_WIDGET (source->priv->browser), TRUE, FALSE);
+	gtk_container_child_set (GTK_CONTAINER (paned),
 				 GTK_WIDGET (source->priv->browser),
 				 "resize", FALSE,
 				 NULL);
@@ -390,7 +387,7 @@ rb_browser_source_constructed (GObject *object)
 
 	rb_source_bind_settings (RB_SOURCE (source),
 				 GTK_WIDGET (source->priv->songs),
-				 source->priv->paned,
+				 paned,
 				 GTK_WIDGET (source->priv->browser));
 
 	if (rb_browser_source_has_drop_support (source)) {
@@ -410,10 +407,22 @@ rb_browser_source_constructed (GObject *object)
 					 source, 0);
 	}
 
-	gtk_paned_pack2 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->songs), TRUE, FALSE);
+	gtk_paned_pack2 (GTK_PANED (paned), GTK_WIDGET (source->priv->songs), TRUE, FALSE);
+
+	/* set up toolbar */
+	source->priv->toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	rb_source_toolbar_add_search_entry (source->priv->toolbar, "/BrowserSourceSearchMenu", NULL);
+
+	content = gtk_grid_new ();
+	gtk_grid_set_column_spacing (GTK_GRID (content), 6);
+	gtk_grid_set_row_spacing (GTK_GRID (content), 6);
+	gtk_grid_attach (GTK_GRID (content), GTK_WIDGET (source->priv->toolbar), 0, 0, 1, 1);
+	gtk_widget_set_vexpand (paned, TRUE);
+	gtk_widget_set_hexpand (paned, TRUE);
+	gtk_grid_attach (GTK_GRID (content), paned, 0, 1, 1, 1);
 
 	klass = RB_BROWSER_SOURCE_GET_CLASS (source);
-	klass->impl_pack_paned (source, source->priv->paned);
+	klass->pack_content (source, content);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
 
@@ -446,9 +455,6 @@ rb_browser_source_set_property (GObject *object,
 			rb_browser_source_populate (source);
 		}
 		break;
-	case PROP_SEARCH_TYPE:
-		/* ignored */
-		break;
 	case PROP_SHOW_BROWSER:
 		if (g_value_get_boolean (value)) {
 			gtk_widget_show (GTK_WIDGET (source->priv->browser));
@@ -477,9 +483,6 @@ rb_browser_source_get_property (GObject *object,
 		break;
 	case PROP_POPULATE:
 		g_value_set_boolean (value, source->priv->populate);
-		break;
-	case PROP_SEARCH_TYPE:
-		g_value_set_enum (value, RB_SOURCE_SEARCH_INCREMENTAL);
 		break;
 	case PROP_SHOW_BROWSER:
 		g_value_set_boolean (value, gtk_widget_get_visible (GTK_WIDGET (source->priv->browser)));
@@ -639,6 +642,8 @@ impl_reset_filters (RBSource *asource)
 		changed = TRUE;
 	}
 
+	rb_source_toolbar_clear_search_entry (source->priv->toolbar);
+
 	if (changed)
 		rb_browser_source_do_query (source, FALSE);
 }
@@ -676,19 +681,6 @@ impl_song_properties (RBSource *asource)
 		rb_debug ("failed to create dialog, or no selection!");
 }
 
-static GList *
-impl_get_search_actions (RBSource *source)
-{
-	GList *actions = NULL;
-
-	actions = g_list_prepend (actions, g_strdup ("BrowserSourceSearchTitles"));
-	actions = g_list_prepend (actions, g_strdup ("BrowserSourceSearchAlbums"));
-	actions = g_list_prepend (actions, g_strdup ("BrowserSourceSearchArtists"));
-	actions = g_list_prepend (actions, g_strdup ("BrowserSourceSearchAll"));
-
-	return actions;
-}
-
 /**
  * rb_browser_source_has_drop_support:
  * @source: a #RBBrowserSource
@@ -703,7 +695,7 @@ rb_browser_source_has_drop_support (RBBrowserSource *source)
 {
 	RBBrowserSourceClass *klass = RB_BROWSER_SOURCE_GET_CLASS (source);
 
-	return klass->impl_has_drop_support (source);
+	return klass->has_drop_support (source);
 }
 
 static void
@@ -809,11 +801,7 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 }
 
 static void
-default_pack_paned (RBBrowserSource *source, GtkWidget *paned)
+default_pack_content (RBBrowserSource *source, GtkWidget *content)
 {
-	GtkWidget *box;
-
-	box = gtk_vbox_new (FALSE, 5);
-	gtk_box_pack_start (GTK_BOX (box), paned, TRUE, TRUE, 0);
-	gtk_container_add (GTK_CONTAINER (source), box);
+	gtk_container_add (GTK_CONTAINER (source), content);
 }

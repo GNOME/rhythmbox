@@ -53,6 +53,7 @@
 #include "rb-metadata.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-source-search-basic.h"
+#include "rb-source-toolbar.h"
 
 /* icon names */
 #define IRADIO_SOURCE_ICON  "library-internet-radio"
@@ -89,7 +90,6 @@ GType rb_iradio_entry_type_get_type (void);
 
 /* page methods */
 static gboolean impl_show_popup (RBDisplayPage *page);
-static GList *impl_get_ui_actions (RBDisplayPage *page);
 static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
 
 /* source methods */
@@ -133,8 +133,6 @@ struct RBIRadioSourcePrivate
 {
 	RhythmDB *db;
 
-	GtkWidget *vbox;
-	GtkWidget *paned;
 	GtkActionGroup *action_group;
 
 	RBPropertyView *genres;
@@ -203,9 +201,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 
 	page_class->show_popup = impl_show_popup;
 	page_class->get_status  = impl_get_status;
-	page_class->get_ui_actions = impl_get_ui_actions;
 
-	source_class->impl_can_browse = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
@@ -235,10 +231,6 @@ rb_iradio_source_init (RBIRadioSource *source)
 	GdkPixbuf *pixbuf;
 
 	source->priv = RB_IRADIO_SOURCE_GET_PRIVATE (source);
-
-	source->priv->vbox = gtk_vbox_new (FALSE, 5);
-
-	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
 
 	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
 	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
@@ -300,16 +292,21 @@ rb_iradio_source_constructed (GObject *object)
 	RBShell *shell;
 	GtkAction *action;
 	GSettings *settings;
+	GtkUIManager *ui_manager;
+	GtkWidget *grid;
+	GtkWidget *paned;
+	RBSourceToolbar *toolbar;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_iradio_source_parent_class, constructed, object);
 	source = RB_IRADIO_SOURCE (object);
 
-	source->priv->paned = gtk_hpaned_new ();
+	paned = gtk_hpaned_new ();
 
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell,
 		      "db", &source->priv->db,
 		      "shell-player", &source->priv->player,
+		      "ui-manager", &ui_manager,
 		      NULL);
 	g_object_unref (shell);
 
@@ -343,7 +340,7 @@ rb_iradio_source_constructed (GObject *object)
                                               "MusicNewInternetRadioStation");
         /* Translators: this is the toolbar button label for 
            New Internet Radio Station action. */
-        g_object_set (action, "short-label", C_("Radio", "New"), NULL);
+        g_object_set (action, "short-label", C_("Radio", "Add"), NULL);
 
 
 	/* set up stations view */
@@ -395,16 +392,24 @@ rb_iradio_source_constructed (GObject *object)
 	g_object_set (source->priv->genres, "vscrollbar_policy",
 		      GTK_POLICY_AUTOMATIC, NULL);
 
-	gtk_paned_pack1 (GTK_PANED (source->priv->paned),
-			 GTK_WIDGET (source->priv->genres), FALSE, FALSE);
-	gtk_paned_pack2 (GTK_PANED (source->priv->paned),
-			 GTK_WIDGET (source->priv->stations), TRUE, FALSE);
+	gtk_paned_pack1 (GTK_PANED (paned), GTK_WIDGET (source->priv->genres), FALSE, FALSE);
+	gtk_paned_pack2 (GTK_PANED (paned), GTK_WIDGET (source->priv->stations), TRUE, FALSE);
 
-	gtk_box_pack_start (GTK_BOX (source->priv->vbox), source->priv->paned, TRUE, TRUE, 0);
+	/* set up toolbar */
+	toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	rb_source_toolbar_add_search_entry (toolbar, NULL, _("Search your internet radio stations"));
+
+	grid = gtk_grid_new ();
+	gtk_grid_set_column_spacing (GTK_GRID (grid), 6);
+	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
+	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (toolbar), 0, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (grid), paned, 0, 1, 1, 1);
+
+	gtk_container_add (GTK_CONTAINER (source), grid);
 
 	rb_source_bind_settings (RB_SOURCE (source),
 				 GTK_WIDGET (source->priv->stations),
-				 source->priv->paned,
+				 paned,
 				 GTK_WIDGET (source->priv->genres));
 
 	gtk_widget_show_all (GTK_WIDGET (source));
@@ -482,8 +487,8 @@ rb_iradio_source_new (RBShell *shell, GObject *plugin)
 					  "shell", shell,
 					  "entry-type", entry_type,
 					  "plugin", plugin,
-					  "search-type", RB_SOURCE_SEARCH_INCREMENTAL,
 					  "settings", g_settings_get_child (settings, "source"),
+					  "toolbar-path", "/IRadioSourceToolBar",
 					  NULL));
 	g_object_unref (settings);
 	rb_shell_register_entry_type_for_source (shell, source, entry_type);
@@ -933,16 +938,6 @@ impl_show_popup (RBDisplayPage *page)
 {
 	_rb_display_page_show_popup (page, "/IRadioSourcePopup");
 	return TRUE;
-}
-
-static GList*
-impl_get_ui_actions (RBDisplayPage *page)
-{
-	GList *actions = NULL;
-
-	actions = g_list_prepend (actions, g_strdup ("MusicNewInternetRadioStation"));
-
-	return actions;
 }
 
 static void

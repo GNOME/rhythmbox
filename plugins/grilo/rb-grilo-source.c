@@ -364,7 +364,7 @@ rb_grilo_source_constructed (GObject *object)
 
 	/* search bar (if the source supports searching) */
 	if (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source->priv->grilo_source)) & GRL_OP_SEARCH) {
-		source->priv->search_entry = rb_search_entry_new ();
+		source->priv->search_entry = rb_search_entry_new (FALSE);
 		g_object_set (source->priv->search_entry, "explicit-mode", TRUE, NULL);
 		g_signal_connect (source->priv->search_entry, "search", G_CALLBACK (search_cb), source);
 		g_signal_connect (source->priv->search_entry, "activate", G_CALLBACK (search_cb), source);
@@ -1075,6 +1075,9 @@ static void
 impl_selected (RBDisplayPage *page)
 {
 	RBGriloSource *source = RB_GRILO_SOURCE (page);
+
+	RB_DISPLAY_PAGE_CLASS (rb_grilo_source_parent_class)->selected (page);
+
 	if (source->priv->done_initial_browse == FALSE) {
 		source->priv->done_initial_browse = TRUE;
 		start_browse (source, NULL, NULL, 0);

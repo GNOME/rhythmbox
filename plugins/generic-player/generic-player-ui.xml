@@ -16,4 +16,11 @@
     <separator/>
     <menuitem name="GenericPlayerPlaylistDeletePopup" action="GenericPlayerPlaylistDelete"/>
   </popup>
+
+  <toolbar name="GenericPlayerSourceToolBar">
+    <toolitem name="Browse" action="ViewBrowser"/>
+    <toolitem name="ViewAll" action="ViewAll"/>
+    <toolitem name="Eject" action="RemovableSourceEject"/>
+    <toolitem name="Sync" action="MediaPlayerSourceSync"/>
+  </toolbar>
 </ui>

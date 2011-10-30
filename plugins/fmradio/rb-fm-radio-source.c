@@ -33,12 +33,13 @@
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
-#include "rhythmdb-query-model.h"
-#include "rb-debug.h"
-#include "rb-shell-player.h"
-#include "rb-entry-view.h"
-#include "rb-uri-dialog.h"
-#include "rb-util.h"
+#include <lib/rb-debug.h>
+#include <lib/rb-util.h>
+#include <rhythmdb/rhythmdb-query-model.h>
+#include <shell/rb-shell-player.h>
+#include <widgets/rb-entry-view.h>
+#include <widgets/rb-uri-dialog.h>
+#include <widgets/rb-source-toolbar.h>
 
 #include "rb-fm-radio-source.h"
 #include "rb-radio-tuner.h"
@@ -67,7 +68,6 @@ static void playing_entry_changed (RBShellPlayer *player, RhythmDBEntry *entry,
 
 static void         impl_delete         (RBSource *source);
 static gboolean     impl_show_popup     (RBDisplayPage *page);
-static GList       *impl_get_ui_actions (RBDisplayPage *page);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 
 static void rb_fm_radio_entry_type_class_init (RBFMRadioEntryTypeClass *klass);
@@ -133,7 +133,6 @@ rb_fm_radio_source_class_init (RBFMRadioSourceClass *class)
 	object_class->dispose = rb_fm_radio_source_dispose;
 
 	page_class->show_popup = impl_show_popup;
-	page_class->get_ui_actions = impl_get_ui_actions;
 
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -161,6 +160,9 @@ rb_fm_radio_source_constructed (GObject *object)
 {
 	RBFMRadioSource *self;
 	RBShell *shell;
+	RBSourceToolbar *toolbar;
+	GtkUIManager *ui_manager;
+	GtkWidget *grid;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_fm_radio_source_parent_class, constructed, object);
 	self = RB_FM_RADIO_SOURCE (object);
@@ -172,6 +174,7 @@ rb_fm_radio_source_constructed (GObject *object)
 	g_object_get (shell,
 		      "db", &self->priv->db,
 		      "shell-player", &self->priv->player,
+		      "ui-manager", &ui_manager,
 		      NULL);
 	g_object_unref (shell);
 
@@ -181,6 +184,9 @@ rb_fm_radio_source_constructed (GObject *object)
 		rb_fm_radio_source_actions,
 		G_N_ELEMENTS (rb_fm_radio_source_actions),
 		self);
+
+	toolbar = rb_source_toolbar_new (RB_SOURCE (self), ui_manager);
+	g_object_unref (toolbar);
 
 	self->priv->stations = rb_entry_view_new (self->priv->db,
 						  G_OBJECT (self->priv->player),
@@ -202,8 +208,10 @@ rb_fm_radio_source_constructed (GObject *object)
 		G_CALLBACK (rb_fm_radio_source_songs_view_show_popup),
 		self, 0);
 
-	gtk_container_add (GTK_CONTAINER (self),
-			   GTK_WIDGET (self->priv->stations));
+	grid = gtk_grid_new ();
+	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (toolbar), 0, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (self->priv->stations), 0, 1, 1, 1);
+	gtk_container_add (GTK_CONTAINER (self), grid);
 	gtk_widget_show_all (GTK_WIDGET (self));
 
 	rb_fm_radio_source_do_query (self);
@@ -237,6 +245,7 @@ rb_fm_radio_source_new (RBShell *shell, RBRadioTuner *tuner)
 			     "name", _("FM Radio"),
 			     "shell", shell,
 			     "entry-type", entry_type,
+			     "toolbar-path", "/FMRadioSourceToolBar",
 			     NULL);
 	self->priv->tuner = g_object_ref (tuner);
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (self),
@@ -443,12 +452,6 @@ impl_show_popup (RBDisplayPage *page)
 {
 	_rb_display_page_show_popup (page, "/FMRadioSourcePopup");
 	return TRUE;
-}
-
-static GList *
-impl_get_ui_actions (RBDisplayPage *page)
-{
-	return g_list_prepend (NULL, g_strdup ("MusicNewFMRadioStation"));
 }
 
 static RBEntryView *

@@ -115,6 +115,10 @@ rb_introspection_sources = \
 		widgets/rb-rating.c \
 		widgets/rb-library-browser.h \
 		widgets/rb-library-browser.c \
+		widgets/rb-search-entry.h \
+		widgets/rb-search-entry.c \
+		widgets/rb-source-toolbar.h \
+		widgets/rb-source-toolbar.c \
 		widgets/rb-segmented-bar.h \
 		widgets/rb-segmented-bar.c \
 		widgets/rb-song-info.h \
@@ -131,7 +135,7 @@ MPID_3_0_gir_PACKAGES = gobject-2.0
 MPID_3_0_gir_SCANNERFLAGS = --symbol-prefix mpid_
 
 RB-3.0.gir: $(top_builddir)/shell/librhythmbox-core.la MPID-3.0.gir
-RB_3_0_gir_INCLUDES = GObject-2.0 Gio-2.0 Gtk-3.0 Gst-0.10 libxml2-2.0
+RB_3_0_gir_INCLUDES = GObject-2.0 Gio-2.0 Gtk-3.0 Gst-0.10 GstPbutils-0.10 libxml2-2.0
 RB_3_0_gir_CFLAGS = $(RHYTHMBOX_CFLAGS_NOWARN) $(TOTEM_PLPARSER_CFLAGS) $(DBUS_CFLAGS) $(GUDEV_CFLAGS) -I$(top_srcdir)
 RB_3_0_gir_LIBS = $(top_builddir)/shell/librhythmbox-core.la
 RB_3_0_gir_FILES = $(addprefix $(top_srcdir)/,$(rb_introspection_sources))

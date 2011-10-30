@@ -187,7 +187,7 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
 
-	browser_source_class->impl_has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
+	browser_source_class->has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 
 	g_object_class_install_property (object_class,
 					 PROP_SERVICE_NAME,
@@ -342,6 +342,7 @@ rb_daap_source_new (RBShell *shell,
 					  "password-protected", password_protected,
 					  "plugin", G_OBJECT (plugin),
 					  "settings", g_settings_get_child (settings, "source"),
+					  "toolbar-path", "/DAAPSourceToolBar",
 					  NULL));
 	g_object_unref (settings);
 
@@ -644,6 +645,8 @@ rb_daap_source_selected (RBDisplayPage *page)
 	DMAPDb *db = NULL;
 	char *name = NULL;
 	RhythmDBEntryType *entry_type;
+
+	RB_DISPLAY_PAGE_CLASS (rb_daap_source_parent_class)->selected (page);
 
 	if (daap_source->priv->connection != NULL) {
 		return;
