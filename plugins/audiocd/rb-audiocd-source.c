@@ -90,9 +90,7 @@ static gboolean update_disc_number_cb (GtkWidget *widget, GdkEventFocus *event, 
 static void info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *source);
 #endif
 
-#if defined(HAVE_SJ_METADATA_GETTER)
 static void reload_metadata_cmd (GtkAction *action, RBAudioCdSource *source);
-#endif
 static void copy_tracks_cmd (GtkAction *action, RBAudioCdSource *source);
 
 static void extract_cell_data_func (GtkTreeViewColumn *column,
@@ -739,11 +737,11 @@ rb_audiocd_scan_songs (RBAudioCdSource *source,
 	return ok;
 }
 
-#ifdef HAVE_SJ_METADATA_GETTER
 
 static void
 reload_metadata_cmd (GtkAction *action, RBAudioCdSource *source)
 {
+#ifdef HAVE_SJ_METADATA_GETTER
 	RhythmDB *db;
 
 	g_return_if_fail (RB_IS_AUDIOCD_SOURCE (source));
@@ -751,8 +749,10 @@ reload_metadata_cmd (GtkAction *action, RBAudioCdSource *source)
 	db = get_db_for_source (RB_AUDIOCD_SOURCE (source));
 	rb_audiocd_load_metadata (RB_AUDIOCD_SOURCE (source), db);
 	g_object_unref (db);
+#endif
 }
 
+#ifdef HAVE_SJ_METADATA_GETTER
 /*
  * Called by the Multiple Album dialog when the user hits return in
  * the list view
