@@ -345,6 +345,10 @@ first_call_complete (GObject *proxy, GAsyncResult *res, RBMMKeysPlugin *plugin)
 	if (error != NULL) {
 		g_warning ("Unable to grab media player keys: %s", error->message);
 		g_clear_error (&error);
+#ifdef HAVE_MMKEYS
+		mmkeys_grab (plugin, TRUE);
+		plugin->grab_type = X_KEY_GRAB;
+#endif
 		return;
 	}
 
