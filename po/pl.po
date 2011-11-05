@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-05 21:01+0100\n"
-"PO-Revision-Date: 2011-11-05 21:02+0100\n"
+"POT-Creation-Date: 2011-11-05 21:33+0100\n"
+"PO-Revision-Date: 2011-11-05 21:34+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -1863,6 +1863,40 @@ msgid ""
 msgstr ""
 "Aktualizuje stan komunikatora według bieżącego utworu (działa z programami "
 "Empathy, Gossip i Pidgin)"
+
+#. Translators: do not translate %(artist)s or %(title)s, they are
+#. string substitution markers (like %s) for the artist and title of
+#. the current playing song.  They can be reordered if necessary.
+#: ../plugins/im-status/im-status.py:168
+#, python-format
+msgid "♫ %(artist)s - %(title)s ♫"
+msgstr "♫ %(artist)s - %(title)s ♫"
+
+#. Translators: do not translate %(artist)s or %(album)s, they are
+#. string substitution markers (like %s) for the artist and album name
+#. of the current playing song.  They can be reordered if necessary.
+#: ../plugins/im-status/im-status.py:173
+#, python-format
+msgid "♫ %(artist)s - %(album)s ♫"
+msgstr "♫ %(artist)s - %(album)s ♫"
+
+#. Translators: do not translate %(album)s, it is a string substitution
+#. marker (like %s) for the album name of the current playing song.
+#: ../plugins/im-status/im-status.py:177
+#, python-format
+msgid "♫ %(album)s ♫"
+msgstr "♫ %(album)s ♫"
+
+#. Translators: do not translate %(title)s, it is a string substitution
+#. marker (like %s) for the title of the current playing song.
+#: ../plugins/im-status/im-status.py:181
+#, python-format
+msgid "♫ %(title)s ♫"
+msgstr "♫ %(title)s ♫"
+
+#: ../plugins/im-status/im-status.py:183
+msgid "♫ Listening to music... ♫"
+msgstr "♫ Słucham muzyki... ♫"
 
 #: ../plugins/ipod/ipod-info.ui.h:3
 msgid "Database version:"
