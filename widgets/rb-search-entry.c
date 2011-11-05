@@ -57,6 +57,7 @@ static void rb_search_entry_clear_cb (GtkEntry *entry,
 				      GdkEvent *event,
 				      RBSearchEntry *search_entry);
 static void rb_search_entry_update_icons (RBSearchEntry *entry);
+static void rb_search_entry_widget_grab_focus (GtkWidget *widget);
 
 struct RBSearchEntryPrivate
 {
@@ -69,8 +70,6 @@ struct RBSearchEntryPrivate
 	gboolean searching;
 
 	guint timeout;
-
-	gboolean is_a11y_theme;
 };
 
 G_DEFINE_TYPE (RBSearchEntry, rb_search_entry, GTK_TYPE_HBOX)
@@ -109,11 +108,14 @@ static void
 rb_search_entry_class_init (RBSearchEntryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->constructed = rb_search_entry_constructed;
 	object_class->finalize = rb_search_entry_finalize;
 	object_class->set_property = rb_search_entry_set_property;
 	object_class->get_property = rb_search_entry_get_property;
+
+	widget_class->grab_focus = rb_search_entry_widget_grab_focus;
 
 	/**
 	 * RBSearchEntry::search:
@@ -208,19 +210,12 @@ static void
 rb_search_entry_constructed (GObject *object)
 {
 	RBSearchEntry *entry;
-	GtkSettings *settings;
-	char *theme;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_search_entry_parent_class, constructed, object);
 
 	entry = RB_SEARCH_ENTRY (object);
 
-	settings = gtk_settings_get_for_screen (gtk_widget_get_screen (GTK_WIDGET (entry)));
-	g_object_get (settings, "gtk-theme-name", &theme, NULL);
-	entry->priv->is_a11y_theme = strncmp (theme, "HighContrast", strlen ("HighContrast")) == 0 ||
-					strncmp (theme, "LowContrast", strlen ("LowContrast")) == 0;
-	g_free (theme);
-
+	gtk_widget_set_can_focus (GTK_WIDGET (entry), TRUE);
 	entry->priv->entry = gtk_entry_new ();
 	g_signal_connect_object (GTK_ENTRY (entry->priv->entry),
 				 "icon-press",
@@ -537,6 +532,12 @@ rb_search_entry_grab_focus (RBSearchEntry *entry)
 }
 
 static void
+rb_search_entry_widget_grab_focus (GtkWidget *widget)
+{
+	rb_search_entry_grab_focus (RB_SEARCH_ENTRY (widget));
+}
+
+static void
 rb_search_entry_clear_cb (GtkEntry *entry,
 			  GtkEntryIconPosition icon_pos,
 			  GdkEvent *event,
@@ -546,5 +547,36 @@ rb_search_entry_clear_cb (GtkEntry *entry,
 		g_signal_emit (G_OBJECT (search_entry), rb_search_entry_signals[SHOW_POPUP], 0);
 	} else {
 		rb_search_entry_set_text (search_entry, "");
+	}
+}
+
+/**
+ * rb_search_entry_set_mnemonic:
+ * @entry: a #RBSearchEntry
+ * @enable: if %TRUE, enable the mnemonic
+ *
+ * Adds or removes a mnemonic allowing the user to focus
+ * the search entry.
+ */
+void
+rb_search_entry_set_mnemonic (RBSearchEntry *entry, gboolean enable)
+{
+	GtkWidget *toplevel;
+	guint keyval;
+	gunichar accel = 0;
+
+	if (pango_parse_markup (_("_Search:"), -1, '_', NULL, NULL, &accel, NULL) && accel != 0) {
+		keyval = gdk_keyval_to_lower (gdk_unicode_to_keyval (accel));
+	} else {
+		keyval = gdk_unicode_to_keyval ('s');
+	}
+
+	toplevel = gtk_widget_get_toplevel (GTK_WIDGET (entry));
+	if (gtk_widget_is_toplevel (toplevel)) {
+		if (enable) {
+			gtk_window_add_mnemonic (GTK_WINDOW (toplevel), keyval, entry->priv->entry);
+		} else {
+			gtk_window_remove_mnemonic (GTK_WINDOW (toplevel), keyval, entry->priv->entry);
+		}
 	}
 }

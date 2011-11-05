@@ -85,6 +85,7 @@ static void notify_sort_order_cb (GObject *object, GParamSpec *pspec, RBGriloSou
 
 static void impl_delete_thyself (RBDisplayPage *page);
 static void impl_selected (RBDisplayPage *page);
+static void impl_deselected (RBDisplayPage *page);
 
 static RBEntryView *impl_get_entry_view (RBSource *source);
 
@@ -179,6 +180,7 @@ rb_grilo_source_class_init (RBGriloSourceClass *klass)
 
 	page_class->delete_thyself = impl_delete_thyself;
 	page_class->selected = impl_selected;
+	page_class->deselected = impl_deselected;
 
 	source_class->impl_get_entry_view = impl_get_entry_view;
 
@@ -1082,6 +1084,18 @@ impl_selected (RBDisplayPage *page)
 		source->priv->done_initial_browse = TRUE;
 		start_browse (source, NULL, NULL, 0);
 	}
+
+	rb_search_entry_set_mnemonic (source->priv->search_entry, TRUE);
+}
+
+static void
+impl_deselected (RBDisplayPage *page)
+{
+	RBGriloSource *source = RB_GRILO_SOURCE (page);
+
+	RB_DISPLAY_PAGE_CLASS (rb_grilo_source_parent_class)->deselected (page);
+
+	rb_search_entry_set_mnemonic (source->priv->search_entry, FALSE);
 }
 
 static RBEntryView *

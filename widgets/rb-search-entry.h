@@ -74,6 +74,8 @@ gboolean	rb_search_entry_searching(RBSearchEntry *entry);
 
 void		rb_search_entry_grab_focus (RBSearchEntry *entry);
 
+void		rb_search_entry_set_mnemonic (RBSearchEntry *entry, gboolean enable);
+
 G_END_DECLS
 
 #endif /* __RB_SEARCH_ENTRY_H */

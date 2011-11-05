@@ -125,6 +125,17 @@ source_selected_cb (GObject *object, GParamSpec *pspec, RBSourceToolbar *toolbar
 			gtk_widget_show_all (GTK_WIDGET (toolbar->priv->toolbar));
 		}
 
+		if (toolbar->priv->search_entry != NULL) {
+			rb_search_entry_set_mnemonic (toolbar->priv->search_entry, TRUE);
+
+			gtk_widget_add_accelerator (GTK_WIDGET (toolbar->priv->search_entry),
+						    "grab-focus",
+						    gtk_ui_manager_get_accel_group (toolbar->priv->ui_manager),
+						    gdk_unicode_to_keyval ('f'),
+						    GDK_CONTROL_MASK,
+						    0);
+		}
+
 		if (toolbar->priv->search_group != NULL) {
 			if (toolbar->priv->search_value != -1) {
 				gtk_radio_action_set_current_value (toolbar->priv->search_group,
@@ -156,6 +167,15 @@ source_selected_cb (GObject *object, GParamSpec *pspec, RBSourceToolbar *toolbar
 	} else {
 		if (toolbar->priv->toolbar != NULL) {
 			gtk_container_remove (GTK_CONTAINER (toolbar), toolbar->priv->toolbar);
+		}
+
+		if (toolbar->priv->search_entry != NULL) {
+			rb_search_entry_set_mnemonic (toolbar->priv->search_entry, FALSE);
+
+			gtk_widget_remove_accelerator (GTK_WIDGET (toolbar->priv->search_entry),
+						       gtk_ui_manager_get_accel_group (toolbar->priv->ui_manager),
+						       gdk_unicode_to_keyval ('f'),
+						       GDK_CONTROL_MASK);
 		}
 
 		if (toolbar->priv->search_group != NULL) {
