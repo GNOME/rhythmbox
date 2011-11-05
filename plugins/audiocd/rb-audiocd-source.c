@@ -72,9 +72,9 @@ static void impl_get_property (GObject *object, guint prop_id, GValue *value, GP
 static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
 
-
 static guint impl_want_uri (RBSource *source, const char *uri);
 static gboolean impl_uri_is_source (RBSource *source, const char *uri);
+static RBEntryView *impl_get_entry_view (RBSource *source);
 
 static gpointer rb_audiocd_load_songs (RBAudioCdSource *source);
 static void rb_audiocd_load_metadata (RBAudioCdSource *source, RhythmDB *db);
@@ -120,6 +120,7 @@ struct _RBAudioCdSourcePrivate
 	GstElement *cdda;
 	GstElement *fakesink;
 
+	RBEntryView *entry_view;
 	GtkWidget *artist_entry;
 	GtkWidget *artist_sort_entry;
 	GtkWidget *album_entry;
@@ -226,6 +227,7 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 
+	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_uri_is_source = impl_uri_is_source;
 	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;	/* shouldn't need this. */
 	source_class->impl_want_uri = impl_want_uri;
@@ -320,7 +322,6 @@ static void
 rb_audiocd_source_constructed (GObject *object)
 {
 	RBAudioCdSource *source;
-	RBEntryView *entry_view;
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *extract;
 	GtkUIManager *ui_manager;
@@ -397,23 +398,23 @@ rb_audiocd_source_constructed (GObject *object)
 	rhythmdb_query_free (query);
 
 	/* we want audio cds to sort by track# by default */
-	entry_view = rb_entry_view_new (db, G_OBJECT (shell_player), TRUE, FALSE);
-	g_signal_connect_object (entry_view,
+	source->priv->entry_view = rb_entry_view_new (db, G_OBJECT (shell_player), TRUE, FALSE);
+	g_signal_connect_object (source->priv->entry_view,
 				 "notify::sort-order",
 				 G_CALLBACK (sort_order_changed_cb),
 				 source, 0);
-	rb_entry_view_set_sorting_order (entry_view, "Track", GTK_SORT_ASCENDING);
-	rb_entry_view_set_model (entry_view, query_model);
+	rb_entry_view_set_sorting_order (source->priv->entry_view, "Track", GTK_SORT_ASCENDING);
+	rb_entry_view_set_model (source->priv->entry_view, query_model);
 
-	rb_entry_view_append_column (entry_view, RB_ENTRY_VIEW_COL_TRACK_NUMBER, TRUE);
-	rb_entry_view_append_column (entry_view, RB_ENTRY_VIEW_COL_TITLE, TRUE);
-	rb_entry_view_append_column (entry_view, RB_ENTRY_VIEW_COL_ARTIST, TRUE);
-	rb_entry_view_append_column (entry_view, RB_ENTRY_VIEW_COL_GENRE, FALSE);
+	rb_entry_view_append_column (source->priv->entry_view, RB_ENTRY_VIEW_COL_TRACK_NUMBER, TRUE);
+	rb_entry_view_append_column (source->priv->entry_view, RB_ENTRY_VIEW_COL_TITLE, TRUE);
+	rb_entry_view_append_column (source->priv->entry_view, RB_ENTRY_VIEW_COL_ARTIST, TRUE);
+	rb_entry_view_append_column (source->priv->entry_view, RB_ENTRY_VIEW_COL_GENRE, FALSE);
 
 	/* enable in-place editing for titles, artists, and genres */
-	rb_entry_view_set_column_editable (entry_view, RB_ENTRY_VIEW_COL_TITLE, TRUE);
-	rb_entry_view_set_column_editable (entry_view, RB_ENTRY_VIEW_COL_ARTIST, TRUE);
-	rb_entry_view_set_column_editable (entry_view, RB_ENTRY_VIEW_COL_GENRE, TRUE);
+	rb_entry_view_set_column_editable (source->priv->entry_view, RB_ENTRY_VIEW_COL_TITLE, TRUE);
+	rb_entry_view_set_column_editable (source->priv->entry_view, RB_ENTRY_VIEW_COL_ARTIST, TRUE);
+	rb_entry_view_set_column_editable (source->priv->entry_view, RB_ENTRY_VIEW_COL_GENRE, TRUE);
 
 	/* create the 'extract' column */
 	renderer = gtk_cell_renderer_toggle_new ();
@@ -435,11 +436,11 @@ rb_audiocd_source_constructed (GObject *object)
 	g_signal_connect_object (renderer, "toggled", G_CALLBACK (extract_toggled_cb), source, 0);
 
 	/* set column width */
-	gtk_cell_renderer_get_preferred_width (renderer, GTK_WIDGET (entry_view), NULL, &toggle_width);
+	gtk_cell_renderer_get_preferred_width (renderer, GTK_WIDGET (source->priv->entry_view), NULL, &toggle_width);
 	gtk_tree_view_column_set_sizing (extract, GTK_TREE_VIEW_COLUMN_FIXED);
 	gtk_tree_view_column_set_fixed_width (extract, toggle_width + 10);
 
-	rb_entry_view_insert_column_custom (entry_view, extract, "", "Extract", NULL, NULL, NULL, 1);
+	rb_entry_view_insert_column_custom (source->priv->entry_view, extract, "", "Extract", NULL, NULL, NULL, 1);
 	gtk_widget_set_tooltip_text (gtk_tree_view_column_get_widget (extract),
 	                             _("Select tracks to be extracted"));
 
@@ -493,7 +494,7 @@ rb_audiocd_source_constructed (GObject *object)
 	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
 	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (toolbar), 0, 0, 1, 1);
 	gtk_grid_attach (GTK_GRID (grid), infogrid, 0, 1, 1, 1);
-	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (entry_view), 0, 2, 1, 1);
+	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (source->priv->entry_view), 0, 2, 1, 1);
 	g_object_unref (builder);
 
 	gtk_widget_show_all (grid);
@@ -1212,6 +1213,13 @@ impl_want_uri (RBSource *source, const char *uri)
 	g_object_unref (file);
 
 	return retval;
+}
+
+static RBEntryView *
+impl_get_entry_view (RBSource *source)
+{
+	RBAudioCdSource *cdsource = RB_AUDIOCD_SOURCE (source);
+	return cdsource->priv->entry_view;
 }
 
 static gboolean
