@@ -1,6 +1,9 @@
 from gi.repository import GObject, Peas
 from gi.repository import RB
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 class SamplePython(GObject.Object, Peas.Activatable):
 	__gtype_name = 'SamplePythonPlugin'
 

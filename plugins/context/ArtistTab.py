@@ -37,7 +37,10 @@ import LastFM
 from gi.repository import WebKit
 from gi.repository import GObject, Gtk
 from gi.repository import RB
-    
+
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 class ArtistTab (GObject.GObject):
     
     __gsignals__ = {

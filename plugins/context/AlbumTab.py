@@ -37,6 +37,9 @@ from gi.repository import RB
 from gi.repository import GObject, Gtk
 from gi.repository import WebKit
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 class AlbumTab (GObject.GObject):
 
     __gsignals__ = {

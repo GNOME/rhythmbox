@@ -32,6 +32,11 @@ from WinampcnParser import WinampcnParser
 from TerraParser import TerraParser
 from DarkLyricsParser import DarkLyricsParser
 
+from gi.repository import RB
+
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 lyrics_sites = [
 	{ 'id': 'lyrc.com.ar', 		'class': LyrcParser, 		'name': _("Lyrc (lyrc.com.ar)") 		},
 	{ 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},

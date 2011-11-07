@@ -33,6 +33,9 @@ import os
 import rb
 from gi.repository import RB
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 # this API key belongs to jonathan@d14n.org
 # and was generated specifically for this use
 API_KEY = 'ff56d530598d65c1a4088e57da7be2f9'

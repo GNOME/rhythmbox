@@ -28,6 +28,9 @@ import rb
 from gi.repository import Gtk, GObject, GLib, Peas
 from gi.repository import RB
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 ui_definition = """
 <ui>
     <popup name="BrowserSourceViewPopup">

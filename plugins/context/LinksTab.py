@@ -32,10 +32,10 @@ from gi.repository import GObject, Gtk
 from gi.repository import RB
 from gi.repository import WebKit
 
-from gettext import gettext as _
-
 from mako.template import Template
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
 
 class LinksTab (GObject.GObject):
 

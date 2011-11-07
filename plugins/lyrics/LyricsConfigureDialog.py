@@ -30,7 +30,10 @@ from LyricsSites import lyrics_sites
 from os import system, path
 
 import rb
-from gi.repository import Gtk, Gio, GObject, PeasGtk
+from gi.repository import RB, Gtk, Gio, GObject, PeasGtk
+
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
 
 class LyricsConfigureDialog (GObject.Object, PeasGtk.Configurable):
 	__gtype_name__ = 'LyricsConfigureDialog'

@@ -39,6 +39,9 @@ except ImportError:
   use_mc5 = False
   use_purple = False
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 NORMAL_SONG_ARTIST = 'artist'
 NORMAL_SONG_TITLE  = 'title'
 NORMAL_SONG_ALBUM  = 'album'

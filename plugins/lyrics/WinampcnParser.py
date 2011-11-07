@@ -26,7 +26,6 @@
 
 import sys
 import urllib
-import gettext
 import re
 import rb
 from xml.dom import minidom

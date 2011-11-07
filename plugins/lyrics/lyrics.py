@@ -35,6 +35,9 @@ from gi.repository import RB
 import LyricsParse
 from LyricsConfigureDialog import LyricsConfigureDialog
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 ui_str = """
 <ui>
   <menubar name="MenuBar">

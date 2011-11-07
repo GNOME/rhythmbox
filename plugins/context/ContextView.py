@@ -36,6 +36,9 @@ from gi.repository import GObject, Gtk, Gdk, Pango, Gio
 from gi.repository import RB
 from gi.repository import WebKit
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 context_ui = """
 <ui>
     <toolbar name="ToolBar">

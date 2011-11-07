@@ -33,6 +33,9 @@ import rb
 from gi.repository import GObject, Gtk
 from gi.repository import RB
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 class LyricsTab (GObject.GObject):
     
     __gsignals__ = {

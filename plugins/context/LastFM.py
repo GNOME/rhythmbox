@@ -29,6 +29,9 @@ import ConfigParser
 
 from gi.repository import RB
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 # utility things for dealing with last.fm
 
 URL_PREFIX = 'http://ws.audioscrobbler.com/2.0/?method='

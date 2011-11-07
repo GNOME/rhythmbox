@@ -40,6 +40,9 @@ from gi.repository import GObject, Gtk, Gio, Peas, PeasGtk
 
 from MagnatuneSource import MagnatuneSource
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 popup_ui = """
 <ui>
   <popup name="MagnatuneSourceViewPopup">

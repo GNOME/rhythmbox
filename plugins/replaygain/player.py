@@ -31,6 +31,9 @@ from gi.repository import GObject, Gio, Gst
 
 import config
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 EPSILON = 0.001
 
 class ReplayGainPlayer(object):

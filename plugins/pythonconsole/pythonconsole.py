@@ -40,11 +40,17 @@ import traceback
 from gi.repository import Gtk, Gdk, GObject, Pango, Peas
 from gi.repository import RB
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 try:
 	import rpdb2
 	have_rpdb2 = True
 except:
 	have_rpdb2 = False
+
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
 
 ui_str = """
 <ui>

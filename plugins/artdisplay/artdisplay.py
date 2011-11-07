@@ -34,6 +34,9 @@ import rb
 from gi.repository import GObject, Gtk, Gdk, GdkPixbuf, Gio, Peas
 from gi.repository import RB
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 FADE_STEPS = 10
 FADE_TOTAL_TIME = 1000
 ART_MISSING_ICON = 'rhythmbox-missing-artwork'

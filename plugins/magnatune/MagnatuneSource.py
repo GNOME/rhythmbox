@@ -41,6 +41,9 @@ from gi.repository import GObject, Gtk, Gio
 from TrackListHandler import TrackListHandler
 from BuyAlbumHandler import BuyAlbumHandler, MagnatunePurchaseError
 
+import gettext
+gettext.install('rhythmbox', RB.locale_dir())
+
 magnatune_partner_id = "rhythmbox"
 
 # URIs
