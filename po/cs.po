@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-11-05 12:44+0000\n"
-"PO-Revision-Date: 2011-11-07 23:12+0100\n"
+"POT-Creation-Date: 2011-11-07 22:17+0000\n"
+"PO-Revision-Date: 2011-11-07 23:19+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -676,8 +676,8 @@ msgstr "%e. %b %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:696
-#: ../plugins/artdisplay/LastFMCoverArtSearch.py:136
-#: ../plugins/artdisplay/LastFMCoverArtSearch.py:140
+#: ../plugins/artdisplay/LastFMCoverArtSearch.py:139
+#: ../plugins/artdisplay/LastFMCoverArtSearch.py:143
 #: ../plugins/audiocd/rb-audiocd-source.c:597
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:589
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:593
@@ -689,7 +689,7 @@ msgstr "%e. %b %Y"
 #: ../plugins/iradio/rb-iradio-source.c:562
 #: ../plugins/iradio/rb-iradio-source.c:1047
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
-#: ../plugins/lyrics/lyrics.py:74 ../plugins/lyrics/lyrics.py:76
+#: ../plugins/lyrics/lyrics.py:77 ../plugins/lyrics/lyrics.py:79
 #: ../plugins/mtpdevice/rb-mtp-source.c:641
 #: ../plugins/mtpdevice/rb-mtp-source.c:1123
 #: ../plugins/mtpdevice/rb-mtp-source.c:1512
@@ -711,12 +711,12 @@ msgstr "%e. %b %Y"
 msgid "Unknown"
 msgstr "Neznámo"
 
-#: ../lib/rb-file-helpers.c:394
+#: ../lib/rb-file-helpers.c:406
 #, c-format
 msgid "Too many symlinks"
 msgstr "Příliš mnoho symbolických odkazů"
 
-#: ../lib/rb-file-helpers.c:1197
+#: ../lib/rb-file-helpers.c:1209
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Nepodařilo se zjistit volné místo na %s: %s"
@@ -802,15 +802,15 @@ msgstr "Přebal"
 msgid "Fetch album covers from the Internet"
 msgstr "Načítat přebaly alb z Internetu"
 
-#: ../plugins/artdisplay/artdisplay.py:342
+#: ../plugins/artdisplay/artdisplay.py:345
 msgid "Searching... drop artwork here"
 msgstr "Vyhledává se… upusťte grafiku zde"
 
-#: ../plugins/artdisplay/artdisplay.py:347
+#: ../plugins/artdisplay/artdisplay.py:350
 msgid "Drop artwork here"
 msgstr "Upustit grafické dílo zde"
 
-#: ../plugins/artdisplay/LastFMCoverArtSearch.py:42
+#: ../plugins/artdisplay/LastFMCoverArtSearch.py:45
 msgid "Image provided by Last.fm"
 msgstr "Obrázek poskytnutý od Last.fm"
 
@@ -923,7 +923,7 @@ msgid "Title"
 msgstr "Název"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:826
-#: ../plugins/context/ArtistTab.py:55 ../sources/rb-library-source.c:120
+#: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:120
 #: ../widgets/rb-entry-view.c:1439 ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Umělec"
@@ -1449,18 +1449,18 @@ msgstr "Vypálit"
 msgid "Copy CD"
 msgstr "Kopírovat CD"
 
-#: ../plugins/context/AlbumTab.py:54
+#: ../plugins/context/AlbumTab.py:57
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2371
 msgid "Albums"
 msgstr "Alba"
 
 #. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
-#: ../plugins/context/AlbumTab.py:117
+#: ../plugins/context/AlbumTab.py:120
 #, python-format
 msgid "Loading top albums for %s"
 msgstr "Načítají se nejlepší alba umělce %s"
 
-#: ../plugins/context/ArtistTab.py:115
+#: ../plugins/context/ArtistTab.py:118
 #, python-format
 msgid "Loading biography for %s"
 msgstr "Načítá se biografie umělce %s"
@@ -1474,25 +1474,25 @@ msgid "Show information related to the currently playing artist and song."
 msgstr "Zobrazit informace vztahující se k právě přehrávané skladbě a umělci."
 
 #. Add button to toggle visibility of pane
-#: ../plugins/context/ContextView.py:90
+#: ../plugins/context/ContextView.py:93
 msgid "Toggle Conte_xt Pane"
 msgstr "Přepnout konte_xtový panel"
 
-#: ../plugins/context/ContextView.py:91
+#: ../plugins/context/ContextView.py:94
 msgid "Change the visibility of the context pane"
 msgstr "Změnit viditelnost kontextového panelu"
 
 #. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
-#: ../plugins/context/ContextView.py:209
+#: ../plugins/context/ContextView.py:212
 #, python-format
 msgid "Top songs by %s"
 msgstr "Nejlepší skladby od %s"
 
-#: ../plugins/context/ContextView.py:242
+#: ../plugins/context/ContextView.py:245
 msgid "Nothing Playing"
 msgstr "Nic se nepřehrává"
 
-#: ../plugins/context/LastFM.py:39
+#: ../plugins/context/LastFM.py:42
 msgid ""
 "This information is only available to Last.fm users. Ensure the Last.fm "
 "plugin is enabled, select Last.fm in the side pane, and log in."
@@ -1509,17 +1509,17 @@ msgstr "Odkazy"
 msgid "No artist specified."
 msgstr "Neuveden žádný umělec."
 
-#: ../plugins/context/LyricsTab.py:50 ../plugins/lyrics/lyrics.py:243
-#: ../plugins/lyrics/lyrics.py:328
+#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:246
+#: ../plugins/lyrics/lyrics.py:331
 msgid "Lyrics"
 msgstr "Text"
 
-#: ../plugins/context/LyricsTab.py:101
+#: ../plugins/context/LyricsTab.py:104
 #, python-format
 msgid "Loading lyrics for %s by %s"
 msgstr "Načítá se text pro %s od %s"
 
-#: ../plugins/context/LyricsTab.py:119
+#: ../plugins/context/LyricsTab.py:122
 msgid "Lyrics not found"
 msgstr "Text nenalezen"
 
@@ -1859,6 +1859,40 @@ msgstr ""
 "Aktualizuje stav IM podle současné skladby (pracuje s komunikátory Empathy, "
 "Gossip a Pidgin)"
 
+#. Translators: do not translate %(artist)s or %(title)s, they are
+#. string substitution markers (like %s) for the artist and title of
+#. the current playing song.  They can be reordered if necessary.
+#: ../plugins/im-status/im-status.py:171
+#, python-format
+msgid "♫ %(artist)s - %(title)s ♫"
+msgstr "♫ %(artist)s – %(title)s ♫"
+
+#. Translators: do not translate %(artist)s or %(album)s, they are
+#. string substitution markers (like %s) for the artist and album name
+#. of the current playing song.  They can be reordered if necessary.
+#: ../plugins/im-status/im-status.py:176
+#, python-format
+msgid "♫ %(artist)s - %(album)s ♫"
+msgstr "♫ %(artist)s – %(album)s ♫"
+
+#. Translators: do not translate %(album)s, it is a string substitution
+#. marker (like %s) for the album name of the current playing song.
+#: ../plugins/im-status/im-status.py:180
+#, python-format
+msgid "♫ %(album)s ♫"
+msgstr "♫ %(album)s ♫"
+
+#. Translators: do not translate %(title)s, it is a string substitution
+#. marker (like %s) for the title of the current playing song.
+#: ../plugins/im-status/im-status.py:184
+#, python-format
+msgid "♫ %(title)s ♫"
+msgstr "♫ %(title)s ♫"
+
+#: ../plugins/im-status/im-status.py:186
+msgid "♫ Listening to music... ♫"
+msgstr "♫ Poslouchá se hudba… ♫"
+
 #: ../plugins/ipod/ipod-info.ui.h:3
 msgid "Database version:"
 msgstr "Verze databáze:"
@@ -2069,7 +2103,7 @@ msgstr "Ovládání aplikace Rhythmbox pomocí infračerveného dálkového ovla
 msgid "LIRC "
 msgstr "LIRC "
 
-#: ../plugins/lyrics/LyricsConfigureDialog.py:100
+#: ../plugins/lyrics/LyricsConfigureDialog.py:103
 msgid "Choose lyrics folder..."
 msgstr "Vybrat složku textů…"
 
@@ -2093,57 +2127,57 @@ msgstr "<b>Vyhledávače</b>"
 msgid "Browse..."
 msgstr "Procházet…"
 
-#: ../plugins/lyrics/lyrics.py:160 ../plugins/lyrics/lyrics.py:162
-#: ../plugins/lyrics/lyrics.py:171
+#: ../plugins/lyrics/lyrics.py:163 ../plugins/lyrics/lyrics.py:165
+#: ../plugins/lyrics/lyrics.py:174
 msgid "No lyrics found"
 msgstr "Text nenalezen"
 
-#: ../plugins/lyrics/lyrics.py:205
+#: ../plugins/lyrics/lyrics.py:208
 msgid "_Save"
 msgstr "_Uložit"
 
-#: ../plugins/lyrics/lyrics.py:210 ../plugins/lyrics/lyrics.py:223
+#: ../plugins/lyrics/lyrics.py:213 ../plugins/lyrics/lyrics.py:226
 #: ../shell/rb-shell.c:347
 msgid "_Edit"
 msgstr "U_pravit"
 
-#: ../plugins/lyrics/lyrics.py:225
+#: ../plugins/lyrics/lyrics.py:228
 msgid "_Search again"
 msgstr "_Hledat znovu"
 
-#: ../plugins/lyrics/lyrics.py:283
+#: ../plugins/lyrics/lyrics.py:286
 msgid "Searching for lyrics..."
 msgstr "Vyhledává se text…"
 
-#: ../plugins/lyrics/lyrics.py:343
+#: ../plugins/lyrics/lyrics.py:346
 msgid "Song L_yrics"
 msgstr "Text skladb_y"
 
-#: ../plugins/lyrics/lyrics.py:344
+#: ../plugins/lyrics/lyrics.py:347
 msgid "Display lyrics for the playing song"
 msgstr "Zobrazit k přehrávané skladbě text"
 
-#: ../plugins/lyrics/LyricsSites.py:36
+#: ../plugins/lyrics/LyricsSites.py:41
 msgid "Lyrc (lyrc.com.ar)"
 msgstr "Lyrc (lyrc.com.ar)"
 
-#: ../plugins/lyrics/LyricsSites.py:37
+#: ../plugins/lyrics/LyricsSites.py:42
 msgid "Astraweb (www.astraweb.com)"
 msgstr "Astraweb (www.astraweb.com)"
 
-#: ../plugins/lyrics/LyricsSites.py:38
+#: ../plugins/lyrics/LyricsSites.py:43
 msgid "Leo's Lyrics (www.leoslyrics.com)"
 msgstr "Leo's Lyrics (www.leoslyrics.com)"
 
-#: ../plugins/lyrics/LyricsSites.py:39
+#: ../plugins/lyrics/LyricsSites.py:44
 msgid "WinampCN (www.winampcn.com)"
 msgstr "WinampCN (www.winampcn.com)"
 
-#: ../plugins/lyrics/LyricsSites.py:40
+#: ../plugins/lyrics/LyricsSites.py:45
 msgid "TerraBrasil (terra.com.br)"
 msgstr "TerraBrasil (terra.com.br)"
 
-#: ../plugins/lyrics/LyricsSites.py:41
+#: ../plugins/lyrics/LyricsSites.py:46
 msgid "Dark Lyrics (darklyrics.com)"
 msgstr "Dark Lyrics (darklyrics.com)"
 
@@ -2489,39 +2523,39 @@ msgstr "http://www.magnatune.com/info/"
 msgid "http://www.magnatune.com/info/redownload"
 msgstr "http://www.magnatune.com/info/redownload/"
 
-#: ../plugins/magnatune/magnatune.py:102
+#: ../plugins/magnatune/magnatune.py:105
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune.py:111
+#: ../plugins/magnatune/magnatune.py:114
 msgid "Download Album"
 msgstr "Stáhnout album"
 
-#: ../plugins/magnatune/magnatune.py:112
+#: ../plugins/magnatune/magnatune.py:115
 msgid "Download this album from Magnatune"
 msgstr "Stáhnout toto album z Magnatune"
 
-#: ../plugins/magnatune/magnatune.py:116
+#: ../plugins/magnatune/magnatune.py:119
 msgid "Artist Information"
 msgstr "Informace o umělci"
 
-#: ../plugins/magnatune/magnatune.py:117
+#: ../plugins/magnatune/magnatune.py:120
 msgid "Get information about this artist"
 msgstr "Získat informace o tomto umělci"
 
-#: ../plugins/magnatune/magnatune.py:121
+#: ../plugins/magnatune/magnatune.py:124
 msgid "Cancel Downloads"
 msgstr "Zrušit stahování"
 
-#: ../plugins/magnatune/magnatune.py:122
+#: ../plugins/magnatune/magnatune.py:125
 msgid "Stop downloading purchased albums"
 msgstr "Zastavit stahování zakoupených alb"
 
-#: ../plugins/magnatune/magnatune.py:258 ../plugins/magnatune/magnatune.py:261
+#: ../plugins/magnatune/magnatune.py:261 ../plugins/magnatune/magnatune.py:264
 msgid "Couldn't store account information"
 msgstr "Nelze uchovat informace o účtu"
 
-#: ../plugins/magnatune/magnatune.py:259
+#: ../plugins/magnatune/magnatune.py:262
 msgid ""
 "There was a problem accessing the keyring. Check the debug output for more "
 "information."
@@ -2529,42 +2563,42 @@ msgstr ""
 "Nastal problém při přístupu ke klíčence. Více informací zjistíte z ladicího "
 "výstupu."
 
-#: ../plugins/magnatune/MagnatuneSource.py:101
+#: ../plugins/magnatune/MagnatuneSource.py:104
 msgid "Loading Magnatune catalog"
 msgstr "Načítá se katalog Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:108
+#: ../plugins/magnatune/MagnatuneSource.py:111
 msgid "Downloading Magnatune Album(s)"
 msgstr "Stahují se alba z Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:206
+#: ../plugins/magnatune/MagnatuneSource.py:209
 msgid "Couldn't purchase album"
 msgstr "Nepodařilo se koupit album"
 
-#: ../plugins/magnatune/MagnatuneSource.py:207
+#: ../plugins/magnatune/MagnatuneSource.py:210
 msgid "You must have a library location set to purchase an album."
 msgstr "Ke koupi alba musíte mít nastavené umístění kolekce."
 
-#: ../plugins/magnatune/MagnatuneSource.py:257
+#: ../plugins/magnatune/MagnatuneSource.py:260
 msgid "Unable to load catalog"
 msgstr "Nelze načíst katalog"
 
-#: ../plugins/magnatune/MagnatuneSource.py:258
+#: ../plugins/magnatune/MagnatuneSource.py:261
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
 "Rhythmboxu se nepodařilo porozumět katalogu Magnatune, nahlaste prosím chybu."
 
-#: ../plugins/magnatune/MagnatuneSource.py:295
-#: ../plugins/magnatune/MagnatuneSource.py:395
+#: ../plugins/magnatune/MagnatuneSource.py:298
+#: ../plugins/magnatune/MagnatuneSource.py:398
 msgid "Couldn't get account details"
 msgstr "Nelze získat podrobnosti o účtu"
 
-#: ../plugins/magnatune/MagnatuneSource.py:444
+#: ../plugins/magnatune/MagnatuneSource.py:447
 msgid "Download Error"
 msgstr "Chyba stahování"
 
-#: ../plugins/magnatune/MagnatuneSource.py:445
+#: ../plugins/magnatune/MagnatuneSource.py:448
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2575,11 +2609,11 @@ msgstr ""
 "Server Magnatune vrátil:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:447 ../widgets/rb-entry-view.c:1603
+#: ../plugins/magnatune/MagnatuneSource.py:450 ../widgets/rb-entry-view.c:1603
 msgid "Error"
 msgstr "Chyba"
 
-#: ../plugins/magnatune/MagnatuneSource.py:448
+#: ../plugins/magnatune/MagnatuneSource.py:451
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -2590,11 +2624,11 @@ msgstr ""
 "Text chyby je:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:478
+#: ../plugins/magnatune/MagnatuneSource.py:481
 msgid "Finished Downloading"
 msgstr "Stahování dokončeno"
 
-#: ../plugins/magnatune/MagnatuneSource.py:478
+#: ../plugins/magnatune/MagnatuneSource.py:481
 msgid "All Magnatune downloads have been completed."
 msgstr "Všechna stahování z Magnatune byla dokončena."
 
@@ -2730,27 +2764,27 @@ msgstr "Interaktivní konzola Pythonu"
 msgid "Python Console"
 msgstr "Konzola Pythonu"
 
-#: ../plugins/pythonconsole/pythonconsole.py:78
+#: ../plugins/pythonconsole/pythonconsole.py:84
 msgid "_Python Console"
 msgstr "Konzola _Pythonu"
 
-#: ../plugins/pythonconsole/pythonconsole.py:79
+#: ../plugins/pythonconsole/pythonconsole.py:85
 msgid "Show Rhythmbox's python console"
 msgstr "Zobrazit v Rhythmboxu konzolu Pythonu"
 
-#: ../plugins/pythonconsole/pythonconsole.py:84
+#: ../plugins/pythonconsole/pythonconsole.py:90
 msgid "Python Debugger"
 msgstr "Debugger Pythonu"
 
-#: ../plugins/pythonconsole/pythonconsole.py:85
+#: ../plugins/pythonconsole/pythonconsole.py:91
 msgid "Enable remote python debugging with rpdb2"
 msgstr "Povolit vzdálené ladění pythonu pomocí rpdb2"
 
-#: ../plugins/pythonconsole/pythonconsole.py:122
+#: ../plugins/pythonconsole/pythonconsole.py:128
 msgid "You can access the main window through the 'shell' variable :"
 msgstr "K hlavnímu oknu můžete přistupovat přes proměnnou „shell“:"
 
-#: ../plugins/pythonconsole/pythonconsole.py:137
+#: ../plugins/pythonconsole/pythonconsole.py:143
 #, python-format
 msgid ""
 "After you press OK, Rhythmbox will wait until you connect to it with winpdb "
@@ -2770,19 +2804,19 @@ msgstr "Informovat Zeitgeist o vašich aktivitách"
 msgid "Zeitgeist"
 msgstr "Zeitgeist"
 
-#: ../plugins/replaygain/config.py:65
+#: ../plugins/replaygain/config.py:68
 msgid "-15.0 dB"
 msgstr "-15,0 dB"
 
-#: ../plugins/replaygain/config.py:66
+#: ../plugins/replaygain/config.py:69
 msgid "0.0 dB"
 msgstr "0,0 dB"
 
-#: ../plugins/replaygain/config.py:67
+#: ../plugins/replaygain/config.py:70
 msgid "15.0 dB"
 msgstr "15,0 dB"
 
-#: ../plugins/replaygain/player.py:46
+#: ../plugins/replaygain/player.py:49
 #, python-format
 msgid ""
 "The GStreamer elements required for ReplayGain processing are not available. "
@@ -2791,7 +2825,7 @@ msgstr ""
 "Části systému GStreamer požadované pro zpracování funkcí ReplayGain nejsou "
 "dostupné. Konkrétně schází: %s"
 
-#: ../plugins/replaygain/player.py:47
+#: ../plugins/replaygain/player.py:50
 msgid "ReplayGain GStreamer plugins not available"
 msgstr "Zásuvný modul ReplayGain GStreamer není dostupný"
 
@@ -2839,7 +2873,7 @@ msgstr "Vzorový přídavný modul v Pythonu bez žádných funkcí"
 msgid "Python Sample Plugin"
 msgstr "Vzorový modul v Pythonu"
 
-#: ../plugins/sample-python/sample-python.py:16
+#: ../plugins/sample-python/sample-python.py:19
 msgid "Python Source"
 msgstr "Zdroj Pythonu"
 
@@ -2869,11 +2903,11 @@ msgstr "Odeslat vybrané stopy pomocí poštovního nebo komunikačního program
 msgid "Send tracks"
 msgstr "Odeslané stopy"
 
-#: ../plugins/sendto/sendto.py:55
+#: ../plugins/sendto/sendto.py:58
 msgid "Send to..."
 msgstr "Odeslat…"
 
-#: ../plugins/sendto/sendto.py:56
+#: ../plugins/sendto/sendto.py:59
 msgid "Send files by mail, instant message..."
 msgstr "Odeslat soubory poštou, komunikátorem…"
 
