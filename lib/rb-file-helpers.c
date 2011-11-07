@@ -76,6 +76,18 @@ static char *installed_paths[] = {
 
 static char **search_paths;
 
+/**
+ * rb_locale_dir:
+ *
+ * Returns the locale directory identified at build configuration time.
+ *
+ * Return value: locale dir
+ */
+const char *
+rb_locale_dir (void)
+{
+	return GNOMELOCALEDIR;
+}
 
 /**
  * rb_file:
