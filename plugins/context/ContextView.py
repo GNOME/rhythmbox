@@ -41,9 +41,11 @@ gettext.install('rhythmbox', RB.locale_dir())
 
 context_ui = """
 <ui>
-    <toolbar name="ToolBar">
-        <toolitem name="Context" action="ToggleContextView" />
-    </toolbar>
+    <menubar name="MenuBar">
+        <menu name="ViewMenu" action="View">
+            <menuitem name="Context" action="ToggleContextView" />
+        </menu>
+    </menubar>
 </ui>
 """
 
@@ -90,7 +92,7 @@ class ContextView (GObject.GObject):
         self.tab[self.current].activate ()
 
         # Add button to toggle visibility of pane
-        self.action = ('ToggleContextView','gtk-info', _("Toggle Conte_xt Pane"),
+        self.action = ('ToggleContextView','gtk-info', _("Conte_xt Pane"),
                         None, _("Change the visibility of the context pane"),
                         self.toggle_visibility, True)
         self.action_group = Gtk.ActionGroup(name='ContextPluginActions')
@@ -145,7 +147,7 @@ class ContextView (GObject.GObject):
 
     def toggle_visibility (self, action):
         if not self.visible:
-            self.shell.add_widget (self.vbox, RB.ShellUILocation.RIGHT_SIDEBAR, expand=True)
+            self.shell.add_widget (self.vbox, RB.ShellUILocation.RIGHT_SIDEBAR, True, True)
             self.visible = True
         else:
             self.shell.remove_widget (self.vbox, RB.ShellUILocation.RIGHT_SIDEBAR)
