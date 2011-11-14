@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-10-11 22:26+0000\n"
-"PO-Revision-Date: 2011-10-12 13:47+0300\n"
+"POT-Creation-Date: 2011-10-12 10:52+0000\n"
+"PO-Revision-Date: 2011-11-14 12:20+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -583,7 +583,7 @@ msgstr "Tanınmayan başlatma seçeneği: %d"
 #: ../lib/eggdesktopfile.c:1383
 #, c-format
 msgid "Can't pass document URIs to a 'Type=Link' desktop entry"
-msgstr ""
+msgstr "Belge URI'leri, bir 'Tür=Bağlantı' masaüstü girdisine gönderilemiyor"
 
 #: ../lib/eggdesktopfile.c:1404
 #, c-format
@@ -644,21 +644,21 @@ msgstr "Dün %I:%M %p"
 #.
 #: ../lib/rb-cut-and-paste-code.c:130
 msgid "%a %I:%M %p"
-msgstr ""
+msgstr "%a %I:%M %p"
 
 #. Translators: "friendly time" string for a day in the current year,
 #. * strftime format. e.g. "Feb 12 12:34 am"
 #.
 #: ../lib/rb-cut-and-paste-code.c:143
 msgid "%b %d %I:%M %p"
-msgstr ""
+msgstr "%d %b %I:%M %p"
 
 #. Translators: "friendly time" string for a day in a different year,
 #. * strftime format. e.g. "Feb 12 1997"
 #.
 #: ../lib/rb-cut-and-paste-code.c:148
 msgid "%b %d %Y"
-msgstr ""
+msgstr "%d %b %Y"
 
 #. impossible time or broken locale settings
 #. we really do need to fix this so untagged entries actually have NULL rather than
@@ -710,7 +710,7 @@ msgstr "Çok fazla sembolik bağ"
 #: ../lib/rb-file-helpers.c:1197
 #, c-format
 msgid "Cannot get free space at %s: %s"
-msgstr ""
+msgstr "%s içindeki boş alan bulunamıyor: %s"
 
 #: ../lib/rb-util.c:698 ../plugins/context/tmpl/album-tmpl.html:20
 #: ../remote/dbus/rb-client.c:146
@@ -720,10 +720,10 @@ msgstr "%d:%02d"
 
 #: ../lib/rb-util.c:700 ../plugins/context/tmpl/album-tmpl.html:18
 #: ../remote/dbus/rb-client.c:148
-#, fuzzy, c-format
+#, c-format
 #| msgid "%d:%02d of %d:%02d"
 msgid "%d:%02d:%02d"
-msgstr "%d:%02d / %d:%02d"
+msgstr "%d:%02d:%02d"
 
 #: ../lib/rb-util.c:747
 #, c-format
@@ -731,10 +731,10 @@ msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d / %d:%02d kaldı"
 
 #: ../lib/rb-util.c:751
-#, fuzzy, c-format
+#, c-format
 #| msgid "%d:%02d of %d:%02d remaining"
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
-msgstr "%d:%02d / %d:%02d kaldı"
+msgstr "%d:%02d:%02d / %d:%02d:%02d kaldı"
 
 #: ../lib/rb-util.c:756
 #, c-format
@@ -742,44 +742,41 @@ msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d / %d:%02d"
 
 #: ../lib/rb-util.c:760
-#, fuzzy, c-format
+#, c-format
 #| msgid "%d:%02d of %d:%02d"
 msgid "%d:%02d:%02d of %d:%02d:%02d"
-msgstr "%d:%02d / %d:%02d"
+msgstr "%d:%02d:%02d / %d:%02d:%02d"
 
 #: ../metadata/rb-metadata-gst.c:450
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
-msgstr ""
+msgstr "Etiketler, birden çok akış içerdiği için bu dosyaya yazılamadı"
 
 #: ../metadata/rb-metadata-gst.c:490
 #, c-format
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
 msgstr ""
+"Etiketler, desteklenen bir biçimde kodlanmadığı için bu dosyaya yazılamadı"
 
 #: ../metadata/rb-metadata-gst.c:622
 #, c-format
-#| msgid "Failed to create %s element; check your installation"
 msgid "Failed to create a source element; check your installation"
 msgstr "Bir kaynak öğesi oluşturulamadı; kurulumunuzu denetleyin"
 
 #: ../metadata/rb-metadata-gst.c:632
 #, c-format
-#| msgid "Failed to create %s element; check your installation"
 msgid ""
 "Failed to create the 'decodebin2' element; check your GStreamer installation"
 msgstr "'decodebin2' öğesi oluşturulamadı; GStreamer kurulumunuzu denetleyin"
 
 #: ../metadata/rb-metadata-gst.c:641
 #, c-format
-#| msgid "Failed to create %s element; check your installation"
 msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
 "installation"
 msgstr ""
-"'giostreamsink' öğesi oluşturulamadı; GStreamer kurulumunuzu "
-"denetleyin"
+"'giostreamsink' öğesi oluşturulamadı; GStreamer kurulumunuzu denetleyin"
 
 #: ../metadata/rb-metadata-gst.c:722
 #, c-format
@@ -796,11 +793,11 @@ msgstr "Albüm kapaklarını internetten al"
 
 #: ../plugins/artdisplay/artdisplay.py:342
 msgid "Searching... drop artwork here"
-msgstr ""
+msgstr "Aranıyor... çiziminizi buraya bırakın"
 
 #: ../plugins/artdisplay/artdisplay.py:347
 msgid "Drop artwork here"
-msgstr ""
+msgstr "Çiziminizi buraya bırakın"
 
 #: ../plugins/artdisplay/LastFMCoverArtSearch.py:42
 msgid "Image provided by Last.fm"
@@ -835,16 +832,18 @@ msgid ""
 "This CD could be more than one album. Please select which album it is below "
 "and press <i>Continue</i>."
 msgstr ""
+"Bu CD birden fazla albümden biri olabilir. Lütfen aşağıdan hangi albüm "
+"olduğunu "
+"seçin ve <i>Devam</i>'a basın."
 
 #: ../plugins/audiocd/multiple-album.ui.h:3
 msgid "_Continue"
 msgstr "_Devam"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:158
-#, fuzzy
 #| msgid "_Add to Library..."
 msgid "_Extract to Library"
-msgstr "Kütüph_aneye ekle..."
+msgstr "Kütüphaneye _Çıkart"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:159
 msgid "Copy tracks to the library"
@@ -862,18 +861,17 @@ msgstr "Albüm Bilgisini Yeniden Yükle"
 #. for Copy to Library action.
 #: ../plugins/audiocd/rb-audiocd-source.c:340
 msgid "Extract"
-msgstr ""
+msgstr "Çıkart"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:383
 msgid "Select tracks to be extracted"
-msgstr ""
+msgstr "Çıkartılacak parçaları seçin"
 
 #. Info bar for non-Musicbrainz data
 #: ../plugins/audiocd/rb-audiocd-source.c:414
-#, fuzzy
 #| msgid "_Album:"
 msgid "S_ubmit Album"
-msgstr "_Albüm:"
+msgstr "A_lbümü Gönder"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:415
 msgid "Hide"
@@ -888,16 +886,15 @@ msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "Bu albümü ekleyerek MusicBrainz veritabanını geliştirebilirsiniz."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:556
-#, fuzzy
 #| msgid "<invalid filename>"
 msgid "<Invalid unicode>"
-msgstr "<geçersiz dosya adı>"
+msgstr "<Geçersiz ünikod>"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:600
-#, fuzzy, c-format
+#, c-format
 #| msgid "Track %.2d"
 msgid "Track %u"
-msgstr "Parça %.2d"
+msgstr "Parça %u"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:663
 #: ../plugins/audiocd/rb-audiocd-source.c:671
@@ -937,46 +934,44 @@ msgstr "'%s' aygıtı herhangi bir ortam içermiyor."
 #, c-format
 msgid ""
 "Device '%s' could not be opened. Check the access permissions on the device."
-msgstr ""
+msgstr "'%s' aygıtı açılamadı. Aygıt üzerindeki erişim izinlerini denetleyin."
 
 #: ../plugins/audiocd/sj-metadata.c:196 ../plugins/audiocd/sj-metadata.c:207
 #, c-format
 msgid "Cannot read CD: %s"
-msgstr ""
+msgstr "CD okunamıyor: %s"
 
 #: ../plugins/audiocd/sj-metadata-getter.c:247
 #, c-format
 msgid "Could not create CD lookup thread"
-msgstr ""
+msgstr "CD yoklama süreci oluşturulamadı"
 
 #: ../plugins/audiocd/sj-metadata-gvfs.c:86
 #, c-format
 msgid "Cannot access CD"
-msgstr ""
+msgstr "CD'ye erişilemiyor"
 
 #: ../plugins/audiocd/sj-metadata-gvfs.c:105
-#, fuzzy
 #| msgid "Unknown file type"
 msgid "Unknown Title"
-msgstr "Bilinmeyen dosya türü"
+msgstr "Bilinmeyen Başlık"
 
 #: ../plugins/audiocd/sj-metadata-gvfs.c:109
 #: ../plugins/audiocd/sj-metadata-gvfs.c:135
-#, fuzzy
 #| msgid "Unknown"
 msgid "Unknown Artist"
-msgstr "Bilinmeyen"
+msgstr "Bilinmeyen Sanatçı"
 
 #: ../plugins/audiocd/sj-metadata-gvfs.c:131
-#, fuzzy, c-format
+#, c-format
 #| msgid "Track %.2d"
 msgid "Track %d"
-msgstr "Parça %.2d"
+msgstr "Parça %d"
 
 #: ../plugins/audiocd/sj-metadata-gvfs.c:156
 #, c-format
 msgid "Cannot access CD: %s"
-msgstr ""
+msgstr "CD'ye erişilemiyor: %s"
 
 #: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:1
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:1
@@ -985,7 +980,7 @@ msgstr "Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:2
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
-msgstr ""
+msgstr "Parça bilgisini Last.fm'e gönderir ve Last.fm radyo akışlarını çalar"
 
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:2
 msgid "Libre.fm"
@@ -993,15 +988,13 @@ msgstr "Libre.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:3
 msgid "Which Audioscrobbler services do you wish to use?"
-msgstr ""
+msgstr "Hangi Audioscrobbler hizmetlerini kullanmak istersiniz?"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:1
-#| msgid "greater than"
 msgid "Create Station"
 msgstr "İstasyon Oluştur"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:2
-#| msgid "Create a new Internet Radio station"
 msgid "Create a Radio Station"
 msgstr "Bir Radyo İstasyonu Kur"
 
@@ -1153,7 +1146,6 @@ msgid "Connection error. Please try logging in again."
 msgstr "Bağlantı hatası. Lütfen tekrar giriş yapmayı deneyin."
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1218
-#| msgid "Library"
 msgid "My Library"
 msgstr "Kütüphanem"
 
@@ -1166,63 +1158,62 @@ msgid "My Neighbourhood"
 msgstr "Komşularım"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1401
-#, fuzzy, c-format
+#, c-format
 #| msgid "_Last played"
 msgid "%s plays"
-msgstr "Son Ça_lınan"
+msgstr "%s çalıyor"
 
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This is the label for menu item which when activated will take the user to the
 #. * artist/track's page on the service's website.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1658
-#, fuzzy, c-format
+#, c-format
 #| msgid "_View"
 msgid "_View on %s"
-msgstr "_Görünüm"
+msgstr "%s'de _görüntüle"
 
 #. Translators: describes a radio stream playing tracks similar to those by an artist.
 #. * Followed by a text entry box for the artist name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:58
 msgid "Similar to Artist:"
-msgstr ""
+msgstr "Şu Sanatçıya Benzer:"
 
 #. Translators: describes a radio stream playing tracks listened to by the top fans of
 #. * a particular artist.  Followed by a text entry box for the artist name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:62
 msgid "Top Fans of Artist:"
-msgstr ""
+msgstr "Şu Sanatçının Hayranları:"
 
 #. Translators: describes a radio stream playing tracks from the library of a particular
 #. * user.  Followed by a text entry box for the user name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:66
-#, fuzzy
 #| msgid "Library"
 msgid "Library of User:"
-msgstr "Kütüphane"
+msgstr "Kullanıcının Kütüphanesi:"
 
 #. Translators: describes a radio stream playing tracks played by users similar to a
 #. * particular user.  Followed by a text entry box for the user name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:70
 msgid "Neighbourhood of User:"
-msgstr ""
+msgstr "Kullanıcının Komşuları:"
 
 #. Translators: describes a radio stream playing tracks that a particular user has marked
 #. * as loved.  Followed by a text entry box for the user name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:74
 msgid "Tracks Loved by User:"
-msgstr ""
+msgstr "Kullanıcının Sevdiği Parçalar:"
 
 #. Translators: describes a radio stream playing tracks recommended to a particular user.
 #. * Followed by a text entry box for the user name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:78
 msgid "Recommendations for User:"
-msgstr ""
+msgstr "Kullanıcı için Tavsiyeler:"
 
 #. Translators: a type of station named "Mix Radio" by Last.fm.
 #. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for a description of it.
@@ -1230,67 +1221,67 @@ msgstr ""
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:83
 msgid "Mix Radio for User:"
-msgstr ""
+msgstr "Şu Kullanıcı için Karışık Radyo:"
 
 #. Translators: describes a radio stream playing tracks tagged with a particular tag.
 #. * Followed by a text entry box for the tag.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:87
 msgid "Tracks Tagged with:"
-msgstr ""
+msgstr "Şöyle Etiketlenen Parçalar:"
 
 #. Translators: describes a radio stream playing tracks often listened to by members of
 #. * a particular group. Followed by a text entry box for the group name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:91
 msgid "Listened by Group:"
-msgstr ""
+msgstr "Şu Grup tarafından Dinlenenler:"
 
 #. Translators: station is built from artists similar to the artist %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:126
-#, fuzzy, c-format
+#, c-format
 #| msgid "Radio"
 msgid "%s Radio"
-msgstr "Radyo"
+msgstr "%s Radyosu"
 
 #. Translators: station is built from the artist %s's top fans
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:128
 #, c-format
 msgid "%s Fan Radio"
-msgstr ""
+msgstr "%s Hayran Radyosu"
 
 #. Translators: station is built from the library of the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:130
-#, fuzzy, c-format
+#, c-format
 #| msgid "Library"
 msgid "%s's Library"
-msgstr "Kütüphane"
+msgstr "%s'in Kütüphanesi"
 
 #. Translators: station is built from the "neighbourhood" of the user %s.
 #. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:133
 #, c-format
 msgid "%s's Neighbourhood"
-msgstr ""
+msgstr "%s'in Komşuları"
 
 #. Translators: station is built from the tracks which have been "loved" by the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:135
 #, c-format
 msgid "%s's Loved Tracks"
-msgstr ""
+msgstr "%s'in Sevdiği Parçalar"
 
 #. Translators: station is built from the tracks which are recommended to the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:137
 #, c-format
 msgid "%s's Recommended Radio"
-msgstr ""
+msgstr "%s'e Önerilenler Radyosu"
 
 #. Translators: station is the "Mix Radio" for the user %s.
 #. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for description.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:140
 #, c-format
 msgid "%s's Mix Radio"
-msgstr ""
+msgstr "%s'in Karışık Radyosu"
 
 #. Translators: station is built from the tracks which have been "tagged" with %s.
 #. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
@@ -1298,32 +1289,27 @@ msgstr ""
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:144
 #, c-format
 msgid "%s Tag Radio"
-msgstr ""
+msgstr "%s Etiketi Radyosu"
 
 #. Translators: station is built from the library of the group %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:146
 #, c-format
 msgid "%s Group Radio"
-msgstr ""
+msgstr "%s Grup Radyosu"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:289
-#| msgid "Orientation"
 msgid "_Rename Station"
 msgstr "İstasyonu Yeniden Adlandı_r"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:290
-#| msgid "%d station"
-#| msgid_plural "%d stations"
 msgid "Rename station"
 msgstr "İstasyonu yeniden adlandır"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:292
-#| msgid "Delete selection"
 msgid "_Delete Station"
 msgstr "_İstasyonu Sil"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:293
-#| msgid "Delete selection"
 msgid "Delete station"
 msgstr "İstasyonu sil"
 
@@ -1339,8 +1325,6 @@ msgstr "İstasyon ayarlanırken hata oluştu: yanıt yok"
 
 #. Invalid station url
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:817
-#| msgid "%d station"
-#| msgid_plural "%d stations"
 msgid "Invalid station URL"
 msgstr "Geçersiz istasyon URL'si"
 
@@ -1369,7 +1353,6 @@ msgstr "%s artık bu tür istasyonları desteklemiyor"
 #. Other error
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:836
 #, c-format
-#| msgid "Error renaming '%s' to '%s' (%s).\n"
 msgid "Error tuning station: %i - %s"
 msgstr "İstasyon ayarlanırken hata oluştu: %i - %s"
 
@@ -1383,26 +1366,22 @@ msgstr "İstasyon ayarlanırken hata oluştu: geçersiz yanıt"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1244
 #, c-format
-#| msgid "Error reading filename: %s"
 msgid "Error tuning station: %s"
 msgstr "İstasyon ayarlanırken hata oluştu: %s"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1316
 #, c-format
 msgid "Password for streaming %s radio using the deprecated API"
-msgstr ""
+msgstr "Kullanımdan kalkmış API ile %s radyosunu dinlemek için gereken parola"
 
 #. We could be calling either radio.tune or radio.getPlaylist methods.
 #. * "Tuning station" seems like a user friendly message to display for both cases.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1484
-#| msgid "%d station"
-#| msgid_plural "%d stations"
 msgid "Tuning station"
 msgstr "İstasyon ayarlanıyor"
 
 #: ../plugins/brasero-disc-recorder/cd-recorder.plugin.in.h:1
-#| msgid "Audio CD track"
 msgid "Audio CD Recorder"
 msgstr "Ses CD'si Kaydedici"
 
@@ -1411,17 +1390,14 @@ msgid "Record audio CDs from playlists and duplicate audio CDs"
 msgstr "Çalma listelerinden ses CD'leri oluşturun ve ses CD'lerini çoğaltın"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:95
-#| msgid "_Eject Audio-CD..."
 msgid "_Create Audio CD..."
 msgstr "_Ses CD'si Oluştur..."
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:96
-#| msgid "Create a new playlist"
 msgid "Create an audio CD from playlist"
 msgstr "Çalma listesinden bir ses CD'si oluştur"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:98
-#| msgid "Import _Audio CD..."
 msgid "Duplicate Audio CD..."
 msgstr "Ses CD'sini Çoğalt..."
 
@@ -1439,7 +1415,6 @@ msgstr "Rhythmbox, ses diskini kaydedemedi"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:209
 #, c-format
-#| msgid "Failed to find an audio track"
 msgid "Unable to build an audio track list"
 msgstr "Bir ses parçası listesi oluşturulamadı"
 
@@ -1456,7 +1431,6 @@ msgid "Unable to write audio project"
 msgstr "Ses projesi yazılamadı"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:459
-#| msgid "Failed to create directory %s."
 msgid "Unable to create audio CD project"
 msgstr "Ses CD'si projesi oluşturulamadı"
 
@@ -1469,7 +1443,6 @@ msgstr "Yazdır"
 #. Translators: this is the toolbar button label for
 #. Duplicate Audio CD action
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:720
-#| msgid "_Copy"
 msgid "Copy CD"
 msgstr "CD Kopyala"
 
@@ -1477,7 +1450,6 @@ msgstr "CD Kopyala"
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2371
 #: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:151
 #: ../sources/rb-static-playlist-source.c:125
-#| msgid "Album"
 msgid "Albums"
 msgstr "Albümler"
 
@@ -1497,7 +1469,6 @@ msgid "Context Pane"
 msgstr "Bağlam Paneli"
 
 #: ../plugins/context/context.plugin.in.h:2
-#| msgid "Scroll the view to the currently playing song"
 msgid "Show information related to the currently playing artist and song."
 msgstr "Şu anda çalan şarkı ve sanatçıyla ilgili bilgileri göster."
 
@@ -1507,7 +1478,6 @@ msgid "Toggle Conte_xt Pane"
 msgstr "Ba_ğlam Panelini Aç/Kapa"
 
 #: ../plugins/context/ContextView.py:91
-#| msgid "Change the visibility of the statusbar"
 msgid "Change the visibility of the context pane"
 msgstr "Bağlam panelinin görünürlüğünü değiştir"
 
@@ -1518,7 +1488,6 @@ msgid "Top songs by %s"
 msgstr "%s'in gözde parçaları"
 
 #: ../plugins/context/ContextView.py:242
-#| msgid "Not playing"
 msgid "Nothing Playing"
 msgstr "Hiçbirşey Çalmıyor"
 
@@ -1528,8 +1497,8 @@ msgid ""
 "plugin is enabled, select Last.fm in the side pane, and log in."
 msgstr ""
 "Bu bilgi sadece Last.fm kullanıcılarına açıktır. Last.fm eklentisinin "
-"etkinleştirilmiş "
-"olduğundan emin olun, yan panelden Last.fm'i seçin ve giriş yapın."
+"etkinleştirilmiş olduğundan emin olun, yan panelden Last.fm'i seçin ve giriş "
+"yapın."
 
 #: ../plugins/context/LinksTab.py:54
 msgid "Links"
@@ -1547,7 +1516,7 @@ msgstr "Şarkı Sözleri"
 #: ../plugins/context/LyricsTab.py:101
 #, python-format
 msgid "Loading lyrics for %s by %s"
-msgstr ""
+msgstr "%s için (%s tarafından) şarkı sözleri yükleniyor"
 
 #: ../plugins/context/LyricsTab.py:119
 msgid "Lyrics not found"
@@ -1581,13 +1550,11 @@ msgid "Unable to retrieve album information:"
 msgstr "Albüm bilgisi alınamadı:"
 
 #: ../plugins/context/tmpl/artist-tmpl.html:9
-#, fuzzy
 #| msgid "No properties available."
 msgid "No information available"
-msgstr "Kullanılabilir özellik yok."
+msgstr "Kullanılabilir bilgi yok"
 
 #: ../plugins/context/tmpl/artist-tmpl.html:32
-#| msgid "_Remove"
 msgid "Read more"
 msgstr "Daha fazlasını oku"
 
@@ -1610,7 +1577,7 @@ msgstr "Müzik paylaşın ve yerel ağınızda paylaşılan müziği çalın"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
 msgid "<b>Add Remote</b>"
-msgstr "<b>Uzak Bağlantı Ekle</b>"
+msgstr "<b>Uzaktan Kumanda Ekle</b>"
 
 #: ../plugins/daap/daap-prefs.ui.h:2
 msgid "<b>Sharing</b>"
@@ -1618,14 +1585,13 @@ msgstr "<b>Paylaşım</b>"
 
 #: ../plugins/daap/daap-prefs.ui.h:3
 msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
-msgstr "<span foreground=\"red\">Bu Uzak Bağlantı ile eşleşilemedi.</span>"
+msgstr "<span foreground=\"red\">Bu Uzaktan Kumanda ile eşleşilemedi.</span>"
 
 #: ../plugins/daap/daap-prefs.ui.h:4
 msgid "Forget known Remotes"
-msgstr "Bilinen Uzak  Bağlatıları Unut"
+msgstr "Bilinen Uzaktan Kumandaları Unut"
 
 #: ../plugins/daap/daap-prefs.ui.h:5
-#| msgid "Library"
 msgid "Library _name:"
 msgstr "Kütüphane _adı:"
 
@@ -1639,18 +1605,17 @@ msgstr "Parola _iste:"
 
 #: ../plugins/daap/daap-prefs.ui.h:8
 msgid "You can now control Rhythmbox through your Remote"
-msgstr ""
+msgstr "Artık Rhythmbox'ı uzaktan kumandanız ile kontrol edebilirsiniz"
 
 #: ../plugins/daap/daap-prefs.ui.h:9
 msgid "_Look for touch Remotes"
-msgstr ""
+msgstr "_Dokunmatik Uzaktan Kumandaları Ara"
 
 #: ../plugins/daap/daap-prefs.ui.h:10
 msgid "_Share my music"
 msgstr "Müziğimi _paylaş"
 
 #: ../plugins/daap/rb-daap-dialog.c:55
-#| msgid "Invalid track number"
 msgid "Invalid share name"
 msgstr "Geçersiz paylaşım adı"
 
@@ -1690,7 +1655,6 @@ msgstr "DAAP paylaşımının makine-adı:port bilgisi:"
 
 #: ../plugins/daap/rb-daap-sharing.c:61
 #, c-format
-#| msgid "_Music"
 msgid "%s's Music"
 msgstr "%s'in Müziği"
 
@@ -1708,7 +1672,6 @@ msgid "Retrieving songs from music share"
 msgstr "Müzik paylaşımından parçalar alınıyor"
 
 #: ../plugins/daap/rb-daap-source.c:597
-#| msgid "Could not close output sink"
 msgid "Could not connect to shared music"
 msgstr "Paylaşılan müziğe bağlanılamadı"
 
@@ -1718,13 +1681,12 @@ msgstr "Bağlanıyor..."
 
 #: ../plugins/daap/rb-dacp-pairing-page.c:410
 msgid "Could not pair with this Remote."
-msgstr ""
+msgstr "Bu Uzaktan Kumanda ile eşleşilemedi."
 
 #: ../plugins/daap/rb-dacp-pairing-page.c:630
-#, fuzzy
 #| msgid "_Remove"
 msgid "Remotes"
-msgstr "Çıka_r"
+msgstr "Uzaktan Kumandalar"
 
 #: ../plugins/dbus-media-server/dbus-media-server.plugin.in.h:1
 msgid "MediaServer2 D-Bus interface"
@@ -1733,35 +1695,30 @@ msgstr "MediaServer2 D-Bus arayüzü"
 #: ../plugins/dbus-media-server/dbus-media-server.plugin.in.h:2
 msgid ""
 "Provides an implementation of the MediaServer2 D-Bus interface specification"
-msgstr ""
+msgstr "MediaServer2 D-Bus arayüz belirtiminin bir uygulamasını sağlar"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1240
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1365
-#| msgid "Tra_ck"
 msgid "All Tracks"
 msgstr "Tüm Parçalar"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2370
 #: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:150
 #: ../sources/rb-static-playlist-source.c:124
-#| msgid "Artist"
 msgid "Artists"
 msgstr "Sanatçılar"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2372
-#| msgid "Genre"
 msgid "Genres"
 msgstr "Türler"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2381
 #: ../shell/rb-playlist-manager.c:1081 ../sources/rb-display-page-group.c:92
-#| msgid "Playlist"
 msgid "Playlists"
 msgstr "Çalma Listeleri"
 
 #: ../plugins/fmradio/fmradio.plugin.in.h:1
 #: ../plugins/fmradio/rb-fm-radio-source.c:237
-#| msgid "Radio"
 msgid "FM Radio"
 msgstr "FM Radyo"
 
@@ -1770,17 +1727,14 @@ msgid "Support for FM radio broadcasting services"
 msgstr "FM radyo yayın hizmetleri desteği"
 
 #: ../plugins/fmradio/rb-fm-radio-source.c:91
-#| msgid "New Internet Radio Station"
 msgid "New FM R_adio Station"
 msgstr "Yeni FM R_adyo İstasyonu"
 
 #: ../plugins/fmradio/rb-fm-radio-source.c:92
-#| msgid "Create a new Internet Radio station"
 msgid "Create a new FM Radio station"
 msgstr "Yeni bir FM Radyo istasyonu oluştur"
 
 #: ../plugins/fmradio/rb-fm-radio-source.c:374
-#| msgid "New Internet Radio Station"
 msgid "New FM Radio Station"
 msgstr "Yeni FM Radyo İstasyonu"
 
@@ -1800,7 +1754,6 @@ msgstr "Ses biçimleri:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:3
 #: ../plugins/mtpdevice/mtp-info.ui.h:3
-#| msgid "File name:"
 msgid "Device _name:"
 msgstr "Aygıt _adı:"
 
@@ -1816,19 +1769,16 @@ msgstr "Model:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:6
 #: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
-#| msgid "Playlist"
 msgid "Playlists:"
 msgstr "Çalma listeleri:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:7
 #: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:9
-#| msgid "_Track number:"
 msgid "Serial number:"
 msgstr "Seri numarası:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:8
 #: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:10
-#| msgid "Tra_ck"
 msgid "Tracks:"
 msgstr "Parçalar:"
 
@@ -1842,22 +1792,18 @@ msgstr "Genel ses çalıcı cihaz desteği (PSP ve Nokia 770 dahil)"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:90
 #: ../shell/rb-playlist-manager.c:830 ../shell/rb-playlist-manager.c:873
-#| msgid "_New Playlist..."
 msgid "New Playlist"
 msgstr "Yeni Çalma Listesi"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:91
-#| msgid "Create a new playlist"
 msgid "Create a new playlist on this device"
 msgstr "Bu aygıtta yeni bir çalma listesi oluştur"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:93
-#| msgid "Playlist"
 msgid "Delete Playlist"
 msgstr "Çalma Listesini Sil"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:94
-#| msgid "Create a new playlist"
 msgid "Delete this playlist"
 msgstr "Bu çalma listesini sil"
 
@@ -1870,7 +1816,6 @@ msgstr "_Özellikler"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:97
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:123
-#| msgid "Display music player help"
 msgid "Display device properties"
 msgstr "Aygıt özelliklerini görüntüle"
 
@@ -1889,7 +1834,6 @@ msgid "Grilo media browser"
 msgstr "Grilo ortam tarayıcısı"
 
 #: ../plugins/grilo/rb-grilo-source.c:340
-#| msgid "_Browser"
 msgid "Browse"
 msgstr "Göz at"
 
@@ -1904,48 +1848,51 @@ msgid_plural "Only showing %d results"
 msgstr[0] "Sadece %d sonuç gösteriliyor"
 
 #: ../plugins/im-status/im-status.plugin.in.h:1
-#, fuzzy
 #| msgid "S_tatusbar"
 msgid "IM Status"
-msgstr "D_urum çubuğu"
+msgstr "Anlık İleti Durumu"
 
 #: ../plugins/im-status/im-status.plugin.in.h:2
 msgid ""
 "Updates IM status according to the current song (works with Empathy, Gossip, "
 "and Pidgin)"
 msgstr ""
+"Şimdiki şarkıya uygun olarak IM durumunu günceller (Empathy, Gossip ve "
+"Pidgin ile çalışır)"
 
 #: ../plugins/ipod/ipod-info.ui.h:3
 msgid "Database version:"
-msgstr ""
+msgstr "Veri tabanı sürümü:"
 
 #: ../plugins/ipod/ipod-info.ui.h:4
 msgid "Device node:"
-msgstr ""
+msgstr "Aygıt düğümü:"
 
 #: ../plugins/ipod/ipod-info.ui.h:5 ../plugins/mtpdevice/mtp-info.ui.h:4
 msgid "Firmware version:"
-msgstr ""
+msgstr "Aygıt yazılımı sürümü:"
 
 #: ../plugins/ipod/ipod-info.ui.h:7
 msgid "Mount point:"
-msgstr ""
+msgstr "Bağlama noktası:"
 
 #: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:8
 msgid "Podcasts:"
-msgstr ""
+msgstr "Podcastler:"
 
 #: ../plugins/ipod/ipod-info.ui.h:12
-#, fuzzy
 #| msgid "File name:"
 msgid "iPod _name:"
-msgstr "Dosya adı:"
+msgstr "iPod_adı:"
 
 #: ../plugins/ipod/ipod-init.ui.h:1
 msgid ""
 "<span size=\"x-large\" weight=\"bold\">Do you want to initialize your iPod?</"
 "span>"
 msgstr ""
+"<span size=\"x-large\" weight=\"bold\">iPod'unuzu ilklendirmek istiyor "
+"musunuz? </ "
+"span>"
 
 #: ../plugins/ipod/ipod-init.ui.h:2
 msgid ""
@@ -1955,69 +1902,70 @@ msgid ""
 "initialize the iPod, please fill in the information below. If the device is "
 "not an iPod, or you do not wish to initialize it, please click cancel."
 msgstr ""
+"Rhytmbox ilklendirilmemiş veya hatalı iPod olabilecek bir aygıt tespit "
+"etti. Rhytmbox aygıtı kullanmadan önce bu aygıt ilklendirilmelidir; ancak bu "
+"işlem var olan bir şarkıya ya da meta bilgisine zarar verebilir. Eğer "
+"Rhytmbox'ın bu iPod'u ilklendirmesini istiyorsanız, aşağıdaki bilgileri "
+"doldurun. Eğer bu aygıt bir iPod değilse ya da bu aygıtı ilklendirmek "
+"istemiyorsanız, lütfen iptal'e tıklayın."
 
 #: ../plugins/ipod/ipod-init.ui.h:3
 msgid "_Initialize"
-msgstr ""
+msgstr "_İlklendir"
 
 #: ../plugins/ipod/ipod-init.ui.h:4
 msgid "_Model:"
-msgstr ""
+msgstr "_Model:"
 
 #: ../plugins/ipod/ipod-init.ui.h:5
 msgid "_Name:"
-msgstr ""
+msgstr "_İsim:"
 
 #: ../plugins/ipod/ipod-init.ui.h:6
 msgid "iPod detected"
-msgstr ""
+msgstr "iPod algılandı"
 
 #: ../plugins/ipod/ipod.plugin.in.h:1
 msgid "Portable Players - iPod"
-msgstr ""
+msgstr "Taşınabilir Çalıcılar - iPod"
 
 #: ../plugins/ipod/ipod.plugin.in.h:2
 msgid "Support for Apple iPod devices (show the content, play from device)"
-msgstr ""
+msgstr "Apple iPod aygıtları desteği (içerik gösterme, aygıttan çalma)"
 
 #: ../plugins/ipod/rb-ipod-helpers.c:305
 msgid "Unable to initialize new iPod"
-msgstr ""
+msgstr "Yeni iPod ilklendirilemedi"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:99 ../plugins/ipod/rb-ipod-plugin.c:108
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:119 ../shell/rb-playlist-manager.c:203
-#, fuzzy
 #| msgid "_Remove"
 msgid "_Rename"
-msgstr "Çıka_r"
+msgstr "_Yeniden Adlandır"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:100
 msgid "Rename iPod"
-msgstr ""
+msgstr "iPod'u yeniden adlandır"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:103
-#, fuzzy
 #| msgid "%s Properties"
 msgid "Display iPod properties"
-msgstr "%s Özellikleri"
+msgstr "iPod özelliklerini göster"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:105 ../shell/rb-shell-clipboard.c:177
-#, fuzzy
 #| msgid "_New Playlist..."
 msgid "_New Playlist"
-msgstr "Ye_ni çalma listesi..."
+msgstr "_Yeni Çalma Listesi"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:106
-#, fuzzy
 #| msgid "Save a playlist to a file"
 msgid "Add new playlist to iPod"
-msgstr "Çalma listesini dosyaya kaydet"
+msgstr "iPod'a yeni çalma listesi ekle"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:109 ../shell/rb-playlist-manager.c:204
-#, fuzzy
 #| msgid "Save playlist"
 msgid "Rename playlist"
-msgstr "Şarkı listesini kaydet"
+msgstr "Çalma listesini yeniden adlandır"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:111 ../shell/rb-playlist-manager.c:206
 #: ../shell/rb-shell-clipboard.c:166
@@ -2025,10 +1973,9 @@ msgid "_Delete"
 msgstr "_Sil"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:112 ../shell/rb-playlist-manager.c:207
-#, fuzzy
 #| msgid "Save playlist"
 msgid "Delete playlist"
-msgstr "Şarkı listesini kaydet"
+msgstr "Çalma listesini sil"
 
 #: ../plugins/ipod/rb-ipod-source.c:1583
 #: ../podcast/rb-podcast-main-source.c:70
@@ -2036,29 +1983,26 @@ msgstr "Şarkı listesini kaydet"
 #: ../sources/sync/rb-sync-settings-ui.c:263
 #: ../sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
-msgstr ""
+msgstr "Podcastler"
 
 #: ../plugins/ipod/rb-ipod-source.c:1951
-#, fuzzy
 #| msgid "Save playlist"
 msgid "New playlist"
-msgstr "Şarkı listesini kaydet"
+msgstr "Yeni çalma listesi"
 
 #: ../plugins/iradio/iradio.plugin.in.h:1
-#, fuzzy
 #| msgid "New Internet Radio Station"
 msgid "Internet Radio"
-msgstr "Yeni İnternet Radyo İstasyonu"
+msgstr "İnternet Radyosu"
 
 #: ../plugins/iradio/iradio.plugin.in.h:2
 msgid "Support for broadcasting services transmitted via the Internet"
-msgstr ""
+msgstr "İnternet üzerinden aktarılan yayın hizmetleri desteği"
 
 #: ../plugins/iradio/rb-iradio-source.c:159
-#, fuzzy
 #| msgid "New Internet Radio Station"
 msgid "New Internet _Radio Station..."
-msgstr "Yeni İnternet Radyo İstasyonu"
+msgstr "Yeni İnternet_Radyo İstasyonu..."
 
 #: ../plugins/iradio/rb-iradio-source.c:160
 msgid "Create a new Internet Radio station"
@@ -2069,7 +2013,7 @@ msgstr "Yeni bir İnternet Radyo İstasyonu oluştur"
 #: ../plugins/iradio/rb-iradio-source.c:346
 msgctxt "Radio"
 msgid "New"
-msgstr ""
+msgstr "Yeni"
 
 #: ../plugins/iradio/rb-iradio-source.c:383 ../widgets/rb-entry-view.c:1457
 #: ../widgets/rb-library-browser.c:134
@@ -2092,10 +2036,9 @@ msgid "New Internet Radio Station"
 msgstr "Yeni İnternet Radyo İstasyonu"
 
 #: ../plugins/iradio/rb-iradio-source.c:964
-#, fuzzy
 #| msgid "New Internet Radio Station"
 msgid "URL of internet radio station:"
-msgstr "Yeni İnternet Radyo İstasyonu"
+msgstr "İnternet radyo istasyonu adresi:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
@@ -2108,19 +2051,21 @@ msgstr "%s Özellikleri"
 #: ../plugins/iradio/rb-station-properties-dialog.c:491
 #: ../podcast/rb-podcast-properties-dialog.c:620
 #: ../widgets/rb-entry-view.c:1009 ../widgets/rb-song-info.c:1155
-#, fuzzy, c-format
+#, c-format
 #| msgid "%d kbps"
 msgid "%lu kbps"
-msgstr "%d kbps"
+msgstr "%lu kbps"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:582
 msgid "Unable to change station property"
-msgstr ""
+msgstr "İstanyon özelliği değiştirilemedi"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:582
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
 msgstr ""
+"Öyle bir istasyon zaten var olduğundan, istasyon adresi %s olarak "
+"değiştirilemedi"
 
 #: ../plugins/iradio/station-properties.ui.h:5
 msgid "L_ocation:"
@@ -2128,50 +2073,47 @@ msgstr "K_onum:"
 
 #: ../plugins/lirc/lirc.plugin.in.h:1
 msgid "Control Rhythmbox using an infrared remote control"
-msgstr ""
+msgstr "Rhythmbox'ı kızılötesi uzaktan kumanda kullanarak kontrol edin"
 
 #: ../plugins/lirc/lirc.plugin.in.h:2
 msgid "LIRC "
-msgstr ""
+msgstr "LIRC "
 
 #: ../plugins/lyrics/LyricsConfigureDialog.py:100
-#, fuzzy
 #| msgid "Choose a playlist to be loaded"
 msgid "Choose lyrics folder..."
-msgstr "Yüklenecek çalma listesini seçin"
+msgstr "Şarkı sözü klasörünü seç..."
 
 #: ../plugins/lyrics/lyrics.plugin.in.h:1
 msgid "Fetch song lyrics from the Internet"
-msgstr ""
+msgstr "Şarkı sözlerini internetten indir"
 
 #: ../plugins/lyrics/lyrics.plugin.in.h:2
-#, fuzzy
 #| msgid "Song Properties"
 msgid "Song Lyrics"
-msgstr "Şarkı Özellikleri"
+msgstr "Şarkı Sözleri"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:1
 msgid "<b>Lyrics Folder</b>"
-msgstr ""
+msgstr "<b>Şarkı Sözleri Klasörü</b>"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:2
 msgid "<b>Search engines</b>"
-msgstr ""
+msgstr "<b>Arama motorları</b>"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:3
-#, fuzzy
 #| msgid "_Browse..."
 msgid "Browse..."
-msgstr "_Gözat..."
+msgstr "Gözat..."
 
 #: ../plugins/lyrics/lyrics.py:160 ../plugins/lyrics/lyrics.py:162
 #: ../plugins/lyrics/lyrics.py:171
 msgid "No lyrics found"
-msgstr ""
+msgstr "Şarkı sözü bulunamadı"
 
 #: ../plugins/lyrics/lyrics.py:205
 msgid "_Save"
-msgstr ""
+msgstr "_Kaydet"
 
 #: ../plugins/lyrics/lyrics.py:210 ../plugins/lyrics/lyrics.py:223
 #: ../shell/rb-shell.c:350
@@ -2179,50 +2121,49 @@ msgid "_Edit"
 msgstr "_Düzenle"
 
 #: ../plugins/lyrics/lyrics.py:225
-#, fuzzy
 #| msgid "_Search:"
 msgid "_Search again"
-msgstr "_Ara:"
+msgstr "_Tekrar ara"
 
 #: ../plugins/lyrics/lyrics.py:283
 msgid "Searching for lyrics..."
-msgstr ""
+msgstr "Şarkı sözleri aranıyor..."
 
 #: ../plugins/lyrics/lyrics.py:343
 msgid "Song L_yrics"
-msgstr ""
+msgstr "Şarkı S_özleri"
 
 #: ../plugins/lyrics/lyrics.py:344
 msgid "Display lyrics for the playing song"
-msgstr ""
+msgstr "Çalmakta olan şarkının sözlerini göster"
 
 #: ../plugins/lyrics/LyricsSites.py:36
 msgid "Lyrc (lyrc.com.ar)"
-msgstr ""
+msgstr "Lyrc (lyrc.com.ar)"
 
 #: ../plugins/lyrics/LyricsSites.py:37
 msgid "Astraweb (www.astraweb.com)"
-msgstr ""
+msgstr "Astraweb (www.astraweb.com)"
 
 #: ../plugins/lyrics/LyricsSites.py:38
 msgid "Leo's Lyrics (www.leoslyrics.com)"
-msgstr ""
+msgstr "Leo's Lyrics (www.leoslyrics.com)"
 
 #: ../plugins/lyrics/LyricsSites.py:39
 msgid "WinampCN (www.winampcn.com)"
-msgstr ""
+msgstr "WinampCN (www.winampcn.com)"
 
 #: ../plugins/lyrics/LyricsSites.py:40
 msgid "TerraBrasil (terra.com.br)"
-msgstr ""
+msgstr "TerraBrasil (terra.com.br)"
 
 #: ../plugins/lyrics/LyricsSites.py:41
 msgid "Dark Lyrics (darklyrics.com)"
-msgstr ""
+msgstr "Dark Lyrics (darklyrics.com)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
 msgid "     * Founder/owner runs it -- support a small business"
-msgstr ""
+msgstr "     * Kurucusu/sahibi işletiyor -- küçük esnafa destek olun"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:3
 #, no-c-format
@@ -2230,54 +2171,71 @@ msgid ""
 "    * 50% of payment goes to artist (makes buyer feel good: they're helping "
 "the world)"
 msgstr ""
+"    * Ödemenin %50'si sanatçıya gider (Alıcıların kendisini daha iyi "
+"hissetmesini "
+"sağlar: ne de olsa dünyaya yardım ediyorlar)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:4
 msgid "    * All albums and artists hand-picked"
-msgstr ""
+msgstr "    * Tüm albümler ve sanatçılar özenle seçildi"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:5
 msgid ""
 "    * Downloads and CDs are both available (no other site on the internet "
 "sells both)"
 msgstr ""
+"    * Hem İndirme hem de CD olarak mevcuttur (internetteki başka hiç bir site "
+"ikisini birden satmamaktadır)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:6
 msgid ""
 "    * Extensive biographical info about each musician, and artist photo -- "
 "feel a strong connection to the artist"
 msgstr ""
+"    * Her müzisyen ve sanatçı fotoğrafı hakkında kapsamlı biyografik bilgi --"
+" sanatçıya güçlü bir bağ hissi"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:7
 msgid "    * Free listening of all songs"
-msgstr ""
+msgstr "    * Tüm şarkılar özgürce dinlenebilir"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:8
 msgid ""
 "    * Full color, high quality cover art PDF available for most albums - "
 "easy to print"
 msgstr ""
+"    * Renkli, yüksek kalitede çoğu albüm için uygun PDF albüm kapağı - "
+"kolay yazdırılır"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:9
 msgid ""
 "    * Low pressure environment - nothing flashing, no audio ads while "
 "listening to albums"
 msgstr ""
+"    * Düşük baskı ortamı - albümleri dinlerken sesli reklamlar ya da "
+"parlayan birşeyler yok"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:10
 msgid ""
 "    * Music selection is unique to Magnatune, unlike most on-line stores "
 "that have more-or-less the same (gigantic) selection\n"
 msgstr ""
+"    * Az çok aynı (dev) seçim yelpazesine sahip birçok çevrimiçi mağazanın "
+"aksine, "
+"müzik seçimi Magnatune'a has benzersizliktedir.\n"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:12
 msgid ""
 "    * No copy protection on the music (DRM) which allows playing music on "
 "any device (unlike iTunes/MSN/etc)"
 msgstr ""
+"    * Müziklerde kopyalama koruması (DRM) yoktur, böylece müzikleri "
+"(iTunes/MSN/vb. aksine) "
+"herhangi bir araçla dinleyebilirsiniz. "
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:13
 msgid "    * No need to \"register\" to listen or buy"
-msgstr ""
+msgstr "    * Dinlemek ya da satın almak için \"kaydolmaya\" gerek yok"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:14
 msgid ""
@@ -2327,7 +2285,7 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:23
 msgid "<b>Magnatune online music store</b>"
-msgstr ""
+msgstr "<b>Magnatune çevrimiçi müzik mağazası</b>"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:24
 msgid ""
@@ -2347,79 +2305,79 @@ msgstr ""
 
 #: ../plugins/magnatune/magnatune.plugin.in.h:2
 msgid "Magnatune Store"
-msgstr ""
+msgstr "Magnatune Mağazası"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
 msgid "$10 US (better than average)"
-msgstr ""
+msgstr "$10 US (ortalamanın üstünde)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:2
 msgid "$11 US"
-msgstr ""
+msgstr "$11 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:3
 msgid "$12 US (generous)"
-msgstr ""
+msgstr "$12 US (cömertçe)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:4
 msgid "$13 US"
-msgstr ""
+msgstr "$13 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:5
 msgid "$14 US"
-msgstr ""
+msgstr "$14 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:6
 msgid "$15 US (VERY generous!)"
-msgstr ""
+msgstr "$15 US (ÇOK cömertçe!)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:7
 msgid "$16 US"
-msgstr ""
+msgstr "$16 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:8
 msgid "$17 US"
-msgstr ""
+msgstr "$17 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:9
 msgid "$18 US (We love you!)"
-msgstr ""
+msgstr "$18 US (Sizi seviyoruz!)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:10
 msgid "$5 US"
-msgstr ""
+msgstr "$5 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:11
 msgid "$6 US"
-msgstr ""
+msgstr "$6 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:12
 msgid "$7 US"
-msgstr ""
+msgstr "$7 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:13
 msgid "$8 US (typical)"
-msgstr ""
+msgstr "$8 US (genel)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:14
 msgid "$9 US"
-msgstr ""
+msgstr "$9 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:15
 msgid "128K MP3"
-msgstr ""
+msgstr "128K MP3"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:16
 msgid "April (04)"
-msgstr ""
+msgstr "Nisan (04)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:17
 msgid "August (08)"
-msgstr ""
+msgstr "Ağustos (08)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:18
 msgid "December (12)"
-msgstr ""
+msgstr "Aralık (12)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:19
 msgid "FLAC"
@@ -2427,59 +2385,59 @@ msgstr "FLAC"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:20
 msgid "February (02)"
-msgstr ""
+msgstr "Şubat (02)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:21
 msgid "Find out about Magnatune at "
-msgstr ""
+msgstr "Magnatune hakkında daha çok bilgi için: "
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:22
 msgid "Get an account at "
-msgstr ""
+msgstr "Buradan bir hesap al: "
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:23
 msgid "I don't have a Magnatune account"
-msgstr ""
+msgstr "Bir magnatune hesabım yok"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:24
 msgid "I have a download account"
-msgstr ""
+msgstr "Bir indirme hesabım var"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:25
 msgid "I have a streaming account"
-msgstr ""
+msgstr "Bir internet üzerinden yayın hesabım var"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:26
 msgid "January (01)"
-msgstr ""
+msgstr "Ocak (01)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:27
 msgid "July (07)"
-msgstr ""
+msgstr "Temmuz (07)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:28
 msgid "June (06)"
-msgstr ""
+msgstr "Haziran (06)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:29
 msgid "Magnatune Information"
-msgstr ""
+msgstr "Magnatune Bilgisi"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:30
 msgid "March (03)"
-msgstr ""
+msgstr "Mart (03)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:31
 msgid "May (05)"
-msgstr ""
+msgstr "Mayıs (05)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:32
 msgid "November (11)"
-msgstr ""
+msgstr "Kasım (11)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:33
 msgid "October (10)"
-msgstr ""
+msgstr "Ekim (10)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:34
 msgid "Ogg Vorbis"
@@ -2487,85 +2445,85 @@ msgstr "Ogg Vorbis"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:35
 msgid "Password:"
-msgstr ""
+msgstr "Parola:"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:36
 msgid "Preferred audio _format:"
-msgstr ""
+msgstr "Tercih edilen ses _biçimi:"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:37
 msgid "Redownload purchased music at "
-msgstr ""
+msgstr "Satın alınan müziği şuradan yeniden indir: "
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:38
 msgid "September (09)"
-msgstr ""
+msgstr "Eylül (09)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:39
-#, fuzzy
 #| msgid "File name:"
 msgid "Username:"
-msgstr "Dosya adı:"
+msgstr "Kullanıcı adı:"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:40
 msgid "VBR MP3"
-msgstr ""
+msgstr "VBR MP3"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:41
 msgid "WAV"
-msgstr ""
+msgstr "WAV"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:42
 msgid ""
 "Your account details have changed. Changes will be applied the next time you "
 "start Rhythmbox."
 msgstr ""
+"Hesap ayrıntılarınız değişti. Değişiklikler, Rhythmbox'ı bir sonraki  "
+"başlatmanızda uygulanacak."
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:43
 msgid "http://magnatune.com/compare_plans"
-msgstr ""
+msgstr "http://magnatune.com/compare_plans"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:44
 msgid "http://www.magnatune.com/info/"
-msgstr ""
+msgstr "http://www.magnatune.com/info/"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:45
 msgid "http://www.magnatune.com/info/redownload"
-msgstr ""
+msgstr "http://www.magnatune.com/info/redownload"
 
 #: ../plugins/magnatune/magnatune.py:102
 msgid "Magnatune"
-msgstr ""
+msgstr "Magnatune"
 
 #: ../plugins/magnatune/magnatune.py:111
 msgid "Download Album"
-msgstr ""
+msgstr "Albüm İndir"
 
 #: ../plugins/magnatune/magnatune.py:112
 msgid "Download this album from Magnatune"
-msgstr ""
+msgstr "Bu albümü Magnatune'dan indir"
 
 #: ../plugins/magnatune/magnatune.py:116
 msgid "Artist Information"
-msgstr ""
+msgstr "Sanatçı Bilgisi"
 
 #: ../plugins/magnatune/magnatune.py:117
-#, fuzzy
 #| msgid "Get information on this artist from the web"
 msgid "Get information about this artist"
-msgstr "Bu sanatçı hakkında web'den bilgi al"
+msgstr "Bu sanatçı hakkında bilgi al"
 
 #: ../plugins/magnatune/magnatune.py:121
 msgid "Cancel Downloads"
-msgstr ""
+msgstr "İndirmeleri İptal Et"
 
 #: ../plugins/magnatune/magnatune.py:122
 msgid "Stop downloading purchased albums"
-msgstr ""
+msgstr "Satın alınan albümlerin indirilmesini durdur"
 
 #: ../plugins/magnatune/magnatune.py:258 ../plugins/magnatune/magnatune.py:261
 msgid "Couldn't store account information"
-msgstr ""
+msgstr "Hesap bilgileri kaydedilemedi"
 
 #: ../plugins/magnatune/magnatune.py:259
 msgid ""
@@ -2575,17 +2533,16 @@ msgstr ""
 
 #: ../plugins/magnatune/MagnatuneSource.py:101
 msgid "Loading Magnatune catalog"
-msgstr ""
+msgstr "Magnatune kataloğu yükleniyor"
 
 #: ../plugins/magnatune/MagnatuneSource.py:108
 msgid "Downloading Magnatune Album(s)"
-msgstr ""
+msgstr "Magnatune Albüm(leri) İndiriliyor"
 
 #: ../plugins/magnatune/MagnatuneSource.py:206
-#, fuzzy
 #| msgid "Couldn't parse playlist"
 msgid "Couldn't purchase album"
-msgstr "Çalma listesi ayrıştırılamadı"
+msgstr "Albüm satın alınamadı"
 
 #: ../plugins/magnatune/MagnatuneSource.py:207
 msgid "You must have a library location set to purchase an album."
@@ -2593,21 +2550,22 @@ msgstr ""
 
 #: ../plugins/magnatune/MagnatuneSource.py:257
 msgid "Unable to load catalog"
-msgstr ""
+msgstr "Katalog yüklenemedi"
 
 #: ../plugins/magnatune/MagnatuneSource.py:258
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
+"Rhythmbox Magnatune kataloğunu algılayamadı, lütfen bir hata raporu giriniz."
 
 #: ../plugins/magnatune/MagnatuneSource.py:295
 #: ../plugins/magnatune/MagnatuneSource.py:395
 msgid "Couldn't get account details"
-msgstr ""
+msgstr "Hesap ayrıntıları alınamadı"
 
 #: ../plugins/magnatune/MagnatuneSource.py:444
 msgid "Download Error"
-msgstr ""
+msgstr "İndirme Hatası"
 
 #: ../plugins/magnatune/MagnatuneSource.py:445
 #, python-format
@@ -2618,10 +2576,9 @@ msgid ""
 msgstr ""
 
 #: ../plugins/magnatune/MagnatuneSource.py:447 ../widgets/rb-entry-view.c:1601
-#, fuzzy
 #| msgid "_Error"
 msgid "Error"
-msgstr "_Hata"
+msgstr "Hata"
 
 #: ../plugins/magnatune/MagnatuneSource.py:448
 #, python-format
@@ -2630,47 +2587,50 @@ msgid ""
 "The error text is:\n"
 "%s"
 msgstr ""
+"Albüm indirilmeye çalışılırken bir hata oluştu.\n"
+"Hata metni:\n"
+"%s"
 
 #: ../plugins/magnatune/MagnatuneSource.py:478
 msgid "Finished Downloading"
-msgstr ""
+msgstr "İndirme Bitti"
 
 #: ../plugins/magnatune/MagnatuneSource.py:478
 msgid "All Magnatune downloads have been completed."
-msgstr ""
+msgstr "Tüm Magnatune indirmeleri tamamlandı."
 
 #: ../plugins/mmkeys/mmkeys.plugin.in.h:1
 msgid "Control Rhythmbox using key shortcuts"
-msgstr ""
+msgstr "Rhythmbox'ı tuş kısayollarını kullanarak denetle"
 
 #: ../plugins/mmkeys/mmkeys.plugin.in.h:2
-#, fuzzy
 #| msgid "Music Player"
 msgid "Media Player Keys"
-msgstr "Müzik Çalıcı"
+msgstr "Ortam Oynatıcı Tuşları"
 
 #: ../plugins/mtpdevice/mtpdevice.plugin.in.h:1
 msgid "Portable Players - MTP"
-msgstr ""
+msgstr "Taşınabilir Oynatıcılar - MTP"
 
 #: ../plugins/mtpdevice/mtpdevice.plugin.in.h:2
 msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr ""
+"MTP aygıtları desteği (içeriği gösterir, aktarma yapar, aygıttan oynatır)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:157
 #: ../plugins/mtpdevice/rb-mtp-thread.c:544
 #, c-format
 msgid "Unable to open temporary file: %s"
-msgstr ""
+msgstr "Geçici dosya açılamadı: %s"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:120
 msgid "Rename MTP-device"
-msgstr ""
+msgstr "MTP cihazını yeniden adlandır"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:855
 #: ../plugins/mtpdevice/rb-mtp-thread.c:855
 msgid "Media player device error"
-msgstr ""
+msgstr "Ortam oynatıcı aygıt hatası"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
@@ -2678,28 +2638,28 @@ msgstr ""
 #: ../plugins/mtpdevice/rb-mtp-source.c:859
 #, c-format
 msgid "Unable to open the %s %s device"
-msgstr ""
+msgstr "%s %s aygıtı açılamadı"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:903
 msgid "Digital Audio Player"
-msgstr ""
+msgstr "Sayısal Ses Çalar"
 
 #: ../plugins/mtpdevice/rb-mtp-thread.c:499
 #: ../plugins/mtpdevice/rb-mtp-thread.c:557
 #: ../plugins/mtpdevice/rb-mtp-thread.c:575
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
-msgstr ""
+msgstr "MTP aygıtından dosya kopyalanamadı: %s"
 
 #: ../plugins/mtpdevice/rb-mtp-thread.c:520
 #, c-format
 msgid "Not enough space in %s"
-msgstr ""
+msgstr "%s'de yeterli alan yok"
 
 #: ../plugins/mtpdevice/rb-mtp-thread.c:601
 #, c-format
 msgid "No space left on MTP device"
-msgstr ""
+msgstr "MTP aygıtında boş alan kalmadı"
 
 #: ../plugins/mtpdevice/rb-mtp-thread.c:604
 #, c-format
@@ -2707,38 +2667,33 @@ msgid "Unable to send file to MTP device: %s"
 msgstr ""
 
 #: ../plugins/notification/notification.plugin.in.h:1
-#, fuzzy
 #| msgid "Location:"
 msgid "Notification"
-msgstr "Konum:"
+msgstr "Bildirim"
 
 #: ../plugins/notification/notification.plugin.in.h:2
 msgid "Notification popups"
-msgstr ""
+msgstr "Bildirim pencereleri"
 
 #: ../plugins/notification/rb-notification-plugin.c:208
-#, fuzzy
 #| msgid "P_revious"
 msgid "Previous"
-msgstr "_Önceki"
+msgstr "Önceki"
 
 #: ../plugins/notification/rb-notification-plugin.c:214
-#, fuzzy
 #| msgid "_Pause"
 msgid "Pause"
-msgstr "_Duraklat"
+msgstr "Duraklat"
 
 #: ../plugins/notification/rb-notification-plugin.c:214
-#, fuzzy
 #| msgid "_Play"
 msgid "Play"
-msgstr "_Çal"
+msgstr "Oynat"
 
 #: ../plugins/notification/rb-notification-plugin.c:225
-#, fuzzy
 #| msgid "_Next"
 msgid "Next"
-msgstr "S_onraki"
+msgstr "Sonraki"
 
 #. Translators: by Artist
 #: ../plugins/notification/rb-notification-plugin.c:312
@@ -2938,36 +2893,34 @@ msgid "Send files by mail, instant message..."
 msgstr ""
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:39
-#, fuzzy
 #| msgid "_Quality"
 msgid "Low quality"
-msgstr "Ka_lite"
+msgstr "Düşük kalite"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:40
 msgid "Normal quality"
-msgstr ""
+msgstr "Normal kalite"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:41
-#, fuzzy
 #| msgid "_Quality"
 msgid "High quality"
-msgstr "Ka_lite"
+msgstr "Yüksek kalite"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:173
 msgid "_Visual Effect"
-msgstr ""
+msgstr "_Görsel Efekt"
 
 #: ../plugins/visualizer/rb-visualizer-page.c:76
 msgid "Visual Effects"
-msgstr ""
+msgstr "Görsel Efektler"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:369
 msgid "Fullscreen"
-msgstr ""
+msgstr "Tam Ekran"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:370
 msgid "Toggle fullscreen visual effects"
-msgstr ""
+msgstr "Tam ekran görsel efektleri aç/kapat"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:395
 #, fuzzy
@@ -2981,15 +2934,15 @@ msgstr ""
 
 #: ../plugins/visualizer/visualizer.plugin.in.h:2
 msgid "Visualization"
-msgstr ""
+msgstr "Görselleştirme"
 
 #: ../podcast/rb-podcast-main-source.c:117
 msgid "New Episodes"
-msgstr ""
+msgstr "Yeni Bölümler"
 
 #: ../podcast/rb-podcast-main-source.c:135
 msgid "New Downloads"
-msgstr ""
+msgstr "Yeni İndirmeler"
 
 #: ../podcast/rb-podcast-main-source.c:156
 msgid "Downloading podcast"
@@ -5246,22 +5199,19 @@ msgid "Multiple Song Properties"
 msgstr "Çoklu Şarkı Özellikleri"
 
 #: ../widgets/rb-song-info.c:1214
-#, fuzzy
 #| msgid "Unknown file type"
 msgid "Unknown file name"
-msgstr "Bilinmeyen dosya türü"
+msgstr "Bilinmeyen dosya adı"
 
 #: ../widgets/rb-song-info.c:1236
-#, fuzzy
 #| msgid "on the desktop"
 msgid "On the desktop"
-msgstr "masaüstünde"
+msgstr "Masaüstünde"
 
 #: ../widgets/rb-song-info.c:1259
-#, fuzzy
 #| msgid "Unknown"
 msgid "Unknown location"
-msgstr "Bilinmeyen"
+msgstr "Bilinmeyen konum"
 
 #~ msgid "Add to Music Library"
 #~ msgstr "Müzik Kütüphanesine ekle"
