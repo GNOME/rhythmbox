@@ -841,22 +841,20 @@ update_config_widget (RBDaapPlugin *plugin)
 		gtk_entry_set_text (GTK_ENTRY (name_entry), name);
 		g_free (name);
 	}
-	g_signal_connect_object (name_entry,
-				 "focus-out-event",
-				 G_CALLBACK (share_name_entry_focus_out_event_cb),
-				 plugin,
-				 0);
+	g_signal_connect (name_entry,
+			  "focus-out-event",
+			  G_CALLBACK (share_name_entry_focus_out_event_cb),
+			  plugin);
 
 	password = g_settings_get_string (plugin->settings, "share-password");
 	if (password != NULL) {
 		gtk_entry_set_text (GTK_ENTRY (password_entry), password);
 		g_free (password);
 	}
-	g_signal_connect_object (password_entry,
-				 "focus-out-event",
-				 G_CALLBACK (share_password_entry_focus_out_event_cb),
-				 plugin,
-				 0);
+	g_signal_connect (password_entry,
+			  "focus-out-event",
+			  G_CALLBACK (share_password_entry_focus_out_event_cb),
+			  plugin);
 
 	/*gtk_widget_set_sensitive (password_entry, require_password);*/
 }

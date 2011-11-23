@@ -170,7 +170,7 @@ rb_daap_sharing_init (RBShell *shell)
 		create_share (shell);
 	}
 
-	g_signal_connect_object (settings, "changed", G_CALLBACK (sharing_settings_changed_cb), share, 0);
+	g_signal_connect_object (settings, "changed", G_CALLBACK (sharing_settings_changed_cb), shell, 0);
 }
 
 void
