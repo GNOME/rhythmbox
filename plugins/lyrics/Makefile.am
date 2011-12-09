@@ -7,9 +7,7 @@ plugin_PYTHON =				\
        LyricsSites.py			\
        LyricsConfigureDialog.py		\
        lyrics.py			\
-       LyrcParser.py			\
        AstrawebParser.py		\
-       LeoslyricsParser.py		\
        LyricWikiParser.py		\
        WinampcnParser.py		\
        TerraParser.py			\
