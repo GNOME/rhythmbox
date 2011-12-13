@@ -27,6 +27,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import os, re
+import urllib
 
 import rb
 from gi.repository import Gtk, Gio, GObject, Peas
@@ -158,7 +159,7 @@ class LyricGrabber(object):
 		
 		if status:
 			l = rb.Loader()
-			l.get_url(self.cache_path, callback)
+			l.get_url('file://' + urllib.pathname2url(self.cache_path), callback)
 		elif cache_only:
 			self.callback(_("No lyrics found"))
 		elif self.artist == "" and self.title == "":
@@ -419,7 +420,8 @@ class LyricsDisplayPlugin(GObject.Object, Peas.Activatable):
 
 	def lyrics_request (self, db, entry):
 		def lyrics_results(text):
-			db.emit_entry_extra_metadata_notify (entry, 'rb:lyrics', text)
+			if text:
+				db.emit_entry_extra_metadata_notify (entry, 'rb:lyrics', text)
 
 		lyrics_grabber = LyricGrabber(db, entry)
 		lyrics_grabber.search_lyrics(lyrics_results)
