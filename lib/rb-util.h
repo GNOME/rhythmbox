@@ -84,6 +84,14 @@ gboolean rb_signal_accumulator_object_handled (GSignalInvocationHint *hint,
 					       GValue *return_accu,
 					       const GValue *handler_return,
 					       gpointer dummy);
+gboolean rb_signal_accumulator_value_handled (GSignalInvocationHint *hint,
+					      GValue *return_accu,
+					      const GValue *handler_return,
+					      gpointer dummy);
+gboolean rb_signal_accumulator_boolean_or (GSignalInvocationHint *hint,
+					   GValue *return_accu,
+					   const GValue *handler_return,
+					   gpointer dummy);
 gboolean rb_signal_accumulator_value_array (GSignalInvocationHint *hint,
 					    GValue *return_accu,
 					    const GValue *handler_return,

@@ -102,8 +102,9 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  gio-unix-2.0 >= $GLIB_REQS		\
 		  libsoup-2.4 >= $LIBSOUP_REQS		\
 		  libsoup-gnome-2.4 >= $LIBSOUP_REQS	\
-		  libpeas-1.0 >= $LIBPEAS_REQS
-		  libpeas-gtk-1.0 >= $LIBPEAS_REQS)
+		  libpeas-1.0 >= $LIBPEAS_REQS		\
+		  libpeas-gtk-1.0 >= $LIBPEAS_REQS	\
+		  tdb >= 1.2.6)
 
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
 if test x$have_totem_plparser != xyes; then

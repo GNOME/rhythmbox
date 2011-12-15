@@ -25,6 +25,10 @@ metadatainclude_HEADERS = rb-metadata.h
 noinst_LTLIBRARIES = librbmetadata.la
 
 librbmetadata_la_SOURCES =				\
+	rb-ext-db-key.h					\
+	rb-ext-db-key.c					\
+	rb-ext-db.h					\
+	rb-ext-db.c					\
 	rb-metadata.h					\
 	rb-metadata-common.c				\
 	rb-metadata-dbus.h				\

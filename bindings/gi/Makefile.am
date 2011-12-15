@@ -29,6 +29,10 @@ rb_introspection_sources = \
 		lib/rb-string-value-map.c \
 		lib/rb-util.h \
 		lib/rb-util.c \
+		metadata/rb-ext-db.h \
+		metadata/rb-ext-db.c \
+		metadata/rb-ext-db-key.h \
+		metadata/rb-ext-db-key.c \
 		metadata/rb-metadata.h \
 		metadata/rb-metadata-dbus-client.c \
 		podcast/rb-podcast-manager.h \

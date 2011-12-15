@@ -1032,7 +1032,39 @@ rb_signal_accumulator_object_handled (GSignalInvocationHint *hint,
 	g_value_unset (return_accu);
 	g_value_init (return_accu, G_VALUE_TYPE (handler_return));
 	g_value_copy (handler_return, return_accu);
-	
+
+	return FALSE;
+}
+
+/**
+ * rb_signal_accumulator_value_handled: (skip):
+ * @hint: a #GSignalInvocationHint
+ * @return_accu: holds the accumulated return value
+ * @handler_return: holds the return value to be accumulated
+ * @dummy: user data (unused)
+ *
+ * A #GSignalAccumulator that aborts the signal emission after the
+ * first handler to return a value, and returns the value returned by
+ * that handler.  This is the opposite behaviour from what you get when
+ * no accumulator is specified, where the last signal handler wins.
+ *
+ * Return value: %FALSE to abort signal emission, %TRUE to continue
+ */
+gboolean
+rb_signal_accumulator_value_handled (GSignalInvocationHint *hint,
+				     GValue *return_accu,
+				     const GValue *handler_return,
+				     gpointer dummy)
+{
+	if (handler_return == NULL ||
+	    !G_VALUE_HOLDS (handler_return, G_TYPE_VALUE) ||
+	    g_value_get_boxed (handler_return) == NULL)
+		return TRUE;
+
+	g_value_unset (return_accu);
+	g_value_init (return_accu, G_VALUE_TYPE (handler_return));
+	g_value_copy (handler_return, return_accu);
+
 	return FALSE;
 }
 
@@ -1084,6 +1116,36 @@ rb_signal_accumulator_value_array (GSignalInvocationHint *hint,
 	g_value_unset (return_accu);
 	g_value_init (return_accu, G_TYPE_VALUE_ARRAY);
 	g_value_set_boxed (return_accu, a);
+	return TRUE;
+}
+
+/**
+ * rb_signal_accumulator_boolean_or: (skip):
+ * @hint: a #GSignalInvocationHint
+ * @return_accu: holds the accumulated return value
+ * @handler_return: holds the return value to be accumulated
+ * @dummy: user data (unused)
+ *
+ * A #GSignalAccumulator used to return the boolean OR of all
+ * returned (boolean) values.
+ *
+ * Return value: %FALSE to abort signal emission, %TRUE to continue
+ */
+gboolean
+rb_signal_accumulator_boolean_or (GSignalInvocationHint *hint,
+				  GValue *return_accu,
+				  const GValue *handler_return,
+				  gpointer dummy)
+{
+	if (handler_return != NULL && G_VALUE_HOLDS_BOOLEAN (handler_return)) {
+		if (G_VALUE_HOLDS_BOOLEAN (return_accu) == FALSE ||
+		    g_value_get_boolean (return_accu) == FALSE) {
+			g_value_unset (return_accu);
+			g_value_init (return_accu, G_TYPE_BOOLEAN);
+			g_value_set_boolean (return_accu, g_value_get_boolean (handler_return));
+		}
+	}
+
 	return TRUE;
 }
 
