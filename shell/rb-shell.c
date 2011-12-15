@@ -95,6 +95,7 @@
 #include "rb-podcast-manager.h"
 #include "rb-podcast-main-source.h"
 #include "rb-podcast-entry-types.h"
+#include "rb-ext-db.h"
 
 #include "eggsmclient.h"
 
@@ -299,6 +300,7 @@ struct _RBShellPrivate
 	char *playlists_file;
 
 	RhythmDB *db;
+	RBExtDB *art_store;
 
 	RBShellPlayer *player_shell;
 	RBShellClipboard *clipboard_shell;
@@ -466,6 +468,104 @@ rb_shell_create_mount_op_cb (RhythmDB *db, RBShell *shell)
 	return op;
 }
 
+static GValue *
+load_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
+{
+	const char *data;
+	gsize data_size;
+	GdkPixbufLoader *loader;
+	GdkPixbuf *pixbuf;
+	GValue *v;
+	GError *error = NULL;
+
+	if (G_VALUE_HOLDS_STRING (value)) {
+		data = g_value_get_string (value);
+		data_size = strlen (data);
+	} else if (G_VALUE_HOLDS (value, G_TYPE_GSTRING)) {
+		GString *str = g_value_get_boxed (value);
+		data = (const char *)str->str;
+		data_size = str->len;
+	} else if (G_VALUE_HOLDS (value, G_TYPE_BYTE_ARRAY)) {
+		GByteArray *bytes = g_value_get_boxed (value);
+		data = (const char *)bytes->data;
+		data_size = bytes->len;
+	} else {
+		rb_debug ("unable to load pixbufs from values of type %s", G_VALUE_TYPE_NAME (value));
+		return NULL;
+	}
+
+	loader = gdk_pixbuf_loader_new ();
+	gdk_pixbuf_loader_write (loader, (const guchar *)data, data_size, &error);
+	if (error != NULL) {
+		rb_debug ("unable to load pixbuf: %s", error->message);
+		g_clear_error (&error);
+		return NULL;
+	}
+
+	gdk_pixbuf_loader_close (loader, &error);
+	if (error != NULL) {
+		rb_debug ("unable to load pixbuf: %s", error->message);
+		g_clear_error (&error);
+		return NULL;
+	}
+
+	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+	v = g_new0 (GValue, 1);
+	g_value_init (v, GDK_TYPE_PIXBUF);
+	g_value_set_object (v, pixbuf);
+	return v;
+}
+
+static GValue *
+store_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
+{
+	const char *jpeg_format = "jpeg";
+	char *jpeg_format_options[] = { "quality", NULL };
+	char *jpeg_format_values[] = { "100", NULL };
+	const char *png_format = "png";
+	char *png_format_options[] = { "compression", NULL };
+	char *png_format_values[] = { "9", NULL };
+	const char *format;
+	char **format_options;
+	char **format_values;
+	GdkPixbuf *pixbuf;
+	char *data;
+	gsize data_size;
+	GError *error = NULL;
+	GString *s;
+	GValue *v;
+
+	if (G_VALUE_HOLDS (value, GDK_TYPE_PIXBUF) == FALSE) {
+		rb_debug ("can't store values of type %s", G_VALUE_TYPE_NAME (value));
+		return NULL;
+	}
+
+	pixbuf = GDK_PIXBUF (g_value_get_object (value));
+
+	/* switch to png if the image has an alpha channel */
+	if (gdk_pixbuf_get_has_alpha (pixbuf)) {
+		format = png_format;
+		format_options = png_format_options;
+		format_values = png_format_values;
+	} else {
+		format = jpeg_format;
+		format_options = jpeg_format_options;
+		format_values = jpeg_format_values;
+	}
+
+	if (gdk_pixbuf_save_to_bufferv (pixbuf, &data, &data_size, format, format_options, format_values, &error) == FALSE) {
+		rb_debug ("unable to save pixbuf: %s", error->message);
+		g_clear_error (&error);
+		return NULL;
+	}
+
+	s = g_string_new_len (data, data_size);
+	v = g_new0 (GValue, 1);
+	g_value_init (v, G_TYPE_GSTRING);
+	g_value_set_boxed (v, s);
+	return v;
+}
+
 static void
 construct_db (RBShell *shell)
 {
@@ -499,6 +599,10 @@ construct_db (RBShell *shell)
 	g_signal_connect_object (G_OBJECT (shell->priv->db), "create-mount-op",
 				 G_CALLBACK (rb_shell_create_mount_op_cb), shell,
 				 0);
+
+	shell->priv->art_store = rb_ext_db_new ("album-art");
+	g_signal_connect (shell->priv->art_store, "load", G_CALLBACK (load_external_art_cb), shell);
+	g_signal_connect (shell->priv->art_store, "store", G_CALLBACK (store_external_art_cb), shell);
 
 	rb_profile_end ("creating database object");
 }
@@ -1788,6 +1892,10 @@ rb_shell_finalize (GObject *object)
 
 		rb_debug ("unreffing DB");
 		g_object_unref (shell->priv->db);
+	}
+	if (shell->priv->art_store != NULL) {
+		g_object_unref (shell->priv->art_store);
+		shell->priv->art_store = NULL;
 	}
 
 	rb_file_helpers_shutdown ();
