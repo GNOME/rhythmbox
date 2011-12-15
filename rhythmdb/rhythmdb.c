@@ -5366,3 +5366,134 @@ rhythmdb_entry_is_lossless (RhythmDBEntry *entry)
 	media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
 	return rb_gst_media_type_is_lossless (media_type);
 }
+
+/**
+ * rhythmdb_entry_create_ext_db_key:
+ * @entry: a #RhythmDBEntry
+ * @prop: the primary #RhythmDBPropType for metadata lookups
+ *
+ * Creates a #RBExtDBKey for finding external metadata
+ * for a given property.  This is mostly useful for finding album or
+ * track related data.
+ *
+ * Return value: the new #RBExtDBKey
+ */
+RBExtDBKey *
+rhythmdb_entry_create_ext_db_key (RhythmDBEntry *entry, RhythmDBPropType prop)
+{
+	RBExtDBKey *key;
+	const char *str;
+
+	switch (prop) {
+	case RHYTHMDB_PROP_ALBUM:
+		key = rb_ext_db_key_create ("album", rhythmdb_entry_get_string (entry, prop));
+		rb_ext_db_key_add_field (key,
+					 "artist",
+					 RB_EXT_DB_FIELD_OPTIONAL,
+					 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+		str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_ARTIST);
+		if (g_strcmp0 (str, "") != 0 && g_strcmp0 (str, _("Unknown")) != 0) {
+			rb_ext_db_key_add_field (key,
+						 "album-artist",
+						 RB_EXT_DB_FIELD_OPTIONAL,
+						 str);
+		} else {
+			/* try artist name as album-artist too */
+			rb_ext_db_key_add_field (key,
+						 "album-artist",
+						 RB_EXT_DB_FIELD_OPTIONAL,
+						 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+		}
+
+		str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID);
+		if (g_strcmp0 (str, "") != 0 && g_strcmp0 (str, _("Unknown")) != 0) {
+			rb_ext_db_key_add_field (key,
+						 "musicbrainz-albumid",
+						 RB_EXT_DB_FIELD_INFORMATIONAL,
+						 str);
+		}
+
+		break;
+
+	case RHYTHMDB_PROP_TITLE:
+		key = rb_ext_db_key_create ("title", rhythmdb_entry_get_string (entry, prop));
+		rb_ext_db_key_add_field (key,
+					 "artist",
+					 RB_EXT_DB_FIELD_OPTIONAL,
+					 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+		rb_ext_db_key_add_field (key,
+					 "album",
+					 RB_EXT_DB_FIELD_OPTIONAL,
+					 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
+		break;
+
+	case RHYTHMDB_PROP_ARTIST:
+		/* not really sure what this might be useful for */
+		key = rb_ext_db_key_create ("artist", rhythmdb_entry_get_string (entry, prop));
+		break;
+
+	default:
+		g_assert_not_reached ();
+	}
+
+	rb_ext_db_key_add_field (key,
+				 "location",
+				 RB_EXT_DB_FIELD_INFORMATIONAL,
+				 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+	return key;
+}
+
+/**
+ * rhythmdb_entry_matches_ext_db_key:
+ * @db: #RhythmDB instance
+ * @entry: a #RhythmDBEntry
+ * @key: a #RBExtDBKey
+ *
+ * Checks whether @key matches @entry.
+ *
+ * Return value: %TRUE if the key matches the entry
+ */
+gboolean
+rhythmdb_entry_matches_ext_db_key (RhythmDB *db, RhythmDBEntry *entry, RBExtDBKey *key)
+{
+	char **fields;
+	int i;
+
+	fields = rb_ext_db_key_get_field_names (key);
+	for (i = 0; fields[i] != NULL; i++) {
+		const char *value;
+		const char *entry_value;
+		RhythmDBPropType prop;
+
+		prop = rhythmdb_propid_from_nice_elt_name (db, (const xmlChar *)fields[i]);
+		value = rb_ext_db_key_get_field (key, fields[i]);
+
+		switch (rb_ext_db_key_get_field_type (key, fields[i])) {
+		case RB_EXT_DB_FIELD_INFORMATIONAL:
+			/* ignore */
+			break;
+
+		case RB_EXT_DB_FIELD_OPTIONAL:
+			if (prop == -1)
+				break;
+
+			entry_value = rhythmdb_entry_get_string (entry, prop);
+			if (entry_value != NULL && strlen (entry_value) > 0 && strcmp (entry_value, value) != 0) {
+				return FALSE;
+			}
+			break;
+
+		case RB_EXT_DB_FIELD_REQUIRED:
+			if (prop == -1)
+				return FALSE;
+
+			entry_value = rhythmdb_entry_get_string (entry, prop);
+			if (entry_value == NULL || strcmp (entry_value, value) != 0) {
+				return FALSE;
+			}
+			break;
+		}
+	}
+
+	return TRUE;
+}

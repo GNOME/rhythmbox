@@ -39,6 +39,7 @@
 #include <rhythmdb/rhythmdb-entry.h>
 #include <rhythmdb/rhythmdb-entry-type.h>
 #include <rhythmdb/rhythmdb-query-results.h>
+#include <metadata/rb-ext-db-key.h>
 
 G_BEGIN_DECLS
 
@@ -379,6 +380,12 @@ void		rhythmdb_entry_write_metadata_changes (RhythmDB *db,
 						 RhythmDBEntry *entry,
 						 GSList *changes,
 						 GError **error);
+
+RBExtDBKey *	rhythmdb_entry_create_ext_db_key (RhythmDBEntry *entry,
+						 RhythmDBPropType prop);
+gboolean	rhythmdb_entry_matches_ext_db_key (RhythmDB *db,
+						 RhythmDBEntry *entry,
+						 RBExtDBKey *key);
 
 /*
  * Returns a freshly allocated GtkTreeModel which represents the query.
