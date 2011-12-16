@@ -49,6 +49,7 @@
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "rb-source-toolbar.h"
+#include "rb-ext-db.h"
 
 
 /* radio type stuff */
@@ -182,7 +183,7 @@ struct _RBAudioscrobblerRadioSourcePrivate
 	/* the currently playing entry from this source, if there is one */
 	RhythmDBEntry *playing_entry;
 
-	guint emit_coverart_id;
+	RBExtDB *art_store;
 
 	guint ui_merge_id;
 	GtkActionGroup *action_group;
@@ -252,15 +253,6 @@ static void rename_station_action_cb (GtkAction *action,
 static void delete_station_action_cb (GtkAction *action,
                                       RBAudioscrobblerRadioSource *source);
 
-/* cover art */
-static GValue *coverart_uri_request (RhythmDB *db,
-                                     RhythmDBEntry *entry,
-                                     RBAudioscrobblerRadioSource *source);
-static void extra_metadata_gather_cb (RhythmDB *db,
-                                      RhythmDBEntry *entry,
-                                      RBStringValueMap *map,
-                                      RBAudioscrobblerRadioSource *source);
-static gboolean emit_coverart_uri_cb (RBAudioscrobblerRadioSource *source);
 
 /* RBDisplayPage implementations */
 static void impl_selected (RBDisplayPage *page);
@@ -458,6 +450,8 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 		      "ui-manager", &ui_manager,
 		      NULL);
 
+	source->priv->art_store = rb_ext_db_new ("album-art");
+
 	main_vbox = gtk_vbox_new (FALSE, 4);
 	gtk_widget_show (main_vbox);
 	gtk_container_add (GTK_CONTAINER (source), main_vbox);
@@ -517,14 +511,6 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 				 "playing-song-changed",
 				 G_CALLBACK (playing_song_changed_cb),
 				 source, 0);
-	g_signal_connect_object (db,
-				 "entry-extra-metadata-request::" RHYTHMDB_PROP_COVER_ART_URI,
-				 G_CALLBACK (coverart_uri_request),
-				 source, 0);
-	g_signal_connect_object (db,
-				 "entry-extra-metadata-gather",
-				 G_CALLBACK (extra_metadata_gather_cb),
-				 source, 0);
 
 	/* merge ui */
 	g_object_get (source, "plugin", &plugin, NULL);
@@ -575,6 +561,11 @@ rb_audioscrobbler_radio_source_dispose (GObject *object)
 	if (source->priv->play_order != NULL) {
 		g_object_unref (source->priv->play_order);
 		source->priv->play_order = NULL;
+	}
+
+	if (source->priv->art_store != NULL) {
+		g_object_unref (source->priv->art_store);
+		source->priv->art_store = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_audioscrobbler_radio_source_parent_class)->dispose (object);
@@ -663,14 +654,10 @@ playing_song_changed_cb (RBShellPlayer *player,
 		source->priv->playing_entry = NULL;
 	}
 
-	/* stop requesting cover art for old entry */
-	if (source->priv->emit_coverart_id != 0) {
-		g_source_remove (source->priv->emit_coverart_id);
-		source->priv->emit_coverart_id = 0;
-	}
-
 	/* check if the new playing entry is from this source */
 	if (rhythmdb_query_model_entry_to_iter (source->priv->track_model, entry, &playing_iter) == TRUE) {
+		RBAudioscrobblerRadioTrackData *track_data;
+		RBExtDBKey *key;
 		GtkTreeIter iter;
 		gboolean reached_playing = FALSE;
 		int entries_after_playing = 0;
@@ -710,8 +697,15 @@ playing_song_changed_cb (RBShellPlayer *player,
 			tune (source);
 		}
 
-		/* emit cover art notification */
-		source->priv->emit_coverart_id = g_idle_add ((GSourceFunc) emit_coverart_uri_cb, source);
+		/* provide cover art */
+		key = rb_ext_db_key_create ("album", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
+		rb_ext_db_key_add_field (key, "artist", RB_EXT_DB_FIELD_OPTIONAL, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+		track_data = RHYTHMDB_ENTRY_GET_TYPE_DATA(entry, RBAudioscrobblerRadioTrackData);
+		rb_ext_db_store_uri (source->priv->art_store,
+				     key,
+				     RB_EXT_DB_SOURCE_SEARCH,
+				     track_data->image_url);
+		rb_ext_db_key_free (key);
 	}
 
 	rhythmdb_commit (db);
@@ -1365,104 +1359,6 @@ static void
 delete_station_action_cb (GtkAction *action, RBAudioscrobblerRadioSource *source)
 {
 	rb_audioscrobbler_profile_page_remove_radio_station (source->priv->parent, RB_SOURCE (source));
-}
-
-/* cover art */
-static const char *
-get_image_url_for_entry (RBAudioscrobblerRadioSource *source, RhythmDBEntry *entry)
-{
-	RBAudioscrobblerRadioTrackData *data;
-	RhythmDBEntryType *entry_type;
-
-	if (entry == NULL) {
-		return NULL;
-	}
-
-	g_object_get (source, "entry-type", &entry_type, NULL);
-
-	if (rhythmdb_entry_get_entry_type (entry) != entry_type) {
-		return NULL;
-	}
-
-	data = RHYTHMDB_ENTRY_GET_TYPE_DATA(entry, RBAudioscrobblerRadioTrackData);
-	return data->image_url;
-}
-
-static GValue *
-coverart_uri_request (RhythmDB *db,
-                      RhythmDBEntry *entry,
-                      RBAudioscrobblerRadioSource *source)
-{
-	const char *image_url;
-
-	image_url = get_image_url_for_entry (source, entry);
-	if (image_url != NULL) {
-		GValue *v;
-		v = g_new0 (GValue, 1);
-		g_value_init (v, G_TYPE_STRING);
-		rb_debug ("requested cover image %s", image_url);
-		g_value_set_string (v, image_url);
-		return v;
-	}
-
-	return NULL;
-}
-
-static void
-extra_metadata_gather_cb (RhythmDB *db,
-                          RhythmDBEntry *entry,
-                          RBStringValueMap *map,
-                          RBAudioscrobblerRadioSource *source)
-{
-	const char *image_url;
-
-	image_url = get_image_url_for_entry (source, entry);
-	if (image_url != NULL) {
-		GValue v = {0,};
-		g_value_init (&v, G_TYPE_STRING);
-		g_value_set_string (&v, image_url);
-
-		rb_debug ("gathered cover image %s", image_url);
-		rb_string_value_map_set (map, "rb:coverArt-uri", &v);
-		g_value_unset (&v);
-	}
-}
-
-static gboolean
-emit_coverart_uri_cb (RBAudioscrobblerRadioSource *source)
-{
-	RBShell *shell;
-	RBShellPlayer *shell_player;
-	RhythmDB *db;
-	RhythmDBEntry *entry;
-	const char *image_url;
-
-	g_object_get (source, "shell", &shell, NULL);
-	g_object_get (shell,
-		      "db", &db,
-		      "shell-player", &shell_player,
-		      NULL);
-
-	source->priv->emit_coverart_id = 0;
-
-	entry = rb_shell_player_get_playing_entry (shell_player);
-	image_url = get_image_url_for_entry (source, entry);
-	if (image_url != NULL) {
-		GValue v = {0,};
-		g_value_init (&v, G_TYPE_STRING);
-		g_value_set_string (&v, image_url);
-		rhythmdb_emit_entry_extra_metadata_notify (db,
-							   entry,
-							   "rb:coverArt-uri",
-							   &v);
-		g_value_unset (&v);
-	}
-
-	g_object_unref (shell_player);
-	g_object_unref (shell);
-	g_object_unref (db);
-
-	return FALSE;
 }
 
 static void
