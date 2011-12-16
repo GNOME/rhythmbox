@@ -863,6 +863,7 @@ plugins/sample-python/Makefile
 plugins/sample-vala/Makefile
 plugins/pythonconsole/Makefile
 plugins/artdisplay/Makefile
+plugins/artsearch/Makefile
 plugins/magnatune/Makefile
 plugins/generic-player/Makefile
 plugins/rb/Makefile

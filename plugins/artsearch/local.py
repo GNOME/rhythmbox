@@ -1,0 +1,147 @@
+# -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
+#
+# Copyright (C) 2006 - Ed Catmur <ed@catmur.co.uk>
+# Copyright (C) 2009 - Jonathan Matthew <jonathan@d14n.org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# The Rhythmbox authors hereby grant permission for non-GPL compatible
+# GStreamer plugins to be used and distributed together with GStreamer
+# and Rhythmbox. This permission is above and beyond the permissions granted
+# by the GPL license by which Rhythmbox is covered. If you modify this code
+# you may extend this exception to your version of the code, but you are not
+# obligated to do so. If you do not wish to do so, delete this exception
+# statement from your version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
+
+import os
+
+from gi.repository import RB
+from gi.repository import GObject, GLib, Gio
+
+IMAGE_NAMES = ["cover", "album", "albumart", "front", ".folder", "folder"]
+ITEMS_PER_NOTIFICATION = 10
+
+IGNORED_SCHEMES = ('http', 'cdda', 'daap', 'mms')
+
+def file_root (f_name):
+	return os.path.splitext (f_name)[0].lower ()
+
+def shared_prefix_length (a, b):
+	l = 0
+	while a[l] == b[l]:
+		l = l+1
+	return l
+
+class LocalSearch:
+	def __init__ (self):
+		pass
+
+	def finished(self, results):
+		parent = self.file.get_parent()
+		ordered = []
+
+		# Compare lower case, without file extension
+		for name in [file_root (self.file.get_basename())] + IMAGE_NAMES:
+			for f_name in results:
+				if file_root (f_name) == name:
+					ordered.append(parent.resolve_relative_path(f_name).get_uri())
+
+		# look for file names containing the artist and album (case-insensitive)
+		# (mostly for jamendo downloads)
+		artist = self.artist.lower()
+		album = self.album.lower()
+		for f_name in results:
+			f_root = file_root (f_name).lower()
+			if f_root.find (artist) != -1 and f_root.find (album) != -1:
+				ordered.append(parent.resolve_relative_path(f_name).get_uri())
+
+		# if that didn't work, look for the longest shared prefix
+		# only accept matches longer than 2 to avoid weird false positives
+		match_len = 2
+		match = None
+		for f_name in results:
+			pl = shared_prefix_length(f_name, self.file.get_basename())
+			if pl > match_len:
+				match_len = pl
+				match = f_name
+
+		if match is not None:
+			ordered.append(parent.resolve_relative_path(match).get_uri())
+
+		key = RB.ExtDBKey.create("album", self.album)
+		key.add_field("album-artist", RB.ExtDBFieldType.OPTIONAL, self.artist)
+		self.callback(key, ordered, RB.ExtDBSourceType.USER, self.callback_args)
+
+	def _enum_dir_cb(self, fileenum, result, results):
+		try:
+			files = fileenum.next_files_finish(result)
+			if files is None or len(files) == 0:
+				print "okay, done; got %d files" % len(results)
+				self.finished(results)
+				return
+
+			for f in files:
+				ct = f.get_attribute_string("standard::content-type")
+				# assume readable unless told otherwise
+				readable = True
+				if f.has_attribute("access::can-read"):
+					readable = f.get_attribute_boolean("access::can-read")
+				if ct is not None and ct.startswith("image/") and readable:
+					results.append(f.get_name())
+
+			fileenum.next_files_async(ITEMS_PER_NOTIFICATION, GLib.PRIORITY_DEFAULT, None, self._enum_dir_cb, results)
+		except Exception, e:
+			print "okay, probably done: %s" % e
+			import sys
+			sys.excepthook(*sys.exc_info())
+			self.finished(results)
+
+
+	def _enum_children_cb(self, parent, result, data):
+		try:
+			enumfiles = parent.enumerate_children_finish(result)
+			enumfiles.next_files_async(ITEMS_PER_NOTIFICATION, GLib.PRIORITY_DEFAULT, None, self._enum_dir_cb, [])
+		except Exception, e:
+			print "okay, probably done: %s" % e
+			import sys
+			sys.excepthook(*sys.exc_info())
+			self.callback(None, None, RB.ExtDBSourceType.NONE, self.callback_args)
+
+
+	def search (self, key, last_time, callback, args):
+		# ignore last_time
+
+		location = key.get_field("location")
+		if location is None:
+			print "not searching, we don't have a location"
+			callback(None, None, RB.ExtDBSourceType.NONE, args)
+			return
+
+		self.file = Gio.file_new_for_uri(location)
+		if self.file.get_uri_scheme() in IGNORED_SCHEMES:
+			print 'not searching for local art for %s' % (self.file.get_uri())
+			callback(None, None, RB.ExtDBSourceType.NONE, args)
+			return
+
+		self.album = key.get_field("album")
+		self.artist = key.get_field("album-artist")
+		if self.artist in (None, ""):
+			self.artist = key.get_field("artist")
+		self.callback = callback
+		self.callback_args = args
+
+		print 'searching for local art for %s' % (self.file.get_uri())
+		parent = self.file.get_parent()
+		enumfiles = parent.enumerate_children_async("standard::content-type,access::can-read,standard::name", 0, 0, None, self._enum_children_cb, None)
