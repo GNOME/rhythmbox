@@ -50,6 +50,7 @@
 #include "rb-metadata.h"
 #include "rb-util.h"
 #include "rb-missing-plugins.h"
+#include "rb-ext-db.h"
 
 enum
 {
@@ -112,6 +113,7 @@ struct RBPodcastManagerPrivate
 	guint source_sync;
 	guint next_file_id;
 	gboolean shutdown;
+	RBExtDB *art_store;
 
 	GSettings *settings;
 	GFile *timestamp_file;
@@ -287,6 +289,8 @@ rb_podcast_manager_constructed (GObject *object)
 		g_object_unref (st);
 	}
 
+	pd->priv->art_store = rb_ext_db_new ("album-art");
+
 	rb_podcast_manager_start_update_timer (pd);
 }
 
@@ -323,6 +327,11 @@ rb_podcast_manager_dispose (GObject *object)
 	if (pd->priv->timestamp_file != NULL) {
 		g_object_unref (pd->priv->timestamp_file);
 		pd->priv->timestamp_file = NULL;
+	}
+
+	if (pd->priv->art_store != NULL) {
+		g_object_unref (pd->priv->art_store);
+		pd->priv->art_store = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_podcast_manager_parent_class)->dispose (object);
@@ -1977,10 +1986,18 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 	}
 
 	if (data->img) {
+		RBExtDBKey *key;
+
 		g_value_init (&image_val, G_TYPE_STRING);
 		g_value_set_string (&image_val, (gchar *) data->img);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_IMAGE, &image_val);
 		g_value_unset (&image_val);
+
+		key = rb_ext_db_key_create ("album", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
+		rb_ext_db_store_uri (pd->priv->art_store,
+				     key,
+				     RB_EXT_DB_SOURCE_SEARCH,	/* sort of */
+				     data->img);
 	}
 
 	/* clear any error that might have been set earlier */
