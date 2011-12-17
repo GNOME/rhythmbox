@@ -42,6 +42,7 @@
 #include "rb-shell.h"
 #include "rb-shell-player.h"
 #include "rb-stock-icons.h"
+#include "rb-ext-db.h"
 
 #define PLAYING_ENTRY_NOTIFY_TIME	4
 
@@ -68,6 +69,7 @@ typedef struct
 
 	RBShellPlayer *shell_player;
 	RhythmDB *db;
+	RBExtDB *art_store;
 } RBNotificationPlugin;
 
 typedef struct
@@ -344,6 +346,30 @@ get_artist_album_templates (const char *artist,
 }
 
 static void
+art_cb (RBExtDBKey *key, const char *filename, GValue *data, RBNotificationPlugin *plugin)
+{
+	RhythmDBEntry *entry;
+
+	entry = rb_shell_player_get_playing_entry (plugin->shell_player);
+	if (entry == NULL) {
+		return;
+	}
+
+	if (rhythmdb_entry_matches_ext_db_key (plugin->db, entry, key)) {
+		guint elapsed = 0;
+
+		plugin->notify_art_path = g_strdup (filename);
+
+		rb_shell_player_get_playing_time (plugin->shell_player, &elapsed, NULL);
+		if (elapsed < PLAYING_ENTRY_NOTIFY_TIME) {
+			notify_playing_entry (plugin, FALSE);
+		}
+	}
+
+	rhythmdb_entry_unref (entry);
+}
+
+static void
 update_current_playing_data (RBNotificationPlugin *plugin, RhythmDBEntry *entry)
 {
 	GValue *value;
@@ -352,6 +378,7 @@ update_current_playing_data (RBNotificationPlugin *plugin, RhythmDBEntry *entry)
 	char *album = NULL;
 	char *title = NULL;
 	GString *secondary;
+	RBExtDBKey *key;
 
 	const char *artist_template = NULL;
 	const char *album_template = NULL;
@@ -370,6 +397,15 @@ update_current_playing_data (RBNotificationPlugin *plugin, RhythmDBEntry *entry)
 	}
 
 	secondary = g_string_sized_new (100);
+
+	/* request album art */
+	key = rhythmdb_entry_create_ext_db_key (entry, RHYTHMDB_PROP_ALBUM);
+	rb_ext_db_request (plugin->art_store,
+			   key,
+			   (RBExtDBRequestCallback) art_cb,
+			   g_object_ref (plugin),
+			   g_object_unref);
+	rb_ext_db_key_free (key);
 
 	/* get artist, preferring streaming song details */
 	value = rhythmdb_entry_request_extra_metadata (plugin->db,
@@ -474,48 +510,6 @@ is_playing_entry (RBNotificationPlugin *plugin, RhythmDBEntry *entry)
 }
 
 static void
-db_art_uri_metadata_cb (RhythmDB *db,
-			RhythmDBEntry *entry,
-			const char *field,
-			GValue *metadata,
-			RBNotificationPlugin *plugin)
-{
-	guint time;
-
-	if (is_playing_entry (plugin, entry) == FALSE)
-		return;
-
-	if (G_VALUE_HOLDS (metadata, G_TYPE_STRING)) {
-		const char *uri = g_value_get_string (metadata);
-		if (g_str_has_prefix (uri, "file://")) {
-			char *path = g_filename_from_uri (uri, NULL, NULL);
-			if (g_strcmp0 (path, plugin->notify_art_path) != 0) {
-				g_free (plugin->notify_art_path);
-				plugin->notify_art_path = path;
-			} else {
-				/* same art URI, ignore it */
-				g_free (path);
-				return;
-			}
-		} else {
-			/* unsupported art URI, ignore it */
-			return;
-		}
-	} else {
-		g_free (plugin->notify_art_path);
-		plugin->notify_art_path = NULL;
-	}
-
-	if (rb_shell_player_get_playing_time (plugin->shell_player, &time, NULL)) {
-		if (time < PLAYING_ENTRY_NOTIFY_TIME) {
-			notify_playing_entry (plugin, FALSE);
-		}
-	} else {
-		notify_playing_entry (plugin, FALSE);
-	}
-}
-
-static void
 db_stream_metadata_cb (RhythmDB *db,
 		       RhythmDBEntry *entry,
 		       const char *field,
@@ -551,14 +545,14 @@ impl_activate (PeasActivatable *bplugin)
 
 	g_signal_connect_object (plugin->shell_player, "playing-song-changed", G_CALLBACK (playing_entry_changed_cb), plugin, 0);
 
-	g_signal_connect_object (plugin->db, "entry_extra_metadata_notify::" RHYTHMDB_PROP_COVER_ART_URI,
-				 G_CALLBACK (db_art_uri_metadata_cb), plugin, 0);
 	g_signal_connect_object (plugin->db, "entry_extra_metadata_notify::" RHYTHMDB_PROP_STREAM_SONG_TITLE,
 				 G_CALLBACK (db_stream_metadata_cb), plugin, 0);
 	g_signal_connect_object (plugin->db, "entry_extra_metadata_notify::" RHYTHMDB_PROP_STREAM_SONG_ARTIST,
 				 G_CALLBACK (db_stream_metadata_cb), plugin, 0);
 	g_signal_connect_object (plugin->db, "entry_extra_metadata_notify::" RHYTHMDB_PROP_STREAM_SONG_ALBUM,
 				 G_CALLBACK (db_stream_metadata_cb), plugin, 0);
+
+	plugin->art_store = rb_ext_db_new ("album-art");
 
 	/* hook into shell preferences so we can poke stuff into the general prefs page? */
 
@@ -586,7 +580,6 @@ impl_deactivate	(PeasActivatable *bplugin)
 	}
 
 	if (plugin->db != NULL) {
-		g_signal_handlers_disconnect_by_func (plugin->db, db_art_uri_metadata_cb, plugin);
 		g_signal_handlers_disconnect_by_func (plugin->db, db_stream_metadata_cb, plugin);
 
 		g_object_unref (plugin->db);
@@ -595,6 +588,9 @@ impl_deactivate	(PeasActivatable *bplugin)
 
 	g_signal_handlers_disconnect_by_func (shell, shell_notify_playing_cb, plugin);
 	g_signal_handlers_disconnect_by_func (shell, shell_notify_custom_cb, plugin);
+
+	g_object_unref (plugin->art_store);
+	plugin->art_store = NULL;
 
 	/* forget what's playing */
 	g_free (plugin->current_title);

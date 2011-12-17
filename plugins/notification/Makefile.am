@@ -25,6 +25,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/sources                    	\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/plugins				\
+	-I$(top_srcdir)/metadata			\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
