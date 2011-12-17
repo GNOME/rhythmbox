@@ -87,6 +87,8 @@ class MagnatuneSource(RB.BrowserSource):
 		self.__downloads = {} # keeps track of download progress for each file
 		self.__cancellables = {} # keeps track of Gio.Cancellable objects so we can abort album downloads
 
+		self.__art_store = RB.ExtDB("album-art")
+
 	#
 	# RBSource methods
 	#
@@ -550,12 +552,9 @@ class MagnatuneSource(RB.BrowserSource):
 		if entry.get_entry_type() != self.__db.entry_type_get_by_name("MagnatuneEntryType"):
 			return
 
-		GObject.idle_add(self.emit_cover_art_uri, entry)
-
-	def emit_cover_art_uri(self, entry):
-		sku = self.__sku_dict[self.__db.entry_get_string(entry, RB.RhythmDBPropType.LOCATION)]
-		url = self.__art_dict[sku]
-		self.__db.emit_entry_extra_metadata_notify(entry, 'rb:coverArt-uri', url)
-		return False
+		sku = self.__sku_dict[entry.get_string(RB.RhythmDBPropType.LOCATION)]
+		key = RB.ExtDBKey.create("album", entry.get_string(RB.RhythmDBPropType.ALBUM))
+		key.add_field("artist", RB.ExtDBFieldType.OPTIONAL, entry.get_string(RB.RhythmDBPropType.ARTIST))
+		self.__art_store.store_uri(key, self.__art_dict[sku])
 
 GObject.type_register(MagnatuneSource)
