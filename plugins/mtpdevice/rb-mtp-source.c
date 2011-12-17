@@ -54,6 +54,7 @@
 #include "rb-encoder.h"
 #include "rb-sync-settings.h"
 #include "rb-gst-media-types.h"
+#include "rb-ext-db.h"
 
 #include "rb-mtp-source.h"
 #include "rb-mtp-thread.h"
@@ -102,11 +103,6 @@ static gboolean impl_can_eject (RBDeviceSource *source);
 static void mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source);
 static void mtp_tracklist_cb (LIBMTP_track_t *tracks, RBMtpSource *source);
 static RhythmDB * get_db_for_source (RBMtpSource *source);
-static void artwork_notify_cb (RhythmDB *db,
-			       RhythmDBEntry *entry,
-			       const char *property_name,
-			       const GValue *metadata,
-			       RBMtpSource *source);
 
 static void		impl_get_entries	(RBMediaPlayerSource *source, const char *category, GHashTable *map);
 static guint64		impl_get_capacity	(RBMediaPlayerSource *source);
@@ -139,7 +135,6 @@ typedef struct
 	RBMtpThread *device_thread;
 	LIBMTP_raw_device_t raw_device;
 	GHashTable *entry_map;
-	GHashTable *artwork_request_map;
 	GHashTable *track_transfer_map;
 #if defined(HAVE_GUDEV)
 	GUdevDevice *udev_device;
@@ -149,6 +144,7 @@ typedef struct
 #endif
 	uint16_t supported_types[LIBMTP_FILETYPE_UNKNOWN+1];
 	gboolean album_art_supported;
+	RBExtDB *art_store;
 
 	/* device information */
 	char *manufacturer;
@@ -280,7 +276,6 @@ rb_mtp_source_init (RBMtpSource *source)
 						 g_direct_equal,
 						 NULL,
 						 (GDestroyNotify) LIBMTP_destroy_track_t);
-	priv->artwork_request_map = g_hash_table_new (g_direct_hash, g_direct_equal);
 
 	priv->track_transfer_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 }
@@ -403,12 +398,7 @@ rb_mtp_source_constructed (GObject *object)
 	g_object_unref (pixbuf);
 
 	if (priv->album_art_supported) {
-		RhythmDB *db;
-
-		db = get_db_for_source (source);
-		g_signal_connect_object (db, "entry-extra-metadata-notify::rb:coverArt",
-					 G_CALLBACK (artwork_notify_cb), source, 0);
-		g_object_unref (db);
+		priv->art_store = rb_ext_db_new ("album-art");
 	}
 }
 
@@ -515,6 +505,10 @@ rb_mtp_source_dispose (GObject *object)
 		priv->remount_volume = NULL;
 	}
 #endif
+	if (priv->art_store != NULL) {
+		g_object_unref (priv->art_store);
+		priv->art_store = NULL;
+	}
 
 	db = get_db_for_source (source);
 
@@ -534,7 +528,6 @@ rb_mtp_source_finalize (GObject *object)
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (object);
 
 	g_hash_table_destroy (priv->entry_map);
-	g_hash_table_destroy (priv->artwork_request_map);
 	g_hash_table_destroy (priv->track_transfer_map);		/* probably need to destroy the tracks too.. */
 
 #if defined(HAVE_GUDEV)
@@ -1059,41 +1052,21 @@ get_db_for_source (RBMtpSource *source)
 	return db;
 }
 
-typedef struct {
-	RBMtpSource *source;
-	RhythmDBEntry *entry;
-} RequestAlbumArtData;
-
-static gboolean
-request_album_art_idle (RequestAlbumArtData *data)
+static void
+art_request_cb (RBExtDBKey *key, const char *filename, GValue *data, RBMtpSource *source)
 {
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (data->source);
-	const char *album;
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 
-	/* pretty sure we don't need any extra locking here - we only touch the artwork
-	 * request map on the main thread anyway.
-	 */
+	if (G_VALUE_HOLDS (data, GDK_TYPE_PIXBUF)) {
+		GdkPixbuf *pixbuf;
+		const char *album_name;
 
-	album = rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_ALBUM);
-	if (g_hash_table_lookup (priv->artwork_request_map, album) == NULL) {
-		GValue *metadata;
-		RhythmDB *db = get_db_for_source (data->source);
+		pixbuf = GDK_PIXBUF (g_value_get_object (data));
 
-		rb_debug ("requesting cover art image for album %s", album);
-		g_hash_table_insert (priv->artwork_request_map, (gpointer) album, GINT_TO_POINTER (1));
-		metadata = rhythmdb_entry_request_extra_metadata (db, data->entry, "rb:coverArt");
-		if (metadata) {
-			artwork_notify_cb (db, data->entry, "rb:coverArt", metadata, data->source);
-			g_value_unset (metadata);
-			g_free (metadata);
-		}
-		g_object_unref (db);
+		album_name = rb_ext_db_key_get_field (key, "album");
+		rb_mtp_thread_set_album_image (priv->device_thread, album_name, pixbuf);
+		queue_free_space_update (source);
 	}
-
-	g_object_unref (data->source);
-	rhythmdb_entry_unref (data->entry);
-	g_free (data);
-	return FALSE;
 }
 
 static gboolean
@@ -1105,8 +1078,6 @@ impl_track_added (RBTransferTarget *target,
 {
 	LIBMTP_track_t *track = NULL;
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (target);
-	RhythmDB *db;
-	RhythmDBEntry *mtp_entry;
 
 	track = g_hash_table_lookup (priv->track_transfer_map, dest);
 	if (track == NULL) {
@@ -1115,21 +1086,25 @@ impl_track_added (RBTransferTarget *target,
 	}
 	g_hash_table_remove (priv->track_transfer_map, dest);
 
-	db = get_db_for_source (RB_MTP_SOURCE (target));
-	/* entry_map takes ownership of the track here */
-	mtp_entry = add_mtp_track_to_db (RB_MTP_SOURCE (target), db, track);
-	g_object_unref (db);
-
 	if (strcmp (track->album, _("Unknown")) != 0) {
 		rb_mtp_thread_add_to_album (priv->device_thread, track, track->album);
-	}
 
-	if (priv->album_art_supported) {
-		RequestAlbumArtData *artdata;
-		artdata = g_new0 (RequestAlbumArtData, 1);
-		artdata->source = g_object_ref (target);
-		artdata->entry = rhythmdb_entry_ref (mtp_entry);
-		g_idle_add ((GSourceFunc) request_album_art_idle, artdata);
+		if (priv->album_art_supported) {
+			RBExtDBKey *key;
+
+			/* need to do this in an idle handler? */
+			key = rb_ext_db_key_create ("album", track->album);
+			rb_ext_db_key_add_field (key,
+						 "artist",
+						 RB_EXT_DB_FIELD_OPTIONAL,
+						 track->artist);
+			rb_ext_db_request (priv->art_store,
+					   key,
+					   (RBExtDBRequestCallback) art_request_cb,
+					   g_object_ref (target),
+					   (GDestroyNotify) g_object_unref);
+			rb_ext_db_key_free (key);
+		}
 	}
 	queue_free_space_update (RB_MTP_SOURCE (target));
 	return FALSE;
@@ -1284,32 +1259,6 @@ impl_build_dest_uri (RBTransferTarget *target,
 	}
 	uri = g_strdup_printf ("xrbmtp://%lu/%s/%d", id, extension, filetype);
 	return uri;
-}
-
-static void
-artwork_notify_cb (RhythmDB *db,
-		   RhythmDBEntry *entry,
-		   const char *property_name,
-		   const GValue *metadata,
-		   RBMtpSource *source)
-{
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-	GdkPixbuf *pixbuf;
-	const char *album_name;
-
-	album_name = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
-
-	/* check if we're looking for art for this entry, and if we actually got some */
-	if (g_hash_table_remove (priv->artwork_request_map, album_name) == FALSE)
-		return;
-
-	if (G_VALUE_HOLDS (metadata, GDK_TYPE_PIXBUF) == FALSE)
-		return;
-
-	pixbuf = GDK_PIXBUF (g_value_get_object (metadata));
-
-	rb_mtp_thread_set_album_image (priv->device_thread, album_name, pixbuf);
-	queue_free_space_update (source);
 }
 
 
