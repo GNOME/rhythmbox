@@ -44,6 +44,7 @@
 #include <shell/rb-shell-player.h>
 #include <backends/rb-player.h>
 #include <sources/rb-playlist-source.h>
+#include <metadata/rb-ext-db.h>
 
 #define RB_TYPE_MPRIS_PLUGIN		(rb_mpris_plugin_get_type ())
 #define RB_MPRIS_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_MPRIS_PLUGIN, RBMprisPlugin))
@@ -74,6 +75,7 @@ typedef struct
 	RBDisplayPageModel *page_model;
 	GtkAction *next_action;
 	GtkAction *prev_action;
+	RBExtDB *art_store;
 
 	int playlist_count;
 
@@ -523,8 +525,10 @@ build_track_metadata (RBMprisPlugin *plugin,
 		      GVariantBuilder *builder,
 		      RhythmDBEntry *entry)
 {
+	RBExtDBKey *key;
 	GValue *md;
 	char *trackid_str;
+	char *art_filename = NULL;
 
 	trackid_str = g_strdup_printf(ENTRY_OBJECT_PATH_PREFIX "%lu",
 				      rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID));
@@ -574,17 +578,19 @@ build_track_metadata (RBMprisPlugin *plugin,
 	add_double_property (builder, entry, RHYTHMDB_PROP_RATING, "xesam:userRating", 0.2);	/* scale to 0..1 */
 	add_double_property_as_int (builder, entry, RHYTHMDB_PROP_BPM, "xesam:audioBPM", 1.0, FALSE);
 
-	md = rhythmdb_entry_request_extra_metadata (plugin->db, entry, RHYTHMDB_PROP_COVER_ART_URI);
-	if (md != NULL) {
-		const char *uri;
-		uri = g_value_get_string (md);
-		if (uri != NULL && uri[0] != '\0') {
-			g_variant_builder_add (builder, "{sv}", "mpris:artUrl", g_variant_new ("s", uri));
-		}
+	key = rhythmdb_entry_create_ext_db_key (entry, RHYTHMDB_PROP_ALBUM);
 
-		g_value_unset (md);
-		g_free (md);
+	art_filename = rb_ext_db_lookup (plugin->art_store, key);
+	if (art_filename != NULL) {
+		char *uri;
+		uri = g_filename_to_uri (art_filename, NULL, NULL);
+		if (uri != NULL) {
+			g_variant_builder_add (builder, "{sv}", "mpris:artUrl", g_variant_new ("s", uri));
+			g_free (uri);
+		}
+		g_free (art_filename);
 	}
+	rb_ext_db_key_free (key);
 
 	/* maybe do lyrics? */
 }
@@ -1219,6 +1225,19 @@ entry_extra_metadata_notify_cb (RhythmDB *db, RhythmDBEntry *entry, const char *
 }
 
 static void
+art_added_cb (RBExtDB *store, RBExtDBKey *key, const char *filename, GValue *data, RBMprisPlugin *plugin)
+{
+	RhythmDBEntry *playing_entry = rb_shell_player_get_playing_entry (plugin->player);
+	if (playing_entry != NULL && rhythmdb_entry_matches_ext_db_key (plugin->db, playing_entry, key)) {
+		rb_debug ("emitting Metadata change due to album art");
+		metadata_changed (plugin, playing_entry);
+	}
+	if (playing_entry != NULL) {
+		rhythmdb_entry_unref (playing_entry);
+	}
+}
+
+static void
 entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry, GValueArray *changes, RBMprisPlugin *plugin)
 {
 	RhythmDBEntry *playing_entry = rb_shell_player_get_playing_entry (plugin->player);
@@ -1487,6 +1506,12 @@ impl_activate (PeasActivatable *bplugin)
 				(GtkTreeModelForeachFunc) display_page_inserted_cb,
 				plugin);
 
+	plugin->art_store = rb_ext_db_new ("album-art");
+	g_signal_connect_object (plugin->art_store,
+				 "added",
+				 G_CALLBACK (art_added_cb),
+				 plugin, 0);
+
 	/*
 	 * This is a pretty awful hack.  The shell player should expose this
 	 * information as properties, and we should bind those to the actions
@@ -1598,6 +1623,14 @@ impl_deactivate	(PeasActivatable *bplugin)
 	if (plugin->connection != NULL) {
 		g_object_unref (plugin->connection);
 		plugin->connection = NULL;
+	}
+
+	if (plugin->art_store != NULL) {
+		g_signal_handlers_disconnect_by_func (plugin->art_store,
+						      G_CALLBACK (art_added_cb),
+						      plugin);
+		g_object_unref (plugin->art_store);
+		plugin->art_store = NULL;
 	}
 }
 
