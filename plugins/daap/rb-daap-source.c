@@ -96,8 +96,6 @@ struct RBDAAPSourcePrivate
 	const char *connection_status;
 	float connection_progress;
 
-	GMainLoop *mount_op_loop;
-	gboolean mount_op_handled;
 	gboolean tried_password;
 	gboolean disconnecting;
 };
@@ -356,32 +354,89 @@ rb_daap_source_new (RBShell *shell,
 	return source;
 }
 
+typedef struct {
+	RBDAAPSource *source;
+	DMAPConnection *connection;
+	SoupSession *session;
+	SoupMessage *message;
+	SoupAuth *auth;
+	char *name;
+} AuthData;
+
 static void
 mount_op_reply_cb (GMountOperation *op,
 		   GMountOperationResult result,
-		   RBDAAPSource *source)
+		   AuthData *auth_data)
 {
-	rb_debug ("mount op reply: %d", result);
-	source->priv->mount_op_handled = (result == G_MOUNT_OPERATION_HANDLED);
-	g_main_loop_quit (source->priv->mount_op_loop);
-}
-
-static char *
-ask_password (RBDAAPSource *source, const char *name, const char *keyring)
-{
-	GtkWindow *parent;
-	GMountOperation *mount_op;
-	GAskPasswordFlags flags;
-	char *password = NULL;
-	char *message;
+	const char *password;
+	gchar *keyring;
 #ifdef WITH_GNOME_KEYRING
 	guint32 item_id;
 #endif
 
+	rb_debug ("mount op reply: %d", result);
+	password = g_mount_operation_get_password (op);
+
+#ifdef WITH_GNOME_KEYRING
+	switch (g_mount_operation_get_password_save (op)) {
+	case G_PASSWORD_SAVE_NEVER:
+		break;
+
+	case G_PASSWORD_SAVE_FOR_SESSION:
+		keyring = "session";
+		/* fall through */
+
+	case G_PASSWORD_SAVE_PERMANENTLY:
+		gnome_keyring_set_network_password_sync (keyring,
+			NULL,
+			"DAAP", auth_data->name,
+			NULL, "daap",
+			NULL, 0,
+			password,
+			&item_id);
+		break;
+
+	default:
+		g_assert_not_reached ();
+	}
+#endif
+
+	if (password) {
+		dmap_connection_authenticate_message (auth_data->connection,
+						      auth_data->session,
+						      auth_data->message,
+						      auth_data->auth,
+						      password);
+	} else {
+		rb_daap_source_disconnect (auth_data->source);
+	}
+
+	g_object_unref (auth_data->source);
+	g_free (auth_data->name);
+	g_free (auth_data);
+	g_object_unref (op);
+}
+
+static void
+ask_password (RBDAAPSource *source, const char *name, const char *keyring, SoupSession *session, SoupMessage *msg, SoupAuth *auth)
+{
+	GtkWindow *parent;
+	GMountOperation *mount_op;
+	GAskPasswordFlags flags;
+	AuthData *auth_data;
+	char *message;
+
 	parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source)));
 
 	mount_op = gtk_mount_operation_new (parent);
-	g_signal_connect_object (mount_op, "reply", G_CALLBACK (mount_op_reply_cb), source, 0);
+	auth_data = g_new0 (AuthData, 1);
+	auth_data->source = g_object_ref (source);
+	auth_data->connection = source->priv->connection;
+	auth_data->session = session;
+	auth_data->message = msg;
+	auth_data->auth = auth;
+	auth_data->name = g_strdup (name);
+	g_signal_connect (mount_op, "reply", G_CALLBACK (mount_op_reply_cb), auth_data);
 
 	flags = G_ASK_PASSWORD_NEED_PASSWORD;
 #ifdef WITH_GNOME_KEYRING
@@ -389,52 +444,9 @@ ask_password (RBDAAPSource *source, const char *name, const char *keyring)
 		flags |= G_ASK_PASSWORD_SAVING_SUPPORTED;
 	}
 #endif
-	source->priv->mount_op_handled = FALSE;
-	
 	message = g_strdup_printf (_("The music share '%s' requires a password to connect"), name);
 	g_signal_emit_by_name (mount_op, "ask-password", message, NULL, "DAAP", flags);
 	g_free (message);
-
-	source->priv->mount_op_loop = g_main_loop_new (NULL, FALSE);
-	GDK_THREADS_LEAVE ();
-	g_main_loop_run (source->priv->mount_op_loop);
-	GDK_THREADS_ENTER ();
-	g_main_loop_unref (source->priv->mount_op_loop);
-	source->priv->mount_op_loop = NULL;
-
-	if (source->priv->mount_op_handled) {
-		password = g_strdup (g_mount_operation_get_password (mount_op));
-
-#ifdef WITH_GNOME_KEYRING
-		switch (g_mount_operation_get_password_save (mount_op)) {
-		case G_PASSWORD_SAVE_NEVER:
-			break;
-
-		case G_PASSWORD_SAVE_FOR_SESSION:
-			keyring = "session";
-			/* fall through */
-
-		case G_PASSWORD_SAVE_PERMANENTLY:
-			gnome_keyring_set_network_password_sync (keyring,
-				NULL,
-				"DAAP", name,
-				NULL, "daap",
-				NULL, 0,
-				password,
-				&item_id);
-			break;
-
-		default:
-			g_assert_not_reached ();
-		}
-#endif
-	}
-
-	if (! password) {
-		rb_daap_source_disconnect (source);
-	}
-
-	return password;
 }
 
 static void
@@ -450,7 +462,7 @@ connection_auth_cb (DMAPConnection *connection,
 #ifdef WITH_GNOME_KEYRING
 	GnomeKeyringResult keyringret;
 	gchar *keyring;
-	GList *list;
+	GList *list = NULL;
 
 	keyring = NULL;
 	if (!source->priv->tried_password) {
@@ -475,17 +487,17 @@ connection_auth_cb (DMAPConnection *connection,
 	}
 
 	if (password == NULL) {
-		password = ask_password (source, name, keyring);
+		ask_password (source, name, keyring, session, msg, auth);
+	} else {
+		dmap_connection_authenticate_message (connection, session, msg, auth, password);
 	}
 
-	/* this is commented out for some reason
 	if (list)
-		gnome_keyring_network_password_list_free (list); */
+		gnome_keyring_network_password_list_free (list);
 	g_free (keyring);
 #else
-	password = ask_password (source, name, NULL);
+	ask_password (source, name, NULL, session, msg, auth);
 #endif
-	dmap_connection_authenticate_message (connection, session, msg, auth, password);
 }
 
 static void
@@ -570,6 +582,7 @@ release_connection (RBDAAPSource *daap_source)
 	rb_debug ("Releasing connection");
 
 	g_object_unref (daap_source->priv->connection);
+	daap_source->priv->connection = NULL;
 }
 
 static void
@@ -767,7 +780,9 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 	rb_debug ("Waiting for DAAP connection to finish");
 	while (daap_source->priv->connection != NULL) {
 		rb_debug ("Waiting for DAAP connection to finish...");
+		GDK_THREADS_ENTER ();
 		gtk_main_iteration ();
+		GDK_THREADS_LEAVE ();
 	}
 
 	daap_source->priv->disconnecting = FALSE;
