@@ -38,6 +38,7 @@
 #include <lib/rb-file-helpers.h>
 #include <lib/rb-util.h>
 #include <lib/rb-debug.h>
+#include <metadata/rb-ext-db.h>
 
 #define MAX_IMAGE_HEIGHT		128		/* should be style-controlled, but it's tricky */
 #define FULLSCREEN_BORDER_WIDTH		32		/* this should be style-controlled too */
@@ -65,16 +66,7 @@ rb_visualizer_fullscreen_load_style (GObject *plugin)
 
 /* cover art display */
 
-static gboolean
-has_art_provider (RhythmDB *db)
-{
-	GQuark detail = g_quark_from_static_string (RHYTHMDB_PROP_COVER_ART);
-	GQuark uridetail = g_quark_from_static_string (RHYTHMDB_PROP_COVER_ART_URI);
-	guint id = g_signal_lookup ("entry-extra-metadata-request", RHYTHMDB_TYPE);
-	return g_signal_has_handler_pending (db, id, detail, TRUE) ||
-	       g_signal_has_handler_pending (db, id, uridetail, TRUE);
-}
-
+/* use a 'missing image' image instead? */
 static void
 set_blank_image (MxFrame *frame)
 {
@@ -88,66 +80,51 @@ set_blank_image (MxFrame *frame)
 }
 
 static void
-cover_art_notify_cb (RhythmDB *db, RhythmDBEntry *entry, const char *field, GValue *metadata, MxFrame *frame)
+art_cb (RBExtDBKey *key, const char *filename, GValue *data, MxFrame *frame)
 {
+	ClutterActor *image;
+	GdkPixbuf *pixbuf;
+
+	if (data == NULL || G_VALUE_HOLDS (data, GDK_TYPE_PIXBUF) == FALSE) {
+		return;
+	}
+
 	clutter_threads_enter ();
 
-	if (entry != g_object_get_data (G_OBJECT (frame), "rb-playing-entry"))
-		return;
-
-	if (G_VALUE_HOLDS (metadata, GDK_TYPE_PIXBUF)) {
-		GdkPixbuf *pixbuf;
-
-		pixbuf = GDK_PIXBUF (g_value_get_object (metadata));
-		if (pixbuf != NULL) {
-			ClutterActor *image;
-
-			image = gtk_clutter_texture_new ();
-			gtk_clutter_texture_set_from_pixbuf (GTK_CLUTTER_TEXTURE (image), pixbuf, NULL);
-			if (clutter_actor_get_height (image) > MAX_IMAGE_HEIGHT) {
-				clutter_actor_set_height (image, MAX_IMAGE_HEIGHT);
-				clutter_texture_set_keep_aspect_ratio (CLUTTER_TEXTURE (image), TRUE);
-			}
-			if (clutter_actor_get_width (image) > MAX_IMAGE_HEIGHT) {
-				clutter_actor_set_width (image, MAX_IMAGE_HEIGHT);
-			}
-			mx_bin_set_child (MX_BIN (frame), image);
-			clutter_actor_show_all (CLUTTER_ACTOR (frame));
-		}
-	} else if (has_art_provider (db)) {
-		set_blank_image (frame);
-		clutter_actor_show_all (CLUTTER_ACTOR (frame));
-	} else {
-		mx_bin_set_child (MX_BIN (frame), NULL);
-		clutter_actor_hide_all (CLUTTER_ACTOR (frame));
+	image = gtk_clutter_texture_new ();
+	pixbuf = GDK_PIXBUF (g_value_get_object (data));
+	gtk_clutter_texture_set_from_pixbuf (GTK_CLUTTER_TEXTURE (image), pixbuf, NULL);
+	if (clutter_actor_get_height (image) > MAX_IMAGE_HEIGHT) {
+		clutter_actor_set_height (image, MAX_IMAGE_HEIGHT);
+		clutter_texture_set_keep_aspect_ratio (CLUTTER_TEXTURE (image), TRUE);
 	}
+	if (clutter_actor_get_width (image) > MAX_IMAGE_HEIGHT) {
+		clutter_actor_set_width (image, MAX_IMAGE_HEIGHT);
+	}
+	mx_bin_set_child (MX_BIN (frame), image);
+	clutter_actor_show_all (CLUTTER_ACTOR (frame));
+
 	clutter_threads_leave ();
 }
 
 static void
 cover_art_entry_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, MxFrame *frame)
 {
-	RhythmDB *db;
+	RBExtDBKey *key;
+	RBExtDB *art_store;
+
+	art_store = rb_ext_db_new ("album-art");
+
 	clutter_threads_enter ();
-	g_object_get (player, "db", &db, NULL);
-	if (has_art_provider (db)) {
-		set_blank_image (frame);
-		clutter_actor_show_all (CLUTTER_ACTOR (frame));
-	} else {
-		mx_bin_set_child (MX_BIN (frame), NULL);
-		clutter_actor_hide_all (CLUTTER_ACTOR (frame));
-	}
-	g_object_unref (db);
+	set_blank_image (frame);
+	clutter_actor_show_all (CLUTTER_ACTOR (frame));
 	clutter_threads_leave ();
 
-	if (entry != NULL) {
-		g_object_set_data_full (G_OBJECT (frame),
-					"rb-playing-entry",
-					rhythmdb_entry_ref (entry),
-					(GDestroyNotify) rhythmdb_entry_unref);
-	} else {
-		g_object_set_data (G_OBJECT (frame), "rb-playing-entry", NULL);
-	}
+	key = rhythmdb_entry_create_ext_db_key (entry, RHYTHMDB_PROP_ALBUM);
+	rb_ext_db_request (art_store, key, (RBExtDBRequestCallback) art_cb, g_object_ref (frame), g_object_unref);
+	rb_ext_db_key_free (key);
+
+	g_object_unref (art_store);
 }
 
 /* track info display */
@@ -357,16 +334,8 @@ create_track_info (RBShell *shell)
 				     "expand", FALSE,
 				     NULL);
 
-	g_signal_connect_object (db, "entry-extra-metadata-notify::" RHYTHMDB_PROP_COVER_ART, G_CALLBACK (cover_art_notify_cb), frame, 0);
 	g_signal_connect_object (player, "playing-song-changed", G_CALLBACK (cover_art_entry_changed_cb), frame, 0);
-
-	/* request current image */
-	value = rhythmdb_entry_request_extra_metadata (db, entry, RHYTHMDB_PROP_COVER_ART);
-	cover_art_notify_cb (db, entry, RHYTHMDB_PROP_COVER_ART, value, MX_FRAME (frame));
-	if (value != NULL) {
-		g_value_unset (value);
-		g_free (value);
-	}
+	cover_art_entry_changed_cb (player, entry, MX_FRAME (frame));
 
 	box2 = mx_box_layout_new ();
 	mx_box_layout_set_orientation (MX_BOX_LAYOUT (box2), MX_ORIENTATION_VERTICAL);
