@@ -28,14 +28,14 @@ import gi
 
 from warnings import warn
 
-from CoverArtDatabase import CoverArtDatabase
-
 import rb
 from gi.repository import GObject, Gtk, Gdk, GdkPixbuf, Gio, Peas
 from gi.repository import RB
 
 import gettext
 gettext.install('rhythmbox', RB.locale_dir())
+
+import urllib
 
 FADE_STEPS = 10
 FADE_TOTAL_TIME = 1000
@@ -279,16 +279,10 @@ GObject.type_register (FadingImage)
 
 
 class ArtDisplayWidget (FadingImage):
-	__gsignals__ = {
-			'pixbuf-dropped' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, (RB.RhythmDBEntry, GdkPixbuf.Pixbuf)),
-			'uri-dropped' : (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, (RB.RhythmDBEntry, GObject.TYPE_STRING))
-			}
 
 	def __init__ (self, missing_image):
 		super (ArtDisplayWidget, self).__init__ (missing_image)
 		self.set_padding (0, 5)
-		self.ddg_id = self.connect ('drag-data-get', self.drag_data_get)
-		self.ddr_id = self.connect ('drag-data-received', self.drag_data_received)
 		self.qt_id = self.connect ('query-tooltip', self.query_tooltip)
 		self.props.has_tooltip = True
 		self.current_entry, self.working = None, False
@@ -296,32 +290,6 @@ class ArtDisplayWidget (FadingImage):
 
 	def disconnect_handlers (self):
  		super (ArtDisplayWidget, self).disconnect_handlers ()
-		self.disconnect (self.ddg_id)
-		self.disconnect (self.ddr_id)
-
-	def update_dnd_targets (self):
-		# XXX not working yet
-		return
-
-		if self.current_entry:
-			targets = Gtk.TargetList()
-			targets.add_image_targets (0, False)
-			targets.add_uri_targets(0)
-			targets.add_text_targets(0)
-			Gtk.drag_dest_set (self, Gtk.DestDefaults.ALL, targets.list, Gdk.DragAction.COPY)
-		else:
-			Gtk.drag_dest_unset (self)
-
-		targets = Gtk.TargetList()
-		if self.current_pixbuf:
-			targets.add_image_targets(0, True)
-		if self.current_uri:
-			targets.add_uri_targets(0)
-		if targets:
-			Gtk.drag_source_set (self, Gdk.ModifierType.BUTTON1_MASK, targets.list, Gdk.DragAction.COPY)
-			pass
-		else:
-			Gtk.drag_source_unset (self)
 
 	def query_tooltip (self, widget, x, y, keyboard_mode, tooltip):
 		if (self.tooltip_image, self.tooltip_text) != (None, None):
@@ -336,37 +304,19 @@ class ArtDisplayWidget (FadingImage):
 		self.current_pixbuf = pixbuf
 		self.current_uri = uri
 		self.set_current_art (pixbuf, working)
-		self.update_dnd_targets ()
 
 		self.tooltip_image = None
 		if not self.current_entry:
 			self.tooltip_text = None
 		elif working:
-			self.tooltip_text = _("Searching... drop artwork here")
+			self.tooltip_text = _("Searching...")
 		elif (tooltip_image, tooltip_text) != (None, None):
 			self.tooltip_image = tooltip_image
 			self.tooltip_text = tooltip_text
 		else:
-			self.tooltip_text = _("Drop artwork here")
+			self.tooltip_text = None
 
 
-	def drag_data_get (self, widget, drag_context, selection_data, info, timestamp):
-		if self.current_pixbuf:
-			selection_data.set_pixbuf (self.current_pixbuf)
-		if self.current_uri:
-			selection_data.set_uris ([self.current_uri])
-
-	def drag_data_received (self, widget, drag_context, x, y, selection_data, info, timestamp):
-		entry = self.current_entry
-		pixbuf = selection_data.get_pixbuf ()
-		uris = selection_data.get_uris ()
-		text = selection_data.get_text ()
-		if pixbuf:
-			self.emit ('pixbuf-dropped', entry, pixbuf)
-		elif uris:
-			self.emit ('uri-dropped', entry, uris[0])
-		elif text:
-			self.emit ('uri-dropped', entry, text)
 GObject.type_register (ArtDisplayWidget)
 
 
@@ -384,24 +334,13 @@ class ArtDisplayPlugin (GObject.GObject, Peas.Activatable):
 			sp.connect ('playing-song-changed', self.playing_entry_changed),
 			sp.connect ('playing-changed', self.playing_changed)
 		)
-		self.emitting_uri_notify = False
-		db = shell.props.db
-		self.db_cb_ids = (
-			db.connect_after ('entry-extra-metadata-request::rb:coverArt', self.cover_art_request),
-			db.connect_after ('entry-extra-metadata-notify::rb:coverArt', self.cover_art_notify),
-			db.connect_after ('entry-extra-metadata-request::rb:coverArt-uri', self.cover_art_uri_request),
-			db.connect_after ('entry-extra-metadata-notify::rb:coverArt-uri', self.cover_art_uri_notify),
-			db.connect_after ('entry-extra-metadata-gather', self.cover_art_uri_gather),
-		)
+		self.art_store = RB.ExtDB(name="album-art")
 		self.art_widget = ArtDisplayWidget (rb.find_plugin_file (self, ART_MISSING_ICON + ".svg"))
-		self.art_widget.connect ('pixbuf-dropped', self.on_set_pixbuf)
-		self.art_widget.connect ('uri-dropped', self.on_set_uri)
 		self.art_widget.connect ('get-max-size', self.get_max_art_size)
 		self.art_widget.connect ('button-press-event', self.on_button_press)
 		self.art_container = Gtk.VBox ()
 		self.art_container.pack_start (self.art_widget, True, True, 6)
 		shell.add_widget (self.art_container, RB.ShellUILocation.SIDEBAR, False, True)
-		self.art_db = CoverArtDatabase ()
 		self.current_entry, self.current_pixbuf = None, None
 		self.playing_entry_changed (sp, sp.get_playing_entry ())
 
@@ -413,16 +352,10 @@ class ArtDisplayPlugin (GObject.GObject, Peas.Activatable):
 			sp.disconnect (id)
 		self.player_cb_ids = ()
 
-		db = shell.props.db
-		for id in self.db_cb_ids:
-			db.disconnect (id)
-		self.db_cb_ids = ()
-
 		shell.remove_widget (self.art_container, RB.ShellUILocation.SIDEBAR)
 		self.art_widget.disconnect_handlers ()
 		self.art_widget = None
 		self.art_container = None
-		self.art_db = None
 
 	def playing_changed (self, sp, playing):
 		self.set_entry(sp.get_playing_entry ())
@@ -436,134 +369,24 @@ class ArtDisplayPlugin (GObject.GObject, Peas.Activatable):
 
 		self.art_widget.set (entry, None, None, None, None, True)
 		self.art_container.show_all ()
-		# Intitates search in the database (which checks art cache, internet etc.)
 		self.current_entry = entry
 		self.current_pixbuf = None
 
-		shell = self.object
-		db = shell.props.db
-		self.art_db.get_pixbuf(db, entry, True, self.on_get_pixbuf_completed)
+		if entry is not None:
+			key = entry.create_ext_db_key (RB.RhythmDBPropType.ALBUM)
+			self.art_store.request(key, self.art_store_request_cb, entry)
 
-	def on_get_pixbuf_completed(self, entry, pixbuf, uri, tooltip_image, tooltip_text):
-		# Set the pixbuf for the entry returned from the art db
-		if rb.entry_equal(entry, self.current_entry):
-			if self.current_pixbuf is None or pixbuf is not None:
-				self.current_pixbuf = pixbuf
-
-			if tooltip_image is None:
-				pb = None
-			elif tooltip_image.startswith("/"):
-				pb = GdkPixbuf.Pixbuf.new_from_file(tooltip_image)
-			else:
-				f = rb.find_plugin_file (self, tooltip_image)
-				pb = GdkPixbuf.Pixbuf.new_from_file(f)
-			self.art_widget.set (entry, self.current_pixbuf, uri, pb, tooltip_text, False)
-
-		if pixbuf:
-			# This might be from a playing-changed signal,
-			# in which case consumers won't be ready yet.
-			def idle_emit_art():
-				shell = self.object
-				db = shell.props.db
-				db.emit_entry_extra_metadata_notify (entry, "rb:coverArt", pixbuf)
-				if uri:
-					self.emitting_uri_notify = True
-					db.emit_entry_extra_metadata_notify (entry, "rb:coverArt-uri", uri)
-					self.emitting_uri_notify = False
-				return False
-			GObject.idle_add(idle_emit_art)
-
-	def cover_art_request (self, db, entry):
-		a = [None]
-		def callback(entry, pixbuf, uri, tooltip_image, tooltip_text):
-			a[0] = pixbuf
-			self.on_get_pixbuf_completed(entry, pixbuf, uri, tooltip_image, tooltip_text)
-
-		playing = rb.entry_equal(entry, self.current_entry)
-		self.art_db.get_pixbuf(db, entry, playing, callback)
-
-		# If callback was called synchronously we can return a pixmap
-		return a[0]
-
-	def cover_art_notify (self, db, entry, field, metadata):
+	def art_store_request_cb(self, key, filename, data, entry):
 		if rb.entry_equal(entry, self.current_entry) is False:
-			return
-		if not isinstance (metadata, GdkPixbuf.Pixbuf):
-			return
-		self.art_db.cancel_get_pixbuf (entry)
-		if self.current_pixbuf == metadata:
-			return
-		self.current_pixbuf = metadata
-
-		# cache the pixbuf so we can provide a url
-		uri = self.art_db.cache_pixbuf (db, entry, metadata)
-		self.art_widget.set (entry, metadata, uri, None, None, False)
-		self.emitting_uri_notify = True
-		db.emit_entry_extra_metadata_notify (entry, "rb:coverArt-uri", uri)
-		self.emitting_uri_notify = False
-
-	def cover_art_uri_notify (self, db, entry, field, metadata):
-		if rb.entry_equal(entry, self.current_entry) is False:
+			# track changed while we were searching
 			return
 
-		if self.emitting_uri_notify:
-			return
-
-		if not metadata:
-			print "got no-cover-art notification"
-			self.art_widget.set (entry, None, None, False)
-			db.emit_entry_extra_metadata_notify (entry, "rb:coverArt", None)
-			return
-
-		uri = str (metadata)
-		def loader_cb_busted (data):
-			if data and len (data) >= 1000:
-				pbl = GdkPixbuf.PixbufLoader ()
-				try:
-					if pbl.write (data, len(data)) and pbl.close ():
-						pixbuf = pbl.get_pixbuf ()
-						if pixbuf:
-							self.art_db.cancel_get_pixbuf (entry)
-							self.on_get_pixbuf_completed (entry, pixbuf, uri, None, None)
-				except GError:
-					pass
-
-		def loader_cb (data):
-			if data and len(data) >= 1000:
-				l = GdkPixbuf.PixbufLoader()
-				l.write(data)
-				l.close()
-				pixbuf = l.get_pixbuf()
-			else:
-				pixbuf = None
-
-			self.art_db.cancel_get_pixbuf (entry)
-			self.on_get_pixbuf_completed (entry, pixbuf, uri, None, None)
-
-		print "got cover art URI notification: %s" % (uri)
-
-		# TODO use GdkPixbuf.new_from_stream_async()
-		l = rb.Loader()
-		l.get_url (uri, loader_cb)
-
-
-	def cover_art_uri_request (self, db, entry):
-		if rb.entry_equal(entry, self.current_entry):
-			return self.art_widget.current_uri
-
-	def cover_art_uri_gather (self, db, entry, metadata):
-		if rb.entry_equal(entry, self.current_entry) and self.art_widget.current_uri:
-			metadata ['rb:coverArt-uri'] = self.art_widget.current_uri
-
-	def on_set_pixbuf (self, widget, entry, pixbuf):
-		shell = self.object
-		db = shell.props.db
-		self.art_db.set_pixbuf (db, entry, pixbuf, self.on_get_pixbuf_completed)
-
-	def on_set_uri (self, widget, entry, uri):
-		shell = self.object
-		db = shell.props.db
-		self.art_db.set_pixbuf_from_uri (db, entry, uri, self.on_get_pixbuf_completed)
+		if isinstance(data, GdkPixbuf.Pixbuf):
+			self.current_pixbuf = data
+			uri = "file://" + urllib.pathname2url(filename)
+			self.art_widget.set (entry, self.current_pixbuf, uri, None, None, False)
+		else:
+			self.art_widget.set (entry, None, None, None, None, False)
 
 	def get_max_art_size (self, widget):
 		# limit the art image to a third of the window height to prevent it from

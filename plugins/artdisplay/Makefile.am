@@ -3,12 +3,7 @@
 plugindir = $(PLUGINDIR)/artdisplay
 plugindatadir = $(PLUGINDATADIR)/artdisplay
 plugin_PYTHON = 			\
-	EmbeddedCoverArtSearch.py	\
-	PodcastCoverArtSearch.py	\
-	LastFMCoverArtSearch.py		\
-	LocalCoverArtSearch.py		\
 	CoverArtDatabase.py		\
-	MusicBrainzCoverArtSearch.py	\
 	artdisplay.py
 
 plugin_in_files = artdisplay.plugin.in
@@ -17,7 +12,7 @@ plugin_in_files = artdisplay.plugin.in
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
 artworkdir = $(plugindatadir)
-artwork_DATA = rhythmbox-missing-artwork.svg lastfm_red_small.png
+artwork_DATA = rhythmbox-missing-artwork.svg
 
 EXTRA_DIST = $(plugin_in_files) $(artwork_DATA)
 
