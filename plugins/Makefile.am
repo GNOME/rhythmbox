@@ -18,6 +18,7 @@ SUBDIRS +=						\
 	context						\
 	im-status					\
 	lyrics						\
+	magnatune					\
 	pythonconsole					\
 	rbzeitgeist					\
 	replaygain					\
@@ -25,7 +26,6 @@ SUBDIRS +=						\
 	sendto						\
 	rb
 
-# magnatune
 endif
 
 if ENABLE_VALA
