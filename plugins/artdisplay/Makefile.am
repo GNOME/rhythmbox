@@ -3,7 +3,6 @@
 plugindir = $(PLUGINDIR)/artdisplay
 plugindatadir = $(PLUGINDATADIR)/artdisplay
 plugin_PYTHON = 			\
-	CoverArtDatabase.py		\
 	artdisplay.py
 
 plugin_in_files = artdisplay.plugin.in

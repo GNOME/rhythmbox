@@ -2,6 +2,8 @@ using GLib;
 using RB;
 
 class SampleValaPlugin: Peas.ExtensionBase, Peas.Activatable {
+	public GLib.Object object { owned get; construct; }
+
 	public void activate () {
 		stdout.printf ("Hello world\n");
 	}
