@@ -97,7 +97,7 @@ static const char* radio_types[] = {
 const char *
 rb_audioscrobbler_radio_type_get_text (RBAudioscrobblerRadioType type)
 {
-	return radio_types[type];
+	return _(radio_types[type]);
 }
 
 static const char* radio_urls[] = {
@@ -152,7 +152,7 @@ static const char* radio_names[] = {
 const char *
 rb_audioscrobbler_radio_type_get_default_name (RBAudioscrobblerRadioType type)
 {
-	return radio_names[type];
+	return _(radio_names[type]);
 }
 
 /* source declarations */

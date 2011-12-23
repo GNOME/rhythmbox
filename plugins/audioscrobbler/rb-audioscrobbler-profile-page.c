@@ -1691,7 +1691,7 @@ create_popup_menu (RBAudioscrobblerProfilePage *page,
 	    data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
 		GtkWidget *similar_artists_item;
 
-		similar_artists_item = gtk_menu_item_new_with_mnemonic (("Listen to _Similar Artists Radio"));
+		similar_artists_item = gtk_menu_item_new_with_mnemonic (_("Listen to _Similar Artists Radio"));
 		g_signal_connect (similar_artists_item,
 				  "activate",
 				  G_CALLBACK (list_item_listen_similar_artists_activated_cb),
@@ -1705,7 +1705,7 @@ create_popup_menu (RBAudioscrobblerProfilePage *page,
 	    data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
 		GtkWidget *top_fans_item;
 
-		top_fans_item = gtk_menu_item_new_with_mnemonic (("Listen to _Top Fans Radio"));
+		top_fans_item = gtk_menu_item_new_with_mnemonic (_("Listen to _Top Fans Radio"));
 		g_signal_connect (top_fans_item,
 				  "activate",
 				  G_CALLBACK (list_item_listen_top_fans_activated_cb),
