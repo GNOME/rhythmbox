@@ -499,6 +499,7 @@ load_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
 	if (error != NULL) {
 		rb_debug ("unable to load pixbuf: %s", error->message);
 		g_clear_error (&error);
+		g_object_unref (loader);
 		return NULL;
 	}
 
@@ -513,6 +514,8 @@ load_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
 	v = g_new0 (GValue, 1);
 	g_value_init (v, GDK_TYPE_PIXBUF);
 	g_value_set_object (v, pixbuf);
+	g_object_unref (loader);
+
 	return v;
 }
 
