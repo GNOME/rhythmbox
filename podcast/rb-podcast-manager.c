@@ -1993,7 +1993,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_IMAGE, &image_val);
 		g_value_unset (&image_val);
 
-		key = rb_ext_db_key_create ("album", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
+		key = rb_ext_db_key_create_storage ("album", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
 		rb_ext_db_store_uri (pd->priv->art_store,
 				     key,
 				     RB_EXT_DB_SOURCE_SEARCH,	/* sort of */

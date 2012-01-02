@@ -123,20 +123,21 @@ class LastFMSearch (object):
 		if len(image_urls) > 0:
 			# images tags appear in order of increasing size, and we want the largest.  probably.
 			url = image_urls.pop()
-			self.callback(self.current_key, url, RB.ExtDBSourceType.SEARCH, self.callback_args)
+			self.store.store_uri(self.current_key, RB.ExtDBSourceType.SEARCH, url)
+			self.callback(self.callback_args)
 		else:
 			self.search_next()
 
 
 	def search_next (self):
 		if len(self.searches) == 0:
-			self.callback(None, None, RB.ExtDBSourceType.NONE, self.callback_args)
+			self.callback(self.callback_args)
 			return
 
-		(artist, album, album_mbid, artist_field) = self.searches.pop(0)
-		self.current_key = RB.ExtDBKey.create("album", album)
+		(artist, album, album_mbid) = self.searches.pop(0)
+		self.current_key = RB.ExtDBKey.create_storage("album", album)
 		if artist is not None:
-			self.current_key.add_field(artist_field, RB.ExtDBFieldType.OPTIONAL, artist)
+			self.current_key.add_field("artist", artist)
 
 		url = self.search_url(artist, album, album_mbid)
 
@@ -144,41 +145,36 @@ class LastFMSearch (object):
 		l.get_url(url, self.album_info_cb)
 
 
-	def search(self, key, last_time, callback, args):
+	def search(self, key, last_time, store, callback, args):
 		if last_time > (time.time() - REPEAT_SEARCH_PERIOD):
 			print "we already tried this one"
-			callback (None, None, RB.ExtDBSourceType.NONE, args)
+			callback (args)
 			return
 
 		if user_has_account() == False:
 			print "can't search: no last.fm account details"
-			callback (None, None, RB.ExtDBSourceType.NONE, args)
+			callback (args)
 			return
 
 		album = key.get_field("album")
-		albumartist = key.get_field("album-artist")
-		album_mbid = key.get_field("musicbrainz-albumid")
-		artist = key.get_field("artist")
+		artists = key.get_field_values("artist")
+		album_mbid = key.get_info("musicbrainz-albumid")
 
-		if albumartist in ("", _("Unknown")):
-			albumartist = None
-		if artist in ("", _("Unknown")):
-			artist = None
+		artists = filter(lambda x: x not in (None, "", _("Unknown")), artists)
 		if album in ("", _("Unknown")):
 			album = None
 
-		if album == None or (albumartist == None and artist == None):
+		if album == None or len(artists) == 0:
 			print "can't search: no useful details"
-			callback (None, None, RB.ExtDBSourceType.NONE, args)
+			callback (args)
 			return
 
 		self.searches = []
-		if artist != albumartist and artist != None:
-			self.searches.append([artist, album, album_mbid, "artist"])
-		if albumartist != None:
-			self.searches.append([albumartist, album, album_mbid, "album-artist"])
-		self.searches.append(["Various Artists", album, album_mbid, "album-artist"])
+		for a in artists:
+			self.searches.append([a, album, album_mbid])
+		self.searches.append(["Various Artists", album, album_mbid])
 
+		self.store = store
 		self.callback = callback
 		self.callback_args = args
 		self.search_next()

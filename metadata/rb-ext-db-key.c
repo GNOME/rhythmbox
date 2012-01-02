@@ -47,20 +47,23 @@
 typedef struct
 {
 	char *name;
-	char *value;
-	RBExtDBFieldType type;
+	GPtrArray *values;
+	gboolean match_null;
 } RBExtDBField;
 
 struct _RBExtDBKey
 {
+	gboolean lookup;
+	RBExtDBField *multi_field;
 	GList *fields;
+	GList *info;
 };
 
 static void
 rb_ext_db_field_free (RBExtDBField *field)
 {
 	g_free (field->name);
-	g_free (field->value);
+	g_ptr_array_free (field->values, TRUE);
 	g_slice_free (RBExtDBField, field);
 }
 
@@ -68,10 +71,14 @@ static RBExtDBField *
 rb_ext_db_field_copy (RBExtDBField *field)
 {
 	RBExtDBField *copy;
+	int i;
+
 	copy = g_slice_new0 (RBExtDBField);
 	copy->name = g_strdup (field->name);
-	copy->value = g_strdup (field->value);
-	copy->type = field->type;
+	copy->values = g_ptr_array_new_with_free_func (g_free);
+	for (i = 0; i < field->values->len; i++) {
+		g_ptr_array_add (copy->values, g_strdup (g_ptr_array_index (field->values, i)));
+	}
 	return copy;
 }
 
@@ -104,8 +111,13 @@ rb_ext_db_key_copy (RBExtDBKey *key)
 	GList *l;
 
 	copy = g_slice_new0 (RBExtDBKey);
+	copy->lookup = key->lookup;
+	copy->multi_field = key->multi_field;
 	for (l = key->fields; l != NULL; l = l->next) {
 		copy->fields = g_list_append (copy->fields, rb_ext_db_field_copy (l->data));
+	}
+	for (l = key->info; l != NULL; l = l->next) {
+		copy->info = g_list_append (copy->info, rb_ext_db_field_copy (l->data));
 	}
 	return copy;
 }
@@ -120,53 +132,152 @@ void
 rb_ext_db_key_free (RBExtDBKey *key)
 {
 	g_list_free_full (key->fields, (GDestroyNotify) rb_ext_db_field_free);
+	g_list_free_full (key->info, (GDestroyNotify) rb_ext_db_field_free);
 	g_slice_free (RBExtDBKey, key);
 }
 
+static RBExtDBKey *
+do_create (const char *field, const char *value, gboolean lookup)
+{
+	RBExtDBKey *key;
+	key = g_slice_new0 (RBExtDBKey);
+	key->lookup = lookup;
+	rb_ext_db_key_add_field (key, field, value);
+	return key;
+}
+
 /**
- * rb_ext_db_key_create:
+ * rb_ext_db_key_create_lookup:
  * @field: required field name
  * @value: value for field
  *
- * Creates a new metadata lookup key with a single required field.
+ * Creates a new metadata lookup key with a single field.
  * Use @rb_ext_db_key_add_field to add more.
  *
  * Return value: the new key
  */
 RBExtDBKey *
-rb_ext_db_key_create (const char *field, const char *value)
+rb_ext_db_key_create_lookup (const char *field, const char *value)
 {
-	RBExtDBKey *key;
-
-	key = g_slice_new0 (RBExtDBKey);
-	rb_ext_db_key_add_field (key, field, RB_EXT_DB_FIELD_REQUIRED, value);
-
-	return key;
+	return do_create (field, value, TRUE);
 }
+
+/**
+ * rb_ext_db_key_create_storage:
+ * @field: required field name
+ * @value: value for field
+ *
+ * Creates a new metadata storage key with a single field.
+ * Use @rb_ext_db_key_add_field to add more.
+ *
+ * Return value: the new key
+ */
+RBExtDBKey *
+rb_ext_db_key_create_storage (const char *field, const char *value)
+{
+	return do_create (field, value, FALSE);
+}
+
+/**
+ * rb_ext_db_key_is_lookup:
+ * @key: a #RBExtDBKey
+ *
+ * Returns %TRUE if the key is a lookup key
+ *
+ * Return value: whether the key is a lookup key
+ */
+gboolean
+rb_ext_db_key_is_lookup (RBExtDBKey *key)
+{
+	return key->lookup;
+}
+
+static void
+add_to_list (GList **list, RBExtDBField **multi, const char *name, const char *value)
+{
+	RBExtDBField *f;
+	GList *l;
+	int i;
+
+	for (l = *list; l != NULL; l = l->next) {
+		f = l->data;
+		if (strcmp (f->name, name) == 0) {
+			g_assert (multi != NULL);
+
+			if (value != NULL) {
+				for (i = 0; i < f->values->len; i++) {
+					if (strcmp (g_ptr_array_index (f->values, i), value) == 0) {
+						/* duplicate value */
+						return;
+					}
+				}
+				g_assert (*multi == NULL || *multi == f);
+				g_ptr_array_add (f->values, g_strdup (value));
+				*multi = f;
+			} else {
+				g_assert (*multi == NULL || *multi == f);
+				f->match_null = TRUE;
+				*multi = f;
+			}
+			return;
+		}
+	}
+
+	f = g_slice_new0 (RBExtDBField);
+	f->name = g_strdup (name);
+	f->values = g_ptr_array_new_with_free_func (g_free);
+	g_ptr_array_add (f->values, g_strdup (value));
+	*list = g_list_append (*list, f);
+}
+
+static char **
+get_list_names (GList *list)
+{
+	char **names;
+	GList *l;
+	int i;
+
+	names = g_new0 (char *, g_list_length (list) + 1);
+	i = 0;
+	for (l = list; l != NULL; l = l->next) {
+		RBExtDBField *f = l->data;
+		names[i++] = g_strdup (f->name);
+	}
+
+	return names;
+}
+
+static GPtrArray *
+get_list_values (GList *list, const char *field)
+{
+	RBExtDBField *f;
+	GList *l;
+
+	for (l = list; l != NULL; l = l->next) {
+		f = l->data;
+		if (strcmp (f->name, field) == 0) {
+			return f->values;
+		}
+	}
+
+	return NULL;
+}
+
 
 /**
  * rb_ext_db_key_add_field:
  * @key: a #RBExtDBKey
  * @field: name of the field to add
- * @field_type: field type (required, optional, or informational)
  * @value: field value
  *
- * Adds a field to the key.  Does not check that the field does not
- * already exist.
+ * Adds a field to the key, or an additional value to an existing field.
  */
 void
 rb_ext_db_key_add_field (RBExtDBKey *key,
 			 const char *field,
-			 RBExtDBFieldType field_type,
 			 const char *value)
 {
-	RBExtDBField *f;
-
-	f = g_slice_new0 (RBExtDBField);
-	f->name = g_strdup (field);
-	f->value = g_strdup (value);
-	f->type = field_type;
-	key->fields = g_list_append (key->fields, f);
+	add_to_list (&key->fields, &key->multi_field, field, value);
 }
 
 /**
@@ -181,18 +292,7 @@ rb_ext_db_key_add_field (RBExtDBKey *key,
 char **
 rb_ext_db_key_get_field_names (RBExtDBKey *key)
 {
-	char **names;
-	GList *l;
-	int i;
-
-	names = g_new0 (char *, g_list_length (key->fields) + 1);
-	i = 0;
-	for (l = key->fields; l != NULL; l = l->next) {
-		RBExtDBField *f = l->data;
-		names[i++] = g_strdup (f->name);
-	}
-
-	return names;
+	return get_list_names (key->fields);
 }
 
 /**
@@ -200,68 +300,124 @@ rb_ext_db_key_get_field_names (RBExtDBKey *key)
  * @key: a #RBExtDBKey
  * @field: field to retrieve
  *
- * Extracts the value for the specified field.
+ * Extracts the value for a single-valued field.
  *
  * Return value: field value, or NULL
  */
 const char *
 rb_ext_db_key_get_field (RBExtDBKey *key, const char *field)
 {
-	GList *l;
-
-	for (l = key->fields; l != NULL; l = l->next) {
-		RBExtDBField *f = l->data;
-		if (g_strcmp0 (field, f->name) == 0) {
-			return f->value;
-		}
+	GPtrArray *v = get_list_values (key->fields, field);
+	if (v != NULL && v->len > 0) {
+		return g_ptr_array_index (v, 0);
+	} else {
+		return NULL;
 	}
-
-	return NULL;
 }
 
+
 /**
- * rb_ext_db_key_get_field_type:
+ * rb_ext_db_key_get_field_values:
  * @key: a #RBExtDBKey
  * @field: field to retrieve
  *
- * Extracts the field type for the specified field.
+ * Extracts the values for the specified field.
  *
- * Return value: field type value
+ * Return value: (transfer full): field values, or NULL
  */
-RBExtDBFieldType
-rb_ext_db_key_get_field_type (RBExtDBKey *key, const char *field)
+char **
+rb_ext_db_key_get_field_values (RBExtDBKey *key, const char *field)
 {
-	GList *l;
+	GPtrArray *v = get_list_values (key->fields, field);
+	char **strv;
+	int i;
 
-	for (l = key->fields; l != NULL; l = l->next) {
-		RBExtDBField *f = l->data;
-		if (g_strcmp0 (field, f->name) == 0) {
-			return f->type;
-		}
+	if (v == NULL) {
+		return NULL;
 	}
 
-	/* check that the field exists before calling this */
-	return RB_EXT_DB_FIELD_INFORMATIONAL;
+	strv = g_new0 (char *, v->len + 1);
+	for (i = 0; i < v->len; i++) {
+		strv[i] = g_strdup (g_ptr_array_index (v, i));
+	}
+	return strv;
 }
+
+/**
+ * rb_ext_db_key_add_info:
+ * @key: a #RBExtDBKey
+ * @field: name of the field to add
+ * @value: field value
+ *
+ * Adds an information field to the key.
+ */
+void
+rb_ext_db_key_add_info (RBExtDBKey *key,
+			const char *field,
+			const char *value)
+{
+	add_to_list (&key->info, NULL, field, value);
+}
+
+/**
+ * rb_ext_db_key_get_info_names:
+ * @key: a #RBExtDBKey
+ *
+ * Returns a NULL-terminated array containing the names of the info
+ * fields * present in the key.
+ *
+ * Return value: (transfer full): array of info field names
+ */
+char **
+rb_ext_db_key_get_info_names (RBExtDBKey *key)
+{
+	return get_list_names (key->info);
+}
+
+/**
+ * rb_ext_db_key_get_info:
+ * @key: a #RBExtDBKey
+ * @name: info field to retrieve
+ *
+ * Extracts the value for the specified info field.
+ *
+ * Return value: field value, or NULL
+ */
+const char *
+rb_ext_db_key_get_info (RBExtDBKey *key, const char *name)
+{
+	GPtrArray *v = get_list_values (key->fields, name);
+	if (v != NULL && v->len > 0) {
+		return g_ptr_array_index (v, 0);
+	} else {
+		return NULL;
+	}
+}
+
+
+
 
 static gboolean
 match_field (RBExtDBKey *key, RBExtDBField *field)
 {
-	const char *value;
+	GPtrArray *values;
+	int i;
+	int j;
 
-	if (field->type == RB_EXT_DB_FIELD_INFORMATIONAL)
-		return TRUE;
-
-	value = rb_ext_db_key_get_field (key, field->name);
-	if (value == NULL) {
-		if (field->type == RB_EXT_DB_FIELD_REQUIRED)
-			return FALSE;
-	} else {
-		if (g_strcmp0 (value, field->value) != 0)
-			return FALSE;
+	values = get_list_values (key->fields, field->name);
+	if (values == NULL) {
+		return field->match_null;
 	}
 
-	return TRUE;
+	for (i = 0; i < field->values->len; i++) {
+		const char *a = g_ptr_array_index (field->values, i);
+		for (j = 0; j < values->len; j++) {
+			const char *b = g_ptr_array_index (values, j);
+			if (strcmp (a, b) == 0)
+				return TRUE;
+		}
+	}
+	return FALSE;
 }
 
 /**
@@ -298,46 +454,90 @@ rb_ext_db_key_matches (RBExtDBKey *a, RBExtDBKey *b)
 	return TRUE;
 }
 
-static void
-create_store_key (RBExtDBKey *key, guint optional_count, guint optional_fields, TDB_DATA *data)
+/**
+ * rb_ext_db_key_field_matches:
+ * @key: an #RBExtDBKey
+ * @field: a field to check
+ * @value: a value to match against
+ *
+ * Checks whether a specified field in @key matches a value.
+ * This can be used to match keys against other types of data.
+ * To match keys against each other, use @rb_ext_db_key_matches.
+ *
+ * Return value: %TRUE if the field matches the value
+ */
+gboolean
+rb_ext_db_key_field_matches (RBExtDBKey *key, const char *field, const char *value)
+{
+	GPtrArray *v;
+	int i;
+
+	v = get_list_values (key->fields, field);
+	if (v == NULL) {
+		/* if the key doesn't have this field, anything matches */
+		return TRUE;
+	}
+
+	if (value == NULL) {
+		if (key->multi_field == NULL) {
+			/* no multi field, so null can't match */
+			return FALSE;
+		}
+
+		if (g_strcmp0 (field, key->multi_field->name) == 0) {
+			/* this is the multi field, so null might match */
+			return key->multi_field->match_null;
+		} else {
+			/* this isn't the multi field, null can't match */
+			return FALSE;
+		}
+	}
+
+	for (i = 0; i < v->len; i++) {
+		if (strcmp (g_ptr_array_index (v, i), value) == 0) {
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
+static gboolean
+create_store_key (RBExtDBKey *key, int option, TDB_DATA *data)
 {
 	GByteArray *k;
 	GList *l;
-	int opt = 0;
 	guint8 nul = '\0';
+
+	if (key->multi_field != NULL &&
+	    option > key->multi_field->values->len &&
+	    key->multi_field->match_null == FALSE) {
+		return FALSE;
+	} else if (key->multi_field == NULL && option != 0) {
+		return FALSE;
+	}
 
 	k = g_byte_array_sized_new (512);
 	for (l = key->fields; l != NULL; l = l->next) {
 		RBExtDBField *f = l->data;
-		switch (f->type) {
-		case RB_EXT_DB_FIELD_OPTIONAL:
-			/* decide if we want to include this one */
-			if (optional_fields != G_MAXUINT) {
-				int bit = 1 << ((optional_count-1) - opt);
-				opt++;
-				if ((optional_fields & bit) == 0)
-					break;
-			}
-			/* fall through */
-		case RB_EXT_DB_FIELD_REQUIRED:
-			g_byte_array_append (k, (guint8 *)f->name, strlen (f->name));
-			g_byte_array_append (k, &nul, 1);
-			g_byte_array_append (k, (guint8 *)f->value, strlen (f->value));
-			g_byte_array_append (k, &nul, 1);
-			break;
+		const char *value;
 
-		case RB_EXT_DB_FIELD_INFORMATIONAL:
-			break;
-
-		default:
-			g_assert_not_reached ();
-			break;
+		if (f != key->multi_field) {
+			value = g_ptr_array_index (f->values, 0);
+		} else if (option < f->values->len) {
+			value = g_ptr_array_index (f->values, option);
+		} else {
+			continue;
 		}
-
+		g_byte_array_append (k, (guint8 *)f->name, strlen (f->name));
+		g_byte_array_append (k, &nul, 1);
+		g_byte_array_append (k, (guint8 *)value, strlen (value));
+		g_byte_array_append (k, &nul, 1);
 	}
 
 	data->dsize = k->len;
 	data->dptr = g_byte_array_free (k, FALSE);
+	return TRUE;
 }
 
 /**
@@ -358,28 +558,21 @@ rb_ext_db_key_lookups (RBExtDBKey *key,
 		       RBExtDBKeyLookupCallback callback,
 		       gpointer user_data)
 {
-	int optional_count = 0;
-	int optional_keys;
-	GList *l;
-
-	for (l = key->fields; l != NULL; l = l->next) {
-		RBExtDBField *field = l->data;
-		if (field->type == RB_EXT_DB_FIELD_OPTIONAL) {
-			optional_count++;
-		}
-	}
-
-	for (optional_keys = (1<<optional_count)-1; optional_keys >= 0; optional_keys--) {
+	int i = 0;
+	while (TRUE) {
 		TDB_DATA sk;
 		gboolean result;
 
-		create_store_key (key, optional_count, optional_keys, &sk);
+		if (create_store_key (key, i, &sk) == FALSE)
+			break;
 
 		result = callback (sk, user_data);
 		g_free (sk.dptr);
 
 		if (result == FALSE)
 			break;
+
+		i++;
 	}
 }
 
@@ -403,29 +596,6 @@ TDB_DATA
 rb_ext_db_key_to_store_key (RBExtDBKey *key)
 {
 	TDB_DATA k = {0,};
-	/* include all optional keys */
-	create_store_key (key, G_MAXUINT, G_MAXUINT, &k);
+	create_store_key (key, 0, &k);
 	return k;
-}
-
-
-
-#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
-
-GType
-rb_ext_db_field_type_get_type (void)
-{
-	static GType etype = 0;
-
-	if (etype == 0) {
-		static const GEnumValue values[] = {
-			ENUM_ENTRY(RB_EXT_DB_FIELD_REQUIRED, "required"),
-			ENUM_ENTRY(RB_EXT_DB_FIELD_OPTIONAL, "optional"),
-			ENUM_ENTRY(RB_EXT_DB_FIELD_INFORMATIONAL, "informational"),
-			{ 0, 0, 0 }
-		};
-		etype = g_enum_register_static ("RBExtDBFieldType", values);
-	}
-
-	return etype;
 }

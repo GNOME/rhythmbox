@@ -37,16 +37,6 @@
 
 G_BEGIN_DECLS
 
-
-typedef enum {
-	RB_EXT_DB_FIELD_REQUIRED,		/* results must match this; stored */
-	RB_EXT_DB_FIELD_OPTIONAL,		/* results should match this; stored */
-	RB_EXT_DB_FIELD_INFORMATIONAL		/* may be used to find results, not stored */
-} RBExtDBFieldType;
-
-GType				   rb_ext_db_field_type_get_type (void);
-#define RB_TYPE_EXT_DB_FIELD_TYPE (rb_ext_db_field_type_get_type ())
-
 typedef struct _RBExtDBKey RBExtDBKey;
 struct _RBExtDBKey;
 
@@ -58,19 +48,30 @@ GType			rb_ext_db_key_get_type		(void);
 RBExtDBKey *		rb_ext_db_key_copy		(RBExtDBKey *key);
 void			rb_ext_db_key_free		(RBExtDBKey *key);
 
-RBExtDBKey *		rb_ext_db_key_create		(const char *field,
+RBExtDBKey *		rb_ext_db_key_create_lookup	(const char *field,
 							 const char *value);
+RBExtDBKey *		rb_ext_db_key_create_storage	(const char *field,
+							 const char *value);
+gboolean		rb_ext_db_key_is_lookup		(RBExtDBKey *key);
 
 void			rb_ext_db_key_add_field		(RBExtDBKey *key,
 							 const char *field,
-							 RBExtDBFieldType field_type,
 							 const char *value);
-
 char **			rb_ext_db_key_get_field_names	(RBExtDBKey *key);
 const char *		rb_ext_db_key_get_field		(RBExtDBKey *key,
 							 const char *field);
-RBExtDBFieldType	rb_ext_db_key_get_field_type	(RBExtDBKey *key,
+char **			rb_ext_db_key_get_field_values	(RBExtDBKey *key,
 							 const char *field);
+gboolean		rb_ext_db_key_field_matches	(RBExtDBKey *key,
+							 const char *field,
+							 const char *value);
+
+void			rb_ext_db_key_add_info		(RBExtDBKey *key,
+							 const char *name,
+							 const char *value);
+char **			rb_ext_db_key_get_info_names	(RBExtDBKey *key);
+const char *		rb_ext_db_key_get_info		(RBExtDBKey *key,
+							 const char *name);
 
 gboolean		rb_ext_db_key_matches		(RBExtDBKey *a,
 							 RBExtDBKey *b);

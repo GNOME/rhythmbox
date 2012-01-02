@@ -553,8 +553,8 @@ class MagnatuneSource(RB.BrowserSource):
 			return
 
 		sku = self.__sku_dict[entry.get_string(RB.RhythmDBPropType.LOCATION)]
-		key = RB.ExtDBKey.create("album", entry.get_string(RB.RhythmDBPropType.ALBUM))
-		key.add_field("artist", RB.ExtDBFieldType.OPTIONAL, entry.get_string(RB.RhythmDBPropType.ARTIST))
+		key = RB.ExtDBKey.create_storage("album", entry.get_string(RB.RhythmDBPropType.ALBUM))
+		key.add_field("artist", entry.get_string(RB.RhythmDBPropType.ARTIST))
 		self.__art_store.store_uri(key, self.__art_dict[sku])
 
 GObject.type_register(MagnatuneSource)

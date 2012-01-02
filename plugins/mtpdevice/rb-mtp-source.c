@@ -1093,11 +1093,8 @@ impl_track_added (RBTransferTarget *target,
 			RBExtDBKey *key;
 
 			/* need to do this in an idle handler? */
-			key = rb_ext_db_key_create ("album", track->album);
-			rb_ext_db_key_add_field (key,
-						 "artist",
-						 RB_EXT_DB_FIELD_OPTIONAL,
-						 track->artist);
+			key = rb_ext_db_key_create_lookup ("album", track->album);
+			rb_ext_db_key_add_field (key, "artist", track->artist);
 			rb_ext_db_request (priv->art_store,
 					   key,
 					   (RBExtDBRequestCallback) art_request_cb,

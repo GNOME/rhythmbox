@@ -51,21 +51,28 @@ class LocalSearch:
 	def finished(self, results):
 		parent = self.file.get_parent()
 		ordered = []
+		key = RB.ExtDBKey.create_storage("album", self.album)
+		key.add_field("artist", self.artist)
 
 		# Compare lower case, without file extension
 		for name in [file_root (self.file.get_basename())] + IMAGE_NAMES:
 			for f_name in results:
 				if file_root (f_name) == name:
-					ordered.append(parent.resolve_relative_path(f_name).get_uri())
+					uri = parent.resolve_relative_path(f_name).get_uri()
+					self.store.store_uri(key, RB.ExtDBSourceType.USER, uri)
 
 		# look for file names containing the artist and album (case-insensitive)
 		# (mostly for jamendo downloads)
-		artist = self.artist.lower()
 		album = self.album.lower()
 		for f_name in results:
 			f_root = file_root (f_name).lower()
-			if f_root.find (artist) != -1 and f_root.find (album) != -1:
-				ordered.append(parent.resolve_relative_path(f_name).get_uri())
+			for artist in self.artists:
+				artist = artist.lower()
+				if f_root.find (artist) != -1 and f_root.find (album) != -1:
+					nkey = RB.ExtDBKey.create_storage("album", album)
+					nkey.add_field("artist", artist)
+					uri = parent.resolve_relative_path(f_name).get_uri()
+					self.store.store_uri(nkey. RB.ExtDBSourceType.USER, uri)
 
 		# if that didn't work, look for the longest shared prefix
 		# only accept matches longer than 2 to avoid weird false positives
@@ -78,11 +85,10 @@ class LocalSearch:
 				match = f_name
 
 		if match is not None:
-			ordered.append(parent.resolve_relative_path(match).get_uri())
+			uri = parent.resolve_relative_path(match).get_uri()
+			self.store.store_uri(nkey. RB.ExtDBSourceType.USER, uri)
 
-		key = RB.ExtDBKey.create("album", self.album)
-		key.add_field("album-artist", RB.ExtDBFieldType.OPTIONAL, self.artist)
-		self.callback(key, ordered, RB.ExtDBSourceType.USER, self.callback_args)
+		self.callback(self.callback_args)
 
 	def _enum_dir_cb(self, fileenum, result, results):
 		try:
@@ -117,28 +123,27 @@ class LocalSearch:
 			print "okay, probably done: %s" % e
 			import sys
 			sys.excepthook(*sys.exc_info())
-			self.callback(None, None, RB.ExtDBSourceType.NONE, self.callback_args)
+			self.callback(self.callback_args)
 
 
-	def search (self, key, last_time, callback, args):
+	def search (self, key, last_time, store, callback, args):
 		# ignore last_time
 
 		location = key.get_field("location")
 		if location is None:
 			print "not searching, we don't have a location"
-			callback(None, None, RB.ExtDBSourceType.NONE, args)
+			callback(args)
 			return
 
 		self.file = Gio.file_new_for_uri(location)
 		if self.file.get_uri_scheme() in IGNORED_SCHEMES:
 			print 'not searching for local art for %s' % (self.file.get_uri())
-			callback(None, None, RB.ExtDBSourceType.NONE, args)
+			callback(args)
 			return
 
 		self.album = key.get_field("album")
-		self.artist = key.get_field("album-artist")
-		if self.artist in (None, ""):
-			self.artist = key.get_field("artist")
+		self.artists = key.get_field_values("artist")
+		self.store = store
 		self.callback = callback
 		self.callback_args = args
 

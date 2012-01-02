@@ -676,18 +676,20 @@ rb_ext_db_request (RBExtDB *store,
 		return FALSE;
 	}
 
-	/* discard duplicate requests */
+	/* discard duplicate requests, combine equivalent requests */
 	for (l = store->priv->requests; l != NULL; l = l->next) {
 		req = l->data;
+		if (rb_ext_db_key_matches (key, req->key) == FALSE)
+			continue;
+
 		if (req->callback == callback &&
 		    req->user_data == user_data &&
-		    req->destroy_notify == destroy &&
-		    rb_ext_db_key_matches (key, req->key)) {
+		    req->destroy_notify == destroy) {
 			rb_debug ("found matching existing request");
 			if (destroy)
 				destroy (user_data);
 			return TRUE;
-		} else if (rb_ext_db_key_matches (key, req->key)) {
+		} else {
 			rb_debug ("found existing equivalent request");
 			emit_request = FALSE;
 		}

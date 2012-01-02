@@ -5386,60 +5386,39 @@ rhythmdb_entry_create_ext_db_key (RhythmDBEntry *entry, RhythmDBPropType prop)
 
 	switch (prop) {
 	case RHYTHMDB_PROP_ALBUM:
-		key = rb_ext_db_key_create ("album", rhythmdb_entry_get_string (entry, prop));
+		key = rb_ext_db_key_create_lookup ("album", rhythmdb_entry_get_string (entry, prop));
 		rb_ext_db_key_add_field (key,
 					 "artist",
-					 RB_EXT_DB_FIELD_OPTIONAL,
 					 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
 		str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_ARTIST);
 		if (g_strcmp0 (str, "") != 0 && g_strcmp0 (str, _("Unknown")) != 0) {
-			rb_ext_db_key_add_field (key,
-						 "album-artist",
-						 RB_EXT_DB_FIELD_OPTIONAL,
-						 str);
-		} else {
-			/* try artist name as album-artist too */
-			rb_ext_db_key_add_field (key,
-						 "album-artist",
-						 RB_EXT_DB_FIELD_OPTIONAL,
-						 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+			rb_ext_db_key_add_field (key, "artist", str);
 		}
 
 		str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID);
 		if (g_strcmp0 (str, "") != 0 && g_strcmp0 (str, _("Unknown")) != 0) {
-			rb_ext_db_key_add_field (key,
-						 "musicbrainz-albumid",
-						 RB_EXT_DB_FIELD_INFORMATIONAL,
-						 str);
+			rb_ext_db_key_add_info (key, "musicbrainz-albumid", str);
 		}
 
 		break;
 
 	case RHYTHMDB_PROP_TITLE:
-		key = rb_ext_db_key_create ("title", rhythmdb_entry_get_string (entry, prop));
-		rb_ext_db_key_add_field (key,
-					 "artist",
-					 RB_EXT_DB_FIELD_OPTIONAL,
-					 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
-		rb_ext_db_key_add_field (key,
-					 "album",
-					 RB_EXT_DB_FIELD_OPTIONAL,
-					 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
+		key = rb_ext_db_key_create_lookup ("title", rhythmdb_entry_get_string (entry, prop));
+		/* maybe these should be info? */
+		rb_ext_db_key_add_field (key, "artist", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+		rb_ext_db_key_add_field (key, "album", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
 		break;
 
 	case RHYTHMDB_PROP_ARTIST:
 		/* not really sure what this might be useful for */
-		key = rb_ext_db_key_create ("artist", rhythmdb_entry_get_string (entry, prop));
+		key = rb_ext_db_key_create_lookup ("artist", rhythmdb_entry_get_string (entry, prop));
 		break;
 
 	default:
 		g_assert_not_reached ();
 	}
 
-	rb_ext_db_key_add_field (key,
-				 "location",
-				 RB_EXT_DB_FIELD_INFORMATIONAL,
-				 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+	rb_ext_db_key_add_info (key, "location", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 	return key;
 }
 
@@ -5461,38 +5440,37 @@ rhythmdb_entry_matches_ext_db_key (RhythmDB *db, RhythmDBEntry *entry, RBExtDBKe
 
 	fields = rb_ext_db_key_get_field_names (key);
 	for (i = 0; fields[i] != NULL; i++) {
-		const char *value;
-		const char *entry_value;
 		RhythmDBPropType prop;
+		RhythmDBPropType extra_prop;
+		const char *v;
 
 		prop = rhythmdb_propid_from_nice_elt_name (db, (const xmlChar *)fields[i]);
-		value = rb_ext_db_key_get_field (key, fields[i]);
+		if (prop == -1) {
+			if (rb_ext_db_key_field_matches (key, fields[i], NULL) == FALSE)
+				return FALSE;
 
-		switch (rb_ext_db_key_get_field_type (key, fields[i])) {
-		case RB_EXT_DB_FIELD_INFORMATIONAL:
-			/* ignore */
+			continue;
+		}
+
+		/* check additional values for some fields */
+		switch (prop) {
+		case RHYTHMDB_PROP_ARTIST:
+			extra_prop = RHYTHMDB_PROP_ALBUM_ARTIST;
 			break;
-
-		case RB_EXT_DB_FIELD_OPTIONAL:
-			if (prop == -1)
-				break;
-
-			entry_value = rhythmdb_entry_get_string (entry, prop);
-			if (entry_value != NULL && strlen (entry_value) > 0 && strcmp (entry_value, value) != 0) {
-				return FALSE;
-			}
-			break;
-
-		case RB_EXT_DB_FIELD_REQUIRED:
-			if (prop == -1)
-				return FALSE;
-
-			entry_value = rhythmdb_entry_get_string (entry, prop);
-			if (entry_value == NULL || strcmp (entry_value, value) != 0) {
-				return FALSE;
-			}
+		default:
+			extra_prop = -1;
 			break;
 		}
+
+		if (extra_prop != -1) {
+			v = rhythmdb_entry_get_string (entry, extra_prop);
+			if (rb_ext_db_key_field_matches (key, fields[i], v))
+				continue;
+		}
+
+		v = rhythmdb_entry_get_string (entry, prop);
+		if (rb_ext_db_key_field_matches (key, fields[i], v) == FALSE)
+			return FALSE;
 	}
 
 	return TRUE;

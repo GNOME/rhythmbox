@@ -41,39 +41,17 @@ class Search(object):
 		self.last_time = last_time
 		self.searches = searches
 
-
 	def next_search(self):
 		if len(self.searches) == 0:
 			self.store.store(self.key, RB.ExtDBSourceType.NONE, None)
 			return False
 
 		search = self.searches.pop(0)
-		search.search(self.key, self.last_time, self.search_results, None)
+		search.search(self.key, self.last_time, self.store, self.search_done, None)
 		return True
 
-
-	def search_results(self, storekey, data, source_type, args):
-
-		if data is None or storekey is None:
-			pass
-		elif isinstance(data, str) or isinstance(data, unicode):
-			print "got a uri: %s" % str(data)
-			self.store.store_uri(storekey, source_type, data)
-		elif isinstance(data, list) or isinstance(data, tuple):
-			print "got a uri list: %s" % str(data)
-			for u in data:
-				self.store.store_uri(storekey, source_type, u)
-		elif isinstance(data, GdkPixbuf.Pixbuf):
-			print "got a pixbuf"
-			self.store.store(storekey, source_type, data)
-		else:
-			# complain quietly
-			print "got mystery meat: %s" % data
-			pass
-
-		# keep going anyway
+	def search_done(self, args):
 		self.next_search()
-
 
 class ArtSearchPlugin (GObject.GObject, Peas.Activatable):
 	__gtype_name__ = 'ArtSearchPlugin'

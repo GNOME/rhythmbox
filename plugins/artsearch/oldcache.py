@@ -45,25 +45,21 @@ class OldCacheSearch(object):
 		album = album.replace('/', '-')
 		return os.path.join(ART_FOLDER, '%s - %s.%s' % (artist, album, extension))
 
-	def search(self, key, last_time, callback, *args):
+	def search(self, key, last_time, store, callback, *args):
 		album = key.get_field("album")
-		artist = key.get_field("artist")
-		albumartist = key.get_field("album-artist")
+		artists = key.get_field_values("artist") or []
 
-		print "looking for %s by (%s, %s)" % (album, artist, albumartist)
-		for field in ('album-artist', 'artist'):
-			artist = key.get_field(field)
-			if artist is None:
-				continue
-
+		print "looking for %s by %s" % (album, str(artists))
+		for artist in artists:
 			for ext in ('jpg', 'png'):
-				path = self.filename(album, field, ext)
+				path = self.filename(album, artist, ext)
 				if os.path.exists(path):
 					print "found %s" % path
 					uri = "file://" + urllib.pathname2url(path)
-					storekey = RB.ExtDBKey.create('album', album)
-					storekey.add_field(field, RB.ExtDBFieldType.OPTIONAL, artist)
-					callback(storekey, uri, RB.ExtDBSourceType.SEARCH, *args)
+					storekey = RB.ExtDBKey.create_storage('album', album)
+					storekey.add_field("artist", artist)
+					store.store_uri(storekey, RB.ExtDBSourceType.SEARCH, uri)
+					callback(*args)
 					return
 
-		callback(None, None, RB.ExtDBSourceType.NONE, *args)
+		callback(*args)

@@ -43,16 +43,16 @@ AMAZON_IMAGE_URL = "http://images.amazon.com/images/P/%s.01.LZZZZZZZ.jpg"
 class MusicBrainzSearch(object):
 
 	def get_release_cb (self, data, args):
-		(key, callback, cbargs) = args
+		(key, store, callback, cbargs) = args
 		if data is None:
 			print "musicbrainz release request returned nothing"
-			callback(None, None, RB.ExtDBSourceType.NONE, *cbargs)
+			callback(*cbargs)
 			return
 
 		try:
 			parsed = dom.parseString(data)
 
-			storekey = RB.ExtDBKey.create('album', key.get_field('album'))
+			storekey = RB.ExtDBKey.create_storage('album', key.get_field('album'))
 
 			# check that there's an artist that isn't 'various artists'
 			artist_tags = parsed.getElementsByTagName('artist')
@@ -64,7 +64,7 @@ class MusicBrainzSearch(object):
 					if len(nametags) > 0:
 						artistname = nametags[0].firstChild.data
 						print "got musicbrainz artist name %s" % artistname
-						storekey.add_field('album-artist', RB.ExtDBFieldType.OPTIONAL, artistname)
+						storekey.add_field('artist', artistname)
 
 
 			# look for an ASIN tag
@@ -75,20 +75,21 @@ class MusicBrainzSearch(object):
 				print "got ASIN %s" % asin
 				image_url = AMAZON_IMAGE_URL % asin
 
-				callback(storekey, image_url, RB.ExtDBSourceType.SEARCH, *cbargs)
+				store.store_uri(storekey, RB.ExtDBSourceType.SEARCH, image_url)
 			else:
 				print "no ASIN for this release"
-				callback(None, None, RB.ExtDBSourceType.NONE, *cbargs)
+
+			callback(*cbargs)
 		except Exception, e:
 			print "exception parsing musicbrainz response: %s" % e
-			callback(None, None, RB.ExtDBSourceType.NONE, *cbargs)
+			callback(*cbargs)
 
-	def search(self, key, last_time, callback, *args):
+	def search(self, key, last_time, store, callback, *args):
 		key = key.copy()	# ugh
-		album_id = key.get_field("musicbrainz-albumid")
+		album_id = key.get_info("musicbrainz-albumid")
 		if album_id is None:
 			print "no musicbrainz release ID for this track"
-			callback(None, None, RB.ExtDBSourceType.NONE, *args)
+			callback(*args)
 			return
 
 		if album_id.startswith(MUSICBRAINZ_RELEASE_PREFIX):
@@ -101,4 +102,4 @@ class MusicBrainzSearch(object):
 
 		url = MUSICBRAINZ_RELEASE_URL % (album_id)
 		loader = rb.Loader()
-		loader.get_url(url, self.get_release_cb, (key, callback, args))
+		loader.get_url(url, self.get_release_cb, (key, store, callback, args))

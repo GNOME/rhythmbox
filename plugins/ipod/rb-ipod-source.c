@@ -1572,10 +1572,10 @@ impl_track_added (RBTransferTarget *target,
 		device = rb_ipod_db_get_device (priv->ipod_db);
 		if (device && itdb_device_supports_artwork (device)) {
 			RBExtDBKey *key;
-			key = rb_ext_db_key_create ("album", song->album);
-			rb_ext_db_key_add_field (key, "artist", RB_EXT_DB_FIELD_OPTIONAL, song->artist);
+			key = rb_ext_db_key_create_lookup ("album", song->album);
+			rb_ext_db_key_add_field (key, "artist", song->artist);
 			if (song->albumartist) {
-				rb_ext_db_key_add_field (key, "album-artist", RB_EXT_DB_FIELD_OPTIONAL, song->albumartist);
+				rb_ext_db_key_add_field (key, "artist", song->albumartist);
 			}
 
 			rb_ext_db_request (priv->art_store,

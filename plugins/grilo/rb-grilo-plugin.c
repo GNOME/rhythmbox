@@ -153,11 +153,8 @@ playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBGriloPlu
 	if (uri != NULL) {
 		RBExtDBKey *key;
 
-		key = rb_ext_db_key_create ("album", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
-		rb_ext_db_key_add_field (key,
-					 "artist",
-					 RB_EXT_DB_FIELD_OPTIONAL,
-					 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+		key = rb_ext_db_key_create_storage ("album", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
+		rb_ext_db_key_add_field (key, "artist", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
 
 		rb_ext_db_store_uri (plugin->art_store,
 				     key,
