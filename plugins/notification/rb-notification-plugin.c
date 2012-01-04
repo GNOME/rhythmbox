@@ -194,9 +194,9 @@ do_notify (RBNotificationPlugin *plugin,
 
 	if (image_uri != NULL) {
 		notify_notification_clear_hints (notification);
-		notify_notification_set_hint_string (notification,
-						     "image_path",
-						     image_uri);
+		notify_notification_set_hint (notification,
+					      "image_path",
+					      g_variant_new_string (image_uri));
 	}
 
 	notify_notification_clear_actions (notification);
@@ -217,9 +217,7 @@ do_notify (RBNotificationPlugin *plugin,
 							(NotifyActionCallback) notification_playpause_cb,
 							plugin,
 							NULL);
-			notify_notification_set_hint_byte (notification,
-							   "action-icons",
-							   1);
+			notify_notification_set_hint (notification, "action-icons", g_variant_new_boolean (TRUE));
 		}
 
 		notify_notification_add_action (notification,
@@ -238,9 +236,7 @@ do_notify (RBNotificationPlugin *plugin,
 		} else {
 			hint = "transient";
 		}
-		notify_notification_set_hint_byte (notification,
-						   hint,
-						   1);
+		notify_notification_set_hint (notification, hint, g_variant_new_boolean (TRUE));
 	}
 
 	if (notify_notification_show (notification, &error) == FALSE) {
