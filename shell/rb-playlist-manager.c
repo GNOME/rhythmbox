@@ -1627,8 +1627,7 @@ playlist_manager_method_call (GDBusConnection *connection,
 		char **names;
 
 		rb_playlist_manager_get_playlist_names (mgr, &names, NULL);
-		g_dbus_method_invocation_return_value (invocation,
-						       g_variant_new_strv ((const char * const *)names, -1));
+		g_dbus_method_invocation_return_value (invocation, g_variant_new ("(^as)", names));
 		g_strfreev (names);
 	} else if (g_strcmp0 (method_name, "CreatePlaylist") == 0) {
 		g_variant_get (parameters, "(&s)", &name);
