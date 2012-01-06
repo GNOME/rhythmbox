@@ -388,7 +388,7 @@ impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *
 	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
 	g_object_unref (model);
 
-	*text = g_strdup_printf (ngettext ("%d import errors", "%d import errors", count),
+	*text = g_strdup_printf (ngettext ("%d import error", "%d import errors", count),
 				 count);
 }
 

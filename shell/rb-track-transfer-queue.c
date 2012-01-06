@@ -416,16 +416,15 @@ start_next_batch (RBTrackTransferQueue *queue)
 	}
 
 	if (profiles == NULL) {
-		if (total == 1) {
-			message = g_strdup (_("This file cannot be transferred as it is not in a "
-					      "format supported by the target device and no suitable "
-					      "encoding profiles are available."));
-		} else {
-			message = g_strdup_printf (_("%d of the %d files cannot be transferred as "
-						     "they must be converted into a format supported "
-						     "by the target device but no suitable encoding "
-						     "profiles are available."), count, total);
-		}
+		const char *str;
+		str = ngettext ("%d file cannot be transferred as it must be converted into "
+				"a format supported by the target device but no suitable "
+				"encoding profiles are available",
+				"%d files cannot be transferred as they must be converted into "
+				"a format supported by the target device but no suitable "
+				"encoding profiles are available",
+				count);
+		message = g_strdup_printf (str, count);
 	} else {
 		GPtrArray *descriptions;
 		GstEncodingTarget *target;
@@ -444,15 +443,14 @@ start_next_batch (RBTrackTransferQueue *queue)
 			/* XXX should provide the option of picking a different format? */
 			message = g_strdup_printf (_("Additional software is required to encode media "
 						     "in your preferred format:\n%s"), plugins);
-		} else if (total == 1) {
-			message = g_strdup_printf (_("Additional software is required to convert this "
-						     "file into a format supported by the target "
-						     "device:\n%s"), plugins);
 		} else {
-			message = g_strdup_printf (_("Additional software is required to convert %d "
-						     "of the %d files to be transferred into a format "
-						     "supported by the target device:\n%s"),
-						     count, total, plugins);
+			const char *str;
+			str = ngettext ("Additional software is required to convert %d file "
+					"into a format supported by the target device:\n%s",
+					"Additional software is required to convert %d files "
+					"into a format supported by the target device:\n%s",
+					count);
+			message = g_strdup_printf (str, count, plugins);
 		}
 
 		g_free (plugins);

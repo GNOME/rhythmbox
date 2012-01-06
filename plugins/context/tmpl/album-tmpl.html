@@ -4,6 +4,7 @@
     import re
     import cgi
     import rfc822
+    from gettext import ngettext
 
     def cleanup(text):
         return re.sub(r'\([^\)]*\)', '', text)
@@ -71,9 +72,10 @@
     %if 'duration' in entry:
     <% 
         album_time = sec2hms(entry['duration'])
-        tracks = len(entry['tracklist'])
+	tracks = len(entry['tracklist'])
+	str = ngettext("%s (%d track)", "%s (%d tracks)", tracks)
     %>
-    <p class="duration">${ _("%s (%d tracks)") % (album_time, tracks) }</p>
+    <p class="duration">${ str % (album_time, tracks) }</p>
     %endif
     %if 'tracklist' in entry:
     <button id="btn_${entry['id'] | h}" onclick="toggle_vis(${entry['id'] | h})">
