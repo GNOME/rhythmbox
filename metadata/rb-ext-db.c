@@ -647,7 +647,7 @@ rb_ext_db_request (RBExtDB *store,
 {
 	RBExtDBRequest *req;
 	gboolean result;
-	gulong last_time;
+	guint64 last_time;
 	TDB_DATA tdbvalue;
 	TDB_DATA tdbkey;
 	char *filename;
@@ -713,7 +713,7 @@ rb_ext_db_request (RBExtDB *store,
 	/* and let metadata providers request it */
 	if (emit_request) {
 		result = FALSE;
-		g_signal_emit (store, signals[REQUEST], 0, req->key, last_time, &result);
+		g_signal_emit (store, signals[REQUEST], 0, req->key, (gulong)last_time, &result);
 	} else {
 		result = TRUE;
 	}
