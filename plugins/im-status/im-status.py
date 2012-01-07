@@ -40,7 +40,7 @@ except ImportError:
   use_purple = False
 
 import gettext
-gettext.install('rhythmbox', RB.locale_dir())
+gettext.install('rhythmbox', RB.locale_dir(), unicode=True)
 
 NORMAL_SONG_ARTIST = 'artist'
 NORMAL_SONG_TITLE  = 'title'
