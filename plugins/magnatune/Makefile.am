@@ -26,8 +26,8 @@ themedir = $(pkgdatadir)/icons/hicolor
 size = 24x24
 context = places
 icondir = $(themedir)/$(size)/$(context)
-noinst_DATA = icons/hicolor/$(size)/$(context)/magnatune.png
+noinst_DATA += icons/hicolor/$(size)/$(context)/magnatune.png
 
-EXTRA_DIST = $(plugin_in_files) $(gtkbuilder_DATA) $(icon_DATA)
+EXTRA_DIST = $(plugin_in_files) $(gtkbuilder_DATA) $(icon_DATA) $(noinst_DATA)
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)
