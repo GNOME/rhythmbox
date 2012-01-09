@@ -1,6 +1,6 @@
 # Vietnamese translation for Rhythmbox.
 # Copyright © 2007 Gnome i18n Project for Vietnamese.
-# Nguyễn Thái Ngọc Duy <pclouds@vnlinux.org>, 2002-2004, 2005, 2007, 2011.
+# Nguyễn Thái Ngọc Duy <pclouds@gmail.com>, 2002-2004, 2005, 2007, 2011-2012.
 # Clytie Siddall <clytie@riverland.net.au>, 2005-2006.
 # Lê Trường An <xinemdungkhoc1@gmail.com>, 2011.
 #
@@ -10,8 +10,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
 "POT-Creation-Date: 2012-01-07 07:39+0000\n"
-"PO-Revision-Date: 2012-01-09 08:47+0700\n"
-"Last-Translator: Lê Trường An <xinemdungkhoc1@gmail.com>\n"
+"PO-Revision-Date: 2012-01-09 09:00+0700\n"
+"Last-Translator: Nguyễn Thái Ngọc Duy <pclouds@gmail.com>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -269,7 +269,7 @@ msgstr "_Tên tập tin:"
 
 #: ../data/ui/library-prefs.ui.h:7
 msgid "_Install additional software required to use this format"
-msgstr ""
+msgstr "_Cài đặt phần mềm bổ sung cần cho định dạng này"
 
 #: ../data/ui/library-prefs.ui.h:8
 msgid "_Music files are placed in:"
@@ -280,10 +280,9 @@ msgid "_Preferred format:"
 msgstr "Định dạng ư_u tiên:"
 
 #: ../data/ui/library-prefs.ui.h:10
-#, fuzzy
 #| msgid "Starting %s"
 msgid "_Settings"
-msgstr "Đang bắt đầu %s"
+msgstr "_Thiết lập"
 
 #: ../data/ui/library-prefs.ui.h:11
 msgid "_Watch my library for new files"
@@ -746,13 +745,13 @@ msgstr "%d:%02d:%02d/%d:%02d:%02d"
 #: ../metadata/rb-metadata-gst.c:450
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
-msgstr ""
+msgstr "Không thể ghi thẻ vào tập in này vì nó chứa nhiều luồng"
 
 #: ../metadata/rb-metadata-gst.c:490
 #, c-format
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
-msgstr ""
+msgstr "Không thể ghi thẻ vào tập in này vì dùng định dạng không được hỗ trợ"
 
 #: ../metadata/rb-metadata-gst.c:622
 #, c-format
@@ -760,19 +759,19 @@ msgid "Failed to create a source element; check your installation"
 msgstr "Lỗi tạo phần tử nguồn; hãy kiểm tra lại bản cài đặt."
 
 #: ../metadata/rb-metadata-gst.c:632
-#, fuzzy, c-format
+#, c-format
 #| msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgid ""
 "Failed to create the 'decodebin2' element; check your GStreamer installation"
-msgstr "Lỗi tạo yếu tố playbin2; hãy kiểm tra lại bản cài đặt GStreamer"
+msgstr "Lỗi tạo yếu tố 'decodebin2'; hãy kiểm tra lại bản cài đặt GStreamer"
 
 #: ../metadata/rb-metadata-gst.c:641
-#, fuzzy, c-format
+#, c-format
 #| msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
 "installation"
-msgstr "Lỗi tạo yếu tố playbin2; hãy kiểm tra lại bản cài đặt GStreamer"
+msgstr "Lỗi tạo yếu tố 'giostreamsink'; hãy kiểm tra lại bản cài đặt GStreamer"
 
 #: ../metadata/rb-metadata-gst.c:722
 #, c-format
@@ -789,16 +788,14 @@ msgid "Fetch album covers from the Internet"
 msgstr "Lấy ảnh bìa tập nhạc từ Internet"
 
 #: ../plugins/artdisplay/artdisplay.py:312
-#, fuzzy
 #| msgid "Searching for lyrics..."
 msgid "Searching..."
-msgstr "Đang tìm lời nhạc..."
+msgstr "Đang tìm..."
 
 #: ../plugins/artsearch/artsearch.plugin.in.h:1
-#, fuzzy
 #| msgid "Cover art"
 msgid "Cover art search"
-msgstr "Ảnh bìa"
+msgstr "Tìm ảnh bìa"
 
 #: ../plugins/audiocd/album-info.ui.h:1
 msgid "A_lbum:"
@@ -1161,11 +1158,11 @@ msgstr "_Xem trên %s"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1694
 msgid "Listen to _Similar Artists Radio"
-msgstr ""
+msgstr "Nghe đài nghệ sĩ _tương tự"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1708
 msgid "Listen to _Top Fans Radio"
-msgstr ""
+msgstr "Nghe đài _fan hâm mộ hàng đầu"
 
 #. Translators: describes a radio stream playing tracks similar to those by an artist.
 #. * Followed by a text entry box for the artist name.
@@ -1464,10 +1461,9 @@ msgstr "Hiện thông tin liên quan đến bài hát và nghệ sĩ đang phát
 
 #. Add button to toggle visibility of pane
 #: ../plugins/context/ContextView.py:95
-#, fuzzy
 #| msgid "Context Pane"
 msgid "Conte_xt Pane"
-msgstr "Khung ngữ cảnh"
+msgstr "Khung _ngữ cảnh"
 
 #: ../plugins/context/ContextView.py:96
 msgid "Change the visibility of the context pane"
@@ -1528,7 +1524,7 @@ msgid "Top albums by %s"
 msgstr "Tập nhạc đầu bảng của %s"
 
 #: ../plugins/context/tmpl/album-tmpl.html:76
-#, fuzzy, c-format
+#, c-format
 #| msgid "%s (%d tracks)"
 msgid "%s (%d track)"
 msgid_plural "%s (%d tracks)"
@@ -1690,17 +1686,15 @@ msgstr "Cung cấp cài đặt cho đặc tả giao tiếp D-Bus MediaServer2"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1240
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1365
-#, fuzzy
 #| msgid "Show _All Tracks"
 msgid "All Tracks"
-msgstr "Hiện _mọi bài"
+msgstr "Mọi bài"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2370
 msgid "Artists"
 msgstr "Nghệ sĩ"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2372
-#, fuzzy
 #| msgid "Genre"
 msgid "Genres"
 msgstr "Thể loại"
@@ -1820,27 +1814,26 @@ msgstr "Nâng cao"
 
 #: ../plugins/grilo/grilo.plugin.in.h:1
 msgid "Browse various local and Internet media sources"
-msgstr ""
+msgstr "Duyệt các nguồn phương tiện Internet và cục bộ khác nhau"
 
 #: ../plugins/grilo/grilo.plugin.in.h:2
 msgid "Grilo media browser"
-msgstr ""
+msgstr "Trình duyệt phương tiện Grilo"
 
 #: ../plugins/grilo/rb-grilo-source.c:342
-#, fuzzy
 #| msgid "_Browse"
 msgid "Browse"
-msgstr "_Duyệt"
+msgstr "Duyệt"
 
 #: ../plugins/grilo/rb-grilo-source.c:385
 msgid "Fetch more tracks"
-msgstr ""
+msgstr "Lấy thêm bài"
 
 #: ../plugins/grilo/rb-grilo-source.c:840
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
-msgstr[0] ""
+msgstr[0] "Chỉ hiện %d kết quả"
 
 #: ../plugins/im-status/im-status.plugin.in.h:1
 msgid "IM Status"
@@ -2027,7 +2020,6 @@ msgstr "Tạo đài phát thanh Internet mới"
 #. Translators: this is the toolbar button label for
 #. New Internet Radio Station action.
 #: ../plugins/iradio/rb-iradio-source.c:343
-#, fuzzy
 #| msgid "Add"
 msgctxt "Radio"
 msgid "Add"
@@ -2039,10 +2031,9 @@ msgid "Genre"
 msgstr "Thể loại"
 
 #: ../plugins/iradio/rb-iradio-source.c:400
-#, fuzzy
 #| msgid "URL of internet radio station:"
 msgid "Search your internet radio stations"
-msgstr "URL của đài phát Internet:"
+msgstr "Tìm đài phát Internet"
 
 #: ../plugins/iradio/rb-iradio-source.c:486
 msgid "Radio"
@@ -2765,7 +2756,7 @@ msgid "You can access the main window through the 'shell' variable :"
 msgstr "Bạn có thể truy cập cửa sổ chính thông qua biến 'shell':"
 
 #: ../plugins/pythonconsole/pythonconsole.py:143
-#, fuzzy, python-format
+#, python-format
 #| msgid ""
 #| "After you press OK, Rhythmbox will wait until you connect to it with "
 #| "winpdb or rpdb2. If you have not set a debugger password in GConf, it "
@@ -2776,8 +2767,8 @@ msgid ""
 "use the default password ('rhythmbox')."
 msgstr ""
 "Sau khi bạn nhấn OK, Rhythmbox sẽ chờ tới khi bạn kết nối bằng winpdb hoặc "
-"rpdb2. Nếu bạn chưa đặt mật khẩu cho trình bắt lỗi trong GConf, nó sẽ dùng "
-"mật khẩu mặc định ('rhythmbox')."
+"rpdb2. Nếu bạn chưa đặt mật khẩu cho trình bắt lỗi trong tập tin %s, nó sẽ "
+"dùng mật khẩu mặc định ('rhythmbox')."
 
 #. ex:noet:ts=8:
 #: ../plugins/rbzeitgeist/rbzeitgeist.plugin.in.h:1
@@ -2896,50 +2887,43 @@ msgid "Send files by mail, instant message..."
 msgstr "Gửi tập tin đính kèm theo thư, tin nhắn..."
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:39
-#, fuzzy
 #| msgid "Quality"
 msgid "Low quality"
-msgstr "Chất lượng"
+msgstr "Chất lượng thấp"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:40
-#, fuzzy
 #| msgid "Normal"
 msgid "Normal quality"
-msgstr "Bình thường"
+msgstr "Chất lượng bình thường"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:41
-#, fuzzy
 #| msgid "Quality"
 msgid "High quality"
-msgstr "Chất lượng"
+msgstr "Chất lượng cao"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:173
-#, fuzzy
 #| msgid "Enable visual effects?"
 msgid "_Visual Effect"
-msgstr "Bật hiệu ứng thị giác chứ?"
+msgstr "Hiệu ứng _trực quan"
 
 #: ../plugins/visualizer/rb-visualizer-page.c:76
-#, fuzzy
 #| msgid "Enable visual effects?"
 msgid "Visual Effects"
-msgstr "Bật hiệu ứng thị giác chứ?"
+msgstr "Hiệu ứng trực quan"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:369
 msgid "Fullscreen"
 msgstr "Toàn màn hình"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:370
-#, fuzzy
 #| msgid "Enable visual effects?"
 msgid "Toggle fullscreen visual effects"
-msgstr "Bật hiệu ứng thị giác chứ?"
+msgstr "Bật/Tắt hiệu ứng trực quan toàn màn hình"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:395
-#, fuzzy
 #| msgid "Art Display"
 msgid "Display"
-msgstr "Ảnh bìa"
+msgstr "Hiển thị"
 
 #: ../plugins/visualizer/visualizer.plugin.in.h:1
 msgid "Displays visualizations"
@@ -3207,7 +3191,6 @@ msgstr[0] "%d phần"
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
 #: ../podcast/rb-podcast-source.c:1293
-#, fuzzy
 #| msgid "Add"
 msgctxt "Podcast"
 msgid "Add"
@@ -3588,15 +3571,14 @@ msgid "Eject this medium"
 msgstr "Đẩy vật chứa này ra"
 
 #: ../shell/rb-removable-media-manager.c:153
-#, fuzzy
 #| msgid "Check for _new episodes:"
 msgid "_Check for New Devices"
-msgstr "Kiểm tra phần mớ_i:"
+msgstr "_Tìm thiết bị mới"
 
 #: ../shell/rb-removable-media-manager.c:154
 msgid ""
 "Check for new media storage devices that have not been automatically detected"
-msgstr ""
+msgstr "Tìm thiết bị lưu trữ mới chưa được tự động phát hiện"
 
 #: ../shell/rb-shell.c:348
 msgid "_Music"
@@ -3790,18 +3772,16 @@ msgstr ""
 
 #. Translators: this is the short label for the 'import folder' action
 #: ../shell/rb-shell.c:2058
-#, fuzzy
 #| msgid "Import Errors"
 msgctxt "Library"
 msgid "Import"
-msgstr "Lỗi nhập"
+msgstr "Nhập"
 
 #. Translators: this is the short label for the 'view all tracks' action
 #: ../shell/rb-shell.c:2060
-#, fuzzy
 #| msgid "Show _All Tracks"
 msgid "Show All"
-msgstr "Hiện _mọi bài"
+msgstr "Hiện tất cả"
 
 #: ../shell/rb-shell.c:2370
 msgid "Error while saving song information"
@@ -4201,7 +4181,7 @@ msgid "Replace _All"
 msgstr "Thay thế _hết"
 
 #: ../shell/rb-track-transfer-queue.c:420
-#, fuzzy, c-format
+#, c-format
 #| msgid ""
 #| "%d of the %d files to be transferred are not in a format supported by the "
 #| "target device, and no encoders are available for the supported formats."
@@ -4214,8 +4194,8 @@ msgid_plural ""
 "supported by the target device but no suitable encoding profiles are "
 "available"
 msgstr[0] ""
-"%d trên %d tập tin được truyền không nằm trong danh sách các định dạng hỗ "
-"trợ ở thiết bị đích, và không có bộ đổi phù hợp cho những dạng thức này."
+"Không thể truyền %d tập tin vì phải chuyển sang dạng thức được thiết bị đích "
+"hỗ trợ, nhưng không có hỗ sơ chuyển đổi phù hợp"
 
 #. XXX should provide the option of picking a different format?
 #: ../shell/rb-track-transfer-queue.c:444
@@ -4224,6 +4204,8 @@ msgid ""
 "Additional software is required to encode media in your preferred format:\n"
 "%s"
 msgstr ""
+"Cần phần mềm bổ sung để mã hoá theo định dạng ưa thích:\n"
+"%s"
 
 #: ../shell/rb-track-transfer-queue.c:448
 #, c-format
@@ -4236,6 +4218,9 @@ msgid_plural ""
 "by the target device:\n"
 "%s"
 msgstr[0] ""
+"Cần phần mềm bổ sung để chuyển đổi %d tập tin sang định dạng được hỗ trợ ở "
+"thiết bị đích:\n"
+"%s"
 
 #: ../shell/rb-track-transfer-queue.c:465
 msgid "Unable to transfer tracks"
@@ -4243,19 +4228,17 @@ msgstr "Không thể truyền bài"
 
 #: ../shell/rb-track-transfer-queue.c:470
 msgid "_Cancel the transfer"
-msgstr ""
+msgstr "_Huỷ truyền"
 
 #: ../shell/rb-track-transfer-queue.c:472
-#, fuzzy
 #| msgid "_Skip this step"
 msgid "_Skip these files"
-msgstr "_Bỏ qua bước này:"
+msgstr "_Bỏ qua những tập tin này"
 
 #: ../shell/rb-track-transfer-queue.c:475
-#, fuzzy
 #| msgid "_Initialize"
 msgid "_Install"
-msgstr "_Khởi tạo"
+msgstr "_Cài đặt"
 
 #: ../shell/rb-track-transfer-queue.c:573
 #, c-format
@@ -4333,21 +4316,20 @@ msgstr "Chia sẻ"
 #. set up info bar for triggering codec installation
 #: ../sources/rb-import-errors-source.c:243
 msgid "Install Additional Software"
-msgstr ""
+msgstr "Cài đặt phần mềm bổ sung"
 
 #: ../sources/rb-import-errors-source.c:249
-#, fuzzy
 #| msgid ""
 #| "Additional GStreamer plugins are required to play some of these files."
 msgid "Additional software is required to play some of these files."
-msgstr "Cần phần bổ sung GStreamer khác để phát tập tin này."
+msgstr "Cần phần mềm bổ sung để phát những tập tin này."
 
 #: ../sources/rb-import-errors-source.c:354
 msgid "Import Errors"
 msgstr "Lỗi nhập"
 
 #: ../sources/rb-import-errors-source.c:391
-#, fuzzy, c-format
+#, c-format
 #| msgid "%d import errors"
 #| msgid_plural "%d import errors"
 msgid "%d import error"
@@ -4491,7 +4473,6 @@ msgstr "Xoá trắng"
 
 #. Translators: this is the toolbutton label for the 'shuffle queue' action
 #: ../sources/rb-play-queue-source.c:286
-#, fuzzy
 #| msgid "Shuffle"
 msgctxt "Queue"
 msgid "Shuffle"
@@ -4969,16 +4950,14 @@ msgid "Clear the search text"
 msgstr "Xoá từ khóa tìm kiếm"
 
 #: ../widgets/rb-search-entry.c:234
-#, fuzzy
 #| msgid "Clear the search text"
 msgid "Select the search type"
-msgstr "Xoá từ khóa tìm kiếm"
+msgstr "Chọn loại tìm kiếm"
 
 #: ../widgets/rb-search-entry.c:256
-#, fuzzy
 #| msgid "_Search:"
 msgid "Search"
-msgstr "Tìm _kiếm:"
+msgstr "Tìm kiếm"
 
 #: ../widgets/rb-search-entry.c:568
 msgid "_Search:"
