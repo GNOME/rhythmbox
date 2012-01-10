@@ -199,7 +199,7 @@ rb_static_playlist_source_create_actions (RBShell *shell)
 	RBStaticPlaylistSourceClass *klass;
 	GtkUIManager *uimanager;
 
-	klass = RB_STATIC_PLAYLIST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_STATIC_PLAYLIST_SOURCE));
+	klass = RB_STATIC_PLAYLIST_SOURCE_CLASS (g_type_class_ref (RB_TYPE_STATIC_PLAYLIST_SOURCE));
 
 	klass->action_group = gtk_action_group_new ("StaticPlaylistActions");
 	gtk_action_group_set_translation_domain (klass->action_group, GETTEXT_PACKAGE);
@@ -217,6 +217,8 @@ rb_static_playlist_source_create_actions (RBShell *shell)
 	rb_source_search_basic_create_for_actions (klass->action_group,
 						   rb_static_playlist_source_radio_actions,
 						   G_N_ELEMENTS (rb_static_playlist_source_radio_actions));
+
+	g_type_class_unref (klass);
 }
 static void
 rb_static_playlist_source_init (RBStaticPlaylistSource *source)

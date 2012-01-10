@@ -240,7 +240,7 @@ rb_auto_playlist_source_create_actions (RBShell *shell)
 	RBAutoPlaylistSourceClass *klass;
 	GtkUIManager *uimanager;
 
-	klass = RB_AUTO_PLAYLIST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_AUTO_PLAYLIST_SOURCE));
+	klass = RB_AUTO_PLAYLIST_SOURCE_CLASS (g_type_class_ref (RB_TYPE_AUTO_PLAYLIST_SOURCE));
 
 	klass->action_group = gtk_action_group_new ("AutoPlaylistActions");
 	gtk_action_group_set_translation_domain (klass->action_group, GETTEXT_PACKAGE);
@@ -258,6 +258,8 @@ rb_auto_playlist_source_create_actions (RBShell *shell)
 	rb_source_search_basic_create_for_actions (klass->action_group,
 						   rb_auto_playlist_source_radio_actions,
 						   G_N_ELEMENTS (rb_auto_playlist_source_radio_actions));
+
+	g_type_class_unref (klass);
 }
 
 static void
