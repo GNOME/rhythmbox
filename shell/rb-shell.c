@@ -96,6 +96,7 @@
 #include "rb-podcast-main-source.h"
 #include "rb-podcast-entry-types.h"
 #include "rb-ext-db.h"
+#include "rb-auto-playlist-source.h"
 
 #include "eggsmclient.h"
 
@@ -798,6 +799,9 @@ construct_sources (RBShell *shell)
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (shell->priv->podcast_source), page_group);
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (shell->priv->missing_files_source), page_group);
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (shell->priv->import_errors_source), page_group);
+
+	rb_auto_playlist_source_create_actions (shell);
+	rb_static_playlist_source_create_actions (shell);
 
 	rb_podcast_main_source_add_subsources (RB_PODCAST_MAIN_SOURCE (shell->priv->podcast_source));
 

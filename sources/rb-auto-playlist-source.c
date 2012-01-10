@@ -134,8 +134,6 @@ struct _RBAutoPlaylistSourcePrivate
 
 	RBSourceSearch *default_search;
 	RhythmDBQuery *search_query;
-
-	GtkActionGroup *action_group;
 };
 
 static gpointer playlist_pixbuf = NULL;
@@ -203,11 +201,6 @@ rb_auto_playlist_source_dispose (GObject *object)
 {
 	RBAutoPlaylistSourcePrivate *priv = GET_PRIVATE (object);
 
-	if (priv->action_group != NULL) {
-		g_object_unref (priv->action_group);
-		priv->action_group = NULL;
-	}
-
 	if (priv->cached_all_query != NULL) {
 		g_object_unref (priv->cached_all_query);
 		priv->cached_all_query = NULL;
@@ -239,6 +232,32 @@ rb_auto_playlist_source_finalize (GObject *object)
 	}
 
 	G_OBJECT_CLASS (rb_auto_playlist_source_parent_class)->finalize (object);
+}
+
+void
+rb_auto_playlist_source_create_actions (RBShell *shell)
+{
+	RBAutoPlaylistSourceClass *klass;
+	GtkUIManager *uimanager;
+
+	klass = RB_AUTO_PLAYLIST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_AUTO_PLAYLIST_SOURCE));
+
+	klass->action_group = gtk_action_group_new ("AutoPlaylistActions");
+	gtk_action_group_set_translation_domain (klass->action_group, GETTEXT_PACKAGE);
+
+	g_object_get (shell, "ui-manager", &uimanager, NULL);
+	gtk_ui_manager_insert_action_group (uimanager, klass->action_group, 0);
+	g_object_unref (uimanager);
+
+	gtk_action_group_add_radio_actions (klass->action_group,
+					    rb_auto_playlist_source_radio_actions,
+					    G_N_ELEMENTS (rb_auto_playlist_source_radio_actions),
+					    0,
+					    NULL,
+					    NULL);
+	rb_source_search_basic_create_for_actions (klass->action_group,
+						   rb_auto_playlist_source_radio_actions,
+						   G_N_ELEMENTS (rb_auto_playlist_source_radio_actions));
 }
 
 static void
@@ -273,27 +292,10 @@ rb_auto_playlist_source_constructed (GObject *object)
 				 G_CALLBACK (rb_auto_playlist_source_songs_sort_order_changed_cb),
 				 source, 0);
 
-	g_object_get (source, "shell", &shell, NULL);
-	priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
-								     "AutoPlaylistActions",
-								     NULL, 0,
-								     shell);
-	if (gtk_action_group_get_action (priv->action_group,
-					 rb_auto_playlist_source_radio_actions[0].name) == NULL) {
-		gtk_action_group_add_radio_actions (priv->action_group,
-						    rb_auto_playlist_source_radio_actions,
-						    G_N_ELEMENTS (rb_auto_playlist_source_radio_actions),
-						    0,
-						    NULL,
-						    NULL);
-		rb_source_search_basic_create_for_actions (priv->action_group,
-							   rb_auto_playlist_source_radio_actions,
-							   G_N_ELEMENTS (rb_auto_playlist_source_radio_actions));
-	}
 	priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
 
-
 	/* set up toolbar */
+	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "ui-manager", &ui_manager, NULL);
 	priv->toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
 	rb_source_toolbar_add_search_entry (priv->toolbar, "/AutoPlaylistSourceSearchMenu", NULL);

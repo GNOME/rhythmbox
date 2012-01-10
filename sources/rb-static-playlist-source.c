@@ -149,7 +149,6 @@ typedef struct
 	RBSourceSearch *default_search;
 	RhythmDBQuery *search_query;
 
-	GtkActionGroup *action_group;
 	gboolean dispose_has_run;
 } RBStaticPlaylistSourcePrivate;
 
@@ -194,6 +193,31 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	g_type_class_add_private (klass, sizeof (RBStaticPlaylistSourcePrivate));
 }
 
+void
+rb_static_playlist_source_create_actions (RBShell *shell)
+{
+	RBStaticPlaylistSourceClass *klass;
+	GtkUIManager *uimanager;
+
+	klass = RB_STATIC_PLAYLIST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_STATIC_PLAYLIST_SOURCE));
+
+	klass->action_group = gtk_action_group_new ("StaticPlaylistActions");
+	gtk_action_group_set_translation_domain (klass->action_group, GETTEXT_PACKAGE);
+
+	g_object_get (shell, "ui-manager", &uimanager, NULL);
+	gtk_ui_manager_insert_action_group (uimanager, klass->action_group, 0);
+	g_object_unref (uimanager);
+
+	gtk_action_group_add_radio_actions (klass->action_group,
+					    rb_static_playlist_source_radio_actions,
+					    G_N_ELEMENTS (rb_static_playlist_source_radio_actions),
+					    0,
+					    NULL,
+					    NULL);
+	rb_source_search_basic_create_for_actions (klass->action_group,
+						   rb_static_playlist_source_radio_actions,
+						   G_N_ELEMENTS (rb_static_playlist_source_radio_actions));
+}
 static void
 rb_static_playlist_source_init (RBStaticPlaylistSource *source)
 {
@@ -241,11 +265,6 @@ rb_static_playlist_source_dispose (GObject *object)
 	if (priv->filter_model != NULL) {
 		g_object_unref (priv->filter_model);
 		priv->filter_model = NULL;
-	}
-
-	if (priv->action_group != NULL) {
-		g_object_unref (priv->action_group);
-		priv->action_group = NULL;
 	}
 
 	if (priv->default_search != NULL) {
@@ -302,25 +321,9 @@ rb_static_playlist_source_constructed (GObject *object)
 	gtk_widget_set_hexpand (paned, TRUE);
 	gtk_widget_set_vexpand (paned, TRUE);
 
-	g_object_get (source, "shell", &shell, NULL);
-	priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
-								     "StaticPlaylistActions",
-								     NULL, 0,
-								     shell);
-	if (gtk_action_group_get_action (priv->action_group,
-					 rb_static_playlist_source_radio_actions[0].name) == NULL) {
-		gtk_action_group_add_radio_actions (priv->action_group,
-						    rb_static_playlist_source_radio_actions,
-						    G_N_ELEMENTS (rb_static_playlist_source_radio_actions),
-						    0,
-						    NULL,
-						    NULL);
-		rb_source_search_basic_create_for_actions (priv->action_group,
-							   rb_static_playlist_source_radio_actions,
-							   G_N_ELEMENTS (rb_static_playlist_source_radio_actions));
-	}
 	priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
 
+	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "ui-manager", &ui_manager, NULL);
 	g_object_unref (shell);
 
