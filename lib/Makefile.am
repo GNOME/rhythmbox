@@ -3,12 +3,6 @@ SUBDIRS = libmediaplayerid
 
 noinst_LTLIBRARIES = librb.la
 
-if MKDTEMP_MISSING
-MKDTEMP_FILES = mkdtemp.c mkdtemp.h
-else
-MKDTEMP_FILES =
-endif
-
 rbincludedir = $(includedir)/rhythmbox/lib
 rbinclude_HEADERS =					\
 	rb-builder-helpers.h				\
@@ -19,7 +13,6 @@ rbinclude_HEADERS =					\
 	rb-util.h
 
 librb_la_SOURCES =					\
-	$(MKDTEMP_FILES)				\
 	$(rbinclude_HEADERS)				\
 	rb-debug.c					\
 	eggdesktopfile.c				\

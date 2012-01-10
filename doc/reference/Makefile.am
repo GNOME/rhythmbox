@@ -37,7 +37,6 @@ IGNORE_HFILES= \
 	eggsmclient-private.h \
 	eggsmclient.h \
 	md5.h \
-	mkdtemp.h \
 	rb-cut-and-paste-code.h \
 	rb-marshal.h \
 	rhythmdb-private.h \

@@ -82,12 +82,6 @@ else
 	AC_MSG_RESULT([no])
 fi
 
-mkdtemp_missing=false
-AC_CHECK_FUNC(mkdtemp,
-    [AC_DEFINE([HAVE_MKDTEMP], 1, [Have GlibC function to make temp dirs])],
-    mkdtemp_missing=true)
-AM_CONDITIONAL(MKDTEMP_MISSING, test x$mkdtemp_missing = xtrue)
-
 PKG_PROG_PKG_CONFIG
 
 PKG_CHECK_MODULES(RB_CLIENT, glib-2.0 >= $GLIB_REQS gio-2.0 >= $GLIB_REQS gio-unix-2.0 >= $GLIB_REQS)
