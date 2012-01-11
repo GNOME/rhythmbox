@@ -12,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
 "POT-Creation-Date: 2012-01-05 16:17+0000\n"
-"PO-Revision-Date: 2012-01-06 01:35+0530\n"
+"PO-Revision-Date: 2012-01-11 22:11+0530\n"
 "Last-Translator: Praveen Illa <mail2ipn@gmail.com>\n"
 "Language-Team: Telugu <indlinux-telugu@lists.sourceforge.net>\n"
 "Language: te\n"
@@ -25,7 +25,7 @@ msgstr ""
 #: ../backends/gstreamer/rb-encoder-gst.c:497
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
-msgstr "%sకు వ్రాయుటకు GStreamer సింక్ మూలకాన్ని సృష్టించలేక పోయింది"
+msgstr "%sకు వ్రాయుటకు GStreamer సింక్ మూలకాన్ని సృష్టించలేకపోయింది"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:492
@@ -101,7 +101,7 @@ msgstr "సంగీత ప్రదర్శకం"
 #: ../data/rhythmbox.desktop.in.in.h:2
 #: ../data/rhythmbox-device.desktop.in.in.h:2
 msgid "Play and organize your music collection"
-msgstr "మీ మ్యూజిక్ సంకలనమును ప్లే చేయుము మరియు నిర్వహించుము"
+msgstr "మీ సంగీత సేకరణను ఆడించండి మరియు నిర్వహించండి"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
 #: ../data/rhythmbox-device.desktop.in.in.h:3 ../shell/rb-shell.c:622
@@ -120,7 +120,7 @@ msgstr "ఏ విధానము సరిపోలినా జతచేయి
 
 #: ../data/ui/create-playlist.ui.h:2
 msgid "Create automatically updating playlist where:"
-msgstr "స్వయంచాలకంగా నవీకరించుకొను ప్లేలిస్టును సృష్టించుము:"
+msgstr "స్వయంచాలకంగా నవీకరించుకొను పాటలజాబితాను సృష్టించు:"
 
 #: ../data/ui/create-playlist.ui.h:3
 msgid "GB"
@@ -156,7 +156,7 @@ msgstr "BPM"
 
 #: ../data/ui/general-prefs.ui.h:3
 msgid "Browser Views"
-msgstr "బ్రౌజర్ దర్శనములు"
+msgstr "విహారకం వీక్షణలు"
 
 #: ../data/ui/general-prefs.ui.h:4
 msgid "C_omment"
@@ -196,7 +196,7 @@ msgstr "పాఠ్యము మాత్రమే"
 
 #: ../data/ui/general-prefs.ui.h:13
 msgid "Ti_me"
-msgstr "సమయము (_m)"
+msgstr "సమయం (_m)"
 
 #: ../data/ui/general-prefs.ui.h:14
 msgid "Toolbar Button Labels"
@@ -204,7 +204,7 @@ msgstr "సాధనపట్టీ బటన్ లేబుళ్ళు"
 
 #: ../data/ui/general-prefs.ui.h:15
 msgid "Track _number"
-msgstr "ట్రాక్ సంఖ్య (_n)"
+msgstr "పాట సంఖ్య (_n)"
 
 #: ../data/ui/general-prefs.ui.h:16
 msgid "Visible Columns"
@@ -220,7 +220,7 @@ msgstr "కళాకారులు మరియు ఆల్బమ్సు (_A
 
 #: ../data/ui/general-prefs.ui.h:19
 msgid "_Genre"
-msgstr "సాహిత్యము (_G)"
+msgstr "సాహిత్యం (_G)"
 
 #: ../data/ui/general-prefs.ui.h:20
 msgid "_Genres and artists"
@@ -253,7 +253,7 @@ msgstr "కళాకారి/కళాకారి - ఆల్బమ్/కళ�
 
 #: ../data/ui/library-prefs.ui.h:2
 msgid "F_older hierarchy:"
-msgstr "ఫోల్డర్ క్రమానుగతి"
+msgstr "సంచయం క్రమానుగతి (_o):"
 
 #: ../data/ui/library-prefs.ui.h:3
 msgid "Library Location"
@@ -277,7 +277,7 @@ msgstr ""
 
 #: ../data/ui/library-prefs.ui.h:8
 msgid "_Music files are placed in:"
-msgstr "సంగీతపు దస్త్రములు యిందున వున్నవి (_M):"
+msgstr "సంగీతపు ఫైళ్ళు ఇందున వున్నవి (_M):"
 
 #: ../data/ui/library-prefs.ui.h:9
 msgid "_Preferred format:"
@@ -307,9 +307,8 @@ msgstr "<b>శోధన యింజన్లు</b>"
 
 #. Translators: This refers to the usage of media space
 #: ../data/ui/media-player-properties.ui.h:5
-#, fuzzy
 msgid "<b>Volume usage</b>"
-msgstr "వాల్యూమ్ వినియోగము:"
+msgstr "<b>శబ్దస్థాయి వినియోగం:</b>"
 
 #: ../data/ui/media-player-properties.ui.h:6
 #: ../data/ui/podcast-feed-properties.ui.h:2
@@ -319,9 +318,8 @@ msgid "Basic"
 msgstr "ప్రాధమిక"
 
 #: ../data/ui/media-player-properties.ui.h:7
-#, fuzzy
 msgid "Media Player Properties"
-msgstr "మీడియా ప్లేయర్ కీలు"
+msgstr "మాధ్యమ ప్రదర్శకం లక్షణాలు"
 
 #: ../data/ui/media-player-properties.ui.h:8
 msgid "Sync"
@@ -341,7 +339,7 @@ msgstr ""
 
 #: ../data/ui/playlist-save.ui.h:1
 msgid "<b>Playlist format</b>"
-msgstr "<b>ప్లేలిస్టు ఫార్మాట్</b>"
+msgstr "<b>పాటలజాబితా ఫార్మాట్</b>"
 
 #: ../data/ui/playlist-save.ui.h:2
 msgid "By extension"
@@ -353,11 +351,11 @@ msgstr "పాటలజాబితాను భద్రపరుచు"
 
 #: ../data/ui/playlist-save.ui.h:4
 msgid "Select playlist format:"
-msgstr "ప్లేలిస్టు ఫార్మాటును యెంపికచేయుము:"
+msgstr "పాటలజాబితా ఫార్మాటును ఎంపికచేయండి:"
 
 #: ../data/ui/podcast-feed-properties.ui.h:1
 msgid "Author:"
-msgstr "గ్రంధకర్త:"
+msgstr "స్వరకర్త:"
 
 #: ../data/ui/podcast-feed-properties.ui.h:3
 msgid "Copyright:"
@@ -417,17 +415,16 @@ msgid "Manually"
 msgstr "మానవీయం"
 
 #: ../data/ui/podcast-prefs.ui.h:6
-#, fuzzy
 msgid "Podcast Downloads"
-msgstr "డౌనులోడు కాలేదు"
+msgstr "పాడ్‌కాస్ట్ దింపుకోళ్ళు"
 
 #: ../data/ui/podcast-prefs.ui.h:7
 msgid "Select Folder For Podcasts"
-msgstr "పాడ్‌కాస్టుల కొరకు ఫోల్డరును యెంపికచేయుము"
+msgstr "పాడ్‌కాస్టుల కొరకు సంచయాన్ని ఎంచుకోండి"
 
 #: ../data/ui/podcast-prefs.ui.h:8
 msgid "_Download location:"
-msgstr "డౌన్‌లోడు సమయం (_D):"
+msgstr "దింపుకోలు ప్రదేశం (_D):"
 
 #: ../data/ui/podcast-properties.ui.h:2 ../data/ui/song-info.ui.h:7
 #: ../plugins/iradio/station-properties.ui.h:2
@@ -440,7 +437,7 @@ msgstr "తేది:"
 
 #: ../data/ui/podcast-properties.ui.h:6
 msgid "Download location:"
-msgstr "డౌనులోడు స్థానము:"
+msgstr "దింపుకోలు ప్రదేశం:"
 
 #: ../data/ui/podcast-properties.ui.h:7 ../data/ui/song-info.ui.h:10
 msgid "Duration:"
@@ -520,7 +517,7 @@ msgstr "BPM:"
 
 #: ../data/ui/song-info.ui.h:8
 msgid "Date added:"
-msgstr "తేది జతచేయబడింది:"
+msgstr "జతచేయబడిన తేది:"
 
 #: ../data/ui/song-info.ui.h:11 ../plugins/iradio/station-properties.ui.h:4
 msgid "Error message"
@@ -552,16 +549,15 @@ msgstr "శీర్షిక (_T):"
 
 #: ../data/ui/sync-state.ui.h:1
 msgid "Added files:"
-msgstr ""
+msgstr "జతచేయబడిన ఫైళ్ళు:"
 
 #: ../data/ui/sync-state.ui.h:2
 msgid "Contents after sync"
 msgstr ""
 
 #: ../data/ui/sync-state.ui.h:3
-#, fuzzy
 msgid "Current contents"
-msgstr "సారములు (_C)"
+msgstr "ప్రస్తుత విషయాలు"
 
 #: ../data/ui/sync-state.ui.h:4
 msgid "Removed files:"
@@ -712,7 +708,7 @@ msgstr "%b %d %Y"
 #: ../widgets/rb-song-info.c:920 ../widgets/rb-song-info.c:932
 #: ../widgets/rb-song-info.c:1153 ../widgets/rb-song-info.c:1492
 msgid "Unknown"
-msgstr "తెలియని"
+msgstr "తెలియదు"
 
 #: ../lib/rb-file-helpers.c:406
 #, c-format
@@ -792,21 +788,20 @@ msgstr "వ్రాయునప్పుడు ఫైలు పాడైనద�
 
 #: ../plugins/artdisplay/artdisplay.plugin.in.h:1
 msgid "Cover art"
-msgstr "పై చిత్రము"
+msgstr "ముఖచిత్రం"
 
 #: ../plugins/artdisplay/artdisplay.plugin.in.h:2
 #: ../plugins/artsearch/artsearch.plugin.in.h:2
 msgid "Fetch album covers from the Internet"
-msgstr "ఇంటర్నెట్‌నుండి ఆల్బమ్ కవర్లను వెతుకుము"
+msgstr "ఆల్బమ్ కవర్లను అంతర్జాలం నుండి తీసుకొనిరమ్ము"
 
 #: ../plugins/artdisplay/artdisplay.py:312
 msgid "Searching..."
 msgstr "శోధిస్తున్నది..."
 
 #: ../plugins/artsearch/artsearch.plugin.in.h:1
-#, fuzzy
 msgid "Cover art search"
-msgstr "పై చిత్రము"
+msgstr "ముఖచిత్ర శోధన"
 
 #: ../plugins/audiocd/album-info.ui.h:1
 msgid "A_lbum:"
@@ -1010,9 +1005,8 @@ msgid "Logout"
 msgstr "నిష్క్రమించు"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:6
-#, fuzzy
 msgid "Loved Tracks"
-msgstr "ఇష్టపడిన ట్రాక్సు"
+msgstr "ఇష్టపడిన పాటలు"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 msgid "Queued tracks:"
@@ -1032,9 +1026,8 @@ msgid "Status:"
 msgstr "స్థితి:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:12
-#, fuzzy
 msgid "Submission statistics"
-msgstr "గణాంకములు"
+msgstr "దాఖలు గణాంకములు"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:13
 msgid "Submit listening data"
@@ -1107,7 +1100,7 @@ msgstr "ఈ పాట ఇష్టపడిన దానివలె గుర�
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:674
 msgid "Ban"
-msgstr "నిషేదించుము"
+msgstr "నిషేధించు"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:675
 msgid "Ban the current track from being played again"
@@ -1171,9 +1164,9 @@ msgstr "%s యొక్క ప్లేలిస్టు"
 #. * This is the label for menu item which when activated will take the user to the
 #. * artist/track's page on the service's website.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1677
-#, fuzzy, c-format
+#, c-format
 msgid "_View on %s"
-msgstr "దర్శించు (_V)"
+msgstr "%s నందు వీక్షించు (_V)"
 
 #. Translators: describes a radio stream playing tracks similar to those by an artist.
 #. * Followed by a text entry box for the artist name.
@@ -1246,9 +1239,9 @@ msgstr ""
 
 #. Translators: station is built from artists similar to the artist %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:128
-#, fuzzy, c-format
+#, c-format
 msgid "%s Radio"
-msgstr "రేడియో"
+msgstr "%s రేడియో"
 
 #. Translators: station is built from the artist %s's top fans
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:130
@@ -1273,7 +1266,7 @@ msgstr "%sయొక్క సమీప రేడియో"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:137
 #, c-format
 msgid "%s's Loved Tracks"
-msgstr "%s యిష్టపడిన ట్రాక్సు"
+msgstr "%s ఇష్టపడిన పాటలు"
 
 #. Translators: station is built from the tracks which are recommended to the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:139
@@ -1303,24 +1296,20 @@ msgid "%s Group Radio"
 msgstr "%s సమూహ రేడియో"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:281
-#, fuzzy
 msgid "_Rename Station"
-msgstr "iPod పునఃనామకరణ చేయి"
+msgstr "స్టేషన్ పేరుమార్చు (_D)"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:282
-#, fuzzy
 msgid "Rename station"
-msgstr "iPod పునఃనామకరణ చేయి"
+msgstr "స్టేషను పేరుమార్చు"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:284
-#, fuzzy
 msgid "_Delete Station"
-msgstr "స్టేషనును తొలగించుము"
+msgstr "స్టేషనును తొలగించు (_D)"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:285
-#, fuzzy
 msgid "Delete station"
-msgstr "స్టేషనును తొలగించుము"
+msgstr "స్టేషనును తొలగించు"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:473
 msgid "You must enter your password to listen to this station"
@@ -1403,7 +1392,7 @@ msgstr "ఆడియో CDలను ప్లేలిస్టులనుం�
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:95
 msgid "_Create Audio CD..."
-msgstr "ఆడియో CDను సృష్టించుము... (_C)"
+msgstr "ఆడియో CDను సృష్టించు...(_C)"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:96
 msgid "Create an audio CD from playlist"
@@ -1500,9 +1489,8 @@ msgid "Top songs by %s"
 msgstr ""
 
 #: ../plugins/context/ContextView.py:247
-#, fuzzy
 msgid "Nothing Playing"
-msgstr "ప్లే చేయుటలేదు"
+msgstr "ఏమీ ఆడుటలేదు"
 
 #: ../plugins/context/LastFM.py:42
 msgid ""
@@ -1529,14 +1517,12 @@ msgid "Loading lyrics for %s by %s"
 msgstr ""
 
 #: ../plugins/context/LyricsTab.py:122
-#, fuzzy
 msgid "Lyrics not found"
-msgstr "ఎటువంచి లిరిక్సు కనబడలేదు"
+msgstr "లిరిక్సు కనబడలేదు"
 
 #: ../plugins/context/tmpl/album-tmpl.html:45
-#, fuzzy
 msgid "Hide all tracks"
-msgstr "అన్ని ట్రాక్లను క్యూచేయుము (_Q)"
+msgstr "అన్ని పాటలను దాయి"
 
 #: ../plugins/context/tmpl/album-tmpl.html:46
 #: ../plugins/context/tmpl/album-tmpl.html:80
@@ -1730,7 +1716,7 @@ msgstr "సాహిత్యం"
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2381
 #: ../shell/rb-playlist-manager.c:1081 ../sources/rb-display-page-group.c:92
 msgid "Playlists"
-msgstr "ప్లేజాబితాలు"
+msgstr "పాటలజాబితాలు"
 
 #: ../plugins/fmradio/fmradio.plugin.in.h:1
 #: ../plugins/fmradio/rb-fm-radio-source.c:245
@@ -1760,7 +1746,7 @@ msgstr "రేడియో స్టేషన్ పౌనఃపున్యమ�
 #: ../plugins/generic-player/generic-player-info.ui.h:1
 #: ../plugins/ipod/ipod-info.ui.h:1 ../plugins/mtpdevice/mtp-info.ui.h:1
 msgid "<b>System</b>"
-msgstr "<b>సిస్టమ్</b>"
+msgstr "<b>వ్యవస్థ</b>"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:2
 #: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:2
@@ -1808,7 +1794,7 @@ msgstr "జనరిక్ ఆడియో ప్లేయర్ పరికర
 #: ../plugins/generic-player/rb-generic-player-plugin.c:90
 #: ../shell/rb-playlist-manager.c:830 ../shell/rb-playlist-manager.c:873
 msgid "New Playlist"
-msgstr "కొత్త ప్లేలిస్టు"
+msgstr "కొత్త పాటలజాబితా"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:91
 msgid "Create a new playlist on this device"
@@ -1816,11 +1802,11 @@ msgstr "ఈ పరికరముపైన కొత్త ప్లేలిస
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:93
 msgid "Delete Playlist"
-msgstr "ప్లేలిస్టును తొలగించుము"
+msgstr "పాటలజాబితాను తొలగించు"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:94
 msgid "Delete this playlist"
-msgstr "ఈ ప్లేలిస్టును తొలగించుము"
+msgstr "ఈ పాటలజాబితాను తొలగించు"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:96
 #: ../plugins/ipod/rb-ipod-plugin.c:102
@@ -1854,9 +1840,8 @@ msgid "Browse"
 msgstr "విహరించు (_B)"
 
 #: ../plugins/grilo/rb-grilo-source.c:385
-#, fuzzy
 msgid "Fetch more tracks"
-msgstr "సిఫార్సు చేయు ట్రాక్సు"
+msgstr "మరిన్ని పాటలను తీసుకొనిరమ్ము"
 
 #: ../plugins/grilo/rb-grilo-source.c:840
 #, c-format
@@ -1911,9 +1896,8 @@ msgid "♫ Listening to music... ♫"
 msgstr "♫ సంగితం వినుటకు... ♫"
 
 #: ../plugins/ipod/ipod-info.ui.h:3
-#, fuzzy
 msgid "Database version:"
-msgstr "డాటాబేస్ వర్షన్:"
+msgstr "డాటాబేస్ రూపాంతరం:"
 
 #: ../plugins/ipod/ipod-info.ui.h:4
 msgid "Device node:"
@@ -1932,9 +1916,8 @@ msgid "Podcasts:"
 msgstr "పాడ్‌కాస్టులు:"
 
 #: ../plugins/ipod/ipod-info.ui.h:12
-#, fuzzy
 msgid "iPod _name:"
-msgstr "iPod నామము:"
+msgstr "iPod పేరు (_n):"
 
 #: ../plugins/ipod/ipod-init.ui.h:1
 msgid ""
@@ -2017,7 +2000,7 @@ msgstr "తొలగించుము (_D)"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:112 ../shell/rb-playlist-manager.c:207
 msgid "Delete playlist"
-msgstr "ప్లేలిస్టును తొలగించుము"
+msgstr "పాటలజాబితాను తొలగించు"
 
 #: ../plugins/ipod/rb-ipod-source.c:1456
 #: ../podcast/rb-podcast-main-source.c:70
@@ -2033,11 +2016,11 @@ msgstr "కొత్త పాటలజాబితా"
 
 #: ../plugins/iradio/iradio.plugin.in.h:1
 msgid "Internet Radio"
-msgstr "ఇంటర్నెట్ రేడియో"
+msgstr "అంతర్జాల రేడియో"
 
 #: ../plugins/iradio/iradio.plugin.in.h:2
 msgid "Support for broadcasting services transmitted via the Internet"
-msgstr "ఇంటర్నెట్ ద్వారా బదిలీకరించు బ్రాడ్‌కాస్టింగ్ సేవలకొరకు మద్దతు"
+msgstr "అంతర్జాలం ద్వారా బదిలీకరించు బ్రాడ్‌కాస్టింగ్ సేవలకొరకు మద్దతు"
 
 #: ../plugins/iradio/rb-iradio-source.c:157
 msgid "New Internet _Radio Station..."
@@ -2078,11 +2061,11 @@ msgstr[1] "%d స్టేషన్లు"
 #: ../plugins/iradio/rb-iradio-source.c:959
 #: ../plugins/iradio/rb-station-properties-dialog.c:403
 msgid "New Internet Radio Station"
-msgstr "కొత్త యింటర్నెట్ రేడియో స్టేషన్"
+msgstr "కొత్త అంతర్జాల రేడియో స్టేషన్"
 
 #: ../plugins/iradio/rb-iradio-source.c:959
 msgid "URL of internet radio station:"
-msgstr "ఇంటర్నెట్ రేడియో స్టేషన్ యొక్క URL:"
+msgstr "అంతర్జాల రేడియో స్టేషన్ యొక్క URL:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
@@ -2134,11 +2117,11 @@ msgstr "పాట లిరిక్"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:1
 msgid "<b>Lyrics Folder</b>"
-msgstr "<b>లిరిక్సు ఫోల్డర్</b>"
+msgstr "<b>లిరిక్సు సంచయం</b>"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:2
 msgid "<b>Search engines</b>"
-msgstr "<b>శోధన యింజన్లు</b>"
+msgstr "<b>శోధన యంత్రాలు</b>"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:3
 msgid "Browse..."
@@ -2530,9 +2513,8 @@ msgid "Magnatune"
 msgstr "మాగ్నాట్యూన్"
 
 #: ../plugins/magnatune/magnatune.py:114
-#, fuzzy
 msgid "Download Album"
-msgstr "ఆల్బమును డౌనులోడు చేయుము (_D)"
+msgstr "ఆల్బమును దింపుకొను"
 
 #: ../plugins/magnatune/magnatune.py:115
 #, fuzzy
@@ -2642,7 +2624,7 @@ msgstr "రిథమ్‌బాక్స్ కీ లఘవులను వి
 
 #: ../plugins/mmkeys/mmkeys.plugin.in.h:2
 msgid "Media Player Keys"
-msgstr "మీడియా ప్లేయర్ కీలు"
+msgstr "మాధ్యమ ప్రదర్శకం మీటలు"
 
 #: ../plugins/mtpdevice/mtpdevice.plugin.in.h:1
 msgid "Portable Players - MTP"
@@ -2660,7 +2642,7 @@ msgstr "తాత్కాలిక ఫైలు తెరువలేక పో
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:120
 msgid "Rename MTP-device"
-msgstr "MTP-పరికరమును పునఃనామకరణ చేయుము"
+msgstr "MTP-పరికరము పేరుమార్చు"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:864
 #: ../plugins/mtpdevice/rb-mtp-thread.c:855
@@ -2684,7 +2666,7 @@ msgstr "డిజిటల్ ఆడియో ప్లేయర్"
 #: ../plugins/mtpdevice/rb-mtp-thread.c:575
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
-msgstr "దస్త్రమును MTP పరికరమునుండి నకలుతీయలేదు: %s"
+msgstr "ఫైలును MTP పరికరమునుండి నకలుతీయలేదు: %s"
 
 #: ../plugins/mtpdevice/rb-mtp-thread.c:520
 #, c-format
@@ -2699,7 +2681,7 @@ msgstr "దస్త్రమును MTP పరికరమునకు పం
 #: ../plugins/mtpdevice/rb-mtp-thread.c:604
 #, c-format
 msgid "Unable to send file to MTP device: %s"
-msgstr "దస్త్రమును MTP పరికరమునకు పంపలేక పోయింది: %s"
+msgstr "ఫైలును MTP పరికరమునకు పంపలేక పోయింది: %s"
 
 #: ../plugins/notification/notification.plugin.in.h:1
 msgid "Notification"
@@ -2724,7 +2706,7 @@ msgstr "ఆడించు"
 
 #: ../plugins/notification/rb-notification-plugin.c:225
 msgid "Next"
-msgstr "తరువాతి"
+msgstr "తరువాతది"
 
 #. Translators: by Artist
 #: ../plugins/notification/rb-notification-plugin.c:310
@@ -2896,16 +2878,15 @@ msgstr "Vala నందు యెటువంటి సౌలభ్యముల�
 
 #: ../plugins/sample-vala/sample-vala.plugin.in.h:2
 msgid "Vala Sample Plugin"
-msgstr "Vala సాదారణ ప్లగ్‌యిన్"
+msgstr "Vala సాధారణ ప్లగ్‌యిన్"
 
 #: ../plugins/sendto/sendto.plugin.in.h:1
 msgid "Send selected tracks by email or instant message"
 msgstr ""
 
 #: ../plugins/sendto/sendto.plugin.in.h:2
-#, fuzzy
 msgid "Send tracks"
-msgstr "ఇష్టపడిన ట్రాక్సు"
+msgstr "పాటలను పంపు"
 
 #: ../plugins/sendto/sendto.py:58
 msgid "Send to..."
@@ -2945,9 +2926,8 @@ msgid "Toggle fullscreen visual effects"
 msgstr "దర్శనీయ ప్రభావాలను చేతనము చేయాలా?"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:395
-#, fuzzy
 msgid "Display"
-msgstr "చిన్న ప్రదర్శన (_S)"
+msgstr "ప్రదర్శన"
 
 #: ../plugins/visualizer/visualizer.plugin.in.h:1
 msgid "Displays visualizations"
@@ -3075,7 +3055,7 @@ msgstr "కొత్త పాడ్‌కాస్టు ఫీడునకు 
 
 #: ../podcast/rb-podcast-source.c:113
 msgid "Download _Episode"
-msgstr "భాగమును డౌనులోడు చేయుము (_E)"
+msgstr "భాగమును దింపుకొను (_E)"
 
 #: ../podcast/rb-podcast-source.c:114
 msgid "Download Podcast Episode"
@@ -3083,11 +3063,11 @@ msgstr "పాడ్‌కాస్టు భాగమును డౌనుల�
 
 #: ../podcast/rb-podcast-source.c:116
 msgid "_Cancel Download"
-msgstr "డౌనులోడును రద్దుచేయుము (_C)"
+msgstr "దింపుకోలును రద్దుచేయి (_C)"
 
 #: ../podcast/rb-podcast-source.c:117
 msgid "Cancel Episode Download"
-msgstr "భాగము డౌనులోడును రద్దుచేయుము"
+msgstr "భాగము డౌనులోడును రద్దుచేయి"
 
 #: ../podcast/rb-podcast-source.c:120
 msgid "Episode Properties"
@@ -3095,41 +3075,41 @@ msgstr "భాగము లక్షణములు"
 
 #: ../podcast/rb-podcast-source.c:122
 msgid "_Update Podcast Feed"
-msgstr "పాడ్‌కాస్ట్ ఫీడును నవీకరించుము (_U)"
+msgstr "పాడ్‌కాస్ట్ ఫీడును నవీకరించు (_U)"
 
 #: ../podcast/rb-podcast-source.c:123
 msgid "Update Feed"
-msgstr "ఫీడ్‌ను నవీకరించుము"
+msgstr "ఫీడ్‌ను నవీకరించు"
 
 #: ../podcast/rb-podcast-source.c:125
 msgid "_Delete Podcast Feed"
-msgstr "పాడ్‌కాస్టు ఫీడ్‌ను తొలగించుము (_D)"
+msgstr "పాడ్‌కాస్టు ఫీడ్‌ను తొలగించు (_D)"
 
 #: ../podcast/rb-podcast-source.c:126
 msgid "Delete Feed"
-msgstr "ఫీడ్ తొలగించుము"
+msgstr "ఫీడ్ తొలగించు"
 
 #: ../podcast/rb-podcast-source.c:128
 msgid "_Update All Feeds"
-msgstr "అన్ని ఫీడులను నవీకరించుము (_U)"
+msgstr "అన్ని ఫీడులను నవీకరించు (_U)"
 
 #: ../podcast/rb-podcast-source.c:129
 msgid "Update all feeds"
-msgstr "అన్ని ఫీడులను నవీకరించుము"
+msgstr "అన్ని ఫీడులను నవీకరించు"
 
 #: ../podcast/rb-podcast-source.c:135 ../sources/rb-auto-playlist-source.c:103
 #: ../sources/rb-browser-source.c:148
 #: ../sources/rb-static-playlist-source.c:123
 msgid "Search all fields"
-msgstr "అన్ని క్షేత్రములను శోధించుము"
+msgstr "అన్ని క్షేత్రములను శోధించు"
 
 #: ../podcast/rb-podcast-source.c:136
 msgid "Search podcast feeds"
-msgstr "పాడ్‌కాస్టు ఫీడులను శోధించుము"
+msgstr "పాడ్‌కాస్టు ఫీడులను శోధించు"
 
 #: ../podcast/rb-podcast-source.c:137
 msgid "Search podcast episodes"
-msgstr "పాడ్‌కాస్టు భాగములను శోధించుము"
+msgstr "పాడ్‌కాస్టు భాగములను శోధించు"
 
 #: ../podcast/rb-podcast-source.c:357
 msgid "New Podcast Feed"
@@ -3600,9 +3580,8 @@ msgid "Eject this medium"
 msgstr "ఈ మాధ్యమమును బయటకునెట్టుము"
 
 #: ../shell/rb-removable-media-manager.c:153
-#, fuzzy
 msgid "_Check for New Devices"
-msgstr "కొత్త భాగముల కొరకు పరిశీలించుము (_n):"
+msgstr "కొత్త పరికరముల కొరకు పరిశీలించు (_n)"
 
 #: ../shell/rb-removable-media-manager.c:154
 msgid ""
@@ -3659,9 +3638,8 @@ msgid "_Contents"
 msgstr "విషయసూచిక (_C)"
 
 #: ../shell/rb-shell.c:365
-#, fuzzy
 msgid "Display Rhythmbox help"
-msgstr "రిథమ్‌బాక్స్ నిష్క్రమించుము"
+msgstr "రిథమ్‌బాక్స్ సహాయాన్ని ప్రదర్శించు"
 
 #: ../shell/rb-shell.c:367
 msgid "_Quit"
@@ -4169,18 +4147,16 @@ msgid "Current song is not seekable"
 msgstr "ప్రస్తుత పాట జరుపగలది కాదు"
 
 #: ../shell/rb-shell-player.c:3815
-#, fuzzy
 msgid "Pause playback"
-msgstr "ప్లేబాక్‌ను నిశ్శబ్దముచేయి"
+msgstr "ప్లేబాక్ నిలిపివేయి"
 
 #: ../shell/rb-shell-player.c:3817
 msgid "Stop playback"
 msgstr "ప్లేబాక్ ఆపుము"
 
 #: ../shell/rb-shell-preferences.c:205
-#, fuzzy
 msgid "Rhythmbox Preferences"
-msgstr "Last.fm అభీష్టాలు"
+msgstr "రిథమ్‌బాక్స్ ప్రాధాన్యతలు"
 
 #: ../shell/rb-shell-preferences.c:251
 msgid "General"
@@ -4260,11 +4236,11 @@ msgstr "ట్రాక్ బదిలీకరణలో దోషము"
 
 #: ../shell/rb-track-transfer-queue.c:472
 msgid "_Cancel the transfer"
-msgstr ""
+msgstr "బదిలీని రద్దుచేయి (_C)"
 
 #: ../shell/rb-track-transfer-queue.c:474
 msgid "_Skip these files"
-msgstr ""
+msgstr "ఈ ఫైళ్ళను దాటవేయి (_S)"
 
 #: ../shell/rb-track-transfer-queue.c:477
 msgid "_Install"
@@ -4346,7 +4322,7 @@ msgstr "భాగస్వామ్యపరచిన"
 #. set up info bar for triggering codec installation
 #: ../sources/rb-import-errors-source.c:243
 msgid "Install Additional Software"
-msgstr ""
+msgstr "అదనపు సాఫ్ట్‍వేరుని స్థాపించు"
 
 #: ../sources/rb-import-errors-source.c:249
 #, fuzzy
@@ -4471,9 +4447,8 @@ msgstr[0] "%d తప్పిపోయిన ఫైళ్ళు"
 msgstr[1] "%d తప్పిపోయిన ఫైళ్ళు"
 
 #: ../sources/rb-playlist-source.c:126
-#, fuzzy
 msgid "Remove From Playlist"
-msgstr "ప్లేలిస్టును పునఃనామకరణ చేయుము"
+msgstr "పాటలజాబితా నుండి తొలగించు"
 
 #: ../sources/rb-playlist-source.c:127
 #, fuzzy
@@ -4570,7 +4545,7 @@ msgstr ""
 
 #: ../widgets/rb-alert-dialog.c:106
 msgid "Alert Buttons"
-msgstr ""
+msgstr "హెచ్చరిక బొత్తాలు"
 
 #: ../widgets/rb-alert-dialog.c:107
 msgid "The buttons shown in the alert dialog"
@@ -4698,10 +4673,9 @@ msgid "Album"
 msgstr "ఆల్బమ్"
 
 #: ../widgets/rb-query-creator-properties.c:80
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Album Artist"
-msgstr "కళాకారి"
+msgstr "ఆల్బమ్ కళాకారుడు"
 
 #: ../widgets/rb-query-creator-properties.c:81
 msgctxt "query-criteria"
@@ -4729,10 +4703,9 @@ msgid "Comment"
 msgstr "వ్యాఖ్య"
 
 #: ../widgets/rb-query-creator-properties.c:87
-#, fuzzy
 msgctxt "query-criteria"
 msgid "Play Count"
-msgstr "ప్లే కౌంట్"
+msgstr "ప్లే చేయబడినది"
 
 #: ../widgets/rb-query-creator-properties.c:88
 msgctxt "query-criteria"
@@ -4791,10 +4764,9 @@ msgid "Album"
 msgstr "ఆల్బమ్"
 
 #: ../widgets/rb-query-creator-properties.c:108
-#, fuzzy
 msgctxt "query-sort"
 msgid "Album Artist"
-msgstr "కళాకారి"
+msgstr "ఆల్బమ్ కళాకారి"
 
 #: ../widgets/rb-query-creator-properties.c:109
 msgctxt "query-sort"
@@ -4816,10 +4788,9 @@ msgid "W_ith more highly rated tracks first"
 msgstr "ఎక్కువగా రేటు యిచ్చన ట్రాకులు మొదటగా (_i)"
 
 #: ../widgets/rb-query-creator-properties.c:112
-#, fuzzy
 msgctxt "query-sort"
 msgid "Play Count"
-msgstr "ప్లే కౌంట్"
+msgstr "ప్లే చేయబడినది"
 
 #: ../widgets/rb-query-creator-properties.c:112
 msgid "W_ith more often played songs first"
@@ -4853,20 +4824,18 @@ msgid "_In decreasing order"
 msgstr "అవరోహణ క్రమములో (_I)"
 
 #: ../widgets/rb-query-creator-properties.c:116
-#, fuzzy
 msgctxt "query-sort"
 msgid "Last Played"
-msgstr "చివరిగా ప్లేచేసిన"
+msgstr "చివరిగా ప్లేచేసినవి"
 
 #: ../widgets/rb-query-creator-properties.c:116
 msgid "W_ith more recently played tracks first"
 msgstr "ఇటీవల ప్లేచేసిన ట్రాకులు ముందుగా (_i)"
 
 #: ../widgets/rb-query-creator-properties.c:117
-#, fuzzy
 msgctxt "query-sort"
 msgid "Date Added"
-msgstr "తేది జతచేయబడింది"
+msgstr "జతచేయబడిన తేదీ"
 
 #: ../widgets/rb-query-creator-properties.c:117
 msgid "W_ith more recently added tracks first"
@@ -4994,9 +4963,8 @@ msgid "Clear the search text"
 msgstr "శోధన పాఠ్యమును శుభ్రపరచుము"
 
 #: ../widgets/rb-search-entry.c:234
-#, fuzzy
 msgid "Select the search type"
-msgstr "శోధన పాఠ్యమును శుభ్రపరచుము"
+msgstr "శోధన రకాన్ని ఎంచుకోండి"
 
 #: ../widgets/rb-search-entry.c:256
 msgid "Search"
