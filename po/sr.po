@@ -8,18 +8,18 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Exaile\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2011-12-20 12:44+0000\n"
-"PO-Revision-Date: 2011-07-21 01:48+0200\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythm"
+"box&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2012-01-07 07:39+0000\n"
+"PO-Revision-Date: 2012-01-12 11:20+0200\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <gnom@prevod.org>\n"
+"Language: sr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: Serbian (sr)\n"
-"Plural-Forms: nplurals=4; plural=n==1? 3 : n%10==1 && n%100!=11 ? 0 :    n%"
-"10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=4; plural=n==1? 3 : n%10==1 && n%100!=11 ? 0 : "
+"n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Project-Style: gnome\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:497
@@ -106,8 +106,8 @@ msgid "Play and organize your music collection"
 msgstr "Слушајте и уређујте музичку збирку"
 
 #: ../data/rhythmbox.desktop.in.in.h:3
-#: ../data/rhythmbox-device.desktop.in.in.h:3 ../shell/rb-shell.c:619
-#: ../shell/rb-shell.c:2628
+#: ../data/rhythmbox-device.desktop.in.in.h:3 ../shell/rb-shell.c:622
+#: ../shell/rb-shell.c:2631
 msgid "Rhythmbox"
 msgstr "Ритам машина"
 
@@ -670,8 +670,7 @@ msgstr "%d %b %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:696
-#: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:165
-#: ../plugins/artsearch/lastfm.py:167
+#: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/audiocd/rb-audiocd-source.c:597
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:589
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:593
@@ -686,16 +685,16 @@ msgstr "%d %b %Y"
 #: ../plugins/lyrics/lyrics.py:78 ../plugins/lyrics/lyrics.py:80
 #: ../plugins/mtpdevice/rb-mtp-source.c:634
 #: ../plugins/mtpdevice/rb-mtp-source.c:1089
-#: ../plugins/mtpdevice/rb-mtp-source.c:1461
-#: ../plugins/notification/rb-notification-plugin.c:479
+#: ../plugins/mtpdevice/rb-mtp-source.c:1458
+#: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-manager.c:1963
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
 #: ../podcast/rb-podcast-source.c:735 ../remote/dbus/rb-client.c:144
 #: ../rhythmdb/rhythmdb.c:2028 ../rhythmdb/rhythmdb.c:2034
-#: ../rhythmdb/rhythmdb.c:2049 ../rhythmdb/rhythmdb.c:5395
-#: ../rhythmdb/rhythmdb.c:5409 ../rhythmdb/rhythmdb-tree.c:1344
+#: ../rhythmdb/rhythmdb.c:2049 ../rhythmdb/rhythmdb.c:5394
+#: ../rhythmdb/rhythmdb.c:5399 ../rhythmdb/rhythmdb-tree.c:1344
 #: ../rhythmdb/rhythmdb-tree.c:1348 ../rhythmdb/rhythmdb-tree.c:1352
 #: ../rhythmdb/rhythmdb-tree.c:1356 ../shell/rb-shell-player.c:1764
 #: ../shell/rb-shell-player.c:3732 ../widgets/rb-entry-view.c:985
@@ -716,13 +715,13 @@ msgstr "Превише симболичких веза"
 msgid "Cannot get free space at %s: %s"
 msgstr "Не могу да добијем слободан простор на %s: %s"
 
-#: ../lib/rb-util.c:698 ../plugins/context/tmpl/album-tmpl.html:20
+#: ../lib/rb-util.c:698 ../plugins/context/tmpl/album-tmpl.html:21
 #: ../remote/dbus/rb-client.c:146
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:700 ../plugins/context/tmpl/album-tmpl.html:18
+#: ../lib/rb-util.c:700 ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:148
 #, c-format
 msgid "%d:%02d:%02d"
@@ -796,12 +795,10 @@ msgid "Fetch album covers from the Internet"
 msgstr "Преузмите омоте албума са Интернета"
 
 #: ../plugins/artdisplay/artdisplay.py:312
-#| msgid "Searching for lyrics..."
 msgid "Searching..."
 msgstr "Тражим..."
 
 #: ../plugins/artsearch/artsearch.plugin.in.h:1
-#| msgid "Cover art"
 msgid "Cover art search"
 msgstr "Претрага омота албума"
 
@@ -1165,6 +1162,14 @@ msgstr "%s пуштања"
 msgid "_View on %s"
 msgstr "П_огледај на „%s“"
 
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1694
+msgid "Listen to _Similar Artists Radio"
+msgstr "Слушајте радио _сличних извођача"
+
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1708
+msgid "Listen to _Top Fans Radio"
+msgstr "Слушајте радио _врсних обожавалаца"
+
 #. Translators: describes a radio stream playing tracks similar to those by an artist.
 #. * Followed by a text entry box for the artist name.
 #.
@@ -1177,7 +1182,7 @@ msgstr "Слично извођачу:"
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:64
 msgid "Top Fans of Artist:"
-msgstr "Најзагриженији обожаваоци извођача:"
+msgstr "Врсни обожаваоци извођача:"
 
 #. Translators: describes a radio stream playing tracks from the library of a particular
 #. * user.  Followed by a text entry box for the user name.
@@ -1465,7 +1470,6 @@ msgstr "Прикажите податке о тренутном извођачу
 
 #. Add button to toggle visibility of pane
 #: ../plugins/context/ContextView.py:95
-#| msgid "Context Pane"
 msgid "Conte_xt Pane"
 msgstr "Бо_чна површ"
 
@@ -1513,30 +1517,35 @@ msgstr "Учитавам текст песме „%s“, извођача „%s�
 msgid "Lyrics not found"
 msgstr "Нисам пронашао текст песме"
 
-#: ../plugins/context/tmpl/album-tmpl.html:45
+#: ../plugins/context/tmpl/album-tmpl.html:46
 msgid "Hide all tracks"
 msgstr "Сакриј све песме"
 
-#: ../plugins/context/tmpl/album-tmpl.html:46
-#: ../plugins/context/tmpl/album-tmpl.html:80
+#: ../plugins/context/tmpl/album-tmpl.html:47
+#: ../plugins/context/tmpl/album-tmpl.html:82
 msgid "Show all tracks"
 msgstr "Прикажи све песме"
 
-#: ../plugins/context/tmpl/album-tmpl.html:56
+#: ../plugins/context/tmpl/album-tmpl.html:57
 #, c-format
 msgid "Top albums by %s"
 msgstr "Најбољи албуми извођача „%s“"
 
 #: ../plugins/context/tmpl/album-tmpl.html:76
 #, c-format
-msgid "%s (%d tracks)"
-msgstr "%s (%d песама)"
+#| msgid "%s (%d tracks)"
+msgid "%s (%d track)"
+msgid_plural "%s (%d tracks)"
+msgstr[0] "%s (%d песма)"
+msgstr[1] "%s (%d песме)"
+msgstr[2] "%s (%d песама)"
+msgstr[3] "%s (Једна песама)"
 
-#: ../plugins/context/tmpl/album-tmpl.html:93
+#: ../plugins/context/tmpl/album-tmpl.html:95
 msgid "Track list not available"
 msgstr "Није доступан списак песама"
 
-#: ../plugins/context/tmpl/album-tmpl.html:99
+#: ../plugins/context/tmpl/album-tmpl.html:101
 msgid "Unable to retrieve album information:"
 msgstr "Не могу да добијем податке о албуму:"
 
@@ -1687,7 +1696,6 @@ msgstr "Омогућите уграђивање спецификација Ме�
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1240
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1365
-#| msgid "Show _All Tracks"
 msgid "All Tracks"
 msgstr "Све песме"
 
@@ -1696,7 +1704,6 @@ msgid "Artists"
 msgstr "Извођачи"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2372
-#| msgid "Genre"
 msgid "Genres"
 msgstr "Жанрови"
 
@@ -1810,7 +1817,7 @@ msgstr "Прикажите подешавања уређаја"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1352
 #: ../plugins/ipod/rb-ipod-source.c:2014
-#: ../plugins/mtpdevice/rb-mtp-source.c:1555
+#: ../plugins/mtpdevice/rb-mtp-source.c:1552
 msgid "Advanced"
 msgstr "Напредно"
 
@@ -1823,7 +1830,6 @@ msgid "Grilo media browser"
 msgstr "Медијски прегледник Грило"
 
 #: ../plugins/grilo/rb-grilo-source.c:342
-#| msgid "_Browse"
 msgid "Browse"
 msgstr "Разгледај"
 
@@ -2025,7 +2031,6 @@ msgstr "Направите нову интернет радио станицу"
 #. Translators: this is the toolbar button label for
 #. New Internet Radio Station action.
 #: ../plugins/iradio/rb-iradio-source.c:343
-#| msgid "Add"
 msgctxt "Radio"
 msgid "Add"
 msgstr "Додај"
@@ -2036,7 +2041,6 @@ msgid "Genre"
 msgstr "Жанр"
 
 #: ../plugins/iradio/rb-iradio-source.c:400
-#| msgid "URL of internet radio station:"
 msgid "Search your internet radio stations"
 msgstr "Претражите ваше интернет радио станице"
 
@@ -2529,7 +2533,6 @@ msgid "Get information about this artist"
 msgstr "Нађи податке о овом извођачу"
 
 #: ../plugins/magnatune/magnatune.py:124
-#| msgid "_Cancel Download"
 msgid "Cancel Downloads"
 msgstr "Обустави преузимања"
 
@@ -2704,26 +2707,26 @@ msgstr "Паузирај"
 msgid "Play"
 msgstr "Пусти"
 
-#: ../plugins/notification/rb-notification-plugin.c:227
+#: ../plugins/notification/rb-notification-plugin.c:225
 msgid "Next"
 msgstr "Наредно"
 
 #. Translators: by Artist
-#: ../plugins/notification/rb-notification-plugin.c:314
+#: ../plugins/notification/rb-notification-plugin.c:310
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:142
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "изводи <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/notification/rb-notification-plugin.c:316
+#: ../plugins/notification/rb-notification-plugin.c:312
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:144
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:208
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "на албуму <i>%s</i>"
 
-#: ../plugins/notification/rb-notification-plugin.c:394
+#: ../plugins/notification/rb-notification-plugin.c:390
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:202
 #: ../widgets/rb-header.c:586
 msgid "Not Playing"
@@ -2899,27 +2902,22 @@ msgid "Send files by mail, instant message..."
 msgstr "Шаље датотеке као електронску пошту или брзе поруке..."
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:39
-#| msgid "Quality"
 msgid "Low quality"
 msgstr "Низак квалитет"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:40
-#| msgid "Normal"
 msgid "Normal quality"
 msgstr "Нормалан квалитет"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:41
-#| msgid "Quality"
 msgid "High quality"
 msgstr "Високи квалитет"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:173
-#| msgid "Enable visual effects?"
 msgid "_Visual Effect"
 msgstr "_Визуелни ефекти"
 
 #: ../plugins/visualizer/rb-visualizer-page.c:76
-#| msgid "Enable visual effects?"
 msgid "Visual Effects"
 msgstr "Визуелни ефекти"
 
@@ -2928,13 +2926,11 @@ msgid "Fullscreen"
 msgstr "Преко целог екрана"
 
 #: ../plugins/visualizer/rb-visualizer-plugin.c:370
-#| msgid "Enable visual effects?"
 msgid "Toggle fullscreen visual effects"
 msgstr "Пребаците визуелне ефекте пуног екрана"
 
 # Фуј, бљак
 #: ../plugins/visualizer/rb-visualizer-plugin.c:395
-#| msgid "%s plays"
 msgid "Display"
 msgstr "Приказ"
 
@@ -3138,9 +3134,9 @@ msgid ""
 "Please note that you can delete the feed but keep the downloaded files by "
 "choosing to delete the feed only."
 msgstr ""
-"Уколико обришете довод и датотеке, биће трајно изгубљене.  Можете "
-"обрисати само довод задржавајући преузете датотеке избором могућности "
-"„Обриши само довод“."
+"Уколико обришете довод и датотеке, биће трајно изгубљене.  Можете обрисати "
+"само довод задржавајући преузете датотеке избором могућности „Обриши само "
+"довод“."
 
 #: ../podcast/rb-podcast-source.c:464
 msgid "Delete _Feed Only"
@@ -3185,9 +3181,9 @@ msgid ""
 "lost.  Please note that you can delete the episode but keep the downloaded "
 "file by choosing to delete the episode only."
 msgstr ""
-"Уколико обришете епизоду и датотеку, биће трајно изгубљене.  Можете "
-"обрисати само епизоду задржавајући преузете датотеке избором могућности "
-"„Обриши само епизоду“."
+"Уколико обришете епизоду и датотеку, биће трајно изгубљене.  Можете обрисати "
+"само епизоду задржавајући преузете датотеке избором могућности „Обриши само "
+"епизоду“."
 
 #: ../podcast/rb-podcast-source.c:1063
 msgid "Delete _Episode Only"
@@ -3209,7 +3205,6 @@ msgstr[3] "Једна епизода"
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
 #: ../podcast/rb-podcast-source.c:1293
-#| msgid "Add"
 msgctxt "Podcast"
 msgid "Add"
 msgstr "Додај"
@@ -3605,7 +3600,8 @@ msgstr "Тражи _нове уређаје"
 msgid ""
 "Check for new media storage devices that have not been automatically detected"
 msgstr ""
-"Извршите проверу за новим уређајима складиштења који нису аутоматски откривени"
+"Извршите проверу за новим уређајима складиштења који нису аутоматски "
+"откривени"
 
 #: ../shell/rb-shell.c:348
 msgid "_Music"
@@ -3751,43 +3747,43 @@ msgstr "_Разгледај..."
 msgid "Change the visibility of the browser"
 msgstr "Измените видљивост претраживача"
 
-#: ../shell/rb-shell.c:890
+#: ../shell/rb-shell.c:893
 msgid "Change the music volume"
 msgstr "Измените јачину звука"
 
-#: ../shell/rb-shell.c:1936
+#: ../shell/rb-shell.c:1939
 msgid "Enable debug output"
 msgstr "Омогућава опширан испис ради тражења грешака"
 
-#: ../shell/rb-shell.c:1937
+#: ../shell/rb-shell.c:1940
 msgid "Enable debug output matching a specified string"
 msgstr "Омогућава опширан испис који се поклапа са унетим изразом"
 
-#: ../shell/rb-shell.c:1938
+#: ../shell/rb-shell.c:1941
 msgid "Do not update the library with file changes"
 msgstr "Не врши ажурирање аудиотеке изменама у датотеци песме"
 
-#: ../shell/rb-shell.c:1939
+#: ../shell/rb-shell.c:1942
 msgid "Do not register the shell"
 msgstr "Не врши пријављивање љуске"
 
-#: ../shell/rb-shell.c:1940
+#: ../shell/rb-shell.c:1943
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Не чува никакве податке трајно (подразумева „--no-registration“)"
 
-#: ../shell/rb-shell.c:1941
+#: ../shell/rb-shell.c:1944
 msgid "Disable loading of plugins"
 msgstr "Онемогућава учитавање прикључака"
 
-#: ../shell/rb-shell.c:1942
+#: ../shell/rb-shell.c:1945
 msgid "Path for database file to use"
 msgstr "Путања до датотеке са базом података"
 
-#: ../shell/rb-shell.c:1943
+#: ../shell/rb-shell.c:1946
 msgid "Path for playlists file to use"
 msgstr "Путања до датотеке са листом песама"
 
-#: ../shell/rb-shell.c:1954
+#: ../shell/rb-shell.c:1957
 #, c-format
 msgid ""
 "%s\n"
@@ -3797,29 +3793,27 @@ msgstr ""
 "Покрените „%s --help“ за потпун списак опција из командне линије.\n"
 
 #. Translators: this is the short label for the 'import folder' action
-#: ../shell/rb-shell.c:2055
-#| msgid "Import Errors"
+#: ../shell/rb-shell.c:2058
 msgctxt "Library"
 msgid "Import"
 msgstr "Увези"
 
 #. Translators: this is the short label for the 'view all tracks' action
-#: ../shell/rb-shell.c:2057
-#| msgid "Show _All Tracks"
+#: ../shell/rb-shell.c:2060
 msgid "Show All"
 msgstr "Прикажи све"
 
-#: ../shell/rb-shell.c:2367
+#: ../shell/rb-shell.c:2370
 msgid "Error while saving song information"
 msgstr "Грешка при чувању података о песми"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2648
+#: ../shell/rb-shell.c:2651
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (паузирано)"
 
-#: ../shell/rb-shell.c:2741
+#: ../shell/rb-shell.c:2744
 msgid "translator-credits"
 msgstr ""
 "Предраг Кртолица <predrag_k@optusnet.com.au>\n"
@@ -3828,7 +3822,7 @@ msgstr ""
 "\n"
 "http://prevod.org — превод на српски језик."
 
-#: ../shell/rb-shell.c:2744
+#: ../shell/rb-shell.c:2747
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3840,7 +3834,7 @@ msgstr ""
 "објављује Задужбина слободног софтвера; било верзије 2 те\n"
 "лиценце, или (по вашем мишљењу) било које новије верзије.\n"
 
-#: ../shell/rb-shell.c:2748
+#: ../shell/rb-shell.c:2751
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3852,7 +3846,7 @@ msgstr ""
 "ТРЖИШНЕ ВРЕДНОСТИ или ПРИЛАГОЂЕНОСТИ ОДРЕЂЕНОЈ НАМЕНИ.\n"
 "Погледајте ГНУ Општу јавну лиценцу за више детаља.\n"
 
-#: ../shell/rb-shell.c:2752
+#: ../shell/rb-shell.c:2755
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3863,63 +3857,63 @@ msgstr ""
 "софтвера на следећу адресу: Free Software Foundation,Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA\n"
 
-#: ../shell/rb-shell.c:2759
+#: ../shell/rb-shell.c:2762
 msgid "Maintainers:"
 msgstr "Развојни тим:"
 
-#: ../shell/rb-shell.c:2762
+#: ../shell/rb-shell.c:2765
 msgid "Former Maintainers:"
 msgstr "Претходни одржаваоци:"
 
-#: ../shell/rb-shell.c:2765
+#: ../shell/rb-shell.c:2768
 msgid "Contributors:"
 msgstr "Доприносиоци:"
 
-#: ../shell/rb-shell.c:2767
+#: ../shell/rb-shell.c:2770
 msgid "Music management and playback software for GNOME."
 msgstr "Програм за уређивање и слушање музике у Гном окружењу."
 
-#: ../shell/rb-shell.c:2776
+#: ../shell/rb-shell.c:2779
 msgid "Rhythmbox Website"
 msgstr "Веб страна Ритам машине"
 
-#: ../shell/rb-shell.c:2823 ../shell/rb-shell-preferences.c:166
+#: ../shell/rb-shell.c:2826 ../shell/rb-shell-preferences.c:166
 msgid "Couldn't display help"
 msgstr "Не могу да прикажем помоћ"
 
-#: ../shell/rb-shell.c:2868
+#: ../shell/rb-shell.c:2871
 msgid "Configure Plugins"
 msgstr "Подесите прикључке"
 
-#: ../shell/rb-shell.c:2957
+#: ../shell/rb-shell.c:2960
 msgid "Import Folder into Library"
 msgstr "Увезите фасциклу у аудиотеку"
 
-#: ../shell/rb-shell.c:2976
+#: ../shell/rb-shell.c:2979
 msgid "Import File into Library"
 msgstr "Увезите датотеку у аудиотеку"
 
-#: ../shell/rb-shell.c:3509 ../sources/rb-play-queue-source.c:629
+#: ../shell/rb-shell.c:3512 ../sources/rb-play-queue-source.c:629
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Регистровани извори не могу да отворе адресу %s"
 
-#: ../shell/rb-shell.c:3839
+#: ../shell/rb-shell.c:3842
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Регистровани извори се не поклапају са адресом %s"
 
-#: ../shell/rb-shell.c:3872 ../shell/rb-shell.c:3915
+#: ../shell/rb-shell.c:3875 ../shell/rb-shell.c:3918
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Непозната адреса песме: %s"
 
-#: ../shell/rb-shell.c:3924
+#: ../shell/rb-shell.c:3927
 #, c-format
 msgid "Unknown property %s"
 msgstr "Непознато својство %s"
 
-#: ../shell/rb-shell.c:3938
+#: ../shell/rb-shell.c:3941
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Неисправна врста својства %s за својство %s"
@@ -4209,25 +4203,34 @@ msgid "Replace _All"
 msgstr "Изабери _све"
 
 #: ../shell/rb-track-transfer-queue.c:420
-msgid ""
-"This file cannot be transferred as it is not in a format supported by the "
-"target device and no suitable encoding profiles are available."
-msgstr ""
-"Ова датотека не може бити пребачена зато што циљни уређај не подржава овај "
-"формат, а нису доступни ни одговарајући профили шифровања."
-
-#: ../shell/rb-track-transfer-queue.c:424
 #, c-format
+#| msgid ""
+#| "%d of the %d files cannot be transferred as they must be converted into a "
+#| "format supported by the target device but no suitable encoding profiles "
+#| "are available."
 msgid ""
-"%d of the %d files cannot be transferred as they must be converted into a "
-"format supported by the target device but no suitable encoding profiles are "
-"available."
-msgstr ""
-"%d од %d датотеке не могу бити пребачене јер морају бити претворене у формат "
-"који циљни уређај подржава, али нису доступни одговарајући профили шифровања."
+"%d file cannot be transferred as it must be converted into a format "
+"supported by the target device but no suitable encoding profiles are "
+"available"
+msgid_plural ""
+"%d files cannot be transferred as they must be converted into a format "
+"supported by the target device but no suitable encoding profiles are "
+"available"
+msgstr[0] ""
+"%d датотека не може бити пренешена јер мора бити претворена у формат подржан "
+"циљним уређајем али нису доступни одговарајући профили кодирања."
+msgstr[1] ""
+"%d датотеке не могу бити пренешене јер морају бити претворене у формат "
+"подржан циљним уређајем али нису доступни одговарајући профили кодирања."
+msgstr[2] ""
+"%d датотека не може бити пренешено јер мора бити претворено у формат подржан "
+"циљним уређајем али нису доступни одговарајући профили кодирања."
+msgstr[3] ""
+"Једна датотека не може бити пренешена јер мора бити претворена у формат "
+"подржан циљним уређајем али нису доступни одговарајући профили кодирања."
 
 #. XXX should provide the option of picking a different format?
-#: ../shell/rb-track-transfer-queue.c:445
+#: ../shell/rb-track-transfer-queue.c:444
 #, c-format
 msgid ""
 "Additional software is required to encode media in your preferred format:\n"
@@ -4239,51 +4242,60 @@ msgstr ""
 
 #: ../shell/rb-track-transfer-queue.c:448
 #, c-format
+#| msgid ""
+#| "Additional software is required to convert this file into a format "
+#| "supported by the target device:\n"
+#| "%s"
 msgid ""
-"Additional software is required to convert this file into a format supported "
+"Additional software is required to convert %d file into a format supported "
 "by the target device:\n"
 "%s"
-msgstr ""
-"Додатни софтвер је потребан да бисте претворили ову датотеку у формат који "
-"подржава циљни уређај:\n"
+msgid_plural ""
+"Additional software is required to convert %d files into a format supported "
+"by the target device:\n"
+"%s"
+msgstr[0] ""
+"Додатни софтвер је потребан да бисте претворили %d датотеку у формат подржан "
+"циљним уређајем:\n"
+"%s"
+msgstr[1] ""
+"Додатни софтвер је потребан да бисте претворили %d датотеке у формат подржан "
+"циљним уређајем:\n"
+"%s"
+msgstr[2] ""
+"Додатни софтвер је потребан да бисте претворили %d датотека у формат подржан "
+"циљним уређајем:\n"
+"%s"
+msgstr[3] ""
+"Додатни софтвер је потребан да бисте претворили ову %d датотеку у формат "
+"подржан циљним уређајем:\n"
 "%s"
 
-#: ../shell/rb-track-transfer-queue.c:452
-#, c-format
-msgid ""
-"Additional software is required to convert %d of the %d files to be "
-"transferred into a format supported by the target device:\n"
-"%s"
-msgstr ""
-"Додатни софтвер је потребан да бисте претворили %d од %d датотеке у формат "
-"који подржава циљни уређај:\n"
-"%s"
-
-#: ../shell/rb-track-transfer-queue.c:467
+#: ../shell/rb-track-transfer-queue.c:465
 msgid "Unable to transfer tracks"
 msgstr "Грешка у преносу песама"
 
-#: ../shell/rb-track-transfer-queue.c:472
+#: ../shell/rb-track-transfer-queue.c:470
 msgid "_Cancel the transfer"
-msgstr "_Откажи пребацивање"
+msgstr "_Откажи пренос"
 
-#: ../shell/rb-track-transfer-queue.c:474
+#: ../shell/rb-track-transfer-queue.c:472
 msgid "_Skip these files"
 msgstr "_Прескочи ове датотеке"
 
-#: ../shell/rb-track-transfer-queue.c:477
+#: ../shell/rb-track-transfer-queue.c:475
 msgid "_Install"
 msgstr "_Инсталирај"
 
-#: ../shell/rb-track-transfer-queue.c:575
+#: ../shell/rb-track-transfer-queue.c:573
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
-msgstr "Пребациујем песму %d од %d (%.0f%%)"
+msgstr "Преносим песму %d од %d (%.0f%%)"
 
-#: ../shell/rb-track-transfer-queue.c:578
+#: ../shell/rb-track-transfer-queue.c:576
 #, c-format
 msgid "Transferring track %d out of %d"
-msgstr "Пребацујем песму %d од %d"
+msgstr "Преносим песму %d од %d"
 
 #: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:149
 #: ../sources/rb-static-playlist-source.c:124
@@ -4363,7 +4375,9 @@ msgstr "Грешке при увозу"
 
 #: ../sources/rb-import-errors-source.c:391
 #, c-format
-msgid "%d import errors"
+#| msgid "%d import errors"
+#| msgid_plural "%d import errors"
+msgid "%d import error"
 msgid_plural "%d import errors"
 msgstr[0] "%d грешка при увозу"
 msgstr[1] "%d грешке при увозу"
@@ -4444,15 +4458,14 @@ msgstr "Усклађује уређај са збирком песама"
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
-msgstr ""
-"Нисте изабрали песме, листе нити подемисије за пребацивање на овај уређај."
+msgstr "Нисте изабрали песме, листе нити подемисије за пренос на овај уређај."
 
 #: ../sources/rb-media-player-source.c:651
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
 msgstr ""
-"Нема довољно места на уређају за пребацивање изабраних песама, листи или "
+"Нема довољно места на уређају за пренос изабраних песама, листи или "
 "подемисија"
 
 #: ../sources/rb-media-player-source.c:702
@@ -4512,7 +4525,6 @@ msgstr "Очисти"
 
 #. Translators: this is the toolbutton label for the 'shuffle queue' action
 #: ../sources/rb-play-queue-source.c:286
-#| msgid "Shuffle"
 msgctxt "Queue"
 msgid "Shuffle"
 msgstr "Насумично"
@@ -5007,12 +5019,10 @@ msgid "Clear the search text"
 msgstr "Обришите текст за претрагу"
 
 #: ../widgets/rb-search-entry.c:234
-#| msgid "Clear the search text"
 msgid "Select the search type"
 msgstr "Изаберите врсту претраге"
 
 #: ../widgets/rb-search-entry.c:256
-#| msgid "_Search:"
 msgid "Search"
 msgstr "Тражи"
 
@@ -5040,6 +5050,22 @@ msgstr "Унутар радне површи"
 #: ../widgets/rb-song-info.c:1259
 msgid "Unknown location"
 msgstr "Непознато место"
+
+#~ msgid ""
+#~ "This file cannot be transferred as it is not in a format supported by the "
+#~ "target device and no suitable encoding profiles are available."
+#~ msgstr ""
+#~ "Ова датотека не може бити пребачена зато што циљни уређај не подржава "
+#~ "овај формат, а нису доступни ни одговарајући профили шифровања."
+
+#~ msgid ""
+#~ "Additional software is required to convert %d of the %d files to be "
+#~ "transferred into a format supported by the target device:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Додатни софтвер је потребан да бисте претворили %d од %d датотеке у "
+#~ "формат који подржава циљни уређај:\n"
+#~ "%s"
 
 #~ msgid "Searching... drop artwork here"
 #~ msgstr "Претражујем... превуците омоте албума овде"
