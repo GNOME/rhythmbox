@@ -89,7 +89,6 @@ EXTRA_DIST = 					\
 	$(gtkbuilder_DATA)			\
 	$(top_srcdir)/plugins/audioscrobbler/Last.fm-icon.png		\
 	$(top_srcdir)/plugins/audioscrobbler/Libre.fm-icon.png		\
-	$(top_srcdir)/plugins/audioscrobbler/as-powered.png		\
 	$(NULL)
 
 CLEANFILES = 			\
