@@ -52,7 +52,7 @@ class LocalSearch:
 		parent = self.file.get_parent()
 		ordered = []
 		key = RB.ExtDBKey.create_storage("album", self.album)
-		key.add_field("artist", self.artist)
+		key.add_field("artist", self.artists[0])
 
 		# Compare lower case, without file extension
 		for name in [file_root (self.file.get_basename())] + IMAGE_NAMES:
@@ -129,7 +129,7 @@ class LocalSearch:
 	def search (self, key, last_time, store, callback, args):
 		# ignore last_time
 
-		location = key.get_field("location")
+		location = key.get_info("location")
 		if location is None:
 			print "not searching, we don't have a location"
 			callback(args)
