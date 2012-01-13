@@ -83,7 +83,7 @@ struct _RBExtDBPrivate
 	struct tdb_context *tdb_context;
 
 	GList *requests;
-	GList *store_queue;
+	GAsyncQueue *store_queue;
 	GSimpleAsyncResult *store_op;
 };
 
@@ -372,11 +372,15 @@ static void
 impl_finalize (GObject *object)
 {
 	RBExtDB *store = RB_EXT_DB (object);
+	RBExtDBStoreRequest *req;
 
 	g_free (store->priv->name);
 
 	g_list_free_full (store->priv->requests, (GDestroyNotify) free_request);
-	g_list_free_full (store->priv->store_queue, (GDestroyNotify) free_store_request);
+	while ((req = g_async_queue_try_pop (store->priv->store_queue)) != NULL) {
+		free_store_request (req);
+	}
+	g_async_queue_unref (store->priv->store_queue);
 
 	if (store->priv->tdb_context) {
 		tdb_close (store->priv->tdb_context);
@@ -391,6 +395,8 @@ static void
 rb_ext_db_init (RBExtDB *store)
 {
 	store->priv = G_TYPE_INSTANCE_GET_PRIVATE (store, RB_TYPE_EXT_DB, RBExtDBPrivate);
+
+	store->priv->store_queue = g_async_queue_new ();
 }
 
 static void
@@ -779,15 +785,12 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 	TDB_DATA tdbdata;
 	gboolean ignore;
 
-	if (store->priv->store_queue == NULL) {
+	req = g_async_queue_try_pop (store->priv->store_queue);
+	if (req == NULL) {
 		rb_debug ("nothing to do");
 		g_simple_async_result_set_op_res_gpointer (result, NULL, NULL);
 		return;
 	}
-
-	req = store->priv->store_queue->data;
-	store->priv->store_queue = g_list_delete_link (store->priv->store_queue,
-						  store->priv->store_queue);
 	g_simple_async_result_set_op_res_gpointer (result, req, (GDestroyNotify)free_store_request);
 
 	/* convert key to storage blob */
@@ -952,7 +955,7 @@ maybe_start_store_request (RBExtDB *store)
 		return;
 	}
 
-	if (store->priv->store_queue == NULL) {
+	if (g_async_queue_length (store->priv->store_queue) < 1) {
 		rb_debug ("nothing to do");
 		return;
 	}
@@ -970,8 +973,8 @@ maybe_start_store_request (RBExtDB *store)
 static void
 store_metadata (RBExtDB *store, RBExtDBStoreRequest *req)
 {
-	store->priv->store_queue = g_list_append (store->priv->store_queue, req);
-	rb_debug ("now %d entries in store queue", g_list_length (store->priv->store_queue));
+	g_async_queue_push (store->priv->store_queue, req);
+	rb_debug ("now %d entries in store queue", g_async_queue_length (store->priv->store_queue));
 	maybe_start_store_request (store);
 }
 
