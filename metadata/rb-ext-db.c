@@ -160,6 +160,7 @@ create_store_request (RBExtDBKey *key,
 		      GValue *value)
 {
 	RBExtDBStoreRequest *sreq = g_slice_new0 (RBExtDBStoreRequest);
+	g_assert (rb_ext_db_key_is_lookup (key) == FALSE);
 	sreq->key = rb_ext_db_key_copy (key);
 	sreq->source_type = source_type;
 	if (uri != NULL) {
