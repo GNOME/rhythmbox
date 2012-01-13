@@ -386,7 +386,7 @@ rb_ext_db_key_get_info_names (RBExtDBKey *key)
 const char *
 rb_ext_db_key_get_info (RBExtDBKey *key, const char *name)
 {
-	GPtrArray *v = get_list_values (key->fields, name);
+	GPtrArray *v = get_list_values (key->info, name);
 	if (v != NULL && v->len > 0) {
 		return g_ptr_array_index (v, 0);
 	} else {
