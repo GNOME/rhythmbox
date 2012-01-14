@@ -342,6 +342,7 @@ typedef struct
 	RBPlayerPlayType play_type;
 	gint64 crossfade;
 	gboolean fading;
+	gboolean starting_eos;
 
 	gulong adjust_probe_id;
 
@@ -1607,7 +1608,8 @@ start_waiting_eos_streams (RBPlayerGstXFade *player)
 	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
 	for (l = player->priv->streams; l != NULL; l = l->next) {
 		RBXFadeStream *pstream = l->data;
-		if (pstream->state == WAITING_EOS) {
+		if (pstream->state == WAITING_EOS && pstream->starting_eos == FALSE) {
+			pstream->starting_eos = TRUE;
 			to_start = g_list_prepend (to_start, g_object_ref (pstream));
 		}
 	}
@@ -2328,6 +2330,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 			/* wait for current stream's EOS */
 			rb_debug ("existing playing stream found; waiting for its EOS -> WAITING_EOS");
 			stream->state = WAITING_EOS;
+			stream->starting_eos = FALSE;
 		} else {
 			rb_debug ("no playing stream found, so starting immediately");
 			ret = link_and_unblock_stream (stream, error);
