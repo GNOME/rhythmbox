@@ -3060,7 +3060,6 @@ rhythmdb_load_thread_main (RhythmDB *db)
 
 	db->priv->active_mounts = rhythmdb_get_active_mounts (db);
 
-	rb_profile_start ("loading db");
 	g_mutex_lock (db->priv->saving_mutex);
 	if (klass->impl_load (db, db->priv->exiting, &error) == FALSE) {
 		rb_debug ("db load failed: disabling saving");
@@ -3088,7 +3087,6 @@ rhythmdb_load_thread_main (RhythmDB *db)
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	rhythmdb_push_event (db, result);
 
-	rb_profile_end ("loading db");
 	return NULL;
 }
 
