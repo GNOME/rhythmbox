@@ -86,7 +86,9 @@ main (int argc, char **argv)
 
 	/* TODO: kill this function */
 	rb_threads_init ();
-	gdk_threads_enter ();
+	if (glib_check_version (2, 31, 1) != NULL) {
+		gdk_threads_enter ();
+	}
 
 	new_argc = argc;
 	new_argv = argv;
@@ -96,7 +98,9 @@ main (int argc, char **argv)
 
 	g_object_unref (shell);
 
-	gdk_threads_leave ();
+	if (glib_check_version (2, 31, 1) != NULL) {
+		gdk_threads_leave ();
+	}
 
 	exit (0);
 }
