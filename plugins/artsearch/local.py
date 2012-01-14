@@ -72,6 +72,7 @@ class LocalSearch:
 					nkey = RB.ExtDBKey.create_storage("album", album)
 					nkey.add_field("artist", artist)
 					uri = parent.resolve_relative_path(f_name).get_uri()
+					print "found album+artist match " + uri
 					self.store.store_uri(nkey. RB.ExtDBSourceType.USER, uri)
 
 		# if that didn't work, look for the longest shared prefix
@@ -86,7 +87,8 @@ class LocalSearch:
 
 		if match is not None:
 			uri = parent.resolve_relative_path(match).get_uri()
-			self.store.store_uri(nkey. RB.ExtDBSourceType.USER, uri)
+			print "found prefix match " + uri
+			self.store.store_uri(key, RB.ExtDBSourceType.USER, uri)
 
 		self.callback(self.callback_args)
 
