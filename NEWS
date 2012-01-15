@@ -1,3 +1,169 @@
+Overview of changes in Rhythmbox 2.95  "In Mind"
+================================================
+
+* GTK+ 3, GObject introspection, GNOME 3 compatible
+* New album art database
+* Grilo plugin for UPNP and Jamendo
+* Rewritten visualization plugin (using clutter)
+* First steps in redesigning some parts of the UI that sorely need it
+* New encoding profile system
+* Plugins now based on libpeas
+* Much improved dbus media server plugin
+
+Bugs fixed:
+
+160966 - Add "Comment" field as a criteria for automatically updating playlists
+362876 - Problem editing APE tags in mp3s
+424629 - handle multiple id3 tag sets better
+427592 - ctrl+f for search bar
+439893 - No warning about unsupported formats
+446882 - use id3v2.3
+458806 - Get rid of visualization modes
+458816 - Is the visualization pop up really needed?
+481321 - rhythmbox wakes up the dbus daemon every second
+489097 - Wrong adjectives are used to describe visualization quality
+503383 - A better place for the browser toggle
+503586 - [upnp] export the share with an easier identifiable name
+504415 - [upnp] display the content of some other UPnP server in the (hierarchical) exported form
+520209 - transcoding should use easy codec installation when required
+522254 - attempt to preserve file permission when editing tags
+522256 - rhythmbox volume control lags
+588586 - Activated encoding profile doesn't show up in "Preferred Format" drop down box
+593186 - arch-independent files installed in $plugindir
+594474 - Playlists are not exported over UPNP
+594516 - Rhythmbox album art is blurred in notification bubbles
+598764 - Rhythmbox should not play games with desktops
+600122 - wrong shortcut for Show / Hide the Queue Sidebar
+615096 - Quality of flac flike changes from "Lossless" to "Unknown" when it has a (cover) image embedded
+619926 - Add support for MediaServerSpec Interface on DBUS
+625892 - Port to GSettings
+626236 - Migrate from PyGTK to PyGObject introspection-based bindings
+628559 - MTP plugin claims my camera, blocking me from using it as a camera
+633556 - libgnome-media-profiles has split from gnome-media
+634858 - Rhythmbox does not show covers which are embedded into ID3 Tag
+634957 - Lyrics plugin works, but context pane does not show lyrics.
+639983 - Unable to install 13.3 on Ubuntu Maverick
+640000 - Undefined 'ulong' type
+640021 - Segfault during dacp pairing process.
+640915 - Album art is displayed, but can't be opened
+641352 - build failure due missing brasero-media.h
+641417 - DAAP browse crashes rhythmbox with SIGABRT
+641970 - crash in g_assertion_message_expr, split_query_by_disjunctions
+642051 - Update for the Zeitgeist plugin
+642614 - Default stations list contains some that are offline
+642836 - shell: Add a way to start-up with plugins disabled
+643165 - Podcast avoidance code doesn't work
+644585 - Play queue is cleared on exit
+645015 - Crash in g_object_unref, image_download_cb
+645145 - crash on track switch after disabling status icon
+645577 - Theme tweaks
+645703 - error dialog at startup due to failing cover art plugin
+645812 - Port to libpeas
+645905 - Add missing #include "config.h" to make sure translations work
+646239 - rhythmbox.pc references gtk 2
+646405 - sometimes playback is not advanced to the next song
+647032 - When clicking on "MIssing files" I get crash
+647050 - Date translations will fail for a number of languages
+647549 - Typo in rhythbox daap plugin causes build to fail
+647775 - Zeitgeist plugins throws error
+648225 - Artwork displayed when playing back mp3 picks first APIC found, not type "Cover (front)"
+648956 - Deleted internet radio stations reappear when restarting Rhythmbox
+649017 - Make PeasGtkPluginManager expand with plugins dialog
+649019 - Add missing key 'sourcelist-hidden' to org.gnome.rhythmbox schema
+649020 - RB fails to start with multiple library locations set
+649224 - crash in Rhythmbox: Quit from menu after pre...
+649231 - Crash in rb_station_properties_dialog_get_current_entry
+649288 - DAAP Client cannot connect on non-standard ports
+650043 - Device property dialog doesn't display volume usage
+650191 - don't start after changing the display order of tracks
+650848 - Remove libmusicbrainz option
+650919 - sync reports incorrect number of files to add
+650920 - syncing won't remove file from device
+651198 - last/libre.fm data lists (i.e. Recent Tracks) do not resize correctly
+651201 - Rhythmbox transcodes AAC (.m4a) to MP3 even when target device supports AAC
+651852 - Play/Pause/Previous Missing from gnome shell notification
+652488 - fixes for some UI glitches
+652964 - Segfault when RBAudioscrobbler finalizes and queue needs saved
+653187 - [im-status] 'ascii' codec can't decode byte outside range(128)
+653900 - Rhythmbox does not copy m4a files to iPod
+654357 - IM Status plugin fails to load
+655760 - Toolbar reappears after programme restart
+656759 - configure doesn't indicate whether or not the visualiser plugin is being built
+657119 - Rhythmbox Lyrics Plugin Problem
+657126 - Current git crashes just refreshing library
+657185 - Rhythmbox crashes when attempting to extract a CD
+658363 - MP3 player properties window makes rhythmbox crash
+658801 - ngettext (Plural forms) needed for "Only showing %d results"
+658917 - fix gsettings.m4 to properly install schema files on BSD systems
+659261 - Grilo plugin try to clear the search_entry even if it did not create one
+659467 - Missing plural handling for "%d tracks"
+659508 - Visualizer plugin does not install its data file in the right directory
+660351 - add pygobject 3.0 support
+660775 - Rhythmbox has serious disk usage when changing volume.
+661330 - Album Art plugin makes Rhythmbox crash on some files
+661700 - rhythmbox fails to inhibit/uninhibit the gnome-session while playing a file.
+661806 - Can't extract to FLAC format on Fedora 16
+662146 - rhythmbox play button points backwards
+662448 - artist/album browser not shown after returning from compact mode
+662641 - Playlist for last.fm radios doesn't show artist, album and duration
+663354 - No keyboard shortcut to give search box focus
+663469 - Python plugins are not internationalized
+663810 - rhythmbox crashed with SIGSEGV in rb_playlist_manager_get_playlists()
+664680 - Can't change Library name for DAAP Music sharing
+664831 - Failed to link new stream into GStreamer pipeline
+666087 - lyrics plugin fails to load cached files
+666338 - Clicking on DAAP share causes UI to fail
+666668 - unbreak installation after CoverArtDatabase.py got removed
+666773 - Untranslated strings in the audioscrobbler plugin
+666894 - Rhythmbox dies with signal SIGINT interrupt
+667014 - magnatune: icon missing from the tarball generated from master
+667132 - [im-status] IM-status plugin fails to update status
+667139 - broken DBus method PlaylistManager.GetPlaylists
+667778 - Crash when playing an audio file
+
+Translation updates:
+
+- be, courtesy of Olya Matsuk 
+- bg, courtesy of Alexander Shopov 
+- ca, courtesy of Gil Forcada 
+- cs, courtesy of Marek Černocký 
+- da, courtesy of Byrial Ole Jensen 
+- de, courtesy of Christian Kirbach 
+- en_GB, courtesy of Bruce Cowan 
+- eo, courtesy of Kristjan SCHMIDT 
+- es, courtesy of Daniel Mustieles 
+- et, courtesy of Mattias Põldaru 
+- eu, courtesy of Iñaki Larrañaga Murgoitio 
+- fi, courtesy of Timo Jyrinki 
+- fr, courtesy of Claude Paroz 
+- gl, courtesy of Fran Dieguez 
+- hu, courtesy of Gabor Kelemen 
+- it, courtesy of Luca Ferretti 
+- ja, courtesy of Jiro Matsuzawa 
+- kn, courtesy of Shankar Prasad 
+- lt, courtesy of Aurimas Černius 
+- lv, courtesy of Rūdolfs Mazurs 
+- nb, courtesy of Kjartan Maraas 
+- nl, courtesy of Wouter Bolsterlee 
+- pl, courtesy of Piotr Drąg 
+- pt_BR, courtesy of Gabriel F. Vilar 
+- pt, courtesy of Filipe Gomes 
+- ro, courtesy of Lucian Adrian Grijincu 
+- ru, courtesy of Yuri Myasoedov 
+- sl, courtesy of Matej Urbančič 
+- sr, courtesy of Мирослав Николић 
+- sr@latin, courtesy of Miroslav Nikolić 
+- sv, courtesy of Daniel Nylander 
+- te, courtesy of Praveen Illa 
+- tr, courtesy of Muhammet Kara 
+- uk, courtesy of Korostil Daniel 
+- uk, courtesy of Сергій Гаврилов 
+- vi, courtesy of Nguyễn Thái Ngọc Duy 
+- zh_CN, courtesy of YunQiang Su 
+- zh_HK, courtesy of Cheng-Chia Tseng 
+- zh_TW, courtesy of Cheng-Chia Tseng 
+
+
 Overview of changes in Rhythmbox 0.13.3  "Country Rain"
 =======================================================
 
