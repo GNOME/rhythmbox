@@ -2,6 +2,7 @@
 # vim: set et sw=2:
 # 
 # Copyright (C) 2007-2008 - Vincent Untz
+# Copyright (C) 2012 - Nirbheek Chauhan <nirbheek@gentoo.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,18 +27,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import rb
-from gi.repository import GObject, Peas
+import gi
+from gi.repository import Gio, GLib, GObject, Peas
 from gi.repository import RB
-
-try:
-  import dbus
-  use_gossip = True
-  use_mc5 = True
-  use_purple = True
-except ImportError:
-  use_gossip = False
-  use_mc5 = False
-  use_purple = False
 
 import gettext
 gettext.install('rhythmbox', RB.locale_dir(), unicode=True)
@@ -48,10 +40,6 @@ NORMAL_SONG_ALBUM  = 'album'
 STREAM_SONG_ARTIST = 'rb:stream-song-artist'
 STREAM_SONG_TITLE  = 'rb:stream-song-title'
 STREAM_SONG_ALBUM  = 'rb:stream-song-album'
-
-GOSSIP_BUS_NAME = 'org.gnome.Gossip'
-GOSSIP_OBJ_PATH = '/org/gnome/Gossip'
-GOSSIP_IFACE_NAME = 'org.gnome.Gossip'
 
 PROPERTIES_IFACE_NAME = 'org.freedesktop.DBus.Properties'
 MC5_BUS_NAME = 'org.freedesktop.Telepathy.MissionControl5'
@@ -70,6 +58,17 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
   def __init__ (self):
     GObject.Object.__init__ (self)
 
+  def _init_dbus_proxies(self):
+    self.proxies = {}
+    bus_type = Gio.BusType.SESSION
+    flags = 0
+    iface_info = None
+    # Creating proxies doesn't do any blocking I/O, and never fails
+    self.proxies["purple"] = Gio.DBusProxy.new_for_bus_sync(bus_type, flags, iface_info,
+                               PURPLE_BUS_NAME, PURPLE_OBJ_PATH, PURPLE_IFACE_NAME, None)
+    self.proxies["mc5_props"] = Gio.DBusProxy.new_for_bus_sync(bus_type, flags, iface_info,
+                               MC5_BUS_NAME, MC5_AM_OBJ_PATH, PROPERTIES_IFACE_NAME, None)
+
   def do_activate (self):
     shell = self.object
     sp = shell.props.shell_player
@@ -85,6 +84,7 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
     self.current_title = None
     self.current_album = None
 
+    self._init_dbus_proxies ()
     self.save_status ()
 
     if sp.get_playing ():
@@ -185,124 +185,73 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
     else:
       new_status = _(u"♫ Listening to music... ♫")
 
-    self.set_gossip_status (new_status)
     self.set_mc5_status (new_status)
     self.set_purple_status (new_status)
 
   def save_status (self):
-    self.saved_gossip = self.get_gossip_status ()
     self.saved_mc5 = self.get_mc5_status ()
     self.saved_purple = self.get_purple_status ()
 
   def restore_status (self):
-    if self.saved_gossip != None:
-      self.set_gossip_status (self.saved_gossip)
     if self.saved_mc5 != None:
       self.set_mc5_status (self.saved_mc5)
     if self.saved_purple != None:
       self.set_purple_status (self.saved_purple)
 
-  def set_gossip_status (self, new_status):
-    if not use_gossip:
-      return
-
-    try:
-      bus = dbus.SessionBus ()
-      gossip_obj = bus.get_object (GOSSIP_BUS_NAME, GOSSIP_OBJ_PATH)
-      gossip = dbus.Interface (gossip_obj, GOSSIP_IFACE_NAME)
-
-      state, status = gossip.GetPresence ("")
-      gossip.SetPresence (state, new_status)
-    except dbus.DBusException:
-      pass
-
-  def get_gossip_status (self):
-    if not use_gossip:
-      return
-
-    try:
-      bus = dbus.SessionBus ()
-      gossip_obj = bus.get_object (GOSSIP_BUS_NAME, GOSSIP_OBJ_PATH)
-      gossip = dbus.Interface (gossip_obj, GOSSIP_IFACE_NAME)
-
-      state, status = gossip.GetPresence ("")
-      return status
-    except dbus.DBusException:
-      return None
-
   def set_mc5_status (self, new_status):
-    if not use_mc5:
-      return
-
     try:
-      bus = dbus.SessionBus ()
-      am_obj = bus.get_object (MC5_BUS_NAME, MC5_AM_OBJ_PATH)
-      am = dbus.Interface (am_obj, PROPERTIES_IFACE_NAME)
-
-      for acct in am.Get (MC5_AM_IFACE_NAME, "ValidAccounts"):
-        acct_obj = bus.get_object (MC5_BUS_NAME, acct)
-        acct_iface = dbus.Interface (acct_obj, PROPERTIES_IFACE_NAME)
-        status = acct_iface.Get (MC5_ACCT_IFACE_NAME, "RequestedPresence")
-        acct_iface.Set (MC5_ACCT_IFACE_NAME, "RequestedPresence", (status[0], status[1], new_status))
-
-    except dbus.DBusException, e:
-      print "dbus exception while setting status: " + str(e)
-
+      proxy = self.proxies["mc5_props"]
+      for acct_obj_path in proxy.Get("(ss)", MC5_AM_IFACE_NAME, "ValidAccounts"):
+        # Create a new proxy connected to acct_obj_path
+        acct_proxy = Gio.DBusProxy.new_for_bus_sync(Gio.BusType.SESSION, 0, None,
+                                                    MC5_BUS_NAME, acct_obj_path,
+                                                    PROPERTIES_IFACE_NAME, None)
+        # status = (state, status, status_message)
+        status = acct_proxy.Get("(ss)", MC5_ACCT_IFACE_NAME, "RequestedPresence")
+        # Create the (uss) GVariant to set the new status message
+        vstatus = GLib.Variant("(uss)", (status[0], status[1], new_status))
+        # Set the status!
+        acct_proxy.Set("(ssv)", MC5_ACCT_IFACE_NAME, "RequestedPresence", vstatus)
+    except gi._glib.GError as e:
+      print ("GError while setting status: " + str(e))
 
   def get_mc5_status (self):
-    if not use_mc5:
-      return
-
     try:
-      bus = dbus.SessionBus ()
-      am_obj = bus.get_object (MC5_BUS_NAME, MC5_AM_OBJ_PATH)
-      am = dbus.Interface (am_obj, PROPERTIES_IFACE_NAME)
+      proxy = self.proxies["mc5_props"]
       got_status = False
-
       # a bit awful: this just returns the status text from the first account
       # that has one.
-      for acct in am.Get (MC5_AM_IFACE_NAME, "ValidAccounts"):
-        acct_obj = bus.get_object (MC5_BUS_NAME, acct)
-        acct_iface = dbus.Interface (acct_obj, PROPERTIES_IFACE_NAME)
-        status = acct_iface.Get (MC5_ACCT_IFACE_NAME, "RequestedPresence")
+      for acct_obj_path in proxy.Get("(ss)", MC5_AM_IFACE_NAME, "ValidAccounts"):
+        # Create a new proxy connected to acct_obj_path
+        acct_proxy = Gio.DBusProxy.new_for_bus_sync (Gio.BusType.SESSION, 0, None,
+                                                     MC5_BUS_NAME, acct_obj_path,
+                                                     PROPERTIES_IFACE_NAME, None)
+        # Get (state, status, status_message)
+        ret = acct_proxy.Get("(ss)", MC5_ACCT_IFACE_NAME, "RequestedPresence")
         got_status = True
-        if status[2] != "":
-          return status[2]
-
+        if ret[2] != "":
+          return ret[2]
       # if all accounts have empty status, return that
       if got_status:
         return ""
-    except dbus.DBusException, e:
-      print "dbus exception while getting status: " + str(e)
-
+    except gi._glib.GError as e:
+      print ("GError while setting status: " + str(e))
     return None
 
   def set_purple_status (self, new_status):
-    if not use_purple:
-      return
-
     try:
-      bus = dbus.SessionBus ()
-      purple_obj = bus.get_object (PURPLE_BUS_NAME, PURPLE_OBJ_PATH)
-      purple = dbus.Interface (purple_obj, PURPLE_IFACE_NAME)
-
-      status = purple.PurpleSavedstatusGetCurrent ()
-      purple.PurpleSavedstatusSetMessage (status, new_status)
-      purple.PurpleSavedstatusActivate (status)
-    except dbus.DBusException:
-      pass
+      proxy = self.proxies["purple"]
+      status = proxy.PurpleSavedstatusGetCurrent()
+      proxy.PurpleSavedstatusSetMessage("(is)", status, new_status)
+      proxy.PurpleSavedstatusActivate("(i)", status)
+    except gi._glib.GError as e:
+      print ("GError while setting status: " + str(e))
 
   def get_purple_status (self):
-    if not use_purple:
-      return
-
     try:
-      bus = dbus.SessionBus ()
-      purple_obj = bus.get_object (PURPLE_BUS_NAME, PURPLE_OBJ_PATH)
-      purple = dbus.Interface (purple_obj, PURPLE_IFACE_NAME)
-
-      current = purple.PurpleSavedstatusGetCurrent ()
-      status = purple.PurpleSavedstatusGetMessage (current)
-      return status
-    except dbus.DBusException:
-      return None
+      proxy = self.proxies["purple"]
+      status = proxy.PurpleSavedstatusGetCurrent()
+      return proxy.PurpleSavedstatusGetMessage("(i)", status)
+    except gi._glib.GError as e:
+      print ("GError while setting status: " + str(e))
+    return None
