@@ -410,6 +410,7 @@ rb_audiocd_source_constructed (GObject *object)
 	rb_entry_view_append_column (source->priv->entry_view, RB_ENTRY_VIEW_COL_TITLE, TRUE);
 	rb_entry_view_append_column (source->priv->entry_view, RB_ENTRY_VIEW_COL_ARTIST, TRUE);
 	rb_entry_view_append_column (source->priv->entry_view, RB_ENTRY_VIEW_COL_GENRE, FALSE);
+	rb_entry_view_append_column (source->priv->entry_view, RB_ENTRY_VIEW_COL_DURATION, FALSE);
 
 	/* enable in-place editing for titles, artists, and genres */
 	rb_entry_view_set_column_editable (source->priv->entry_view, RB_ENTRY_VIEW_COL_TITLE, TRUE);
@@ -496,6 +497,8 @@ rb_audiocd_source_constructed (GObject *object)
 	gtk_grid_attach (GTK_GRID (grid), infogrid, 0, 1, 1, 1);
 	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (source->priv->entry_view), 0, 2, 1, 1);
 	g_object_unref (builder);
+
+	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (source->priv->entry_view), NULL, NULL);
 
 	gtk_widget_show_all (grid);
 	gtk_container_add (GTK_CONTAINER (source), grid);
