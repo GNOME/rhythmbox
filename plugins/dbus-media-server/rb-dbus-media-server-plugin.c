@@ -498,7 +498,10 @@ emit_updated_in_idle (RBMediaServer2Plugin *plugin)
 {
 	if (plugin->emit_updated_id == 0) {
 		plugin->emit_updated_id =
-			g_idle_add ((GSourceFunc)emit_container_updated_cb, plugin);
+			g_idle_add_full (G_PRIORITY_LOW,
+					 (GSourceFunc)emit_container_updated_cb,
+					 plugin,
+					 NULL);
 	}
 }
 
