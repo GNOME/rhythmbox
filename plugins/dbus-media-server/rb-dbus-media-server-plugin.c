@@ -984,16 +984,24 @@ prop_model_row_changed_cb (GtkTreeModel *model,
 {
 	char *value;
 	RBRefString *refstring;
+	gboolean is_all;
 	GList *l;
 
 	gtk_tree_model_get (model, iter,
 			    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &value,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, &is_all,
 			    -1);
+	if (is_all) {
+		g_free (value);
+		return;
+	}
+
 	refstring = rb_refstring_new (value);
 	g_free (value);
 
 	for (l = prop_data->updated_values; l != NULL; l = l->next) {
 		if (refstring == (RBRefString *)l->data) {
+			rb_refstring_unref (refstring);
 			return;
 		}
 	}
