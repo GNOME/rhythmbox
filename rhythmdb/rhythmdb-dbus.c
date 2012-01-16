@@ -111,19 +111,28 @@ rhythmdb_method_call (GDBusConnection *connection,
 			GVariant *v;
 
 			value = value_ptr;
+			v = NULL;
 			if (G_VALUE_HOLDS_STRING (value)) {
-				v = g_variant_new_string (g_value_get_string (value));
+				if (g_value_get_string (value) != NULL) {
+					v = g_variant_new_string (g_value_get_string (value));
+				}
 			} else if (G_VALUE_HOLDS_ULONG (value)) {
 				v = g_variant_new_uint32 (g_value_get_ulong (value));
 			} else if (G_VALUE_HOLDS_DOUBLE (value)) {
 				v = g_variant_new_double (g_value_get_double (value));
+			} else if (G_VALUE_HOLDS_BOOLEAN (value)) {
+				v = g_variant_new_boolean (g_value_get_boolean (value));
+			} else if (G_VALUE_HOLDS_UINT64 (value)) {
+				v = g_variant_new_uint64 (g_value_get_uint64 (value));
 			} else {
 				g_assert_not_reached ();
 			}
-			g_variant_builder_add (builder,
-					       "{sv}",
-					       (const char *)name_ptr,
-					       v);
+			if (v != NULL) {
+				g_variant_builder_add (builder,
+						       "{sv}",
+						       (const char *)name_ptr,
+						       v);
+			}
 			count++;
 		}
 		g_hash_table_destroy (prop_hash);
@@ -133,7 +142,8 @@ rhythmdb_method_call (GDBusConnection *connection,
 			g_variant_builder_add (builder, "{sv}", "", g_variant_new_string (""));
 		}
 
-		g_dbus_method_invocation_return_value (invocation, g_variant_builder_end (builder));
+		g_dbus_method_invocation_return_value (invocation,
+						       g_variant_new ("(a{sv})", builder));
 		g_variant_builder_unref (builder);
 
 	} else if (g_strcmp0 (method_name, "SetEntryProperties") == 0) {
@@ -183,6 +193,7 @@ rhythmdb_method_call (GDBusConnection *connection,
 			g_value_unset (&v);
 		}
 
+		g_dbus_method_invocation_return_value (invocation, NULL);
 	} else {
 		g_dbus_method_invocation_return_error (invocation,
 						       G_DBUS_ERROR,
