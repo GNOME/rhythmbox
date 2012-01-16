@@ -1,11 +1,20 @@
 #!/usr/bin/python
+# vim: set sts=2 sw=2 et :
 # Set the rating for a URI
 
-import dbus, sys
+import sys
 
-bus = dbus.SessionBus()
-rbshellobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Shell')
-rbshell = dbus.Interface(rbshellobj, 'org.gnome.Rhythmbox.Shell')
+from gi.repository import GLib, Gio
 
-rbshell.setSongProperty(sys.argv[1], "rating", dbus.Double(float(sys.argv[2])))
+bus_type = Gio.BusType.SESSION
+flags = 0
+iface_info = None
+proxy = Gio.DBusProxy.new_for_bus_sync(bus_type, flags, iface_info,
+                                       "org.gnome.Rhythmbox3",
+                                       "/org/gnome/Rhythmbox3/RhythmDB",
+                                       "org.gnome.Rhythmbox3.RhythmDB", None)
 
+entry_uri = sys.argv[1]
+rating = float(sys.argv[2])
+vrating = GLib.Variant("d", rating)
+proxy.SetEntryProperties("(sa{sv})", entry_uri, {"rating": vrating})
