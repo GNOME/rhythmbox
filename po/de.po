@@ -13,23 +13,25 @@
 # Jakob Kramer <jakob.kramer@gmx.de>, 2010.
 # Christian Kirbach <Christian.Kirbach@googlemail.com>, 2009, 2010.
 # Wolfgang Stöggl <c72578@yahoo.de>, 2011.
-#
+# Hendrik Knackstedt <kn.hendrik@gmail.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-01-10 10:36+0000\n"
-"PO-Revision-Date: 2012-01-10 00:18+0100\n"
-"Last-Translator: Christian Kirbach <Christian.Kirbach@googlemail.com>\n"
+"POT-Creation-Date: 2012-01-16 20:31+0000\n"
+"PO-Revision-Date: 2012-01-15 16:57+0200\n"
+"Last-Translator: Hendrik Knackstedt <kn.hendrik@gmail.com>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
+"Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Virtaal 0.7.0\n"
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: GERMANY\n"
+"X-Project-Style: gnome\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:497
 #, c-format
@@ -39,7 +41,7 @@ msgstr ""
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:492
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2732
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2735
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Ausgabegerät konnte nicht geöffnet werden: %s"
@@ -51,51 +53,51 @@ msgstr ""
 "Das Element »playbin2« konnte nicht angelegt werden; überprüfen Sie die "
 "Installation von GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1108
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1122
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1109
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1123
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr ""
 "Neuer Datenstrom konnte nicht an GStreamer-Weiterleitung gebunden werden"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1150
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1151
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Neuer Datenstrom konnte nicht gestartet werden"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2657
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2660
 #, c-format
 msgid "Failed to open output device"
 msgstr "Ausgabegerät konnte nicht geöffnet werden"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3010
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3083
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3013
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3086
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "GStreamer-Element konnte nicht angelegt werden; bitte überprüfen Sie Ihre "
 "Installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3024
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3027
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Audioausgabeelement konnte nicht angelegt werden; bitte überprüfen Sie Ihre "
 "Installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3057
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3099
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3125
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3134
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3143
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3060
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3102
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3128
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3137
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3146
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "GStreamer-Weiterleitung konnte nicht verbunden werden; bitte überprüfen Sie "
 "Ihre Installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3238
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3241
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr ""
@@ -116,7 +118,7 @@ msgstr "Zuletzt gespielt"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1
 msgid "Music Player"
-msgstr "Musik-Wiedergabe"
+msgstr "Musikwiedergabe"
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 #: ../data/rhythmbox-device.desktop.in.in.h:2
@@ -132,7 +134,7 @@ msgstr "Rhythmbox"
 #: ../data/rhythmbox.desktop.in.in.h:4
 #: ../data/rhythmbox-device.desktop.in.in.h:4
 msgid "Rhythmbox Music Player"
-msgstr "Rhythmbox Musik-Wiedergabeprogramm"
+msgstr "Rhythmbox Musikwiedergabe"
 
 #: ../data/ui/create-playlist.ui.h:1
 msgid "A_dd if any criteria are matched"
@@ -646,7 +648,7 @@ msgstr "Optionen der Sitzungsverwaltung anzeigen"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:7
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3604 ../widgets/rb-entry-view.c:933
+#: ../rhythmdb/rhythmdb.c:3602 ../widgets/rb-entry-view.c:933
 #: ../widgets/rb-entry-view.c:1542 ../widgets/rb-entry-view.c:1555
 #: ../widgets/rb-song-info.c:1465
 msgid "Never"
@@ -693,7 +695,7 @@ msgstr "%d. %B %Y"
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:696
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
-#: ../plugins/audiocd/rb-audiocd-source.c:597
+#: ../plugins/audiocd/rb-audiocd-source.c:600
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:589
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:593
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
@@ -715,8 +717,8 @@ msgstr "%d. %B %Y"
 #: ../podcast/rb-podcast-properties-dialog.c:717
 #: ../podcast/rb-podcast-source.c:735 ../remote/dbus/rb-client.c:144
 #: ../rhythmdb/rhythmdb.c:2028 ../rhythmdb/rhythmdb.c:2034
-#: ../rhythmdb/rhythmdb.c:2049 ../rhythmdb/rhythmdb.c:5394
-#: ../rhythmdb/rhythmdb.c:5399 ../rhythmdb/rhythmdb-tree.c:1344
+#: ../rhythmdb/rhythmdb.c:2049 ../rhythmdb/rhythmdb.c:5392
+#: ../rhythmdb/rhythmdb.c:5397 ../rhythmdb/rhythmdb-tree.c:1344
 #: ../rhythmdb/rhythmdb-tree.c:1348 ../rhythmdb/rhythmdb-tree.c:1352
 #: ../rhythmdb/rhythmdb-tree.c:1356 ../shell/rb-shell-player.c:1764
 #: ../shell/rb-shell-player.c:3732 ../widgets/rb-entry-view.c:985
@@ -844,7 +846,7 @@ msgstr "C_D:"
 
 #: ../plugins/audiocd/audiocd.plugin.in.h:1
 msgid "Audio CD Player"
-msgstr "Musik-CD Wiedergabe"
+msgstr "Wiedergabe von Musik-CDs"
 
 #: ../plugins/audiocd/audiocd.plugin.in.h:2
 msgid "Support for playing of audio CDs as music source"
@@ -888,64 +890,64 @@ msgstr "Albuminformationen neu laden"
 msgid "Extract"
 msgstr "Entpacken"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:445
+#: ../plugins/audiocd/rb-audiocd-source.c:446
 msgid "Select tracks to be extracted"
 msgstr "Zu entpackende Titel auswählen"
 
 #. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:461
+#: ../plugins/audiocd/rb-audiocd-source.c:462
 msgid "S_ubmit Album"
 msgstr "Album _einsenden"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:462
+#: ../plugins/audiocd/rb-audiocd-source.c:463
 msgid "Hide"
 msgstr "Verbergen"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:464
+#: ../plugins/audiocd/rb-audiocd-source.c:465
 msgid "Could not find this album on MusicBrainz."
 msgstr "Dieses Album konnte nicht auf MusicBrainz gefunden werden."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:465
+#: ../plugins/audiocd/rb-audiocd-source.c:466
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr ""
 "Sie können die Datenbank von MusicBrainz verbessern, indem Sie dieses Album "
 "hinzufügen."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:603
+#: ../plugins/audiocd/rb-audiocd-source.c:606
 msgid "<Invalid unicode>"
 msgstr "<ungültiger Unicode>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:646
+#: ../plugins/audiocd/rb-audiocd-source.c:649
 #, c-format
 msgid "Track %u"
 msgstr "Titel %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:707
-#: ../plugins/audiocd/rb-audiocd-source.c:715
-#: ../plugins/audiocd/rb-audiocd-source.c:1102
+#: ../plugins/audiocd/rb-audiocd-source.c:710
+#: ../plugins/audiocd/rb-audiocd-source.c:718
+#: ../plugins/audiocd/rb-audiocd-source.c:1105
 msgid "Couldn't load Audio CD"
 msgstr "Audio-CD konnte nicht geladen werden"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:708
+#: ../plugins/audiocd/rb-audiocd-source.c:711
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox konnte nicht auf die CD zugreifen."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:716
+#: ../plugins/audiocd/rb-audiocd-source.c:719
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox konnte die CD-Informationen nicht einlesen."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:819
+#: ../plugins/audiocd/rb-audiocd-source.c:822
 #: ../sources/rb-library-source.c:129 ../widgets/rb-entry-view.c:1429
 msgid "Title"
 msgstr "Titel"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:826
+#: ../plugins/audiocd/rb-audiocd-source.c:829
 #: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:120
 #: ../widgets/rb-entry-view.c:1439 ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Künstler"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1103
+#: ../plugins/audiocd/rb-audiocd-source.c:1106
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox konnte nicht auf das CD-Laufwerk zugreifen."
 
@@ -1476,7 +1478,7 @@ msgid "Copy CD"
 msgstr "CD kopieren"
 
 #: ../plugins/context/AlbumTab.py:57
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2371
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2382
 msgid "Albums"
 msgstr "Alben"
 
@@ -1734,20 +1736,20 @@ msgid ""
 "Provides an implementation of the MediaServer2 D-Bus interface specification"
 msgstr "Stellt eine Implementation der MediaServer2 D-Bus-Schnittstelle bereit"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1240
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1365
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1251
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1376
 msgid "All Tracks"
 msgstr "Alle Titel"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2370
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2381
 msgid "Artists"
 msgstr "Künstler"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2372
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2383
 msgid "Genres"
 msgstr "Genres"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2381
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2392
 #: ../shell/rb-playlist-manager.c:1081 ../sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "Wiedergabelisten"
@@ -2923,7 +2925,7 @@ msgstr "Ein Beispiel-Plugin in Python ohne weitere Funktion"
 msgid "Python Sample Plugin"
 msgstr "Python-Beispiel-Plugin"
 
-#: ../plugins/sample-python/sample-python.py:19
+#: ../plugins/sample-python/sample-python.py:20
 msgid "Python Source"
 msgstr "Python-Quelle"
 
@@ -3461,26 +3463,26 @@ msgstr "Leere Datei"
 msgid "Could not load the music database:"
 msgstr "Die Musikdatenbank konnte nicht geladen werden:"
 
-#: ../rhythmdb/rhythmdb.c:4459
+#: ../rhythmdb/rhythmdb.c:4457
 #, c-format
 msgid "Checking (%d/%d)"
 msgstr "Überprüfung läuft (%d/%d)"
 
-#: ../rhythmdb/rhythmdb.c:4503
+#: ../rhythmdb/rhythmdb.c:4501
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld Minute"
 msgstr[1] "%ld Minuten"
 
-#: ../rhythmdb/rhythmdb.c:4504
+#: ../rhythmdb/rhythmdb.c:4502
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld Stunde"
 msgstr[1] "%ld Stunden"
 
-#: ../rhythmdb/rhythmdb.c:4505
+#: ../rhythmdb/rhythmdb.c:4503
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3488,7 +3490,7 @@ msgstr[0] "%ld Tag"
 msgstr[1] "%ld Tage"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4511
+#: ../rhythmdb/rhythmdb.c:4509
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s und %s"
@@ -3496,8 +3498,8 @@ msgstr "%s, %s und %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4517 ../rhythmdb/rhythmdb.c:4525
-#: ../rhythmdb/rhythmdb.c:4536
+#: ../rhythmdb/rhythmdb.c:4515 ../rhythmdb/rhythmdb.c:4523
+#: ../rhythmdb/rhythmdb.c:4534
 #, c-format
 msgid "%s and %s"
 msgstr "%s, %s"
@@ -4183,7 +4185,7 @@ msgstr "Linear, einmal gespielte Einträge entfernen"
 #: ../shell/rb-shell-player.c:1015
 #, c-format
 msgid "Failed to create the player: %s"
-msgstr "Der Player konnte nicht angelegt werden: %s"
+msgstr "Das Wiedergabegerät konnte nicht angelegt werden: %s"
 
 #: ../shell/rb-shell-player.c:1569
 #, c-format
@@ -4279,13 +4281,13 @@ msgid_plural ""
 "supported by the target device but no suitable encoding profiles are "
 "available"
 msgstr[0] ""
-"%d Datei kann nicht übertragen werden, da sie in ein vom Zielgerät "
-"unterstütztes Format umgewandelt werden muss, und für die unterstützten "
-"Formate sind keine Kodierer verfügbar."
+"%d Datei kann nicht übertragen werden, weil sie in ein vom Zielgerät "
+"unterstütztes Format umgewandelt werden muss, aber für die unterstützten "
+"Formate keine Kodierer verfügbar sind."
 msgstr[1] ""
-"%d Dateien können nicht übertragen werden, da sie in ein vom Zielgerät "
-"unterstütztes Format umgewandelt werden müssen, und für die unterstützten "
-"Formate sind keine Kodierer verfügbar."
+"%d Dateien können nicht übertragen werden, weil sie in ein vom Zielgerät "
+"unterstütztes Format umgewandelt werden müssen, aber für die unterstützten "
+"Formate keine Kodierer verfügbar sind."
 
 #. XXX should provide the option of picking a different format?
 #: ../shell/rb-track-transfer-queue.c:444
@@ -4494,7 +4496,7 @@ msgstr "Mit Musiksammlung abgleichen"
 
 #: ../sources/rb-media-player-source.c:100
 msgid "Synchronize media player with the library"
-msgstr "Das Medien-Wiedergabegerät mit der Bibliothek abgleichen"
+msgstr "Das Medienwiedergabegerät mit der Bibliothek abgleichen"
 
 #: ../sources/rb-media-player-source.c:647
 msgid ""
