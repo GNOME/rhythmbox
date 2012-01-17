@@ -1007,7 +1007,6 @@ prop_model_row_changed_cb (GtkTreeModel *model,
 	}
 
 	prop_data->updated_values = g_list_prepend (prop_data->updated_values, refstring);
-	prop_data->updated = TRUE;
 	emit_updated_in_idle (prop_data->source_data->plugin);
 }
 
