@@ -1288,6 +1288,7 @@ emit_source_tracks_property_updates (RBMediaServer2Plugin *plugin, SourceRegistr
 	const char *invalidated[] = { NULL };
 	GVariantBuilder *properties;
 	GVariant *parameters;
+	char *path;
 
 	rb_debug ("updating properties for source %s", source_data->dbus_path);
 	properties = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
@@ -1300,13 +1301,19 @@ emit_source_tracks_property_updates (RBMediaServer2Plugin *plugin, SourceRegistr
 				    properties,
 				    invalidated);
 	g_variant_builder_unref (properties);
+	if (source_data->flat) {
+		path = g_strdup (source_data->dbus_path);
+	} else {
+		path = g_strdup_printf ("%s/all", source_data->dbus_path);
+	}
 	g_dbus_connection_emit_signal (plugin->connection,
 				       NULL,
-				       source_data->dbus_path,
+				       path,
 				       "org.freedesktop.DBus.Properties",
 				       "PropertiesChanged",
 				       parameters,
 				       &error);
+	g_free (path);
 	if (error != NULL) {
 		g_warning ("Unable to send property changes for MediaServer2 container %s: %s",
 			   source_data->dbus_path,
