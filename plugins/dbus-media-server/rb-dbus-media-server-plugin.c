@@ -1645,24 +1645,27 @@ destroy_registration_data (SourceRegistrationData *source_data)
 }
 
 static void
-source_updated (SourceRegistrationData *source_data, gboolean count_changed)
+source_parent_updated (SourceRegistrationData *source_data)
 {
-	source_data->updated = TRUE;
-
-	if (count_changed) {
-		GList *l;
-		for (l = source_data->plugin->categories; l != NULL; l = l->next) {
-			CategoryRegistrationData *category_data = l->data;
-			if (g_strcmp0 (source_data->parent_dbus_path, category_data->dbus_path) == 0) {
-				category_data->updated = TRUE;
-				break;
-			}
-		}
-		if (l == NULL) {
-			source_data->plugin->root_updated = TRUE;
+	GList *l;
+	for (l = source_data->plugin->categories; l != NULL; l = l->next) {
+		CategoryRegistrationData *category_data = l->data;
+		if (g_strcmp0 (source_data->parent_dbus_path, category_data->dbus_path) == 0) {
+			category_data->updated = TRUE;
+			break;
 		}
 	}
+	if (l == NULL) {
+		source_data->plugin->root_updated = TRUE;
+	}
 
+	emit_updated_in_idle (source_data->plugin);
+}
+
+static void
+source_updated (SourceRegistrationData *source_data)
+{
+	source_data->updated = TRUE;
 	emit_updated_in_idle (source_data->plugin);
 }
 
@@ -1671,13 +1674,13 @@ source_updated (SourceRegistrationData *source_data, gboolean count_changed)
 static void
 row_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, SourceRegistrationData *source_data)
 {
-	source_updated (source_data, TRUE);
+	source_updated (source_data);
 }
 
 static void
 row_deleted_cb (GtkTreeModel *model, GtkTreePath *path, SourceRegistrationData *source_data)
 {
-	source_updated (source_data, TRUE);
+	source_updated (source_data);
 }
 
 static void
@@ -1694,7 +1697,7 @@ entry_prop_changed_cb (RhythmDBQueryModel *model,
 		return;
 	}
 
-	source_updated (source_data, FALSE);
+	source_updated (source_data);
 	for (l = source_data->properties; l != NULL; l = l->next) {
 		SourcePropertyRegistrationData *prop_data = l->data;
 		RBRefString *value;
@@ -1746,13 +1749,13 @@ base_query_model_updated_cb (RBSource *source, GParamSpec *pspec, SourceRegistra
 		g_object_set (prop_data->model, "query-model", source_data->base_query_model, NULL);
 	}
 
-	source_updated (source_data, TRUE);
+	source_updated (source_data);
 }
 
 static void
 name_updated_cb (RBSource *source, GParamSpec *pspec, SourceRegistrationData *source_data)
 {
-	source_updated (source_data, FALSE);
+	source_updated (source_data);
 }
 
 static void
@@ -1828,7 +1831,7 @@ unregister_source_container (RBMediaServer2Plugin *plugin, SourceRegistrationDat
 		plugin->sources = g_list_remove (plugin->sources, source_data);
 
 		/* emit 'updated' signal on parent container */
-		source_updated (source_data, FALSE);
+		source_parent_updated (source_data);
 		destroy_registration_data (source_data);
 	}
 }
