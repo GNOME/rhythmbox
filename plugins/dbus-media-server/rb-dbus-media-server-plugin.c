@@ -1431,10 +1431,10 @@ source_properties_method_call (GDBusConnection *connection,
 				g_variant_builder_add (eb, "{sv}", "ChildCount", g_variant_new_uint32 (value_count));
 			}
 			if (all_props || rb_str_in_strv ("ItemCount", filter)) {
-				g_variant_builder_add (eb, "{sv}", "ItemCount", g_variant_new_uint32 (value_count));
+				g_variant_builder_add (eb, "{sv}", "ItemCount", g_variant_new_uint32 (0));
 			}
 			if (all_props || rb_str_in_strv ("ContainerCount", filter)) {
-				g_variant_builder_add (eb, "{sv}", "ContainerCount", g_variant_new_uint32 (0));
+				g_variant_builder_add (eb, "{sv}", "ContainerCount", g_variant_new_uint32 (value_count));
 			}
 			if (all_props || rb_str_in_strv ("Searchable", filter)) {
 				g_variant_builder_add (eb, "{sv}", "Searchable", g_variant_new_boolean (FALSE));
