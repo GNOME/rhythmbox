@@ -397,9 +397,6 @@ rb_mtp_source_constructed (GObject *object)
 	g_object_set (source, "pixbuf", pixbuf, NULL);
 	g_object_unref (pixbuf);
 
-	if (priv->album_art_supported) {
-		priv->art_store = rb_ext_db_new ("album-art");
-	}
 }
 
 static void
@@ -840,6 +837,10 @@ device_opened_idle (DeviceOpenedData *data)
 				rb_debug ("no encoding profile for supported media type %s", mediatype);
 			}
 		}
+	}
+
+	if (priv->album_art_supported) {
+		priv->art_store = rb_ext_db_new ("album-art");
 	}
 
 	target = gst_encoding_target_new ("mtpdevice", "device", "", profiles);
