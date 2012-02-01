@@ -199,7 +199,7 @@ class LyricPane(object):
 			buf = self.buffer
 			startiter = buf.get_start_iter()
 			enditer = buf.get_end_iter()
-			text = buf.get_text(startiter, enditer)
+			text = buf.get_text(startiter, enditer, True)
 			save_lyrics(self.cache_path, text)
 			self.get_lyrics()
 		
