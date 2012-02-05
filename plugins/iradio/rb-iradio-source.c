@@ -949,6 +949,12 @@ new_station_location_added (RBURIDialog    *dialog,
 }
 
 static void
+new_station_response_cb (GtkDialog *dialog, int response, gpointer meh)
+{
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 rb_iradio_source_cmd_new_station (GtkAction *action,
 				  RBIRadioSource *source)
 {
@@ -956,14 +962,15 @@ rb_iradio_source_cmd_new_station (GtkAction *action,
 
 	rb_debug ("Got new station command");
 
+	/* should prevent multiple dialogs?  going to kill this nonsense anyway soon.. */
+
 	dialog = rb_uri_dialog_new (_("New Internet Radio Station"), _("URL of internet radio station:"));
 	g_signal_connect_object (dialog, "location-added",
 				 G_CALLBACK (new_station_location_added),
 				 source, 0);
+	g_signal_connect (dialog, "response", G_CALLBACK (new_station_response_cb), NULL);
 
-	gtk_dialog_run (GTK_DIALOG (dialog));
-
-	gtk_widget_destroy (dialog);
+	gtk_widget_show_all (dialog);
 }
 
 static gboolean
