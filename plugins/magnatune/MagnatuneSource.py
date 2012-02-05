@@ -191,7 +191,7 @@ class MagnatuneSource(RB.BrowserSource):
 				urls.add(url)
 
 	def download_album(self):
-		if selt.__settings['account-type'] != 'download':
+		if self.__settings['account-type'] != 'download':
 			# The user doesn't have a download account, so redirect them to the purchase page.
 			self.purchase_redirect()
 			return
