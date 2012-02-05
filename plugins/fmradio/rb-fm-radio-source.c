@@ -376,6 +376,12 @@ new_station_location_added (RBURIDialog *dialog, const char *frequency,
 }
 
 static void
+new_station_response_cb (GtkDialog *dialog, int response, gpointer meh)
+{
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 rb_fm_radio_source_cmd_new_station (GtkAction *action, RBFMRadioSource *self)
 {
 	GtkWidget *dialog;
@@ -385,8 +391,8 @@ rb_fm_radio_source_cmd_new_station (GtkAction *action, RBFMRadioSource *self)
 	g_signal_connect_object (dialog, "location-added",
 				 G_CALLBACK (new_station_location_added),
 				 self, 0);
-	gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	g_signal_connect (dialog, "response", G_CALLBACK (new_station_response_cb), NULL);
+	gtk_widget_show_all (dialog);
 }
 
 static void
