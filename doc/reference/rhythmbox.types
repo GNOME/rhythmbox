@@ -2,9 +2,11 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "rb-async-copy.h"
 #include "rb-auto-playlist-source.h"
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cell-renderer-rating.h"
+#include "rb-chunk-loader.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-debug.h"
 #include "rb-device-source.h"

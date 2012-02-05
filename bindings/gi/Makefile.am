@@ -17,8 +17,12 @@ rb_introspection_sources = \
 		backends/rb-player-gst-tee.c \
 		backends/rb-player.h \
 		backends/rb-player.c \
+		lib/rb-async-copy.h \
+		lib/rb-async-copy.c \
 		lib/rb-builder-helpers.h \
 		lib/rb-builder-helpers.c \
+		lib/rb-chunk-loader.h \
+		lib/rb-chunk-loader.c \
 		lib/rb-debug.h \
 		lib/rb-debug.c \
 		lib/rb-file-helpers.h \

@@ -37,7 +37,11 @@ librb_la_SOURCES =					\
 	rb-gst-media-types.c				\
 	rb-gst-media-types.h				\
 	rb-missing-plugins.c				\
-	rb-missing-plugins.h
+	rb-missing-plugins.h				\
+	rb-async-copy.c					\
+	rb-async-copy.h					\
+	rb-chunk-loader.c				\
+	rb-chunk-loader.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

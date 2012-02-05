@@ -36,7 +36,6 @@ from gi.repository import RB
 
 # rb classes
 from Loader import Loader
-from Loader import ChunkLoader
 from Loader import UpdateCheck
 from Coroutine import Coroutine
 from URLCache import URLCache
