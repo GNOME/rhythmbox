@@ -100,11 +100,13 @@ class TerraParser (object):
 		source = re.split('<p>', source)
 		# Parse artist and title
 		artistitle = re.sub('<.*?>', '', source[0])
+		rx = re.compile('^(\t|\n)+',re.M | re.S)
+		artistitle = rx.sub('', artistitle)
 		# Parse lyrics
 		lyrics = re.split('</p>', source[1])[0]
 		lyrics = re.sub('<[Bb][Rr]/>', '', lyrics)
 
-		lyrics = unescape_entities(artistitle) + unescape_entities(lyrics)
+		lyrics = unescape_entities(artistitle) + "\n" + unescape_entities(lyrics)
 		lyrics += "\n\nEsta letra foi disponibilizada pelo site\nhttp://letras.terra.com.br"
 
 		return lyrics
