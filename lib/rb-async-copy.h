@@ -69,8 +69,8 @@ void			rb_async_copy_set_progress 	(RBAsyncCopy *copy,
 GError *		rb_async_copy_get_error		(RBAsyncCopy *copy);
 
 void			rb_async_copy_start		(RBAsyncCopy *copy,
-							 const char *src_uri,
-							 const char *dest_uri,
+							 const char *src,
+							 const char *dest,
 							 RBAsyncCopyCallback callback,
 							 gpointer user_data,
 							 GDestroyNotify destroy_data);

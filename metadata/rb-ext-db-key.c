@@ -346,17 +346,17 @@ rb_ext_db_key_get_field_values (RBExtDBKey *key, const char *field)
 /**
  * rb_ext_db_key_add_info:
  * @key: a #RBExtDBKey
- * @field: name of the field to add
+ * @name: name of the field to add
  * @value: field value
  *
  * Adds an information field to the key.
  */
 void
 rb_ext_db_key_add_info (RBExtDBKey *key,
-			const char *field,
+			const char *name,
 			const char *value)
 {
-	add_to_list (&key->info, NULL, field, value);
+	add_to_list (&key->info, NULL, name, value);
 }
 
 /**
