@@ -31,12 +31,10 @@ import sys, os.path
 import xml
 import datetime
 import string
-import gnomekeyring as keyring
 
 import rb
 from gi.repository import RB
-from gi.repository import GObject, Gtk, Gio, Peas, PeasGtk
-# XXX use GnomeKeyring when available
+from gi.repository import GObject, Gtk, Gio, Peas, PeasGtk, GnomeKeyring
 
 from MagnatuneSource import MagnatuneSource
 
@@ -57,6 +55,11 @@ popup_ui = """
     <separator/>
     <menuitem name="PropertiesLibraryPopup" action="MusicProperties"/>
   </popup>
+  <toolbar name="MagnatuneToolBar">
+    <toolitem name="MagnatuneDownloadAlbumToolbar" action="MagnatuneDownloadAlbum"/>
+    <toolitem name="MagnatuneArtistInfoToolbar" action="MagnatuneArtistInfo"/>
+    <toolitem name="MagnatuneCancelDownloadToolbar" action="MagnatuneCancelDownload"/>
+  </toolbar>
 </ui>
 """
 
@@ -102,7 +105,8 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 					  pixbuf=icon,
 					  plugin=self,
 					  settings=settings.get_child("source"),
-					  name=_("Magnatune"))
+					  name=_("Magnatune"),
+					  toolbar_path="/MagnatuneToolBar")
 
 		shell.register_entry_type_for_source(self.source, self.entry_type)
 		shell.append_display_page(self.source, group)
@@ -168,41 +172,6 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 			'item': None
 		}
 
-		def got_items(result, items):
-			def created_item(result, id):
-				if result is None: # Item successfully created
-					keyring_data['id'] = id
-					keyring.item_get_info(None, id, got_item)
-				else:
-					print "Couldn't create keyring item: " + str(result)
-					fill_account_details()
-					dialog.present()
-			def got_item(result, item):
-				if result is None: # Item retrieved successfully
-					keyring_data['item'] = item
-				else:
-					print "Couldn't retrieve keyring item: " + str(result)
-				fill_account_details()
-				dialog.present()
-
-
-			if result is None and len(items) != 0: # Got list of search results
-				keyring_data['id'] = items[0].item_id
-				keyring.item_get_info(None, keyring_data['id'], got_item)
-			elif result == keyring.NoMatchError or len(items) == 0: # No items were found, so we'll create one
-				keyring.item_create(None,
-				                    keyring.ITEM_GENERIC_SECRET,
-				                    "Rhythmbox: Magnatune account information",
-				                    {'rhythmbox-plugin': 'magnatune'},
-				                    "", # Empty secret for now
-				                    True,
-				                    created_item)
-			else: # Some other error occurred
-				print "Couldn't access keyring: " + str(result)
-				fill_account_details()
-				dialog.present()
-
-
 		def fill_account_details():
 			account_type = self.settings['account_type']
 			builder.get_object("no_account_radio").set_active(account_type == "none")
@@ -253,16 +222,16 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 			builder.get_object("account_changed_label").show()
 
 		def close_button_pressed(x, y):
-			try:
-				if keyring_data['id'] and keyring_data['item']:
-					# The async version is not in the python bindings, grr...
-					keyring.item_set_info_sync(None, keyring_data['id'], keyring_data['item'])
-				else:
+			if keyring_data['id'] and keyring_data['item']:
+				result = GnomeKeyring.item_set_info_sync(None,
+									 keyring_data['id'],
+									 keyring_data['item'])
+				if result != GnomeKeyring.Result.OK:
 					RB.error_dialog(title = _("Couldn't store account information"),
-							message = _("There was a problem accessing the keyring. Check the debug output for more information."))
-			except Exception, e:
+							message = GnomeKeyring.result_to_message(result))
+			else:
 				RB.error_dialog(title = _("Couldn't store account information"),
-						message = str(e))
+						message = _("There was a problem accessing the keyring. Check the debug output for more information."))
 			dialog.hide()
 
 		def format_selection_changed(self, button):
@@ -289,5 +258,35 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 		builder.connect_signals(self.configure_callback_dic)
 		dialog.connect("response", close_button_pressed)
 
-		keyring.find_items(keyring.ITEM_GENERIC_SECRET, {'rhythmbox-plugin': 'magnatune'}, got_items)
+		attributes = GnomeKeyring.attribute_list_new()
+		GnomeKeyring.attribute_list_append_string(attributes, "rhythmbox-plugin", "magnatune")
+		(result, items) = GnomeKeyring.find_items_sync(GnomeKeyring.ItemType.GENERIC_SECRET, attributes)
+		if result == GnomeKeyring.Result.OK and len(items) != 0:
+			keyring_data['id'] = items[0].item_id
+			(result, item) = GnomeKeyring.item_get_info_sync(None, keyring_data['id'])
+			if result == GnomeKeyring.Result.OK:
+				keyring_data['item'] = item
+			else:
+				print "Couldn't get keyring item: " + GnomeKeyring.result_to_message(result)
+
+		elif result == GnomeKeyring.Result.NO_MATCH or len(items) == 0:
+			# no item found, so create a new one
+			result = GnomeKeyring.item_create_sync(None,
+							       GnomeKeyring.ItemType.GENERIC_SECRET,
+							       "Rhythmbox: Magnatune account information",
+							       attributes,
+							       "",	# Empty secret for now
+							       True)
+			if result == GnomeKeyring.Result.OK:
+				keyring_data['id'] = id
+				(result, item) = GnomeKeyring.item_get_info_sync(None, id)
+				if result == GnomeKeyring.Result.OK:
+					keyring_data['item'] = item
+			else:
+				print "Couldn't create keyring item: " + GnomeKeyring.result_to_message(result)
+		else:
+			print "Couldn't access keyring: " + str(result)
+
+		fill_account_details()
+		dialog.present()
 		return dialog
