@@ -857,26 +857,39 @@ rb_playlist_manager_set_automatic_playlist (RBPlaylistManager *mgr,
 }
 
 static void
+new_automatic_playlist_response_cb (GtkDialog *dialog, int response, RBPlaylistManager *mgr)
+{
+	RBSource *playlist;
+
+	switch (response) {
+	case GTK_RESPONSE_NONE:
+	case GTK_RESPONSE_CLOSE:
+		break;
+
+	default:
+		playlist = rb_playlist_manager_new_playlist (mgr, _("New Playlist"), TRUE);
+
+		rb_playlist_manager_set_automatic_playlist (mgr,
+							    RB_AUTO_PLAYLIST_SOURCE (playlist),
+							    RB_QUERY_CREATOR (dialog));
+		rb_playlist_manager_set_dirty (mgr, TRUE);
+		break;
+	}
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
 						RBPlaylistManager *mgr)
 {
-	RBQueryCreator *creator = RB_QUERY_CREATOR (rb_query_creator_new (mgr->priv->db));
-	RBSource *playlist;
+	GtkWidget *creator = rb_query_creator_new (mgr->priv->db);
+	gtk_widget_show_all (creator);
 
-	switch (gtk_dialog_run (GTK_DIALOG (creator))) {
-	case GTK_RESPONSE_NONE:
-	case GTK_RESPONSE_CLOSE:
-		gtk_widget_destroy (GTK_WIDGET (creator));
-		return;
-	}
-
-	playlist = rb_playlist_manager_new_playlist (mgr, _("New Playlist"), TRUE);
-
-	rb_playlist_manager_set_automatic_playlist (mgr, RB_AUTO_PLAYLIST_SOURCE (playlist), creator);
-
-	rb_playlist_manager_set_dirty (mgr, TRUE);
-
-	gtk_widget_destroy (GTK_WIDGET (creator));
+	g_signal_connect (creator,
+			  "response",
+			  G_CALLBACK (new_automatic_playlist_response_cb),
+			  mgr);
 }
 
 typedef struct {
