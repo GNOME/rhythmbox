@@ -52,7 +52,6 @@
 #include "rb-rhythmdb-dmap-db-adapter.h"
 #include "rb-display-page.h"
 
-#include "rb-daap-dialog.h"
 #include "rb-daap-plugin.h"
 
 #include "rb-static-playlist-source.h"

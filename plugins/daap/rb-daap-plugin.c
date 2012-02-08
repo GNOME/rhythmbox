@@ -665,6 +665,12 @@ new_daap_share_location_added_cb (RBURIDialog *dialog,
 }
 
 static void
+new_daap_share_response_cb (GtkDialog *dialog, int response, gpointer meh)
+{
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 rb_daap_plugin_cmd_connect (GtkAction *action,
 			    RBDaapPlugin *plugin)
 {
@@ -674,8 +680,8 @@ rb_daap_plugin_cmd_connect (GtkAction *action,
 	g_signal_connect_object (dialog, "location-added",
 				 G_CALLBACK (new_daap_share_location_added_cb),
 				 plugin, 0);
-	gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_widget_destroy (dialog);
+	gtk_widget_show_all (dialog);
+	g_signal_connect (dialog, "response", G_CALLBACK (new_daap_share_response_cb), NULL);
 }
 
 
