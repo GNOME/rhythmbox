@@ -1728,6 +1728,7 @@ remove_one_song (gpointer key,
 		g_mutex_unlock (db->priv->keywords_lock);
 		remove_entry_from_album (db, entry);
 		g_hash_table_remove (db->priv->entry_ids, GINT_TO_POINTER (entry->id));
+		entry->flags |= RHYTHMDB_ENTRY_TREE_REMOVED;
 		rhythmdb_entry_unref (entry);
 		return TRUE;
 	}
