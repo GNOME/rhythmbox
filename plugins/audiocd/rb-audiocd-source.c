@@ -130,6 +130,10 @@ struct _RBAudioCdSourcePrivate
 
 #ifdef HAVE_SJ_METADATA_GETTER
 	SjMetadataGetter *metadata;
+	GtkWidget *multiple_album_dialog;
+	GtkWidget *albums_listview;
+	GtkListStore *albums_store;
+	GList *albums;
 
 	GtkWidget *info_bar;
 	GtkWidget *info_bar_label;
@@ -158,7 +162,7 @@ GType rb_audiocd_entry_type_get_type (void);
 G_DEFINE_DYNAMIC_TYPE (RBAudioCdEntryType, rb_audiocd_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
 
 #ifdef HAVE_SJ_METADATA_GETTER
-static AlbumDetails* multiple_album_dialog (GList *albums, RBAudioCdSource *source);
+static void multiple_album_dialog (RBAudioCdSource *source, GList *albums);
 #endif
 
 static GtkActionEntry rb_audiocd_source_actions[] = {
@@ -757,181 +761,28 @@ reload_metadata_cmd (GtkAction *action, RBAudioCdSource *source)
 }
 
 #ifdef HAVE_SJ_METADATA_GETTER
-/*
- * Called by the Multiple Album dialog when the user hits return in
- * the list view
- */
-static void
-album_row_activated (GtkTreeView *treeview,
-		     GtkTreePath *arg1,
-		     GtkTreeViewColumn *arg2,
-		     gpointer user_data)
-{
-	GtkDialog *dialog = GTK_DIALOG (user_data);
-	g_assert (dialog != NULL);
-	gtk_dialog_response (dialog, GTK_RESPONSE_OK);
-}
-
-/*
- * Utility function for when there are more than one albums
- * available. Borrowed from Sound Juicer.
- */
-static AlbumDetails *
-multiple_album_dialog (GList *albums, RBAudioCdSource *source)
-{
-	GtkWidget *dialog;
-	GtkWidget *albums_listview;
-	GtkListStore *albums_store;
-	GtkTreeSelection *selection;
-	AlbumDetails *album;
-	GtkTreeIter iter;
-	int response;
-	GtkBuilder *builder;
-	GtkTreeViewColumn *column;
-	GtkCellRenderer *text_renderer;
-	GObject *plugin;
-	char *builder_file;
-
-	gdk_threads_enter ();
-
-	g_object_get (source, "plugin", &plugin, NULL);
-	g_assert (plugin != NULL);
-
-	/* create dialog */
-	builder_file = rb_find_plugin_data_file (plugin, "multiple-album.ui");
-	g_object_unref (plugin);
-
-	if (builder_file == NULL) {
-		g_warning ("couldn't find multiple-album.ui");
-		return NULL;
-	}
-
-	builder = rb_builder_load (builder_file, NULL);
-	g_free (builder_file);
-
-	dialog = GTK_WIDGET (gtk_builder_get_object (builder, "multiple_dialog"));
-	g_assert (dialog != NULL);
-	gtk_window_set_transient_for (GTK_WINDOW (dialog),
-				      GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source))));
-	albums_listview = GTK_WIDGET (gtk_builder_get_object (builder, "albums_listview"));
-
-	g_signal_connect (albums_listview, "row-activated", G_CALLBACK (album_row_activated), dialog);
-
-	/* add columns */
-	text_renderer = gtk_cell_renderer_text_new ();
-	column = gtk_tree_view_column_new_with_attributes (_("Title"),
-							   text_renderer,
-							   "text", 0,
-							   NULL);
-
-	gtk_tree_view_append_column (GTK_TREE_VIEW (albums_listview), column);
-
-	column = gtk_tree_view_column_new_with_attributes (_("Artist"),
-							   text_renderer,
-							   "text", 1,
-							   NULL);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (albums_listview), column);
-
-	/* create model for the tree view */
-	albums_store = gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
-	gtk_tree_view_set_model (GTK_TREE_VIEW (albums_listview), GTK_TREE_MODEL (albums_store));
-
-	for (; albums ; albums = g_list_next (albums)) {
-		GtkTreeIter iter;
-		AlbumDetails *album = (AlbumDetails*)(albums->data);
-		gtk_list_store_append (albums_store, &iter);
-		gtk_list_store_set (albums_store, &iter,
-				    0, album->title,
-				    1, album->artist,
-				    2, album,
-				    -1);
-	}
-
-	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (albums_listview));
-	gtk_tree_selection_set_mode (selection, GTK_SELECTION_BROWSE);
-
-	/* select the first row */
-	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (albums_store), &iter);
-	gtk_tree_selection_select_iter (selection, &iter);
-
-	gtk_widget_grab_focus (albums_listview);
-	gtk_widget_show_all (dialog);
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_widget_hide (dialog);
-
-	if (response == GTK_RESPONSE_DELETE_EVENT) {
-		album = NULL;
-	} else {
-		gtk_tree_selection_get_selected (selection, NULL, &iter);
-		gtk_tree_model_get (GTK_TREE_MODEL (albums_store), &iter, 2, &album, -1);
-	}
-	gtk_widget_destroy (GTK_WIDGET (dialog));
-
-	gdk_threads_leave ();
-	g_object_unref (builder);
-	return album;
-}
-
 
 static void
-metadata_cb (SjMetadataGetter *metadata,
-	     GList *albums,
-	     GError *error,
-	     RBAudioCdSource *source)
+apply_album_metadata (RBAudioCdSource *source, AlbumDetails *album)
 {
-	GList *cd_track = source->priv->tracks;
 	RhythmDB *db;
 	GValue true_value = {0,};
-	AlbumDetails *album;
-
-	g_assert (metadata == source->priv->metadata);
-
-	if (error != NULL) {
-		rb_debug ("Failed to load cd metadata: %s", error->message);
-		/* TODO display error to user? */
-		g_object_unref (metadata);
-		source->priv->metadata = NULL;
-		return;
-	}
-	if (albums == NULL) {
-		rb_debug ("Musicbrainz didn't return any CD metadata, but didn't give an error");
-		g_object_unref (metadata);
-		source->priv->metadata = NULL;
-		return;
-	}
-	if (cd_track == NULL) {
-		/* empty cd? */
-		rb_debug ("no tracks on the CD?");
-		g_object_unref (metadata);
-		source->priv->metadata = NULL;
-		return;
-	}
+	GList *cd_track;
 
 	db = get_db_for_source (source);
 
 	g_value_init (&true_value, G_TYPE_BOOLEAN);
 	g_value_set_boolean (&true_value, TRUE);
 
-	g_free (source->priv->submit_url);
-	source->priv->submit_url = NULL;
-
-	/* if we have multiple results, ask the user to pick one */
-	if (g_list_length (albums) > 1) {
-		album = multiple_album_dialog (albums, source);
-		if (album == NULL)
-			album = (AlbumDetails *)albums->data;
-	} else
-		album = (AlbumDetails *)albums->data;
-
 	if (album->metadata_source != SOURCE_MUSICBRAINZ) {
-		source->priv->submit_url = sj_metadata_getter_get_submit_url (metadata);
+		source->priv->submit_url = sj_metadata_getter_get_submit_url (source->priv->metadata);
 		if (source->priv->submit_url != NULL)
 			gtk_widget_show (source->priv->info_bar);
 	}
 
 	if (album->metadata_source == SOURCE_FALLBACK) {
 		rb_debug ("ignoring CD metadata from fallback source");
-		g_object_unref (metadata);
+		g_object_unref (source->priv->metadata);
 		source->priv->metadata = NULL;
 		g_object_unref (db);
 		return;
@@ -970,6 +821,7 @@ metadata_cb (SjMetadataGetter *metadata,
 	rb_debug ("disc number: %d", album->disc_number);
 	rb_debug ("genre: %s", album->genre);
 
+	cd_track = source->priv->tracks;
 	while (album->tracks && cd_track) {
 		TrackDetails *track = (TrackDetails*)album->tracks->data;
 		RhythmDBEntry *entry = cd_track->data;
@@ -1034,15 +886,194 @@ metadata_cb (SjMetadataGetter *metadata,
 		cd_track = g_list_next (cd_track);
 	}
 
-	/* And free the albums list, as it belongs to us, not
-	 * the metadata getter */
-	g_list_foreach (albums, (GFunc)album_details_free, NULL);
-	g_list_free (albums);
-
-	g_object_unref (metadata);
+	g_object_unref (source->priv->metadata);
 	source->priv->metadata = NULL;
 
 	g_object_unref (db);
+}
+
+
+/*
+ * Called by the Multiple Album dialog when the user hits return in
+ * the list view
+ */
+static void
+album_row_activated (GtkTreeView *treeview,
+		     GtkTreePath *arg1,
+		     GtkTreeViewColumn *arg2,
+		     gpointer user_data)
+{
+	GtkDialog *dialog = GTK_DIALOG (user_data);
+	g_assert (dialog != NULL);
+	gtk_dialog_response (dialog, GTK_RESPONSE_OK);
+}
+
+static void
+multiple_album_response_cb (GtkWidget *dialog, int response, RBAudioCdSource *source)
+{
+	AlbumDetails *album;
+	GtkTreeIter iter;
+	GtkTreeSelection *selection;
+
+	/* maybe assert? */
+	if (dialog == source->priv->multiple_album_dialog) {
+		source->priv->multiple_album_dialog = NULL;
+	}
+
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (source->priv->albums_listview));
+
+	if (response == GTK_RESPONSE_DELETE_EVENT) {
+		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->albums_store), &iter);
+	} else {
+		gtk_tree_selection_get_selected (selection, NULL, &iter);
+	}
+
+	gtk_tree_model_get (GTK_TREE_MODEL (source->priv->albums_store), &iter, 2, &album, -1);
+	apply_album_metadata (source, album);
+
+	gtk_widget_destroy (dialog);
+
+	g_list_foreach (source->priv->albums, (GFunc)album_details_free, NULL);
+	g_list_free (source->priv->albums);
+	source->priv->albums = NULL;
+}
+
+/*
+ * Utility function for when there are more than one albums
+ * available. Borrowed from Sound Juicer.
+ */
+static void
+multiple_album_dialog (RBAudioCdSource *source, GList *albums)
+{
+	GtkTreeSelection *selection;
+	GtkTreeIter iter;
+	GtkBuilder *builder;
+	GtkTreeViewColumn *column;
+	GtkCellRenderer *text_renderer;
+	GObject *plugin;
+	char *builder_file;
+
+	gdk_threads_enter ();
+
+	g_object_get (source, "plugin", &plugin, NULL);
+	g_assert (plugin != NULL);
+
+	/* create dialog */
+	builder_file = rb_find_plugin_data_file (plugin, "multiple-album.ui");
+	g_object_unref (plugin);
+
+	if (builder_file == NULL) {
+		g_warning ("couldn't find multiple-album.ui");
+		apply_album_metadata (source, (AlbumDetails *)albums->data);
+		g_list_foreach (albums, (GFunc)album_details_free, NULL);
+		g_list_free (albums);
+		return;
+	}
+
+	source->priv->albums = albums;
+
+	builder = rb_builder_load (builder_file, NULL);
+	g_free (builder_file);
+
+	source->priv->multiple_album_dialog = GTK_WIDGET (gtk_builder_get_object (builder, "multiple_dialog"));
+	g_assert (source->priv->multiple_album_dialog != NULL);
+	gtk_window_set_transient_for (GTK_WINDOW (source->priv->multiple_album_dialog),
+				      GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source))));
+	source->priv->albums_listview = GTK_WIDGET (gtk_builder_get_object (builder, "albums_listview"));
+
+	g_signal_connect (source->priv->albums_listview,
+			  "row-activated",
+			  G_CALLBACK (album_row_activated),
+			  source->priv->multiple_album_dialog);
+
+	/* add columns */
+	text_renderer = gtk_cell_renderer_text_new ();
+	column = gtk_tree_view_column_new_with_attributes (_("Title"),
+							   text_renderer,
+							   "text", 0,
+							   NULL);
+
+	gtk_tree_view_append_column (GTK_TREE_VIEW (source->priv->albums_listview), column);
+
+	column = gtk_tree_view_column_new_with_attributes (_("Artist"),
+							   text_renderer,
+							   "text", 1,
+							   NULL);
+	gtk_tree_view_append_column (GTK_TREE_VIEW (source->priv->albums_listview), column);
+
+	/* create model for the tree view */
+	source->priv->albums_store = gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+	gtk_tree_view_set_model (GTK_TREE_VIEW (source->priv->albums_listview), GTK_TREE_MODEL (source->priv->albums_store));
+
+	for (; albums ; albums = g_list_next (albums)) {
+		GtkTreeIter iter;
+		AlbumDetails *album = (AlbumDetails*)(albums->data);
+		gtk_list_store_append (source->priv->albums_store, &iter);
+		gtk_list_store_set (source->priv->albums_store, &iter,
+				    0, album->title,
+				    1, album->artist,
+				    2, album,
+				    -1);
+	}
+
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (source->priv->albums_listview));
+	gtk_tree_selection_set_mode (selection, GTK_SELECTION_BROWSE);
+
+	/* select the first row */
+	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->albums_store), &iter);
+	gtk_tree_selection_select_iter (selection, &iter);
+
+	g_signal_connect (source->priv->multiple_album_dialog,
+			  "response",
+			  G_CALLBACK (multiple_album_response_cb),
+			  source);
+	gtk_widget_grab_focus (source->priv->albums_listview);
+	gtk_widget_show_all (source->priv->multiple_album_dialog);
+
+	gdk_threads_leave ();
+}
+
+
+static void
+metadata_cb (SjMetadataGetter *metadata,
+	     GList *albums,
+	     GError *error,
+	     RBAudioCdSource *source)
+{
+	g_assert (metadata == source->priv->metadata);
+
+	if (error != NULL) {
+		rb_debug ("Failed to load cd metadata: %s", error->message);
+		/* TODO display error to user? */
+		g_object_unref (metadata);
+		source->priv->metadata = NULL;
+		return;
+	}
+	if (albums == NULL) {
+		rb_debug ("Musicbrainz didn't return any CD metadata, but didn't give an error");
+		g_object_unref (metadata);
+		source->priv->metadata = NULL;
+		return;
+	}
+	if (source->priv->tracks == NULL) {
+		/* empty cd? */
+		rb_debug ("no tracks on the CD?");
+		g_object_unref (metadata);
+		source->priv->metadata = NULL;
+		return;
+	}
+
+	g_free (source->priv->submit_url);
+	source->priv->submit_url = NULL;
+
+	/* if we have multiple results, ask the user to pick one */
+	if (g_list_length (albums) > 1) {
+		multiple_album_dialog (source, albums);
+	} else {
+		apply_album_metadata (source, (AlbumDetails *)albums->data);
+		g_list_foreach (albums, (GFunc)album_details_free, NULL);
+		g_list_free (albums);
+	}
 }
 
 static void
@@ -1136,12 +1167,17 @@ impl_delete_thyself (RBDisplayPage *page)
 {
 	RhythmDB *db;
 	RhythmDBEntryType *entry_type;
+	RBAudioCdSource *source = RB_AUDIOCD_SOURCE (page);
 
 	rb_debug ("audio cd ejected");
 
-	rb_audiocd_load_metadata_cancel (RB_AUDIOCD_SOURCE (page));
+	if (source->priv->multiple_album_dialog != NULL) {
+		gtk_dialog_response (GTK_DIALOG (source->priv->multiple_album_dialog), GTK_RESPONSE_DELETE_EVENT);
+	}
 
-	db = get_db_for_source (RB_AUDIOCD_SOURCE (page));
+	rb_audiocd_load_metadata_cancel (source);
+
+	db = get_db_for_source (source);
 
 	g_object_get (page, "entry-type", &entry_type, NULL);
 	rhythmdb_entry_delete_by_type (db, entry_type);
