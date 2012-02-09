@@ -1171,9 +1171,11 @@ impl_delete_thyself (RBDisplayPage *page)
 
 	rb_debug ("audio cd ejected");
 
+#ifdef HAVE_SJ_METADATA_GETTER
 	if (source->priv->multiple_album_dialog != NULL) {
 		gtk_dialog_response (GTK_DIALOG (source->priv->multiple_album_dialog), GTK_RESPONSE_DELETE_EVENT);
 	}
+#endif
 
 	rb_audiocd_load_metadata_cancel (source);
 
