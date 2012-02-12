@@ -518,6 +518,15 @@ rb_playlist_manager_is_dirty (RBPlaylistManager *mgr)
 				(GtkTreeModelForeachFunc) _is_dirty_playlist,
 				&dirty);
 
+	/* explicitly check the play queue */
+	if (dirty == FALSE) {
+		RBSource *queue_source;
+
+		g_object_get (mgr->priv->shell, "queue-source", &queue_source, NULL);
+		g_object_get (queue_source, "dirty", &dirty, NULL);
+		g_object_unref (queue_source);
+	}
+
 	if (!dirty)
 		dirty = g_atomic_int_get (&mgr->priv->dirty);
 
