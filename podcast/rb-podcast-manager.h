@@ -54,12 +54,12 @@ typedef struct
 {
 	GObjectClass parent_class;
 
-    /* signals */
-    void        (*status_changed)    		(RBPodcastManager* pd, RhythmDBEntry *entry, glong value);
-    void        (*start_download)    		(RBPodcastManager* pd, RhythmDBEntry *entry);
-    void        (*finish_download)   		(RBPodcastManager* pd, RhythmDBEntry *entry);
-    void        (*feed_updates_available)   	(RBPodcastManager* pd, RhythmDBEntry *entry);
-    gboolean    (*process_error)	   	(RBPodcastManager* pd, const char *error, gboolean existing);
+	/* signals */
+	void        (*status_changed)    		(RBPodcastManager* pd, RhythmDBEntry *entry, glong value);
+	void        (*start_download)    		(RBPodcastManager* pd, RhythmDBEntry *entry);
+	void        (*finish_download)   		(RBPodcastManager* pd, RhythmDBEntry *entry);
+	void        (*feed_updates_available)   	(RBPodcastManager* pd, RhythmDBEntry *entry);
+	void        (*process_error)	   		(RBPodcastManager* pd, const char *url, const char *error, gboolean existing);
 
 } RBPodcastManagerClass;
 
@@ -76,6 +76,7 @@ gboolean                rb_podcast_manager_remove_feed 		(RBPodcastManager *pd,
 gchar *                 rb_podcast_manager_get_podcast_dir	(RBPodcastManager *pd);
 
 gboolean                rb_podcast_manager_subscribe_feed    	(RBPodcastManager *pd, const gchar* url, gboolean automatic);
+void			rb_podcast_manager_insert_feed_url	(RBPodcastManager *pd, const char *url);
 void            	rb_podcast_manager_unsubscribe_feed    	(RhythmDB *db, const gchar* url);
 void			rb_podcast_manager_shutdown 		(RBPodcastManager *pd);
 RhythmDBEntry *         rb_podcast_manager_add_post  	  	(RhythmDB *db,

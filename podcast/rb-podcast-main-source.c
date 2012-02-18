@@ -194,14 +194,29 @@ feed_updates_available_cb (RBPodcastManager *pd,
 
 }
 
-static gboolean
+static void
+error_dialog_response_cb (GtkDialog *dialog, int response, RBPodcastMainSource *source)
+{
+	const char *url = g_object_get_data (G_OBJECT (dialog), "feed-url");
+
+	if (response == GTK_RESPONSE_YES) {
+		RBPodcastManager *pd;
+		g_object_get (source, "podcast-manager", &pd, NULL);
+		rb_podcast_manager_insert_feed_url (pd, url);
+		g_object_unref (pd);
+	}
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 feed_error_cb (RBPodcastManager *pd,
+	       const char *url,
 	       const char *error,
 	       gboolean existing,
 	       RBPodcastMainSource *source)
 {
 	GtkWidget *dialog;
-	int result;
 
 	/* if the podcast feed doesn't already exist in the db,
 	 * ask if the user wants to add it anyway; if it already
@@ -224,13 +239,10 @@ feed_error_cb (RBPodcastManager *pd,
 	gtk_window_set_title (GTK_WINDOW (dialog), "");
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
 
-	result = gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_widget_destroy (dialog);
+	g_object_set_data_full (G_OBJECT (dialog), "feed-url", g_strdup (url), g_free);
+	g_signal_connect (dialog, "response", G_CALLBACK (error_dialog_response_cb), source);
 
-	/* in the existing feed case, the response will be _OK or _NONE.
-	 * we want to return FALSE here in this case, so this check works.
-	 */
-	return (result == GTK_RESPONSE_YES);
+	gtk_widget_show_all (dialog);
 }
 
 static void

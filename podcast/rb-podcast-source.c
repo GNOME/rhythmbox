@@ -350,17 +350,23 @@ podcast_location_added_cb (RBURIDialog *dialog,
 }
 
 static void
+podcast_add_response_cb (GtkDialog *dialog, int response, gpointer meh)
+{
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 podcast_cmd_new_podcast (GtkAction *action, RBPodcastSource *source)
 {
 	GtkWidget *dialog;
 
 	dialog = rb_uri_dialog_new (_("New Podcast Feed"), _("URL of podcast feed:"));
-	g_signal_connect_object (G_OBJECT (dialog),
+	g_signal_connect_object (dialog,
 				 "location-added",
 				 G_CALLBACK (podcast_location_added_cb),
 				 source, 0);
-	gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_widget_destroy (dialog);
+	g_signal_connect (dialog, "response", G_CALLBACK (podcast_add_response_cb), NULL);
+	gtk_widget_show_all (dialog);
 }
 
 
@@ -431,10 +437,32 @@ podcast_cmd_cancel_download (GtkAction *action, RBPodcastSource *source)
 }
 
 static void
-podcast_cmd_delete_feed (GtkAction *action, RBPodcastSource *source)
+podcast_remove_response_cb (GtkDialog *dialog, int response, RBPodcastSource *source)
 {
 	GList *feeds, *l;
-	gint ret;
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
+	if (response == GTK_RESPONSE_CANCEL || response == GTK_RESPONSE_DELETE_EVENT) {
+		return;
+	}
+
+	feeds = rb_string_list_copy (source->priv->selected_feeds);
+	for (l = feeds; l != NULL; l = g_list_next (l)) {
+		const char *location = l->data;
+
+		rb_debug ("Removing podcast location: %s", location);
+		rb_podcast_manager_remove_feed (source->priv->podcast_mgr,
+						location,
+						(response == GTK_RESPONSE_YES));
+	}
+
+	rb_list_deep_free (feeds);
+}
+
+static void
+podcast_cmd_delete_feed (GtkAction *action, RBPodcastSource *source)
+{
 	GtkWidget *dialog;
 	GtkWidget *button;
 	GtkWindow *window;
@@ -474,23 +502,8 @@ podcast_cmd_delete_feed (GtkAction *action, RBPodcastSource *source)
 	gtk_window_set_focus (GTK_WINDOW (dialog), button);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_YES);
 
-	ret = gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_widget_destroy (dialog);
-
-	if (ret == GTK_RESPONSE_CANCEL || ret == GTK_RESPONSE_DELETE_EVENT)
-		return;
-
-	feeds = rb_string_list_copy (source->priv->selected_feeds);
-	for (l = feeds; l != NULL; l = g_list_next (l)) {
-		const char *location = l->data;
-
-		rb_debug ("Removing podcast location: %s", location);
-		rb_podcast_manager_remove_feed (source->priv->podcast_mgr,
-						location,
-						(ret == GTK_RESPONSE_YES));
-	}
-
-	rb_list_deep_free (feeds);
+	gtk_widget_show_all (dialog);
+	g_signal_connect (dialog, "response", G_CALLBACK (podcast_remove_response_cb), source);
 }
 
 static void
@@ -1028,12 +1041,46 @@ impl_can_add_to_queue (RBSource *source)
 }
 
 static void
+delete_response_cb (GtkDialog *dialog, int response, RBPodcastSource *source)
+{
+	GList *entries;
+	GList *l;
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
+	if (response == GTK_RESPONSE_CANCEL || response == GTK_RESPONSE_DELETE_EVENT) {
+		return;
+	}
+
+	entries = rb_entry_view_get_selected_entries (source->priv->posts);
+	for (l = entries; l != NULL; l = g_list_next (l)) {
+		RhythmDBEntry *entry = l->data;
+
+		rb_podcast_manager_cancel_download (source->priv->podcast_mgr, entry);
+		if (response == GTK_RESPONSE_YES) {
+			rb_podcast_manager_delete_download (source->priv->podcast_mgr, entry);
+		}
+
+		/* set podcast entries to invisible instead of deleted so they will
+		 * not reappear after the podcast has been updated
+		 */
+		GValue v = {0,};
+		g_value_init (&v, G_TYPE_BOOLEAN);
+		g_value_set_boolean (&v, TRUE);
+		rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_HIDDEN, &v);
+		g_value_unset (&v);
+	}
+
+	g_list_foreach (entries, (GFunc)rhythmdb_entry_unref, NULL);
+	g_list_free (entries);
+
+	rhythmdb_commit (source->priv->db);
+}
+
+static void
 impl_delete (RBSource *asource)
 {
 	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
-	GList *entries;
-	GList *l;
-	gint ret;
 	GtkWidget *dialog;
 	GtkWidget *button;
 	GtkWindow *window;
@@ -1071,36 +1118,8 @@ impl_delete (RBSource *asource)
 
 	gtk_window_set_focus (GTK_WINDOW (dialog), button);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_YES);
-
-	ret = gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_widget_destroy (dialog);
-
-	if (ret == GTK_RESPONSE_CANCEL || ret == GTK_RESPONSE_DELETE_EVENT)
-		return;
-
-	entries = rb_entry_view_get_selected_entries (source->priv->posts);
-	for (l = entries; l != NULL; l = g_list_next (l)) {
-		RhythmDBEntry *entry = l->data;
-
-		rb_podcast_manager_cancel_download (source->priv->podcast_mgr, entry);
-		if (ret == GTK_RESPONSE_YES) {
-			rb_podcast_manager_delete_download (source->priv->podcast_mgr, entry);
-		}
-
-		/* set podcast entries to invisible instead of deleted so they will
-		 * not reappear after the podcast has been updated
-		 */
-		GValue v = {0,};
-		g_value_init (&v, G_TYPE_BOOLEAN);
-		g_value_set_boolean (&v, TRUE);
-		rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_HIDDEN, &v);
-		g_value_unset (&v);
-	}
-
-	g_list_foreach (entries, (GFunc)rhythmdb_entry_unref, NULL);
-	g_list_free (entries);
-
-	rhythmdb_commit (source->priv->db);
+	g_signal_connect (dialog, "response", G_CALLBACK (delete_response_cb), source);
+	gtk_widget_show_all (dialog);
 }
 
 static RBEntryView *
