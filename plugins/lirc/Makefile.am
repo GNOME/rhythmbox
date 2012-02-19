@@ -30,7 +30,7 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_BSD_SOURCE
 
-plugin_in_files = lirc.plugin.in
+plugin_in_files = rblirc.plugin.in
 
 %.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 

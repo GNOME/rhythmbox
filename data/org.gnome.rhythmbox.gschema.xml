@@ -253,9 +253,14 @@
       <description>When set prevents loading of plugins from the user's home directory</description>
     </key>
     <key name="active-plugins" type="as">
-      <default>['artdisplay','audiocd','audioscrobbler','cd-recorder','daap','dbus-media-server','generic-player','ipod','iradio','mmkeys','mpris','mtpdevice','notification']</default>
+      <default>[]</default>
       <summary>List of active plugin names.</summary>
       <description>List of active plugin names. These plugins will be loaded on startup if available.</description>
+    </key>
+    <key name="seen-plugins" type="as">
+      <default>[]</default>
+      <summary>List of plugins that have previously been seen.</summary>
+      <description>List of plugins that have previously been seen.  Previously unseen plugins may be automatically enabled.</description>
     </key>
   </schema>
 

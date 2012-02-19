@@ -925,6 +925,8 @@ construct_plugins (RBShell *shell)
 	char *typelib_dir;
 	char *plugindir;
 	char *plugindatadir;
+	char **seen_plugins;
+	GPtrArray *new_plugins = NULL;
 	const GList *plugins;
 	const GList *l;
 	GError *error = NULL;
@@ -1010,15 +1012,72 @@ construct_plugins (RBShell *shell)
 			 "loaded-plugins",
 			 G_SETTINGS_BIND_DEFAULT);
 
-	/* load builtin plugins */
+	seen_plugins = g_settings_get_strv (shell->priv->plugin_settings, "seen-plugins");
 	plugins = peas_engine_get_plugin_list (shell->priv->plugin_engine);
 	for (l = plugins; l != NULL; l = l->next) {
 		PeasPluginInfo *info = PEAS_PLUGIN_INFO (l->data);
+		char *kf_name;
+		char *kf_path;
+		GKeyFile *keyfile;
+
+		/* load builtin plugins, except for the 'rb' utility module, which only
+		 * gets loaded if another plugin needs it.
+		 */
 		if (peas_plugin_info_is_builtin (info) &&
 		    g_strcmp0 (peas_plugin_info_get_module_name (info), "rb") != 0) {
 			peas_engine_load_plugin (shell->priv->plugin_engine, info);
+			continue;
 		}
+
+		/* have we seen this plugin before? */
+		if (rb_str_in_strv (peas_plugin_info_get_module_name (info), (const char **)seen_plugins)) {
+			continue;
+		}
+		if (new_plugins == NULL) {
+			new_plugins = g_ptr_array_new_with_free_func (g_free);
+		}
+		g_ptr_array_add (new_plugins, g_strdup (peas_plugin_info_get_module_name (info)));
+
+		/* it's a new plugin, see if it wants to be enabled */
+		kf_name = g_strdup_printf ("%s.plugin", peas_plugin_info_get_module_name (info));
+		kf_path = g_build_filename (peas_plugin_info_get_module_dir (info), kf_name, NULL);
+		g_free (kf_name);
+
+		keyfile = g_key_file_new ();
+		if (g_key_file_load_from_file (keyfile, kf_path, G_KEY_FILE_NONE, NULL)) {
+			if (g_key_file_get_boolean (keyfile, "RB", "InitiallyEnabled", NULL)) {
+				rb_debug ("loading new plugin %s", peas_plugin_info_get_module_name (info));
+				peas_engine_load_plugin (shell->priv->plugin_engine, info);
+			} else {
+				rb_debug ("new plugin %s not enabled", peas_plugin_info_get_module_name (info));
+			}
+		} else {
+			rb_debug ("couldn't load plugin file %s", kf_path);
+		}
+		g_free (kf_path);
+		g_key_file_unref (keyfile);
 	}
+
+	if (new_plugins != NULL) {
+		GPtrArray *update;
+		int i;
+
+		update = g_ptr_array_new_with_free_func (g_free);
+		for (i = 0; i < g_strv_length (seen_plugins); i++) {
+			g_ptr_array_add (update, g_strdup (seen_plugins[i]));
+		}
+		for (i = 0; i < new_plugins->len; i++) {
+			g_ptr_array_add (update, g_strdup (g_ptr_array_index (new_plugins, i)));
+		}
+
+		g_ptr_array_add (update, NULL);
+		g_settings_set_strv (shell->priv->plugin_settings, "seen-plugins", (const char * const *)update->pdata);
+
+		g_ptr_array_free (new_plugins, TRUE);
+		g_ptr_array_free (update, TRUE);
+	}
+
+	g_strfreev (seen_plugins);
 
 	rb_profile_end ("loading plugins");
 }
