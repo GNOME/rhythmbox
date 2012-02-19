@@ -1,0 +1,119 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:e="http://projectmallard.org/experimental/"
+      type="topic" style="task"
+      id="search">
+
+  <info>
+    <link type="guide" xref="index#manage"/>
+    <link type="seealso" xref="sort"/>
+    <desc>Search your media and perfom basic queries.</desc>
+    <revision pkgversion="1.6" version="0.1" date="2009-01-22" status="draft"/>
+    <credit type="author">
+      <name>Paul Cutler</name>
+      <email>pcutler@gnome.org</email>
+    </credit>    
+<!--
+    <copyright>
+      <year>2010</year>
+      <name>GNOME Documentation Project</name>
+    </copyright>
+-->
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+  </info>
+
+  <title>Searching your Banshee Library</title>    
+  
+  <p>Banshee features a powerful search language.  You can search your 
+  library quickly and easily with basic search terms or perform detailed
+  searches with Banshee's advanced search terminology.</p>
+  
+  <p>To perform a search of your media in Banshee, press the <key>S</key> or
+  click the <gui>Search</gui> box in the upper right hand corner of the Library
+  view in Banshee.
+  </p>
+  
+  <p>A search query consists of some basic terms, for example, 
+  <em>dave matthews</em>.  By entering <em>dave matthews</em> in the search box,
+   Banshee will search all metadata fields including Track Title, Album Title,
+   Album Artist, Year, etc.  Any track whose metadata includes <em>dave</em> 
+   and <em>matthews</em> will be returned.  Search terms are case insensitive, meaning you don't have to capitalize.  <em>dave</em>, <em>Dave</em>, and <em>DAVE</em>
+   all mean the same thing when searching.</p>
+
+<section id="operators">
+  <title>Basic Operators</title>
+  <p>Operators can be placed between any two search words or placed before a 
+  search word.  The default operation is <gui>AND</gui> and is used when
+  no other operators are used between two search terms.  Because it is the
+  default, there is no explicit AND operator.</p>
+  
+  <p>Other basic operators include <gui>OR</gui> and <gui>NOT</gui>.  Together,
+  these three operations can yield very powerful queries to help you search
+  your media.</p>
+  
+</section>
+
+<section id="logical">
+  <title>Logical Operators and Examples</title>
+  <p>The following is a list of logical operators and examples of the search
+  results when searching using them.</p>
+  
+  <table frame="all" rules="rows" shade="rows">
+  <tr>
+    <td><p><gui>Operator</gui></p></td>  <td><p><gui>Description</gui></p></td>
+  </tr>
+  <tr>
+    <td><p><em>default</em>, <em>white space</em></p></td> <td><p>
+    Search for two terms with a space between the two words or terms.</p></td>
+  </tr>
+  <tr>
+    <td><p>OR, or, <key>|</key>, <key>,</key></p></td> <td><p>
+    Search results will be two songs with either result in any field.</p></td>
+  </tr>
+  <tr>
+    <td><p>NOT, not,<key>-</key></p></td> <td><p>
+    Do not display search results with any search term that follows the 
+    operator of NOT, not,<key>-</key>.</p></td>
+  </tr>  
+         
+</table>
+
+  <p>Examples of logical operations include:</p>
+  
+  <table frame="all" rules="rows" shade="rows">
+  <tr>
+    <td><p><gui>Query</gui></p></td>  <td><p><gui>Description</gui></p></td>
+  </tr>
+  <tr>
+    <td><p>dave matthews</p></td> <td><p>
+    Matches any fields in a track containing both <em>dave</em> and 
+    <em>matthews</em>.</p></td>
+  </tr>
+  <tr>
+    <td><p>dave, matthews</p></td> <td><p>
+    Matches any fields in a track containing either <em>dave</em> or
+    <em>matthews</em>.</p></td>
+  </tr>
+  <tr>
+    <td><p>dave or matthews</p></td> <td><p>
+    Matches any fields in a track containing either <em>dave</em> or
+    <em>matthews</em>.</p></td>
+  </tr> 
+  <tr>
+    <td><p>dave | matthews</p></td> <td><p>
+    Matches any fields in a track containing either <em>dave</em> or
+    <em>matthews</em>.</p></td>
+  </tr>       
+  <tr>
+    <td><p>-"dave matthews"</p></td> <td><p>
+    Displays all tracks whose fields do not contain <em>dave
+    matthews</em>.</p></td>
+  </tr> 
+  
+  </table> 
+  
+  <p>For more information on performing more complex search queries,
+  see the <link xref="adv-search"/> page.</p>
+  
+</section>
+	
+</page>

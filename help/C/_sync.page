@@ -1,0 +1,150 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:e="http://projectmallard.org/experimental/"
+      type="topic" style="task"
+      id="sync">
+
+  <info>
+    <link type="guide" xref="index#sync"/>
+    <link type="seealso" xref="playlists"/>
+    <desc>Sync your media to a portable media player or smartphone.</desc>
+    <revision pkgversion="1.8" version="0.1" date="2010-08-29" status="draft"/>
+    <credit type="author">
+      <name>Paul Cutler</name>
+      <email>pcutler@gnome.org</email>
+    </credit>    
+<!--
+    <copyright>
+      <year>2010</year>
+      <name>GNOME Documentation Project</name>
+    </copyright>
+-->
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+  </info>
+
+  <title>Sync</title>    
+  
+  <p>Banshee supports syncing your music to portable media players and 
+  smartphones.  You can add specific music tracks, albums or playlist 
+  or allow Banshee to keep your music player in sync with your entire
+  library.  After your player is connected to your computer you can also
+  play back the songs on your portable player in Banshee.  When syncing
+  music in a lossless format, such as FLAC, Banshee will automatically
+  transcode your music for you to a lossy format such as Ogg Vorbis or MP3,
+  if you have the correct codecs installed.
+  </p>
+  
+  <section id="devices">
+    <title>Device Support</title>
+    <p>Banshee supports almost all modern portable music players and
+    smartphones with the notable exception of the Apple iPhone, iPad and
+    iPod Touch.</p>
+  
+  <p>When you plug your device in, Banshee will display it in the left menu.
+  Pressing the device icon will take you to your device home page in Banshee
+  displaying your sync preferences.
+  </p>
+  
+  </section>
+  
+    <section id="sync-settings">
+    <title>Sync Your Music</title>
+    <p>You can choose to manage the media on your portable music
+    by having Banshee automatically sync it or manage your music and media
+    manually.
+    </p>
+    
+    <p>Choose your device from the Banshee menu and then choose how you want
+    to sync your media, including:
+    </p>
+    <list>
+      <item><p>Music</p></item>
+      <item><p>Audiobooks</p></item>  
+      <item><p>Videos</p></item>
+      <item><p>Podcast</p></item>  
+    </list>
+    
+    <p>From the dropdown menu next to each of the media, choose from:
+    </p>
+    <list>
+      <item><p>Manage manually</p></item>
+      <item><p>Sync entire library</p></item>  
+    </list>    
+    
+    <note style="warning">
+      <p>If you choose to sync your entire library automatically with your
+      portable media player make sure your portable media player has enough
+      storage space.  If your library is larger than the space on your
+      portable media player, Banshee will sync media until your player is
+      full and then stop.        
+      </p>
+    </note>
+    
+    <p>If you have created playlists or smart playlists in your music library,
+    they will also be displayed as a sync option for Music.  This can be 
+    helpful when creating smart playlists, as smart playlists will automatically
+    update as new content is added based on the playlist rules, and Banshee
+    will sync the new playlist to your device every time you plug it in.
+    </p>
+    
+    <p>Banshee will display the total hard drive space of your portable music
+    player in a graph in the bottom center of Banshee.  The graph will show you
+    how much space is taken by audio files, video, other and free space.  
+    Directly below that Banshee will show you how many total items are stored
+    on your portable music player, how many hours or days of listening that is
+    equal to, and total space used.
+    </p>
+    
+  </section>
+
+  <section id="sync-manually">
+    <title>Sync Your Entire Library</title>
+    <p>You can drag and drop media to your portable music player from Banshee.
+    Select the file or files you want to copy to your portable media player
+    and then press and hold your right mouse button and drag the file(s) to
+    your portable media player icon in Banshee.  This will copy the files to 
+    your device.
+    </p>
+    
+    <p>If your music library is encoded in a format that your portable media
+    player does not support, such as OGG or FLAC, and you have the necessary
+    codecs installed, Banshee can automatically transcode these files to MP3
+    when transferring to your portable media player.  Check with your Linux
+    distribution for the necessary codecs as it is outside the scope of this
+    help and varies by distribution.
+    </p>
+    
+    <note style="tip">
+      <p>You may need to eject your device to load the files correctly
+      on your portable music player.  To eject your device in Banshee,
+      using your mouse right click the device in the Banshee menu and
+      press <gui>Disconnect</gui>.
+      </p>
+    </note>
+
+  </section>
+  
+  <section id="pmp-play">
+    <title>Play Music From Your Portable Music Player</title>
+    <p>You can play music stored on your portable music player directly in
+    Banshee.  Choose your player in the Banshee menu on the left and your 
+    portable music player's library will be displayed.  You can then play
+    music in Banshee just as you would music in your own library.</p>
+  </section>
+  
+  <section id="pmp-delete">
+    <title>Remove Music From your Portable Music Player</title>
+    <p>To remove songs stored on your portable music player, choose your
+    player in Banshee to view its library.  Then choose the tracks you would
+    like to remove and right click the tracks and choose <gui>Delete</gui> or from the 
+    menu choose <guiseq><gui>Edit</gui><gui>Delete</gui></guiseq>.</p>
+    
+     <note style="warning">
+      <p>Deleting files from your portable music player will permanently remove
+      the files and you will not be able to recover them.      
+      </p>
+    </note>
+    
+  </section>
+
+	
+</page>

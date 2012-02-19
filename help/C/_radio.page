@@ -1,0 +1,71 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:e="http://projectmallard.org/experimental/"
+      type="topic" style="task"
+      id="add-radio">
+
+  <info>
+    <link type="guide" xref="index#media"/>
+    <link type="seealso" xref="remove-media"/>
+    <link type="seealso" xref="add-podcasts"/>
+    <link type="seealso" xref="import"/>
+    <desc>Add, remove and play internet radio stations in Banshee.</desc>
+    <revision pkgversion="2.0" version="0.1" date="2010-05-20" status="draft"/>
+    <credit type="author">
+      <name>Paul Cutler</name>
+      <email>pcutler@gnome.org</email>
+    </credit>    
+<!--
+    <copyright>
+      <year>2010</year>
+      <name>GNOME Documentation Project</name>
+    </copyright>
+-->
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+  </info>
+
+  <title>Internet Radio</title> 
+  
+  <section id="radiodescription">
+     <title>What is Internet Radio?</title>
+     
+  <p>Internet radio stations are similar to regular radio stations, allowing
+  an individual or organization to stream music live over the internet.
+  Internet radio stations can be a simultaneous stream of a regular radio station,
+  an amateur broadcasting their own station, or commercial
+  internet radio stations that include live DJs and even commercials.</p>
+  
+  </section>
+  
+  <section id="addradio">
+  
+  <title>Add Radio Station</title>
+  
+  <p>To add an internet radio station to Banshee, press <gui>Add Station</gui>
+  in the upper right hand corner of Banshee or, from the menu, choose <guiseq>
+  <gui>Media</gui><gui>Add Station</gui></guiseq>.
+  </p>
+  
+  <p>From the internet radio station's webpage, copy the link to their stream
+  URL in your web browser.  In most browsers, you can right click on the link
+  and press <gui>Copy Link</gui>.  
+  </p>
+   
+
+  <p>Banshee will prompt you to enter the <gui>Station Genre</gui>.
+  Choose the kind of music the internet radio station plays from the available 
+  drop down selections. You will then need to enter the <gui>Station Name</gui>.  
+  Enter a name for the radio station.  Then press tab or use your mouse to select
+  the <gui>Stream URL</gui> field to paste the URL of the radio station.
+  Using your mouse right click and choose <gui>Paste</gui> or press <keyseq>
+  <key>Control</key><key>V</key></keyseq>.</p>
+  
+  <p>You can optionally also fill out the fields for
+  <gui>Station Creator</gui>, <gui>Description</gui>, and <gui>Rating</gui>.
+  </p>
+  
+  <p>Then press <gui>Save</gui> to save the internet radio station in Banshee.
+  </p>
+  
+  </section>
+  	  	  
+</page>

@@ -1,0 +1,81 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:e="http://projectmallard.org/experimental/"
+      type="topic" style="task"
+      id="tags">
+
+  <info>
+    <link type="guide" xref="index#manage"/>
+    <link type="seealso" xref="coverart"/>
+    <link type="seealso" xref="playlists"/>
+    <desc>Edit and change music tags and metadata.</desc>
+    <revision pkgversion="2.0" version="0.1" date="2010-05-09" 			status="draft"/>
+    <credit type="author">
+      <name>Paul Cutler</name>
+      <email>pcutler@gnome.org</email>
+    </credit>    
+<!--
+    <copyright>
+      <year>2010</year>
+      <name>GNOME Documentation Project</name>
+    </copyright>
+-->
+    <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+  </info>
+  
+  <title>Music Metadata</title>
+
+  <section id="metadata">
+
+  <title>Music metadata</title>    
+  
+  	<p>Digital music contains metadata that stores information in the 
+  	music file including the artist, album, year recorded, genre, and more.
+  	Almost all music purchased over the internet will have the metadata
+  	already embedded and if you import music from CDs, Banshee will include
+  	the metadata when ripping the CD if available.  For more information
+  	on ripping CDs and including the metadata see the 
+  	<link xref="import"/>.</p>
+  	
+  	<p>Popular metadata formats are ID3v1 and ID3v2 for MP3 files and
+  	Vorbis comments for OGG Vorbis files.</p>	
+  
+  	<p>If you have imported songs that do not contain metadata, 
+  	<app>Banshee</app> will display <gui>Unknown</gui> for most fields
+  	in the library. </p>
+  	
+  </section>
+
+  <section id="editmetadata"> 	
+    
+    <title>Edit Your Metadata</title>
+    
+    <p>You can change and edit the metadata of your songs.  Select the song or
+    songs you want to update and hit the <key>E</key>, choose
+    <guiseq><gui>Edit</gui><gui>Edit Track Information</gui></guiseq> from the menu, or use
+    your mouse and right click on the files and select
+    <gui>Edit Track Information</gui>.
+    </p>
+    
+    <p>A dialog box will appear that shows the song's metadata and allow you to 
+    change or update it.  The default fields displayed include:</p>
+    
+    <list>
+      <item><p><gui>Track Title</gui></p></item>
+      <item><p><gui>Track Artist</gui></p></item>
+      <item><p><gui>Album Title</gui></p></item>
+      <item><p><gui>Genre</gui></p></item>
+      <item><p><gui>Track Number</gui></p></item>
+      <item><p><gui>Disc Number</gui></p></item>
+      <item><p><gui>Year</gui></p></item>
+    </list>
+    
+    <p>Update the song's information.  If you have selected multiple songs to
+    edit press the right arrow icon to the right of the <gui>Track Title</gui>
+    field or press the <gui>Forward</gui> button at the bottom of the dialog
+    when finished with each song.   When you have completed editing all metadata,
+    press <gui>Save</gui>.
+    </p>
+   
+  </section>
+
+</page>
