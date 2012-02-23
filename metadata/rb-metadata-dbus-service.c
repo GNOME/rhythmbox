@@ -210,7 +210,10 @@ static const GDBusInterfaceVTable metadata_vtable = {
 };
 
 static void
-connection_closed_cb (GDBusConnection *connection, ServiceData *svc)
+connection_closed_cb (GDBusConnection *connection,
+		      gboolean remote_peer_vanished,
+		      GError *error,
+		      ServiceData *svc)
 {
 	rb_debug ("client connection closed");
 	g_assert (connection == svc->connection);
