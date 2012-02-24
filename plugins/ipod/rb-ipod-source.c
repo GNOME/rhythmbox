@@ -65,6 +65,7 @@ static void rb_ipod_source_constructed (GObject *object);
 static void rb_ipod_source_dispose (GObject *object);
 
 static void impl_delete (RBSource *asource);
+static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
 static void rb_ipod_load_songs (RBiPodSource *source);
 
 static gboolean impl_show_popup (RBDisplayPage *page);
@@ -177,6 +178,7 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	source_class->impl_delete = impl_delete;
 
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_paste = impl_paste;
 
 	mps_class->impl_get_entries = impl_get_entries;
 	mps_class->impl_get_capacity = impl_get_capacity;
@@ -1328,6 +1330,12 @@ impl_delete_entries (RBMediaPlayerSource *source, GList *entries, RBMediaPlayerS
 	data->files = filenames;
 
 	g_thread_create ((GThreadFunc) delete_thread, data, FALSE, NULL);
+}
+
+static RBTrackTransferBatch *
+impl_paste (RBSource *source, GList *entries)
+{
+	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries);
 }
 
 static void
