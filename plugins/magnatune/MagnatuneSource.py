@@ -46,6 +46,7 @@ magnatune_partner_id = "rhythmbox"
 
 # URIs
 magnatune_song_info_uri = "http://magnatune.com/info/song_info_xml.zip"
+magnatune_changed_uri = "http://magnatune.com/info/changed.txt"
 magnatune_buy_album_uri = "https://magnatune.com/buy/choose?"
 magnatune_api_download_uri = "http://%s:%s@download.magnatune.com/buy/membership_free_dl_xml?"
 
@@ -54,6 +55,7 @@ magnatune_cache_dir = Gio.file_new_for_path(RB.user_cache_dir()).resolve_relativ
 
 magnatune_song_info = os.path.join(magnatune_cache_dir.get_path(), 'song_info.xml')
 magnatune_song_info_temp = os.path.join(magnatune_cache_dir.get_path(), 'song_info.zip.tmp')
+magnatune_changes = os.path.join(magnatune_cache_dir.get_path(), 'changed.txt')
 
 
 class MagnatuneSource(RB.BrowserSource):
@@ -220,9 +222,24 @@ class MagnatuneSource(RB.BrowserSource):
 	#
 
 	def __update_catalogue(self):
-		def update_cb(result):
+		def update_cb(remote_changes):
 			self.__catalogue_check = None
-			if result is True:
+			try:
+				f = open(magnatune_changes, 'r')
+				local_changes = f.read().strip()
+			except:
+				local_changes = ""
+
+			remote_changes = remote_changes.strip()
+			print "local checksum %s, remote checksum %s" % (local_changes, remote_changes)
+			if local_changes != remote_changes:
+				try:
+					f = open(magnatune_changes, 'w')
+					f.write(remote_changes + "\n")
+					f.close()
+				except Exception, e:
+					print "unable to write local change id: %s" % str(e)
+
 				download_catalogue()
 			elif self.__has_loaded is False:
 				load_catalogue()
@@ -357,8 +374,8 @@ class MagnatuneSource(RB.BrowserSource):
 			self.__catalogue_loader.start(magnatune_song_info, 64*1024)
 
 
-		self.__catalogue_check = rb.UpdateCheck()
-		self.__catalogue_check.check_for_update(magnatune_song_info, magnatune_song_info_uri, update_cb)
+		self.__catalogue_check = rb.Loader()
+		self.__catalogue_check.get_url(magnatune_changed_uri, update_cb)
 
 
 	def __show_loading_screen(self, show):
