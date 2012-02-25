@@ -70,6 +70,8 @@ static void	rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass
 static void	rb_track_transfer_batch_init (RBTrackTransferBatch *batch);
 
 static gboolean start_next (RBTrackTransferBatch *batch);
+static void start_encoding (RBTrackTransferBatch *batch, gboolean overwrite);
+static void track_transfer_completed (RBTrackTransferBatch *batch, guint64 dest_size, const char *mediatype, GError *error);
 
 static guint	signals[LAST_SIGNAL] = { 0 };
 
@@ -95,6 +97,7 @@ struct _RBTrackTransferBatchPrivate
 	char *current_dest_uri;
 	double current_fraction;
 	RBEncoder *current_encoder;
+	GstEncodingProfile *current_profile;
 	gboolean cancelled;
 };
 
@@ -406,6 +409,24 @@ _rb_track_transfer_batch_cancel (RBTrackTransferBatch *batch)
 	/* anything else? */
 }
 
+/**
+ * _rb_track_transfer_batch_continue:
+ * @batch: a #RBTrackTransferBatch
+ * @overwrite: if %TRUE, overwrite the current file, otherwise skip
+ *
+ * Continues a transfer that was suspended because the current
+ * destination URI exists.  Only to be called by the #RBTrackTransferQueue.
+ */
+void
+_rb_track_transfer_batch_continue (RBTrackTransferBatch *batch, gboolean overwrite)
+{
+	if (overwrite) {
+		start_encoding (batch, TRUE);
+	} else {
+		track_transfer_completed (batch, 0, NULL, NULL);
+	}
+}
+
 static void
 emit_progress (RBTrackTransferBatch *batch)
 {
@@ -434,25 +455,17 @@ encoder_progress_cb (RBEncoder *encoder, double fraction, RBTrackTransferBatch *
 }
 
 static void
-encoder_completed_cb (RBEncoder *encoder,
-		      guint64 dest_size,
-		      const char *mediatype,
-		      GError *error,
-		      RBTrackTransferBatch *batch)
+track_transfer_completed (RBTrackTransferBatch *batch,
+			  guint64 dest_size,
+			  const char *mediatype,
+			  GError *error)
 {
 	RhythmDBEntry *entry;
 
-	if (error != NULL) {
-		rb_debug ("encoder finished (error: %s)", error->message);
-	} else {
-		rb_debug ("encoder finished (size %" G_GUINT64_FORMAT ")", dest_size);
-	}
-
-	g_object_unref (batch->priv->current_encoder);
-	batch->priv->current_encoder = NULL;
-
 	entry = batch->priv->current;
 	batch->priv->current = NULL;
+
+	batch->priv->current_profile = NULL;
 
 	/* update batch state to reflect that the track is done */
 	batch->priv->total_fraction += batch->priv->current_entry_fraction;
@@ -476,13 +489,28 @@ encoder_completed_cb (RBEncoder *encoder,
 	}
 }
 
-static gboolean
-encoder_overwrite_cb (RBEncoder *encoder, GFile *file, RBTrackTransferBatch *batch)
+static void
+encoder_completed_cb (RBEncoder *encoder,
+		      guint64 dest_size,
+		      const char *mediatype,
+		      GError *error,
+		      RBTrackTransferBatch *batch)
 {
-	gboolean overwrite = FALSE;
-	g_signal_emit (batch, signals[OVERWRITE_PROMPT], 0, file, &overwrite);
+	g_object_unref (batch->priv->current_encoder);
+	batch->priv->current_encoder = NULL;
 
-	return overwrite;
+	if (error == NULL) {
+		rb_debug ("encoder finished (size %" G_GUINT64_FORMAT ")", dest_size);
+	} else if (g_error_matches (error, RB_ENCODER_ERROR, RB_ENCODER_ERROR_DEST_EXISTS)) {
+		rb_debug ("encoder stopped because destination %s already exists",
+			  batch->priv->current_dest_uri);
+		g_signal_emit (batch, signals[OVERWRITE_PROMPT], 0, batch->priv->current_dest_uri);
+		return;
+	} else {
+		rb_debug ("encoder finished (error: %s)", error->message);
+	}
+
+	track_transfer_completed (batch, dest_size, mediatype, error);
 }
 
 static char *
@@ -506,6 +534,28 @@ get_extension_from_location (RhythmDBEntry *entry)
 	return extension;
 }
 
+static void
+start_encoding (RBTrackTransferBatch *batch, gboolean overwrite)
+{
+	if (batch->priv->current_encoder != NULL) {
+		g_object_unref (batch->priv->current_encoder);
+	}
+	batch->priv->current_encoder = rb_encoder_new ();
+
+	g_signal_connect_object (batch->priv->current_encoder, "progress",
+				 G_CALLBACK (encoder_progress_cb),
+				 batch, 0);
+	g_signal_connect_object (batch->priv->current_encoder, "completed",
+				 G_CALLBACK (encoder_completed_cb),
+				 batch, 0);
+
+	rb_encoder_encode (batch->priv->current_encoder,
+			   batch->priv->current,
+			   batch->priv->current_dest_uri,
+			   overwrite,
+			   batch->priv->current_profile);
+}
+
 static gboolean
 start_next (RBTrackTransferBatch *batch)
 {
@@ -522,17 +572,6 @@ start_next (RBTrackTransferBatch *batch)
 	}
 
 	batch->priv->current_fraction = 0.0;
-	batch->priv->current_encoder = rb_encoder_new ();
-
-	g_signal_connect_object (batch->priv->current_encoder, "progress",
-				 G_CALLBACK (encoder_progress_cb),
-				 batch, 0);
-	g_signal_connect_object (batch->priv->current_encoder, "overwrite",
-				 G_CALLBACK (encoder_overwrite_cb),
-				 batch, 0);
-	g_signal_connect_object (batch->priv->current_encoder, "completed",
-				 G_CALLBACK (encoder_completed_cb),
-				 batch, 0);
 
 	rb_debug ("%d entries remain in the batch", g_list_length (batch->priv->entries));
 
@@ -607,21 +646,15 @@ start_next (RBTrackTransferBatch *batch)
 
 		batch->priv->current = entry;
 		batch->priv->current_entry_fraction = fraction;
+		batch->priv->current_profile = profile;
 		break;
 	}
 
-	if (batch->priv->current == NULL) {
-		g_object_unref (batch->priv->current_encoder);
-		batch->priv->current_encoder = NULL;
-	} else {
+	if (batch->priv->current != NULL) {
 		g_signal_emit (batch, signals[TRACK_STARTED], 0,
 			       batch->priv->current,
 			       batch->priv->current_dest_uri);
-
-		rb_encoder_encode (batch->priv->current_encoder,
-				   batch->priv->current,
-				   batch->priv->current_dest_uri,
-				   profile);
+		start_encoding (batch, FALSE);
 	}
 
 	return TRUE;
@@ -930,11 +963,12 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 	/**
 	 * RBTrackTransferBatch::overwrite-prompt:
 	 * @batch: the #RBTrackTransferBatch
-	 * @file: the #GFile that may be overwritten
+	 * @uri: the destination URI that already exists
 	 *
 	 * Emitted when the destination URI for a transfer already exists.
-	 * If a handler returns TRUE, the file will be overwritten, otherwise
-	 * the transfer will be skipped.
+	 * The handler must call _rb_track_transfer_batch_continue or
+	 * _rb_track_transfer_batch_cancel when it has figured out what to
+	 * do.
 	 */
 	signals [OVERWRITE_PROMPT] =
 		g_signal_new ("overwrite-prompt",
@@ -942,9 +976,9 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBTrackTransferBatchClass, overwrite_prompt),
 			      NULL, NULL,
-			      rb_marshal_BOOLEAN__OBJECT,
-			      G_TYPE_BOOLEAN,
-			      1, G_TYPE_FILE);
+			      g_cclosure_marshal_VOID__STRING,
+			      G_TYPE_NONE,
+			      1, G_TYPE_STRING);
 
 	/**
 	 * RBTrackTransferBatch::track-started:

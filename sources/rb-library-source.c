@@ -1276,7 +1276,7 @@ track_done_cb (RBTrackTransferBatch *batch,
 		} else {
 			rb_error_dialog (NULL, _("Error transferring track"), "%s", error->message);
 		}
-	} else {
+	} else if (dest != NULL) {
 		/* could probably do something smarter here to avoid
 		 * re-reading tags etc.
 		 */

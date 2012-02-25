@@ -438,6 +438,7 @@ static gboolean
 attach_output_pipeline (RBEncoderGst *encoder,
 			GstElement *end,
 			const char *dest,
+			gboolean overwrite,
 			GError **error)
 {
 	GFile *file;
@@ -466,14 +467,18 @@ attach_output_pipeline (RBEncoderGst *encoder,
 			} else if (g_error_matches (local_error,
 						    G_IO_ERROR,
 						    G_IO_ERROR_EXISTS)) {
-				if (_rb_encoder_emit_overwrite (RB_ENCODER (encoder), file)) {
+				if (overwrite) {
 					g_error_free (local_error);
 					stream = g_file_replace (file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, error);
 					if (stream == NULL) {
 						return FALSE;
 					}
 				} else {
-					g_propagate_error (error, local_error);
+					g_set_error (error,
+						     RB_ENCODER_ERROR,
+						     RB_ENCODER_ERROR_DEST_EXISTS,
+						     local_error->message);
+					g_error_free (local_error);
 					return FALSE;
 				}
 			} else {
@@ -549,6 +554,7 @@ static gboolean
 copy_track (RBEncoderGst *encoder,
 	    RhythmDBEntry *entry,
 	    const char *dest,
+	    gboolean overwrite,
 	    GError **error)
 {
 	/* source ! sink */
@@ -560,7 +566,7 @@ copy_track (RBEncoderGst *encoder,
 	if (src == NULL)
 		return FALSE;
 
-	if (!attach_output_pipeline (encoder, src, dest, error))
+	if (!attach_output_pipeline (encoder, src, dest, overwrite, error))
 		return FALSE;
 
 	start_pipeline (encoder);
@@ -571,6 +577,7 @@ static gboolean
 transcode_track (RBEncoderGst *encoder,
 	 	 RhythmDBEntry *entry,
 		 const char *dest,
+		 gboolean overwrite,
 		 GError **error)
 {
 	/* src ! decodebin2 ! encodebin ! sink */
@@ -616,7 +623,7 @@ transcode_track (RBEncoderGst *encoder,
 		      NULL);
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), encoder->priv->encodebin);
 
-	if (!attach_output_pipeline (encoder, encoder->priv->encodebin, dest, error))
+	if (!attach_output_pipeline (encoder, encoder->priv->encodebin, dest, overwrite, error))
 		goto error;
 	if (!add_tags_from_entry (encoder, entry, error))
 		goto error;
@@ -680,6 +687,7 @@ static void
 impl_encode (RBEncoder *bencoder,
 	     RhythmDBEntry *entry,
 	     const char *dest,
+	     gboolean overwrite,
 	     GstEncodingProfile *profile)
 {
 	RBEncoderGst *encoder = RB_ENCODER_GST (bencoder);
@@ -712,7 +720,7 @@ impl_encode (RBEncoder *bencoder,
 		encoder->priv->position_format = GST_FORMAT_BYTES;
 		encoder->priv->dest_media_type = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
 
-		result = copy_track (encoder, entry, dest, &error);
+		result = copy_track (encoder, entry, dest, overwrite, &error);
 	} else {
 		gst_encoding_profile_ref (profile);
 		encoder->priv->profile = profile;
@@ -720,7 +728,7 @@ impl_encode (RBEncoder *bencoder,
 		encoder->priv->position_format = GST_FORMAT_TIME;
 		encoder->priv->dest_media_type = rb_gst_encoding_profile_get_media_type (profile);
 
-		result = transcode_track (encoder, entry, dest, &error);
+		result = transcode_track (encoder, entry, dest, overwrite, &error);
 	}
 
 	if (result == FALSE && encoder->priv->cancelled == FALSE) {

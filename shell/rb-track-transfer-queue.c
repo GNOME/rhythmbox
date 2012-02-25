@@ -100,22 +100,63 @@ rb_track_transfer_queue_new (RBShell *shell)
 	return g_object_new (RB_TYPE_TRACK_TRANSFER_QUEUE, "shell", shell, NULL);
 }
 
-static gboolean
-overwrite_prompt (RBTrackTransferBatch *batch, GFile *file, RBTrackTransferQueue *queue)
+static void
+overwrite_response_cb (GtkDialog *dialog, int response, RBTrackTransferQueue *queue)
+{
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
+	switch (response) {
+	case GTK_RESPONSE_YES:
+		rb_debug ("replacing existing file");
+		_rb_track_transfer_batch_continue (queue->priv->current, TRUE);
+		break;
+
+	case GTK_RESPONSE_NO:
+		rb_debug ("skipping existing file");
+		_rb_track_transfer_batch_continue (queue->priv->current, FALSE);
+		break;
+
+	case GTK_RESPONSE_REJECT:
+		rb_debug ("skipping all existing files");
+		queue->priv->overwrite_decision = OVERWRITE_NONE;
+		_rb_track_transfer_batch_continue (queue->priv->current, FALSE);
+		break;
+
+	case GTK_RESPONSE_ACCEPT:
+		rb_debug ("replacing all existing files");
+		queue->priv->overwrite_decision = OVERWRITE_ALL;
+		_rb_track_transfer_batch_continue (queue->priv->current, TRUE);
+		break;
+
+	case GTK_RESPONSE_CANCEL:
+	case GTK_RESPONSE_DELETE_EVENT:		/* not sure what the user really wants here */
+		rb_debug ("cancelling batch");
+		rb_track_transfer_queue_cancel_batch (queue, queue->priv->current);
+		break;
+
+	default:
+		g_assert_not_reached ();
+		break;
+	}
+}
+
+static void
+overwrite_prompt (RBTrackTransferBatch *batch, const char *uri, RBTrackTransferQueue *queue)
 {
 	switch (queue->priv->overwrite_decision) {
 	case OVERWRITE_PROMPT:
 	{
 		GtkWindow *window;
 		GtkWidget *dialog;
+		GFile *file;
 		GFileInfo *info;
-		gint response;
 		char *text;
 		char *free_name;
 		const char *display_name;
 
 		free_name = NULL;
 		display_name = NULL;
+		file = g_file_new_for_uri (uri);
 		info = g_file_query_info (file,
 					  G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME,
 					  G_FILE_QUERY_INFO_NONE,
@@ -151,47 +192,25 @@ overwrite_prompt (RBTrackTransferBatch *batch, GFile *file, RBTrackTransferQueue
 					_("Replace _All"), GTK_RESPONSE_ACCEPT,
 					NULL);
 
+		g_signal_connect (dialog, "response", G_CALLBACK (overwrite_response_cb), queue);
 		gtk_widget_show (GTK_WIDGET (dialog));
-		response = gtk_dialog_run (GTK_DIALOG (dialog));
-		gtk_widget_destroy (dialog);
 		g_free (free_name);
 		if (info != NULL) {
 			g_object_unref (info);
 		}
-
-		switch (response) {
-		case GTK_RESPONSE_YES:
-			rb_debug ("replacing existing file");
-			return TRUE;
-
-		case GTK_RESPONSE_NO:
-			rb_debug ("skipping existing file");
-			return FALSE;
-
-		case GTK_RESPONSE_REJECT:
-			rb_debug ("skipping all existing files");
-			queue->priv->overwrite_decision = OVERWRITE_NONE;
-			return FALSE;
-
-		case GTK_RESPONSE_ACCEPT:
-			rb_debug ("replacing all existing files");
-			queue->priv->overwrite_decision = OVERWRITE_ALL;
-			return TRUE;
-
-		case GTK_RESPONSE_CANCEL:
-			rb_debug ("cancelling batch");
-			rb_track_transfer_queue_cancel_batch (queue, batch);
-			return FALSE;
-		}
+		g_object_unref (file);
+		break;
 	}
 
 	case OVERWRITE_ALL:
 		rb_debug ("already decided to replace all existing files");
-		return TRUE;
+		_rb_track_transfer_batch_continue (batch, TRUE);
+		break;
 
 	case OVERWRITE_NONE:
 		rb_debug ("already decided to skip all existing files");
-		return FALSE;
+		_rb_track_transfer_batch_continue (batch, FALSE);
+		break;
 
 	default:
 		g_assert_not_reached ();

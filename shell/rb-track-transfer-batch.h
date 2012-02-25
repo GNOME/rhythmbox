@@ -101,6 +101,9 @@ void			_rb_track_transfer_batch_start		(RBTrackTransferBatch *batch,
 								 GObject *queue);	/* eh */
 void			_rb_track_transfer_batch_cancel		(RBTrackTransferBatch *batch);
 
+void			_rb_track_transfer_batch_continue	(RBTrackTransferBatch *batch,
+								 gboolean overwrite);
+
 G_END_DECLS
 
 #endif /* __RB_TRACK_TRANSFER_BATCH_H */

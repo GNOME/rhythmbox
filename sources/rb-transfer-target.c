@@ -360,15 +360,15 @@ track_done_cb (RBTrackTransferBatch *batch,
 	       GError *error,
 	       RBTransferTarget *target)
 {
-	if (error == NULL) {
-		rb_transfer_target_track_added (target, entry, dest, dest_size, dest_mediatype);
-	} else {
+	if (error != NULL) {
 		if (g_error_matches (error, RB_ENCODER_ERROR, RB_ENCODER_ERROR_OUT_OF_SPACE) ||
 		    g_error_matches (error, RB_ENCODER_ERROR, RB_ENCODER_ERROR_DEST_READ_ONLY)) {
 			rb_debug ("fatal transfer error: %s", error->message);
 			rb_track_transfer_batch_cancel (batch);
 		}
 		rb_transfer_target_track_add_error (target, entry, dest, error);
+	} else if (dest_size != 0) {
+		rb_transfer_target_track_added (target, entry, dest, dest_size, dest_mediatype);
 	}
 }
 

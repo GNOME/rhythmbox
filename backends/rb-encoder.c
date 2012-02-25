@@ -52,7 +52,6 @@ enum {
 	COMPLETED,
 	PREPARE_SOURCE,		/* this is on RBEncoderFactory */
 	PREPARE_SINK,		/* this is on RBEncoderFactory */
-	OVERWRITE,
 	LAST_SIGNAL
 };
 
@@ -154,24 +153,6 @@ rb_encoder_interface_init (RBEncoderIface *iface)
 			      rb_marshal_VOID__UINT64_STRING_POINTER,
 			      G_TYPE_NONE,
 			      3, G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_POINTER);
-	/**
-	 * RBEncoder::overwrite:
-	 * @encoder: the #RBEncoder instance
-	 * @file: the #GFile that may be overwritten
-	 *
-	 * Emitted when a destination file already exists.  If the
-	 * return value if %TRUE, the file will be overwritten, otherwise
-	 * the transfer will be aborted.
-	 */
-	signals[OVERWRITE] =
-		g_signal_new ("overwrite",
-			      G_TYPE_FROM_INTERFACE (iface),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBEncoderIface, overwrite),
-			      NULL, NULL,		/* need an accumulator here? */
-			      rb_marshal_BOOLEAN__OBJECT,
-			      G_TYPE_BOOLEAN,
-			      1, G_TYPE_OBJECT);
 }
 
 GType
@@ -221,6 +202,7 @@ rb_encoder_factory_get ()
  * @encoder: the #RBEncoder
  * @entry: the #RhythmDBEntry to transcode
  * @dest: destination file URI
+ * @overwrite: if %TRUE, overwrite @dest if it already exists
  * @profile: encoding profile to use, or NULL to just copy
  *
  * Initiates encoding, transcoding to the specified profile if specified.
@@ -232,11 +214,12 @@ void
 rb_encoder_encode (RBEncoder *encoder,
 		   RhythmDBEntry *entry,
 		   const char *dest,
+		   gboolean overwrite,
 		   GstEncodingProfile *profile)
 {
 	RBEncoderIface *iface = RB_ENCODER_GET_IFACE (encoder);
 
-	iface->encode (encoder, entry, dest, profile);
+	iface->encode (encoder, entry, dest, overwrite, profile);
 }
 
 /**
@@ -302,14 +285,6 @@ _rb_encoder_emit_completed (RBEncoder *encoder, guint64 dest_size, const char *m
 	g_signal_emit (encoder, signals[COMPLETED], 0, dest_size, mediatype, error);
 }
 
-gboolean
-_rb_encoder_emit_overwrite (RBEncoder *encoder, GFile *file)
-{
-	gboolean ret = FALSE;
-	g_signal_emit (encoder, signals[OVERWRITE], 0, file, &ret);
-	return ret;
-}
-
 void
 _rb_encoder_emit_prepare_source (RBEncoder *encoder, const char *uri, GObject *source)
 {
@@ -346,6 +321,7 @@ rb_encoder_error_get_type (void)
 			ENUM_ENTRY (RB_ENCODER_ERROR_FILE_ACCESS, "file-access-error"),
 			ENUM_ENTRY (RB_ENCODER_ERROR_OUT_OF_SPACE, "out-of-space"),
 			ENUM_ENTRY (RB_ENCODER_ERROR_DEST_READ_ONLY, "destination-read-only"),
+			ENUM_ENTRY (RB_ENCODER_ERROR_DEST_EXISTS, "destination-exists"),
 			{ 0, 0, 0 }
 		};
 
