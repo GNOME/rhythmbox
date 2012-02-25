@@ -1055,7 +1055,7 @@ construct_plugins (RBShell *shell)
 			rb_debug ("couldn't load plugin file %s", kf_path);
 		}
 		g_free (kf_path);
-		g_key_file_unref (keyfile);
+		g_key_file_free (keyfile);
 	}
 
 	if (new_plugins != NULL) {
