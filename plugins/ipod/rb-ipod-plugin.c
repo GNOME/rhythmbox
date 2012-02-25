@@ -213,18 +213,6 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 		return NULL;
 	}
 
-	if (rb_ipod_helpers_needs_init (mount)) {
-		gboolean inited;
-		gchar *builder_file;
-		builder_file = rb_find_plugin_data_file (G_OBJECT (plugin), "ipod-init.ui");
-		inited = rb_ipod_helpers_show_first_time_dialog (mount,
-								 builder_file);
-		g_free (builder_file);
-		if (!inited) {
-			return NULL;
-		}
-	}
-
 	g_object_get (plugin, "object", &shell, NULL);
 	src = RB_SOURCE (rb_ipod_source_new (G_OBJECT (plugin),
 					     shell,
@@ -236,7 +224,6 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 	g_signal_connect_object (G_OBJECT (src),
 				 "deleted", G_CALLBACK (rb_ipod_plugin_source_deleted),
 				 plugin, 0);
-
 	return src;
 }
 

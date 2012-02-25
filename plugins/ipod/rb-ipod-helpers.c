@@ -200,8 +200,8 @@ fill_one_generation (gpointer key, gpointer value, gpointer data)
 	}
 }
 
-static void
-fill_model_combo (GtkWidget *combo, const char *mount_path)
+void
+rb_ipod_helpers_fill_model_combo (GtkWidget *combo, const char *mount_path)
 {
 	GHashTable *models;
 	Itdb_Device *device;
@@ -235,85 +235,6 @@ fill_model_combo (GtkWidget *combo, const char *mount_path)
 					    renderer,
 					    set_cell,
 					    NULL, NULL);
-}
-
-gboolean
-rb_ipod_helpers_show_first_time_dialog (GMount *mount, const char *builder_file)
-{
-	/* could be an uninitialised iPod, ask the user */
-	GtkBuilder *builder;
-	GtkWidget *dialog;
-	GtkWidget *widget;
-	GtkWidget *name_widget;
-	GtkTreeModel *tree_model;
-	GtkTreeIter iter;
-	int response;
-	char *mountpoint;
-	const Itdb_IpodInfo *info;
-	char *ipod_name;
-	GFile *root;
-	GError *error = NULL;
-
-	root = g_mount_get_root (mount);
-	if (root == NULL) {
-		return FALSE;      
-	}
-	mountpoint = g_file_get_path (root);
-	g_object_unref (G_OBJECT (root));
-
-	if (mountpoint == NULL) {
-		return FALSE;
-	}
-
-	/* create message dialog with model-number combo box
-	 * and asking whether they want to initialise the iPod
-	 */
-	builder = rb_builder_load (builder_file, NULL);
-	if (builder == NULL) {
-		return FALSE;
-	}
-	dialog = GTK_WIDGET (gtk_builder_get_object (builder, "ipod_init"));
-	widget = GTK_WIDGET (gtk_builder_get_object (builder, "model_combo"));
-	name_widget = GTK_WIDGET (gtk_builder_get_object (builder, "name_entry"));
-	fill_model_combo (widget, mountpoint);
-	g_object_unref (builder);
-
-	rb_debug ("showing init dialog for ipod mount on '%s'", mountpoint);
-
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
-	if (response != GTK_RESPONSE_ACCEPT) {
-		gtk_widget_destroy (dialog);
-		g_free (mountpoint);
-		return FALSE;
-	}
-
-	/* get model number and name */
-	tree_model = gtk_combo_box_get_model (GTK_COMBO_BOX (widget));
-	if (!gtk_combo_box_get_active_iter (GTK_COMBO_BOX (widget), &iter)) {
-		gtk_widget_destroy (dialog);
-		g_free (mountpoint);
-		return FALSE;
-	}
-	gtk_tree_model_get (tree_model, &iter, COL_INFO, &info, -1);
-	ipod_name = g_strdup (gtk_entry_get_text (GTK_ENTRY (name_widget)));
-
-	gtk_widget_destroy (dialog);
-
-	rb_debug ("attempting to init ipod on '%s', with model '%s' and name '%s'",
-		  mountpoint, info->model_number, ipod_name);
-	if (!itdb_init_ipod (mountpoint, info->model_number, ipod_name, &error)) {
-		rb_error_dialog (NULL, _("Unable to initialize new iPod"), "%s", error->message);
-
-		g_free (mountpoint);
-		g_free (ipod_name);
-		g_error_free (error);
-		return FALSE;
-	}
-
-	g_free (mountpoint);
-	g_free (ipod_name);
-
-	return TRUE;
 }
 
 static gchar *

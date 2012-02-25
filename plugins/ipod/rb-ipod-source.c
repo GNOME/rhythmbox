@@ -57,6 +57,7 @@
 #include "rb-gst-media-types.h"
 #include "rb-transfer-target.h"
 #include "rb-ext-db.h"
+#include "rb-dialog.h"
 
 static void rb_ipod_device_source_init (RBDeviceSourceInterface *interface);
 static void rb_ipod_source_transfer_target_init (RBTransferTargetInterface *interface);
@@ -130,6 +131,11 @@ typedef struct
 	RBExtDB *art_store;
 
 	GQueue *offline_plays;
+
+	/* init dialog */
+	GtkWidget *init_dialog;
+	GtkWidget *model_combo;
+	GtkWidget *name_entry;
 } RBiPodSourcePrivate;
 
 typedef struct {
@@ -304,18 +310,12 @@ rb_ipod_source_init (RBiPodSource *source)
 }
 
 static void
-rb_ipod_source_constructed (GObject *object)
+finish_construction (RBiPodSource *source)
 {
-	RBiPodSource *source;
 	RBEntryView *songs;
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	GstEncodingTarget *target;
-	RBiPodSourcePrivate *priv;
 
-	RB_CHAIN_GOBJECT_METHOD (rb_ipod_source_parent_class, constructed, object);
-	source = RB_IPOD_SOURCE (object);
-	priv = IPOD_SOURCE_GET_PRIVATE (object);
-
-	rb_device_source_set_display_details (RB_DEVICE_SOURCE (source));
 
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
@@ -335,6 +335,129 @@ rb_ipod_source_constructed (GObject *object)
 	g_object_set (source, "encoding-target", target, NULL);
 
         rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
+}
+
+static void
+first_time_dialog_response_cb (GtkDialog *dialog, int response, RBiPodSource *source)
+{
+	const Itdb_IpodInfo *info;
+	GtkTreeModel *tree_model;
+	GtkTreeIter iter;
+	char *mountpoint;
+	char *ipod_name;
+	GFile *root;
+	GError *error = NULL;
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+
+	priv->init_dialog = NULL;
+
+	if (response != GTK_RESPONSE_ACCEPT) {
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
+		return;
+	}
+
+	/* get model number and name */
+	tree_model = gtk_combo_box_get_model (GTK_COMBO_BOX (priv->model_combo));
+	if (!gtk_combo_box_get_active_iter (GTK_COMBO_BOX (priv->model_combo), &iter)) {
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
+		return;
+	}
+	gtk_tree_model_get (tree_model, &iter, /* COL_INFO */ 0, &info, -1);
+	ipod_name = g_strdup (gtk_entry_get_text (GTK_ENTRY (priv->name_entry)));
+
+	/* get mountpoint again */
+	root = g_mount_get_root (priv->mount);
+	if (root == NULL) {
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+		return;
+	}
+	mountpoint = g_file_get_path (root);
+	g_object_unref (root);
+
+	rb_debug ("attempting to init ipod on '%s', with model '%s' and name '%s'",
+		  mountpoint, info->model_number, ipod_name);
+	if (!itdb_init_ipod (mountpoint, info->model_number, ipod_name, &error)) {
+		rb_error_dialog (NULL, _("Unable to initialize new iPod"), "%s", error->message);
+		g_error_free (error);
+		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
+	} else {
+		finish_construction (source);
+	}
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+	g_free (mountpoint);
+	g_free (ipod_name);
+}
+
+static gboolean
+create_init_dialog (RBiPodSource *source)
+{
+	GFile *root;
+	char *mountpoint;
+	char *builder_file;
+	GtkBuilder *builder;
+	GObject *plugin;
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+
+	root = g_mount_get_root (priv->mount);
+	if (root == NULL) {
+		return FALSE;
+	}
+	mountpoint = g_file_get_path (root);
+	g_object_unref (root);
+
+	if (mountpoint == NULL) {
+		return FALSE;
+	}
+
+	g_object_get (source, "plugin", &plugin, NULL);
+	builder_file = rb_find_plugin_data_file (G_OBJECT (plugin), "ipod-init.ui");
+	g_object_unref (plugin);
+
+	builder = rb_builder_load (builder_file, NULL);
+	g_free (builder_file);
+	if (builder == NULL) {
+		g_free (mountpoint);
+		return FALSE;
+	}
+
+	priv->init_dialog = GTK_WIDGET (gtk_builder_get_object (builder, "ipod_init"));
+	priv->model_combo = GTK_WIDGET (gtk_builder_get_object (builder, "model_combo"));
+	priv->name_entry = GTK_WIDGET (gtk_builder_get_object (builder, "name_entry"));
+	rb_ipod_helpers_fill_model_combo (priv->model_combo, mountpoint);
+
+	g_signal_connect (priv->init_dialog,
+			  "response",
+			  G_CALLBACK (first_time_dialog_response_cb),
+			  source);
+
+	g_object_unref (builder);
+	g_free (mountpoint);
+	return TRUE;
+}
+
+static void
+rb_ipod_source_constructed (GObject *object)
+{
+	RBiPodSource *source;
+	GMount *mount;
+
+	RB_CHAIN_GOBJECT_METHOD (rb_ipod_source_parent_class, constructed, object);
+	source = RB_IPOD_SOURCE (object);
+
+	g_object_get (source, "mount", &mount, NULL);
+
+	rb_device_source_set_display_details (RB_DEVICE_SOURCE (source));
+
+	if (rb_ipod_helpers_needs_init (mount)) {
+		if (create_init_dialog (source) == FALSE) {
+			rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
+		}
+	} else {
+		finish_construction (source);
+	}
 }
 
 static void
@@ -372,6 +495,11 @@ rb_ipod_source_dispose (GObject *object)
 	if (priv->art_store) {
 		g_object_unref (priv->art_store);
 		priv->art_store = NULL;
+	}
+
+	if (priv->init_dialog) {
+		gtk_widget_destroy (priv->init_dialog);
+		priv->init_dialog = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_ipod_source_parent_class)->dispose (object);
