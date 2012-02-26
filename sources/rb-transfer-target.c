@@ -367,7 +367,7 @@ track_done_cb (RBTrackTransferBatch *batch,
 			rb_track_transfer_batch_cancel (batch);
 		}
 		rb_transfer_target_track_add_error (target, entry, dest, error);
-	} else if (dest_size != 0) {
+	} else {
 		rb_transfer_target_track_added (target, entry, dest, dest_size, dest_mediatype);
 	}
 }

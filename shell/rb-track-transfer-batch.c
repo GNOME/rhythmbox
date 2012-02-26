@@ -71,7 +71,11 @@ static void	rb_track_transfer_batch_init (RBTrackTransferBatch *batch);
 
 static gboolean start_next (RBTrackTransferBatch *batch);
 static void start_encoding (RBTrackTransferBatch *batch, gboolean overwrite);
-static void track_transfer_completed (RBTrackTransferBatch *batch, guint64 dest_size, const char *mediatype, GError *error);
+static void track_transfer_completed (RBTrackTransferBatch *batch,
+				      guint64 dest_size,
+				      const char *mediatype,
+				      gboolean skipped,
+				      GError *error);
 
 static guint	signals[LAST_SIGNAL] = { 0 };
 
@@ -423,7 +427,7 @@ _rb_track_transfer_batch_continue (RBTrackTransferBatch *batch, gboolean overwri
 	if (overwrite) {
 		start_encoding (batch, TRUE);
 	} else {
-		track_transfer_completed (batch, 0, NULL, NULL);
+		track_transfer_completed (batch, 0, NULL, TRUE, NULL);
 	}
 }
 
@@ -458,6 +462,7 @@ static void
 track_transfer_completed (RBTrackTransferBatch *batch,
 			  guint64 dest_size,
 			  const char *mediatype,
+			  gboolean skipped,
 			  GError *error)
 {
 	RhythmDBEntry *entry;
@@ -476,12 +481,14 @@ track_transfer_completed (RBTrackTransferBatch *batch,
 		 * possible that a signal handler will cancel us.
 		 */
 		g_object_ref (batch);
-		g_signal_emit (batch, signals[TRACK_DONE], 0,
-			       entry,
-			       batch->priv->current_dest_uri,
-			       dest_size,
-			       mediatype,
-			       error);
+		if (skipped == FALSE) {
+			g_signal_emit (batch, signals[TRACK_DONE], 0,
+				       entry,
+				       batch->priv->current_dest_uri,
+				       dest_size,
+				       mediatype,
+				       error);
+		}
 
 		start_next (batch);
 
@@ -510,7 +517,7 @@ encoder_completed_cb (RBEncoder *encoder,
 		rb_debug ("encoder finished (error: %s)", error->message);
 	}
 
-	track_transfer_completed (batch, dest_size, mediatype, error);
+	track_transfer_completed (batch, dest_size, mediatype, FALSE, error);
 }
 
 static char *
