@@ -1079,6 +1079,7 @@ impl_track_added (RBTransferTarget *target,
 {
 	LIBMTP_track_t *track = NULL;
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (target);
+	RhythmDB *db;
 
 	track = g_hash_table_lookup (priv->track_transfer_map, dest);
 	if (track == NULL) {
@@ -1104,6 +1105,11 @@ impl_track_added (RBTransferTarget *target,
 			rb_ext_db_key_free (key);
 		}
 	}
+
+	db = get_db_for_source (RB_MTP_SOURCE (target));
+	add_mtp_track_to_db (RB_MTP_SOURCE (target), db, track);
+	g_object_unref (db);
+
 	queue_free_space_update (RB_MTP_SOURCE (target));
 	return FALSE;
 }
