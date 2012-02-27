@@ -28,6 +28,8 @@
 
 #include <config.h>
 
+#include <stdio.h>
+
 #include <glib/gi18n.h>
 #include <gio/gio.h>
 #include <gst/gst.h>
@@ -49,7 +51,6 @@ typedef enum {
 
 typedef GstElement *(*RBAddTaggerElem) (GstElement *pipeline, GstPad *srcpad, GstTagList *tags);
 
-static gboolean check_gst_plugin_version (const char *plugin, const char *element, gint major, gint minor, gint micro);
 G_DEFINE_TYPE(RBMetaData, rb_metadata, G_TYPE_OBJECT)
 
 struct RBMetaDataPrivate
@@ -263,31 +264,6 @@ rb_metadata_get_saveable_types (RBMetaData *md)
 }
 
 static gboolean
-check_gst_plugin_version (const char *plugin, const char *element, int major, int minor, int micro)
-{
-	const char *version;
-	GstPlugin *p;
-	guint i;
-	guint count;
-
-	if (gst_default_registry_check_feature_version (element, major, minor, micro + 1))
-		return TRUE;
-
-	if (!gst_default_registry_check_feature_version (element, major, minor, micro))
-		return FALSE;
-
-	p = gst_default_registry_find_plugin (plugin);
-	if (p == NULL)
-		return FALSE;
-
-	version = gst_plugin_get_version (p);
-
-	/* check if it's not a release */	/* what */
-	count = sscanf (version, "%u.%u.%u.%u", &i, &i, &i, &i);
-	return (count > 3);
-}
-
-static gboolean
 link_named_pad (GstPad *srcpad, GstElement *element, const char *sinkpadname)
 {
 	GstPad *sinkpad;
@@ -341,10 +317,7 @@ mp3_tagger (GstElement *pipeline, GstPad *srcpad, GstTagList *tags)
 	GstElement *mux = NULL;
 
 	/* try id3mux first, since it's more supported and writes id3v2.3 tags rather than v2.4.  */
-	if (check_gst_plugin_version ("id3mux", "id3mux", 0, 10, 12)) {
-		mux = gst_element_factory_make ("id3mux", NULL);
-	}
-
+	mux = gst_element_factory_make ("id3mux", NULL);
 	if (mux == NULL)
 		mux = gst_element_factory_make ("id3v2mux", NULL);
 
@@ -457,7 +430,7 @@ metadata_save_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean l
 	}
 
 	/* find a tagger function that accepts the caps */
-	caps = gst_pad_get_caps (pad);
+	caps = gst_pad_get_current_caps (pad);		/* is this right? */
 	caps_str = gst_caps_to_string (caps);
 	rb_debug ("finding tagger for src caps %s", caps_str);
 	g_free (caps_str);
@@ -542,7 +515,7 @@ metadata_save_autoplug_select_cb (GstElement *decodebin, GstPad *pad, GstCaps *c
 	}
 
 	src_caps = gst_caps_new_any ();
-	is_any = gst_element_factory_can_src_caps (factory, src_caps);
+	is_any = gst_element_factory_can_src_all_caps (factory, src_caps);	/* or _any_caps? */
 	gst_caps_unref (src_caps);
 	if (is_any) {
 		/* this is something like id3demux (though that will match the
@@ -551,7 +524,7 @@ metadata_save_autoplug_select_cb (GstElement *decodebin, GstPad *pad, GstCaps *c
 		return GST_AUTOPLUG_SELECT_TRY;
 	}
 
-	src_caps = gst_caps_from_string ("audio/x-raw-int; audio/x-raw-float; video/x-raw-yuv; video/x-raw-rgb; video/x-raw-gray");
+	src_caps = gst_caps_from_string ("audio/x-raw; video/x-raw");
 	is_raw = factory_src_caps_intersect (factory, src_caps);
 	gst_caps_unref (src_caps);
 
@@ -624,12 +597,12 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 		goto out;
 	}
 
-	decodebin = gst_element_factory_make ("decodebin2", "decoder");
+	decodebin = gst_element_factory_make ("decodebin", "decoder");
 	if (decodebin == NULL) {
 		g_set_error (error,
 			     RB_METADATA_ERROR,
 			     RB_METADATA_ERROR_MISSING_PLUGIN,
-			     _("Failed to create the 'decodebin2' element; check your GStreamer installation"));
+			     _("Failed to create the 'decodebin' element; check your GStreamer installation"));
 		goto out;
 	}
 
@@ -869,7 +842,7 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field, const GValue *val)
 			rb_debug ("Setting %s",tag);
 
 			if (md->priv->tags == NULL) {
-				md->priv->tags = gst_tag_list_new ();
+				md->priv->tags = gst_tag_list_new_empty ();
 			}
 
 			gst_tag_list_add_values (md->priv->tags,
@@ -915,8 +888,7 @@ rb_metadata_init (RBMetaData *md)
 			g_hash_table_insert (md->priv->taggers, "audio/x-flac", flac_tagger);
 		}
 
-		/* id3mux > 0.10.12 is the new one, not the broken old one. */
-		if (gst_element_factory_find ("id3v2mux") || check_gst_plugin_version ("id3mux", "id3mux", 0, 10, 12)) {
+		if (gst_element_factory_find ("id3v2mux") || gst_element_factory_find ("id3mux")) {
 			rb_debug ("id3 tagging available");
 			g_hash_table_insert (md->priv->taggers, "audio/mpeg", mp3_tagger);
 		}
@@ -938,7 +910,6 @@ rb_metadata_class_init (RBMetaDataClass *klass)
 	object_class->finalize = rb_metadata_finalize;
 
 	g_type_class_add_private (klass, sizeof (RBMetaDataPrivate));
-	rb_metadata_gst_register_transforms ();
 }
 
 RBMetaData *

@@ -37,8 +37,6 @@ G_BEGIN_DECLS
 const char *		rb_metadata_gst_field_to_gst_tag (RBMetaDataField field);
 RBMetaDataField		rb_metadata_gst_tag_to_field (const char *tag);
 
-void			rb_metadata_gst_register_transforms (void);
-
 G_END_DECLS
 
 #endif /* RB_METADATA_GST_COMMON_H */

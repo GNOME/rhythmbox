@@ -37,31 +37,6 @@
 #include "rb-metadata-gst-common.h"
 #include "rb-debug.h"
 
-static void
-gst_date_gulong_transform (const GValue *src, GValue *dest)
-{
-	const GDate *date = gst_value_get_date (src);
-
-	g_value_set_ulong (dest, (date) ? g_date_get_julian (date) : 0);
-}
-
-static void
-gulong_gst_date_transform (const GValue *src, GValue *dest)
-{
-	gulong day = g_value_get_ulong (src);
-	GDate *date = g_date_new_julian (day);
-
-	gst_value_set_date (dest, date);
-	g_date_free (date);
-}
-
-void
-rb_metadata_gst_register_transforms ()
-{
-	g_value_register_transform_func (GST_TYPE_DATE, G_TYPE_ULONG, gst_date_gulong_transform);
-	g_value_register_transform_func (G_TYPE_ULONG, GST_TYPE_DATE, gulong_gst_date_transform);
-}
-
 RBMetaDataField
 rb_metadata_gst_tag_to_field (const char *tag)
 {
