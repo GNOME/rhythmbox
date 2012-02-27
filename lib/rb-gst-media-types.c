@@ -115,8 +115,8 @@ rb_gst_caps_to_media_type (const GstCaps *caps)
 	media_type = gst_structure_get_name (s);
 	if (media_type == NULL) {
 		return NULL;
-	} else if (g_str_has_prefix (media_type, "audio/x-raw-") ||
-	    g_str_has_prefix (media_type, "video/x-raw-")) {
+	} else if (g_str_has_prefix (media_type, "audio/x-raw") ||
+	    g_str_has_prefix (media_type, "video/x-raw")) {
 		/* ignore raw types */
 		return NULL;
 	} else if (g_str_equal (media_type, "audio/mpeg")) {
