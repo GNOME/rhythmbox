@@ -36,7 +36,7 @@
 #include <glib/gi18n.h>
 #include <gdk/gdk.h>
 #include <gst/tag/tag.h>
-#include <gst/interfaces/streamvolume.h>
+#include <gst/audio/streamvolume.h>
 #include <gst/pbutils/pbutils.h>
 
 #include "rb-debug.h"
@@ -175,7 +175,7 @@ emit_volume_changed_idle (RBPlayerGst *player)
 {
 	double vol;
 
-	if (gst_element_implements_interface (player->priv->playbin, GST_TYPE_STREAM_VOLUME)) {
+	if (GST_IS_STREAM_VOLUME (player->priv->playbin)) {
 		vol = gst_stream_volume_get_volume (GST_STREAM_VOLUME (player->priv->playbin),
 						    GST_STREAM_VOLUME_FORMAT_CUBIC);
 	} else {
@@ -315,7 +315,7 @@ set_playbin_volume (RBPlayerGst *player, float volume)
 	 * we still get another one anyway.
 	 */
 	g_signal_handlers_block_by_func (player->priv->playbin, volume_notify_cb, player);
-	if (gst_element_implements_interface (player->priv->playbin, GST_TYPE_STREAM_VOLUME))
+	if (GST_IS_STREAM_VOLUME (player->priv->playbin))
 		gst_stream_volume_set_volume (GST_STREAM_VOLUME (player->priv->playbin),
 					      GST_STREAM_VOLUME_FORMAT_CUBIC, volume);
 	else
@@ -588,8 +588,8 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 		if (gst_is_missing_plugin_message (message)) {
 			handle_missing_plugin_message (mp, message);
 		} else if (mp->priv->playbin_stream_changing &&
-			   gst_structure_has_name (structure, "playbin2-stream-changed")) {
-			rb_debug ("got playbin2-stream-changed message");
+			   gst_structure_has_name (structure, "playbin-stream-changed")) {
+			rb_debug ("got playbin-stream-changed message");
 			mp->priv->playbin_stream_changing = FALSE;
 			emit_playing_stream_and_tags (mp, TRUE);
 		} else if (gst_structure_has_name (structure, "redirect")) {
@@ -609,20 +609,9 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 }
 
 static void
-source_notify_cb (GObject *object, GParamSpec *pspec, RBPlayerGst *player)
+source_setup_cb (GstElement *playbin, GstElement *source, RBPlayerGst *player)
 {
-	GstElement *source;
-
-	if (player->priv->uri == NULL) {
-		rb_debug ("got notify::source while changing to NULL");
-		return;
-	}
-
-	g_object_get (object, "source", &source, NULL);
-
 	g_signal_emit (player, signals[PREPARE_SOURCE], 0, player->priv->uri, source);
-
-	g_object_unref (source);
 }
 
 static gboolean
@@ -630,13 +619,12 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 {
 	GstElement *sink;
 
-	mp->priv->playbin = gst_element_factory_make ("playbin2", NULL);
+	mp->priv->playbin = gst_element_factory_make ("playbin", NULL);
 	if (mp->priv->playbin == NULL) {
 		g_set_error (error,
 			     RB_PLAYER_ERROR,
 			     RB_PLAYER_ERROR_GENERAL,
-			     _("Failed to create %s element; check your GStreamer installation"),
-			     "playbin2");
+			     _("Failed to create playbin element; check your GStreamer installation"));
 		return FALSE;
 	}
 	g_signal_connect_object (G_OBJECT (mp->priv->playbin),
@@ -648,8 +636,8 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 				 G_CALLBACK (volume_notify_cb),
 				 mp, 0);
 	g_signal_connect_object (G_OBJECT (mp->priv->playbin),
-				 "notify::source",
-				 G_CALLBACK (source_notify_cb),
+				 "source-setup",
+				 G_CALLBACK (source_setup_cb),
 				 mp, 0);
 
 	gst_bus_add_watch (gst_element_get_bus (mp->priv->playbin),
@@ -704,7 +692,7 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 		gst_bin_add_many (GST_BIN (mp->priv->sinkbin), mp->priv->filterbin, mp->priv->tee, queue, mp->priv->audio_sink, NULL);
 		gst_element_link_many (mp->priv->filterbin, mp->priv->tee, queue, mp->priv->audio_sink, NULL);
 
-		pad = gst_element_get_pad (mp->priv->filterbin, "sink");
+		pad = gst_element_get_static_pad (mp->priv->filterbin, "sink");
 		ghostpad = gst_ghost_pad_new ("sink", pad);
 		gst_element_add_pad (mp->priv->sinkbin, ghostpad);
 		gst_object_unref (pad);
@@ -964,7 +952,7 @@ impl_get_time (RBPlayer *player)
 		gint64 position = -1;
 		GstFormat fmt = GST_FORMAT_TIME;
 
-		gst_element_query_position (mp->priv->playbin, &fmt, &position);
+		gst_element_query_position (mp->priv->playbin, fmt, &position);
 		return position;
 	} else {
 		return -1;
@@ -996,7 +984,7 @@ impl_remove_tee (RBPlayerGstTee *player, GstElement *element)
 	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
 	if (mp->priv->tee == NULL) {
-		gst_object_sink (element);
+		gst_object_ref_sink (element);
 		mp->priv->waiting_tees = g_list_remove (mp->priv->waiting_tees, element);
 		return TRUE;
 	}
@@ -1022,7 +1010,7 @@ impl_remove_filter (RBPlayerGstFilter *player, GstElement *element)
 	RBPlayerGst *mp = RB_PLAYER_GST (player);
 
 	if (mp->priv->filterbin == NULL) {
-		gst_object_sink (element);
+		gst_object_ref_sink (element);
 		mp->priv->waiting_filters = g_list_remove (mp->priv->waiting_filters, element);
 		return TRUE;
 	}
@@ -1122,13 +1110,13 @@ impl_dispose (GObject *object)
 	}
 
 	if (mp->priv->waiting_tees != NULL) {
-		g_list_foreach (mp->priv->waiting_tees, (GFunc)gst_object_sink, NULL);
+		g_list_foreach (mp->priv->waiting_tees, (GFunc)gst_object_ref_sink, NULL);
 		g_list_free (mp->priv->waiting_tees);
 		mp->priv->waiting_tees = NULL;
 	}
 
 	if (mp->priv->waiting_filters != NULL) {
-		g_list_foreach (mp->priv->waiting_filters, (GFunc)gst_object_sink, NULL);
+		g_list_foreach (mp->priv->waiting_filters, (GFunc)gst_object_ref_sink, NULL);
 		g_list_free (mp->priv->waiting_filters);
 		mp->priv->waiting_filters = NULL;
 	}
