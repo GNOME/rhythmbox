@@ -696,10 +696,11 @@ AM_CONDITIONAL([ENABLE_BROWSER_PLUGIN], test x$enable_browser_plugin = xyes)
 dnl ================================================================
 dnl Use libdmapsharing for DAAP?
 dnl ================================================================
-AC_ARG_ENABLE(daap,
-              AC_HELP_STRING([--disable-daap],
-                             [Disable DAAP support]),,
-              enable_daap=auto)
+dnl AC_ARG_ENABLE(daap,
+dnl               AC_HELP_STRING([--disable-daap],
+dnl                             [Disable DAAP support]),,
+dnl              enable_daap=auto)
+enable_daap=no
 if test "x$enable_daap" != "xno"; then
 	PKG_CHECK_MODULES(DMAPSHARING, libdmapsharing-3.0 >= 2.9.11,
 			  have_libdmapsharing=yes,
@@ -720,10 +721,11 @@ AC_SUBST(DMAPSHARING_LIBS)
 dnl ================================================================
 dnl clutter for visualizer plugin
 dnl ================================================================
-AC_ARG_ENABLE(visualizer,
-              AC_HELP_STRING([--disable-visualizer],
-                             [Disable visualizer plugin support]),,
-              enable_visualizer=auto)
+dnl AC_ARG_ENABLE(visualizer,
+dnl               AC_HELP_STRING([--disable-visualizer],
+dnl                              [Disable visualizer plugin support]),,
+dnl               enable_visualizer=auto)
+enable_visualizer=no
 if test "x$enable_visualizer" != "xno"; then
 	PKG_CHECK_MODULES(CLUTTER,
 			  clutter-1.0 >= 1.2			\
