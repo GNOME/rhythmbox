@@ -178,11 +178,11 @@ rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass)
 	 */
 	g_object_class_install_property (object_class,
 					 PROP_ENCODING_TARGET,
-					 gst_param_spec_mini_object ("encoding-target",
-								     "encoding target",
-								     "GstEncodingTarget",
-								     GST_TYPE_ENCODING_TARGET,
-								     G_PARAM_READWRITE));
+					 g_param_spec_object ("encoding-target",
+							      "encoding target",
+							      "GstEncodingTarget",
+							      GST_TYPE_ENCODING_TARGET,
+							      G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RBMediaPlayerSourcePrivate));
 }
@@ -227,7 +227,7 @@ rb_media_player_source_set_property (GObject *object,
 		if (priv->encoding_target) {
 			gst_encoding_target_unref (priv->encoding_target);
 		}
-		priv->encoding_target = GST_ENCODING_TARGET (gst_value_dup_mini_object (value));
+		priv->encoding_target = GST_ENCODING_TARGET (g_value_dup_object (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -247,7 +247,7 @@ rb_media_player_source_get_property (GObject *object,
 		/* not actually supported in the base class */
 		break;
 	case PROP_ENCODING_TARGET:
-		gst_value_set_mini_object (value, GST_MINI_OBJECT (priv->encoding_target));
+		g_value_set_object (value, priv->encoding_target);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
