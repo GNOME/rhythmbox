@@ -61,43 +61,18 @@ static GstStaticPadTemplate srctemplate = GST_STATIC_PAD_TEMPLATE ("src",
 	GST_PAD_ALWAYS,
 	GST_STATIC_CAPS_ANY);
 
-static GstElementDetails rb_fm_radio_src_details =
-GST_ELEMENT_DETAILS ("RB Silence Source",
-	"Source/File",
-	"Outputs buffers of silence",
-	"James Henstridge <james@jamesh.id.au>");
-
 GType rb_fm_radio_src_get_type (void);
 static void rb_fm_radio_src_uri_handler_init (gpointer g_iface,
 					      gpointer iface_data);
 
-static void
-_do_init (GType fmradio_src_type)
-{
-	static const GInterfaceInfo urihandler_info = {
-		rb_fm_radio_src_uri_handler_init,
-		NULL,
-		NULL
-	};
-
-	g_type_add_interface_static (fmradio_src_type, GST_TYPE_URI_HANDLER,
-				     &urihandler_info);
-}
-
-GST_BOILERPLATE_FULL (RBFMRadioSrc, rb_fm_radio_src,
-		      GstBin, GST_TYPE_BIN, _do_init);
+G_DEFINE_TYPE_WITH_CODE (RBFMRadioSrc,
+			 rb_fm_radio_src,
+			 GST_TYPE_BIN,
+			 G_IMPLEMENT_INTERFACE (GST_TYPE_URI_HANDLER,
+						rb_fm_radio_src_uri_handler_init));
 
 static void
-rb_fm_radio_src_base_init (gpointer g_class)
-{
-	GstElementClass *element_class = GST_ELEMENT_CLASS (g_class);
-	gst_element_class_add_pad_template (element_class,
-		gst_static_pad_template_get (&srctemplate));
-	gst_element_class_set_details (element_class, &rb_fm_radio_src_details);
-}
-
-static void
-rb_fm_radio_src_init (RBFMRadioSrc *src, RBFMRadioSrcClass *klass)
+rb_fm_radio_src_init (RBFMRadioSrc *src)
 {
 	GstPad *pad;
 
@@ -130,43 +105,52 @@ rb_fm_radio_src_finalize (GObject *object)
 	if (src->audiotestsrc)
 		gst_object_unref (src->audiotestsrc);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_fm_radio_src_parent_class)->finalize (object);
 }
 
 static void
 rb_fm_radio_src_class_init (RBFMRadioSrcClass *klass)
 {
 	GObjectClass *object_class;
+	GstElementClass *element_class;
 
 	object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = rb_fm_radio_src_finalize;
+
+	element_class = GST_ELEMENT_CLASS (klass);
+	gst_element_class_add_pad_template (element_class,
+		gst_static_pad_template_get (&srctemplate));
+	gst_element_class_set_details_simple (element_class,
+					      "RB Silence Source",
+					      "Source/File",
+					      "Outputs buffers of silence",
+					      "James Henstridge <james@jamesh.id.au>");
 }
 
 
 /* URI handler interface */
 
 static guint
-rb_fm_radio_src_uri_get_type (void)
+rb_fm_radio_src_uri_get_type (GType type)
 {
 	return GST_URI_SRC;
 }
 
-static gchar **
-rb_fm_radio_src_uri_get_protocols (void)
+static const gchar *const *
+rb_fm_radio_src_uri_get_protocols (GType type)
 {
-	static gchar *protocols[] = {"xrbsilence", NULL};
+	static const gchar *protocols[] = {"xrbsilence", NULL};
 	return protocols;
 }
 
-static const gchar *
+static gchar *
 rb_fm_radio_src_uri_get_uri (GstURIHandler *handler)
 {
-	return "xrbsilence:///";
+	return g_strdup ("xrbsilence:///");
 }
 
 static gboolean
-rb_fm_radio_src_uri_set_uri (GstURIHandler *handler,
-			   const gchar *uri)
+rb_fm_radio_src_uri_set_uri (GstURIHandler *handler, const gchar *uri, GError **error)
 {
 	if (g_str_has_prefix (uri, "xrbsilence://") == FALSE)
 		return FALSE;
@@ -175,8 +159,7 @@ rb_fm_radio_src_uri_set_uri (GstURIHandler *handler,
 }
 
 static void
-rb_fm_radio_src_uri_handler_init (gpointer g_iface,
-				gpointer iface_data)
+rb_fm_radio_src_uri_handler_init (gpointer g_iface, gpointer iface_data)
 {
 	GstURIHandlerInterface *iface = (GstURIHandlerInterface *) g_iface;
 
@@ -193,12 +176,12 @@ plugin_init (GstPlugin *plugin)
 	return ret;
 }
 
-GST_PLUGIN_DEFINE_STATIC (GST_VERSION_MAJOR,
-			  GST_VERSION_MINOR,
-			  "rbsilencesrc",
-			  "element to output silence",
-			  plugin_init,
-			  VERSION,
-			  "GPL",
-			  PACKAGE,
-			  "");
+GST_PLUGIN_DEFINE (GST_VERSION_MAJOR,
+		   GST_VERSION_MINOR,
+		   "rbsilencesrc",
+		   "element to output silence",
+		   plugin_init,
+		   VERSION,
+		   "GPL",
+		   PACKAGE,
+		   "");
