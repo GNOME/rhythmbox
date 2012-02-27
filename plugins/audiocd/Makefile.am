@@ -12,8 +12,7 @@ libaudiocd_la_LIBTOOLFLAGS = --tag=disable-static
 
 libaudiocd_la_LIBADD = \
 	$(top_builddir)/shell/librhythmbox-core.la	\
-	$(TOTEM_PLPARSER_LIBS)				\
-	$(GSTCDDA_LIBS)
+	$(TOTEM_PLPARSER_LIBS)
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
@@ -38,7 +37,6 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(RHYTHMBOX_CFLAGS)				\
-	$(GSTCDDA_CFLAGS)				\
 	-DUSE_TOTEM_PL_PARSER				\
 	-D_BSD_SOURCE
 
