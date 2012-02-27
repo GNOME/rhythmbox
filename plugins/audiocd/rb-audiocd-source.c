@@ -33,6 +33,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <gst/gst.h>
+#include <gst/audio/gstaudiocdsrc.h>
 
 #include "rhythmdb.h"
 #include "rb-shell.h"
@@ -601,6 +602,8 @@ submit_info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSo
 		}
 		g_free (submit_url);
 	}
+#endif
+
 
 	clear_info_bar (source);
 }
