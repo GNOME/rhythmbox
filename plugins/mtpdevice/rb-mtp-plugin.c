@@ -60,6 +60,7 @@
 #include "rb-shell.h"
 #include "rb-stock-icons.h"
 #include "rb-removable-media-manager.h"
+#include "rb-mtp-gst.h"
 
 
 #define RB_TYPE_MTP_PLUGIN		(rb_mtp_plugin_get_type ())
@@ -536,9 +537,7 @@ peas_register_types (PeasObjectModule *module)
 	_rb_mtp_source_register_type (G_TYPE_MODULE (module));
 	_rb_mtp_thread_register_type (G_TYPE_MODULE (module));
 
-	/* ensure the gstreamer elements get linked in */
-	rb_mtp_src_get_type ();
-	rb_mtp_sink_get_type ();
+	rb_mtp_gst_init ();
 
 	peas_object_module_register_extension_type (module,
 						    PEAS_TYPE_ACTIVATABLE,

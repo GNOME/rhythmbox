@@ -6,6 +6,8 @@ plugin_LTLIBRARIES = libmtpdevice.la
 
 libmtpdevice_la_SOURCES = \
 	rb-mtp-plugin.c	\
+	rb-mtp-gst.c \
+	rb-mtp-gst.h \
 	rb-mtp-gst-src.c \
 	rb-mtp-gst-sink.c \
 	rb-mtp-source.c	\
