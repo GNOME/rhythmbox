@@ -33,6 +33,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <stdlib.h>
 
 #include <glib/gi18n.h>
 #include <libmtp.h>
@@ -88,38 +89,16 @@ static GstStaticPadTemplate srctemplate = GST_STATIC_PAD_TEMPLATE ("src",
 	GST_STATIC_CAPS_ANY);
 
 GType rb_mtp_src_get_type (void);
-static void rb_mtp_src_uri_handler_init (gpointer g_iface, gpointer iface_data);
+static void uri_handler_init (gpointer g_iface, gpointer iface_data);
+
+G_DEFINE_TYPE_WITH_CODE (RBMTPSrc,
+			 rb_mtp_src,
+			 GST_TYPE_BASE_SRC,
+			 G_IMPLEMENT_INTERFACE (GST_TYPE_URI_HANDLER,
+						uri_handler_init));
 
 static void
-_do_init (GType mtp_src_type)
-{
-	static const GInterfaceInfo urihandler_info = {
-		rb_mtp_src_uri_handler_init,
-		NULL,
-		NULL
-	};
-
-	g_type_add_interface_static (mtp_src_type, GST_TYPE_URI_HANDLER,
-			&urihandler_info);
-}
-
-GST_BOILERPLATE_FULL (RBMTPSrc, rb_mtp_src, GstBaseSrc, GST_TYPE_BASE_SRC, _do_init);
-
-static void
-rb_mtp_src_base_init (gpointer g_class)
-{
-	GstElementClass *element_class = GST_ELEMENT_CLASS (g_class);
-	gst_element_class_add_pad_template (element_class,
-		gst_static_pad_template_get (&srctemplate));
-	gst_element_class_set_details_simple (element_class,
-					      "RB MTP Source",
-					      "Source/File",
-					      "Downloads and plays files from MTP devices",
-					      "Jonathan Matthew <jonathan@d14n.org>");
-}
-
-static void
-rb_mtp_src_init (RBMTPSrc *src, RBMTPSrcClass *klass)
+rb_mtp_src_init (RBMTPSrc *src)
 {
 	src->download_mutex = g_mutex_new ();
 	src->download_cond = g_cond_new ();
@@ -154,10 +133,10 @@ rb_mtp_src_set_uri (RBMTPSrc *src, const char *uri)
 }
 
 static GstFlowReturn
-rb_mtp_src_create (GstBaseSrc *basesrc, guint64 offset, guint length, GstBuffer **buffer)
+rb_mtp_src_fill (GstBaseSrc *basesrc, guint64 offset, guint length, GstBuffer *buf)
 {
 	RBMTPSrc *src = RB_MTP_SRC (basesrc);
-	GstBuffer *buf;
+	GstMapInfo mapinfo;
 	int ret;
 
 	/* seek if required */
@@ -172,29 +151,24 @@ rb_mtp_src_create (GstBaseSrc *basesrc, guint64 offset, guint length, GstBuffer 
 		src->read_position = offset;
 	}
 
-	buf = gst_buffer_try_new_and_alloc (length);
-	if (buf == NULL && length > 0) {
-		GST_ERROR_OBJECT (src, "Failed to allocate %u bytes", length);
-		return GST_FLOW_ERROR;
-	}
-
 	if (length > 0) {
-		ret = read (src->fd, GST_BUFFER_DATA (buf), length);
+		gst_buffer_map (buf, &mapinfo, GST_MAP_WRITE);
+		ret = read (src->fd, mapinfo.data, length);
 		if (ret < length) {
 			GST_ELEMENT_ERROR (src, RESOURCE, READ, (NULL), GST_ERROR_SYSTEM);
+			gst_buffer_unmap (buf, &mapinfo);
 			gst_buffer_unref (buf);
 			return GST_FLOW_ERROR;
 		}
 
-		length = ret;
-		GST_BUFFER_SIZE (buf) = length;
+		gst_buffer_unmap (buf, &mapinfo);
+		gst_buffer_resize (buf, 0, length);
 		GST_BUFFER_OFFSET (buf) = offset;
 		GST_BUFFER_OFFSET_END (buf) = offset + length;
 
 		src->read_position += length;
 	}
 
-	*buffer = buf;
 	return GST_FLOW_OK;
 }
 
@@ -362,7 +336,7 @@ rb_mtp_src_dispose (GObject *object)
 		src->device_thread = NULL;
 	}
 
-	G_OBJECT_CLASS (parent_class)->dispose (object);
+	G_OBJECT_CLASS (rb_mtp_src_parent_class)->dispose (object);
 }
 
 static void
@@ -385,7 +359,7 @@ rb_mtp_src_finalize (GObject *object)
 		src->tempfile = NULL;
 	}
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_mtp_src_parent_class)->finalize (object);
 }
 
 static void
@@ -393,6 +367,7 @@ rb_mtp_src_class_init (RBMTPSrcClass *klass)
 {
 	GObjectClass *gobject_class;
 	GstBaseSrcClass *basesrc_class;
+	GstElementClass *element_class;
 
 	gobject_class = G_OBJECT_CLASS (klass);
 	gobject_class->dispose = rb_mtp_src_dispose;
@@ -405,7 +380,7 @@ rb_mtp_src_class_init (RBMTPSrcClass *klass)
 	basesrc_class->stop = GST_DEBUG_FUNCPTR (rb_mtp_src_stop);
 	basesrc_class->is_seekable = GST_DEBUG_FUNCPTR (rb_mtp_src_is_seekable);
 	basesrc_class->get_size = GST_DEBUG_FUNCPTR (rb_mtp_src_get_size);
-	basesrc_class->create = GST_DEBUG_FUNCPTR (rb_mtp_src_create);
+	basesrc_class->fill = GST_DEBUG_FUNCPTR (rb_mtp_src_fill);
 
 	g_object_class_install_property (gobject_class,
 					 PROP_URI,
@@ -421,34 +396,42 @@ rb_mtp_src_class_init (RBMTPSrcClass *klass)
 							      "device handling thread",
 							      G_TYPE_OBJECT,
 							      G_PARAM_READWRITE));
+
+	element_class = GST_ELEMENT_CLASS (klass);
+	gst_element_class_add_pad_template (element_class,
+		gst_static_pad_template_get (&srctemplate));
+	gst_element_class_set_details_simple (element_class,
+					      "RB MTP Source",
+					      "Source/File",
+					      "Downloads and plays files from MTP devices",
+					      "Jonathan Matthew <jonathan@d14n.org>");
 }
 
 
 /* URI handler interface */
 
 static guint
-rb_mtp_src_uri_get_type (void)
+rb_mtp_src_uri_get_type (GType type)
 {
 	return GST_URI_SRC;
 }
 
-static gchar **
-rb_mtp_src_uri_get_protocols (void)
+static const gchar *const *
+rb_mtp_src_uri_get_protocols (GType type)
 {
-	static gchar *protocols[] = {"xrbmtp", NULL};
+	static const gchar *protocols[] = {"xrbmtp", NULL};
 	return protocols;
 }
 
-static const gchar *
+static gchar *
 rb_mtp_src_uri_get_uri (GstURIHandler *handler)
 {
 	RBMTPSrc *src = RB_MTP_SRC (handler);
-
-	return src->track_uri;
+	return g_strdup (src->track_uri);
 }
 
 static gboolean
-rb_mtp_src_uri_set_uri (GstURIHandler *handler, const gchar *uri)
+rb_mtp_src_uri_set_uri (GstURIHandler *handler, const gchar *uri, GError **error)
 {
 	RBMTPSrc *src = RB_MTP_SRC (handler);
 
@@ -464,7 +447,7 @@ rb_mtp_src_uri_set_uri (GstURIHandler *handler, const gchar *uri)
 }
 
 static void
-rb_mtp_src_uri_handler_init (gpointer g_iface, gpointer iface_data)
+uri_handler_init (gpointer g_iface, gpointer iface_data)
 {
 	GstURIHandlerInterface *iface = (GstURIHandlerInterface *) g_iface;
 
@@ -473,20 +456,3 @@ rb_mtp_src_uri_handler_init (gpointer g_iface, gpointer iface_data)
 	iface->get_uri = rb_mtp_src_uri_get_uri;
 	iface->set_uri = rb_mtp_src_uri_set_uri;
 }
-
-static gboolean
-plugin_init (GstPlugin *plugin)
-{
-	gboolean ret = gst_element_register (plugin, "rbmtpsrc", GST_RANK_PRIMARY, RB_TYPE_MTP_SRC);
-	return ret;
-}
-
-GST_PLUGIN_DEFINE_STATIC (GST_VERSION_MAJOR,
-			  GST_VERSION_MINOR,
-			  "rbmtpsrc",
-			  "element to download and play files from MTP devices",
-			  plugin_init,
-			  VERSION,
-			  "GPL",
-			  PACKAGE,
-			  "");
