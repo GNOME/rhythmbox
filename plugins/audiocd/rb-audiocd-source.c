@@ -37,7 +37,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <gst/gst.h>
-#include <gst/cdda/gstcddabasesrc.h>
+#include <gst/audio/gstaudiocdsrc.h>
 
 #include "rhythmdb.h"
 #include "rb-shell.h"
@@ -623,13 +623,13 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 {
 	RhythmDBEntry *entry;
 	char *audio_path;
-	guint64 duration;
+	/* guint64 duration; */
 	GValue value = {0, };
 	gchar *str;
 	RhythmDBEntryType *entry_type;
 	RBAudioCDEntryData *extra_data;
 
-	audio_path = g_strdup_printf ("cdda://%d#%s", track_number, source->priv->device_path);
+	audio_path = g_strdup_printf ("cdda://%s#%d", source->priv->device_path, track_number);
 
 	g_object_get (source, "entry-type", &entry_type, NULL);
 	rb_debug ("Audio CD - create entry for track %d from %s", track_number, audio_path);
@@ -659,7 +659,8 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 
 	/* determine the duration
 	 * FIXME: http://bugzilla.gnome.org/show_bug.cgi?id=551011 */
-	if (gst_tag_list_get_uint64 (GST_CDDA_BASE_SRC(source->priv->cdda)->tracks[track_number - 1].tags, GST_TAG_DURATION, &duration)) {
+#if 0
+	if (gst_tag_list_get_uint64 (GST_AUDIO_CD_SRC (source->priv->cdda)->tracks[track_number - 1].tags, GST_TAG_DURATION, &duration)) {
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, (gulong)(duration / GST_SECOND));
 		rhythmdb_entry_set (db, entry,
@@ -669,11 +670,13 @@ rb_audiocd_create_track_entry (RBAudioCdSource *source,
 	} else {
 		g_warning ("Failed to query cd track duration");
 	}
+#endif
+
 
 	entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST, FALSE, NULL);
 	entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM, FALSE, NULL);
 	entry_set_string_prop (db, entry, RHYTHMDB_PROP_GENRE, FALSE, NULL);
-	entry_set_string_prop (db, entry, RHYTHMDB_PROP_MEDIA_TYPE, TRUE, "audio/x-raw-int");
+	entry_set_string_prop (db, entry, RHYTHMDB_PROP_MEDIA_TYPE, TRUE, "audio/x-raw");
 
 	extra_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioCDEntryData);
 	extra_data->extract = TRUE;
@@ -689,12 +692,7 @@ rb_audiocd_get_cd_info (RBAudioCdSource *source,
 			gint64 *num_tracks)
 {
 	GstFormat fmt = gst_format_get_by_nick ("track");
-	GstFormat out_fmt = fmt;
-	if (!gst_element_query_duration (source->priv->cdda, &out_fmt, num_tracks) || out_fmt != fmt) {
-		return FALSE;
-	}
-
-	return TRUE;
+	return gst_element_query_duration (source->priv->cdda, fmt, num_tracks);
 }
 
 static gboolean
