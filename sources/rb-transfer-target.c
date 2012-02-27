@@ -462,9 +462,9 @@ rb_transfer_target_default_init (RBTransferTargetInterface *interface)
 	interface->should_transfer = default_should_transfer;
 
 	g_object_interface_install_property (interface,
-					     gst_param_spec_mini_object ("encoding-target",
-									 "encoding target",
-									 "GstEncodingTarget",
-									 GST_TYPE_ENCODING_TARGET,
-									 G_PARAM_READWRITE));
+					     g_param_spec_object ("encoding-target",
+								  "encoding target",
+								  "GstEncodingTarget",
+								  GST_TYPE_ENCODING_TARGET,
+								  G_PARAM_READWRITE));
 }

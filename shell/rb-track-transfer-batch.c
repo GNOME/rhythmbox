@@ -690,7 +690,7 @@ impl_set_property (GObject *object,
 	RBTrackTransferBatch *batch = RB_TRACK_TRANSFER_BATCH (object);
 	switch (prop_id) {
 	case PROP_ENCODING_TARGET:
-		batch->priv->target = GST_ENCODING_TARGET (gst_value_dup_mini_object (value));
+		batch->priv->target = GST_ENCODING_TARGET (g_value_dup_object (value));
 		break;
 	case PROP_SOURCE:
 		batch->priv->source = g_value_dup_object (value);
@@ -713,7 +713,7 @@ impl_get_property (GObject *object,
 	RBTrackTransferBatch *batch = RB_TRACK_TRANSFER_BATCH (object);
 	switch (prop_id) {
 	case PROP_ENCODING_TARGET:
-		gst_value_set_mini_object (value, GST_MINI_OBJECT (batch->priv->target));
+		g_value_set_object (value, batch->priv->target);
 		break;
 	case PROP_SOURCE:
 		g_value_set_object (value, batch->priv->source);
@@ -817,11 +817,11 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 	 */
 	g_object_class_install_property (object_class,
 					 PROP_ENCODING_TARGET,
-					 gst_param_spec_mini_object ("encoding-target",
-								     "encoding target",
-								     "GstEncodingTarget",
-								     GST_TYPE_ENCODING_TARGET,
-								     G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+					 g_param_spec_object ("encoding-target",
+							      "encoding target",
+							      "GstEncodingTarget",
+							      GST_TYPE_ENCODING_TARGET,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
 	 * RBTrackTransferBatch:source:
 	 *
