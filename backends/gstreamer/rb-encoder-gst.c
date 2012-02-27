@@ -474,10 +474,10 @@ attach_output_pipeline (RBEncoderGst *encoder,
 						return FALSE;
 					}
 				} else {
-					g_set_error (error,
-						     RB_ENCODER_ERROR,
-						     RB_ENCODER_ERROR_DEST_EXISTS,
-						     local_error->message);
+					g_set_error_literal (error,
+							     RB_ENCODER_ERROR,
+							     RB_ENCODER_ERROR_DEST_EXISTS,
+							     local_error->message);
 					g_error_free (local_error);
 					return FALSE;
 				}
