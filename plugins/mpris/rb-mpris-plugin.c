@@ -1532,7 +1532,7 @@ impl_activate (PeasActivatable *bplugin)
 	g_object_unref (ui_manager);
 
 	plugin->name_own_id = g_bus_own_name (G_BUS_TYPE_SESSION,
-					      MPRIS_BUS_NAME_PREFIX ".rhythmbox3",
+					      MPRIS_BUS_NAME_PREFIX ".rhythmbox",
 					      G_BUS_NAME_OWNER_FLAGS_NONE,
 					      NULL,
 					      (GBusNameAcquiredCallback) name_acquired_cb,
