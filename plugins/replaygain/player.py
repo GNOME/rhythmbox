@@ -26,6 +26,9 @@
 #
 
 import rb
+import gi
+
+gi.require_version("Gst", "0.11")
 from gi.repository import RB
 from gi.repository import GObject, Gio, Gst
 
@@ -66,8 +69,8 @@ class ReplayGainPlayer(object):
 			self.setup_xfade_mode()
 			self.deactivate_backend = self.deactivate_xfade_mode
 		else:
-			self.setup_playbin2_mode()
-			self.deactivate_backend = self.deactivate_playbin2_mode
+			self.setup_playbin_mode()
+			self.deactivate_backend = self.deactivate_playbin_mode
 
 
 
@@ -118,17 +121,17 @@ class ReplayGainPlayer(object):
 
 
 
-	### playbin2 mode (rgvolume ! rglimiter as global filter)
+	### playbin mode (rgvolume ! rglimiter as global filter)
 
-	def playbin2_uri_notify_cb(self, playbin, pspec):
+	def playbin_uri_notify_cb(self, playbin, pspec):
 		self.got_replaygain = False
 
-	def playbin2_notify_cb(self, player, pspec):
+	def playbin_notify_cb(self, player, pspec):
 		playbin = player.props.playbin
-		playbin.connect("notify::uri", self.playbin2_uri_notify_cb)
+		playbin.connect("notify::uri", self.playbin_uri_notify_cb)
 
 
-	def playbin2_target_gain_cb(self, rgvolume, pspec):
+	def playbin_target_gain_cb(self, rgvolume, pspec):
 		#if self.resetting_rgvolume is True:
 		#	return
 
@@ -160,29 +163,30 @@ class ReplayGainPlayer(object):
 		else:
 			print "no need to reset rgvolume"
 
-	def setup_playbin2_mode(self):
+	def setup_playbin_mode(self):
 		print "using output filter for rgvolume and rglimiter"
 		self.rgvolume = Gst.ElementFactory.make("rgvolume", None)
-		self.rgvolume.connect("notify::target-gain", self.playbin2_target_gain_cb)
+		self.rgvolume.connect("notify::target-gain", self.playbin_target_gain_cb)
 		self.rglimiter = Gst.ElementFactory.make("rglimiter", None)
 
 		# on track changes, we need to reset the rgvolume state, otherwise it
 		# carries over the tags from the previous track
 		self.pec_id = self.shell_player.connect('playing-song-changed', self.playing_entry_changed)
 
-		# watch playbin2's uri property to see when a new track is opened
+		# watch playbin's uri property to see when a new track is opened
 		playbin = self.player.props.playbin
 		if playbin is None:
-			self.player.connect("notify::playbin", self.playbin2_notify_cb)
+			self.player.connect("notify::playbin", self.playbin_notify_cb)
 		else:
-			playbin.connect("notify::uri", self.playbin2_uri_notify_cb)
+			playbin.connect("notify::uri", self.playbin_uri_notify_cb)
 
 		# work around bug #621632 by adding these as separate filters
+		# XXX try not doing this with 0.11 once filters exist again
 		self.player.add_filter(self.rgvolume)
 		self.player.add_filter(self.rglimiter)
 		self.rgfilter = None
 
-	def deactivate_playbin2_mode(self):
+	def deactivate_playbin_mode(self):
 		if self.rgfilter == None:
 			self.player.remove_filter(self.rglimiter)
 			self.player.remove_filter(self.rgvolume)
