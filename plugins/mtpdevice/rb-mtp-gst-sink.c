@@ -86,41 +86,13 @@ static GstStaticPadTemplate sinktemplate = GST_STATIC_PAD_TEMPLATE ("sink",
 	GST_PAD_ALWAYS,
 	GST_STATIC_CAPS_ANY);
 
-static GstElementDetails rb_mtp_sink_details =
-GST_ELEMENT_DETAILS ("RB MTP Sink",
-	"Sink/File",
-	"Uploads tracks to MTP devices",
-	"Jonathan Matthew <jonathan@d14n.org>");
-
 GType rb_mtp_sink_get_type (void);
-static void rb_mtp_sink_uri_handler_init (gpointer g_iface, gpointer iface_data);
+static void uri_handler_init (gpointer g_iface, gpointer iface_data);
+
+G_DEFINE_TYPE_WITH_CODE (RBMTPSink, rb_mtp_sink, GST_TYPE_BIN, G_IMPLEMENT_INTERFACE (GST_TYPE_URI_HANDLER, uri_handler_init));
 
 static void
-_do_init (GType mtp_sink_type)
-{
-	static const GInterfaceInfo urihandler_info = {
-		rb_mtp_sink_uri_handler_init,
-		NULL,
-		NULL
-	};
-
-	g_type_add_interface_static (mtp_sink_type, GST_TYPE_URI_HANDLER,
-			&urihandler_info);
-}
-
-GST_BOILERPLATE_FULL (RBMTPSink, rb_mtp_sink, GstBin, GST_TYPE_BIN, _do_init);
-
-static void
-rb_mtp_sink_base_init (gpointer g_class)
-{
-	GstElementClass *element_class = GST_ELEMENT_CLASS (g_class);
-	gst_element_class_add_pad_template (element_class,
-		gst_static_pad_template_get (&sinktemplate));
-	gst_element_class_set_details (element_class, &rb_mtp_sink_details);
-}
-
-static void
-rb_mtp_sink_init (RBMTPSink *sink, RBMTPSinkClass *klass)
+rb_mtp_sink_init (RBMTPSink *sink)
 {
 	GstPad *pad;
 
@@ -135,7 +107,7 @@ rb_mtp_sink_init (RBMTPSink *sink, RBMTPSinkClass *klass)
 	gst_object_ref (sink->fdsink);
 
 	/* create ghost pad */
-	pad = gst_element_get_pad (sink->fdsink, "sink");
+	pad = gst_element_get_static_pad (sink->fdsink, "sink");
 	sink->ghostpad = gst_ghost_pad_new ("sink", pad);
 	gst_element_add_pad (GST_ELEMENT (sink), sink->ghostpad);
 	gst_object_ref (sink->ghostpad);
@@ -286,7 +258,7 @@ rb_mtp_sink_handle_message (GstBin *bin, GstMessage *message)
 		}
 	}
 
-	GST_BIN_CLASS (parent_class)->handle_message (bin, message);
+	GST_BIN_CLASS (rb_mtp_sink_parent_class)->handle_message (bin, message);
 }
 
 static GstStateChangeReturn
@@ -312,7 +284,7 @@ rb_mtp_sink_change_state (GstElement *element, GstStateChange transition)
 			break;
 	}
 
-	ret = GST_ELEMENT_CLASS (parent_class)->change_state (element, transition);
+	ret = GST_ELEMENT_CLASS (rb_mtp_sink_parent_class)->change_state (element, transition);
 
 	switch (transition) {
 		case GST_STATE_CHANGE_PLAYING_TO_PAUSED:
@@ -394,7 +366,7 @@ rb_mtp_sink_dispose (GObject *object)
 		sink->device_thread = NULL;
 	}
 
-	G_OBJECT_CLASS (parent_class)->dispose (object);
+	G_OBJECT_CLASS (rb_mtp_sink_parent_class)->dispose (object);
 }
 
 static void
@@ -411,7 +383,7 @@ rb_mtp_sink_finalize (GObject *object)
 		g_strfreev (sink->folder_path);
 	}
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_mtp_sink_parent_class)->finalize (object);
 }
 
 static void
@@ -452,33 +424,41 @@ rb_mtp_sink_class_init (RBMTPSinkClass *klass)
 							      "device handling thread",
 							      G_TYPE_OBJECT,
 							      G_PARAM_READWRITE));
+
+	gst_element_class_add_pad_template (element_class,
+		gst_static_pad_template_get (&sinktemplate));
+	gst_element_class_set_details_simple (element_class,
+					      "RB MTP Sink",
+					      "Sink/File",
+					      "Uploads tracks to MTP devices",
+					      "Jonathan Matthew <jonathan@d14n.org>");
 }
 
 
 /* URI handler interface */
 
 static guint
-rb_mtp_sink_uri_get_type (void)
+rb_mtp_sink_uri_get_type (GType type)
 {
 	return GST_URI_SINK;
 }
 
-static gchar **
-rb_mtp_sink_uri_get_protocols (void)
+static const gchar *const *
+rb_mtp_sink_uri_get_protocols (GType type)
 {
-	static gchar *protocols[] = {"xrbmtp", NULL};
+	static const gchar *protocols[] = {"xrbmtp", NULL};
 	return protocols;
 }
 
-static const gchar *
+static gchar *
 rb_mtp_sink_uri_get_uri (GstURIHandler *handler)
 {
 	/* more or less */
-	return "xrbmtp://";
+	return g_strdup ("xrbmtp://");
 }
 
 static gboolean
-rb_mtp_sink_uri_set_uri (GstURIHandler *handler, const gchar *uri)
+rb_mtp_sink_uri_set_uri (GstURIHandler *handler, const gchar *uri, GError **error)
 {
 	RBMTPSink *sink = RB_MTP_SINK (handler);
 
@@ -496,7 +476,7 @@ rb_mtp_sink_uri_set_uri (GstURIHandler *handler, const gchar *uri)
 }
 
 static void
-rb_mtp_sink_uri_handler_init (gpointer g_iface, gpointer iface_data)
+uri_handler_init (gpointer g_iface, gpointer iface_data)
 {
 	GstURIHandlerInterface *iface = (GstURIHandlerInterface *) g_iface;
 
@@ -505,20 +485,3 @@ rb_mtp_sink_uri_handler_init (gpointer g_iface, gpointer iface_data)
 	iface->get_uri = rb_mtp_sink_uri_get_uri;
 	iface->set_uri = rb_mtp_sink_uri_set_uri;
 }
-
-static gboolean
-plugin_init (GstPlugin *plugin)
-{
-	gboolean ret = gst_element_register (plugin, "rbmtpsink", GST_RANK_PRIMARY, RB_TYPE_MTP_SINK);
-	return ret;
-}
-
-GST_PLUGIN_DEFINE_STATIC (GST_VERSION_MAJOR,
-			  GST_VERSION_MINOR,
-			  "rbmtpsink",
-			  "element to upload files to MTP devices",
-			  plugin_init,
-			  VERSION,
-			  "GPL",
-			  PACKAGE,
-			  "");
