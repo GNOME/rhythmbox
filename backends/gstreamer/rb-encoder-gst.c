@@ -239,7 +239,7 @@ progress_timeout_cb (RBEncoderGst *encoder)
 	if (state != GST_STATE_PLAYING)
 		return FALSE;
 
-	if (!gst_element_query_position (encoder->priv->pipeline, &format, &position)) {
+	if (!gst_element_query_position (encoder->priv->pipeline, format, &position)) {
 		g_warning ("Could not get current track position");
 		return TRUE;
 	}
@@ -309,14 +309,11 @@ add_tags_from_entry (RBEncoderGst *encoder,
 	gdouble bpm;
 	gboolean done;
 
-	tags = gst_tag_list_new ();
-
-	gst_tag_list_add (tags, GST_TAG_MERGE_REPLACE_ALL,
-			  GST_TAG_TRACK_NUMBER, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER),
-			  GST_TAG_ALBUM_VOLUME_NUMBER, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER),
-			  GST_TAG_ENCODER, "Rhythmbox",
-			  GST_TAG_ENCODER_VERSION, VERSION,
-			  NULL);
+	tags = gst_tag_list_new (GST_TAG_TRACK_NUMBER, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER),
+				 GST_TAG_ALBUM_VOLUME_NUMBER, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER),
+				 GST_TAG_ENCODER, "Rhythmbox",
+				 GST_TAG_ENCODER_VERSION, VERSION,
+				 NULL);
 
 	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_TITLE, entry, RHYTHMDB_PROP_TITLE);
 	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_ARTIST, entry, RHYTHMDB_PROP_ARTIST);
@@ -390,7 +387,7 @@ new_decoded_pad_cb (GstElement *decodebin, GstPad *new_pad, gboolean arg1, RBEnc
 	if (encoder->priv->decoded_pads > 0)
 		return;
 
-	caps = gst_pad_get_caps (new_pad);
+	caps = gst_pad_get_current_caps (new_pad);
 	caps_string = gst_caps_to_string (caps);
 	gst_caps_unref (caps);
 
@@ -414,13 +411,13 @@ add_decoding_pipeline (RBEncoderGst *encoder,
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
 	encoder->priv->transcoding = TRUE;
-	decodebin = gst_element_factory_make ("decodebin2", NULL);
+	decodebin = gst_element_factory_make ("decodebin", NULL);
 	if (decodebin == NULL) {
-		rb_debug ("couldn't create decodebin2");
+		rb_debug ("couldn't create decodebin");
 		g_set_error (error,
 				RB_ENCODER_ERROR,
 				RB_ENCODER_ERROR_INTERNAL,
-				"Could not create decodebin2");
+				"Could not create decodebin");
 		return NULL;
 	}
 
@@ -580,7 +577,7 @@ transcode_track (RBEncoderGst *encoder,
 		 gboolean overwrite,
 		 GError **error)
 {
-	/* src ! decodebin2 ! encodebin ! sink */
+	/* src ! decodebin ! encodebin ! sink */
 	GstElement *src;
 	GstElement *decoder;
 
