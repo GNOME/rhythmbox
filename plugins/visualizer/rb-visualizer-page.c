@@ -334,11 +334,9 @@ impl_constructed (GObject *object)
 	realsink = clutter_gst_video_sink_new (CLUTTER_TEXTURE (page->texture));
 
 	colorspace = gst_element_factory_make ("ffmpegcolorspace", NULL);
-	/* capsfilter to force rgb format (without this we end up using ayuv) */
+	/* capsfilter to force rgb format (without this we end up using ayuv)  - XXX check this in 0.11 */
 	capsfilter = gst_element_factory_make ("capsfilter", NULL);
-	caps = gst_caps_from_string ("video/x-raw-rgb,bpp=(int)24,depth=(int)24,"
-				     "endianness=(int)4321,red_mask=(int)16711680,"
-				     "green_mask=(int)65280,blue_mask=(int)255");
+	caps = gst_caps_from_string ("video/x-raw,format=(string)xRGB");
 	g_object_set (capsfilter, "caps", caps, NULL);
 	gst_caps_unref (caps);
 

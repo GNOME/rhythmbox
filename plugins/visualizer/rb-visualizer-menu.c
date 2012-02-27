@@ -144,7 +144,7 @@ rb_visualizer_create_popup_menu (GtkToggleAction *fullscreen_action)
 
 	rb_debug ("building vis plugin list");
 	active_element = g_settings_get_string (settings, "vis-plugin");
-	features = gst_registry_feature_filter (gst_registry_get_default (),
+	features = gst_registry_feature_filter (gst_registry_get (),
 						vis_plugin_filter,
 						FALSE, NULL);
 	for (t = features; t != NULL; t = t->next) {
