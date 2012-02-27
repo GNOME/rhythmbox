@@ -538,7 +538,7 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 	-Wunused-label -Wunused-value \
 	-Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes \
 	-Wnested-externs -Wpointer-arith \
-	-Wcast-align -Wall \
+	-Wcast-align -Wformat-security -Wall \
 	-Werror -std=gnu89"
 
 	if echo "$CFLAGS" | grep -q -- '-O' && echo "$CFLAGS" | grep -q -v -- '-O0'; then
