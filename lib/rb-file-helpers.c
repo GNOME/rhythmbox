@@ -34,6 +34,8 @@
  * and dealing with file naming restrictions for various filesystems.
  */
 
+#include "config.h"
+
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib/gi18n.h>
@@ -42,7 +44,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <config.h>
 #include <unistd.h>
 #include <stdlib.h>
 

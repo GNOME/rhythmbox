@@ -701,14 +701,14 @@ construct_widgets (RBShell *shell)
 	gtk_widget_set_no_show_all (shell->priv->queue_sidebar, TRUE);
 
 	/* places for plugins to put UI */
-	shell->priv->top_container = GTK_BOX (gtk_vbox_new (FALSE, 0));
-	shell->priv->bottom_container = GTK_BOX (gtk_vbox_new (FALSE, 0));
-	shell->priv->sidebar_container = GTK_BOX (gtk_vbox_new (FALSE, 0));
-	shell->priv->right_sidebar_container = GTK_BOX (gtk_vbox_new (FALSE, 0));
+	shell->priv->top_container = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+	shell->priv->bottom_container = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+	shell->priv->sidebar_container = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+	shell->priv->right_sidebar_container = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
 
 	/* set up sidebars */
-	shell->priv->paned = gtk_hpaned_new ();
-	shell->priv->right_paned = gtk_hpaned_new ();
+	shell->priv->paned = gtk_paned_new (GTK_ORIENTATION_HORIZONTAL);
+	shell->priv->right_paned = gtk_paned_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_show_all (shell->priv->right_paned);
 	g_signal_connect_object (G_OBJECT (shell->priv->right_paned),
 				 "size-allocate",
@@ -716,9 +716,9 @@ construct_widgets (RBShell *shell)
 				 shell, 0);
 	gtk_widget_set_no_show_all (shell->priv->right_paned, TRUE);
 	{
-		GtkWidget *vbox2 = gtk_vbox_new (FALSE, 0);
+		GtkWidget *vbox2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 
-		shell->priv->queue_paned = gtk_vpaned_new ();
+		shell->priv->queue_paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
 		gtk_paned_pack1 (GTK_PANED (shell->priv->queue_paned),
 				 GTK_WIDGET (shell->priv->display_page_tree),
 				 FALSE, TRUE);
@@ -762,7 +762,7 @@ construct_widgets (RBShell *shell)
 				 shell, 0);
 	gtk_widget_show (shell->priv->paned);
 
-	shell->priv->main_vbox = gtk_vbox_new (FALSE, 0);
+	shell->priv->main_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (shell->priv->main_vbox), 0);
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 6);
 	gtk_widget_show (GTK_WIDGET (shell->priv->player_shell));

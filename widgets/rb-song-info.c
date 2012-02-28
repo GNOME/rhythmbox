@@ -1180,7 +1180,7 @@ rb_song_info_update_filesize (RBSongInfo *song_info)
 	char *text = NULL;
 	guint64 filesize = 0;
 	filesize = rhythmdb_entry_get_uint64 (song_info->priv->current_entry, RHYTHMDB_PROP_FILE_SIZE);
-	text = g_format_size_for_display (filesize);
+	text = g_format_size (filesize);
 	gtk_label_set_text (GTK_LABEL (song_info->priv->filesize), text);
 	g_free (text);
 }

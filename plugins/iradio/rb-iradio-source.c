@@ -300,7 +300,7 @@ rb_iradio_source_constructed (GObject *object)
 	RB_CHAIN_GOBJECT_METHOD (rb_iradio_source_parent_class, constructed, object);
 	source = RB_IRADIO_SOURCE (object);
 
-	paned = gtk_hpaned_new ();
+	paned = gtk_paned_new (GTK_ORIENTATION_HORIZONTAL);
 
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell,

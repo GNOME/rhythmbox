@@ -41,7 +41,7 @@ static gchar *value_formatter (gdouble percent, gpointer data)
 {
 	gsize total_size = GPOINTER_TO_SIZE (data);
 
-	return g_format_size_for_display (percent * total_size*1024*1024*1024);
+	return g_format_size (percent * total_size*1024*1024*1024);
 }
 
 int main (int argc, char **argv)

@@ -1332,7 +1332,7 @@ impl_constructed (GObject *object)
 
 	source->priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
 
-	source->priv->paned = gtk_vpaned_new ();
+	source->priv->paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
 
 	g_object_unref (shell);
 

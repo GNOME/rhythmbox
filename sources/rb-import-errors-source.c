@@ -253,7 +253,7 @@ rb_import_errors_source_constructed (GObject *object)
 
 	g_object_unref (entry_type);
 
-	box = gtk_vbox_new (FALSE, 6);
+	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
 	gtk_box_pack_start (GTK_BOX (box), GTK_WIDGET (source->priv->view), TRUE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (box), source->priv->infobar, FALSE, FALSE, 0);
 

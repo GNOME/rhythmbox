@@ -359,7 +359,7 @@ rb_audioscrobbler_profile_page_constructed (GObject *object)
 	g_object_unref (shell_player);
 
 	/* create the UI */
-	page->priv->main_vbox = gtk_vbox_new (FALSE, 4);
+	page->priv->main_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 4);
 	gtk_box_pack_start (GTK_BOX (page), page->priv->main_vbox, TRUE, TRUE, 0);
 	gtk_widget_show (page->priv->main_vbox);
 
@@ -1591,7 +1591,7 @@ create_list_button (RBAudioscrobblerProfilePage *page,
 	gtk_button_set_relief (GTK_BUTTON (button),
 		               GTK_RELIEF_NONE);
 
-	button_contents = gtk_hbox_new (FALSE, 4);
+	button_contents = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
 	gtk_container_add (GTK_CONTAINER (button), button_contents);
 
 	if (data->image != NULL) {

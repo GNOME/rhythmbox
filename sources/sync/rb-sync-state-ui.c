@@ -60,7 +60,7 @@ G_DEFINE_TYPE (RBSyncStateUI, rb_sync_state_ui, GTK_TYPE_VBOX)
 static char *
 value_formatter (gdouble percent, RBSyncBarData *bar)
 {
-	return g_format_size_for_display (percent * bar->capacity);
+	return g_format_size (percent * bar->capacity);
 }
 
 void

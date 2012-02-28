@@ -452,7 +452,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 
 	source->priv->art_store = rb_ext_db_new ("album-art");
 
-	main_vbox = gtk_vbox_new (FALSE, 4);
+	main_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 4);
 	gtk_widget_show (main_vbox);
 	gtk_container_add (GTK_CONTAINER (source), main_vbox);
 

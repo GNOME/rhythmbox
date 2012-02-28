@@ -278,7 +278,7 @@ rb_auto_playlist_source_constructed (GObject *object)
 	source = RB_AUTO_PLAYLIST_SOURCE (object);
 	priv = GET_PRIVATE (source);
 
-	priv->paned = gtk_vpaned_new ();
+	priv->paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
 
 	g_object_get (RB_PLAYLIST_SOURCE (source), "entry-type", &entry_type, NULL);
 	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)),

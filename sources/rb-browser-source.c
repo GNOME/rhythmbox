@@ -348,7 +348,7 @@ rb_browser_source_constructed (GObject *object)
 
 	source->priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
 
-	paned = gtk_vpaned_new ();
+	paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
 
 	source->priv->browser = rb_library_browser_new (source->priv->db, entry_type);
 	gtk_widget_set_no_show_all (GTK_WIDGET (source->priv->browser), TRUE);

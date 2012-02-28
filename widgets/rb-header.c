@@ -238,12 +238,12 @@ rb_header_init (RBHeader *header)
 
 	gtk_box_set_spacing (GTK_BOX (header), 3);
 
-	vbox = gtk_vbox_new (FALSE, 6);
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
 	gtk_widget_show (vbox);
 	gtk_box_pack_start (GTK_BOX (header), vbox, TRUE, TRUE, 0);
 
 	/* song info */
-	hbox = gtk_hbox_new (FALSE, 16);
+	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 16);
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
 	gtk_widget_show (hbox);
 
@@ -256,7 +256,7 @@ rb_header_init (RBHeader *header)
 	gtk_widget_show (header->priv->song);
 
 	/* construct the time display */
-	header->priv->timeline = gtk_hbox_new (FALSE, 3);
+	header->priv->timeline = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
 	header->priv->elapsed = gtk_label_new ("");
 
 	gtk_misc_set_padding (GTK_MISC (header->priv->elapsed), 2, 0);
@@ -265,11 +265,11 @@ rb_header_init (RBHeader *header)
 	gtk_widget_show_all (header->priv->timeline);
 
 	/* row for the position slider */
-	header->priv->scaleline = gtk_hbox_new (FALSE, 3);
+	header->priv->scaleline = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
 	gtk_box_pack_start (GTK_BOX (vbox), header->priv->scaleline, FALSE, FALSE, 0);
 
 	header->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 10.0, 1.0, 10.0, 0.0));
-	header->priv->scale = gtk_hscale_new (header->priv->adjustment);
+	header->priv->scale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, header->priv->adjustment);
 	g_signal_connect_object (G_OBJECT (header->priv->scale),
 				 "button_press_event",
 				 G_CALLBACK (slider_press_callback),

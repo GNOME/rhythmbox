@@ -319,7 +319,7 @@ rb_static_playlist_source_constructed (GObject *object)
 				 G_CALLBACK (rb_static_playlist_source_filter_entry_drop),
 				 source, 0);
 
-	paned = gtk_vpaned_new ();
+	paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
 	gtk_widget_set_hexpand (paned, TRUE);
 	gtk_widget_set_vexpand (paned, TRUE);
 
