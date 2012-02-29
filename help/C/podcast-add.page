@@ -1,15 +1,19 @@
 <page xmlns="http://projectmallard.org/1.0/"
   type="topic"
-  id="podcast-add">
+  id="podcast-add"
+  style="task">
       
   <info>
     <link type="guide" xref="podcast" group="one"/>
     <desc>Subscribe to a new podcast feed.</desc>
-    <revision pkgversion="3.0" version="0.1" date="2010-07-16" status="draft"/>
-    <revision pkgversion="3.0" version="0.1" date="2010-07-27" status="review"/>
+    <revision pkgversion="3.4" version="0.8" date="2012-02-26" status="draft"/>
     <credit type="author">
       <name>Milo Casagrande</name>
       <email>milo@ubuntu.com</email>
+    </credit>
+    <credit type="author">
+      <name>Jim Campbell</name>
+      <email>jwcampbell@gmail.com</email>
     </credit>
     <license>
       <p>Creative Commons Share Alike 3.0</p>
@@ -17,39 +21,25 @@
   </info>
 
   <title>Add a podcast feed</title>
-  <p>
-    Before you subscribe to a new podcast feed, it is necessary to have the
-    address of the feed you want to add.
-  </p>
-  <p>
-    The feed address should be available on the podcast website.
-  </p>
   
-  <note>
-    <p>
-      Usually the podcast feed address is not the podcast website address. That 
-      address should be advertised on the podcast website.
-    </p>
-  </note>
+  <p>Before you subscribe to a new podcast feed, you will need to know the 
+  Feed URL of the podcast. The feed address should be available on the podcast's 
+  website.</p>
+  
+  <note><p>Usually the podcast Feed URL is <em>not</em> the same as the podcast 
+  website address. The Feed URL for the podcast is normally featured somewhere 
+  on the podcast website, though.</p></note>
 
   <steps>
-    <item>
-      <p>
-        Select <guiseq><gui style="menu">Music</gui>
-        <gui style="menuitem">New Podcast Feed</gui></guiseq>.
-      </p>
-    </item>
-    <item>
-      <p>
-        Type or paste the address in the text-box, and 
-        click <gui style="button">Add</gui>.        
-      </p>
-    </item>
+    <title>To subscribe to a podcast:</title>
+    <item><p>From within <app>Rhythmbox</app>, select <guiseq><gui>Music</gui>
+    <gui style="menuitem">New Podcast Feed...</gui></guiseq></p></item>
+    <item><p>Enter the Podcast's Feed URL into the Feed URL window.</p></item>
+    <item><p>Click <gui style="button">OK</gui>.</p></item>
   </steps>
   
-  <p>
-    Once you add a new podcast feed, <app>Rhythmbox</app> will check by default
-    for new episodes every hour.
-  </p>
+  <p>After you add a new podcast feed, <app>Rhythmbox</app> will check for new 
+  podcast episodes every hour. If you want <app>Rhythmbox</app> to check 
+  for podcasts less frequently, see ____________________.</p>
 
 </page>
