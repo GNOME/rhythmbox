@@ -60,6 +60,11 @@ rb_gst_get_missing_plugin_type (const GstStructure *structure)
 	const GValue *val;
 	int i;
 
+	if (structure == NULL) {
+		rb_debug ("no missing plugin details");
+		return MEDIA_TYPE_NONE;
+	}
+
 	missing_type = gst_structure_get_string (structure, "type");
 	if (missing_type == NULL || strcmp (missing_type, "decoder") != 0) {
 		rb_debug ("missing plugin is not a decoder");

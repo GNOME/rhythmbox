@@ -284,6 +284,7 @@ test_load (const char *uri)
 	if (error) {
 		g_print ("Error loading metadata from %s: %s\n", uri, error->message);
 		g_clear_error (&error);
+		g_print ("media type: %s\n", rb_metadata_get_media_type (md));
 		rv = -1;
 	} else {
 		int i;
