@@ -1210,6 +1210,8 @@ rb_shell_startup (GApplication *app)
 	 * we're asked to quit.
 	 */
 	g_application_hold (app);
+
+	(* G_APPLICATION_CLASS (rb_shell_parent_class)->startup) (app);
 }
 
 static gboolean
