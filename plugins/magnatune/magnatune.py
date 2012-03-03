@@ -56,6 +56,7 @@ popup_ui = """
     <menuitem name="PropertiesLibraryPopup" action="MusicProperties"/>
   </popup>
   <toolbar name="MagnatuneToolBar">
+    <toolitem name="Browse" action="ViewBrowser"/>
     <toolitem name="MagnatuneDownloadAlbumToolbar" action="MagnatuneDownloadAlbum"/>
     <toolitem name="MagnatuneArtistInfoToolbar" action="MagnatuneArtistInfo"/>
     <toolitem name="MagnatuneCancelDownloadToolbar" action="MagnatuneCancelDownload"/>
