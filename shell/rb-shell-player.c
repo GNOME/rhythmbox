@@ -799,16 +799,18 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 		return;
 	}
 
+	if (player->priv->playing_entry_eos) {
+		rb_debug ("playing entry has already EOS'd");
+		return;
+	}
+
 	if (entry != NULL) {
 		if (player->priv->playing_entry != entry) {
 			rb_debug ("EOS'd entry is not the current playing entry; ignoring");
 			return;
 		}
-	}
 
-	if (player->priv->playing_entry_eos) {
-		rb_debug ("playing entry has already EOS'd");
-		return;
+		rhythmdb_entry_ref (entry);
 	}
 
 	/* defer EOS handling while the position slider is being dragged */
@@ -816,6 +818,8 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 	if (dragging) {
 		rb_debug ("slider is dragging, will handle EOS (if applicable) on release");
 		player->priv->playing_entry_eos = TRUE;
+		if (entry != NULL)
+			rhythmdb_entry_unref (entry);
 		return;
 	}
 
@@ -897,6 +901,9 @@ rb_shell_player_handle_eos_unlocked (RBShellPlayer *player, RhythmDBEntry *entry
 						  player->priv->db,
 						  entry);
 	}
+
+	if (entry != NULL)
+		rhythmdb_entry_unref (entry);
 }
 
 static void
