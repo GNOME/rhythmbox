@@ -78,7 +78,6 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 	__gtype_name__ = 'Magnatune'
 	object = GObject.property(type=GObject.GObject)
 
-	format_list = ['ogg', 'flac', 'wav', 'mp3-vbr', 'mp3-cbr']
 
 	def __init__(self):
 		GObject.GObject.__init__(self)
@@ -163,8 +162,11 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 	__gtype_name__ = 'MagnatuneConfig'
 	object = GObject.property(type=GObject.GObject)
 
+	format_list = ['ogg', 'flac', 'wav', 'mp3-vbr', 'mp3-cbr']
+
 	def __init__(self):
 		GObject.GObject.__init__(self)
+		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
 
 	def do_create_configure_widget(self):
 		# We use a dictionary so we can modify these values from within inner functions
@@ -174,7 +176,7 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 		}
 
 		def fill_account_details():
-			account_type = self.settings['account_type']
+			account_type = self.settings['account-type']
 			builder.get_object("no_account_radio").set_active(account_type == "none")
 			builder.get_object("stream_account_radio").set_active(account_type == "stream")
 			builder.get_object("download_account_radio").set_active(account_type == "download")
@@ -199,9 +201,9 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 
 		def account_type_toggled (button):
 			print "account type radiobutton toggled: " + button.get_name()
-			account_type = {"no_account_radio": "none", "stream_account_radio": "stream", "download_account_radio": "download"}
+			account_type = {"no_account_radio": 'none', "stream_account_radio": 'stream', "download_account_radio": 'download'} 
 			if button.get_active():
-				self.settings['account_type'] = account_type[button.get_name()]
+				self.settings['account-type'] = account_type[button.get_name()]
 				if account_type[button.get_name()] == 'none':
 					builder.get_object("username_label").set_sensitive(False)
 					builder.get_object("username_entry").set_sensitive(False)
@@ -235,11 +237,11 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 						message = _("There was a problem accessing the keyring. Check the debug output for more information."))
 			dialog.hide()
 
-		def format_selection_changed(self, button):
+		def format_selection_changed(button):
 			self.settings['format'] = self.format_list[button.get_active()]
 
 		self.configure_callback_dic = {
-			"rb_magnatune_audio_combobox_changed_cb" : self.format_selection_changed,
+			"rb_magnatune_audio_combobox_changed_cb" : format_selection_changed,
 			"rb_magnatune_radio_account_toggled_cb" : account_type_toggled,
 			"rb_magnatune_username_changed_cb" : account_details_changed,
 			"rb_magnatune_password_changed_cb" : account_details_changed
@@ -248,7 +250,7 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 		builder = Gtk.Builder()
 		builder.add_from_file(rb.find_plugin_file(self, "magnatune-prefs.ui"))
 
-		dialog = builder.get_object('preferences_dialog')
+		dialog = builder.get_object('magnatune_vbox')
 
 		# Set the names of the radio buttons so we can tell which one has been clicked
 		for name in ("no_account_radio", "stream_account_radio", "download_account_radio"):
@@ -257,7 +259,8 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 		builder.get_object("audio_combobox").set_active(self.format_list.index(self.settings['format']))
 
 		builder.connect_signals(self.configure_callback_dic)
-		dialog.connect("response", close_button_pressed)
+		# hrm, how do we do this?
+		# dialog.connect("response", close_button_pressed)
 
 		attributes = GnomeKeyring.attribute_list_new()
 		GnomeKeyring.attribute_list_append_string(attributes, "rhythmbox-plugin", "magnatune")
@@ -272,12 +275,12 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 
 		elif result == GnomeKeyring.Result.NO_MATCH or len(items) == 0:
 			# no item found, so create a new one
-			result = GnomeKeyring.item_create_sync(None,
-							       GnomeKeyring.ItemType.GENERIC_SECRET,
-							       "Rhythmbox: Magnatune account information",
-							       attributes,
-							       "",	# Empty secret for now
-							       True)
+			(result, id) = GnomeKeyring.item_create_sync(None,
+								     GnomeKeyring.ItemType.GENERIC_SECRET,
+								     "Rhythmbox: Magnatune account information",
+								     attributes,
+								     "",	# Empty secret for now
+								     True)
 			if result == GnomeKeyring.Result.OK:
 				keyring_data['id'] = id
 				(result, item) = GnomeKeyring.item_get_info_sync(None, id)
@@ -289,5 +292,4 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 			print "Couldn't access keyring: " + str(result)
 
 		fill_account_details()
-		dialog.present()
 		return dialog
