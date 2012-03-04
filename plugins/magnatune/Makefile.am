@@ -4,8 +4,9 @@ plugindir = $(PLUGINDIR)/magnatune
 plugindatadir = $(PLUGINDATADIR)/magnatune
 plugin_PYTHON =                       \
        MagnatuneSource.py             \
-       BuyAlbumHandler.py             \
+       DownloadAlbumHandler.py        \
        TrackListHandler.py            \
+       MagnatuneAccount.py            \
        magnatune.py
 
 %.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache

@@ -27,7 +27,7 @@
 
 import xml.sax, xml.sax.handler
 
-class BuyAlbumHandler(xml.sax.handler.ContentHandler): # Class to download the track, etc.
+class DownloadAlbumHandler(xml.sax.handler.ContentHandler): # Class to download the track, etc.
 	format_map =	{
 			'ogg'		:	'URL_OGGZIP',
 			'flac'		:	'URL_FLACZIP',
@@ -45,7 +45,7 @@ class BuyAlbumHandler(xml.sax.handler.ContentHandler): # Class to download the t
 
 	def endElement(self, name):
 		if name == "ERROR": # Something went wrong. Display error message to user.
-			raise MagnatunePurchaseError(self._text)
+			raise MagnatuneDownloadError(self._text)
 		elif name == self._format_tag:
 			self.url = self._text
 		# Response also contains:
@@ -55,5 +55,5 @@ class BuyAlbumHandler(xml.sax.handler.ContentHandler): # Class to download the t
 	def characters(self, content):
 		self._text = self._text + content
 
-class MagnatunePurchaseError(Exception):
+class MagnatuneDownloadError(Exception):
 	pass
