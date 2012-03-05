@@ -1,11 +1,11 @@
 AC_PREREQ(2.53)
 AC_INIT([rhythmbox],
-	[2.95],
+	[2.96],
 	[https://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox])
 AC_CONFIG_SRCDIR(rhythmbox.pc.in)
 AC_CONFIG_MACRO_DIR(macros)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE([1.9 dist-bzip2 no-dist-gzip])
+AM_INIT_AUTOMAKE([1.9 dist-xz no-dist-gzip])
 
 AC_SUBST(ACLOCAL_AMFLAGS, "-I macros")
 
