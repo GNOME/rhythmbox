@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-02-19 23:25+0000\n"
-"PO-Revision-Date: 2012-02-23 14:03+0100\n"
+"POT-Creation-Date: 2012-03-04 22:46+0000\n"
+"PO-Revision-Date: 2012-03-05 10:53+0100\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -28,7 +28,7 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:497
+#: ../backends/gstreamer/rb-encoder-gst.c:502
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr ""
@@ -109,7 +109,7 @@ msgstr "Mis mejores puntuados"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/rb-shell.c:623
-#: ../shell/rb-shell.c:2694
+#: ../shell/rb-shell.c:2696
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -691,14 +691,14 @@ msgstr "%d %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
 #: ../plugins/generic-player/rb-generic-player-source.c:1063
-#: ../plugins/ipod/rb-ipod-source.c:436
+#: ../plugins/ipod/rb-ipod-source.c:566
 #: ../plugins/iradio/rb-iradio-source.c:562
 #: ../plugins/iradio/rb-iradio-source.c:1054
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78 ../plugins/lyrics/lyrics.py:80
 #: ../plugins/mtpdevice/rb-mtp-source.c:631
-#: ../plugins/mtpdevice/rb-mtp-source.c:1090
-#: ../plugins/mtpdevice/rb-mtp-source.c:1459
+#: ../plugins/mtpdevice/rb-mtp-source.c:1091
+#: ../plugins/mtpdevice/rb-mtp-source.c:1465
 #: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-manager.c:1903 ../podcast/rb-podcast-manager.c:1997
@@ -709,8 +709,8 @@ msgstr "%d %b %Y"
 #: ../rhythmdb/rhythmdb.c:2049 ../rhythmdb/rhythmdb.c:5392
 #: ../rhythmdb/rhythmdb.c:5397 ../rhythmdb/rhythmdb-tree.c:1344
 #: ../rhythmdb/rhythmdb-tree.c:1348 ../rhythmdb/rhythmdb-tree.c:1352
-#: ../rhythmdb/rhythmdb-tree.c:1356 ../shell/rb-shell-player.c:1764
-#: ../shell/rb-shell-player.c:3732 ../widgets/rb-entry-view.c:985
+#: ../rhythmdb/rhythmdb-tree.c:1356 ../shell/rb-shell-player.c:1771
+#: ../shell/rb-shell-player.c:3739 ../widgets/rb-entry-view.c:985
 #: ../widgets/rb-entry-view.c:1007 ../widgets/rb-entry-view.c:1483
 #: ../widgets/rb-entry-view.c:1495 ../widgets/rb-entry-view.c:1507
 #: ../widgets/rb-song-info.c:920 ../widgets/rb-song-info.c:932
@@ -718,12 +718,12 @@ msgstr "%d %b %Y"
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: ../lib/rb-file-helpers.c:406
+#: ../lib/rb-file-helpers.c:407
 #, c-format
 msgid "Too many symlinks"
 msgstr "Demasiados enlaces simbólicos"
 
-#: ../lib/rb-file-helpers.c:1209
+#: ../lib/rb-file-helpers.c:1210
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "No se puede obtener espacio libre en %s: %s"
@@ -760,14 +760,14 @@ msgstr "%d:%02d de %d:%02d"
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d de %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:450
+#: ../metadata/rb-metadata-gst.c:519
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
 msgstr ""
 "No se pudieron escribir las etiquetas en este archivo ya que contiene "
 "múltiples flujos"
 
-#: ../metadata/rb-metadata-gst.c:490
+#: ../metadata/rb-metadata-gst.c:559
 #, c-format
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
@@ -775,19 +775,19 @@ msgstr ""
 "No se pudieron escribir las etiquetas en este archivo ya que no está "
 "codificado en un formato soportado"
 
-#: ../metadata/rb-metadata-gst.c:622
+#: ../metadata/rb-metadata-gst.c:691
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Falló al crear un elemento de origen; compruebe su instalación"
 
-#: ../metadata/rb-metadata-gst.c:632
+#: ../metadata/rb-metadata-gst.c:701
 #, c-format
 msgid ""
 "Failed to create the 'decodebin2' element; check your GStreamer installation"
 msgstr ""
 "Falló al crear el elemento «decodebin2»; compruebe su instalación de GStreamer"
 
-#: ../metadata/rb-metadata-gst.c:641
+#: ../metadata/rb-metadata-gst.c:710
 #, c-format
 msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
@@ -796,7 +796,7 @@ msgstr ""
 "Falló al crear el elemento «giostreamsink»; compruebe su instalación de "
 "GStreamer"
 
-#: ../metadata/rb-metadata-gst.c:722
+#: ../metadata/rb-metadata-gst.c:791
 #, c-format
 msgid "File corrupted during write"
 msgstr "El archivo ha sido corrompido mientras se grababa"
@@ -1823,8 +1823,8 @@ msgid "Display device properties"
 msgstr "Mostrar las propiedades del dispositivo"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1352
-#: ../plugins/ipod/rb-ipod-source.c:2014
-#: ../plugins/mtpdevice/rb-mtp-source.c:1553
+#: ../plugins/ipod/rb-ipod-source.c:2150
+#: ../plugins/mtpdevice/rb-mtp-source.c:1559
 msgid "Advanced"
 msgstr "Avanzado"
 
@@ -1968,10 +1968,6 @@ msgstr ""
 "Soporte para dispositivos Apple iPod (mostrar el contenido, reproducir desde "
 "el dispositivo)"
 
-#: ../plugins/ipod/rb-ipod-helpers.c:305
-msgid "Unable to initialize new iPod"
-msgstr "No se pudo inicializar el nuevo iPod"
-
 #: ../plugins/ipod/rb-ipod-plugin.c:99 ../plugins/ipod/rb-ipod-plugin.c:108
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:119 ../shell/rb-playlist-manager.c:203
 msgid "_Rename"
@@ -2006,7 +2002,11 @@ msgstr "_Borrar"
 msgid "Delete playlist"
 msgstr "Borrar lista de reproducción"
 
-#: ../plugins/ipod/rb-ipod-source.c:1456
+#: ../plugins/ipod/rb-ipod-source.c:382
+msgid "Unable to initialize new iPod"
+msgstr "No se pudo inicializar el nuevo iPod"
+
+#: ../plugins/ipod/rb-ipod-source.c:1592
 #: ../podcast/rb-podcast-main-source.c:70
 #: ../sources/sync/rb-sync-settings-ui.c:262
 #: ../sources/sync/rb-sync-settings-ui.c:263
@@ -2014,7 +2014,7 @@ msgstr "Borrar lista de reproducción"
 msgid "Podcasts"
 msgstr "Podcasts"
 
-#: ../plugins/ipod/rb-ipod-source.c:1904
+#: ../plugins/ipod/rb-ipod-source.c:2040
 msgid "New playlist"
 msgstr "Lista de reproducción nueva"
 
@@ -2101,7 +2101,6 @@ msgid "L_ocation:"
 msgstr "_Dirección:"
 
 #: ../plugins/lirc/rblirc.plugin.in.h:1
-#| msgid "LIRC "
 msgid "LIRC"
 msgstr "LIRC"
 
@@ -2241,268 +2240,238 @@ msgstr ""
 "de música Magnatune"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
-msgid "January (01)"
-msgstr "Enero (01)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:2
-msgid "February (02)"
-msgstr "Febrero (02)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:3
-msgid "March (03)"
-msgstr "Marzo (03)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:4
-msgid "April (04)"
-msgstr "Abril (04)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:5
-msgid "May (05)"
-msgstr "Mayo (05)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:6
-msgid "June (06)"
-msgstr "Junio (06)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:7
-msgid "July (07)"
-msgstr "Julio (07)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:8
-msgid "August (08)"
-msgstr "Agosto (08)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:9
-msgid "September (09)"
-msgstr "Septiembre (09)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:10
-msgid "October (10)"
-msgstr "Octubre (10)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:11
-msgid "November (11)"
-msgstr "Noviembre (11)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:12
-msgid "December (12)"
-msgstr "Diciembre (12)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:13
-msgid "$5 US"
-msgstr "$5 EE. UU."
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:14
-msgid "$6 US"
-msgstr "$6 EE. UU."
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:15
-msgid "$7 US"
-msgstr "$7 EE. UU."
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:16
-msgid "$8 US (typical)"
-msgstr "$8 EE. UU. (general)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:17
-msgid "$9 US"
-msgstr "$9 EE. UU."
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:18
-msgid "$10 US (better than average)"
-msgstr "$10 EE. UU. (más que la media)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:19
-msgid "$11 US"
-msgstr "$11 EE. UU."
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:20
-msgid "$12 US (generous)"
-msgstr "$12 EE. UU. (generoso)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:21
-msgid "$13 US"
-msgstr "$13 EE. UU."
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:22
-msgid "$14 US"
-msgstr "$14 EE. UU."
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:23
-msgid "$15 US (VERY generous!)"
-msgstr "$15 EE. UU. (MUY generoso)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:24
-msgid "$16 US"
-msgstr "$16 EE. UU."
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:25
-msgid "$17 US"
-msgstr "$17 EE. UU."
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:26
-msgid "$18 US (We love you!)"
-msgstr "$18 EE. UU. (te queremos)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:27
-msgid "Ogg Vorbis"
-msgstr "Ogg Vorbis"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:28
-msgid "FLAC"
-msgstr "FLAC"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:29
-msgid "WAV"
-msgstr "WAV"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:30
-msgid "VBR MP3"
-msgstr "VBR MP3"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:31
-msgid "128K MP3"
-msgstr "128K MP3"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:32
 msgid "Magnatune Information"
 msgstr "Información de Magnatune"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:33
+#: ../plugins/magnatune/magnatune-prefs.ui.h:2
 msgid "I don't have a Magnatune account"
 msgstr "No tengo una cuenta en Magnatune"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:34
+#: ../plugins/magnatune/magnatune-prefs.ui.h:3
 msgid "I have a streaming account"
 msgstr "Tengo una cuenta de «streaming»"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:35
+#: ../plugins/magnatune/magnatune-prefs.ui.h:4
 msgid "I have a download account"
 msgstr "Tengo una cuenta de descargas"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:36
+#: ../plugins/magnatune/magnatune-prefs.ui.h:5
 msgid "Username:"
 msgstr "Usuario:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:37
+#: ../plugins/magnatune/magnatune-prefs.ui.h:6
 msgid "Password:"
 msgstr "Contraseña:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:38
+#: ../plugins/magnatune/magnatune-prefs.ui.h:7
 msgid "Preferred audio _format:"
 msgstr "Formato de audio _preferido:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:39
+#: ../plugins/magnatune/magnatune-prefs.ui.h:8
 msgid "Get an account at "
 msgstr "Obtener una cuenta de "
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:40
+#: ../plugins/magnatune/magnatune-prefs.ui.h:9
 msgid "http://magnatune.com/compare_plans"
 msgstr "http://magnatune.com/compare_plans"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:41
+#: ../plugins/magnatune/magnatune-prefs.ui.h:10
 msgid "Find out about Magnatune at "
 msgstr "Informarse acerca de de Magnatune en "
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:42
+#: ../plugins/magnatune/magnatune-prefs.ui.h:11
 msgid "http://www.magnatune.com/info/"
 msgstr "http://www.magnatune.com/info/"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:43
-msgid "Redownload purchased music at "
-msgstr "Volver a descargar la música comprada en "
+#: ../plugins/magnatune/magnatune-prefs.ui.h:12
+msgid "January (01)"
+msgstr "Enero (01)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:44
-msgid "http://www.magnatune.com/info/redownload"
-msgstr "http://www.magnatune.com/info/redownload"
+#: ../plugins/magnatune/magnatune-prefs.ui.h:13
+msgid "February (02)"
+msgstr "Febrero (02)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:45
-msgid ""
-"Your account details have changed. Changes will be applied the next time you "
-"start Rhythmbox."
-msgstr ""
-"Los detalles de su cuenta han cambiado. Los cambios se aplicarán la "
-"siguiente ver que inicie Rhythmbox."
+#: ../plugins/magnatune/magnatune-prefs.ui.h:14
+msgid "March (03)"
+msgstr "Marzo (03)"
 
-#: ../plugins/magnatune/magnatune.py:108
+#: ../plugins/magnatune/magnatune-prefs.ui.h:15
+msgid "April (04)"
+msgstr "Abril (04)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:16
+msgid "May (05)"
+msgstr "Mayo (05)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:17
+msgid "June (06)"
+msgstr "Junio (06)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:18
+msgid "July (07)"
+msgstr "Julio (07)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:19
+msgid "August (08)"
+msgstr "Agosto (08)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:20
+msgid "September (09)"
+msgstr "Septiembre (09)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:21
+msgid "October (10)"
+msgstr "Octubre (10)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:22
+msgid "November (11)"
+msgstr "Noviembre (11)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:23
+msgid "December (12)"
+msgstr "Diciembre (12)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:24
+msgid "$5 US"
+msgstr "$5 EE. UU."
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:25
+msgid "$6 US"
+msgstr "$6 EE. UU."
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:26
+msgid "$7 US"
+msgstr "$7 EE. UU."
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:27
+msgid "$8 US (typical)"
+msgstr "$8 EE. UU. (general)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:28
+msgid "$9 US"
+msgstr "$9 EE. UU."
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:29
+msgid "$10 US (better than average)"
+msgstr "$10 EE. UU. (más que la media)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:30
+msgid "$11 US"
+msgstr "$11 EE. UU."
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:31
+msgid "$12 US (generous)"
+msgstr "$12 EE. UU. (generoso)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:32
+msgid "$13 US"
+msgstr "$13 EE. UU."
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:33
+msgid "$14 US"
+msgstr "$14 EE. UU."
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:34
+msgid "$15 US (VERY generous!)"
+msgstr "$15 EE. UU. (MUY generoso)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:35
+msgid "$16 US"
+msgstr "$16 EE. UU."
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:36
+msgid "$17 US"
+msgstr "$17 EE. UU."
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:37
+msgid "$18 US (We love you!)"
+msgstr "$18 EE. UU. (te queremos)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:38
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:39
+msgid "FLAC"
+msgstr "FLAC"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:40
+msgid "WAV"
+msgstr "WAV"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:41
+msgid "VBR MP3"
+msgstr "VBR MP3"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:42
+msgid "128K MP3"
+msgstr "128K MP3"
+
+#: ../plugins/magnatune/magnatune.py:129
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune.py:118
+#: ../plugins/magnatune/magnatune.py:139
 msgid "Download Album"
 msgstr "Descargar álbum"
 
-#: ../plugins/magnatune/magnatune.py:119
+#: ../plugins/magnatune/magnatune.py:140
 msgid "Download this album from Magnatune"
 msgstr "Descargar este álbum desde Magnatune"
 
-#: ../plugins/magnatune/magnatune.py:123
+#: ../plugins/magnatune/magnatune.py:144
 msgid "Artist Information"
 msgstr "Información del artista"
 
-#: ../plugins/magnatune/magnatune.py:124
+#: ../plugins/magnatune/magnatune.py:145
 msgid "Get information about this artist"
 msgstr "Obtener información sobre este artista"
 
-#: ../plugins/magnatune/magnatune.py:128
+#: ../plugins/magnatune/magnatune.py:149
 msgid "Cancel Downloads"
 msgstr "Cancelar descargas"
 
-#: ../plugins/magnatune/magnatune.py:129
-msgid "Stop downloading purchased albums"
-msgstr "Parar de descargar álbumes comprados"
+#: ../plugins/magnatune/magnatune.py:150
+#| msgid "Cancel Downloads"
+msgid "Stop album downloads"
+msgstr "Detener las descargas de álbumes"
 
-#: ../plugins/magnatune/magnatune.py:230 ../plugins/magnatune/magnatune.py:233
-msgid "Couldn't store account information"
-msgstr "No se pudo almacenar la información de la cuenta"
-
-#: ../plugins/magnatune/magnatune.py:234
-msgid ""
-"There was a problem accessing the keyring. Check the debug output for more "
-"information."
-msgstr ""
-"Hubo un problema al acceder al depósito de claves. Para obtener más "
-"información compruebe la salida de depuración."
-
-#: ../plugins/magnatune/MagnatuneSource.py:104
+#: ../plugins/magnatune/MagnatuneSource.py:108
 msgid "Loading Magnatune catalog"
 msgstr "Cargando catálogo de Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:111
+#: ../plugins/magnatune/MagnatuneSource.py:115
 msgid "Downloading Magnatune Album(s)"
 msgstr "Descargando álbum(es) Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:204
-msgid "Couldn't purchase album"
-msgstr "No se pudo comprar el álbum"
+#: ../plugins/magnatune/MagnatuneSource.py:208
+#| msgid "Couldn't purchase album"
+msgid "Couldn't download album"
+msgstr "No se pudo descargar el álbum"
 
-#: ../plugins/magnatune/MagnatuneSource.py:205
-msgid "You must have a library location set to purchase an album."
+#: ../plugins/magnatune/MagnatuneSource.py:209
+#| msgid "You must have a library location set to purchase an album."
+msgid "You must have a library location set to download an album."
 msgstr ""
 "Debe tener establecida una ubicación para la biblioteca para poder comprar "
 "un álbum."
 
-#: ../plugins/magnatune/MagnatuneSource.py:253
+#: ../plugins/magnatune/MagnatuneSource.py:272
 msgid "Unable to load catalog"
 msgstr "No se pudo cargar el catálogo"
 
-#: ../plugins/magnatune/MagnatuneSource.py:254
+#: ../plugins/magnatune/MagnatuneSource.py:273
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
 "Rhythmbox no pudo entender el catálogo de Magnatune, rellene un informe de "
 "error."
 
-#: ../plugins/magnatune/MagnatuneSource.py:343
-#: ../plugins/magnatune/MagnatuneSource.py:393
-msgid "Couldn't get account details"
-msgstr "No se pudieron obtener los detalles de la cuenta"
-
-#: ../plugins/magnatune/MagnatuneSource.py:442
+#: ../plugins/magnatune/MagnatuneSource.py:425
 msgid "Download Error"
 msgstr "Error en la descarga"
 
-#: ../plugins/magnatune/MagnatuneSource.py:443
+#: ../plugins/magnatune/MagnatuneSource.py:426
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2513,11 +2482,11 @@ msgstr ""
 "El servidor de Magnatune devolvió:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:445 ../widgets/rb-entry-view.c:1603
+#: ../plugins/magnatune/MagnatuneSource.py:429 ../widgets/rb-entry-view.c:1603
 msgid "Error"
 msgstr "Error"
 
-#: ../plugins/magnatune/MagnatuneSource.py:446
+#: ../plugins/magnatune/MagnatuneSource.py:430
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -2528,11 +2497,11 @@ msgstr ""
 "El texto del error es:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:476
+#: ../plugins/magnatune/MagnatuneSource.py:466
 msgid "Finished Downloading"
 msgstr "Finalizó la descarga"
 
-#: ../plugins/magnatune/MagnatuneSource.py:476
+#: ../plugins/magnatune/MagnatuneSource.py:466
 msgid "All Magnatune downloads have been completed."
 msgstr "Se completaron todas las descargas de Magnatune."
 
@@ -3661,39 +3630,39 @@ msgstr "Cambiar la visibilidad del examinador"
 msgid "Change the music volume"
 msgstr "Cambiar el volumen de la música"
 
-#: ../shell/rb-shell.c:2002
+#: ../shell/rb-shell.c:2004
 msgid "Enable debug output"
 msgstr "Activar la salida de depuración"
 
-#: ../shell/rb-shell.c:2003
+#: ../shell/rb-shell.c:2005
 msgid "Enable debug output matching a specified string"
 msgstr "Activar la salida de depuración coincidiendo con una cadena"
 
-#: ../shell/rb-shell.c:2004
+#: ../shell/rb-shell.c:2006
 msgid "Do not update the library with file changes"
 msgstr "No actualizar la fonoteca con los cambios en los archivos"
 
-#: ../shell/rb-shell.c:2005
+#: ../shell/rb-shell.c:2007
 msgid "Do not register the shell"
 msgstr "No registrar el shell"
 
-#: ../shell/rb-shell.c:2006
+#: ../shell/rb-shell.c:2008
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "No guardar ningún dato permanentemente (implica --no-registration)"
 
-#: ../shell/rb-shell.c:2007
+#: ../shell/rb-shell.c:2009
 msgid "Disable loading of plugins"
 msgstr "Desactivar la carga de complementos"
 
-#: ../shell/rb-shell.c:2008
+#: ../shell/rb-shell.c:2010
 msgid "Path for database file to use"
 msgstr "Ruta al archivo de base de datos a usar"
 
-#: ../shell/rb-shell.c:2009
+#: ../shell/rb-shell.c:2011
 msgid "Path for playlists file to use"
 msgstr "Ruta para el archivo de listas de reproducción que usar"
 
-#: ../shell/rb-shell.c:2020
+#: ../shell/rb-shell.c:2022
 #, c-format
 msgid ""
 "%s\n"
@@ -3704,27 +3673,27 @@ msgstr ""
 "disponibles de la línea de comandos.\n"
 
 #. Translators: this is the short label for the 'import folder' action
-#: ../shell/rb-shell.c:2121
+#: ../shell/rb-shell.c:2123
 msgctxt "Library"
 msgid "Import"
 msgstr "Importar"
 
 #. Translators: this is the short label for the 'view all tracks' action
-#: ../shell/rb-shell.c:2123
+#: ../shell/rb-shell.c:2125
 msgid "Show All"
 msgstr "Mostrar todas"
 
-#: ../shell/rb-shell.c:2433
+#: ../shell/rb-shell.c:2435
 msgid "Error while saving song information"
 msgstr "Error al guardar la información de la canción"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2714
+#: ../shell/rb-shell.c:2716
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausado)"
 
-#: ../shell/rb-shell.c:2807
+#: ../shell/rb-shell.c:2809
 msgid "translator-credits"
 msgstr ""
 "Jorge González <jorgegonz@svn.gnome.org>, 2007-2010\n"
@@ -3735,7 +3704,7 @@ msgstr ""
 "Germán Poo-Caamaño <gpoo@ubiobio.cl>, 2003\n"
 "Xan López <xan@dimensis.com>, 2002"
 
-#: ../shell/rb-shell.c:2810
+#: ../shell/rb-shell.c:2812
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3747,7 +3716,7 @@ msgstr ""
 "la Free Software Foundation; ya sea en la versión 2 de la Licencia, o\n"
 "(a su elección) cualquier versión posterior.\n"
 
-#: ../shell/rb-shell.c:2814
+#: ../shell/rb-shell.c:2816
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3759,7 +3728,7 @@ msgstr ""
 "MERCANTILIDAD o IDONEIDAD PARA UN PROPÓSITO PARTICULAR. Vea\n"
 "la Licencia Pública General de GNU para más detalles.\n"
 
-#: ../shell/rb-shell.c:2818
+#: ../shell/rb-shell.c:2820
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3770,63 +3739,63 @@ msgstr ""
 "Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2825
+#: ../shell/rb-shell.c:2827
 msgid "Maintainers:"
 msgstr "Desarrolladores:"
 
-#: ../shell/rb-shell.c:2828
+#: ../shell/rb-shell.c:2830
 msgid "Former Maintainers:"
 msgstr "Desarrolladores anteriores:"
 
-#: ../shell/rb-shell.c:2831
+#: ../shell/rb-shell.c:2833
 msgid "Contributors:"
 msgstr "Colaboradores:"
 
-#: ../shell/rb-shell.c:2833
+#: ../shell/rb-shell.c:2835
 msgid "Music management and playback software for GNOME."
 msgstr "Software de organización y reproducción de música para GNOME."
 
-#: ../shell/rb-shell.c:2842
+#: ../shell/rb-shell.c:2844
 msgid "Rhythmbox Website"
 msgstr "Página web de Rhythmbox"
 
-#: ../shell/rb-shell.c:2889 ../shell/rb-shell-preferences.c:166
+#: ../shell/rb-shell.c:2891 ../shell/rb-shell-preferences.c:166
 msgid "Couldn't display help"
 msgstr "No se ha podido mostrar la ayuda"
 
-#: ../shell/rb-shell.c:2934
+#: ../shell/rb-shell.c:2936
 msgid "Configure Plugins"
 msgstr "Configurar complementos"
 
-#: ../shell/rb-shell.c:3023
+#: ../shell/rb-shell.c:3025
 msgid "Import Folder into Library"
 msgstr "Importar carpeta en la fonoteca"
 
-#: ../shell/rb-shell.c:3042
+#: ../shell/rb-shell.c:3044
 msgid "Import File into Library"
 msgstr "Importar archivo en la fonoteca"
 
-#: ../shell/rb-shell.c:3575 ../sources/rb-play-queue-source.c:629
+#: ../shell/rb-shell.c:3577 ../sources/rb-play-queue-source.c:629
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ninguna fuente registrada puede manejar URIs %s"
 
-#: ../shell/rb-shell.c:3905
+#: ../shell/rb-shell.c:3907
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Ninguna fuente registrada coincide con el URI %s"
 
-#: ../shell/rb-shell.c:3938 ../shell/rb-shell.c:3981
+#: ../shell/rb-shell.c:3940 ../shell/rb-shell.c:3983
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI de la canción desconocida: %s"
 
-#: ../shell/rb-shell.c:3990
+#: ../shell/rb-shell.c:3992
 #, c-format
 msgid "Unknown property %s"
 msgstr "Propiedad %s desconocida"
 
-#: ../shell/rb-shell.c:4004
+#: ../shell/rb-shell.c:4006
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "El tipo de la propiedad %s es inválido para la propiedad %s"
@@ -3959,7 +3928,7 @@ msgstr "Reducir el volumen de reproducción"
 msgid "_Play"
 msgstr "_Reproducir"
 
-#: ../shell/rb-shell-player.c:313 ../shell/rb-shell-player.c:3820
+#: ../shell/rb-shell-player.c:313 ../shell/rb-shell-player.c:3827
 msgid "Start playback"
 msgstr "Iniciar reproducción"
 
@@ -3989,94 +3958,94 @@ msgstr "Marcador deslizante de posición de la _canción"
 msgid "Change the visibility of the song position slider"
 msgstr "Cambiar la visibilidad del deslizador de la canción"
 
-#: ../shell/rb-shell-player.c:826
+#: ../shell/rb-shell-player.c:830
 msgid "Stream error"
 msgstr "Error de flujo"
 
-#: ../shell/rb-shell-player.c:827
+#: ../shell/rb-shell-player.c:831
 msgid "Unexpected end of stream!"
 msgstr "¡Fin de flujo inesperado!"
 
-#: ../shell/rb-shell-player.c:991
+#: ../shell/rb-shell-player.c:998
 msgid "Linear"
 msgstr "Lineal"
 
-#: ../shell/rb-shell-player.c:993
+#: ../shell/rb-shell-player.c:1000
 msgid "Linear looping"
 msgstr "Bucle lineal"
 
-#: ../shell/rb-shell-player.c:995
+#: ../shell/rb-shell-player.c:1002
 msgid "Shuffle"
 msgstr "Aleatorio"
 
-#: ../shell/rb-shell-player.c:997
+#: ../shell/rb-shell-player.c:1004
 msgid "Random with equal weights"
 msgstr "Aleatorio con pesos iguales"
 
-#: ../shell/rb-shell-player.c:999
+#: ../shell/rb-shell-player.c:1006
 msgid "Random by time since last play"
 msgstr "Aleatorio por última vez desde que se reprodujo"
 
-#: ../shell/rb-shell-player.c:1001
+#: ../shell/rb-shell-player.c:1008
 msgid "Random by rating"
 msgstr "Aleatorio por puntuación"
 
-#: ../shell/rb-shell-player.c:1003
+#: ../shell/rb-shell-player.c:1010
 msgid "Random by time since last play and rating"
 msgstr "Aleatorio por tiempo desde la última reproducción y puntuación"
 
-#: ../shell/rb-shell-player.c:1005
+#: ../shell/rb-shell-player.c:1012
 msgid "Linear, removing entries once played"
 msgstr "Lineal, quitando las entradas una vez reproducida"
 
-#: ../shell/rb-shell-player.c:1015
+#: ../shell/rb-shell-player.c:1022
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Ocurrió un error al crear el reproductor: %s"
 
-#: ../shell/rb-shell-player.c:1569
+#: ../shell/rb-shell-player.c:1576
 #, c-format
 msgid "Playlist was empty"
 msgstr "La lista de reproducción estaba vacía"
 
-#: ../shell/rb-shell-player.c:2038
+#: ../shell/rb-shell-player.c:2045
 #, c-format
 msgid "Not currently playing"
 msgstr "Ahora no se está reproduciendo nada"
 
-#: ../shell/rb-shell-player.c:2096
+#: ../shell/rb-shell-player.c:2103
 #, c-format
 msgid "No previous song"
 msgstr "No hay canción anterior"
 
-#: ../shell/rb-shell-player.c:2196
+#: ../shell/rb-shell-player.c:2203
 #, c-format
 msgid "No next song"
 msgstr "No hay siguiente canción"
 
-#: ../shell/rb-shell-player.c:2317 ../shell/rb-shell-player.c:3462
+#: ../shell/rb-shell-player.c:2324 ../shell/rb-shell-player.c:3469
 msgid "Couldn't start playback"
 msgstr "No se ha podido iniciar la reproducción"
 
-#: ../shell/rb-shell-player.c:3165
+#: ../shell/rb-shell-player.c:3172
 msgid "Couldn't stop playback"
 msgstr "No se ha podido detener la reproducción"
 
-#: ../shell/rb-shell-player.c:3284
+#: ../shell/rb-shell-player.c:3291
 #, c-format
 msgid "Playback position not available"
 msgstr "La posición de la reproducción no está disponible"
 
-#: ../shell/rb-shell-player.c:3316 ../shell/rb-shell-player.c:3350
+#: ../shell/rb-shell-player.c:3323 ../shell/rb-shell-player.c:3357
 #, c-format
 msgid "Current song is not seekable"
 msgstr "La canción actual no se puede buscar"
 
-#: ../shell/rb-shell-player.c:3815
+#: ../shell/rb-shell-player.c:3822
 msgid "Pause playback"
 msgstr "Pausar la reproducción"
 
-#: ../shell/rb-shell-player.c:3817
+#: ../shell/rb-shell-player.c:3824
 msgid "Stop playback"
 msgstr "Detener reproducción"
 
@@ -4092,32 +4061,32 @@ msgstr "General"
 msgid "Playback"
 msgstr "Reproducción"
 
-#: ../shell/rb-track-transfer-queue.c:134
+#: ../shell/rb-track-transfer-queue.c:175
 #, c-format
 msgid "The file \"%s\" already exists. Do you want to replace it?"
 msgstr "El archivo «%s» ya existe. ¿Quiere reemplazarlo?"
 
-#: ../shell/rb-track-transfer-queue.c:147
+#: ../shell/rb-track-transfer-queue.c:188
 msgid "_Cancel"
 msgstr "_Cancelar"
 
-#: ../shell/rb-track-transfer-queue.c:148
+#: ../shell/rb-track-transfer-queue.c:189
 msgid "_Skip"
 msgstr "_Saltar"
 
-#: ../shell/rb-track-transfer-queue.c:149
+#: ../shell/rb-track-transfer-queue.c:190
 msgid "_Replace"
 msgstr "_Reemplazar"
 
-#: ../shell/rb-track-transfer-queue.c:150
+#: ../shell/rb-track-transfer-queue.c:191
 msgid "S_kip All"
 msgstr "Sal_tar todas"
 
-#: ../shell/rb-track-transfer-queue.c:151
+#: ../shell/rb-track-transfer-queue.c:192
 msgid "Replace _All"
 msgstr "Reempla_zar todas"
 
-#: ../shell/rb-track-transfer-queue.c:420
+#: ../shell/rb-track-transfer-queue.c:439
 #, c-format
 msgid ""
 "%d file cannot be transferred as it must be converted into a format "
@@ -4137,7 +4106,7 @@ msgstr[1] ""
 "apropiado disponible."
 
 #. XXX should provide the option of picking a different format?
-#: ../shell/rb-track-transfer-queue.c:444
+#: ../shell/rb-track-transfer-queue.c:463
 #, c-format
 msgid ""
 "Additional software is required to encode media in your preferred format:\n"
@@ -4147,7 +4116,7 @@ msgstr ""
 "formato favorito:\n"
 "%s"
 
-#: ../shell/rb-track-transfer-queue.c:448
+#: ../shell/rb-track-transfer-queue.c:467
 #, c-format
 msgid ""
 "Additional software is required to convert %d file into a format supported "
@@ -4166,28 +4135,28 @@ msgstr[1] ""
 "soportado por el dispositivo de destino:\n"
 "%s"
 
-#: ../shell/rb-track-transfer-queue.c:465
+#: ../shell/rb-track-transfer-queue.c:484
 msgid "Unable to transfer tracks"
 msgstr "No se pudieron transferir las pistas"
 
-#: ../shell/rb-track-transfer-queue.c:470
+#: ../shell/rb-track-transfer-queue.c:489
 msgid "_Cancel the transfer"
 msgstr "_Cancelar la transferencia"
 
-#: ../shell/rb-track-transfer-queue.c:472
+#: ../shell/rb-track-transfer-queue.c:491
 msgid "_Skip these files"
 msgstr "_Omitir estos archivos"
 
-#: ../shell/rb-track-transfer-queue.c:475
+#: ../shell/rb-track-transfer-queue.c:494
 msgid "_Install"
 msgstr "_Instalar"
 
-#: ../shell/rb-track-transfer-queue.c:573
+#: ../shell/rb-track-transfer-queue.c:592
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
 msgstr "Transfiriendo pista %d de %d (%.0f%%)"
 
-#: ../shell/rb-track-transfer-queue.c:576
+#: ../shell/rb-track-transfer-queue.c:595
 #, c-format
 msgid "Transferring track %d out of %d"
 msgstr "Transfiriendo pista %d de %d"
@@ -4929,6 +4898,35 @@ msgstr "En el escritorio"
 #: ../widgets/rb-song-info.c:1259
 msgid "Unknown location"
 msgstr "Dirección desconocida"
+
+#~ msgid "Redownload purchased music at "
+#~ msgstr "Volver a descargar la música comprada en "
+
+#~ msgid "http://www.magnatune.com/info/redownload"
+#~ msgstr "http://www.magnatune.com/info/redownload"
+
+#~ msgid ""
+#~ "Your account details have changed. Changes will be applied the next time "
+#~ "you start Rhythmbox."
+#~ msgstr ""
+#~ "Los detalles de su cuenta han cambiado. Los cambios se aplicarán la "
+#~ "siguiente ver que inicie Rhythmbox."
+
+#~ msgid "Stop downloading purchased albums"
+#~ msgstr "Parar de descargar álbumes comprados"
+
+#~ msgid "Couldn't store account information"
+#~ msgstr "No se pudo almacenar la información de la cuenta"
+
+#~ msgid ""
+#~ "There was a problem accessing the keyring. Check the debug output for "
+#~ "more information."
+#~ msgstr ""
+#~ "Hubo un problema al acceder al depósito de claves. Para obtener más "
+#~ "información compruebe la salida de depuración."
+
+#~ msgid "Couldn't get account details"
+#~ msgstr "No se pudieron obtener los detalles de la cuenta"
 
 #~ msgid "Invalid share name"
 #~ msgstr "Nombre de compartición inválido"
