@@ -584,6 +584,7 @@ rb_mtp_source_new (RBShell *shell,
 #endif
 					      "settings", g_settings_get_child (settings, "source"),
 					      "toolbar-path", "/MTPSourceToolBar",
+					      "name", _("Media Player"),
 					      NULL));
 	g_object_unref (settings);
 
