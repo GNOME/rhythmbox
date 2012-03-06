@@ -82,6 +82,7 @@ static void rb_mtp_source_get_property (GObject *object,
 static void impl_delete (RBSource *asource);
 static RBTrackTransferBatch *impl_paste (RBSource *asource, GList *entries);
 static gboolean impl_show_popup (RBDisplayPage *page);
+static gboolean impl_uri_is_source (RBSource *asource, const char *uri);
 
 static gboolean impl_track_added (RBTransferTarget *target,
 				  RhythmDBEntry *entry,
@@ -199,6 +200,7 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_delete = impl_delete;
 	source_class->impl_paste = impl_paste;
+	source_class->impl_uri_is_source = impl_uri_is_source;
 
 	mps_class->impl_get_entries = impl_get_entries;
 	mps_class->impl_get_capacity = impl_get_capacity;
@@ -1026,6 +1028,24 @@ impl_delete (RBSource *source)
 	sel = rb_entry_view_get_selected_entries (songs);
 	impl_delete_entries (RB_MEDIA_PLAYER_SOURCE (source), sel, NULL, NULL, NULL);
 	rb_list_destroy_free (sel, (GDestroyNotify) rhythmdb_entry_unref);
+}
+
+static gboolean
+impl_uri_is_source (RBSource *source, const char *uri)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	char *source_uri;
+	gboolean result;
+
+	if (g_str_has_prefix (uri, "gphoto2://") == FALSE)
+		return FALSE;
+
+	source_uri = g_strdup_printf ("gphoto2://[usb:%03d,%03d]/", 
+				      priv->raw_device.bus_location,
+				      priv->raw_device.devnum);
+	result = g_str_has_prefix (uri, source_uri);
+	g_free (source_uri);
+	return result;
 }
 
 static RBTrackTransferBatch *
