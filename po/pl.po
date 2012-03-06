@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-05 01:02+0100\n"
-"PO-Revision-Date: 2012-03-04 01:03+0100\n"
+"POT-Creation-Date: 2012-03-06 19:22+0100\n"
+"PO-Revision-Date: 2012-03-06 19:21+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -687,15 +687,15 @@ msgstr "%d %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
-#: ../plugins/generic-player/rb-generic-player-source.c:1063
-#: ../plugins/ipod/rb-ipod-source.c:566
+#: ../plugins/generic-player/rb-generic-player-source.c:1077
+#: ../plugins/ipod/rb-ipod-source.c:565
 #: ../plugins/iradio/rb-iradio-source.c:562
 #: ../plugins/iradio/rb-iradio-source.c:1054
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78 ../plugins/lyrics/lyrics.py:80
-#: ../plugins/mtpdevice/rb-mtp-source.c:631
-#: ../plugins/mtpdevice/rb-mtp-source.c:1091
-#: ../plugins/mtpdevice/rb-mtp-source.c:1465
+#: ../plugins/mtpdevice/rb-mtp-source.c:649
+#: ../plugins/mtpdevice/rb-mtp-source.c:1127
+#: ../plugins/mtpdevice/rb-mtp-source.c:1501
 #: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-manager.c:1903 ../podcast/rb-podcast-manager.c:1997
@@ -1817,9 +1817,9 @@ msgstr "_Właściwości"
 msgid "Display device properties"
 msgstr "Wyświetla właściwości urządzenia"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:1352
-#: ../plugins/ipod/rb-ipod-source.c:2150
-#: ../plugins/mtpdevice/rb-mtp-source.c:1559
+#: ../plugins/generic-player/rb-generic-player-source.c:1366
+#: ../plugins/ipod/rb-ipod-source.c:2160
+#: ../plugins/mtpdevice/rb-mtp-source.c:1595
 msgid "Advanced"
 msgstr "Zaawansowane"
 
@@ -2000,11 +2000,11 @@ msgstr "_Usuń"
 msgid "Delete playlist"
 msgstr "Usuwa listę odtwarzania"
 
-#: ../plugins/ipod/rb-ipod-source.c:382
+#: ../plugins/ipod/rb-ipod-source.c:381
 msgid "Unable to initialize new iPod"
 msgstr "Nie można zainicjować nowego odtwarzacza iPod"
 
-#: ../plugins/ipod/rb-ipod-source.c:1592
+#: ../plugins/ipod/rb-ipod-source.c:1591
 #: ../podcast/rb-podcast-main-source.c:70
 #: ../sources/sync/rb-sync-settings-ui.c:262
 #: ../sources/sync/rb-sync-settings-ui.c:263
@@ -2012,7 +2012,7 @@ msgstr "Nie można zainicjować nowego odtwarzacza iPod"
 msgid "Podcasts"
 msgstr "Podcasty"
 
-#: ../plugins/ipod/rb-ipod-source.c:2040
+#: ../plugins/ipod/rb-ipod-source.c:2050
 msgid "New playlist"
 msgstr "Nowa lista odtwarzania"
 
@@ -2526,20 +2526,24 @@ msgstr "Nie można otworzyć tymczasowego pliku: %s"
 msgid "Rename MTP-device"
 msgstr "Zmień nazwę urządzenia MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:865
+#: ../plugins/mtpdevice/rb-mtp-source.c:604
+msgid "Media Player"
+msgstr "Odtwarzacz muzyki"
+
+#: ../plugins/mtpdevice/rb-mtp-source.c:883
 #: ../plugins/mtpdevice/rb-mtp-thread.c:856
 msgid "Media player device error"
-msgstr "Błąd urządzenia multimedialnego"
+msgstr "Błąd odtwarzacza muzyki"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:869
+#: ../plugins/mtpdevice/rb-mtp-source.c:887
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Nie można otworzyć urządzenia %s %s"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:913
+#: ../plugins/mtpdevice/rb-mtp-source.c:931
 msgid "Digital Audio Player"
 msgstr "Cyfrowy odtwarzacz muzyki"
 
