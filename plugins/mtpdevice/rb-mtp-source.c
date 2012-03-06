@@ -101,6 +101,7 @@ static char *impl_build_dest_uri (RBTransferTarget *target,
 static void impl_eject (RBDeviceSource *source);
 static gboolean impl_can_eject (RBDeviceSource *source);
 
+static void impl_selected (RBDisplayPage *page);
 static void mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source);
 static void mtp_tracklist_cb (LIBMTP_track_t *tracks, RBMtpSource *source);
 static RhythmDB * get_db_for_source (RBMtpSource *source);
@@ -133,6 +134,7 @@ static GMount *find_mount_for_device (GUdevDevice *device);
 
 typedef struct
 {
+	gboolean tried_open;
 	RBMtpThread *device_thread;
 	LIBMTP_raw_device_t raw_device;
 	GHashTable *entry_map;
@@ -191,6 +193,7 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	object_class->get_property = rb_mtp_source_get_property;
 
 	page_class->show_popup = impl_show_popup;
+	page_class->selected = impl_selected;
 
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -329,24 +332,16 @@ unmount_done_cb (GObject *object, GAsyncResult *result, gpointer psource)
 #endif
 
 static void
-rb_mtp_source_constructed (GObject *object)
+impl_selected (RBDisplayPage *page)
 {
-	RBMtpSource *source;
-	RBMtpSourcePrivate *priv;
-	RBEntryView *tracks;
-	RBShell *shell;
-	RBShellPlayer *shell_player;
-	GObject *player_backend;
-	GtkIconTheme *theme;
-	GdkPixbuf *pixbuf;
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (page);
 #if defined(HAVE_GUDEV)
 	GMount *mount;
 #endif
-	gint size;
 
-	RB_CHAIN_GOBJECT_METHOD (rb_mtp_source_parent_class, constructed, object);
-	source = RB_MTP_SOURCE (object);
-	priv = MTP_SOURCE_GET_PRIVATE (source);
+	if (priv->tried_open)
+		return;
+	priv->tried_open = TRUE;
 
 	/* try to open the device.  if gvfs has mounted it, unmount it first */
 #if defined(HAVE_GUDEV)
@@ -358,11 +353,31 @@ rb_mtp_source_constructed (GObject *object)
 						NULL,
 						NULL,
 						unmount_done_cb,
-						g_object_ref (source));
+						g_object_ref (page));
 		/* mount gets unreffed in callback */
-	} else
+	} else {
+		rb_debug ("device isn't mounted");
+		open_device (RB_MTP_SOURCE (page));
+	}
+#else
+	open_device (RB_MTP_SOURCE (page));
 #endif
-	open_device (source);
+}
+
+static void
+rb_mtp_source_constructed (GObject *object)
+{
+	RBMtpSource *source;
+	RBEntryView *tracks;
+	RBShell *shell;
+	RBShellPlayer *shell_player;
+	GObject *player_backend;
+	GtkIconTheme *theme;
+	GdkPixbuf *pixbuf;
+	gint size;
+
+	RB_CHAIN_GOBJECT_METHOD (rb_mtp_source_parent_class, constructed, object);
+	source = RB_MTP_SOURCE (object);
 
 	tracks = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (tracks, RB_ENTRY_VIEW_COL_RATING, FALSE);

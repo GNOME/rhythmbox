@@ -71,6 +71,7 @@ static void rb_ipod_load_songs (RBiPodSource *source);
 
 static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
+static void impl_selected (RBDisplayPage *page);
 
 static gboolean impl_track_added (RBTransferTarget *target,
 				  RhythmDBEntry *entry,
@@ -177,6 +178,7 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 
 	page_class->delete_thyself = impl_delete_thyself;
 	page_class->show_popup = impl_show_popup;
+	page_class->selected = impl_selected;
 
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
@@ -322,8 +324,6 @@ finish_construction (RBiPodSource *source)
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
         rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_FIRST_SEEN, FALSE);
 
-	rb_ipod_load_songs (source);
-
 	priv->art_store = rb_ext_db_new ("album-art");
 
 	/* is there model-specific data we need to pay attention to here?
@@ -334,7 +334,6 @@ finish_construction (RBiPodSource *source)
 	gst_encoding_target_add_profile (target, rb_gst_get_encoding_profile ("audio/x-aac"));
 	g_object_set (source, "encoding-target", target, NULL);
 
-        rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
 }
 
 static void
@@ -1986,6 +1985,17 @@ ipod_path_from_unix_path (const gchar *mount_point, const gchar *unix_path)
 	itdb_filename_fs2ipod (ipod_path);
 
 	return ipod_path;
+}
+
+static void
+impl_selected (RBDisplayPage *page)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (page);
+	
+	if (priv->ipod_db == NULL) {
+		rb_ipod_load_songs (RB_IPOD_SOURCE (page));
+		rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (page));
+	}
 }
 
 static void

@@ -75,6 +75,7 @@ static void load_songs (RBGenericPlayerSource *source);
 static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
 static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
+static void impl_selected (RBDisplayPage *page);
 
 static gboolean impl_can_paste (RBSource *source);
 static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
@@ -118,6 +119,7 @@ typedef struct
 {
 	RhythmDB *db;
 
+	gboolean loaded;
 	RhythmDBImportJob *import_job;
 	gint load_playlists_id;
 	GList *playlists;
@@ -163,6 +165,7 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	page_class->show_popup = impl_show_popup;
 	page_class->delete_thyself = impl_delete_thyself;
 	page_class->get_status = impl_get_status;
+	page_class->selected = impl_selected;
 
 	source_class->impl_can_delete = impl_can_delete;
 	source_class->impl_delete = impl_delete;
@@ -316,8 +319,6 @@ impl_constructed (GObject *object)
 	}
 	g_strfreev (output_formats);
 
-        rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
-	load_songs (source);
 }
 
 static void
@@ -507,6 +508,19 @@ impl_delete_thyself (RBDisplayPage *page)
 	}
 
 	RB_DISPLAY_PAGE_CLASS (rb_generic_player_source_parent_class)->delete_thyself (page);
+}
+
+static void
+impl_selected (RBDisplayPage *page)
+{
+	RBGenericPlayerSource *source = RB_GENERIC_PLAYER_SOURCE (page);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
+
+	if (priv->loaded == FALSE) {
+		priv->loaded = TRUE;
+		rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
+		load_songs (source);
+	}
 }
 
 static void
