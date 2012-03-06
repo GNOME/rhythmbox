@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-03-05 09:55+0000\n"
-"PO-Revision-Date: 2012-03-05 17:40+0100\n"
+"POT-Creation-Date: 2012-03-06 08:19+0000\n"
+"PO-Revision-Date: 2012-03-06 11:23+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0);\n"
 "X-Poedit-Country: SLOVENIA\n"
 "X-Poedit-Language: Slovenian\n"
@@ -295,7 +295,7 @@ msgstr "_Namesti dodaten program, ki je zahtevan za uporabo te vrste"
 
 #: ../data/ui/media-player-properties.ui.h:1
 msgid "Media Player Properties"
-msgstr "Lastnosti večpredstavnostnega predvajalnika"
+msgstr "Lastnosti predstavnega predvajalnika"
 
 #: ../data/ui/media-player-properties.ui.h:2
 msgid "<b>Information</b>"
@@ -711,9 +711,9 @@ msgstr "%d. %b. %Y"
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78
 #: ../plugins/lyrics/lyrics.py:80
-#: ../plugins/mtpdevice/rb-mtp-source.c:631
-#: ../plugins/mtpdevice/rb-mtp-source.c:1091
-#: ../plugins/mtpdevice/rb-mtp-source.c:1465
+#: ../plugins/mtpdevice/rb-mtp-source.c:634
+#: ../plugins/mtpdevice/rb-mtp-source.c:1112
+#: ../plugins/mtpdevice/rb-mtp-source.c:1486
 #: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-manager.c:1903
@@ -1836,7 +1836,7 @@ msgstr "Prikaže lastnosti naprave"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1352
 #: ../plugins/ipod/rb-ipod-source.c:2150
-#: ../plugins/mtpdevice/rb-mtp-source.c:1559
+#: ../plugins/mtpdevice/rb-mtp-source.c:1580
 msgid "Advanced"
 msgstr "Napredno"
 
@@ -2426,7 +2426,7 @@ msgstr "Prekliči prejem"
 
 #: ../plugins/magnatune/magnatune.py:150
 msgid "Stop album downloads"
-msgstr "Zaustavi prejemanje albuma"
+msgstr "Prekliči prejemanje albuma"
 
 #: ../plugins/magnatune/MagnatuneSource.py:108
 msgid "Loading Magnatune catalog"
@@ -2493,7 +2493,7 @@ msgstr "Vsi prejemi Magnatune so bili končani."
 
 #: ../plugins/mmkeys/mmkeys.plugin.in.h:1
 msgid "Media Player Keys"
-msgstr "Tipke večpredstavnostnih predvajalnikov"
+msgstr "Tipke predstavnega predvajalnika"
 
 #: ../plugins/mmkeys/mmkeys.plugin.in.h:2
 msgid "Control Rhythmbox using key shortcuts"
@@ -2517,20 +2517,24 @@ msgstr "Začasne datoteke ni mogoče odpreti: %s"
 msgid "Rename MTP-device"
 msgstr "Preimenuj napravo MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:865
+#: ../plugins/mtpdevice/rb-mtp-source.c:589
+msgid "Media Player"
+msgstr "Predstavni predvajalnik"
+
+#: ../plugins/mtpdevice/rb-mtp-source.c:868
 #: ../plugins/mtpdevice/rb-mtp-thread.c:856
 msgid "Media player device error"
-msgstr "Napaka naprave večpredstavnostnega predvajalnika"
+msgstr "Napaka naprave predstavnega predvajalnika"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:869
+#: ../plugins/mtpdevice/rb-mtp-source.c:872
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Naprave %s %s ni mogoče odpreti"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:913
+#: ../plugins/mtpdevice/rb-mtp-source.c:916
 msgid "Digital Audio Player"
 msgstr "Digitalni zvočni predvajalnik"
 
@@ -3444,7 +3448,7 @@ msgstr "_Preveri za nove naprave"
 
 #: ../shell/rb-removable-media-manager.c:154
 msgid "Check for new media storage devices that have not been automatically detected"
-msgstr "Preveri za nove naprave shrambe večpredstavnosti, ki niso bile samodejno zaznane"
+msgstr "Preveri za nove naprave shrambe predstavnih vsebin, ki niso bile samodejno zaznane"
 
 #: ../shell/rb-shell.c:349
 msgid "_Music"
@@ -4064,7 +4068,7 @@ msgid ""
 "Additional software is required to encode media in your preferred format:\n"
 "%s"
 msgstr ""
-"Za kodiranje predstavnosti v vaši želeni vrsti je zahtevan dodaten program:\n"
+"Za kodiranje predstavnih vsebin v želeno vrsto datoteke zahteva namestitev dodatnega programa:\n"
 "%s"
 
 #: ../shell/rb-track-transfer-queue.c:467
