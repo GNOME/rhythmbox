@@ -675,7 +675,7 @@ main (int argc, char **argv)
 	mpris = g_dbus_proxy_new_sync (bus,
 				       G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START,
 				       NULL,
-				       "org.mpris.MediaPlayer2.rhythmbox3",
+				       "org.mpris.MediaPlayer2.rhythmbox",
 				       "/org/mpris/MediaPlayer2",
 				       "org.mpris.MediaPlayer2.Player",
 				       NULL,
