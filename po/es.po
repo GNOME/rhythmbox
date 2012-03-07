@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-03-04 22:46+0000\n"
-"PO-Revision-Date: 2012-03-05 10:53+0100\n"
+"POT-Creation-Date: 2012-03-05 22:37+0000\n"
+"PO-Revision-Date: 2012-03-07 10:24+0100\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -696,9 +696,9 @@ msgstr "%d %b %Y"
 #: ../plugins/iradio/rb-iradio-source.c:1054
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78 ../plugins/lyrics/lyrics.py:80
-#: ../plugins/mtpdevice/rb-mtp-source.c:631
-#: ../plugins/mtpdevice/rb-mtp-source.c:1091
-#: ../plugins/mtpdevice/rb-mtp-source.c:1465
+#: ../plugins/mtpdevice/rb-mtp-source.c:632
+#: ../plugins/mtpdevice/rb-mtp-source.c:1092
+#: ../plugins/mtpdevice/rb-mtp-source.c:1466
 #: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-manager.c:1903 ../podcast/rb-podcast-manager.c:1997
@@ -1824,7 +1824,7 @@ msgstr "Mostrar las propiedades del dispositivo"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1352
 #: ../plugins/ipod/rb-ipod-source.c:2150
-#: ../plugins/mtpdevice/rb-mtp-source.c:1559
+#: ../plugins/mtpdevice/rb-mtp-source.c:1560
 msgid "Advanced"
 msgstr "Avanzado"
 
@@ -2432,7 +2432,6 @@ msgid "Cancel Downloads"
 msgstr "Cancelar descargas"
 
 #: ../plugins/magnatune/magnatune.py:150
-#| msgid "Cancel Downloads"
 msgid "Stop album downloads"
 msgstr "Detener las descargas de álbumes"
 
@@ -2445,12 +2444,10 @@ msgid "Downloading Magnatune Album(s)"
 msgstr "Descargando álbum(es) Magnatune"
 
 #: ../plugins/magnatune/MagnatuneSource.py:208
-#| msgid "Couldn't purchase album"
 msgid "Couldn't download album"
 msgstr "No se pudo descargar el álbum"
 
 #: ../plugins/magnatune/MagnatuneSource.py:209
-#| msgid "You must have a library location set to purchase an album."
 msgid "You must have a library location set to download an album."
 msgstr ""
 "Debe tener establecida una ubicación para la biblioteca para poder comprar "
@@ -2533,7 +2530,12 @@ msgstr "No se puede abrir el archivo temporal: %s"
 msgid "Rename MTP-device"
 msgstr "Renombrar el dispositivo MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:865
+#: ../plugins/mtpdevice/rb-mtp-source.c:587
+#| msgid "Media Player Keys"
+msgid "Media Player"
+msgstr "Reproductor multimedia"
+
+#: ../plugins/mtpdevice/rb-mtp-source.c:866
 #: ../plugins/mtpdevice/rb-mtp-thread.c:856
 msgid "Media player device error"
 msgstr "Error del dispositivo reproductor multimedia"
@@ -2541,12 +2543,12 @@ msgstr "Error del dispositivo reproductor multimedia"
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:869
+#: ../plugins/mtpdevice/rb-mtp-source.c:870
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "No se pudo abrir el dispositivo %2$s de %1$s"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:913
+#: ../plugins/mtpdevice/rb-mtp-source.c:914
 msgid "Digital Audio Player"
 msgstr "Reproductor de sonido digital"
 
