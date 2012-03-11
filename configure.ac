@@ -539,7 +539,7 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 	-Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes \
 	-Wnested-externs -Wpointer-arith \
 	-Wcast-align -Wformat-security -Wall \
-	-Werror -std=gnu89"
+	-Werror -Wno-deprecated-declarations -std=gnu89"
 
 	if echo "$CFLAGS" | grep -q -- '-O' && echo "$CFLAGS" | grep -q -v -- '-O0'; then
 		WARN_CFLAGS="-Wuninitialized $WARN_CFLAGS"
