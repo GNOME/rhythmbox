@@ -75,7 +75,8 @@ void
 rb_metadata_reset (RBMetaData *md)
 {
 	if (md->priv->tags != NULL) {
-		g_object_unref (md->priv->tags);
+		gst_tag_list_free (md->priv->tags);
+		md->priv->tags = NULL;
 	}
 
 	if (md->priv->info != NULL) {
