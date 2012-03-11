@@ -144,7 +144,7 @@ rb_audioscrobbler_entry_encode (AudioscrobblerEntry *entry)
 
 	encoded->mbid = soup_uri_encode (entry->mbid, EXTRA_URI_ENCODE_CHARS);
 
-	encoded->timestamp = g_strdup_printf("%ld", entry->play_time);
+	encoded->timestamp = g_strdup_printf("%ld", (long)entry->play_time);
 	encoded->length = entry->length;
 	encoded->source = g_strdup (entry->source);
 
@@ -221,7 +221,7 @@ rb_audioscrobbler_entry_save_to_string (GString *string, AudioscrobblerEntry *en
 				encoded->album,
 				encoded->mbid,
 				encoded->length,
-				entry->play_time);
+				(long)entry->play_time);
 	rb_audioscrobbler_encoded_entry_free (encoded);
 }
 
@@ -232,6 +232,6 @@ rb_audioscrobbler_entry_debug (AudioscrobblerEntry *entry, int index)
 	rb_debug ("      album: %s", entry->album);
 	rb_debug ("      title: %s", entry->title);
 	rb_debug ("     length: %d", entry->length);
-	rb_debug ("   playtime: %ld", entry->play_time);
+	rb_debug ("   playtime: %ld", (long)entry->play_time);
 }
 

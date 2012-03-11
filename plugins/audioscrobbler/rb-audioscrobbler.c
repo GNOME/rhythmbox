@@ -829,9 +829,9 @@ rb_audioscrobbler_should_handshake (RBAudioscrobbler *audioscrobbler)
 	}
 
 	if (time (NULL) < audioscrobbler->priv->handshake_next) {
-		rb_debug ("Too soon; time=%lu, handshake_next=%lu",
-			  time (NULL),
-			  audioscrobbler->priv->handshake_next);
+		rb_debug ("Too soon; time=%ld, handshake_next=%ld",
+			  (long)time (NULL),
+			  (long)audioscrobbler->priv->handshake_next);
 		return FALSE;
 	}
 
