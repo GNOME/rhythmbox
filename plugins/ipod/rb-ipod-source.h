@@ -71,6 +71,9 @@ void			rb_ipod_source_show_properties	(RBiPodSource *source);
 void			rb_ipod_source_delete_entries	(RBiPodSource *source,
 							 GList *entries);
 
+Itdb_Track *		rb_ipod_source_lookup_track	(RBiPodSource *source,
+							 RhythmDBEntry *entry);
+
 G_END_DECLS
 
 #endif /* __RB_IPOD_SOURCE_H */

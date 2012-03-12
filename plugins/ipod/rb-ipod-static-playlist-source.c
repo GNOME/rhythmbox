@@ -262,6 +262,14 @@ rb_ipod_static_playlist_source_get_ipod_source (RBIpodStaticPlaylistSource *play
 	return priv->ipod_source;
 }
 
+RbIpodDb*
+rb_ipod_static_playlist_source_get_ipod_db (RBIpodStaticPlaylistSource *playlist)
+{
+	RBIpodStaticPlaylistSourcePrivate *priv = IPOD_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (playlist);
+
+	return priv->ipod_db;
+}
+
 gboolean
 rb_ipod_static_playlist_source_get_was_reordered (RBIpodStaticPlaylistSource *playlist)
 {

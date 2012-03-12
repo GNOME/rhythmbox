@@ -594,15 +594,15 @@ playlist_track_removed (RhythmDBQueryModel *m,
 	RBIpodStaticPlaylistSource *playlist = RB_IPOD_STATIC_PLAYLIST_SOURCE (data);
 	Itdb_Playlist *ipod_pl = rb_ipod_static_playlist_source_get_itdb_playlist (playlist);
 	RBiPodSource *ipod = rb_ipod_static_playlist_source_get_ipod_source (playlist);
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod);
+	RbIpodDb *ipod_db = rb_ipod_static_playlist_source_get_ipod_db (playlist);
 	Itdb_Track *track;
 
 	g_return_if_fail (ipod != NULL);
 	g_return_if_fail (ipod_pl != NULL);
 
-	track = g_hash_table_lookup (priv->entry_map, entry);
+	track = rb_ipod_source_lookup_track (ipod, entry);
 	g_return_if_fail (track != NULL);
-	rb_ipod_db_remove_from_playlist (priv->ipod_db, ipod_pl, track);
+	rb_ipod_db_remove_from_playlist (ipod_db, ipod_pl, track);
 }
 
 static void
@@ -612,7 +612,7 @@ playlist_track_added (GtkTreeModel *model, GtkTreePath *path,
 	RBIpodStaticPlaylistSource *playlist = RB_IPOD_STATIC_PLAYLIST_SOURCE (data);
 	Itdb_Playlist *ipod_pl = rb_ipod_static_playlist_source_get_itdb_playlist (playlist);
 	RBiPodSource *ipod = rb_ipod_static_playlist_source_get_ipod_source (playlist);
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod);
+	RbIpodDb *ipod_db = rb_ipod_static_playlist_source_get_ipod_db (playlist);
 	Itdb_Track *track;
 	RhythmDBEntry *entry;
 
@@ -620,10 +620,10 @@ playlist_track_added (GtkTreeModel *model, GtkTreePath *path,
 	g_return_if_fail (ipod_pl != NULL);
 
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
-        track = g_hash_table_lookup (priv->entry_map, entry);
+	track = rb_ipod_source_lookup_track (ipod, entry);
 	g_return_if_fail (track != NULL);
 
-	rb_ipod_db_add_to_playlist (priv->ipod_db, ipod_pl, track);
+	rb_ipod_db_add_to_playlist (ipod_db, ipod_pl, track);
 }
 
 static void
@@ -633,7 +633,6 @@ playlist_before_save (RbIpodDb *ipod_db, gpointer data)
 	GtkTreeModel *model = GTK_TREE_MODEL (rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (playlist)));
 	Itdb_Playlist *ipod_pl = rb_ipod_static_playlist_source_get_itdb_playlist (playlist);
 	RBiPodSource *ipod = rb_ipod_static_playlist_source_get_ipod_source (playlist);
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod);
 	GtkTreeIter iter;
 
 	if (!rb_ipod_static_playlist_source_get_was_reordered (playlist)) {
@@ -650,7 +649,7 @@ playlist_before_save (RbIpodDb *ipod_db, gpointer data)
 			Itdb_Track *track;
 
 			gtk_tree_model_get (model, &iter, 0, &entry, -1);
-			track = g_hash_table_lookup (priv->entry_map, entry);
+			track = rb_ipod_source_lookup_track (ipod, entry);
 
 			g_return_if_fail (track != NULL);
 		} while (gtk_tree_model_iter_next (model, &iter));
@@ -675,7 +674,7 @@ playlist_before_save (RbIpodDb *ipod_db, gpointer data)
 			Itdb_Track *track;
 
 			gtk_tree_model_get (model, &iter, 0, &entry, -1);
-			track = g_hash_table_lookup (priv->entry_map, entry);
+			track = rb_ipod_source_lookup_track (ipod, entry);
 
 			rb_debug ("adding \"%s\" to \"%s\"", track->title, ipod_pl->name);
 
@@ -692,13 +691,12 @@ playlist_rows_reordered (GtkTreeModel *model,
 			 gint *order, gpointer data)
 {
 	RBIpodStaticPlaylistSource *playlist = RB_IPOD_STATIC_PLAYLIST_SOURCE (data);
-	RBiPodSource *ipod = rb_ipod_static_playlist_source_get_ipod_source (playlist);
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod);
+	RbIpodDb *ipod_db = rb_ipod_static_playlist_source_get_ipod_db (playlist);
 
 	/* Mark as reordered; will check before save */
 	rb_ipod_static_playlist_source_set_was_reordered (playlist, TRUE);
 
-	rb_ipod_db_save_async (priv->ipod_db);
+	rb_ipod_db_save_async (ipod_db);
 }
 
 static void
@@ -2062,6 +2060,16 @@ rb_ipod_source_remove_playlist (RBiPodSource *ipod_source,
 
 	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
 	rb_ipod_db_remove_playlist (priv->ipod_db, rb_ipod_static_playlist_source_get_itdb_playlist (playlist_source));
+}
+
+
+Itdb_Track *
+rb_ipod_source_lookup_track (RBiPodSource *source,
+			     RhythmDBEntry *entry)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+
+	return g_hash_table_lookup (priv->entry_map, entry);
 }
 
 static gboolean
