@@ -311,6 +311,10 @@ rb_ipod_static_playlist_source_dispose (GObject *object)
 		priv->ipod_source = NULL;
 	}
 	if (priv->ipod_db) {
+		g_signal_handlers_disconnect_by_func (priv->ipod_db,
+						      G_CALLBACK (playlist_before_save),
+						      source);
+
 		g_object_unref (priv->ipod_db);
 		priv->ipod_db = NULL;
 	}
