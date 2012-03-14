@@ -214,8 +214,8 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 			builder.get_object("stream_account_radio").set_active(account_type == "stream")
 			builder.get_object("download_account_radio").set_active(account_type == "download")
 
-			builder.get_object("username_entry").set_text(username)
-			builder.get_object("password_entry").set_text(password)
+			builder.get_object("username_entry").set_text(username or "")
+			builder.get_object("password_entry").set_text(password or "")
 
 			update_sensitivity(account_type)
 
