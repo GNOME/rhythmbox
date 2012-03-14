@@ -277,14 +277,13 @@ rb_ipod_plugin_cmd_playlist_rename (GtkAction *action, RBSource *source)
 static void
 rb_ipod_plugin_cmd_playlist_delete (GtkAction *action, RBSource *source)
 {
-	RBIpodStaticPlaylistSource *psource;
 	RBiPodSource *ipod_source;
 
 	g_return_if_fail (RB_IS_IPOD_STATIC_PLAYLIST_SOURCE (source));
-	psource = RB_IPOD_STATIC_PLAYLIST_SOURCE (source);
 
-	ipod_source = rb_ipod_static_playlist_source_get_ipod_source (psource);
+	g_object_get (source, "ipod-source", &ipod_source, NULL);
 	rb_ipod_source_remove_playlist (ipod_source, source);
+	g_object_unref (ipod_source);
 }
 
 static void
