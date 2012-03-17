@@ -3732,13 +3732,17 @@ player_image_cb (RBPlayer *player,
 	if (image == NULL)
 		return;
 
-	store = rb_ext_db_new ("album-art");
-
-	key = rb_ext_db_key_create_storage ("album", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
 	artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_ARTIST);
 	if (artist == NULL || artist[0] == '\0' || strcmp (artist, _("Unknown")) == 0) {
 		artist = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
+		if (artist == NULL || artist[0] == '\0' || strcmp (artist, _("Unknown")) == 0) {
+			return;
+		}
 	}
+
+	store = rb_ext_db_new ("album-art");
+
+	key = rb_ext_db_key_create_storage ("album", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
 	rb_ext_db_key_add_field (key, "artist", artist);
 
 	g_value_init (&v, GDK_TYPE_PIXBUF);
