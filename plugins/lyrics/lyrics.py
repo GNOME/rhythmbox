@@ -224,9 +224,9 @@ class LyricPane(object):
 			self.get_lyrics()
 	   
 
-		self.edit = Gtk.ToggleButton(label=_("_Edit"))
+		self.edit = Gtk.ToggleButton(label=_("_Edit"), use_underline=True)
 		self.edit.connect('toggled', edit_callback)
-		self.discard = Gtk.Button(label=_("_Search again"))
+		self.discard = Gtk.Button(label=_("_Search again"), use_underline=True)
 		self.discard.connect('clicked', discard_callback)
 		self.clear = Gtk.Button.new_from_stock(Gtk.STOCK_CLEAR)
 		self.clear.connect('clicked', clear_callback)
