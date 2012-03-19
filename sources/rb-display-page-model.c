@@ -70,6 +70,7 @@
 enum
 {
 	DROP_RECEIVED,
+	PAGE_INSERTED,
 	LAST_SIGNAL
 };
 
@@ -670,6 +671,7 @@ rb_display_page_model_add_page (RBDisplayPageModel *page_model, RBDisplayPage *p
 				           RB_DISPLAY_PAGE_MODEL_COLUMN_PLAYING, FALSE,
 					   RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, page,
 					   -1);
+	g_signal_emit (G_OBJECT (page_model), rb_display_page_model_signals[PAGE_INSERTED], 0, page, &iter);
 
 	g_signal_connect_object (page, "notify::name", G_CALLBACK (page_notify_cb), page_model, 0);
 	g_signal_connect_object (page, "notify::visibility", G_CALLBACK (page_notify_cb), page_model, 0);
@@ -871,6 +873,27 @@ rb_display_page_model_class_init (RBDisplayPageModelClass *klass)
 			      G_TYPE_NONE,
 			      3,
 			      RB_TYPE_DISPLAY_PAGE, G_TYPE_INT, G_TYPE_POINTER);
+
+	/**
+	 * RBDisplayPageModel::page-inserted:
+	 * @model: the #RBDisplayPageModel
+	 * @page: the #RBDisplayPage that was inserted
+	 * @iter: a #GtkTreeIter indicating the page position
+	 *
+	 * Emitted when a new page is inserted into the model.
+	 * Use this instead of GtkTreeModel::row-inserted as this
+	 * doesn't get complicated by visibility filtering.
+	 */
+	rb_display_page_model_signals[PAGE_INSERTED] =
+		g_signal_new ("page-inserted",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBDisplayPageModelClass, page_inserted),
+			      NULL, NULL,
+			      NULL,
+			      G_TYPE_NONE,
+			      2,
+			      RB_TYPE_DISPLAY_PAGE, GTK_TYPE_TREE_ITER);
 
 	if (!drag_target_list) {
 		drag_target_list = gtk_target_list_new (dnd_targets, G_N_ELEMENTS (dnd_targets));

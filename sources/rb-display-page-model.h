@@ -67,6 +67,9 @@ struct _RBDisplayPageModelClass
 			       RBDisplayPage *target,
 			       GtkTreeViewDropPosition pos,
 			       GtkSelectionData *data);
+	void (*page_inserted) (RBDisplayPageModel *model,
+			       RBDisplayPage *page,
+			       GtkTreeIter *iter);
 };
 
 GType		rb_display_page_model_get_type	(void);
