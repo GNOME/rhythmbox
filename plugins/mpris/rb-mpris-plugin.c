@@ -1346,14 +1346,9 @@ source_deleted_cb (RBDisplayPage *page, RBMprisPlugin *plugin)
 	add_playlist_property_change (plugin, "PlaylistCount", g_variant_new_uint32 (plugin->playlist_count));
 }
 
-static gboolean
-display_page_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBMprisPlugin *plugin)
+static void
+display_page_inserted_cb (RBDisplayPageModel *model, RBDisplayPage *page, GtkTreeIter *iter, RBMprisPlugin *plugin)
 {
-	RBDisplayPage *page;
-
-	gtk_tree_model_get (model, iter,
-			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
-			    -1);
 	if (RB_IS_PLAYLIST_SOURCE (page)) {
 		gboolean is_local;
 
@@ -1371,10 +1366,18 @@ display_page_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *i
 			g_signal_connect_object (page, "deleted", G_CALLBACK (source_deleted_cb), plugin, 0);
 		}
 	}
+}
+
+static gboolean
+display_page_foreach_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBMprisPlugin *plugin)
+{
+	RBDisplayPage *page;
+
+	gtk_tree_model_get (model, iter, RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page, -1);
+	display_page_inserted_cb (RB_DISPLAY_PAGE_MODEL (model), page, iter, plugin);
 
 	return FALSE;
 }
-
 
 static void
 name_acquired_cb (GDBusConnection *connection, const char *name, RBMprisPlugin *plugin)
@@ -1499,11 +1502,11 @@ impl_activate (PeasActivatable *bplugin)
 				 G_CALLBACK (elapsed_nano_changed_cb),
 				 plugin, 0);
 	g_signal_connect_object (plugin->page_model,
-				 "row-inserted",
+				 "page-inserted",
 				 G_CALLBACK (display_page_inserted_cb),
 				 plugin, 0);
 	gtk_tree_model_foreach (GTK_TREE_MODEL (plugin->page_model),
-				(GtkTreeModelForeachFunc) display_page_inserted_cb,
+				(GtkTreeModelForeachFunc) display_page_foreach_cb,
 				plugin);
 
 	plugin->art_store = rb_ext_db_new ("album-art");
