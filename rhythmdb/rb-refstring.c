@@ -95,7 +95,7 @@ rb_refstring_new (const char *init)
 
 	ret = g_malloc (sizeof (RBRefString) + strlen (init));
 
-	strcpy (ret->value, init);
+	g_strlcpy (ret->value, init, strlen (init) + 1);
 	g_atomic_int_set (&ret->refcount, 1);
 	ret->folded = NULL;
 	ret->sortkey = NULL;
