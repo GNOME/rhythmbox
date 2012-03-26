@@ -58,6 +58,7 @@ GUDEV_REQS=143
 LIBMTP_REQS=0.3.0
 LIBPEAS_REQS=0.7.3
 GRILO_REQS=0.1.17
+LIBXML2_REQS=2.7.8
 
 LIBNOTIFY_REQS=0.7.0
 BRASERO_MIN_REQS=2.31.5
@@ -98,6 +99,7 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  libsoup-gnome-2.4 >= $LIBSOUP_REQS	\
 		  libpeas-1.0 >= $LIBPEAS_REQS		\
 		  libpeas-gtk-1.0 >= $LIBPEAS_REQS	\
+		  libxml-2.0 >= $LIBXML2_REQS		\
 		  tdb >= 1.2.6)
 
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
