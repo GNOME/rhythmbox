@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-02-29 09:58+0100\n"
-"PO-Revision-Date: 2012-02-29 10:45+0100\n"
+"POT-Creation-Date: 2012-03-27 11:28+0200\n"
+"PO-Revision-Date: 2012-03-27 11:29+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
@@ -92,7 +92,7 @@ msgstr "Mina högst rankade"
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1
 #: ../shell/rb-shell.c:623
-#: ../shell/rb-shell.c:2694
+#: ../shell/rb-shell.c:2696
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -700,16 +700,16 @@ msgstr "%d %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
-#: ../plugins/generic-player/rb-generic-player-source.c:1063
-#: ../plugins/ipod/rb-ipod-source.c:566
+#: ../plugins/generic-player/rb-generic-player-source.c:1077
+#: ../plugins/ipod/rb-ipod-source.c:565
 #: ../plugins/iradio/rb-iradio-source.c:562
 #: ../plugins/iradio/rb-iradio-source.c:1054
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78
 #: ../plugins/lyrics/lyrics.py:80
-#: ../plugins/mtpdevice/rb-mtp-source.c:631
-#: ../plugins/mtpdevice/rb-mtp-source.c:1091
-#: ../plugins/mtpdevice/rb-mtp-source.c:1465
+#: ../plugins/mtpdevice/rb-mtp-source.c:649
+#: ../plugins/mtpdevice/rb-mtp-source.c:1127
+#: ../plugins/mtpdevice/rb-mtp-source.c:1501
 #: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-manager.c:1903
@@ -727,8 +727,9 @@ msgstr "%d %b %Y"
 #: ../rhythmdb/rhythmdb-tree.c:1348
 #: ../rhythmdb/rhythmdb-tree.c:1352
 #: ../rhythmdb/rhythmdb-tree.c:1356
-#: ../shell/rb-shell-player.c:1764
-#: ../shell/rb-shell-player.c:3732
+#: ../shell/rb-shell-player.c:1771
+#: ../shell/rb-shell-player.c:3736
+#: ../shell/rb-shell-player.c:3738
 #: ../widgets/rb-entry-view.c:985
 #: ../widgets/rb-entry-view.c:1007
 #: ../widgets/rb-entry-view.c:1483
@@ -785,32 +786,32 @@ msgstr "%d.%02d av %d.%02d"
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d.%02d:%02d av %d.%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:450
+#: ../metadata/rb-metadata-gst.c:520
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
 msgstr "Kunde inte skriva taggar till denna fil eftersom den innehåller flera strömmar"
 
-#: ../metadata/rb-metadata-gst.c:490
+#: ../metadata/rb-metadata-gst.c:560
 #, c-format
 msgid "Unable to write tags to this file as it is not encoded in a supported format"
 msgstr "Kunde inte skriva taggar till denna fil eftersom den inte är kodad i ett format som stöds"
 
-#: ../metadata/rb-metadata-gst.c:622
+#: ../metadata/rb-metadata-gst.c:692
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Misslyckades med att skapa källelement; kontrollera din installation"
 
-#: ../metadata/rb-metadata-gst.c:632
+#: ../metadata/rb-metadata-gst.c:702
 #, c-format
 msgid "Failed to create the 'decodebin2' element; check your GStreamer installation"
 msgstr "Misslyckades med att skapa \"decodebin2\"-element; kontrollera din GStreamer-installation"
 
-#: ../metadata/rb-metadata-gst.c:641
+#: ../metadata/rb-metadata-gst.c:711
 #, c-format
 msgid "Failed to create the 'giostreamsink' element; check your GStreamer installation"
 msgstr "Misslyckades med att skapa \"giostreamsink\"-element; kontrollera din GStreamer-installation"
 
-#: ../metadata/rb-metadata-gst.c:722
+#: ../metadata/rb-metadata-gst.c:792
 #, c-format
 msgid "File corrupted during write"
 msgstr "Filen förstörd under skrivning"
@@ -1470,7 +1471,7 @@ msgid "Copy CD"
 msgstr "Kopiera cd"
 
 #: ../plugins/context/AlbumTab.py:57
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2391
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2399
 msgid "Albums"
 msgstr "Album"
 
@@ -1704,15 +1705,15 @@ msgstr "Tillhandahåller en implementation av D-Bus-gränssnitt för MediaServer
 msgid "All Tracks"
 msgstr "Alla spår"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2390
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2398
 msgid "Artists"
 msgstr "Artister"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2392
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2400
 msgid "Genres"
 msgstr "Genrer"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2401
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2409
 #: ../shell/rb-playlist-manager.c:1103
 #: ../sources/rb-display-page-group.c:92
 msgid "Playlists"
@@ -1828,9 +1829,9 @@ msgstr "_Egenskaper"
 msgid "Display device properties"
 msgstr "Visa enhetsegenskaper"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:1352
-#: ../plugins/ipod/rb-ipod-source.c:2150
-#: ../plugins/mtpdevice/rb-mtp-source.c:1559
+#: ../plugins/generic-player/rb-generic-player-source.c:1366
+#: ../plugins/ipod/rb-ipod-source.c:1986
+#: ../plugins/mtpdevice/rb-mtp-source.c:1595
 msgid "Advanced"
 msgstr "Avancerat"
 
@@ -1997,11 +1998,11 @@ msgstr "_Ta bort"
 msgid "Delete playlist"
 msgstr "Ta bort spellistan"
 
-#: ../plugins/ipod/rb-ipod-source.c:382
+#: ../plugins/ipod/rb-ipod-source.c:381
 msgid "Unable to initialize new iPod"
 msgstr "Kunde inte initiera ny iPod"
 
-#: ../plugins/ipod/rb-ipod-source.c:1592
+#: ../plugins/ipod/rb-ipod-source.c:1413
 #: ../podcast/rb-podcast-main-source.c:70
 #: ../sources/sync/rb-sync-settings-ui.c:262
 #: ../sources/sync/rb-sync-settings-ui.c:263
@@ -2009,7 +2010,7 @@ msgstr "Kunde inte initiera ny iPod"
 msgid "Podcasts"
 msgstr "Poddsändningar"
 
-#: ../plugins/ipod/rb-ipod-source.c:2040
+#: ../plugins/ipod/rb-ipod-source.c:1863
 msgid "New playlist"
 msgstr "Ny spellista"
 
@@ -2223,256 +2224,230 @@ msgid "Adds support to Rhythmbox for playing and purchasing from the Magnatune o
 msgstr "Lägger till stöd i Rhythmbox för att spela och köpa musik från nätbutiken Magnatune"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
-msgid "January (01)"
-msgstr "Januari (01)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:2
-msgid "February (02)"
-msgstr "Februari (02)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:3
-msgid "March (03)"
-msgstr "Mars (03)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:4
-msgid "April (04)"
-msgstr "April (04)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:5
-msgid "May (05)"
-msgstr "Maj (05)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:6
-msgid "June (06)"
-msgstr "Juni (06)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:7
-msgid "July (07)"
-msgstr "Juli (07)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:8
-msgid "August (08)"
-msgstr "Augusti (08)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:9
-msgid "September (09)"
-msgstr "September (09)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:10
-msgid "October (10)"
-msgstr "Oktober (10)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:11
-msgid "November (11)"
-msgstr "November (11)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:12
-msgid "December (12)"
-msgstr "December (12)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:13
-msgid "$5 US"
-msgstr "$5 USD"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:14
-msgid "$6 US"
-msgstr "$6 USD"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:15
-msgid "$7 US"
-msgstr "$7 USD"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:16
-msgid "$8 US (typical)"
-msgstr "$8 USD (vanligt)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:17
-msgid "$9 US"
-msgstr "$9 USD"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:18
-msgid "$10 US (better than average)"
-msgstr "$10 USD (bättre än normalt)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:19
-msgid "$11 US"
-msgstr "$11 USD"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:20
-msgid "$12 US (generous)"
-msgstr "$12 USD (generöst)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:21
-msgid "$13 US"
-msgstr "$13 USD"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:22
-msgid "$14 US"
-msgstr "$14 USD"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:23
-msgid "$15 US (VERY generous!)"
-msgstr "$15 USD (MYCKET generöst!)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:24
-msgid "$16 US"
-msgstr "$16 USD"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:25
-msgid "$17 US"
-msgstr "$17 USD"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:26
-msgid "$18 US (We love you!)"
-msgstr "$18 USD (Vi älskar dig!)"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:27
-msgid "Ogg Vorbis"
-msgstr "Ogg Vorbis"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:28
-msgid "FLAC"
-msgstr "FLAC"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:29
-msgid "WAV"
-msgstr "WAV"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:30
-msgid "VBR MP3"
-msgstr "VBR MP3"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:31
-msgid "128K MP3"
-msgstr "128K MP3"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:32
 msgid "Magnatune Information"
 msgstr "Magnatune-information"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:33
+#: ../plugins/magnatune/magnatune-prefs.ui.h:2
 msgid "I don't have a Magnatune account"
 msgstr "Jag har inte ett Magnatune-konto"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:34
+#: ../plugins/magnatune/magnatune-prefs.ui.h:3
 msgid "I have a streaming account"
 msgstr "Jag har ett strömningskonto"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:35
+#: ../plugins/magnatune/magnatune-prefs.ui.h:4
 msgid "I have a download account"
 msgstr "Jag har ett hämtningskonto"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:36
+#: ../plugins/magnatune/magnatune-prefs.ui.h:5
 msgid "Username:"
 msgstr "Användarnamn:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:37
+#: ../plugins/magnatune/magnatune-prefs.ui.h:6
 msgid "Password:"
 msgstr "Lösenord:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:38
+#: ../plugins/magnatune/magnatune-prefs.ui.h:7
 msgid "Preferred audio _format:"
 msgstr "Föredraget ljud_format:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:39
+#: ../plugins/magnatune/magnatune-prefs.ui.h:8
 msgid "Get an account at "
 msgstr "Skaffa ett konto på "
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:40
+#: ../plugins/magnatune/magnatune-prefs.ui.h:9
 msgid "http://magnatune.com/compare_plans"
 msgstr "http://magnatune.com/compare_plans"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:41
+#: ../plugins/magnatune/magnatune-prefs.ui.h:10
 msgid "Find out about Magnatune at "
 msgstr "Läs mer om Magnatune på "
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:42
+#: ../plugins/magnatune/magnatune-prefs.ui.h:11
 msgid "http://www.magnatune.com/info/"
 msgstr "http://www.magnatune.com/info/"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:43
-msgid "Redownload purchased music at "
-msgstr "Hämta köpt musik igen på "
+#: ../plugins/magnatune/magnatune-prefs.ui.h:12
+msgid "January (01)"
+msgstr "Januari (01)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:44
-msgid "http://www.magnatune.com/info/redownload"
-msgstr "http://www.magnatune.com/info/redownload"
+#: ../plugins/magnatune/magnatune-prefs.ui.h:13
+msgid "February (02)"
+msgstr "Februari (02)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:45
-msgid "Your account details have changed. Changes will be applied the next time you start Rhythmbox."
-msgstr "Dina kontouppgifter har ändrats. Ändringar kommer att tillämpas nästa gång du startar Rhythmbox."
+#: ../plugins/magnatune/magnatune-prefs.ui.h:14
+msgid "March (03)"
+msgstr "Mars (03)"
 
-#: ../plugins/magnatune/magnatune.py:108
+#: ../plugins/magnatune/magnatune-prefs.ui.h:15
+msgid "April (04)"
+msgstr "April (04)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:16
+msgid "May (05)"
+msgstr "Maj (05)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:17
+msgid "June (06)"
+msgstr "Juni (06)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:18
+msgid "July (07)"
+msgstr "Juli (07)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:19
+msgid "August (08)"
+msgstr "Augusti (08)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:20
+msgid "September (09)"
+msgstr "September (09)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:21
+msgid "October (10)"
+msgstr "Oktober (10)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:22
+msgid "November (11)"
+msgstr "November (11)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:23
+msgid "December (12)"
+msgstr "December (12)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:24
+msgid "$5 US"
+msgstr "$5 USD"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:25
+msgid "$6 US"
+msgstr "$6 USD"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:26
+msgid "$7 US"
+msgstr "$7 USD"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:27
+msgid "$8 US (typical)"
+msgstr "$8 USD (vanligt)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:28
+msgid "$9 US"
+msgstr "$9 USD"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:29
+msgid "$10 US (better than average)"
+msgstr "$10 USD (bättre än normalt)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:30
+msgid "$11 US"
+msgstr "$11 USD"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:31
+msgid "$12 US (generous)"
+msgstr "$12 USD (generöst)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:32
+msgid "$13 US"
+msgstr "$13 USD"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:33
+msgid "$14 US"
+msgstr "$14 USD"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:34
+msgid "$15 US (VERY generous!)"
+msgstr "$15 USD (MYCKET generöst!)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:35
+msgid "$16 US"
+msgstr "$16 USD"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:36
+msgid "$17 US"
+msgstr "$17 USD"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:37
+msgid "$18 US (We love you!)"
+msgstr "$18 USD (Vi älskar dig!)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:38
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:39
+msgid "FLAC"
+msgstr "FLAC"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:40
+msgid "WAV"
+msgstr "WAV"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:41
+msgid "VBR MP3"
+msgstr "VBR MP3"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:42
+msgid "128K MP3"
+msgstr "128K MP3"
+
+#: ../plugins/magnatune/magnatune.py:129
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/magnatune.py:118
+#: ../plugins/magnatune/magnatune.py:139
 msgid "Download Album"
 msgstr "Hämta album"
 
-#: ../plugins/magnatune/magnatune.py:119
+#: ../plugins/magnatune/magnatune.py:140
 msgid "Download this album from Magnatune"
 msgstr "Hämta detta album från Magnatune"
 
-#: ../plugins/magnatune/magnatune.py:123
+#: ../plugins/magnatune/magnatune.py:144
 msgid "Artist Information"
 msgstr "Artistinformation"
 
-#: ../plugins/magnatune/magnatune.py:124
+#: ../plugins/magnatune/magnatune.py:145
 msgid "Get information about this artist"
 msgstr "Hämta information om denna artist"
 
-#: ../plugins/magnatune/magnatune.py:128
+#: ../plugins/magnatune/magnatune.py:149
 msgid "Cancel Downloads"
 msgstr "Avbryt hämtningar"
 
-#: ../plugins/magnatune/magnatune.py:129
-msgid "Stop downloading purchased albums"
-msgstr "Stoppa hämtningen av köpta album"
+#: ../plugins/magnatune/magnatune.py:150
+msgid "Stop album downloads"
+msgstr "Stoppa albumhämtningar"
 
-#: ../plugins/magnatune/magnatune.py:230
-#: ../plugins/magnatune/magnatune.py:233
-msgid "Couldn't store account information"
-msgstr "Kunde inte lagra kontoinformationen"
-
-#: ../plugins/magnatune/magnatune.py:234
-msgid "There was a problem accessing the keyring. Check the debug output for more information."
-msgstr "Det uppstod ett problem vid åtkomst till nyckelringen. Kontrollera felsökningsutdata för mer information."
-
-#: ../plugins/magnatune/MagnatuneSource.py:106
+#: ../plugins/magnatune/MagnatuneSource.py:108
 msgid "Loading Magnatune catalog"
 msgstr "Läser in Magnatune-katalog"
 
-#: ../plugins/magnatune/MagnatuneSource.py:113
+#: ../plugins/magnatune/MagnatuneSource.py:115
 msgid "Downloading Magnatune Album(s)"
 msgstr "Hämtar Magnatune-album"
 
-#: ../plugins/magnatune/MagnatuneSource.py:206
-msgid "Couldn't purchase album"
-msgstr "Kunde inte köpa album"
+#: ../plugins/magnatune/MagnatuneSource.py:208
+msgid "Couldn't download album"
+msgstr "Kunde inte hämta albumet"
 
-#: ../plugins/magnatune/MagnatuneSource.py:207
-msgid "You must have a library location set to purchase an album."
-msgstr "Du måste ha en biblioteksplats inställd för att köpa ett album."
+#: ../plugins/magnatune/MagnatuneSource.py:209
+msgid "You must have a library location set to download an album."
+msgstr "Du måste ha en biblioteksplats inställd för att hämta ett album."
 
-#: ../plugins/magnatune/MagnatuneSource.py:270
+#: ../plugins/magnatune/MagnatuneSource.py:272
 msgid "Unable to load catalog"
 msgstr "Kunde inte läsa in katalogen"
 
-#: ../plugins/magnatune/MagnatuneSource.py:271
+#: ../plugins/magnatune/MagnatuneSource.py:273
 msgid "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr "Rhythmbox kunde inte förstå Magnatune-katalogen. Skicka in en felrapport."
 
-#: ../plugins/magnatune/MagnatuneSource.py:360
-#: ../plugins/magnatune/MagnatuneSource.py:410
-msgid "Couldn't get account details"
-msgstr "Kunde inte hämta kontouppgifter"
-
-#: ../plugins/magnatune/MagnatuneSource.py:459
+#: ../plugins/magnatune/MagnatuneSource.py:425
 msgid "Download Error"
 msgstr "Hämtningsfel"
 
-#: ../plugins/magnatune/MagnatuneSource.py:460
+#: ../plugins/magnatune/MagnatuneSource.py:426
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2483,12 +2458,12 @@ msgstr ""
 "Magnatune-servern returnerade:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:462
+#: ../plugins/magnatune/MagnatuneSource.py:429
 #: ../widgets/rb-entry-view.c:1603
 msgid "Error"
 msgstr "Fel"
 
-#: ../plugins/magnatune/MagnatuneSource.py:463
+#: ../plugins/magnatune/MagnatuneSource.py:430
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -2499,11 +2474,11 @@ msgstr ""
 "Felmeddelandet var:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:493
+#: ../plugins/magnatune/MagnatuneSource.py:466
 msgid "Finished Downloading"
 msgstr "Färdig med hämtningen"
 
-#: ../plugins/magnatune/MagnatuneSource.py:493
+#: ../plugins/magnatune/MagnatuneSource.py:466
 msgid "All Magnatune downloads have been completed."
 msgstr "Alla hämtningar från Magnatune är färdiga."
 
@@ -2533,7 +2508,11 @@ msgstr "Kunde inte öppna temporär fil: %s"
 msgid "Rename MTP-device"
 msgstr "Byt namn på MTP-enhet"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:865
+#: ../plugins/mtpdevice/rb-mtp-source.c:604
+msgid "Media Player"
+msgstr "Mediaspelare"
+
+#: ../plugins/mtpdevice/rb-mtp-source.c:883
 #: ../plugins/mtpdevice/rb-mtp-thread.c:856
 msgid "Media player device error"
 msgstr "Enhetsfel i mediaspelare"
@@ -2541,12 +2520,12 @@ msgstr "Enhetsfel i mediaspelare"
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:869
+#: ../plugins/mtpdevice/rb-mtp-source.c:887
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Kunde inte öppna %s %s-enheten"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:913
+#: ../plugins/mtpdevice/rb-mtp-source.c:931
 msgid "Digital Audio Player"
 msgstr "Digital ljudspelare"
 
@@ -3600,39 +3579,39 @@ msgstr "Ändra synligheten för bläddraren"
 msgid "Change the music volume"
 msgstr "Ändra musikvolymen"
 
-#: ../shell/rb-shell.c:2002
+#: ../shell/rb-shell.c:2004
 msgid "Enable debug output"
 msgstr "Aktivera felsökningsutskrifter"
 
-#: ../shell/rb-shell.c:2003
+#: ../shell/rb-shell.c:2005
 msgid "Enable debug output matching a specified string"
 msgstr "Aktivera felsökningsutskrifter som matchar en speciell sträng"
 
-#: ../shell/rb-shell.c:2004
+#: ../shell/rb-shell.c:2006
 msgid "Do not update the library with file changes"
 msgstr "Uppdatera inte biblioteket med filändringar"
 
-#: ../shell/rb-shell.c:2005
+#: ../shell/rb-shell.c:2007
 msgid "Do not register the shell"
 msgstr "Registrera inte skalet"
 
-#: ../shell/rb-shell.c:2006
+#: ../shell/rb-shell.c:2008
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Spara inte någon data permanent (betyder --no-registration)"
 
-#: ../shell/rb-shell.c:2007
+#: ../shell/rb-shell.c:2009
 msgid "Disable loading of plugins"
 msgstr "Inaktivera inläsning av insticksmoduler"
 
-#: ../shell/rb-shell.c:2008
+#: ../shell/rb-shell.c:2010
 msgid "Path for database file to use"
 msgstr "Sökväg till databasfil att använda"
 
-#: ../shell/rb-shell.c:2009
+#: ../shell/rb-shell.c:2011
 msgid "Path for playlists file to use"
 msgstr "Sökväg till spellistefiler att använda"
 
-#: ../shell/rb-shell.c:2020
+#: ../shell/rb-shell.c:2022
 #, c-format
 msgid ""
 "%s\n"
@@ -3642,27 +3621,27 @@ msgstr ""
 "Kör \"%s --help\" för att se en komplett lista över tillgängliga kommandoradsflaggor.\n"
 
 #. Translators: this is the short label for the 'import folder' action
-#: ../shell/rb-shell.c:2121
+#: ../shell/rb-shell.c:2123
 msgctxt "Library"
 msgid "Import"
 msgstr "Importera"
 
 #. Translators: this is the short label for the 'view all tracks' action
-#: ../shell/rb-shell.c:2123
+#: ../shell/rb-shell.c:2125
 msgid "Show All"
 msgstr "Visa alla"
 
-#: ../shell/rb-shell.c:2433
+#: ../shell/rb-shell.c:2435
 msgid "Error while saving song information"
 msgstr "Kunde inte spara låtinformation"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2714
+#: ../shell/rb-shell.c:2716
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausad)"
 
-#: ../shell/rb-shell.c:2807
+#: ../shell/rb-shell.c:2809
 msgid "translator-credits"
 msgstr ""
 "Daniel Nylander <po@danielnylander.se>\n"
@@ -3672,7 +3651,7 @@ msgstr ""
 "Skicka synpunkter på översättningen till\n"
 "<tp-sv@listor.tp-sv.se>."
 
-#: ../shell/rb-shell.c:2810
+#: ../shell/rb-shell.c:2812
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3684,7 +3663,7 @@ msgstr ""
 "av Free Software Foundation; antingen version 2 av licensen, eller\n"
 "(om du vill) vilken senare version som helst.\n"
 
-#: ../shell/rb-shell.c:2814
+#: ../shell/rb-shell.c:2816
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3696,7 +3675,7 @@ msgstr ""
 "garantin att det ska fungera eller passa ett speciellt syfte. Se GNU General\n"
 "Public License för mer information.\n"
 
-#: ../shell/rb-shell.c:2818
+#: ../shell/rb-shell.c:2820
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3706,66 +3685,66 @@ msgstr ""
 "med Rhythmbox. Om inte, skriv till Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA\n"
 
-#: ../shell/rb-shell.c:2825
+#: ../shell/rb-shell.c:2827
 msgid "Maintainers:"
 msgstr "Ansvariga:"
 
-#: ../shell/rb-shell.c:2828
+#: ../shell/rb-shell.c:2830
 msgid "Former Maintainers:"
 msgstr "Tidigare ansvariga:"
 
-#: ../shell/rb-shell.c:2831
+#: ../shell/rb-shell.c:2833
 msgid "Contributors:"
 msgstr "Bidragsgivare:"
 
-#: ../shell/rb-shell.c:2833
+#: ../shell/rb-shell.c:2835
 msgid "Music management and playback software for GNOME."
 msgstr "Programvara för hantering och uppspelning av musik för GNOME."
 
-#: ../shell/rb-shell.c:2842
+#: ../shell/rb-shell.c:2844
 msgid "Rhythmbox Website"
 msgstr "Webbplatsen för Rhythmbox"
 
-#: ../shell/rb-shell.c:2889
+#: ../shell/rb-shell.c:2891
 #: ../shell/rb-shell-preferences.c:166
 msgid "Couldn't display help"
 msgstr "Kunde inte visa hjälp"
 
-#: ../shell/rb-shell.c:2934
+#: ../shell/rb-shell.c:2936
 msgid "Configure Plugins"
 msgstr "Konfigurera insticksmoduler"
 
-#: ../shell/rb-shell.c:3023
+#: ../shell/rb-shell.c:3025
 msgid "Import Folder into Library"
 msgstr "Importera mapp till bibliotek"
 
-#: ../shell/rb-shell.c:3042
+#: ../shell/rb-shell.c:3044
 msgid "Import File into Library"
 msgstr "Importera fil till biblitek"
 
-#: ../shell/rb-shell.c:3575
+#: ../shell/rb-shell.c:3577
 #: ../sources/rb-play-queue-source.c:629
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ingen registerad källa kan hantera URI %s"
 
-#: ../shell/rb-shell.c:3905
+#: ../shell/rb-shell.c:3907
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Ingen registerad källa matchar URI:n %s"
 
-#: ../shell/rb-shell.c:3938
-#: ../shell/rb-shell.c:3981
+#: ../shell/rb-shell.c:3940
+#: ../shell/rb-shell.c:3983
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Okänd URI för låt: %s"
 
-#: ../shell/rb-shell.c:3990
+#: ../shell/rb-shell.c:3992
 #, c-format
 msgid "Unknown property %s"
 msgstr "Okänd egenskap %s"
 
-#: ../shell/rb-shell.c:4004
+#: ../shell/rb-shell.c:4006
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Okänd egenskapstyp %s för egenskap %s"
@@ -3900,7 +3879,7 @@ msgid "_Play"
 msgstr "Spela _upp"
 
 #: ../shell/rb-shell-player.c:313
-#: ../shell/rb-shell-player.c:3820
+#: ../shell/rb-shell-player.c:3831
 msgid "Start playback"
 msgstr "Börja spela"
 
@@ -3928,96 +3907,96 @@ msgstr "Låtpo_sitionsväljare"
 msgid "Change the visibility of the song position slider"
 msgstr "Ändra synligheten för låtpositionsväljaren"
 
-#: ../shell/rb-shell-player.c:826
+#: ../shell/rb-shell-player.c:830
 msgid "Stream error"
 msgstr "Strömningsfel"
 
-#: ../shell/rb-shell-player.c:827
+#: ../shell/rb-shell-player.c:831
 msgid "Unexpected end of stream!"
 msgstr "Oväntat slut på ström!"
 
-#: ../shell/rb-shell-player.c:991
+#: ../shell/rb-shell-player.c:998
 msgid "Linear"
 msgstr "Linjär"
 
-#: ../shell/rb-shell-player.c:993
+#: ../shell/rb-shell-player.c:1000
 msgid "Linear looping"
 msgstr "Linjär slinga"
 
-#: ../shell/rb-shell-player.c:995
+#: ../shell/rb-shell-player.c:1002
 msgid "Shuffle"
 msgstr "Blanda"
 
-#: ../shell/rb-shell-player.c:997
+#: ../shell/rb-shell-player.c:1004
 msgid "Random with equal weights"
 msgstr "Slumpmässig med lika viktning"
 
-#: ../shell/rb-shell-player.c:999
+#: ../shell/rb-shell-player.c:1006
 msgid "Random by time since last play"
 msgstr "Slumpmässig efter tid sedan senaste uppspelning"
 
-#: ../shell/rb-shell-player.c:1001
+#: ../shell/rb-shell-player.c:1008
 msgid "Random by rating"
 msgstr "Slumpmässig efter betyg"
 
-#: ../shell/rb-shell-player.c:1003
+#: ../shell/rb-shell-player.c:1010
 msgid "Random by time since last play and rating"
 msgstr "Slumpmässig efter tid sedan senaste uppspelning och betyg"
 
-#: ../shell/rb-shell-player.c:1005
+#: ../shell/rb-shell-player.c:1012
 msgid "Linear, removing entries once played"
 msgstr "Linjär, tar bort objekt när de spelats"
 
-#: ../shell/rb-shell-player.c:1015
+#: ../shell/rb-shell-player.c:1022
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Misslyckades med att skapa spelaren: %s"
 
-#: ../shell/rb-shell-player.c:1569
+#: ../shell/rb-shell-player.c:1576
 #, c-format
 msgid "Playlist was empty"
 msgstr "Spellistan var tom"
 
-#: ../shell/rb-shell-player.c:2038
+#: ../shell/rb-shell-player.c:2045
 #, c-format
 msgid "Not currently playing"
 msgstr "Spelar inte för tillfället"
 
-#: ../shell/rb-shell-player.c:2096
+#: ../shell/rb-shell-player.c:2103
 #, c-format
 msgid "No previous song"
 msgstr "Ingen föregående låt"
 
-#: ../shell/rb-shell-player.c:2196
+#: ../shell/rb-shell-player.c:2203
 #, c-format
 msgid "No next song"
 msgstr "Ingen nästa låt"
 
-#: ../shell/rb-shell-player.c:2317
-#: ../shell/rb-shell-player.c:3462
+#: ../shell/rb-shell-player.c:2324
+#: ../shell/rb-shell-player.c:3469
 msgid "Couldn't start playback"
 msgstr "Kunde inte starta uppspelning"
 
-#: ../shell/rb-shell-player.c:3165
+#: ../shell/rb-shell-player.c:3172
 msgid "Couldn't stop playback"
 msgstr "Kunde inte stoppa uppspelning"
 
-#: ../shell/rb-shell-player.c:3284
+#: ../shell/rb-shell-player.c:3291
 #, c-format
 msgid "Playback position not available"
 msgstr "Uppspelningsposition inte tillgänglig"
 
-#: ../shell/rb-shell-player.c:3316
-#: ../shell/rb-shell-player.c:3350
+#: ../shell/rb-shell-player.c:3323
+#: ../shell/rb-shell-player.c:3357
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Det går inte att söka i aktuell låt"
 
-#: ../shell/rb-shell-player.c:3815
+#: ../shell/rb-shell-player.c:3826
 msgid "Pause playback"
 msgstr "Pausa uppspelningen"
 
-#: ../shell/rb-shell-player.c:3817
+#: ../shell/rb-shell-player.c:3828
 msgid "Stop playback"
 msgstr "Stoppa uppspelning"
 
@@ -4852,6 +4831,35 @@ msgstr "På skrivbordet"
 #: ../widgets/rb-song-info.c:1259
 msgid "Unknown location"
 msgstr "Okänd plats"
+
+#~ msgid "Redownload purchased music at "
+#~ msgstr "Hämta köpt musik igen på "
+
+#~ msgid "http://www.magnatune.com/info/redownload"
+#~ msgstr "http://www.magnatune.com/info/redownload"
+
+#~ msgid ""
+#~ "Your account details have changed. Changes will be applied the next time "
+#~ "you start Rhythmbox."
+#~ msgstr ""
+#~ "Dina kontouppgifter har ändrats. Ändringar kommer att tillämpas nästa "
+#~ "gång du startar Rhythmbox."
+
+#~ msgid "Stop downloading purchased albums"
+#~ msgstr "Stoppa hämtningen av köpta album"
+
+#~ msgid "Couldn't store account information"
+#~ msgstr "Kunde inte lagra kontoinformationen"
+
+#~ msgid ""
+#~ "There was a problem accessing the keyring. Check the debug output for "
+#~ "more information."
+#~ msgstr ""
+#~ "Det uppstod ett problem vid åtkomst till nyckelringen. Kontrollera "
+#~ "felsökningsutdata för mer information."
+
+#~ msgid "Couldn't get account details"
+#~ msgstr "Kunde inte hämta kontouppgifter"
 
 #~ msgid "Searching... drop artwork here"
 #~ msgstr "Söker... släpp bildmaterial här"
