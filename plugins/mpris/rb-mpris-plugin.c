@@ -73,8 +73,6 @@ typedef struct
 	RBShellPlayer *player;
 	RhythmDB *db;
 	RBDisplayPageModel *page_model;
-	GtkAction *next_action;
-	GtkAction *prev_action;
 	RBExtDB *art_store;
 
 	int playlist_count;
@@ -847,9 +845,13 @@ get_player_property (GDBusConnection *connection,
 	} else if (g_strcmp0 (property_name, "MaximumRate") == 0) {
 		return g_variant_new_double (1.0);
 	} else if (g_strcmp0 (property_name, "CanGoNext") == 0) {
-		return g_variant_new_boolean (gtk_action_get_sensitive (plugin->next_action));
+		gboolean has_next;
+		g_object_get (plugin->player, "has-next", &has_next, NULL);
+		return g_variant_new_boolean (has_next);
 	} else if (g_strcmp0 (property_name, "CanGoPrevious") == 0) {
-		return g_variant_new_boolean (gtk_action_get_sensitive (plugin->prev_action));
+		gboolean has_prev;
+		g_object_get (plugin->player, "has-prev", &has_prev, NULL);
+		return g_variant_new_boolean (has_prev);
 	} else if (g_strcmp0 (property_name, "CanPlay") == 0) {
 		/* uh.. under what conditions can we not play?  nothing in the source? */
 		return g_variant_new_boolean (TRUE);
@@ -1289,20 +1291,25 @@ playing_source_changed_cb (RBShellPlayer *player,
 }
 
 static void
-next_action_sensitive_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *plugin)
+player_has_next_changed_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *plugin)
 {
 	GVariant *v;
+	gboolean has_next;
 	rb_debug ("emitting CanGoNext change");
-	v = g_variant_new_boolean (gtk_action_get_sensitive (plugin->next_action));
+	g_object_get (object, "has-next", &has_next, NULL);
+	v = g_variant_new_boolean (has_next);
 	add_player_property_change (plugin, "CanGoNext", v);
 }
 
 static void
-prev_action_sensitive_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *plugin)
+player_has_prev_changed_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *plugin)
 {
 	GVariant *v;
+	gboolean has_prev;
+
 	rb_debug ("emitting CanGoPrevious change");
-	v = g_variant_new_boolean (gtk_action_get_sensitive (plugin->prev_action));
+	g_object_get (object, "has-prev", &has_prev, NULL);
+	v = g_variant_new_boolean (has_prev);
 	add_player_property_change (plugin, "CanGoPrevious", v);
 }
 
@@ -1395,7 +1402,6 @@ static void
 impl_activate (PeasActivatable *bplugin)
 {
 	RBMprisPlugin *plugin;
-	GtkUIManager *ui_manager;
 	GDBusInterfaceInfo *ifaceinfo;
 	GError *error = NULL;
 	RBShell *shell;
@@ -1406,7 +1412,6 @@ impl_activate (PeasActivatable *bplugin)
 	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell,
 		      "shell-player", &plugin->player,
-		      "ui-manager", &ui_manager,
 		      "db", &plugin->db,
 		      "display-page-model", &plugin->page_model,
 		      NULL);
@@ -1501,6 +1506,14 @@ impl_activate (PeasActivatable *bplugin)
 				 "elapsed-nano-changed",
 				 G_CALLBACK (elapsed_nano_changed_cb),
 				 plugin, 0);
+	g_signal_connect_object (plugin->player,
+				 "notify::has-next",
+				 G_CALLBACK (player_has_next_changed_cb),
+				 plugin, 0);
+	g_signal_connect_object (plugin->player,
+				 "notify::has-prev",
+				 G_CALLBACK (player_has_prev_changed_cb),
+				 plugin, 0);
 	g_signal_connect_object (plugin->page_model,
 				 "page-inserted",
 				 G_CALLBACK (display_page_inserted_cb),
@@ -1514,25 +1527,6 @@ impl_activate (PeasActivatable *bplugin)
 				 "added",
 				 G_CALLBACK (art_added_cb),
 				 plugin, 0);
-
-	/*
-	 * This is a pretty awful hack.  The shell player should expose this
-	 * information as properties, and we should bind those to the actions
-	 * elsewhere.
-	 */
-
-	plugin->next_action = gtk_ui_manager_get_action (ui_manager, "/MenuBar/ControlMenu/ControlNextMenu");
-	plugin->prev_action = gtk_ui_manager_get_action (ui_manager, "/MenuBar/ControlMenu/ControlPreviousMenu");
-
-	g_signal_connect_object (plugin->next_action,
-				 "notify::sensitive",
-				 G_CALLBACK (next_action_sensitive_cb),
-				 plugin, 0);
-	g_signal_connect_object (plugin->prev_action,
-				 "notify::sensitive",
-				 G_CALLBACK (prev_action_sensitive_cb),
-				 plugin, 0);
-	g_object_unref (ui_manager);
 
 	plugin->name_own_id = g_bus_own_name (G_BUS_TYPE_SESSION,
 					      MPRIS_BUS_NAME_PREFIX ".rhythmbox",
