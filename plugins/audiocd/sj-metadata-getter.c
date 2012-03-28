@@ -26,12 +26,15 @@
 #include "sj-metadata-getter.h"
 #include "sj-metadata-marshal.h"
 #include "sj-metadata.h"
+#ifdef HAVE_MUSICBRAINZ4
+#include "sj-metadata-musicbrainz4.h"
+#endif /* HAVE_MUSICBRAINZ4 */
 #ifdef HAVE_MUSICBRAINZ3
 #include "sj-metadata-musicbrainz3.h"
 #endif /* HAVE_MUSICBRAINZ3 */
-#ifdef HAVE_LIBCDIO
-#include "sj-metadata-cdtext.h"
-#endif /* HAVE_LIBCDIO */
+#ifdef HAVE_MUSICBRAINZ
+#include "sj-metadata-musicbrainz.h"
+#endif /* HAVE_MUSICBRAINZ */
 #include "sj-metadata-gvfs.h"
 #include "sj-error.h"
 
@@ -119,7 +122,7 @@ sj_metadata_getter_set_cdrom (SjMetadataGetter *mdg, const char* device)
 
   g_free (priv->cdrom);
 
-#if defined (sun) && defined (__SVR4)
+#ifdef __sun
   if (g_str_has_prefix (device, "/dev/dsk/")) {
     priv->cdrom = g_strdup_printf ("/dev/rdsk/%s", device + strlen ("/dev/dsk/"));
     return;
@@ -175,12 +178,15 @@ lookup_cd (SjMetadataGetter *mdg)
   GError *error = NULL;
   gboolean found = FALSE;
   GType types[] = {
+#ifdef HAVE_MUSICBRAINZ4
+    SJ_TYPE_METADATA_MUSICBRAINZ4,
+#endif /* HAVE_MUSICBRAINZ4 */
 #ifdef HAVE_MUSICBRAINZ3
     SJ_TYPE_METADATA_MUSICBRAINZ3,
 #endif /* HAVE_MUSICBRAINZ3 */
-#ifdef HAVE_LIBCDIO
-    SJ_TYPE_METADATA_CDTEXT,
-#endif /* HAVE_LIBCDIO */
+#ifdef HAVE_MUSICBRAINZ
+    SJ_TYPE_METADATA_MUSICBRAINZ,
+#endif /* HAVE_MUSICBRAINZ */
     SJ_TYPE_METADATA_GVFS
   };
 

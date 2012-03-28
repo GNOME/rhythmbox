@@ -50,6 +50,7 @@ GDK_PIXBUF_REQS=2.18.0
 GLIB_REQS=2.28.0
 LIBGPOD_REQS=0.6
 MUSICBRAINZ3_REQS=3.0.2
+MUSICBRAINZ4_REQS=4.0.0
 TOTEM_PLPARSER_REQS=2.32.1
 VALA_REQS=0.9.4
 AVAHI_REQS=0.6
@@ -347,12 +348,15 @@ AC_SUBST(GSTCDDA_CFLAGS)
 dnl check for MusicBrainz
 have_sj_metadata_getter=no
 AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
-				[don't build with MusicBrainz support]))
+				[build without MusicBrainz support]))
 if test x"$enable_musicbrainz" != "xno"; then
 	PKG_CHECK_MODULES(MUSICBRAINZ3, libmusicbrainz3 >= $MUSICBRAINZ3_REQS gconf-2.0, [have_musicbrainz3=yes], [have_musicbrainz3=no])
-
 	AC_SUBST(MUSICBRAINZ3_CFLAGS)
 	AC_SUBST(MUSICBRAINZ3_LIBS)
+
+	PKG_CHECK_MODULES(MUSICBRAINZ4, libmusicbrainz4 >= $MUSICBRAINZ4_REQS gconf-2.0, [have_musicbrainz4=yes], [have_musicbrainz4=no])
+	AC_SUBST(MUSICBRAINZ4_CFLAGS)
+	AC_SUBST(MUSICBRAINZ4_LIBS)
 
 	if test x"$have_musicbrainz3" = xyes; then
 		oldlibs=$LIBS
@@ -362,14 +366,23 @@ if test x"$enable_musicbrainz" != "xno"; then
 
 		AC_DEFINE([HAVE_MUSICBRAINZ3], 1, [Whether libmusicbrainz3 is available])
 		have_sj_metadata_getter=yes
+	fi
+
+	if test x"$have_musicbrainz4" = xyes; then
+		AC_DEFINE([HAVE_MUSICBRAINZ4], 1, [Whether libmusicbrainz4 is available])
+		have_sj_metadata_getter=yes
+	fi
+
+	if test x"$have_sj_metadata_getter" = xyes; then
 		AC_DEFINE([HAVE_SJ_METADATA_GETTER], 1, [Whether to use the sound-juicer metadata getter code])
 	else
 		if test x"$enable_musicbrainz" = xyes; then
-			AC_MSG_ERROR([MusicBrainz requested, but neither libmusicbrainz nor libmusicbrainz3 are available])
+			AC_MSG_ERROR([MusicBrainz requested, but neither libmusicbrainz3 nor libmusicbrainz4 are available])
 		fi
 	fi
 fi
 AM_CONDITIONAL([HAVE_MUSICBRAINZ3], [test "x$have_musicbrainz3" = "xyes"])
+AM_CONDITIONAL([HAVE_MUSICBRAINZ4], [test "x$have_musicbrainz4" = "xyes"])
 AM_CONDITIONAL([HAVE_SJ_METADATA_GETTER], [test "x$have_sj_metadata_getter" = "xyes"])
 
 AC_PATH_XTRA

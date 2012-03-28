@@ -175,10 +175,19 @@ sj_metadata_helper_check_media (const char *cdrom, GError **error)
 
   /* This initialize the library if it isn't done yet */
   monitor = brasero_medium_monitor_get_default ();
+  if (brasero_medium_monitor_is_probing (monitor)) {
+      /* FIXME: would be nicer to only check if "cdrom" is being probed,
+       * but libbrasero doesn't seem to have an API for that
+       */
+      g_set_error (error, SJ_ERROR, SJ_ERROR_CD_BUSY, _("Cannot read CD: %s"),
+                   _("Devices haven't been all probed yet"));
+      return FALSE;
+  }
   drive = brasero_medium_monitor_get_drive (monitor, cdrom);
   if (drive == NULL) {
     return FALSE;
   }
+
   medium = brasero_drive_get_medium (drive);
   g_object_unref (drive);
 
