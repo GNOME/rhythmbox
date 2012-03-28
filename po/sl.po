@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-03-06 08:19+0000\n"
-"PO-Revision-Date: 2012-03-23 10:08+0200\n"
-"Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
+"POT-Creation-Date: 2012-03-28 09:57+0000\n"
+"PO-Revision-Date: 2012-03-28 15:13+0100\n"
+"Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0);\n"
 "X-Poedit-Country: SLOVENIA\n"
 "X-Poedit-Language: Slovenian\n"
@@ -704,16 +704,16 @@ msgstr "%d. %b. %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
-#: ../plugins/generic-player/rb-generic-player-source.c:1063
-#: ../plugins/ipod/rb-ipod-source.c:566
+#: ../plugins/generic-player/rb-generic-player-source.c:1077
+#: ../plugins/ipod/rb-ipod-source.c:565
 #: ../plugins/iradio/rb-iradio-source.c:562
 #: ../plugins/iradio/rb-iradio-source.c:1054
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78
 #: ../plugins/lyrics/lyrics.py:80
-#: ../plugins/mtpdevice/rb-mtp-source.c:634
-#: ../plugins/mtpdevice/rb-mtp-source.c:1112
-#: ../plugins/mtpdevice/rb-mtp-source.c:1486
+#: ../plugins/mtpdevice/rb-mtp-source.c:649
+#: ../plugins/mtpdevice/rb-mtp-source.c:1127
+#: ../plugins/mtpdevice/rb-mtp-source.c:1501
 #: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-manager.c:1903
@@ -732,7 +732,8 @@ msgstr "%d. %b. %Y"
 #: ../rhythmdb/rhythmdb-tree.c:1352
 #: ../rhythmdb/rhythmdb-tree.c:1356
 #: ../shell/rb-shell-player.c:1771
-#: ../shell/rb-shell-player.c:3739
+#: ../shell/rb-shell-player.c:3736
+#: ../shell/rb-shell-player.c:3738
 #: ../widgets/rb-entry-view.c:985
 #: ../widgets/rb-entry-view.c:1007
 #: ../widgets/rb-entry-view.c:1483
@@ -789,32 +790,32 @@ msgstr "%d:%02d od %d:%02d"
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d od %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:519
+#: ../metadata/rb-metadata-gst.c:520
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
 msgstr "V datoteko ni mogoče napisati oznak, saj vsebuje več pretokov"
 
-#: ../metadata/rb-metadata-gst.c:559
+#: ../metadata/rb-metadata-gst.c:560
 #, c-format
 msgid "Unable to write tags to this file as it is not encoded in a supported format"
 msgstr "Oznak ni mogoče zapisati v datoteko, saj ni kodirana v podprti vrsti"
 
-#: ../metadata/rb-metadata-gst.c:691
+#: ../metadata/rb-metadata-gst.c:692
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Ustvarjanje predmeta vira je spodletelo; preverite svojo namestitev"
 
-#: ../metadata/rb-metadata-gst.c:701
+#: ../metadata/rb-metadata-gst.c:702
 #, c-format
 msgid "Failed to create the 'decodebin2' element; check your GStreamer installation"
 msgstr "Ustvarjanje predmeta 'decodebin2' je spodletelo, preverite vašo namestitev GStreamer"
 
-#: ../metadata/rb-metadata-gst.c:710
+#: ../metadata/rb-metadata-gst.c:711
 #, c-format
 msgid "Failed to create the 'giostreamsink' element; check your GStreamer installation"
 msgstr "Ustvarjanje predmeta 'giostreamsink' je spodletelo, preverite vašo namestitev GStreamer"
 
-#: ../metadata/rb-metadata-gst.c:791
+#: ../metadata/rb-metadata-gst.c:792
 #, c-format
 msgid "File corrupted during write"
 msgstr "Med zapisanjem datoteke je prišlo do okvare"
@@ -952,47 +953,55 @@ msgstr "Izvajalec"
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Dostop do CD naprave ni mogoč."
 
-#: ../plugins/audiocd/sj-metadata.c:190
-#, c-format
-msgid "Device '%s' does not contain any media"
-msgstr "V napravi '%s' ni medija"
-
-#: ../plugins/audiocd/sj-metadata.c:193
-#, c-format
-msgid "Device '%s' could not be opened. Check the access permissions on the device."
-msgstr "Naprave '%s' ni mogoče odpreti. Preverite dovoljenja dostopa na napravi."
-
-#: ../plugins/audiocd/sj-metadata.c:196
-#: ../plugins/audiocd/sj-metadata.c:207
+#. FIXME: would be nicer to only check if "cdrom" is being probed,
+#. * but libbrasero doesn't seem to have an API for that
+#.
+#: ../plugins/audiocd/sj-metadata.c:182
+#: ../plugins/audiocd/sj-metadata.c:205
+#: ../plugins/audiocd/sj-metadata.c:216
 #, c-format
 msgid "Cannot read CD: %s"
 msgstr "CD-ja ni mogoče prebrati: %s"
 
-#: ../plugins/audiocd/sj-metadata-getter.c:247
+#: ../plugins/audiocd/sj-metadata.c:183
+msgid "Devices haven't been all probed yet"
+msgstr "Naprave še niso preučene"
+
+#: ../plugins/audiocd/sj-metadata.c:199
+#, c-format
+msgid "Device '%s' does not contain any media"
+msgstr "V napravi '%s' ni medija"
+
+#: ../plugins/audiocd/sj-metadata.c:202
+#, c-format
+msgid "Device '%s' could not be opened. Check the access permissions on the device."
+msgstr "Naprave '%s' ni mogoče odpreti. Preverite dovoljenja dostopa na napravi."
+
+#: ../plugins/audiocd/sj-metadata-getter.c:253
 #, c-format
 msgid "Could not create CD lookup thread"
 msgstr "Iskalne niti CD-ja ni mogoče ustvariti"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:86
+#: ../plugins/audiocd/sj-metadata-gvfs.c:90
 #, c-format
 msgid "Cannot access CD"
 msgstr "Dostop do CD-ja ni mogoč"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:105
+#: ../plugins/audiocd/sj-metadata-gvfs.c:109
 msgid "Unknown Title"
 msgstr "Neznan naslov"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:109
-#: ../plugins/audiocd/sj-metadata-gvfs.c:135
+#: ../plugins/audiocd/sj-metadata-gvfs.c:113
+#: ../plugins/audiocd/sj-metadata-gvfs.c:139
 msgid "Unknown Artist"
 msgstr "Neznan izvajalec"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:131
+#: ../plugins/audiocd/sj-metadata-gvfs.c:135
 #, c-format
 msgid "Track %d"
 msgstr "Posnetek %d"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:156
+#: ../plugins/audiocd/sj-metadata-gvfs.c:160
 #, c-format
 msgid "Cannot access CD: %s"
 msgstr "Dostop do CD-ja ni mogoč: %s"
@@ -1474,7 +1483,7 @@ msgid "Copy CD"
 msgstr "Kopiraj CD"
 
 #: ../plugins/context/AlbumTab.py:57
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2391
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2399
 msgid "Albums"
 msgstr "Albumi"
 
@@ -1710,15 +1719,15 @@ msgstr "Zagotovi podprtje določila vmesnika D-Bus MediaServer2"
 msgid "All Tracks"
 msgstr "Vsi posnetki"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2390
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2398
 msgid "Artists"
 msgstr "Izvajalci"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2392
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2400
 msgid "Genres"
 msgstr "Zvrsti"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2401
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2409
 #: ../shell/rb-playlist-manager.c:1103
 #: ../sources/rb-display-page-group.c:92
 msgid "Playlists"
@@ -1834,9 +1843,9 @@ msgstr "_Lastnosti"
 msgid "Display device properties"
 msgstr "Prikaže lastnosti naprave"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:1352
-#: ../plugins/ipod/rb-ipod-source.c:2150
-#: ../plugins/mtpdevice/rb-mtp-source.c:1580
+#: ../plugins/generic-player/rb-generic-player-source.c:1366
+#: ../plugins/ipod/rb-ipod-source.c:1986
+#: ../plugins/mtpdevice/rb-mtp-source.c:1595
 msgid "Advanced"
 msgstr "Napredno"
 
@@ -2005,11 +2014,11 @@ msgstr "_Izbriši"
 msgid "Delete playlist"
 msgstr "Izbris seznama predvajanja"
 
-#: ../plugins/ipod/rb-ipod-source.c:382
+#: ../plugins/ipod/rb-ipod-source.c:381
 msgid "Unable to initialize new iPod"
 msgstr "Začetnih vrednosti novega iPoda ni mogoče nastaviti"
 
-#: ../plugins/ipod/rb-ipod-source.c:1592
+#: ../plugins/ipod/rb-ipod-source.c:1413
 #: ../podcast/rb-podcast-main-source.c:70
 #: ../sources/sync/rb-sync-settings-ui.c:262
 #: ../sources/sync/rb-sync-settings-ui.c:263
@@ -2017,7 +2026,7 @@ msgstr "Začetnih vrednosti novega iPoda ni mogoče nastaviti"
 msgid "Podcasts"
 msgstr "Podcasti"
 
-#: ../plugins/ipod/rb-ipod-source.c:2040
+#: ../plugins/ipod/rb-ipod-source.c:1863
 msgid "New playlist"
 msgstr "Nov seznam predvajanja"
 
@@ -2517,11 +2526,11 @@ msgstr "Začasne datoteke ni mogoče odpreti: %s"
 msgid "Rename MTP-device"
 msgstr "Preimenuj napravo MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:589
+#: ../plugins/mtpdevice/rb-mtp-source.c:604
 msgid "Media Player"
 msgstr "Predstavni predvajalnik"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:868
+#: ../plugins/mtpdevice/rb-mtp-source.c:883
 #: ../plugins/mtpdevice/rb-mtp-thread.c:856
 msgid "Media player device error"
 msgstr "Napaka naprave predstavnega predvajalnika"
@@ -2529,12 +2538,12 @@ msgstr "Napaka naprave predstavnega predvajalnika"
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:872
+#: ../plugins/mtpdevice/rb-mtp-source.c:887
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Naprave %s %s ni mogoče odpreti"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:916
+#: ../plugins/mtpdevice/rb-mtp-source.c:931
 msgid "Digital Audio Player"
 msgstr "Digitalni zvočni predvajalnik"
 
@@ -3894,7 +3903,7 @@ msgid "_Play"
 msgstr "_Predvajaj"
 
 #: ../shell/rb-shell-player.c:313
-#: ../shell/rb-shell-player.c:3827
+#: ../shell/rb-shell-player.c:3831
 msgid "Start playback"
 msgstr "Začetek predvajanja"
 
@@ -4007,11 +4016,11 @@ msgstr "Položaj predvajanja ni dostopen"
 msgid "Current song is not seekable"
 msgstr "Po trenutni skladbi ni mogoče iskati"
 
-#: ../shell/rb-shell-player.c:3822
+#: ../shell/rb-shell-player.c:3826
 msgid "Pause playback"
 msgstr "Premor predvajanja"
 
-#: ../shell/rb-shell-player.c:3824
+#: ../shell/rb-shell-player.c:3828
 msgid "Stop playback"
 msgstr "Zaustavitev predvajanja"
 
