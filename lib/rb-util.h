@@ -52,6 +52,7 @@ int rb_gvalue_compare (GValue *a, GValue *b);
 
 int rb_compare_gtimeval (GTimeVal *a, GTimeVal *b);
 int rb_safe_strcmp (const char *a, const char *b);
+char *rb_make_time_string (guint seconds);
 char *rb_make_duration_string (guint duration);
 char *rb_make_elapsed_time_string (guint elapsed, guint duration, gboolean show_remaining);
 
