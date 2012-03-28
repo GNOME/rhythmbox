@@ -43,6 +43,7 @@ extern const char RB_STOCK_PLAYLIST[];
 extern const char RB_STOCK_PLAYLIST_NEW[];
 extern const char RB_STOCK_AUTO_PLAYLIST[];
 extern const char RB_STOCK_AUTO_PLAYLIST_NEW[];
+extern const char RB_STOCK_MISSING_ARTWORK[];
 extern const char GNOME_MEDIA_SHUFFLE[];
 extern const char GNOME_MEDIA_REPEAT[];
 extern const char GNOME_MEDIA_EJECT[];

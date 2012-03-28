@@ -13,7 +13,8 @@ widgetinclude_HEADERS =					\
 	rb-segmented-bar.h				\
 	rb-song-info.h					\
 	rb-source-toolbar.h				\
-	rb-uri-dialog.h
+	rb-uri-dialog.h					\
+	rb-fading-image.h
 
 librbwidgets_la_SOURCES =				\
 	$(widgetinclude_HEADERS)			\
@@ -44,7 +45,8 @@ librbwidgets_la_SOURCES =				\
 	eggwrapbox.h					\
 	eggwrapbox-enums.c				\
 	eggwrapbox-enums.h				\
-	rb-source-toolbar.c
+	rb-source-toolbar.c				\
+	rb-fading-image.c
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
