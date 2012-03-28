@@ -402,6 +402,7 @@ rb_iradio_source_constructed (GObject *object)
 	grid = gtk_grid_new ();
 	gtk_grid_set_column_spacing (GTK_GRID (grid), 6);
 	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
+	gtk_widget_set_margin_top (GTK_WIDGET (grid), 6);
 	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (toolbar), 0, 0, 1, 1);
 	gtk_grid_attach (GTK_GRID (grid), paned, 0, 1, 1, 1);
 
