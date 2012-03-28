@@ -48,15 +48,14 @@
     </menu>
 
     <menu name="ViewMenu" action="View">
-      <menuitem name="ViewSmallDisplayMenu" action="ViewSmallDisplay"/>
       <menuitem name="ViewPartyModeMenu" action="ViewPartyMode"/>
       <placeholder name="ViewMenuModePlaceholder"/>
       <separator name="ViewSep1"/>
       <menuitem name="ViewSidePaneMenu" action="ViewSidePane"/>
       <menuitem name="ViewQueueAsSidebarMenu" action="ViewQueueAsSidebar"/>
-      <menuitem name="ViewBrowserMenu" action="ViewBrowser"/>
       <menuitem name="ViewStatusbarMenu" action="ViewStatusbar"/>
-      <menuitem name="ViewToolbarMenu" action="ViewToolbar"/>
+      <menuitem name="ViewSongPositionSliderMenu" action="ViewSongPositionSlider"/>
+      <menuitem name="ViewAlbumArtMenu" action="ViewAlbumArt"/>
       <separator name="ViewSep2"/>
       <menuitem name="ViewAllMenu" action="ViewAll"/>
       <separator name="ViewSep3"/>
@@ -96,8 +95,8 @@
   </menubar>
 
   <toolbar name="ToolBar">
-    <toolitem name="Play" action="ControlPlay"/>
     <toolitem name="Previous" action="ControlPrevious"/>
+    <toolitem name="Play" action="ControlPlay"/>
     <toolitem name="Next" action="ControlNext"/>
     <separator/>
     <toolitem name="Repeat" action="ControlRepeat"/>

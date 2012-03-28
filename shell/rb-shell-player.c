@@ -36,7 +36,7 @@
  * and manages the various #RBPlayOrder instances.  It provides simple operations
  * such as next, previous, play/pause, and seek.
  *
- * When playing internet radio streams, it first attempts to read the straem URL
+ * When playing internet radio streams, it first attempts to read the stream URL
  * as a playlist.  If this succeeds, the URLs from the playlist are stored in a
  * list and tried in turn in case of errors.  If the playlist parsing fails, the
  * stream URL is played directly.
@@ -77,7 +77,6 @@
 #include "rb-library-source.h"
 #include "rb-util.h"
 #include "rb-play-order.h"
-#include "rb-statusbar.h"
 #include "rb-playlist-source.h"
 #include "rb-play-queue-source.h"
 #include "rhythmdb.h"
@@ -245,11 +244,12 @@ struct RBShellPlayerPrivate
 	GCancellable *parser_cancellable;
 
 	RBHeader *header_widget;
-	RBStatusbar *statusbar_widget;
 
 	GSettings *settings;
 	GSettings *ui_settings;
 
+	gboolean has_prev;
+	gboolean has_next;
 	gboolean mute;
 	float volume;
 
@@ -269,12 +269,14 @@ enum
 	PROP_PLAY_ORDER,
 	PROP_PLAYING,
 	PROP_VOLUME,
-	PROP_STATUSBAR,
+	PROP_HEADER,
 	PROP_QUEUE_SOURCE,
 	PROP_QUEUE_ONLY,
 	PROP_PLAYING_FROM_QUEUE,
 	PROP_PLAYER,
-	PROP_MUTE
+	PROP_MUTE,
+	PROP_HAS_NEXT,
+	PROP_HAS_PREV
 };
 
 enum
@@ -318,15 +320,12 @@ static GtkToggleActionEntry rb_shell_player_toggle_entries [] =
 	{ "ControlRepeat", GNOME_MEDIA_REPEAT, N_("_Repeat"), "<control>R",
 	  N_("Play first song again after all songs are played"),
 	  G_CALLBACK (rb_shell_player_repeat_changed_cb) },
-	{ "ViewSongPositionSlider", NULL, N_("_Song Position Slider"), NULL,
-	  N_("Change the visibility of the song position slider"),
-	  NULL, TRUE },
 };
 static guint rb_shell_player_n_toggle_entries = G_N_ELEMENTS (rb_shell_player_toggle_entries);
 
 static guint rb_shell_player_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBShellPlayer, rb_shell_player, GTK_TYPE_HBOX)
+G_DEFINE_TYPE (RBShellPlayer, rb_shell_player, G_TYPE_OBJECT)
 
 static void
 rb_shell_player_class_init (RBShellPlayerClass *klass)
@@ -482,16 +481,16 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							     G_PARAM_READWRITE));
 
 	/**
-	 * RBShellPlayer:statusbar:
+	 * RBShellPlayer:header:
 	 *
-	 * The #RBStatusbar object
+	 * The #RBHeader object
 	 */
 	g_object_class_install_property (object_class,
-					 PROP_STATUSBAR,
-					 g_param_spec_object ("statusbar",
-							      "RBStatusbar",
-							      "RBStatusbar object",
-							      RB_TYPE_STATUSBAR,
+					 PROP_HEADER,
+					 g_param_spec_object ("header",
+							      "RBHeader",
+							      "RBHeader object",
+							      RB_TYPE_HEADER,
 							      G_PARAM_READWRITE));
 	/**
 	 * RBShellPlayer:mute:
@@ -505,6 +504,30 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							       "Whether playback is muted",
 							       FALSE,
 							       G_PARAM_READWRITE));
+	/**
+	 * RBShellPlayer:has-next:
+	 *
+	 * Whether there is a track to play after the current track.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_HAS_NEXT,
+					 g_param_spec_boolean ("has-next",
+							       "has-next",
+							       "Whether there is a next track",
+							       FALSE,
+							       G_PARAM_READABLE));
+	/**
+	 * RBShellPlayer:has-prev:
+	 *
+	 * Whether there was a previous track before the current track.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_HAS_PREV,
+					 g_param_spec_boolean ("has-prev",
+							       "has-prev",
+							       "Whether there is a previous track",
+							       FALSE,
+							       G_PARAM_READABLE));
 
 	/**
 	 * RBShellPlayer::window-title-changed:
@@ -682,25 +705,14 @@ rb_shell_player_constructed (GObject *object)
 	player_settings_changed_cb (player->priv->settings, "transition-time", player);
 	player_settings_changed_cb (player->priv->settings, "play-order", player);
 
-	player->priv->header_widget = rb_header_new (player, player->priv->db);
-	gtk_widget_show (GTK_WIDGET (player->priv->header_widget));
-	gtk_box_pack_start (GTK_BOX (player), GTK_WIDGET (player->priv->header_widget), TRUE, TRUE, 0);
-	g_signal_connect_object (player->priv->header_widget,
-				 "notify::slider-dragging",
-				 G_CALLBACK (rb_shell_player_slider_dragging_cb),
-				 player, 0);
-	g_settings_bind (player->priv->ui_settings, "show-song-position-slider",
-			 player->priv->header_widget, "show-position-slider",
-			 G_SETTINGS_BIND_INVERT_BOOLEAN | G_SETTINGS_BIND_NO_SENSITIVITY);
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "ViewSongPositionSlider");
-	g_settings_bind (player->priv->ui_settings, "show-song-position-slider",
-			 action, "active",
-			 G_SETTINGS_BIND_INVERT_BOOLEAN | G_SETTINGS_BIND_NO_SENSITIVITY);
-
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlPlay");
 	g_object_set (action, "is-important", TRUE, NULL);
+
+	action = gtk_action_group_get_action (player->priv->actiongroup, "ControlPrevious");
+	g_object_bind_property (player, "has-prev", action, "sensitive", G_BINDING_DEFAULT);
+	action = gtk_action_group_get_action (player->priv->actiongroup, "ControlNext");
+	g_object_bind_property (player, "has-next", action, "sensitive", G_BINDING_DEFAULT);
 
 	player->priv->syncing_state = TRUE;
 	rb_shell_player_set_playing_source (player, NULL);
@@ -1025,9 +1037,6 @@ rb_shell_player_init (RBShellPlayer *player)
 		exit (1);
 	}
 
-	gtk_box_set_spacing (GTK_BOX (player), 12);
-	gtk_container_set_border_width (GTK_CONTAINER (player), 3);
-
 	g_signal_connect_object (player->priv->mmplayer,
 				 "eos",
 				 G_CALLBACK (rb_shell_player_handle_eos),
@@ -1332,8 +1341,12 @@ rb_shell_player_set_property (GObject *object,
 		player->priv->volume = g_value_get_float (value);
 		rb_shell_player_sync_volume (player, FALSE, TRUE);
 		break;
-	case PROP_STATUSBAR:
-		player->priv->statusbar_widget = g_value_get_object (value);
+	case PROP_HEADER:
+		player->priv->header_widget = g_value_get_object (value);
+		g_signal_connect_object (player->priv->header_widget,
+					 "notify::slider-dragging",
+					 G_CALLBACK (rb_shell_player_slider_dragging_cb),
+					 player, 0);
 		break;
 	case PROP_QUEUE_SOURCE:
 		rb_shell_player_set_queue_source_internal (player, g_value_get_object (value));
@@ -1389,8 +1402,8 @@ rb_shell_player_get_property (GObject *object,
 	case PROP_VOLUME:
 		g_value_set_float (value, player->priv->volume);
 		break;
-	case PROP_STATUSBAR:
-		g_value_set_object (value, player->priv->statusbar_widget);
+	case PROP_HEADER:
+		g_value_set_object (value, player->priv->header_widget);
 		break;
 	case PROP_QUEUE_SOURCE:
 		g_value_set_object (value, player->priv->queue_source);
@@ -1406,6 +1419,12 @@ rb_shell_player_get_property (GObject *object,
 		break;
 	case PROP_MUTE:
 		g_value_set_boolean (value, player->priv->mute);
+		break;
+	case PROP_HAS_NEXT:
+		g_value_set_boolean (value, player->priv->has_next);
+		break;
+	case PROP_HAS_PREV:
+		g_value_set_boolean (value, player->priv->has_prev);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1924,22 +1943,21 @@ rb_shell_player_sync_play_order (RBShellPlayer *player)
 
 static void
 rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
-				      gboolean has_next,
-				      gboolean has_previous,
+				      gboolean _has_next,
+				      gboolean _has_previous,
 				      RBShellPlayer *player)
 {
 	/* we cannot depend on the values of has_next, has_previous or porder
 	 * since this can be called for the main porder, queue porder, etc
 	 */
-	gboolean have_next = FALSE;
-	gboolean have_previous = FALSE;
-	GtkAction *action;
+	gboolean has_next = FALSE;
+	gboolean has_prev = FALSE;
 	RhythmDBEntry *entry;
 
 	entry = rb_shell_player_get_playing_entry (player);
 	if (entry != NULL) {
-		have_next = TRUE;
-		have_previous = TRUE;
+		has_next = TRUE;
+		has_prev = TRUE;
 		rhythmdb_entry_unref (entry);
 	} else {
 		if (player->priv->current_playing_source &&
@@ -1948,21 +1966,23 @@ rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 			g_object_get (player->priv->current_playing_source, "play-order", &porder, NULL);
 			if (porder == NULL)
 				porder = g_object_ref (player->priv->play_order);
-			have_next = rb_play_order_has_next (porder);
+			has_next = rb_play_order_has_next (porder);
 			g_object_unref (porder);
 		}
 		if (player->priv->queue_play_order) {
-			have_next |= rb_play_order_has_next (player->priv->queue_play_order);
+			has_next |= rb_play_order_has_next (player->priv->queue_play_order);
 		}
-		have_previous = (player->priv->current_playing_source != NULL);
+		has_prev = (player->priv->current_playing_source != NULL);
 	}
 
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "ControlPrevious");
-	g_object_set (action, "sensitive", have_previous, NULL);
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "ControlNext");
-	g_object_set (action, "sensitive", have_next, NULL);
+	if (has_prev != player->priv->has_prev) {
+		player->priv->has_prev = has_prev;
+		g_object_notify (G_OBJECT (player), "has-prev");
+	}
+	if (has_next != player->priv->has_next) {
+		player->priv->has_next = has_next;
+		g_object_notify (G_OBJECT (player), "has-next");
+	}
 }
 
 /**
@@ -2506,7 +2526,12 @@ rb_shell_player_sync_volume (RBShellPlayer *player,
 				      player->priv->mute ? 0.0 : player->priv->volume);
 	}
 
-	rb_settings_delayed_sync (player->priv->settings, (RBDelayedSyncFunc) sync_volume_cb, g_object_ref (player), g_object_unref);
+	if (player->priv->syncing_state == FALSE) {
+		rb_settings_delayed_sync (player->priv->settings,
+					  (RBDelayedSyncFunc) sync_volume_cb,
+					  g_object_ref (player),
+					  g_object_unref);
+	}
 
 	entry = rb_shell_player_get_playing_entry (player);
 	if (entry != NULL) {
@@ -2994,7 +3019,6 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 {
 	GtkAction *action;
 	RBSource *source;
-	gboolean not_small;
 	RBEntryView *view;
 	int entry_view_state;
 	RhythmDBEntry *entry;
@@ -3013,10 +3037,9 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 
 	rb_debug ("syncing with source %p", source);
 
-        not_small = !g_settings_get_boolean (player->priv->ui_settings, "small-display");
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ViewJumpToPlaying");
-	g_object_set (action, "sensitive", entry != NULL && not_small, NULL);
+	g_object_set (action, "sensitive", entry != NULL, NULL);
 
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlPlay");
@@ -3751,6 +3774,7 @@ player_image_cb (RBPlayer *player,
 	g_value_unset (&v);
 
 	g_object_unref (store);
+	rb_ext_db_key_free (key);
 }
 
 /**

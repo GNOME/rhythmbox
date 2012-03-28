@@ -77,8 +77,6 @@ void rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 						   RBShellPreferences *shell_preferences);
 void rb_shell_preferences_browser_views_activated_cb (GtkWidget *widget,
 						      RBShellPreferences *shell_preferences);
-static gboolean toolbar_style_get_map (GValue *value, GVariant *variant, gpointer data);
-static GVariant *toolbar_style_set_map (const GValue *value, const GVariantType *variant_type, gpointer data);
 
 static void column_check_toggled_cb (GtkWidget *widget, RBShellPreferences *preferences);
 
@@ -126,8 +124,6 @@ struct RBShellPreferencesPrivate
 	GtkWidget *playback_prefs_plugin_box;
 
 	GSList *browser_views_group;
-
-	GtkWidget *toolbar_style_menu;
 
 	gboolean applying_settings;
 
@@ -261,22 +257,7 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 				    "browser-views",
 				    shell_preferences);
 
-	/* toolbar button style */
-	rb_builder_boldify_label (builder, "toolbar_style_label");
-	shell_preferences->priv->toolbar_style_menu =
-		GTK_WIDGET (gtk_builder_get_object (builder, "toolbar_style_menu"));
-	gtk_combo_box_set_row_separator_func (GTK_COMBO_BOX (shell_preferences->priv->toolbar_style_menu),
-					      rb_combo_box_hyphen_separator_func,
-					      NULL, NULL);
-
 	shell_preferences->priv->main_settings = g_settings_new ("org.gnome.rhythmbox");
-
-	g_settings_bind_with_mapping (shell_preferences->priv->main_settings, "toolbar-style",
-				      shell_preferences->priv->toolbar_style_menu, "active",
-				      G_SETTINGS_BIND_DEFAULT,
-				      (GSettingsBindGetMapping) toolbar_style_get_map,
-				      (GSettingsBindSetMapping) toolbar_style_set_map,
-				      NULL, NULL);
 
 	/* box for stuff added by plugins */
 	shell_preferences->priv->general_prefs_plugin_box =
@@ -495,33 +476,6 @@ column_check_toggled_cb (GtkWidget *widget, RBShellPreferences *preferences)
 
 	g_variant_unref (v);
 	g_variant_builder_unref (b);
-}
-
-static GVariant *
-toolbar_style_set_map (const GValue *value,
-		       const GVariantType *expected_type,
-		       gpointer data)
-{
-	int index = g_value_get_int (value);
-
-	/* ignore the separator row */
-	if (index >= 1)
-		index--;
-
-	return g_variant_new_int32 (index);
-}
-
-static gboolean
-toolbar_style_get_map (GValue *value, GVariant *variant, gpointer data)
-{
-	int index = g_variant_get_int32 (variant);
-
-	/* skip the separator row */
-	if (index >= 1)
-		index++;
-
-	g_value_set_int (value, index);
-	return TRUE;
 }
 
 /**

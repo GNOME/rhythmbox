@@ -92,6 +92,7 @@
 #include "rb-song-info.h"
 #include "rb-marshal.h"
 #include "rb-missing-plugins.h"
+#include "rb-header.h"
 #include "rb-podcast-manager.h"
 #include "rb-podcast-main-source.h"
 #include "rb-podcast-entry-types.h"
@@ -182,15 +183,11 @@ static void rb_shell_cmd_view_all (GtkAction *action,
 				   RBShell *shell);
 static void rb_shell_view_party_mode_changed_cb (GtkAction *action,
 						 RBShell *shell);
-static void rb_shell_view_smalldisplay_changed_cb (GtkAction *action,
-						 RBShell *shell);
 static void rb_shell_view_statusbar_changed_cb (GtkAction *action,
 						RBShell *shell);
 static void rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
 						       RBShell *shell);
 static void rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell);
-static void rb_shell_sync_toolbar_state (RBShell *shell);
-static void rb_shell_sync_smalldisplay (RBShell *shell);
 static void rb_shell_sync_pane_visibility (RBShell *shell);
 static void rb_shell_sync_statusbar_visibility (RBShell *shell);
 static void rb_shell_set_visibility (RBShell *shell,
@@ -210,7 +207,6 @@ static void rb_shell_volume_widget_changed_cb (GtkScaleButton *vol,
 static void rb_shell_player_volume_changed_cb (RBShellPlayer *player,
 					       GParamSpec *arg,
 					       RBShell *shell);
-static void settings_changed_cb (GSettings *settings, const char *key, RBShell *shell);
 
 static void rb_shell_session_init (RBShell *shell);
 
@@ -305,6 +301,7 @@ struct _RBShellPrivate
 
 	RBShellPlayer *player_shell;
 	RBShellClipboard *clipboard_shell;
+	RBHeader *header;
 	RBStatusbar *statusbar;
 	RBPlaylistManager *playlist_manager;
 	RBRemovableMediaManager *removable_media_manager;
@@ -328,12 +325,6 @@ struct _RBShellPrivate
 	char *cached_title;
 	gboolean cached_playing;
 
-	guint sidepane_visibility_notify_id;
-	guint toolbar_visibility_notify_id;
-	guint toolbar_style_notify_id;
-	guint smalldisplay_notify_id;
-
-	glong last_small_time; /* when we last changed small mode */
 	gboolean party_mode;
 
 	GSettings *settings;
@@ -388,12 +379,6 @@ static GtkToggleActionEntry rb_shell_toggle_entries [] =
 	{ "ViewSidePane", NULL, N_("Side _Pane"), "F9",
 	  N_("Change the visibility of the side pane"),
 	  NULL, TRUE },
-	{ "ViewToolbar", NULL, N_("T_oolbar"), NULL,
-	  N_("Change the visibility of the toolbar"),
-	  NULL, TRUE },
-	{ "ViewSmallDisplay", NULL, N_("_Small Display"), "<control>D",
-	  N_("Make the main window smaller"),
-	  G_CALLBACK (rb_shell_view_smalldisplay_changed_cb), },
 	{ "ViewPartyMode", NULL, N_("Party _Mode"), "F11",
 	  N_("Change the status of the party mode"),
 	  G_CALLBACK (rb_shell_view_party_mode_changed_cb), FALSE },
@@ -403,6 +388,12 @@ static GtkToggleActionEntry rb_shell_toggle_entries [] =
         { "ViewStatusbar", NULL, N_("S_tatusbar"), NULL,
 	  N_("Change the visibility of the statusbar"),
 	  G_CALLBACK (rb_shell_view_statusbar_changed_cb), TRUE },
+	{ "ViewSongPositionSlider", NULL, N_("_Song Position Slider"), NULL,
+	  N_("Change the visibility of the song position slider"),
+	  NULL, TRUE },
+	{ "ViewAlbumArt", NULL, N_("_Album Art"), NULL,
+	  N_("Change the visibility of the album art display"),
+	  NULL, TRUE },
         { "ViewBrowser", NULL, N_("_Browse"), "<control>B",
 	  N_("Change the visibility of the browser"),
 	  NULL, TRUE }
@@ -508,6 +499,7 @@ load_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
 	if (error != NULL) {
 		rb_debug ("unable to load pixbuf: %s", error->message);
 		g_clear_error (&error);
+		g_object_unref (loader);
 		return NULL;
 	}
 
@@ -674,10 +666,14 @@ construct_widgets (RBShell *shell)
 	g_object_get (shell->priv->display_page_tree, "model", &shell->priv->display_page_model, NULL);
 	rb_display_page_group_add_core_groups (G_OBJECT (shell), shell->priv->display_page_model);
 
+	shell->priv->header = rb_header_new (shell->priv->player_shell, shell->priv->db);
+	g_object_set (shell->priv->player_shell, "header", shell->priv->header, NULL);
+	gtk_widget_show (GTK_WIDGET (shell->priv->header));
+	g_settings_bind (shell->priv->settings, "time-display", shell->priv->header, "show-remaining", G_SETTINGS_BIND_DEFAULT);
+
 	shell->priv->statusbar = rb_statusbar_new (shell->priv->db,
 						   shell->priv->ui_manager,
 						   shell->priv->track_transfer_queue);
-	g_object_set (shell->priv->player_shell, "statusbar", shell->priv->statusbar, NULL);
 	gtk_widget_show (GTK_WIDGET (shell->priv->statusbar));
 
 	g_signal_connect_object (shell->priv->display_page_tree, "selected",
@@ -764,8 +760,6 @@ construct_widgets (RBShell *shell)
 
 	shell->priv->main_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (shell->priv->main_vbox), 0);
-	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 6);
-	gtk_widget_show (GTK_WIDGET (shell->priv->player_shell));
 
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->top_container), FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), shell->priv->paned, TRUE, TRUE, 0);
@@ -868,9 +862,7 @@ construct_load_ui (RBShell *shell)
 	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
 	gtk_style_context_add_class (gtk_widget_get_style_context (toolbar),
 				     GTK_STYLE_CLASS_PRIMARY_TOOLBAR);
-	g_settings_bind (shell->priv->settings, "toolbar-visible",
-			 toolbar, "visible",
-			 G_SETTINGS_BIND_DEFAULT);
+	gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_BOTH);
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), toolbar, FALSE, FALSE, 0);
 	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), toolbar, 1);
 
@@ -885,7 +877,8 @@ construct_load_ui (RBShell *shell)
 
 	tool_item = gtk_tool_item_new ();
 	gtk_tool_item_set_expand (tool_item, TRUE);
-	gtk_widget_show (GTK_WIDGET (tool_item));
+	gtk_container_add (GTK_CONTAINER (tool_item), GTK_WIDGET (shell->priv->header));
+	gtk_widget_show_all (GTK_WIDGET (tool_item));
 	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), tool_item, -1);
 
 	tool_item = gtk_tool_item_new ();
@@ -1129,11 +1122,10 @@ rb_shell_startup (GApplication *app)
 {
 	RBShell *shell = RB_SHELL (app);
 	GtkAction *gtkaction;
+	RBEntryView *view;
 
 	rb_debug ("Constructing shell");
 	rb_profile_start ("constructing shell");
-
-	g_signal_connect_object (shell->priv->settings, "changed", G_CALLBACK (settings_changed_cb), shell, 0);
 
 	gtkaction = gtk_action_group_get_action (shell->priv->actiongroup, "ViewSidePane");
 	g_settings_bind (shell->priv->settings, "display-page-tree-visible",
@@ -1143,9 +1135,20 @@ rb_shell_startup (GApplication *app)
 			 shell->priv->sidebar_container, "visible",
 			 G_SETTINGS_BIND_DEFAULT);
 
-	gtkaction = gtk_action_group_get_action (shell->priv->actiongroup, "ViewToolbar");
-	g_settings_bind (shell->priv->settings, "toolbar-visible",
+	gtkaction = gtk_action_group_get_action (shell->priv->actiongroup, "ViewSongPositionSlider");
+	g_settings_bind (shell->priv->settings, "show-song-position-slider",
 			 gtkaction, "active",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (shell->priv->settings, "show-song-position-slider",
+			 shell->priv->header, "show-position-slider",
+			 G_SETTINGS_BIND_DEFAULT);
+
+	gtkaction = gtk_action_group_get_action (shell->priv->actiongroup, "ViewAlbumArt");
+	g_settings_bind (shell->priv->settings, "show-album-art",
+			 gtkaction, "active",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (shell->priv->settings, "show-album-art",
+			 shell->priv->header, "show-album-art",
 			 G_SETTINGS_BIND_DEFAULT);
 
 	rb_debug ("shell: syncing with settings");
@@ -1161,9 +1164,7 @@ rb_shell_startup (GApplication *app)
 	construct_plugins (shell);
 
 	rb_shell_sync_window_state (shell, FALSE);
-	rb_shell_sync_smalldisplay (shell);
 	rb_shell_sync_party_mode (shell);
-	rb_shell_sync_toolbar_state (shell);
 
 	rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
 
@@ -1189,19 +1190,9 @@ rb_shell_startup (GApplication *app)
 
 	gdk_notify_startup_complete ();
 
-	/* focus play if small, the entry view if not */
-	if (g_settings_get_boolean (shell->priv->settings, "small-display")) {
-		GtkWidget *play_button;
-
-		play_button = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar/Play");
-		gtk_widget_grab_focus (play_button);
-	} else {
-		RBEntryView *view;
-
-		view = rb_source_get_entry_view (RB_SOURCE (shell->priv->library_source));
-		if (view != NULL) {
-			gtk_widget_grab_focus (GTK_WIDGET (view));
-		}
+	view = rb_source_get_entry_view (RB_SOURCE (shell->priv->library_source));
+	if (view != NULL) {
+		gtk_widget_grab_focus (GTK_WIDGET (view));
 	}
 
 	rb_profile_end ("constructing shell");
@@ -2148,7 +2139,7 @@ rb_shell_window_state_cb (GtkWidget *widget,
 	if (event->changed_mask & GDK_WINDOW_STATE_MAXIMIZED) {
 		gboolean maximised = ((event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED) != 0);
 
-		if (!g_settings_get_boolean (shell->priv->settings, "small-display")) {
+		if (maximised != g_settings_get_boolean (shell->priv->settings, "maximized")) {
 			g_settings_set_boolean (shell->priv->settings,
 						"maximized",
 						maximised);
@@ -2228,24 +2219,17 @@ static void
 sync_window_settings (GSettings *settings, RBShell *shell)
 {
 	int width, height;
+	int oldwidth, oldheight;
 	int oldx, oldy;
 	int x, y;
 	int pos;
 
 	gtk_window_get_size (GTK_WINDOW (shell->priv->window), &width, &height);
-	if (g_settings_get_boolean (shell->priv->settings, "small-display")) {
-		if (width != g_settings_get_int (shell->priv->settings, "small-width")) {
-			rb_debug ("storing small window width of %d", width);
-			g_settings_set_int (shell->priv->settings, "small-width", width);
-		}
-	} else {
-		int oldwidth, oldheight;
 
-		g_settings_get (shell->priv->settings, "size", "(ii)", &oldwidth, &oldheight);
-		if ((width != oldwidth) || (height != oldheight)) {
-			rb_debug ("storing window size of %d:%d", width, height);
-			g_settings_set (shell->priv->settings, "size", "(ii)", width, height);
-		}
+	g_settings_get (shell->priv->settings, "size", "(ii)", &oldwidth, &oldheight);
+	if ((width != oldwidth) || (height != oldheight)) {
+		rb_debug ("storing window size of %d:%d", width, height);
+		g_settings_set (shell->priv->settings, "size", "(ii)", width, height);
 	}
 
 	gtk_window_get_position (GTK_WINDOW(shell->priv->window), &x, &y);
@@ -2337,44 +2321,26 @@ rb_shell_sync_window_state (RBShell *shell,
 			    gboolean dont_maximise)
 {
 	GdkGeometry hints;
+	int width, height;
 	int x, y;
 
 	rb_profile_start ("syncing window state");
 
-	if (g_settings_get_boolean (shell->priv->settings, "small-display")) {
-		int width;
-
-		width = g_settings_get_int (shell->priv->settings, "small-width");
-		hints.min_height = -1;
-		hints.min_width = -1;
-		hints.max_height = -1;
-		hints.max_width = 3000;
-		gtk_window_set_default_size (GTK_WINDOW (shell->priv->window), width, 0);
-		gtk_window_resize (GTK_WINDOW (shell->priv->window), width, 1);
-		gtk_window_set_geometry_hints (GTK_WINDOW (shell->priv->window),
-						NULL,
-						&hints,
-						GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE);
-		gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
-		rb_debug ("syncing small window width to %d", width);
-	} else {
-		int width, height;
-		if (!dont_maximise) {
-			if (g_settings_get_boolean (shell->priv->settings, "maximized"))
-				gtk_window_maximize (GTK_WINDOW (shell->priv->window));
-			else
-				gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
-		}
-
-		g_settings_get (shell->priv->settings, "size", "(ii)", &width, &height);
-
-		gtk_window_set_default_size (GTK_WINDOW (shell->priv->window), width, height);
-		gtk_window_resize (GTK_WINDOW (shell->priv->window), width, height);
-		gtk_window_set_geometry_hints (GTK_WINDOW (shell->priv->window),
-						NULL,
-						&hints,
-						0);
+	if (!dont_maximise) {
+		if (g_settings_get_boolean (shell->priv->settings, "maximized"))
+			gtk_window_maximize (GTK_WINDOW (shell->priv->window));
+		else
+			gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
 	}
+
+	g_settings_get (shell->priv->settings, "size", "(ii)", &width, &height);
+
+	gtk_window_set_default_size (GTK_WINDOW (shell->priv->window), width, height);
+	gtk_window_resize (GTK_WINDOW (shell->priv->window), width, height);
+	gtk_window_set_geometry_hints (GTK_WINDOW (shell->priv->window),
+					NULL,
+					&hints,
+					0);
 
 	g_settings_get (shell->priv->settings, "position", "(ii)", &x, &y);
 	gtk_window_move (GTK_WINDOW (shell->priv->window), x, y);
@@ -2516,7 +2482,6 @@ rb_shell_playlist_created_cb (RBPlaylistManager *mgr,
 			      RBSource *source,
 			      RBShell *shell)
 {
-	g_settings_set_boolean (shell->priv->settings, "small-display", FALSE);
 	g_settings_set_boolean (shell->priv->settings, "display-page-tree-visible", TRUE);
 
 	rb_shell_sync_window_state (shell, FALSE);
@@ -2722,24 +2687,6 @@ rb_shell_set_window_title (RBShell *shell,
 					      window_title);
 		}
 	}
-}
-
-static void
-rb_shell_view_smalldisplay_changed_cb (GtkAction *action,
-				       RBShell *shell)
-{
-	GTimeVal time;
-
-	/* don't change more than once per second, it causes weirdness */
-	g_get_current_time (&time);
-	if (time.tv_sec == shell->priv->last_small_time)
-		return;
-
-	shell->priv->last_small_time = time.tv_sec;
-
-	g_settings_set_boolean (shell->priv->settings,
-				"small-display",
-				gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
 }
 
 static void
@@ -3149,47 +3096,6 @@ rb_shell_sync_pane_visibility (RBShell *shell)
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), queue_as_sidebar);
 }
 
-static void
-rb_shell_sync_toolbar_state (RBShell *shell)
-{
-	GtkWidget *toolbar;
-	guint toolbar_style;
-
-	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
-
-	/* icons-only in small mode */
-	if (g_settings_get_boolean (shell->priv->settings, "small-display"))
-		toolbar_style = 3;
-	else
-		toolbar_style = g_settings_get_int (shell->priv->settings, "toolbar-style");
-
-	switch (toolbar_style) {
-	case 0:
-		/* default*/
-		gtk_toolbar_unset_style (GTK_TOOLBAR (toolbar));
-		break;
-	case 1:
-		/* text below icons */
-		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_BOTH);
-		break;
-	case 2:
-		/* text beside icons */
-		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_BOTH_HORIZ);
-		break;
-	case 3:
-		/* icons only */
-		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_ICONS);
-		break;
-	case 4:
-		/* text only */
-		gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_TEXT);
-		break;
-	default:
-		g_warning ("unknown toolbar style type");
-		gtk_toolbar_unset_style (GTK_TOOLBAR (toolbar));
-	}
-}
-
 static gboolean
 window_state_event_cb (GtkWidget           *widget,
 		       GdkEventWindowState *event,
@@ -3212,8 +3118,6 @@ rb_shell_sync_party_mode (RBShell *shell)
 
 	/* disable/enable quit action */
 	action = gtk_action_group_get_action (shell->priv->actiongroup, "MusicQuit");
-	g_object_set (action, "sensitive", !shell->priv->party_mode, NULL);
-	action = gtk_action_group_get_action (shell->priv->actiongroup, "ViewSmallDisplay");
 	g_object_set (action, "sensitive", !shell->priv->party_mode, NULL);
 
 	/* show/hide queue as sidebar ? */
@@ -3240,55 +3144,6 @@ rb_shell_sync_party_mode (RBShell *shell)
 }
 
 static void
-rb_shell_sync_smalldisplay (RBShell *shell)
-{
-	GtkAction *action;
-	GtkAction *queue_action;
-	GtkAction *party_mode_action;
-	GtkAction *jump_to_playing_action;
-
-	rb_shell_sync_window_state (shell, FALSE);
-
-	action = gtk_action_group_get_action (shell->priv->actiongroup,
-					      "ViewSidePane");
-	queue_action = gtk_action_group_get_action (shell->priv->actiongroup,
-						    "ViewQueueAsSidebar");
-	party_mode_action = gtk_action_group_get_action (shell->priv->actiongroup,
-							 "ViewPartyMode");
-	jump_to_playing_action = gtk_action_group_get_action (shell->priv->actiongroup,
-							      "ViewJumpToPlaying");
-
-	if (g_settings_get_boolean (shell->priv->settings, "small-display")) {
-		g_object_set (action, "sensitive", FALSE, NULL);
-		g_object_set (queue_action, "sensitive", FALSE, NULL);
-		g_object_set (party_mode_action, "sensitive", FALSE, NULL);
-		g_object_set (jump_to_playing_action, "sensitive", FALSE, NULL);
-
-		gtk_widget_hide (GTK_WIDGET (shell->priv->paned));
-	} else {
-		RhythmDBEntry *playing;
-
-		g_object_set (action, "sensitive", TRUE, NULL);
-		g_object_set (queue_action, "sensitive", TRUE, NULL);
-		g_object_set (party_mode_action, "sensitive", TRUE, NULL);
-
-		playing = rb_shell_player_get_playing_entry (shell->priv->player_shell);
-		g_object_set (jump_to_playing_action, "sensitive", playing != NULL, NULL);
-		if (playing)
-			rhythmdb_entry_unref (playing);
-
-		gtk_widget_show (GTK_WIDGET (shell->priv->paned));
-	}
-	rb_shell_sync_statusbar_visibility (shell);
-	rb_shell_sync_toolbar_state (shell);
-
-	action = gtk_action_group_get_action (shell->priv->actiongroup,
-					      "ViewSmallDisplay");
-	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
-				      g_settings_get_boolean (shell->priv->settings, "small-display"));
-}
-
-static void
 rb_shell_sync_statusbar_visibility (RBShell *shell)
 {
 	gboolean visible;
@@ -3299,20 +3154,7 @@ rb_shell_sync_statusbar_visibility (RBShell *shell)
 	action = gtk_action_group_get_action (shell->priv->actiongroup, "ViewStatusbar");
 	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), visible);
 
-	gtk_widget_set_visible (GTK_WIDGET (shell->priv->statusbar),
-				visible && !g_settings_get_boolean (shell->priv->settings, "small-display"));
-}
-
-static void
-settings_changed_cb (GSettings *settings, const char *key, RBShell *shell)
-{
-	if (g_strcmp0 (key, "toolbar-style") == 0) {
-		rb_debug ("toolbar state changed");
-		rb_shell_sync_toolbar_state (shell);
-	} else if (g_strcmp0 (key, "small-display") == 0) {
-		rb_debug ("small display mode changed");
-		rb_shell_sync_smalldisplay (shell);
-	}
+	gtk_widget_set_visible (GTK_WIDGET (shell->priv->statusbar), visible);
 }
 
 static void

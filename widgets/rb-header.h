@@ -50,27 +50,20 @@ typedef struct RBHeaderPrivate RBHeaderPrivate;
 
 struct _RBHeader
 {
-	GtkHBox parent;
+	GtkGrid parent;
 
 	RBHeaderPrivate *priv;
 };
 
 struct _RBHeaderClass
 {
-	GtkHBoxClass parent;
+	GtkGridClass parent;
 };
 
 GType		rb_header_get_type		(void);
 
 RBHeader *	rb_header_new			(RBShellPlayer *shell_player,
 						 RhythmDB *db);
-
-void		rb_header_set_show_position_slider (RBHeader *header,
-                                                    gboolean show);
-
-void		rb_header_sync			(RBHeader *header);
-
-void		rb_header_sync_time		(RBHeader *header);
 
 G_END_DECLS
 
