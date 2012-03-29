@@ -53,6 +53,8 @@ rb_introspection_sources = \
 		rhythmdb/rhythmdb-query.c \
 		rhythmdb/rhythmdb-query-model.h \
 		rhythmdb/rhythmdb-query-model.c \
+		rhythmdb/rhythmdb-query-result-list.h \
+		rhythmdb/rhythmdb-query-result-list.c \
 		rhythmdb/rhythmdb-query-results.h \
 		rhythmdb/rhythmdb-query-results.c \
 		rhythmdb/rhythmdb-import-job.h \
