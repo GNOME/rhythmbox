@@ -73,6 +73,10 @@ static void rb_header_get_property (GObject *object,
 				    guint prop_id,
 				    GValue *value,
 				    GParamSpec *pspec);
+static GtkSizeRequestMode rb_header_get_request_mode (GtkWidget *widget);
+static void rb_header_get_preferred_width (GtkWidget *widget,
+					   int *minimum_size,
+					   int *natural_size);
 static void rb_header_size_allocate (GtkWidget *widget, GtkAllocation *allocation);
 static void rb_header_update_elapsed (RBHeader *header);
 static void apply_slider_position (RBHeader *header);
@@ -120,6 +124,8 @@ struct RBHeaderPrivate
 	long duration;
 	gboolean seekable;
 	char *image_path;
+	gboolean show_album_art;
+	gboolean show_slider;
 };
 
 enum
@@ -159,7 +165,10 @@ rb_header_class_init (RBHeaderClass *klass)
 	object_class->set_property = rb_header_set_property;
 	object_class->get_property = rb_header_get_property;
 
+	widget_class->get_request_mode = rb_header_get_request_mode;
+	widget_class->get_preferred_width = rb_header_get_preferred_width;
 	widget_class->size_allocate = rb_header_size_allocate;
+	/* GtkGrid's get_preferred_height_for_width does all we need here */
 
 	/**
 	 * RBHeader:db:
@@ -447,6 +456,21 @@ rb_header_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, 
 	rb_fading_image_start (RB_FADING_IMAGE (header->priv->image), 2000);
 }
 
+static GtkSizeRequestMode
+rb_header_get_request_mode (GtkWidget *widget)
+{
+	return GTK_SIZE_REQUEST_HEIGHT_FOR_WIDTH;
+}
+
+static void
+rb_header_get_preferred_width (GtkWidget *widget,
+			       int *minimum_width,
+			       int *natural_width)
+{
+	*minimum_width = 0;
+	*natural_width = 0;
+}
+
 static void
 rb_header_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 {
@@ -463,7 +487,7 @@ rb_header_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
 
 	/* take some leading space for the image, which we always make square */
-	if (gtk_widget_get_visible (RB_HEADER (widget)->priv->image)) {
+	if (RB_HEADER (widget)->priv->show_album_art) {
 		image_width = allocation->height;
 		if (rtl) {
 			child_alloc.x = allocation->x + allocation->width - image_width;
@@ -477,26 +501,36 @@ rb_header_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 		child_alloc.width = image_width;
 		child_alloc.height = allocation->height;
 		gtk_widget_size_allocate (RB_HEADER (widget)->priv->image, &child_alloc);
+	} else {
+		image_width = 0;
 	}
 
 	/* figure out how much space to allocate to the scale.
 	 * it gets at least its minimum size, at most 1/3 of the
 	 * space we have.
 	 */
-	if (gtk_widget_get_visible (RB_HEADER (widget)->priv->scale)) {
+	if (RB_HEADER (widget)->priv->show_slider) {
 		gtk_widget_get_preferred_width (RB_HEADER (widget)->priv->scale, &scale_width, NULL);
 		if (scale_width < allocation->width / 3)
 			scale_width = allocation->width / 3;
 
-		if (rtl) {
-			child_alloc.x = allocation->x;
+		if (scale_width + image_width > allocation->width)
+			scale_width = allocation->width - image_width;
+
+		if (scale_width > 0) {
+			if (rtl) {
+				child_alloc.x = allocation->x;
+			} else {
+				child_alloc.x = allocation->x + (allocation->width - scale_width) + spacing;
+			}
+			child_alloc.y = allocation->y;
+			child_alloc.width = scale_width - spacing;
+			child_alloc.height = allocation->height;
+			gtk_widget_show (RB_HEADER (widget)->priv->scale);
+			gtk_widget_size_allocate (RB_HEADER (widget)->priv->scale, &child_alloc);
 		} else {
-			child_alloc.x = allocation->x + (allocation->width - scale_width) + spacing;
+			gtk_widget_hide (RB_HEADER (widget)->priv->scale);
 		}
-		child_alloc.y = allocation->y;
-		child_alloc.width = scale_width - spacing;
-		child_alloc.height = allocation->height;
-		gtk_widget_size_allocate (RB_HEADER (widget)->priv->scale, &child_alloc);
 	} else {
 		scale_width = 0;
 	}
@@ -512,20 +546,32 @@ rb_header_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	} else {
 		child_alloc.x = allocation->x;
 	}
-	child_alloc.y = allocation->y;
-	child_alloc.width = info_width;
-	child_alloc.height = allocation->height;
-	gtk_widget_size_allocate (RB_HEADER (widget)->priv->songbox, &child_alloc);
 
-	if (rtl) {
-		child_alloc.x = allocation->x + scale_width + spacing;
+	if (info_width > 0) {
+		child_alloc.y = allocation->y;
+		child_alloc.width = info_width;
+		child_alloc.height = allocation->height;
+		gtk_widget_show (RB_HEADER (widget)->priv->songbox);
+		gtk_widget_size_allocate (RB_HEADER (widget)->priv->songbox, &child_alloc);
 	} else {
-		child_alloc.x = allocation->x + info_width + spacing;
+		gtk_widget_hide (RB_HEADER (widget)->priv->songbox);
+		info_width = 0;
 	}
-	child_alloc.y = allocation->y;
-	child_alloc.width = time_width;
-	child_alloc.height = allocation->height;
-	gtk_widget_size_allocate (RB_HEADER (widget)->priv->timebutton, &child_alloc);
+
+	if (info_width + scale_width + (2 * spacing) + time_width > allocation->width) {
+		gtk_widget_hide (RB_HEADER (widget)->priv->timebutton);
+	} else {
+		if (rtl) {
+			child_alloc.x = allocation->x + scale_width + spacing;
+		} else {
+			child_alloc.x = allocation->x + info_width + spacing;
+		}
+		child_alloc.y = allocation->y;
+		child_alloc.width = time_width;
+		child_alloc.height = allocation->height;
+		gtk_widget_show (RB_HEADER (widget)->priv->timebutton);
+		gtk_widget_size_allocate (RB_HEADER (widget)->priv->timebutton, &child_alloc);
+	}
 }
 
 static void
@@ -563,10 +609,12 @@ rb_header_set_property (GObject *object,
 		rb_header_update_elapsed (header);
 		break;
 	case PROP_SHOW_POSITION_SLIDER:
-		gtk_widget_set_visible (header->priv->scale, g_value_get_boolean (value));
+		header->priv->show_slider = g_value_get_boolean (value);
+		gtk_widget_set_visible (header->priv->scale, header->priv->show_slider);
 		break;
 	case PROP_SHOW_ALBUM_ART:
-		gtk_widget_set_visible (header->priv->image, g_value_get_boolean (value));
+		header->priv->show_album_art = g_value_get_boolean (value);
+		gtk_widget_set_visible (header->priv->image, header->priv->show_album_art);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -599,10 +647,10 @@ rb_header_get_property (GObject *object,
 		g_value_set_boolean (value, header->priv->show_remaining);
 		break;
 	case PROP_SHOW_POSITION_SLIDER:
-		g_value_set_boolean (value, gtk_widget_get_visible (header->priv->scale));
+		g_value_set_boolean (value, header->priv->show_slider);
 		break;
 	case PROP_SHOW_ALBUM_ART:
-		g_value_set_boolean (value, gtk_widget_get_visible (header->priv->image));
+		g_value_set_boolean (value, header->priv->show_album_art);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
