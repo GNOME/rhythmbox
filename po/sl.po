@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-03-28 09:57+0000\n"
-"PO-Revision-Date: 2012-03-28 15:13+0100\n"
+"POT-Creation-Date: 2012-03-29 16:16+0000\n"
+"PO-Revision-Date: 2012-03-29 20:16+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "Language: \n"
@@ -95,8 +95,8 @@ msgstr "Moje najboljše ocenjeno"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1
-#: ../shell/rb-shell.c:623
-#: ../shell/rb-shell.c:2696
+#: ../shell/rb-shell.c:615
+#: ../shell/rb-shell.c:2661
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -148,106 +148,82 @@ msgid "_When sorted by:"
 msgstr "_Ko je razvrščeno po:"
 
 #: ../data/ui/general-prefs.ui.h:1
-msgid "Default"
-msgstr "Privzeto"
-
-#: ../data/ui/general-prefs.ui.h:2
-msgid "Text below icons"
-msgstr "Besedilo pod ikonami"
-
-#: ../data/ui/general-prefs.ui.h:3
-msgid "Text beside icons"
-msgstr "Besedilo ob ikonah"
-
-#: ../data/ui/general-prefs.ui.h:4
-msgid "Icons only"
-msgstr "Le ikone"
-
-#: ../data/ui/general-prefs.ui.h:5
-msgid "Text only"
-msgstr "Le besedilo"
-
-#: ../data/ui/general-prefs.ui.h:6
 msgid "Browser Views"
 msgstr "Pogledi brskalnika"
 
-#: ../data/ui/general-prefs.ui.h:7
+#: ../data/ui/general-prefs.ui.h:2
 msgid "_Artists and albums"
 msgstr "_Izvajalci in albumi"
 
-#: ../data/ui/general-prefs.ui.h:8
+#: ../data/ui/general-prefs.ui.h:3
 msgid "_Genres and artists"
 msgstr "_Zvrsti in izvajalci"
 
-#: ../data/ui/general-prefs.ui.h:9
+#: ../data/ui/general-prefs.ui.h:4
 msgid "G_enres, artists and albums"
 msgstr "Z_vrsti, izvajalci in albumi"
 
-#: ../data/ui/general-prefs.ui.h:10
+#: ../data/ui/general-prefs.ui.h:5
 msgid "Visible Columns"
 msgstr "Vidni stolpci"
 
-#: ../data/ui/general-prefs.ui.h:11
+#: ../data/ui/general-prefs.ui.h:6
 msgid "Track _number"
 msgstr "Številka _posnetka"
 
-#: ../data/ui/general-prefs.ui.h:12
+#: ../data/ui/general-prefs.ui.h:7
 msgid "_Artist"
 msgstr "_Izvajalec"
 
-#: ../data/ui/general-prefs.ui.h:13
+#: ../data/ui/general-prefs.ui.h:8
 msgid "A_lbum"
 msgstr "_Album"
 
-#: ../data/ui/general-prefs.ui.h:14
+#: ../data/ui/general-prefs.ui.h:9
 msgid "_Year"
 msgstr "_Leto"
 
-#: ../data/ui/general-prefs.ui.h:15
+#: ../data/ui/general-prefs.ui.h:10
 msgid "_Last played"
 msgstr "Za_dnjič predvajano"
 
-#: ../data/ui/general-prefs.ui.h:16
+#: ../data/ui/general-prefs.ui.h:11
 msgid "_Genre"
 msgstr "_Zvrst"
 
-#: ../data/ui/general-prefs.ui.h:17
+#: ../data/ui/general-prefs.ui.h:12
 msgid "Da_te added"
 msgstr "Da_tum dodajanja"
 
-#: ../data/ui/general-prefs.ui.h:18
+#: ../data/ui/general-prefs.ui.h:13
 msgid "_Play count"
 msgstr "_Števec predvajanj"
 
-#: ../data/ui/general-prefs.ui.h:19
+#: ../data/ui/general-prefs.ui.h:14
 msgid "C_omment"
 msgstr "O_pomba"
 
-#: ../data/ui/general-prefs.ui.h:20
+#: ../data/ui/general-prefs.ui.h:15
 #: ../widgets/rb-entry-view.c:1594
 msgid "BPM"
 msgstr "UNM"
 
-#: ../data/ui/general-prefs.ui.h:21
+#: ../data/ui/general-prefs.ui.h:16
 msgid "_Rating"
 msgstr "_Ocena"
 
-#: ../data/ui/general-prefs.ui.h:22
+#: ../data/ui/general-prefs.ui.h:17
 msgid "Ti_me"
 msgstr "_Trajanje"
 
-#: ../data/ui/general-prefs.ui.h:23
+#: ../data/ui/general-prefs.ui.h:18
 msgid "Lo_cation"
 msgstr "_Mesto"
 
-#: ../data/ui/general-prefs.ui.h:24
+#: ../data/ui/general-prefs.ui.h:19
 #: ../plugins/visualizer/rb-visualizer-menu.c:138
 msgid "_Quality"
 msgstr "_Kakovost"
-
-#: ../data/ui/general-prefs.ui.h:25
-msgid "Toolbar Button Labels"
-msgstr "Oznake gumbov orodne vrstice"
 
 #: ../data/ui/library-prefs.ui.h:1
 msgid "Library Location"
@@ -695,7 +671,7 @@ msgstr "%d. %b. %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158
-#: ../lib/rb-util.c:696
+#: ../lib/rb-util.c:713
 #: ../plugins/artsearch/lastfm.py:163
 #: ../plugins/artsearch/lastfm.py:164
 #: ../plugins/audiocd/rb-audiocd-source.c:604
@@ -706,8 +682,8 @@ msgstr "%d. %b. %Y"
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
 #: ../plugins/generic-player/rb-generic-player-source.c:1077
 #: ../plugins/ipod/rb-ipod-source.c:565
-#: ../plugins/iradio/rb-iradio-source.c:562
-#: ../plugins/iradio/rb-iradio-source.c:1054
+#: ../plugins/iradio/rb-iradio-source.c:563
+#: ../plugins/iradio/rb-iradio-source.c:1055
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78
 #: ../plugins/lyrics/lyrics.py:80
@@ -731,14 +707,16 @@ msgstr "%d. %b. %Y"
 #: ../rhythmdb/rhythmdb-tree.c:1348
 #: ../rhythmdb/rhythmdb-tree.c:1352
 #: ../rhythmdb/rhythmdb-tree.c:1356
-#: ../shell/rb-shell-player.c:1771
-#: ../shell/rb-shell-player.c:3736
-#: ../shell/rb-shell-player.c:3738
+#: ../shell/rb-shell-player.c:1790
+#: ../shell/rb-shell-player.c:3759
+#: ../shell/rb-shell-player.c:3761
 #: ../widgets/rb-entry-view.c:985
 #: ../widgets/rb-entry-view.c:1007
 #: ../widgets/rb-entry-view.c:1483
 #: ../widgets/rb-entry-view.c:1495
 #: ../widgets/rb-entry-view.c:1507
+#: ../widgets/rb-header.c:1087
+#: ../widgets/rb-header.c:1113
 #: ../widgets/rb-song-info.c:920
 #: ../widgets/rb-song-info.c:932
 #: ../widgets/rb-song-info.c:1153
@@ -756,36 +734,36 @@ msgstr "Preveč simbolnih povezav"
 msgid "Cannot get free space at %s: %s"
 msgstr "Na %s ni mogoče dobiti praznega prostora: %s"
 
-#: ../lib/rb-util.c:698
+#: ../lib/rb-util.c:694
 #: ../plugins/context/tmpl/album-tmpl.html:21
 #: ../remote/dbus/rb-client.c:146
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:700
+#: ../lib/rb-util.c:696
 #: ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:148
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:747
+#: ../lib/rb-util.c:760
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d od %d:%02d preostalo"
 
-#: ../lib/rb-util.c:751
+#: ../lib/rb-util.c:764
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d od %d:%02d:%02d preostalo"
 
-#: ../lib/rb-util.c:756
+#: ../lib/rb-util.c:769
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d od %d:%02d"
 
-#: ../lib/rb-util.c:760
+#: ../lib/rb-util.c:773
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d od %d:%02d:%02d"
@@ -820,22 +798,13 @@ msgstr "Ustvarjanje predmeta 'giostreamsink' je spodletelo, preverite vašo name
 msgid "File corrupted during write"
 msgstr "Med zapisanjem datoteke je prišlo do okvare"
 
-#: ../plugins/artdisplay/artdisplay.plugin.in.h:1
-msgid "Cover art"
-msgstr "Ovitki"
-
-#: ../plugins/artdisplay/artdisplay.plugin.in.h:2
-#: ../plugins/artsearch/artsearch.plugin.in.h:2
-msgid "Fetch album covers from the Internet"
-msgstr "Pridobi naslovnice albumov z medmrežja"
-
-#: ../plugins/artdisplay/artdisplay.py:312
-msgid "Searching..."
-msgstr "Iskanje ..."
-
 #: ../plugins/artsearch/artsearch.plugin.in.h:1
 msgid "Cover art search"
 msgstr "Iskanje naslovnic"
+
+#: ../plugins/artsearch/artsearch.plugin.in.h:2
+msgid "Fetch album covers from the Internet"
+msgstr "Pridobi naslovnice albumov z medmrežja"
 
 #: ../plugins/audiocd/album-info.ui.h:1
 msgid "A_lbum:"
@@ -2063,11 +2032,11 @@ msgstr "Zvrst"
 msgid "Search your internet radio stations"
 msgstr "Preišči internetne radijske postaje"
 
-#: ../plugins/iradio/rb-iradio-source.c:486
+#: ../plugins/iradio/rb-iradio-source.c:487
 msgid "Radio"
 msgstr "Radio"
 
-#: ../plugins/iradio/rb-iradio-source.c:626
+#: ../plugins/iradio/rb-iradio-source.c:627
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -2077,12 +2046,12 @@ msgstr[2] "%d postaji"
 msgstr[3] "%d postaje"
 
 #. should prevent multiple dialogs?  going to kill this nonsense anyway soon..
-#: ../plugins/iradio/rb-iradio-source.c:967
+#: ../plugins/iradio/rb-iradio-source.c:968
 #: ../plugins/iradio/rb-station-properties-dialog.c:403
 msgid "New Internet Radio Station"
 msgstr "Nova medmrežna radijska postaja"
 
-#: ../plugins/iradio/rb-iradio-source.c:967
+#: ../plugins/iradio/rb-iradio-source.c:968
 msgid "URL of internet radio station:"
 msgstr "URL medmrežne radijske postaje:"
 
@@ -2160,7 +2129,7 @@ msgstr "_Shrani"
 
 #: ../plugins/lyrics/lyrics.py:214
 #: ../plugins/lyrics/lyrics.py:227
-#: ../shell/rb-shell.c:350
+#: ../shell/rb-shell.c:341
 msgid "_Edit"
 msgstr "_Uredi"
 
@@ -2610,7 +2579,7 @@ msgstr "iz <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:390
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:202
-#: ../widgets/rb-header.c:586
+#: ../widgets/rb-header.c:810
 msgid "Not Playing"
 msgstr "Ni predvajanja"
 
@@ -3088,7 +3057,7 @@ msgid "Don't start a new instance of Rhythmbox"
 msgstr "Ne zaženi novega primerka programa"
 
 #: ../remote/dbus/rb-client.c:82
-#: ../shell/rb-shell.c:369
+#: ../shell/rb-shell.c:360
 msgid "Quit Rhythmbox"
 msgstr "Končaj Rhythmbox"
 
@@ -3459,187 +3428,187 @@ msgstr "_Preveri za nove naprave"
 msgid "Check for new media storage devices that have not been automatically detected"
 msgstr "Preveri za nove naprave shrambe predstavnih vsebin, ki niso bile samodejno zaznane"
 
-#: ../shell/rb-shell.c:349
+#: ../shell/rb-shell.c:340
 msgid "_Music"
 msgstr "_Glasba"
 
-#: ../shell/rb-shell.c:351
+#: ../shell/rb-shell.c:342
 msgid "_View"
 msgstr "_Pogled"
 
-#: ../shell/rb-shell.c:352
+#: ../shell/rb-shell.c:343
 msgid "_Control"
 msgstr "_Nadzor"
 
-#: ../shell/rb-shell.c:353
+#: ../shell/rb-shell.c:344
 msgid "_Tools"
 msgstr "_Orodja"
 
-#: ../shell/rb-shell.c:354
+#: ../shell/rb-shell.c:345
 msgid "_Help"
 msgstr "Pomo_č"
 
-#: ../shell/rb-shell.c:356
+#: ../shell/rb-shell.c:347
 msgid "_Import Folder..."
 msgstr "_Uvozi mapo ..."
 
-#: ../shell/rb-shell.c:357
+#: ../shell/rb-shell.c:348
 msgid "Choose folder to be added to the Library"
 msgstr "Izbor mape za dodajanje v knjižnico"
 
-#: ../shell/rb-shell.c:359
+#: ../shell/rb-shell.c:350
 msgid "Import _File..."
 msgstr "Uvozi _datoteko ..."
 
-#: ../shell/rb-shell.c:360
+#: ../shell/rb-shell.c:351
 msgid "Choose file to be added to the Library"
 msgstr "Izbor datoteke za dodajanje v knjižnico"
 
-#: ../shell/rb-shell.c:362
+#: ../shell/rb-shell.c:353
 msgid "_About"
 msgstr "_O Programu"
 
-#: ../shell/rb-shell.c:363
+#: ../shell/rb-shell.c:354
 msgid "Show information about Rhythmbox"
 msgstr "Prikaži podrobnosti o Rhythmbox"
 
-#: ../shell/rb-shell.c:365
+#: ../shell/rb-shell.c:356
 msgid "_Contents"
 msgstr "_Vsebina"
 
-#: ../shell/rb-shell.c:366
+#: ../shell/rb-shell.c:357
 msgid "Display Rhythmbox help"
 msgstr "Prikaži pomoč Rhythmbox"
 
-#: ../shell/rb-shell.c:368
+#: ../shell/rb-shell.c:359
 msgid "_Quit"
 msgstr "_Končaj"
 
-#: ../shell/rb-shell.c:371
+#: ../shell/rb-shell.c:362
 msgid "Prefere_nces"
 msgstr "_Možnosti"
 
-#: ../shell/rb-shell.c:372
+#: ../shell/rb-shell.c:363
 msgid "Edit Rhythmbox preferences"
 msgstr "Uredi možnosti Rhythmbox"
 
-#: ../shell/rb-shell.c:374
+#: ../shell/rb-shell.c:365
 msgid "Plu_gins"
 msgstr "Vs_tavki"
 
-#: ../shell/rb-shell.c:375
+#: ../shell/rb-shell.c:366
 msgid "Change and configure plugins"
 msgstr "Sprememba in nastavitev vstavkov"
 
-#: ../shell/rb-shell.c:377
+#: ../shell/rb-shell.c:368
 msgid "Show _All Tracks"
 msgstr "P_rikaži vse posnetke"
 
-#: ../shell/rb-shell.c:378
+#: ../shell/rb-shell.c:369
 msgid "Show all tracks in this music source"
 msgstr "Prikaže vse posnetke tega glasbenega vira"
 
-#: ../shell/rb-shell.c:380
+#: ../shell/rb-shell.c:371
 msgid "_Jump to Playing Song"
 msgstr "S_koči na predvajano pesem"
 
-#: ../shell/rb-shell.c:381
+#: ../shell/rb-shell.c:372
 msgid "Scroll the view to the currently playing song"
 msgstr "Drsanje pogleda na trenutno predvajajočo skladbo"
 
-#: ../shell/rb-shell.c:388
+#: ../shell/rb-shell.c:379
 msgid "Side _Pane"
 msgstr "_Stranski pladenj"
 
-#: ../shell/rb-shell.c:389
+#: ../shell/rb-shell.c:380
 msgid "Change the visibility of the side pane"
 msgstr "Sprememba vidnosti stranskega pladnja"
 
-#: ../shell/rb-shell.c:391
-msgid "T_oolbar"
-msgstr "_Orodna vrstica"
-
-#: ../shell/rb-shell.c:392
-msgid "Change the visibility of the toolbar"
-msgstr "Sprememba vidnosti orodne vrstice"
-
-#: ../shell/rb-shell.c:394
-msgid "_Small Display"
-msgstr "_Majhno okno"
-
-#: ../shell/rb-shell.c:395
-msgid "Make the main window smaller"
-msgstr "Naredi glavno okno manjše"
-
-#: ../shell/rb-shell.c:397
+#: ../shell/rb-shell.c:382
 msgid "Party _Mode"
 msgstr "_Pogled zabave"
 
-#: ../shell/rb-shell.c:398
+#: ../shell/rb-shell.c:383
 msgid "Change the status of the party mode"
 msgstr "Sprememba stanja pogleda zabave"
 
-#: ../shell/rb-shell.c:400
+#: ../shell/rb-shell.c:385
 msgid "Play _Queue as Side Pane"
 msgstr "_Čakalna vrsta predvajanja kot stranska vrstica"
 
-#: ../shell/rb-shell.c:401
+#: ../shell/rb-shell.c:386
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "Preklop vidnosti čakalne vrste med virom in stransko vrstico"
 
-#: ../shell/rb-shell.c:403
+#: ../shell/rb-shell.c:388
 msgid "S_tatusbar"
 msgstr "_Vrstica stanja"
 
-#: ../shell/rb-shell.c:404
+#: ../shell/rb-shell.c:389
 msgid "Change the visibility of the statusbar"
 msgstr "Sprememba vidnosti vrstice stanja"
 
-#: ../shell/rb-shell.c:406
+#: ../shell/rb-shell.c:391
+msgid "_Song Position Slider"
+msgstr "Drsnik položaja _skladbe"
+
+#: ../shell/rb-shell.c:392
+msgid "Change the visibility of the song position slider"
+msgstr "Sprememba vidnosti drsnika položaja skladbe"
+
+#: ../shell/rb-shell.c:394
+msgid "_Album Art"
+msgstr "_Naslovnice albumov"
+
+#: ../shell/rb-shell.c:395
+msgid "Change the visibility of the album art display"
+msgstr "Preklop prikaza naslovnic albumov"
+
+#: ../shell/rb-shell.c:397
 msgid "_Browse"
 msgstr "Pre_brskaj"
 
-#: ../shell/rb-shell.c:407
+#: ../shell/rb-shell.c:398
 msgid "Change the visibility of the browser"
 msgstr "Sprememba vidnosti brskalnika"
 
-#: ../shell/rb-shell.c:897
+#: ../shell/rb-shell.c:890
 msgid "Change the music volume"
 msgstr "Sprememba glasnosti glasbe"
 
-#: ../shell/rb-shell.c:2004
+#: ../shell/rb-shell.c:1995
 msgid "Enable debug output"
 msgstr "Omogoči izhod razhroščevanja"
 
-#: ../shell/rb-shell.c:2005
+#: ../shell/rb-shell.c:1996
 msgid "Enable debug output matching a specified string"
 msgstr "Omogoči filtriran odvod razhroščevanja"
 
-#: ../shell/rb-shell.c:2006
+#: ../shell/rb-shell.c:1997
 msgid "Do not update the library with file changes"
 msgstr "Knjižnice ne posodobi s spremembami datotek"
 
-#: ../shell/rb-shell.c:2007
+#: ../shell/rb-shell.c:1998
 msgid "Do not register the shell"
 msgstr "Ne vpiši lupine"
 
-#: ../shell/rb-shell.c:2008
+#: ../shell/rb-shell.c:1999
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Podatkov ne shrani trajno (privzame --no-registration)"
 
-#: ../shell/rb-shell.c:2009
+#: ../shell/rb-shell.c:2000
 msgid "Disable loading of plugins"
 msgstr "Onemogoči nalaganje vstavkov"
 
-#: ../shell/rb-shell.c:2010
+#: ../shell/rb-shell.c:2001
 msgid "Path for database file to use"
 msgstr "Pot, ki naj jo uporablja datoteka podatkovne zbirke"
 
-#: ../shell/rb-shell.c:2011
+#: ../shell/rb-shell.c:2002
 msgid "Path for playlists file to use"
 msgstr "Pot, ki naj jo uporablja datoteka seznama predvajanja"
 
-#: ../shell/rb-shell.c:2022
+#: ../shell/rb-shell.c:2013
 #, c-format
 msgid ""
 "%s\n"
@@ -3649,33 +3618,33 @@ msgstr ""
 "Zaženite '%s --help' za podroben pregled razpoložljivih možnosti ukazne vrstice.\n"
 
 #. Translators: this is the short label for the 'import folder' action
-#: ../shell/rb-shell.c:2123
+#: ../shell/rb-shell.c:2114
 msgctxt "Library"
 msgid "Import"
 msgstr "Uvozi"
 
 #. Translators: this is the short label for the 'view all tracks' action
-#: ../shell/rb-shell.c:2125
+#: ../shell/rb-shell.c:2116
 msgid "Show All"
 msgstr "Pokaži vse"
 
-#: ../shell/rb-shell.c:2435
+#: ../shell/rb-shell.c:2401
 msgid "Error while saving song information"
 msgstr "Napaka med shranjevanjem podatkov o skladbi"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2716
+#: ../shell/rb-shell.c:2681
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (v premoru)"
 
-#: ../shell/rb-shell.c:2809
+#: ../shell/rb-shell.c:2756
 msgid "translator-credits"
 msgstr ""
 "Matej Urbančič <mateju@svn.gnome.org>\n"
 "Andrej Žnidaršič <andrej.znidarsic@gmail.com>"
 
-#: ../shell/rb-shell.c:2812
+#: ../shell/rb-shell.c:2759
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3687,7 +3656,7 @@ msgstr ""
 " objavljena s Free Software Foundation; ali različico 2 Licence\n"
 " ali (na vašo željo) katerakoli kasnejša različica.\n"
 
-#: ../shell/rb-shell.c:2816
+#: ../shell/rb-shell.c:2763
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3699,7 +3668,7 @@ msgstr ""
 " ali PRIMERNOST ZA DOLOČEN NAMEN. Oglejte si\n"
 " GNU General Public Licence za več podrobnosti.\n"
 
-#: ../shell/rb-shell.c:2820
+#: ../shell/rb-shell.c:2767
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3709,66 +3678,66 @@ msgstr ""
 " v primeru, da kopije niste prejeli, pišite na Free Software Foundation, Inc.,\n"
 "51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA\n"
 
-#: ../shell/rb-shell.c:2827
+#: ../shell/rb-shell.c:2774
 msgid "Maintainers:"
 msgstr "Vzdrževalci:"
 
-#: ../shell/rb-shell.c:2830
+#: ../shell/rb-shell.c:2777
 msgid "Former Maintainers:"
 msgstr "Prejšnji vzdrževalci:"
 
-#: ../shell/rb-shell.c:2833
+#: ../shell/rb-shell.c:2780
 msgid "Contributors:"
 msgstr "Sodelavci:"
 
-#: ../shell/rb-shell.c:2835
+#: ../shell/rb-shell.c:2782
 msgid "Music management and playback software for GNOME."
 msgstr "GNOME program za upravljanje in predvajanje glasbe."
 
-#: ../shell/rb-shell.c:2844
+#: ../shell/rb-shell.c:2791
 msgid "Rhythmbox Website"
 msgstr "Spletišče Rhythmbox"
 
-#: ../shell/rb-shell.c:2891
-#: ../shell/rb-shell-preferences.c:166
+#: ../shell/rb-shell.c:2838
+#: ../shell/rb-shell-preferences.c:162
 msgid "Couldn't display help"
 msgstr "Pomoči ni mogoče prikazati "
 
-#: ../shell/rb-shell.c:2936
+#: ../shell/rb-shell.c:2883
 msgid "Configure Plugins"
 msgstr "Nastavitve vstavkov"
 
-#: ../shell/rb-shell.c:3025
+#: ../shell/rb-shell.c:2972
 msgid "Import Folder into Library"
 msgstr "Uvoz mape v knjižnico"
 
-#: ../shell/rb-shell.c:3044
+#: ../shell/rb-shell.c:2991
 msgid "Import File into Library"
 msgstr "Uvoz datoteke v knjižnico"
 
-#: ../shell/rb-shell.c:3577
+#: ../shell/rb-shell.c:3419
 #: ../sources/rb-play-queue-source.c:629
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Noben vpisan vir ne more upravljati z URI-jem %s"
 
-#: ../shell/rb-shell.c:3907
+#: ../shell/rb-shell.c:3749
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Noben vpisan vir ni skladen z naslovom URI %s"
 
-#: ../shell/rb-shell.c:3940
-#: ../shell/rb-shell.c:3983
+#: ../shell/rb-shell.c:3782
+#: ../shell/rb-shell.c:3825
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Neznan URI skladbe: %s"
 
-#: ../shell/rb-shell.c:3992
+#: ../shell/rb-shell.c:3834
 #, c-format
 msgid "Unknown property %s"
 msgstr "Neznana lastnost %s"
 
-#: ../shell/rb-shell.c:4006
+#: ../shell/rb-shell.c:3848
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Neveljavna vrsta lastnosti %s za lastnost %s"
@@ -3866,173 +3835,165 @@ msgstr "_Lastnosti"
 msgid "Show information on each selected song"
 msgstr "Prikaz podatkov o vsaki izbrani skladbi"
 
-#: ../shell/rb-shell-player.c:295
+#: ../shell/rb-shell-player.c:297
 msgid "Pre_vious"
 msgstr "Pre_dhodna"
 
-#: ../shell/rb-shell-player.c:296
+#: ../shell/rb-shell-player.c:298
 msgid "Start playing the previous song"
 msgstr "Predvajanje predhodne skladbe"
 
-#: ../shell/rb-shell-player.c:298
+#: ../shell/rb-shell-player.c:300
 msgid "_Next"
 msgstr "_Naslednja"
 
-#: ../shell/rb-shell-player.c:299
+#: ../shell/rb-shell-player.c:301
 msgid "Start playing the next song"
 msgstr "Predvajanje naslednje skladbe"
 
-#: ../shell/rb-shell-player.c:301
+#: ../shell/rb-shell-player.c:303
 msgid "_Increase Volume"
 msgstr "Povečaj _glasnost"
 
-#: ../shell/rb-shell-player.c:302
+#: ../shell/rb-shell-player.c:304
 msgid "Increase playback volume"
 msgstr "Povečanje glasnosti predvajanja"
 
-#: ../shell/rb-shell-player.c:304
+#: ../shell/rb-shell-player.c:306
 msgid "_Decrease Volume"
 msgstr "_Zmanjšaj glasnost"
 
-#: ../shell/rb-shell-player.c:305
+#: ../shell/rb-shell-player.c:307
 msgid "Decrease playback volume"
 msgstr "Zmanjšanje glasnosti predvajanja"
 
-#: ../shell/rb-shell-player.c:312
+#: ../shell/rb-shell-player.c:314
 msgid "_Play"
 msgstr "_Predvajaj"
 
-#: ../shell/rb-shell-player.c:313
-#: ../shell/rb-shell-player.c:3831
+#: ../shell/rb-shell-player.c:315
+#: ../shell/rb-shell-player.c:3855
 msgid "Start playback"
 msgstr "Začetek predvajanja"
 
-#: ../shell/rb-shell-player.c:315
+#: ../shell/rb-shell-player.c:317
 msgid "Sh_uffle"
 msgstr "P_remešaj"
 
-#: ../shell/rb-shell-player.c:316
+#: ../shell/rb-shell-player.c:318
 msgid "Play songs in a random order"
 msgstr "Predvajanje skladb v naključnem redu"
 
-#: ../shell/rb-shell-player.c:318
+#: ../shell/rb-shell-player.c:320
 msgid "_Repeat"
 msgstr "Pono_vi"
 
-#: ../shell/rb-shell-player.c:319
+#: ../shell/rb-shell-player.c:321
 msgid "Play first song again after all songs are played"
 msgstr "Po predvajanju vseh skladb ponovno predvaja prvo skladbo"
 
-#: ../shell/rb-shell-player.c:321
-msgid "_Song Position Slider"
-msgstr "Drsnik položaja _skladbe"
-
-#: ../shell/rb-shell-player.c:322
-msgid "Change the visibility of the song position slider"
-msgstr "Sprememba vidnosti drsnika položaja skladbe"
-
-#: ../shell/rb-shell-player.c:830
+#: ../shell/rb-shell-player.c:842
 msgid "Stream error"
 msgstr "Napaka pretoka"
 
-#: ../shell/rb-shell-player.c:831
+#: ../shell/rb-shell-player.c:843
 msgid "Unexpected end of stream!"
 msgstr "Nepričakovan konec pretoka!"
 
-#: ../shell/rb-shell-player.c:998
+#: ../shell/rb-shell-player.c:1010
 msgid "Linear"
 msgstr "Zaporedno"
 
-#: ../shell/rb-shell-player.c:1000
+#: ../shell/rb-shell-player.c:1012
 msgid "Linear looping"
 msgstr "Zaporedno kroženje"
 
-#: ../shell/rb-shell-player.c:1002
+#: ../shell/rb-shell-player.c:1014
 msgid "Shuffle"
 msgstr "Mešanje"
 
-#: ../shell/rb-shell-player.c:1004
+#: ../shell/rb-shell-player.c:1016
 msgid "Random with equal weights"
 msgstr "Naključno z enakimi utežmi"
 
-#: ../shell/rb-shell-player.c:1006
+#: ../shell/rb-shell-player.c:1018
 msgid "Random by time since last play"
 msgstr "Naključno po času od zadnjega predvajanja"
 
-#: ../shell/rb-shell-player.c:1008
+#: ../shell/rb-shell-player.c:1020
 msgid "Random by rating"
 msgstr "Naključno po oceni"
 
-#: ../shell/rb-shell-player.c:1010
+#: ../shell/rb-shell-player.c:1022
 msgid "Random by time since last play and rating"
 msgstr "Naključno po času od zadnjega predvajanja in oceni"
 
-#: ../shell/rb-shell-player.c:1012
+#: ../shell/rb-shell-player.c:1024
 msgid "Linear, removing entries once played"
 msgstr "Zaporedno, odstrani vnose po predvajanju"
 
-#: ../shell/rb-shell-player.c:1022
+#: ../shell/rb-shell-player.c:1034
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Ustvarjanje predvajalnika je spodletelo: %s"
 
-#: ../shell/rb-shell-player.c:1576
+#: ../shell/rb-shell-player.c:1595
 #, c-format
 msgid "Playlist was empty"
 msgstr "Seznam predvajanja je bil prazen"
 
-#: ../shell/rb-shell-player.c:2045
+#: ../shell/rb-shell-player.c:2065
 #, c-format
 msgid "Not currently playing"
 msgstr "Trenutno ni predvajanja"
 
-#: ../shell/rb-shell-player.c:2103
+#: ../shell/rb-shell-player.c:2123
 #, c-format
 msgid "No previous song"
 msgstr "Ni predhodne skladbe"
 
-#: ../shell/rb-shell-player.c:2203
+#: ../shell/rb-shell-player.c:2223
 #, c-format
 msgid "No next song"
 msgstr "Ni naslednje skladbe"
 
-#: ../shell/rb-shell-player.c:2324
-#: ../shell/rb-shell-player.c:3469
+#: ../shell/rb-shell-player.c:2344
+#: ../shell/rb-shell-player.c:3492
 msgid "Couldn't start playback"
 msgstr "Predvajanja ni mogoče začeti"
 
-#: ../shell/rb-shell-player.c:3172
+#: ../shell/rb-shell-player.c:3195
 msgid "Couldn't stop playback"
 msgstr "Predvajanja ni mogoče zaustaviti"
 
-#: ../shell/rb-shell-player.c:3291
+#: ../shell/rb-shell-player.c:3314
 #, c-format
 msgid "Playback position not available"
 msgstr "Položaj predvajanja ni dostopen"
 
-#: ../shell/rb-shell-player.c:3323
-#: ../shell/rb-shell-player.c:3357
+#: ../shell/rb-shell-player.c:3346
+#: ../shell/rb-shell-player.c:3380
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Po trenutni skladbi ni mogoče iskati"
 
-#: ../shell/rb-shell-player.c:3826
+#: ../shell/rb-shell-player.c:3850
 msgid "Pause playback"
 msgstr "Premor predvajanja"
 
-#: ../shell/rb-shell-player.c:3828
+#: ../shell/rb-shell-player.c:3852
 msgid "Stop playback"
 msgstr "Zaustavitev predvajanja"
 
-#: ../shell/rb-shell-preferences.c:205
+#: ../shell/rb-shell-preferences.c:201
 msgid "Rhythmbox Preferences"
 msgstr "Možnosti Rhythmbox"
 
-#: ../shell/rb-shell-preferences.c:251
+#: ../shell/rb-shell-preferences.c:247
 msgid "General"
 msgstr "Splošno"
 
-#: ../shell/rb-shell-preferences.c:330
+#: ../shell/rb-shell-preferences.c:311
 msgid "Playback"
 msgstr "Predvajanje"
 
@@ -4362,12 +4323,12 @@ msgid "Play Queue"
 msgstr "Predvajalna vrsta"
 
 #: ../sources/rb-play-queue-source.c:499
-#: ../widgets/rb-header.c:485
+#: ../widgets/rb-header.c:786
 msgid "from"
 msgstr "iz"
 
 #: ../sources/rb-play-queue-source.c:499
-#: ../widgets/rb-header.c:484
+#: ../widgets/rb-header.c:785
 msgid "by"
 msgstr "od"
 
@@ -4494,6 +4455,22 @@ msgstr "Se predvaja"
 #: ../widgets/rb-entry-view.c:1910
 msgid "Playback Error"
 msgstr "Napaka predvajanja"
+
+#: ../widgets/rb-fading-image.c:253
+msgid "Drop artwork here"
+msgstr "Spustite grafično podobo tukaj"
+
+#. Translators: remaining time / total time
+#: ../widgets/rb-header.c:1027
+#, c-format
+msgid "-%s / %s"
+msgstr "-%s / %s"
+
+#. Translators: elapsed time / total time
+#: ../widgets/rb-header.c:1038
+#, c-format
+msgid "%s / %s"
+msgstr "%s / %s"
 
 #: ../widgets/rb-property-view.c:636
 #, c-format
@@ -4880,6 +4857,39 @@ msgstr "Na namizju"
 msgid "Unknown location"
 msgstr "Neznano mesto"
 
+#~ msgid "Default"
+#~ msgstr "Privzeto"
+
+#~ msgid "Text below icons"
+#~ msgstr "Besedilo pod ikonami"
+
+#~ msgid "Text beside icons"
+#~ msgstr "Besedilo ob ikonah"
+
+#~ msgid "Icons only"
+#~ msgstr "Le ikone"
+
+#~ msgid "Text only"
+#~ msgstr "Le besedilo"
+
+#~ msgid "Toolbar Button Labels"
+#~ msgstr "Oznake gumbov orodne vrstice"
+
+#~ msgid "Cover art"
+#~ msgstr "Ovitki"
+
+#~ msgid "Searching..."
+#~ msgstr "Iskanje ..."
+
+#~ msgid "T_oolbar"
+#~ msgstr "_Orodna vrstica"
+
+#~ msgid "_Small Display"
+#~ msgstr "_Majhno okno"
+
+#~ msgid "Make the main window smaller"
+#~ msgstr "Naredi glavno okno manjše"
+
 #~ msgid "Redownload purchased music at "
 #~ msgstr "Ponovno prejmite kupljeno glasbo na"
 
@@ -5040,9 +5050,6 @@ msgstr "Neznano mesto"
 
 #~ msgid "Searching... drop artwork here"
 #~ msgstr "Iskanje... spustite grafično podobo tukaj"
-
-#~ msgid "Drop artwork here"
-#~ msgstr "Spustite grafično podobo tukaj"
 
 #~ msgid "Image provided by Last.fm"
 #~ msgstr "Sliko je zagotovil Last.fm"
