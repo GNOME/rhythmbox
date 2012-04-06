@@ -95,6 +95,7 @@ static void rb_header_sync_time (RBHeader *header);
 static void uri_dropped_cb (RBFadingImage *image, const char *uri, RBHeader *header);
 static void pixbuf_dropped_cb (RBFadingImage *image, GdkPixbuf *pixbuf, RBHeader *header);
 static void image_button_press_cb (GtkWidget *widget, GdkEvent *event, RBHeader *header);
+static void art_added_cb (RBExtDB *db, RBExtDBKey *key, const char *filename, GValue *data, RBHeader *header);
 
 struct RBHeaderPrivate
 {
@@ -331,6 +332,10 @@ rb_header_init (RBHeader *header)
 
 	/* image display */
 	header->priv->art_store = rb_ext_db_new ("album-art");
+	g_signal_connect (header->priv->art_store,
+			  "added",
+			  G_CALLBACK (art_added_cb),
+			  header);
 	header->priv->image = GTK_WIDGET (g_object_new (RB_TYPE_FADING_IMAGE,
 							"fallback", RB_STOCK_MISSING_ARTWORK,
 							NULL));
@@ -397,7 +402,6 @@ rb_header_finalize (GObject *object)
 	G_OBJECT_CLASS (rb_header_parent_class)->finalize (object);
 }
 
-
 static void
 art_cb (RBExtDBKey *key, const char *filename, GValue *data, RBHeader *header)
 {
@@ -423,6 +427,13 @@ art_cb (RBExtDBKey *key, const char *filename, GValue *data, RBHeader *header)
 
 	rhythmdb_entry_unref (entry);
 }
+
+static void
+art_added_cb (RBExtDB *db, RBExtDBKey *key, const char *filename, GValue *data, RBHeader *header)
+{
+	art_cb (key, filename, data, header);
+}
+
 
 static void
 rb_header_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBHeader *header)
