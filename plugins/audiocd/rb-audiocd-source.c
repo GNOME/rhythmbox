@@ -500,6 +500,7 @@ rb_audiocd_source_constructed (GObject *object)
 	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (toolbar), 0, 0, 1, 1);
 	gtk_grid_attach (GTK_GRID (grid), infogrid, 0, 1, 1, 1);
 	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (source->priv->entry_view), 0, 2, 1, 1);
+	gtk_widget_set_margin_top (GTK_WIDGET (grid), 6);
 	g_object_unref (builder);
 
 	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (source->priv->entry_view), NULL, NULL);
