@@ -226,9 +226,8 @@ static void
 buffering_cb (GObject *backend, gpointer whatever, guint progress, RBStreamingSource *source)
 {
 	if (progress == 0)
-		return;
-
-	if (progress == 100)
+		progress = 1;
+	else if (progress == 100)
 		progress = 0;
 
 	GDK_THREADS_ENTER ();
