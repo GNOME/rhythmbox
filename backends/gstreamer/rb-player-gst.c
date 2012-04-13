@@ -524,8 +524,8 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 			GstState pending;
 			gst_message_parse_state_changed (message, &oldstate, &newstate, &pending);
 			if (GST_MESSAGE_SRC (message) == GST_OBJECT (mp->priv->playbin)) {
-				rb_debug ("playbin reached state %s", gst_element_state_get_name (newstate));
 				if (pending == GST_STATE_VOID_PENDING) {
+					rb_debug ("playbin reached state %s", gst_element_state_get_name (newstate));
 					state_change_finished (mp, NULL);
 				}
 			}
@@ -554,6 +554,7 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 			g_warning ("Could not get value from BUFFERING message");
 			break;
 		}
+
 		if (progress >= 100) {
 			mp->priv->buffering = FALSE;
 			if (mp->priv->playing) {
@@ -563,15 +564,9 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 				rb_debug ("buffering done, leaving pipeline PAUSED");
 			}
 		} else if (mp->priv->buffering == FALSE && mp->priv->playing) {
-			GstState cur_state;
 
-			gst_element_get_state (mp->priv->playbin, &cur_state, NULL, 0);
-			if (cur_state == GST_STATE_PLAYING) {
-				rb_debug ("buffering - temporarily pausing playback");
-				gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED);
-			} else {
-				rb_debug ("buffering - during preroll; doing nothing");
-			}
+			rb_debug ("buffering - temporarily pausing playback");
+			gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED);
 			mp->priv->buffering = TRUE;
 		}
 
