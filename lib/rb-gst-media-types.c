@@ -160,7 +160,7 @@ rb_gst_media_type_to_extension (const char *media_type)
 		return NULL;
 	} else if (!strcmp (media_type, "audio/mpeg")) {
 		return "mp3";
-	} else if (!strcmp (media_type, "audio/x-vorbis") || !strcmp (media_type, "application/ogg")) {
+	} else if (!strcmp (media_type, "audio/x-vorbis") || !strcmp (media_type, "application/ogg") || !strcmp (media_type, "audio/ogg")) {
 		return "ogg";
 	} else if (!strcmp (media_type, "audio/x-flac") || !strcmp (media_type, "audio/flac")) {
 		return "flac";
@@ -178,7 +178,7 @@ rb_gst_mime_type_to_media_type (const char *mime_type)
 {
 	if (!strcmp (mime_type, "application/x-id3") || !strcmp (mime_type, "audio/mpeg")) {
 		return "audio/mpeg";
-	} else if (!strcmp (mime_type, "application/ogg") || !strcmp (mime_type, "audio/x-vorbis")) {
+	} else if (!strcmp (mime_type, "application/ogg") || !strcmp (mime_type, "audio/x-vorbis") || !strcmp (mime_type, "audio/ogg")) {
 		return "audio/x-vorbis";
 	} else if (!strcmp (mime_type, "audio/flac")) {
 		return "audio/x-flac";
