@@ -378,6 +378,7 @@ start_state_change (RBPlayerGst *mp, GstState state, enum StateChangeAction acti
 {
 	GstStateChangeReturn scr;
 
+	rb_debug ("changing state to %s", gst_element_state_get_name (state));
 	mp->priv->state_change_action = action;
 	scr = gst_element_set_state (mp->priv->playbin, state);
 	if (scr == GST_STATE_CHANGE_SUCCESS) {
@@ -608,6 +609,12 @@ static void
 source_notify_cb (GObject *object, GParamSpec *pspec, RBPlayerGst *player)
 {
 	GstElement *source;
+
+	if (player->priv->uri == NULL) {
+		rb_debug ("got notify::source while changing to NULL");
+		return;
+	}
+
 	g_object_get (object, "source", &source, NULL);
 
 	g_signal_emit (player, signals[PREPARE_SOURCE], 0, player->priv->uri, source);
