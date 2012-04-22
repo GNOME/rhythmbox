@@ -70,6 +70,12 @@ char *		rb_gst_encoding_profile_get_media_type (GstEncodingProfile *profile);
 
 gboolean	rb_gst_media_type_is_lossless (const char *media_type);
 
+char **		rb_gst_encoding_profile_get_settings (GstEncodingProfile *profile);
+char **		rb_gst_encoding_profile_get_presets (GstEncodingProfile *profile);
+void		rb_gst_encoding_profile_set_preset (GstEncodingProfile *profile, const char *preset);
+
+GstElement *	rb_gst_encoding_profile_get_encoder (GstEncodingProfile *profile);
+
 G_END_DECLS
 
 #endif /* __RB_GST_MEDIA_TYPES_H */
