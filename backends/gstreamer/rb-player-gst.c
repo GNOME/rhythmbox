@@ -502,6 +502,9 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 			}
 			state_change_finished (mp, sig_error);
 			mp->priv->emitted_error = TRUE;
+			if (mp->priv->playbin_stream_changing) {
+				emit_playing_stream_and_tags (mp, TRUE);
+			}
 			_rb_player_emit_error (RB_PLAYER (mp), mp->priv->stream_data, sig_error);
 		}
 
