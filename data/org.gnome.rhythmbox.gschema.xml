@@ -18,6 +18,19 @@
     </key>
   </schema>
 
+  <schema id="org.gnome.rhythmbox.encoding-settings">
+    <key name="media-type" type="s">
+      <default>'audio/x-vorbis'</default>
+      <summary>Preferred media type for encoding audio extracted from CD</summary>
+      <description>Preferred media type for encoding audio extracted from CD. 'audio/x-vorbis' for Ogg Vorbis, or 'audio/mpeg' for MP3, for example. This is not a MIME type.</description>
+    </key>
+    <key name="media-type-presets" type="a{ss}">
+      <default>[]</default>
+      <summary>Maps media types to audio encoder preset names.</summary>
+      <description>Maps media types to audio encoder preset names. If there is no mapping for a media type, the default encoder settings will be used.</description>
+    </key>
+  </schema>
+
   <schema id="org.gnome.rhythmbox" path="/org/gnome/rhythmbox/">
     <key name="maximized" type="b">
       <default>false</default>
@@ -137,12 +150,6 @@
       <summary>File name of tracks</summary>
       <description>The path used to store track in, under the chosen library. Various substitutions are done</description>
     </key>
-    <key name="preferred-media-type" type="s">
-      <default>'audio/x-vorbis'</default>
-      <summary>Preferred media type for encoding audio extracted from CD</summary>
-      <description>Preferred media type for encoding audio extracted from CD. 'audio/x-vorbis' for Ogg Vorbis, or 'audio/mpeg' for MP3, for example. This is not a MIME type.</description>
-    </key>
-    <!-- and something about presets too -->
     <key name="strip-chars" type="b">
       <default>false</default>
       <summary>Strip special characters</summary>
@@ -154,6 +161,7 @@
       <description>Previous location chosen when adding new tracks to the library</description>
     </key>
 
+    <child name='encoding' schema='org.gnome.rhythmbox.encoding-settings'/>
     <child name='source' schema='org.gnome.rhythmbox.source'/>
   </schema>
   <enum id="org.gnome.rhythmbox.podcast-interval">
