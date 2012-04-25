@@ -25,8 +25,8 @@ msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-03-28 13:23+0000\n"
-"PO-Revision-Date: 2012-04-22 15:41+0200\n"
+"POT-Creation-Date: 2012-04-24 20:15+0000\n"
+"PO-Revision-Date: 2012-04-25 23:35+0200\n"
 "Last-Translator: Bruno Brouard <annoa.b@gmail.com>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "MIME-Version: 1.0\n"
@@ -41,61 +41,61 @@ msgstr ""
 "Impossible de créer un élément collecteur GStreamer pour écrire vers %s"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:492
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2735
+#: ../backends/gstreamer/rb-player-gst.c:493
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2829
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "L'ouverture du périphérique de sortie a échoué : %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:633
+#: ../backends/gstreamer/rb-player-gst.c:638
 #, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr ""
 "La création de l'élément playbin2 a échoué ; vérifiez votre installation de "
 "GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1109
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1123
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1118
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1132
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "La liaison du nouveau flux dans le pipeline GStreamer a échoué"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1151
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1160
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Le démarrage d'un nouveau flux a échoué"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2660
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2754
 #, c-format
 msgid "Failed to open output device"
 msgstr "L'ouverture du périphérique de sortie a échoué"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3013
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3086
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3107
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3180
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "La création d'un élément GStreamer a échoué ; vérifiez votre installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3027
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3121
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "La création d'un élément de sortie audio a échoué ; vérifiez votre "
 "installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3060
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3102
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3128
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3137
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3146
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3154
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3196
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3222
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3231
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3240
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "La liaison au pipeline GStreamer a échoué ; vérifiez votre installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3241
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3335
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "La création d'un pipeline GStreamer pour lire %s a échoué"
@@ -282,8 +282,8 @@ msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
 msgstr "Artiste/artiste - Album/Artiste (Album) - 01 - Morceau.ogg"
 
 #: ../data/ui/library-prefs.ui.h:10
-msgid "_Settings"
-msgstr "_Paramétrages"
+msgid "Format settings:"
+msgstr "Paramètres du format :"
 
 #: ../data/ui/library-prefs.ui.h:11
 msgid "_Install additional software required to use this format"
@@ -670,7 +670,7 @@ msgstr "%d %b %Y"
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:713
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
-#: ../plugins/audiocd/rb-audiocd-source.c:604
+#: ../plugins/audiocd/rb-audiocd-source.c:605
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:589
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:593
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
@@ -699,8 +699,8 @@ msgstr "%d %b %Y"
 #: ../shell/rb-shell-player.c:3759 ../shell/rb-shell-player.c:3761
 #: ../widgets/rb-entry-view.c:985 ../widgets/rb-entry-view.c:1007
 #: ../widgets/rb-entry-view.c:1483 ../widgets/rb-entry-view.c:1495
-#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1039
-#: ../widgets/rb-header.c:1065 ../widgets/rb-song-info.c:920
+#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1098
+#: ../widgets/rb-header.c:1124 ../widgets/rb-song-info.c:920
 #: ../widgets/rb-song-info.c:932 ../widgets/rb-song-info.c:1153
 #: ../widgets/rb-song-info.c:1492
 msgid "Unknown"
@@ -878,41 +878,41 @@ msgid "You can improve the MusicBrainz database by adding this album."
 msgstr ""
 "Vous pouvez améliorer la base de données MusicBrainz en ajoutant cet album."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:610
+#: ../plugins/audiocd/rb-audiocd-source.c:611
 msgid "<Invalid unicode>"
 msgstr "<Unicode non valide>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:653
+#: ../plugins/audiocd/rb-audiocd-source.c:654
 #, c-format
 msgid "Track %u"
 msgstr "Piste %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:714
-#: ../plugins/audiocd/rb-audiocd-source.c:722
-#: ../plugins/audiocd/rb-audiocd-source.c:1136
+#: ../plugins/audiocd/rb-audiocd-source.c:715
+#: ../plugins/audiocd/rb-audiocd-source.c:723
+#: ../plugins/audiocd/rb-audiocd-source.c:1137
 msgid "Couldn't load Audio CD"
 msgstr "Impossible de charger le CD audio"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:715
+#: ../plugins/audiocd/rb-audiocd-source.c:716
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox ne parvient pas à accéder au CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:723
+#: ../plugins/audiocd/rb-audiocd-source.c:724
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox ne parvient pas à lire les informations du CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:991
-#: ../sources/rb-library-source.c:129 ../widgets/rb-entry-view.c:1429
+#: ../plugins/audiocd/rb-audiocd-source.c:992
+#: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1429
 msgid "Title"
 msgstr "Morceau"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:998
-#: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:120
+#: ../plugins/audiocd/rb-audiocd-source.c:999
+#: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:124
 #: ../widgets/rb-entry-view.c:1439 ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Artiste"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1137
+#: ../plugins/audiocd/rb-audiocd-source.c:1138
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox ne parvient pas à obtenir l'accès au périphérique CD."
 
@@ -2611,7 +2611,7 @@ msgstr "sur l'album <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:390
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:202
-#: ../widgets/rb-header.c:762
+#: ../widgets/rb-header.c:821
 msgid "Not Playing"
 msgstr "Pas de lecture"
 
@@ -4252,63 +4252,72 @@ msgid_plural "%d import errors"
 msgstr[0] "%d erreur d'importation"
 msgstr[1] "%d erreurs d'importation"
 
-#: ../sources/rb-library-source.c:116
+#: ../sources/rb-library-source.c:120
 msgid "Artist/Artist - Album"
 msgstr "Artiste/artiste - albums"
 
-#: ../sources/rb-library-source.c:117
+#: ../sources/rb-library-source.c:121
 msgid "Artist/Album"
 msgstr "Artiste/album"
 
-#: ../sources/rb-library-source.c:118
+#: ../sources/rb-library-source.c:122
 msgid "Artist - Album"
 msgstr "Artiste - album"
 
-#: ../sources/rb-library-source.c:119 ../widgets/rb-entry-view.c:1449
+#: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1449
 #: ../widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Album"
 
-#: ../sources/rb-library-source.c:125
+#: ../sources/rb-library-source.c:129
 msgid "Number - Title"
 msgstr "Piste - Morceau"
 
-#: ../sources/rb-library-source.c:126
+#: ../sources/rb-library-source.c:130
 msgid "Artist - Title"
 msgstr "Artiste - Morceau"
 
-#: ../sources/rb-library-source.c:127
+#: ../sources/rb-library-source.c:131
 msgid "Artist - Number - Title"
 msgstr "Artiste - Piste - Morceau"
 
-#: ../sources/rb-library-source.c:128
+#: ../sources/rb-library-source.c:132
 msgid "Artist (Album) - Number - Title"
 msgstr "Artiste (album) - Piste - Morceau"
 
-#: ../sources/rb-library-source.c:130
+#: ../sources/rb-library-source.c:134
 msgid "Number. Artist - Title"
 msgstr "Piste. Artiste - Morceau"
 
-#: ../sources/rb-library-source.c:339
+#: ../sources/rb-library-source.c:360
 #: ../sources/sync/rb-sync-settings-ui.c:216
 #: ../sources/sync/rb-sync-settings-ui.c:217
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "Musique"
 
-#: ../sources/rb-library-source.c:392
+#: ../sources/rb-library-source.c:407
 msgid "Choose Library Location"
 msgstr "Emplacement de la bibliothèque"
 
-#: ../sources/rb-library-source.c:431
+#: ../sources/rb-library-source.c:446
 msgid "Multiple locations set"
 msgstr "Ensemble d'emplacements multiples"
 
-#: ../sources/rb-library-source.c:1119
+#: ../sources/rb-library-source.c:572
+msgid "Default settings"
+msgstr "Paramètres par défaut"
+
+# Co_uper
+#: ../sources/rb-library-source.c:588
+msgid "Custom settings"
+msgstr "Paramètres personnalisés"
+
+#: ../sources/rb-library-source.c:1387
 msgid "Example Path:"
 msgstr "Exemple de chemin :"
 
-#: ../sources/rb-library-source.c:1273 ../sources/rb-library-source.c:1277
+#: ../sources/rb-library-source.c:1560 ../sources/rb-library-source.c:1564
 #: ../sources/rb-transfer-target.c:189
 msgid "Error transferring track"
 msgstr "Erreur lors du transfert de la piste"
@@ -4401,11 +4410,11 @@ msgstr "Aléatoire"
 msgid "Play Queue"
 msgstr "Liste d'attente"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:738
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:797
 msgid "from"
 msgstr "sur l'album"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:737
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:796
 msgid "by"
 msgstr "par"
 
@@ -4537,13 +4546,13 @@ msgid "Drop artwork here"
 msgstr "Déposer la pochette ici"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:979
+#: ../widgets/rb-header.c:1038
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:990
+#: ../widgets/rb-header.c:1049
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
