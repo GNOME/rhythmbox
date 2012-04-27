@@ -355,7 +355,7 @@ parse_pattern (const char *pattern, GHashTable *properties, gint64 elapsed)
 				break;
 			case 'd':
 				/* Track duration */
-				value = g_hash_table_lookup (properties, "xesam:length");
+				value = g_hash_table_lookup (properties, "mpris:length");
 				if (value)
 					string = rb_make_duration_string (g_variant_get_int64 (value));
 				break;
