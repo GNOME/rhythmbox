@@ -784,6 +784,8 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 	stream = NULL;
 
 	if (*error == NULL) {
+		GFileInfo *originfo;
+
 		/* check to ensure the file isn't corrupt */
 		if (!check_file_valid (uri, tmpname)) {
 			g_set_error (error,
@@ -796,8 +798,12 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 		src = g_file_new_for_uri (tmpname);
 		dest = g_file_new_for_uri (uri);
 
-		/* try to copy attributes over, not likely to help much though */
-		g_file_copy_attributes (dest, src, G_FILE_COPY_ALL_METADATA, NULL, NULL);
+		/* try to copy access and ownership attributes over, not likely to help much though */
+		originfo = g_file_query_info (dest, "access::*,owner::*", G_FILE_QUERY_INFO_NONE, NULL, NULL);
+		if (originfo) {
+			g_file_set_attributes_from_info (src, originfo, G_FILE_QUERY_INFO_NONE, NULL, NULL);
+			g_object_unref (originfo);
+		}
 
 		g_file_move (src, dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &io_error);
 		if (io_error != NULL) {
