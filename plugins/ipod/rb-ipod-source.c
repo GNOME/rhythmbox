@@ -105,6 +105,7 @@ static void rb_ipod_source_get_property (GObject *object,
 					 guint prop_id,
 					 GValue *value,
 					 GParamSpec *pspec);
+static gboolean ensure_loaded (RBiPodSource *source);
 
 
 static RhythmDB *get_db_for_source (RBiPodSource *source);
@@ -544,6 +545,7 @@ rb_ipod_source_new (GObject *plugin,
 					       "mount", mount,
 					       "shell", shell,
 					       "device-info", device_info,
+					       "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 					       "settings", g_settings_get_child (settings, "source"),
 					       "toolbar-path", "/iPodSourceToolBar",
 					       NULL));
@@ -1166,6 +1168,10 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 
 	g_object_unref (db);
 
+	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
+
+	rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), NULL, FALSE);
+
 	GDK_THREADS_LEAVE ();
 	priv->load_idle_id = 0;
 	return FALSE;
@@ -1284,7 +1290,10 @@ impl_delete_entries (RBMediaPlayerSource *source, GList *entries, RBMediaPlayerS
 static RBTrackTransferBatch *
 impl_paste (RBSource *source, GList *entries)
 {
-	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries);
+	gboolean defer;
+
+	defer = (ensure_loaded (RB_IPOD_SOURCE (source)) == FALSE);
+	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries, defer);
 }
 
 static void
@@ -1809,15 +1818,26 @@ ipod_path_from_unix_path (const gchar *mount_point, const gchar *unix_path)
 	return ipod_path;
 }
 
+static gboolean
+ensure_loaded (RBiPodSource *source)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	RBSourceLoadStatus status;
+	
+	if (priv->ipod_db == NULL) {
+		rb_ipod_load_songs (source);
+		rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
+		return FALSE;
+	} else {
+		g_object_get (source, "load-status", &status, NULL);
+		return (status == RB_SOURCE_LOAD_STATUS_LOADED);
+	}
+}
+
 static void
 impl_selected (RBDisplayPage *page)
 {
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (page);
-	
-	if (priv->ipod_db == NULL) {
-		rb_ipod_load_songs (RB_IPOD_SOURCE (page));
-		rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (page));
-	}
+	ensure_loaded (RB_IPOD_SOURCE (page));
 }
 
 static void

@@ -376,6 +376,7 @@ track_done_cb (RBTrackTransferBatch *batch,
  * rb_transfer_target_transfer:
  * @target: an #RBTransferTarget
  * @entries: a #GList of entries to transfer
+ * @defer: if %TRUE, don't start the transfer until
  *
  * Starts tranferring @entries to the target.  This returns the
  * #RBTrackTransferBatch that it starts, so the caller can track
@@ -385,7 +386,7 @@ track_done_cb (RBTrackTransferBatch *batch,
  * Return value: (transfer full): an #RBTrackTransferBatch, or NULL
  */
 RBTrackTransferBatch *
-rb_transfer_target_transfer (RBTransferTarget *target, GList *entries)
+rb_transfer_target_transfer (RBTransferTarget *target, GList *entries, gboolean defer)
 {
 	RBTrackTransferQueue *xferq;
 	RBShell *shell;
@@ -395,7 +396,7 @@ rb_transfer_target_transfer (RBTransferTarget *target, GList *entries)
 	GstEncodingTarget *encoding_target;
 	gboolean start_batch = FALSE;
 
-	g_object_get (target,		/* hrm */
+	g_object_get (target,
 		      "shell", &shell,
 		      "entry-type", &our_entry_type,
 		      "encoding-target", &encoding_target,
@@ -403,11 +404,17 @@ rb_transfer_target_transfer (RBTransferTarget *target, GList *entries)
 	g_object_get (shell, "track-transfer-queue", &xferq, NULL);
 	g_object_unref (shell);
 
-	batch = rb_track_transfer_batch_new (encoding_target, NULL, G_OBJECT (target));
-	gst_encoding_target_unref (encoding_target);
+	batch = g_object_steal_data (G_OBJECT (target), "transfer-target-batch");
 
-	g_signal_connect_object (batch, "get-dest-uri", G_CALLBACK (get_dest_uri_cb), target, 0);
-	g_signal_connect_object (batch, "track-done", G_CALLBACK (track_done_cb), target, 0);
+	if (batch == NULL) {
+		batch = rb_track_transfer_batch_new (encoding_target, NULL, G_OBJECT (target));
+
+		g_signal_connect_object (batch, "get-dest-uri", G_CALLBACK (get_dest_uri_cb), target, 0);
+		g_signal_connect_object (batch, "track-done", G_CALLBACK (track_done_cb), target, 0);
+	} else {
+		start_batch = TRUE;
+	}
+	gst_encoding_target_unref (encoding_target);
 
 	for (l = entries; l != NULL; l = l->next) {
 		RhythmDBEntry *entry;
@@ -433,7 +440,11 @@ rb_transfer_target_transfer (RBTransferTarget *target, GList *entries)
 	g_object_unref (our_entry_type);
 
 	if (start_batch) {
-		rb_track_transfer_queue_start_batch (xferq, batch);
+		if (defer) {
+			g_object_set_data_full (G_OBJECT (target), "transfer-target-batch", g_object_ref (batch), g_object_unref);
+		} else {
+			rb_track_transfer_queue_start_batch (xferq, batch);
+		}
 	} else {
 		g_object_unref (batch);
 		batch = NULL;

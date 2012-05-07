@@ -331,16 +331,18 @@ unmount_done_cb (GObject *object, GAsyncResult *result, gpointer psource)
 
 #endif
 
-static void
-impl_selected (RBDisplayPage *page)
+static gboolean
+ensure_loaded (RBMtpSource *source)
 {
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (page);
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 #if defined(HAVE_GUDEV)
 	GMount *mount;
 #endif
-
-	if (priv->tried_open)
-		return;
+	if (priv->tried_open) {
+		RBSourceLoadStatus status;
+		g_object_get (source, "load-status", &status, NULL);
+		return (status == RB_SOURCE_LOAD_STATUS_LOADED);
+	}
 	priv->tried_open = TRUE;
 
 	/* try to open the device.  if gvfs has mounted it, unmount it first */
@@ -353,15 +355,22 @@ impl_selected (RBDisplayPage *page)
 						NULL,
 						NULL,
 						unmount_done_cb,
-						g_object_ref (page));
+						g_object_ref (source));
 		/* mount gets unreffed in callback */
 	} else {
 		rb_debug ("device isn't mounted");
-		open_device (RB_MTP_SOURCE (page));
+		open_device (source);
 	}
 #else
-	open_device (RB_MTP_SOURCE (page));
+	open_device (source);
 #endif
+	return FALSE;
+}
+
+static void
+impl_selected (RBDisplayPage *page)
+{
+	ensure_loaded (RB_MTP_SOURCE (page));
 }
 
 static void
@@ -599,6 +608,7 @@ rb_mtp_source_new (RBShell *shell,
 #else
 					      "udi", udi,
 #endif
+					      "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 					      "settings", g_settings_get_child (settings, "source"),
 					      "toolbar-path", "/MTPSourceToolBar",
 					      "name", _("Media Player"),
@@ -990,6 +1000,10 @@ mtp_tracklist_cb (LIBMTP_track_t *tracks, RBMtpSource *source)
 		add_mtp_track_to_db (source, db, track);
 	}
 	g_object_unref (db);
+
+	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
+
+	rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), NULL, FALSE);
 }
 
 static char *
@@ -1066,7 +1080,9 @@ impl_uri_is_source (RBSource *source, const char *uri)
 static RBTrackTransferBatch *
 impl_paste (RBSource *source, GList *entries)
 {
-	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries);
+	gboolean defer;
+	defer = (ensure_loaded (RB_MTP_SOURCE (source)) == FALSE);
+	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries, defer);
 }
 
 static gboolean

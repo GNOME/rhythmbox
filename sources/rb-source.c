@@ -108,6 +108,7 @@ struct _RBSourcePrivate
 	guint update_visibility_id;
 	guint update_status_id;
 	RhythmDBEntryType *entry_type;
+	RBSourceLoadStatus load_status;
 
 	GSettings *settings;
 
@@ -124,6 +125,7 @@ enum
 	PROP_PLAY_ORDER,
 	PROP_SETTINGS,
 	PROP_SHOW_BROWSER,
+	PROP_LOAD_STATUS,
 	PROP_TOOLBAR_PATH
 };
 
@@ -233,6 +235,21 @@ rb_source_class_init (RBSourceClass *klass)
 							      "optional play order specific to the source",
 							      RB_TYPE_PLAY_ORDER,
 							      G_PARAM_READABLE));
+
+	/**
+	 * RBSource:load-status:
+	 *
+	 * Indicates whether the source is not loaded, is currently loading data, or is
+	 * fully loaded.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_LOAD_STATUS,
+					 g_param_spec_enum ("load-status",
+							    "load-status",
+							    "load status",
+							    RB_TYPE_SOURCE_LOAD_STATUS,
+							    RB_SOURCE_LOAD_STATUS_LOADED,
+							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
 	/**
 	 * RBSource:settings:
@@ -451,6 +468,9 @@ rb_source_set_property (GObject *object,
 	case PROP_SHOW_BROWSER:
 		/* not connected to anything here */
 		break;
+	case PROP_LOAD_STATUS:
+		source->priv->load_status = g_value_get_enum (value);
+		break;
 	case PROP_TOOLBAR_PATH:
 		source->priv->toolbar_path = g_value_dup_string (value);
 		break;
@@ -489,6 +509,9 @@ rb_source_get_property (GObject *object,
 		break;
 	case PROP_SHOW_BROWSER:
 		g_value_set_boolean (value, FALSE);
+		break;
+	case PROP_LOAD_STATUS:
+		g_value_set_enum (value, source->priv->load_status);
 		break;
 	case PROP_TOOLBAR_PATH:
 		g_value_set_string (value, source->priv->toolbar_path);
@@ -1443,6 +1466,27 @@ rb_source_eof_type_get_type (void)
 
 	return etype;
 }
+
+GType
+rb_source_load_status_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0) {
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_SOURCE_LOAD_STATUS_NOT_LOADED, "not-loaded"),
+			ENUM_ENTRY (RB_SOURCE_LOAD_STATUS_WAITING, "waiting"),
+			ENUM_ENTRY (RB_SOURCE_LOAD_STATUS_LOADING, "loading"),
+			ENUM_ENTRY (RB_SOURCE_LOAD_STATUS_LOADED, "loaded"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBSourceLoadStatus", values);
+	}
+
+	return etype;
+}
+
 /* introspection annotations for vmethods */
 
 /**
@@ -1478,4 +1522,3 @@ rb_source_eof_type_get_type (void)
  * @source: a #RBSource
  * @entries: (element-type RB.RhythmDBEntry) (transfer none): list of entries to paste
  */
-

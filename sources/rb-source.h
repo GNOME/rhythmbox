@@ -48,6 +48,13 @@ typedef enum {
 	RB_SOURCE_EOF_NEXT,
 } RBSourceEOFType;
 
+typedef enum {
+	RB_SOURCE_LOAD_STATUS_NOT_LOADED,
+	RB_SOURCE_LOAD_STATUS_WAITING,
+	RB_SOURCE_LOAD_STATUS_LOADING,
+	RB_SOURCE_LOAD_STATUS_LOADED
+} RBSourceLoadStatus;
+
 typedef struct _RBSource	RBSource;
 typedef struct _RBSourceClass	RBSourceClass;
 typedef struct _RBSourcePrivate	RBSourcePrivate;
@@ -56,6 +63,9 @@ typedef void (*RBSourceActionCallback) (GtkAction *action, RBSource *source);
 
 GType rb_source_eof_type_get_type (void);
 #define RB_TYPE_SOURCE_EOF_TYPE	(rb_source_eof_type_get_type())
+
+GType rb_source_load_status_get_type (void);
+#define RB_TYPE_SOURCE_LOAD_STATUS (rb_source_load_status_get_type())
 
 #define RB_TYPE_SOURCE         (rb_source_get_type ())
 #define RB_SOURCE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_SOURCE, RBSource))
