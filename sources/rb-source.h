@@ -133,7 +133,6 @@ struct _RBSourceClass
 	gboolean	(*impl_can_pause)	(RBSource *source);
 	RBSourceEOFType	(*impl_handle_eos)	(RBSource *source);
 
-	void		(*impl_delete_thyself)	(RBSource *source);
 	char *		(*impl_get_delete_action) (RBSource *source);
 };
 
