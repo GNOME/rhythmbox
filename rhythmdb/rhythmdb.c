@@ -4697,6 +4697,7 @@ rhythmdb_sync_library_location (RhythmDB *db)
 		rhythmdb_stop_monitoring (db);
 
 		g_strfreev (db->priv->library_locations);
+		db->priv->library_locations = NULL;
 	}
 
 	if (g_settings_get_boolean (db->priv->settings, "monitor-library")) {
