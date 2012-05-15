@@ -82,6 +82,7 @@ static void rb_mtp_source_get_property (GObject *object,
 static void impl_delete (RBSource *asource);
 static RBTrackTransferBatch *impl_paste (RBSource *asource, GList *entries);
 static gboolean impl_show_popup (RBDisplayPage *page);
+static gboolean impl_uri_is_source (RBSource *asource, const char *uri);
 
 static gboolean impl_track_added (RBTransferTarget *target,
 				  RhythmDBEntry *entry,
@@ -100,6 +101,7 @@ static char *impl_build_dest_uri (RBTransferTarget *target,
 static void impl_eject (RBDeviceSource *source);
 static gboolean impl_can_eject (RBDeviceSource *source);
 
+static void impl_selected (RBDisplayPage *page);
 static void mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source);
 static void mtp_tracklist_cb (LIBMTP_track_t *tracks, RBMtpSource *source);
 static RhythmDB * get_db_for_source (RBMtpSource *source);
@@ -132,6 +134,7 @@ static GMount *find_mount_for_device (GUdevDevice *device);
 
 typedef struct
 {
+	gboolean tried_open;
 	RBMtpThread *device_thread;
 	LIBMTP_raw_device_t raw_device;
 	GHashTable *entry_map;
@@ -190,6 +193,7 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	object_class->get_property = rb_mtp_source_get_property;
 
 	page_class->show_popup = impl_show_popup;
+	page_class->selected = impl_selected;
 
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -199,6 +203,7 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_delete = impl_delete;
 	source_class->impl_paste = impl_paste;
+	source_class->impl_uri_is_source = impl_uri_is_source;
 
 	mps_class->impl_get_entries = impl_get_entries;
 	mps_class->impl_get_capacity = impl_get_capacity;
@@ -326,25 +331,19 @@ unmount_done_cb (GObject *object, GAsyncResult *result, gpointer psource)
 
 #endif
 
-static void
-rb_mtp_source_constructed (GObject *object)
+static gboolean
+ensure_loaded (RBMtpSource *source)
 {
-	RBMtpSource *source;
-	RBMtpSourcePrivate *priv;
-	RBEntryView *tracks;
-	RBShell *shell;
-	RBShellPlayer *shell_player;
-	GObject *player_backend;
-	GtkIconTheme *theme;
-	GdkPixbuf *pixbuf;
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 #if defined(HAVE_GUDEV)
 	GMount *mount;
 #endif
-	gint size;
-
-	RB_CHAIN_GOBJECT_METHOD (rb_mtp_source_parent_class, constructed, object);
-	source = RB_MTP_SOURCE (object);
-	priv = MTP_SOURCE_GET_PRIVATE (source);
+	if (priv->tried_open) {
+		RBSourceLoadStatus status;
+		g_object_get (source, "load-status", &status, NULL);
+		return (status == RB_SOURCE_LOAD_STATUS_LOADED);
+	}
+	priv->tried_open = TRUE;
 
 	/* try to open the device.  if gvfs has mounted it, unmount it first */
 #if defined(HAVE_GUDEV)
@@ -358,9 +357,36 @@ rb_mtp_source_constructed (GObject *object)
 						unmount_done_cb,
 						g_object_ref (source));
 		/* mount gets unreffed in callback */
-	} else
-#endif
+	} else {
+		rb_debug ("device isn't mounted");
+		open_device (source);
+	}
+#else
 	open_device (source);
+#endif
+	return FALSE;
+}
+
+static void
+impl_selected (RBDisplayPage *page)
+{
+	ensure_loaded (RB_MTP_SOURCE (page));
+}
+
+static void
+rb_mtp_source_constructed (GObject *object)
+{
+	RBMtpSource *source;
+	RBEntryView *tracks;
+	RBShell *shell;
+	RBShellPlayer *shell_player;
+	GObject *player_backend;
+	GtkIconTheme *theme;
+	GdkPixbuf *pixbuf;
+	gint size;
+
+	RB_CHAIN_GOBJECT_METHOD (rb_mtp_source_parent_class, constructed, object);
+	source = RB_MTP_SOURCE (object);
 
 	tracks = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (tracks, RB_ENTRY_VIEW_COL_RATING, FALSE);
@@ -582,8 +608,10 @@ rb_mtp_source_new (RBShell *shell,
 #else
 					      "udi", udi,
 #endif
+					      "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 					      "settings", g_settings_get_child (settings, "source"),
 					      "toolbar-path", "/MTPSourceToolBar",
+					      "name", _("Media Player"),
 					      NULL));
 	g_object_unref (settings);
 
@@ -972,6 +1000,10 @@ mtp_tracklist_cb (LIBMTP_track_t *tracks, RBMtpSource *source)
 		add_mtp_track_to_db (source, db, track);
 	}
 	g_object_unref (db);
+
+	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
+
+	rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), NULL, FALSE);
 }
 
 static char *
@@ -1027,10 +1059,30 @@ impl_delete (RBSource *source)
 	rb_list_destroy_free (sel, (GDestroyNotify) rhythmdb_entry_unref);
 }
 
+static gboolean
+impl_uri_is_source (RBSource *source, const char *uri)
+{
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
+	char *source_uri;
+	gboolean result;
+
+	if (g_str_has_prefix (uri, "gphoto2://") == FALSE)
+		return FALSE;
+
+	source_uri = g_strdup_printf ("gphoto2://[usb:%03d,%03d]/", 
+				      priv->raw_device.bus_location,
+				      priv->raw_device.devnum);
+	result = g_str_has_prefix (uri, source_uri);
+	g_free (source_uri);
+	return result;
+}
+
 static RBTrackTransferBatch *
 impl_paste (RBSource *source, GList *entries)
 {
-	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries);
+	gboolean defer;
+	defer = (ensure_loaded (RB_MTP_SOURCE (source)) == FALSE);
+	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries, defer);
 }
 
 static gboolean

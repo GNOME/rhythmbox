@@ -278,7 +278,7 @@ rb_auto_playlist_source_constructed (GObject *object)
 	source = RB_AUTO_PLAYLIST_SOURCE (object);
 	priv = GET_PRIVATE (source);
 
-	priv->paned = gtk_vpaned_new ();
+	priv->paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
 
 	g_object_get (RB_PLAYLIST_SOURCE (source), "entry-type", &entry_type, NULL);
 	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)),
@@ -313,6 +313,7 @@ rb_auto_playlist_source_constructed (GObject *object)
 	grid = gtk_grid_new ();
 	gtk_grid_set_column_spacing (GTK_GRID (grid), 6);
 	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
+	gtk_widget_set_margin_top (GTK_WIDGET (grid), 6);
 	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (priv->toolbar), 0, 0, 1, 1);
 	gtk_grid_attach (GTK_GRID (grid), priv->paned, 0, 1, 1, 1);
 	gtk_container_add (GTK_CONTAINER (source), grid);

@@ -348,7 +348,7 @@ rb_browser_source_constructed (GObject *object)
 
 	source->priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
 
-	paned = gtk_vpaned_new ();
+	paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
 
 	source->priv->browser = rb_library_browser_new (source->priv->db, entry_type);
 	gtk_widget_set_no_show_all (GTK_WIDGET (source->priv->browser), TRUE);
@@ -416,6 +416,7 @@ rb_browser_source_constructed (GObject *object)
 	content = gtk_grid_new ();
 	gtk_grid_set_column_spacing (GTK_GRID (content), 6);
 	gtk_grid_set_row_spacing (GTK_GRID (content), 6);
+	gtk_widget_set_margin_top (content, 6);
 	gtk_grid_attach (GTK_GRID (content), GTK_WIDGET (source->priv->toolbar), 0, 0, 1, 1);
 	gtk_widget_set_vexpand (paned, TRUE);
 	gtk_widget_set_hexpand (paned, TRUE);

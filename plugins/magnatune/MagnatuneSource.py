@@ -26,6 +26,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import os
+import sys
 import xml
 import urllib
 import urlparse
@@ -34,10 +35,11 @@ import zipfile
 
 import rb
 from gi.repository import RB
-from gi.repository import GObject, Gtk, Gdk, Gio, GnomeKeyring
+from gi.repository import GObject, Gtk, Gdk, Gio
 
 from TrackListHandler import TrackListHandler
-from BuyAlbumHandler import BuyAlbumHandler, MagnatunePurchaseError
+from DownloadAlbumHandler import DownloadAlbumHandler, MagnatuneDownloadError
+import MagnatuneAccount
 
 import gettext
 gettext.install('rhythmbox', RB.locale_dir())
@@ -85,7 +87,7 @@ class MagnatuneSource(RB.BrowserSource):
 
 		# album download stuff
 		self.__downloads = {} # keeps track of download progress for each file
-		self.__cancellables = {} # keeps track of Gio.Cancellable objects so we can abort album downloads
+		self.__copies = {} # keeps copy objects for each file
 
 		self.__art_store = RB.ExtDB(name="album-art")
 
@@ -180,7 +182,7 @@ class MagnatuneSource(RB.BrowserSource):
 				Gtk.show_uri(screen, url, Gdk.CURRENT_TIME)
 				urls.add(url)
 
-	def purchase_redirect(self):
+	def download_redirect(self):
 		screen = self.props.shell.props.window.get_screen()
 		tracks = self.get_entry_view().get_selected_entries()
 		urls = set([])
@@ -194,8 +196,8 @@ class MagnatuneSource(RB.BrowserSource):
 
 	def download_album(self):
 		if self.__settings['account-type'] != 'download':
-			# The user doesn't have a download account, so redirect them to the purchase page.
-			self.purchase_redirect()
+			# The user doesn't have a download account, so redirect them to the download signup page
+			self.download_redirect()
 			return
 
 		try:
@@ -203,8 +205,8 @@ class MagnatuneSource(RB.BrowserSource):
 			library = Gio.Settings("org.gnome.rhythmbox.rhythmdb")
 			library_location = library['locations'][0]
 		except IndexError, e:
-			RB.error_dialog(title = _("Couldn't purchase album"),
-				        message = _("You must have a library location set to purchase an album."))
+			RB.error_dialog(title = _("Couldn't download album"),
+				        message = _("You must have a library location set to download an album."))
 			return
 
 		tracks = self.get_entry_view().get_selected_entries()
@@ -319,9 +321,9 @@ class MagnatuneSource(RB.BrowserSource):
 						name = f.get_name()
 						if not name.startswith("in_progress_"):
 							continue
-						uri = magnatune_in_progress_dir.resolve_relative_path(name).load_contents()[0]
+						(result, uri, etag) = magnatune_in_progress_dir.resolve_relative_path(name).load_contents(None)
 						print "restarting download from %s" % uri
-						self.__download_album(Gio.file_new_for_uri(uri), name[12:])
+						self.__download_album(uri, name[12:])
 				else:
 					# hack around some weird chars that show up in the catalogue for some reason
 					data = str(data.str)
@@ -348,26 +350,9 @@ class MagnatuneSource(RB.BrowserSource):
 			self.__notify_status_changed()
 
 			load_size = {'size': 0}
-			account_type = self.__settings['account-type']
-			username = ""
-			password = ""
-
-			if account_type != 'none':
-				attributes = GnomeKeyring.attribute_list_new()
-				GnomeKeyring.attribute_list_append_string(attributes, "rhythmbox-plugin", "magnatune")
-				(result, items) = GnomeKeyring.find_items_sync(GnomeKeyring.ItemType.GENERIC_SECRET, attributes)
-				if result is not GnomeKeyring.Result.OK or len(items) == 0:
-					RB.error_dialog(title = _("Couldn't get account details"),
-							message = GnomeKeyring.result_to_message(result))
-					account_type = 'none'
-				else:
-					try:
-						username, password = items[0].get_secret().split('\n')
-					except ValueError: # Couldn't parse secret, possibly because it's empty
-						account_type = 'none'
 
 			parser = xml.sax.make_parser()
-			parser.setContentHandler(TrackListHandler(self.__db, self.__entry_type, self.__sku_dict, self.__home_dict, self.__art_dict, account_type, username, password))
+			parser.setContentHandler(TrackListHandler(self.__db, self.__entry_type, self.__sku_dict, self.__home_dict, self.__art_dict))
 
 			self.__catalogue_loader = RB.ChunkLoader()
 			self.__catalogue_loader.set_callback(catalogue_chunk_cb, parser)
@@ -405,32 +390,11 @@ class MagnatuneSource(RB.BrowserSource):
 	#
 
 	def __auth_download(self, sku): # http://magnatune.com/info/api
-		def got_items(result, items):
-			if result is not None or len(items) == 0:
-				RB.error_dialog(title = _("Couldn't get account details"),
-				                message = str(result))
-				return
-
-			try:
-				username, password = items[0].secret.split('\n')
-			except ValueError: # Couldn't parse secret, possibly because it's empty
-				username = ""
-				password = ""
-			print "downloading album: " + sku
-			url_dict = {
-				'id':	magnatune_partner_id,
-				'sku':	sku
-			}
-			url = magnatune_api_download_uri % (username, password)
-			url = url + urllib.urlencode(url_dict)
-
-			l = rb.Loader()
-			l.get_url(url, auth_data_cb, (username, password))
 
 		def auth_data_cb(data, (username, password)):
-			buy_album_handler = BuyAlbumHandler(self.__settings['format'])
+			dl_album_handler = DownloadAlbumHandler(self.__settings['format'])
 			auth_parser = xml.sax.make_parser()
-			auth_parser.setContentHandler(buy_album_handler)
+			auth_parser.setContentHandler(dl_album_handler)
 
 			if data is None:
 				# hmm.
@@ -438,12 +402,13 @@ class MagnatuneSource(RB.BrowserSource):
 
 			try:
 				data = data.replace("<br>", "") # get rid of any stray <br> tags that will mess up the parser
+				data = data.replace(" & ", " &amp; ") # clean up some missing escaping
 				# print data
 				auth_parser.feed(data)
 				auth_parser.close()
 
 				# process the URI: add authentication info, quote the filename component for some reason
-				parsed = urlparse.urlparse(buy_album_handler.url)
+				parsed = urlparse.urlparse(dl_album_handler.url)
 				netloc = "%s:%s@%s" % (username, password, parsed.hostname)
 
 				spath = os.path.split(urllib.url2pathname(parsed.path))
@@ -453,33 +418,41 @@ class MagnatuneSource(RB.BrowserSource):
 				authed = (parsed[0], netloc, path) + parsed[3:]
 				audio_dl_uri = urlparse.urlunparse(authed)
 
-				self.__download_album(Gio.file_new_for_uri(audio_dl_uri), sku)
+				print "download uri for %s is %s" % (sku, audio_dl_uri)
+				self.__download_album(audio_dl_uri, sku)
 
-			except MagnatunePurchaseError, e:
+			except MagnatuneDownloadError, e:
 				RB.error_dialog(title = _("Download Error"),
 						message = _("An error occurred while trying to authorize the download.\nThe Magnatune server returned:\n%s") % str(e))
 			except Exception, e:
+				sys.excepthook(*sys.exc_info())
 				RB.error_dialog(title = _("Error"),
 						message = _("An error occurred while trying to download the album.\nThe error text is:\n%s") % str(e))
 
+		print "downloading album: " + sku
+		account = MagnatuneAccount.instance()
+		(account_type, username, password) = account.get()
+		url_dict = {
+			'id':	magnatune_partner_id,
+			'sku':	sku
+		}
+		url = magnatune_api_download_uri % (username, password)
+		url = url + urllib.urlencode(url_dict)
 
-		keyring.find_items(keyring.ITEM_GENERIC_SECRET, {'rhythmbox-plugin': 'magnatune'}, got_items)
+		l = rb.Loader()
+		l.get_url(url, auth_data_cb, (username, password))
+
 
 	def __download_album(self, audio_dl_uri, sku):
-		def download_progress(current, total):
-			self.__downloads[str_uri] = (current, total)
+		def download_progress(copy, complete, total, self):
+			self.__downloads[audio_dl_uri] = (complete, total)
 			self.__notify_status_changed()
 
-		def download_finished(uri, result):
-			del self.__cancellables[str_uri]
-			del self.__downloads[str_uri]
+		def download_finished(copy, success, self):
+			del self.__downloads[audio_dl_uri]
+			del self.__copies[audio_dl_uri]
 
-			try:
-				success = uri.copy_finish(result)
-			except Exception, e:
-				success = False
-				print "Download not completed: " + str(e)
-
+			print "download of %s finished: %s" % (audio_dl_uri, success)
 			if success:
 				threading.Thread(target=unzip_album).start()
 			else:
@@ -490,7 +463,7 @@ class MagnatuneSource(RB.BrowserSource):
 				manager = shell.props.ui_manager
 				manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(False)
 				if success:
-					shell.notify_custom(4000, _("Finished Downloading"), _("All Magnatune downloads have been completed."))
+					shell.notify_custom(4000, _("Finished Downloading"), _("All Magnatune downloads have been completed."), None, False)
 
 			self.__notify_status_changed()
 
@@ -499,58 +472,59 @@ class MagnatuneSource(RB.BrowserSource):
 			library = Gio.Settings("org.gnome.rhythmbox.rhythmdb")
 			library_location = Gio.file_new_for_uri(library['locations'][0])
 
+			print "unzipping %s" % dest.get_path()
 			album = zipfile.ZipFile(dest.get_path())
 			for track in album.namelist():
 				track_uri = library_location.resolve_relative_path(track).get_uri()
+				print "zip file entry: %s => %s" % (track, track_uri)
 
 				track_uri = RB.sanitize_uri_for_filesystem(track_uri)
 				RB.uri_create_parent_dirs(track_uri)
 
-				track_out = Gio.file_new_for_uri(track_uri).create()
+				track_out = Gio.file_new_for_uri(track_uri).create(Gio.FileCreateFlags.NONE, None)
 				if track_out is not None:
-					track_out.write(album.read(track))
-					track_out.close()
+					track_out.write(album.read(track), None)
+					track_out.close(None)
+					print "adding %s to library" % track_uri
 					self.__db.add_uri(track_uri)
 
 			album.close()
 			remove_download_files()
 
 		def remove_download_files():
-			in_progress.delete()
-			dest.delete()
-
+			print "removing download files"
+			in_progress.delete(None)
+			dest.delete(None)
 
 		in_progress = magnatune_in_progress_dir.resolve_relative_path("in_progress_" + sku)
 		dest = magnatune_in_progress_dir.resolve_relative_path(sku)
 
-		str_uri = audio_dl_uri.get_uri()
-		in_progress.replace_contents(str_uri, None, False, flags=Gio.FileCreateFlags.PRIVATE|Gio.FileCreateFlags.REPLACE_DESTINATION)
+		in_progress.replace_contents(str(audio_dl_uri),
+					     None,
+					     False,
+					     Gio.FileCreateFlags.PRIVATE|Gio.FileCreateFlags.REPLACE_DESTINATION,
+					     None)
 
 		shell = self.props.shell
 		manager = shell.props.ui_manager
 		manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(True)
 
-		self.__downloads[str_uri] = (0, 0) # (current, total)
-
-		cancel = Gio.Cancellable()
-		self.__cancellables[str_uri] = cancel
 		try:
 			# For some reason, Gio.FileCopyFlags.OVERWRITE doesn't work for copy_async
-			dest.delete()
+			dest.delete(None)
 		except:
 			pass
 
-		# no way to resume downloads, sadly
-		audio_dl_uri.copy_async(dest,
-		                        download_finished,
-					progress_callback=download_progress,
-					flags=Gio.FileCopyFlags.OVERWRITE,
-					cancellable=cancel)
+		dl = RB.AsyncCopy()
+		dl.set_progress(download_progress, self)
+		dl.start(audio_dl_uri, dest.get_uri(), download_finished, self)
+		self.__downloads[audio_dl_uri] = (0, 0) # (current, total)
+		self.__copies[audio_dl_uri] = dl
 
 
 	def cancel_downloads(self):
-		for cancel in self.__cancellables.values():
-			cancel.cancel()
+		for download in self.__copies.values():
+			download.cancel()
 
 		shell = self.props.shell
 		manager = shell.props.ui_manager

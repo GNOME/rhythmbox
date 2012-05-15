@@ -2297,15 +2297,11 @@ is_shareable_device (RBSource *source)
 }
 */
 
-static gboolean
-display_page_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBMediaServer2Plugin *plugin)
+static void
+display_page_inserted_cb (RBDisplayPageModel *model, RBDisplayPage *page, GtkTreeIter *iter, RBMediaServer2Plugin *plugin)
 {
-	RBDisplayPage *page;
 	GList *l;
 
-	gtk_tree_model_get (model, iter,
-			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
-			    -1);
 	if (RB_IS_SOURCE (page)) {
 		RBSource *source = RB_SOURCE (page);
 		/* figure out if this is a source we can publish */
@@ -2323,6 +2319,18 @@ display_page_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *i
 			}
 		}
 	}
+
+}
+
+static gboolean
+display_page_foreach_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBMediaServer2Plugin *plugin)
+{
+	RBDisplayPage *page;
+
+	gtk_tree_model_get (model, iter,
+			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
+			    -1);
+	display_page_inserted_cb (RB_DISPLAY_PAGE_MODEL (model), page, iter, plugin);
 
 	g_object_unref (page);
 	return FALSE;
@@ -2394,9 +2402,9 @@ impl_activate (PeasActivatable *bplugin)
 	g_object_unref (source);
 
 	/* watch for user-creatable sources (playlists, devices) */
-	g_signal_connect_object (plugin->display_page_model, "row-inserted", G_CALLBACK (display_page_inserted_cb), plugin, 0);
+	g_signal_connect_object (plugin->display_page_model, "page-inserted", G_CALLBACK (display_page_inserted_cb), plugin, 0);
 	gtk_tree_model_foreach (GTK_TREE_MODEL (plugin->display_page_model),
-				(GtkTreeModelForeachFunc) display_page_inserted_cb,
+				(GtkTreeModelForeachFunc) display_page_foreach_cb,
 				plugin);
 	register_category_container (plugin, _("Playlists"), RB_MEDIASERVER2_PLAYLISTS, RB_MEDIASERVER2_ROOT, is_shareable_playlist);
 	/* see comments above */

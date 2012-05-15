@@ -50,6 +50,7 @@ static const char *container_formats[] = {
 
 #define ENCODING_TARGET_FILE "rhythmbox.gep"
 static GstEncodingTarget *default_target = NULL;
+static GKeyFile *target_keyfile = NULL;
 
 RBGstMediaType
 rb_gst_get_missing_plugin_type (const GstStructure *structure)
@@ -59,6 +60,11 @@ rb_gst_get_missing_plugin_type (const GstStructure *structure)
 	const GstCaps *caps;
 	const GValue *val;
 	int i;
+
+	if (structure == NULL) {
+		rb_debug ("no missing plugin details");
+		return MEDIA_TYPE_NONE;
+	}
 
 	missing_type = gst_structure_get_string (structure, "type");
 	if (missing_type == NULL || strcmp (missing_type, "decoder") != 0) {
@@ -155,7 +161,7 @@ rb_gst_media_type_to_extension (const char *media_type)
 		return NULL;
 	} else if (!strcmp (media_type, "audio/mpeg")) {
 		return "mp3";
-	} else if (!strcmp (media_type, "audio/x-vorbis") || !strcmp (media_type, "application/ogg")) {
+	} else if (!strcmp (media_type, "audio/x-vorbis") || !strcmp (media_type, "application/ogg") || !strcmp (media_type, "audio/ogg")) {
 		return "ogg";
 	} else if (!strcmp (media_type, "audio/x-flac") || !strcmp (media_type, "audio/flac")) {
 		return "flac";
@@ -173,7 +179,7 @@ rb_gst_mime_type_to_media_type (const char *mime_type)
 {
 	if (!strcmp (mime_type, "application/x-id3") || !strcmp (mime_type, "audio/mpeg")) {
 		return "audio/mpeg";
-	} else if (!strcmp (mime_type, "application/ogg") || !strcmp (mime_type, "audio/x-vorbis")) {
+	} else if (!strcmp (mime_type, "application/ogg") || !strcmp (mime_type, "audio/x-vorbis") || !strcmp (mime_type, "audio/ogg")) {
 		return "audio/x-vorbis";
 	} else if (!strcmp (mime_type, "audio/flac")) {
 		return "audio/x-flac";
@@ -248,6 +254,20 @@ rb_gst_encoding_profile_get_media_type (GstEncodingProfile *profile)
 	}
 }
 
+static char *
+get_encoding_target_file ()
+{
+	char *target_file;
+
+	target_file = rb_find_user_data_file (ENCODING_TARGET_FILE);
+	if (g_file_test (target_file, G_FILE_TEST_EXISTS) == FALSE) {
+		g_free (target_file);
+		target_file = g_strdup (rb_file (ENCODING_TARGET_FILE));
+	}
+
+	return target_file;
+}
+
 GstEncodingTarget *
 rb_gst_get_default_encoding_target ()
 {
@@ -255,17 +275,15 @@ rb_gst_get_default_encoding_target ()
 		char *target_file;
 		GError *error = NULL;
 
-		target_file = rb_find_user_data_file (ENCODING_TARGET_FILE);
-		if (g_file_test (target_file, G_FILE_TEST_EXISTS) == FALSE) {
-			target_file = g_strdup (rb_file (ENCODING_TARGET_FILE));
-		}
-
+		target_file = get_encoding_target_file ();
 		default_target = gst_encoding_target_load_from_file (target_file, &error);
 		if (default_target == NULL) {
 			g_warning ("Unable to load encoding profiles from %s: %s", target_file, error ? error->message : "no error");
 			g_clear_error (&error);
+			g_free (target_file);
 			return NULL;
 		}
+		g_free (target_file);
 	}
 
 	return default_target;
@@ -307,3 +325,139 @@ rb_gst_media_type_is_lossless (const char *media_type)
 	}
 	return FALSE;
 }
+
+static GstEncodingProfile *
+get_audio_encoding_profile (GstEncodingProfile *profile)
+{
+	if (GST_IS_ENCODING_AUDIO_PROFILE (profile)) {
+		return profile;
+	} else if (GST_IS_ENCODING_CONTAINER_PROFILE (profile)) {
+		const GList *l = gst_encoding_container_profile_get_profiles (GST_ENCODING_CONTAINER_PROFILE (profile));
+		for (; l != NULL; l = l->next) {
+			GstEncodingProfile *p = get_audio_encoding_profile (l->data);
+			if (p != NULL) {
+				return p;
+			}
+		}
+	}
+
+	g_warning ("no audio encoding profile in profile %s", gst_encoding_profile_get_name (profile));
+	return NULL;
+}
+
+static GstElementFactory *
+get_audio_encoder_factory (GstEncodingProfile *profile)
+{
+	GstEncodingProfile *p = get_audio_encoding_profile (profile);
+	GstElementFactory *f;
+	GList *l;
+	GList *fl;
+
+	if (p == NULL)
+		return NULL;
+
+	l = gst_element_factory_list_get_elements (GST_ELEMENT_FACTORY_TYPE_ENCODER, GST_RANK_MARGINAL);
+	fl = gst_element_factory_list_filter (l, gst_encoding_profile_get_format (p), GST_PAD_SRC, FALSE);
+
+	if (fl != NULL) {
+		f = gst_object_ref (fl->data);
+	} else {
+		g_warning ("no encoder factory for profile %s", gst_encoding_profile_get_name (p));
+		f = NULL;
+	}
+	gst_plugin_feature_list_free (l);
+	gst_plugin_feature_list_free (fl);
+	return f;
+}
+
+/**
+ * rb_gst_encoding_profile_set_preset:
+ * @profile: a #GstEncodingProfile
+ * @preset: preset to apply
+ *
+ * Applies the preset @preset to the audio encoding profile within @profile.
+ */
+void
+rb_gst_encoding_profile_set_preset (GstEncodingProfile *profile, const char *preset)
+{
+	GstEncodingProfile *p;
+
+	p = get_audio_encoding_profile (profile);
+	if (p != NULL) {
+		gst_encoding_profile_set_preset (p, preset);
+	}
+}
+
+/**
+ * rb_gst_encoding_profile_get_settings:
+ * @profile: a #GstEncodingProfile
+ *
+ * Returns a list of settings for the profile @profile that can usefully
+ * be exposed to a user.  This usually means just bitrate/quality settings.
+ * This works by finding the name of the encoder element for the profile
+ * and retrieving a list specific to that encoder.
+ *
+ * Return value: (transfer full) (element-type GParamSpec): list of settings
+ */
+char **
+rb_gst_encoding_profile_get_settings (GstEncodingProfile *profile)
+{
+	GstElementFactory *factory;
+	char **setting_names;
+
+	factory = get_audio_encoder_factory (profile);
+	if (factory == NULL) {
+		return NULL;
+	}
+
+	/* look up list of settings;
+	 * if we don't have one for the encoder, what do we do?  return everything?
+	 */
+	if (target_keyfile == NULL) {
+		char *file = get_encoding_target_file ();
+		GError *error = NULL;
+
+		target_keyfile = g_key_file_new ();
+		g_key_file_set_list_separator (target_keyfile, ',');
+		g_key_file_load_from_file (target_keyfile, file, G_KEY_FILE_NONE, &error);
+		if (error != NULL) {
+			g_warning ("Unable to load encoding target keyfile %s: %s", file, error->message);
+			g_clear_error (&error);
+		}
+	}
+
+	setting_names = g_key_file_get_string_list (target_keyfile,
+						    "rhythmbox-encoder-settings",
+						    gst_plugin_feature_get_name (GST_PLUGIN_FEATURE (factory)),
+						    NULL,
+						    NULL);
+	return setting_names;
+}
+
+GstElement *
+rb_gst_encoding_profile_get_encoder (GstEncodingProfile *profile)
+{
+	GstElementFactory *factory;
+
+	factory = get_audio_encoder_factory (profile);
+	if (factory == NULL) {
+		return NULL;
+	}
+
+	return gst_element_factory_create (factory, NULL);
+}
+
+char **
+rb_gst_encoding_profile_get_presets (GstEncodingProfile *profile)
+{
+	GstElement *encoder;
+	char **presets = NULL;
+
+	encoder = rb_gst_encoding_profile_get_encoder (profile);
+	if (encoder != NULL && GST_IS_PRESET (encoder)) {
+		presets = gst_preset_get_preset_names (GST_PRESET (encoder));
+		g_object_unref (encoder);
+	}
+	return presets;
+}
+

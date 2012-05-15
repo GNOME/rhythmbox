@@ -674,6 +674,30 @@ rb_search_fold (const char *original)
 }
 
 /**
+ * rb_make_time_string:
+ * @seconds: time in seconds
+ *
+ * Constructs a string describing the specified time.
+ *
+ * Return value: (transfer full): time string
+ */
+char *
+rb_make_time_string (guint nseconds)
+{
+	int hours, minutes, seconds;
+
+	hours = nseconds / (60 * 60);
+	minutes = (nseconds - (hours * 60 * 60)) / 60;
+	seconds = nseconds % 60;
+
+	if (hours == 0)
+		return g_strdup_printf (_("%d:%02d"), minutes, seconds);
+	else
+		return g_strdup_printf (_("%d:%02d:%02d"), hours, minutes, seconds);
+}
+
+
+/**
  * rb_make_duration_string:
  * @duration: duration in seconds
  *
@@ -685,21 +709,10 @@ rb_search_fold (const char *original)
 char *
 rb_make_duration_string (guint duration)
 {
-	char *str;
-	int hours, minutes, seconds;
-
-	hours = duration / (60 * 60);
-	minutes = (duration - (hours * 60 * 60)) / 60;
-	seconds = duration % 60;
-
-	if (hours == 0 && minutes == 0 && seconds == 0)
-		str = g_strdup (_("Unknown"));
-	else if (hours == 0)
-		str = g_strdup_printf (_("%d:%02d"), minutes, seconds);
+	if (duration == 0)
+		return g_strdup (_("Unknown"));
 	else
-		str = g_strdup_printf (_("%d:%02d:%02d"), hours, minutes, seconds);
-
-	return str;
+		return rb_make_time_string (duration);
 }
 
 /**
@@ -721,7 +734,7 @@ rb_make_elapsed_time_string (guint elapsed, guint duration, gboolean show_remain
 	int seconds2 = 0, minutes2 = 0, hours2 = 0;
 
 	if (duration == 0)
-		return rb_make_duration_string (elapsed);
+		return rb_make_time_string (elapsed);
 
 	if (duration > 0) {
 		hours2 = duration / (60 * 60);

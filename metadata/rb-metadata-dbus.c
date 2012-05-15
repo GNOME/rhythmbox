@@ -36,37 +36,37 @@
 #include "rb-metadata-dbus.h"
 #include "rb-debug.h"
 
-const char *rb_metadata_iface_xml = "				\
-<node>								\
-  <interface name='org.gnome.Rhythmbox3.Metadata'>		\
-    <method name='ping'>					\
-      <arg direction='out' type='b' name='ok'/>			\
-    </method>							\
-    <method name='load'>					\
-      <arg direction='in' type='s' name='uri'/>			\
-      <arg direction='out' type='as' name='missingPlugins'/>	\
-      <arg direction='out' type='as' name='pluginDescriptions'/> \
-      <arg direction='out' type='b' name='hasAudio'/>		\
-      <arg direction='out' type='b' name='hasVideo'/>		\
-      <arg direction='out' type='b' name='hasOtherData'/>	\
-      <arg direction='out' type='s' name='mediaType'/>		\
-      <arg direction='out' type='b' name='ok'/>			\
-      <arg direction='out' type='i' name='errorCode'/>		\
-      <arg direction='out' type='s' name='errorString'/>	\
-      <arg direction='out' type='a{iv}' name='metadata'/>	\
-    </method>							\
-    <method name='getSaveableTypes'>				\
-      <arg direction='out' type='as' name='types'/>		\
-    </method>							\
-    <method name='save'>					\
-      <arg direction='in' type='s' name='uri'/>			\
-      <arg direction='in' type='a{iv}' name='metadata'/>	\
-      <arg direction='out' type='b' name='ok'/>			\
-      <arg direction='out' type='i' name='errorCode'/>		\
-      <arg direction='out' type='s' name='errorString'/>	\
-    </method>							\
-  </interface>							\
-</node>";
+const char *rb_metadata_iface_xml =
+"<node>								"
+"  <interface name='org.gnome.Rhythmbox3.Metadata'>		"
+"    <method name='ping'>					"
+"      <arg direction='out' type='b' name='ok'/>		"
+"    </method>							"
+"    <method name='load'>					"
+"      <arg direction='in' type='s' name='uri'/>		"
+"      <arg direction='out' type='as' name='missingPlugins'/>	"
+"      <arg direction='out' type='as' name='pluginDescriptions'/> "
+"      <arg direction='out' type='b' name='hasAudio'/>		"
+"      <arg direction='out' type='b' name='hasVideo'/>		"
+"      <arg direction='out' type='b' name='hasOtherData'/>	"
+"      <arg direction='out' type='s' name='mediaType'/>		"
+"      <arg direction='out' type='b' name='ok'/>		"
+"      <arg direction='out' type='i' name='errorCode'/>		"
+"      <arg direction='out' type='s' name='errorString'/>	"
+"      <arg direction='out' type='a{iv}' name='metadata'/>	"
+"    </method>							"
+"    <method name='getSaveableTypes'>				"
+"      <arg direction='out' type='as' name='types'/>		"
+"    </method>							"
+"    <method name='save'>					"
+"      <arg direction='in' type='s' name='uri'/>		"
+"      <arg direction='in' type='a{iv}' name='metadata'/>	"
+"      <arg direction='out' type='b' name='ok'/>		"
+"      <arg direction='out' type='i' name='errorCode'/>		"
+"      <arg direction='out' type='s' name='errorString'/>	"
+"    </method>							"
+"  </interface>							"
+"</node>";
 
 GVariantBuilder *
 rb_metadata_dbus_get_variant_builder (RBMetaData *md)

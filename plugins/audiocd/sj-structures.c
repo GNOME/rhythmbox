@@ -35,6 +35,8 @@ void track_details_free(TrackDetails *track)
   g_free (track->track_id);
   g_free (track->artist_id);
   g_free (track->artist_sortname);
+  g_list_foreach (track->artists, (GFunc)artist_details_free, NULL);
+
   g_free (track);
 }
 
@@ -55,5 +57,25 @@ void album_details_free(AlbumDetails *album)
   g_free (album->asin);
   g_free (album->discogs);
   g_free (album->wikipedia);
+  g_free (album->lyrics_url);
+  g_free (album->country);
+  g_free (album->type);
+  g_list_foreach (album->artists, (GFunc)artist_details_free, NULL);
+
   g_free (album);
+}
+
+/*
+ * Free a ArtistDetails*
+ */
+void artist_details_free (ArtistDetails *artist)
+{
+  g_free (artist->id);
+  g_free (artist->name);
+  g_free (artist->sortname);
+  g_free (artist->disambiguation);
+  g_free (artist->gender);
+  g_free (artist->country);
+  g_free (artist->joinphrase);
+  g_free (artist);
 }

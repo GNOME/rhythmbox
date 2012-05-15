@@ -73,8 +73,6 @@ typedef struct
 	RBShellPlayer *player;
 	RhythmDB *db;
 	RBDisplayPageModel *page_model;
-	GtkAction *next_action;
-	GtkAction *prev_action;
 	RBExtDB *art_store;
 
 	int playlist_count;
@@ -847,9 +845,13 @@ get_player_property (GDBusConnection *connection,
 	} else if (g_strcmp0 (property_name, "MaximumRate") == 0) {
 		return g_variant_new_double (1.0);
 	} else if (g_strcmp0 (property_name, "CanGoNext") == 0) {
-		return g_variant_new_boolean (gtk_action_get_sensitive (plugin->next_action));
+		gboolean has_next;
+		g_object_get (plugin->player, "has-next", &has_next, NULL);
+		return g_variant_new_boolean (has_next);
 	} else if (g_strcmp0 (property_name, "CanGoPrevious") == 0) {
-		return g_variant_new_boolean (gtk_action_get_sensitive (plugin->prev_action));
+		gboolean has_prev;
+		g_object_get (plugin->player, "has-prev", &has_prev, NULL);
+		return g_variant_new_boolean (has_prev);
 	} else if (g_strcmp0 (property_name, "CanPlay") == 0) {
 		/* uh.. under what conditions can we not play?  nothing in the source? */
 		return g_variant_new_boolean (TRUE);
@@ -1289,20 +1291,25 @@ playing_source_changed_cb (RBShellPlayer *player,
 }
 
 static void
-next_action_sensitive_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *plugin)
+player_has_next_changed_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *plugin)
 {
 	GVariant *v;
+	gboolean has_next;
 	rb_debug ("emitting CanGoNext change");
-	v = g_variant_new_boolean (gtk_action_get_sensitive (plugin->next_action));
+	g_object_get (object, "has-next", &has_next, NULL);
+	v = g_variant_new_boolean (has_next);
 	add_player_property_change (plugin, "CanGoNext", v);
 }
 
 static void
-prev_action_sensitive_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *plugin)
+player_has_prev_changed_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *plugin)
 {
 	GVariant *v;
+	gboolean has_prev;
+
 	rb_debug ("emitting CanGoPrevious change");
-	v = g_variant_new_boolean (gtk_action_get_sensitive (plugin->prev_action));
+	g_object_get (object, "has-prev", &has_prev, NULL);
+	v = g_variant_new_boolean (has_prev);
 	add_player_property_change (plugin, "CanGoPrevious", v);
 }
 
@@ -1346,14 +1353,9 @@ source_deleted_cb (RBDisplayPage *page, RBMprisPlugin *plugin)
 	add_playlist_property_change (plugin, "PlaylistCount", g_variant_new_uint32 (plugin->playlist_count));
 }
 
-static gboolean
-display_page_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBMprisPlugin *plugin)
+static void
+display_page_inserted_cb (RBDisplayPageModel *model, RBDisplayPage *page, GtkTreeIter *iter, RBMprisPlugin *plugin)
 {
-	RBDisplayPage *page;
-
-	gtk_tree_model_get (model, iter,
-			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
-			    -1);
 	if (RB_IS_PLAYLIST_SOURCE (page)) {
 		gboolean is_local;
 
@@ -1371,10 +1373,18 @@ display_page_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *i
 			g_signal_connect_object (page, "deleted", G_CALLBACK (source_deleted_cb), plugin, 0);
 		}
 	}
+}
+
+static gboolean
+display_page_foreach_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBMprisPlugin *plugin)
+{
+	RBDisplayPage *page;
+
+	gtk_tree_model_get (model, iter, RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page, -1);
+	display_page_inserted_cb (RB_DISPLAY_PAGE_MODEL (model), page, iter, plugin);
 
 	return FALSE;
 }
-
 
 static void
 name_acquired_cb (GDBusConnection *connection, const char *name, RBMprisPlugin *plugin)
@@ -1392,7 +1402,6 @@ static void
 impl_activate (PeasActivatable *bplugin)
 {
 	RBMprisPlugin *plugin;
-	GtkUIManager *ui_manager;
 	GDBusInterfaceInfo *ifaceinfo;
 	GError *error = NULL;
 	RBShell *shell;
@@ -1403,7 +1412,6 @@ impl_activate (PeasActivatable *bplugin)
 	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell,
 		      "shell-player", &plugin->player,
-		      "ui-manager", &ui_manager,
 		      "db", &plugin->db,
 		      "display-page-model", &plugin->page_model,
 		      NULL);
@@ -1498,12 +1506,20 @@ impl_activate (PeasActivatable *bplugin)
 				 "elapsed-nano-changed",
 				 G_CALLBACK (elapsed_nano_changed_cb),
 				 plugin, 0);
+	g_signal_connect_object (plugin->player,
+				 "notify::has-next",
+				 G_CALLBACK (player_has_next_changed_cb),
+				 plugin, 0);
+	g_signal_connect_object (plugin->player,
+				 "notify::has-prev",
+				 G_CALLBACK (player_has_prev_changed_cb),
+				 plugin, 0);
 	g_signal_connect_object (plugin->page_model,
-				 "row-inserted",
+				 "page-inserted",
 				 G_CALLBACK (display_page_inserted_cb),
 				 plugin, 0);
 	gtk_tree_model_foreach (GTK_TREE_MODEL (plugin->page_model),
-				(GtkTreeModelForeachFunc) display_page_inserted_cb,
+				(GtkTreeModelForeachFunc) display_page_foreach_cb,
 				plugin);
 
 	plugin->art_store = rb_ext_db_new ("album-art");
@@ -1511,25 +1527,6 @@ impl_activate (PeasActivatable *bplugin)
 				 "added",
 				 G_CALLBACK (art_added_cb),
 				 plugin, 0);
-
-	/*
-	 * This is a pretty awful hack.  The shell player should expose this
-	 * information as properties, and we should bind those to the actions
-	 * elsewhere.
-	 */
-
-	plugin->next_action = gtk_ui_manager_get_action (ui_manager, "/MenuBar/ControlMenu/ControlNextMenu");
-	plugin->prev_action = gtk_ui_manager_get_action (ui_manager, "/MenuBar/ControlMenu/ControlPreviousMenu");
-
-	g_signal_connect_object (plugin->next_action,
-				 "notify::sensitive",
-				 G_CALLBACK (next_action_sensitive_cb),
-				 plugin, 0);
-	g_signal_connect_object (plugin->prev_action,
-				 "notify::sensitive",
-				 G_CALLBACK (prev_action_sensitive_cb),
-				 plugin, 0);
-	g_object_unref (ui_manager);
 
 	plugin->name_own_id = g_bus_own_name (G_BUS_TYPE_SESSION,
 					      MPRIS_BUS_NAME_PREFIX ".rhythmbox",

@@ -32,7 +32,7 @@ import rb
 from gi.repository import RB
 
 class TrackListHandler(xml.sax.handler.ContentHandler):
-	def __init__(self, db, entry_type, sku_dict, home_dict, art_dict, account_type, username, password):
+	def __init__(self, db, entry_type, sku_dict, home_dict, art_dict):
 		xml.sax.handler.ContentHandler.__init__(self)
 		self.__db = db
 		self.__entry_type = entry_type
@@ -40,19 +40,9 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 		self.__home_dict = home_dict
 		self.__art_dict = art_dict
 		self.__track = {}
-		self.__account_type = account_type
-		self.__user = urllib.quote(username)
-		self.__pw = urllib.quote(password)
-		self.__URIre = re.compile(r'^http://[^.]+\.magnatune\.com/')
-		self.__nsre = re.compile(r'\.(mp3|ogg)$')
 
 	def startElement(self, name, attrs):
 		self.__text = ""
-
-	def fix_trackurl(self, trackurl):
-		trackurl = self.__URIre.sub("http://%s:%s@%s.magnatune.com/" % (self.__user, self.__pw, self.__account_type), trackurl)
-		trackurl = self.__nsre.sub(r"_nospeech.\1", trackurl)
-		return trackurl
 
 	def endElement(self, name):
 		if name == "Track":
@@ -62,9 +52,6 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 					trackurl = self.__track['oggurl']
 				else:
 					trackurl = self.__track['url']
-				# use ad-free tracks if available
-				if self.__account_type != 'none':
-					trackurl = self.fix_trackurl(trackurl)
 
 				trackurl = str(trackurl)
 

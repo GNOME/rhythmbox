@@ -44,6 +44,10 @@ if HAVE_MUSICBRAINZ3
 libaudiocd_la_LIBADD +=$(MUSICBRAINZ3_LIBS)
 INCLUDES += $(MUSICBRAINZ3_CFLAGS)
 endif
+if HAVE_MUSICBRAINZ4
+libaudiocd_la_LIBADD +=$(MUSICBRAINZ4_LIBS)
+INCLUDES += $(MUSICBRAINZ4_CFLAGS)
+endif
 
 libaudiocd_la_LIBADD += $(NULL)
 
@@ -70,6 +74,7 @@ SJ_FILES =									\
 	sj-metadata-gvfs.c sj-metadata-gvfs.h					\
 	sj-metadata-getter.c sj-metadata-getter.h				\
 	sj-metadata-musicbrainz3.c sj-metadata-musicbrainz3.h			\
+	sj-metadata-musicbrainz4.c sj-metadata-musicbrainz4.h			\
 	sj-structures.c sj-structures.h						\
 	sj-metadata-marshal.list
 
@@ -90,6 +95,9 @@ libaudiocd_la_SOURCES +=							\
 
 if HAVE_MUSICBRAINZ3
 libaudiocd_la_SOURCES += sj-metadata-musicbrainz3.c sj-metadata-musicbrainz3.h
+endif
+if HAVE_MUSICBRAINZ4
+libaudiocd_la_SOURCES += sj-metadata-musicbrainz4.c sj-metadata-musicbrainz4.h
 endif
 
 MARSHALFILES += sj-metadata-marshal.h sj-metadata-marshal.c

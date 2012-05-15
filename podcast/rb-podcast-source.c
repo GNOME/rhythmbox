@@ -1332,7 +1332,7 @@ impl_constructed (GObject *object)
 
 	source->priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
 
-	source->priv->paned = gtk_vpaned_new ();
+	source->priv->paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
 
 	g_object_unref (shell);
 
@@ -1545,6 +1545,7 @@ impl_constructed (GObject *object)
 			 GTK_WIDGET (source->priv->posts), TRUE, FALSE);
 
 	grid = gtk_grid_new ();
+	gtk_widget_set_margin_top (GTK_WIDGET (grid), 6);
 	gtk_grid_set_column_spacing (GTK_GRID (grid), 6);
 	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
 	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (toolbar), 0, 0, 1, 1);

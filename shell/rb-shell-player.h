@@ -26,7 +26,7 @@
  *
  */
 
-#include <gtk/gtk.h>
+#include <glib-object.h>
 
 #include <sources/rb-source.h>
 #include <rhythmdb/rhythmdb.h>
@@ -64,14 +64,14 @@ typedef struct RBShellPlayerPrivate RBShellPlayerPrivate;
 
 struct _RBShellPlayer
 {
-	GtkHBox parent;
+	GObject parent;
 
 	RBShellPlayerPrivate *priv;
 };
 
 struct _RBShellPlayerClass
 {
-	GtkHBoxClass parent_class;
+	GObjectClass parent_class;
 
 	void (*window_title_changed) (RBShellPlayer *player, const char *window_title);
 	void (*elapsed_changed) (RBShellPlayer *player, guint elapsed);

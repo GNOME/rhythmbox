@@ -76,7 +76,8 @@ void
 rb_metadata_reset (RBMetaData *md)
 {
 	if (md->priv->tags != NULL) {
-		g_object_unref (md->priv->tags);
+		gst_tag_list_free (md->priv->tags);
+		md->priv->tags = NULL;
 	}
 
 	if (md->priv->info != NULL) {
@@ -89,6 +90,72 @@ rb_metadata_reset (RBMetaData *md)
 	md->priv->has_audio = FALSE;
 	md->priv->has_non_audio = FALSE;
 	md->priv->has_video = FALSE;
+}
+
+static void
+have_type_cb (GstElement *element, guint probability, GstCaps *caps, RBMetaData *md)
+{
+	md->priv->mediatype = rb_gst_caps_to_media_type (caps);
+	rb_debug ("got type %s", md->priv->mediatype);
+}
+
+static void
+run_typefind (RBMetaData *md, const char *uri)
+{
+	GstElement *src;
+
+	src = gst_element_make_from_uri (GST_URI_SRC, uri, NULL);
+	if (src != NULL) {
+		GstElement *pipeline = gst_pipeline_new (NULL);
+		GstElement *sink = gst_element_factory_make ("fakesink", NULL);
+		GstElement *typefind = gst_element_factory_make ("typefind", NULL);
+
+		gst_bin_add_many (GST_BIN (pipeline), src, typefind, sink, NULL);
+		if (gst_element_link_many (src, typefind, sink, NULL)) {
+			GstBus *bus;
+			GstMessage *message;
+			gboolean done;
+
+			g_signal_connect (typefind, "have-type", G_CALLBACK (have_type_cb), md);
+
+			bus = gst_pipeline_get_bus (GST_PIPELINE (pipeline));
+			gst_element_set_state (pipeline, GST_STATE_PAUSED);
+			done = FALSE;
+
+			while (done == FALSE && md->priv->mediatype == NULL) {
+				message = gst_bus_timed_pop (bus, 5 * GST_SECOND);
+				if (message == NULL) {
+					rb_debug ("typefind pass timed out");
+					break;
+				}
+
+				switch (GST_MESSAGE_TYPE (message)) {
+				case GST_MESSAGE_ERROR:
+					rb_debug ("typefind pass got an error");
+					done = TRUE;
+					break;
+
+				case GST_MESSAGE_STATE_CHANGED:
+					if (GST_MESSAGE_SRC (message) == GST_OBJECT (pipeline)) {
+						GstState old, new, pending;
+						gst_message_parse_state_changed (message, &old, &new, &pending);
+						if (new == GST_STATE_PAUSED && pending == GST_STATE_VOID_PENDING) {
+							rb_debug ("typefind pipeline reached PAUSED");
+							done = TRUE;
+						}
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
+
+			gst_element_set_state (GST_ELEMENT (pipeline), GST_STATE_NULL);
+		}
+
+		g_object_unref (pipeline);
+	}
 }
 
 void
@@ -154,41 +221,44 @@ rb_metadata_load (RBMetaData *md, const char *uri, GError **error)
 	}
 	gst_discoverer_stream_info_list_free (streams);
 
+	/* if we don't have a media type, use typefind to get one */
+	if (md->priv->mediatype == NULL) {
+		run_typefind (md, uri);
+	}
+
 	/* look at missing plugin information too */
-	if (rb_metadata_has_missing_plugins (md)) {
-		switch (rb_gst_get_missing_plugin_type (gst_discoverer_info_get_misc (md->priv->info))) {
-		case MEDIA_TYPE_NONE:
-			break;
-		case MEDIA_TYPE_CONTAINER:
-			/* hm, maybe we need a way to say 'we don't even know what's in here'.
-			 * but for now, the things we actually identify as containers are mostly
-			 * used for audio, so pretending they actually are is good enough.
-			 */
-		case MEDIA_TYPE_AUDIO:
-			md->priv->has_audio = TRUE;
-			break;
-		case MEDIA_TYPE_VIDEO:
-			md->priv->has_video = TRUE;
-			break;
-		case MEDIA_TYPE_OTHER:
-			md->priv->has_non_audio = TRUE;
-			break;
-		default:
-			g_assert_not_reached ();
-		}
+	switch (rb_gst_get_missing_plugin_type (gst_discoverer_info_get_misc (md->priv->info))) {
+	case MEDIA_TYPE_NONE:
+		break;
+	case MEDIA_TYPE_CONTAINER:
+		/* hm, maybe we need a way to say 'we don't even know what's in here'.
+		 * but for now, the things we actually identify as containers are mostly
+		 * used for audio, so pretending they actually are is good enough.
+		 */
+	case MEDIA_TYPE_AUDIO:
+		md->priv->has_audio = TRUE;
+		break;
+	case MEDIA_TYPE_VIDEO:
+		md->priv->has_video = TRUE;
+		break;
+	case MEDIA_TYPE_OTHER:
+		md->priv->has_non_audio = TRUE;
+		break;
+	default:
+		g_assert_not_reached ();
 	}
 }
 
 gboolean
 rb_metadata_has_missing_plugins (RBMetaData *md)
 {
-	GstDiscovererResult result;
+	const GstStructure *s;
 	if (md->priv->info == NULL) {
 		return FALSE;
 	}
 
-	result = gst_discoverer_info_get_result (md->priv->info);
-	return ((result & GST_DISCOVERER_MISSING_PLUGINS) != 0);
+	s = gst_discoverer_info_get_misc (md->priv->info);
+	return (rb_gst_get_missing_plugin_type (s) != MEDIA_TYPE_NONE);
 }
 
 gboolean
@@ -687,6 +757,8 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 	stream = NULL;
 
 	if (*error == NULL) {
+		GFileInfo *originfo;
+
 		/* check to ensure the file isn't corrupt */
 		if (!check_file_valid (uri, tmpname)) {
 			g_set_error (error,
@@ -699,8 +771,12 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 		src = g_file_new_for_uri (tmpname);
 		dest = g_file_new_for_uri (uri);
 
-		/* try to copy attributes over, not likely to help much though */
-		g_file_copy_attributes (dest, src, G_FILE_COPY_ALL_METADATA, NULL, NULL);
+		/* try to copy access and ownership attributes over, not likely to help much though */
+		originfo = g_file_query_info (dest, "access::*,owner::*", G_FILE_QUERY_INFO_NONE, NULL, NULL);
+		if (originfo) {
+			g_file_set_attributes_from_info (src, originfo, G_FILE_QUERY_INFO_NONE, NULL, NULL);
+			g_object_unref (originfo);
+		}
 
 		g_file_move (src, dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &io_error);
 		if (io_error != NULL) {

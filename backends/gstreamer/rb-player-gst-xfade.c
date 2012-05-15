@@ -228,6 +228,11 @@ enum
 	LAST_SIGNAL
 };
 
+/* copied from gsturidecodebin.c:stream_uris */
+static const char *stream_schemes[] = {
+	"http", "https", "mms", "mmsh", "mmsu", "mmst", "ssh", "ftp", "sftp"
+};
+
 static guint signals[LAST_SIGNAL] = { 0 };
 
 struct _RBPlayerGstXFadePrivate
@@ -344,6 +349,7 @@ typedef struct
 	gint64 crossfade;
 	gboolean fading;
 	gboolean starting_eos;
+	gboolean use_buffering;
 
 	gulong adjust_probe_id;
 
@@ -364,6 +370,7 @@ typedef struct
 #define RB_IS_XFADE_STREAM(obj)	(G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_XFADE_STREAM))
 
 static void adjust_stream_base_time (RBXFadeStream *stream);
+static gboolean actually_start_stream (RBXFadeStream *stream, GError **error);
 
 static void rb_xfade_stream_class_init (RBXFadeStreamClass *klass);
 
@@ -832,6 +839,8 @@ post_stream_playing_message (RBXFadeStream *stream, gboolean fake)
 
 	if (fake == FALSE) {
 		stream->emitted_playing = TRUE;
+	} else {
+		stream->emitted_fake_playing = TRUE;
 	}
 }
 
@@ -1714,12 +1723,14 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			GstTagList *tags;
 			gst_message_parse_tag (message, &tags);
 
+			g_mutex_lock (stream->lock);
 			if (stream->emitted_playing) {
 				gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, stream);
 				gst_tag_list_free (tags);
 			} else {
 				stream->tags = g_list_append (stream->tags, tags);
 			}
+			g_mutex_unlock (stream->lock);
 		}
 		break;
 
@@ -1748,13 +1759,19 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 		if (stream == NULL) {
 			rb_debug ("got application message %s for unknown stream", name);
 		} else if (strcmp (name, STREAM_PLAYING_MESSAGE) == 0) {
+			GList *l;
 			GList *t;
 
 			rb_debug ("got stream playing message for %s", stream->uri);
 			_rb_player_emit_playing_stream (RB_PLAYER (player), stream->stream_data);
 
 			/* process any buffered tag lists we received while prerolling the stream */
-			for (t = stream->tags; t != NULL; t = t->next) {
+			g_mutex_lock (stream->lock);
+			l = stream->tags;
+			stream->tags = NULL;
+			g_mutex_unlock (stream->lock);
+
+			for (t = l; t != NULL; t = t->next) {
 				GstTagList *tags;
 
 				tags = (GstTagList *)t->data;
@@ -1762,8 +1779,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, stream);
 				gst_tag_list_free (tags);
 			}
-			g_list_free (stream->tags);
-			stream->tags = NULL;
+			g_list_free (l);
 
 		} else if (strcmp (name, FADE_IN_DONE_MESSAGE) == 0) {
 			/* do something? */
@@ -1772,7 +1788,9 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			case FADING_OUT:
 				/* stop the stream and dispose of it */
 				rb_debug ("got fade-out-done for stream %s -> PENDING_REMOVE", stream->uri);
+				g_mutex_lock (stream->lock);
 				stream->state = PENDING_REMOVE;
+				g_mutex_unlock (stream->lock);
 				schedule_stream_reap (player);
 				break;
 
@@ -1780,6 +1798,8 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				{
 					/* try to seek back a bit to account for the fade */
 					gint64 pos = -1;
+
+					g_mutex_lock (stream->lock);
 					gst_element_query_position (stream->volume, GST_FORMAT_TIME, &pos);
 					if (pos != -1) {
 						stream->seek_target = pos > PAUSE_FADE_LENGTH ? pos - PAUSE_FADE_LENGTH : 0;
@@ -1791,6 +1811,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 						rb_debug ("got fade-out-done for stream %s -> PAUSED (position query failed)",
 							  stream->uri);
 					}
+					g_mutex_unlock (stream->lock);
 				}
 				unlink_and_block_stream (stream);
 				break;
@@ -1838,6 +1859,57 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			g_warning ("Could not get value from BUFFERING message");
 			break;
 		}
+
+		g_mutex_lock (stream->lock);
+		if (progress >= 100) {
+			GError *error = NULL;
+			switch (stream->state) {
+			case PREROLLING:
+				rb_debug ("stream %s is buffered, now waiting", stream->uri);
+				stream->state = WAITING;
+				break;
+
+			case WAITING_EOS:
+				/* hmm, not sure */
+				break;
+
+			case PREROLL_PLAY:
+				rb_debug ("stream %s is buffered, now playing", stream->uri);
+				if (actually_start_stream (stream, &error) == FALSE) {
+					emit_stream_error (stream, error);
+				}
+				break;
+
+			default:
+				rb_debug ("stream %s is buffered, resuming", stream->uri);
+				link_and_unblock_stream (stream, &error);
+				if (error) {
+					g_warning ("couldn't restart newly buffered stream: %s", error->message);
+					g_clear_error (&error);
+				}
+				break;
+			}
+		} else {
+			switch (stream->state) {
+			case PREROLLING:
+			case WAITING:
+				rb_debug ("still buffering, %d", progress);
+				stream->state = PREROLLING;
+				break;
+
+			case WAITING_EOS:
+				/* not sure */
+				break;
+
+			default:
+				if (stream->adder_pad != NULL) {
+					rb_debug ("stream buffering, stopping playback");
+					unlink_and_block_stream (stream);
+				}
+				break;
+			}
+		}
+		g_mutex_unlock (stream->lock);
 
 		if (stream == NULL) {
 			rb_debug ("got buffering message for unknown stream (%d)", progress);
@@ -2027,6 +2099,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	GstCaps *caps;
 	GValueArray *stream_filters = NULL;
 	GstElement *tail;
+	int i;
 
 	rb_debug ("creating new stream for %s (stream data %p)", uri, stream_data);
 	stream = g_object_new (RB_TYPE_XFADE_STREAM, NULL, NULL);
@@ -2035,6 +2108,14 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	stream->stream_data_destroy = stream_data_destroy;
 	stream->uri = g_strdup (uri);
 	stream->state = WAITING;
+
+	stream->use_buffering = FALSE;
+	for (i = 0; i < G_N_ELEMENTS (stream_schemes); i++) {
+		if (gst_uri_has_protocol (uri, stream_schemes[i])) {
+			stream->use_buffering = TRUE;
+			break;
+		}
+	}
 
 	/* kill the floating reference */
 	g_object_ref (stream);
@@ -2413,6 +2494,19 @@ stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream
 		      "min-threshold-time", G_GINT64_CONSTANT (0),
 		      "max-size-buffers", 200,		/* back to normal value */
 		      NULL);
+
+	if (stream->use_buffering) {
+		rb_debug ("stream %s requires buffering", stream->uri);
+		switch (stream->state) {
+		case PREROLL_PLAY:
+			post_stream_playing_message (stream, TRUE);
+			break;
+		default:
+			break;
+		}
+		g_mutex_unlock (stream->lock);
+		return;
+	}
 
 	/* update stream state */
 	switch (stream->state) {

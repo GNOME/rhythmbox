@@ -75,6 +75,7 @@ static void load_songs (RBGenericPlayerSource *source);
 static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
 static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
+static void impl_selected (RBDisplayPage *page);
 
 static gboolean impl_can_paste (RBSource *source);
 static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
@@ -118,6 +119,7 @@ typedef struct
 {
 	RhythmDB *db;
 
+	gboolean loaded;
 	RhythmDBImportJob *import_job;
 	gint load_playlists_id;
 	GList *playlists;
@@ -163,6 +165,7 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	page_class->show_popup = impl_show_popup;
 	page_class->delete_thyself = impl_delete_thyself;
 	page_class->get_status = impl_get_status;
+	page_class->selected = impl_selected;
 
 	source_class->impl_can_delete = impl_can_delete;
 	source_class->impl_delete = impl_delete;
@@ -316,8 +319,6 @@ impl_constructed (GObject *object)
 	}
 	g_strfreev (output_formats);
 
-        rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
-	load_songs (source);
 }
 
 static void
@@ -474,6 +475,7 @@ rb_generic_player_source_new (GObject *plugin, RBShell *shell, GMount *mount, MP
 							 "mount", mount,
 							 "shell", shell,
 							 "device-info", device_info,
+							 "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 							 "settings", g_settings_get_child (settings, "source"),
 							 "toolbar-path", "/GenericPlayerSourceToolBar",
 							 NULL));
@@ -509,6 +511,29 @@ impl_delete_thyself (RBDisplayPage *page)
 	RB_DISPLAY_PAGE_CLASS (rb_generic_player_source_parent_class)->delete_thyself (page);
 }
 
+static gboolean
+ensure_loaded (RBGenericPlayerSource *source)
+{
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
+	RBSourceLoadStatus status;
+
+	if (priv->loaded) {
+		g_object_get (source, "load-status", &status, NULL);
+		return (status == RB_SOURCE_LOAD_STATUS_LOADED);
+	} else {
+		priv->loaded = TRUE;
+		rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
+		load_songs (source);
+		return FALSE;
+	}
+}
+
+static void
+impl_selected (RBDisplayPage *page)
+{
+	ensure_loaded (RB_GENERIC_PLAYER_SOURCE (page));
+}
+
 static void
 import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *source)
 {
@@ -529,6 +554,9 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 	priv->import_job = NULL;
 
 	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
+	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
+
+	rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), NULL, FALSE);
 
 	GDK_THREADS_LEAVE ();
 }
@@ -885,7 +913,10 @@ impl_can_paste (RBSource *source)
 static RBTrackTransferBatch *
 impl_paste (RBSource *source, GList *entries)
 {
-	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries);
+	gboolean defer;
+
+	defer = (ensure_loaded (RB_GENERIC_PLAYER_SOURCE (source)) == FALSE);
+	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries, defer);
 }
 
 static gboolean

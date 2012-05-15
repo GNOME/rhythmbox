@@ -355,7 +355,7 @@ parse_pattern (const char *pattern, GHashTable *properties, gint64 elapsed)
 				break;
 			case 'd':
 				/* Track duration */
-				value = g_hash_table_lookup (properties, "xesam:length");
+				value = g_hash_table_lookup (properties, "mpris:length");
 				if (value)
 					string = rb_make_duration_string (g_variant_get_int64 (value));
 				break;
@@ -675,7 +675,7 @@ main (int argc, char **argv)
 	mpris = g_dbus_proxy_new_sync (bus,
 				       G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START,
 				       NULL,
-				       "org.mpris.MediaPlayer2.rhythmbox3",
+				       "org.mpris.MediaPlayer2.rhythmbox",
 				       "/org/mpris/MediaPlayer2",
 				       "org.mpris.MediaPlayer2.Player",
 				       NULL,

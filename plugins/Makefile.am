@@ -13,7 +13,6 @@ SUBDIRS =						\
 
 if ENABLE_PYTHON
 SUBDIRS +=						\
-	artdisplay					\
 	artsearch					\
 	context						\
 	im-status					\

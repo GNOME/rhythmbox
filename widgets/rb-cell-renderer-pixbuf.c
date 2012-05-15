@@ -132,7 +132,11 @@ rb_cell_renderer_pixbuf_activate (GtkCellRenderer *cell,
       return FALSE;
   }
 
-  gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
+  gdk_window_get_device_position (gtk_widget_get_window (widget),
+				  gdk_event_get_source_device (event),
+				  &mouse_x,
+				  &mouse_y,
+				  NULL);
   gtk_tree_view_convert_widget_to_bin_window_coords (GTK_TREE_VIEW (widget),
 						     mouse_x, mouse_y,
 						     &mouse_x, &mouse_y);

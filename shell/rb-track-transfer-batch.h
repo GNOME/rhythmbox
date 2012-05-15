@@ -60,6 +60,9 @@ struct _RBTrackTransferBatchClass
 	void	(*cancelled)		(RBTrackTransferBatch *batch);
 	void	(*complete)		(RBTrackTransferBatch *batch);
 
+	char *	(*configure_profile)	(RBTrackTransferBatch *batch,
+					 const char *mediatype,
+					 GstEncodingProfile *profile);
 	char *  (*get_dest_uri)		(RBTrackTransferBatch *batch,
 					 RhythmDBEntry *entry,
 					 const char *mediatype,

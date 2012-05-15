@@ -482,7 +482,7 @@ durationCriteriaCreateWidget (gboolean *constrain)
 	GtkWidget *secondsSpin;
 
 	/* the widget for Duration is set out like the following [ 2] : [30] */
-	box = GTK_BOX (gtk_hbox_new (FALSE, 3));
+	box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3));
 
 	minutesSpin = gtk_spin_button_new_with_range (0.0, (double)((G_MAXINT - 59) / 60), 1.0);
 	gtk_box_pack_start (box, minutesSpin, FALSE, FALSE, 0);
@@ -560,7 +560,7 @@ relativeTimeCriteriaCreateWidget (gboolean *constrain)
 	GtkWidget *timeSpin;
 	GtkWidget *timeOption;
 
-	box = GTK_BOX (gtk_hbox_new (FALSE, 6));
+	box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6));
 
 	timeSpin = gtk_spin_button_new_with_range (1.0, G_MAXINT, 1.0);
 	gtk_box_pack_start (box, timeSpin, TRUE, TRUE, 0);

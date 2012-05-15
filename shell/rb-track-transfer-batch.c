@@ -51,6 +51,7 @@ enum
 	TRACK_STARTED,
 	TRACK_PROGRESS,
 	TRACK_DONE,
+	CONFIGURE_PROFILE,
 	LAST_SIGNAL
 };
 
@@ -625,6 +626,9 @@ start_next (RBTrackTransferBatch *batch)
 		if (profile != NULL) {
 			media_type = rb_gst_encoding_profile_get_media_type (profile);
 			extension = g_strdup (rb_gst_media_type_to_extension (media_type));
+
+			rb_gst_encoding_profile_set_preset (profile, NULL);
+			g_signal_emit (batch, signals[CONFIGURE_PROFILE], 0, media_type, profile);
 		} else {
 			media_type = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
 			extension = g_strdup (rb_gst_media_type_to_extension (media_type));
@@ -1051,6 +1055,25 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 			      rb_marshal_VOID__BOXED_STRING_UINT64_STRING_POINTER,
 			      G_TYPE_NONE,
 			      5, RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING, G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_POINTER);
+
+	/**
+	 * RBTrackTransferBatch::configure-profile:
+	 * @batch: the #RBTrackTransferBatch
+	 * @mediatype: the target media type
+	 * @profile: the #GstEncodingProfile
+	 *
+	 * Emitted to allow configuration of encoding profile settings
+	 * (mostly by setting presets on sub-profiles).
+	 */
+	signals [CONFIGURE_PROFILE] =
+		g_signal_new ("configure-profile",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBTrackTransferBatchClass, configure_profile),
+			      NULL, NULL,
+			      rb_marshal_VOID__STRING_POINTER,
+			      G_TYPE_NONE,
+			      2, G_TYPE_STRING, GST_TYPE_ENCODING_PROFILE);
 
 	g_type_class_add_private (klass, sizeof (RBTrackTransferBatchPrivate));
 }

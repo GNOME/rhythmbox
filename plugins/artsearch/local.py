@@ -73,7 +73,7 @@ class LocalSearch:
 					nkey.add_field("artist", artist)
 					uri = parent.resolve_relative_path(f_name).get_uri()
 					print "found album+artist match " + uri
-					self.store.store_uri(nkey. RB.ExtDBSourceType.USER, uri)
+					self.store.store_uri(nkey, RB.ExtDBSourceType.USER, uri)
 
 		# if that didn't work, look for the longest shared prefix
 		# only accept matches longer than 2 to avoid weird false positives

@@ -783,7 +783,7 @@ append_row (RBQueryCreator *creator)
 	GtkBox *hbox;
 	gboolean constrain;
 
-	hbox = GTK_BOX (gtk_hbox_new (FALSE, 5));
+	hbox = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5));
 	gtk_box_pack_start (GTK_BOX (priv->vbox), GTK_WIDGET (hbox), TRUE, TRUE, 0);
 	priv->rows = g_list_prepend (priv->rows, hbox);
 	gtk_box_reorder_child (priv->vbox, GTK_WIDGET (hbox), -1);

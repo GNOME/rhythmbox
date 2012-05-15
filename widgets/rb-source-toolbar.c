@@ -42,6 +42,7 @@ struct _RBSourceToolbarPrivate
 	GtkWidget *search_popup;
 	GtkWidget *toolbar;
 	GBinding *browse_binding;
+	GtkAction *browse_action;
 	char *popup_path;
 
 	/* search state */
@@ -150,19 +151,22 @@ source_selected_cb (GObject *object, GParamSpec *pspec, RBSourceToolbar *toolbar
 
 		g_object_get (toolbar->priv->source, "toolbar-path", &toolbar_path, NULL);
 		if (toolbar_path != NULL) {
-			GtkAction *browse_action;
 
 			browse_path = g_strdup_printf ("%s/Browse", toolbar_path);
-			browse_action = gtk_ui_manager_get_action (toolbar->priv->ui_manager, browse_path);
+			toolbar->priv->browse_action = gtk_ui_manager_get_action (toolbar->priv->ui_manager,
+										  browse_path);
 			g_free (browse_path);
 
-			if (browse_action != NULL) {
+			if (toolbar->priv->browse_action != NULL) {
 				toolbar->priv->browse_binding =
 					g_object_bind_property (toolbar->priv->source, "show-browser",
-								browse_action, "active",
+								toolbar->priv->browse_action, "active",
 								G_BINDING_BIDIRECTIONAL | G_BINDING_SYNC_CREATE);
+				gtk_action_connect_accelerator (toolbar->priv->browse_action);
 			}
 			g_free (toolbar_path);
+		} else {
+			toolbar->priv->browse_action = NULL;
 		}
 	} else {
 		if (toolbar->priv->toolbar != NULL) {
@@ -190,6 +194,11 @@ source_selected_cb (GObject *object, GParamSpec *pspec, RBSourceToolbar *toolbar
 		if (toolbar->priv->browse_binding != NULL) {
 			g_object_unref (toolbar->priv->browse_binding);
 			toolbar->priv->browse_binding = NULL;
+		}
+
+		if (toolbar->priv->browse_action != NULL) {
+			gtk_action_disconnect_accelerator (toolbar->priv->browse_action);
+			toolbar->priv->browse_action = NULL;
 		}
 	}
 }

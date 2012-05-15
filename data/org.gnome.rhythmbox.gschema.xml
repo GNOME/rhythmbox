@@ -18,6 +18,19 @@
     </key>
   </schema>
 
+  <schema id="org.gnome.rhythmbox.encoding-settings">
+    <key name="media-type" type="s">
+      <default>'audio/x-vorbis'</default>
+      <summary>Preferred media type for encoding audio extracted from CD</summary>
+      <description>Preferred media type for encoding audio extracted from CD. 'audio/x-vorbis' for Ogg Vorbis, or 'audio/mpeg' for MP3, for example. This is not a MIME type.</description>
+    </key>
+    <key name="media-type-presets" type="a{ss}">
+      <default>[]</default>
+      <summary>Maps media types to audio encoder preset names.</summary>
+      <description>Maps media types to audio encoder preset names. If there is no mapping for a media type, the default encoder settings will be used.</description>
+    </key>
+  </schema>
+
   <schema id="org.gnome.rhythmbox" path="/org/gnome/rhythmbox/">
     <key name="maximized" type="b">
       <default>false</default>
@@ -36,26 +49,6 @@
       <default>(-1,-1)</default>
       <summary>Main window position</summary>
       <description>The position of the window, if not maximized. (-1, -1) indicates no specific position.</description>
-    </key>
-    <key name="small-display" type="b">
-      <default>false</default>
-      <summary>Small display mode</summary>
-      <description>If true, the main window is displayed without the source list, browser or playlist.</description>
-    </key>
-    <key name="small-width" type="i">
-      <default>600</default>
-      <summary>Small window width</summary>
-      <description>Main window width when the player is in Small Display mode.</description>
-    </key>
-    <key name="toolbar-visible" type="b">
-      <default>true</default>
-      <summary>Toolbar visibility</summary>
-      <description>If true, the toolbar is visible.</description>
-    </key>
-    <key name="toolbar-style" type="i">
-      <default>0</default>
-      <summary>Toolbar style</summary>
-      <description>0=GNOME default, 1=Text below icons, 2=Text beside icons, 3=Icons only, 4=Text only</description>
     </key>
     <key name="display-page-tree-visible" type="b">
       <default>true</default>
@@ -88,9 +81,14 @@
       <description>If true, the play queue is displayed as a sidebar. If false, the play queue is displayed as a source in the source list.</description>
     </key>
     <key name="show-song-position-slider" type="b">
-      <default>false</default>
+      <default>true</default>
       <summary>Song position slider visibility</summary>
       <description>If true, the song position slider is shown.</description>
+    </key>
+    <key name="show-album-art" type="b">
+      <default>true</default>
+      <summary>Album art display visibility</summary>
+      <description>If true, the album art display is shown.</description>
     </key>
     <key name="time-display" type="b">
       <default>true</default>
@@ -152,12 +150,6 @@
       <summary>File name of tracks</summary>
       <description>The path used to store track in, under the chosen library. Various substitutions are done</description>
     </key>
-    <key name="preferred-media-type" type="s">
-      <default>'audio/x-vorbis'</default>
-      <summary>Preferred media type for encoding audio extracted from CD</summary>
-      <description>Preferred media type for encoding audio extracted from CD. 'audio/x-vorbis' for Ogg Vorbis, or 'audio/mpeg' for MP3, for example. This is not a MIME type.</description>
-    </key>
-    <!-- and something about presets too -->
     <key name="strip-chars" type="b">
       <default>false</default>
       <summary>Strip special characters</summary>
@@ -169,6 +161,7 @@
       <description>Previous location chosen when adding new tracks to the library</description>
     </key>
 
+    <child name='encoding' schema='org.gnome.rhythmbox.encoding-settings'/>
     <child name='source' schema='org.gnome.rhythmbox.source'/>
   </schema>
   <enum id="org.gnome.rhythmbox.podcast-interval">
@@ -342,6 +335,7 @@
   </schema>
 
 
+  <!-- pygobject's gsettings overrides can't do enums yet
   <enum id="org.gnome.rhythmbox.plugins.magnatune.audio-format">
     <value nick="ogg" value="0"/>
     <value nick="flac" value="1"/>
@@ -354,13 +348,14 @@
     <value nick="stream" value="1"/>
     <value nick="download" value="2"/>
   </enum>
+  -->
   <schema id="org.gnome.rhythmbox.plugins.magnatune" path="/org/gnome/rhythmbox/plugins/magnatune/">
-    <key name="format" enum="org.gnome.rhythmbox.plugins.magnatune.audio-format">
+    <key name="format" type="s"> <!-- enum="org.gnome.rhythmbox.plugins.magnatune.audio-format" -->
       <default>'ogg'</default>
       <summary>Audio format to use for Magnatune downloads</summary>
       <description>Audio format to use for Magnatune downloads</description>
     </key>
-    <key name="account-type" enum="org.gnome.rhythmbox.plugins.magnatune.account-type">
+    <key name="account-type" type="s"> <!-- enum="org.gnome.rhythmbox.plugins.magnatune.account-type"> -->
       <default>'none'</default>
       <summary>Magnatune account type</summary>
       <description>Magnatune account type</description>

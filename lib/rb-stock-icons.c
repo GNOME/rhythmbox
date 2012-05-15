@@ -59,6 +59,7 @@ const char RB_STOCK_PLAYLIST[] = "playlist";
 const char RB_STOCK_PLAYLIST_NEW[] = "playlist-new";
 const char RB_STOCK_AUTO_PLAYLIST[] = "playlist-automatic";
 const char RB_STOCK_AUTO_PLAYLIST_NEW[] = "playlist-automatic-new";
+const char RB_STOCK_MISSING_ARTWORK[] = "rhythmbox-missing-artwork";
 const char GNOME_MEDIA_SHUFFLE[] = "media-playlist-shuffle";
 const char GNOME_MEDIA_REPEAT[] = "media-playlist-repeat";
 const char GNOME_MEDIA_EJECT[] = "media-eject";

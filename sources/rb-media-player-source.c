@@ -256,6 +256,17 @@ rb_media_player_source_get_property (GObject *object,
 }
 
 static void
+load_status_changed_cb (GObject *object, GParamSpec *pspec, gpointer whatever)
+{
+	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (object);
+	RBSourceLoadStatus status;
+
+	g_object_get (object, "load-status", &status, NULL);
+
+	gtk_action_set_sensitive (priv->sync_action, (status == RB_SOURCE_LOAD_STATUS_LOADED));
+}
+
+static void
 rb_media_player_source_constructed (GObject *object)
 {
 	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (object);
@@ -268,6 +279,8 @@ rb_media_player_source_constructed (GObject *object)
 	g_object_unref (shell);
 
 	priv->sync_action = gtk_action_group_get_action (action_group, "MediaPlayerSourceSync");
+	g_signal_connect (object, "notify::load-status", G_CALLBACK (load_status_changed_cb), NULL);
+	load_status_changed_cb (object, NULL, NULL);
 }
 
 /* must be called once device information is available via source properties */
@@ -886,7 +899,7 @@ impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data)
 	if (entries) {
 		entries = g_list_reverse (entries);
 		if (rb_source_can_paste (RB_SOURCE (page))) {
-			rb_transfer_target_transfer (RB_TRANSFER_TARGET (page), entries);
+			rb_source_paste (RB_SOURCE (page), entries);
 		}
 		g_list_free (entries);
 	}

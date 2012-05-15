@@ -40,9 +40,6 @@ G_BEGIN_DECLS
 #define RHYTHMDB_IS_QUERY_RESULT_LIST_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RHYTHMDB_TYPE_QUERY_RESULT_LIST))
 #define RHYTHMDB_QUERY_RESULT_LIST_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RHYTHMDB_TYPE_QUERY_RESULT_LIST, RhythmDBQueryResultListClass))
 
-GType rhythmdb_query_result_list_limit_type_get_type (void);
-#define RHYTHMDB_TYPE_QUERY_RESULT_LIST_LIMIT_TYPE (rhythmdb_query_result_list_limit_type_get_type ())
-
 typedef struct _RhythmDBQueryResultList RhythmDBQueryResultList;
 typedef struct _RhythmDBQueryResultListClass RhythmDBQueryResultListClass;
 typedef struct _RhythmDBQueryResultListPrivate RhythmDBQueryResultListPrivate;

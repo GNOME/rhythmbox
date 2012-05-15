@@ -4543,7 +4543,7 @@ rhythmdb_compute_status_normal (gint n_songs,
 		}
 	}
 
-	size_str = g_format_size_for_display (size);
+	size_str = g_format_size (size);
 
 	if (size > 0 && duration > 0) {
 		ret = g_strdup_printf ("%s, %s, %s", songcount, time, size_str);
@@ -4697,6 +4697,7 @@ rhythmdb_sync_library_location (RhythmDB *db)
 		rhythmdb_stop_monitoring (db);
 
 		g_strfreev (db->priv->library_locations);
+		db->priv->library_locations = NULL;
 	}
 
 	if (g_settings_get_boolean (db->priv->settings, "monitor-library")) {

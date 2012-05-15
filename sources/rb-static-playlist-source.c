@@ -319,7 +319,7 @@ rb_static_playlist_source_constructed (GObject *object)
 				 G_CALLBACK (rb_static_playlist_source_filter_entry_drop),
 				 source, 0);
 
-	paned = gtk_vpaned_new ();
+	paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
 	gtk_widget_set_hexpand (paned, TRUE);
 	gtk_widget_set_vexpand (paned, TRUE);
 
@@ -359,6 +359,7 @@ rb_static_playlist_source_constructed (GObject *object)
 	grid = gtk_grid_new ();
 	gtk_grid_set_column_spacing (GTK_GRID (grid), 6);
 	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
+	gtk_widget_set_margin_top (GTK_WIDGET (grid), 6);
 	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (priv->toolbar), 0, 0, 1, 1);
 	gtk_grid_attach (GTK_GRID (grid), paned, 0, 1, 1, 1);
 	gtk_container_add (GTK_CONTAINER (source), grid);

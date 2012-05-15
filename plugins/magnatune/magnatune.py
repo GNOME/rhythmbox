@@ -31,12 +31,14 @@ import sys, os.path
 import xml
 import datetime
 import string
+import re
 
 import rb
 from gi.repository import RB
-from gi.repository import GObject, Gtk, Gio, Peas, PeasGtk, GnomeKeyring
+from gi.repository import GObject, Gtk, Gio, Peas, PeasGtk
 
 from MagnatuneSource import MagnatuneSource
+import MagnatuneAccount
 
 import gettext
 gettext.install('rhythmbox', RB.locale_dir())
@@ -56,6 +58,7 @@ popup_ui = """
     <menuitem name="PropertiesLibraryPopup" action="MusicProperties"/>
   </popup>
   <toolbar name="MagnatuneToolBar">
+    <toolitem name="Browse" action="ViewBrowser"/>
     <toolitem name="MagnatuneDownloadAlbumToolbar" action="MagnatuneDownloadAlbum"/>
     <toolitem name="MagnatuneArtistInfoToolbar" action="MagnatuneArtistInfo"/>
     <toolitem name="MagnatuneCancelDownloadToolbar" action="MagnatuneCancelDownload"/>
@@ -63,21 +66,39 @@ popup_ui = """
 </ui>
 """
 
+
+
 class MagnatuneEntryType(RB.RhythmDBEntryType):
 	def __init__(self):
 		RB.RhythmDBEntryType.__init__(self, name='magnatune')
+		self.URIre = re.compile(r'^http://[^.]+\.magnatune\.com/')
+		self.nsre = re.compile(r'\.(mp3|ogg)$')
+		self.account = MagnatuneAccount.instance()
 
-	def can_sync_metadata(self, entry):
+	def fix_trackurl(self, trackurl, account_type, username, password):
+		return trackurl
+
+	def do_get_playback_uri(self, entry):
+		(account_type, username, password) = self.account.get()
+		uri = entry.get_string(RB.RhythmDBPropType.LOCATION)
+		if account_type != "none":
+			uri = self.URIre.sub("http://%s:%s@%s.magnatune.com/" % (username, password, account_type), uri)
+			uri = self.nsre.sub(r"_nospeech.\1", uri)
+			print "converted track uri: %s" % uri
+
+		return uri
+
+	def do_can_sync_metadata(self, entry):
 		return True
 
-	def sync_metadata(self, entry, changes):
+	def do_sync_metadata(self, entry, changes):
 		return
+
+
 
 class Magnatune(GObject.GObject, Peas.Activatable):
 	__gtype_name__ = 'Magnatune'
 	object = GObject.property(type=GObject.GObject)
-
-	format_list = ['ogg', 'flac', 'wav', 'mp3-vbr', 'mp3-cbr']
 
 	def __init__(self):
 		GObject.GObject.__init__(self)
@@ -126,7 +147,7 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 		action.connect('activate', lambda a: shell.props.selected_page.display_artist_info())
 		self.action_group.add_action(action)
 		action = Gtk.Action(name='MagnatuneCancelDownload', label=_("Cancel Downloads"),
-				tooltip=_("Stop downloading purchased albums"),
+				tooltip=_("Stop album downloads"),
 				stock_id='gtk-stop')
 		action.connect('activate', lambda a: shell.props.selected_page.cancel_downloads())
 		action.set_sensitive(False)
@@ -137,6 +158,7 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 
 		self.pec_id = shell.props.shell_player.connect('playing-song-changed', self.playing_entry_changed)
 		manager.ensure_update()
+
 
 	def do_deactivate(self):
 		shell = self.object
@@ -158,12 +180,18 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 		self.source.playing_entry_changed(entry)
 
 
+
+
 class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 	__gtype_name__ = 'MagnatuneConfig'
 	object = GObject.property(type=GObject.GObject)
 
+	format_list = ['ogg', 'flac', 'wav', 'mp3-vbr', 'mp3-cbr']
+
 	def __init__(self):
 		GObject.GObject.__init__(self)
+		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
+		self.account = MagnatuneAccount.instance()
 
 	def do_create_configure_widget(self):
 		# We use a dictionary so we can modify these values from within inner functions
@@ -172,82 +200,58 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 			'item': None
 		}
 
-		def fill_account_details():
-			account_type = self.settings['account_type']
-			builder.get_object("no_account_radio").set_active(account_type == "none")
-			builder.get_object("stream_account_radio").set_active(account_type == "stream")
-			builder.get_object("download_account_radio").set_active(account_type == "download")
-
-			username = ""
-			password = ""
-			try:
-				if keyring_data['item']:
-					username, password = keyring_data['item'].get_secret().split('\n')
-			except ValueError: # Couldn't parse the secret, probably because it's empty
-				pass
-			builder.get_object("username_entry").set_text(username)
-			builder.get_object("password_entry").set_text(password)
-
+		def update_sensitivity(account_type):
 			has_account = account_type != "none"
 			builder.get_object("username_entry").set_sensitive(has_account)
 			builder.get_object("password_entry").set_sensitive(has_account)
 			builder.get_object("username_label").set_sensitive(has_account)
 			builder.get_object("password_label").set_sensitive(has_account)
 
-			builder.get_object("account_changed_label").hide()
 
-		def account_type_toggled (button):
+		def fill_account_details():
+			(account_type, username, password) = self.account.get()
+			builder.get_object("no_account_radio").set_active(account_type == "none")
+			builder.get_object("stream_account_radio").set_active(account_type == "stream")
+			builder.get_object("download_account_radio").set_active(account_type == "download")
+
+			builder.get_object("username_entry").set_text(username or "")
+			builder.get_object("password_entry").set_text(password or "")
+
+			update_sensitivity(account_type)
+
+
+		def account_type_toggled(button):
 			print "account type radiobutton toggled: " + button.get_name()
-			account_type = {"no_account_radio": "none", "stream_account_radio": "stream", "download_account_radio": "download"}
+			account_type = {"no_account_radio": 'none', "stream_account_radio": 'stream', "download_account_radio": 'download'} 
 			if button.get_active():
-				self.settings['account_type'] = account_type[button.get_name()]
-				if account_type[button.get_name()] == 'none':
-					builder.get_object("username_label").set_sensitive(False)
-					builder.get_object("username_entry").set_sensitive(False)
-					builder.get_object("password_label").set_sensitive(False)
-					builder.get_object("password_entry").set_sensitive(False)
-				else:
-					builder.get_object("username_label").set_sensitive(True)
-					builder.get_object("username_entry").set_sensitive(True)
-					builder.get_object("password_label").set_sensitive(True)
-					builder.get_object("password_entry").set_sensitive(True)
-				builder.get_object("account_changed_label").show()
+				self.settings['account-type'] = account_type[button.get_name()]
+				update_sensitivity(account_type[button.get_name()])
 
-		def account_details_changed(entry):
+		def account_details_changed(entry, event):
 			username = builder.get_object("username_entry").get_text()
 			password = builder.get_object("password_entry").get_text()
-			if keyring_data['item']:
-				keyring_data['item'].set_secret('\n'.join((username, password)))
 
-			builder.get_object("account_changed_label").show()
+			if username == "" or password == "":
+				print "missing something"
+				return
 
-		def close_button_pressed(x, y):
-			if keyring_data['id'] and keyring_data['item']:
-				result = GnomeKeyring.item_set_info_sync(None,
-									 keyring_data['id'],
-									 keyring_data['item'])
-				if result != GnomeKeyring.Result.OK:
-					RB.error_dialog(title = _("Couldn't store account information"),
-							message = GnomeKeyring.result_to_message(result))
-			else:
-				RB.error_dialog(title = _("Couldn't store account information"),
-						message = _("There was a problem accessing the keyring. Check the debug output for more information."))
-			dialog.hide()
+			# should actually try a request to http://username:password@account-type.magnatune.com/
+			# to check the password is correct..
 
-		def format_selection_changed(self, button):
+			MagnatuneAccount.instance().update(username, password)
+
+		def format_selection_changed(button):
 			self.settings['format'] = self.format_list[button.get_active()]
 
 		self.configure_callback_dic = {
-			"rb_magnatune_audio_combobox_changed_cb" : self.format_selection_changed,
-			"rb_magnatune_radio_account_toggled_cb" : account_type_toggled,
-			"rb_magnatune_username_changed_cb" : account_details_changed,
-			"rb_magnatune_password_changed_cb" : account_details_changed
+			"rb_magnatune_audio_combobox_changed_cb" : format_selection_changed,
+			"rb_magnatune_radio_account_toggled_cb" : account_type_toggled
 		}
 
 		builder = Gtk.Builder()
 		builder.add_from_file(rb.find_plugin_file(self, "magnatune-prefs.ui"))
 
-		dialog = builder.get_object('preferences_dialog')
+		dialog = builder.get_object('magnatune_vbox')
 
 		# Set the names of the radio buttons so we can tell which one has been clicked
 		for name in ("no_account_radio", "stream_account_radio", "download_account_radio"):
@@ -256,37 +260,8 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 		builder.get_object("audio_combobox").set_active(self.format_list.index(self.settings['format']))
 
 		builder.connect_signals(self.configure_callback_dic)
-		dialog.connect("response", close_button_pressed)
-
-		attributes = GnomeKeyring.attribute_list_new()
-		GnomeKeyring.attribute_list_append_string(attributes, "rhythmbox-plugin", "magnatune")
-		(result, items) = GnomeKeyring.find_items_sync(GnomeKeyring.ItemType.GENERIC_SECRET, attributes)
-		if result == GnomeKeyring.Result.OK and len(items) != 0:
-			keyring_data['id'] = items[0].item_id
-			(result, item) = GnomeKeyring.item_get_info_sync(None, keyring_data['id'])
-			if result == GnomeKeyring.Result.OK:
-				keyring_data['item'] = item
-			else:
-				print "Couldn't get keyring item: " + GnomeKeyring.result_to_message(result)
-
-		elif result == GnomeKeyring.Result.NO_MATCH or len(items) == 0:
-			# no item found, so create a new one
-			result = GnomeKeyring.item_create_sync(None,
-							       GnomeKeyring.ItemType.GENERIC_SECRET,
-							       "Rhythmbox: Magnatune account information",
-							       attributes,
-							       "",	# Empty secret for now
-							       True)
-			if result == GnomeKeyring.Result.OK:
-				keyring_data['id'] = id
-				(result, item) = GnomeKeyring.item_get_info_sync(None, id)
-				if result == GnomeKeyring.Result.OK:
-					keyring_data['item'] = item
-			else:
-				print "Couldn't create keyring item: " + GnomeKeyring.result_to_message(result)
-		else:
-			print "Couldn't access keyring: " + str(result)
+		builder.get_object("username_entry").connect("focus-out-event", account_details_changed)
+		builder.get_object("password_entry").connect("focus-out-event", account_details_changed)
 
 		fill_account_details()
-		dialog.present()
 		return dialog

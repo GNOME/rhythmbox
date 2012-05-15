@@ -71,6 +71,7 @@ static void rb_ipod_load_songs (RBiPodSource *source);
 
 static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
+static void impl_selected (RBDisplayPage *page);
 
 static gboolean impl_track_added (RBTransferTarget *target,
 				  RhythmDBEntry *entry,
@@ -104,6 +105,7 @@ static void rb_ipod_source_get_property (GObject *object,
 					 guint prop_id,
 					 GValue *value,
 					 GParamSpec *pspec);
+static gboolean ensure_loaded (RBiPodSource *source);
 
 
 static RhythmDB *get_db_for_source (RBiPodSource *source);
@@ -177,6 +179,7 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 
 	page_class->delete_thyself = impl_delete_thyself;
 	page_class->show_popup = impl_show_popup;
+	page_class->selected = impl_selected;
 
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
@@ -322,8 +325,6 @@ finish_construction (RBiPodSource *source)
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
         rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_FIRST_SEEN, FALSE);
 
-	rb_ipod_load_songs (source);
-
 	priv->art_store = rb_ext_db_new ("album-art");
 
 	/* is there model-specific data we need to pay attention to here?
@@ -334,7 +335,6 @@ finish_construction (RBiPodSource *source)
 	gst_encoding_target_add_profile (target, rb_gst_get_encoding_profile ("audio/x-aac"));
 	g_object_set (source, "encoding-target", target, NULL);
 
-        rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
 }
 
 static void
@@ -545,6 +545,7 @@ rb_ipod_source_new (GObject *plugin,
 					       "mount", mount,
 					       "shell", shell,
 					       "device-info", device_info,
+					       "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 					       "settings", g_settings_get_child (settings, "source"),
 					       "toolbar-path", "/iPodSourceToolBar",
 					       NULL));
@@ -588,172 +589,6 @@ ipod_path_to_uri (const char *mount_point, const char *ipod_path)
 }
 
 static void
-playlist_track_removed (RhythmDBQueryModel *m,
-			RhythmDBEntry *entry,
-			gpointer data)
-{
-	RBIpodStaticPlaylistSource *playlist = RB_IPOD_STATIC_PLAYLIST_SOURCE (data);
-	Itdb_Playlist *ipod_pl = rb_ipod_static_playlist_source_get_itdb_playlist (playlist);
-	RBiPodSource *ipod = rb_ipod_static_playlist_source_get_ipod_source (playlist);
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod);
-	Itdb_Track *track;
-
-	g_return_if_fail (ipod != NULL);
-	g_return_if_fail (ipod_pl != NULL);
-
-	track = g_hash_table_lookup (priv->entry_map, entry);
-	g_return_if_fail (track != NULL);
-	rb_ipod_db_remove_from_playlist (priv->ipod_db, ipod_pl, track);
-}
-
-static void
-playlist_track_added (GtkTreeModel *model, GtkTreePath *path,
-		      GtkTreeIter *iter, gpointer data)
-{
-	RBIpodStaticPlaylistSource *playlist = RB_IPOD_STATIC_PLAYLIST_SOURCE (data);
-	Itdb_Playlist *ipod_pl = rb_ipod_static_playlist_source_get_itdb_playlist (playlist);
-	RBiPodSource *ipod = rb_ipod_static_playlist_source_get_ipod_source (playlist);
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod);
-	Itdb_Track *track;
-	RhythmDBEntry *entry;
-
-	g_return_if_fail (ipod != NULL);
-	g_return_if_fail (ipod_pl != NULL);
-
-	gtk_tree_model_get (model, iter, 0, &entry, -1);
-        track = g_hash_table_lookup (priv->entry_map, entry);
-	g_return_if_fail (track != NULL);
-
-	rb_ipod_db_add_to_playlist (priv->ipod_db, ipod_pl, track);
-}
-
-static void
-playlist_before_save (RbIpodDb *ipod_db, gpointer data)
-{
-	RBIpodStaticPlaylistSource *playlist = RB_IPOD_STATIC_PLAYLIST_SOURCE (data);
-	GtkTreeModel *model = GTK_TREE_MODEL (rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (playlist)));
-	Itdb_Playlist *ipod_pl = rb_ipod_static_playlist_source_get_itdb_playlist (playlist);
-	RBiPodSource *ipod = rb_ipod_static_playlist_source_get_ipod_source (playlist);
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod);
-	GtkTreeIter iter;
-
-	if (!rb_ipod_static_playlist_source_get_was_reordered (playlist)) {
-		return;
-	}
-
-	rb_ipod_static_playlist_source_set_was_reordered (playlist, FALSE);
-
-	/* Sanity check that all tracks are in entry_map */
-
-	if (gtk_tree_model_get_iter_first (model, &iter)) {
-		do {
-			RhythmDBEntry *entry;
-			Itdb_Track *track;
-
-			gtk_tree_model_get (model, &iter, 0, &entry, -1);
-			track = g_hash_table_lookup (priv->entry_map, entry);
-
-			g_return_if_fail (track != NULL);
-		} while (gtk_tree_model_iter_next (model, &iter));
-	}
-
-	/* Remove all tracks then re-add in correct order */
-
-	while (ipod_pl->members != NULL) {
-		Itdb_Track *track;
-
-		track = (Itdb_Track *)ipod_pl->members->data;
-
-		rb_debug ("removing \"%s\" from \"%s\"", track->title, ipod_pl->name);
-
-		/* Call directly to itdb to avoid scheduling another save */
-		itdb_playlist_remove_track (ipod_pl, track);
-	}
-
-	if (gtk_tree_model_get_iter_first (model, &iter)) {
-		do {
-			RhythmDBEntry *entry;
-			Itdb_Track *track;
-
-			gtk_tree_model_get (model, &iter, 0, &entry, -1);
-			track = g_hash_table_lookup (priv->entry_map, entry);
-
-			rb_debug ("adding \"%s\" to \"%s\"", track->title, ipod_pl->name);
-
-			/* Call directly to itdb to avoid scheduling another save */
-			itdb_playlist_add_track (ipod_pl, track, -1);
-		} while (gtk_tree_model_iter_next (model, &iter));
-	}
-}
-
-static void
-playlist_rows_reordered (GtkTreeModel *model,
-			 GtkTreePath *path,
-			 GtkTreeIter *iter,
-			 gint *order, gpointer data)
-{
-	RBIpodStaticPlaylistSource *playlist = RB_IPOD_STATIC_PLAYLIST_SOURCE (data);
-	RBiPodSource *ipod = rb_ipod_static_playlist_source_get_ipod_source (playlist);
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod);
-
-	/* Mark as reordered; will check before save */
-	rb_ipod_static_playlist_source_set_was_reordered (playlist, TRUE);
-
-	rb_ipod_db_save_async (priv->ipod_db);
-}
-
-static void
-playlist_source_model_disconnect_signals (GObject *model, RBIpodStaticPlaylistSource *playlist_source)
-{
-	g_return_if_fail (RB_IS_IPOD_STATIC_PLAYLIST_SOURCE (playlist_source));
-
-	g_signal_handlers_disconnect_by_func (model,
-					      G_CALLBACK (playlist_track_added),
-					      playlist_source);
-	g_signal_handlers_disconnect_by_func (model,
-					      G_CALLBACK (playlist_track_removed),
-					      playlist_source);
-	g_signal_handlers_disconnect_by_func (model,
-					      G_CALLBACK (playlist_rows_reordered),
-					      playlist_source);
-}
-
-static void
-playlist_source_model_connect_signals (RBIpodStaticPlaylistSource *playlist_source)
-{
-	RhythmDBQueryModel *model;
-
-	g_return_if_fail (RB_IS_IPOD_STATIC_PLAYLIST_SOURCE (playlist_source));
-
-	g_object_get (G_OBJECT (playlist_source),
-		      "base-query-model", &model, NULL);
-	g_signal_connect (model, "row-inserted",
-			  G_CALLBACK (playlist_track_added),
-			  playlist_source);
-	g_signal_connect (model, "entry-removed",
-			  G_CALLBACK (playlist_track_removed),
-			  playlist_source);
-	g_signal_connect (model, "rows-reordered",
-			  G_CALLBACK (playlist_rows_reordered),
-			  playlist_source);
-	g_object_unref (model);
-}
-
-static void
-playlist_source_model_changed (GObject *obj, GParamSpec *pspec, gpointer old_model)
-{
-	RBIpodStaticPlaylistSource *playlist_source;
-
-	rb_debug ("base model changed for iPod playlist");
-
-	playlist_source = RB_IPOD_STATIC_PLAYLIST_SOURCE (obj);
-
-	playlist_source_model_disconnect_signals (G_OBJECT (old_model), playlist_source);
-
-	playlist_source_model_connect_signals (playlist_source);
-}
-
-static void
 set_podcast_icon (RBIpodStaticPlaylistSource *source)
 {
 	GdkPixbuf *pixbuf;
@@ -779,7 +614,6 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 	GList *it;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	RhythmDBEntryType *entry_type;
-	RhythmDBQueryModel *model;
 
 	g_object_get (source,
 			  "shell", &shell,
@@ -814,17 +648,6 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 	playlist->userdata = playlist_source;
 	playlist->userdata_destroy = g_object_unref;
 	playlist->userdata_duplicate = g_object_ref;
-
-	g_object_get (G_OBJECT (playlist_source),
-		      "base-query-model", &model, NULL);
-	g_signal_connect (playlist_source, "notify::base-query-model",
-			  G_CALLBACK (playlist_source_model_changed),
-			  playlist_source);
-	g_signal_connect (priv->ipod_db, "before-save",
-			  G_CALLBACK (playlist_before_save),
-			  playlist_source);
-	g_object_unref (model);
-	playlist_source_model_connect_signals (playlist_source);
 
 	if (itdb_playlist_is_podcasts(playlist)) {
 		priv->podcast_pl = playlist_source;
@@ -1345,6 +1168,10 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 
 	g_object_unref (db);
 
+	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
+
+	rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), NULL, FALSE);
+
 	GDK_THREADS_LEAVE ();
 	priv->load_idle_id = 0;
 	return FALSE;
@@ -1463,7 +1290,10 @@ impl_delete_entries (RBMediaPlayerSource *source, GList *entries, RBMediaPlayerS
 static RBTrackTransferBatch *
 impl_paste (RBSource *source, GList *entries)
 {
-	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries);
+	gboolean defer;
+
+	defer = (ensure_loaded (RB_IPOD_SOURCE (source)) == FALSE);
+	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries, defer);
 }
 
 static void
@@ -1988,6 +1818,28 @@ ipod_path_from_unix_path (const gchar *mount_point, const gchar *unix_path)
 	return ipod_path;
 }
 
+static gboolean
+ensure_loaded (RBiPodSource *source)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	RBSourceLoadStatus status;
+	
+	if (priv->ipod_db == NULL) {
+		rb_ipod_load_songs (source);
+		rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
+		return FALSE;
+	} else {
+		g_object_get (source, "load-status", &status, NULL);
+		return (status == RB_SOURCE_LOAD_STATUS_LOADED);
+	}
+}
+
+static void
+impl_selected (RBDisplayPage *page)
+{
+	ensure_loaded (RB_IPOD_SOURCE (page));
+}
+
 static void
 impl_delete_thyself (RBDisplayPage *page)
 {
@@ -2005,17 +1857,8 @@ impl_delete_thyself (RBDisplayPage *page)
 		Itdb_Playlist *playlist = (Itdb_Playlist *)p->data;
 		if (!itdb_playlist_is_mpl (playlist) && !playlist->is_spl) {
 			RBSource *rb_playlist;
-			RhythmDBQueryModel *model;
 
 			rb_playlist = RB_SOURCE (playlist->userdata);
-			g_object_get (G_OBJECT (rb_playlist),
-				      "base-query-model", &model, NULL);
-
-			/* remove these to ensure they aren't called during source deletion */
-			playlist_source_model_disconnect_signals (G_OBJECT (model),
-								  RB_IPOD_STATIC_PLAYLIST_SOURCE (rb_playlist));
-
-			g_object_unref (model);
 			rb_display_page_delete_thyself (RB_DISPLAY_PAGE (rb_playlist));
 		}
 	}
@@ -2049,9 +1892,22 @@ rb_ipod_source_remove_playlist (RBiPodSource *ipod_source,
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (ipod_source);
 	RBIpodStaticPlaylistSource *playlist_source = RB_IPOD_STATIC_PLAYLIST_SOURCE (source);
+	Itdb_Playlist *playlist;
 
 	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
-	rb_ipod_db_remove_playlist (priv->ipod_db, rb_ipod_static_playlist_source_get_itdb_playlist (playlist_source));
+
+	g_object_get (playlist_source, "itdb-playlist", &playlist, NULL);
+	rb_ipod_db_remove_playlist (priv->ipod_db, playlist);
+}
+
+
+Itdb_Track *
+rb_ipod_source_lookup_track (RBiPodSource *source,
+			     RhythmDBEntry *entry)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+
+	return g_hash_table_lookup (priv->entry_map, entry);
 }
 
 static gboolean

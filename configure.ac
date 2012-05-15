@@ -1,11 +1,11 @@
 AC_PREREQ(2.53)
 AC_INIT([rhythmbox],
-	[2.95],
+	[2.96],
 	[https://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox])
 AC_CONFIG_SRCDIR(rhythmbox.pc.in)
 AC_CONFIG_MACRO_DIR(macros)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE([1.9 dist-bzip2 no-dist-gzip])
+AM_INIT_AUTOMAKE([1.9 dist-xz no-dist-gzip])
 
 AC_SUBST(ACLOCAL_AMFLAGS, "-I macros")
 
@@ -43,13 +43,14 @@ m4_ifdef([LT_OUTPUT], [LT_OUTPUT])
 AC_C_BIGENDIAN
 AC_CHECK_SIZEOF(long)
 
-GTK_REQS=2.91.4
+GTK_REQS=3.2.0
 
 GST_0_11_REQS=0.11.0
 GDK_PIXBUF_REQS=2.18.0
-GLIB_REQS=2.26.0
+GLIB_REQS=2.28.0
 LIBGPOD_REQS=0.6
 MUSICBRAINZ3_REQS=3.0.2
+MUSICBRAINZ4_REQS=4.0.0
 TOTEM_PLPARSER_REQS=2.32.1
 VALA_REQS=0.9.4
 AVAHI_REQS=0.6
@@ -58,6 +59,7 @@ GUDEV_REQS=143
 LIBMTP_REQS=0.3.0
 LIBPEAS_REQS=0.7.3
 GRILO_REQS=0.1.17
+LIBXML2_REQS=2.7.8
 
 LIBNOTIFY_REQS=0.7.0
 BRASERO_MIN_REQS=2.31.5
@@ -98,6 +100,7 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  libsoup-gnome-2.4 >= $LIBSOUP_REQS	\
 		  libpeas-1.0 >= $LIBPEAS_REQS		\
 		  libpeas-gtk-1.0 >= $LIBPEAS_REQS	\
+		  libxml-2.0 >= $LIBXML2_REQS		\
 		  tdb >= 1.2.6)
 
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
@@ -341,12 +344,15 @@ AC_CHECK_LIB(z, uncompress)
 dnl check for MusicBrainz
 have_sj_metadata_getter=no
 AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
-				[don't build with MusicBrainz support]))
+				[build without MusicBrainz support]))
 if test x"$enable_musicbrainz" != "xno"; then
 	PKG_CHECK_MODULES(MUSICBRAINZ3, libmusicbrainz3 >= $MUSICBRAINZ3_REQS gconf-2.0, [have_musicbrainz3=yes], [have_musicbrainz3=no])
-
 	AC_SUBST(MUSICBRAINZ3_CFLAGS)
 	AC_SUBST(MUSICBRAINZ3_LIBS)
+
+	PKG_CHECK_MODULES(MUSICBRAINZ4, libmusicbrainz4 >= $MUSICBRAINZ4_REQS gconf-2.0, [have_musicbrainz4=yes], [have_musicbrainz4=no])
+	AC_SUBST(MUSICBRAINZ4_CFLAGS)
+	AC_SUBST(MUSICBRAINZ4_LIBS)
 
 	if test x"$have_musicbrainz3" = xyes; then
 		oldlibs=$LIBS
@@ -356,14 +362,23 @@ if test x"$enable_musicbrainz" != "xno"; then
 
 		AC_DEFINE([HAVE_MUSICBRAINZ3], 1, [Whether libmusicbrainz3 is available])
 		have_sj_metadata_getter=yes
+	fi
+
+	if test x"$have_musicbrainz4" = xyes; then
+		AC_DEFINE([HAVE_MUSICBRAINZ4], 1, [Whether libmusicbrainz4 is available])
+		have_sj_metadata_getter=yes
+	fi
+
+	if test x"$have_sj_metadata_getter" = xyes; then
 		AC_DEFINE([HAVE_SJ_METADATA_GETTER], 1, [Whether to use the sound-juicer metadata getter code])
 	else
 		if test x"$enable_musicbrainz" = xyes; then
-			AC_MSG_ERROR([MusicBrainz requested, but neither libmusicbrainz nor libmusicbrainz3 are available])
+			AC_MSG_ERROR([MusicBrainz requested, but neither libmusicbrainz3 nor libmusicbrainz4 are available])
 		fi
 	fi
 fi
 AM_CONDITIONAL([HAVE_MUSICBRAINZ3], [test "x$have_musicbrainz3" = "xyes"])
+AM_CONDITIONAL([HAVE_MUSICBRAINZ4], [test "x$have_musicbrainz4" = "xyes"])
 AM_CONDITIONAL([HAVE_SJ_METADATA_GETTER], [test "x$have_sj_metadata_getter" = "xyes"])
 
 AC_PATH_XTRA
@@ -534,8 +549,8 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 	-Wunused-label -Wunused-value \
 	-Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes \
 	-Wnested-externs -Wpointer-arith \
-	-Wcast-align -Wall \
-	-Werror -std=gnu89"
+	-Wcast-align -Wformat-security -Wall \
+	-Werror -Wno-deprecated-declarations -std=gnu89"
 
 	if echo "$CFLAGS" | grep -q -- '-O' && echo "$CFLAGS" | grep -q -v -- '-O0'; then
 		WARN_CFLAGS="-Wuninitialized $WARN_CFLAGS"
@@ -578,6 +593,11 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+dnl Set required and max glib/gdk versions
+AC_DEFINE(GLIB_VERSION_MIN_REQUIRED, GLIB_VERSION_2_28, [minimum glib version])
+AC_DEFINE(GLIB_VERSION_MAX_ALLOWED, GLIB_VERSION_2_28, [maximum glib version])
+AC_DEFINE(GDK_VERSION_MIN_REQUIRED, GDK_VERSION_3_2, [minimum gdk version])
+AC_DEFINE(GDK_VERSION_MAX_ALLOWED, GDK_VERSION_3_2, [maximum gdk version])
 
 dnl Check for -fno-strict-aliasing
 FLAGS="-fno-strict-aliasing"
@@ -829,6 +849,7 @@ data/icons/hicolor/32x32/apps/Makefile
 data/icons/hicolor/32x32/places/Makefile
 data/icons/hicolor/48x48/Makefile
 data/icons/hicolor/48x48/apps/Makefile
+data/icons/hicolor/48x48/status/Makefile
 data/icons/hicolor/256x256/Makefile
 data/icons/hicolor/256x256/apps/Makefile
 data/icons/hicolor/scalable/Makefile
@@ -854,7 +875,6 @@ plugins/lyrics/Makefile
 plugins/sample-python/Makefile
 plugins/sample-vala/Makefile
 plugins/pythonconsole/Makefile
-plugins/artdisplay/Makefile
 plugins/artsearch/Makefile
 plugins/magnatune/Makefile
 plugins/generic-player/Makefile

@@ -338,6 +338,7 @@ rb_daap_source_new (RBShell *shell,
 					  "visibility", TRUE,
 					  "password-protected", password_protected,
 					  "plugin", G_OBJECT (plugin),
+					  "load-status", RB_SOURCE_LOAD_STATUS_NOT_LOADED,
 					  "settings", g_settings_get_child (settings, "source"),
 					  "toolbar-path", "/DAAPSourceToolBar",
 					  NULL));
@@ -425,6 +426,7 @@ ask_password (RBDAAPSource *source, const char *name, const char *keyring, SoupS
 	AuthData *auth_data;
 	char *message;
 
+	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_WAITING, NULL);
 	parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source)));
 
 	mount_op = gtk_mount_operation_new (parent);
@@ -517,14 +519,16 @@ connection_connecting_cb (DMAPConnection       *connection,
 		source->priv->connection_status = _("Connecting to music share");
 		break;
 	case DMAP_GET_REVISION_NUMBER:
+		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADING, NULL);
 	case DMAP_GET_DB_INFO:
 	case DMAP_GET_SONGS:
 	case DMAP_GET_PLAYLISTS:
 	case DMAP_GET_PLAYLIST_ENTRIES:
 		source->priv->connection_status = _("Retrieving songs from music share");
 		break;
-	case DMAP_LOGOUT:
 	case DMAP_DONE:
+		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
+	case DMAP_LOGOUT:
 		source->priv->connection_status = NULL;
 		break;
 	}

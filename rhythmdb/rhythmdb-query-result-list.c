@@ -136,6 +136,13 @@ rhythmdb_query_result_list_class_init (RhythmDBQueryResultListClass *klass)
 }
 
 
+/**
+ * rhythmdb_query_result_list_new:
+ *
+ * Creates a new empty query result list.
+ *
+ * Return value: (transfer full): query result list
+ */
 RhythmDBQueryResultList *
 rhythmdb_query_result_list_new (void)
 {
@@ -144,6 +151,14 @@ rhythmdb_query_result_list_new (void)
 	return RHYTHMDB_QUERY_RESULT_LIST (obj);
 }
 
+/**
+ * rhythmdb_query_result_list_get_results:
+ * @list: a #RhythmDBQueryResultList
+ *
+ * Returns the results from the query.
+ *
+ * Return value: (transfer none) (element-type RhythmDBEntry): list of results
+ */
 GList *
 rhythmdb_query_result_list_get_results (RhythmDBQueryResultList *list)
 {

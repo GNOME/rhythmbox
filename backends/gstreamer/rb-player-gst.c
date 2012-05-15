@@ -378,6 +378,7 @@ start_state_change (RBPlayerGst *mp, GstState state, enum StateChangeAction acti
 {
 	GstStateChangeReturn scr;
 
+	rb_debug ("changing state to %s", gst_element_state_get_name (state));
 	mp->priv->state_change_action = action;
 	scr = gst_element_set_state (mp->priv->playbin, state);
 	if (scr == GST_STATE_CHANGE_SUCCESS) {
@@ -501,6 +502,9 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 			}
 			state_change_finished (mp, sig_error);
 			mp->priv->emitted_error = TRUE;
+			if (mp->priv->playbin_stream_changing) {
+				emit_playing_stream_and_tags (mp, TRUE);
+			}
 			_rb_player_emit_error (RB_PLAYER (mp), mp->priv->stream_data, sig_error);
 		}
 
@@ -524,8 +528,8 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 			GstState pending;
 			gst_message_parse_state_changed (message, &oldstate, &newstate, &pending);
 			if (GST_MESSAGE_SRC (message) == GST_OBJECT (mp->priv->playbin)) {
-				rb_debug ("playbin reached state %s", gst_element_state_get_name (newstate));
 				if (pending == GST_STATE_VOID_PENDING) {
+					rb_debug ("playbin reached state %s", gst_element_state_get_name (newstate));
 					state_change_finished (mp, NULL);
 				}
 			}
@@ -554,6 +558,7 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 			g_warning ("Could not get value from BUFFERING message");
 			break;
 		}
+
 		if (progress >= 100) {
 			mp->priv->buffering = FALSE;
 			if (mp->priv->playing) {
@@ -563,15 +568,9 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 				rb_debug ("buffering done, leaving pipeline PAUSED");
 			}
 		} else if (mp->priv->buffering == FALSE && mp->priv->playing) {
-			GstState cur_state;
 
-			gst_element_get_state (mp->priv->playbin, &cur_state, NULL, 0);
-			if (cur_state == GST_STATE_PLAYING) {
-				rb_debug ("buffering - temporarily pausing playback");
-				gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED);
-			} else {
-				rb_debug ("buffering - during preroll; doing nothing");
-			}
+			rb_debug ("buffering - temporarily pausing playback");
+			gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED);
 			mp->priv->buffering = TRUE;
 		}
 
@@ -612,6 +611,11 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 static void
 source_setup_cb (GstElement *playbin, GstElement *source, RBPlayerGst *player)
 {
+	if (player->priv->uri == NULL) {
+		rb_debug ("got notify::source while changing to NULL");
+		return;
+	}
+
 	g_signal_emit (player, signals[PREPARE_SOURCE], 0, player->priv->uri, source);
 }
 

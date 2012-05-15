@@ -500,6 +500,7 @@ rb_audiocd_source_constructed (GObject *object)
 	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (toolbar), 0, 0, 1, 1);
 	gtk_grid_attach (GTK_GRID (grid), infogrid, 0, 1, 1, 1);
 	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (source->priv->entry_view), 0, 2, 1, 1);
+	gtk_widget_set_margin_top (GTK_WIDGET (grid), 6);
 	g_object_unref (builder);
 
 	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (source->priv->entry_view), NULL, NULL);
@@ -547,6 +548,7 @@ rb_audiocd_source_new (GObject *plugin,
 			       "volume", volume,
 			       "shell", shell,
 			       "plugin", plugin,
+			       "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 			       "show-browser", FALSE,
 			       "settings", g_settings_get_child (settings, "source"),
 			       "toolbar-path", "/AudioCdSourceToolBar",
@@ -783,6 +785,7 @@ apply_album_metadata (RBAudioCdSource *source, AlbumDetails *album)
 		g_object_unref (source->priv->metadata);
 		source->priv->metadata = NULL;
 		g_object_unref (db);
+		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
 		return;
 	}
 
@@ -888,6 +891,8 @@ apply_album_metadata (RBAudioCdSource *source, AlbumDetails *album)
 	source->priv->metadata = NULL;
 
 	g_object_unref (db);
+
+	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
 }
 
 
@@ -1045,12 +1050,14 @@ metadata_cb (SjMetadataGetter *metadata,
 		/* TODO display error to user? */
 		g_object_unref (metadata);
 		source->priv->metadata = NULL;
+		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
 		return;
 	}
 	if (albums == NULL) {
 		rb_debug ("Musicbrainz didn't return any CD metadata, but didn't give an error");
 		g_object_unref (metadata);
 		source->priv->metadata = NULL;
+		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
 		return;
 	}
 	if (source->priv->tracks == NULL) {
@@ -1058,6 +1065,7 @@ metadata_cb (SjMetadataGetter *metadata,
 		rb_debug ("no tracks on the CD?");
 		g_object_unref (metadata);
 		source->priv->metadata = NULL;
+		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
 		return;
 	}
 
@@ -1098,6 +1106,8 @@ rb_audiocd_load_metadata (RBAudioCdSource *source,
 	g_signal_connect (G_OBJECT (source->priv->metadata), "metadata",
 			  G_CALLBACK (metadata_cb), source);
 	sj_metadata_getter_list_albums (source->priv->metadata, NULL);
+#else
+	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
 #endif
 }
 
