@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-03-29 16:16+0000\n"
-"PO-Revision-Date: 2012-04-04 18:03+0200\n"
-"Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
+"POT-Creation-Date: 2012-04-22 23:01+0000\n"
+"PO-Revision-Date: 2012-05-20 11:21+0100\n"
+"Last-Translator: filmsi\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0);\n"
 "X-Poedit-Country: SLOVENIA\n"
 "X-Poedit-Language: Slovenian\n"
@@ -28,55 +28,55 @@ msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Predmeta korita GStreamer za pisanje v %s ni mogoče ustvariti"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:492
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2735
+#: ../backends/gstreamer/rb-player-gst.c:493
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2829
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Odpiranje izhodne naprave je spodletelo: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:633
+#: ../backends/gstreamer/rb-player-gst.c:638
 #, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr "Ustvarjanje predmeta playbin2 je spodletelo, preverite svojo namestitev GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1109
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1123
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1118
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1132
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Povezava novega toka v cevovod GStreamer je spodletela"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1151
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1160
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Zaganjanje novega pretoka je spodletelo"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2660
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2754
 #, c-format
 msgid "Failed to open output device"
 msgstr "Odpiranje izhodne naprave je spodletelo"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3013
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3086
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3107
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3180
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Ustvarjanje predmeta GStreamer je spodletelo; preverite svojo namestitev"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3027
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3121
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Ustvarjanje predmeta zvočnega izhoda je spodletelo; preverite svojo namestitev"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3060
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3102
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3128
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3137
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3146
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3154
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3196
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3222
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3231
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3240
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Povezovanje cevovoda GStreamer je spodletelo; preverite svojo namestitev"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3241
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3335
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Ustvarjanje cevovoda Gstreamer za predvajanje %s je spodletelo"
@@ -262,8 +262,8 @@ msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
 msgstr "Izvajalec/Izvajalec - Album/Izvajalec (Album) - 01 - Naslov.ogg"
 
 #: ../data/ui/library-prefs.ui.h:10
-msgid "_Settings"
-msgstr "_Nastavitve"
+msgid "Format settings:"
+msgstr "Nastavitve zapisa:"
 
 #: ../data/ui/library-prefs.ui.h:11
 msgid "_Install additional software required to use this format"
@@ -674,7 +674,7 @@ msgstr "%d. %b. %Y"
 #: ../lib/rb-util.c:713
 #: ../plugins/artsearch/lastfm.py:163
 #: ../plugins/artsearch/lastfm.py:164
-#: ../plugins/audiocd/rb-audiocd-source.c:604
+#: ../plugins/audiocd/rb-audiocd-source.c:605
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:589
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:593
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
@@ -715,8 +715,8 @@ msgstr "%d. %b. %Y"
 #: ../widgets/rb-entry-view.c:1483
 #: ../widgets/rb-entry-view.c:1495
 #: ../widgets/rb-entry-view.c:1507
-#: ../widgets/rb-header.c:1087
-#: ../widgets/rb-header.c:1113
+#: ../widgets/rb-header.c:1098
+#: ../widgets/rb-header.c:1124
 #: ../widgets/rb-song-info.c:920
 #: ../widgets/rb-song-info.c:932
 #: ../widgets/rb-song-info.c:1153
@@ -881,44 +881,44 @@ msgstr "Tega albuma na MusicBrainz ni mogoče najti."
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "Z dodajanjem tega albuma lahko izboljšate podatkovno zbirko MusicBrainz."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:610
+#: ../plugins/audiocd/rb-audiocd-source.c:611
 msgid "<Invalid unicode>"
 msgstr "<neveljaven unicode>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:653
+#: ../plugins/audiocd/rb-audiocd-source.c:654
 #, c-format
 msgid "Track %u"
 msgstr "Posnetek %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:714
-#: ../plugins/audiocd/rb-audiocd-source.c:722
-#: ../plugins/audiocd/rb-audiocd-source.c:1136
+#: ../plugins/audiocd/rb-audiocd-source.c:715
+#: ../plugins/audiocd/rb-audiocd-source.c:723
+#: ../plugins/audiocd/rb-audiocd-source.c:1137
 msgid "Couldn't load Audio CD"
 msgstr "Zvočnega CD-ja ni mogoče naložiti"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:715
+#: ../plugins/audiocd/rb-audiocd-source.c:716
 msgid "Rhythmbox couldn't access the CD."
 msgstr "S programom ni mogoč dostop do CD-ja."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:723
+#: ../plugins/audiocd/rb-audiocd-source.c:724
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "S programom ni mogoče prebrati podatkov CD-ja."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:991
-#: ../sources/rb-library-source.c:129
+#: ../plugins/audiocd/rb-audiocd-source.c:992
+#: ../sources/rb-library-source.c:133
 #: ../widgets/rb-entry-view.c:1429
 msgid "Title"
 msgstr "Naslov"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:998
+#: ../plugins/audiocd/rb-audiocd-source.c:999
 #: ../plugins/context/ArtistTab.py:58
-#: ../sources/rb-library-source.c:120
+#: ../sources/rb-library-source.c:124
 #: ../widgets/rb-entry-view.c:1439
 #: ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Izvajalec"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1137
+#: ../plugins/audiocd/rb-audiocd-source.c:1138
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Dostop do CD naprave ni mogoč."
 
@@ -2579,7 +2579,7 @@ msgstr "iz <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:390
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:202
-#: ../widgets/rb-header.c:810
+#: ../widgets/rb-header.c:821
 msgid "Not Playing"
 msgstr "Ni predvajanja"
 
@@ -4176,65 +4176,75 @@ msgstr[1] "%d napaka uvoza"
 msgstr[2] "%d napaki uvoza"
 msgstr[3] "%d napake uvoza"
 
-#: ../sources/rb-library-source.c:116
+#: ../sources/rb-library-source.c:120
 msgid "Artist/Artist - Album"
 msgstr "Izvajalec/Izvajalec - Album"
 
-#: ../sources/rb-library-source.c:117
+#: ../sources/rb-library-source.c:121
 msgid "Artist/Album"
 msgstr "Izvajalec/Album"
 
-#: ../sources/rb-library-source.c:118
+#: ../sources/rb-library-source.c:122
 msgid "Artist - Album"
 msgstr "Izvajalec - Album"
 
-#: ../sources/rb-library-source.c:119
+#: ../sources/rb-library-source.c:123
 #: ../widgets/rb-entry-view.c:1449
 #: ../widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Album"
 
-#: ../sources/rb-library-source.c:125
+#: ../sources/rb-library-source.c:129
 msgid "Number - Title"
 msgstr "Številka - Naslov"
 
-#: ../sources/rb-library-source.c:126
+#: ../sources/rb-library-source.c:130
 msgid "Artist - Title"
 msgstr "Izvajalec - Naslov"
 
-#: ../sources/rb-library-source.c:127
+#: ../sources/rb-library-source.c:131
 msgid "Artist - Number - Title"
 msgstr "Izvajalec - Številka - Naslov"
 
-#: ../sources/rb-library-source.c:128
+#: ../sources/rb-library-source.c:132
 msgid "Artist (Album) - Number - Title"
 msgstr "Izvajalec (Album) - Številka - Naslov"
 
-#: ../sources/rb-library-source.c:130
+#: ../sources/rb-library-source.c:134
 msgid "Number. Artist - Title"
 msgstr "Številka. Izvajalec - Naslov"
 
-#: ../sources/rb-library-source.c:339
+#: ../sources/rb-library-source.c:360
 #: ../sources/sync/rb-sync-settings-ui.c:216
 #: ../sources/sync/rb-sync-settings-ui.c:217
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "Glasba"
 
-#: ../sources/rb-library-source.c:392
+#: ../sources/rb-library-source.c:407
 msgid "Choose Library Location"
 msgstr "Izbor mesta knjižnice"
 
-#: ../sources/rb-library-source.c:431
+#: ../sources/rb-library-source.c:446
 msgid "Multiple locations set"
 msgstr "Nastavitev več mest"
 
-#: ../sources/rb-library-source.c:1119
+#: ../sources/rb-library-source.c:572
+#| msgid "Delete station"
+msgid "Default settings"
+msgstr "Privzete nastavitve"
+
+#: ../sources/rb-library-source.c:588
+#| msgid "Cut selection"
+msgid "Custom settings"
+msgstr "Nastavitve po meri"
+
+#: ../sources/rb-library-source.c:1387
 msgid "Example Path:"
 msgstr "Primer poti:"
 
-#: ../sources/rb-library-source.c:1273
-#: ../sources/rb-library-source.c:1277
+#: ../sources/rb-library-source.c:1560
+#: ../sources/rb-library-source.c:1564
 #: ../sources/rb-transfer-target.c:189
 msgid "Error transferring track"
 msgstr "Napaka med prenosom posnetka"
@@ -4323,12 +4333,12 @@ msgid "Play Queue"
 msgstr "Predvajalna vrsta"
 
 #: ../sources/rb-play-queue-source.c:499
-#: ../widgets/rb-header.c:786
+#: ../widgets/rb-header.c:797
 msgid "from"
 msgstr "iz"
 
 #: ../sources/rb-play-queue-source.c:499
-#: ../widgets/rb-header.c:785
+#: ../widgets/rb-header.c:796
 msgid "by"
 msgstr "od"
 
@@ -4461,13 +4471,13 @@ msgid "Drop artwork here"
 msgstr "Spustite grafično podobo tukaj"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1027
+#: ../widgets/rb-header.c:1038
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1038
+#: ../widgets/rb-header.c:1049
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
@@ -4857,246 +4867,3 @@ msgstr "Na namizju"
 msgid "Unknown location"
 msgstr "Neznano mesto"
 
-#~ msgid "Default"
-#~ msgstr "Privzeto"
-
-#~ msgid "Text below icons"
-#~ msgstr "Besedilo pod ikonami"
-
-#~ msgid "Text beside icons"
-#~ msgstr "Besedilo ob ikonah"
-
-#~ msgid "Icons only"
-#~ msgstr "Le ikone"
-
-#~ msgid "Text only"
-#~ msgstr "Le besedilo"
-
-#~ msgid "Toolbar Button Labels"
-#~ msgstr "Oznake gumbov orodne vrstice"
-
-#~ msgid "Cover art"
-#~ msgstr "Ovitki"
-
-#~ msgid "Searching..."
-#~ msgstr "Iskanje ..."
-
-#~ msgid "T_oolbar"
-#~ msgstr "_Orodna vrstica"
-
-#~ msgid "_Small Display"
-#~ msgstr "_Majhno okno"
-
-#~ msgid "Make the main window smaller"
-#~ msgstr "Naredi glavno okno manjše"
-
-#~ msgid "Redownload purchased music at "
-#~ msgstr "Ponovno prejmite kupljeno glasbo na"
-
-#~ msgid "http://www.magnatune.com/info/redownload"
-#~ msgstr "http://www.magnatune.com/info/redownload"
-
-#~ msgid ""
-#~ "Your account details have changed. Changes will be applied the next time "
-#~ "you start Rhythmbox."
-#~ msgstr ""
-#~ "Podrobnosti vašega računa so se spremenile. Spremembe bodo uporabljene ob "
-#~ "naslednjem zagonu Rhythmbox."
-
-#~ msgid "Stop downloading purchased albums"
-#~ msgstr "Zaustavi prejem nabavljenih albumov"
-
-#~ msgid "Couldn't store account information"
-#~ msgstr "Ni mogoče shraniti podrobnosti računa"
-
-#~ msgid ""
-#~ "There was a problem accessing the keyring. Check the debug output for "
-#~ "more information."
-#~ msgstr ""
-#~ "Prišlo je do napake med dostopom do zbirke ključev. Za več podrobnosti si "
-#~ "oglejte odvod razhroščevanja."
-
-#~ msgid "Couldn't get account details"
-#~ msgstr "Ni mogoče dobiti podrobnosti računa"
-
-#~ msgid "Invalid share name"
-#~ msgstr "Neveljavno ime souporabe"
-
-#~ msgid "The shared music name '%s' is already taken. Please choose another."
-#~ msgstr "Ime souporabe glasbe '%s' je že zasedeno. Izberite drugega."
-
-#~ msgid "Shared music _name:"
-#~ msgstr "_Ime souporabe glasbe:"
-
-#~ msgid "     * Founder/owner runs it -- support a small business"
-#~ msgstr ""
-#~ "    * Ustanovitelj/lastnik upravlja z njo -- podprite majhno podjetje"
-
-#~ msgid ""
-#~ "    * 50% of payment goes to artist (makes buyer feel good: they're "
-#~ "helping the world)"
-#~ msgstr ""
-#~ "    * 50% plačila gre izvajalcu (kupec se počuti dobro: pomaga svetu)"
-
-#~ msgid ""
-#~ "    * Downloads and CDs are both available (no other site on the internet "
-#~ "sells both)"
-#~ msgstr ""
-#~ "    * Na voljo sta tako prejemanje kot CD-ji (nobena druga stran na "
-#~ "medmrežju ne prodaja obojega)"
-
-#~ msgid ""
-#~ "    * Extensive biographical info about each musician, and artist photo "
-#~ "-- feel a strong connection to the artist"
-#~ msgstr ""
-#~ "    * Obširne biografske podrobnosti o vsakem izvajalcu in fotografija "
-#~ "izvajalca -- čutite močno povezavo z izvajalcem "
-
-#~ msgid ""
-#~ "    * Full color, high quality cover art PDF available for most albums - "
-#~ "easy to print"
-#~ msgstr ""
-#~ "    * Polno barvne, visoko kakovostne naslovnice PDF so na voljo za "
-#~ "večino albumov - preproste za tisk"
-
-#~ msgid ""
-#~ "    * Low pressure environment - nothing flashing, no audio ads while "
-#~ "listening to albums"
-#~ msgstr ""
-#~ "    * Okolje nizkega pritiska - nič ne utripa, med poslušanjem albumov ni "
-#~ "zvočnih oglasov"
-
-#~ msgid ""
-#~ "    * Music selection is unique to Magnatune, unlike most on-line stores "
-#~ "that have more-or-less the same (gigantic) selection\n"
-#~ msgstr ""
-#~ "    * Izbira glasbe pri Magnatune je edinstvena, v nasprotju z večino "
-#~ "spletnih trgovin ki imajo bolj ali manj enako (ogromno) izbiro\n"
-
-#~ msgid ""
-#~ "    * No copy protection on the music (DRM) which allows playing music on "
-#~ "any device (unlike iTunes/MSN/etc)"
-#~ msgstr ""
-#~ "    * Glasba ne vsebuje zaščite pred kopiranjem (DRM), kar omogoča "
-#~ "predvajanje na katerikoli napravi (za razliko od iTunes/MSN/itn)"
-
-#~ msgid "    * No need to \"register\" to listen or buy"
-#~ msgstr "    * Za poslušanje ali nakup se ni treba \"vpisati\""
-
-#~ msgid ""
-#~ "    * Not part of the \"evil\" major label machine - for those that hate "
-#~ "the music biz and want to help topple it"
-#~ msgstr ""
-#~ "    * Ni del \"zlobne\" industrije založniških hiš - za tiste, ki "
-#~ "sovražijo glasbeno industrijo in jo želijo pomagati premagati"
-
-#~ msgid "    * Not venture-capital backed big business"
-#~ msgstr ""
-#~ "    * Ni del zasebnega kapitala, podprtega s strani velikih podjetij"
-
-#~ msgid ""
-#~ "    * Our genres are hard to find in record stores and not on radio "
-#~ "(though do appear on college radio)"
-#~ msgstr ""
-#~ "    * Naše zvrsti je težko najti v trgovinah in na radiu (vendar se "
-#~ "pojavijo na študentskih radijih)"
-
-#~ msgid ""
-#~ "    * Perfect quality downloads (CD copy) are available when you download "
-#~ "(not inferior quality sound)"
-#~ msgstr ""
-#~ "    * Pri prejemanju je dostopna popolna kakovost prejemanj (CD "
-#~ "kakovost)  "
-
-#~ msgid ""
-#~ "    * Radio stations and \"genre mix\" playlists allow background "
-#~ "listening - can do work while listening to our music"
-#~ msgstr ""
-#~ "    * Radijske postaje in seznami predvajanja \"mešane zvrsti\" dovolijo "
-#~ "poslušanje v ozadju - med poslušanjem naše glasbe lahko delate"
-
-#~ msgid "    * Smaller selection means easier to find good music"
-#~ msgstr "    * Manjša izbira pomeni, da je lažje najti dobro glasbo"
-
-#~ msgid ""
-#~ "    * Variable pricing scheme means you can pay as little as $5 for an "
-#~ "album if you choose"
-#~ msgstr ""
-#~ "    * Spremenljiva shema cen pomeni, da lahko za album plačate samo $5, "
-#~ "če tako izberete"
-
-#~ msgid "    * Very simple user interface, quick to play music"
-#~ msgstr "    * Zelo preprost uporabniški vmesnik, hitro predvaja glasbo"
-
-#~ msgid "    * Wide variety of genres, can fit any mood"
-#~ msgstr "    * Široka izbira zvrsti, ujema se z vsakim razpoloženjem "
-
-#~ msgid ""
-#~ "This file cannot be transferred as it is not in a format supported by the "
-#~ "target device and no suitable encoding profiles are available."
-#~ msgstr ""
-#~ "Te datoteke ni mogoče prenesti na napravo, saj jo je treba pretvoriti v "
-#~ "vrsto, ki jo ciljna naprava podpira. Hkrati kodirniki za podprte vrste "
-#~ "niso na voljo."
-
-#~ msgid ""
-#~ "Additional software is required to convert %d of the %d files to be "
-#~ "transferred into a format supported by the target device:\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Za pretvorbo %d od %d datotek v vrsto, ki jo podpira ciljna naprava, je "
-#~ "zahtevan dodaten program:\n"
-#~ "%s "
-
-#~ msgid "Searching... drop artwork here"
-#~ msgstr "Iskanje... spustite grafično podobo tukaj"
-
-#~ msgid "Image provided by Last.fm"
-#~ msgstr "Sliko je zagotovil Last.fm"
-
-#~ msgid "Lyrc (lyrc.com.ar)"
-#~ msgstr "Lyrc (lyrc.com.ar)"
-
-#~ msgid "Leo's Lyrics (www.leoslyrics.com)"
-#~ msgstr "Leo's Lyrics (www.leoslyrics.com)"
-
-#~ msgid "Toggle Conte_xt Pane"
-#~ msgstr "Preklop vse_binskega pladnja"
-#~ msgctxt "Radio"
-
-#~ msgid "New"
-#~ msgstr "Novo"
-
-#~ msgid "Feeds"
-#~ msgstr "Viri"
-
-#~ msgid "Episodes"
-#~ msgstr "Epizode"
-#~ msgctxt "Podcast"
-
-#~ msgid "New"
-#~ msgstr "Novo"
-
-#~ msgid "Filter music display by genre, artist, album, or title"
-#~ msgstr "Filtriranje prikaza glasbe po zvrsti, izvajalcu, albumu ali naslovu"
-
-#~ msgid "Titles"
-#~ msgstr "Naslovi"
-
-#~ msgid "Hide the Rhythmbox window"
-#~ msgstr "Skrij okno Rhythmbox"
-
-#~ msgid "Show notification of the playing song"
-#~ msgstr "Prikaz obvestila o predvajani skladbi"
-
-#~ msgid "Mute playback"
-#~ msgstr "Utišaj predvajanje"
-
-#~ msgid "Unmute playback"
-#~ msgstr "Povrni glasnost predvajanja"
-
-#~ msgid "Playback is muted.\n"
-#~ msgstr "Predvajanje je utišano.\n"
-
-#~ msgid "[URI...]"
-#~ msgstr "[URI ...]"
