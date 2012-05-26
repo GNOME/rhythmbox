@@ -19,6 +19,8 @@ librbpodcast_la_SOURCES =				\
 	$(podcastinclude_HEADERS)			\
 	rb-feed-podcast-properties-dialog.c		\
 	rb-feed-podcast-properties-dialog.h		\
+	rb-podcast-add-dialog.c				\
+	rb-podcast-add-dialog.h				\
 	rb-podcast-properties-dialog.c			\
 	rb-podcast-properties-dialog.h			\
 	rb-podcast-main-source.c			\

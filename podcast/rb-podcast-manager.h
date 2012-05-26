@@ -57,7 +57,6 @@ typedef struct
 	GObjectClass parent_class;
 
 	/* signals */
-	void        (*status_changed)    		(RBPodcastManager* pd, RhythmDBEntry *entry, glong value);
 	void        (*start_download)    		(RBPodcastManager* pd, RhythmDBEntry *entry);
 	void        (*finish_download)   		(RBPodcastManager* pd, RhythmDBEntry *entry);
 	void        (*feed_updates_available)   	(RBPodcastManager* pd, RhythmDBEntry *entry);

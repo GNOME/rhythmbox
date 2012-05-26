@@ -40,6 +40,7 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <libsoup/soup.h>
 
 #include "rb-podcast-source.h"
 #include "rb-podcast-settings.h"
@@ -54,7 +55,6 @@
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "rb-dialog.h"
-#include "rb-uri-dialog.h"
 #include "rb-podcast-properties-dialog.h"
 #include "rb-feed-podcast-properties-dialog.h"
 #include "rb-playlist-manager.h"
@@ -64,6 +64,7 @@
 #include "rb-cut-and-paste-code.h"
 #include "rb-source-search-basic.h"
 #include "rb-cell-renderer-pixbuf.h"
+#include "rb-podcast-add-dialog.h"
 #include "rb-source-toolbar.h"
 
 static void podcast_cmd_new_podcast		(GtkAction *action,
@@ -88,6 +89,9 @@ struct _RBPodcastSourcePrivate
 	guint prefs_notify_id;
 
 	GtkWidget *paned;
+	GtkWidget *add_dialog;
+	GtkAction *add_action;
+	RBSourceToolbar *toolbar;
 
 	RhythmDBPropertyModel *feed_model;
 	RBPropertyView *feeds;
@@ -107,8 +111,8 @@ struct _RBPodcastSourcePrivate
 
 static GtkActionEntry rb_podcast_source_actions [] =
 {
-	{ "MusicNewPodcast", RB_STOCK_PODCAST_NEW, N_("_New Podcast Feed..."), "<control>P",
-	  N_("Subscribe to a new Podcast Feed"),
+	{ "MusicNewPodcast", RB_STOCK_PODCAST_NEW, N_("_New Podcast Feed..."), NULL,
+	  N_("Subscribe to a new podcast feed"),
 	  G_CALLBACK (podcast_cmd_new_podcast) },
 	{ "PodcastSrcDownloadPost", NULL, N_("Download _Episode"), NULL,
 	  N_("Download Podcast Episode"),
@@ -340,35 +344,67 @@ posts_view_drag_data_received_cb (GtkWidget *widget,
 }
 
 static void
-podcast_location_added_cb (RBURIDialog *dialog,
-			   const char *location,
-			   RBPodcastSource *source)
+podcast_add_dialog_closed_cb (RBPodcastAddDialog *dialog, RBPodcastSource *source)
 {
-	rb_podcast_manager_subscribe_feed (source->priv->podcast_mgr,
-					   location,
-					   FALSE);
+	rb_podcast_source_do_query (source);
+	gtk_widget_hide (source->priv->add_dialog);
+	gtk_widget_show (GTK_WIDGET (source->priv->toolbar));
+	gtk_widget_show (source->priv->paned);
 }
 
 static void
-podcast_add_response_cb (GtkDialog *dialog, int response, gpointer meh)
+yank_clipboard_url (GtkClipboard *clipboard, const char *text, RBPodcastSource *source)
 {
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+	SoupURI *uri;
+
+	if (text == NULL) {
+		return;
+	}
+
+	uri = soup_uri_new (text);
+	if (SOUP_URI_VALID_FOR_HTTP (uri)) {
+		rb_podcast_add_dialog_reset (RB_PODCAST_ADD_DIALOG (source->priv->add_dialog), text, FALSE);
+	}
+
+	if (uri != NULL) {
+		soup_uri_free (uri);
+	}
 }
 
 static void
 podcast_cmd_new_podcast (GtkAction *action, RBPodcastSource *source)
 {
-	GtkWidget *dialog;
+	RhythmDBQueryModel *query_model;
 
-	dialog = rb_uri_dialog_new (_("New Podcast Feed"), _("URL of podcast feed:"));
-	g_signal_connect_object (dialog,
-				 "location-added",
-				 G_CALLBACK (podcast_location_added_cb),
-				 source, 0);
-	g_signal_connect (dialog, "response", G_CALLBACK (podcast_add_response_cb), NULL);
-	gtk_widget_show_all (dialog);
+	rb_podcast_add_dialog_reset (RB_PODCAST_ADD_DIALOG (source->priv->add_dialog), NULL, FALSE);
+
+	/* if we can get a url from the clipboard, populate the dialog with that,
+	 * since there's a good chance that's what the user wants to do anyway.
+	 */
+	gtk_clipboard_request_text (gtk_clipboard_get (GDK_SELECTION_CLIPBOARD),
+				    (GtkClipboardTextReceivedFunc) yank_clipboard_url,
+				    source);
+	gtk_clipboard_request_text (gtk_clipboard_get (GDK_SELECTION_PRIMARY),
+				    (GtkClipboardTextReceivedFunc) yank_clipboard_url,
+				    source);
+
+	query_model = rhythmdb_query_model_new_empty (source->priv->db);
+	rb_entry_view_set_model (source->priv->posts, query_model);
+	g_object_set (source, "query-model", query_model, NULL);
+	g_object_unref (query_model);
+
+	gtk_widget_hide (source->priv->paned);
+	gtk_widget_hide (GTK_WIDGET (source->priv->toolbar));
+	gtk_widget_show (source->priv->add_dialog);
 }
 
+void
+rb_podcast_source_add_feed (RBPodcastSource *source, const char *text)
+{
+	gtk_action_activate (source->priv->add_action);
+
+	rb_podcast_add_dialog_reset (RB_PODCAST_ADD_DIALOG (source->priv->add_dialog), text, TRUE);
+}
 
 static void
 podcast_cmd_download_post (GtkAction *action, RBPodcastSource *source)
@@ -1283,7 +1319,6 @@ impl_constructed (GObject *object)
 	int position;
 	GtkUIManager *ui_manager;
 	GtkWidget *grid;
-	RBSourceToolbar *toolbar;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_source_parent_class, constructed, object);
 	source = RB_PODCAST_SOURCE (object);
@@ -1305,11 +1340,11 @@ impl_constructed (GObject *object)
 						   rb_podcast_source_actions,
 						   G_N_ELEMENTS (rb_podcast_source_actions));
 
-	action = gtk_action_group_get_action (source->priv->action_group,
-					      "MusicNewPodcast");
+	source->priv->add_action = gtk_action_group_get_action (source->priv->action_group,
+								"MusicNewPodcast");
 	/* Translators: this is the toolbar button label
 	   for New Podcast Feed action. */
-	g_object_set (action, "short-label", C_("Podcast", "Add"), NULL);
+	g_object_set (source->priv->add_action, "short-label", C_("Podcast", "Add"), NULL);
 
 	action = gtk_action_group_get_action (source->priv->action_group,
 					      "PodcastFeedUpdate");
@@ -1334,7 +1369,6 @@ impl_constructed (GObject *object)
 
 	source->priv->paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
 
-	g_object_unref (shell);
 
 	/* set up posts view */
 	source->priv->posts = rb_entry_view_new (source->priv->db,
@@ -1535,8 +1569,8 @@ impl_constructed (GObject *object)
 			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
 
 	/* set up toolbar */
-	toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
-	rb_source_toolbar_add_search_entry (toolbar, "/PodcastSourceSearchMenu", NULL);
+	source->priv->toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	rb_source_toolbar_add_search_entry (source->priv->toolbar, "/PodcastSourceSearchMenu", NULL);
 
 	/* pack the feed and post views into the source */
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned),
@@ -1548,12 +1582,19 @@ impl_constructed (GObject *object)
 	gtk_widget_set_margin_top (GTK_WIDGET (grid), 6);
 	gtk_grid_set_column_spacing (GTK_GRID (grid), 6);
 	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
-	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (toolbar), 0, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (source->priv->toolbar), 0, 0, 1, 1);
 	gtk_grid_attach (GTK_GRID (grid), source->priv->paned, 0, 1, 1, 1);
 
 	gtk_container_add (GTK_CONTAINER (source), grid);
 
+	/* podcast add dialog */
+	source->priv->add_dialog = rb_podcast_add_dialog_new (shell, source->priv->podcast_mgr);
+	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (source->priv->add_dialog), 0, 2, 1, 1);
+	gtk_widget_set_no_show_all (source->priv->add_dialog, TRUE);
+	g_signal_connect_object (source->priv->add_dialog, "closed", G_CALLBACK (podcast_add_dialog_closed_cb), source, 0);
+
 	gtk_widget_show_all (GTK_WIDGET (source));
+	gtk_widget_hide (source->priv->add_dialog);
 
 	g_object_get (source, "settings", &settings, NULL);
 
@@ -1569,6 +1610,7 @@ impl_constructed (GObject *object)
 
 	g_object_unref (settings);
 	g_object_unref (ui_manager);
+	g_object_unref (shell);
 
 	rb_podcast_source_do_query (source);
 }

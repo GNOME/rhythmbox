@@ -61,7 +61,6 @@ enum
 
 enum
 {
-	STATUS_CHANGED,
 	START_DOWNLOAD,
 	FINISH_DOWNLOAD,
 	PROCESS_ERROR,
@@ -193,18 +192,6 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 							      "database",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE));
-
-	rb_podcast_manager_signals[STATUS_CHANGED] =
-	       g_signal_new ("status_changed",
-		       		G_OBJECT_CLASS_TYPE (object_class),
-		 		G_SIGNAL_RUN_LAST,
-				G_STRUCT_OFFSET (RBPodcastManagerClass, status_changed),
-				NULL, NULL,
-				rb_marshal_VOID__BOXED_ULONG,
-				G_TYPE_NONE,
-				2,
-				RHYTHMDB_TYPE_ENTRY,
-				G_TYPE_ULONG);
 
 	rb_podcast_manager_signals[START_DOWNLOAD] =
 	       g_signal_new ("start_download",
@@ -1499,9 +1486,6 @@ download_progress (RBPodcastManagerInfo *data, guint64 downloaded, guint64 total
 		g_value_unset (&val);
 
 		rhythmdb_commit (data->pd->priv->db);
-
-		g_signal_emit (data->pd, rb_podcast_manager_signals[STATUS_CHANGED],
-			       0, data->entry, local_progress);
 
 		GDK_THREADS_LEAVE ();
 
