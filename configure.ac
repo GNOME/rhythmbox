@@ -101,7 +101,8 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  libpeas-1.0 >= $LIBPEAS_REQS		\
 		  libpeas-gtk-1.0 >= $LIBPEAS_REQS	\
 		  libxml-2.0 >= $LIBXML2_REQS		\
-		  tdb >= 1.2.6)
+		  tdb >= 1.2.6				\
+		  json-glib-1.0)
 
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
 if test x$have_totem_plparser != xyes; then
@@ -768,30 +769,6 @@ AC_SUBST(CLUTTER_CFLAGS)
 AC_SUBST(CLUTTER_LIBS)
 
 dnl ================================================================
-dnl Dependencies for Last.fm plugin
-dnl ================================================================
-AC_ARG_ENABLE(lastfm,
-              AC_HELP_STRING([--disable-lastfm],
-                             [Disable Last.fm support]),,
-              enable_lastfm=auto)
-if test "x$enable_lastfm" != "xno"; then
-	PKG_CHECK_MODULES(JSON_GLIB, json-glib-1.0,
-			  have_json_glib=yes,
-			  have_json_glib=no)
-	if test "x$have_json_glib" = "xno" -a "x$enable_lastfm" = "xyes"; then
-		AC_MSG_ERROR([Last.fm support explicitly requested, but json-glib couldn't be found])
-	fi
-	if test x"$have_json_glib" = "xyes"; then
-		AC_DEFINE(HAVE_JSON_GLIB, 1, [Define if json-glib support is enabled])
-	fi
-fi
-
-AM_CONDITIONAL(ENABLE_LASTFM, test x"$have_json_glib" = "xyes")
-
-AC_SUBST(JSON_GLIB_CFLAGS)
-AC_SUBST(JSON_GLIB_LIBS)
-
-dnl ================================================================
 dnl grilo plugin
 dnl ================================================================
 AC_ARG_ENABLE(grilo,
@@ -997,12 +974,6 @@ if test "x$have_clutter" = xyes; then
 	AC_MSG_NOTICE([** Visualizer plugin enabled])
 else
 	AC_MSG_NOTICE([   Visualizer plugin disabled])
-fi
-
-if test "x$have_json_glib" = xyes; then
-	AC_MSG_NOTICE([** Last.fm support enabled])
-else
-	AC_MSG_NOTICE([   Last.fm support disabled])
 fi
 
 AC_MSG_NOTICE([End options])

@@ -93,6 +93,8 @@ RhythmDBEntry *         rb_podcast_manager_add_post  	  	(RhythmDB *db,
 gboolean		rb_podcast_manager_entry_downloaded	(RhythmDBEntry *entry);
 gboolean		rb_podcast_manager_entry_in_download_queue (RBPodcastManager *pd, RhythmDBEntry *entry);
 
+void			rb_podcast_manager_add_search		(RBPodcastManager *pd, GType search_type);
+GList *			rb_podcast_manager_get_searches		(RBPodcastManager *pd);
 
 G_END_DECLS
 

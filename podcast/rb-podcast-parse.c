@@ -242,6 +242,37 @@ rb_podcast_parse_load_feed (RBPodcastChannel *data,
 	return TRUE;
 }
 
+RBPodcastChannel *
+rb_podcast_parse_channel_copy (RBPodcastChannel *data)
+{
+	RBPodcastChannel *copy;
+	copy = g_new0 (RBPodcastChannel, 1);
+	copy->url = g_strdup (data->url);
+	copy->title = g_strdup (data->title);
+	copy->lang = g_strdup (data->lang);
+	copy->description = g_strdup (data->description);
+	copy->author = g_strdup (data->author);
+	copy->contact = g_strdup (data->contact);
+	copy->img = g_strdup (data->img);
+	copy->pub_date = data->pub_date;
+	copy->copyright = g_strdup (data->copyright);
+	copy->is_opml = data->is_opml;
+
+	if (data->posts != NULL) {
+		GList *l;
+		for (l = data->posts; l != NULL; l = l->next) {
+			RBPodcastItem *copyitem;
+			copyitem = rb_podcast_parse_item_copy (l->data);
+			data->posts = g_list_prepend (data->posts, copyitem);
+		}
+		data->posts = g_list_reverse (data->posts);
+	} else {
+		copy->num_posts = data->num_posts;
+	}
+
+	return copy;
+}
+
 void
 rb_podcast_parse_channel_free (RBPodcastChannel *data)
 {
@@ -264,6 +295,21 @@ rb_podcast_parse_channel_free (RBPodcastChannel *data)
 	data = NULL;
 }
 
+RBPodcastItem *
+rb_podcast_parse_item_copy (RBPodcastItem *item)
+{
+	RBPodcastItem *copy;
+	copy = g_new0 (RBPodcastItem, 1);
+	copy->title = g_strdup (item->title);
+	copy->url = g_strdup (item->url);
+	copy->description = g_strdup (item->description);
+	copy->author = g_strdup (item->author);
+	copy->pub_date = item->pub_date;
+	copy->duration = item->duration;
+	copy->filesize = item->filesize;
+	return copy;
+}
+
 void
 rb_podcast_parse_item_free (RBPodcastItem *item)
 {
@@ -272,6 +318,7 @@ rb_podcast_parse_item_free (RBPodcastItem *item)
 	g_free (item->title);
 	g_free (item->url);
 	g_free (item->description);
+	g_free (item->author);
 
 	g_free (item);
 }

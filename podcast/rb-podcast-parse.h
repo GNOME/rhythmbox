@@ -67,12 +67,16 @@ typedef struct
     	gboolean is_opml;
 
 	GList *posts;
+	int num_posts;
 } RBPodcastChannel;
 
 gboolean rb_podcast_parse_load_feed	(RBPodcastChannel *data,
 					 const char *url,
 					 gboolean existing_feed,
 					 GError **error);
+
+RBPodcastChannel *rb_podcast_parse_channel_copy (RBPodcastChannel *data);
+RBPodcastItem *rb_podcast_parse_item_copy (RBPodcastItem *data);
 void rb_podcast_parse_channel_free 	(RBPodcastChannel *data);
 void rb_podcast_parse_item_free 	(RBPodcastItem *data);
 

@@ -3,6 +3,7 @@ plugininclude_HEADERS = rb-plugin-macros.h
 
 SUBDIRS =						\
 	audiocd						\
+	audioscrobbler					\
 	dbus-media-server				\
 	generic-player					\
 	iradio						\
@@ -58,10 +59,6 @@ endif
 
 if USE_CLUTTER
 SUBDIRS += visualizer
-endif
-
-if ENABLE_LASTFM
-SUBDIRS += audioscrobbler
 endif
 
 if USE_NOTIFY

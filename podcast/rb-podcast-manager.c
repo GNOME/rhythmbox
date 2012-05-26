@@ -40,6 +40,7 @@
 #include "rb-podcast-settings.h"
 #include "rb-podcast-manager.h"
 #include "rb-podcast-entry-types.h"
+#include "rb-podcast-search.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
 #include "rb-marshal.h"
@@ -115,6 +116,7 @@ struct RBPodcastManagerPrivate
 	gboolean shutdown;
 	RBExtDB *art_store;
 
+	GList *searches;
 	GSettings *settings;
 	GFile *timestamp_file;
 };
@@ -273,6 +275,10 @@ rb_podcast_manager_constructed (GObject *object)
 
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_manager_parent_class, constructed, object);
 
+	/* add built in search types */
+	rb_podcast_manager_add_search (pd, rb_podcast_search_itunes_get_type ());
+	rb_podcast_manager_add_search (pd, rb_podcast_search_miroguide_get_type ());
+
 	pd->priv->settings = g_settings_new (PODCAST_SETTINGS_SCHEMA);
 	g_signal_connect_object (pd->priv->settings,
 				 "changed",
@@ -353,6 +359,8 @@ rb_podcast_manager_finalize (GObject *object)
 		g_list_foreach (pd->priv->download_list, (GFunc)g_free, NULL);
 		g_list_free (pd->priv->download_list);
 	}
+
+	g_list_free (pd->priv->searches);
 
 	G_OBJECT_CLASS (rb_podcast_manager_parent_class)->finalize (object);
 }
@@ -2232,3 +2240,26 @@ rb_podcast_manager_get_podcast_dir (RBPodcastManager *pd)
 	return conf_dir_uri;
 }
 
+void
+rb_podcast_manager_add_search (RBPodcastManager *pd, GType search_type)
+{
+	pd->priv->searches = g_list_append (pd->priv->searches, GUINT_TO_POINTER (search_type));
+}
+
+GList *
+rb_podcast_manager_get_searches (RBPodcastManager *pd)
+{
+	GList *searches = NULL;
+	GList *i;
+
+	for (i = pd->priv->searches; i != NULL; i = i->next) {
+		RBPodcastSearch *search;
+		GType search_type;
+
+		search_type = GPOINTER_TO_UINT (i->data);
+		search = RB_PODCAST_SEARCH (g_object_new (search_type, NULL));
+		searches = g_list_append (searches, search);
+	}
+
+	return searches;
+}
