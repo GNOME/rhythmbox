@@ -155,7 +155,6 @@ static void rb_podcast_manager_save_metadata		(RBPodcastManager *pd,
 static void rb_podcast_manager_db_entry_added_cb 	(RBPodcastManager *pd,
 							 RhythmDBEntry *entry);
 static gboolean rb_podcast_manager_next_file 		(RBPodcastManager * pd);
-static void rb_podcast_manager_insert_feed 		(RBPodcastManager *pd, RBPodcastChannel *data);
 static void rb_podcast_manager_handle_feed_error	(RBPodcastManager *mgr,
 							 const char *url,
 							 GError *error,
@@ -1098,7 +1097,7 @@ rb_podcast_manager_parse_complete_cb (RBPodcastManagerParseResult *result)
 						      result->error,
 						      (result->automatic == FALSE));
 	} else {
-		rb_podcast_manager_insert_feed (result->pd, result->channel);
+		rb_podcast_manager_add_parsed_feed (result->pd, result->channel);
 	}
 
 	GDK_THREADS_LEAVE ();
@@ -1187,21 +1186,21 @@ rb_podcast_manager_thread_parse_feed (RBPodcastThreadInfo *info)
 
 RhythmDBEntry *
 rb_podcast_manager_add_post (RhythmDB *db,
-			      const char *name,
-			      const char *title,
-			      const char *subtitle,
-			      const char *generator,
-			      const char *uri,
-			      const char *description,
-			      gulong date,
-			      gulong duration,
-			      guint64 filesize)
+			     gboolean search_result,
+			     const char *name,
+			     const char *title,
+			     const char *subtitle,
+			     const char *generator,
+			     const char *uri,
+			     const char *description,
+			     gulong date,
+			     gulong duration,
+			     guint64 filesize)
 {
 	RhythmDBEntry *entry;
+	RhythmDBEntryType *entry_type;
 	GValue val = {0,};
 	GTimeVal time;
-	RhythmDBQueryModel *mountpoint_entries;
-	GtkTreeIter iter;
 
 	if (!uri || !name || !title || !g_utf8_validate(uri, -1, NULL)) {
 		return NULL;
@@ -1210,33 +1209,43 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	if (entry)
 		return NULL;
 
-	/*
-	 * Does the uri exist as the mount-point?
-	 * This check is necessary since after an entry's file is downloaded,
-	 * the location stored in the db changes to the local file path
-	 * instead of the uri. The uri moves to the mount-point attribute.
-	 * Consequently, without this check, every downloaded entry will be
-	 * re-added to the db.
-	 */
-	mountpoint_entries = rhythmdb_query_model_new_empty (db);
-	g_object_set (mountpoint_entries, "show-hidden", TRUE, NULL);
-	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (mountpoint_entries),
-		RHYTHMDB_QUERY_PROP_EQUALS,
-		RHYTHMDB_PROP_TYPE,
-		RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
-		RHYTHMDB_QUERY_PROP_EQUALS,
-		RHYTHMDB_PROP_MOUNTPOINT,
-		uri,
-		RHYTHMDB_QUERY_END);
+	if (search_result == FALSE) {
+		RhythmDBQueryModel *mountpoint_entries;
+		GtkTreeIter iter;
 
-	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (mountpoint_entries), &iter)) {
+		/*
+		 * Does the uri exist as the mount-point?
+		 * This check is necessary since after an entry's file is downloaded,
+		 * the location stored in the db changes to the local file path
+		 * instead of the uri. The uri moves to the mount-point attribute.
+		 * Consequently, without this check, every downloaded entry will be
+		 * re-added to the db.
+		 */
+		mountpoint_entries = rhythmdb_query_model_new_empty (db);
+		g_object_set (mountpoint_entries, "show-hidden", TRUE, NULL);
+		rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (mountpoint_entries),
+			RHYTHMDB_QUERY_PROP_EQUALS,
+			RHYTHMDB_PROP_TYPE,
+			RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
+			RHYTHMDB_QUERY_PROP_EQUALS,
+			RHYTHMDB_PROP_MOUNTPOINT,
+			uri,
+			RHYTHMDB_QUERY_END);
+
+		if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (mountpoint_entries), &iter)) {
+			g_object_unref (mountpoint_entries);
+			return NULL;
+		}
 		g_object_unref (mountpoint_entries);
-		return NULL;
 	}
-	g_object_unref (mountpoint_entries);
+
+	if (search_result)
+		entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_SEARCH;
+	else
+		entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
 
 	entry = rhythmdb_entry_new (db,
-				    RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
+				    entry_type,
 				    uri);
 	if (entry == NULL)
 		return NULL;
@@ -1918,8 +1927,8 @@ rb_podcast_manager_insert_feed_url (RBPodcastManager *pd, const char *url)
 	g_value_unset (&last_update_val);
 }
 
-static void
-rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
+void
+rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 {
 	GValue description_val = { 0, };
 	GValue title_val = { 0, };
@@ -2084,6 +2093,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 
 		post_entry =
 		    rb_podcast_manager_add_post (db,
+			    FALSE,
 			    title,
 			    (gchar *) item->title,
 			    (gchar *) data->url,

@@ -35,6 +35,7 @@
 
 static RhythmDBEntryType *podcast_post_entry_type = NULL;
 static RhythmDBEntryType *podcast_feed_entry_type = NULL;
+static RhythmDBEntryType *podcast_search_entry_type = NULL;
 
 /* podcast post entry type class */
 
@@ -58,14 +59,16 @@ GType rb_podcast_feed_entry_type_get_type (void);
 
 G_DEFINE_TYPE (RBPodcastFeedEntryType, rb_podcast_feed_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
 
-static char *
-podcast_get_playback_uri (RhythmDBEntryType *entry_type, RhythmDBEntry *entry)
-{
-	if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT) != NULL) {
-		return rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
-	}
-	return NULL;
-}
+/* podcast search entry type class */
+
+typedef struct _RhythmDBEntryType RBPodcastSearchEntryType;
+typedef struct _RhythmDBEntryTypeClass RBPodcastSearchEntryTypeClass;
+
+static void rb_podcast_search_entry_type_class_init (RBPodcastSearchEntryTypeClass *klass);
+static void rb_podcast_search_entry_type_init (RBPodcastSearchEntryType *etype);
+GType rb_podcast_search_entry_type_get_type (void);
+
+G_DEFINE_TYPE (RBPodcastSearchEntryType, rb_podcast_search_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
 
 static void
 podcast_post_create (RhythmDBEntryType *entry_type, RhythmDBEntry *entry)
@@ -113,7 +116,6 @@ rb_podcast_post_entry_type_class_init (RBPodcastPostEntryTypeClass *klass)
 
 	etype_class->entry_created = podcast_post_create;
 	etype_class->destroy_entry = podcast_data_destroy;
-	etype_class->get_playback_uri = podcast_get_playback_uri;
 	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
 	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
 }
@@ -124,11 +126,11 @@ rb_podcast_post_entry_type_init (RBPodcastPostEntryType *etype)
 }
 
 /**
- * rhythmdb_get_ignore_entry_type:
+ * rhythmdb_get_feed_entry_type:
  *
- * Returns the #RhythmDBEntryType for ignored files
+ * Returns the #RhythmDBEntryType for podcast feeds 
  *
- * Return value: (transfer none): the entry type for ignored files
+ * Return value: (transfer none): the entry type for podcast feeds
  */
 RhythmDBEntryType *
 rb_podcast_get_feed_entry_type (void)
@@ -150,6 +152,35 @@ rb_podcast_feed_entry_type_class_init (RBPodcastFeedEntryTypeClass *klass)
 
 static void
 rb_podcast_feed_entry_type_init (RBPodcastFeedEntryType *etype)
+{
+}
+
+/**
+ * rhythmdb_get_search_entry_type:
+ *
+ * Returns the #RhythmDBEntryType for search result podcast episodes
+ *
+ * Return value: (transfer none): the entry type for search result podcast episodes
+ */
+RhythmDBEntryType *
+rb_podcast_get_search_entry_type (void)
+{
+	return podcast_search_entry_type;
+}
+
+static void
+rb_podcast_search_entry_type_class_init (RBPodcastSearchEntryTypeClass *klass)
+{
+	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
+
+	etype_class->entry_created = podcast_post_create;
+	etype_class->destroy_entry = podcast_data_destroy;
+	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
+	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
+}
+
+static void
+rb_podcast_search_entry_type_init (RBPodcastSearchEntryType *etype)
 {
 }
 
@@ -177,4 +208,13 @@ rb_podcast_register_entry_types (RhythmDB *db)
 						"type-data-size", sizeof (RhythmDBPodcastFields),
 						NULL);
 	rhythmdb_register_entry_type (db, podcast_feed_entry_type);
+
+	podcast_search_entry_type = g_object_new (rb_podcast_search_entry_type_get_type (),
+						"db", db,
+						"name", "podcast-search",
+						"save-to-disk", FALSE,
+						"category", RHYTHMDB_ENTRY_NORMAL,
+						"type-data-size", sizeof (RhythmDBPodcastFields),
+						NULL);
+	rhythmdb_register_entry_type (db, podcast_search_entry_type);
 }
