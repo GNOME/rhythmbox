@@ -113,7 +113,7 @@ static const char *podcast_uri_prefixes[] = {
 
 static guint signals[LAST_SIGNAL] = {0,};
 
-G_DEFINE_TYPE (RBPodcastAddDialog, rb_podcast_add_dialog, GTK_TYPE_VBOX);
+G_DEFINE_TYPE (RBPodcastAddDialog, rb_podcast_add_dialog, GTK_TYPE_BOX);
 
 
 static gboolean
@@ -666,10 +666,11 @@ impl_constructed (GObject *object)
 
 	dialog->priv->info_bar_message = gtk_label_new ("");
 	dialog->priv->info_bar = gtk_info_bar_new ();
+	g_object_set (dialog->priv->info_bar, "spacing", 0, NULL);
 	gtk_container_add (GTK_CONTAINER (gtk_info_bar_get_content_area (GTK_INFO_BAR (dialog->priv->info_bar))),
 			   dialog->priv->info_bar_message);
 	gtk_widget_set_no_show_all (dialog->priv->info_bar, TRUE);
-	gtk_box_pack_start (GTK_BOX (gtk_builder_get_object (builder, "info-bar-container")), dialog->priv->info_bar, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (dialog), dialog->priv->info_bar, FALSE, FALSE, 0);
 	gtk_widget_show (dialog->priv->info_bar_message);
 
 	dialog->priv->subscribe_button = GTK_WIDGET (gtk_builder_get_object (builder, "subscribe-button"));
@@ -732,7 +733,7 @@ impl_constructed (GObject *object)
 	gtk_tree_view_append_column (GTK_TREE_VIEW (dialog->priv->feed_view), column);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "podcast-add-dialog"));
-	gtk_box_pack_start (GTK_BOX (dialog), widget, TRUE, TRUE, 12);	/* 12? */
+	gtk_box_pack_start (GTK_BOX (dialog), widget, TRUE, TRUE, 12);
 
 	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (dialog->priv->feed_view), TRUE);
 
@@ -936,6 +937,7 @@ rb_podcast_add_dialog_new (RBShell *shell, RBPodcastManager *podcast_mgr)
 	return GTK_WIDGET (g_object_new (RB_TYPE_PODCAST_ADD_DIALOG,
 					 "shell", shell,
 					 "podcast-manager", podcast_mgr,
+					 "orientation", GTK_ORIENTATION_VERTICAL,
 					 NULL));
 }
 

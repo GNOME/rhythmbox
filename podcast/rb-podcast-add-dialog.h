@@ -48,14 +48,14 @@ typedef struct RBPodcastAddDialogPrivate RBPodcastAddDialogPrivate;
 
 struct _RBPodcastAddDialog
 {
-	GtkHBox parent;
+	GtkBox parent;
 
 	RBPodcastAddDialogPrivate *priv;
 };
 
 struct _RBPodcastAddDialogClass
 {
-	GtkHBoxClass parent;
+	GtkBoxClass parent;
 
 	/* signals */
 	void	(*close)	(RBPodcastAddDialog *dialog);

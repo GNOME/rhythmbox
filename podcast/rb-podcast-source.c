@@ -88,6 +88,7 @@ struct _RBPodcastSourcePrivate
 
 	guint prefs_notify_id;
 
+	GtkWidget *grid;
 	GtkWidget *paned;
 	GtkWidget *add_dialog;
 	GtkAction *add_action;
@@ -347,6 +348,7 @@ static void
 podcast_add_dialog_closed_cb (RBPodcastAddDialog *dialog, RBPodcastSource *source)
 {
 	rb_podcast_source_do_query (source);
+	gtk_widget_set_margin_top (GTK_WIDGET (source->priv->grid), 6);
 	gtk_widget_hide (source->priv->add_dialog);
 	gtk_widget_show (GTK_WIDGET (source->priv->toolbar));
 	gtk_widget_show (source->priv->paned);
@@ -393,6 +395,7 @@ podcast_cmd_new_podcast (GtkAction *action, RBPodcastSource *source)
 	g_object_set (source, "query-model", query_model, NULL);
 	g_object_unref (query_model);
 
+	gtk_widget_set_margin_top (GTK_WIDGET (source->priv->grid), 0);
 	gtk_widget_hide (source->priv->paned);
 	gtk_widget_hide (GTK_WIDGET (source->priv->toolbar));
 	gtk_widget_show (source->priv->add_dialog);
@@ -1318,7 +1321,6 @@ impl_constructed (GObject *object)
 	GSettings *settings;
 	int position;
 	GtkUIManager *ui_manager;
-	GtkWidget *grid;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_source_parent_class, constructed, object);
 	source = RB_PODCAST_SOURCE (object);
@@ -1578,18 +1580,20 @@ impl_constructed (GObject *object)
 	gtk_paned_pack2 (GTK_PANED (source->priv->paned),
 			 GTK_WIDGET (source->priv->posts), TRUE, FALSE);
 
-	grid = gtk_grid_new ();
-	gtk_widget_set_margin_top (GTK_WIDGET (grid), 6);
-	gtk_grid_set_column_spacing (GTK_GRID (grid), 6);
-	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
-	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (source->priv->toolbar), 0, 0, 1, 1);
-	gtk_grid_attach (GTK_GRID (grid), source->priv->paned, 0, 1, 1, 1);
+	source->priv->grid = gtk_grid_new ();
+	gtk_widget_set_margin_top (GTK_WIDGET (source->priv->grid), 6);
+	gtk_grid_set_column_spacing (GTK_GRID (source->priv->grid), 6);
+	gtk_grid_set_row_spacing (GTK_GRID (source->priv->grid), 6);
+	gtk_grid_attach (GTK_GRID (source->priv->grid), GTK_WIDGET (source->priv->toolbar), 0, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (source->priv->grid), source->priv->paned, 0, 1, 1, 1);
 
-	gtk_container_add (GTK_CONTAINER (source), grid);
+	gtk_container_add (GTK_CONTAINER (source), source->priv->grid);
 
 	/* podcast add dialog */
 	source->priv->add_dialog = rb_podcast_add_dialog_new (shell, source->priv->podcast_mgr);
-	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (source->priv->add_dialog), 0, 2, 1, 1);
+	gtk_widget_show_all (source->priv->add_dialog);
+	gtk_widget_set_margin_top (source->priv->add_dialog, 0);
+	gtk_grid_attach (GTK_GRID (source->priv->grid), GTK_WIDGET (source->priv->add_dialog), 0, 2, 1, 1);
 	gtk_widget_set_no_show_all (source->priv->add_dialog, TRUE);
 	g_signal_connect_object (source->priv->add_dialog, "closed", G_CALLBACK (podcast_add_dialog_closed_cb), source, 0);
 
