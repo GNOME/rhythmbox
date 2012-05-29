@@ -10,25 +10,25 @@
 # Raivis Dejus <orvils@gmail.com>, 2006, 2007, 2009.
 # Peteris Caune <cuu508@gmail.com>, 2007.
 # Peteris Krisjanis <pecisk@gmail.com>, 2010, 2012.
-# Rūdofls Mazurs <rudolfs.mazurs@gmail.com>, 2011.
+# Rūdofls Mazurs <rudolfs.mazurs@gmail.com>, 2011, 2012.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD.lv\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug."
-"cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-03-05 22:37+0000\n"
-"PO-Revision-Date: 2012-03-06 23:21+0200\n"
-"Last-Translator: Peteris Krisjanis <pecisk@gmail.com>\n"
-"Language-Team: Latvian <lata-l10n@googlegroups.com>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-29 11:53+0300\n"
+"PO-Revision-Date: 2012-05-29 12:11+0300\n"
+"Last-Translator: Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>\n"
+"Language-Team: Latviešu <lata-l10n@googlegroups.com>\n"
+"Language: lv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "#-#-#-#-#  lv.po (monkey-media)  #-#-#-#-#\n"
 "#-#-#-#-#  lv.po (rhythmbox)  #-#-#-#-#\n"
 "X-Generator: Lokalize 1.1\n"
-"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : "
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : "
 "2);\n"
-"Language: lv\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:502
 #, c-format
@@ -36,55 +36,55 @@ msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Neizdevās izveidot GStreamer saņēmēja elementu, lai rakstītu uz %s"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:492
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2735
+#: ../backends/gstreamer/rb-player-gst.c:493
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2829
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Neizdevās atvērt izvada ierīci: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:633
+#: ../backends/gstreamer/rb-player-gst.c:638
 #, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr "Neizdevās izveidot playbin2 elementu; pārbaudīt Gstreamer instalāciju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1109
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1123
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1118
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1132
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Neizdevās izveidot jaunu straumi GStreamer konveijerā"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1151
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1160
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Neizdevās sākt jaunu straumi"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2660
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2754
 #, c-format
 msgid "Failed to open output device"
 msgstr "Neizdevās atvērt izejas ierīci"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3013
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3086
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3107
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3180
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Neizdevās izveidot GStreamer elementu; pārbaudiet savu instalaciju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3027
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3121
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Neizdevās izveidot audio izvada elementu; pārbaudiet savu instalāciju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3060
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3102
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3128
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3137
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3146
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3154
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3196
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3222
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3231
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3240
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Neizdevās izveidot GStreamer konveijeru, pārbaudiet savu instalāciju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3241
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3335
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Neizdevās izveidot GStreamer konveijeru, lai atskaņotu %s"
@@ -102,8 +102,8 @@ msgid "My Top Rated"
 msgstr "Augstāk novērtētās"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/rb-shell.c:623
-#: ../shell/rb-shell.c:2696
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/rb-shell.c:615
+#: ../shell/rb-shell.c:2661
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -155,105 +155,81 @@ msgid "_When sorted by:"
 msgstr "_Kārtojot pēc:"
 
 #: ../data/ui/general-prefs.ui.h:1
-msgid "Default"
-msgstr "Noklusētais"
-
-#: ../data/ui/general-prefs.ui.h:2
-msgid "Text below icons"
-msgstr "Teksts zem ikonām"
-
-#: ../data/ui/general-prefs.ui.h:3
-msgid "Text beside icons"
-msgstr "Teksts blakus ikonām"
-
-#: ../data/ui/general-prefs.ui.h:4
-msgid "Icons only"
-msgstr "Tikai ikonas"
-
-#: ../data/ui/general-prefs.ui.h:5
-msgid "Text only"
-msgstr "Tikai teksts"
-
-#: ../data/ui/general-prefs.ui.h:6
 msgid "Browser Views"
 msgstr "Pārlūka skati"
 
-#: ../data/ui/general-prefs.ui.h:7
+#: ../data/ui/general-prefs.ui.h:2
 msgid "_Artists and albums"
 msgstr "Izpildītāji un _albumi"
 
-#: ../data/ui/general-prefs.ui.h:8
+#: ../data/ui/general-prefs.ui.h:3
 msgid "_Genres and artists"
 msgstr "Ža_nri un izpildītāji"
 
-#: ../data/ui/general-prefs.ui.h:9
+#: ../data/ui/general-prefs.ui.h:4
 msgid "G_enres, artists and albums"
 msgstr "Ž_anri, izpildītāji un albumi"
 
-#: ../data/ui/general-prefs.ui.h:10
+#: ../data/ui/general-prefs.ui.h:5
 msgid "Visible Columns"
 msgstr "Redzamās kolonnas"
 
-#: ../data/ui/general-prefs.ui.h:11
+#: ../data/ui/general-prefs.ui.h:6
 msgid "Track _number"
 msgstr "Celiņa _numurs"
 
-#: ../data/ui/general-prefs.ui.h:12
+#: ../data/ui/general-prefs.ui.h:7
 msgid "_Artist"
 msgstr "_Izpildītājs"
 
-#: ../data/ui/general-prefs.ui.h:13
+#: ../data/ui/general-prefs.ui.h:8
 msgid "A_lbum"
 msgstr "A_lbums"
 
-#: ../data/ui/general-prefs.ui.h:14
+#: ../data/ui/general-prefs.ui.h:9
 msgid "_Year"
 msgstr "_Gads"
 
-#: ../data/ui/general-prefs.ui.h:15
+#: ../data/ui/general-prefs.ui.h:10
 msgid "_Last played"
 msgstr "_Pēdējoreiz atskaņots"
 
-#: ../data/ui/general-prefs.ui.h:16
+#: ../data/ui/general-prefs.ui.h:11
 msgid "_Genre"
 msgstr "_Žanrs"
 
-#: ../data/ui/general-prefs.ui.h:17
+#: ../data/ui/general-prefs.ui.h:12
 msgid "Da_te added"
 msgstr "Pievienošanas da_tums"
 
-#: ../data/ui/general-prefs.ui.h:18
+#: ../data/ui/general-prefs.ui.h:13
 msgid "_Play count"
 msgstr "_Atskaņojumu skaits"
 
-#: ../data/ui/general-prefs.ui.h:19
+#: ../data/ui/general-prefs.ui.h:14
 msgid "C_omment"
 msgstr "K_omentārs"
 
-#: ../data/ui/general-prefs.ui.h:20 ../widgets/rb-entry-view.c:1594
+#: ../data/ui/general-prefs.ui.h:15 ../widgets/rb-entry-view.c:1594
 msgid "BPM"
 msgstr "BPM"
 
-#: ../data/ui/general-prefs.ui.h:21
+#: ../data/ui/general-prefs.ui.h:16
 msgid "_Rating"
 msgstr "_Vērtējums"
 
-#: ../data/ui/general-prefs.ui.h:22
+#: ../data/ui/general-prefs.ui.h:17
 msgid "Ti_me"
 msgstr "_Laiks"
 
-#: ../data/ui/general-prefs.ui.h:23
+#: ../data/ui/general-prefs.ui.h:18
 msgid "Lo_cation"
 msgstr "A_trašanās vieta"
 
-#: ../data/ui/general-prefs.ui.h:24
+#: ../data/ui/general-prefs.ui.h:19
 #: ../plugins/visualizer/rb-visualizer-menu.c:138
 msgid "_Quality"
 msgstr "_Kvalitāte"
-
-#: ../data/ui/general-prefs.ui.h:25
-msgid "Toolbar Button Labels"
-msgstr "Rīkjoslas pogu etiķetes"
 
 #: ../data/ui/library-prefs.ui.h:1
 msgid "Library Location"
@@ -293,8 +269,8 @@ msgstr ""
 "Mākslinieks/Mākslinieks - Albums/Mākslinieks (Albums) - 01 - Virsraksts.ogg"
 
 #: ../data/ui/library-prefs.ui.h:10
-msgid "_Settings"
-msgstr "Ie_statījumi"
+msgid "Format settings:"
+msgstr "Formatēšanas iestatījumi:"
 
 #: ../data/ui/library-prefs.ui.h:11
 msgid "_Install additional software required to use this format"
@@ -359,6 +335,25 @@ msgstr "Izvēlēties repertuāra formātu:"
 #: ../data/ui/playlist-save.ui.h:4
 msgid "<b>Playlist format</b>"
 msgstr "<b>Repertuāra formāts</b>"
+
+#: ../data/ui/podcast-add-dialog.ui.h:1
+msgid "Subscribe"
+msgstr "Abonēt"
+
+#: ../data/ui/podcast-add-dialog.ui.h:2
+msgid ""
+"Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
+"podcast feed URL.\n"
+"Subscribe to podcasts to download new episodes as they are published."
+msgstr ""
+"Meklējiet podraides iTunes veikalā un Miroguide.com, vai ievadiet podraides "
+"plūsmas URL.\n"
+"Abonējiet podraidi, lai lejupielādētu jaunās sērijas brīdī, kad tās tiek "
+"publicētas."
+
+#: ../data/ui/podcast-add-dialog.ui.h:4
+msgid "Close"
+msgstr "Aizvērt"
 
 #: ../data/ui/podcast-feed-properties.ui.h:1
 #: ../data/ui/podcast-properties.ui.h:1
@@ -435,7 +430,7 @@ msgstr "Pašrocīgi"
 
 #: ../data/ui/podcast-properties.ui.h:2
 msgid "Feed:"
-msgstr "Barotne:"
+msgstr "Plūsma:"
 
 #: ../data/ui/podcast-properties.ui.h:3
 msgid "Date:"
@@ -631,7 +626,7 @@ msgstr "Parādīt sesijas pārvaldības opcijas"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3602 ../widgets/rb-entry-view.c:933
+#: ../rhythmdb/rhythmdb.c:3603 ../widgets/rb-entry-view.c:933
 #: ../widgets/rb-entry-view.c:1542 ../widgets/rb-entry-view.c:1555
 #: ../widgets/rb-song-info.c:1465
 msgid "Never"
@@ -676,39 +671,42 @@ msgstr "%d. %b, %Y."
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:696
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:713
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
-#: ../plugins/audiocd/rb-audiocd-source.c:604
+#: ../plugins/audiocd/rb-audiocd-source.c:606
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:589
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:593
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
-#: ../plugins/generic-player/rb-generic-player-source.c:1063
-#: ../plugins/ipod/rb-ipod-source.c:566
-#: ../plugins/iradio/rb-iradio-source.c:562
-#: ../plugins/iradio/rb-iradio-source.c:1054
+#: ../plugins/generic-player/rb-generic-player-source.c:1094
+#: ../plugins/ipod/rb-ipod-source.c:567
+#: ../plugins/iradio/rb-iradio-source.c:563
+#: ../plugins/iradio/rb-iradio-source.c:1055
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78 ../plugins/lyrics/lyrics.py:80
-#: ../plugins/mtpdevice/rb-mtp-source.c:632
-#: ../plugins/mtpdevice/rb-mtp-source.c:1092
-#: ../plugins/mtpdevice/rb-mtp-source.c:1466
+#: ../plugins/mtpdevice/rb-mtp-source.c:659
+#: ../plugins/mtpdevice/rb-mtp-source.c:1143
+#: ../plugins/mtpdevice/rb-mtp-source.c:1517
 #: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-manager.c:1903 ../podcast/rb-podcast-manager.c:1997
+#: ../podcast/rb-podcast-add-dialog.c:576 ../podcast/rb-podcast-manager.c:1904
+#: ../podcast/rb-podcast-manager.c:1998
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
-#: ../podcast/rb-podcast-source.c:748 ../remote/dbus/rb-client.c:144
+#: ../podcast/rb-podcast-source.c:787 ../remote/dbus/rb-client.c:144
 #: ../rhythmdb/rhythmdb.c:2028 ../rhythmdb/rhythmdb.c:2034
-#: ../rhythmdb/rhythmdb.c:2049 ../rhythmdb/rhythmdb.c:5392
-#: ../rhythmdb/rhythmdb.c:5397 ../rhythmdb/rhythmdb-tree.c:1344
+#: ../rhythmdb/rhythmdb.c:2049 ../rhythmdb/rhythmdb.c:5396
+#: ../rhythmdb/rhythmdb.c:5401 ../rhythmdb/rhythmdb-tree.c:1344
 #: ../rhythmdb/rhythmdb-tree.c:1348 ../rhythmdb/rhythmdb-tree.c:1352
-#: ../rhythmdb/rhythmdb-tree.c:1356 ../shell/rb-shell-player.c:1771
-#: ../shell/rb-shell-player.c:3739 ../widgets/rb-entry-view.c:985
-#: ../widgets/rb-entry-view.c:1007 ../widgets/rb-entry-view.c:1483
-#: ../widgets/rb-entry-view.c:1495 ../widgets/rb-entry-view.c:1507
-#: ../widgets/rb-song-info.c:920 ../widgets/rb-song-info.c:932
-#: ../widgets/rb-song-info.c:1153 ../widgets/rb-song-info.c:1492
+#: ../rhythmdb/rhythmdb-tree.c:1356 ../shell/rb-shell-player.c:1790
+#: ../shell/rb-shell-player.c:3759 ../shell/rb-shell-player.c:3761
+#: ../widgets/rb-entry-view.c:985 ../widgets/rb-entry-view.c:1007
+#: ../widgets/rb-entry-view.c:1483 ../widgets/rb-entry-view.c:1495
+#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1098
+#: ../widgets/rb-header.c:1124 ../widgets/rb-song-info.c:920
+#: ../widgets/rb-song-info.c:932 ../widgets/rb-song-info.c:1153
+#: ../widgets/rb-song-info.c:1492
 msgid "Unknown"
 msgstr "Nezināms"
 
@@ -722,63 +720,63 @@ msgstr "Pārāk daudz simbolsaišu"
 msgid "Cannot get free space at %s: %s"
 msgstr "Nevar iegūt brīvo vietu no %s: %s"
 
-#: ../lib/rb-util.c:698 ../plugins/context/tmpl/album-tmpl.html:21
+#: ../lib/rb-util.c:694 ../plugins/context/tmpl/album-tmpl.html:21
 #: ../remote/dbus/rb-client.c:146
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:700 ../plugins/context/tmpl/album-tmpl.html:19
+#: ../lib/rb-util.c:696 ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:148
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:747
+#: ../lib/rb-util.c:760
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d of %d:%02d atlicis"
 
-#: ../lib/rb-util.c:751
+#: ../lib/rb-util.c:764
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d no %d:%02d:%02d atlicis"
 
-#: ../lib/rb-util.c:756
+#: ../lib/rb-util.c:769
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d no %d:%02d"
 
-#: ../lib/rb-util.c:760
+#: ../lib/rb-util.c:773
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d no %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:519
+#: ../metadata/rb-metadata-gst.c:520
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
 msgstr "Nevar ierakstīt birkas šajā failā, jo tajā ir vairākas straumes"
 
-#: ../metadata/rb-metadata-gst.c:559
+#: ../metadata/rb-metadata-gst.c:560
 #, c-format
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
 msgstr ""
 "Nevar ierakstīt birkas šajā failā, jo tas nav iekodēts atbalstītā formātā"
 
-#: ../metadata/rb-metadata-gst.c:691
+#: ../metadata/rb-metadata-gst.c:692
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Neizdevās izveidot avota elementu; pārbaudiet savu instalāciju"
 
-#: ../metadata/rb-metadata-gst.c:701
+#: ../metadata/rb-metadata-gst.c:702
 #, c-format
 msgid ""
 "Failed to create the 'decodebin2' element; check your GStreamer installation"
 msgstr ""
 "Neizdevās izveidot 'decodebin2' elementu; pārbaudīt GStreamer instalāciju"
 
-#: ../metadata/rb-metadata-gst.c:710
+#: ../metadata/rb-metadata-gst.c:711
 #, c-format
 msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
@@ -786,29 +784,18 @@ msgid ""
 msgstr ""
 "Neizdevās izveidot 'giostreamsink' elementu; pārbaudīt GStreamer instalāciju"
 
-#: ../metadata/rb-metadata-gst.c:791
+#: ../metadata/rb-metadata-gst.c:794
 #, c-format
 msgid "File corrupted during write"
 msgstr "Fails bojāts rakstīšanas laikā"
 
-#: ../plugins/artdisplay/artdisplay.plugin.in.h:1
-msgid "Cover art"
-msgstr "Vāciņa attēls"
+#: ../plugins/artsearch/artsearch.plugin.in.h:1
+msgid "Cover art search"
+msgstr "Vāciņa attēla meklēšana"
 
-#: ../plugins/artdisplay/artdisplay.plugin.in.h:2
 #: ../plugins/artsearch/artsearch.plugin.in.h:2
 msgid "Fetch album covers from the Internet"
 msgstr "Ielādē albuma vāciņus no interneta"
-
-#: ../plugins/artdisplay/artdisplay.py:312
-#| msgid "Searching for lyrics..."
-msgid "Searching..."
-msgstr "Meklē..."
-
-#: ../plugins/artsearch/artsearch.plugin.in.h:1
-#| msgid "Cover art"
-msgid "Cover art search"
-msgstr "Vāciņa attēla meklēšana"
 
 #: ../plugins/audiocd/album-info.ui.h:1
 msgid "A_lbum:"
@@ -889,86 +876,95 @@ msgstr "Neizdevās atrast šo albumu MusicBrainz."
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "Jūs vara papildināt MusicBrainz datubāzi, pievienojot šo albumu."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:610
+#: ../plugins/audiocd/rb-audiocd-source.c:612
 msgid "<Invalid unicode>"
 msgstr "<Nederīgs unikods>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:653
+#: ../plugins/audiocd/rb-audiocd-source.c:655
 #, c-format
 msgid "Track %u"
 msgstr "%u celiņš"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:714
-#: ../plugins/audiocd/rb-audiocd-source.c:722
-#: ../plugins/audiocd/rb-audiocd-source.c:1136
+#: ../plugins/audiocd/rb-audiocd-source.c:716
+#: ../plugins/audiocd/rb-audiocd-source.c:724
+#: ../plugins/audiocd/rb-audiocd-source.c:1146
 msgid "Couldn't load Audio CD"
 msgstr "Neizdevās ielādēt audio CD"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:715
+#: ../plugins/audiocd/rb-audiocd-source.c:717
 msgid "Rhythmbox couldn't access the CD."
 msgstr "Rhythmbox neizdevās piekļūt CD."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:723
+#: ../plugins/audiocd/rb-audiocd-source.c:725
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox nevarēja nolasīt CD informāciju."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:991
-#: ../sources/rb-library-source.c:129 ../widgets/rb-entry-view.c:1429
+#: ../plugins/audiocd/rb-audiocd-source.c:996
+#: ../podcast/rb-podcast-add-dialog.c:711 ../sources/rb-library-source.c:133
+#: ../widgets/rb-entry-view.c:1429
 msgid "Title"
 msgstr "Nosaukums"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:998
-#: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:120
+#: ../plugins/audiocd/rb-audiocd-source.c:1003
+#: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:124
 #: ../widgets/rb-entry-view.c:1439 ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Izpildītājs"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1137
+#: ../plugins/audiocd/rb-audiocd-source.c:1147
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "Rhythmbox neizdevās saņemt pieeju CD iekārtai."
 
-#: ../plugins/audiocd/sj-metadata.c:190
+#. FIXME: would be nicer to only check if "cdrom" is being probed,
+#. * but libbrasero doesn't seem to have an API for that
+#.
+#: ../plugins/audiocd/sj-metadata.c:182 ../plugins/audiocd/sj-metadata.c:205
+#: ../plugins/audiocd/sj-metadata.c:216
+#, c-format
+msgid "Cannot read CD: %s"
+msgstr "Neizdodas nolasīt CD: %s"
+
+#: ../plugins/audiocd/sj-metadata.c:183
+msgid "Devices haven't been all probed yet"
+msgstr "Ne visas ierīces vēl ir izmeklētas"
+
+#: ../plugins/audiocd/sj-metadata.c:199
 #, c-format
 msgid "Device '%s' does not contain any media"
 msgstr "Iekārta \"%s\" nesatur mēdiju"
 
-#: ../plugins/audiocd/sj-metadata.c:193
+#: ../plugins/audiocd/sj-metadata.c:202
 #, c-format
 msgid ""
 "Device '%s' could not be opened. Check the access permissions on the device."
 msgstr ""
 "Iekārtu %s neizdevās atvērt. Pārbaudiet šīs ierīces piekļuves atļaujas."
 
-#: ../plugins/audiocd/sj-metadata.c:196 ../plugins/audiocd/sj-metadata.c:207
-#, c-format
-msgid "Cannot read CD: %s"
-msgstr "Neizdodas nolasīt CD: %s"
-
-#: ../plugins/audiocd/sj-metadata-getter.c:247
+#: ../plugins/audiocd/sj-metadata-getter.c:253
 #, c-format
 msgid "Could not create CD lookup thread"
 msgstr "Neizdevās izveidot CD uzmeklešanas pavedienu"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:86
+#: ../plugins/audiocd/sj-metadata-gvfs.c:90
 #, c-format
 msgid "Cannot access CD"
 msgstr "Neizdodas piekļūt CD"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:105
+#: ../plugins/audiocd/sj-metadata-gvfs.c:109
 msgid "Unknown Title"
 msgstr "Nezināms virsraksts"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:109
-#: ../plugins/audiocd/sj-metadata-gvfs.c:135
+#: ../plugins/audiocd/sj-metadata-gvfs.c:113
+#: ../plugins/audiocd/sj-metadata-gvfs.c:139
 msgid "Unknown Artist"
 msgstr "Nezināms izpildītājs"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:131
+#: ../plugins/audiocd/sj-metadata-gvfs.c:135
 #, c-format
 msgid "Track %d"
 msgstr "Celinš %d"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:156
+#: ../plugins/audiocd/sj-metadata-gvfs.c:160
 #, c-format
 msgid "Cannot access CD: %s"
 msgstr "Neizdodas piekļūt CD: %s"
@@ -1452,7 +1448,7 @@ msgid "Copy CD"
 msgstr "Kopēt CD"
 
 #: ../plugins/context/AlbumTab.py:57
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2391
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2399
 msgid "Albums"
 msgstr "Albumi"
 
@@ -1478,7 +1474,6 @@ msgstr ""
 
 #. Add button to toggle visibility of pane
 #: ../plugins/context/ContextView.py:95
-#| msgid "Context Pane"
 msgid "Conte_xt Pane"
 msgstr "Konte_ksta rūts"
 
@@ -1543,7 +1538,6 @@ msgstr "%s populārākie albumi"
 
 #: ../plugins/context/tmpl/album-tmpl.html:76
 #, c-format
-#| msgid "%s (%d tracks)"
 msgid "%s (%d track)"
 msgid_plural "%s (%d tracks)"
 msgstr[0] "%s (%d celiņš)"
@@ -1652,20 +1646,20 @@ msgstr "Hosts:DAAP koplietotnes ports:"
 msgid "%s's Music"
 msgstr "%s mūzika"
 
-#: ../plugins/daap/rb-daap-source.c:446
+#: ../plugins/daap/rb-daap-source.c:448
 #, c-format
 msgid "The music share '%s' requires a password to connect"
 msgstr "Lai savienotos ar mūzikas koplietotni '%s', ir nepieciešama parole"
 
-#: ../plugins/daap/rb-daap-source.c:517
+#: ../plugins/daap/rb-daap-source.c:519
 msgid "Connecting to music share"
 msgstr "Savienojas ar mūzikas kopvietu"
 
-#: ../plugins/daap/rb-daap-source.c:524
+#: ../plugins/daap/rb-daap-source.c:527
 msgid "Retrieving songs from music share"
 msgstr "Iegūst dziesmas no mūzikas koplietotnes"
 
-#: ../plugins/daap/rb-daap-source.c:610
+#: ../plugins/daap/rb-daap-source.c:614
 msgid "Could not connect to shared music"
 msgstr "Neizdevās pieslēgties koplietotajai mūzikai"
 
@@ -1695,15 +1689,15 @@ msgstr "Nodrošina MediaServer2 D-Bus saskarnes specifikācijas realizāciju"
 msgid "All Tracks"
 msgstr "Visi celiņi"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2390
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2398
 msgid "Artists"
 msgstr "Izpildītājs"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2392
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2400
 msgid "Genres"
 msgstr "Žanri"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2401
+#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2409
 #: ../shell/rb-playlist-manager.c:1103 ../sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "Repertuāri"
@@ -1800,7 +1794,7 @@ msgstr "Dzēst šo repertuāru"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:96
 #: ../plugins/ipod/rb-ipod-plugin.c:102
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:122 ../podcast/rb-podcast-source.c:119
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:122 ../podcast/rb-podcast-source.c:124
 #: ../shell/rb-shell-clipboard.c:190
 msgid "_Properties"
 msgstr "_Rekvizīti"
@@ -1810,9 +1804,9 @@ msgstr "_Rekvizīti"
 msgid "Display device properties"
 msgstr "Rādīt ierīces rekvizītus"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:1352
-#: ../plugins/ipod/rb-ipod-source.c:2150
-#: ../plugins/mtpdevice/rb-mtp-source.c:1560
+#: ../plugins/generic-player/rb-generic-player-source.c:1383
+#: ../plugins/ipod/rb-ipod-source.c:2006
+#: ../plugins/mtpdevice/rb-mtp-source.c:1611
 msgid "Advanced"
 msgstr "Paplašināti"
 
@@ -1996,7 +1990,7 @@ msgstr "Dzēst repertuāru"
 msgid "Unable to initialize new iPod"
 msgstr "Neizdodas inicializēt jaunu iPod"
 
-#: ../plugins/ipod/rb-ipod-source.c:1592
+#: ../plugins/ipod/rb-ipod-source.c:1422
 #: ../podcast/rb-podcast-main-source.c:70
 #: ../sources/sync/rb-sync-settings-ui.c:262
 #: ../sources/sync/rb-sync-settings-ui.c:263
@@ -2004,7 +1998,7 @@ msgstr "Neizdodas inicializēt jaunu iPod"
 msgid "Podcasts"
 msgstr "Podraides"
 
-#: ../plugins/ipod/rb-ipod-source.c:2040
+#: ../plugins/ipod/rb-ipod-source.c:1883
 msgid "New playlist"
 msgstr "Jauns repertuārs"
 
@@ -2027,7 +2021,6 @@ msgstr "Izveidot jaunu Internet radio staciju"
 #. Translators: this is the toolbar button label for
 #. New Internet Radio Station action.
 #: ../plugins/iradio/rb-iradio-source.c:343
-#| msgid "Add"
 msgctxt "Radio"
 msgid "Add"
 msgstr "Pievienot"
@@ -2038,15 +2031,14 @@ msgid "Genre"
 msgstr "Žanrs"
 
 #: ../plugins/iradio/rb-iradio-source.c:400
-#| msgid "URL of internet radio station:"
 msgid "Search your internet radio stations"
 msgstr "Meklē jūsu interneta radio stacijas"
 
-#: ../plugins/iradio/rb-iradio-source.c:486
+#: ../plugins/iradio/rb-iradio-source.c:487
 msgid "Radio"
 msgstr "Radio"
 
-#: ../plugins/iradio/rb-iradio-source.c:626
+#: ../plugins/iradio/rb-iradio-source.c:627
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -2055,19 +2047,19 @@ msgstr[1] "%d stacijas"
 msgstr[2] "%d staciju"
 
 #. should prevent multiple dialogs?  going to kill this nonsense anyway soon..
-#: ../plugins/iradio/rb-iradio-source.c:967
+#: ../plugins/iradio/rb-iradio-source.c:968
 #: ../plugins/iradio/rb-station-properties-dialog.c:403
 msgid "New Internet Radio Station"
 msgstr "Jauna Internet radio stacija"
 
-#: ../plugins/iradio/rb-iradio-source.c:967
+#: ../plugins/iradio/rb-iradio-source.c:968
 msgid "URL of internet radio station:"
 msgstr "Internet radiostacijas URL:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
 #: ../podcast/rb-podcast-properties-dialog.c:507
-#: ../sources/rb-media-player-source.c:413 ../widgets/rb-song-info.c:1078
+#: ../sources/rb-media-player-source.c:426 ../widgets/rb-song-info.c:1078
 #, c-format
 msgid "%s Properties"
 msgstr "%s rekvizīti"
@@ -2093,7 +2085,6 @@ msgid "L_ocation:"
 msgstr "At_rašanās vieta:"
 
 #: ../plugins/lirc/rblirc.plugin.in.h:1
-#| msgid "LIRC "
 msgid "LIRC"
 msgstr "LIRC "
 
@@ -2135,7 +2126,7 @@ msgid "_Save"
 msgstr "_Saglabāt"
 
 #: ../plugins/lyrics/lyrics.py:214 ../plugins/lyrics/lyrics.py:227
-#: ../shell/rb-shell.c:350
+#: ../shell/rb-shell.c:341
 msgid "_Edit"
 msgstr "R_ediģēt"
 
@@ -2176,9 +2167,6 @@ msgid "<b>Magnatune online music store</b>"
 msgstr "<b>Magnatune tiešā mūzikas glabātuve</b>"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:2
-#| msgid ""
-#| "Magnatune is an online record label that is not evil. Some of their key "
-#| "attributes are:\n"
 msgid "Magnatune is an online record label that is not evil.\n"
 msgstr "Magnatune ir tiešsaistes ierakstu leibls, kas nav ļauns.\n"
 
@@ -2192,8 +2180,7 @@ msgid ""
 "(no other service allows that)"
 msgstr ""
 "    * Maksājošie biedri iegūst neierobežotu lejupielāžu skaitu uz visu "
-"katalogu "
-"(neviens cits serviss to nepiedāvā)"
+"katalogu (neviens cits serviss to nepiedāvā)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:7
 #, no-c-format
@@ -2210,20 +2197,17 @@ msgid ""
 "FLAC files."
 msgstr ""
 "    * Atvērtajam pirmkodam draudzīgus failu formātus: MP3 un WAV, bet arī "
-"OGG "
-"un FLAC failiem."
+"OGG un FLAC failiem."
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:9
 msgid "    * All albums and artists hand-picked"
 msgstr "    * Visi mākslinieki un albumi ir izvēlēti ar roku"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:10
-#| msgid "You can find more information at http://www.jamendo.com/"
 msgid "You can find more information at "
 msgstr "Jūs varat uzzināt vairāk šeit "
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:11
-#| msgid "http://www.magnatune.com/info/"
 msgid "http://www.magnatune.com/"
 msgstr "http://www.magnatune.com/"
 
@@ -2430,7 +2414,6 @@ msgid "Cancel Downloads"
 msgstr "Atcelt lejupielādes"
 
 #: ../plugins/magnatune/magnatune.py:150
-#| msgid "Cancel Downloads"
 msgid "Stop album downloads"
 msgstr "Apturēt albūma lejupielādes"
 
@@ -2443,12 +2426,10 @@ msgid "Downloading Magnatune Album(s)"
 msgstr "Lejupielādē Magnatune albumu(-s)"
 
 #: ../plugins/magnatune/MagnatuneSource.py:208
-#| msgid "Couldn't purchase album"
 msgid "Couldn't download album"
 msgstr "Neizdevās lejupielādēt albumu"
 
 #: ../plugins/magnatune/MagnatuneSource.py:209
-#| msgid "You must have a library location set to purchase an album."
 msgid "You must have a library location set to download an album."
 msgstr ""
 "Jums ir jānorāda fonotēkas atrašanās vieta, lai lejupielādētu šo albumu."
@@ -2529,12 +2510,11 @@ msgstr "Neizdevās atvērt pagaidu failu: %s"
 msgid "Rename MTP-device"
 msgstr "Pārsaukt MTP ierīci"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:587
-#| msgid "Media Player Keys"
+#: ../plugins/mtpdevice/rb-mtp-source.c:614
 msgid "Media Player"
 msgstr "Mediju atskaņotājs"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:866
+#: ../plugins/mtpdevice/rb-mtp-source.c:893
 #: ../plugins/mtpdevice/rb-mtp-thread.c:856
 msgid "Media player device error"
 msgstr "Mēdiju atskaņotāja ierīces kļūda"
@@ -2542,12 +2522,12 @@ msgstr "Mēdiju atskaņotāja ierīces kļūda"
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:870
+#: ../plugins/mtpdevice/rb-mtp-source.c:897
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Neizdevās atvērt %s %s ierīci"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:914
+#: ../plugins/mtpdevice/rb-mtp-source.c:941
 msgid "Digital Audio Player"
 msgstr "Digitālais audio atskaņotājs"
 
@@ -2614,7 +2594,7 @@ msgstr "no <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:390
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:202
-#: ../widgets/rb-header.c:586
+#: ../widgets/rb-header.c:821
 msgid "Not Playing"
 msgstr "Neatskaņo"
 
@@ -2826,6 +2806,29 @@ msgstr "Vizualizēšana"
 msgid "Displays visualizations"
 msgstr "Rāda vizualizāciju"
 
+#: ../podcast/rb-podcast-add-dialog.c:273
+msgid "Unable to load the feed. Check your network connection."
+msgstr "Neizdevās ielādēt plūsmu. Pārbaudiet sava tīkla savienojumu."
+
+#: ../podcast/rb-podcast-add-dialog.c:400
+msgid "Unable to search for podcasts. Check your network connection."
+msgstr "Nevar meklēt podraides. Pārbaudiet sava tīkla savienojumu."
+
+#: ../podcast/rb-podcast-add-dialog.c:722
+msgid "Author"
+msgstr "Autors"
+
+#: ../podcast/rb-podcast-add-dialog.c:727
+#: ../podcast/rb-podcast-add-dialog.c:730
+msgid "Episodes"
+msgstr "Epizodes"
+
+#: ../podcast/rb-podcast-add-dialog.c:758
+#: ../podcast/rb-podcast-add-dialog.c:769 ../podcast/rb-podcast-source.c:1397
+#: ../podcast/rb-podcast-source.c:1408
+msgid "Date"
+msgstr "Datums"
+
 #: ../podcast/rb-podcast-main-source.c:117
 msgid "New Episodes"
 msgstr "Jauna epizode"
@@ -2853,56 +2856,56 @@ msgstr "Kļūda podraidē"
 #: ../podcast/rb-podcast-main-source.c:236
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
-msgstr "%s. Vai vēlaties pievienot šo barotni neskatoties uz to?"
+msgstr "%s. Vai tomēr vēlaties pievienot šo plūsmu?"
 
-#: ../podcast/rb-podcast-manager.c:910
+#: ../podcast/rb-podcast-manager.c:904
 msgid "Error creating podcast download directory"
 msgstr "Kļūda veidojot podraides lejupielādes mapi"
 
-#: ../podcast/rb-podcast-manager.c:911
+#: ../podcast/rb-podcast-manager.c:905
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Neizdodas izveidot lejupielādes mapi %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:1036
+#: ../podcast/rb-podcast-manager.c:1030
 msgid "Invalid URL"
 msgstr "Nepareizs URL"
 
-#: ../podcast/rb-podcast-manager.c:1037
+#: ../podcast/rb-podcast-manager.c:1031
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL \"%s\" nav pareizs, lūdzu, pārbaudiet to."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1047
+#: ../podcast/rb-podcast-manager.c:1041
 msgid "URL already added"
 msgstr "URL jau ir pievienots"
 
-#: ../podcast/rb-podcast-manager.c:1048
+#: ../podcast/rb-podcast-manager.c:1042
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr ""
 "URL \"%s\" jau ir pievienots kā Internet radio stacija. Ja tā ir podraides "
-"barotne, aizvāciet radio staciju."
+"plūsma, izņemiet radio staciju."
 
-#: ../podcast/rb-podcast-manager.c:1124
+#: ../podcast/rb-podcast-manager.c:1118
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
 msgstr ""
-"Neizskatās, ka URL '%s' būtu podraides barotne. Tas varētu būt nepareizs "
-"URL, vai arī barotne ir bojāta. Vai vēlaties, lai Rhythmbox mēģinātu to "
-"izmantot jebkurā gadījumā?"
+"Neizskatās, ka URL '%s' būtu podraides plūsma. Tas varētu būt nepareizs URL, "
+"vai arī plūsma ir bojāta. Vai vēlaties, lai Rhythmbox tomēr mēģinātu to "
+"izmantot?"
 
-#: ../podcast/rb-podcast-manager.c:1245
+#: ../podcast/rb-podcast-manager.c:1249
 msgid "Podcast"
 msgstr "Podraide"
 
-#: ../podcast/rb-podcast-manager.c:2187
+#: ../podcast/rb-podcast-manager.c:2189
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Pievienojot šo podkāstu %s radās problēma. Lūdzu pārbaudiet tā URL: %s"
@@ -2920,12 +2923,12 @@ msgstr "Negaidīts faila tips: %s"
 #: ../podcast/rb-podcast-parse.c:223
 #, c-format
 msgid "Unable to parse the feed contents"
-msgstr "Neizdevās apstrādāt barotnes saturu"
+msgstr "Neizdevās apstrādāt plūsmas saturu"
 
 #: ../podcast/rb-podcast-parse.c:237
 #, c-format
 msgid "The feed does not contain any downloadable items"
-msgstr "Barotnē nav lejupielādējamu elementu"
+msgstr "Plūsmā nav lejupielādējamu elementu"
 
 #: ../podcast/rb-podcast-properties-dialog.c:195
 msgid "Unable to display requested URI"
@@ -2935,131 +2938,123 @@ msgstr "Nevar parādīt pieprasīto URI"
 msgid "Not Downloaded"
 msgstr "Nav lejupielādēts"
 
-#: ../podcast/rb-podcast-source.c:110
+#: ../podcast/rb-podcast-source.c:115
 msgid "_New Podcast Feed..."
-msgstr "Jau_na podraides barotne..."
+msgstr "Jau_na podraides plūsma..."
 
-#: ../podcast/rb-podcast-source.c:111
-msgid "Subscribe to a new Podcast Feed"
-msgstr "Pierakstīties uz jaunu podraides barotni"
+#: ../podcast/rb-podcast-source.c:116
+msgid "Subscribe to a new podcast feed"
+msgstr "Abonēt jaunu podraides plūsmu"
 
-#: ../podcast/rb-podcast-source.c:113
+#: ../podcast/rb-podcast-source.c:118
 msgid "Download _Episode"
 msgstr "L_ejupielādēt epizodi"
 
-#: ../podcast/rb-podcast-source.c:114
+#: ../podcast/rb-podcast-source.c:119
 msgid "Download Podcast Episode"
 msgstr "Lejupielādēt podraides epizodi"
 
-#: ../podcast/rb-podcast-source.c:116
+#: ../podcast/rb-podcast-source.c:121
 msgid "_Cancel Download"
 msgstr "At_celt lejupielādi"
 
-#: ../podcast/rb-podcast-source.c:117
+#: ../podcast/rb-podcast-source.c:122
 msgid "Cancel Episode Download"
 msgstr "Atcelt epizodes lejupielādi"
 
-#: ../podcast/rb-podcast-source.c:120
+#: ../podcast/rb-podcast-source.c:125
 msgid "Episode Properties"
 msgstr "Epizodes rekvizīti"
 
-#: ../podcast/rb-podcast-source.c:122
+#: ../podcast/rb-podcast-source.c:127
 msgid "_Update Podcast Feed"
-msgstr "Atja_unināt podraides barotni"
-
-#: ../podcast/rb-podcast-source.c:123
-msgid "Update Feed"
-msgstr "Atjaunināt barotni"
-
-#: ../podcast/rb-podcast-source.c:125
-msgid "_Delete Podcast Feed"
-msgstr "_Dzēst podraides barotni"
-
-#: ../podcast/rb-podcast-source.c:126
-msgid "Delete Feed"
-msgstr "Dzēst barotni"
+msgstr "Atja_unināt podraides plūsmu"
 
 #: ../podcast/rb-podcast-source.c:128
+msgid "Update Feed"
+msgstr "Atjaunināt plūsmu"
+
+#: ../podcast/rb-podcast-source.c:130
+msgid "_Delete Podcast Feed"
+msgstr "_Dzēst podraides plūsmu"
+
+#: ../podcast/rb-podcast-source.c:131
+msgid "Delete Feed"
+msgstr "Dzēst plūsmu"
+
+#: ../podcast/rb-podcast-source.c:133
 msgid "_Update All Feeds"
-msgstr "Atja_unināt visas barotnes"
+msgstr "Atja_unināt visas plūsmas"
 
-#: ../podcast/rb-podcast-source.c:129
+#: ../podcast/rb-podcast-source.c:134
 msgid "Update all feeds"
-msgstr "Atjaunināt visas barotnes"
+msgstr "Atjaunināt visas plūsmas"
 
-#: ../podcast/rb-podcast-source.c:135 ../sources/rb-auto-playlist-source.c:103
+#: ../podcast/rb-podcast-source.c:140 ../sources/rb-auto-playlist-source.c:103
 #: ../sources/rb-browser-source.c:148
 #: ../sources/rb-static-playlist-source.c:123
 msgid "Search all fields"
 msgstr "Meklēt visos laukos"
 
-#: ../podcast/rb-podcast-source.c:136
+#: ../podcast/rb-podcast-source.c:141
 msgid "Search podcast feeds"
-msgstr "Meklēt podraides barotnes"
+msgstr "Meklēt podraides plūsmas"
 
-#: ../podcast/rb-podcast-source.c:137
+#: ../podcast/rb-podcast-source.c:142
 msgid "Search podcast episodes"
 msgstr "Meklēt podraides epizodes"
 
-#: ../podcast/rb-podcast-source.c:363
-msgid "New Podcast Feed"
-msgstr "Jauna podraides parotne"
-
-#: ../podcast/rb-podcast-source.c:363
-msgid "URL of podcast feed:"
-msgstr "Podraides barotnes _URL:"
-
-#: ../podcast/rb-podcast-source.c:481
+#: ../podcast/rb-podcast-source.c:520
 msgid "Delete the podcast feed and downloaded files?"
-msgstr "Dzēst podraides barotni un lejupielādētos failus?"
+msgstr "Dzēst podraides plūsmu un lejupielādētos failus?"
 
-#: ../podcast/rb-podcast-source.c:484
+#: ../podcast/rb-podcast-source.c:523
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
 "choosing to delete the feed only."
 msgstr ""
-"Ja jūs izvēlēsieties dzēst barotni un lejupielādētos failus, tie tiks "
-"neatgriezeniski zaudēti. Ievērojiet, ka jūs varat izdzēst barotni, bet "
-"paturēt lejupielādētos failus, izvēloties dzēst tikai barotni."
+"Ja jūs izvēlēsieties dzēst plūsmu un lejupielādētos failus, tie tiks "
+"neatgriezeniski zaudēti. Ievērojiet, ka jūs varat izdzēst plūsmu, bet "
+"paturēt lejupielādētos failus, izvēloties dzēst tikai plūsmu."
 
-#: ../podcast/rb-podcast-source.c:492
+#: ../podcast/rb-podcast-source.c:531
 msgid "Delete _Feed Only"
-msgstr "Dz_ēst tikai barotni"
+msgstr "Dz_ēst tikai blūsmu"
 
-#: ../podcast/rb-podcast-source.c:499
+#: ../podcast/rb-podcast-source.c:538
 msgid "_Delete Feed And Files"
-msgstr "_Dzēst barotni un failus"
+msgstr "_Dzēst plūsmu un failus"
 
-#: ../podcast/rb-podcast-source.c:577 ../podcast/rb-podcast-source.c:1415
+#: ../podcast/rb-podcast-source.c:616 ../podcast/rb-podcast-source.c:1451
 msgid "Downloaded"
 msgstr "Lejupielādēta"
 
-#: ../podcast/rb-podcast-source.c:581 ../podcast/rb-podcast-source.c:1417
+#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1453
 msgid "Failed"
 msgstr "Neizdevās"
 
-#: ../podcast/rb-podcast-source.c:585 ../podcast/rb-podcast-source.c:1416
+#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1452
 msgid "Waiting"
 msgstr "Gaida"
 
-#: ../podcast/rb-podcast-source.c:692
+#: ../podcast/rb-podcast-source.c:731
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
-msgstr[0] "%d barotne"
-msgstr[1] "%d barotnes"
-msgstr[2] "%d barotnes"
+msgstr[0] "%d plūsma"
+msgstr[1] "%d plūsmas"
+msgstr[2] "%d plūsmu"
 
-#: ../podcast/rb-podcast-source.c:929
+#: ../podcast/rb-podcast-source.c:968
 msgid "Podcast Error"
 msgstr "Podraides kļūda"
 
-#: ../podcast/rb-podcast-source.c:1099
+#: ../podcast/rb-podcast-source.c:1138
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Dzēst podraides epizodi un lejupielādēto failu?"
 
-#: ../podcast/rb-podcast-source.c:1102
+#: ../podcast/rb-podcast-source.c:1141
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -3069,15 +3064,15 @@ msgstr ""
 "tiks neatgriezeniski zaudēti.  Ievērojiet, ka jūs varat izdzēst epizodi, bet "
 "paturēt lejupielādēto failu, izvēloties dzēst tikai epizodi."
 
-#: ../podcast/rb-podcast-source.c:1110
+#: ../podcast/rb-podcast-source.c:1149
 msgid "Delete _Episode Only"
 msgstr "Dzēst _tikai epizodi"
 
-#: ../podcast/rb-podcast-source.c:1116
+#: ../podcast/rb-podcast-source.c:1155
 msgid "_Delete Episode And File"
 msgstr "_Dzēst epizodi un failu"
 
-#: ../podcast/rb-podcast-source.c:1206
+#: ../podcast/rb-podcast-source.c:1245
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -3087,28 +3082,23 @@ msgstr[2] "%d epizodes"
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
-#: ../podcast/rb-podcast-source.c:1312
-#| msgid "Add"
+#: ../podcast/rb-podcast-source.c:1349
 msgctxt "Podcast"
 msgid "Add"
 msgstr "Pievienot"
 
 #. Translators: this is the toolbar button label
 #. for Update Feed action.
-#: ../podcast/rb-podcast-source.c:1318
+#: ../podcast/rb-podcast-source.c:1355
 msgid "Update"
 msgstr "Atjaunināt"
 
-#: ../podcast/rb-podcast-source.c:1361 ../podcast/rb-podcast-source.c:1372
-msgid "Date"
-msgstr "Datums"
-
-#: ../podcast/rb-podcast-source.c:1394 ../podcast/rb-podcast-source.c:1449
-#: ../podcast/rb-podcast-source.c:1497
+#: ../podcast/rb-podcast-source.c:1430 ../podcast/rb-podcast-source.c:1485
+#: ../podcast/rb-podcast-source.c:1533
 msgid "Feed"
-msgstr "Barotne"
+msgstr "Plūsma"
 
-#: ../podcast/rb-podcast-source.c:1414 ../podcast/rb-podcast-source.c:1432
+#: ../podcast/rb-podcast-source.c:1450 ../podcast/rb-podcast-source.c:1468
 msgid "Status"
 msgstr "Statuss"
 
@@ -3116,7 +3106,7 @@ msgstr "Statuss"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Nestartēt jaunu Rhytmbox instanci"
 
-#: ../remote/dbus/rb-client.c:82 ../shell/rb-shell.c:369
+#: ../remote/dbus/rb-client.c:82 ../shell/rb-shell.c:360
 msgid "Quit Rhythmbox"
 msgstr "Iziet no Rhythmbox"
 
@@ -3284,12 +3274,12 @@ msgstr "Tukšs fails"
 msgid "Could not load the music database:"
 msgstr "Neizdevās ielādēt mūzikas datubāzi:"
 
-#: ../rhythmdb/rhythmdb.c:4457
+#: ../rhythmdb/rhythmdb.c:4458
 #, c-format
 msgid "Checking (%d/%d)"
 msgstr "Pārbaude (%d/%d)"
 
-#: ../rhythmdb/rhythmdb.c:4501
+#: ../rhythmdb/rhythmdb.c:4502
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3297,7 +3287,7 @@ msgstr[0] "%ld minūte"
 msgstr[1] "%ld minūtes"
 msgstr[2] "%ld minūtes"
 
-#: ../rhythmdb/rhythmdb.c:4502
+#: ../rhythmdb/rhythmdb.c:4503
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3305,7 +3295,7 @@ msgstr[0] "%ld stunda"
 msgstr[1] "%ld stundas"
 msgstr[2] "%ld stundas"
 
-#: ../rhythmdb/rhythmdb.c:4503
+#: ../rhythmdb/rhythmdb.c:4504
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3314,7 +3304,7 @@ msgstr[1] "%ld dienas"
 msgstr[2] "%ld dienas"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4509
+#: ../rhythmdb/rhythmdb.c:4510
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s un %s"
@@ -3322,8 +3312,8 @@ msgstr "%s, %s un %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4515 ../rhythmdb/rhythmdb.c:4523
-#: ../rhythmdb/rhythmdb.c:4534
+#: ../rhythmdb/rhythmdb.c:4516 ../rhythmdb/rhythmdb.c:4524
+#: ../rhythmdb/rhythmdb.c:4535
 #, c-format
 msgid "%s and %s"
 msgstr "%s un %s"
@@ -3484,187 +3474,187 @@ msgid ""
 msgstr ""
 "Pārbaudīt jaunas multimediju glabāšanas ierīces, kas nav automātiski atrastas"
 
-#: ../shell/rb-shell.c:349
+#: ../shell/rb-shell.c:340
 msgid "_Music"
 msgstr "_Mūzika"
 
-#: ../shell/rb-shell.c:351
+#: ../shell/rb-shell.c:342
 msgid "_View"
 msgstr "_Skats"
 
-#: ../shell/rb-shell.c:352
+#: ../shell/rb-shell.c:343
 msgid "_Control"
 msgstr "_Kontrole"
 
-#: ../shell/rb-shell.c:353
+#: ../shell/rb-shell.c:344
 msgid "_Tools"
 msgstr "_Rīki"
 
-#: ../shell/rb-shell.c:354
+#: ../shell/rb-shell.c:345
 msgid "_Help"
 msgstr "_Palīdzība"
 
-#: ../shell/rb-shell.c:356
+#: ../shell/rb-shell.c:347
 msgid "_Import Folder..."
 msgstr "_Importēt mapi..."
 
-#: ../shell/rb-shell.c:357
+#: ../shell/rb-shell.c:348
 msgid "Choose folder to be added to the Library"
 msgstr "Izvēlēties mapi, ko pievienot fonotēkai"
 
-#: ../shell/rb-shell.c:359
+#: ../shell/rb-shell.c:350
 msgid "Import _File..."
 msgstr "Importēt _failu..."
 
-#: ../shell/rb-shell.c:360
+#: ../shell/rb-shell.c:351
 msgid "Choose file to be added to the Library"
 msgstr "Izvēlēties failu, ko pievienot fonotēkai"
 
-#: ../shell/rb-shell.c:362
+#: ../shell/rb-shell.c:353
 msgid "_About"
 msgstr "P_ar..."
 
-#: ../shell/rb-shell.c:363
+#: ../shell/rb-shell.c:354
 msgid "Show information about Rhythmbox"
 msgstr "Parādīt informāciju par Rhythmbox"
 
-#: ../shell/rb-shell.c:365
+#: ../shell/rb-shell.c:356
 msgid "_Contents"
 msgstr "_Saturs"
 
-#: ../shell/rb-shell.c:366
+#: ../shell/rb-shell.c:357
 msgid "Display Rhythmbox help"
 msgstr "Rādīt Rhythmbox palīdzību"
 
-#: ../shell/rb-shell.c:368
+#: ../shell/rb-shell.c:359
 msgid "_Quit"
 msgstr "_Iziet"
 
-#: ../shell/rb-shell.c:371
+#: ../shell/rb-shell.c:362
 msgid "Prefere_nces"
 msgstr "Ies_tatījumi"
 
-#: ../shell/rb-shell.c:372
+#: ../shell/rb-shell.c:363
 msgid "Edit Rhythmbox preferences"
 msgstr "Rediģēt Rhythmbox iestatījumus"
 
-#: ../shell/rb-shell.c:374
+#: ../shell/rb-shell.c:365
 msgid "Plu_gins"
 msgstr "Sprau_dņi"
 
-#: ../shell/rb-shell.c:375
+#: ../shell/rb-shell.c:366
 msgid "Change and configure plugins"
 msgstr "Mainīt un konfigurēt spraudņus"
 
-#: ../shell/rb-shell.c:377
+#: ../shell/rb-shell.c:368
 msgid "Show _All Tracks"
 msgstr "R_ādīt visus celiņus"
 
-#: ../shell/rb-shell.c:378
+#: ../shell/rb-shell.c:369
 msgid "Show all tracks in this music source"
 msgstr "Parādīt visus celiņus šajā mūzikas avotā"
 
-#: ../shell/rb-shell.c:380
+#: ../shell/rb-shell.c:371
 msgid "_Jump to Playing Song"
 msgstr "Pārlekt uz atskaņo_to dziesmu"
 
-#: ../shell/rb-shell.c:381
+#: ../shell/rb-shell.c:372
 msgid "Scroll the view to the currently playing song"
 msgstr "Ritināt skatu līdz pašlaik atskaņotajai dziesmai"
 
-#: ../shell/rb-shell.c:388
+#: ../shell/rb-shell.c:379
 msgid "Side _Pane"
 msgstr "Sānu _rūts"
 
-#: ../shell/rb-shell.c:389
+#: ../shell/rb-shell.c:380
 msgid "Change the visibility of the side pane"
 msgstr "Mainīt sānu rūts redzamību"
 
-#: ../shell/rb-shell.c:391
-msgid "T_oolbar"
-msgstr "Rīkj_osla"
-
-#: ../shell/rb-shell.c:392
-msgid "Change the visibility of the toolbar"
-msgstr "Mainīt rīkjoslas redzamību"
-
-#: ../shell/rb-shell.c:394
-msgid "_Small Display"
-msgstr "Mazs ekrān_s"
-
-#: ../shell/rb-shell.c:395
-msgid "Make the main window smaller"
-msgstr "Padarīt galveno logu mazāku"
-
-#: ../shell/rb-shell.c:397
+#: ../shell/rb-shell.c:382
 msgid "Party _Mode"
 msgstr "Ballītes režī_ms"
 
-#: ../shell/rb-shell.c:398
+#: ../shell/rb-shell.c:383
 msgid "Change the status of the party mode"
 msgstr "Mainīt ballītes režīma statusu"
 
-#: ../shell/rb-shell.c:400
+#: ../shell/rb-shell.c:385
 msgid "Play _Queue as Side Pane"
 msgstr "Atskaņojamā rinda kā sānu rūts"
 
-#: ../shell/rb-shell.c:401
+#: ../shell/rb-shell.c:386
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "Mainīt to, vai rinda ir redzama kā avots vai sānu panelis"
 
-#: ../shell/rb-shell.c:403
+#: ../shell/rb-shell.c:388
 msgid "S_tatusbar"
 msgstr "S_tatusa josla"
 
-#: ../shell/rb-shell.c:404
+#: ../shell/rb-shell.c:389
 msgid "Change the visibility of the statusbar"
 msgstr "Mainīt statusa joslas redzamību"
 
-#: ../shell/rb-shell.c:406
+#: ../shell/rb-shell.c:391
+msgid "_Song Position Slider"
+msgstr "Dzie_smu pozīcijas slīdnis"
+
+#: ../shell/rb-shell.c:392
+msgid "Change the visibility of the song position slider"
+msgstr "Mainīt dziesmu pozīcijas slīdņa redzamību"
+
+#: ../shell/rb-shell.c:394
+msgid "_Album Art"
+msgstr "_Albuma zīmējums"
+
+#: ../shell/rb-shell.c:395
+msgid "Change the visibility of the album art display"
+msgstr "Mainīt albuma zīmējuma redzamību"
+
+#: ../shell/rb-shell.c:397
 msgid "_Browse"
 msgstr "_Pārlūkot"
 
-#: ../shell/rb-shell.c:407
+#: ../shell/rb-shell.c:398
 msgid "Change the visibility of the browser"
 msgstr "Mainīt pārlūka redzamību"
 
-#: ../shell/rb-shell.c:897
+#: ../shell/rb-shell.c:890
 msgid "Change the music volume"
 msgstr "Mainīt mūzikas skaļumu"
 
-#: ../shell/rb-shell.c:2004
+#: ../shell/rb-shell.c:1995
 msgid "Enable debug output"
 msgstr "Aktivizēt atkļūdošanas izvadi"
 
-#: ../shell/rb-shell.c:2005
+#: ../shell/rb-shell.c:1996
 msgid "Enable debug output matching a specified string"
 msgstr "Aktivizēt atkļūdošanas izvadi, kas atbilst norādītajai virknei"
 
-#: ../shell/rb-shell.c:2006
+#: ../shell/rb-shell.c:1997
 msgid "Do not update the library with file changes"
 msgstr "Mainoties failiem neatjaunināt fonotēku"
 
-#: ../shell/rb-shell.c:2007
+#: ../shell/rb-shell.c:1998
 msgid "Do not register the shell"
 msgstr "Nereģistrēt čaulu"
 
-#: ../shell/rb-shell.c:2008
+#: ../shell/rb-shell.c:1999
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Nesaglabāt datus pastāvīgi (nozīmē --no-registration)"
 
-#: ../shell/rb-shell.c:2009
+#: ../shell/rb-shell.c:2000
 msgid "Disable loading of plugins"
 msgstr "Deaktivēt spraudņu ielādi"
 
-#: ../shell/rb-shell.c:2010
+#: ../shell/rb-shell.c:2001
 msgid "Path for database file to use"
 msgstr "Ceļš uz izmantojamo datubāzi"
 
-#: ../shell/rb-shell.c:2011
+#: ../shell/rb-shell.c:2002
 msgid "Path for playlists file to use"
 msgstr "Ceļš uz izmantojamo repertuāra failu"
 
-#: ../shell/rb-shell.c:2022
+#: ../shell/rb-shell.c:2013
 #, c-format
 msgid ""
 "%s\n"
@@ -3675,33 +3665,31 @@ msgstr ""
 "sarakstu.\n"
 
 #. Translators: this is the short label for the 'import folder' action
-#: ../shell/rb-shell.c:2123
-#| msgid "Import Errors"
+#: ../shell/rb-shell.c:2114
 msgctxt "Library"
 msgid "Import"
 msgstr "Importēt"
 
 #. Translators: this is the short label for the 'view all tracks' action
-#: ../shell/rb-shell.c:2125
-#| msgid "Show _All Tracks"
+#: ../shell/rb-shell.c:2116
 msgid "Show All"
 msgstr "Rādīt visus"
 
-#: ../shell/rb-shell.c:2435
+#: ../shell/rb-shell.c:2401
 msgid "Error while saving song information"
 msgstr "Kļūda saglabājot informāciju par dziesmu"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2716
+#: ../shell/rb-shell.c:2681
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pauzēts)"
 
-#: ../shell/rb-shell.c:2809
+#: ../shell/rb-shell.c:2756
 msgid "translator-credits"
 msgstr "Pēteris Krišjānis <pecisk@gmail.com>Raivis Dejus <orvils@gmail.com>"
 
-#: ../shell/rb-shell.c:2812
+#: ../shell/rb-shell.c:2759
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3712,7 +3700,7 @@ msgstr ""
 "saskaņā ar Brīvās programmatūras fonda GNU Vispārējās Publiskās Licences 2. "
 "vai kādas vēlākas versijas noteikumiem\n"
 
-#: ../shell/rb-shell.c:2816
+#: ../shell/rb-shell.c:2763
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3722,7 +3710,7 @@ msgstr ""
 "Rhythmbox tiek izplatīts bez JEBKĀDAS GARANTIJAS.\n"
 " Sīkāku informāciju meklējiet GNU Vispārējās publiskās licences tekstā\n"
 
-#: ../shell/rb-shell.c:2820
+#: ../shell/rb-shell.c:2767
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3732,63 +3720,63 @@ msgstr ""
 "Ja tā nav noticis rakstiet Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2827
+#: ../shell/rb-shell.c:2774
 msgid "Maintainers:"
 msgstr "Uzturētāji:"
 
-#: ../shell/rb-shell.c:2830
+#: ../shell/rb-shell.c:2777
 msgid "Former Maintainers:"
 msgstr "Kādreizējie uzturētāji:"
 
-#: ../shell/rb-shell.c:2833
+#: ../shell/rb-shell.c:2780
 msgid "Contributors:"
 msgstr "Kontributori:"
 
-#: ../shell/rb-shell.c:2835
+#: ../shell/rb-shell.c:2782
 msgid "Music management and playback software for GNOME."
 msgstr "Mūzikas pārvaldīšanas un atskaņošanas programmatūra GNOME videi."
 
-#: ../shell/rb-shell.c:2844
+#: ../shell/rb-shell.c:2791
 msgid "Rhythmbox Website"
 msgstr "Rhythmbox tīmekļa vietne"
 
-#: ../shell/rb-shell.c:2891 ../shell/rb-shell-preferences.c:166
+#: ../shell/rb-shell.c:2838 ../shell/rb-shell-preferences.c:162
 msgid "Couldn't display help"
 msgstr "Neizdevās parādīt palīdzību"
 
-#: ../shell/rb-shell.c:2936
+#: ../shell/rb-shell.c:2883
 msgid "Configure Plugins"
 msgstr "Konfigurēt spraudņus"
 
-#: ../shell/rb-shell.c:3025
+#: ../shell/rb-shell.c:2972
 msgid "Import Folder into Library"
 msgstr "Importēt mapi fonotēkā"
 
-#: ../shell/rb-shell.c:3044
+#: ../shell/rb-shell.c:2991
 msgid "Import File into Library"
 msgstr "Importēt failu fonotēkā"
 
-#: ../shell/rb-shell.c:3577 ../sources/rb-play-queue-source.c:629
+#: ../shell/rb-shell.c:3419 ../sources/rb-play-queue-source.c:629
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Neviens no reģistrētajiem avotiem nevar apstrādāt URI %s"
 
-#: ../shell/rb-shell.c:3907
+#: ../shell/rb-shell.c:3748
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Neviens no reģistrētajiem avotiem neatbilst URI %s"
 
-#: ../shell/rb-shell.c:3940 ../shell/rb-shell.c:3983
+#: ../shell/rb-shell.c:3781 ../shell/rb-shell.c:3824
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Nezināms dziesmas URI: %s"
 
-#: ../shell/rb-shell.c:3992
+#: ../shell/rb-shell.c:3833
 #, c-format
 msgid "Unknown property %s"
 msgstr "Nezināms parametrs %s"
 
-#: ../shell/rb-shell.c:4006
+#: ../shell/rb-shell.c:3847
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Nederīgs parametra tips %s parametram %s"
@@ -3885,170 +3873,162 @@ msgstr "R_ekvizīti"
 msgid "Show information on each selected song"
 msgstr "Rādīt informāciju par katru izvēlēto dziesmu"
 
-#: ../shell/rb-shell-player.c:295
+#: ../shell/rb-shell-player.c:297
 msgid "Pre_vious"
 msgstr "Iep_riekšējais"
 
-#: ../shell/rb-shell-player.c:296
+#: ../shell/rb-shell-player.c:298
 msgid "Start playing the previous song"
 msgstr "Sākt atskaņot iepriekšējo dziesmu"
 
-#: ../shell/rb-shell-player.c:298
+#: ../shell/rb-shell-player.c:300
 msgid "_Next"
 msgstr "_Nākamais"
 
-#: ../shell/rb-shell-player.c:299
+#: ../shell/rb-shell-player.c:301
 msgid "Start playing the next song"
 msgstr "Sākt atskaņot nākamo dziesmu"
 
-#: ../shell/rb-shell-player.c:301
+#: ../shell/rb-shell-player.c:303
 msgid "_Increase Volume"
 msgstr "Pal_ielināt skaļumu"
 
-#: ../shell/rb-shell-player.c:302
+#: ../shell/rb-shell-player.c:304
 msgid "Increase playback volume"
 msgstr "Palielināt skaļumu"
 
-#: ../shell/rb-shell-player.c:304
+#: ../shell/rb-shell-player.c:306
 msgid "_Decrease Volume"
 msgstr "Samazināt skaļumu"
 
-#: ../shell/rb-shell-player.c:305
+#: ../shell/rb-shell-player.c:307
 msgid "Decrease playback volume"
 msgstr "Samazināt skaļumu"
 
-#: ../shell/rb-shell-player.c:312
+#: ../shell/rb-shell-player.c:314
 msgid "_Play"
 msgstr "_Atskaņot"
 
-#: ../shell/rb-shell-player.c:313 ../shell/rb-shell-player.c:3827
+#: ../shell/rb-shell-player.c:315 ../shell/rb-shell-player.c:3855
 msgid "Start playback"
 msgstr "Sākt atskaņošanu"
 
-#: ../shell/rb-shell-player.c:315
+#: ../shell/rb-shell-player.c:317
 msgid "Sh_uffle"
 msgstr "Ja_ukti"
 
-#: ../shell/rb-shell-player.c:316
+#: ../shell/rb-shell-player.c:318
 msgid "Play songs in a random order"
 msgstr "Atskaņot dziesmas jauktā kārtībā"
 
-#: ../shell/rb-shell-player.c:318
+#: ../shell/rb-shell-player.c:320
 msgid "_Repeat"
 msgstr "Atkā_rtot"
 
-#: ../shell/rb-shell-player.c:319
+#: ../shell/rb-shell-player.c:321
 msgid "Play first song again after all songs are played"
 msgstr "kad visas dziesmas ir atskaņotas sākt atskanošanu no jauna"
 
-#: ../shell/rb-shell-player.c:321
-msgid "_Song Position Slider"
-msgstr "Dzie_smu pozīcijas slīdnis"
-
-#: ../shell/rb-shell-player.c:322
-msgid "Change the visibility of the song position slider"
-msgstr "Mainīt dziesmu pozīcijas slīdņa redzamību"
-
-#: ../shell/rb-shell-player.c:830
+#: ../shell/rb-shell-player.c:842
 msgid "Stream error"
 msgstr "Plūsmas kļūda"
 
-#: ../shell/rb-shell-player.c:831
+#: ../shell/rb-shell-player.c:843
 msgid "Unexpected end of stream!"
 msgstr "Negaidītas straumes beigas!"
 
-#: ../shell/rb-shell-player.c:998
+#: ../shell/rb-shell-player.c:1010
 msgid "Linear"
 msgstr "Lineārs"
 
-#: ../shell/rb-shell-player.c:1000
+#: ../shell/rb-shell-player.c:1012
 msgid "Linear looping"
 msgstr "Lineāra ciklošanās"
 
-#: ../shell/rb-shell-player.c:1002
+#: ../shell/rb-shell-player.c:1014
 msgid "Shuffle"
 msgstr "Sajaukt"
 
-#: ../shell/rb-shell-player.c:1004
+#: ../shell/rb-shell-player.c:1016
 msgid "Random with equal weights"
 msgstr "Uz labu laimi ar vienādiem svariem"
 
-#: ../shell/rb-shell-player.c:1006
+#: ../shell/rb-shell-player.c:1018
 msgid "Random by time since last play"
 msgstr "Uz labu laimi ņemot vērā pēdējo atskaņošanas laiku"
 
-#: ../shell/rb-shell-player.c:1008
+#: ../shell/rb-shell-player.c:1020
 msgid "Random by rating"
 msgstr "Uz labu laimi ņemot vērā vērtējumu"
 
-#: ../shell/rb-shell-player.c:1010
+#: ../shell/rb-shell-player.c:1022
 msgid "Random by time since last play and rating"
 msgstr "Uz labu laimi ņemot vērā pēdējo atskaņošanas reizi un vērtējumu"
 
-#: ../shell/rb-shell-player.c:1012
+#: ../shell/rb-shell-player.c:1024
 msgid "Linear, removing entries once played"
 msgstr "Lineāri, aizvācot atskaņotās dziesmas"
 
-#: ../shell/rb-shell-player.c:1022
+#: ../shell/rb-shell-player.c:1034
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Neizdevās izveidot atskaņotāju: %s"
 
-#: ../shell/rb-shell-player.c:1576
+#: ../shell/rb-shell-player.c:1595
 #, c-format
 msgid "Playlist was empty"
 msgstr "Repertuārs bija tukšs"
 
-#: ../shell/rb-shell-player.c:2045
+#: ../shell/rb-shell-player.c:2065
 #, c-format
 msgid "Not currently playing"
 msgstr "Šobrīd neatskaņo"
 
-#: ../shell/rb-shell-player.c:2103
+#: ../shell/rb-shell-player.c:2123
 #, c-format
 msgid "No previous song"
 msgstr "Nav iepriekšējās dziesmas"
 
-#: ../shell/rb-shell-player.c:2203
+#: ../shell/rb-shell-player.c:2223
 #, c-format
 msgid "No next song"
 msgstr "Nav nākamās dziesmas"
 
-#: ../shell/rb-shell-player.c:2324 ../shell/rb-shell-player.c:3469
+#: ../shell/rb-shell-player.c:2344 ../shell/rb-shell-player.c:3492
 msgid "Couldn't start playback"
 msgstr "Neizdevās sākt atskaņošanu"
 
-#: ../shell/rb-shell-player.c:3172
+#: ../shell/rb-shell-player.c:3195
 msgid "Couldn't stop playback"
 msgstr "Neizdevās beigt atskaņošanu"
 
-#: ../shell/rb-shell-player.c:3291
+#: ../shell/rb-shell-player.c:3314
 #, c-format
 msgid "Playback position not available"
 msgstr "Atskaņošanas pozīcija nav pieejama"
 
-#: ../shell/rb-shell-player.c:3323 ../shell/rb-shell-player.c:3357
+#: ../shell/rb-shell-player.c:3346 ../shell/rb-shell-player.c:3380
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Pašreizējā dziesma nav meklējama"
 
-#: ../shell/rb-shell-player.c:3822
+#: ../shell/rb-shell-player.c:3850
 msgid "Pause playback"
 msgstr "Pauzēt atskaņošanu"
 
-#: ../shell/rb-shell-player.c:3824
+#: ../shell/rb-shell-player.c:3852
 msgid "Stop playback"
 msgstr "Apturēt atskaņošanu"
 
-#: ../shell/rb-shell-preferences.c:205
+#: ../shell/rb-shell-preferences.c:201
 msgid "Rhythmbox Preferences"
 msgstr "Rhythmbox iestatījumi"
 
-#: ../shell/rb-shell-preferences.c:251
+#: ../shell/rb-shell-preferences.c:247
 msgid "General"
 msgstr "Vispārēji"
 
-#: ../shell/rb-shell-preferences.c:330
+#: ../shell/rb-shell-preferences.c:311
 msgid "Playback"
 msgstr "Atskaņošana"
 
@@ -4079,10 +4059,6 @@ msgstr "Aizvietot _visus"
 
 #: ../shell/rb-track-transfer-queue.c:439
 #, c-format
-#| msgid ""
-#| "%d of the %d files cannot be transferred as they must be converted into a "
-#| "format supported by the target device but no suitable encoding profiles "
-#| "are available."
 msgid ""
 "%d file cannot be transferred as it must be converted into a format "
 "supported by the target device but no suitable encoding profiles are "
@@ -4092,14 +4068,14 @@ msgid_plural ""
 "supported by the target device but no suitable encoding profiles are "
 "available"
 msgstr[0] ""
-"%d failu nevar pārsūtīt, jo tie jāpārveido formātā, ko atbalsta "
-"mērķa ierīce, bet nav pieejamu piemērotu kodēšanas profilu."
+"%d failu nevar pārsūtīt, jo tie jāpārveido formātā, ko atbalsta mērķa "
+"ierīce, bet nav pieejamu piemērotu kodēšanas profilu."
 msgstr[1] ""
-"%d failus nevar pārsūtīt, jo tie jāpārveido formātā, ko atbalsta "
-"mērķa ierīce, bet nav pieejamu piemērotu kodēšanas profilu."
+"%d failus nevar pārsūtīt, jo tie jāpārveido formātā, ko atbalsta mērķa "
+"ierīce, bet nav pieejamu piemērotu kodēšanas profilu."
 msgstr[2] ""
-"%d failus nevar pārsūtīt, jo tie jāpārveido formātā, ko atbalsta "
-"mērķa ierīce, bet nav pieejamu piemērotu kodēšanas profilu."
+"%d failus nevar pārsūtīt, jo tie jāpārveido formātā, ko atbalsta mērķa "
+"ierīce, bet nav pieejamu piemērotu kodēšanas profilu."
 
 #. XXX should provide the option of picking a different format?
 #: ../shell/rb-track-transfer-queue.c:463
@@ -4114,10 +4090,6 @@ msgstr ""
 
 #: ../shell/rb-track-transfer-queue.c:467
 #, c-format
-#| msgid ""
-#| "Additional software is required to convert this file into a format "
-#| "supported by the target device:\n"
-#| "%s"
 msgid ""
 "Additional software is required to convert %d file into a format supported "
 "by the target device:\n"
@@ -4132,13 +4104,11 @@ msgstr[0] ""
 "%s"
 msgstr[1] ""
 "Nepieciešama papildu programmatūra, lai pārveidotu %d failus tādā formātā, "
-"ko "
-"atbalsta mērķa ierīce:\n"
+"ko atbalsta mērķa ierīce:\n"
 "%s"
 msgstr[2] ""
 "Nepieciešama papildu programmatūra, lai pārveidotu %d failus tādā formātā, "
-"ko "
-"atbalsta mērķa ierīce:\n"
+"ko atbalsta mērķa ierīce:\n"
 "%s"
 
 #: ../shell/rb-track-transfer-queue.c:484
@@ -4246,71 +4216,77 @@ msgstr "Importēšanas kļūdas"
 
 #: ../sources/rb-import-errors-source.c:391
 #, c-format
-#| msgid "%d import errors"
-#| msgid_plural "%d import errors"
 msgid "%d import error"
 msgid_plural "%d import errors"
 msgstr[0] "%d importēšanas kļūda"
 msgstr[1] "%d importēšanas kļūdas"
 msgstr[2] "%d importēšanas kļūdu"
 
-#: ../sources/rb-library-source.c:116
+#: ../sources/rb-library-source.c:120
 msgid "Artist/Artist - Album"
 msgstr "Mākslinieks/Mākslinieks - Albums"
 
-#: ../sources/rb-library-source.c:117
+#: ../sources/rb-library-source.c:121
 msgid "Artist/Album"
 msgstr "Mākslinieks/Albums"
 
-#: ../sources/rb-library-source.c:118
+#: ../sources/rb-library-source.c:122
 msgid "Artist - Album"
 msgstr "Mākslinieks - Albums"
 
-#: ../sources/rb-library-source.c:119 ../widgets/rb-entry-view.c:1449
+#: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1449
 #: ../widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Albums"
 
-#: ../sources/rb-library-source.c:125
+#: ../sources/rb-library-source.c:129
 msgid "Number - Title"
 msgstr "Numurs - Nosaukums"
 
-#: ../sources/rb-library-source.c:126
+#: ../sources/rb-library-source.c:130
 msgid "Artist - Title"
 msgstr "Mākslinieks - Nosaukums"
 
-#: ../sources/rb-library-source.c:127
+#: ../sources/rb-library-source.c:131
 msgid "Artist - Number - Title"
 msgstr "Mākslinieks - Numurs - Nosaukums"
 
-#: ../sources/rb-library-source.c:128
+#: ../sources/rb-library-source.c:132
 msgid "Artist (Album) - Number - Title"
 msgstr "Mākslinieks (Albums) - Numurs - Nosaukums"
 
-#: ../sources/rb-library-source.c:130
+#: ../sources/rb-library-source.c:134
 msgid "Number. Artist - Title"
 msgstr "Numurs. Mākslinieks - Nosaukums"
 
-#: ../sources/rb-library-source.c:339
+#: ../sources/rb-library-source.c:360
 #: ../sources/sync/rb-sync-settings-ui.c:216
 #: ../sources/sync/rb-sync-settings-ui.c:217
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "Mūzika"
 
-#: ../sources/rb-library-source.c:392
+#: ../sources/rb-library-source.c:407
 msgid "Choose Library Location"
 msgstr "Izvēlieties fonotēkas atrašanās vietu"
 
-#: ../sources/rb-library-source.c:431
+#: ../sources/rb-library-source.c:446
 msgid "Multiple locations set"
 msgstr "Iestatītas vairākas atršanās vietas"
 
-#: ../sources/rb-library-source.c:1119
+#: ../sources/rb-library-source.c:572
+msgid "Default settings"
+msgstr "Noklusējuma iestatījumi"
+
+#: ../sources/rb-library-source.c:588
+msgid "Custom settings"
+msgstr "Pielāgotie iestatījumi"
+
+#: ../sources/rb-library-source.c:1387
 msgid "Example Path:"
 msgstr "Parauga ceļš:"
 
-#: ../sources/rb-library-source.c:1273 ../sources/rb-library-source.c:1277
+#: ../sources/rb-library-source.c:1560 ../sources/rb-library-source.c:1564
 #: ../sources/rb-transfer-target.c:189
 msgid "Error transferring track"
 msgstr "Kļūda pārsūtot celiņu"
@@ -4323,7 +4299,7 @@ msgstr "Sinhronizēt var fonotēku"
 msgid "Synchronize media player with the library"
 msgstr "Sinhronizēt atskaņotāju ar fonotēku"
 
-#: ../sources/rb-media-player-source.c:647
+#: ../sources/rb-media-player-source.c:660
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
@@ -4331,7 +4307,7 @@ msgstr ""
 "Jūs neesat izvēlējies nekādu mūziku, repertuārus vai podraides, ko pārsūtīt "
 "uz šo ierīci."
 
-#: ../sources/rb-media-player-source.c:651
+#: ../sources/rb-media-player-source.c:664
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
@@ -4339,16 +4315,16 @@ msgstr ""
 "Uz ierīces nepietiek vietas, lai pārsūtītu izvēlēto mūziku, repertuārus un "
 "podraides."
 
-#: ../sources/rb-media-player-source.c:702
+#: ../sources/rb-media-player-source.c:715
 #, c-format
 msgid "%s Sync Settings"
 msgstr "%s sinhronizēšanas iestatījumi"
 
-#: ../sources/rb-media-player-source.c:707
+#: ../sources/rb-media-player-source.c:720
 msgid "Sync with the device"
 msgstr "Sinhronizēt ar ierīci"
 
-#: ../sources/rb-media-player-source.c:709
+#: ../sources/rb-media-player-source.c:722
 msgid "Don't sync"
 msgstr "Nesinhronizēt"
 
@@ -4395,7 +4371,6 @@ msgstr "Attīrīt"
 
 #. Translators: this is the toolbutton label for the 'shuffle queue' action
 #: ../sources/rb-play-queue-source.c:286
-#| msgid "Shuffle"
 msgctxt "Queue"
 msgid "Shuffle"
 msgstr "Jaukt"
@@ -4405,15 +4380,15 @@ msgstr "Jaukt"
 msgid "Play Queue"
 msgstr "Atskaņošanas rinda"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:485
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:797
 msgid "from"
 msgstr "no"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:484
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:796
 msgid "by"
 msgstr " "
 
-#: ../sources/rb-source.c:523
+#: ../sources/rb-source.c:546
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
@@ -4421,7 +4396,7 @@ msgstr[0] "%d dziesma"
 msgstr[1] "%d dziesmas"
 msgstr[2] "%d dziesmas"
 
-#: ../sources/rb-source.c:1305
+#: ../sources/rb-source.c:1328
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "Importē (%d/%d)"
@@ -4534,6 +4509,22 @@ msgstr "Atskaņo tagad"
 #: ../widgets/rb-entry-view.c:1910
 msgid "Playback Error"
 msgstr "Atskaņošanas kļūda"
+
+#: ../widgets/rb-fading-image.c:253
+msgid "Drop artwork here"
+msgstr "Ievelciet dizainu šeit"
+
+#. Translators: remaining time / total time
+#: ../widgets/rb-header.c:1038
+#, c-format
+msgid "-%s / %s"
+msgstr "-%s / %s"
+
+#. Translators: elapsed time / total time
+#: ../widgets/rb-header.c:1049
+#, c-format
+msgid "%s / %s"
+msgstr "%s / %s"
 
 #: ../widgets/rb-property-view.c:636
 #, c-format
@@ -4884,7 +4875,6 @@ msgid "Clear the search text"
 msgstr "Attīrīt meklējamo tekstu"
 
 #: ../widgets/rb-search-entry.c:234
-#| msgid "Clear the search text"
 msgid "Select the search type"
 msgstr "Izvēlieties meklēšanas tipu"
 
@@ -4916,11 +4906,48 @@ msgstr "Uz darbvirsmas"
 msgid "Unknown location"
 msgstr "Nezināma atrašanās vieta"
 
+#~ msgid "Text below icons"
+#~ msgstr "Teksts zem ikonām"
+
+#~ msgid "Text beside icons"
+#~ msgstr "Teksts blakus ikonām"
+
+#~ msgid "Icons only"
+#~ msgstr "Tikai ikonas"
+
+#~ msgid "Text only"
+#~ msgstr "Tikai teksts"
+
+#~ msgid "Toolbar Button Labels"
+#~ msgstr "Rīkjoslas pogu etiķetes"
+
+#~ msgid "_Settings"
+#~ msgstr "Ie_statījumi"
+
+#~ msgid "Cover art"
+#~ msgstr "Vāciņa attēls"
+
+#~| msgid "Searching for lyrics..."
+#~ msgid "Searching..."
+#~ msgstr "Meklē..."
+
+#~ msgid "New Podcast Feed"
+#~ msgstr "Jauna podraides parotne"
+
+#~ msgid "URL of podcast feed:"
+#~ msgstr "Podraides barotnes _URL:"
+
+#~ msgid "T_oolbar"
+#~ msgstr "Rīkj_osla"
+
+#~ msgid "_Small Display"
+#~ msgstr "Mazs ekrān_s"
+
+#~ msgid "Make the main window smaller"
+#~ msgstr "Padarīt galveno logu mazāku"
+
 #~ msgid "Searching... drop artwork here"
 #~ msgstr "Meklē... Ievelciet vāka dizainu šeit"
-
-#~ msgid "Drop artwork here"
-#~ msgstr "Ievelciet dizainu šeit"
 
 #~ msgid "Image provided by Last.fm"
 #~ msgstr "Attēli no Last.fm"
@@ -5075,9 +5102,6 @@ msgstr "Nezināma atrašanās vieta"
 
 #~ msgid "Feeds"
 #~ msgstr "Barotnes"
-
-#~ msgid "Episodes"
-#~ msgstr "Epizodes"
 
 #~ msgctxt "Podcast"
 #~ msgid "New"
@@ -5370,9 +5394,6 @@ msgstr "Nezināma atrašanās vieta"
 
 #~ msgid "<b>Download Manager</b>"
 #~ msgstr "<b>Lejupielāžu pārvaldnieks</b>"
-
-#~ msgid "_Close"
-#~ msgstr "_Aizvērt"
 
 #~| msgid "Rhythmbox"
 #~ msgid "_Show Rhythmbox"
