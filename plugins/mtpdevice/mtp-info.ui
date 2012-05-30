@@ -248,8 +248,10 @@
     <child type="label">
       <object class="GtkLabel" id="label-frame-system">
         <property name="visible">True</property>
-        <property name="label" translatable="yes">&lt;b&gt;System&lt;/b&gt;</property>
-        <property name="use_markup">True</property>
+        <property name="label" translatable="yes">System</property>
+        <attributes>
+          <attribute name="weight" value="bold"/>
+        </attributes>
       </object>
     </child>
   </object>
