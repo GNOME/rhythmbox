@@ -7,16 +7,16 @@
 # Hajime Taira <htaira@redhat.com>, 2010.
 # Hiroshi Tagawa <kuponuga@gmail.com>, 2010.
 # Kiyotaka NISHIBORI <ml.nishibori.kiyotaka@gmail.com>, 2010.
-# OKANO Takayoshi <kano@na.rim.or.jp>, 2011.
+# OKANO Takayoshi <kano@na.rim.or.jp>, 2011-2012.
 # Kentaro KAZUHAMA <kazken3@gmail.com>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-05-29 15:06+0000\n"
-"PO-Revision-Date: 2012-05-30 00:19+0900\n"
-"Last-Translator: OKANO Takayoshi <kano@na.rim.or.jp>\n"
+"POT-Creation-Date: 2012-05-31 14:18+0000\n"
+"PO-Revision-Date: 2012-06-01 01:47+0900\n"
+"Last-Translator: Kentaro KAZUHAMA <kazken3@gmail.com>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -262,10 +262,8 @@ msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
 msgstr "アーティスト - アルバム/アーティスト (アルバム) - 01 - タイトル.ogg"
 
 #: ../data/ui/library-prefs.ui.h:10
-#, fuzzy
-#| msgid "Account Settings"
 msgid "Format settings:"
-msgstr "アカウントの設定"
+msgstr "フォーマット設定:"
 
 #: ../data/ui/library-prefs.ui.h:11
 msgid "_Install additional software required to use this format"
@@ -333,19 +331,19 @@ msgstr "<b>プレイリストのフォーマット</b>"
 
 #: ../data/ui/podcast-add-dialog.ui.h:1
 msgid "Subscribe"
-msgstr ""
+msgstr "購読"
 
 #: ../data/ui/podcast-add-dialog.ui.h:2
 msgid ""
 "Search for podcasts in the iTunes Store and on Miroguide.com, or enter a podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
+"iTunes StoreやMiroguide.comのポッドキャストを検索するか、ポッドキャストフィードのURLを入力します。\n"
+"発行済みの新しいエピソードをダウンロードするにはポッドキャストを購読します。"
 
 #: ../data/ui/podcast-add-dialog.ui.h:4
-#, fuzzy
-#| msgid "_Close"
 msgid "Close"
-msgstr "閉じる(_C)"
+msgstr "閉じる"
 
 #: ../data/ui/podcast-feed-properties.ui.h:1
 #: ../data/ui/podcast-properties.ui.h:1
@@ -907,7 +905,7 @@ msgstr "CDを読み込めません: %s"
 
 #: ../plugins/audiocd/sj-metadata.c:183
 msgid "Devices haven't been all probed yet"
-msgstr ""
+msgstr "デバイスをまだすべて調べていません"
 
 #: ../plugins/audiocd/sj-metadata.c:199
 #, c-format
@@ -2721,20 +2719,16 @@ msgid "Displays visualizations"
 msgstr "視覚効果を表示します"
 
 #: ../podcast/rb-podcast-add-dialog.c:273
-#, fuzzy
-#| msgid "Unable to parse the feed contents"
 msgid "Unable to load the feed. Check your network connection."
-msgstr "配信元の内容を解析できません"
+msgstr "フィードを読み込めません。ネットワークの接続を確認してください。"
 
 #: ../podcast/rb-podcast-add-dialog.c:400
 msgid "Unable to search for podcasts. Check your network connection."
-msgstr ""
+msgstr "ポッドキャストが検索できません。ネットワークの接続を確認してください。"
 
 #: ../podcast/rb-podcast-add-dialog.c:722
-#, fuzzy
-#| msgid "Author:"
 msgid "Author"
-msgstr "配信元:"
+msgstr "配信元"
 
 #: ../podcast/rb-podcast-add-dialog.c:727
 #: ../podcast/rb-podcast-add-dialog.c:730
@@ -3482,17 +3476,12 @@ msgid "Change the visibility of the song position slider"
 msgstr "再生位置を表すスライダーの表示を切り替えます"
 
 #: ../shell/rb-shell.c:394
-#, fuzzy
-#| msgctxt "query-criteria"
-#| msgid "Album Artist"
 msgid "_Album Art"
-msgstr "アルバムアーティスト"
+msgstr "アルバムアート(_A)"
 
 #: ../shell/rb-shell.c:395
-#, fuzzy
-#| msgid "Change the visibility of the toolbar"
 msgid "Change the visibility of the album art display"
-msgstr "ツールバーの表示を切り替えます"
+msgstr "アルバムアートの表示を切り替えます"
 
 #: ../shell/rb-shell.c:397
 msgid "_Browse"
@@ -4143,16 +4132,12 @@ msgid "Multiple locations set"
 msgstr "複数の場所のセット"
 
 #: ../sources/rb-library-source.c:572
-#, fuzzy
-#| msgid "Delete station"
 msgid "Default settings"
-msgstr "ラジオステーションを削除します"
+msgstr "デフォルトの形式"
 
 #: ../sources/rb-library-source.c:588
-#, fuzzy
-#| msgid "Account Settings"
 msgid "Custom settings"
-msgstr "アカウントの設定"
+msgstr "カスタム形式"
 
 #: ../sources/rb-library-source.c:1387
 msgid "Example Path:"
@@ -4376,17 +4361,15 @@ msgstr "ココに画像をドロップしてください"
 
 #. Translators: remaining time / total time
 #: ../widgets/rb-header.c:1038
-#, fuzzy, c-format
-#| msgid "%s %s"
+#, c-format
 msgid "-%s / %s"
-msgstr "%s %s"
+msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
 #: ../widgets/rb-header.c:1049
-#, fuzzy, c-format
-#| msgid "%s %s"
+#, c-format
 msgid "%s / %s"
-msgstr "%s %s"
+msgstr "%s / %s"
 
 #: ../widgets/rb-property-view.c:636
 #, c-format
