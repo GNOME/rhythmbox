@@ -509,9 +509,9 @@ rate_song (GDBusProxy *mpris, gdouble song_rating)
 		return;
 	}
 
-	v = g_hash_table_lookup (properties, "xesam:uri");
+	v = g_hash_table_lookup (properties, "xesam:url");
 	if (v == NULL) {
-		rb_debug ("can't set rating, no uri");
+		rb_debug ("can't set rating, no url");
 		return;
 	}
 
@@ -523,7 +523,7 @@ rate_song (GDBusProxy *mpris, gdouble song_rating)
 				     "/org/gnome/Rhythmbox3/RhythmDB",
 				     "org.gnome.Rhythmbox3.RhythmDB",
 				     "SetEntryProperties",
-				     g_variant_new ("(sa{sv})", v, g_variant_builder_end (&props)),
+				     g_variant_new ("(sa{sv})", g_variant_get_string (v, NULL), &props),
 				     NULL,
 				     G_DBUS_CALL_FLAGS_NONE,
 				     -1,
