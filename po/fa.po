@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-05-30 06:35+0000\n"
-"PO-Revision-Date: 2012-06-03 13:38+0330\n"
+"POT-Creation-Date: 2012-06-03 09:10+0000\n"
+"PO-Revision-Date: 2012-06-03 14:34+0330\n"
 "Last-Translator: Arash Mousavi <mousavi.arash@gmail.com>\n"
 "Language-Team: Persian\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-Language: Persian\n"
 "X-Poedit-Country: IRAN, ISLAMIC REPUBLIC OF\n"
 "X-Poedit-SourceCharset: utf-8\n"
@@ -1553,6 +1553,7 @@ msgstr "آلبوم‌های برتر توسط %s"
 msgid "%s (%d track)"
 msgid_plural "%s (%d tracks)"
 msgstr[0] "%s (%Id قطعه)"
+msgstr[1] "%s (%Id قطعه)"
 
 #: ../plugins/context/tmpl/album-tmpl.html:95
 msgid "Track list not available"
@@ -1740,52 +1741,52 @@ msgstr ""
 #: ../plugins/generic-player/generic-player-info.ui.h:1
 #: ../plugins/mtpdevice/mtp-info.ui.h:1
 msgid "Device _name:"
-msgstr ""
+msgstr "_نام دستگاه:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:2
 #: ../plugins/ipod/ipod-info.ui.h:2
 #: ../plugins/mtpdevice/mtp-info.ui.h:2
 msgid "Tracks:"
-msgstr ""
+msgstr "قطعه‌ها:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:3
 #: ../plugins/ipod/ipod-info.ui.h:4
 #: ../plugins/mtpdevice/mtp-info.ui.h:4
 msgid "Playlists:"
-msgstr ""
+msgstr "فهرست‌پخش:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:4
 #: ../plugins/ipod/ipod-info.ui.h:10
 #: ../plugins/mtpdevice/mtp-info.ui.h:5
 msgid "Model:"
-msgstr ""
+msgstr "مدل:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:5
 #: ../plugins/ipod/ipod-info.ui.h:9
 #: ../plugins/mtpdevice/mtp-info.ui.h:6
 msgid "Serial number:"
-msgstr ""
+msgstr "شماره سریال:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:6
 #: ../plugins/mtpdevice/mtp-info.ui.h:8
 msgid "Manufacturer:"
-msgstr ""
+msgstr "تولیدکننده:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:7
 #: ../plugins/ipod/ipod-info.ui.h:11
 #: ../plugins/mtpdevice/mtp-info.ui.h:9
 msgid "Audio formats:"
-msgstr ""
+msgstr "قالب‌های صوتی:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:8
 #: ../plugins/ipod/ipod-info.ui.h:12
 #: ../plugins/mtpdevice/mtp-info.ui.h:10
 msgid "<b>System</b>"
-msgstr ""
+msgstr "<b>سیستم</b>"
 
 #: ../plugins/generic-player/generic-player.plugin.in.h:1
 msgid "Portable Players"
-msgstr ""
+msgstr "پخش‌کننده‌های قابل حمل"
 
 #: ../plugins/generic-player/generic-player.plugin.in.h:2
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
@@ -1795,19 +1796,19 @@ msgstr ""
 #: ../shell/rb-playlist-manager.c:839
 #: ../shell/rb-playlist-manager.c:879
 msgid "New Playlist"
-msgstr ""
+msgstr "فهرست‌پخش جدید"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:91
 msgid "Create a new playlist on this device"
-msgstr ""
+msgstr "ساخت یک فهرست‌پخش جدید بر روی دستگاه"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:93
 msgid "Delete Playlist"
-msgstr ""
+msgstr "حذف فهرست‌پخش"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:94
 msgid "Delete this playlist"
-msgstr ""
+msgstr "حذف فهرست‌پخش"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:96
 #: ../plugins/ipod/rb-ipod-plugin.c:102
@@ -1815,18 +1816,18 @@ msgstr ""
 #: ../podcast/rb-podcast-source.c:124
 #: ../shell/rb-shell-clipboard.c:190
 msgid "_Properties"
-msgstr ""
+msgstr "_ترجیحات"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:97
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:123
 msgid "Display device properties"
-msgstr ""
+msgstr "نمایش ترجیحات دستگاه"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1383
 #: ../plugins/ipod/rb-ipod-source.c:2006
 #: ../plugins/mtpdevice/rb-mtp-source.c:1611
 msgid "Advanced"
-msgstr ""
+msgstr "پیشرفته"
 
 #: ../plugins/grilo/grilo.plugin.in.h:1
 msgid "Grilo media browser"
@@ -1838,22 +1839,22 @@ msgstr ""
 
 #: ../plugins/grilo/rb-grilo-source.c:342
 msgid "Browse"
-msgstr ""
+msgstr "مرور"
 
 #: ../plugins/grilo/rb-grilo-source.c:385
 msgid "Fetch more tracks"
-msgstr ""
+msgstr "دریافت قطعه‌های بیشتر"
 
 #: ../plugins/grilo/rb-grilo-source.c:840
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "نمایش تنها %Id نتیجه"
+msgstr[1] "نمایش تنها %Id نتیجه"
 
 #: ../plugins/im-status/im-status.plugin.in.h:1
 msgid "IM Status"
-msgstr ""
+msgstr "وضعیت پیام‌رسان"
 
 #: ../plugins/im-status/im-status.plugin.in.h:2
 msgid "Updates IM status according to the current song (works with Empathy, Gossip, and Pidgin)"
@@ -2049,6 +2050,7 @@ msgstr "رادیو"
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%Id ایستگاه"
+msgstr[1] "%Id ایستگاه"
 
 #. should prevent multiple dialogs?  going to kill this nonsense anyway soon..
 #: ../plugins/iradio/rb-iradio-source.c:968
@@ -2365,23 +2367,23 @@ msgstr "۱۸$ آمریکا (ما عاشقتیم!)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:38
 msgid "Ogg Vorbis"
-msgstr ""
+msgstr "Ogg Vorbis"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:39
 msgid "FLAC"
-msgstr ""
+msgstr "FLAC"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:40
 msgid "WAV"
-msgstr ""
+msgstr "WAV"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:41
 msgid "VBR MP3"
-msgstr ""
+msgstr "VBR MP3"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:42
 msgid "128K MP3"
-msgstr ""
+msgstr "128K MP3"
 
 #: ../plugins/magnatune/magnatune.py:129
 msgid "Magnatune"
@@ -2421,7 +2423,7 @@ msgstr ""
 
 #: ../plugins/magnatune/MagnatuneSource.py:208
 msgid "Couldn't download album"
-msgstr ""
+msgstr "نمی‌توان آلبوم را بارگیری کرد"
 
 #: ../plugins/magnatune/MagnatuneSource.py:209
 msgid "You must have a library location set to download an album."
@@ -2900,7 +2902,7 @@ msgstr ""
 
 #: ../podcast/rb-podcast-properties-dialog.c:570
 msgid "Not Downloaded"
-msgstr ""
+msgstr "بارگیری نشد"
 
 #: ../podcast/rb-podcast-source.c:115
 msgid "_New Podcast Feed..."
@@ -3031,8 +3033,8 @@ msgstr ""
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%Id قسمت"
+msgstr[1] "%Id قسمت"
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
@@ -3225,7 +3227,7 @@ msgstr ""
 #: ../rhythmdb/rhythmdb.c:2374
 #, c-format
 msgid "Empty file"
-msgstr ""
+msgstr "پرونده خالی"
 
 #: ../rhythmdb/rhythmdb.c:3046
 msgid "Could not load the music database:"
@@ -3234,34 +3236,34 @@ msgstr ""
 #: ../rhythmdb/rhythmdb.c:4458
 #, c-format
 msgid "Checking (%d/%d)"
-msgstr ""
+msgstr "درحال بررسی (%Id/%Id)"
 
 #: ../rhythmdb/rhythmdb.c:4502
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%Ild دقیقه"
+msgstr[1] "%Ild دقیقه"
 
 #: ../rhythmdb/rhythmdb.c:4503
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%Ild ساعت"
+msgstr[1] "%Ild ساعت"
 
 #: ../rhythmdb/rhythmdb.c:4504
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%Ild روز"
+msgstr[1] "%Ild روز"
 
 #. Translators: the format is "X days, X hours and X minutes"
 #: ../rhythmdb/rhythmdb.c:4510
 #, c-format
 msgid "%s, %s and %s"
-msgstr ""
+msgstr "%s، %s و %s"
 
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
@@ -3271,7 +3273,7 @@ msgstr ""
 #: ../rhythmdb/rhythmdb.c:4535
 #, c-format
 msgid "%s and %s"
-msgstr ""
+msgstr "%s و %s"
 
 #: ../rhythmdb/rhythmdb-property-model.c:496
 msgid "All"
@@ -4145,6 +4147,7 @@ msgstr "خطاهای وارد کردن"
 msgid "%d import error"
 msgid_plural "%d import errors"
 msgstr[0] "%Id خطای ورود"
+msgstr[1] "%Id خطای ورود"
 
 #: ../sources/rb-library-source.c:120
 msgid "Artist/Artist - Album"
@@ -4255,6 +4258,7 @@ msgstr "پرونده‌های مفقود"
 msgid "%d missing file"
 msgid_plural "%d missing files"
 msgstr[0] "%Id پرونده‌ی مفقود"
+msgstr[1] "%Id پرونده‌ی مفقود"
 
 #: ../sources/rb-playlist-source.c:126
 msgid "Remove From Playlist"
@@ -4311,7 +4315,8 @@ msgstr "توسط"
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
-msgstr[0] "%Id آهنگ	"
+msgstr[0] "%Id آهنگ"
+msgstr[1] "%Id آهنگ"
 
 #: ../sources/rb-source.c:1328
 #, c-format
@@ -4448,29 +4453,29 @@ msgstr "%s / %s"
 #, c-format
 msgid "%d artist (%d)"
 msgid_plural "All %d artists (%d)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%Id هنرمند (%Id)"
+msgstr[1] "تمام %Id هنرمند (%Id)"
 
 #: ../widgets/rb-property-view.c:639
 #, c-format
 msgid "%d album (%d)"
 msgid_plural "All %d albums (%d)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%Id آلبوم (%Id)"
+msgstr[1] "تمام %Id آلبوم (%Id)"
 
 #: ../widgets/rb-property-view.c:642
 #, c-format
 msgid "%d genre (%d)"
 msgid_plural "All %d genres (%d)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%Id سبک (%Id)"
+msgstr[1] "تمام %Id هنرمند (%Id)"
 
 #: ../widgets/rb-property-view.c:645
 #, c-format
 msgid "%d (%d)"
 msgid_plural "All %d (%d)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%Id (%Id)"
+msgstr[1] "تمام %Id (%Id)"
 
 #: ../widgets/rb-property-view.c:651
 #, c-format
@@ -4781,6 +4786,7 @@ msgstr "بدون ستاره"
 msgid "%d Star"
 msgid_plural "%d Stars"
 msgstr[0] "%Id ستاره"
+msgstr[1] "%Id ستاره"
 
 #: ../widgets/rb-search-entry.c:227
 msgid "Clear the search text"
