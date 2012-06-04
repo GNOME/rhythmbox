@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
 "POT-Creation-Date: 2012-05-26 04:24+0000\n"
-"PO-Revision-Date: 2012-06-04 10:28+0700\n"
+"PO-Revision-Date: 2012-06-04 10:43+0700\n"
 "Last-Translator: Nguyễn Thái Ngọc Duy <pclouds@gmail.com>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -257,7 +257,7 @@ msgstr "Nghệ sĩ/Nghệ sĩ - Tập/Nghệ sĩ (Tập) - 01 - Tựa.ogg"
 
 #: ../data/ui/library-prefs.ui.h:10
 msgid "Format settings:"
-msgstr ""
+msgstr "Thiết lập định dạng:"
 
 #: ../data/ui/library-prefs.ui.h:11
 msgid "_Install additional software required to use this format"
@@ -325,7 +325,7 @@ msgstr "<b>Định dạng danh mục nhạc</b>"
 
 #: ../data/ui/podcast-add-dialog.ui.h:1
 msgid "Subscribe"
-msgstr ""
+msgstr "Đăng ký"
 
 #: ../data/ui/podcast-add-dialog.ui.h:2
 msgid ""
@@ -333,12 +333,13 @@ msgid ""
 "podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
+"Tìm podcast trên iTunes Store và Miroguide.com, hoặc nhập URL podcast.\n"
+"Đăng ký podcast để tải về phần mới khi được công bố."
 
 #: ../data/ui/podcast-add-dialog.ui.h:4
-#, fuzzy
 #| msgid "_Close"
 msgid "Close"
-msgstr "Đón_g"
+msgstr "Đóng"
 
 #: ../data/ui/podcast-feed-properties.ui.h:1
 #: ../data/ui/podcast-properties.ui.h:1
@@ -908,7 +909,7 @@ msgstr "Không thể đọc CD: %s"
 
 #: ../plugins/audiocd/sj-metadata.c:183
 msgid "Devices haven't been all probed yet"
-msgstr ""
+msgstr "Chưa dò hết thiết bị"
 
 #: ../plugins/audiocd/sj-metadata.c:199
 #, c-format
@@ -2055,10 +2056,9 @@ msgid "L_ocation:"
 msgstr "Đị_a chỉ:"
 
 #: ../plugins/lirc/rblirc.plugin.in.h:1
-#, fuzzy
 #| msgid "LIRC "
 msgid "LIRC"
-msgstr "LIRC "
+msgstr "LIRC"
 
 #: ../plugins/lirc/rblirc.plugin.in.h:2
 msgid "Control Rhythmbox using an infrared remote control"
@@ -2139,13 +2139,11 @@ msgid "<b>Magnatune online music store</b>"
 msgstr "<b>Cửa hàng nhạc trực tuyến Magnatune</b>"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:2
-#, fuzzy
 #| msgid ""
 #| "Magnatune is an online record label that is not evil. Some of their key "
 #| "attributes are:\n"
 msgid "Magnatune is an online record label that is not evil.\n"
-msgstr ""
-"Magnatune là nhãn đĩa trực tuyến không xấu xa. Một số đặc điểm chính là:\n"
+msgstr "Magnatune là nhãn đĩa trực tuyến không xấu xa.\n"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:4
 msgid "    * Free listening of all songs"
@@ -2156,6 +2154,8 @@ msgid ""
 "    * Paid members get totally unlimited downloading of the entire catalog "
 "(no other service allows that)"
 msgstr ""
+"    * Thành viên có thu phí được phép tải về không giới hạn (không dịch vụ "
+"nào khác cho phép như thế)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:7
 #, no-c-format
@@ -2163,22 +2163,25 @@ msgid ""
 "    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's "
 "worth joining"
 msgstr ""
+"    * 10% phí thành viên Magnatune được chuyển đến Rhythmbox/GNOME - đáng "
+"tham gia"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:8
 msgid ""
 "    * Open-Source friendly file formats: MP3s and WAVs, but also OGG and "
 "FLAC files."
 msgstr ""
+"    * Định dạng tập tin thân thiện mã nguồn mở: MP3 và WAV, nhưng cũng có "
+"OGG và FLAC."
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:9
 msgid "    * All albums and artists hand-picked"
 msgstr "    * Mọi tập nhạc và nghệ sĩ đều được chọn bằng tay"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:10
-#, fuzzy
 #| msgid "You can find more information at http://www.jamendo.com/"
 msgid "You can find more information at "
-msgstr "Bạn có thể tìm hiểu thêm tại http://www.jamendo.com/"
+msgstr "Bạn có thể tìm hiểu thêm tại "
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:11
 msgid "http://www.magnatune.com/"
@@ -2389,10 +2392,9 @@ msgid "Cancel Downloads"
 msgstr "Thôi tải về"
 
 #: ../plugins/magnatune/magnatune.py:150
-#, fuzzy
 #| msgid "Cancel Downloads"
 msgid "Stop album downloads"
-msgstr "Thôi tải về"
+msgstr "Thôi tải tập nhạc về"
 
 #: ../plugins/magnatune/MagnatuneSource.py:108
 msgid "Loading Magnatune catalog"
@@ -2403,16 +2405,14 @@ msgid "Downloading Magnatune Album(s)"
 msgstr "Đang tải các tập nhạc Magnatune về"
 
 #: ../plugins/magnatune/MagnatuneSource.py:208
-#, fuzzy
 #| msgid "Couldn't purchase album"
 msgid "Couldn't download album"
-msgstr "Không thể mua tập nhạc"
+msgstr "Không thể tải tập nhạc về"
 
 #: ../plugins/magnatune/MagnatuneSource.py:209
-#, fuzzy
 #| msgid "You must have a library location set to purchase an album."
 msgid "You must have a library location set to download an album."
-msgstr "Bạn phải đặt vị trí thư viện để có thể mua tập nhạc."
+msgstr "Bạn phải xác định vị trí thư viện để có thể tải tập nhạc về."
 
 #: ../plugins/magnatune/MagnatuneSource.py:272
 msgid "Unable to load catalog"
@@ -2488,10 +2488,9 @@ msgid "Rename MTP-device"
 msgstr "Đổi tên thiết bị MTP"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:614
-#, fuzzy
 #| msgid "Media Player Keys"
 msgid "Media Player"
-msgstr "Phím chơi nhạc"
+msgstr "Bộ phát nhạc"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:893
 #: ../plugins/mtpdevice/rb-mtp-thread.c:856
@@ -2785,20 +2784,18 @@ msgid "Displays visualizations"
 msgstr "Hiển thị hiệu ứng thị giác"
 
 #: ../podcast/rb-podcast-add-dialog.c:273
-#, fuzzy
 #| msgid "Unable to parse the feed contents"
 msgid "Unable to load the feed. Check your network connection."
-msgstr "Không thể phân tích nội dung nguồn"
+msgstr "Không thể nạp nguồn. Kiểm tra lại kết nối mạng."
 
 #: ../podcast/rb-podcast-add-dialog.c:400
 msgid "Unable to search for podcasts. Check your network connection."
-msgstr ""
+msgstr "Không thể tìm podcast. Kiểm tra kết nối mạng."
 
 #: ../podcast/rb-podcast-add-dialog.c:721
-#, fuzzy
 #| msgid "Author:"
 msgid "Author"
-msgstr "Tác giả:"
+msgstr "Tác giả"
 
 #: ../podcast/rb-podcast-add-dialog.c:726
 #: ../podcast/rb-podcast-add-dialog.c:729
@@ -2925,7 +2922,6 @@ msgid "_New Podcast Feed..."
 msgstr "_Nguồn Podcast mới..."
 
 #: ../podcast/rb-podcast-source.c:115
-#, fuzzy
 #| msgid "Subscribe to a new Podcast Feed"
 msgid "Subscribe to a new podcast feed"
 msgstr "Đăng kí nguồn Podcast mới"
@@ -3575,17 +3571,15 @@ msgid "Change the visibility of the song position slider"
 msgstr "Hiện/Ẩn thanh trượt vị trí bài nhạc"
 
 #: ../shell/rb-shell.c:394
-#, fuzzy
 #| msgctxt "query-criteria"
 #| msgid "Album Artist"
 msgid "_Album Art"
-msgstr "Nghệ sĩ"
+msgstr "Ả_nh bìa"
 
 #: ../shell/rb-shell.c:395
-#, fuzzy
 #| msgid "Change the visibility of the toolbar"
 msgid "Change the visibility of the album art display"
-msgstr "Hiện/Ẩn thanh công cụ"
+msgstr "Hiện/Ẩn ảnh bìa"
 
 #: ../shell/rb-shell.c:397
 msgid "_Browse"
@@ -4241,16 +4235,14 @@ msgid "Multiple locations set"
 msgstr "Nhiều địa điểm được đặt"
 
 #: ../sources/rb-library-source.c:572
-#, fuzzy
 #| msgid "Delete station"
 msgid "Default settings"
-msgstr "Xoá đài"
+msgstr "Thiết lập mặc định"
 
 #: ../sources/rb-library-source.c:588
-#, fuzzy
 #| msgid "Cut selection"
 msgid "Custom settings"
-msgstr "Cắt vùng chọn"
+msgstr "Thiết lập tự chọn"
 
 #: ../sources/rb-library-source.c:1387
 msgid "Example Path:"
@@ -4480,17 +4472,17 @@ msgstr "Thả ảnh bìa vào đây"
 
 #. Translators: remaining time / total time
 #: ../widgets/rb-header.c:1038
-#, fuzzy, c-format
+#, c-format
 #| msgid "%s %s"
 msgid "-%s / %s"
-msgstr "%s, %s"
+msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
 #: ../widgets/rb-header.c:1049
-#, fuzzy, c-format
+#, c-format
 #| msgid "%s %s"
 msgid "%s / %s"
-msgstr "%s, %s"
+msgstr "%s / %s"
 
 #: ../widgets/rb-property-view.c:636
 #, c-format
