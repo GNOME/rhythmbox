@@ -625,7 +625,17 @@ do_load_request (GSimpleAsyncResult *result, GObject *object, GCancellable *canc
 		g_signal_emit (object, signals[LOAD], 0, &d, &req->data);
 		g_value_unset (&d);
 
-		rb_debug ("converted data into value of type %s", G_VALUE_TYPE_NAME (req->data));
+		if (req->data) {
+			rb_debug ("converted data into value of type %s",
+				  G_VALUE_TYPE_NAME (req->data));
+
+			if (G_VALUE_HOLDS (req->data, G_TYPE_OBJECT)) {
+				/* drop extra ref added by signal return */
+				g_object_unref (g_value_get_object (req->data));
+			}
+		} else {
+			rb_debug ("data conversion failed");
+		}
 	}
 
 	g_object_unref (f);
@@ -647,10 +657,10 @@ do_load_request (GSimpleAsyncResult *result, GObject *object, GCancellable *canc
  */
 gboolean
 rb_ext_db_request (RBExtDB *store,
-			      RBExtDBKey *key,
-			      RBExtDBRequestCallback callback,
-			      gpointer user_data,
-			      GDestroyNotify destroy)
+		   RBExtDBKey *key,
+		   RBExtDBRequestCallback callback,
+		   gpointer user_data,
+		   GDestroyNotify destroy)
 {
 	RBExtDBRequest *req;
 	gboolean result;
