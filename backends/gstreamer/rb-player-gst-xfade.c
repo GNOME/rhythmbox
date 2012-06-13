@@ -447,6 +447,11 @@ rb_xfade_stream_dispose (GObject *object)
 		sd->player = NULL;
 	}
 
+	if (sd->tags != NULL) {
+		rb_list_destroy_free (sd->tags, (GDestroyNotify) gst_tag_list_free);
+		sd->tags = NULL;
+	}
+
 	rb_xfade_stream_dispose_stream_data (sd);
 
 	G_OBJECT_CLASS (rb_xfade_stream_parent_class)->dispose (object);
