@@ -619,7 +619,10 @@ do_load_request (GSimpleAsyncResult *result, GObject *object, GCancellable *canc
 
 		/* convert the encoded data into a useful object */
 		rb_debug ("converting %" G_GSIZE_FORMAT " bytes of file data", file_data_size);
-		s = g_string_new_len (file_data, file_data_size);
+		s = g_slice_new0 (GString);
+		s->str = file_data;
+		s->len = file_data_size;
+		s->allocated_len = file_data_size;
 		g_value_init (&d, G_TYPE_GSTRING);
 		g_value_take_boxed (&d, s);
 		g_signal_emit (object, signals[LOAD], 0, &d, &req->data);

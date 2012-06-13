@@ -555,10 +555,13 @@ store_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
 		return NULL;
 	}
 
-	s = g_string_new_len (data, data_size);
+	s = g_slice_new0 (GString);
+	s->str = data;
+	s->len = data_size;
+	s->allocated_len = data_size;
 	v = g_new0 (GValue, 1);
 	g_value_init (v, G_TYPE_GSTRING);
-	g_value_set_boxed (v, s);
+	g_value_take_boxed (v, s);
 	return v;
 }
 
