@@ -231,6 +231,8 @@ rb_gst_media_type_matches_profile (GstEncodingProfile *profile, const char *medi
 			}
 		}
 	}
+	gst_caps_unref (caps);
+
 	return matches;
 }
 
