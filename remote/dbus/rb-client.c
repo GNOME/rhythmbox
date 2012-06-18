@@ -615,6 +615,29 @@ main (int argc, char **argv)
 
 	rb_debug_init (debug);
 
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+	/* check if it's running before registering the application */
+	if (no_start || check_running || quit) {
+		GDBusProxy *app_proxy;
+		app_proxy = g_dbus_proxy_new_sync (bus, G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START, NULL,
+						   "org.gnome.Rhythmbox3",
+						   "/org/gnome/Rhythmbox3",
+						   "org.gtk.Actions",
+						   NULL,
+						   &error);
+		if (app_proxy == NULL || proxy_has_name_owner (app_proxy) == FALSE) {
+			rb_debug ("not running");
+			if (check_running) {
+				exit (2);
+			}
+			exit (0);
+		} else if (check_running) {
+			rb_debug ("running instance found");
+			exit (0);
+		}
+		g_object_unref (app_proxy);
+	}
+
 	app = g_application_new ("org.gnome.Rhythmbox3", G_APPLICATION_IS_LAUNCHER);
 	if (g_application_register (app, NULL, &error) == FALSE) {
 		if (check_running) {
@@ -629,13 +652,6 @@ main (int argc, char **argv)
 		exit (0);
 	}
 
-
-	/* are we just checking if it's running? */
-	if (check_running) {
-		rb_debug ("running instance found");
-		exit (0);
-	}
-
 	/* wait until it's ready to accept control */
 	state = g_action_group_get_action_state (G_ACTION_GROUP (app), "LoadURI");
 	if (state == NULL) {
@@ -643,7 +659,6 @@ main (int argc, char **argv)
 		exit (0);
 	}
 
-	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
 	g_variant_get (state, "(bb)", &loaded, &scanned);
 	if ((loaded && scanned) == FALSE) {
 		GMainLoop *loop;
