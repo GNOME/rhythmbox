@@ -11,13 +11,14 @@
 # Peteris Caune <cuu508@gmail.com>, 2007.
 # Peteris Krisjanis <pecisk@gmail.com>, 2010, 2012.
 # Rūdofls Mazurs <rudolfs.mazurs@gmail.com>, 2011, 2012.
+# Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD.lv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-29 11:53+0300\n"
-"PO-Revision-Date: 2012-05-29 12:11+0300\n"
+"POT-Creation-Date: 2012-06-20 20:58+0300\n"
+"PO-Revision-Date: 2012-06-20 20:59+0300\n"
 "Last-Translator: Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>\n"
 "Language-Team: Latviešu <lata-l10n@googlegroups.com>\n"
 "Language: lv\n"
@@ -37,7 +38,7 @@ msgstr "Neizdevās izveidot GStreamer saņēmēja elementu, lai rakstītu uz %s"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:493
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2829
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2834
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Neizdevās atvērt izvada ierīci: %s"
@@ -47,44 +48,44 @@ msgstr "Neizdevās atvērt izvada ierīci: %s"
 msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgstr "Neizdevās izveidot playbin2 elementu; pārbaudīt Gstreamer instalāciju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1118
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1132
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1123
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1137
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Neizdevās izveidot jaunu straumi GStreamer konveijerā"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1160
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1165
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Neizdevās sākt jaunu straumi"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2754
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2759
 #, c-format
 msgid "Failed to open output device"
 msgstr "Neizdevās atvērt izejas ierīci"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3107
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3180
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3112
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3185
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Neizdevās izveidot GStreamer elementu; pārbaudiet savu instalaciju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3121
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3126
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Neizdevās izveidot audio izvada elementu; pārbaudiet savu instalāciju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3154
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3196
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3222
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3231
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3240
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3159
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3201
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3227
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3236
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3245
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Neizdevās izveidot GStreamer konveijeru, pārbaudiet savu instalāciju"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3335
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3340
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Neizdevās izveidot GStreamer konveijeru, lai atskaņotu %s"
@@ -102,8 +103,8 @@ msgid "My Top Rated"
 msgstr "Augstāk novērtētās"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/rb-shell.c:615
-#: ../shell/rb-shell.c:2661
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/rb-shell.c:618
+#: ../shell/rb-shell.c:2664
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -2491,6 +2492,14 @@ msgstr "Mēdiju atskaņotāja taustiņi"
 msgid "Control Rhythmbox using key shortcuts"
 msgstr "Kontrolē Rhythmbox izmantojot taustiņu saīsnes"
 
+#: ../plugins/mpris/mpris.plugin.in.h:1
+msgid "MPRIS D-Bus interface"
+msgstr "MPRIS D-Bus saskarne"
+
+#: ../plugins/mpris/mpris.plugin.in.h:2
+msgid "Provides an implementation of the MPRIS D-Bus interface specification"
+msgstr "Nodrošina MPRIS2 D-Bus saskarnes specifikācijas realizāciju"
+
 #: ../plugins/mtpdevice/mtpdevice.plugin.in.h:1
 msgid "Portable Players - MTP"
 msgstr "Pārvietojamie spēlētāji - MTP"
@@ -3217,7 +3226,7 @@ msgstr "Iestata reitingu pašreizējai dziesmai"
 msgid "Not playing"
 msgstr "Neatskaņo"
 
-#: ../remote/dbus/rb-client.c:894
+#: ../remote/dbus/rb-client.c:909
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Atskaņošanas skaļums ir %f.\n"
@@ -3618,43 +3627,43 @@ msgstr "_Pārlūkot"
 msgid "Change the visibility of the browser"
 msgstr "Mainīt pārlūka redzamību"
 
-#: ../shell/rb-shell.c:890
+#: ../shell/rb-shell.c:893
 msgid "Change the music volume"
 msgstr "Mainīt mūzikas skaļumu"
 
-#: ../shell/rb-shell.c:1995
+#: ../shell/rb-shell.c:1998
 msgid "Enable debug output"
 msgstr "Aktivizēt atkļūdošanas izvadi"
 
-#: ../shell/rb-shell.c:1996
+#: ../shell/rb-shell.c:1999
 msgid "Enable debug output matching a specified string"
 msgstr "Aktivizēt atkļūdošanas izvadi, kas atbilst norādītajai virknei"
 
-#: ../shell/rb-shell.c:1997
+#: ../shell/rb-shell.c:2000
 msgid "Do not update the library with file changes"
 msgstr "Mainoties failiem neatjaunināt fonotēku"
 
-#: ../shell/rb-shell.c:1998
+#: ../shell/rb-shell.c:2001
 msgid "Do not register the shell"
 msgstr "Nereģistrēt čaulu"
 
-#: ../shell/rb-shell.c:1999
+#: ../shell/rb-shell.c:2002
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Nesaglabāt datus pastāvīgi (nozīmē --no-registration)"
 
-#: ../shell/rb-shell.c:2000
+#: ../shell/rb-shell.c:2003
 msgid "Disable loading of plugins"
 msgstr "Deaktivēt spraudņu ielādi"
 
-#: ../shell/rb-shell.c:2001
+#: ../shell/rb-shell.c:2004
 msgid "Path for database file to use"
 msgstr "Ceļš uz izmantojamo datubāzi"
 
-#: ../shell/rb-shell.c:2002
+#: ../shell/rb-shell.c:2005
 msgid "Path for playlists file to use"
 msgstr "Ceļš uz izmantojamo repertuāra failu"
 
-#: ../shell/rb-shell.c:2013
+#: ../shell/rb-shell.c:2016
 #, c-format
 msgid ""
 "%s\n"
@@ -3665,31 +3674,31 @@ msgstr ""
 "sarakstu.\n"
 
 #. Translators: this is the short label for the 'import folder' action
-#: ../shell/rb-shell.c:2114
+#: ../shell/rb-shell.c:2117
 msgctxt "Library"
 msgid "Import"
 msgstr "Importēt"
 
 #. Translators: this is the short label for the 'view all tracks' action
-#: ../shell/rb-shell.c:2116
+#: ../shell/rb-shell.c:2119
 msgid "Show All"
 msgstr "Rādīt visus"
 
-#: ../shell/rb-shell.c:2401
+#: ../shell/rb-shell.c:2404
 msgid "Error while saving song information"
 msgstr "Kļūda saglabājot informāciju par dziesmu"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2681
+#: ../shell/rb-shell.c:2684
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pauzēts)"
 
-#: ../shell/rb-shell.c:2756
+#: ../shell/rb-shell.c:2759
 msgid "translator-credits"
 msgstr "Pēteris Krišjānis <pecisk@gmail.com>Raivis Dejus <orvils@gmail.com>"
 
-#: ../shell/rb-shell.c:2759
+#: ../shell/rb-shell.c:2762
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3700,7 +3709,7 @@ msgstr ""
 "saskaņā ar Brīvās programmatūras fonda GNU Vispārējās Publiskās Licences 2. "
 "vai kādas vēlākas versijas noteikumiem\n"
 
-#: ../shell/rb-shell.c:2763
+#: ../shell/rb-shell.c:2766
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3710,7 +3719,7 @@ msgstr ""
 "Rhythmbox tiek izplatīts bez JEBKĀDAS GARANTIJAS.\n"
 " Sīkāku informāciju meklējiet GNU Vispārējās publiskās licences tekstā\n"
 
-#: ../shell/rb-shell.c:2767
+#: ../shell/rb-shell.c:2770
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3720,63 +3729,63 @@ msgstr ""
 "Ja tā nav noticis rakstiet Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-shell.c:2774
+#: ../shell/rb-shell.c:2777
 msgid "Maintainers:"
 msgstr "Uzturētāji:"
 
-#: ../shell/rb-shell.c:2777
+#: ../shell/rb-shell.c:2780
 msgid "Former Maintainers:"
 msgstr "Kādreizējie uzturētāji:"
 
-#: ../shell/rb-shell.c:2780
+#: ../shell/rb-shell.c:2783
 msgid "Contributors:"
 msgstr "Kontributori:"
 
-#: ../shell/rb-shell.c:2782
+#: ../shell/rb-shell.c:2785
 msgid "Music management and playback software for GNOME."
 msgstr "Mūzikas pārvaldīšanas un atskaņošanas programmatūra GNOME videi."
 
-#: ../shell/rb-shell.c:2791
+#: ../shell/rb-shell.c:2794
 msgid "Rhythmbox Website"
 msgstr "Rhythmbox tīmekļa vietne"
 
-#: ../shell/rb-shell.c:2838 ../shell/rb-shell-preferences.c:162
+#: ../shell/rb-shell.c:2841 ../shell/rb-shell-preferences.c:162
 msgid "Couldn't display help"
 msgstr "Neizdevās parādīt palīdzību"
 
-#: ../shell/rb-shell.c:2883
+#: ../shell/rb-shell.c:2886
 msgid "Configure Plugins"
 msgstr "Konfigurēt spraudņus"
 
-#: ../shell/rb-shell.c:2972
+#: ../shell/rb-shell.c:2975
 msgid "Import Folder into Library"
 msgstr "Importēt mapi fonotēkā"
 
-#: ../shell/rb-shell.c:2991
+#: ../shell/rb-shell.c:2994
 msgid "Import File into Library"
 msgstr "Importēt failu fonotēkā"
 
-#: ../shell/rb-shell.c:3419 ../sources/rb-play-queue-source.c:629
+#: ../shell/rb-shell.c:3422 ../sources/rb-play-queue-source.c:629
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Neviens no reģistrētajiem avotiem nevar apstrādāt URI %s"
 
-#: ../shell/rb-shell.c:3748
+#: ../shell/rb-shell.c:3751
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Neviens no reģistrētajiem avotiem neatbilst URI %s"
 
-#: ../shell/rb-shell.c:3781 ../shell/rb-shell.c:3824
+#: ../shell/rb-shell.c:3784 ../shell/rb-shell.c:3827
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Nezināms dziesmas URI: %s"
 
-#: ../shell/rb-shell.c:3833
+#: ../shell/rb-shell.c:3836
 #, c-format
 msgid "Unknown property %s"
 msgstr "Nezināms parametrs %s"
 
-#: ../shell/rb-shell.c:3847
+#: ../shell/rb-shell.c:3850
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Nederīgs parametra tips %s parametram %s"
