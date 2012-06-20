@@ -191,6 +191,8 @@ free_store_request (RBExtDBStoreRequest *sreq)
 		g_free (sreq->value);
 	}
 	g_free (sreq->uri);
+	g_free (sreq->filename);
+	rb_ext_db_key_free (sreq->key);
 	g_slice_free (RBExtDBStoreRequest, sreq);
 }
 
@@ -223,6 +225,7 @@ flatten_data (guint64 search_time, const char *filename, RBExtDBSourceType sourc
 	data.dsize = g_variant_get_size (v);
 	data.dptr = g_malloc0 (data.dsize);
 	g_variant_store (v, data.dptr);
+	g_variant_unref (v);
 	return data;
 }
 
@@ -359,6 +362,7 @@ impl_constructor (GType type, guint n_construct_properties, GObjectConstructPara
 			/* umm */
 			g_assert_not_reached ();
 		}
+		g_free (tdbfile);
 	}
 	g_free (storedir);
 
