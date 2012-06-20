@@ -5448,9 +5448,10 @@ rhythmdb_entry_matches_ext_db_key (RhythmDB *db, RhythmDBEntry *entry, RBExtDBKe
 
 		prop = rhythmdb_propid_from_nice_elt_name (db, (const xmlChar *)fields[i]);
 		if (prop == -1) {
-			if (rb_ext_db_key_field_matches (key, fields[i], NULL) == FALSE)
+			if (rb_ext_db_key_field_matches (key, fields[i], NULL) == FALSE) {
+				g_strfreev (fields);
 				return FALSE;
-
+			}
 			continue;
 		}
 
@@ -5471,9 +5472,12 @@ rhythmdb_entry_matches_ext_db_key (RhythmDB *db, RhythmDBEntry *entry, RBExtDBKe
 		}
 
 		v = rhythmdb_entry_get_string (entry, prop);
-		if (rb_ext_db_key_field_matches (key, fields[i], v) == FALSE)
+		if (rb_ext_db_key_field_matches (key, fields[i], v) == FALSE) {
+			g_strfreev (fields);
 			return FALSE;
+		}
 	}
 
+	g_strfreev (fields);
 	return TRUE;
 }
