@@ -38,6 +38,7 @@
 #include <lib/rb-file-helpers.h>
 #include <lib/rb-debug.h>
 #include <lib/rb-util.h>
+#include <lib/rb-marshal.h>
 
 /**
  * SECTION:rb-ext-db
@@ -472,8 +473,9 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBExtDBClass, store),
-			      rb_signal_accumulator_value_handled, NULL, NULL,
-			      G_TYPE_VALUE,
+			      g_signal_accumulator_first_wins, NULL,
+			      rb_marshal_POINTER__BOXED,
+			      G_TYPE_POINTER,
 			      1, G_TYPE_VALUE);
 	/**
 	 * RBExtDB::load:
@@ -486,8 +488,9 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBExtDBClass, load),
-			      rb_signal_accumulator_value_handled, NULL, NULL,
-			      G_TYPE_VALUE,
+			      g_signal_accumulator_first_wins, NULL,
+			      rb_marshal_POINTER__BOXED,
+			      G_TYPE_POINTER,
 			      1, G_TYPE_VALUE);
 
 	g_type_class_add_private (klass, sizeof (RBExtDBPrivate));
@@ -629,17 +632,13 @@ do_load_request (GSimpleAsyncResult *result, GObject *object, GCancellable *canc
 		s->allocated_len = file_data_size;
 		g_value_init (&d, G_TYPE_GSTRING);
 		g_value_take_boxed (&d, s);
+		req->data = NULL;
 		g_signal_emit (object, signals[LOAD], 0, &d, &req->data);
 		g_value_unset (&d);
 
 		if (req->data) {
 			rb_debug ("converted data into value of type %s",
 				  G_VALUE_TYPE_NAME (req->data));
-
-			if (G_VALUE_HOLDS (req->data, G_TYPE_OBJECT)) {
-				/* drop extra ref added by signal return */
-				g_object_unref (g_value_get_object (req->data));
-			}
 		} else {
 			rb_debug ("data conversion failed");
 		}
@@ -872,11 +871,6 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 		 */
 		g_signal_emit (store, signals[LOAD], 0, req->data, &req->value);
 		rb_debug ("converted encoded data into value of type %s", G_VALUE_TYPE_NAME (req->value));
-
-		/* drop extra ref added by signal return */
-		if (G_VALUE_HOLDS (req->data, G_TYPE_OBJECT)) {
-			g_object_unref (g_value_get_object (req->data));
-		}
 	} else if (req->value != NULL) {
 		/* we got an object representing the data; store it so we
 		 * can write it to a file
@@ -884,11 +878,6 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 		g_signal_emit (store, signals[STORE], 0, req->value, &req->data);
 
 		rb_debug ("stored value into encoded data of type %s", G_VALUE_TYPE_NAME (req->data));
-
-		/* drop extra ref added by signal return */
-		if (G_VALUE_HOLDS (req->data, G_TYPE_OBJECT)) {
-			g_object_unref (g_value_get_object (req->data));
-		}
 	} else {
 		/* indicates we actually didn't get anything, as opposed to communication errors etc.
 		 * providers just shouldn't call rb_ext_db_store_* in that case.
