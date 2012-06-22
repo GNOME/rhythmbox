@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-05-26 04:24+0000\n"
-"PO-Revision-Date: 2012-05-29 23:44+0300\n"
+"POT-Creation-Date: 2012-06-06 22:56+0000\n"
+"PO-Revision-Date: 2012-06-22 20:13+0300\n"
 "Last-Translator: Aurimas Černius <aurisc4@gmail.com>\n"
 "Language-Team: Lithuanian\n"
 "MIME-Version: 1.0\n"
@@ -346,7 +346,6 @@ msgstr ""
 "Užsisakykite tinklalaidžių naujus epizodus jiem parsisiųsti, vos tik jie paskelbiami."
 
 #: ../data/ui/podcast-add-dialog.ui.h:4
-#| msgid "Clear"
 msgid "Close"
 msgstr "Užverti"
 
@@ -714,7 +713,7 @@ msgstr "%Y %b %d"
 #: ../podcast/rb-podcast-manager.c:1998
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
-#: ../podcast/rb-podcast-source.c:784
+#: ../podcast/rb-podcast-source.c:787
 #: ../remote/dbus/rb-client.c:144
 #: ../rhythmdb/rhythmdb.c:2028
 #: ../rhythmdb/rhythmdb.c:2034
@@ -923,7 +922,7 @@ msgid "Rhythmbox couldn't read the CD information."
 msgstr "Rhythmbox nepavyko perskaityti CD informacijos."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:996
-#: ../podcast/rb-podcast-add-dialog.c:710
+#: ../podcast/rb-podcast-add-dialog.c:711
 #: ../sources/rb-library-source.c:133
 #: ../widgets/rb-entry-view.c:1429
 msgid "Title"
@@ -1820,7 +1819,7 @@ msgstr "Ištrinti šį grojaraštį"
 #: ../plugins/generic-player/rb-generic-player-plugin.c:96
 #: ../plugins/ipod/rb-ipod-plugin.c:102
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:122
-#: ../podcast/rb-podcast-source.c:123
+#: ../podcast/rb-podcast-source.c:124
 #: ../shell/rb-shell-clipboard.c:190
 msgid "_Properties"
 msgstr "_Savybės"
@@ -2493,6 +2492,18 @@ msgstr "Muzikos grotuvo klavišai"
 msgid "Control Rhythmbox using key shortcuts"
 msgstr "Valdykite Rhythmbox naudodami klavišų susiejimus"
 
+#: ../plugins/mpris/mpris.plugin.in.h:1
+#| msgid "MediaServer2 D-Bus interface"
+msgid "MPRIS D-Bus interface"
+msgstr "MPRIS D-Bus sąsaja"
+
+#: ../plugins/mpris/mpris.plugin.in.h:2
+#| msgid ""
+#| "Provides an implementation of the MediaServer2 D-Bus interface "
+#| "specification"
+msgid "Provides an implementation of the MPRIS D-Bus interface specification"
+msgstr "Suteikia MPRIS D-Bus sąsajos specifikacijos realizaciją"
+
 #: ../plugins/mtpdevice/mtpdevice.plugin.in.h:1
 msgid "Portable Players - MTP"
 msgstr "Nešiojamieji grotuvai – MTP"
@@ -2799,7 +2810,6 @@ msgid "Displays visualizations"
 msgstr "Rodo vaizdo efektus"
 
 #: ../podcast/rb-podcast-add-dialog.c:273
-#| msgid "Unable to parse the feed contents"
 msgid "Unable to load the feed. Check your network connection."
 msgstr "Nepavyko įkelti kanalo turinio. Patikrinkite tinklo ryšį."
 
@@ -2807,21 +2817,19 @@ msgstr "Nepavyko įkelti kanalo turinio. Patikrinkite tinklo ryšį."
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Nepavyko ieškoti tinklalaidžių. Patikrinkite tinklo ryšį."
 
-#: ../podcast/rb-podcast-add-dialog.c:721
-#| msgid "Author:"
+#: ../podcast/rb-podcast-add-dialog.c:722
 msgid "Author"
 msgstr "Autorius"
 
-#: ../podcast/rb-podcast-add-dialog.c:726
-#: ../podcast/rb-podcast-add-dialog.c:729
-#| msgid "New Episodes"
+#: ../podcast/rb-podcast-add-dialog.c:727
+#: ../podcast/rb-podcast-add-dialog.c:730
 msgid "Episodes"
 msgstr "Epizodai"
 
-#: ../podcast/rb-podcast-add-dialog.c:757
-#: ../podcast/rb-podcast-add-dialog.c:768
-#: ../podcast/rb-podcast-source.c:1395
-#: ../podcast/rb-podcast-source.c:1406
+#: ../podcast/rb-podcast-add-dialog.c:758
+#: ../podcast/rb-podcast-add-dialog.c:769
+#: ../podcast/rb-podcast-source.c:1397
+#: ../podcast/rb-podcast-source.c:1408
 msgid "Date"
 msgstr "Data"
 
@@ -2924,106 +2932,105 @@ msgstr "Nepavyko parodyti prašomo URI"
 msgid "Not Downloaded"
 msgstr "Neatsiųsta"
 
-#: ../podcast/rb-podcast-source.c:114
+#: ../podcast/rb-podcast-source.c:115
 msgid "_New Podcast Feed..."
 msgstr "_Naujas tinklalaidžių kanalas..."
 
-#: ../podcast/rb-podcast-source.c:115
-#| msgid "Subscribe to a new Podcast Feed"
+#: ../podcast/rb-podcast-source.c:116
 msgid "Subscribe to a new podcast feed"
 msgstr "Užsisakyti naują tinklalaidžių kanalą"
 
-#: ../podcast/rb-podcast-source.c:117
+#: ../podcast/rb-podcast-source.c:118
 msgid "Download _Episode"
 msgstr "Atsisiųsti _epizodą"
 
-#: ../podcast/rb-podcast-source.c:118
+#: ../podcast/rb-podcast-source.c:119
 msgid "Download Podcast Episode"
 msgstr "Atsisiųsti tinklalaidės epizodą"
 
-#: ../podcast/rb-podcast-source.c:120
+#: ../podcast/rb-podcast-source.c:121
 msgid "_Cancel Download"
 msgstr "_Nutraukti atsiuntimą"
 
-#: ../podcast/rb-podcast-source.c:121
+#: ../podcast/rb-podcast-source.c:122
 msgid "Cancel Episode Download"
 msgstr "Nutraukti epizodo atsiuntimą"
 
-#: ../podcast/rb-podcast-source.c:124
+#: ../podcast/rb-podcast-source.c:125
 msgid "Episode Properties"
 msgstr "Epizodo savybės"
 
-#: ../podcast/rb-podcast-source.c:126
+#: ../podcast/rb-podcast-source.c:127
 msgid "_Update Podcast Feed"
 msgstr "_Atnaujinti tinklalaidžių kanalą"
 
-#: ../podcast/rb-podcast-source.c:127
+#: ../podcast/rb-podcast-source.c:128
 msgid "Update Feed"
 msgstr "Atnaujinti kanalą"
 
-#: ../podcast/rb-podcast-source.c:129
+#: ../podcast/rb-podcast-source.c:130
 msgid "_Delete Podcast Feed"
 msgstr "_Ištrinti tinklalaidžių kanalą"
 
-#: ../podcast/rb-podcast-source.c:130
+#: ../podcast/rb-podcast-source.c:131
 msgid "Delete Feed"
 msgstr "Ištrinti kanalą"
 
-#: ../podcast/rb-podcast-source.c:132
+#: ../podcast/rb-podcast-source.c:133
 msgid "_Update All Feeds"
 msgstr "_Atnaujinti visus kanalus"
 
-#: ../podcast/rb-podcast-source.c:133
+#: ../podcast/rb-podcast-source.c:134
 msgid "Update all feeds"
 msgstr "Atnaujinti visus kanalus"
 
-#: ../podcast/rb-podcast-source.c:139
+#: ../podcast/rb-podcast-source.c:140
 #: ../sources/rb-auto-playlist-source.c:103
 #: ../sources/rb-browser-source.c:148
 #: ../sources/rb-static-playlist-source.c:123
 msgid "Search all fields"
-msgstr "Rodyti visus laukelius"
+msgstr "Ieškoti visur"
 
-#: ../podcast/rb-podcast-source.c:140
+#: ../podcast/rb-podcast-source.c:141
 msgid "Search podcast feeds"
 msgstr "Ieškoti tinklalaidžių kanalų"
 
-#: ../podcast/rb-podcast-source.c:141
+#: ../podcast/rb-podcast-source.c:142
 msgid "Search podcast episodes"
 msgstr "Ieškoti tinklalaidžių epizodų"
 
-#: ../podcast/rb-podcast-source.c:517
+#: ../podcast/rb-podcast-source.c:520
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Ištrinti tinklalaidžių kanalą ir atsiųstus failus?"
 
-#: ../podcast/rb-podcast-source.c:520
+#: ../podcast/rb-podcast-source.c:523
 msgid "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the feed but keep the downloaded files by choosing to delete the feed only."
 msgstr "Jeigu pasirinksite ištrinti kanalus ir failus, jie bus negrįžtamai prarasti. Turėkite omenyje, kad galite ištrinti kanalą, bet atsiųstus failus pasilikti, Jums tereikia pasirinkti ištrinti tik kanalą."
 
-#: ../podcast/rb-podcast-source.c:528
+#: ../podcast/rb-podcast-source.c:531
 msgid "Delete _Feed Only"
 msgstr "Ištrinti tik _kanalą"
 
-#: ../podcast/rb-podcast-source.c:535
+#: ../podcast/rb-podcast-source.c:538
 msgid "_Delete Feed And Files"
 msgstr "_Ištrinti kanalą ir failus"
 
-#: ../podcast/rb-podcast-source.c:613
-#: ../podcast/rb-podcast-source.c:1449
+#: ../podcast/rb-podcast-source.c:616
+#: ../podcast/rb-podcast-source.c:1451
 msgid "Downloaded"
 msgstr "Atsiųsti"
 
-#: ../podcast/rb-podcast-source.c:617
-#: ../podcast/rb-podcast-source.c:1451
+#: ../podcast/rb-podcast-source.c:620
+#: ../podcast/rb-podcast-source.c:1453
 msgid "Failed"
 msgstr "Nepavyko"
 
-#: ../podcast/rb-podcast-source.c:621
-#: ../podcast/rb-podcast-source.c:1450
+#: ../podcast/rb-podcast-source.c:624
+#: ../podcast/rb-podcast-source.c:1452
 msgid "Waiting"
 msgstr "Laukiama"
 
-#: ../podcast/rb-podcast-source.c:728
+#: ../podcast/rb-podcast-source.c:731
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
@@ -3031,27 +3038,27 @@ msgstr[0] "%d kanalas"
 msgstr[1] "Visi %d kanalai"
 msgstr[2] "Visi %d kanalų"
 
-#: ../podcast/rb-podcast-source.c:965
+#: ../podcast/rb-podcast-source.c:968
 msgid "Podcast Error"
 msgstr "Tinklalaidės klaida"
 
-#: ../podcast/rb-podcast-source.c:1135
+#: ../podcast/rb-podcast-source.c:1138
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Ištrinti tinklalaidės epizodą ir atsiųstą failą?"
 
-#: ../podcast/rb-podcast-source.c:1138
+#: ../podcast/rb-podcast-source.c:1141
 msgid "If you choose to delete the episode and file, they will be permanently lost.  Please note that you can delete the episode but keep the downloaded file by choosing to delete the episode only."
 msgstr "Jei parinksite ištrinti šį epizodą ir failą, jie bus visam laikui prarasti. Turėkite omenyje, kad galite ištrinti šį epizodą, bet atsiųstą failą galite pasilikti, tereikia pasirinkti ištrinti tik patį epizodą."
 
-#: ../podcast/rb-podcast-source.c:1146
+#: ../podcast/rb-podcast-source.c:1149
 msgid "Delete _Episode Only"
 msgstr "Ištrinti tik _epizodą"
 
-#: ../podcast/rb-podcast-source.c:1152
+#: ../podcast/rb-podcast-source.c:1155
 msgid "_Delete Episode And File"
 msgstr "_Ištrinti epizodą ir failą"
 
-#: ../podcast/rb-podcast-source.c:1242
+#: ../podcast/rb-podcast-source.c:1245
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -3061,25 +3068,25 @@ msgstr[2] "%d epizodų"
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
-#: ../podcast/rb-podcast-source.c:1347
+#: ../podcast/rb-podcast-source.c:1349
 msgctxt "Podcast"
 msgid "Add"
 msgstr "Pridėti"
 
 #. Translators: this is the toolbar button label
 #. for Update Feed action.
-#: ../podcast/rb-podcast-source.c:1353
+#: ../podcast/rb-podcast-source.c:1355
 msgid "Update"
 msgstr "Atnaujinti"
 
-#: ../podcast/rb-podcast-source.c:1428
-#: ../podcast/rb-podcast-source.c:1483
-#: ../podcast/rb-podcast-source.c:1531
+#: ../podcast/rb-podcast-source.c:1430
+#: ../podcast/rb-podcast-source.c:1485
+#: ../podcast/rb-podcast-source.c:1533
 msgid "Feed"
 msgstr "Kanalas"
 
-#: ../podcast/rb-podcast-source.c:1448
-#: ../podcast/rb-podcast-source.c:1466
+#: ../podcast/rb-podcast-source.c:1450
+#: ../podcast/rb-podcast-source.c:1468
 msgid "Status"
 msgstr "Būsena"
 
@@ -3585,13 +3592,10 @@ msgid "Change the visibility of the song position slider"
 msgstr "Keisti dainos pozicijos slankiklio matomumą"
 
 #: ../shell/rb-shell.c:394
-#| msgctxt "query-criteria"
-#| msgid "Album Artist"
 msgid "_Album Art"
 msgstr "_Albumo menas"
 
 #: ../shell/rb-shell.c:395
-#| msgid "Change the visibility of the toolbar"
 msgid "Change the visibility of the album art display"
 msgstr "Pakeisti albumo meno matomumą"
 
@@ -4258,12 +4262,10 @@ msgid "Multiple locations set"
 msgstr "Nurodyta keletas vietų"
 
 #: ../sources/rb-library-source.c:572
-#| msgid "Delete station"
 msgid "Default settings"
 msgstr "Numatytieji nustatymai"
 
 #: ../sources/rb-library-source.c:588
-#| msgid "Cut selection"
 msgid "Custom settings"
 msgstr "Pasirinktiniai nustatymai"
 
@@ -4499,14 +4501,12 @@ msgstr "Meskite meno kūrinius čia"
 #. Translators: remaining time / total time
 #: ../widgets/rb-header.c:1038
 #, c-format
-#| msgid "%s and %s"
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
 #: ../widgets/rb-header.c:1049
 #, c-format
-#| msgid "%s and %s"
 msgid "%s / %s"
 msgstr "%s / %s"
 
