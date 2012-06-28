@@ -85,6 +85,7 @@ static gboolean slider_moved_callback (GtkWidget *widget, GdkEventMotion *event,
 static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *header);
 static void slider_changed_callback (GtkWidget *widget, RBHeader *header);
 static gboolean slider_scroll_callback (GtkWidget *widget, GdkEventScroll *event, RBHeader *header);
+static gboolean slider_focus_out_callback (GtkWidget *widget, GdkEvent *event, RBHeader *header);
 static void time_button_clicked_cb (GtkWidget *button, RBHeader *header);
 
 static void rb_header_elapsed_changed_cb (RBShellPlayer *player, gint64 elapsed, RBHeader *header);
@@ -114,6 +115,7 @@ struct RBHeaderPrivate
 	GtkAdjustment *adjustment;
 	gboolean slider_dragging;
 	gboolean slider_locked;
+	gboolean slider_drag_moved;
 	guint slider_moved_timeout;
 	long latest_set_time;
 
@@ -295,6 +297,10 @@ rb_header_init (RBHeader *header)
 	g_signal_connect_object (G_OBJECT (header->priv->scale),
 				 "scroll_event",
 				 G_CALLBACK (slider_scroll_callback),
+				 header, 0);
+	g_signal_connect_object (G_OBJECT (header->priv->scale),
+				 "focus-out-event",
+				 G_CALLBACK (slider_focus_out_callback),
 				 header, 0);
 	gtk_scale_set_draw_value (GTK_SCALE (header->priv->scale), FALSE);
 	gtk_widget_set_size_request (header->priv->scale, 150, -1);
@@ -872,6 +878,7 @@ slider_press_callback (GtkWidget *widget,
 		       RBHeader *header)
 {
 	header->priv->slider_dragging = TRUE;
+	header->priv->slider_drag_moved = FALSE;
 	header->priv->latest_set_time = -1;
 	g_object_notify (G_OBJECT (header), "slider-dragging");
 
@@ -895,6 +902,7 @@ slider_moved_timeout (RBHeader *header)
 
 	apply_slider_position (header);
 	header->priv->slider_moved_timeout = 0;
+	header->priv->slider_drag_moved = FALSE;
 
 	GDK_THREADS_LEAVE ();
 
@@ -912,6 +920,7 @@ slider_moved_callback (GtkWidget *widget,
 		rb_debug ("slider is not dragging");
 		return FALSE;
 	}
+	header->priv->slider_drag_moved = TRUE;
 
 	progress = gtk_adjustment_get_value (header->priv->adjustment);
 	header->priv->elapsed_time = (gint64) ((progress+0.5) * RB_PLAYER_SECOND);
@@ -965,8 +974,11 @@ slider_release_callback (GtkWidget *widget,
 		header->priv->slider_moved_timeout = 0;
 	}
 
-	apply_slider_position (header);
+	if (header->priv->slider_drag_moved)
+		apply_slider_position (header);
+
 	header->priv->slider_dragging = FALSE;
+	header->priv->slider_drag_moved = FALSE;
 	g_object_notify (G_OBJECT (header), "slider-dragging");
 	return FALSE;
 }
@@ -982,6 +994,8 @@ slider_changed_callback (GtkWidget *widget,
 	if (header->priv->slider_dragging == FALSE &&
 	    header->priv->slider_locked == FALSE) {
 		apply_slider_position (header);
+	} else if (header->priv->slider_dragging) {
+		header->priv->slider_drag_moved = TRUE;
 	}
 }
 
@@ -1008,6 +1022,20 @@ slider_scroll_callback (GtkWidget *widget, GdkEventScroll *event, RBHeader *head
 	}
 
 	return retval;
+}
+
+static gboolean
+slider_focus_out_callback (GtkWidget *widget, GdkEvent *event, RBHeader *header)
+{
+	if (header->priv->slider_dragging) {
+		if (header->priv->slider_drag_moved)
+			apply_slider_position (header);
+
+		header->priv->slider_dragging = FALSE;
+		header->priv->slider_drag_moved = FALSE;
+		g_object_notify (G_OBJECT (header), "slider-dragging");
+	}
+	return FALSE;
 }
 
 static void
