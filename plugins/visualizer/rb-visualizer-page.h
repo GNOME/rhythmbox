@@ -51,6 +51,7 @@ struct _RBVisualizerPage
 	ClutterActor *texture;
 
 	GtkWidget *fullscreen;
+	GtkWidget *fullscreen_embed;
 
 	GtkWidget *popup;
 	GtkToggleAction *fullscreen_action;

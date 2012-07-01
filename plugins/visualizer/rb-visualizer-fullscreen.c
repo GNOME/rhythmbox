@@ -519,7 +519,6 @@ create_controls (RBShell *shell)
 static gboolean
 hide_controls_cb (ClutterActor *controls)
 {
-	rb_debug ("controls pseudo class: %s", mx_stylable_get_style_pseudo_class (MX_STYLABLE (controls)));
 	if (clutter_actor_has_pointer (controls) == FALSE) {
 		g_object_set_data (G_OBJECT (controls), "hide-controls-id", NULL);
 
@@ -636,23 +635,10 @@ rb_visualizer_fullscreen_add_widgets (GtkWidget *window, ClutterActor *stage, RB
 }
 
 void
-rb_visualizer_fullscreen_remove_widgets (ClutterActor *stage)
+rb_visualizer_fullscreen_stop (ClutterActor *stage)
 {
-	ClutterActor *track_info;
 	ClutterActor *controls;
 
-	clutter_threads_enter ();
-
-	track_info = CLUTTER_ACTOR (g_object_steal_data (G_OBJECT (stage), TRACK_INFO_DATA));
-	if (track_info != NULL) {
-		clutter_container_remove_actor (CLUTTER_CONTAINER (stage), track_info);
-	}
-
-	controls = CLUTTER_ACTOR (g_object_steal_data (G_OBJECT (stage), CONTROLS_DATA));
-	if (controls != NULL) {
-		stop_hide_timer (controls);
-		clutter_container_remove_actor (CLUTTER_CONTAINER (stage), controls);
-	}
-
-	clutter_threads_leave ();
+	controls = CLUTTER_ACTOR (g_object_get_data (G_OBJECT (stage), CONTROLS_DATA));
+	stop_hide_timer (controls);
 }

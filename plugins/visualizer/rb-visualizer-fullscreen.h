@@ -38,7 +38,7 @@ G_BEGIN_DECLS
 void		rb_visualizer_fullscreen_load_style (GObject *plugin);
 
 void		rb_visualizer_fullscreen_add_widgets (GtkWidget *window, ClutterActor *stage, RBShell *shell);
-void		rb_visualizer_fullscreen_remove_widgets (ClutterActor *stage);
+void		rb_visualizer_fullscreen_stop (ClutterActor *stage);
 
 G_END_DECLS
 
