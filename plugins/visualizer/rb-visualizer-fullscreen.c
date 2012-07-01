@@ -437,19 +437,25 @@ create_button (const char *button_style, const char *icon_style, const char *ico
 static void
 next_clicked_cb (MxButton *button, RBShellPlayer *player)
 {
+	clutter_threads_leave ();
 	rb_shell_player_do_next (player, NULL);
+	clutter_threads_enter ();
 }
 
 static void
 prev_clicked_cb (MxButton *button, RBShellPlayer *player)
 {
+	clutter_threads_leave ();
 	rb_shell_player_do_previous (player, NULL);
+	clutter_threads_enter ();
 }
 
 static void
 playpause_clicked_cb (MxButton *button, RBShellPlayer *player)
 {
+	clutter_threads_leave ();
 	rb_shell_player_playpause (player, FALSE, NULL);
+	clutter_threads_enter ();
 }
 
 static void
