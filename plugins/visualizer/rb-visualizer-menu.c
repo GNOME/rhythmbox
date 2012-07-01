@@ -125,7 +125,7 @@ rb_visualizer_create_popup_menu (GtkToggleAction *fullscreen_action)
 	quality = g_settings_get_enum (settings, "quality");
 	submenu = gtk_menu_new ();
 	for (i = 0; i < G_N_ELEMENTS (rb_visualizer_quality); i++) {
-		item = gtk_check_menu_item_new_with_label (rb_visualizer_quality[i].name);
+		item = gtk_check_menu_item_new_with_label (_(rb_visualizer_quality[i].name));
 
 		gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (item), (i == quality));
 
