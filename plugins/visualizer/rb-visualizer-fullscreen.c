@@ -108,23 +108,29 @@ art_cb (RBExtDBKey *key, const char *filename, GValue *data, MxFrame *frame)
 }
 
 static void
-cover_art_entry_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, MxFrame *frame)
+request_cover_art (MxFrame *frame, RhythmDBEntry *entry)
 {
 	RBExtDBKey *key;
 	RBExtDB *art_store;
 
 	art_store = rb_ext_db_new ("album-art");
 
-	clutter_threads_enter ();
-	set_blank_image (frame);
-	clutter_actor_show_all (CLUTTER_ACTOR (frame));
-	clutter_threads_leave ();
-
 	key = rhythmdb_entry_create_ext_db_key (entry, RHYTHMDB_PROP_ALBUM);
 	rb_ext_db_request (art_store, key, (RBExtDBRequestCallback) art_cb, g_object_ref (frame), g_object_unref);
 	rb_ext_db_key_free (key);
 
 	g_object_unref (art_store);
+}
+
+static void
+cover_art_entry_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, MxFrame *frame)
+{
+	clutter_threads_enter ();
+	set_blank_image (frame);
+	clutter_actor_show_all (CLUTTER_ACTOR (frame));
+	clutter_threads_leave ();
+
+	request_cover_art (frame, entry);
 }
 
 /* track info display */
@@ -194,7 +200,6 @@ update_track_info (MxLabel *label, RhythmDB *db, RhythmDBEntry *entry, const cha
 	ClutterActor *text;
 	GString *str;
 
-	clutter_threads_enter ();
 	text = mx_label_get_clutter_text (label);
 
 	str = g_string_sized_new (100);
@@ -236,8 +241,15 @@ update_track_info (MxLabel *label, RhythmDB *db, RhythmDBEntry *entry, const cha
 	g_string_append (str, "  ");
 	clutter_text_set_markup (CLUTTER_TEXT (text), str->str);
 	clutter_text_set_ellipsize (CLUTTER_TEXT (text), PANGO_ELLIPSIZE_NONE);
-	clutter_threads_leave ();
 	g_string_free (str, TRUE);
+}
+
+static void
+update_track_info_lock (MxLabel *label, RhythmDB *db, RhythmDBEntry *entry, const char *streaming_title)
+{
+	clutter_threads_enter ();
+	update_track_info (label, db, entry, streaming_title);
+	clutter_threads_leave ();
 }
 
 static void
@@ -246,7 +258,7 @@ playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, ClutterAct
 	RhythmDB *db;
 
 	g_object_get (player, "db", &db, NULL);
-	update_track_info (MX_LABEL (label), db, entry, NULL);
+	update_track_info_lock (MX_LABEL (label), db, entry, NULL);
 	g_object_unref (db);
 }
 
@@ -263,7 +275,7 @@ entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry, GValueArray *changes, Clut
 		case RHYTHMDB_PROP_TITLE:
 		case RHYTHMDB_PROP_ARTIST:
 		case RHYTHMDB_PROP_ALBUM:
-			update_track_info (MX_LABEL (label), db, entry, NULL);
+			update_track_info_lock (MX_LABEL (label), db, entry, NULL);
 			return;
 
 		default:
@@ -276,7 +288,7 @@ static void
 streaming_title_notify_cb (RhythmDB *db, RhythmDBEntry *entry, const char *field, GValue *metadata, ClutterActor *label)
 {
 	if (G_VALUE_HOLDS_STRING (metadata)) {
-		update_track_info (MX_LABEL (label), db, entry, g_value_get_string (metadata));
+		update_track_info_lock (MX_LABEL (label), db, entry, g_value_get_string (metadata));
 	}
 }
 
@@ -284,20 +296,23 @@ streaming_title_notify_cb (RhythmDB *db, RhythmDBEntry *entry, const char *field
 /* elapsed time / duration display */
 
 static void
-elapsed_changed_cb (RBShellPlayer *player, guint elapsed, ClutterActor *label)
+update_elapsed (ClutterActor *label, RBShellPlayer *player, guint elapsed)
 {
 	long duration;
 	char *str;
 
 	duration = rb_shell_player_get_playing_song_duration (player);
 	str = rb_make_elapsed_time_string (elapsed, duration, FALSE);
-	clutter_threads_enter ();
-
 	mx_label_set_text (MX_LABEL (label), str);
-
-	clutter_threads_leave ();
-
 	g_free (str);
+}
+
+static void
+elapsed_changed_cb (RBShellPlayer *player, guint elapsed, ClutterActor *label)
+{
+	clutter_threads_enter ();
+	update_elapsed (label, player, elapsed);
+	clutter_threads_leave ();
 }
 
 
@@ -333,9 +348,11 @@ create_track_info (RBShell *shell)
 	clutter_container_child_set (CLUTTER_CONTAINER (box), frame,
 				     "expand", FALSE,
 				     NULL);
+	set_blank_image (MX_FRAME (frame));
+	clutter_actor_show_all (CLUTTER_ACTOR (frame));
 
 	g_signal_connect_object (player, "playing-song-changed", G_CALLBACK (cover_art_entry_changed_cb), frame, 0);
-	cover_art_entry_changed_cb (player, entry, MX_FRAME (frame));
+	request_cover_art (MX_FRAME (frame), entry);
 
 	box2 = mx_box_layout_new ();
 	mx_box_layout_set_orientation (MX_BOX_LAYOUT (box2), MX_ORIENTATION_VERTICAL);
@@ -388,7 +405,7 @@ create_track_info (RBShell *shell)
 
 	g_signal_connect_object (player, "elapsed-changed", G_CALLBACK (elapsed_changed_cb), widget, 0);
 	if (rb_shell_player_get_playing_time (player, &elapsed, NULL)) {
-		elapsed_changed_cb (player, elapsed, widget);
+		update_elapsed (widget, player, elapsed);
 	}
 
 	rhythmdb_entry_unref (entry);
@@ -436,11 +453,10 @@ playpause_clicked_cb (MxButton *button, RBShellPlayer *player)
 }
 
 static void
-playing_changed_cb (RBShellPlayer *player, gboolean playing, MxButton *button)
+update_playing (MxButton *button, gboolean playing)
 {
 	ClutterActor *child;
 
-	clutter_threads_enter ();
 	child = mx_bin_get_child (MX_BIN (button));
 	if (playing) {
 		mx_stylable_set_style_class (MX_STYLABLE (button), "PauseButton");
@@ -449,9 +465,16 @@ playing_changed_cb (RBShellPlayer *player, gboolean playing, MxButton *button)
 		mx_stylable_set_style_class (MX_STYLABLE (button), "PlayButton");
 		mx_icon_set_icon_name (MX_ICON (child), "media-playback-start");
 	}
-	clutter_threads_leave ();
-
 	/* stop button?  meh */
+}
+
+static void
+playing_changed_cb (RBShellPlayer *player, gboolean playing, MxButton *button)
+{
+
+	clutter_threads_enter ();
+	update_playing (button, playing);
+	clutter_threads_leave ();
 }
 
 static ClutterActor *
@@ -482,7 +505,7 @@ create_controls (RBShell *shell)
 	g_signal_connect_object (button, "clicked", G_CALLBACK (playpause_clicked_cb), player, 0);
 	g_signal_connect_object (player, "playing-changed", G_CALLBACK (playing_changed_cb), button, 0);
 	g_object_get (player, "playing", &playing, NULL);
-	playing_changed_cb (player, playing, MX_BUTTON (button));
+	update_playing (MX_BUTTON (button), playing);
 	mx_box_layout_add_actor (MX_BOX_LAYOUT (box), button, pos++);
 
 	button = create_button ("NextButton", "NextButtonIcon", "media-skip-forward");

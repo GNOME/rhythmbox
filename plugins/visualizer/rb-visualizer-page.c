@@ -169,7 +169,9 @@ static gboolean
 stage_button_press_cb (ClutterActor *stage, ClutterEvent *event, RBVisualizerPage *page)
 {
 	if (event->button.button == 1 && event->button.click_count == 2) {
+		clutter_threads_leave ();
 		toggle_fullscreen (page);
+		clutter_threads_enter ();
 	} else if (event->button.button == 3) {
 		rb_display_page_show_popup (RB_DISPLAY_PAGE (page));
 	}
@@ -181,7 +183,9 @@ static gboolean
 stage_key_release_cb (ClutterActor *stage, ClutterEvent *event, RBVisualizerPage *page)
 {
 	if (event->key.keyval == CLUTTER_KEY_Escape) {
+		clutter_threads_leave ();
 		stop_fullscreen (page);
+		clutter_threads_enter ();
 	}
 	return FALSE;
 }
