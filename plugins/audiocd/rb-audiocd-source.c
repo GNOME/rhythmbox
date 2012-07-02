@@ -1138,7 +1138,7 @@ rb_audiocd_load_songs (RBAudioCdSource *source)
 
 	rb_debug ("loading Audio CD from %s", source->priv->device_path);
 	/* create a cdda gstreamer element, to get cd info from */
-	source->priv->cdda = gst_element_make_from_uri (GST_URI_SRC, "cdda://", NULL);
+	source->priv->cdda = gst_element_make_from_uri (GST_URI_SRC, "cdda://", NULL, NULL);
 	if (!source->priv->cdda) {
 		gdk_threads_enter ();
 		rb_error_dialog (NULL, _("Couldn't load Audio CD"),

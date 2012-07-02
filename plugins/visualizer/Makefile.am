@@ -19,7 +19,6 @@ libvisualizer_la_LIBTOOLFLAGS = --tag=disable-static
 
 libvisualizer_la_LIBADD = 			\
 	$(top_builddir)/shell/librhythmbox-core.la	\
-	-lgstinterfaces-0.11				\
 	$(CLUTTER_LIBS)					\
 	$(RHYTHMBOX_LIBS)
 

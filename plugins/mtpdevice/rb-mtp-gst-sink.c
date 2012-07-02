@@ -29,6 +29,7 @@
 #include "config.h"
 
 #include <string.h>
+#include <sys/stat.h>
 
 #include <glib/gi18n.h>
 #include <libmtp.h>

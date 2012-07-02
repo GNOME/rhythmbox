@@ -449,7 +449,7 @@ rb_xfade_stream_dispose (GObject *object)
 	}
 
 	if (sd->tags != NULL) {
-		rb_list_destroy_free (sd->tags, (GDestroyNotify) gst_tag_list_free);
+		rb_list_destroy_free (sd->tags, (GDestroyNotify) gst_tag_list_unref);
 		sd->tags = NULL;
 	}
 

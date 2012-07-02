@@ -12,8 +12,8 @@ librbbackendsgstreamer_la_SOURCES =			\
 	$(NULL)
 
 librbbackendsgstreamer_la_LIBADD =			\
-	-lgstpbutils-0.11				\
-	-lgstcontroller-0.11
+	-lgstpbutils-1.0				\
+	-lgstcontroller-1.0
 	$(RHYTHMBOX_LIBS)
 
 librbbackendsgstreamer_la_LDFLAGS = -export-dynamic

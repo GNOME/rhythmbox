@@ -493,7 +493,7 @@ attach_output_pipeline (RBEncoderGst *encoder,
 	}
 
 	if (sink == NULL) {
-		sink = gst_element_make_from_uri (GST_URI_SINK, dest, "sink");
+		sink = gst_element_make_from_uri (GST_URI_SINK, dest, "sink", NULL);
 		if (sink == NULL) {
 			g_set_error (error, RB_ENCODER_ERROR, RB_ENCODER_ERROR_FILE_ACCESS,
 				     _("Could not create a GStreamer sink element to write to %s"),
@@ -528,7 +528,7 @@ create_pipeline_and_source (RBEncoderGst *encoder,
 		return NULL;
 	}
 
-	src = gst_element_make_from_uri (GST_URI_SRC, uri, "source");
+	src = gst_element_make_from_uri (GST_URI_SRC, uri, "source", NULL);
 	if (src == NULL) {
 		g_set_error (error,
 			     RB_ENCODER_ERROR, RB_ENCODER_ERROR_INTERNAL,

@@ -104,7 +104,7 @@ run_typefind (RBMetaData *md, const char *uri)
 {
 	GstElement *src;
 
-	src = gst_element_make_from_uri (GST_URI_SRC, uri, NULL);
+	src = gst_element_make_from_uri (GST_URI_SRC, uri, NULL, NULL);
 	if (src != NULL) {
 		GstElement *pipeline = gst_pipeline_new (NULL);
 		GstElement *sink = gst_element_factory_make ("fakesink", NULL);
@@ -657,7 +657,7 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 	md->priv->pipeline = pipeline;
 	md->priv->sink_linked = FALSE;
 
-	urisrc = gst_element_make_from_uri (GST_URI_SRC, uri, "urisrc");
+	urisrc = gst_element_make_from_uri (GST_URI_SRC, uri, "urisrc", NULL);
 	if (urisrc == NULL) {
 		g_set_error (error,
 			     RB_METADATA_ERROR,
