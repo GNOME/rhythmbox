@@ -46,7 +46,7 @@ AC_CHECK_SIZEOF(long)
 
 GTK_REQS=3.4.0
 
-GST_0_11_REQS=0.11.0
+GST_REQS=0.11.92
 GDK_PIXBUF_REQS=2.18.0
 GLIB_REQS=2.32.0
 LIBGPOD_REQS=0.6
@@ -271,16 +271,15 @@ fi
 dnl Sound system
 dnl Now we're ready to ask for gstreamer libs and cflags
 dnl And we can also ask for the right version of gstreamer
-PKG_CHECK_MODULES(GSTREAMER_0_11, \
-	gstreamer-0.11 >= $GST_0_11_REQS
-	gstreamer-audio-0.11 >= $GST_0_11_REQS
-	gstreamer-base-0.11 >= $GST_0_11_REQS
-	gstreamer-plugins-base-0.11 >= $GST_0_11_REQS
-	gstreamer-interfaces-0.11 >= $GST_0_11_REQS
-	gstreamer-pbutils-0.11 >= $GST_0_11_REQS)
+PKG_CHECK_MODULES(GSTREAMER, \
+	gstreamer-1.0 >= $GST_REQS
+	gstreamer-audio-1.0 >= $GST_REQS
+	gstreamer-base-1.0 >= $GST_REQS
+	gstreamer-plugins-base-1.0 >= $GST_REQS
+	gstreamer-pbutils-1.0 >= $GST_REQS)
 
-RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $GSTREAMER_0_11_CFLAGS -DGST_USE_UNSTABLE_API"
-RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $GSTREAMER_0_11_LIBS"
+RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $GSTREAMER_CFLAGS -DGST_USE_UNSTABLE_API"
+RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $GSTREAMER_LIBS"
 
 AC_ARG_WITH(mdns,
    AC_HELP_STRING([--with-mdns=auto|avahi],

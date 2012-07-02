@@ -62,7 +62,7 @@ rhythmbox_metadata_LDADD = 				\
 	librbmetadatasvc.la				\
 	$(top_builddir)/lib/librb.la			\
 	$(RHYTHMBOX_LIBS)				\
-	-lgstpbutils-0.11
+	-lgstpbutils-1.0
 
 # test program?
 noinst_PROGRAMS = test-metadata
@@ -73,6 +73,6 @@ test_metadata_LDADD =					\
 	librbmetadata.la				\
 	$(top_builddir)/lib/librb.la			\
 	$(RHYTHMBOX_LIBS)				\
-	-lgstpbutils-0.11
+	-lgstpbutils-1.0
 
 librbmetadata_la_LDFLAGS = -export-dynamic

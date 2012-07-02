@@ -112,9 +112,9 @@ librhythmbox_core_la_LIBADD =				\
 	$(GUDEV_LIBS)					\
 	$(WEBKIT_LIBS)				\
 	$(RHYTHMBOX_LIBS)				\
-	-lgstpbutils-0.11				\
-	-lgstcontroller-0.11				\
-	-lgsttag-0.11
+	-lgstpbutils-1.0				\
+	-lgstcontroller-1.0				\
+	-lgsttag-1.0
 
 librhythmbox_core_la_LDFLAGS = 				\
 	-version-info $(RHYTHMBOX_CORE_CURRENT):$(RHYTHMBOX_CORE_REVISION):$(RHYTHMBOX_CORE_AGE)	\
