@@ -18,7 +18,10 @@ INCLUDES +=						\
 # API
 
 metadataincludedir = $(includedir)/rhythmbox/metadata
-metadatainclude_HEADERS = rb-metadata.h
+metadatainclude_HEADERS = 				\
+	rb-ext-db-key.h					\
+	rb-ext-db.h					\
+	rb-metadata.h
 
 # client library
 

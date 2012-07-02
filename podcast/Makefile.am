@@ -4,21 +4,30 @@ podcastincludedir = $(includedir)/rhythmbox/podcast
 podcastinclude_HEADERS =				\
 	rb-podcast-entry-types.h			\
 	rb-podcast-parse.h				\
-	rb-podcast-manager.h
+	rb-podcast-manager.h				\
+	rb-podcast-search.h
 
 
 librbpodcast_parse_la_SOURCES = 			\
 	rb-podcast-parse.c				\
-	rb-podcast-parse.h
+	rb-podcast-parse.h				\
+	rb-podcast-search.c				\
+	rb-podcast-search-itunes.c			\
+	rb-podcast-search-miroguide.c
 
 librbpodcast_la_SOURCES =				\
 	$(podcastinclude_HEADERS)			\
 	rb-feed-podcast-properties-dialog.c		\
 	rb-feed-podcast-properties-dialog.h		\
+	rb-podcast-add-dialog.c				\
+	rb-podcast-add-dialog.h				\
 	rb-podcast-properties-dialog.c			\
 	rb-podcast-properties-dialog.h			\
 	rb-podcast-main-source.c			\
 	rb-podcast-main-source.h			\
+	rb-podcast-search.c				\
+	rb-podcast-search-itunes.c			\
+	rb-podcast-search-miroguide.c			\
 	rb-podcast-settings.h				\
 	rb-podcast-source.c				\
 	rb-podcast-source.h				\
@@ -26,7 +35,18 @@ librbpodcast_la_SOURCES =				\
 	rb-podcast-manager.c				\
 	rb-podcast-entry-types.c
 
-noinst_PROGRAMS = test-podcast-parse
+noinst_PROGRAMS = test-podcast-parse test-podcast-search
+
+test_podcast_search_SOURCES =				\
+	test-podcast-search.c
+test_podcast_search_LDADD =				\
+	librbpodcast_parse.la				\
+	$(top_builddir)/lib/librb.la			\
+	$(RHYTHMBOX_LIBS)				\
+	$(JSON_GLIB_LIBS)				\
+	$(TOTEM_PLPARSER_LIBS)
+
+
 test_podcast_parse_SOURCES =				\
 	test-podcast-parse.c
 test_podcast_parse_LDADD =				\
@@ -48,9 +68,11 @@ AM_CFLAGS =						\
 	-I$(top_builddir)/lib 				\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(WEBKIT_CFLAGS)				\
+	$(JSON_GLIB_CFLAGS)				\
 	$(TOTEM_PLPARSER_CFLAGS)
 
 librbpodcast_la_LDFLAGS = -export-dynamic
+librbpodcast_la_LIBADD = $(JSON_GLIB_LIBS)
 
 PLUGIN_FILES = rhythmbox-itms-plugin.c npapi.h npupp.h npruntime.h
 

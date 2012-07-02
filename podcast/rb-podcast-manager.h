@@ -27,7 +27,9 @@
  */
 
 #include <glib.h>
+
 #include <rhythmdb/rhythmdb.h>
+#include <podcast/rb-podcast-parse.h>
 
 #ifndef RB_PODCAST_MANAGER_H
 #define RB_PODCAST_MANAGER_H
@@ -55,7 +57,6 @@ typedef struct
 	GObjectClass parent_class;
 
 	/* signals */
-	void        (*status_changed)    		(RBPodcastManager* pd, RhythmDBEntry *entry, glong value);
 	void        (*start_download)    		(RBPodcastManager* pd, RhythmDBEntry *entry);
 	void        (*finish_download)   		(RBPodcastManager* pd, RhythmDBEntry *entry);
 	void        (*feed_updates_available)   	(RBPodcastManager* pd, RhythmDBEntry *entry);
@@ -76,10 +77,12 @@ gboolean                rb_podcast_manager_remove_feed 		(RBPodcastManager *pd,
 gchar *                 rb_podcast_manager_get_podcast_dir	(RBPodcastManager *pd);
 
 gboolean                rb_podcast_manager_subscribe_feed    	(RBPodcastManager *pd, const gchar* url, gboolean automatic);
+void			rb_podcast_manager_add_parsed_feed	(RBPodcastManager *pd, RBPodcastChannel *feed);
 void			rb_podcast_manager_insert_feed_url	(RBPodcastManager *pd, const char *url);
 void            	rb_podcast_manager_unsubscribe_feed    	(RhythmDB *db, const gchar* url);
 void			rb_podcast_manager_shutdown 		(RBPodcastManager *pd);
 RhythmDBEntry *         rb_podcast_manager_add_post  	  	(RhythmDB *db,
+								 gboolean search_result,
                                			         	 const char *name,
 	                                                 	 const char *title,
 	                                                 	 const char *subtitle,
@@ -93,6 +96,8 @@ RhythmDBEntry *         rb_podcast_manager_add_post  	  	(RhythmDB *db,
 gboolean		rb_podcast_manager_entry_downloaded	(RhythmDBEntry *entry);
 gboolean		rb_podcast_manager_entry_in_download_queue (RBPodcastManager *pd, RhythmDBEntry *entry);
 
+void			rb_podcast_manager_add_search		(RBPodcastManager *pd, GType search_type);
+GList *			rb_podcast_manager_get_searches		(RBPodcastManager *pd);
 
 G_END_DECLS
 

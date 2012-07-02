@@ -40,6 +40,7 @@
 #include "rb-podcast-settings.h"
 #include "rb-podcast-manager.h"
 #include "rb-podcast-entry-types.h"
+#include "rb-podcast-search.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
 #include "rb-marshal.h"
@@ -60,7 +61,6 @@ enum
 
 enum
 {
-	STATUS_CHANGED,
 	START_DOWNLOAD,
 	FINISH_DOWNLOAD,
 	PROCESS_ERROR,
@@ -115,6 +115,7 @@ struct RBPodcastManagerPrivate
 	gboolean shutdown;
 	RBExtDB *art_store;
 
+	GList *searches;
 	GSettings *settings;
 	GFile *timestamp_file;
 };
@@ -153,7 +154,6 @@ static void rb_podcast_manager_save_metadata		(RBPodcastManager *pd,
 static void rb_podcast_manager_db_entry_added_cb 	(RBPodcastManager *pd,
 							 RhythmDBEntry *entry);
 static gboolean rb_podcast_manager_next_file 		(RBPodcastManager * pd);
-static void rb_podcast_manager_insert_feed 		(RBPodcastManager *pd, RBPodcastChannel *data);
 static void rb_podcast_manager_handle_feed_error	(RBPodcastManager *mgr,
 							 const char *url,
 							 GError *error,
@@ -192,18 +192,6 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 							      "database",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE));
-
-	rb_podcast_manager_signals[STATUS_CHANGED] =
-	       g_signal_new ("status_changed",
-		       		G_OBJECT_CLASS_TYPE (object_class),
-		 		G_SIGNAL_RUN_LAST,
-				G_STRUCT_OFFSET (RBPodcastManagerClass, status_changed),
-				NULL, NULL,
-				rb_marshal_VOID__BOXED_ULONG,
-				G_TYPE_NONE,
-				2,
-				RHYTHMDB_TYPE_ENTRY,
-				G_TYPE_ULONG);
 
 	rb_podcast_manager_signals[START_DOWNLOAD] =
 	       g_signal_new ("start_download",
@@ -272,6 +260,10 @@ rb_podcast_manager_constructed (GObject *object)
 	char *ts_file_path;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_manager_parent_class, constructed, object);
+
+	/* add built in search types */
+	rb_podcast_manager_add_search (pd, rb_podcast_search_itunes_get_type ());
+	rb_podcast_manager_add_search (pd, rb_podcast_search_miroguide_get_type ());
 
 	pd->priv->settings = g_settings_new (PODCAST_SETTINGS_SCHEMA);
 	g_signal_connect_object (pd->priv->settings,
@@ -353,6 +345,8 @@ rb_podcast_manager_finalize (GObject *object)
 		g_list_foreach (pd->priv->download_list, (GFunc)g_free, NULL);
 		g_list_free (pd->priv->download_list);
 	}
+
+	g_list_free (pd->priv->searches);
 
 	G_OBJECT_CLASS (rb_podcast_manager_parent_class)->finalize (object);
 }
@@ -1090,7 +1084,7 @@ rb_podcast_manager_parse_complete_cb (RBPodcastManagerParseResult *result)
 						      result->error,
 						      (result->automatic == FALSE));
 	} else {
-		rb_podcast_manager_insert_feed (result->pd, result->channel);
+		rb_podcast_manager_add_parsed_feed (result->pd, result->channel);
 	}
 
 	GDK_THREADS_LEAVE ();
@@ -1179,21 +1173,21 @@ rb_podcast_manager_thread_parse_feed (RBPodcastThreadInfo *info)
 
 RhythmDBEntry *
 rb_podcast_manager_add_post (RhythmDB *db,
-			      const char *name,
-			      const char *title,
-			      const char *subtitle,
-			      const char *generator,
-			      const char *uri,
-			      const char *description,
-			      gulong date,
-			      gulong duration,
-			      guint64 filesize)
+			     gboolean search_result,
+			     const char *name,
+			     const char *title,
+			     const char *subtitle,
+			     const char *generator,
+			     const char *uri,
+			     const char *description,
+			     gulong date,
+			     gulong duration,
+			     guint64 filesize)
 {
 	RhythmDBEntry *entry;
+	RhythmDBEntryType *entry_type;
 	GValue val = {0,};
 	GTimeVal time;
-	RhythmDBQueryModel *mountpoint_entries;
-	GtkTreeIter iter;
 
 	if (!uri || !name || !title || !g_utf8_validate(uri, -1, NULL)) {
 		return NULL;
@@ -1202,33 +1196,43 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	if (entry)
 		return NULL;
 
-	/*
-	 * Does the uri exist as the mount-point?
-	 * This check is necessary since after an entry's file is downloaded,
-	 * the location stored in the db changes to the local file path
-	 * instead of the uri. The uri moves to the mount-point attribute.
-	 * Consequently, without this check, every downloaded entry will be
-	 * re-added to the db.
-	 */
-	mountpoint_entries = rhythmdb_query_model_new_empty (db);
-	g_object_set (mountpoint_entries, "show-hidden", TRUE, NULL);
-	rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (mountpoint_entries),
-		RHYTHMDB_QUERY_PROP_EQUALS,
-		RHYTHMDB_PROP_TYPE,
-		RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
-		RHYTHMDB_QUERY_PROP_EQUALS,
-		RHYTHMDB_PROP_MOUNTPOINT,
-		uri,
-		RHYTHMDB_QUERY_END);
+	if (search_result == FALSE) {
+		RhythmDBQueryModel *mountpoint_entries;
+		GtkTreeIter iter;
 
-	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (mountpoint_entries), &iter)) {
+		/*
+		 * Does the uri exist as the mount-point?
+		 * This check is necessary since after an entry's file is downloaded,
+		 * the location stored in the db changes to the local file path
+		 * instead of the uri. The uri moves to the mount-point attribute.
+		 * Consequently, without this check, every downloaded entry will be
+		 * re-added to the db.
+		 */
+		mountpoint_entries = rhythmdb_query_model_new_empty (db);
+		g_object_set (mountpoint_entries, "show-hidden", TRUE, NULL);
+		rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (mountpoint_entries),
+			RHYTHMDB_QUERY_PROP_EQUALS,
+			RHYTHMDB_PROP_TYPE,
+			RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
+			RHYTHMDB_QUERY_PROP_EQUALS,
+			RHYTHMDB_PROP_MOUNTPOINT,
+			uri,
+			RHYTHMDB_QUERY_END);
+
+		if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (mountpoint_entries), &iter)) {
+			g_object_unref (mountpoint_entries);
+			return NULL;
+		}
 		g_object_unref (mountpoint_entries);
-		return NULL;
 	}
-	g_object_unref (mountpoint_entries);
+
+	if (search_result)
+		entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_SEARCH;
+	else
+		entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
 
 	entry = rhythmdb_entry_new (db,
-				    RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
+				    entry_type,
 				    uri);
 	if (entry == NULL)
 		return NULL;
@@ -1482,9 +1486,6 @@ download_progress (RBPodcastManagerInfo *data, guint64 downloaded, guint64 total
 		g_value_unset (&val);
 
 		rhythmdb_commit (data->pd->priv->db);
-
-		g_signal_emit (data->pd, rb_podcast_manager_signals[STATUS_CHANGED],
-			       0, data->entry, local_progress);
 
 		GDK_THREADS_LEAVE ();
 
@@ -1910,8 +1911,8 @@ rb_podcast_manager_insert_feed_url (RBPodcastManager *pd, const char *url)
 	g_value_unset (&last_update_val);
 }
 
-static void
-rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
+void
+rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 {
 	GValue description_val = { 0, };
 	GValue title_val = { 0, };
@@ -2076,6 +2077,7 @@ rb_podcast_manager_insert_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 
 		post_entry =
 		    rb_podcast_manager_add_post (db,
+			    FALSE,
 			    title,
 			    (gchar *) item->title,
 			    (gchar *) data->url,
@@ -2232,3 +2234,26 @@ rb_podcast_manager_get_podcast_dir (RBPodcastManager *pd)
 	return conf_dir_uri;
 }
 
+void
+rb_podcast_manager_add_search (RBPodcastManager *pd, GType search_type)
+{
+	pd->priv->searches = g_list_append (pd->priv->searches, GUINT_TO_POINTER (search_type));
+}
+
+GList *
+rb_podcast_manager_get_searches (RBPodcastManager *pd)
+{
+	GList *searches = NULL;
+	GList *i;
+
+	for (i = pd->priv->searches; i != NULL; i = i->next) {
+		RBPodcastSearch *search;
+		GType search_type;
+
+		search_type = GPOINTER_TO_UINT (i->data);
+		search = RB_PODCAST_SEARCH (g_object_new (search_type, NULL));
+		searches = g_list_append (searches, search);
+	}
+
+	return searches;
+}

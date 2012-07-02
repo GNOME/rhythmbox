@@ -3359,7 +3359,8 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 
 	if (!handled) {
 		if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
-		    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
+		    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST ||
+		    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_SEARCH)
 			podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RhythmDBPodcastFields);
 
 		switch (propid) {
@@ -4751,7 +4752,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 	g_return_val_if_fail (entry->refcount > 0, NULL);
 
 	if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
-	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
+	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST ||
+	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_SEARCH)
 		podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RhythmDBPodcastFields);
 
 	rhythmdb_entry_sync_mirrored (entry, propid);
@@ -5047,7 +5049,8 @@ rhythmdb_entry_get_ulong (RhythmDBEntry *entry,
 	g_return_val_if_fail (entry != NULL, 0);
 
 	if (entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED ||
-	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST)
+	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_POST ||
+	    entry->type == RHYTHMDB_ENTRY_TYPE_PODCAST_SEARCH)
 		podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RhythmDBPodcastFields);
 
 	switch (propid) {
@@ -5445,9 +5448,10 @@ rhythmdb_entry_matches_ext_db_key (RhythmDB *db, RhythmDBEntry *entry, RBExtDBKe
 
 		prop = rhythmdb_propid_from_nice_elt_name (db, (const xmlChar *)fields[i]);
 		if (prop == -1) {
-			if (rb_ext_db_key_field_matches (key, fields[i], NULL) == FALSE)
+			if (rb_ext_db_key_field_matches (key, fields[i], NULL) == FALSE) {
+				g_strfreev (fields);
 				return FALSE;
-
+			}
 			continue;
 		}
 
@@ -5468,9 +5472,12 @@ rhythmdb_entry_matches_ext_db_key (RhythmDB *db, RhythmDBEntry *entry, RBExtDBKe
 		}
 
 		v = rhythmdb_entry_get_string (entry, prop);
-		if (rb_ext_db_key_field_matches (key, fields[i], v) == FALSE)
+		if (rb_ext_db_key_field_matches (key, fields[i], v) == FALSE) {
+			g_strfreev (fields);
 			return FALSE;
+		}
 	}
 
+	g_strfreev (fields);
 	return TRUE;
 }

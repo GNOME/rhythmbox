@@ -35,8 +35,10 @@ G_BEGIN_DECLS
 
 RhythmDBEntryType *rb_podcast_get_post_entry_type  (void);
 RhythmDBEntryType *rb_podcast_get_feed_entry_type  (void);
+RhythmDBEntryType *rb_podcast_get_search_entry_type  (void);
 #define RHYTHMDB_ENTRY_TYPE_PODCAST_POST (rb_podcast_get_post_entry_type ())
 #define RHYTHMDB_ENTRY_TYPE_PODCAST_FEED (rb_podcast_get_feed_entry_type ())
+#define RHYTHMDB_ENTRY_TYPE_PODCAST_SEARCH (rb_podcast_get_search_entry_type ())
 
 void			rb_podcast_register_entry_types		(RhythmDB *db);
 

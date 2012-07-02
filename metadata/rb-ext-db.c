@@ -38,6 +38,7 @@
 #include <lib/rb-file-helpers.h>
 #include <lib/rb-debug.h>
 #include <lib/rb-util.h>
+#include <lib/rb-marshal.h>
 
 /**
  * SECTION:rb-ext-db
@@ -191,6 +192,8 @@ free_store_request (RBExtDBStoreRequest *sreq)
 		g_free (sreq->value);
 	}
 	g_free (sreq->uri);
+	g_free (sreq->filename);
+	rb_ext_db_key_free (sreq->key);
 	g_slice_free (RBExtDBStoreRequest, sreq);
 }
 
@@ -223,6 +226,7 @@ flatten_data (guint64 search_time, const char *filename, RBExtDBSourceType sourc
 	data.dsize = g_variant_get_size (v);
 	data.dptr = g_malloc0 (data.dsize);
 	g_variant_store (v, data.dptr);
+	g_variant_unref (v);
 	return data;
 }
 
@@ -359,6 +363,7 @@ impl_constructor (GType type, guint n_construct_properties, GObjectConstructPara
 			/* umm */
 			g_assert_not_reached ();
 		}
+		g_free (tdbfile);
 	}
 	g_free (storedir);
 
@@ -468,8 +473,9 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBExtDBClass, store),
-			      rb_signal_accumulator_value_handled, NULL, NULL,
-			      G_TYPE_VALUE,
+			      g_signal_accumulator_first_wins, NULL,
+			      rb_marshal_POINTER__BOXED,
+			      G_TYPE_POINTER,
 			      1, G_TYPE_VALUE);
 	/**
 	 * RBExtDB::load:
@@ -482,8 +488,9 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBExtDBClass, load),
-			      rb_signal_accumulator_value_handled, NULL, NULL,
-			      G_TYPE_VALUE,
+			      g_signal_accumulator_first_wins, NULL,
+			      rb_marshal_POINTER__BOXED,
+			      G_TYPE_POINTER,
 			      1, G_TYPE_VALUE);
 
 	g_type_class_add_private (klass, sizeof (RBExtDBPrivate));
@@ -619,13 +626,22 @@ do_load_request (GSimpleAsyncResult *result, GObject *object, GCancellable *canc
 
 		/* convert the encoded data into a useful object */
 		rb_debug ("converting %" G_GSIZE_FORMAT " bytes of file data", file_data_size);
-		s = g_string_new_len (file_data, file_data_size);
+		s = g_slice_new0 (GString);
+		s->str = file_data;
+		s->len = file_data_size;
+		s->allocated_len = file_data_size;
 		g_value_init (&d, G_TYPE_GSTRING);
 		g_value_take_boxed (&d, s);
+		req->data = NULL;
 		g_signal_emit (object, signals[LOAD], 0, &d, &req->data);
 		g_value_unset (&d);
 
-		rb_debug ("converted data into value of type %s", G_VALUE_TYPE_NAME (req->data));
+		if (req->data) {
+			rb_debug ("converted data into value of type %s",
+				  G_VALUE_TYPE_NAME (req->data));
+		} else {
+			rb_debug ("data conversion failed");
+		}
 	}
 
 	g_object_unref (f);
@@ -647,10 +663,10 @@ do_load_request (GSimpleAsyncResult *result, GObject *object, GCancellable *canc
  */
 gboolean
 rb_ext_db_request (RBExtDB *store,
-			      RBExtDBKey *key,
-			      RBExtDBRequestCallback callback,
-			      gpointer user_data,
-			      GDestroyNotify destroy)
+		   RBExtDBKey *key,
+		   RBExtDBRequestCallback callback,
+		   gpointer user_data,
+		   GDestroyNotify destroy)
 {
 	RBExtDBRequest *req;
 	gboolean result;
@@ -860,6 +876,7 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 		 * can write it to a file
 		 */
 		g_signal_emit (store, signals[STORE], 0, req->value, &req->data);
+
 		rb_debug ("stored value into encoded data of type %s", G_VALUE_TYPE_NAME (req->data));
 	} else {
 		/* indicates we actually didn't get anything, as opposed to communication errors etc.

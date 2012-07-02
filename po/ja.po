@@ -7,22 +7,21 @@
 # Hajime Taira <htaira@redhat.com>, 2010.
 # Hiroshi Tagawa <kuponuga@gmail.com>, 2010.
 # Kiyotaka NISHIBORI <ml.nishibori.kiyotaka@gmail.com>, 2010.
-# OKANO Takayoshi <kano@na.rim.or.jp>, 2011.
+# OKANO Takayoshi <kano@na.rim.or.jp>, 2011-2012.
 # Kentaro KAZUHAMA <kazken3@gmail.com>, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-03-19 23:08+0000\n"
-"PO-Revision-Date: 2012-03-13 01:56+0900\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2012-05-31 14:18+0000\n"
+"PO-Revision-Date: 2012-06-01 01:47+0900\n"
 "Last-Translator: Kentaro KAZUHAMA <kazken3@gmail.com>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ja\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:502
@@ -31,62 +30,55 @@ msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "%sに出力する際にGStreamer sinkを生成できませんでした"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:492
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2735
+#: ../backends/gstreamer/rb-player-gst.c:493
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2829
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "出力デバイスのオープンに失敗しました: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:633
+#: ../backends/gstreamer/rb-player-gst.c:638
 #, c-format
 msgid "Failed to create playbin2 element; check your GStreamer installation"
-msgstr ""
-"playbin2エレメントの生成に失敗しました(GStreamerのインストールを確認してくだ"
-"さい)"
+msgstr "playbin2エレメントの生成に失敗しました(GStreamerのインストールを確認してください)"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1109
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1123
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1118
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1132
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "GStreamerのパイプラインに新しいストリームをリンクできませんでした"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1151
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1160
 #, c-format
 msgid "Failed to start new stream"
 msgstr "新しいストリームの起動に失敗しました"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2660
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2754
 #, c-format
 msgid "Failed to open output device"
 msgstr "出力デバイスのオープンに失敗しました"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3013
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3086
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3107
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3180
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
-msgstr ""
-"GStreamerのエレメントを生成できませんでした(インストールを確認してください)"
+msgstr "GStreamerのエレメントを生成できませんでした(インストールを確認してください)"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3027
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3121
 #, c-format
 msgid "Failed to create audio output element; check your installation"
-msgstr ""
-"オーディオ出力のエレメントを生成できませんでした(インストールを確認してくださ"
-"い)"
+msgstr "オーディオ出力のエレメントを生成できませんでした(インストールを確認してください)"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3060
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3102
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3128
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3137
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3146
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3154
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3196
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3222
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3231
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3240
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
-msgstr ""
-"GStreamerのパイプラインにリンクできませんでした(インストールを確認してくださ"
-"い)"
+msgstr "GStreamerのパイプラインにリンクできませんでした(インストールを確認してください)"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3241
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3335
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "%sを再生するGStreamerパイプラインの生成に失敗しました"
@@ -104,8 +96,8 @@ msgid "My Top Rated"
 msgstr "トップ10"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/rb-shell.c:623
-#: ../shell/rb-shell.c:2696
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/rb-shell.c:615
+#: ../shell/rb-shell.c:2661
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -157,105 +149,81 @@ msgid "_When sorted by:"
 msgstr "曲の並べ替え順序(_W):"
 
 #: ../data/ui/general-prefs.ui.h:1
-msgid "Default"
-msgstr "デフォルト"
-
-#: ../data/ui/general-prefs.ui.h:2
-msgid "Text below icons"
-msgstr "アイコンの下に文字"
-
-#: ../data/ui/general-prefs.ui.h:3
-msgid "Text beside icons"
-msgstr "アイコンの横に文字"
-
-#: ../data/ui/general-prefs.ui.h:4
-msgid "Icons only"
-msgstr "アイコンのみ"
-
-#: ../data/ui/general-prefs.ui.h:5
-msgid "Text only"
-msgstr "文字のみ"
-
-#: ../data/ui/general-prefs.ui.h:6
 msgid "Browser Views"
 msgstr "ブラウザーに表示する項目"
 
-#: ../data/ui/general-prefs.ui.h:7
+#: ../data/ui/general-prefs.ui.h:2
 msgid "_Artists and albums"
 msgstr "アーティストとアルバム名(_A)"
 
-#: ../data/ui/general-prefs.ui.h:8
+#: ../data/ui/general-prefs.ui.h:3
 msgid "_Genres and artists"
 msgstr "ジャンルとアーティスト(_G)"
 
-#: ../data/ui/general-prefs.ui.h:9
+#: ../data/ui/general-prefs.ui.h:4
 msgid "G_enres, artists and albums"
 msgstr "ジャンルとアーティストとアルバム名(_E)"
 
-#: ../data/ui/general-prefs.ui.h:10
+#: ../data/ui/general-prefs.ui.h:5
 msgid "Visible Columns"
 msgstr "一覧に表示する項目"
 
-#: ../data/ui/general-prefs.ui.h:11
+#: ../data/ui/general-prefs.ui.h:6
 msgid "Track _number"
 msgstr "トラック番号(_N)"
 
-#: ../data/ui/general-prefs.ui.h:12
+#: ../data/ui/general-prefs.ui.h:7
 msgid "_Artist"
 msgstr "アーティスト(_A)"
 
-#: ../data/ui/general-prefs.ui.h:13
+#: ../data/ui/general-prefs.ui.h:8
 msgid "A_lbum"
 msgstr "アルバム名(_L)"
 
-#: ../data/ui/general-prefs.ui.h:14
+#: ../data/ui/general-prefs.ui.h:9
 msgid "_Year"
 msgstr "制作年(_Y)"
 
-#: ../data/ui/general-prefs.ui.h:15
+#: ../data/ui/general-prefs.ui.h:10
 msgid "_Last played"
 msgstr "最終再生日時(_L)"
 
-#: ../data/ui/general-prefs.ui.h:16
+#: ../data/ui/general-prefs.ui.h:11
 msgid "_Genre"
 msgstr "ジャンル(_G)"
 
-#: ../data/ui/general-prefs.ui.h:17
+#: ../data/ui/general-prefs.ui.h:12
 msgid "Da_te added"
 msgstr "インポートした日時(_T)"
 
-#: ../data/ui/general-prefs.ui.h:18
+#: ../data/ui/general-prefs.ui.h:13
 msgid "_Play count"
 msgstr "再生回数(_P)"
 
-#: ../data/ui/general-prefs.ui.h:19
+#: ../data/ui/general-prefs.ui.h:14
 msgid "C_omment"
 msgstr "コメント(_O)"
 
-#: ../data/ui/general-prefs.ui.h:20 ../widgets/rb-entry-view.c:1594
+#: ../data/ui/general-prefs.ui.h:15 ../widgets/rb-entry-view.c:1594
 msgid "BPM"
 msgstr "BPM"
 
-#: ../data/ui/general-prefs.ui.h:21
+#: ../data/ui/general-prefs.ui.h:16
 msgid "_Rating"
 msgstr "評価(_R)"
 
-#: ../data/ui/general-prefs.ui.h:22
+#: ../data/ui/general-prefs.ui.h:17
 msgid "Ti_me"
 msgstr "再生時間(_M)"
 
-#: ../data/ui/general-prefs.ui.h:23
+#: ../data/ui/general-prefs.ui.h:18
 msgid "Lo_cation"
 msgstr "場所(_C)"
 
-#: ../data/ui/general-prefs.ui.h:24
+#: ../data/ui/general-prefs.ui.h:19
 #: ../plugins/visualizer/rb-visualizer-menu.c:138
 msgid "_Quality"
 msgstr "音質(_Q)"
-
-#: ../data/ui/general-prefs.ui.h:25
-msgid "Toolbar Button Labels"
-msgstr "ツールバーボタンのスタイル"
 
 #: ../data/ui/library-prefs.ui.h:1
 msgid "Library Location"
@@ -294,17 +262,16 @@ msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
 msgstr "アーティスト - アルバム/アーティスト (アルバム) - 01 - タイトル.ogg"
 
 #: ../data/ui/library-prefs.ui.h:10
-msgid "_Settings"
-msgstr "設定(_S)"
+msgid "Format settings:"
+msgstr "フォーマット設定:"
 
 #: ../data/ui/library-prefs.ui.h:11
 msgid "_Install additional software required to use this format"
-msgstr ""
-"このフォーマットを利用するために必要な追加ソフトウエアをインストール(_I)"
+msgstr "このフォーマットを利用するために必要な追加ソフトウェアをインストール(_I)"
 
 #: ../data/ui/media-player-properties.ui.h:1
 msgid "Media Player Properties"
-msgstr "メディアプレイヤーのプロパティー"
+msgstr "メディアプレイヤーのプロパティ"
 
 #: ../data/ui/media-player-properties.ui.h:2
 msgid "<b>Information</b>"
@@ -361,6 +328,22 @@ msgstr "フォーマットの選択:"
 #: ../data/ui/playlist-save.ui.h:4
 msgid "<b>Playlist format</b>"
 msgstr "<b>プレイリストのフォーマット</b>"
+
+#: ../data/ui/podcast-add-dialog.ui.h:1
+msgid "Subscribe"
+msgstr "購読"
+
+#: ../data/ui/podcast-add-dialog.ui.h:2
+msgid ""
+"Search for podcasts in the iTunes Store and on Miroguide.com, or enter a podcast feed URL.\n"
+"Subscribe to podcasts to download new episodes as they are published."
+msgstr ""
+"iTunes StoreやMiroguide.comのポッドキャストを検索するか、ポッドキャストフィードのURLを入力します。\n"
+"発行済みの新しいエピソードをダウンロードするにはポッドキャストを購読します。"
+
+#: ../data/ui/podcast-add-dialog.ui.h:4
+msgid "Close"
+msgstr "閉じる"
 
 #: ../data/ui/podcast-feed-properties.ui.h:1
 #: ../data/ui/podcast-properties.ui.h:1
@@ -633,7 +616,7 @@ msgstr "セッション管理のオプションを表示する"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3602 ../widgets/rb-entry-view.c:933
+#: ../rhythmdb/rhythmdb.c:3603 ../widgets/rb-entry-view.c:933
 #: ../widgets/rb-entry-view.c:1542 ../widgets/rb-entry-view.c:1555
 #: ../widgets/rb-song-info.c:1465
 msgid "Never"
@@ -678,38 +661,40 @@ msgstr "%Y年%B%d日"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:696
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:713
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
-#: ../plugins/audiocd/rb-audiocd-source.c:604
+#: ../plugins/audiocd/rb-audiocd-source.c:606
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:589
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:593
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
-#: ../plugins/generic-player/rb-generic-player-source.c:1077
-#: ../plugins/ipod/rb-ipod-source.c:565
-#: ../plugins/iradio/rb-iradio-source.c:562
-#: ../plugins/iradio/rb-iradio-source.c:1054
+#: ../plugins/generic-player/rb-generic-player-source.c:1094
+#: ../plugins/ipod/rb-ipod-source.c:567
+#: ../plugins/iradio/rb-iradio-source.c:563
+#: ../plugins/iradio/rb-iradio-source.c:1055
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78 ../plugins/lyrics/lyrics.py:80
-#: ../plugins/mtpdevice/rb-mtp-source.c:649
-#: ../plugins/mtpdevice/rb-mtp-source.c:1127
-#: ../plugins/mtpdevice/rb-mtp-source.c:1501
+#: ../plugins/mtpdevice/rb-mtp-source.c:659
+#: ../plugins/mtpdevice/rb-mtp-source.c:1143
+#: ../plugins/mtpdevice/rb-mtp-source.c:1517
 #: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-manager.c:1903 ../podcast/rb-podcast-manager.c:1997
+#: ../podcast/rb-podcast-add-dialog.c:576 ../podcast/rb-podcast-manager.c:1904
+#: ../podcast/rb-podcast-manager.c:1998
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
-#: ../podcast/rb-podcast-source.c:748 ../remote/dbus/rb-client.c:144
+#: ../podcast/rb-podcast-source.c:787 ../remote/dbus/rb-client.c:144
 #: ../rhythmdb/rhythmdb.c:2028 ../rhythmdb/rhythmdb.c:2034
-#: ../rhythmdb/rhythmdb.c:2049 ../rhythmdb/rhythmdb.c:5392
-#: ../rhythmdb/rhythmdb.c:5397 ../rhythmdb/rhythmdb-tree.c:1344
+#: ../rhythmdb/rhythmdb.c:2049 ../rhythmdb/rhythmdb.c:5396
+#: ../rhythmdb/rhythmdb.c:5401 ../rhythmdb/rhythmdb-tree.c:1344
 #: ../rhythmdb/rhythmdb-tree.c:1348 ../rhythmdb/rhythmdb-tree.c:1352
-#: ../rhythmdb/rhythmdb-tree.c:1356 ../shell/rb-shell-player.c:1771
-#: ../shell/rb-shell-player.c:3736 ../shell/rb-shell-player.c:3738
+#: ../rhythmdb/rhythmdb-tree.c:1356 ../shell/rb-shell-player.c:1790
+#: ../shell/rb-shell-player.c:3759 ../shell/rb-shell-player.c:3761
 #: ../widgets/rb-entry-view.c:985 ../widgets/rb-entry-view.c:1007
 #: ../widgets/rb-entry-view.c:1483 ../widgets/rb-entry-view.c:1495
-#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-song-info.c:920
+#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1098
+#: ../widgets/rb-header.c:1124 ../widgets/rb-song-info.c:920
 #: ../widgets/rb-song-info.c:932 ../widgets/rb-song-info.c:1153
 #: ../widgets/rb-song-info.c:1492
 msgid "Unknown"
@@ -725,34 +710,34 @@ msgstr "シンボリックリンクが多すぎます"
 msgid "Cannot get free space at %s: %s"
 msgstr "%sで空き領域を確保できませんでした: %s"
 
-#: ../lib/rb-util.c:698 ../plugins/context/tmpl/album-tmpl.html:21
+#: ../lib/rb-util.c:694 ../plugins/context/tmpl/album-tmpl.html:21
 #: ../remote/dbus/rb-client.c:146
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:700 ../plugins/context/tmpl/album-tmpl.html:19
+#: ../lib/rb-util.c:696 ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:148
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:747
+#: ../lib/rb-util.c:760
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "残り%d:%02d / %d:%02d"
 
-#: ../lib/rb-util.c:751
+#: ../lib/rb-util.c:764
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "残り%d:%02d:%02d / %d:%02d:%02d"
 
-#: ../lib/rb-util.c:756
+#: ../lib/rb-util.c:769
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d / %d:%02d"
 
-#: ../lib/rb-util.c:760
+#: ../lib/rb-util.c:773
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d / %d:%02d:%02d"
@@ -760,16 +745,12 @@ msgstr "%d:%02d:%02d / %d:%02d:%02d"
 #: ../metadata/rb-metadata-gst.c:520
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
-msgstr ""
-"マルチプルストリームに含まれるこのファイルにタグを書き込みことができません"
+msgstr "マルチプルストリームに含まれるこのファイルにタグを書き込みことができません"
 
 #: ../metadata/rb-metadata-gst.c:560
 #, c-format
-msgid ""
-"Unable to write tags to this file as it is not encoded in a supported format"
-msgstr ""
-"サポートされたフォーマットでエンコードされていないこのファイルにタグを書きこ"
-"むことができません"
+msgid "Unable to write tags to this file as it is not encoded in a supported format"
+msgstr "サポートされたフォーマットでエンコードされていないこのファイルにタグを書きこむことができません"
 
 #: ../metadata/rb-metadata-gst.c:692
 #, c-format
@@ -778,42 +759,26 @@ msgstr "ソース要素の生成に失敗しました。インストール状況
 
 #: ../metadata/rb-metadata-gst.c:702
 #, c-format
-msgid ""
-"Failed to create the 'decodebin2' element; check your GStreamer installation"
-msgstr ""
-"'decodebin2'エレメントの生成に失敗しました。GStreamerのインストールを確認して"
-"ください"
+msgid "Failed to create the 'decodebin2' element; check your GStreamer installation"
+msgstr "'decodebin2'エレメントの生成に失敗しました。GStreamerのインストールを確認してください"
 
 #: ../metadata/rb-metadata-gst.c:711
 #, c-format
-msgid ""
-"Failed to create the 'giostreamsink' element; check your GStreamer "
-"installation"
-msgstr ""
-"'giostreamsink'エレメントの生成に失敗しました。GStreamerのインストールを確認"
-"してください"
+msgid "Failed to create the 'giostreamsink' element; check your GStreamer installation"
+msgstr "'giostreamsink'エレメントの生成に失敗しました。GStreamerのインストールを確認してください"
 
-#: ../metadata/rb-metadata-gst.c:792
+#: ../metadata/rb-metadata-gst.c:794
 #, c-format
 msgid "File corrupted during write"
 msgstr "書き込むファイルが壊れています"
 
-#: ../plugins/artdisplay/artdisplay.plugin.in.h:1
-msgid "Cover art"
-msgstr "ジャケットのアート"
-
-#: ../plugins/artdisplay/artdisplay.plugin.in.h:2
-#: ../plugins/artsearch/artsearch.plugin.in.h:2
-msgid "Fetch album covers from the Internet"
-msgstr "アルバムのジャケットをインターネットから取得します"
-
-#: ../plugins/artdisplay/artdisplay.py:312
-msgid "Searching..."
-msgstr "検索しています..."
-
 #: ../plugins/artsearch/artsearch.plugin.in.h:1
 msgid "Cover art search"
 msgstr "カバーアート検索"
+
+#: ../plugins/artsearch/artsearch.plugin.in.h:2
+msgid "Fetch album covers from the Internet"
+msgstr "アルバムのジャケットをインターネットから取得します"
 
 #: ../plugins/audiocd/album-info.ui.h:1
 msgid "A_lbum:"
@@ -840,12 +805,8 @@ msgid "Multiple Albums Found"
 msgstr "複数枚のアルバムが見つかりました"
 
 #: ../plugins/audiocd/multiple-album.ui.h:2
-msgid ""
-"This CD could be more than one album. Please select which album it is below "
-"and press <i>Continue</i>."
-msgstr ""
-"このCDには一つ以上のアルバムがあります。下の一覧からアルバムを選択して<i>続行"
-"する</i>ボタンをクリックしてください。"
+msgid "This CD could be more than one album. Please select which album it is below and press <i>Continue</i>."
+msgstr "このCDには一つ以上のアルバムがあります。下の一覧からアルバムを選択して<i>続行する</i>ボタンをクリックしてください。"
 
 #: ../plugins/audiocd/multiple-album.ui.h:3
 msgid "_Continue"
@@ -892,91 +853,95 @@ msgstr "このアルバムをMusicBrainz上で発見できませんでした"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:470
 msgid "You can improve the MusicBrainz database by adding this album."
-msgstr ""
-"このアルバムを追加することで、MusicBrainzのデータベースを向上させることができ"
-"ます"
+msgstr "このアルバムを追加することで、MusicBrainzのデータベースを向上させることができます"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:610
+#: ../plugins/audiocd/rb-audiocd-source.c:612
 msgid "<Invalid unicode>"
 msgstr "<Unicodeが不正です>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:653
+#: ../plugins/audiocd/rb-audiocd-source.c:655
 #, c-format
 msgid "Track %u"
 msgstr "トラック %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:714
-#: ../plugins/audiocd/rb-audiocd-source.c:722
-#: ../plugins/audiocd/rb-audiocd-source.c:1136
+#: ../plugins/audiocd/rb-audiocd-source.c:716
+#: ../plugins/audiocd/rb-audiocd-source.c:724
+#: ../plugins/audiocd/rb-audiocd-source.c:1146
 msgid "Couldn't load Audio CD"
 msgstr "音楽CDを読み込めませんでした"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:715
+#: ../plugins/audiocd/rb-audiocd-source.c:717
 msgid "Rhythmbox couldn't access the CD."
 msgstr "CDにアクセスできませんでした。"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:723
+#: ../plugins/audiocd/rb-audiocd-source.c:725
 msgid "Rhythmbox couldn't read the CD information."
 msgstr "CDの情報を読み込めませんでした。"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:991
-#: ../sources/rb-library-source.c:129 ../widgets/rb-entry-view.c:1429
+#: ../plugins/audiocd/rb-audiocd-source.c:996
+#: ../podcast/rb-podcast-add-dialog.c:711 ../sources/rb-library-source.c:133
+#: ../widgets/rb-entry-view.c:1429
 msgid "Title"
 msgstr "タイトル"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:998
-#: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:120
+#: ../plugins/audiocd/rb-audiocd-source.c:1003
+#: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:124
 #: ../widgets/rb-entry-view.c:1439 ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "アーティスト"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1137
+#: ../plugins/audiocd/rb-audiocd-source.c:1147
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "RhythmboxはCDデバイスにアクセスできませんでした。"
 
-#: ../plugins/audiocd/sj-metadata.c:190
-#, c-format
-msgid "Device '%s' does not contain any media"
-msgstr "デバイス'%s'にはメディアがありません"
-
-#: ../plugins/audiocd/sj-metadata.c:193
-#, c-format
-msgid ""
-"Device '%s' could not be opened. Check the access permissions on the device."
-msgstr ""
-"デバイス'%s'を開けませんでした。そのデバイスに対するアクセス権を確認してくだ"
-"さい。"
-
-#: ../plugins/audiocd/sj-metadata.c:196 ../plugins/audiocd/sj-metadata.c:207
+#. FIXME: would be nicer to only check if "cdrom" is being probed,
+#. * but libbrasero doesn't seem to have an API for that
+#.
+#: ../plugins/audiocd/sj-metadata.c:182 ../plugins/audiocd/sj-metadata.c:205
+#: ../plugins/audiocd/sj-metadata.c:216
 #, c-format
 msgid "Cannot read CD: %s"
 msgstr "CDを読み込めません: %s"
 
-#: ../plugins/audiocd/sj-metadata-getter.c:247
+#: ../plugins/audiocd/sj-metadata.c:183
+msgid "Devices haven't been all probed yet"
+msgstr "デバイスをまだすべて調べていません"
+
+#: ../plugins/audiocd/sj-metadata.c:199
+#, c-format
+msgid "Device '%s' does not contain any media"
+msgstr "デバイス'%s'にはメディアがありません"
+
+#: ../plugins/audiocd/sj-metadata.c:202
+#, c-format
+msgid "Device '%s' could not be opened. Check the access permissions on the device."
+msgstr "デバイス'%s'を開けませんでした。そのデバイスに対するアクセス権を確認してください。"
+
+#: ../plugins/audiocd/sj-metadata-getter.c:253
 #, c-format
 msgid "Could not create CD lookup thread"
 msgstr "CD検索用スレッドを生成できませんでした"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:86
+#: ../plugins/audiocd/sj-metadata-gvfs.c:90
 #, c-format
 msgid "Cannot access CD"
 msgstr "CDを読み込めません"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:105
+#: ../plugins/audiocd/sj-metadata-gvfs.c:109
 msgid "Unknown Title"
 msgstr "タイトルが不明"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:109
-#: ../plugins/audiocd/sj-metadata-gvfs.c:135
+#: ../plugins/audiocd/sj-metadata-gvfs.c:113
+#: ../plugins/audiocd/sj-metadata-gvfs.c:139
 msgid "Unknown Artist"
 msgstr "アーティストが不明"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:131
+#: ../plugins/audiocd/sj-metadata-gvfs.c:135
 #, c-format
 msgid "Track %d"
 msgstr "トラック %d"
 
-#: ../plugins/audiocd/sj-metadata-gvfs.c:156
+#: ../plugins/audiocd/sj-metadata-gvfs.c:160
 #, c-format
 msgid "Cannot access CD: %s"
 msgstr "CDを読み込めません: %s"
@@ -1326,8 +1291,7 @@ msgstr "ラジオステーションを削除します"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:473
 msgid "You must enter your password to listen to this station"
-msgstr ""
-"このラジオステーションを聴くにはあなたのパスワードを入力しなくてはなりません"
+msgstr "このラジオステーションを聴くにはあなたのパスワードを入力しなくてはなりません"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:787
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1136
@@ -1502,12 +1466,8 @@ msgid "Nothing Playing"
 msgstr "何も再生していません"
 
 #: ../plugins/context/LastFM.py:42
-msgid ""
-"This information is only available to Last.fm users. Ensure the Last.fm "
-"plugin is enabled, select Last.fm in the side pane, and log in."
-msgstr ""
-"この情報はLast.fm のユーザーにのみ利用可能です。Last.fmプラグインが有効である"
-"ことを確認して、サイドペインにあるLast.fmを選択し、ログインします。"
+msgid "This information is only available to Last.fm users. Ensure the Last.fm plugin is enabled, select Last.fm in the side pane, and log in."
+msgstr "この情報はLast.fm のユーザーにのみ利用可能です。Last.fmプラグインが有効であることを確認して、サイドペインにあるLast.fmを選択し、ログインします。"
 
 #: ../plugins/context/LinksTab.py:54
 msgid "Links"
@@ -1653,20 +1613,20 @@ msgstr "DAAP共有の情報(例:192.168.0.1:3689)"
 msgid "%s's Music"
 msgstr "%sの楽曲"
 
-#: ../plugins/daap/rb-daap-source.c:446
+#: ../plugins/daap/rb-daap-source.c:448
 #, c-format
 msgid "The music share '%s' requires a password to connect"
 msgstr "楽曲の共有サーバー\"%s\"に接続するにはパスワードが必要です。"
 
-#: ../plugins/daap/rb-daap-source.c:517
+#: ../plugins/daap/rb-daap-source.c:519
 msgid "Connecting to music share"
 msgstr "楽曲の共有中です"
 
-#: ../plugins/daap/rb-daap-source.c:524
+#: ../plugins/daap/rb-daap-source.c:527
 msgid "Retrieving songs from music share"
 msgstr "共有サービスから楽曲を受信しています"
 
-#: ../plugins/daap/rb-daap-source.c:610
+#: ../plugins/daap/rb-daap-source.c:614
 msgid "Could not connect to shared music"
 msgstr "楽曲の共有サービスに接続できませんでした"
 
@@ -1687,8 +1647,7 @@ msgid "MediaServer2 D-Bus interface"
 msgstr "MediaServer2 D-Busインターフェース"
 
 #: ../plugins/dbus-media-server/dbus-media-server.plugin.in.h:2
-msgid ""
-"Provides an implementation of the MediaServer2 D-Bus interface specification"
+msgid "Provides an implementation of the MediaServer2 D-Bus interface specification"
 msgstr "MediaServer2 D-Busインターフェース仕様書の実装を提供します"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1250
@@ -1801,7 +1760,7 @@ msgstr "このプレイリストを削除します"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:96
 #: ../plugins/ipod/rb-ipod-plugin.c:102
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:122 ../podcast/rb-podcast-source.c:119
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:122 ../podcast/rb-podcast-source.c:124
 #: ../shell/rb-shell-clipboard.c:190
 msgid "_Properties"
 msgstr "ファイル情報(_P)"
@@ -1811,9 +1770,9 @@ msgstr "ファイル情報(_P)"
 msgid "Display device properties"
 msgstr "iPodのプロパティを表示"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:1366
-#: ../plugins/ipod/rb-ipod-source.c:1986
-#: ../plugins/mtpdevice/rb-mtp-source.c:1595
+#: ../plugins/generic-player/rb-generic-player-source.c:1383
+#: ../plugins/ipod/rb-ipod-source.c:2006
+#: ../plugins/mtpdevice/rb-mtp-source.c:1611
 msgid "Advanced"
 msgstr "拡張"
 
@@ -1844,9 +1803,7 @@ msgid "IM Status"
 msgstr "IMの状態"
 
 #: ../plugins/im-status/im-status.plugin.in.h:2
-msgid ""
-"Updates IM status according to the current song (works with Empathy, Gossip, "
-"and Pidgin)"
+msgid "Updates IM status according to the current song (works with Empathy, Gossip, and Pidgin)"
 msgstr "再生中の楽曲に応じてIM(EmpathyとGossip)の状態を更新します"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
@@ -1924,23 +1881,11 @@ msgid "_Model:"
 msgstr "型式(_M):"
 
 #: ../plugins/ipod/ipod-init.ui.h:5
-msgid ""
-"Rhythmbox has detected a device that is probably an uninitialized or "
-"corrupted iPod. It must be initialized before Rhythmbox can use it, but this "
-"will destroy any song metadata already present. If you wish Rhythmbox to "
-"initialize the iPod, please fill in the information below. If the device is "
-"not an iPod, or you do not wish to initialize it, please click cancel."
-msgstr ""
-"Rhythmboxは初期化されていないか、もしくは壊れているiPodと思われるデバイスを検"
-"出しました。Rhythmboxでこのデバイスを利用するためには初期化する必要があります"
-"が、その際にデバイスに現在保存されているすべての楽曲データが破棄されます。"
-"RhythmboxでiPodを初期化する場合は以下の情報を入力してください。このデバイスが"
-"iPodでないか、初期化しない場合はキャンセルボタンを押してください。"
+msgid "Rhythmbox has detected a device that is probably an uninitialized or corrupted iPod. It must be initialized before Rhythmbox can use it, but this will destroy any song metadata already present. If you wish Rhythmbox to initialize the iPod, please fill in the information below. If the device is not an iPod, or you do not wish to initialize it, please click cancel."
+msgstr "Rhythmboxは初期化されていないか、もしくは壊れているiPodと思われるデバイスを検出しました。Rhythmboxでこのデバイスを利用するためには初期化する必要がありますが、その際にデバイスに現在保存されているすべての楽曲データが破棄されます。RhythmboxでiPodを初期化する場合は以下の情報を入力してください。このデバイスがiPodでないか、初期化しない場合はキャンセルボタンを押してください。"
 
 #: ../plugins/ipod/ipod-init.ui.h:6
-msgid ""
-"<span size=\"x-large\" weight=\"bold\">Do you want to initialize your iPod?</"
-"span>"
+msgid "<span size=\"x-large\" weight=\"bold\">Do you want to initialize your iPod?</span>"
 msgstr "<span size=\"x-large\" weight=\"bold\">iPodを初期化しますか?</span>"
 
 #: ../plugins/ipod/ipod.plugin.in.h:1
@@ -1985,11 +1930,11 @@ msgstr "削除(_D)"
 msgid "Delete playlist"
 msgstr "プレイリストを削除します"
 
-#: ../plugins/ipod/rb-ipod-source.c:381
+#: ../plugins/ipod/rb-ipod-source.c:382
 msgid "Unable to initialize new iPod"
 msgstr "新しいiPod を初期化できません"
 
-#: ../plugins/ipod/rb-ipod-source.c:1413
+#: ../plugins/ipod/rb-ipod-source.c:1422
 #: ../podcast/rb-podcast-main-source.c:70
 #: ../sources/sync/rb-sync-settings-ui.c:262
 #: ../sources/sync/rb-sync-settings-ui.c:263
@@ -1997,7 +1942,7 @@ msgstr "新しいiPod を初期化できません"
 msgid "Podcasts"
 msgstr "Podcast"
 
-#: ../plugins/ipod/rb-ipod-source.c:1863
+#: ../plugins/ipod/rb-ipod-source.c:1883
 msgid "New playlist"
 msgstr "新しいプレイリスト"
 
@@ -2033,30 +1978,30 @@ msgstr "ジャンル"
 msgid "Search your internet radio stations"
 msgstr "インターネットラジオステーションのURL:"
 
-#: ../plugins/iradio/rb-iradio-source.c:486
+#: ../plugins/iradio/rb-iradio-source.c:487
 msgid "Radio"
 msgstr "ラジオ"
 
-#: ../plugins/iradio/rb-iradio-source.c:626
+#: ../plugins/iradio/rb-iradio-source.c:627
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%dステーション"
 
 #. should prevent multiple dialogs?  going to kill this nonsense anyway soon..
-#: ../plugins/iradio/rb-iradio-source.c:967
+#: ../plugins/iradio/rb-iradio-source.c:968
 #: ../plugins/iradio/rb-station-properties-dialog.c:403
 msgid "New Internet Radio Station"
 msgstr "新しいインターネットラジオ局"
 
-#: ../plugins/iradio/rb-iradio-source.c:967
+#: ../plugins/iradio/rb-iradio-source.c:968
 msgid "URL of internet radio station:"
 msgstr "インターネットラジオ局のURL:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
 #: ../podcast/rb-podcast-properties-dialog.c:507
-#: ../sources/rb-media-player-source.c:413 ../widgets/rb-song-info.c:1078
+#: ../sources/rb-media-player-source.c:426 ../widgets/rb-song-info.c:1078
 #, c-format
 msgid "%s Properties"
 msgstr "%sのプロパティ"
@@ -2123,7 +2068,7 @@ msgid "_Save"
 msgstr "保存(_S)"
 
 #: ../plugins/lyrics/lyrics.py:214 ../plugins/lyrics/lyrics.py:227
-#: ../shell/rb-shell.c:350
+#: ../shell/rb-shell.c:341
 msgid "_Edit"
 msgstr "編集(_E)"
 
@@ -2172,29 +2117,17 @@ msgid "    * Free listening of all songs"
 msgstr "    * すべての楽曲の試聴は無料です"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:5
-msgid ""
-"    * Paid members get totally unlimited downloading of the entire catalog "
-"(no other service allows that)"
-msgstr ""
-"    * 有料会員は、すべてのカタログを無制限にダウンロードすることができます(他"
-"のサービスでは許可されていません)"
+msgid "    * Paid members get totally unlimited downloading of the entire catalog (no other service allows that)"
+msgstr "    * 有料会員は、すべてのカタログを無制限にダウンロードすることができます(他のサービスでは許可されていません)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:7
 #, no-c-format
-msgid ""
-"    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's "
-"worth joining"
-msgstr ""
-"    * あなたのMagnatuneメンバー料金の10%はRhythmbox/GNOMEに送られます - これ"
-"は参加する価値があります"
+msgid "    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's worth joining"
+msgstr "    * あなたのMagnatuneメンバー料金の10%はRhythmbox/GNOMEに送られます - これは参加する価値があります"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:8
-msgid ""
-"    * Open-Source friendly file formats: MP3s and WAVs, but also OGG and "
-"FLAC files."
-msgstr ""
-"    * MP3やWAVだけでなく、オープンソースになじみがあるファイルフォーマットで"
-"あるOGGやFLACファイルにも対応しています。"
+msgid "    * Open-Source friendly file formats: MP3s and WAVs, but also OGG and FLAC files."
+msgstr "    * MP3やWAVだけでなく、オープンソースになじみがあるファイルフォーマットであるOGGやFLACファイルにも対応しています。"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:9
 msgid "    * All albums and artists hand-picked"
@@ -2213,9 +2146,7 @@ msgid "Magnatune Store"
 msgstr "Magnatune Store"
 
 #: ../plugins/magnatune/magnatune.plugin.in.h:2
-msgid ""
-"Adds support to Rhythmbox for playing and purchasing from the Magnatune "
-"online music store"
+msgid "Adds support to Rhythmbox for playing and purchasing from the Magnatune online music store"
 msgstr "Magnatune online music storeでの再生と楽曲の購入をサポートします"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
@@ -2435,10 +2366,8 @@ msgid "Unable to load catalog"
 msgstr "カタログを読み込めません"
 
 #: ../plugins/magnatune/MagnatuneSource.py:273
-msgid ""
-"Rhythmbox could not understand the Magnatune catalog, please file a bug."
-msgstr ""
-"Magnatuneのカタログを解析できませんでした、バグとして報告してください。"
+msgid "Rhythmbox could not understand the Magnatune catalog, please file a bug."
+msgstr "Magnatuneのカタログを解析できませんでした、バグとして報告してください。"
 
 #: ../plugins/magnatune/MagnatuneSource.py:425
 msgid "Download Error"
@@ -2504,11 +2433,11 @@ msgstr "一時ファイルを開けませんでした: %s"
 msgid "Rename MTP-device"
 msgstr "MTPデバイス名の変更"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:604
+#: ../plugins/mtpdevice/rb-mtp-source.c:614
 msgid "Media Player"
 msgstr "メディアプレイヤー"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:883
+#: ../plugins/mtpdevice/rb-mtp-source.c:893
 #: ../plugins/mtpdevice/rb-mtp-thread.c:856
 msgid "Media player device error"
 msgstr "メディアプレイヤーのデバイスエラー"
@@ -2516,12 +2445,12 @@ msgstr "メディアプレイヤーのデバイスエラー"
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:887
+#: ../plugins/mtpdevice/rb-mtp-source.c:897
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "デバイス%s:%sを開けません"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:931
+#: ../plugins/mtpdevice/rb-mtp-source.c:941
 msgid "Digital Audio Player"
 msgstr "デジタルオーディオプレイヤー"
 
@@ -2588,7 +2517,7 @@ msgstr "アルバム:<i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:390
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:202
-#: ../widgets/rb-header.c:586
+#: ../widgets/rb-header.c:821
 msgid "Not Playing"
 msgstr "再生していません"
 
@@ -2634,14 +2563,8 @@ msgstr "'shell'変数を使ってメインウィンドウにアクセスでき�
 
 #: ../plugins/pythonconsole/pythonconsole.py:143
 #, python-format
-msgid ""
-"After you press OK, Rhythmbox will wait until you connect to it with winpdb "
-"or rpdb2. If you have not set a debugger password in the file %s, it will "
-"use the default password ('rhythmbox')."
-msgstr ""
-"OKを押すと、winpdbやrpdb2に接続するまでRhythmboxは待機します。ファイル%sにデ"
-"バッガーパスワードを設定していない場合は、初期パスワード ('rhythmbox') を使用"
-"してください。"
+msgid "After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in the file %s, it will use the default password ('rhythmbox')."
+msgstr "OKを押すと、winpdbやrpdb2に接続するまでRhythmboxは待機します。ファイル%sにデバッガーパスワードを設定していない場合は、初期パスワード ('rhythmbox') を使用してください。"
 
 #. ex:noet:ts=8:
 #: ../plugins/rbzeitgeist/rbzeitgeist.plugin.in.h:1
@@ -2666,9 +2589,7 @@ msgstr "15.0dB"
 
 #: ../plugins/replaygain/player.py:49
 #, python-format
-msgid ""
-"The GStreamer elements required for ReplayGain processing are not available. "
-"The missing elements are: %s"
+msgid "The GStreamer elements required for ReplayGain processing are not available. The missing elements are: %s"
 msgstr "GStreamerはReplayGainの処理ができません。次の要素が足りません: %s"
 
 #: ../plugins/replaygain/player.py:50
@@ -2797,6 +2718,29 @@ msgstr "視覚効果"
 msgid "Displays visualizations"
 msgstr "視覚効果を表示します"
 
+#: ../podcast/rb-podcast-add-dialog.c:273
+msgid "Unable to load the feed. Check your network connection."
+msgstr "フィードを読み込めません。ネットワークの接続を確認してください。"
+
+#: ../podcast/rb-podcast-add-dialog.c:400
+msgid "Unable to search for podcasts. Check your network connection."
+msgstr "ポッドキャストが検索できません。ネットワークの接続を確認してください。"
+
+#: ../podcast/rb-podcast-add-dialog.c:722
+msgid "Author"
+msgstr "配信元"
+
+#: ../podcast/rb-podcast-add-dialog.c:727
+#: ../podcast/rb-podcast-add-dialog.c:730
+msgid "Episodes"
+msgstr "エピソード"
+
+#: ../podcast/rb-podcast-add-dialog.c:758
+#: ../podcast/rb-podcast-add-dialog.c:769 ../podcast/rb-podcast-source.c:1397
+#: ../podcast/rb-podcast-source.c:1408
+msgid "Date"
+msgstr "日時"
+
 #: ../podcast/rb-podcast-main-source.c:117
 msgid "New Episodes"
 msgstr "新エピソード"
@@ -2826,58 +2770,47 @@ msgstr "Podcastの登録エラー"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s(とにかくPodcastを追加しますか?)"
 
-#: ../podcast/rb-podcast-manager.c:910
+#: ../podcast/rb-podcast-manager.c:904
 msgid "Error creating podcast download directory"
 msgstr "Podcastのダウンロードディレクトリを作成中にエラーが発生しました"
 
-#: ../podcast/rb-podcast-manager.c:911
+#: ../podcast/rb-podcast-manager.c:905
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "ダウンロードディレクトリ%sの作成に失敗しました: %s"
 
-#: ../podcast/rb-podcast-manager.c:1036
+#: ../podcast/rb-podcast-manager.c:1030
 msgid "Invalid URL"
 msgstr "URLが間違っています"
 
-#: ../podcast/rb-podcast-manager.c:1037
+#: ../podcast/rb-podcast-manager.c:1031
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "そのURL\"%s\"は正しくありません。確認してください。"
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1047
+#: ../podcast/rb-podcast-manager.c:1041
 msgid "URL already added"
 msgstr "URLは追加済みです"
 
-#: ../podcast/rb-podcast-manager.c:1048
+#: ../podcast/rb-podcast-manager.c:1042
 #, c-format
-msgid ""
-"The URL \"%s\" has already been added as a radio station. If this is a "
-"podcast feed, please remove the radio station."
-msgstr ""
-"そのURL\"%s\"は、すでにラジオ局として存在しています。これがPodcastの配信元な"
-"らば、ラジオ局から削除してください。"
+msgid "The URL \"%s\" has already been added as a radio station. If this is a podcast feed, please remove the radio station."
+msgstr "そのURL\"%s\"は、すでにラジオ局として存在しています。これがPodcastの配信元ならば、ラジオ局から削除してください。"
 
-#: ../podcast/rb-podcast-manager.c:1124
+#: ../podcast/rb-podcast-manager.c:1118
 #, c-format
-msgid ""
-"The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
-"or the feed may be broken. Would you like Rhythmbox to attempt to use it "
-"anyway?"
-msgstr ""
-"URL'%s'はPodcastの配信元ではないようです。おそらくURLが間違っているか、あるい"
-"は配信元の内容が壊れています。それでもRhythmboxから試してみますか?"
+msgid "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, or the feed may be broken. Would you like Rhythmbox to attempt to use it anyway?"
+msgstr "URL'%s'はPodcastの配信元ではないようです。おそらくURLが間違っているか、あるいは配信元の内容が壊れています。それでもRhythmboxから試してみますか?"
 
-#: ../podcast/rb-podcast-manager.c:1245
+#: ../podcast/rb-podcast-manager.c:1249
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2187
+#: ../podcast/rb-podcast-manager.c:2189
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
-msgstr ""
-"%sというPodcastを追加する際に問題が発生しました。次のURLの内容を確認してくだ"
-"さい: %s"
+msgstr "%sというPodcastを追加する際に問題が発生しました。次のURLの内容を確認してください: %s"
 
 #: ../podcast/rb-podcast-parse.c:181
 #, c-format
@@ -2907,147 +2840,127 @@ msgstr "要求されたURIを表示できません"
 msgid "Not Downloaded"
 msgstr "ダウンロードしない"
 
-#: ../podcast/rb-podcast-source.c:110
+#: ../podcast/rb-podcast-source.c:115
 msgid "_New Podcast Feed..."
 msgstr "新しいPodcastの配信元(_N)..."
 
-#: ../podcast/rb-podcast-source.c:111
-msgid "Subscribe to a new Podcast Feed"
+#: ../podcast/rb-podcast-source.c:116
+msgid "Subscribe to a new podcast feed"
 msgstr "新しいPodcastを購読します"
 
-#: ../podcast/rb-podcast-source.c:113
+#: ../podcast/rb-podcast-source.c:118
 msgid "Download _Episode"
 msgstr "エピソードのダウンロード(_E)"
 
-#: ../podcast/rb-podcast-source.c:114
+#: ../podcast/rb-podcast-source.c:119
 msgid "Download Podcast Episode"
 msgstr "Podcastのエピソードをダウンロードします"
 
-#: ../podcast/rb-podcast-source.c:116
+#: ../podcast/rb-podcast-source.c:121
 msgid "_Cancel Download"
 msgstr "ダウンロードのキャンセル(_C)"
 
-#: ../podcast/rb-podcast-source.c:117
+#: ../podcast/rb-podcast-source.c:122
 msgid "Cancel Episode Download"
 msgstr "エピソードのダウンロードをキャンセルします"
 
-#: ../podcast/rb-podcast-source.c:120
+#: ../podcast/rb-podcast-source.c:125
 msgid "Episode Properties"
 msgstr "エピソードのプロパティ"
 
-#: ../podcast/rb-podcast-source.c:122
+#: ../podcast/rb-podcast-source.c:127
 msgid "_Update Podcast Feed"
 msgstr "Podcastの配信元の更新(_U)"
 
-#: ../podcast/rb-podcast-source.c:123
+#: ../podcast/rb-podcast-source.c:128
 msgid "Update Feed"
 msgstr "配信元を更新します"
 
-#: ../podcast/rb-podcast-source.c:125
+#: ../podcast/rb-podcast-source.c:130
 msgid "_Delete Podcast Feed"
 msgstr "Podcastの配信元の削除(_D)"
 
-#: ../podcast/rb-podcast-source.c:126
+#: ../podcast/rb-podcast-source.c:131
 msgid "Delete Feed"
 msgstr "配信元を削除します"
 
-#: ../podcast/rb-podcast-source.c:128
+#: ../podcast/rb-podcast-source.c:133
 msgid "_Update All Feeds"
 msgstr "すべての配信元の更新(_U)"
 
-#: ../podcast/rb-podcast-source.c:129
+#: ../podcast/rb-podcast-source.c:134
 msgid "Update all feeds"
 msgstr "すべての配信元を更新します"
 
-#: ../podcast/rb-podcast-source.c:135 ../sources/rb-auto-playlist-source.c:103
+#: ../podcast/rb-podcast-source.c:140 ../sources/rb-auto-playlist-source.c:103
 #: ../sources/rb-browser-source.c:148
 #: ../sources/rb-static-playlist-source.c:123
 msgid "Search all fields"
 msgstr "すべての項目を検索します"
 
-#: ../podcast/rb-podcast-source.c:136
+#: ../podcast/rb-podcast-source.c:141
 msgid "Search podcast feeds"
 msgstr "Podcastの配信情報を検索します"
 
-#: ../podcast/rb-podcast-source.c:137
+#: ../podcast/rb-podcast-source.c:142
 msgid "Search podcast episodes"
 msgstr "Podcastのエピソードを検索します"
 
-#: ../podcast/rb-podcast-source.c:363
-msgid "New Podcast Feed"
-msgstr "新しいPodcastの配信情報"
-
-#: ../podcast/rb-podcast-source.c:363
-msgid "URL of podcast feed:"
-msgstr "Podcast配信元のURL:"
-
-#: ../podcast/rb-podcast-source.c:481
+#: ../podcast/rb-podcast-source.c:520
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Podcastの配信情報とダウンロードしたファイルを削除しますか?"
 
-#: ../podcast/rb-podcast-source.c:484
-msgid ""
-"If you choose to delete the feed and files, they will be permanently lost.  "
-"Please note that you can delete the feed but keep the downloaded files by "
-"choosing to delete the feed only."
-msgstr ""
-"[両方を削除する] を選択すると、配信元の情報とダウンロードしたファイルが完全に"
-"消去されます。[配信元だけ削除する] を選択して、ダウンロードしたファイルはその"
-"まま保存しておくことも可能です。"
+#: ../podcast/rb-podcast-source.c:523
+msgid "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the feed but keep the downloaded files by choosing to delete the feed only."
+msgstr "[両方を削除する] を選択すると、配信元の情報とダウンロードしたファイルが完全に消去されます。[配信元だけ削除する] を選択して、ダウンロードしたファイルはそのまま保存しておくことも可能です。"
 
-#: ../podcast/rb-podcast-source.c:492
+#: ../podcast/rb-podcast-source.c:531
 msgid "Delete _Feed Only"
 msgstr "配信元だけ削除する(_F)"
 
-#: ../podcast/rb-podcast-source.c:499
+#: ../podcast/rb-podcast-source.c:538
 msgid "_Delete Feed And Files"
 msgstr "両方を削除する(_D)"
 
-#: ../podcast/rb-podcast-source.c:577 ../podcast/rb-podcast-source.c:1415
+#: ../podcast/rb-podcast-source.c:616 ../podcast/rb-podcast-source.c:1451
 msgid "Downloaded"
 msgstr "ダウンロードが完了しました"
 
-#: ../podcast/rb-podcast-source.c:581 ../podcast/rb-podcast-source.c:1417
+#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1453
 msgid "Failed"
 msgstr "失敗しました"
 
-#: ../podcast/rb-podcast-source.c:585 ../podcast/rb-podcast-source.c:1416
+#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1452
 msgid "Waiting"
 msgstr "待機中です"
 
-#: ../podcast/rb-podcast-source.c:692
+#: ../podcast/rb-podcast-source.c:731
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
 msgstr[0] "合計%d個の配信元"
 
-#: ../podcast/rb-podcast-source.c:929
+#: ../podcast/rb-podcast-source.c:968
 msgid "Podcast Error"
 msgstr "Podcastのエラー"
 
-#: ../podcast/rb-podcast-source.c:1099
+#: ../podcast/rb-podcast-source.c:1138
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Podcastのエピソードとダウンロードしたファイルを削除しますか?"
 
-#: ../podcast/rb-podcast-source.c:1102
-msgid ""
-"If you choose to delete the episode and file, they will be permanently "
-"lost.  Please note that you can delete the episode but keep the downloaded "
-"file by choosing to delete the episode only."
-msgstr ""
-"[両方を削除する] を選択すると、エピソードとダウンロードしたファイルが完全に消"
-"去されます。[エピソードだけ削除する] を選択して、ダウンロードしたファイルはそ"
-"のまま保存しておくことも可能です。"
+#: ../podcast/rb-podcast-source.c:1141
+msgid "If you choose to delete the episode and file, they will be permanently lost.  Please note that you can delete the episode but keep the downloaded file by choosing to delete the episode only."
+msgstr "[両方を削除する] を選択すると、エピソードとダウンロードしたファイルが完全に消去されます。[エピソードだけ削除する] を選択して、ダウンロードしたファイルはそのまま保存しておくことも可能です。"
 
-#: ../podcast/rb-podcast-source.c:1110
+#: ../podcast/rb-podcast-source.c:1149
 msgid "Delete _Episode Only"
 msgstr "エピソードだけ削除する(_E)"
 
-#: ../podcast/rb-podcast-source.c:1116
+#: ../podcast/rb-podcast-source.c:1155
 msgid "_Delete Episode And File"
 msgstr "両方を削除する(_D)"
 
-#: ../podcast/rb-podcast-source.c:1206
+#: ../podcast/rb-podcast-source.c:1245
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -3055,27 +2968,23 @@ msgstr[0] "%d個のエピソード"
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
-#: ../podcast/rb-podcast-source.c:1312
+#: ../podcast/rb-podcast-source.c:1349
 msgctxt "Podcast"
 msgid "Add"
 msgstr "追加"
 
 #. Translators: this is the toolbar button label
 #. for Update Feed action.
-#: ../podcast/rb-podcast-source.c:1318
+#: ../podcast/rb-podcast-source.c:1355
 msgid "Update"
 msgstr "配信元の更新"
 
-#: ../podcast/rb-podcast-source.c:1361 ../podcast/rb-podcast-source.c:1372
-msgid "Date"
-msgstr "日時"
-
-#: ../podcast/rb-podcast-source.c:1394 ../podcast/rb-podcast-source.c:1449
-#: ../podcast/rb-podcast-source.c:1497
+#: ../podcast/rb-podcast-source.c:1430 ../podcast/rb-podcast-source.c:1485
+#: ../podcast/rb-podcast-source.c:1533
 msgid "Feed"
 msgstr "配信元"
 
-#: ../podcast/rb-podcast-source.c:1414 ../podcast/rb-podcast-source.c:1432
+#: ../podcast/rb-podcast-source.c:1450 ../podcast/rb-podcast-source.c:1468
 msgid "Status"
 msgstr "状態"
 
@@ -3083,7 +2992,7 @@ msgstr "状態"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Rhythmboxの新しいインスタンスを起動しない"
 
-#: ../remote/dbus/rb-client.c:82 ../shell/rb-shell.c:369
+#: ../remote/dbus/rb-client.c:82 ../shell/rb-shell.c:360
 msgid "Quit Rhythmbox"
 msgstr "Rhythmboxを終了する"
 
@@ -3250,31 +3159,31 @@ msgstr "空のファイル"
 msgid "Could not load the music database:"
 msgstr "楽曲データベースを読み込めませんでした:"
 
-#: ../rhythmdb/rhythmdb.c:4457
+#: ../rhythmdb/rhythmdb.c:4458
 #, c-format
 msgid "Checking (%d/%d)"
 msgstr "チェック中(%d/%d)"
 
-#: ../rhythmdb/rhythmdb.c:4501
+#: ../rhythmdb/rhythmdb.c:4502
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld分間"
 
-#: ../rhythmdb/rhythmdb.c:4502
+#: ../rhythmdb/rhythmdb.c:4503
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld時間"
 
-#: ../rhythmdb/rhythmdb.c:4503
+#: ../rhythmdb/rhythmdb.c:4504
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld日間"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4509
+#: ../rhythmdb/rhythmdb.c:4510
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s(%s%s)"
@@ -3282,8 +3191,8 @@ msgstr "%s(%s%s)"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4515 ../rhythmdb/rhythmdb.c:4523
-#: ../rhythmdb/rhythmdb.c:4534
+#: ../rhythmdb/rhythmdb.c:4516 ../rhythmdb/rhythmdb.c:4524
+#: ../rhythmdb/rhythmdb.c:4535
 #, c-format
 msgid "%s and %s"
 msgstr "(%sと%s)"
@@ -3294,12 +3203,8 @@ msgstr "すべて"
 
 #: ../rhythmdb/rhythmdb-tree.c:414
 #, c-format
-msgid ""
-"The database was created by a later version of Rhythmbox.  This version of "
-"Rhythmbox cannot read the database."
-msgstr ""
-"そのデータベースは古いバージョンのRhythmboxで生成したものです。このバージョン"
-"のRhythmboxでは読み込めません。"
+msgid "The database was created by a later version of Rhythmbox.  This version of Rhythmbox cannot read the database."
+msgstr "そのデータベースは古いバージョンのRhythmboxで生成したものです。このバージョンのRhythmboxでは読み込めません。"
 
 #: ../shell/rb-playlist-manager.c:180
 msgid "MPEG Version 3.0 URL"
@@ -3439,222 +3344,220 @@ msgid "_Check for New Devices"
 msgstr "新しいデバイスを確認する(_C)"
 
 #: ../shell/rb-removable-media-manager.c:154
-msgid ""
-"Check for new media storage devices that have not been automatically detected"
+msgid "Check for new media storage devices that have not been automatically detected"
 msgstr "自動で認識されない新しいメディアストレージデバイスを確認する"
 
-#: ../shell/rb-shell.c:349
+#: ../shell/rb-shell.c:340
 msgid "_Music"
 msgstr "再生(_M)"
 
-#: ../shell/rb-shell.c:351
+#: ../shell/rb-shell.c:342
 msgid "_View"
 msgstr "表示(_V)"
 
-#: ../shell/rb-shell.c:352
+#: ../shell/rb-shell.c:343
 msgid "_Control"
 msgstr "コントロール(_C)"
 
-#: ../shell/rb-shell.c:353
+#: ../shell/rb-shell.c:344
 msgid "_Tools"
 msgstr "ツール(_T)"
 
-#: ../shell/rb-shell.c:354
+#: ../shell/rb-shell.c:345
 msgid "_Help"
 msgstr "ヘルプ(_H)"
 
-#: ../shell/rb-shell.c:356
+#: ../shell/rb-shell.c:347
 msgid "_Import Folder..."
 msgstr "フォルダーのインポート(_I)..."
 
-#: ../shell/rb-shell.c:357
+#: ../shell/rb-shell.c:348
 msgid "Choose folder to be added to the Library"
 msgstr "ライブラリに追加するフォルダーを選択します"
 
-#: ../shell/rb-shell.c:359
+#: ../shell/rb-shell.c:350
 msgid "Import _File..."
 msgstr "ファイルのインポート(_F)..."
 
-#: ../shell/rb-shell.c:360
+#: ../shell/rb-shell.c:351
 msgid "Choose file to be added to the Library"
 msgstr "ライブラリに追加するファイルを選択します"
 
-#: ../shell/rb-shell.c:362
+#: ../shell/rb-shell.c:353
 msgid "_About"
 msgstr "情報(_A)"
 
-#: ../shell/rb-shell.c:363
+#: ../shell/rb-shell.c:354
 msgid "Show information about Rhythmbox"
 msgstr "Rhythmboxの情報を表示"
 
-#: ../shell/rb-shell.c:365
+#: ../shell/rb-shell.c:356
 msgid "_Contents"
 msgstr "目次(_C)"
 
-#: ../shell/rb-shell.c:366
+#: ../shell/rb-shell.c:357
 msgid "Display Rhythmbox help"
 msgstr "Rhythmboxヘルプを表示する"
 
-#: ../shell/rb-shell.c:368
+#: ../shell/rb-shell.c:359
 msgid "_Quit"
 msgstr "終了(_Q)"
 
-#: ../shell/rb-shell.c:371
+#: ../shell/rb-shell.c:362
 msgid "Prefere_nces"
 msgstr "設定(_N)"
 
-#: ../shell/rb-shell.c:372
+#: ../shell/rb-shell.c:363
 msgid "Edit Rhythmbox preferences"
 msgstr "Rhythmbox設定を編集"
 
-#: ../shell/rb-shell.c:374
+#: ../shell/rb-shell.c:365
 msgid "Plu_gins"
 msgstr "プラグイン(_G)"
 
-#: ../shell/rb-shell.c:375
+#: ../shell/rb-shell.c:366
 msgid "Change and configure plugins"
 msgstr "プラグインを変更したり設定します"
 
-#: ../shell/rb-shell.c:377
+#: ../shell/rb-shell.c:368
 msgid "Show _All Tracks"
 msgstr "すべてのトラック(_A)"
 
-#: ../shell/rb-shell.c:378
+#: ../shell/rb-shell.c:369
 msgid "Show all tracks in this music source"
 msgstr "この楽曲のソースにあるすべてのトラックを表示します"
 
-#: ../shell/rb-shell.c:380
+#: ../shell/rb-shell.c:371
 msgid "_Jump to Playing Song"
 msgstr "再生中の楽曲へジャンプ(_J)"
 
-#: ../shell/rb-shell.c:381
+#: ../shell/rb-shell.c:372
 msgid "Scroll the view to the currently playing song"
 msgstr "現在再生している曲の表示へスクロールします"
 
-#: ../shell/rb-shell.c:388
+#: ../shell/rb-shell.c:379
 msgid "Side _Pane"
 msgstr "サイドペイン(_P)"
 
-#: ../shell/rb-shell.c:389
+#: ../shell/rb-shell.c:380
 msgid "Change the visibility of the side pane"
 msgstr "サイドペインの表示を切り替えます"
 
-#: ../shell/rb-shell.c:391
-msgid "T_oolbar"
-msgstr "ツールバー(_O)"
-
-#: ../shell/rb-shell.c:392
-msgid "Change the visibility of the toolbar"
-msgstr "ツールバーの表示を切り替えます"
-
-#: ../shell/rb-shell.c:394
-msgid "_Small Display"
-msgstr "プレイヤーを最小化(_S)"
-
-#: ../shell/rb-shell.c:395
-msgid "Make the main window smaller"
-msgstr "メインウィンドウを小さくします"
-
-#: ../shell/rb-shell.c:397
+#: ../shell/rb-shell.c:382
 msgid "Party _Mode"
 msgstr "パーティモード(_M)"
 
-#: ../shell/rb-shell.c:398
+#: ../shell/rb-shell.c:383
 msgid "Change the status of the party mode"
 msgstr "パーティモードの状態を切り替えます"
 
-#: ../shell/rb-shell.c:400
+#: ../shell/rb-shell.c:385
 msgid "Play _Queue as Side Pane"
 msgstr "再生キューの内容(_Q)"
 
-#: ../shell/rb-shell.c:401
+#: ../shell/rb-shell.c:386
 msgid "Change whether the queue is visible as a source or a sidebar"
 msgstr "再生キューの内容をソース表示にするかサイドバー表示にするか切り替えます"
 
-#: ../shell/rb-shell.c:403
+#: ../shell/rb-shell.c:388
 msgid "S_tatusbar"
 msgstr "ステータスバー(_T)"
 
-#: ../shell/rb-shell.c:404
+#: ../shell/rb-shell.c:389
 msgid "Change the visibility of the statusbar"
 msgstr "ステータスバーの表示を切り替えます"
 
-#: ../shell/rb-shell.c:406
+#: ../shell/rb-shell.c:391
+msgid "_Song Position Slider"
+msgstr "再生位置の調整スライダー(_S)"
+
+#: ../shell/rb-shell.c:392
+msgid "Change the visibility of the song position slider"
+msgstr "再生位置を表すスライダーの表示を切り替えます"
+
+#: ../shell/rb-shell.c:394
+msgid "_Album Art"
+msgstr "アルバムアート(_A)"
+
+#: ../shell/rb-shell.c:395
+msgid "Change the visibility of the album art display"
+msgstr "アルバムアートの表示を切り替えます"
+
+#: ../shell/rb-shell.c:397
 msgid "_Browse"
 msgstr "ブラウザー(_B)"
 
-#: ../shell/rb-shell.c:407
+#: ../shell/rb-shell.c:398
 msgid "Change the visibility of the browser"
 msgstr "ブラウザーの表示を切り替えます"
 
-#: ../shell/rb-shell.c:897
+#: ../shell/rb-shell.c:890
 msgid "Change the music volume"
 msgstr "音量を調整します"
 
-#: ../shell/rb-shell.c:2004
+#: ../shell/rb-shell.c:1995
 msgid "Enable debug output"
 msgstr "デバッグ表示にする"
 
-#: ../shell/rb-shell.c:2005
+#: ../shell/rb-shell.c:1996
 msgid "Enable debug output matching a specified string"
 msgstr "指定した文字列に一致するデバッグ出力にする"
 
-#: ../shell/rb-shell.c:2006
+#: ../shell/rb-shell.c:1997
 msgid "Do not update the library with file changes"
 msgstr "ファイルが変更されたライブラリを更新しない"
 
-#: ../shell/rb-shell.c:2007
+#: ../shell/rb-shell.c:1998
 msgid "Do not register the shell"
 msgstr "SHELLを登録しない"
 
-#: ../shell/rb-shell.c:2008
+#: ../shell/rb-shell.c:1999
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "どのデータも保存しない(--no-registrationを含む)"
 
-#: ../shell/rb-shell.c:2009
+#: ../shell/rb-shell.c:2000
 msgid "Disable loading of plugins"
 msgstr "プラグインのロードを無効にする"
 
-#: ../shell/rb-shell.c:2010
+#: ../shell/rb-shell.c:2001
 msgid "Path for database file to use"
 msgstr "使用するデータベースへのパスを指定する"
 
-#: ../shell/rb-shell.c:2011
+#: ../shell/rb-shell.c:2002
 msgid "Path for playlists file to use"
 msgstr "使用するプレイリストのパスを指定する"
 
-#: ../shell/rb-shell.c:2022
+#: ../shell/rb-shell.c:2013
 #, c-format
 msgid ""
 "%s\n"
 "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
 "%s\n"
-"'%s --help'を実行すると、利用可能なコマンドラインのオプション一覧が表示されま"
-"す\n"
+"'%s --help'を実行すると、利用可能なコマンドラインのオプション一覧が表示されます\n"
 
 #. Translators: this is the short label for the 'import folder' action
-#: ../shell/rb-shell.c:2123
+#: ../shell/rb-shell.c:2114
 msgctxt "Library"
 msgid "Import"
 msgstr "インポート"
 
 #. Translators: this is the short label for the 'view all tracks' action
-#: ../shell/rb-shell.c:2125
+#: ../shell/rb-shell.c:2116
 msgid "Show All"
 msgstr "すべてを表示"
 
-#: ../shell/rb-shell.c:2435
+#: ../shell/rb-shell.c:2401
 msgid "Error while saving song information"
 msgstr "楽曲情報を保存する際にエラー"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2716
+#: ../shell/rb-shell.c:2681
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (一時停止中)"
 
-#: ../shell/rb-shell.c:2809
+#: ../shell/rb-shell.c:2756
 msgid "translator-credits"
 msgstr ""
 "相花 毅 <takeshi.aihana@gmail.com>\n"
@@ -3669,7 +3572,7 @@ msgstr ""
 "Kentaro KAZUHAMA <kazken3@gmail.com>\n"
 "日本GNOMEユーザー会 <http://www.gnome.gr.jp/>"
 
-#: ../shell/rb-shell.c:2812
+#: ../shell/rb-shell.c:2759
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3681,7 +3584,7 @@ msgstr ""
 "第二版、あるいはそれ以降の版が定める条項の下で本プログラムを\n"
 "再頒布または変更することができます。\n"
 
-#: ../shell/rb-shell.c:2816
+#: ../shell/rb-shell.c:2763
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3692,7 +3595,7 @@ msgstr ""
 "完全に無保証です。商用利用または特定の目的における適合性の保証\n"
 "はありません。詳細は GNU 一般公衆利用許諾契約書をご覧ください。\n"
 
-#: ../shell/rb-shell.c:2820
+#: ../shell/rb-shell.c:2767
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3703,63 +3606,63 @@ msgstr ""
 "Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA まで\n"
 "連絡してください。\n"
 
-#: ../shell/rb-shell.c:2827
+#: ../shell/rb-shell.c:2774
 msgid "Maintainers:"
 msgstr "メンテナ:"
 
-#: ../shell/rb-shell.c:2830
+#: ../shell/rb-shell.c:2777
 msgid "Former Maintainers:"
 msgstr "主要メンテナ:"
 
-#: ../shell/rb-shell.c:2833
+#: ../shell/rb-shell.c:2780
 msgid "Contributors:"
 msgstr "貢献者:"
 
-#: ../shell/rb-shell.c:2835
+#: ../shell/rb-shell.c:2782
 msgid "Music management and playback software for GNOME."
 msgstr "GNOME向けの楽曲管理、再生ソフトウェアです。"
 
-#: ../shell/rb-shell.c:2844
+#: ../shell/rb-shell.c:2791
 msgid "Rhythmbox Website"
 msgstr "Rhythmboxのウェブサイト"
 
-#: ../shell/rb-shell.c:2891 ../shell/rb-shell-preferences.c:166
+#: ../shell/rb-shell.c:2838 ../shell/rb-shell-preferences.c:162
 msgid "Couldn't display help"
 msgstr "ヘルプを表示できませんでした"
 
-#: ../shell/rb-shell.c:2936
+#: ../shell/rb-shell.c:2883
 msgid "Configure Plugins"
 msgstr "プラグインの設定"
 
-#: ../shell/rb-shell.c:3025
+#: ../shell/rb-shell.c:2972
 msgid "Import Folder into Library"
 msgstr "フォルダーのインポート"
 
-#: ../shell/rb-shell.c:3044
+#: ../shell/rb-shell.c:2991
 msgid "Import File into Library"
 msgstr "ファイルのインポート"
 
-#: ../shell/rb-shell.c:3577 ../sources/rb-play-queue-source.c:629
+#: ../shell/rb-shell.c:3419 ../sources/rb-play-queue-source.c:629
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "URI%sを処理できるソースが登録されていません"
 
-#: ../shell/rb-shell.c:3907
+#: ../shell/rb-shell.c:3748
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "URI%sに一致する登録されたソースはありません"
 
-#: ../shell/rb-shell.c:3940 ../shell/rb-shell.c:3983
+#: ../shell/rb-shell.c:3781 ../shell/rb-shell.c:3824
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "不明な曲のURI: %s"
 
-#: ../shell/rb-shell.c:3992
+#: ../shell/rb-shell.c:3833
 #, c-format
 msgid "Unknown property %s"
 msgstr "不明なプロパティ%s"
 
-#: ../shell/rb-shell.c:4006
+#: ../shell/rb-shell.c:3847
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "プロパティ%2$sの種類%1$sが間違っています"
@@ -3856,170 +3759,162 @@ msgstr "プロパティ(_O)"
 msgid "Show information on each selected song"
 msgstr "選択した楽曲の情報を表示します"
 
-#: ../shell/rb-shell-player.c:295
+#: ../shell/rb-shell-player.c:297
 msgid "Pre_vious"
 msgstr "前へ(_V)"
 
-#: ../shell/rb-shell-player.c:296
+#: ../shell/rb-shell-player.c:298
 msgid "Start playing the previous song"
 msgstr "前の楽曲の再生します"
 
-#: ../shell/rb-shell-player.c:298
+#: ../shell/rb-shell-player.c:300
 msgid "_Next"
 msgstr "次へ(_N)"
 
-#: ../shell/rb-shell-player.c:299
+#: ../shell/rb-shell-player.c:301
 msgid "Start playing the next song"
 msgstr "次の楽曲の再生します"
 
-#: ../shell/rb-shell-player.c:301
+#: ../shell/rb-shell-player.c:303
 msgid "_Increase Volume"
 msgstr "音量を上げる(_I)"
 
-#: ../shell/rb-shell-player.c:302
+#: ../shell/rb-shell-player.c:304
 msgid "Increase playback volume"
 msgstr "再生時の音量を上げます"
 
-#: ../shell/rb-shell-player.c:304
+#: ../shell/rb-shell-player.c:306
 msgid "_Decrease Volume"
 msgstr "音量を下げる(_D)"
 
-#: ../shell/rb-shell-player.c:305
+#: ../shell/rb-shell-player.c:307
 msgid "Decrease playback volume"
 msgstr "再生時の音量を下げます"
 
-#: ../shell/rb-shell-player.c:312
+#: ../shell/rb-shell-player.c:314
 msgid "_Play"
 msgstr "再生(_P)"
 
-#: ../shell/rb-shell-player.c:313 ../shell/rb-shell-player.c:3831
+#: ../shell/rb-shell-player.c:315 ../shell/rb-shell-player.c:3855
 msgid "Start playback"
 msgstr "再生を開始します"
 
-#: ../shell/rb-shell-player.c:315
+#: ../shell/rb-shell-player.c:317
 msgid "Sh_uffle"
 msgstr "シャッフル(_U)"
 
-#: ../shell/rb-shell-player.c:316
+#: ../shell/rb-shell-player.c:318
 msgid "Play songs in a random order"
 msgstr "楽曲をランダムな順番で再生します"
 
-#: ../shell/rb-shell-player.c:318
+#: ../shell/rb-shell-player.c:320
 msgid "_Repeat"
 msgstr "リピート(_R)"
 
-#: ../shell/rb-shell-player.c:319
+#: ../shell/rb-shell-player.c:321
 msgid "Play first song again after all songs are played"
 msgstr "すべての楽曲を再生した後に再び先頭の楽曲を再生します"
 
-#: ../shell/rb-shell-player.c:321
-msgid "_Song Position Slider"
-msgstr "再生位置の調整スライダー(_S)"
-
-#: ../shell/rb-shell-player.c:322
-msgid "Change the visibility of the song position slider"
-msgstr "再生位置を表すスライダーの表示を切り替えます"
-
-#: ../shell/rb-shell-player.c:830
+#: ../shell/rb-shell-player.c:842
 msgid "Stream error"
 msgstr "ストリームのエラー"
 
-#: ../shell/rb-shell-player.c:831
+#: ../shell/rb-shell-player.c:843
 msgid "Unexpected end of stream!"
 msgstr "予期しないストリームの終了です!"
 
-#: ../shell/rb-shell-player.c:998
+#: ../shell/rb-shell-player.c:1010
 msgid "Linear"
 msgstr "リニア"
 
-#: ../shell/rb-shell-player.c:1000
+#: ../shell/rb-shell-player.c:1012
 msgid "Linear looping"
 msgstr "リニアループ"
 
-#: ../shell/rb-shell-player.c:1002
+#: ../shell/rb-shell-player.c:1014
 msgid "Shuffle"
 msgstr "シャッフル"
 
-#: ../shell/rb-shell-player.c:1004
+#: ../shell/rb-shell-player.c:1016
 msgid "Random with equal weights"
 msgstr "等しい重み付けでランダム"
 
-#: ../shell/rb-shell-player.c:1006
+#: ../shell/rb-shell-player.c:1018
 msgid "Random by time since last play"
 msgstr "最終再生日時でランダム"
 
-#: ../shell/rb-shell-player.c:1008
+#: ../shell/rb-shell-player.c:1020
 msgid "Random by rating"
 msgstr "評価順にランダム"
 
-#: ../shell/rb-shell-player.c:1010
+#: ../shell/rb-shell-player.c:1022
 msgid "Random by time since last play and rating"
 msgstr "最終再生日時と評価順にランダム"
 
-#: ../shell/rb-shell-player.c:1012
+#: ../shell/rb-shell-player.c:1024
 msgid "Linear, removing entries once played"
 msgstr "リニア(一度再生したエントリを削除します)"
 
-#: ../shell/rb-shell-player.c:1022
+#: ../shell/rb-shell-player.c:1034
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "プレイヤーの生成に失敗しました: %s"
 
-#: ../shell/rb-shell-player.c:1576
+#: ../shell/rb-shell-player.c:1595
 #, c-format
 msgid "Playlist was empty"
 msgstr "プレイリストが空です"
 
-#: ../shell/rb-shell-player.c:2045
+#: ../shell/rb-shell-player.c:2065
 #, c-format
 msgid "Not currently playing"
 msgstr "現在、何も再生していません"
 
-#: ../shell/rb-shell-player.c:2103
+#: ../shell/rb-shell-player.c:2123
 #, c-format
 msgid "No previous song"
 msgstr "前の楽曲はありません"
 
-#: ../shell/rb-shell-player.c:2203
+#: ../shell/rb-shell-player.c:2223
 #, c-format
 msgid "No next song"
 msgstr "次の楽曲はありません"
 
-#: ../shell/rb-shell-player.c:2324 ../shell/rb-shell-player.c:3469
+#: ../shell/rb-shell-player.c:2344 ../shell/rb-shell-player.c:3492
 msgid "Couldn't start playback"
 msgstr "再生を開始できませんでした"
 
-#: ../shell/rb-shell-player.c:3172
+#: ../shell/rb-shell-player.c:3195
 msgid "Couldn't stop playback"
 msgstr "再生を停止できませんでした"
 
-#: ../shell/rb-shell-player.c:3291
+#: ../shell/rb-shell-player.c:3314
 #, c-format
 msgid "Playback position not available"
 msgstr "再生位置が間違っています"
 
-#: ../shell/rb-shell-player.c:3323 ../shell/rb-shell-player.c:3357
+#: ../shell/rb-shell-player.c:3346 ../shell/rb-shell-player.c:3380
 #, c-format
 msgid "Current song is not seekable"
 msgstr "この楽曲はシークできません"
 
-#: ../shell/rb-shell-player.c:3826
+#: ../shell/rb-shell-player.c:3850
 msgid "Pause playback"
 msgstr "一時停止します"
 
-#: ../shell/rb-shell-player.c:3828
+#: ../shell/rb-shell-player.c:3852
 msgid "Stop playback"
 msgstr "再生を停止します"
 
-#: ../shell/rb-shell-preferences.c:205
+#: ../shell/rb-shell-preferences.c:201
 msgid "Rhythmbox Preferences"
 msgstr "Rhythmbox設定"
 
-#: ../shell/rb-shell-preferences.c:251
+#: ../shell/rb-shell-preferences.c:247
 msgid "General"
 msgstr "全般"
 
-#: ../shell/rb-shell-preferences.c:330
+#: ../shell/rb-shell-preferences.c:311
 msgid "Playback"
 msgstr "再生"
 
@@ -4050,18 +3945,9 @@ msgstr "すべて置換(_A)"
 
 #: ../shell/rb-track-transfer-queue.c:439
 #, c-format
-msgid ""
-"%d file cannot be transferred as it must be converted into a format "
-"supported by the target device but no suitable encoding profiles are "
-"available"
-msgid_plural ""
-"%d files cannot be transferred as they must be converted into a format "
-"supported by the target device but no suitable encoding profiles are "
-"available"
-msgstr[0] ""
-"ターゲットデバイスでサポートしているフォーマットに変換する必要がありますが、"
-"適したエンコーディングプロファイルが利用できないため、%dファイルを転送するこ"
-"とができません"
+msgid "%d file cannot be transferred as it must be converted into a format supported by the target device but no suitable encoding profiles are available"
+msgid_plural "%d files cannot be transferred as they must be converted into a format supported by the target device but no suitable encoding profiles are available"
+msgstr[0] "ターゲットデバイスでサポートしているフォーマットに変換する必要がありますが、適したエンコーディングプロファイルが利用できないため、%dファイルを転送することができません"
 
 #. XXX should provide the option of picking a different format?
 #: ../shell/rb-track-transfer-queue.c:463
@@ -4076,16 +3962,13 @@ msgstr ""
 #: ../shell/rb-track-transfer-queue.c:467
 #, c-format
 msgid ""
-"Additional software is required to convert %d file into a format supported "
-"by the target device:\n"
+"Additional software is required to convert %d file into a format supported by the target device:\n"
 "%s"
 msgid_plural ""
-"Additional software is required to convert %d files into a format supported "
-"by the target device:\n"
+"Additional software is required to convert %d files into a format supported by the target device:\n"
 "%s"
 msgstr[0] ""
-"ターゲットデバイスでサポートしているフォーマットに%dファイルを変換するには追"
-"加ソフトウェアが必要です:\n"
+"ターゲットデバイスでサポートしているフォーマットに%dファイルを変換するには追加ソフトウェアが必要です:\n"
 "%s"
 
 #: ../shell/rb-track-transfer-queue.c:484
@@ -4196,63 +4079,71 @@ msgid "%d import error"
 msgid_plural "%d import errors"
 msgstr[0] "%d個のインポートエラー"
 
-#: ../sources/rb-library-source.c:116
+#: ../sources/rb-library-source.c:120
 msgid "Artist/Artist - Album"
 msgstr "アーティスト/グループ - アルバム"
 
-#: ../sources/rb-library-source.c:117
+#: ../sources/rb-library-source.c:121
 msgid "Artist/Album"
 msgstr "アーティスト/アルバム"
 
-#: ../sources/rb-library-source.c:118
+#: ../sources/rb-library-source.c:122
 msgid "Artist - Album"
 msgstr "アーティスト - アルバム"
 
-#: ../sources/rb-library-source.c:119 ../widgets/rb-entry-view.c:1449
+#: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1449
 #: ../widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "アルバム名"
 
-#: ../sources/rb-library-source.c:125
+#: ../sources/rb-library-source.c:129
 msgid "Number - Title"
 msgstr "トラック - タイトル"
 
-#: ../sources/rb-library-source.c:126
+#: ../sources/rb-library-source.c:130
 msgid "Artist - Title"
 msgstr "アーティスト - タイトル"
 
-#: ../sources/rb-library-source.c:127
+#: ../sources/rb-library-source.c:131
 msgid "Artist - Number - Title"
 msgstr "アーティスト - トラック - タイトル"
 
-#: ../sources/rb-library-source.c:128
+#: ../sources/rb-library-source.c:132
 msgid "Artist (Album) - Number - Title"
 msgstr "アーティスト (アルバム名) - トラック - タイトル"
 
-#: ../sources/rb-library-source.c:130
+#: ../sources/rb-library-source.c:134
 msgid "Number. Artist - Title"
 msgstr "トラック. アーティスト - タイトル"
 
-#: ../sources/rb-library-source.c:339
+#: ../sources/rb-library-source.c:360
 #: ../sources/sync/rb-sync-settings-ui.c:216
 #: ../sources/sync/rb-sync-settings-ui.c:217
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "ミュージック"
 
-#: ../sources/rb-library-source.c:392
+#: ../sources/rb-library-source.c:407
 msgid "Choose Library Location"
 msgstr "ライブラリの選択"
 
-#: ../sources/rb-library-source.c:431
+#: ../sources/rb-library-source.c:446
 msgid "Multiple locations set"
 msgstr "複数の場所のセット"
 
-#: ../sources/rb-library-source.c:1119
+#: ../sources/rb-library-source.c:572
+msgid "Default settings"
+msgstr "デフォルトの形式"
+
+#: ../sources/rb-library-source.c:588
+msgid "Custom settings"
+msgstr "カスタム形式"
+
+#: ../sources/rb-library-source.c:1387
 msgid "Example Path:"
 msgstr "例:"
 
-#: ../sources/rb-library-source.c:1273 ../sources/rb-library-source.c:1277
+#: ../sources/rb-library-source.c:1560 ../sources/rb-library-source.c:1564
 #: ../sources/rb-transfer-target.c:189
 msgid "Error transferring track"
 msgstr "トラックの転送中にエラーが発生しました"
@@ -4265,32 +4156,24 @@ msgstr "ライブラリと同期"
 msgid "Synchronize media player with the library"
 msgstr "メディアプレイヤーをライブラリと同期する"
 
-#: ../sources/rb-media-player-source.c:647
-msgid ""
-"You have not selected any music, playlists, or podcasts to transfer to this "
-"device."
-msgstr ""
-"このデバイスに転送する楽曲やプレイリスト、ポッドキャストを一つも選択していま"
-"せん。"
+#: ../sources/rb-media-player-source.c:660
+msgid "You have not selected any music, playlists, or podcasts to transfer to this device."
+msgstr "このデバイスに転送する楽曲やプレイリスト、ポッドキャストを一つも選択していません。"
 
-#: ../sources/rb-media-player-source.c:651
-msgid ""
-"There is not enough space on the device to transfer the selected music, "
-"playlists and podcasts."
-msgstr ""
-"選択した楽曲、プレイリストやポッドキャストを転送する先のデバイスに充分な空き"
-"がありません。"
+#: ../sources/rb-media-player-source.c:664
+msgid "There is not enough space on the device to transfer the selected music, playlists and podcasts."
+msgstr "選択した楽曲、プレイリストやポッドキャストを転送する先のデバイスに充分な空きがありません。"
 
-#: ../sources/rb-media-player-source.c:702
+#: ../sources/rb-media-player-source.c:715
 #, c-format
 msgid "%s Sync Settings"
 msgstr "%s の同期の設定"
 
-#: ../sources/rb-media-player-source.c:707
+#: ../sources/rb-media-player-source.c:720
 msgid "Sync with the device"
 msgstr "デバイスと同期"
 
-#: ../sources/rb-media-player-source.c:709
+#: ../sources/rb-media-player-source.c:722
 msgid "Don't sync"
 msgstr "同期しない"
 
@@ -4344,21 +4227,21 @@ msgstr "シャッフル"
 msgid "Play Queue"
 msgstr "再生キュー"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:485
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:797
 msgid "from"
 msgstr "【アルバム名】"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:484
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:796
 msgid "by"
 msgstr "【アーティスト】"
 
-#: ../sources/rb-source.c:523
+#: ../sources/rb-source.c:546
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d曲"
 
-#: ../sources/rb-source.c:1305
+#: ../sources/rb-source.c:1328
 #, c-format
 msgid "Importing (%d/%d)"
 msgstr "インポート中(%d/%d)"
@@ -4471,6 +4354,22 @@ msgstr "再生中です"
 #: ../widgets/rb-entry-view.c:1910
 msgid "Playback Error"
 msgstr "再生エラー"
+
+#: ../widgets/rb-fading-image.c:253
+msgid "Drop artwork here"
+msgstr "ココに画像をドロップしてください"
+
+#. Translators: remaining time / total time
+#: ../widgets/rb-header.c:1038
+#, c-format
+msgid "-%s / %s"
+msgstr "-%s / %s"
+
+#. Translators: elapsed time / total time
+#: ../widgets/rb-header.c:1049
+#, c-format
+msgid "%s / %s"
+msgstr "%s / %s"
 
 #: ../widgets/rb-property-view.c:636
 #, c-format
@@ -4842,18 +4741,56 @@ msgstr "このデスクトップ"
 msgid "Unknown location"
 msgstr "不明な場所"
 
+#~ msgid "Default"
+#~ msgstr "デフォルト"
+
+#~ msgid "Text below icons"
+#~ msgstr "アイコンの下に文字"
+
+#~ msgid "Text beside icons"
+#~ msgstr "アイコンの横に文字"
+
+#~ msgid "Icons only"
+#~ msgstr "アイコンのみ"
+
+#~ msgid "Text only"
+#~ msgstr "文字のみ"
+
+#~ msgid "Toolbar Button Labels"
+#~ msgstr "ツールバーボタンのスタイル"
+
+#~ msgid "_Settings"
+#~ msgstr "設定(_S)"
+
+#~ msgid "Cover art"
+#~ msgstr "ジャケットのアート"
+
+#~ msgid "Searching..."
+#~ msgstr "検索しています..."
+
+#~ msgid "New Podcast Feed"
+#~ msgstr "新しいPodcastの配信情報"
+
+#~ msgid "URL of podcast feed:"
+#~ msgstr "Podcast配信元のURL:"
+
+#~ msgid "T_oolbar"
+#~ msgstr "ツールバー(_O)"
+
+#~ msgid "_Small Display"
+#~ msgstr "プレイヤーを最小化(_S)"
+
+#~ msgid "Make the main window smaller"
+#~ msgstr "メインウィンドウを小さくします"
+
 #~ msgid "Redownload purchased music at "
 #~ msgstr "購入した楽曲を再ダウンロードするサイト: "
 
 #~ msgid "http://www.magnatune.com/info/redownload"
 #~ msgstr "http://www.magnatune.com/info/redownload"
 
-#~ msgid ""
-#~ "Your account details have changed. Changes will be applied the next time "
-#~ "you start Rhythmbox."
-#~ msgstr ""
-#~ "あなたのアカウントの情報が変更されました。この変更は次回Rhythmboxを起動し"
-#~ "た際に反映されます。"
+#~ msgid "Your account details have changed. Changes will be applied the next time you start Rhythmbox."
+#~ msgstr "あなたのアカウントの情報が変更されました。この変更は次回Rhythmboxを起動した際に反映されます。"
 
 #~ msgid "Stop downloading purchased albums"
 #~ msgstr "購入したアルバムのダウンロードを停止します"
@@ -4861,11 +4798,8 @@ msgstr "不明な場所"
 #~ msgid "Couldn't store account information"
 #~ msgstr "アカウント情報を記録できませんでした"
 
-#~ msgid ""
-#~ "There was a problem accessing the keyring. Check the debug output for "
-#~ "more information."
-#~ msgstr ""
-#~ "キーリングの問題が発生しました。詳しくはデバッグ出力を確認してください。"
+#~ msgid "There was a problem accessing the keyring. Check the debug output for more information."
+#~ msgstr "キーリングの問題が発生しました。詳しくはデバッグ出力を確認してください。"
 
 #~ msgid "Couldn't get account details"
 #~ msgstr "アカウント情報を取得できませんでした"
@@ -4874,137 +4808,73 @@ msgstr "不明な場所"
 #~ msgstr "楽曲の名前が間違っています"
 
 #~ msgid "The shared music name '%s' is already taken. Please choose another."
-#~ msgstr ""
-#~ "共有した楽曲名 '%s' は既に使われています。別の名前を指定してください。"
+#~ msgstr "共有した楽曲名 '%s' は既に使われています。別の名前を指定してください。"
 
 #~ msgid "Shared music _name:"
 #~ msgstr "共有する楽曲名(_N):"
 
 #~ msgid "     * Founder/owner runs it -- support a small business"
-#~ msgstr ""
-#~ "     * 基金者/オーナーが実施しています -- 小規模のビジネスをサポートします"
+#~ msgstr "     * 基金者/オーナーが実施しています -- 小規模のビジネスをサポートします"
 
-#~ msgid ""
-#~ "    * 50% of payment goes to artist (makes buyer feel good: they're "
-#~ "helping the world)"
-#~ msgstr ""
-#~ "    収益の 50% がアーティストへ支払われます (購入者を納得させます: 豊かな"
-#~ "世界を作るのに貢献しています)"
+#~ msgid "    * 50% of payment goes to artist (makes buyer feel good: they're helping the world)"
+#~ msgstr "    収益の 50% がアーティストへ支払われます (購入者を納得させます: 豊かな世界を作るのに貢献しています)"
 
-#~ msgid ""
-#~ "    * Downloads and CDs are both available (no other site on the internet "
-#~ "sells both)"
-#~ msgstr ""
-#~ "     * 楽曲や CD のダウロードが共に可能です (試聴と購入のインターネットサ"
-#~ "イトが同じです)"
+#~ msgid "    * Downloads and CDs are both available (no other site on the internet sells both)"
+#~ msgstr "     * 楽曲や CD のダウロードが共に可能です (試聴と購入のインターネットサイトが同じです)"
 
-#~ msgid ""
-#~ "    * Extensive biographical info about each musician, and artist photo "
-#~ "-- feel a strong connection to the artist"
-#~ msgstr ""
-#~ "    * アーティストや彼らを写した写真など生い立ちの情報も提供しています -- "
-#~ "アーティストに対する強い想いを感じることができます"
+#~ msgid "    * Extensive biographical info about each musician, and artist photo -- feel a strong connection to the artist"
+#~ msgstr "    * アーティストや彼らを写した写真など生い立ちの情報も提供しています -- アーティストに対する強い想いを感じることができます"
 
-#~ msgid ""
-#~ "    * Full color, high quality cover art PDF available for most albums - "
-#~ "easy to print"
-#~ msgstr ""
-#~ "    * ほとんどのアルバムに対してフルカラーで高画質の CD ジャケットを用意し"
-#~ "ています - PDF なので印刷も簡単です"
+#~ msgid "    * Full color, high quality cover art PDF available for most albums - easy to print"
+#~ msgstr "    * ほとんどのアルバムに対してフルカラーで高画質の CD ジャケットを用意しています - PDF なので印刷も簡単です"
 
-#~ msgid ""
-#~ "    * Low pressure environment - nothing flashing, no audio ads while "
-#~ "listening to albums"
-#~ msgstr ""
-#~ "    * 高機能なシステムを要求しません - フラッシュは不要なので、アルバムを"
-#~ "試聴している最中に広告が表示されることはありません"
+#~ msgid "    * Low pressure environment - nothing flashing, no audio ads while listening to albums"
+#~ msgstr "    * 高機能なシステムを要求しません - フラッシュは不要なので、アルバムを試聴している最中に広告が表示されることはありません"
 
-#~ msgid ""
-#~ "    * Music selection is unique to Magnatune, unlike most on-line stores "
-#~ "that have more-or-less the same (gigantic) selection\n"
-#~ msgstr ""
-#~ "    * 似たりよったりのオンライン・ストアの場合とは異なり、提供している楽曲"
-#~ "の種類は Magnatune 独自のものです\n"
+#~ msgid "    * Music selection is unique to Magnatune, unlike most on-line stores that have more-or-less the same (gigantic) selection\n"
+#~ msgstr "    * 似たりよったりのオンライン・ストアの場合とは異なり、提供している楽曲の種類は Magnatune 独自のものです\n"
 
-#~ msgid ""
-#~ "    * No copy protection on the music (DRM) which allows playing music on "
-#~ "any device (unlike iTunes/MSN/etc)"
-#~ msgstr ""
-#~ "    * 楽曲にはコピー防止メカニズム (DRM) は含まれていないので、どんなデバ"
-#~ "イスでも再生できます (iTunes/MSN 等とは違います!)"
+#~ msgid "    * No copy protection on the music (DRM) which allows playing music on any device (unlike iTunes/MSN/etc)"
+#~ msgstr "    * 楽曲にはコピー防止メカニズム (DRM) は含まれていないので、どんなデバイスでも再生できます (iTunes/MSN 等とは違います!)"
 
 #~ msgid "    * No need to \"register\" to listen or buy"
 #~ msgstr "    * 試聴したり購入するための「登録」は不要です"
 
-#~ msgid ""
-#~ "    * Not part of the \"evil\" major label machine - for those that hate "
-#~ "the music biz and want to help topple it"
-#~ msgstr ""
-#~ "    * 「評判の悪い」メジャーなレーベルのシステムに流されません - そのよう"
-#~ "な音楽ビジネスを嫌い、その「撲滅」に協力します"
+#~ msgid "    * Not part of the \"evil\" major label machine - for those that hate the music biz and want to help topple it"
+#~ msgstr "    * 「評判の悪い」メジャーなレーベルのシステムに流されません - そのような音楽ビジネスを嫌い、その「撲滅」に協力します"
 
 #~ msgid "    * Not venture-capital backed big business"
-#~ msgstr ""
-#~ "    * この事業はベンチャー・キャピタル主導のビッグ・ビジネスではありません"
+#~ msgstr "    * この事業はベンチャー・キャピタル主導のビッグ・ビジネスではありません"
 
-#~ msgid ""
-#~ "    * Our genres are hard to find in record stores and not on radio "
-#~ "(though do appear on college radio)"
-#~ msgstr ""
-#~ "     * レコード店では見つ出すのが難しいジャンルやラジオ局にはないジャンル"
-#~ "を用意しています"
+#~ msgid "    * Our genres are hard to find in record stores and not on radio (though do appear on college radio)"
+#~ msgstr "     * レコード店では見つ出すのが難しいジャンルやラジオ局にはないジャンルを用意しています"
 
-#~ msgid ""
-#~ "    * Perfect quality downloads (CD copy) are available when you download "
-#~ "(not inferior quality sound)"
-#~ msgstr ""
-#~ "    * ダウンロード (CD のコピー) しても完全な品質を維持しています (ダウン"
-#~ "ロードしても音質は劣化しません)"
+#~ msgid "    * Perfect quality downloads (CD copy) are available when you download (not inferior quality sound)"
+#~ msgstr "    * ダウンロード (CD のコピー) しても完全な品質を維持しています (ダウンロードしても音質は劣化しません)"
 
-#~ msgid ""
-#~ "    * Radio stations and \"genre mix\" playlists allow background "
-#~ "listening - can do work while listening to our music"
-#~ msgstr ""
-#~ "    * ラジオ局やジャンルを問わないプレイリストを使ってバックグラウンドで試"
-#~ "聴できます - 音楽を聴きながら仕事ができます"
+#~ msgid "    * Radio stations and \"genre mix\" playlists allow background listening - can do work while listening to our music"
+#~ msgstr "    * ラジオ局やジャンルを問わないプレイリストを使ってバックグラウンドで試聴できます - 音楽を聴きながら仕事ができます"
 
 #~ msgid "    * Smaller selection means easier to find good music"
 #~ msgstr "    * 簡単に楽曲を検索できます"
 
-#~ msgid ""
-#~ "    * Variable pricing scheme means you can pay as little as $5 for an "
-#~ "album if you choose"
-#~ msgstr ""
-#~ "    * 価格変動制により、貴方が選択するのであればたった $5 で購入できます"
+#~ msgid "    * Variable pricing scheme means you can pay as little as $5 for an album if you choose"
+#~ msgstr "    * 価格変動制により、貴方が選択するのであればたった $5 で購入できます"
 
 #~ msgid "    * Very simple user interface, quick to play music"
-#~ msgstr ""
-#~ "    * とても簡単なユーザー・インターフェースで楽曲をすぐに再生できます"
+#~ msgstr "    * とても簡単なユーザー・インターフェースで楽曲をすぐに再生できます"
 
 #~ msgid "    * Wide variety of genres, can fit any mood"
 #~ msgstr "    * 提供しているジャンルが豊富なので、どんなムードにも合います"
 
 #~ msgid "You can find more information at http://www.magnatune.com/"
-#~ msgstr ""
-#~ "さらに詳細については http://www.magnatune.com/ のサイトをご覧ください"
+#~ msgstr "さらに詳細については http://www.magnatune.com/ のサイトをご覧ください"
 
-#~| msgid ""
-#~| "%d of the %d files to be transferred are not in a format supported by "
-#~| "the target device, and no encoders are available for the supported "
-#~| "formats."
-#~ msgid ""
-#~ "This file cannot be transferred as it is not in a format supported by the "
-#~ "target device and no suitable encoding profiles are available."
-#~ msgstr ""
-#~ "転送しようとしている %2$d ファイル中 %1$d ファイルがターゲットのデバイスで"
-#~ "サポートされていません。また、サポートされているフォーマット用のエンコー"
-#~ "ダーを利用できません。"
+#~ msgid "This file cannot be transferred as it is not in a format supported by the target device and no suitable encoding profiles are available."
+#~ msgstr "転送しようとしている %2$d ファイル中 %1$d ファイルがターゲットのデバイスでサポートされていません。また、サポートされているフォーマット用のエンコーダーを利用できません。"
 
 #~ msgid "Searching... drop artwork here"
 #~ msgstr "検索中... (ココに画像をドロップしてください)"
-
-#~ msgid "Drop artwork here"
-#~ msgstr "ココに画像をドロップしてください"
 
 #~ msgid "Image provided by Last.fm"
 #~ msgstr "Last.fm 提供の画像"
@@ -5025,17 +4895,12 @@ msgstr "不明な場所"
 #~ msgid "Feeds"
 #~ msgstr "配信元"
 
-#~ msgid "Episodes"
-#~ msgstr "エピソード"
-
 #~ msgctxt "Podcast"
 #~ msgid "New"
 #~ msgstr "新規"
 
 #~ msgid "Filter music display by genre, artist, album, or title"
-#~ msgstr ""
-#~ "楽曲ファイルの表示をジャンルやアーティスト、アルバム、またはタイトルでフィ"
-#~ "ルタします"
+#~ msgstr "楽曲ファイルの表示をジャンルやアーティスト、アルバム、またはタイトルでフィルタします"
 
 #~ msgid "Titles"
 #~ msgstr "タイトル"
@@ -5050,8 +4915,7 @@ msgstr "不明な場所"
 #~ msgstr "%s を %s へ移動できません: %s"
 
 #~ msgid "Failed to create %s element; check your installation"
-#~ msgstr ""
-#~ "%s というエレメントの生成に失敗しました(インストールを確認してください)"
+#~ msgstr "%s というエレメントの生成に失敗しました(インストールを確認してください)"
 
 #~ msgid "GStreamer error: failed to change state"
 #~ msgstr "GStreamer のエラー: 状態を変更できませんでした"
@@ -5083,14 +4947,8 @@ msgstr "不明な場所"
 #~ msgid "[Untitled]"
 #~ msgstr "[無題]"
 
-#~ msgid ""
-#~ "Adds support for playing media from and sending media to DLNA/UPnP "
-#~ "network devices, and enables Rhythmbox to be controlled by a DLNA/UPnP "
-#~ "ControlPoint"
-#~ msgstr ""
-#~ "DLNA/UPnP ネットワーク・デバイスからメディアを再生する機能やメディアを送信"
-#~ "する機能、さらに Rhythmbox から DLNA/UPnP のコントロールポイントを制御でき"
-#~ "るようにします"
+#~ msgid "Adds support for playing media from and sending media to DLNA/UPnP network devices, and enables Rhythmbox to be controlled by a DLNA/UPnP ControlPoint"
+#~ msgstr "DLNA/UPnP ネットワーク・デバイスからメディアを再生する機能やメディアを送信する機能、さらに Rhythmbox から DLNA/UPnP のコントロールポイントを制御できるようにします"
 
 #~ msgid "DLNA/UPnP sharing and control support"
 #~ msgstr "DLNA/UPnP 共有のサポート"
@@ -5119,20 +4977,14 @@ msgstr "不明な場所"
 #~ msgid "http://www.jamendo.com/"
 #~ msgstr "http://www.jamendo.com/"
 
-#~ msgid ""
-#~ "     * A legal framework protecting the artists (thanks to the Creative "
-#~ "Commons licenses)."
-#~ msgstr ""
-#~ "     * アーティストらの権利を保護する合法的なフレームワーク (「クリエイ"
-#~ "ティブ・コモン・ライセンス」準拠) を採用しています。"
+#~ msgid "     * A legal framework protecting the artists (thanks to the Creative Commons licenses)."
+#~ msgstr "     * アーティストらの権利を保護する合法的なフレームワーク (「クリエイティブ・コモン・ライセンス」準拠) を採用しています。"
 
 #~ msgid ""
-#~ "     * An adaptive music recommendation system based on iRATE to help "
-#~ "listeners discover new artists based on their tastes\n"
+#~ "     * An adaptive music recommendation system based on iRATE to help listeners discover new artists based on their tastes\n"
 #~ "       and on other criteria such as their location."
 #~ msgstr ""
-#~ "     * iRATE を使った楽曲の推薦システムを使っているので、聴取者の好みに"
-#~ "合った新しいアーティストや住んでいる国などの条件に応じて\n"
+#~ "     * iRATE を使った楽曲の推薦システムを使っているので、聴取者の好みに合った新しいアーティストや住んでいる国などの条件に応じて\n"
 #~ "       アーティストを簡単に捜せます。"
 
 #~ msgid "     * Free, simple and quick access to the music, for everyone."
@@ -5147,58 +4999,39 @@ msgstr "不明な場所"
 #~ msgid "<b>Jamendo</b>"
 #~ msgstr "<b>Jamendo</b>"
 
-#~ msgid ""
-#~ "Jamendo is a new model for artists to promote, publish, and be paid for "
-#~ "their music."
-#~ msgstr ""
-#~ "Jamendo はアーティストのために楽曲の配布や公開を推進して、それに課金するシ"
-#~ "ステムの新しいモデルです。"
+#~ msgid "Jamendo is a new model for artists to promote, publish, and be paid for their music."
+#~ msgstr "Jamendo はアーティストのために楽曲の配布や公開を推進して、それに課金するシステムの新しいモデルです。"
 
 #~ msgid "Jamendo is the only platform that joins together :"
 #~ msgstr "Jamendo は参加型のプラットフォームです:"
 
 #~ msgid ""
-#~ "Jamendo users can discover and share albums, but also review them or "
-#~ "start a discussion on the forums.\n"
+#~ "Jamendo users can discover and share albums, but also review them or start a discussion on the forums.\n"
 #~ "Albums are democratically rated based on the visitors’ reviews.\n"
 #~ "If they fancy an artist they can support him by making a donation."
 #~ msgstr ""
-#~ "Jamendo のユーザはアルバムを検索して共有することが可能ですが、フォーラムで"
-#~ "アルバムをレビューしたり議論することも可能です。\n"
+#~ "Jamendo のユーザはアルバムを検索して共有することが可能ですが、フォーラムでアルバムをレビューしたり議論することも可能です。\n"
 #~ "ここにあるアルバムは聴取者のレビューに基づいた公平な評価が行われます。\n"
 #~ "もしアーティストが気に入ったら、彼らに寄付をして支援できます。"
 
 #~ msgid ""
-#~ "On Jamendo, the artists distribute their music under Creative Commons "
-#~ "licenses.\n"
-#~ "In a nutshell, they allow you to download, remix and share their music "
-#~ "freely.\n"
-#~ "It's a \"Some rights reserved\" agreement, perfectly suited for the new "
-#~ "century."
+#~ "On Jamendo, the artists distribute their music under Creative Commons licenses.\n"
+#~ "In a nutshell, they allow you to download, remix and share their music freely.\n"
+#~ "It's a \"Some rights reserved\" agreement, perfectly suited for the new century."
 #~ msgstr ""
-#~ "Jamendo では、アーティストはクリエイティブ・コモン・ライセンスの下で自分達"
-#~ "の楽曲を配布しています。\n"
-#~ "簡単に言うと、このシステムでは彼らの楽曲を自由にダウンロードしたりリミック"
-#~ "スしたり共有できるようになります。\n"
-#~ "それは \"Some rights reserved (著作権所有)\" を謳う今の時代にマッチした契"
-#~ "約スタイルの1つです。"
+#~ "Jamendo では、アーティストはクリエイティブ・コモン・ライセンスの下で自分達の楽曲を配布しています。\n"
+#~ "簡単に言うと、このシステムでは彼らの楽曲を自由にダウンロードしたりリミックスしたり共有できるようになります。\n"
+#~ "それは \"Some rights reserved (著作権所有)\" を謳う今の時代にマッチした契約スタイルの1つです。"
 
 #~ msgid ""
-#~ "These new rules make Jamendo able to use the new powerful means of "
-#~ "digital distribution like\n"
-#~ "Peer-to-Peer networks such as BitTorrent or eMule to legally distribute "
-#~ "albums at near-zero cost."
+#~ "These new rules make Jamendo able to use the new powerful means of digital distribution like\n"
+#~ "Peer-to-Peer networks such as BitTorrent or eMule to legally distribute albums at near-zero cost."
 #~ msgstr ""
-#~ "この新しい規約により、Jamendo は次のような技術を使った新しく強力な電子媒体"
-#~ "の配布を実現しています:\n"
-#~ "アルバムを合法的に配布するための BitTorrent や eMule のようなピア・ツー・"
-#~ "ピア技術 (ほぼ費用がゼロ)"
+#~ "この新しい規約により、Jamendo は次のような技術を使った新しく強力な電子媒体の配布を実現しています:\n"
+#~ "アルバムを合法的に配布するための BitTorrent や eMule のようなピア・ツー・ピア技術 (ほぼ費用がゼロ)"
 
-#~ msgid ""
-#~ "Adds support to Rhythmbox for playing and downloading albums from Jamendo"
-#~ msgstr ""
-#~ "Jamendo からアルバムを再生したりダウンロードするための機能を Rhythmbox に"
-#~ "追加します"
+#~ msgid "Adds support to Rhythmbox for playing and downloading albums from Jamendo"
+#~ msgstr "Jamendo からアルバムを再生したりダウンロードするための機能を Rhythmbox に追加します"
 
 #~ msgid "Jamendo"
 #~ msgstr "Jamendo"
@@ -5219,12 +5052,10 @@ msgstr "不明な場所"
 #~ msgstr "Jamendo のカタログを読み込んでいます"
 
 #~ msgid "Error looking up p2plink for album %s on jamendo.com"
-#~ msgstr ""
-#~ "jamendo.com でアルバム %s のためのp2plinkを見つけることはできませんでした"
+#~ msgstr "jamendo.com でアルバム %s のためのp2plinkを見つけることはできませんでした"
 
 #~ msgid "Error looking up artist %s on jamendo.com"
-#~ msgstr ""
-#~ "jamendo.com で %s というアーティストを見つけることはできませんでした"
+#~ msgstr "jamendo.com で %s というアーティストを見つけることはできませんでした"
 
 #~ msgid "Lyrics Plugin Preferences"
 #~ msgstr "歌詞のサポート・プラグインの設定"
@@ -5271,13 +5102,8 @@ msgstr "不明な場所"
 #~ msgid "Unable to move user data files"
 #~ msgstr "ユーザのデータファイルを移動できませんでした"
 
-#~ msgid ""
-#~ "None of the tracks to be transferred are in a format supported by the "
-#~ "target device, and no encoders are available for the supported formats."
-#~ msgstr ""
-#~ "転送しようとしているトラック中、ターゲットのデバイスでサポートされている形"
-#~ "式のものが一つもありません。また、サポートされているフォーマット用のエン"
-#~ "コーダを利用できません。"
+#~ msgid "None of the tracks to be transferred are in a format supported by the target device, and no encoders are available for the supported formats."
+#~ msgstr "転送しようとしているトラック中、ターゲットのデバイスでサポートされている形式のものが一つもありません。また、サポートされているフォーマット用のエンコーダを利用できません。"
 
 #~ msgid "Unable to transfer all tracks. Do you want to continue?"
 #~ msgstr "すべてのトラックを転送できませんでした。続けますか?"
@@ -5382,9 +5208,6 @@ msgstr "不明な場所"
 #~ msgid "%s %s %s"
 #~ msgstr "%s %s %s"
 
-#~ msgid "%s %s"
-#~ msgstr "%s %s"
-
 #~ msgid "%s"
 #~ msgstr "%s"
 
@@ -5453,9 +5276,7 @@ msgstr "不明な場所"
 #~ msgstr "空の CD を挿入してください"
 
 #~ msgid "Please replace the disc in the drive with a rewritable or blank CD."
-#~ msgstr ""
-#~ "ドライブの中にあるディスクを再書き込み可能または空の CD に取り替えてくださ"
-#~ "い。"
+#~ msgstr "ドライブの中にあるディスクを再書き込み可能または空の CD に取り替えてください。"
 
 #~ msgid "Reload a rewritable or blank CD"
 #~ msgstr "再書き込み可能または空の CD に取り替えてください"
@@ -5517,14 +5338,8 @@ msgstr "不明な場所"
 #~ msgid "This playlist is too long to write to an audio CD."
 #~ msgstr "このプレイリストは音楽 CD に書き込むにしては長すぎます。"
 
-#~ msgid ""
-#~ "This playlist is %s minutes long.  This exceeds the length of a standard "
-#~ "audio CD.  If the destination medium is larger than a standard audio CD "
-#~ "please insert it in the drive and try again."
-#~ msgstr ""
-#~ "このプレイリストは %s 分間だけ長すぎます。これでは標準的な音楽 CD の記録時"
-#~ "間を超えてしまいます。もし標準的な音楽 CD よりも長く書き込めるメディアをお"
-#~ "持ちなら、そのメディアをドライブに挿入して再度実行してください。"
+#~ msgid "This playlist is %s minutes long.  This exceeds the length of a standard audio CD.  If the destination medium is larger than a standard audio CD please insert it in the drive and try again."
+#~ msgstr "このプレイリストは %s 分間だけ長すぎます。これでは標準的な音楽 CD の記録時間を超えてしまいます。もし標準的な音楽 CD よりも長く書き込めるメディアをお持ちなら、そのメディアをドライブに挿入して再度実行してください。"
 
 #~ msgid "Playlist too long"
 #~ msgstr "プレイリストが長すぎます"
@@ -5532,12 +5347,8 @@ msgstr "不明な場所"
 #~ msgid "Could not find temporary space!"
 #~ msgstr "作業用のスペースを確保できませんでした!"
 
-#~ msgid ""
-#~ "Could not find enough temporary space to convert audio tracks.  %s MB "
-#~ "required."
-#~ msgstr ""
-#~ "この音楽トラックを一時的に格納するための作業領域を確保できませんでした (%"
-#~ "s Mバイト必要です)。"
+#~ msgid "Could not find enough temporary space to convert audio tracks.  %s MB required."
+#~ msgstr "この音楽トラックを一時的に格納するための作業領域を確保できませんでした (%s Mバイト必要です)。"
 
 #~ msgid "Create audio CD from playlist?"
 #~ msgstr "プレイリストから音楽 CD を作成します"
@@ -5556,9 +5367,6 @@ msgstr "不明な場所"
 
 #~ msgid "_Make multiple copies"
 #~ msgstr "複数枚のコピーを作成する(_M)"
-
-#~ msgid "_Close"
-#~ msgstr "閉じる(_C)"
 
 #, fuzzy
 #~ msgid "_Show Rhythmbox"
@@ -5760,14 +5568,8 @@ msgstr "不明な場所"
 #~ msgid "Enter the item to build a Last.fm station out of:"
 #~ msgstr "次の Last.fm 局を構築するアイテムを入力してください:"
 
-#~ msgid "Account Settings"
-#~ msgstr "アカウントの設定"
-
-#~ msgid ""
-#~ "Account details are needed before you can connect.  Check your settings."
-#~ msgstr ""
-#~ "Last.fm に接続するにはアカウントの設定が必要です。まずは設定を確認してくだ"
-#~ "さい。"
+#~ msgid "Account details are needed before you can connect.  Check your settings."
+#~ msgstr "Last.fm に接続するにはアカウントの設定が必要です。まずは設定を確認してください。"
 
 #~ msgid "Unable to connect"
 #~ msgstr "接続できません"
@@ -5787,11 +5589,8 @@ msgstr "不明な場所"
 #~ msgid "Server did not respond"
 #~ msgstr "サーバからの応答がありませんでした"
 
-#~ msgid ""
-#~ "The streaming system is offline for maintenance, please try again later."
-#~ msgstr ""
-#~ "メンテナンスのためストリーミング・システムがオフラインになっています (あと"
-#~ "でもう一度試してみてください)。"
+#~ msgid "The streaming system is offline for maintenance, please try again later."
+#~ msgstr "メンテナンスのためストリーミング・システムがオフラインになっています (あとでもう一度試してみてください)。"
 
 #~ msgid "Retrieving playlist"
 #~ msgstr "プレイリストを取得しています"
@@ -5934,17 +5733,14 @@ msgstr "不明な場所"
 #~ msgid "_Remember my credit card details"
 #~ msgstr "クレジット・カードの情報を記憶する(_R)"
 
-#~ msgid ""
-#~ "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
+#~ msgid "Would you like to purchase the album <i>%(album)s</i> by '%(artist)s'?"
 #~ msgstr "アルバム <i>%(album)s</i> ('%(artist)s') を購入しますか?"
 
 #~ msgid "Authorizing Purchase"
 #~ msgstr "購入手続き"
 
 #~ msgid "Authorizing purchase with the Magnatune server. Please wait..."
-#~ msgstr ""
-#~ "Magnatuneサーバで購入するための認証を行っています。しばらくお待ちくださ"
-#~ "い..."
+#~ msgstr "Magnatuneサーバで購入するための認証を行っています。しばらくお待ちください..."
 
 #~ msgid "Purchase Error"
 #~ msgstr "購入エラー"

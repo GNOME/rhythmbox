@@ -1,6 +1,6 @@
 AC_PREREQ(2.53)
 AC_INIT([rhythmbox],
-	[2.96],
+	[2.97],
 	[https://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox])
 AC_CONFIG_SRCDIR(rhythmbox.pc.in)
 AC_CONFIG_MACRO_DIR(macros)
@@ -16,7 +16,7 @@ GNOME_MAINTAINER_MODE_DEFINES
 # Increment on interface addition, reset on removal
 RHYTHMBOX_CORE_AGE=0
 # Increment on interface add, remove, or change
-RHYTHMBOX_CORE_CURRENT=5
+RHYTHMBOX_CORE_CURRENT=6
 # Increment on source change, reset when CURRENT changes.
 RHYTHMBOX_CORE_REVISION=0
 
@@ -101,7 +101,8 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  libpeas-1.0 >= $LIBPEAS_REQS		\
 		  libpeas-gtk-1.0 >= $LIBPEAS_REQS	\
 		  libxml-2.0 >= $LIBXML2_REQS		\
-		  tdb >= 1.2.6)
+		  tdb >= 1.2.6				\
+		  json-glib-1.0)
 
 PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
 if test x$have_totem_plparser != xyes; then
@@ -707,7 +708,7 @@ AC_ARG_ENABLE([browser-plugin],
 	[AS_HELP_STRING([--enable-browser-plugin],[compile the iTunes detection browser plugin])],
 	[],[enable_browser_plugin=yes])
 
-MOZILLA_PLUGINDIR="${MOZILLA_PLUGINDIR:="\${libdir}/mozilla/plugins"}"
+MOZILLA_PLUGINDIR=${MOZILLA_PLUGINDIR:-'${libdir}/mozilla/plugins'}
 AC_ARG_VAR([MOZILLA_PLUGINDIR],[Where to install the browser plugin to])
 
 AM_CONDITIONAL([ENABLE_BROWSER_PLUGIN], test x$enable_browser_plugin = xyes)
@@ -764,30 +765,6 @@ AM_CONDITIONAL(USE_CLUTTER, test x"$have_clutter" = "xyes")
 
 AC_SUBST(CLUTTER_CFLAGS)
 AC_SUBST(CLUTTER_LIBS)
-
-dnl ================================================================
-dnl Dependencies for Last.fm plugin
-dnl ================================================================
-AC_ARG_ENABLE(lastfm,
-              AC_HELP_STRING([--disable-lastfm],
-                             [Disable Last.fm support]),,
-              enable_lastfm=auto)
-if test "x$enable_lastfm" != "xno"; then
-	PKG_CHECK_MODULES(JSON_GLIB, json-glib-1.0,
-			  have_json_glib=yes,
-			  have_json_glib=no)
-	if test "x$have_json_glib" = "xno" -a "x$enable_lastfm" = "xyes"; then
-		AC_MSG_ERROR([Last.fm support explicitly requested, but json-glib couldn't be found])
-	fi
-	if test x"$have_json_glib" = "xyes"; then
-		AC_DEFINE(HAVE_JSON_GLIB, 1, [Define if json-glib support is enabled])
-	fi
-fi
-
-AM_CONDITIONAL(ENABLE_LASTFM, test x"$have_json_glib" = "xyes")
-
-AC_SUBST(JSON_GLIB_CFLAGS)
-AC_SUBST(JSON_GLIB_LIBS)
 
 dnl ================================================================
 dnl grilo plugin
@@ -995,12 +972,6 @@ if test "x$have_clutter" = xyes; then
 	AC_MSG_NOTICE([** Visualizer plugin enabled])
 else
 	AC_MSG_NOTICE([   Visualizer plugin disabled])
-fi
-
-if test "x$have_json_glib" = xyes; then
-	AC_MSG_NOTICE([** Last.fm support enabled])
-else
-	AC_MSG_NOTICE([   Last.fm support disabled])
 fi
 
 AC_MSG_NOTICE([End options])

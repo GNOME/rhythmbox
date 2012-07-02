@@ -555,10 +555,13 @@ store_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
 		return NULL;
 	}
 
-	s = g_string_new_len (data, data_size);
+	s = g_slice_new0 (GString);
+	s->str = data;
+	s->len = data_size;
+	s->allocated_len = data_size;
 	v = g_new0 (GValue, 1);
 	g_value_init (v, G_TYPE_GSTRING);
-	g_value_set_boxed (v, s);
+	g_value_take_boxed (v, s);
 	return v;
 }
 
@@ -3616,11 +3619,10 @@ rb_shell_load_uri (RBShell *shell,
 {
 	RhythmDBEntry *entry;
 
-	/* If the URI points to a Podcast, pass it on to
-	 * the Podcast source */
+	/* If the URI points to a Podcast, pass it on to the Podcast source */
 	if (rb_uri_could_be_podcast (uri, NULL)) {
-		rb_podcast_manager_subscribe_feed (shell->priv->podcast_manager, uri, FALSE);
 		rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->podcast_source));
+		rb_podcast_source_add_feed (shell->priv->podcast_source, uri);
 		return TRUE;
 	}
 

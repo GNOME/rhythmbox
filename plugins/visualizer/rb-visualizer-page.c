@@ -41,6 +41,8 @@
 
 G_DEFINE_DYNAMIC_TYPE (RBVisualizerPage, rb_visualizer_page, RB_TYPE_DISPLAY_PAGE)
 
+static GtkWidget *create_embed (RBVisualizerPage *page);
+
 enum {
 	PROP_0,
 	PROP_SINK,
@@ -109,9 +111,19 @@ start_fullscreen (RBVisualizerPage *page)
 		page->fullscreen = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 		gtk_window_set_skip_taskbar_hint (GTK_WINDOW (page->fullscreen), TRUE);
 
-		/* maybe need to block the sink? */
+		/* move the texture from the page embed to the new fullscreen embed */
 
-		gtk_widget_reparent (page->embed, page->fullscreen);
+		g_object_ref (page->texture);
+
+		stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (page->embed));
+		clutter_container_remove_actor (CLUTTER_CONTAINER (stage), page->texture);
+
+		page->fullscreen_embed = create_embed (page);
+		stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (page->fullscreen_embed));
+		clutter_container_add (CLUTTER_CONTAINER (stage), page->texture, NULL);
+		g_object_unref (page->texture);
+
+		gtk_container_add (GTK_CONTAINER (page->fullscreen), page->fullscreen_embed);
 		gtk_widget_show_all (GTK_WIDGET (page->fullscreen));
 
 		gtk_window_get_position (main_window, &x, &y);
@@ -121,7 +133,6 @@ start_fullscreen (RBVisualizerPage *page)
 		gtk_window_set_transient_for (GTK_WINDOW (page->fullscreen), main_window);
 		g_object_unref (main_window);
 
-		stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (page->embed));
 		rb_visualizer_fullscreen_add_widgets (page->fullscreen, stage, shell);
 		g_object_unref (shell);
 	}
@@ -136,12 +147,21 @@ stop_fullscreen (RBVisualizerPage *page)
 		ClutterActor *stage;
 
 		rb_debug ("stopping fullscreen display");
-		gtk_widget_reparent (page->embed, GTK_WIDGET (page));
+
+		g_object_ref (page->texture);
+		stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (page->fullscreen_embed));
+		rb_visualizer_fullscreen_stop (stage);
+		clutter_container_remove_actor (CLUTTER_CONTAINER (stage), page->texture);
+
+		stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (page->embed));
+		clutter_container_add (CLUTTER_CONTAINER (stage), page->texture, NULL);
+
+		g_object_unref (page->texture);
+
 		gtk_widget_destroy (GTK_WIDGET (page->fullscreen));
 		page->fullscreen = NULL;
 
-		stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (page->embed));
-		rb_visualizer_fullscreen_remove_widgets (stage);
+		page->fullscreen_embed = NULL;
 	}
 
 	set_action_state (page, FALSE);
@@ -169,7 +189,9 @@ static gboolean
 stage_button_press_cb (ClutterActor *stage, ClutterEvent *event, RBVisualizerPage *page)
 {
 	if (event->button.button == 1 && event->button.click_count == 2) {
+		clutter_threads_leave ();
 		toggle_fullscreen (page);
+		clutter_threads_enter ();
 	} else if (event->button.button == 3) {
 		rb_display_page_show_popup (RB_DISPLAY_PAGE (page));
 	}
@@ -181,7 +203,9 @@ static gboolean
 stage_key_release_cb (ClutterActor *stage, ClutterEvent *event, RBVisualizerPage *page)
 {
 	if (event->key.keyval == CLUTTER_KEY_Escape) {
+		clutter_threads_leave ();
 		stop_fullscreen (page);
+		clutter_threads_enter ();
 	}
 	return FALSE;
 }
@@ -192,6 +216,22 @@ resize_sink_texture (ClutterActor *stage, ClutterActorBox *box, ClutterAllocatio
 	clutter_actor_set_size (texture, box->x2 - box->x1, box->y2 - box->y1);
 }
 
+
+static GtkWidget *
+create_embed (RBVisualizerPage *page)
+{
+	ClutterActor *stage;
+	GtkWidget *embed;
+
+	embed = gtk_clutter_embed_new ();
+
+	stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (embed));
+	g_signal_connect_object (stage, "allocation-changed", G_CALLBACK (resize_sink_texture), page->texture, 0);
+	g_signal_connect_object (stage, "button-press-event", G_CALLBACK (stage_button_press_cb), page, 0);
+	g_signal_connect_object (stage, "key-release-event", G_CALLBACK (stage_key_release_cb), page, 0);
+
+	return embed;
+}
 
 static gboolean
 impl_show_popup (RBDisplayPage *page)
@@ -205,17 +245,16 @@ static void
 impl_selected (RBDisplayPage *bpage)
 {
 	RBVisualizerPage *page = RB_VISUALIZER_PAGE (bpage);
-	ClutterActor *stage;
 
 	RB_DISPLAY_PAGE_CLASS (rb_visualizer_page_parent_class)->selected (bpage);
 
 	if (page->embed == NULL) {
-		page->embed = gtk_clutter_embed_new ();
+		ClutterActor *stage;
+
+		page->embed = create_embed (page);
 
 		stage = gtk_clutter_embed_get_stage (GTK_CLUTTER_EMBED (page->embed));
-		g_signal_connect_object (stage, "allocation-changed", G_CALLBACK (resize_sink_texture), page->texture, 0);
-		g_signal_connect_object (stage, "button-press-event", G_CALLBACK (stage_button_press_cb), page, 0);
-		g_signal_connect_object (stage, "key-release-event", G_CALLBACK (stage_key_release_cb), page, 0);
+
 		clutter_container_add (CLUTTER_CONTAINER (stage), page->texture, NULL);
 
 		gtk_box_pack_start (GTK_BOX (page), page->embed, TRUE, TRUE, 0);

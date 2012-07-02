@@ -292,6 +292,35 @@ source_deleted_cb (RBMtpSource *source, RBMtpPlugin *plugin)
 	plugin->mtp_sources = g_list_remove (plugin->mtp_sources, source);
 }
 
+static void
+set_properties_action_sensitive (RBMtpPlugin *plugin, RBMtpSource *source)
+{
+	gboolean selected;
+	RBSourceLoadStatus load_status;
+	GtkAction *action;
+
+	g_object_get (source,
+		      "selected", &selected,
+		      "load-status", &load_status,
+		      NULL);
+	if (selected) {
+		action = gtk_action_group_get_action (plugin->action_group, "MTPSourceProperties");
+		gtk_action_set_sensitive (action, (load_status == RB_SOURCE_LOAD_STATUS_LOADED));
+	}
+}
+
+static void
+source_selected_cb (GObject *object, GParamSpec *pspec, RBMtpPlugin *plugin)
+{
+	set_properties_action_sensitive (plugin, RB_MTP_SOURCE (object));
+}
+
+static void
+source_load_status_cb (GObject *object, GParamSpec *pspec, RBMtpPlugin *plugin)
+{
+	set_properties_action_sensitive (plugin, RB_MTP_SOURCE (object));
+}
+
 static int
 get_property_as_int (GUdevDevice *device, const char *property, int base)
 {
@@ -362,6 +391,12 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device_obj, RBMt
 			g_signal_connect_object (G_OBJECT (source),
 						"deleted", G_CALLBACK (source_deleted_cb),
 						plugin, 0);
+			g_signal_connect_object (G_OBJECT (source),
+						 "notify::selected", G_CALLBACK (source_selected_cb),
+						 plugin, 0);
+			g_signal_connect_object (G_OBJECT (source),
+						 "notify::load-status", G_CALLBACK (source_load_status_cb),
+						 plugin, 0);
 			g_object_unref (shell);
 			return source;
 		}

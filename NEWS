@@ -1,3 +1,77 @@
+Overview of changes in Rhythmbox 2.97  "Blue Skied an' Clear"
+=============================================================
+
+* Uses libmusicbrainz4 for audio CD metadata
+* New more compact header layout, including album art
+* Deprecated artdisplay plugin
+* Fixed buffering for network streams
+* Configurable encoding settings for the library,
+   using GStreamer presets or simple quality settings
+* Doesn't preserve mtime on metadata updates
+* Fixed audio CD extraction speed
+* New podcast subscription interface, including iTunes
+  and Miroguide searching and auditioning before
+  subscription
+
+Bugs fixed:
+
+338452 - No menu item to toggle time slider visibility
+343660 - Play controls waste space
+344595 - song_position_slider_hidden not used on startup
+419914 - Toggle elapsed time display style
+447082 - move progress bar to the right of toolbar to preserve space
+526838 - Drag and drop artwork won't accept images from browsers
+540726 - Add a button to hide Cover art
+608295 - Tooltips can hide important information
+612274 - Cover Art Transitions are not smooth
+635895 - UI: button order should be back, play, next
+661217 - crash saving ipod playlists
+661341 - Cannot drag'n'drop album art
+665402 - Tooltips in toolbar obscure artist and song title
+666010 - Disable downloading of cover art whilst showing embedded cover art
+666066 - Crash everytime I start rhythmbox
+668262 - low letters cut off at the bottom in "Now playing" song title
+668395 - use libmusicbrainz4 for better metadata for multi-disc albums
+668402 - Cover image not scaled correctly when side pane width changes
+671706 - build: Remove use of -Werror
+671839 - .gitignore: Add widgets/test-uri-dialog
+671840 - Fix setting multiple tags with different values
+671950 - typo in artsearch plugin
+672084 - Preferences for Magnatune plugin crashes Rhythmbox
+672198 - "Watch my library for new files" is broken
+672410 - MPRIS playlists are not implemented correctly
+672412 - missing libxml2 dependency
+673799 - Hint box blocks track title
+674897 - rb-client should use mpris.length to get duration
+675345 - Unable to configure quality of preferred format
+676860 - External native plugins FTBFS due to header that is not shipped
+677318 - rhythmbox-client --set-rating does not work
+
+Translation updates:
+- ar, courtesy of Ibrahim Saed 
+- bg, courtesy of Alexander Shopov 
+- ca, courtesy of Joan Duran 
+- cs, courtesy of Marek Černocký 
+- de, courtesy of Christian Kirbach 
+- en_GB, courtesy of Bruce Cowan 
+- es, courtesy of Daniel Mustieles 
+- fr, courtesy of Bruno Brouard 
+- gl, courtesy of Fran Dieguez 
+- hu, courtesy of Gabor Kelemen 
+- id, courtesy of Andika Triwidada 
+- it, courtesy of Luca Ferretti 
+- ja, courtesy of Kentaro KAZUHAMA 
+- lt, courtesy of Aurimas Černius 
+- lv, courtesy of Rūdolfs Mazurs 
+- pl, courtesy of Piotr Drąg 
+- sl, courtesy of Matej Urbančič 
+- sr, courtesy of Мирослав Николић 
+- sr@latin, courtesy of Miroslav Nikolić 
+- sv, courtesy of Daniel Nylander 
+- te, courtesy of Praveen Illa 
+- zh_CN, courtesy of YunQiang Su 
+
+
 Overview of changes in Rhythmbox 2.96  "Spanish Air"
 ====================================================
 

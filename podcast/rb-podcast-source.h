@@ -66,6 +66,8 @@ RBSource 	*rb_podcast_source_new		(RBShell *shell,
 						 const char *name,
 						 const char *icon_name);
 
+void		rb_podcast_source_add_feed	(RBPodcastSource *source, const char *url);
+
 G_END_DECLS
 
 #endif /* __RB_PODCAST_SOURCE_H */

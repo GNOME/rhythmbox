@@ -127,6 +127,12 @@ set_source_properties (GstElement *source, const char *uri, gboolean playback_mo
 			/* also, sound-juicer defaults to 8 (scratch) not 0xff (full) here.. */
 			if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "paranoia-mode"))
 				g_object_set (source, "paranoia-mode", 0xff, NULL);
+
+			/* trick cdparanoiasrc into resetting the device speed in case we've
+			 * previously set it to 1 for playback
+			 */
+			if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "read-speed"))
+				g_object_set (source, "read-speed", 0xffff, NULL);
 		}
 	}
 }

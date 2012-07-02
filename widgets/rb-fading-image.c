@@ -618,6 +618,13 @@ rb_fading_image_set_pixbuf (RBFadingImage *image, GdkPixbuf *pixbuf)
 		replace_current (image, scaled, full);
 		gtk_widget_queue_draw (GTK_WIDGET (image));
 		gtk_widget_trigger_tooltip_query (GTK_WIDGET (image));
+
+		if (scaled != NULL) {
+			g_object_unref (scaled);
+		}
+		if (full != NULL) {
+			g_object_unref (full);
+		}
 	}
 }
 
