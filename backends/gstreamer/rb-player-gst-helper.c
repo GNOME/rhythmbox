@@ -135,7 +135,7 @@ rb_player_gst_find_element_with_property (GstElement *element, const char *prope
 				      (GCompareFunc) find_property_element,
 				      &r,
 				      (gpointer) property)) {
-		result = g_value_get_object (&r);
+		result = g_value_dup_object (&r);
 		g_value_unset (&r);
 	}
 	gst_iterator_free (iter);
