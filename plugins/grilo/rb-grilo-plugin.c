@@ -52,9 +52,11 @@
 
 static const char *ignored_plugins[] = {
 	"grl-apple-trailers",
+	"grl-bliptv",
 	"grl-bookmarks",
 	"grl-filesystem",
 	"grl-flickr",
+	"grl-optical-media",
 	"grl-podcasts",
 	"grl-tracker",
 	"grl-vimeo",
