@@ -583,15 +583,18 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 		_rb_player_emit_event (RB_PLAYER (mp), mp->priv->stream_data, gst_structure_get_name (structure), NULL);
 		break;
 
+	case GST_MESSAGE_STREAM_START:
+		if (mp->priv->playbin_stream_changing){
+			rb_debug ("got STREAM_START message");
+			mp->priv->playbin_stream_changing = FALSE;
+			emit_playing_stream_and_tags (mp, TRUE);
+		}
+		break;
+
 	case GST_MESSAGE_ELEMENT:
 		structure = gst_message_get_structure (message);
 		if (gst_is_missing_plugin_message (message)) {
 			handle_missing_plugin_message (mp, message);
-		} else if (mp->priv->playbin_stream_changing &&
-			   gst_structure_has_name (structure, "playbin-stream-changed")) {
-			rb_debug ("got playbin-stream-changed message");
-			mp->priv->playbin_stream_changing = FALSE;
-			emit_playing_stream_and_tags (mp, TRUE);
 		} else if (gst_structure_has_name (structure, "redirect")) {
 			const char *uri = gst_structure_get_string (structure, "new-location");
 			_rb_player_emit_redirect (RB_PLAYER (mp), mp->priv->stream_data, uri);
