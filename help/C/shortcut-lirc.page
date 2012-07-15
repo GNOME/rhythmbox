@@ -1,0 +1,89 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      xmlns:ui="http://projectmallard.org/experimental/ui/"
+      type="guide" style="tip"
+      id="shortcut-lirc">
+
+  <info>
+    <link type="guide" xref="index#rb-advanced-actions"/>
+    <desc>Control <app>Rhythmbox</app> with an infrared remote control 
+    device.</desc>
+    <revision pkgversion="3.6" version="1.0" date="2012-07-15" status="draft"/>
+    <credit type="author">
+      <name>Jim Campbell</name>
+      <email>jwcampbell@gmail.com</email>
+    </credit>
+    <credit type="author">
+      <name>Milo Casagrande</name>
+      <email>milo@ubuntu.com</email>
+    </credit>
+  </info>
+
+  <title>Supported Linux Infrared Remote Control commands</title>
+
+    <p><app>Rhythmbox</app> includes support for Linux Infrared Remote 
+    Control (LIRC) commands. The following command strings are supported:</p>
+
+    <!-- For the sake of appearance, I have not used the <keyseq> feature to 
+    display key sequences in the tables. -->
+
+    <table rules="rows" frame="top bottom">
+    <title>Supported LIRC commands</title>
+      <thead>
+        <tr>
+          <td><p>Command</p></td>  <td><p>String</p></td>  
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><p>Start playback</p></td> <td><p>play</p></td>  
+        </tr>
+        <tr>
+          <td><p>Pause playback</p></td>  <td><p>pause</p></td>
+        </tr>
+        <tr>
+          <td><p>Toggle between playing and paused</p></td>  <td><p>playpause
+          </p>
+          </td>
+        </tr>
+        <tr>
+          <td><p>Toggle the shuffle play order</p></td>  <td><p>shuffle</p></td>
+        </tr>
+        <tr>
+          <td><p>Toggle the repeat play order</p></td>  <td><p>repeat</p>
+          </td>  
+        </tr>
+        <tr>
+          <td><p>Skip to the next track</p></td>  <td><p>next</p>
+          </td>  
+        </tr>
+        <tr>
+          <td><p>Skip to the previous track</p></td>  <td><p>previous</p>
+          </td>  
+        </tr>
+        <tr>
+          <td><p>Skip 10 seconds forward in the playing track</p></td>  <td><p>
+          seek_forward</p>
+          </td>  
+        </tr>
+        <tr>
+          <td><p>Skip 10 seconds backward in the playing track</p></td>  <td><p>
+          seek_backward</p>
+          </td>  
+        </tr>
+        <tr>
+          <td><p>Increase the playback volume by 10</p></td>  <td><p>
+          volume_up</p>
+          </td>  
+        </tr>
+        <tr>
+          <td><p>Decrease the playback volume by 10</p></td>  <td><p>
+          volume_down</p>
+          </td>  
+        </tr>
+        <tr>
+          <td><p>Mute the playback</p></td>  <td><p>mute</p>
+          </td>  
+        </tr>
+      </tbody>
+    </table>
+</page>
