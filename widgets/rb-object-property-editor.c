@@ -411,5 +411,6 @@ rb_object_property_editor_new (GObject *object, char **properties)
 	return GTK_WIDGET (g_object_new (RB_TYPE_OBJECT_PROPERTY_EDITOR,
 					 "object", object,
 					 "properties", properties,
+					 "column-spacing", 6,
 					 NULL));
 }
