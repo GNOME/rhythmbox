@@ -370,7 +370,8 @@ impl_constructed (GObject *object)
 	g_object_ref (page->sink);
 
 	/* actual sink */
-	realsink = clutter_gst_video_sink_new (CLUTTER_TEXTURE (page->texture));
+	realsink = gst_element_factory_make ("cluttersink", NULL);
+	g_object_set (realsink, "texture", page->texture, NULL);
 
 	colorspace = gst_element_factory_make ("ffmpegcolorspace", NULL);
 	/* capsfilter to force rgb format (without this we end up using ayuv) */
