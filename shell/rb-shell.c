@@ -1078,30 +1078,6 @@ construct_plugins (RBShell *shell)
 	rb_profile_end ("loading plugins");
 }
 
-static void
-emit_action_state_update (RBShell *shell, const char *action)
-{
-	GDBusConnection *bus;
-	GVariant *state;
-
-
-	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
-
-	state = g_action_group_get_action_state (G_ACTION_GROUP (shell), action);
-	g_signal_emit_by_name (shell, "action-state-changed::LoadURI", "LoadURI", state);
-	if (bus != NULL) {
-		g_dbus_connection_emit_signal (bus,
-					       NULL,
-					       "/org/gnome/Rhythmbox3",
-					       "org.gtk.Actions",
-					       "StateChanged",
-					       g_variant_new ("(sv)", action, state),
-					       NULL);
-		g_object_unref (bus);
-	}
-	g_variant_unref (state);
-}
-
 static gboolean
 _scan_idle (RBShell *shell)
 {
@@ -1114,7 +1090,6 @@ _scan_idle (RBShell *shell)
 	if (shell->priv->no_registration == FALSE) {
 		g_variant_get (g_action_group_get_action_state (G_ACTION_GROUP (shell), "LoadURI"), "(bb)", &loaded, &scanned);
 		g_action_group_change_action_state (G_ACTION_GROUP (shell), "LoadURI", g_variant_new ("(bb)", loaded, TRUE));
-		emit_action_state_update (shell, "LoadURI");
 	}
 
 	return FALSE;
@@ -2070,7 +2045,6 @@ static void
 rb_shell_constructed (GObject *object)
 {
 	RBShell *shell;
-	GSimpleActionGroup *actions;
 	GSimpleAction *action;
 
 	gtk_init (NULL, NULL);
@@ -2080,23 +2054,20 @@ rb_shell_constructed (GObject *object)
 	shell = RB_SHELL (object);
 
 	/* create application actions */
-	actions = g_simple_action_group_new ();
 	action = g_simple_action_new_stateful ("LoadURI", G_VARIANT_TYPE ("(sb)"), g_variant_new ("(bb)", FALSE, FALSE));
 	g_signal_connect_object (action, "activate", G_CALLBACK (load_uri_action_cb), shell, 0);
-	g_simple_action_group_insert (actions, G_ACTION (action));
+	g_action_map_add_action (G_ACTION_MAP (shell), G_ACTION (action));
 	g_object_unref (action);
 
 	action = g_simple_action_new ("ActivateSource", G_VARIANT_TYPE ("(su)"));
 	g_signal_connect_object (action, "activate", G_CALLBACK (activate_source_action_cb), shell, 0);
-	g_simple_action_group_insert (actions, G_ACTION (action));
+	g_action_map_add_action (G_ACTION_MAP (shell), G_ACTION (action));
 	g_object_unref (action);
 
 	action = g_simple_action_new ("Quit", NULL);
 	g_signal_connect_object (action, "activate", G_CALLBACK (quit_action_cb), shell, 0);
-	g_simple_action_group_insert (actions, G_ACTION (action));
+	g_action_map_add_action (G_ACTION_MAP (shell), G_ACTION (action));
 	g_object_unref (action);
-
-	g_application_set_action_group (G_APPLICATION (shell), G_ACTION_GROUP (actions));
 
 	/* construct enough of the rest of it to display the window if required */
 
@@ -3061,7 +3032,6 @@ idle_handle_load_complete (RBShell *shell)
 	if (shell->priv->no_registration == FALSE) {
 		g_variant_get (g_action_group_get_action_state (G_ACTION_GROUP (shell), "LoadURI"), "(bb)", &loaded, &scanned);
 		g_action_group_change_action_state (G_ACTION_GROUP (shell), "LoadURI", g_variant_new ("(bb)", TRUE, scanned));
-		emit_action_state_update (shell, "LoadURI");
 	}
 
 	rhythmdb_start_action_thread (shell->priv->db);
