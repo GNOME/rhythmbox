@@ -1284,7 +1284,7 @@ impl_delete_entries (RBMediaPlayerSource *source, GList *entries, RBMediaPlayerS
 	data->destroy_data = destroy_data;
 	data->files = filenames;
 
-	g_thread_create ((GThreadFunc) delete_thread, data, FALSE, NULL);
+	g_thread_new ("ipod-delete", (GThreadFunc) delete_thread, data);
 }
 
 static RBTrackTransferBatch *

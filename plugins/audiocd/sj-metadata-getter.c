@@ -243,18 +243,7 @@ lookup_cd (SjMetadataGetter *mdg)
 gboolean
 sj_metadata_getter_list_albums (SjMetadataGetter *mdg, GError **error)
 {
-  GThread *thread;
-
-  g_object_ref (mdg);
-  thread = g_thread_create ((GThreadFunc)lookup_cd, mdg, TRUE, error);
-  if (thread == NULL) {
-    g_set_error (error,
-                 SJ_ERROR, SJ_ERROR_INTERNAL_ERROR,
-                 _("Could not create CD lookup thread"));
-    g_object_unref (mdg);
-    return FALSE;
-  }
-
+  g_thread_new ("sj-cd-lookup", (GThreadFunc)lookup_cd, g_object_ref (mdg));
   return TRUE;
 }
 

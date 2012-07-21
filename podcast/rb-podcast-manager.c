@@ -977,14 +977,9 @@ download_podcast (GFileInfo *src_info, RBPodcastManagerInfo *data)
 	GDK_THREADS_LEAVE ();
 
 	data->cancel = g_cancellable_new ();
-	data->thread = g_thread_create ((GThreadFunc) podcast_download_thread,
-					data,
-					TRUE,
-					&error);
-	if (error != NULL) {
-		download_error (data, error);
-		g_error_free (error);
-	}
+	data->thread = g_thread_new ("podcast-download",
+				     (GThreadFunc) podcast_download_thread,
+				     data);
 }
 
 static void
@@ -1054,8 +1049,9 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 	info->automatic = automatic;
 	info->existing_feed = existing_feed;
 
-	g_thread_create ((GThreadFunc) rb_podcast_manager_thread_parse_feed,
-			 info, FALSE, NULL);
+	g_thread_new ("podcast-parse",
+		      (GThreadFunc) rb_podcast_manager_thread_parse_feed,
+		      info);
 
 	return TRUE;
 }

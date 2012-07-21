@@ -248,7 +248,7 @@ _monitor_entry_thread (RhythmDB *db)
 void
 rhythmdb_start_monitoring (RhythmDB *db)
 {
-	g_thread_create ((GThreadFunc)_monitor_entry_thread, g_object_ref (db), FALSE, NULL);
+	g_thread_new ("monitor-entry", (GThreadFunc)_monitor_entry_thread, g_object_ref (db));
 
 	/* monitor all library locations */
 	if (db->priv->library_locations) {

@@ -902,7 +902,7 @@ rb_mtp_thread_init (RBMtpThread *thread)
 	
 	thread->albums = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify) LIBMTP_destroy_album_t);
 
-	thread->thread = g_thread_create ((GThreadFunc) task_thread, thread, TRUE, NULL);		/* XXX should handle errors i guess */
+	thread->thread = g_thread_new ("mtp", (GThreadFunc) task_thread, thread);
 }
 
 static void

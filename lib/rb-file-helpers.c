@@ -964,7 +964,7 @@ rb_uri_handle_recursively_async (const char *uri,
 	data->func = func;
 	data->user_data = user_data;
 
-	g_thread_create ((GThreadFunc)_recurse_async_func, data, FALSE, NULL);
+	g_thread_new ("rb-uri-recurse", (GThreadFunc)_recurse_async_func, data);
 }
 
 /**

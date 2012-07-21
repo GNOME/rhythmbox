@@ -886,8 +886,9 @@ save_timeout_cb (RbIpodDb *ipod_db)
 	rb_debug ("Switching iPod database to read-only");
 	priv->read_only = TRUE;
 	
-	priv->saving_thread = g_thread_create ((GThreadFunc)saving_thread,
-					       ipod_db, TRUE, NULL);
+	priv->saving_thread = g_thread_new ("ipod-db-save",
+					    (GThreadFunc)saving_thread,
+					    ipod_db);
 	priv->save_timeout_id = 0;
 	return FALSE;
 }

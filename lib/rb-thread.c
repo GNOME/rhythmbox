@@ -280,16 +280,13 @@ rb_thread_constructor (GType type, guint n_construct_properties,
 	RBThread *thread;
 	RBThreadClass *klass;
 	GObjectClass *parent_class; 
-	GError *error = NULL;
 
 	klass = RB_THREAD_CLASS (g_type_class_peek (RB_TYPE_THREAD));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 	thread = RB_THREAD (parent_class->constructor (type, n_construct_properties,
 						       construct_properties));
-	thread->priv->thread = g_thread_create (rb_thread_action_thread_main, thread, TRUE, &error);
-	if (!thread->priv->thread)
-		g_error ("Couldn't create thread: %s", error->message);
+	thread->priv->thread = g_thread_new ("rb-thread", rb_thread_action_thread_main, thread);
 
 	/* Wait until the thread's mainloop is running */
 	g_mutex_lock (thread->priv->state_mutex);

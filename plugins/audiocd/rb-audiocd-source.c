@@ -508,8 +508,7 @@ rb_audiocd_source_constructed (GObject *object)
 	gtk_widget_show_all (grid);
 	gtk_container_add (GTK_CONTAINER (source), grid);
 
-	g_thread_create ((GThreadFunc)rb_audiocd_load_songs, g_object_ref (source), FALSE, NULL);
-
+	g_thread_new ("audiocd-scan", (GThreadFunc)rb_audiocd_load_songs, g_object_ref (source));
 	g_object_unref (db);
 	g_object_unref (shell_player);
 }

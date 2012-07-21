@@ -361,7 +361,6 @@ static void
 parse_in_thread (RBPodcastAddDialog *dialog, const char *text, gboolean existing, gboolean single)
 {
 	ParseThreadData *data;
-	GError *error = NULL;
 
 	data = g_new0 (ParseThreadData, 1);
 	data->dialog = g_object_ref (dialog);
@@ -370,12 +369,7 @@ parse_in_thread (RBPodcastAddDialog *dialog, const char *text, gboolean existing
 	data->existing = existing;
 	data->single = single;
 
-	g_thread_create ((GThreadFunc) parse_thread, data, TRUE, &error);
-	if (error != NULL) {
-		/* ugh.. */
-		g_warning ("Unable to create podcast parsing thread: %s", error->message);
-		g_clear_error (&error);
-	}
+	g_thread_new ("podcast parser", (GThreadFunc) parse_thread, data);
 }
 
 static void

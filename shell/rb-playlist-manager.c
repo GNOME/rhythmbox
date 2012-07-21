@@ -655,7 +655,7 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	if (force)
 		rb_playlist_manager_save_data (data);
 	else
-		g_thread_create ((GThreadFunc) rb_playlist_manager_save_data, data, FALSE, NULL);
+		g_thread_new ("playlist-save", (GThreadFunc) rb_playlist_manager_save_data, data);
 
 	return TRUE;
 }

@@ -1192,7 +1192,7 @@ rhythmdb_thread_create (RhythmDB *db,
 	if (pool)
 		g_thread_pool_push (pool, data, NULL);
 	else
-		g_thread_create ((GThreadFunc) func, data, FALSE, NULL);
+		g_thread_new ("rhythmdb-thread", (GThreadFunc) func, data);
 }
 
 static gboolean

@@ -1668,7 +1668,7 @@ rb_shell_player_open_location (RBShellPlayer *player,
 		}
 		data->cancellable = g_object_ref (player->priv->parser_cancellable);
 
-		g_thread_create ((GThreadFunc)open_location_thread, data, FALSE, NULL);
+		g_thread_new ("open-location", (GThreadFunc)open_location_thread, data);
 	} else {
 		if (player->priv->parser_cancellable != NULL) {
 			g_object_unref (player->priv->parser_cancellable);
