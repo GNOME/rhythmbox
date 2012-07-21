@@ -43,15 +43,15 @@ m4_ifdef([LT_OUTPUT], [LT_OUTPUT])
 AC_C_BIGENDIAN
 AC_CHECK_SIZEOF(long)
 
-GTK_REQS=3.2.0
+GTK_REQS=3.4.0
 
 GST_0_10_REQS=0.10.32
 GDK_PIXBUF_REQS=2.18.0
-GLIB_REQS=2.28.0
+GLIB_REQS=2.32.0
 LIBGPOD_REQS=0.6
 MUSICBRAINZ3_REQS=3.0.2
 MUSICBRAINZ4_REQS=4.0.0
-TOTEM_PLPARSER_REQS=2.32.1
+TOTEM_PLPARSER_REQS=3.2.0
 VALA_REQS=0.9.4
 AVAHI_REQS=0.6
 LIBSOUP_REQS=2.26.0
@@ -64,7 +64,7 @@ LIBXML2_REQS=2.7.8
 LIBNOTIFY_REQS=0.7.0
 BRASERO_MIN_REQS=2.31.5
 WEBKIT_MIN_REQS=1.3.9
-PYGOBJECT_REQUIRED=2.90.2
+PYGOBJECT_REQUIRED=3.0.0
 
 GLIB_GSETTINGS
 
@@ -589,9 +589,6 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 	unset SAVE_CFLAGS
 	unset has_wnoerror
 
-	dnl enable GSEAL if gtk is new enough
-	PKG_CHECK_EXISTS(gtk+-2.0 >= 2.20.0, [CFLAGS="$CFLAGS -DGSEAL_ENABLE"], [])
-
 	dnl disable deprecated stuff
 	dnl CFLAGS="$CFLAGS $DISABLE_DEPRECATED"
 else
@@ -599,10 +596,12 @@ else
 fi
 
 dnl Set required and max glib/gdk versions
-AC_DEFINE(GLIB_VERSION_MIN_REQUIRED, GLIB_VERSION_2_28, [minimum glib version])
-AC_DEFINE(GLIB_VERSION_MAX_ALLOWED, GLIB_VERSION_2_28, [maximum glib version])
-AC_DEFINE(GDK_VERSION_MIN_REQUIRED, GDK_VERSION_3_2, [minimum gdk version])
-AC_DEFINE(GDK_VERSION_MAX_ALLOWED, GDK_VERSION_3_2, [maximum gdk version])
+AC_DEFINE(GLIB_VERSION_MIN_REQUIRED, GLIB_VERSION_2_32, [minimum glib version])
+AC_DEFINE(GLIB_VERSION_MAX_ALLOWED, GLIB_VERSION_2_32, [maximum glib version])
+AC_DEFINE(GDK_VERSION_MIN_REQUIRED, GDK_VERSION_3_4, [minimum gdk version])
+AC_DEFINE(GDK_VERSION_MAX_ALLOWED, GDK_VERSION_3_4, [maximum gdk version])
+AC_DEFINE(CLUTTER_VERSION_MIN_REQUIRED, CLUTTER_VERSION_1_8, [minimum clutter version])
+AC_DEFINE(CLUTTER_VERSION_MAX_ALLOWED, CLUTTER_VERSION_1_8, [maximum clutter version])
 
 dnl Check for -fno-strict-aliasing
 FLAGS="-fno-strict-aliasing"
@@ -751,9 +750,9 @@ AC_ARG_ENABLE(visualizer,
               enable_visualizer=auto)
 if test "x$enable_visualizer" != "xno"; then
 	PKG_CHECK_MODULES(CLUTTER,
-			  clutter-1.0 >= 1.2			\
-			  clutter-x11-1.0 >= 1.2		\
-			  clutter-gst-1.0 >= 1.0		\
+			  clutter-1.0 >= 1.8			\
+			  clutter-x11-1.0 >= 1.8		\
+			  clutter-gst-1.0 >= 1.4		\
 			  clutter-gtk-1.0 >= 1.0		\
 			  mx-1.0 >= 1.0.1,
 			  have_clutter=yes,
