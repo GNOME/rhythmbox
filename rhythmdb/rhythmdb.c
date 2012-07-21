@@ -1208,7 +1208,7 @@ rhythmdb_read_enter (RhythmDB *db)
 	g_return_if_fail (g_atomic_int_get (&db->priv->read_counter) >= 0);
 	g_assert (rb_is_main_thread ());
 
-	count = g_atomic_int_exchange_and_add (&db->priv->read_counter, 1);
+	count = g_atomic_int_add (&db->priv->read_counter, 1);
 	rb_debug ("counter: %d", count+1);
 	if (count == 0)
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[READ_ONLY],
@@ -1222,7 +1222,7 @@ rhythmdb_read_leave (RhythmDB *db)
 	g_return_if_fail (rhythmdb_get_readonly (db));
 	g_assert (rb_is_main_thread ());
 
-	count = g_atomic_int_exchange_and_add (&db->priv->read_counter, -1);
+	count = g_atomic_int_add (&db->priv->read_counter, -1);
 	rb_debug ("counter: %d", count-1);
 	if (count == 1) {
 
@@ -1631,7 +1631,7 @@ rhythmdb_entry_allocate (RhythmDB *db,
 		size = ALIGN_STRUCT (sizeof (RhythmDBEntry)) + type_data_size;
 	}
 	ret = g_malloc0 (size);
-	ret->id = (guint) g_atomic_int_exchange_and_add (&db->priv->next_entry_id, 1);
+	ret->id = (guint) g_atomic_int_add (&db->priv->next_entry_id, 1);
 
 	ret->type = type;
 	ret->title = rb_refstring_ref (db->priv->empty_string);
