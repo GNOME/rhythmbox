@@ -267,15 +267,11 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 	 */
 	g_object_class_install_property (object_class,
 					 PROP_SELECTED_ENTRIES,
-					 g_param_spec_value_array ("selected-entries",
-								   "Selected entries",
-								   "List of selected entries, if this is a multiple-entry dialog",
-								   g_param_spec_boxed ("selected-entry",
-										       "Selected entry",
-										       "RhythmDBEntry for a selected entry",
-										       RHYTHMDB_TYPE_ENTRY,
-										       G_PARAM_READABLE),
-								   G_PARAM_READABLE));
+					 g_param_spec_boxed ("selected-entries",
+							     "selected entries",
+							     "List of selected entries, if this is a multiple-entry dialog",
+							     G_TYPE_ARRAY,
+							     G_PARAM_READABLE));
 
 	object_class->dispose = rb_song_info_dispose;
 	object_class->finalize = rb_song_info_finalize;
@@ -749,15 +745,16 @@ rb_song_info_get_property (GObject *object,
 		break;
 	case PROP_SELECTED_ENTRIES:
 		if (song_info->priv->selected_entries) {
-			GValueArray *value_array;
+			GArray *value_array;
 			GValue entry_value = { 0, };
 			GList *entry_list;
 
-			value_array = g_value_array_new (1);
+			value_array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 1);
+			g_array_set_clear_func (value_array, (GDestroyNotify) g_value_unset);
 			g_value_init (&entry_value, RHYTHMDB_TYPE_ENTRY);
 			for (entry_list = song_info->priv->selected_entries; entry_list; entry_list = entry_list->next) {
 				g_value_set_boxed (&entry_value, entry_list->data);
-				g_value_array_append (value_array, &entry_value);
+				g_array_append_val (value_array, entry_value);
 			}
 			g_value_unset (&entry_value);
 			g_value_take_boxed (value, value_array);

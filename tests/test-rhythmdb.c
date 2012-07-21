@@ -473,10 +473,10 @@ START_TEST (test_rhythmdb_modify_after_delete)
 END_TEST
 
 static void
-commit_change_merge_cb (RhythmDB *db, RhythmDBEntry *entry, GValueArray *changes, gpointer ok)
+commit_change_merge_cb (RhythmDB *db, RhythmDBEntry *entry, GArray *changes, gpointer ok)
 {
 	int expected = GPOINTER_TO_INT (ok);
-	fail_unless (changes->n_values == expected, "commit change lists merged");
+	fail_unless (changes->len == expected, "commit change lists merged");
 }
 
 START_TEST (test_rhythmdb_commit_change_merging)

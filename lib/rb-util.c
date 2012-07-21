@@ -1089,7 +1089,7 @@ rb_signal_accumulator_value_handled (GSignalInvocationHint *hint,
  * @dummy: user data (unused)
  *
  * A #GSignalAccumulator used to combine all returned values into
- * a #GValueArray.
+ * a #GArray of #GValue instances.
  *
  * Return value: %FALSE to abort signal emission, %TRUE to continue
  */
@@ -1099,35 +1099,31 @@ rb_signal_accumulator_value_array (GSignalInvocationHint *hint,
 				   const GValue *handler_return,
 				   gpointer dummy)
 {
-	GValueArray *a;
-	GValueArray *b;
+	GArray *a;
+	GArray *b;
 	int i;
 
 	if (handler_return == NULL)
 		return TRUE;
 
-	a = NULL;
+	a = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 1);
+	g_array_set_clear_func (a, (GDestroyNotify) g_value_unset);
 	if (G_VALUE_HOLDS_BOXED (return_accu)) {
-		a = g_value_get_boxed (return_accu);
-		if (a != NULL) {
-			a = g_value_array_copy (a);
+		b = g_value_get_boxed (return_accu);
+		if (b != NULL) {
+			g_array_append_vals (a, b->data, b->len);
 		}
-	}
-
-	if (a == NULL) {
-		a = g_value_array_new (1);
 	}
 
 	if (G_VALUE_HOLDS_BOXED (handler_return)) {
 		b = g_value_get_boxed (handler_return);
-		for (i=0; i < b->n_values; i++) {
-			GValue *z = g_value_array_get_nth (b, i);
-			a = g_value_array_append (a, z);
+		for (i=0; i < b->len; i++) {
+			a = g_array_append_val (a, g_array_index (b, GValue, i));
 		}
 	}
 
 	g_value_unset (return_accu);
-	g_value_init (return_accu, G_TYPE_VALUE_ARRAY);
+	g_value_init (return_accu, G_TYPE_ARRAY);
 	g_value_set_boxed (return_accu, a);
 	return TRUE;
 }
@@ -1164,14 +1160,14 @@ rb_signal_accumulator_boolean_or (GSignalInvocationHint *hint,
 
 /**
  * rb_value_array_append_data: (skip):
- * @array: #GValueArray to append to
+ * @array: #GArray to append to
  * @type: #GType of the value being appended
  * @Varargs: value to append
  *
  * Appends a single value to @array, collecting it from @Varargs.
  */
 void
-rb_value_array_append_data (GValueArray *array, GType type, ...)
+rb_value_array_append_data (GArray *array, GType type, ...)
 {
 	GValue val = {0,};
 	va_list va;
@@ -1181,7 +1177,7 @@ rb_value_array_append_data (GValueArray *array, GType type, ...)
 
 	g_value_init (&val, type);
 	G_VALUE_COLLECT (&val, va, 0, &err);
-	g_value_array_append (array, &val);
+	g_array_append_val (array, val);
 	g_value_unset (&val);
 
 	if (err)

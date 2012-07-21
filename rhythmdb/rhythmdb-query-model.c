@@ -82,7 +82,7 @@ static void rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 static void rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 						 RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
-						   GValueArray *changes, RhythmDBQueryModel *model);
+						   GArray *changes, RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 						   RhythmDBQueryModel *model);
 
@@ -224,7 +224,7 @@ struct _RhythmDBQueryModelPrivate
 	guint stamp;
 
 	RhythmDBQueryModelLimitType limit_type;
-	GValueArray *limit_value;
+	GArray *limit_value;
 
 	glong total_duration;
 	guint64 total_size;
@@ -374,7 +374,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 					 g_param_spec_boxed ("limit-value",
 							     "limit-value",
 							     "value of limit",
-							     G_TYPE_VALUE_ARRAY,
+							     G_TYPE_ARRAY,
 							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_SHOW_HIDDEN,
@@ -605,8 +605,8 @@ rhythmdb_query_model_set_property (GObject *object,
 		break;
 	case PROP_LIMIT_VALUE:
 		if (model->priv->limit_value)
-			g_value_array_free (model->priv->limit_value);
-		model->priv->limit_value = (GValueArray*)g_value_dup_boxed (value);
+			g_array_unref (model->priv->limit_value);
+		model->priv->limit_value = (GArray*)g_value_dup_boxed (value);
 		break;
 	case PROP_SHOW_HIDDEN:
 		model->priv->show_hidden = g_value_get_boolean (value);
@@ -794,7 +794,7 @@ rhythmdb_query_model_finalize (GObject *object)
 		model->priv->sort_data_destroy (model->priv->sort_data);
 
 	if (model->priv->limit_value)
-		g_value_array_free (model->priv->limit_value);
+		g_array_unref (model->priv->limit_value);
 
 	G_OBJECT_CLASS (rhythmdb_query_model_parent_class)->finalize (object);
 }
@@ -1017,7 +1017,7 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db,
 static void
 rhythmdb_query_model_entry_changed_cb (RhythmDB *db,
 				       RhythmDBEntry *entry,
-				       GValueArray *changes,
+				       GArray *changes,
 				       RhythmDBQueryModel *model)
 {
 	gboolean hidden = FALSE;
@@ -1089,8 +1089,8 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db,
 	 * unless this is a chained query model, in which
 	 * case we propagate the parent model's signals instead.
 	 */
-	for (i = 0; i < changes->n_values; i++) {
-		GValue *v = g_value_array_get_nth (changes, i);
+	for (i = 0; i < changes->len; i++) {
+		GValue *v = &g_array_index (changes, GValue, i);
 		RhythmDBEntryChange *change = g_value_get_boxed (v);
 
 		if (model->priv->base_model == NULL) {
@@ -3275,7 +3275,7 @@ rhythmdb_query_model_within_limit (RhythmDBQueryModel *model,
 			gulong limit_count;
 			gulong current_count;
 
-			limit_count = g_value_get_ulong (g_value_array_get_nth (model->priv->limit_value, 0));
+			limit_count = g_value_get_ulong (&g_array_index (model->priv->limit_value, GValue, 0));
 			current_count = g_hash_table_size (model->priv->reverse_map);
 
 			if (entry)
@@ -3290,7 +3290,7 @@ rhythmdb_query_model_within_limit (RhythmDBQueryModel *model,
 			guint64 limit_size;
 			guint64 current_size;
 
-			limit_size = g_value_get_uint64 (g_value_array_get_nth (model->priv->limit_value, 0));
+			limit_size = g_value_get_uint64 (&g_array_index (model->priv->limit_value, GValue, 0));
 			current_size = model->priv->total_size;
 
 			if (entry)
@@ -3306,7 +3306,7 @@ rhythmdb_query_model_within_limit (RhythmDBQueryModel *model,
 			gulong limit_time;
 			gulong current_time;
 
-			limit_time = g_value_get_ulong (g_value_array_get_nth (model->priv->limit_value, 0));
+			limit_time = g_value_get_ulong (&g_array_index (model->priv->limit_value, GValue, 0));
 			current_time = model->priv->total_duration;
 
 			if (entry)

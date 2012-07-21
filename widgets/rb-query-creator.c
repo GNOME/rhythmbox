@@ -351,7 +351,7 @@ static gboolean
 rb_query_creator_load_query (RBQueryCreator *creator,
                              GPtrArray *query,
 			     RhythmDBQueryModelLimitType limit_type,
-                             GValueArray *limit_value)
+                             GArray *limit_value)
 {
 	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
 	int i;
@@ -418,17 +418,17 @@ rb_query_creator_load_query (RBQueryCreator *creator,
 
 	case RHYTHMDB_QUERY_MODEL_LIMIT_COUNT:
 		gtk_combo_box_set_active (GTK_COMBO_BOX (priv->limit_option), 0);
-		limit = g_value_get_ulong (g_value_array_get_nth (limit_value, 0));
+		limit = g_value_get_ulong (&g_array_index (limit_value, GValue, 0));
 		break;
 
 	case RHYTHMDB_QUERY_MODEL_LIMIT_TIME:
 		gtk_combo_box_set_active (GTK_COMBO_BOX (priv->limit_option), 3);
 		/* convert to minutes */
-		limit = g_value_get_ulong (g_value_array_get_nth (limit_value, 0)) / 60;
+		limit = g_value_get_ulong (&g_array_index (limit_value, GValue, 0)) / 60;
 		break;
 
 	case RHYTHMDB_QUERY_MODEL_LIMIT_SIZE:
-		limit = g_value_get_uint64 (g_value_array_get_nth (limit_value, 0));
+		limit = g_value_get_uint64 (&g_array_index (limit_value, GValue, 0));
 
 		if (limit % 1000 == 0) {
 			gtk_combo_box_set_active (GTK_COMBO_BOX (priv->limit_option), 2);
@@ -495,7 +495,7 @@ GtkWidget *
 rb_query_creator_new_from_query (RhythmDB *db,
                                  GPtrArray *query,
 				 RhythmDBQueryModelLimitType limit_type,
-                                 GValueArray *limit_value,
+                                 GArray *limit_value,
 				 const char *sort_column,
                                  gint sort_direction)
 {
@@ -633,12 +633,12 @@ rb_query_creator_get_query (RBQueryCreator *creator)
  *
  * Retrieves the limit type and value from the query creator.
  * The limit value is returned as the first element in a
- * #GValueArray.
+ * #GArray.
  */
 void
 rb_query_creator_get_limit (RBQueryCreator *creator,
 			    RhythmDBQueryModelLimitType *type,
-                            GValueArray **limit)
+                            GArray **limit)
 {
 	RBQueryCreatorPrivate *priv;
 
@@ -650,7 +650,8 @@ rb_query_creator_get_limit (RBQueryCreator *creator,
 		guint64 l;
 
 		l = gtk_spin_button_get_value(GTK_SPIN_BUTTON (priv->limit_entry));
-		*limit = g_value_array_new (0);
+		*limit = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
+		g_array_set_clear_func (*limit, (GDestroyNotify) g_value_unset);
 
 		switch (gtk_combo_box_get_active (GTK_COMBO_BOX (priv->limit_option))) {
 		case 0:

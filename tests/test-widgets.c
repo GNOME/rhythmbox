@@ -18,7 +18,7 @@
 #endif
 
 static gboolean
-rb_value_array_equal (GValueArray *a1, GValueArray *a2)
+rb_value_array_equal (GArray *a1, GArray *a2)
 {
 	int i;
 
@@ -27,14 +27,14 @@ rb_value_array_equal (GValueArray *a1, GValueArray *a2)
 	else if (a1 == NULL || a2 == NULL)
 		return FALSE;
 
-	if (a1->n_values != a2->n_values)
+	if (a1->len != a2->len)
 		return FALSE;
 
-	for (i = 0; i < a1->n_values; i++) {
+	for (i = 0; i < a1->len; i++) {
 		GValue *v1, *v2;
 
-		v1 = g_value_array_get_nth (a1, i);
-		v2 = g_value_array_get_nth (a2, i);
+		v1 = &g_array_index (a1, GValue, i);
+		v2 = &g_array_index (a2, GValue, i);
 		if (rb_gvalue_compare (v1, v2) != 0)
 			return FALSE;
 	}
@@ -43,7 +43,7 @@ rb_value_array_equal (GValueArray *a1, GValueArray *a2)
 }
 
 static char *
-rb_gvalue_array_to_string (GValueArray *a)
+rb_gvalue_array_to_string (GArray *a)
 {
 	int i;
 	GString *s;
@@ -53,13 +53,13 @@ rb_gvalue_array_to_string (GValueArray *a)
 
 	s = g_string_new ("(");
 
-	for (i = 0; i < a->n_values; i++) {
+	for (i = 0; i < a->len; i++) {
 		GValue *val;
 	
 		if (i != 0)
 			g_string_append (s, ", ");
 
-		val = g_value_array_get_nth (a, i);
+		val = &g_array_index (a, GValue, i);
 		switch (G_VALUE_TYPE (val)) {
 		case G_TYPE_STRING:
 			g_string_append_printf (s, "\"%s\"", g_value_get_string (val));
@@ -146,14 +146,14 @@ static void
 query_creator_test_load_query (RhythmDB *db,
 			       RhythmDBQuery *query,
 			       RhythmDBQueryModelLimitType limit_type,
-			       GValueArray *limit_value,
+			       GArray *limit_value,
 			       const char *sort_column,
 			       gint sort_direction)
 {
 	GtkWidget *creator;
 	RhythmDBQuery *squery;
 	RhythmDBQuery *query2 = NULL;
-	GValueArray *limit_value2 = NULL;
+	GArray *limit_value2 = NULL;
 	const char *sort_column2 = NULL;
 	RhythmDBQueryModelLimitType limit_type2;
 	gint sort_direction2;
@@ -194,7 +194,7 @@ query_creator_test_load_query (RhythmDB *db,
 	g_free (str2);
 	g_free (str1);
 	if (limit_value2)
-		g_value_array_free (limit_value2);
+		g_array_unref (limit_value2);
 
 	/* check sorting */
 	rb_query_creator_get_sort_order (RB_QUERY_CREATOR (creator),
@@ -274,108 +274,114 @@ END_TEST
 START_TEST (test_query_creator_load_limit_count)
 {
 	RhythmDBQuery *query;
-	GValueArray *array;
+	GArray *array;
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_END);
-	array = g_value_array_new (0);
+	array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
+	g_array_set_clear_func (array, (GDestroyNotify) g_value_unset);
 	rb_value_array_append_data (array, G_TYPE_ULONG, 47);
 	query_creator_test_load_query (db,
 				       query,
 				       RHYTHMDB_QUERY_MODEL_LIMIT_COUNT, array,
 				       "Title", GTK_SORT_ASCENDING);
 	rhythmdb_query_free (query);
-	g_value_array_free (array);
+	g_array_unref (array);
 }
 END_TEST
 
 START_TEST (test_query_creator_load_limit_minutes)
 {
 	RhythmDBQuery *query;
-	GValueArray *array;
+	GArray *array;
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_END);
-	array = g_value_array_new (0);
+	array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
+	g_array_set_clear_func (array, (GDestroyNotify) g_value_unset);
 	rb_value_array_append_data (array, G_TYPE_ULONG, 37 * 60);
 	query_creator_test_load_query (db,
 				       query,
 				       RHYTHMDB_QUERY_MODEL_LIMIT_TIME, array,
 				       "Title", GTK_SORT_ASCENDING);
 	rhythmdb_query_free (query);
-	g_value_array_free (array);
+	g_array_unref (array);
 }
 END_TEST
 
 START_TEST (test_query_creator_load_limit_hours)
 {
 	RhythmDBQuery *query;
-	GValueArray *array;
+	GArray *array;
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_END);
-	array = g_value_array_new (0);
+	array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
+	g_array_set_clear_func (array, (GDestroyNotify) g_value_unset);
 	rb_value_array_append_data (array, G_TYPE_ULONG, 41 * 60 * 60);
 	query_creator_test_load_query (db,
 				       query,
 				       RHYTHMDB_QUERY_MODEL_LIMIT_TIME, array,
 				       "Title", GTK_SORT_ASCENDING);
 	rhythmdb_query_free (query);
-	g_value_array_free (array);
+	g_array_unref (array);
 }
 END_TEST
 
 START_TEST (test_query_creator_load_limit_days)
 {
 	RhythmDBQuery *query;
-	GValueArray *array;
+	GArray *array;
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_END);
-	array = g_value_array_new (0);
+	array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
+	g_array_set_clear_func (array, (GDestroyNotify) g_value_unset);
 	rb_value_array_append_data (array, G_TYPE_ULONG, 13 * 60 * 60 * 24);
 	query_creator_test_load_query (db,
 				       query,
 				       RHYTHMDB_QUERY_MODEL_LIMIT_TIME, array,
 				       "Title", GTK_SORT_ASCENDING);
 	rhythmdb_query_free (query);
-	g_value_array_free (array);
+	g_array_unref (array);
 }
 END_TEST
 
 START_TEST (test_query_creator_load_limit_mb)
 {
 	RhythmDBQuery *query;
-	GValueArray *array;
+	GArray *array;
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_END);
-	array = g_value_array_new (0);
+	array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
+	g_array_set_clear_func (array, (GDestroyNotify) g_value_unset);
 	rb_value_array_append_data (array, G_TYPE_UINT64, (guint64)13);
 	query_creator_test_load_query (db,
 				       query,
 				       RHYTHMDB_QUERY_MODEL_LIMIT_SIZE, array,
 				       "Title", GTK_SORT_ASCENDING);
 	rhythmdb_query_free (query);
-	g_value_array_free (array);
+	g_array_unref (array);
 }
 END_TEST
 
 START_TEST (test_query_creator_load_limit_gb)
 {
 	RhythmDBQuery *query;
-	GValueArray *array;
+	GArray *array;
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_END);
-	array = g_value_array_new (0);
+	array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
+	g_array_set_clear_func (array, (GDestroyNotify) g_value_unset);
 	rb_value_array_append_data (array, G_TYPE_UINT64, (guint64)(14 * 1000));
 	query_creator_test_load_query (db,
 				       query,
 				       RHYTHMDB_QUERY_MODEL_LIMIT_SIZE, array,
 				       "Title", GTK_SORT_ASCENDING);
 	rhythmdb_query_free (query);
-	g_value_array_free (array);
+	g_array_unref (array);
 }
 END_TEST
 

@@ -97,7 +97,7 @@ gboolean rb_signal_accumulator_value_array (GSignalInvocationHint *hint,
 					    GValue *return_accu,
 					    const GValue *handler_return,
 					    gpointer dummy);
-void rb_value_array_append_data (GValueArray *array, GType type, ...);
+void rb_value_array_append_data (GArray *array, GType type, ...);
 void rb_value_free (GValue *val); /* g_value_unset, g_slice_free */
 
 void rb_assert_locked (GMutex *mutex);

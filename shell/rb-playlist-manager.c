@@ -845,7 +845,7 @@ rb_playlist_manager_set_automatic_playlist (RBPlaylistManager *mgr,
 					    RBQueryCreator *creator)
 {
 	RhythmDBQueryModelLimitType limit_type;
-	GValueArray *limit_value = NULL;
+	GArray *limit_value = NULL;
 	const char *sort_key;
 	gint sort_direction;
 	GPtrArray *query;
@@ -863,6 +863,9 @@ rb_playlist_manager_set_automatic_playlist (RBPlaylistManager *mgr,
 					   sort_key,
 					   sort_direction);
 	rhythmdb_query_free (query);
+	if (limit_value != NULL) {
+		g_array_unref (limit_value);
+	}
 }
 
 static void
@@ -948,7 +951,7 @@ rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 	creator = g_object_get_data (G_OBJECT (playlist), "rhythmbox-playlist-editor");
 	if (creator == NULL) {
 		RhythmDBQueryModelLimitType limit_type;
-		GValueArray *limit_value = NULL;
+		GArray *limit_value = NULL;
 		GPtrArray *query;
 		char *sort_key;
 		gint sort_direction;
@@ -969,7 +972,7 @@ rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 									     sort_key,
 									     sort_direction));
 		if (limit_value != NULL) {
-			g_value_array_free (limit_value);
+			g_array_unref (limit_value);
 		}
 		rhythmdb_query_free (query);
 		g_free (sort_key);

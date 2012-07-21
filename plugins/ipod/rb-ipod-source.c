@@ -1050,7 +1050,7 @@ send_offline_plays_notification (RBiPodSource *source)
 static void
 rb_ipod_source_entry_changed_cb (RhythmDB *db,
 				 RhythmDBEntry *entry,
-				 GValueArray *changes,
+				 GArray *changes,
 				 RBiPodSource *source)
 {
 	int i;
@@ -1075,8 +1075,8 @@ rb_ipod_source_entry_changed_cb (RhythmDB *db,
 	 * that's the worst that can happen and that's pretty theoretical,
 	 * I don't think avoiding it is worth the effort.
 	 */
-	for (i = 0; i < changes->n_values; i++) {
-		GValue *v = g_value_array_get_nth (changes, i);
+	for (i = 0; i < changes->len; i++) {
+		GValue *v = &g_array_index (changes, GValue, i);
 		RhythmDBEntryChange *change = g_value_get_boxed (v);
 		switch (change->prop) {
 		case RHYTHMDB_PROP_RATING: {

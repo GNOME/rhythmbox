@@ -241,7 +241,7 @@ struct _RhythmDBClass
 
 	/* signals */
 	void	(*entry_added)		(RhythmDB *db, RhythmDBEntry *entry);
-	void	(*entry_changed)	(RhythmDB *db, RhythmDBEntry *entry, GValueArray *changes); /* array of RhythmDBEntryChanges */
+	void	(*entry_changed)	(RhythmDB *db, RhythmDBEntry *entry, GArray *changes); /* array of RhythmDBEntryChanges */
 	void	(*entry_deleted)	(RhythmDB *db, RhythmDBEntry *entry);
 	void	(*entry_keyword_added)	(RhythmDB *db, RhythmDBEntry *entry, RBRefString *keyword);
 	void	(*entry_keyword_removed)(RhythmDB *db, RhythmDBEntry *entry, RBRefString *keyword);

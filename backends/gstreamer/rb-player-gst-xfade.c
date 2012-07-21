@@ -680,7 +680,7 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 			      0,
 			      rb_signal_accumulator_value_array, NULL,
 			      rb_marshal_BOXED__STRING,
-			      G_TYPE_VALUE_ARRAY,
+			      G_TYPE_ARRAY,
 			      1,
 			      G_TYPE_STRING);
 
@@ -2082,7 +2082,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 {
 	RBXFadeStream *stream;
 	GstCaps *caps;
-	GValueArray *stream_filters = NULL;
+	GArray *stream_filters = NULL;
 	GstElement *tail;
 	GstController *controller;
 	int i;
@@ -2247,8 +2247,8 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	g_signal_emit (player, signals[GET_STREAM_FILTERS], 0, uri, &stream_filters);
 	if (stream_filters != NULL) {
 		int i;
-		for (i = 0; i < stream_filters->n_values; i++) {
-			GValue *v = g_value_array_get_nth (stream_filters, i);
+		for (i = 0; i < stream_filters->len; i++) {
+			GValue *v = &g_array_index (stream_filters, GValue, i);
 			GstElement *filter;
 			GstElement *audioconvert;
 
@@ -2260,7 +2260,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 			tail = filter;
 		}
 
-		g_value_array_free (stream_filters);
+		g_array_unref (stream_filters);
 	}
 	gst_element_link (tail, stream->audioconvert);
 

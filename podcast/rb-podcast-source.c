@@ -897,7 +897,7 @@ episode_activated_cb (RBEntryView *view,
 static void
 podcast_entry_changed_cb (RhythmDB *db,
 			  RhythmDBEntry *entry,
-			  GValueArray *changes,
+			  GArray *changes,
 			  RBPodcastSource *source)
 {
 	RhythmDBEntryType *entry_type;
@@ -909,8 +909,8 @@ podcast_entry_changed_cb (RhythmDB *db,
 		return;
 
 	feed_changed = FALSE;
-	for (i = 0; i < changes->n_values; i++) {
-		GValue *v = g_value_array_get_nth (changes, i);
+	for (i = 0; i < changes->len; i++) {
+		GValue *v = &g_array_index (changes, GValue, i);
 		RhythmDBEntryChange *change = g_value_get_boxed (v);
 
 		if (change->prop == RHYTHMDB_PROP_PLAYBACK_ERROR) {
