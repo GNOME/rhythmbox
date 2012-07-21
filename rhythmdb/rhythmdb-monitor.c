@@ -42,10 +42,6 @@
 #include "rhythmdb-query-result-list.h"
 #include "rb-file-helpers.h"
 
-#if !GLIB_CHECK_VERSION(2,24,0)
-#define G_FILE_MONITOR_SEND_MOVED	0
-#endif
-
 #define RHYTHMDB_FILE_MODIFY_PROCESS_TIME 2
 
 static void rhythmdb_directory_change_cb (GFileMonitor *monitor,
@@ -351,7 +347,6 @@ rhythmdb_directory_change_cb (GFileMonitor *monitor,
 			rhythmdb_commit (db);
 		}
 		break;
-#if GLIB_CHECK_VERSION(2,24,0)
 	case G_FILE_MONITOR_EVENT_MOVED:
 		if (other_canon_uri == NULL) {
 			break;
@@ -377,7 +372,6 @@ rhythmdb_directory_change_cb (GFileMonitor *monitor,
 			}
 		}
 		break;
-#endif
 	case G_FILE_MONITOR_EVENT_PRE_UNMOUNT:
 	case G_FILE_MONITOR_EVENT_UNMOUNTED:
 	default:

@@ -59,11 +59,6 @@
 #include "rb-mtp-source.h"
 #include "rb-mtp-thread.h"
 
-#if !GLIB_CHECK_VERSION(2,22,0)
-#define g_mount_unmount_with_operation_finish g_mount_unmount_finish
-#define g_mount_unmount_with_operation(m,f,mo,ca,cb,ud) g_mount_unmount(m,f,ca,cb,ud)
-#endif
-
 static void rb_mtp_source_constructed (GObject *object);
 static void rb_mtp_source_dispose (GObject *object);
 static void rb_mtp_source_finalize (GObject *object);
