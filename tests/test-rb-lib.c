@@ -103,7 +103,6 @@ main (int argc, char **argv)
 	Suite *s;
 
 	rb_profile_start ("rb-utils test suite");
-	g_thread_init (NULL);
 	rb_threads_init ();
 	g_type_init ();
 	rb_debug_init (TRUE);

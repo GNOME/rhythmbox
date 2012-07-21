@@ -317,7 +317,6 @@ main (int argc, char **argv)
 	/* init stuff */
 	rb_profile_start ("rhythmdb-query-model test suite");
 
-	g_thread_init (NULL);
 	rb_threads_init ();
 	setlocale (LC_ALL, NULL);
 	rb_debug_init (TRUE);

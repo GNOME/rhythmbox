@@ -56,7 +56,6 @@ main (int argc, char **argv)
 	 * plugin can't do it.
 	 */
 	gdk_disable_multidevice ();
-	g_thread_init (NULL);
 	g_type_init ();
 	g_random_set_seed (time (0));
 

@@ -428,7 +428,6 @@ main (int argc, char **argv)
 
 	g_log_set_always_fatal (G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 
-	g_thread_init (NULL);
 	rb_threads_init ();
 	rb_debug_init (TRUE);
 	rb_refstring_system_init ();

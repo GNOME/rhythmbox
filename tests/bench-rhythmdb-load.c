@@ -99,7 +99,6 @@ main (int argc, char **argv)
 
 	rb_profile_start ("load test");
 
-	g_thread_init (NULL);
 	rb_threads_init ();
 	setlocale (LC_ALL, NULL);
 	gtk_init (&argc, &argv);

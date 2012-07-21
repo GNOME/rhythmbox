@@ -554,7 +554,6 @@ main (int argc, char **argv)
 	/* init stuff */
 	rb_profile_start ("rhythmbox test suite");
 
-	g_thread_init (NULL);
 	rb_threads_init ();
 	rb_debug_init (TRUE);
 	rb_refstring_system_init ();
