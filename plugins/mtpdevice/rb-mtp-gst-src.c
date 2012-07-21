@@ -65,8 +65,8 @@ struct _RBMTPSrc
 	guint64 read_position;
 
 	GError *download_error;
-	GMutex *download_mutex;
-	GCond *download_cond;
+	GMutex download_mutex;
+	GCond download_cond;
 	gboolean download_done;
 };
 
@@ -121,8 +121,6 @@ rb_mtp_src_base_init (gpointer g_class)
 static void
 rb_mtp_src_init (RBMTPSrc *src, RBMTPSrcClass *klass)
 {
-	src->download_mutex = g_mutex_new ();
-	src->download_cond = g_cond_new ();
 }
 
 static gboolean
@@ -222,7 +220,7 @@ static void
 download_cb (LIBMTP_track_t *track, const char *filename, GError *error, RBMTPSrc *src)
 {
 	rb_debug ("mtp download callback for %s: %s", filename, error ? error->message : "OK");
-	g_mutex_lock (src->download_mutex);
+	g_mutex_lock (&src->download_mutex);
 
 	if (filename == NULL) {
 		src->download_error = g_error_copy (error);
@@ -231,8 +229,8 @@ download_cb (LIBMTP_track_t *track, const char *filename, GError *error, RBMTPSr
 	}
 	src->download_done = TRUE;
 
-	g_cond_signal (src->download_cond);
-	g_mutex_unlock (src->download_mutex);
+	g_cond_signal (&src->download_cond);
+	g_mutex_unlock (&src->download_mutex);
 }
 
 static gboolean
@@ -242,7 +240,7 @@ rb_mtp_src_start (GstBaseSrc *basesrc)
 
 	/* download the file, if we haven't already */
 	if (src->tempfile == NULL) {
-		g_mutex_lock (src->download_mutex);
+		g_mutex_lock (&src->download_mutex);
 		src->download_done = FALSE;
 		rb_mtp_thread_download_track (src->device_thread,
 					      src->track_id,
@@ -252,9 +250,9 @@ rb_mtp_src_start (GstBaseSrc *basesrc)
 					      g_object_unref);
 
 		while (src->download_done == FALSE) {
-			g_cond_wait (src->download_cond, src->download_mutex);
+			g_cond_wait (&src->download_cond, &src->download_mutex);
 		}
-		g_mutex_unlock (src->download_mutex);
+		g_mutex_unlock (&src->download_mutex);
 		rb_debug ("download finished");
 
 		if (src->download_error) {
@@ -370,9 +368,6 @@ rb_mtp_src_finalize (GObject *object)
 {
 	RBMTPSrc *src;
 	src = RB_MTP_SRC (object);
-
-	g_mutex_free (src->download_mutex);
-	g_cond_free (src->download_cond);
 
 	if (src->download_error) {
 		g_error_free (src->download_error);

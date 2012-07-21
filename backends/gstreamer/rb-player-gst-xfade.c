@@ -254,12 +254,12 @@ struct _RBPlayerGstXFadePrivate
 		SINK_STOPPED,
 		SINK_PLAYING
 	} sink_state;
-	GStaticRecMutex sink_lock;
+	GRecMutex sink_lock;
 
 	GList *waiting_tees;
 	GList *waiting_filters;
 
-	GStaticRecMutex stream_list_lock;
+	GRecMutex stream_list_lock;
 	GList *streams;
 	gint linked_streams;
 
@@ -309,7 +309,7 @@ typedef struct
 	GstBin parent;
 	RBPlayerGstXFade *player;
 
-	GMutex *lock;
+	GMutex lock;
 
 	char *uri;
 	gpointer stream_data;
@@ -397,7 +397,7 @@ rb_xfade_stream_send_event (GstElement *element, GstEvent *event)
 static void
 rb_xfade_stream_init (RBXFadeStream *stream)
 {
-	stream->lock = g_mutex_new ();
+	g_mutex_init (&stream->lock);
 }
 
 static void
@@ -462,7 +462,6 @@ rb_xfade_stream_finalize (GObject *object)
 {
 	RBXFadeStream *sd = RB_XFADE_STREAM (object);
 	
-	g_mutex_free (sd->lock);
 	g_free (sd->uri);
 
 	if (sd->error != NULL) {
@@ -724,8 +723,8 @@ rb_player_gst_xfade_init (RBPlayerGstXFade *player)
 {
 	player->priv = GET_PRIVATE (player);
 
-	g_static_rec_mutex_init (&player->priv->stream_list_lock);
-	g_static_rec_mutex_init (&player->priv->sink_lock);
+	g_rec_mutex_init (&player->priv->stream_list_lock);
+	g_rec_mutex_init (&player->priv->sink_lock);
 	player->priv->cur_volume = 1.0f;
 }
 
@@ -739,7 +738,7 @@ rb_player_gst_xfade_dispose (GObject *object)
 	player = RB_PLAYER_GST_XFADE (object);
 
 	/* clean up streams */
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 	for (l = player->priv->streams; l != NULL; l = l->next) {
 		RBXFadeStream *stream = (RBXFadeStream *)l->data;
 
@@ -750,16 +749,16 @@ rb_player_gst_xfade_dispose (GObject *object)
 	}
 	g_list_free (player->priv->streams);
 	player->priv->streams = NULL;
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	if (player->priv->volume_handler) {
 		g_object_unref (player->priv->volume_handler);
 		player->priv->volume_handler = NULL;
 	}
 
-	g_static_rec_mutex_lock (&player->priv->sink_lock);
+	g_rec_mutex_lock (&player->priv->sink_lock);
 	stop_sink (player);
-	g_static_rec_mutex_unlock (&player->priv->sink_lock);
+	g_rec_mutex_unlock (&player->priv->sink_lock);
 
 	if (player->priv->pipeline != NULL) {
 		/* maybe we should keep references to the adder, sink, etc.? */
@@ -864,11 +863,11 @@ adjust_stream_base_time (RBXFadeStream *stream)
 	gint64 output_pos = -1;
 	gint64 stream_pos = -1;
 
-	g_mutex_lock (stream->lock);
+	g_mutex_lock (&stream->lock);
 
 	if (stream->adder_pad == NULL) {
 		rb_debug ("stream isn't linked, can't adjust base time");
-		g_mutex_unlock (stream->lock);
+		g_mutex_unlock (&stream->lock);
 		return;
 	}
 
@@ -906,7 +905,7 @@ adjust_stream_base_time (RBXFadeStream *stream)
 		}
 	}
 		
-	g_mutex_unlock (stream->lock);
+	g_mutex_unlock (&stream->lock);
 }
 
 /* called on a streaming thread when the volume level for a stream changes. */
@@ -921,16 +920,16 @@ volume_changed_cb (GObject *object, GParamSpec *pspec, RBPlayerGstXFade *player)
 	 * our bus callback will handle them on the main thread.
 	 */
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 	stream = find_stream_by_element (player, GST_ELEMENT (object));
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	if (stream == NULL) {
 		rb_debug ("got volume change for unknown stream");
 		return;
 	}
 
-	g_mutex_lock (stream->lock);
+	g_mutex_lock (&stream->lock);
 
 	/* check if the fade is complete */
 	g_object_get (stream->volume, "volume", &vol, NULL);
@@ -968,7 +967,7 @@ volume_changed_cb (GObject *object, GParamSpec *pspec, RBPlayerGstXFade *player)
 		break;
 	}
 	
-	g_mutex_unlock (stream->lock);
+	g_mutex_unlock (&stream->lock);
 
 	if (message != NULL) {
 		GstMessage *msg;
@@ -1057,12 +1056,12 @@ static void
 link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 {
 	GstStateChangeReturn state_ret;
-	g_mutex_lock (stream->lock);
+	g_mutex_lock (&stream->lock);
 
 	/* sometimes we seem to get called twice */
 	if (stream->state == FADING_IN || stream->state == PLAYING) {
 		rb_debug ("stream %s already unblocked", stream->uri);
-		g_mutex_unlock (stream->lock);
+		g_mutex_unlock (&stream->lock);
 		return;
 	}
 
@@ -1073,7 +1072,7 @@ link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	else
 		stream->state = PLAYING;
 	
-	g_mutex_unlock (stream->lock);
+	g_mutex_unlock (&stream->lock);
 
 	adjust_stream_base_time (stream);
 
@@ -1247,7 +1246,7 @@ post_eos_seek_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 {
 	GError *error = NULL;
 
-	g_mutex_lock (stream->lock);
+	g_mutex_lock (&stream->lock);
 
 	rb_debug ("stream %s is blocked; linking and unblocking", stream->uri);
 	stream->src_blocked = TRUE;
@@ -1255,7 +1254,7 @@ post_eos_seek_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 		emit_stream_error (stream, error);
 	}
 
-	g_mutex_unlock (stream->lock);
+	g_mutex_unlock (&stream->lock);
 }
 
 /*
@@ -1273,7 +1272,7 @@ unlink_reuse_relink (RBPlayerGstXFade *player, RBXFadeStream *stream)
 {
 	GError *error = NULL;
 
-	g_mutex_lock (stream->lock);
+	g_mutex_lock (&stream->lock);
 
 	if (stream->adder_pad == NULL) {
 		rb_debug ("stream %s doesn't need to be unlinked.. weird.", stream->uri);
@@ -1294,7 +1293,7 @@ unlink_reuse_relink (RBPlayerGstXFade *player, RBXFadeStream *stream)
 	stream->needs_unlink = FALSE;
 	stream->emitted_playing = FALSE;
 
-	g_mutex_unlock (stream->lock);
+	g_mutex_unlock (&stream->lock);
 
 	/* block the src pad so we don't get not-linked errors if it pushes a buffer
 	 * before we get around to relinking
@@ -1322,11 +1321,11 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	RBPlayerGstXFade *player;
 	GError *error = NULL;
 
-	g_mutex_lock (stream->lock);
+	g_mutex_lock (&stream->lock);
 
 	if (stream->needs_unlink == FALSE || stream->adder_pad == NULL) {
 		rb_debug ("stream %s doesn't need to be unlinked", stream->uri);
-		g_mutex_unlock (stream->lock);
+		g_mutex_unlock (&stream->lock);
 		return;
 	}
 
@@ -1346,7 +1345,7 @@ unlink_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	stream_state = stream->state;
 	player = stream->player;
 
-	g_mutex_unlock (stream->lock);
+	g_mutex_unlock (&stream->lock);
 
 	/* might want a stream-paused signal here? */
 
@@ -1427,7 +1426,7 @@ unlink_and_dispose_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 		gst_element_get_state (GST_ELEMENT (stream), NULL, NULL, GST_CLOCK_TIME_NONE);
 	}
 	
-	g_mutex_lock (stream->lock);
+	g_mutex_lock (&stream->lock);
 
 	if (stream->adder_pad != NULL) {
 		rb_debug ("unlinking stream %s", stream->uri);
@@ -1443,7 +1442,7 @@ unlink_and_dispose_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 
 	was_in_pipeline = (GST_ELEMENT_PARENT (GST_ELEMENT (stream)) == player->priv->pipeline);
 	
-	g_mutex_unlock (stream->lock);
+	g_mutex_unlock (&stream->lock);
 
 	if (was_in_pipeline)
 		gst_bin_remove (GST_BIN (player->priv->pipeline), GST_ELEMENT (stream));
@@ -1459,10 +1458,10 @@ unlink_and_dispose_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 		}
 	}
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 	player->priv->streams = g_list_remove (player->priv->streams, stream);
 	dump_stream_list (player);
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	g_object_unref (stream);
 }
@@ -1474,7 +1473,7 @@ reap_streams (RBPlayerGstXFade *player)
 	GList *t;
 	GList *reap = NULL;
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 	player->priv->stream_reap_id = 0;
 	dump_stream_list (player);
 	for (t = player->priv->streams; t != NULL; t = t->next) {
@@ -1484,7 +1483,7 @@ reap_streams (RBPlayerGstXFade *player)
 			reap = g_list_prepend (reap, stream);
 		}
 	}
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	for (t = reap; t != NULL; t = t->next) {
 		RBXFadeStream *stream = (RBXFadeStream *)t->data;
@@ -1500,14 +1499,14 @@ reap_streams (RBPlayerGstXFade *player)
 static void
 schedule_stream_reap (RBPlayerGstXFade *player)
 {
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 
 	if (player->priv->stream_reap_id == 0) {
 		dump_stream_list (player);
 		player->priv->stream_reap_id = g_idle_add ((GSourceFunc) reap_streams, player);
 	}
 	
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 }
 
 /* emits a tag signal from the player, maybe */
@@ -1619,7 +1618,7 @@ start_waiting_eos_streams (RBPlayerGstXFade *player)
 	GList *l;
 	GList *to_start = NULL;
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 	for (l = player->priv->streams; l != NULL; l = l->next) {
 		RBXFadeStream *pstream = l->data;
 		if (pstream->state == WAITING_EOS && pstream->starting_eos == FALSE) {
@@ -1627,7 +1626,7 @@ start_waiting_eos_streams (RBPlayerGstXFade *player)
 			to_start = g_list_prepend (to_start, g_object_ref (pstream));
 		}
 	}
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	for (l = to_start; l != NULL; l = l->next) {
 		RBXFadeStream *pstream = l->data;
@@ -1652,14 +1651,14 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 
 	g_return_val_if_fail (player != NULL, FALSE);
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 
 	message_src = GST_MESSAGE_SRC (message);
 	if (GST_IS_PAD (message_src)) {
 		message_src = GST_OBJECT_PARENT (message_src);
 	}
 	stream = find_stream_by_element (player, GST_ELEMENT (message_src));
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	switch (GST_MESSAGE_TYPE (message)) {
 	case GST_MESSAGE_ERROR:
@@ -1713,14 +1712,14 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			GstTagList *tags;
 			gst_message_parse_tag (message, &tags);
 
-			g_mutex_lock (stream->lock);
+			g_mutex_lock (&stream->lock);
 			if (stream->emitted_playing) {
 				gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, stream);
 				gst_tag_list_free (tags);
 			} else {
 				stream->tags = g_list_append (stream->tags, tags);
 			}
-			g_mutex_unlock (stream->lock);
+			g_mutex_unlock (&stream->lock);
 		}
 		break;
 
@@ -1756,10 +1755,10 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			_rb_player_emit_playing_stream (RB_PLAYER (player), stream->stream_data);
 
 			/* process any buffered tag lists we received while prerolling the stream */
-			g_mutex_lock (stream->lock);
+			g_mutex_lock (&stream->lock);
 			l = stream->tags;
 			stream->tags = NULL;
-			g_mutex_unlock (stream->lock);
+			g_mutex_unlock (&stream->lock);
 
 			for (t = l; t != NULL; t = t->next) {
 				GstTagList *tags;
@@ -1778,9 +1777,9 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			case FADING_OUT:
 				/* stop the stream and dispose of it */
 				rb_debug ("got fade-out-done for stream %s -> PENDING_REMOVE", stream->uri);
-				g_mutex_lock (stream->lock);
+				g_mutex_lock (&stream->lock);
 				stream->state = PENDING_REMOVE;
-				g_mutex_unlock (stream->lock);
+				g_mutex_unlock (&stream->lock);
 				schedule_stream_reap (player);
 				break;
 
@@ -1790,7 +1789,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 					GstFormat format = GST_FORMAT_TIME;
 					gint64 pos = -1;
 
-					g_mutex_lock (stream->lock);
+					g_mutex_lock (&stream->lock);
 					gst_element_query_position (stream->volume, &format, &pos);
 					if (pos != -1) {
 						stream->seek_target = pos > PAUSE_FADE_LENGTH ? pos - PAUSE_FADE_LENGTH : 0;
@@ -1802,7 +1801,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 						rb_debug ("got fade-out-done for stream %s -> PAUSED (position query failed)",
 							  stream->uri);
 					}
-					g_mutex_unlock (stream->lock);
+					g_mutex_unlock (&stream->lock);
 				}
 				unlink_and_block_stream (stream);
 				break;
@@ -1851,7 +1850,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			break;
 		}
 
-		g_mutex_lock (stream->lock);
+		g_mutex_lock (&stream->lock);
 		if (progress >= 100) {
 			GError *error = NULL;
 			switch (stream->state) {
@@ -1900,7 +1899,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				break;
 			}
 		}
-		g_mutex_unlock (stream->lock);
+		g_mutex_unlock (&stream->lock);
 
 		if (stream == NULL) {
 			rb_debug ("got buffering message for unknown stream (%d)", progress);
@@ -2305,7 +2304,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 	case RB_PLAYER_PLAY_CROSSFADE:
 
 		to_fade = NULL;
-		g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+		g_rec_mutex_lock (&player->priv->stream_list_lock);
 		for (l = player->priv->streams; l != NULL; l = l->next) {
 			RBXFadeStream *pstream = (RBXFadeStream *)l->data;
 
@@ -2337,7 +2336,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 			}
 		}
 
-		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+		g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 		for (l = to_fade; l != NULL; l = l->next) {
 			RBXFadeStream *pstream = (RBXFadeStream *)l->data;
@@ -2384,7 +2383,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 
 	case RB_PLAYER_PLAY_AFTER_EOS:
 
-		g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+		g_rec_mutex_lock (&player->priv->stream_list_lock);
 
 		playing = FALSE;
 		for (l = player->priv->streams; l != NULL; l = l->next) {
@@ -2410,7 +2409,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 			}
 		}
 
-		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+		g_rec_mutex_unlock (&player->priv->stream_list_lock);
 	
 		if (playing) {
 			/* wait for current stream's EOS */
@@ -2425,7 +2424,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 
 	case RB_PLAYER_PLAY_REPLACE:
 		/* replace any existing playing stream */
-		g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+		g_rec_mutex_lock (&player->priv->stream_list_lock);
 
 		for (l = player->priv->streams; l != NULL; l = l->next) {
 			RBXFadeStream *pstream = (RBXFadeStream *)l->data;
@@ -2449,7 +2448,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 			}
 		}
 
-		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+		g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 		ret = link_and_unblock_stream (stream, error);
 		break;
@@ -2476,10 +2475,10 @@ stream_src_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 	GError *error = NULL;
 	gboolean start_stream = FALSE;
 
-	g_mutex_lock (stream->lock);
+	g_mutex_lock (&stream->lock);
 	if (stream->src_blocked) {
 		rb_debug ("stream %s already blocked", stream->uri);
-		g_mutex_unlock (stream->lock);
+		g_mutex_unlock (&stream->lock);
 		return;
 	}
 	stream->src_blocked = TRUE;
@@ -2498,7 +2497,7 @@ stream_src_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 		default:
 			break;
 		}
-		g_mutex_unlock (stream->lock);
+		g_mutex_unlock (&stream->lock);
 		return;
 	}
 
@@ -2517,7 +2516,7 @@ stream_src_blocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
 		break;
 	}
 	
-	g_mutex_unlock (stream->lock);
+	g_mutex_unlock (&stream->lock);
 	
 	if (start_stream == TRUE) {	
 		/* not sure this is actually an acceptable thing to do on a streaming thread.. */
@@ -2606,7 +2605,7 @@ get_times_and_stream (RBPlayerGstXFade *player, RBXFadeStream **pstream, gint64 
 	if (player->priv->pipeline == NULL)
 		return FALSE;
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 	
 	/* first look for a network stream that is buffering during preroll */
 	stream = find_stream_by_state (player, PREROLLING | PREROLL_PLAY);
@@ -2624,7 +2623,7 @@ get_times_and_stream (RBPlayerGstXFade *player, RBXFadeStream **pstream, gint64 
 	if (stream == NULL) {
 		stream = find_stream_by_state (player, FADING_IN | PLAYING | FADING_OUT_PAUSED | PAUSED | PENDING_REMOVE | REUSING);
 	}
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	if (stream != NULL) {
 		if (pstream != NULL) {
@@ -2949,7 +2948,7 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 	GstBus *bus;
 	gboolean ret;
 
-	g_static_rec_mutex_lock (&player->priv->sink_lock);
+	g_rec_mutex_lock (&player->priv->sink_lock);
 	switch (player->priv->sink_state) {
 	case SINK_NULL:
 		g_assert_not_reached ();
@@ -2969,7 +2968,7 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 	default:
 		g_assert_not_reached ();
 	}
-	g_static_rec_mutex_unlock (&player->priv->sink_lock);
+	g_rec_mutex_unlock (&player->priv->sink_lock);
 
 	bus = gst_element_get_bus (GST_ELEMENT (player->priv->pipeline));
 	for (t = messages; t != NULL; t = t->next) {
@@ -3282,7 +3281,7 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 		return FALSE;
 
 	/* see if anyone wants us to reuse an existing stream */
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 	for (t = player->priv->streams; t != NULL; t = t->next) {
 		RBXFadeStream *stream = (RBXFadeStream *)t->data;
 
@@ -3325,7 +3324,7 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 			break;
 		}
 	}
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 	if (reused) {
 		return TRUE;
 	}
@@ -3342,10 +3341,10 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 		return FALSE;
 	}
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 	player->priv->streams = g_list_prepend (player->priv->streams, stream);
 	dump_stream_list (player);
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	/* start prerolling it */
 	preroll_stream (player, stream);
@@ -3356,12 +3355,12 @@ rb_player_gst_xfade_open (RBPlayer *iplayer,
 static gboolean
 stop_sink_later (RBPlayerGstXFade *player)
 {
-	g_static_rec_mutex_lock (&player->priv->sink_lock);
+	g_rec_mutex_lock (&player->priv->sink_lock);
 	player->priv->stop_sink_id = 0;
 	if (g_atomic_int_get (&player->priv->linked_streams) == 0) {
 		stop_sink (player);
 	}
-	g_static_rec_mutex_unlock (&player->priv->sink_lock);
+	g_rec_mutex_unlock (&player->priv->sink_lock);
 
 	return FALSE;
 }
@@ -3369,14 +3368,14 @@ stop_sink_later (RBPlayerGstXFade *player)
 static void
 maybe_stop_sink (RBPlayerGstXFade *player)
 {
-	g_static_rec_mutex_lock (&player->priv->sink_lock);
+	g_rec_mutex_lock (&player->priv->sink_lock);
 	if (player->priv->stop_sink_id == 0) {
 		player->priv->stop_sink_id =
 			g_timeout_add (1000,
 				       (GSourceFunc) stop_sink_later,
 				       player);
 	}
-	g_static_rec_mutex_unlock (&player->priv->sink_lock);
+	g_rec_mutex_unlock (&player->priv->sink_lock);
 }
 
 static gboolean
@@ -3390,13 +3389,13 @@ rb_player_gst_xfade_close (RBPlayer *iplayer, const char *uri, GError **error)
 		GList *l;
 
 		/* need to copy the list as unlink_and_dispose_stream modifies it */
-		g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+		g_rec_mutex_lock (&player->priv->stream_list_lock);
 		list = g_list_copy (player->priv->streams);
 		for (l = list; l != NULL; l = l->next) {
 			RBXFadeStream *stream = (RBXFadeStream *)l->data;
 			g_object_ref (stream);
 		}
-		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+		g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 		for (l = list; l != NULL; l = l->next) {
 			RBXFadeStream *stream = (RBXFadeStream *)l->data;
@@ -3408,9 +3407,9 @@ rb_player_gst_xfade_close (RBPlayer *iplayer, const char *uri, GError **error)
 		/* just stop and close the stream for the specified uri */
 		RBXFadeStream *stream;
 
-		g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+		g_rec_mutex_lock (&player->priv->stream_list_lock);
 		stream = find_stream_by_uri (player, uri);
-		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+		g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 		if (stream != NULL) {
 			unlink_and_dispose_stream (player, stream);
@@ -3435,7 +3434,7 @@ rb_player_gst_xfade_opened (RBPlayer *iplayer)
 
 	/* maybe replace this with just a flag somewhere? */
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 
 	stream = find_stream_by_state (player, PREROLLING | PREROLL_PLAY | WAITING_EOS | WAITING | FADING_IN | PLAYING | PAUSED);
 	if (stream != NULL) {
@@ -3443,7 +3442,7 @@ rb_player_gst_xfade_opened (RBPlayer *iplayer)
 		g_object_unref (stream);
 	}
 
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	return opened;
 }
@@ -3459,7 +3458,7 @@ rb_player_gst_xfade_play (RBPlayer *iplayer,
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
 	gboolean ret = TRUE;
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 
 	/* is there anything to play? */
 	if (player->priv->streams == NULL) {
@@ -3468,13 +3467,13 @@ rb_player_gst_xfade_play (RBPlayer *iplayer,
 			     RB_PLAYER_ERROR_GENERAL,
 			     "Nothing to play");		/* should never happen */
 
-		g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+		g_rec_mutex_unlock (&player->priv->stream_list_lock);
 		return FALSE;
 	}
 	
 	stream = g_list_first (player->priv->streams)->data;
 	g_object_ref (stream);
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	/* make sure the sink is playing */
 	if (start_sink (player, error) == FALSE) {
@@ -3482,7 +3481,7 @@ rb_player_gst_xfade_play (RBPlayer *iplayer,
 		return FALSE;
 	}
 
-	g_mutex_lock (stream->lock);
+	g_mutex_lock (&stream->lock);
 
 	rb_debug ("playing stream %s, play type %d, crossfade %" G_GINT64_FORMAT, stream->uri, play_type, crossfade);
 
@@ -3512,7 +3511,7 @@ rb_player_gst_xfade_play (RBPlayer *iplayer,
 	}
 
 	stream_state = stream->state;
-	g_mutex_unlock (stream->lock);
+	g_mutex_unlock (&stream->lock);
 
 	/* is the head stream already playing? */
 	switch (stream_state) {
@@ -3578,7 +3577,7 @@ rb_player_gst_xfade_pause (RBPlayer *iplayer)
 	double fade_out_start = 1.0f;
 	gint64 fade_out_time = PAUSE_FADE_LENGTH;
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 
 	for (l = player->priv->streams; l != NULL; l = l->next) {
 		RBXFadeStream *stream;
@@ -3636,7 +3635,7 @@ rb_player_gst_xfade_pause (RBPlayer *iplayer)
 			break;
 	}
 
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	for (l = to_fade; l != NULL; l = l->next) {
 		RBXFadeStream *stream = (RBXFadeStream *)l->data;
@@ -3675,14 +3674,14 @@ rb_player_gst_xfade_playing (RBPlayer *iplayer)
 
 	/* XXX maybe replace with just a flag? */
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 
 	stream = find_stream_by_state (player, PLAYING | FADING_IN);
 	if (stream != NULL) {
 		playing = TRUE;
 		g_object_unref (stream);
 	}
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 	return playing;
 }
 
@@ -3732,9 +3731,9 @@ rb_player_gst_xfade_seekable (RBPlayer *iplayer)
 	/* is this supposed to query the most recently opened stream,
 	 * or the current playing stream?  I really don't know.
 	 */
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 	stream = find_stream_by_state (player, FADING_IN | PAUSED | PLAYING);
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	if (stream) {
 		GstQuery *query = NULL;
@@ -3760,9 +3759,9 @@ rb_player_gst_xfade_set_time (RBPlayer *iplayer, gint64 time)
 	RBPlayerGstXFade *player = RB_PLAYER_GST_XFADE (iplayer);
 	RBXFadeStream *stream;
 
-	g_static_rec_mutex_lock (&player->priv->stream_list_lock);
+	g_rec_mutex_lock (&player->priv->stream_list_lock);
 	stream = find_stream_by_state (player, FADING_IN | PLAYING | PAUSED | FADING_OUT_PAUSED | PENDING_REMOVE);
-	g_static_rec_mutex_unlock (&player->priv->stream_list_lock);
+	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	if (stream == NULL) {
 		rb_debug ("got seek while no playing streams exist");

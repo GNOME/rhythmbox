@@ -34,7 +34,7 @@
 #include "rb-refstring.h"
 
 GHashTable *rb_refstrings;
-GMutex *rb_refstrings_mutex;
+GMutex rb_refstrings_mutex;
 
 struct RBRefString
 {
@@ -63,8 +63,6 @@ rb_refstring_free (RBRefString *refstr)
 void
 rb_refstring_system_init ()
 {
-	rb_refstrings_mutex = g_mutex_new ();
-
 	rb_refstrings = g_hash_table_new_full (g_str_hash, g_str_equal,
 					       NULL, (GDestroyNotify) rb_refstring_free);
 }
@@ -84,12 +82,12 @@ rb_refstring_new (const char *init)
 {
 	RBRefString *ret;
 
-	g_mutex_lock (rb_refstrings_mutex);
+	g_mutex_lock (&rb_refstrings_mutex);
 	ret = g_hash_table_lookup (rb_refstrings, init);
 
 	if (ret) {
 		rb_refstring_ref (ret);
-		g_mutex_unlock (rb_refstrings_mutex);
+		g_mutex_unlock (&rb_refstrings_mutex);
 		return ret;
 	}
 
@@ -101,7 +99,7 @@ rb_refstring_new (const char *init)
 	ret->sortkey = NULL;
 
 	g_hash_table_insert (rb_refstrings, ret->value, ret);
-	g_mutex_unlock (rb_refstrings_mutex);
+	g_mutex_unlock (&rb_refstrings_mutex);
 	return ret;
 }
 
@@ -120,13 +118,13 @@ rb_refstring_find (const char *init)
 {
 	RBRefString *ret;
 
-	g_mutex_lock (rb_refstrings_mutex);
+	g_mutex_lock (&rb_refstrings_mutex);
 	ret = g_hash_table_lookup (rb_refstrings, init);
 
 	if (ret)
 		rb_refstring_ref (ret);
 
-	g_mutex_unlock (rb_refstrings_mutex);
+	g_mutex_unlock (&rb_refstrings_mutex);
 	return ret;
 }
 
@@ -146,12 +144,12 @@ rb_refstring_unref (RBRefString *val)
 	g_return_if_fail (g_atomic_int_get (&val->refcount) > 0);
 
 	if (g_atomic_int_dec_and_test (&val->refcount)) {
-		g_mutex_lock (rb_refstrings_mutex);
+		g_mutex_lock (&rb_refstrings_mutex);
 		/* ensure it's still not referenced, as something may have called
 		 * rb_refstring_new since we decremented the count */
 		if (g_atomic_int_get (&val->refcount) == 0)
 			g_hash_table_remove (rb_refstrings, val->value);
-		g_mutex_unlock (rb_refstrings_mutex);
+		g_mutex_unlock (&rb_refstrings_mutex);
 	}
 }
 
@@ -165,7 +163,6 @@ void
 rb_refstring_system_shutdown (void)
 {
 	g_hash_table_destroy (rb_refstrings);
-	g_mutex_free (rb_refstrings_mutex);
 }
 
 /**

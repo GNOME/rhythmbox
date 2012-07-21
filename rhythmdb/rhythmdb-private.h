@@ -139,7 +139,7 @@ struct _RhythmDBPrivate
 	GList *outstanding_stats;
 	GList *active_mounts;
 	GList *mount_list;
-	GMutex *stat_mutex;
+	GMutex stat_mutex;
 	gboolean stat_thread_running;
 	int stat_thread_count;
 	int stat_thread_done;
@@ -149,23 +149,23 @@ struct _RhythmDBPrivate
 	GHashTable *changed_files;
 	guint changed_files_id;
 	char **library_locations;
-	GMutex *monitor_mutex;
+	GMutex monitor_mutex;
 
 	gboolean dry_run;
 	gboolean no_update;
 
-	GMutex *change_mutex;
+	GMutex change_mutex;
 	GHashTable *added_entries;
 	GHashTable *changed_entries;
 	GHashTable *deleted_entries;
 
 	GHashTable *propname_map;
 
-	GMutex *exit_mutex;
+	GMutex exit_mutex;
 	GCancellable *exiting;		/* hrm, name? */
 
-	GCond *saving_condition;
-	GMutex *saving_mutex;
+	GCond saving_condition;
+	GMutex saving_mutex;
 	guint save_count;
 
 	guint event_queue_watch_id;
@@ -182,8 +182,8 @@ struct _RhythmDBPrivate
 	gboolean dirty;
 
 	GHashTable *entry_type_map;
-	GMutex *entry_type_map_mutex;
-	GMutex *entry_type_mutex;
+	GMutex entry_type_map_mutex;
+	GMutex entry_type_mutex;
 
 	gint next_entry_id;
 

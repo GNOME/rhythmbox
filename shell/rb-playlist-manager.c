@@ -139,7 +139,7 @@ struct RBPlaylistManagerPrivate
 
 	gint dirty;
 	gint saving;
-	GMutex *saving_mutex;
+	GMutex saving_mutex;
 };
 
 enum
@@ -236,8 +236,8 @@ rb_playlist_manager_shutdown (RBPlaylistManager *mgr)
 {
 	g_return_if_fail (RB_IS_PLAYLIST_MANAGER (mgr));
 
-	g_mutex_lock (mgr->priv->saving_mutex);
-	g_mutex_unlock (mgr->priv->saving_mutex);
+	g_mutex_lock (&mgr->priv->saving_mutex);
+	g_mutex_unlock (&mgr->priv->saving_mutex);
 }
 
 /**
@@ -422,7 +422,7 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 	file = g_strdup (mgr->priv->playlists_file);
 
 	/* block saves until the playlists have loaded */
-	g_mutex_lock (mgr->priv->saving_mutex);
+	g_mutex_lock (&mgr->priv->saving_mutex);
 
 	exists = g_file_test (file, G_FILE_TEST_EXISTS);
 	if (! exists) {
@@ -459,7 +459,7 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 
 	xmlFreeDoc (doc);
 out:
-	g_mutex_unlock (mgr->priv->saving_mutex);
+	g_mutex_unlock (&mgr->priv->saving_mutex);
 	g_free (file);
 }
 
@@ -545,7 +545,7 @@ rb_playlist_manager_save_data (struct RBPlaylistManagerSaveData *data)
 	char *file;
 	char *tmpname;
 
-	g_mutex_lock (data->mgr->priv->saving_mutex);
+	g_mutex_lock (&data->mgr->priv->saving_mutex);
 
 	file = g_strdup (data->mgr->priv->playlists_file);
 	tmpname = g_strconcat (file, ".tmp", NULL);
@@ -562,7 +562,7 @@ rb_playlist_manager_save_data (struct RBPlaylistManagerSaveData *data)
 	g_free (file);
 
 	g_atomic_int_compare_and_exchange (&data->mgr->priv->saving, 1, 0);
-	g_mutex_unlock (data->mgr->priv->saving_mutex);
+	g_mutex_unlock (&data->mgr->priv->saving_mutex);
 
 	g_object_unref (data->mgr);
 
@@ -1928,7 +1928,6 @@ rb_playlist_manager_init (RBPlaylistManager *mgr)
 						 RB_TYPE_PLAYLIST_MANAGER,
 						 RBPlaylistManagerPrivate);
 
-	mgr->priv->saving_mutex = g_mutex_new ();
 	mgr->priv->dirty = 0;
 	mgr->priv->saving = 0;
 }
@@ -1988,8 +1987,6 @@ rb_playlist_manager_finalize (GObject *object)
 	mgr = RB_PLAYLIST_MANAGER (object);
 
 	g_return_if_fail (mgr->priv != NULL);
-
-	g_mutex_free (mgr->priv->saving_mutex);
 
 	g_free (mgr->priv->playlists_file);
 

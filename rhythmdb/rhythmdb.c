@@ -720,15 +720,9 @@ rhythmdb_init (RhythmDB *db)
 	}
 
 	db->priv->entry_type_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
-	db->priv->entry_type_map_mutex = g_mutex_new ();
-	db->priv->entry_type_mutex = g_mutex_new ();
 
 	rhythmdb_register_song_entry_types (db);
 	rb_podcast_register_entry_types (db);
-
- 	db->priv->stat_mutex = g_mutex_new ();
-
-	db->priv->change_mutex = g_mutex_new ();
 
 	db->priv->changed_entries = g_hash_table_new_full (NULL,
 							   NULL,
@@ -742,9 +736,6 @@ rhythmdb_init (RhythmDB *db)
 							   NULL,
 							   (GDestroyNotify) rhythmdb_entry_unref,
 							   NULL);
-
-	db->priv->saving_condition = g_cond_new ();
-	db->priv->saving_mutex = g_mutex_new ();
 
 	db->priv->can_save = TRUE;
 	db->priv->exiting = g_cancellable_new ();
@@ -921,7 +912,7 @@ perform_next_mount (RhythmDB *db)
 void
 rhythmdb_start_action_thread (RhythmDB *db)
 {
-	g_mutex_lock (db->priv->stat_mutex);
+	g_mutex_lock (&db->priv->stat_mutex);
 	db->priv->action_thread_running = TRUE;
 	rhythmdb_thread_create (db, NULL, (GThreadFunc) action_thread_main, db);
 
@@ -938,7 +929,7 @@ rhythmdb_start_action_thread (RhythmDB *db)
 
 	perform_next_mount (db);
 
-	g_mutex_unlock (db->priv->stat_mutex);
+	g_mutex_unlock (&db->priv->stat_mutex);
 }
 
 static void
@@ -1021,11 +1012,11 @@ rhythmdb_shutdown (RhythmDB *db)
 	db->priv->library_locations = NULL;
 
 	/* abort all async io operations */
-	g_mutex_lock (db->priv->stat_mutex);
+	g_mutex_lock (&db->priv->stat_mutex);
 	g_list_foreach (db->priv->outstanding_stats, (GFunc)_shutdown_foreach_swapped, db);
 	g_list_free (db->priv->outstanding_stats);
 	db->priv->outstanding_stats = NULL;
-	g_mutex_unlock (db->priv->stat_mutex);
+	g_mutex_unlock (&db->priv->stat_mutex);
 
 	rb_debug ("%d outstanding threads", g_atomic_int_get (&db->priv->outstanding_threads));
 	while (g_atomic_int_get (&db->priv->outstanding_threads) > 0) {
@@ -1120,13 +1111,7 @@ rhythmdb_finalize (GObject *object)
 	g_async_queue_unref (db->priv->restored_queue);
 	g_async_queue_unref (db->priv->delayed_write_queue);
 
-	g_mutex_free (db->priv->saving_mutex);
-	g_cond_free (db->priv->saving_condition);
-
 	g_list_free (db->priv->stat_list);
- 	g_mutex_free (db->priv->stat_mutex);
-
-	g_mutex_free (db->priv->change_mutex);
 
 	g_hash_table_destroy (db->priv->propname_map);
 
@@ -1138,8 +1123,6 @@ rhythmdb_finalize (GObject *object)
 	rb_refstring_unref (db->priv->octet_stream_str);
 
 	g_hash_table_destroy (db->priv->entry_type_map);
-	g_mutex_free (db->priv->entry_type_map_mutex);
-	g_mutex_free (db->priv->entry_type_mutex);
 
 	g_free (db->priv->name);
 
@@ -1315,7 +1298,7 @@ rhythmdb_emit_entry_signals_idle (RhythmDB *db)
 	GSList *entry_changes;
 
 	/* get lists of entries to emit, reset source id value */
-	g_mutex_lock (db->priv->change_mutex);
+	g_mutex_lock (&db->priv->change_mutex);
 
 	added_entries = db->priv->added_entries_to_emit;
 	db->priv->added_entries_to_emit = NULL;
@@ -1328,7 +1311,7 @@ rhythmdb_emit_entry_signals_idle (RhythmDB *db)
 
 	db->priv->emit_entry_signals_id = 0;
 
-	g_mutex_unlock (db->priv->change_mutex);
+	g_mutex_unlock (&db->priv->change_mutex);
 
 	GDK_THREADS_ENTER ();
 
@@ -1405,7 +1388,7 @@ process_added_entries_cb (RhythmDBEntry *entry,
 		 * - for local mountpoints that are mounted, add to stat list
 		 * - for everything else, hide entries on those mountpoints
 		 */
-		g_mutex_lock (db->priv->stat_mutex);
+		g_mutex_lock (&db->priv->stat_mutex);
 		if (db->priv->action_thread_running == FALSE) {
 			const char *mountpoint;
 
@@ -1437,7 +1420,7 @@ process_added_entries_cb (RhythmDBEntry *entry,
 				}
 			}
 		}
-		g_mutex_unlock (db->priv->stat_mutex);
+		g_mutex_unlock (&db->priv->stat_mutex);
 	}
 
 	g_assert ((entry->flags & RHYTHMDB_ENTRY_INSERTED) == 0);
@@ -1535,7 +1518,7 @@ rhythmdb_commit_internal (RhythmDB *db,
 			  gboolean sync_changes,
 			  GThread *thread)
 {
-	g_mutex_lock (db->priv->change_mutex);
+	g_mutex_lock (&db->priv->change_mutex);
 
 	if (sync_changes) {
 		g_hash_table_foreach (db->priv->changed_entries, (GHFunc) sync_entry_changed, db);
@@ -1552,7 +1535,7 @@ rhythmdb_commit_internal (RhythmDB *db,
 			db->priv->emit_entry_signals_id = g_idle_add ((GSourceFunc) rhythmdb_emit_entry_signals_idle, db);
 	}
 
-	g_mutex_unlock (db->priv->change_mutex);
+	g_mutex_unlock (&db->priv->change_mutex);
 }
 
 typedef struct {
@@ -1728,9 +1711,9 @@ rhythmdb_entry_insert (RhythmDB *db,
 
 	/* ref the entry before adding to hash, it is unreffed when removed */
 	rhythmdb_entry_ref (entry);
-	g_mutex_lock (db->priv->change_mutex);
+	g_mutex_lock (&db->priv->change_mutex);
 	g_hash_table_insert (db->priv->added_entries, entry, g_thread_self ());
-	g_mutex_unlock (db->priv->change_mutex);
+	g_mutex_unlock (&db->priv->change_mutex);
 }
 
 /**
@@ -2579,9 +2562,9 @@ rhythmdb_execute_stat_mount_ready_cb (GObject *source, GAsyncResult *result, Rhy
 		rhythmdb_file_info_query (event->db, G_FILE (source), event);
 	}
 
-	g_mutex_lock (event->db->priv->stat_mutex);
+	g_mutex_lock (&event->db->priv->stat_mutex);
 	event->db->priv->outstanding_stats = g_list_remove (event->db->priv->outstanding_stats, event);
-	g_mutex_unlock (event->db->priv->stat_mutex);
+	g_mutex_unlock (&event->db->priv->stat_mutex);
 
 	g_object_unref (source);
 	rhythmdb_push_event (event->db, event);
@@ -2598,9 +2581,9 @@ rhythmdb_execute_stat (RhythmDB *db,
 	event->real_uri = rb_refstring_new (uri);
 	file = g_file_new_for_uri (uri);
 
-	g_mutex_lock (db->priv->stat_mutex);
+	g_mutex_lock (&db->priv->stat_mutex);
 	db->priv->outstanding_stats = g_list_prepend (db->priv->outstanding_stats, event);
-	g_mutex_unlock (db->priv->stat_mutex);
+	g_mutex_unlock (&db->priv->stat_mutex);
 
 	rhythmdb_file_info_query (db, file, event);
 
@@ -2635,9 +2618,9 @@ rhythmdb_execute_stat (RhythmDB *db,
        
 	/* either way, we're done now */
 
-	g_mutex_lock (event->db->priv->stat_mutex);
+	g_mutex_lock (&event->db->priv->stat_mutex);
 	event->db->priv->outstanding_stats = g_list_remove (event->db->priv->outstanding_stats, event);
-	g_mutex_unlock (event->db->priv->stat_mutex);
+	g_mutex_unlock (&event->db->priv->stat_mutex);
 
 	rhythmdb_push_event (event->db, event);
 	g_object_unref (file);
@@ -3006,10 +2989,10 @@ rhythmdb_add_uri_with_types (RhythmDB *db,
 	 * when the action thread is already running, stat actions go through
 	 * the normal action queue and are processed by the action thread.
 	 */
-	g_mutex_lock (db->priv->stat_mutex);
+	g_mutex_lock (&db->priv->stat_mutex);
 	if (db->priv->action_thread_running) {
 		RhythmDBAction *action;
-		g_mutex_unlock (db->priv->stat_mutex);
+		g_mutex_unlock (&db->priv->stat_mutex);
 
 		action = g_slice_new0 (RhythmDBAction);
 		action->type = RHYTHMDB_ACTION_STAT;
@@ -3025,7 +3008,7 @@ rhythmdb_add_uri_with_types (RhythmDB *db,
 		entry = rhythmdb_entry_lookup_by_location (db, uri);
 		rhythmdb_add_to_stat_list (db, uri, entry, type, ignore_type, error_type);
 
-		g_mutex_unlock (db->priv->stat_mutex);
+		g_mutex_unlock (&db->priv->stat_mutex);
 	}
 }
 
@@ -3060,7 +3043,8 @@ rhythmdb_load_thread_main (RhythmDB *db)
 
 	db->priv->active_mounts = rhythmdb_get_active_mounts (db);
 
-	g_mutex_lock (db->priv->saving_mutex);
+	rb_profile_start ("loading db");
+	g_mutex_lock (&db->priv->saving_mutex);
 	if (klass->impl_load (db, db->priv->exiting, &error) == FALSE) {
 		rb_debug ("db load failed: disabling saving");
 		db->priv->can_save = FALSE;
@@ -3069,7 +3053,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 			g_idle_add ((GSourceFunc) rhythmdb_load_error_cb, error);
 		}
 	}
-	g_mutex_unlock (db->priv->saving_mutex);
+	g_mutex_unlock (&db->priv->saving_mutex);
 
 	rb_list_deep_free (db->priv->active_mounts);
 	db->priv->active_mounts = NULL;
@@ -3110,19 +3094,19 @@ rhythmdb_save_thread_main (RhythmDB *db)
 
 	rb_debug ("entering save thread");
 
-	g_mutex_lock (db->priv->saving_mutex);
+	g_mutex_lock (&db->priv->saving_mutex);
 
 	db->priv->save_count++;
-	g_cond_broadcast (db->priv->saving_condition);
+	g_cond_broadcast (&db->priv->saving_condition);
 
 	if (!(db->priv->dirty && db->priv->can_save)) {
 		rb_debug ("no save needed, ignoring");
-		g_mutex_unlock (db->priv->saving_mutex);
+		g_mutex_unlock (&db->priv->saving_mutex);
 		goto out;
 	}
 
 	while (db->priv->saving)
-		g_cond_wait (db->priv->saving_condition, db->priv->saving_mutex);
+		g_cond_wait (&db->priv->saving_condition, &db->priv->saving_mutex);
 
 	db->priv->saving = TRUE;
 
@@ -3134,9 +3118,9 @@ rhythmdb_save_thread_main (RhythmDB *db)
 	db->priv->saving = FALSE;
 	db->priv->dirty = FALSE;
 
-	g_mutex_unlock (db->priv->saving_mutex);
+	g_mutex_unlock (&db->priv->saving_mutex);
 
-	g_cond_broadcast (db->priv->saving_condition);
+	g_cond_broadcast (&db->priv->saving_condition);
 
 out:
 	result = g_slice_new0 (RhythmDBEvent);
@@ -3180,24 +3164,24 @@ rhythmdb_save (RhythmDB *db)
 
 	rb_debug("saving the rhythmdb and blocking");
 
-	g_mutex_lock (db->priv->saving_mutex);
+	g_mutex_lock (&db->priv->saving_mutex);
 	new_save_count = db->priv->save_count + 1;
 
 	rhythmdb_save_async (db);
 
 	/* wait until this save request is being processed */
 	while (db->priv->save_count < new_save_count) {
-		g_cond_wait (db->priv->saving_condition, db->priv->saving_mutex);
+		g_cond_wait (&db->priv->saving_condition, &db->priv->saving_mutex);
 	}
 
 	/* wait until it's done */
 	while (db->priv->saving) {
-		g_cond_wait (db->priv->saving_condition, db->priv->saving_mutex);
+		g_cond_wait (&db->priv->saving_condition, &db->priv->saving_mutex);
 	}
 
 	rb_debug ("done");
 
-	g_mutex_unlock (db->priv->saving_mutex);
+	g_mutex_unlock (&db->priv->saving_mutex);
 }
 
 /**
@@ -3272,13 +3256,13 @@ record_entry_change (RhythmDB *db,
 	g_value_copy (old_value, &changedata->old);
 	g_value_copy (new_value, &changedata->new);
 
-	g_mutex_lock (db->priv->change_mutex);
+	g_mutex_lock (&db->priv->change_mutex);
 	/* ref the entry before adding to hash, it is unreffed when removed */
 	rhythmdb_entry_ref (entry);
 	changelist = g_hash_table_lookup (db->priv->changed_entries, entry);
 	changelist = g_slist_append (changelist, changedata);
 	g_hash_table_insert (db->priv->changed_entries, entry, changelist);
-	g_mutex_unlock (db->priv->change_mutex);
+	g_mutex_unlock (&db->priv->change_mutex);
 }
 
 void
@@ -3712,9 +3696,9 @@ rhythmdb_entry_delete (RhythmDB *db,
 
 	klass->impl_entry_delete (db, entry);
 
-	g_mutex_lock (db->priv->change_mutex);
+	g_mutex_lock (&db->priv->change_mutex);
 	g_hash_table_insert (db->priv->deleted_entries, entry, g_thread_self ());
-	g_mutex_unlock (db->priv->change_mutex);
+	g_mutex_unlock (&db->priv->change_mutex);
 
 	/* deleting an entry makes the db dirty */
 	db->priv->dirty = TRUE;
@@ -4579,9 +4563,9 @@ rhythmdb_register_entry_type (RhythmDB *db, RhythmDBEntryType *entry_type)
 
 	g_object_get (entry_type, "name", &name, NULL);
 	g_assert (name != NULL);
-	g_mutex_lock (db->priv->entry_type_map_mutex);
+	g_mutex_lock (&db->priv->entry_type_map_mutex);
 	g_hash_table_insert (db->priv->entry_type_map, name, g_object_ref (entry_type));
-	g_mutex_unlock (db->priv->entry_type_map_mutex);
+	g_mutex_unlock (&db->priv->entry_type_map_mutex);
 
 	if (klass->impl_entry_type_registered)
 		klass->impl_entry_type_registered (db, entry_type);
@@ -4600,9 +4584,9 @@ rhythmdb_entry_type_foreach (RhythmDB *db,
 			     GHFunc func,
 			     gpointer data)
 {
-	g_mutex_lock (db->priv->entry_type_mutex);
+	g_mutex_lock (&db->priv->entry_type_mutex);
 	g_hash_table_foreach (db->priv->entry_type_map, func, data);
-	g_mutex_unlock (db->priv->entry_type_mutex);
+	g_mutex_unlock (&db->priv->entry_type_mutex);
 }
 
 /**
@@ -4621,11 +4605,11 @@ rhythmdb_entry_type_get_by_name (RhythmDB *db,
 {
 	gpointer t = NULL;
 
-	g_mutex_lock (db->priv->entry_type_map_mutex);
+	g_mutex_lock (&db->priv->entry_type_map_mutex);
 	if (db->priv->entry_type_map) {
 		t = g_hash_table_lookup (db->priv->entry_type_map, name);
 	}
-	g_mutex_unlock (db->priv->entry_type_map_mutex);
+	g_mutex_unlock (&db->priv->entry_type_map_mutex);
 
 	return (RhythmDBEntryType *) t;
 }

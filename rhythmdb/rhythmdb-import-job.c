@@ -68,7 +68,7 @@ struct _RhythmDBImportJobPrivate
 	RhythmDBEntryType *entry_type;
 	RhythmDBEntryType *ignore_type;
 	RhythmDBEntryType *error_type;
-	GStaticMutex    lock;
+	GMutex		lock;
 	GSList		*uri_list;
 	gboolean	started;
 	GCancellable    *cancel;
@@ -139,9 +139,9 @@ rhythmdb_import_job_add_uri (RhythmDBImportJob *job, const char *uri)
 {
 	g_assert (job->priv->started == FALSE);
 
-	g_static_mutex_lock (&job->priv->lock);
+	g_mutex_lock (&job->priv->lock);
 	job->priv->uri_list = g_slist_prepend (job->priv->uri_list, g_strdup (uri));
-	g_static_mutex_unlock (&job->priv->lock);
+	g_mutex_unlock (&job->priv->lock);
 }
 
 static void
@@ -150,7 +150,7 @@ missing_plugins_retry_cb (gpointer instance, gboolean installed, RhythmDBImportJ
 	GSList *retry = NULL;
 	GSList *i;
 
-	g_static_mutex_lock (&job->priv->lock);
+	g_mutex_lock (&job->priv->lock);
 	g_assert (job->priv->retried == FALSE);
 	if (installed == FALSE) {
 		rb_debug ("plugin installation was not successful; job complete");
@@ -177,7 +177,7 @@ missing_plugins_retry_cb (gpointer instance, gboolean installed, RhythmDBImportJ
 		rhythmdb_commit (job->priv->db);
 		retry = g_slist_reverse (retry);
 	}
-	g_static_mutex_unlock (&job->priv->lock);
+	g_mutex_unlock (&job->priv->lock);
 
 	for (i = retry; i != NULL; i = i->next) {
 		char *uri = (char *)i->data;
@@ -195,7 +195,7 @@ missing_plugins_retry_cb (gpointer instance, gboolean installed, RhythmDBImportJ
 static gboolean
 emit_status_changed (RhythmDBImportJob *job)
 {
-	g_static_mutex_lock (&job->priv->lock);
+	g_mutex_lock (&job->priv->lock);
 	job->priv->status_changed_id = 0;
 
 	rb_debug ("emitting status changed: %d/%d", job->priv->imported, job->priv->total);
@@ -252,7 +252,7 @@ emit_status_changed (RhythmDBImportJob *job)
 			g_signal_emit (job, signals[COMPLETE], 0, job->priv->total);
 		}
 	}
-	g_static_mutex_unlock (&job->priv->lock);
+	g_mutex_unlock (&job->priv->lock);
 	g_object_unref (job);
 
 	return FALSE;
@@ -276,7 +276,7 @@ uri_recurse_func (GFile *file, gboolean dir, RhythmDBImportJob *job)
 	entry = rhythmdb_entry_lookup_by_location (job->priv->db, uri);
 	if (entry == NULL) {
 		rb_debug ("waiting for entry %s", uri);
-		g_static_mutex_lock (&job->priv->lock);
+		g_mutex_lock (&job->priv->lock);
 		job->priv->total++;
 		g_hash_table_insert (job->priv->outstanding, g_strdup (uri), GINT_TO_POINTER (1));
 
@@ -284,7 +284,7 @@ uri_recurse_func (GFile *file, gboolean dir, RhythmDBImportJob *job)
 			job->priv->status_changed_id = g_idle_add ((GSourceFunc) emit_status_changed, job);
 		}
 
-		g_static_mutex_unlock (&job->priv->lock);
+		g_mutex_unlock (&job->priv->lock);
 	}
 
 	rhythmdb_add_uri_with_types (job->priv->db,
@@ -307,7 +307,7 @@ emit_scan_complete_idle (RhythmDBImportJob *job)
 static void
 next_uri (RhythmDBImportJob *job)
 {
-	g_static_mutex_lock (&job->priv->lock);
+	g_mutex_lock (&job->priv->lock);
 	if (job->priv->uri_list == NULL) {
 		rb_debug ("no more uris to scan");
 		job->priv->scan_complete = TRUE;
@@ -326,7 +326,7 @@ next_uri (RhythmDBImportJob *job)
 
 		g_free (uri);
 	}
-	g_static_mutex_unlock (&job->priv->lock);
+	g_mutex_unlock (&job->priv->lock);
 }
 
 /**
@@ -343,10 +343,10 @@ rhythmdb_import_job_start (RhythmDBImportJob *job)
 	g_assert (job->priv->started == FALSE);
 
 	rb_debug ("starting");
-	g_static_mutex_lock (&job->priv->lock);
+	g_mutex_lock (&job->priv->lock);
 	job->priv->started = TRUE;
 	job->priv->uri_list = g_slist_reverse (job->priv->uri_list);
-	g_static_mutex_unlock (&job->priv->lock);
+	g_mutex_unlock (&job->priv->lock);
 	
 	/* reference is released in emit_scan_complete_idle */
 	next_uri (g_object_ref (job));
@@ -422,9 +422,9 @@ rhythmdb_import_job_complete (RhythmDBImportJob *job)
 void
 rhythmdb_import_job_cancel (RhythmDBImportJob *job)
 {
-	g_static_mutex_lock (&job->priv->lock);
+	g_mutex_lock (&job->priv->lock);
 	g_cancellable_cancel (job->priv->cancel);
-	g_static_mutex_unlock (&job->priv->lock);
+	g_mutex_unlock (&job->priv->lock);
 }
 
 static void
@@ -437,7 +437,7 @@ entry_added_cb (RhythmDB *db,
 
 	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 
-	g_static_mutex_lock (&job->priv->lock);
+	g_mutex_lock (&job->priv->lock);
 	ours = g_hash_table_remove (job->priv->outstanding, uri);
 
 	if (ours) {
@@ -459,7 +459,7 @@ entry_added_cb (RhythmDB *db,
 			job->priv->status_changed_id = g_idle_add ((GSourceFunc) emit_status_changed, job);
 		}
 	}
-	g_static_mutex_unlock (&job->priv->lock);
+	g_mutex_unlock (&job->priv->lock);
 }
 
 static void
@@ -469,7 +469,7 @@ rhythmdb_import_job_init (RhythmDBImportJob *job)
 						 RHYTHMDB_TYPE_IMPORT_JOB,
 						 RhythmDBImportJobPrivate);
 
-	g_static_mutex_init (&job->priv->lock);
+	g_mutex_init (&job->priv->lock);
 	job->priv->outstanding = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
 	job->priv->cancel = g_cancellable_new ();
@@ -559,8 +559,6 @@ impl_finalize (GObject *object)
 
 	rb_slist_deep_free (job->priv->uri_list);
 
-	g_static_mutex_free (&job->priv->lock);
-	
 	G_OBJECT_CLASS (rhythmdb_import_job_parent_class)->finalize (object);
 }
 

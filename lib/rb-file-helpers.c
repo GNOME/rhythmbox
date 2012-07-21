@@ -679,7 +679,7 @@ typedef struct {
 	gpointer user_data;
 	GDestroyNotify data_destroy;
 
-	GMutex *results_lock;
+	GMutex results_lock;
 	guint results_idle_id;
 	GList *file_results;
 	GList *dir_results;
@@ -844,7 +844,7 @@ _recurse_async_idle_cb (RBUriHandleRecursivelyAsyncData *data)
 {
 	GList *ul, *dl;
 
-	g_mutex_lock (data->results_lock);
+	g_mutex_lock (&data->results_lock);
 
 	for (ul = data->file_results, dl = data->dir_results;
 	     ul != NULL;
@@ -862,7 +862,7 @@ _recurse_async_idle_cb (RBUriHandleRecursivelyAsyncData *data)
 	data->dir_results = NULL;
 
 	data->results_idle_id = 0;
-	g_mutex_unlock (data->results_lock);
+	g_mutex_unlock (&data->results_lock);
 	return FALSE;
 }
 
@@ -895,7 +895,6 @@ _recurse_async_data_free (RBUriHandleRecursivelyAsyncData *data)
 	}
 
 	g_free (data->uri);
-	g_mutex_free (data->results_lock);
 	return FALSE;
 }
 
@@ -903,7 +902,7 @@ _recurse_async_data_free (RBUriHandleRecursivelyAsyncData *data)
 static gboolean
 _recurse_async_cb (GFile *file, gboolean dir, RBUriHandleRecursivelyAsyncData *data)
 {
-	g_mutex_lock (data->results_lock);
+	g_mutex_lock (&data->results_lock);
 
 	data->file_results = g_list_prepend (data->file_results, g_object_ref (file));
 	data->dir_results = g_list_prepend (data->dir_results, GINT_TO_POINTER (dir ? 1 : 0));
@@ -911,7 +910,7 @@ _recurse_async_cb (GFile *file, gboolean dir, RBUriHandleRecursivelyAsyncData *d
 		g_idle_add ((GSourceFunc)_recurse_async_idle_cb, data);
 	}
 
-	g_mutex_unlock (data->results_lock);
+	g_mutex_unlock (&data->results_lock);
 	return TRUE;
 }
 
@@ -961,7 +960,7 @@ rb_uri_handle_recursively_async (const char *uri,
 	}
 	data->data_destroy = data_destroy;
 
-	data->results_lock = g_mutex_new ();
+	g_mutex_init (&data->results_lock);
 	data->func = func;
 	data->user_data = user_data;
 

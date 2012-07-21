@@ -49,7 +49,7 @@
 #include "rb-util.h"
 #include "rb-debug.h"
 
-static GPrivate * private_is_primary_thread;
+static GPrivate private_is_primary_thread;
 
 /**
  * rb_true_function: (skip):
@@ -139,9 +139,9 @@ rb_gvalue_compare (GValue *a, GValue *b)
 			retval = 1;
 		break;
 	case G_TYPE_CHAR:
-		if (g_value_get_char (a) < g_value_get_char (b))
+		if (g_value_get_schar (a) < g_value_get_schar (b))
 			retval = -1;
-		else if (g_value_get_char (a) == g_value_get_char (b))
+		else if (g_value_get_schar (a) == g_value_get_schar (b))
 			retval = 0;
 		else
 			retval = 1;
@@ -409,7 +409,7 @@ gboolean
 rb_is_main_thread (void)
 {
 	if (g_thread_supported()) {
-		return GPOINTER_TO_UINT(g_private_get (private_is_primary_thread)) == 1;
+		return GPOINTER_TO_UINT(g_private_get (&private_is_primary_thread)) == 1;
 	} else {
 		return TRUE;
 	}
@@ -423,19 +423,19 @@ purge_useless_threads (gpointer data)
 }
 
 
-static GStaticRecMutex rb_gdk_mutex;
+static GRecMutex rb_gdk_mutex;
 static gboolean mutex_recurses;
 
 static void
 _threads_enter (void)
 {
-	g_static_rec_mutex_lock (&rb_gdk_mutex);
+	g_rec_mutex_lock (&rb_gdk_mutex);
 }
 
 static void
 _threads_leave (void)
 {
-	g_static_rec_mutex_unlock (&rb_gdk_mutex);
+	g_rec_mutex_unlock (&rb_gdk_mutex);
 }
 
 
@@ -461,23 +461,20 @@ rb_assert_locked (GMutex *mutex)
 void
 rb_threads_init (void)
 {
-	GMutex *m;
+	GMutex m;
 
-	private_is_primary_thread = g_private_new (NULL);
-	g_private_set (private_is_primary_thread, GUINT_TO_POINTER (1));
+	g_private_set (&private_is_primary_thread, GUINT_TO_POINTER (1));
 
-	g_static_rec_mutex_init (&rb_gdk_mutex);
+	g_rec_mutex_init (&rb_gdk_mutex);
 	gdk_threads_set_lock_functions (_threads_enter, _threads_leave);
 	gdk_threads_init ();
 
-	m = g_mutex_new ();
-
-	g_mutex_lock (m);
-	mutex_recurses = g_mutex_trylock (m);
+	g_mutex_init (&m);
+	g_mutex_lock (&m);
+	mutex_recurses = g_mutex_trylock (&m);
 	if (mutex_recurses)
-		g_mutex_unlock (m);
-	g_mutex_unlock (m);
-	g_mutex_free (m);
+		g_mutex_unlock (&m);
+	g_mutex_unlock (&m);
 
 	rb_debug ("GMutex %s recursive", mutex_recurses ? "is" : "isn't");
 

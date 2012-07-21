@@ -61,8 +61,8 @@ struct _RBMTPSink
 	GstPad *ghostpad;
 
 	GError *upload_error;
-	GMutex *upload_mutex;
-	GCond *upload_cond;
+	GMutex upload_mutex;
+	GCond upload_cond;
 	gboolean got_folder;
 	gboolean upload_done;
 };
@@ -124,9 +124,6 @@ rb_mtp_sink_init (RBMTPSink *sink, RBMTPSinkClass *klass)
 {
 	GstPad *pad;
 
-	sink->upload_mutex = g_mutex_new ();
-	sink->upload_cond = g_cond_new ();
-
 	/* create actual sink */
 	sink->fdsink = gst_element_factory_make ("fdsink", NULL);
 	if (sink->fdsink == NULL) {
@@ -179,7 +176,7 @@ rb_mtp_sink_close_tempfile (RBMTPSink *sink)
 static void
 folder_callback (uint32_t folder_id, RBMTPSink *sink)
 {
-	g_mutex_lock (sink->upload_mutex);
+	g_mutex_lock (&sink->upload_mutex);
 	if (folder_id == 0) {
 		rb_debug ("mtp folder create failed");
 	} else {
@@ -189,23 +186,23 @@ folder_callback (uint32_t folder_id, RBMTPSink *sink)
 
 	sink->got_folder = TRUE;
 
-	g_cond_signal (sink->upload_cond);
-	g_mutex_unlock (sink->upload_mutex);
+	g_cond_signal (&sink->upload_cond);
+	g_mutex_unlock (&sink->upload_mutex);
 }
 
 static void
 upload_callback (LIBMTP_track_t *track, GError *error, RBMTPSink *sink)
 {
 	rb_debug ("mtp upload callback for %s: item ID %d", track->filename, track->item_id);
-	g_mutex_lock (sink->upload_mutex);
+	g_mutex_lock (&sink->upload_mutex);
 
 	if (error != NULL) {
 		sink->upload_error = g_error_copy (error);
 	}
 	sink->upload_done = TRUE;
 
-	g_cond_signal (sink->upload_cond);
-	g_mutex_unlock (sink->upload_mutex);
+	g_cond_signal (&sink->upload_cond);
+	g_mutex_unlock (&sink->upload_mutex);
 }
 
 static void
@@ -231,7 +228,7 @@ rb_mtp_sink_handle_message (GstBin *bin, GstMessage *message)
 		/* we can just block waiting for mtp thread operations to finish here
 		 * as we're on a streaming thread.
 		 */
-		g_mutex_lock (sink->upload_mutex);
+		g_mutex_lock (&sink->upload_mutex);
 
 		if (sink->folder_path != NULL) {
 			/* find or create the target folder.
@@ -245,7 +242,7 @@ rb_mtp_sink_handle_message (GstBin *bin, GstMessage *message)
 						     g_object_ref (sink),
 						     g_object_unref);
 			while (sink->got_folder == FALSE) {
-				g_cond_wait (sink->upload_cond, sink->upload_mutex);
+				g_cond_wait (&sink->upload_cond, &sink->upload_mutex);
 			}
 		}
 
@@ -259,9 +256,9 @@ rb_mtp_sink_handle_message (GstBin *bin, GstMessage *message)
 					    g_object_unref);
 
 		while (sink->upload_done == FALSE) {
-			g_cond_wait (sink->upload_cond, sink->upload_mutex);
+			g_cond_wait (&sink->upload_cond, &sink->upload_mutex);
 		}
-		g_mutex_unlock (sink->upload_mutex);
+		g_mutex_unlock (&sink->upload_mutex);
 
 		/* post error message if the upload failed - this should get there before
 		 * this EOS message does, so it should work OK.
@@ -405,9 +402,6 @@ rb_mtp_sink_finalize (GObject *object)
 {
 	RBMTPSink *sink;
 	sink = RB_MTP_SINK (object);
-
-	g_mutex_free (sink->upload_mutex);
-	g_cond_free (sink->upload_cond);
 
 	if (sink->upload_error) {
 		g_error_free (sink->upload_error);
