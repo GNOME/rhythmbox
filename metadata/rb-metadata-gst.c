@@ -461,7 +461,7 @@ mp4_tagger (GstElement *pipeline, GstPad *srcpad, GstTagList *tags)
 		return NULL;
 
 	gst_bin_add (GST_BIN (pipeline), mux);
-	if (!link_named_pad (srcpad, mux, "audio_%d"))
+	if (!link_named_pad (srcpad, mux, "audio_%u"))
 		goto error;
 
 	gst_element_set_state (mux, GST_STATE_PAUSED);
