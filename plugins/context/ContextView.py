@@ -270,7 +270,12 @@ class ContextView (GObject.GObject):
         top_five_tvc2.add_attribute(crt, 'text', 1)
         
         top_five_view.set_headers_visible( False )
-        frame.add (top_five_view)
+
+	scroll = Gtk.ScrolledWindow()
+	scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
+	scroll.add(top_five_view)
+
+        frame.add (scroll)
 
         #---- set up webkit pane -----#
         self.webview = WebKit.WebView()
