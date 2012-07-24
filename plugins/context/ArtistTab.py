@@ -123,8 +123,8 @@ class ArtistView (GObject.GObject):
     def load_tmpl (self):
         self.path = rb.find_plugin_file(self.plugin, 'tmpl/artist-tmpl.html')
         self.loading_path = rb.find_plugin_file (self.plugin, 'tmpl/loading.html')
-        self.template = Template (filename = self.path, module_directory = '/tmp/context/')
-        self.loading_template = Template (filename = self.loading_path, module_directory = '/tmp/context')
+        self.template = Template (filename = self.path)
+        self.loading_template = Template (filename = self.loading_path)
         self.styles = self.basepath + '/tmpl/main.css'
 
     def connect_signals (self):

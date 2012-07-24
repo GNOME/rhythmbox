@@ -125,10 +125,8 @@ class AlbumView (GObject.GObject):
     def load_tmpl (self):
         self.path = rb.find_plugin_file (self.plugin, 'tmpl/album-tmpl.html')
         self.loading_path = rb.find_plugin_file (self.plugin, 'tmpl/loading.html')
-        self.album_template = Template (filename = self.path,
-                                        module_directory = '/tmp/context')
-        self.loading_template = Template (filename = self.loading_path, 
-                                          module_directory = '/tmp/context')
+        self.album_template = Template (filename = self.path)
+        self.loading_template = Template (filename = self.loading_path)
         self.styles = self.basepath + '/tmpl/main.css'
 
     def album_list_ready (self, ds):

@@ -106,8 +106,7 @@ class LinksView (GObject.GObject):
         self.path = rb.find_plugin_file(self.plugin, 'tmpl/links-tmpl.html')
         self.images = self.basepath + '/img/links/'
         self.styles = self.basepath + '/tmpl/main.css'
-        self.template = Template (filename = self.path, 
-                                  module_directory = '/tmp/context/')
+        self.template = Template (filename = self.path)
 
         self.file = self.template.render (error      = ds.get_error (),
                                           artist     = ds.get_artist(),
