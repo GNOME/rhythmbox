@@ -474,7 +474,6 @@ column_check_toggled_cb (GtkWidget *widget, RBShellPreferences *preferences)
 
 	g_settings_set_value (preferences->priv->source_settings, "visible-columns", v);
 
-	g_variant_unref (v);
 	g_variant_builder_unref (b);
 }
 
