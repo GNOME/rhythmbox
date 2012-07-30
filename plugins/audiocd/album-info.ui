@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 2.12 -->
+  <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkGrid" id="album_info">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -13,7 +13,6 @@
         <property name="can_focus">False</property>
         <property name="xalign">0</property>
         <property name="label" translatable="yes">A_lbum:</property>
-        <property name="use_markup">True</property>
         <property name="use_underline">True</property>
         <property name="mnemonic_widget">album_entry</property>
       </object>
@@ -30,7 +29,6 @@
         <property name="can_focus">False</property>
         <property name="xalign">0</property>
         <property name="label" translatable="yes">_Artist:</property>
-        <property name="use_markup">True</property>
         <property name="use_underline">True</property>
         <property name="mnemonic_widget">artist_entry</property>
       </object>
@@ -47,7 +45,6 @@
         <property name="can_focus">False</property>
         <property name="xalign">0</property>
         <property name="label" translatable="yes">Artist s_ort order:</property>
-        <property name="use_markup">True</property>
         <property name="use_underline">True</property>
         <property name="mnemonic_widget">artist_sort_entry</property>
       </object>
@@ -64,7 +61,6 @@
         <property name="can_focus">False</property>
         <property name="xalign">0</property>
         <property name="label" translatable="yes">_Genre:</property>
-        <property name="use_markup">True</property>
         <property name="use_underline">True</property>
         <property name="mnemonic_widget">genre_entry</property>
       </object>
@@ -147,7 +143,6 @@
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">_Year:</property>
-            <property name="use_markup">True</property>
             <property name="use_underline">True</property>
             <property name="mnemonic_widget">year_entry</property>
             <accessibility>
@@ -182,7 +177,6 @@
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">_Disc:</property>
-            <property name="use_markup">True</property>
             <property name="use_underline">True</property>
             <property name="mnemonic_widget">disc_number_entry</property>
             <accessibility>
@@ -216,15 +210,6 @@
         <property name="width">1</property>
         <property name="height">1</property>
       </packing>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
     </child>
     <child>
       <placeholder/>
