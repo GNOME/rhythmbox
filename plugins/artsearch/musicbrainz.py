@@ -26,13 +26,16 @@
 
 import xml.dom.minidom as dom
 
-import rb
+import rb, urllib
 from gi.repository import RB
 
 # musicbrainz URLs
 MUSICBRAINZ_RELEASE_URL = "http://musicbrainz.org/ws/2/release/%s?inc=artists"
 MUSICBRAINZ_RELEASE_PREFIX = "http://musicbrainz.org/release/"
 MUSICBRAINZ_RELEASE_SUFFIX = ".html"
+
+MUSICBRAINZ_SEARCH_QUERY = "artist:\"%s\" AND release:\"%s\""
+MUSICBRAINZ_SEARCH_URL = "http://musicbrainz.org/ws/2/release/?query=%s&limit=1"
 
 # musicbrainz IDs
 MUSICBRAINZ_VARIOUS_ARTISTS = "89ad4ac3-39f7-470e-963a-56509c546377"
@@ -84,12 +87,27 @@ class MusicBrainzSearch(object):
 			print "exception parsing musicbrainz response: %s" % e
 			callback(*cbargs)
 
+	def try_search_artist_album (self, key, store, callback, *args):
+		album = key.get_field("album")
+		artist = key.get_field("artist")
+
+		if not album or not artist:
+			print "artist or album information missing"
+			callback(*args)
+			return
+
+		query = MUSICBRAINZ_SEARCH_QUERY % (artist.lower(), album.lower())
+		url = MUSICBRAINZ_SEARCH_URL % (urllib.quote(query, safe=':'),)
+
+		loader = rb.Loader()
+		loader.get_url(url, self.get_release_cb, (key, store, callback, args))
+
 	def search(self, key, last_time, store, callback, *args):
 		key = key.copy()	# ugh
 		album_id = key.get_info("musicbrainz-albumid")
 		if album_id is None:
 			print "no musicbrainz release ID for this track"
-			callback(*args)
+			self.try_search_artist_album(key, store, callback, args)
 			return
 
 		if album_id.startswith(MUSICBRAINZ_RELEASE_PREFIX):
