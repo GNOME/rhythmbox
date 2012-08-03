@@ -107,6 +107,14 @@ rb_audioscrobbler_user_data_get_type (void)
 	return type;
 }
 
+/* unrefs each element and frees the queue */
+static void
+free_data_queue (gpointer data_queue)
+{
+	g_queue_free_full (data_queue,
+	                   (GDestroyNotify)rb_audioscrobbler_user_data_unref);
+}
+
 struct _RBAudioscrobblerUserPrivate {
 	RBAudioscrobblerService *service;
 	char *username;
@@ -122,7 +130,7 @@ struct _RBAudioscrobblerUserPrivate {
 	GPtrArray *recommended_artists;
 
 	/* for image downloads */
-	GHashTable *file_to_data_map;
+	GHashTable *file_to_data_queue_map;
 	GHashTable *file_to_cancellable_map;
 };
 
@@ -348,10 +356,10 @@ rb_audioscrobbler_user_init (RBAudioscrobblerUser *user)
 		                                     SOUP_TYPE_GNOME_FEATURES_2_26,
 		                                     NULL);
 
-	user->priv->file_to_data_map = g_hash_table_new_full (g_file_hash,
-	                                                      (GEqualFunc) g_file_equal,
-	                                                      g_object_unref,
-	                                                      (GDestroyNotify) rb_audioscrobbler_user_data_unref);
+	user->priv->file_to_data_queue_map = g_hash_table_new_full (g_file_hash,
+	                                                            (GEqualFunc) g_file_equal,
+	                                                            g_object_unref,
+	                                                            free_data_queue);
 	user->priv->file_to_cancellable_map = g_hash_table_new_full (g_file_hash,
 	                                                             (GEqualFunc) g_file_equal,
 	                                                             NULL,
@@ -409,7 +417,7 @@ rb_audioscrobbler_user_dispose (GObject* object)
 		user->priv->recommended_artists = NULL;
 	}
 
-	/* free this map first because file_to_data_map owns the file reference */
+	/* free this map first because file_to_data_queue_map owns the file reference */
 	if (user->priv->file_to_cancellable_map != NULL) {
 		GList *key;
 
@@ -425,9 +433,9 @@ rb_audioscrobbler_user_dispose (GObject* object)
 		user->priv->file_to_cancellable_map = NULL;
 	}
 
-	if (user->priv->file_to_data_map != NULL) {
-		g_hash_table_unref (user->priv->file_to_data_map);
-		user->priv->file_to_data_map = NULL;
+	if (user->priv->file_to_data_queue_map != NULL) {
+		g_hash_table_unref (user->priv->file_to_data_queue_map);
+		user->priv->file_to_data_queue_map = NULL;
 	}
 }
 
@@ -1528,6 +1536,7 @@ static void
 download_image (RBAudioscrobblerUser *user, const char *image_url, RBAudioscrobblerUserData *data)
 {
 	GFile *src_file;
+	GQueue *data_queue;
 
 	/* check image_url is not null or empty */
 	if (image_url == NULL || image_url[0] == '\0') {
@@ -1535,9 +1544,10 @@ download_image (RBAudioscrobblerUser *user, const char *image_url, RBAudioscrobb
 	}
 
 	src_file = g_file_new_for_uri (image_url);
+	data_queue = g_hash_table_lookup (user->priv->file_to_data_queue_map, src_file);
 
 	/* only start a download if the file is not already being downloaded */
-	if (g_hash_table_lookup (user->priv->file_to_data_map, src_file) == NULL) {
+	if (data_queue == NULL) {
 		char *dest_filename;
 		char *dest_file_uri;
 		GError *error;
@@ -1552,10 +1562,12 @@ download_image (RBAudioscrobblerUser *user, const char *image_url, RBAudioscrobb
 			GCancellable *cancellable;
 			GFile *dest_file;
 
-			/* add data to map */
-			g_hash_table_insert (user->priv->file_to_data_map,
+			/* add new queue containing data to map */
+			data_queue = g_queue_new ();
+			g_queue_push_tail (data_queue, rb_audioscrobbler_user_data_ref (data));
+			g_hash_table_insert (user->priv->file_to_data_queue_map,
 			                     src_file,
-			                     rb_audioscrobbler_user_data_ref (data));
+			                     data_queue);
 
 			/* create a cancellable for this download */
 			cancellable = g_cancellable_new ();
@@ -1584,7 +1596,10 @@ download_image (RBAudioscrobblerUser *user, const char *image_url, RBAudioscrobb
 		g_free (dest_filename);
 		g_free (dest_file_uri);
 	} else {
-		g_object_unref (src_file);
+		/* the file is already being downloaded. add this data to the queue for
+		 * the file, so that data will be updated when the download completes */
+		rb_debug ("image %s is already being downloaded. adding data to queue", image_url);
+		g_queue_push_tail (data_queue, rb_audioscrobbler_user_data_ref (data));
 	}
 }
 
@@ -1593,86 +1608,100 @@ image_download_cb (GObject *source_object, GAsyncResult *res, gpointer user_data
 {
 	RBAudioscrobblerUser *user = RB_AUDIOSCROBBLER_USER (user_data);
 	GFile *src_file = G_FILE (source_object);
-	RBAudioscrobblerUserData *data;
+	GQueue *data_queue;
 
 	/* free the cancellable */
 	g_hash_table_remove (user->priv->file_to_cancellable_map, src_file);
 
-	data = g_hash_table_lookup (user->priv->file_to_data_map, src_file);
+	data_queue = g_hash_table_lookup (user->priv->file_to_data_queue_map, src_file);
 
-	/* It is only worthwhile continuing if the data's refcount is greater
-	 * than 1. Otherwise nobody else cares about it. */
-	if (g_file_copy_finish (src_file, res, NULL) && data->refcount > 1) {
+	if (g_file_copy_finish (src_file, res, NULL)) {
 		char *dest_file_path;
+		GList *data_i;
 
-		if (data->image != NULL) {
-			g_object_unref (data->image);
-		}
+		/* the image was downloaded for the first item in the queue,
+		 * so the first item must be used to get the path */
+		dest_file_path = calculate_cached_image_path (user, g_queue_peek_head (data_queue));
 
-		/* load image at correct size for the data type */
-		dest_file_path = calculate_cached_image_path (user, data);
-		if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO) {
-			data->image = gdk_pixbuf_new_from_file_at_size (dest_file_path, USER_PROFILE_IMAGE_SIZE, -1, NULL);
-		} else {
-			data->image = gdk_pixbuf_new_from_file_at_size (dest_file_path, LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+		/* iterate through each data item in the queue,
+		 * and if necessary update the image and emit appropriate signal */
+		for (data_i = g_queue_peek_head (data_queue); data_i != NULL; data_i = g_list_next (data_i)) {
+			RBAudioscrobblerUserData *data = data_i->data;
+
+			/* if nobody else has a reference to the data then
+			 * there is no need to update the image */
+			if (data->refcount <= 1) {
+				continue;
+			}
+
+			if (data->image != NULL) {
+				g_object_unref (data->image);
+			}
+
+			/* load image at correct size for the data type */
+			if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO) {
+				data->image = gdk_pixbuf_new_from_file_at_size (dest_file_path, USER_PROFILE_IMAGE_SIZE, -1, NULL);
+			} else {
+				data->image = gdk_pixbuf_new_from_file_at_size (dest_file_path, LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
+			}
+
+			/* emit appropriate signal - quite ugly, surely this could be done in a nicer way */
+			if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO) {
+				g_signal_emit (user, rb_audioscrobbler_user_signals[USER_INFO_UPDATED],
+				               0, data);
+			} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK) {
+				int i;
+				if (user->priv->recent_tracks != NULL) {
+					for (i = 0; i < user->priv->recent_tracks->len; i++) {
+						if (g_ptr_array_index (user->priv->recent_tracks, i) == data) {
+							g_signal_emit (user, rb_audioscrobbler_user_signals[RECENT_TRACKS_UPDATED],
+							               0, user->priv->recent_tracks);
+						}
+					}
+				}
+				if (user->priv->top_tracks != NULL) {
+					for (i = 0; i < user->priv->top_tracks->len; i++) {
+						if (g_ptr_array_index (user->priv->top_tracks, i) == data) {
+							g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_TRACKS_UPDATED],
+							               0, user->priv->top_tracks);
+						}
+					}
+				}
+				if (user->priv->loved_tracks != NULL) {
+					for (i = 0; i < user->priv->loved_tracks->len; i++) {
+						if (g_ptr_array_index (user->priv->loved_tracks, i) == data) {
+							g_signal_emit (user, rb_audioscrobbler_user_signals[LOVED_TRACKS_UPDATED],
+							               0, user->priv->loved_tracks);
+						}
+					}
+				}
+			} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
+				int i;
+				if (user->priv->top_artists != NULL) {
+					for (i = 0; i < user->priv->top_artists->len; i++) {
+						if (g_ptr_array_index (user->priv->top_artists, i) == data) {
+							g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_ARTISTS_UPDATED],
+							               0, user->priv->top_artists);
+						}
+					}
+				}
+				if (user->priv->recommended_artists != NULL) {
+					for (i = 0; i < user->priv->recommended_artists->len; i++) {
+						if (g_ptr_array_index (user->priv->recommended_artists, i) == data) {
+							g_signal_emit (user, rb_audioscrobbler_user_signals[RECOMMENDED_ARTISTS_UPDATED],
+							               0, user->priv->recommended_artists);
+						}
+					}
+				}
+			}
 		}
 		g_free (dest_file_path);
-
-		/* emit appropriate signal - quite ugly, surely this could be done in a nicer way */
-		if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO) {
-			g_signal_emit (user, rb_audioscrobbler_user_signals[USER_INFO_UPDATED],
-			               0, data);
-		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_TRACK) {
-			int i;
-			if (user->priv->recent_tracks != NULL) {
-				for (i = 0; i < user->priv->recent_tracks->len; i++) {
-					if (g_ptr_array_index (user->priv->recent_tracks, i) == data) {
-						g_signal_emit (user, rb_audioscrobbler_user_signals[RECENT_TRACKS_UPDATED],
-						               0, user->priv->recent_tracks);
-					}
-				}
-			}
-			if (user->priv->top_tracks != NULL) {
-				for (i = 0; i < user->priv->top_tracks->len; i++) {
-					if (g_ptr_array_index (user->priv->top_tracks, i) == data) {
-						g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_TRACKS_UPDATED],
-						               0, user->priv->top_tracks);
-					}
-				}
-			}
-			if (user->priv->loved_tracks != NULL) {
-				for (i = 0; i < user->priv->loved_tracks->len; i++) {
-					if (g_ptr_array_index (user->priv->loved_tracks, i) == data) {
-						g_signal_emit (user, rb_audioscrobbler_user_signals[LOVED_TRACKS_UPDATED],
-						               0, user->priv->loved_tracks);
-					}
-				}
-			}
-		} else if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_ARTIST) {
-			int i;
-			if (user->priv->top_artists != NULL) {
-				for (i = 0; i < user->priv->top_artists->len; i++) {
-					if (g_ptr_array_index (user->priv->top_artists, i) == data) {
-						g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_ARTISTS_UPDATED],
-						               0, user->priv->top_artists);
-					}
-				}
-			}
-			if (user->priv->recommended_artists != NULL) {
-				for (i = 0; i < user->priv->recommended_artists->len; i++) {
-					if (g_ptr_array_index (user->priv->recommended_artists, i) == data) {
-						g_signal_emit (user, rb_audioscrobbler_user_signals[RECOMMENDED_ARTISTS_UPDATED],
-						               0, user->priv->recommended_artists);
-					}
-				}
-			}
-		}
 	} else {
 		rb_debug ("error downloading image. possibly due to cancellation");
 	}
 
 	/* cleanup the file and data */
-	g_hash_table_remove (user->priv->file_to_data_map, src_file);
+	g_hash_table_remove (user->priv->file_to_data_queue_map, src_file);
 }
 
 void
