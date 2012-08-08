@@ -1,8 +1,19 @@
-
+# These find the gir and typelib files in an uninstalled GStreamer setup
+# or if GStreamer is installed in a different prefix than most other things
 -include $(INTROSPECTION_MAKEFILE)
 INTROSPECTION_GIRS =
-INTROSPECTION_SCANNER_ARGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir)/bindings/gi --c-include=rhythmbox.h --warn-all
-INTROSPECTION_COMPILER_ARGS = --includedir=$(top_srcdir)
+INTROSPECTION_SCANNER_ARGS = \
+		--add-include-path=$(top_srcdir) \
+		--add-include-path=$(top_builddir)/bindings/gi \
+		--add-include-path=`$(PKG_CONFIG) --variable=girdir gstreamer-1.0` \
+		--add-include-path=`$(PKG_CONFIG) --variable=girdir gstreamer-base-1.0` \
+		--add-include-path=`$(PKG_CONFIG) --variable=girdir gstreamer-pbutils-1.0` \
+		--c-include=rhythmbox.h --warn-all
+INTROSPECTION_COMPILER_ARGS = \
+		--includedir=$(top_srcdir) \
+		--includedir=`$(PKG_CONFIG) --variable=girdir gstreamer-1.0` \
+		--includedir=`$(PKG_CONFIG) --variable=girdir gstreamer-base-1.0` \
+		--includedir=`$(PKG_CONFIG) --variable=girdir gstreamer-pbutils-1.0`
 
 mpid_introspection_sources = \
 		lib/libmediaplayerid/mediaplayerid.h \
