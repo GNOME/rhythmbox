@@ -145,11 +145,11 @@ MPID_3_0_gir_PACKAGES = gobject-2.0
 MPID_3_0_gir_SCANNERFLAGS = --symbol-prefix mpid_
 
 RB-3.0.gir: $(top_builddir)/shell/librhythmbox-core.la MPID-3.0.gir
-RB_3_0_gir_INCLUDES = GObject-2.0 Gio-2.0 Gtk-3.0 Gst-0.11 GstPbutils-0.11 libxml2-2.0
+RB_3_0_gir_INCLUDES = GObject-2.0 Gio-2.0 Gtk-3.0 Gst-1.0 GstPbutils-1.0 libxml2-2.0
 RB_3_0_gir_CFLAGS = $(RHYTHMBOX_CFLAGS_NOWARN) $(TOTEM_PLPARSER_CFLAGS) $(DBUS_CFLAGS) $(GUDEV_CFLAGS) -I$(top_srcdir)
 RB_3_0_gir_LIBS = $(top_builddir)/shell/librhythmbox-core.la
 RB_3_0_gir_FILES = $(addprefix $(top_srcdir)/,$(rb_introspection_sources))
-RB_3_0_gir_PACKAGES = gobject-2.0 gio-2.0 gtk+-3.0 gstreamer-0.11 libxml-2.0
+RB_3_0_gir_PACKAGES = gobject-2.0 gio-2.0 gtk+-3.0 gstreamer-1.0 libxml-2.0
 RB_3_0_gir_SCANNERFLAGS = --symbol-prefix rb_ --identifier-prefix RB --accept-unprefixed --include-uninstalled=$(builddir)/MPID-3.0.gir
 
 INTROSPECTION_GIRS += MPID-3.0.gir RB-3.0.gir
