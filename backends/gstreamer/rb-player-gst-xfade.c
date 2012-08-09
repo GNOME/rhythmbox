@@ -1849,6 +1849,10 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			g_warning ("Could not get value from BUFFERING message");
 			break;
 		}
+		if (stream == NULL) {
+			rb_debug ("got buffering message for unknown stream (%d)", progress);
+			break;
+		}
 
 		g_mutex_lock (&stream->lock);
 		if (progress >= 100) {
@@ -1900,12 +1904,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			}
 		}
 		g_mutex_unlock (&stream->lock);
-
-		if (stream == NULL) {
-			rb_debug ("got buffering message for unknown stream (%d)", progress);
-		} else {
-			_rb_player_emit_buffering (RB_PLAYER (player), stream->stream_data, progress);
-		}
+		_rb_player_emit_buffering (RB_PLAYER (player), stream->stream_data, progress);
 		break;
 	}
 	case GST_MESSAGE_ELEMENT:
