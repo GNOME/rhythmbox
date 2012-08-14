@@ -485,10 +485,15 @@ playing_entry_changed_cb (RBShellPlayer *player,
 			  RBNotificationPlugin *plugin)
 {
 	update_current_playing_data (plugin, entry);
+	notify_playing_entry (plugin, FALSE);
+}
 
-	if (entry != NULL) {
-		notify_playing_entry (plugin, FALSE);
-	}
+static void
+playing_changed_cb (RBShellPlayer *player,
+		    gboolean       playing,
+		    RBNotificationPlugin *plugin)
+{
+	notify_playing_entry (plugin, FALSE);
 }
 
 static gboolean
@@ -540,6 +545,7 @@ impl_activate (PeasActivatable *bplugin)
 	g_signal_connect_object (shell, "notify-custom", G_CALLBACK (shell_notify_custom_cb), plugin, 0);
 
 	g_signal_connect_object (plugin->shell_player, "playing-song-changed", G_CALLBACK (playing_entry_changed_cb), plugin, 0);
+	g_signal_connect_object (plugin->shell_player, "playing-changed", G_CALLBACK (playing_changed_cb), plugin, 0);
 
 	g_signal_connect_object (plugin->db, "entry_extra_metadata_notify::" RHYTHMDB_PROP_STREAM_SONG_TITLE,
 				 G_CALLBACK (db_stream_metadata_cb), plugin, 0);
