@@ -1604,6 +1604,34 @@ download_image (RBAudioscrobblerUser *user, const char *image_url, RBAudioscrobb
 }
 
 static void
+copy_image_for_data (RBAudioscrobblerUser *user, const char *src_file_path, RBAudioscrobblerUserData *dest_data)
+{
+	GFile *src_file = g_file_new_for_path (src_file_path);
+	char *dest_file_path = calculate_cached_image_path (user, dest_data);
+	GFile *dest_file = g_file_new_for_path (dest_file_path);
+
+	if (g_file_equal (src_file, dest_file) == FALSE) {
+		rb_debug ("copying cache image %s to %s",
+		          src_file_path,
+		          dest_file_path);
+
+		g_file_copy_async (src_file,
+		                   dest_file,
+		                   G_FILE_COPY_OVERWRITE,
+		                   G_PRIORITY_DEFAULT,
+		                   NULL,
+		                   NULL,
+		                   NULL,
+		                   NULL,
+		                   NULL);
+	}
+
+	g_object_unref (src_file);
+	g_free (dest_file_path);
+	g_object_unref (dest_file);
+}
+
+static void
 image_download_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
 	RBAudioscrobblerUser *user = RB_AUDIOSCROBBLER_USER (user_data);
@@ -1644,6 +1672,9 @@ image_download_cb (GObject *source_object, GAsyncResult *res, gpointer user_data
 			} else {
 				data->image = gdk_pixbuf_new_from_file_at_size (dest_file_path, LIST_ITEM_IMAGE_SIZE, LIST_ITEM_IMAGE_SIZE, NULL);
 			}
+
+			/* copy the image to the correct location for this data item, for next time */
+			copy_image_for_data (user, dest_file_path, data);
 
 			/* emit appropriate signal - quite ugly, surely this could be done in a nicer way */
 			if (data->type == RB_AUDIOSCROBBLER_USER_DATA_TYPE_USER_INFO) {
