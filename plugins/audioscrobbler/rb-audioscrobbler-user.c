@@ -1625,7 +1625,7 @@ image_download_cb (GObject *source_object, GAsyncResult *res, gpointer user_data
 
 		/* iterate through each data item in the queue,
 		 * and if necessary update the image and emit appropriate signal */
-		for (data_i = g_queue_peek_head (data_queue); data_i != NULL; data_i = g_list_next (data_i)) {
+		for (data_i = g_queue_peek_head_link(data_queue); data_i != NULL; data_i = g_list_next (data_i)) {
 			RBAudioscrobblerUserData *data = data_i->data;
 
 			/* if nobody else has a reference to the data then
