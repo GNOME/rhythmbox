@@ -715,7 +715,10 @@ MOZILLA_PLUGINDIR=${MOZILLA_PLUGINDIR:-'${libdir}/mozilla/plugins'}
 AC_ARG_VAR([MOZILLA_PLUGINDIR],[Where to install the browser plugin to])
 
 AM_CONDITIONAL([ENABLE_BROWSER_PLUGIN], test x$enable_browser_plugin = xyes)
-
+if test x$enable_browser_plugin = xyes; then
+	ITMS_HANDLER="x-scheme-handler/itms;"
+fi
+AC_SUBST(ITMS_HANDLER)
 
 dnl ================================================================
 dnl Use libdmapsharing for DAAP?
