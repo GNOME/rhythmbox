@@ -67,7 +67,7 @@ typedef struct
 {
 	PeasExtensionBase parent;
 
-	GrlPluginRegistry *registry;
+	GrlRegistry *registry;
 	GHashTable *sources;
 	RBShellPlayer *shell_player;
 	gulong emit_cover_art_id;
@@ -95,7 +95,7 @@ rb_grilo_plugin_init (RBGriloPlugin *plugin)
 static void
 rb_grilo_plugin_source_deleted (RBGriloSource *source, RBGriloPlugin *plugin)
 {
-	GrlMediaSource *media_source;
+	GrlSource *media_source;
 
 	g_object_get (source, "media-source", &media_source, NULL);
 	g_hash_table_remove (plugin->sources, media_source);
@@ -103,7 +103,7 @@ rb_grilo_plugin_source_deleted (RBGriloSource *source, RBGriloPlugin *plugin)
 }
 
 static void
-grilo_source_added_cb (GrlPluginRegistry *registry, GrlMediaPlugin *grilo_plugin, RBGriloPlugin *plugin)
+grilo_source_added_cb (GrlRegistry *registry, GrlPlugin *grilo_plugin, RBGriloPlugin *plugin)
 {
 	RBSource *grilo_source;
 	RBShell *shell;

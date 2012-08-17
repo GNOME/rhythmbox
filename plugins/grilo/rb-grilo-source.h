@@ -72,7 +72,7 @@ typedef struct
 } RBGriloEntryData;
 
 RBSource *		rb_grilo_source_new	(GObject *plugin,
-						 GrlMediaSource *grilo_source);
+						 GrlSource *grilo_source);
 GType			rb_grilo_source_get_type (void);
 void			_rb_grilo_source_register_type	(GTypeModule *module);
 
