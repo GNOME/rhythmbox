@@ -328,8 +328,10 @@ rb_header_init (RBHeader *header)
 	/* elapsed time / duration display */
 	header->priv->timelabel = gtk_label_new ("");
 	gtk_widget_set_halign (header->priv->timelabel, GTK_ALIGN_END);
+	gtk_widget_set_no_show_all (header->priv->timelabel, TRUE);
 
 	header->priv->timebutton = gtk_button_new ();
+	gtk_button_set_relief (GTK_BUTTON (header->priv->timebutton), GTK_RELIEF_NONE);
 	gtk_container_add (GTK_CONTAINER (header->priv->timebutton), header->priv->timelabel);
 	g_signal_connect_object (header->priv->timebutton,
 				 "clicked",
@@ -554,7 +556,11 @@ rb_header_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 
 	/* time button gets its minimum size */
 	gtk_widget_get_preferred_width (RB_HEADER (widget)->priv->songbox, NULL, &info_width);
-	gtk_widget_get_preferred_width (RB_HEADER (widget)->priv->timebutton, &time_width, NULL);
+	if (gtk_widget_get_visible (RB_HEADER (widget)->priv->timelabel)) {
+		gtk_widget_get_preferred_width (RB_HEADER (widget)->priv->timebutton, &time_width, NULL);
+	} else {
+		time_width = 0;
+	}
 
 	info_width = allocation->width - (scale_width + time_width) - (2 * spacing);
 
@@ -575,7 +581,9 @@ rb_header_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 		info_width = 0;
 	}
 
-	if (info_width + scale_width + (2 * spacing) + time_width > allocation->width) {
+	if (time_width == 0) {
+		gtk_widget_hide (RB_HEADER (widget)->priv->timebutton);
+	} else if (info_width + scale_width + (2 * spacing) + time_width > allocation->width) {
 		gtk_widget_hide (RB_HEADER (widget)->priv->timebutton);
 	} else {
 		if (rtl) {
@@ -1048,8 +1056,10 @@ rb_header_update_elapsed (RBHeader *header)
 
 	if (header->priv->entry == NULL) {
 		gtk_label_set_text (GTK_LABEL (header->priv->timelabel), "");
+		gtk_widget_hide (header->priv->timelabel);
 		return;
 	}
+	gtk_widget_show (header->priv->timelabel);
 
 	seconds = header->priv->elapsed_time / RB_PLAYER_SECOND;
 	if (header->priv->duration == 0) {
@@ -1068,6 +1078,7 @@ rb_header_update_elapsed (RBHeader *header)
 
 		/* Translators: remaining time / total time */
 		label = g_strdup_printf (_("-%s / %s"), elapsed, duration);
+		gtk_widget_show (header->priv->timebutton);
 		gtk_label_set_text (GTK_LABEL (header->priv->timelabel), label);
 
 		g_free (elapsed);
