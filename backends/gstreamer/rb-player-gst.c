@@ -635,7 +635,8 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 		g_set_error (error,
 			     RB_PLAYER_ERROR,
 			     RB_PLAYER_ERROR_GENERAL,
-			     _("Failed to create playbin2 element; check your GStreamer installation"));
+			     _("Failed to create %s element; check your GStreamer installation"),
+			     "playbin2");
 		return FALSE;
 	}
 	g_signal_connect_object (G_OBJECT (mp->priv->playbin),
@@ -671,6 +672,14 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 				g_object_set (mp->priv->playbin, "audio-sink", mp->priv->audio_sink, NULL);
 				break;
 			}
+		}
+		if (mp->priv->audio_sink == NULL) {
+			g_set_error (error,
+				     RB_PLAYER_ERROR,
+				     RB_PLAYER_ERROR_GENERAL,
+				     _("Failed to create %s element; check your GStreamer installation"),
+				     "autoaudiosink");
+			return FALSE;
 		}
 	} else {
 		rb_debug ("existing audio sink found");
