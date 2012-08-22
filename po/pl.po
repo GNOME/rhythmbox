@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-30 14:38+0200\n"
-"PO-Revision-Date: 2012-07-30 14:40+0200\n"
+"POT-Creation-Date: 2012-08-23 01:28+0200\n"
+"PO-Revision-Date: 2012-08-23 01:30+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -30,17 +30,18 @@ msgstr ""
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:493
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2833
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2832
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Otwarcie urządzenia wyjściowego się nie powiodło: %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:638
+#: ../backends/gstreamer/rb-player-gst.c:680
 #, c-format
-msgid "Failed to create playbin2 element; check your GStreamer installation"
+msgid "Failed to create %s element; check your GStreamer installation"
 msgstr ""
-"Nie można utworzyć elementu playbin2; proszę sprawdzić poprawność instalacji "
-"biblioteki GStreamer"
+"Utworzenie elementu %s się nie powiodło; proszę sprawdzić poprawność "
+"instalacji biblioteki GStreamer"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1122
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1136
@@ -54,38 +55,38 @@ msgid "Failed to start new stream"
 msgstr "Rozpoczęcie nowego strumienia się nie powiodło"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2758
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2757
 #, c-format
 msgid "Failed to open output device"
 msgstr "Otwarcie urządzenia wyjściowego się nie powiodło"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3111
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3184
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3110
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3183
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Utworzenie elementu biblioteki GStreamer się nie powiodło; proszę sprawdzić "
 "poprawność instalacji"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3125
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3124
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Utworzenie elementu wyjścia dźwiękowego się nie powiodło; proszę sprawdzić "
 "poprawność instalacji"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3158
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3200
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3226
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3235
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3244
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3157
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3199
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3225
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3234
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3243
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Połączenie strumienia biblioteki GStreamer się nie powiodło; proszę "
 "sprawdzić poprawność instalacji"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3339
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3338
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr ""
@@ -705,8 +706,8 @@ msgstr "%d %b %Y"
 #: ../shell/rb-shell-player.c:3759 ../shell/rb-shell-player.c:3761
 #: ../widgets/rb-entry-view.c:985 ../widgets/rb-entry-view.c:1007
 #: ../widgets/rb-entry-view.c:1483 ../widgets/rb-entry-view.c:1495
-#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1130
-#: ../widgets/rb-header.c:1156 ../widgets/rb-song-info.c:917
+#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1141
+#: ../widgets/rb-header.c:1167 ../widgets/rb-song-info.c:917
 #: ../widgets/rb-song-info.c:929 ../widgets/rb-song-info.c:1150
 #: ../widgets/rb-song-info.c:1489
 msgid "Unknown"
@@ -1831,7 +1832,7 @@ msgstr "Przeglądaj"
 msgid "Fetch more tracks"
 msgstr "Pobiera więcej ścieżek"
 
-#: ../plugins/grilo/rb-grilo-source.c:840
+#: ../plugins/grilo/rb-grilo-source.c:859
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -2607,7 +2608,7 @@ msgstr "z <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:390
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
-#: ../widgets/rb-header.c:827
+#: ../widgets/rb-header.c:835
 msgid "Not Playing"
 msgstr "Bezczynny"
 
@@ -4408,11 +4409,11 @@ msgstr "Odtwarzanie losowe"
 msgid "Play Queue"
 msgstr "Kolejka odtwarzania"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:803
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:811
 msgid "from"
 msgstr "z"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:802
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:810
 msgid "by"
 msgstr " "
 
@@ -4543,13 +4544,13 @@ msgid "Drop artwork here"
 msgstr "Tutaj można upuścić okładkę"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1070
+#: ../widgets/rb-header.c:1080
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s/%s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1081
+#: ../widgets/rb-header.c:1092
 #, c-format
 msgid "%s / %s"
 msgstr "%s/%s"
