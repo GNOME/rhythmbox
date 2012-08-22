@@ -95,43 +95,53 @@ rb_grilo_plugin_init (RBGriloPlugin *plugin)
 static void
 rb_grilo_plugin_source_deleted (RBGriloSource *source, RBGriloPlugin *plugin)
 {
-	GrlSource *media_source;
+	GrlSource *grilo_source;
 
-	g_object_get (source, "media-source", &media_source, NULL);
-	g_hash_table_remove (plugin->sources, media_source);
-	g_object_unref (media_source);
+	g_object_get (source, "media-source", &grilo_source, NULL);
+	g_hash_table_remove (plugin->sources, grilo_source);
+	g_object_unref (grilo_source);
 }
 
 static void
-grilo_source_added_cb (GrlRegistry *registry, GrlPlugin *grilo_plugin, RBGriloPlugin *plugin)
+grilo_source_added_cb (GrlRegistry *registry, GrlSource *grilo_source, RBGriloPlugin *plugin)
 {
-	RBSource *grilo_source;
+	GrlPlugin *grilo_plugin;
+	GrlSupportedOps ops;
+	const GList *keys;
+	RBSource *source;
 	RBShell *shell;
 	int i;
 
-	if (GRL_IS_MEDIA_SOURCE (grilo_plugin) == FALSE) {
-		/* TODO use metadata sources for album art and lyrics */
-		rb_debug ("grilo source %s is not interesting",
-			  grl_media_plugin_get_name (grilo_plugin));
-		return;
-	}
-
+	grilo_plugin = grl_source_get_plugin (grilo_source);
 	for (i = 0; i < G_N_ELEMENTS (ignored_plugins); i++) {
-		if (g_str_equal (ignored_plugins[i], grl_media_plugin_get_id (grilo_plugin))) {
+		if (g_str_equal (ignored_plugins[i], grl_plugin_get_id (grilo_plugin))) {
 			rb_debug ("grilo source %s is blacklisted",
-				  grl_media_plugin_get_name (grilo_plugin));
+				  grl_source_get_name (grilo_source));
 			return;
 		}
 	}
 
-	rb_debug ("new grilo source: %s", grl_media_plugin_get_name (grilo_plugin));
+	ops = grl_source_supported_operations (grilo_source);
+	if (((ops & GRL_OP_BROWSE) == 0) && ((ops & GRL_OP_SEARCH) == 0)) {
+		rb_debug ("grilo source %s is not interesting",
+			  grl_source_get_name (grilo_source));
+		return;
+	}
 
-	grilo_source = rb_grilo_source_new (G_OBJECT (plugin), GRL_MEDIA_SOURCE (grilo_plugin));
-	g_hash_table_insert (plugin->sources, grilo_plugin, grilo_source);
+	keys = grl_source_supported_keys (grilo_source);
+	if (g_list_find ((GList *)keys, GINT_TO_POINTER (GRL_METADATA_KEY_URL)) == NULL) {
+		rb_debug ("grilo source %s doesn't do urls", grl_source_get_name (grilo_source));
+		return;
+	}
+
+	rb_debug ("new grilo source: %s", grl_source_get_name (grilo_source));
+
+	source = rb_grilo_source_new (G_OBJECT (plugin), grilo_source);
+	g_hash_table_insert (plugin->sources, grilo_source, source);
 
 	/* probably put some sources under 'shared', some under 'stores'? */
 	g_object_get (plugin, "object", &shell, NULL);
-	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (grilo_source), RB_DISPLAY_PAGE_GROUP_SHARED);
+	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (source), RB_DISPLAY_PAGE_GROUP_SHARED);
 	g_object_unref (shell);
 }
 
@@ -179,9 +189,9 @@ impl_activate (PeasActivatable *plugin)
 					     g_object_unref);
 
 	grl_init (0, NULL);
-	pi->registry = grl_plugin_registry_get_default ();
+	pi->registry = grl_registry_get_default ();
 	g_signal_connect (pi->registry, "source-added", G_CALLBACK (grilo_source_added_cb), pi);
-	if (grl_plugin_registry_load_all (pi->registry, &error) == FALSE) {
+	if (grl_registry_load_all_plugins (pi->registry, &error) == FALSE) {
 		g_warning ("Failed to load Grilo plugins: %s", error->message);
 		g_clear_error (&error);
 	}
@@ -196,8 +206,8 @@ impl_activate (PeasActivatable *plugin)
 }
 
 static void
-_delete_cb (GVolume         *volume,
-	    RBSource        *source,
+_delete_cb (GrlSource *grilo_source,
+	    RBSource *source,
 	    RBGriloPlugin *plugin)
 {
 	/* block the source deleted handler so we don't modify the hash table

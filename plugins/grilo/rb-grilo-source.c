@@ -286,7 +286,7 @@ rb_grilo_source_constructed (GObject *object)
 			  G_CALLBACK (notify_sort_order_cb),
 			  source);
 
-	source_keys = grl_metadata_source_supported_keys (GRL_METADATA_SOURCE (source->priv->grilo_source));
+	source_keys = grl_source_supported_keys (source->priv->grilo_source);
 
 	if (g_list_find ((GList *)source_keys, GUINT_TO_POINTER(GRL_METADATA_KEY_TRACK_NUMBER))) {
 		rb_entry_view_append_column (source->priv->entry_view, RB_ENTRY_VIEW_COL_TRACK_NUMBER, FALSE);
@@ -365,7 +365,7 @@ rb_grilo_source_constructed (GObject *object)
 	browserbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
 
 	/* search bar (if the source supports searching) */
-	if (grl_metadata_source_supported_operations (GRL_METADATA_SOURCE (source->priv->grilo_source)) & GRL_OP_SEARCH) {
+	if (grl_source_supported_operations (source->priv->grilo_source) & GRL_OP_SEARCH) {
 		source->priv->search_entry = rb_search_entry_new (FALSE);
 		g_object_set (source->priv->search_entry, "explicit-mode", TRUE, NULL);
 		g_signal_connect (source->priv->search_entry, "search", G_CALLBACK (search_cb), source);
@@ -414,7 +414,7 @@ rb_grilo_source_new (GObject *plugin, GrlSource *grilo_source)
 	RhythmDB *db;
 	char *name;
 
-	name = g_strdup_printf ("grilo:%s", grl_media_plugin_get_id (GRL_MEDIA_PLUGIN (grilo_source)));
+	name = g_strdup_printf ("grilo:%s", grl_source_get_id (grilo_source));
 
 	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell, "db", &db, NULL);
@@ -431,7 +431,7 @@ rb_grilo_source_new (GObject *plugin, GrlSource *grilo_source)
 
 	settings = g_settings_new ("org.gnome.rhythmbox.plugins.grilo");
 	source = g_object_new (RB_TYPE_GRILO_SOURCE,
-			       "name", grl_metadata_source_get_name (GRL_METADATA_SOURCE (grilo_source)),
+			       "name", grl_source_get_name (grilo_source),
 			       "entry-type", entry_type,
 			       "shell", shell,
 			       "plugin", plugin,
@@ -504,6 +504,24 @@ _rb_grilo_source_register_type (GTypeModule *module)
 {
 	rb_grilo_source_register_type (module);
 	rb_grilo_entry_type_register_type (module);
+}
+
+static GrlOperationOptions *
+make_operation_options (RBGriloSource *source, GrlSupportedOps op, int position)
+{
+	GrlOperationOptions *options;
+	GrlCaps *caps;
+
+	caps = grl_source_get_caps (source->priv->grilo_source, op);
+
+	options = grl_operation_options_new (caps);
+	grl_operation_options_set_skip (options, position);
+	grl_operation_options_set_count (options,
+					 CONTAINER_FETCH_SIZE);
+	grl_operation_options_set_type_filter (options, GRL_TYPE_FILTER_AUDIO);
+	grl_operation_options_set_flags (options, GRL_RESOLVE_NORMAL);
+
+	return options;
 }
 
 /* grilo media -> rhythmdb entry */
@@ -651,7 +669,8 @@ grilo_browse_cb (GrlSource *grilo_source, guint operation_id, GrlMedia *media, g
 
 	if (error != NULL) {
 		/* do something? */
-		rb_debug ("got error for %s: %s", grl_metadata_source_get_name (GRL_METADATA_SOURCE (grilo_source)), error->message);
+		rb_debug ("got error for %s: %s", grl_source_get_name (grilo_source), error->message);
+		source->priv->browse_op = 0;
 		return;
 	}
 
@@ -741,24 +760,24 @@ grilo_browse_cb (GrlSource *grilo_source, guint operation_id, GrlMedia *media, g
 static void
 browse_next (RBGriloSource *source)
 {
+	GrlOperationOptions *options;
 	rb_debug ("next browse op for %s (%d)",
-		  grl_metadata_source_get_name (GRL_METADATA_SOURCE (source->priv->grilo_source)),
+		  grl_source_get_name (source->priv->grilo_source),
 		  source->priv->browse_position);
 	source->priv->browse_got_results = FALSE;
-	source->priv->browse_op = grl_media_source_browse (source->priv->grilo_source,
-							   source->priv->browse_container,
-							   source->priv->grilo_keys,
-							   source->priv->browse_position,
-							   CONTAINER_FETCH_SIZE,
-							   GRL_RESOLVE_NORMAL,
-							   (GrlSourceResultCb) grilo_browse_cb,
-							   source);
+	options = make_operation_options (source, GRL_OP_BROWSE, source->priv->browse_position);
+	source->priv->browse_op = grl_source_browse (source->priv->grilo_source,
+						     source->priv->browse_container,
+						     source->priv->grilo_keys,
+						     options,
+						     (GrlSourceResultCb) grilo_browse_cb,
+						     source);
 }
 
 static void
 start_browse (RBGriloSource *source, GrlMedia *container, GtkTreeIter *container_iter, int position)
 {
-	rb_debug ("starting browse op for %s", grl_metadata_source_get_name (GRL_METADATA_SOURCE (source->priv->grilo_source)));
+	rb_debug ("starting browse op for %s", grl_source_get_name (source->priv->grilo_source));
 
 	/* cancel existing operation? */
 	if (source->priv->browse_op != 0) {
@@ -793,7 +812,7 @@ grilo_media_browse_cb (GrlSource *grilo_source, guint operation_id, GrlMedia *me
 	if (error != NULL) {
 		/* do something? */
 		rb_debug ("got error for %s: %s",
-			  grl_metadata_source_get_name (GRL_METADATA_SOURCE (grilo_source)),
+			  grl_source_get_name (grilo_source),
 			  error->message);
 		return;
 	}
@@ -858,31 +877,35 @@ grilo_media_browse_cb (GrlSource *grilo_source, guint operation_id, GrlMedia *me
 static void
 media_browse_next (RBGriloSource *source)
 {
+	GrlOperationOptions *options;
+
 	rb_debug ("next media_browse op for %s (%d)",
-		  grl_metadata_source_get_name (GRL_METADATA_SOURCE (source->priv->grilo_source)),
+		  grl_source_get_name (source->priv->grilo_source),
 		  source->priv->media_browse_position);
 
 	source->priv->media_browse_got_results = FALSE;
 	if (source->priv->media_browse_container != NULL) {
+		options = make_operation_options (source,
+						  GRL_OP_BROWSE,
+						  source->priv->media_browse_position);
 		source->priv->media_browse_op =
-			grl_media_source_browse (source->priv->grilo_source,
-						 source->priv->media_browse_container,
-						 source->priv->grilo_keys,
-						 source->priv->media_browse_position,
-						 CONTAINER_FETCH_SIZE,
-						 GRL_RESOLVE_NORMAL,
-						 (GrlSourceResultCb) grilo_media_browse_cb,
-						 source);
+			grl_source_browse (source->priv->grilo_source,
+					   source->priv->media_browse_container,
+					   source->priv->grilo_keys,
+					   options,
+					   (GrlSourceResultCb) grilo_media_browse_cb,
+					   source);
 	} else {
+		options = make_operation_options (source,
+						  GRL_OP_SEARCH,
+						  source->priv->media_browse_position);
 		source->priv->media_browse_op =
-			grl_media_source_search (source->priv->grilo_source,
-						 source->priv->search_text,
-						 source->priv->grilo_keys,
-						 source->priv->media_browse_position,
-						 CONTAINER_FETCH_SIZE,
-						 GRL_RESOLVE_NORMAL,
-						 (GrlSourceResultCb) grilo_media_browse_cb,
-						 source);
+			grl_source_search (source->priv->grilo_source,
+					   source->priv->search_text,
+					   source->priv->grilo_keys,
+					   options,
+					   (GrlSourceResultCb) grilo_media_browse_cb,
+					   source);
 	}
 }
 
@@ -890,7 +913,7 @@ static void
 start_media_browse (RBGriloSource *source, GrlMedia *container, GtkTreeIter *container_iter, guint limit)
 {
 	rb_debug ("starting media browse for %s",
-		  grl_metadata_source_get_name (GRL_METADATA_SOURCE (source->priv->grilo_source)));
+		  grl_source_get_name (source->priv->grilo_source));
 
 	/* cancel existing operation? */
 	if (source->priv->media_browse_op != 0) {
