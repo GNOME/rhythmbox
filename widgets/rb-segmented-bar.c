@@ -163,7 +163,7 @@ rb_segmented_bar_class_init (RBSegmentedBarClass *klass)
 	widget_class->get_accessible = rb_segmented_bar_get_accessible;
 
         /**
-         * RBSegmentedBar::show-reflection
+         * RBSegmentedBar:show-reflection:
          *
          * Set to TRUE if you want a reflection to be shown below the segmented
 	 * bar.
@@ -177,7 +177,7 @@ rb_segmented_bar_class_init (RBSegmentedBarClass *klass)
                                                                G_PARAM_READWRITE));
 
         /**
-         * RBSegmentedBar::show-labels
+         * RBSegmentedBar:show-labels:
          *
          * Set to TRUE if you want labels describing the various segments
 	 * to be shown.
@@ -190,7 +190,7 @@ rb_segmented_bar_class_init (RBSegmentedBarClass *klass)
                                                                TRUE,
                                                                G_PARAM_READWRITE));
         /**
-         * RBSegmentedBar::bar-height
+         * RBSegmentedBar:bar-height:
          *
          * Height of the segmented bar
          */

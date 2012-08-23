@@ -418,7 +418,7 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 	klass->store = default_store;
 
 	/**
-	 * RBExtDB:name
+	 * RBExtDB:name:
 	 *
 	 * Name of the metadata store.  Used to locate instances.
 	 */

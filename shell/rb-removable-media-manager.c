@@ -226,7 +226,7 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 
 
 	/**
-	 * RBRemovableMediaManager::create-source-device
+	 * RBRemovableMediaManager::create-source-device:
 	 * @mgr: the #RBRemovableMediaManager
 	 * @device: the device (actually a #GUdevDevice)
 	 *
@@ -247,7 +247,7 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      RB_TYPE_SOURCE,
 			      1, G_TYPE_OBJECT);
 	/**
-	 * RBRemovableMediaManager::create-source-volume
+	 * RBRemovableMediaManager::create-source-volume:
 	 * @mgr: the #RBRemovableMediaManager
 	 * @volume: the #GVolume 
 	 *
@@ -270,7 +270,7 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      1, G_TYPE_VOLUME);
 
 	/**
-	 * RBRemovableMediaManager::create-source-mount
+	 * RBRemovableMediaManager::create-source-mount:
 	 * @mgr: the #RBRemovableMediaManager
 	 * @device_info: a #MPIDDevice containing information on the device
 	 * @mount: the #GMount

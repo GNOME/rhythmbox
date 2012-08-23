@@ -70,7 +70,7 @@ rb_player_gst_tee_interface_init (RBPlayerGstTeeIface *iface)
 			      1, G_TYPE_OBJECT);
 
 	/**
-	 * RBPlayerGstTee::tee-pre-remove
+	 * RBPlayerGstTee::tee-pre-remove:
 	 * @player: the #RBPlayerGstTee implementation
 	 * @tee: the element which is about to be removed
 	 *

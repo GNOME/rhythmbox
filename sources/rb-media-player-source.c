@@ -172,7 +172,7 @@ rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass)
 							      NULL,
 							      G_PARAM_READABLE));
 	/**
-	 * RBMediaPlayerSource:encoding-target
+	 * RBMediaPlayerSource:encoding-target:
 	 *
 	 * The #GstEncodingTarget for this device
 	 */

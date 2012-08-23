@@ -294,7 +294,7 @@ rhythmdb_entry_type_class_init (RhythmDBEntryTypeClass *klass)
 	object_class->finalize = impl_finalize;
 
 	/**
-	 * RhythmDBEntryTYpe:db
+	 * RhythmDBEntryType:db:
 	 *
 	 * The #RhythmDB instance.
 	 */
@@ -307,7 +307,7 @@ rhythmdb_entry_type_class_init (RhythmDBEntryTypeClass *klass)
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	/**
-	 * RhythmDBEntryType:name
+	 * RhythmDBEntryType:name:
 	 *
 	 * Entry type name.  This must be unique.
 	 */
@@ -320,7 +320,7 @@ rhythmdb_entry_type_class_init (RhythmDBEntryTypeClass *klass)
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	/**
-	 * RhythmDBEntryType:save-to-disk
+	 * RhythmDBEntryType:save-to-disk:
 	 *
 	 * If %TRUE, entries of this type should be written to the
 	 * on-disk database.
@@ -333,7 +333,7 @@ rhythmdb_entry_type_class_init (RhythmDBEntryTypeClass *klass)
 							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
-	 * RhythmDBEntryType:type-data-size
+	 * RhythmDBEntryType:type-data-size:
 	 *
 	 * The size of the type-specific data structure to allocate for each
 	 * entry of this type.
@@ -346,7 +346,7 @@ rhythmdb_entry_type_class_init (RhythmDBEntryTypeClass *klass)
 							    0, G_MAXUINT, 0,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
-	 * RhythmDBEntryType:category
+	 * RhythmDBEntryType:category:
 	 *
 	 * The #RhythmDBEntryCategory that this entry type fits into.
 	 */
@@ -359,7 +359,7 @@ rhythmdb_entry_type_class_init (RhythmDBEntryTypeClass *klass)
 							    RHYTHMDB_ENTRY_NORMAL,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
-	 * RhythmDBEntryType:has-playlists
+	 * RhythmDBEntryType:has-playlists:
 	 *
 	 * If %TRUE, entries of this type can be added to playlists.
 	 */

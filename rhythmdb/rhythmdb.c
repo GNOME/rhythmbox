@@ -326,7 +326,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 	object_class->get_property = rhythmdb_get_property;
 
 	/**
-	 * RhythmDB:name
+	 * RhythmDB:name:
 	 *
 	 * Database name.  Not sure whta this is used for.
 	 */
@@ -338,7 +338,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 							      NULL,
 							      G_PARAM_READWRITE));
 	/**
-	 * RhythmDB:dry-run
+	 * RhythmDB:dry-run:
 	 *
 	 * If %TRUE, no metadata changes will be written back to media fies.
 	 */
@@ -350,7 +350,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 							       FALSE,
 							       G_PARAM_READWRITE));
 	/**
-	 * RhythmDB:no-update
+	 * RhythmDB:no-update:
 	 *
 	 * If %TRUE, the database will not be updated.
 	 */

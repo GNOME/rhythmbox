@@ -377,7 +377,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							     G_TYPE_STRV,
 							     G_PARAM_READWRITE));
 	/**
-	 * RBEntryView::entry-added
+	 * RBEntryView::entry-added:
 	 * @view: the #RBEntryView
 	 * @entry: the #RhythmDBEntry that was added
 	 *
@@ -459,7 +459,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_TYPE_NONE,
 			      0);
 	/**
-	 * RBEntryView::show-popup
+	 * RBEntryView::show-popup:
 	 * @view: the #RBEntryView
 	 * @over_entry: if TRUE, the popup request was made while pointing
 	 * at an entry in the view

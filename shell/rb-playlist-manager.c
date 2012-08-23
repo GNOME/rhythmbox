@@ -2096,7 +2096,7 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 			      G_TYPE_NONE,
 			      0, G_TYPE_NONE);
 	/**
-	 * RBPlaylistManager::load-finish
+	 * RBPlaylistManager::load-finish:
 	 * @manager: the #RBPlaylistManager
 	 *
 	 * Emitted when the playlist manager finishes loading the user's

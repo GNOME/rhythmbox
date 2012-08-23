@@ -810,7 +810,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 	object_class->dispose = impl_dispose;
 
 	/**
-	 * RBTrackTransferBatch:encoding-target
+	 * RBTrackTransferBatch:encoding-target:
 	 *
 	 * A GstEncodingTarget describing allowable target formats.
 	 * If NULL, the default set of profiles will be used.
@@ -823,7 +823,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 								     GST_TYPE_ENCODING_TARGET,
 								     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
-	 * RBTrackTransferBatch:source
+	 * RBTrackTransferBatch:source:
 	 *
 	 * The RBSource from which the tracks are being transferred.
 	 */
@@ -835,7 +835,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 							      RB_TYPE_SOURCE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
-	 * RBTrackTransferBatch:destination
+	 * RBTrackTransferBatch:destination:
 	 *
 	 * The RBSource to which the tracks are being transferred.
 	 */
@@ -848,7 +848,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	/**
-	 * RBTrackTransferBatch:total-entries
+	 * RBTrackTransferBatch:total-entries:
 	 *
 	 * Total number of entries in the transfer batch.
 	 */
@@ -860,7 +860,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 							   0, G_MAXINT, 0,
 							   G_PARAM_READABLE));
 	/**
-	 * RBTrackTransferBatch:done-entries
+	 * RBTrackTransferBatch:done-entries:
 	 *
 	 * Number of entries in the batch that have been transferred.
 	 */
@@ -872,7 +872,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 							   0, G_MAXINT, 0,
 							   G_PARAM_READABLE));
 	/**
-	 * RBTrackTransferBatch:progress
+	 * RBTrackTransferBatch:progress:
 	 *
 	 * Fraction of the transfer batch that has been processed.
 	 */
@@ -885,7 +885,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 							      G_PARAM_READABLE));
 
 	/**
-	 * RBTrackTransferBatch:entry-list
+	 * RBTrackTransferBatch:entry-list:
 	 *
 	 * A list of all entries in the batch.
 	 */

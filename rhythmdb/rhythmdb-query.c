@@ -910,7 +910,7 @@ rhythmdb_query_append_prop_multiple (RhythmDB *db, GPtrArray *query, RhythmDBPro
 }
 
 /**
- * rhythmdb_query_is_time_relative
+ * rhythmdb_query_is_time_relative:
  * @db: the #RhythmDB
  * @query: the query to check
  *

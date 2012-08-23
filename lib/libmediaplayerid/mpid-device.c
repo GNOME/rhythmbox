@@ -329,7 +329,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 
 	/* install properties */
 	/**
-	 * MPIDDevice:input-path
+	 * MPIDDevice:input-path:
 	 *
 	 * Either the device node path or the mount point path for the device.
 	 */
@@ -341,7 +341,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
-	 * MPIDDevice::error
+	 * MPIDDevice:error:
 	 *
 	 * MPID error code resulting from device detection (see #MPIDError)
 	 */
@@ -354,7 +354,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							    MPID_ERROR_NONE,
 							    G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::source
+	 * MPIDDevice:source:
 	 *
 	 * The information source used to provide device information (see #MPIDSource)
 	 */
@@ -367,7 +367,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							    MPID_SOURCE_NONE,
 							    G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::model
+	 * MPIDDevice:model:
 	 *
 	 * The device model name
 	 */
@@ -379,7 +379,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      NULL,
 							      G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::vendor
+	 * MPIDDevice:vendor:
 	 *
 	 * The device vendor name
 	 */
@@ -391,7 +391,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      NULL,
 							      G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::fs-uuid
+	 * MPIDDevice:fs-uuid:
 	 *
 	 * The device filesystem UUID
 	 */
@@ -403,7 +403,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      NULL,
 							      G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::serial
+	 * MPIDDevice:serial:
 	 *
 	 * The device serial ID
 	 */
@@ -415,7 +415,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      NULL,
 							      G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::drive-type
+	 * MPIDDevice:drive-type:
 	 *
 	 * The device drive type
 	 */
@@ -427,7 +427,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      NULL,
 							      G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::requires-eject
+	 * MPIDDevice:requires-eject:
 	 *
 	 * If %TRUE, the device must be ejected rather than unmounted
 	 */
@@ -439,7 +439,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							       FALSE,
 							       G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::access-protocols
+	 * MPIDDevice:access-protocols:
 	 *
 	 * Names of access protocols that can be used to access the device contents
 	 */
@@ -451,7 +451,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							     G_TYPE_STRV,
 							     G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::output-formats
+	 * MPIDDevice:output-formats:
 	 *
 	 * A set of MIME types that the device can play
 	 */
@@ -463,7 +463,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							     G_TYPE_STRV,
 							     G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::input-formats
+	 * MPIDDevice:input-formats:
 	 *
 	 * A set of MIME types that the device can record
 	 */
@@ -475,7 +475,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							     G_TYPE_STRV,
 							     G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::playlist-formats
+	 * MPIDDevice:playlist-formats:
 	 *
 	 * A set of playlist format MIME types suppored by the device
 	 */
@@ -487,7 +487,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							     G_TYPE_STRV,
 							     G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::playlist-path
+	 * MPIDDevice:playlist-path:
 	 *
 	 * Path to playlist files on the device.  May include '%File' to indicate a directory
 	 * containing any number of playlist files.
@@ -500,7 +500,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							      NULL,
 							      G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::audio-folders
+	 * MPIDDevice:audio-folders:
 	 *
 	 * A set of folders (relative to the root of the device) containing audio
 	 * folders.
@@ -513,7 +513,7 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 							     G_TYPE_STRV,
 							     G_PARAM_READABLE));
 	/**
-	 * MPIDDevice::folder-depth
+	 * MPIDDevice:folder-depth:
 	 *
 	 * The folder nesting level supported by the device.  -1 indicates there is no limit.
 	 */

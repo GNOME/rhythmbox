@@ -738,7 +738,7 @@ rb_track_transfer_queue_class_init (RBTrackTransferQueueClass *klass)
 	object_class->dispose = impl_dispose;
 
 	/**
-	 * RBTrackTransferQueue:shell
+	 * RBTrackTransferQueue:shell:
 	 *
 	 * The #RBShell
 	 */
@@ -750,7 +750,7 @@ rb_track_transfer_queue_class_init (RBTrackTransferQueueClass *klass)
 							      RB_TYPE_SHELL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
-	 * RBTrackTransferQueue:batch
+	 * RBTrackTransferQueue:batch:
 	 *
 	 * The current #RBTrackTransferBatch being processed
 	 */

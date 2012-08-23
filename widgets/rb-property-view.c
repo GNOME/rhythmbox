@@ -590,7 +590,7 @@ rb_property_view_post_row_deleted_cb (GtkTreeModel *model,
 }
 
 /**
- * rb_property_view_get_num_properties
+ * rb_property_view_get_num_properties:
  * @view: a #RBPropertyView
  *
  * Returns the number of property values present in the view.
