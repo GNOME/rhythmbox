@@ -1,6 +1,6 @@
 # translation of rhythmbox.master.te.po to Telugu
 # Telugu translation for rhythmbox.
-# Copyright (C) 2009, 2011 Gnome Telugu Contributors
+# Copyright (C) 2009, 2011, 2012 Gnome Telugu Contributors
 # This file is distributed under the same license as the rhythmbox package.
 #
 # Krishna Babu K <kkrothap@redhat.com>, 2009.
@@ -11,8 +11,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.master.te\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-06-03 16:26+0000\n"
-"PO-Revision-Date: 2012-06-04 08:56+0530\n"
+"POT-Creation-Date: 2012-08-22 23:29+0000\n"
+"PO-Revision-Date: 2012-08-24 00:16+0530\n"
 "Last-Translator: Praveen Illa <mail2ipn@gmail.com>\n"
 "Language-Team: Telugu <indlinux-telugu@lists.sourceforge.net>\n"
 "Language: te\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"X-Generator: KBabel 1.11.4\n"
+"X-Generator: Gtranslator 2.91.5\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:502
 #, c-format
@@ -29,54 +29,55 @@ msgstr "%sకు వ్రాయుటకు GStreamer సింక్ మూల
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:493
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2829
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2832
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "అవుట్పుట్ పరికరము తెరువుటలో విఫలమైంది: %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:638
+#: ../backends/gstreamer/rb-player-gst.c:680
 #, c-format
-msgid "Failed to create playbin2 element; check your GStreamer installation"
-msgstr "playbin2 మూలకం సృష్టించుటకు విఫలమైంది; మీ GStreamer సంస్థాపనను పరిశీలించండి"
+msgid "Failed to create %s element; check your GStreamer installation"
+msgstr "%s మూలకం సృష్టించుటలో విఫలమైంది; మీ GStreamer స్థాపనను సరిచూసుకోండి"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1118
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1132
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1122
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1136
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "కొత్త స్ట్రీమ్‌ను GStreamer పైప్‌లైనుకు లింకు చేయుటలో విఫలమైంది"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1160
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1164
 #, c-format
 msgid "Failed to start new stream"
 msgstr "కొత్త స్ట్రీమ్‌ను ప్రారంభించుటకు విఫలమైంది"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2754
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2757
 #, c-format
 msgid "Failed to open output device"
 msgstr "అవుట్పుట్ పరికరము తెరువుటలో విఫలమైంది"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3107
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3180
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3110
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3183
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "GStreamer మూలకం సృష్టించుటకు విఫలమైంది; మీ సంస్థాపనను పరిశీలించుము"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3121
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3124
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "ఆడియో అవుట్పుట్ మూలకం సృష్టించుటలో విఫలమైంది; మీ సంస్థాపనను పరిశీలించండి"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3154
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3196
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3222
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3231
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3240
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3157
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3199
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3225
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3234
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3243
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "GStreamer పైప్‌లైన్ లింకునకు విఫలమైంది; మీ సంస్థాపనను పరిశీలించండి"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3335
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3338
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "%sను ప్లే చేయుటకు GStreamer పైప్‌లైను సృష్టించుటలో విఫలమైంది"
@@ -94,8 +95,8 @@ msgid "My Top Rated"
 msgstr "నేను బాగా రేటుయిచ్చినవి"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/rb-shell.c:615
-#: ../shell/rb-shell.c:2661
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/rb-shell.c:618
+#: ../shell/rb-shell.c:2635
 msgid "Rhythmbox"
 msgstr "రిథమ్‌బాక్స్ "
 
@@ -229,7 +230,7 @@ msgstr "లైబ్రరీ స్థానము"
 
 #: ../data/ui/library-prefs.ui.h:2
 msgid "_Music files are placed in:"
-msgstr "సంగీతపు ఫైళ్ళు ఇందున వున్నవి (_M):"
+msgstr "సంగీతపు దస్త్రాలు ఇందున వున్నవి (_M):"
 
 #: ../data/ui/library-prefs.ui.h:3
 msgid "_Browse..."
@@ -272,13 +273,13 @@ msgid "Media Player Properties"
 msgstr "మాధ్యమ ప్రదర్శకం లక్షణాలు"
 
 #: ../data/ui/media-player-properties.ui.h:2
-msgid "<b>Information</b>"
-msgstr "<b>సమాచారము</b>"
+msgid "Information"
+msgstr "సమాచారము"
 
 #. Translators: This refers to the usage of media space
 #: ../data/ui/media-player-properties.ui.h:4
-msgid "<b>Volume usage</b>"
-msgstr "<b>శబ్దస్థాయి వినియోగం:</b>"
+msgid "Volume usage"
+msgstr "శబ్దస్థాయి వినియోగం"
 
 #: ../data/ui/media-player-properties.ui.h:5
 #: ../data/ui/podcast-feed-properties.ui.h:6
@@ -288,12 +289,12 @@ msgid "Basic"
 msgstr "ప్రాధమిక"
 
 #: ../data/ui/media-player-properties.ui.h:6 ../data/ui/sync-dialog.ui.h:1
-msgid "<b>Sync Preferences</b>"
-msgstr "<b>సమకాలీకరణ ప్రాధాన్యతలు</b>"
+msgid "Sync Preferences"
+msgstr "సమకాలీకరణ ప్రాధాన్యతలు"
 
 #: ../data/ui/media-player-properties.ui.h:7 ../data/ui/sync-dialog.ui.h:2
-msgid "<b>Sync Preview</b>"
-msgstr "<b>సమకాలీకరణ మునుజూపు</b>"
+msgid "Sync Preview"
+msgstr "సమకాలీకరణ మునుజూపు"
 
 #: ../data/ui/media-player-properties.ui.h:8
 msgid "Sync"
@@ -321,11 +322,11 @@ msgstr "పాటలజాబితాను భద్రపరుచు"
 
 #: ../data/ui/playlist-save.ui.h:3
 msgid "Select playlist format:"
-msgstr "పాటలజాబితా ఫార్మాటును ఎంపికచేయండి:"
+msgstr "పాటలజాబితా ఆకృతిని ఎంపికచేయండి:"
 
 #: ../data/ui/playlist-save.ui.h:4
-msgid "<b>Playlist format</b>"
-msgstr "<b>పాటలజాబితా ఫార్మాట్</b>"
+msgid "Playlist format"
+msgstr "పాటలజాబితా ఆకృతి"
 
 #: ../data/ui/podcast-add-dialog.ui.h:1
 msgid "Subscribe"
@@ -517,7 +518,7 @@ msgstr "దోష సందేశము"
 
 #: ../data/ui/song-info.ui.h:17
 msgid "File name:"
-msgstr "ఫైల్ పేరు:"
+msgstr "దస్త్రం పేరు:"
 
 #: ../data/ui/song-info.ui.h:19
 msgid "Location:"
@@ -541,21 +542,21 @@ msgstr ""
 
 #: ../data/ui/sync-state.ui.h:3
 msgid "Added files:"
-msgstr "జతచేయబడిన ఫైళ్ళు:"
+msgstr "జతచేయబడిన దస్త్రాలు:"
 
 #: ../data/ui/sync-state.ui.h:4
 msgid "Removed files:"
-msgstr "తీసివేయబడిన ఫైళ్ళు:"
+msgstr "తీసివేయబడిన దస్త్రాలు:"
 
 #: ../lib/eggdesktopfile.c:165
 #, c-format
 msgid "File is not a valid .desktop file"
-msgstr "ఫైలు చెల్లునటువంటి .desktop ఫైలు కాదు"
+msgstr "దస్త్రము చెల్లునటువంటి .desktop దస్త్రము కాదు"
 
 #: ../lib/eggdesktopfile.c:188
 #, c-format
 msgid "Unrecognized desktop file Version '%s'"
-msgstr "గుర్తించబడని డైస్కుటాప్ ఫైలు వర్షన్ '%s'"
+msgstr "గుర్తించబడని డైస్కుటాప్ దస్త్ర రూపాంతరం '%s'"
 
 #: ../lib/eggdesktopfile.c:968
 #, c-format
@@ -588,7 +589,7 @@ msgstr "సెషన్ మేనేజర్‌కు అనుసంధాన�
 
 #: ../lib/eggsmclient.c:229
 msgid "Specify file containing saved configuration"
-msgstr "దాచిన ఆకృతీకరణను కలగిన ఫైలును తెలుపు"
+msgstr "దాచిన ఆకృతీకరణను కలగిన దస్త్రాన్ని తెలుపు"
 
 #: ../lib/eggsmclient.c:229
 msgid "FILE"
@@ -613,9 +614,9 @@ msgstr "సెషన్ నిర్వహణా ఐచ్చికములన�
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3603 ../widgets/rb-entry-view.c:933
+#: ../rhythmdb/rhythmdb.c:3587 ../widgets/rb-entry-view.c:933
 #: ../widgets/rb-entry-view.c:1542 ../widgets/rb-entry-view.c:1555
-#: ../widgets/rb-song-info.c:1465
+#: ../widgets/rb-song-info.c:1462
 msgid "Never"
 msgstr "ఎప్పటికికాదు"
 
@@ -658,9 +659,9 @@ msgstr "%b %d %Y"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:713
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:710
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
-#: ../plugins/audiocd/rb-audiocd-source.c:606
+#: ../plugins/audiocd/rb-audiocd-source.c:605
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:589
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:593
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
@@ -672,28 +673,28 @@ msgstr "%b %d %Y"
 #: ../plugins/iradio/rb-iradio-source.c:1055
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78 ../plugins/lyrics/lyrics.py:80
-#: ../plugins/mtpdevice/rb-mtp-source.c:659
-#: ../plugins/mtpdevice/rb-mtp-source.c:1143
-#: ../plugins/mtpdevice/rb-mtp-source.c:1517
+#: ../plugins/mtpdevice/rb-mtp-source.c:654
+#: ../plugins/mtpdevice/rb-mtp-source.c:1138
+#: ../plugins/mtpdevice/rb-mtp-source.c:1512
 #: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:576 ../podcast/rb-podcast-manager.c:1904
-#: ../podcast/rb-podcast-manager.c:1998
+#: ../podcast/rb-podcast-add-dialog.c:570 ../podcast/rb-podcast-manager.c:1900
+#: ../podcast/rb-podcast-manager.c:1994
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
 #: ../podcast/rb-podcast-source.c:787 ../remote/dbus/rb-client.c:144
-#: ../rhythmdb/rhythmdb.c:2028 ../rhythmdb/rhythmdb.c:2034
-#: ../rhythmdb/rhythmdb.c:2049 ../rhythmdb/rhythmdb.c:5396
-#: ../rhythmdb/rhythmdb.c:5401 ../rhythmdb/rhythmdb-tree.c:1344
-#: ../rhythmdb/rhythmdb-tree.c:1348 ../rhythmdb/rhythmdb-tree.c:1352
-#: ../rhythmdb/rhythmdb-tree.c:1356 ../shell/rb-shell-player.c:1790
+#: ../rhythmdb/rhythmdb.c:2011 ../rhythmdb/rhythmdb.c:2017
+#: ../rhythmdb/rhythmdb.c:2032 ../rhythmdb/rhythmdb.c:5380
+#: ../rhythmdb/rhythmdb.c:5385 ../rhythmdb/rhythmdb-tree.c:1338
+#: ../rhythmdb/rhythmdb-tree.c:1342 ../rhythmdb/rhythmdb-tree.c:1346
+#: ../rhythmdb/rhythmdb-tree.c:1350 ../shell/rb-shell-player.c:1790
 #: ../shell/rb-shell-player.c:3759 ../shell/rb-shell-player.c:3761
 #: ../widgets/rb-entry-view.c:985 ../widgets/rb-entry-view.c:1007
 #: ../widgets/rb-entry-view.c:1483 ../widgets/rb-entry-view.c:1495
-#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1098
-#: ../widgets/rb-header.c:1124 ../widgets/rb-song-info.c:920
-#: ../widgets/rb-song-info.c:932 ../widgets/rb-song-info.c:1153
-#: ../widgets/rb-song-info.c:1492
+#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1141
+#: ../widgets/rb-header.c:1167 ../widgets/rb-song-info.c:917
+#: ../widgets/rb-song-info.c:929 ../widgets/rb-song-info.c:1150
+#: ../widgets/rb-song-info.c:1489
 msgid "Unknown"
 msgstr "తెలియదు"
 
@@ -702,39 +703,39 @@ msgstr "తెలియదు"
 msgid "Too many symlinks"
 msgstr "చాలా సిమ్‌లింకులు"
 
-#: ../lib/rb-file-helpers.c:1210
+#: ../lib/rb-file-helpers.c:1209
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "%s వద్ద ఖాళీ స్థలమును పొందలేకపోయింది: %s"
 
-#: ../lib/rb-util.c:694 ../plugins/context/tmpl/album-tmpl.html:21
+#: ../lib/rb-util.c:691 ../plugins/context/tmpl/album-tmpl.html:21
 #: ../remote/dbus/rb-client.c:146
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:696 ../plugins/context/tmpl/album-tmpl.html:19
+#: ../lib/rb-util.c:693 ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:148
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:760
+#: ../lib/rb-util.c:757
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d మిగిలింది మొత్తం %d:%02d లో"
 
-#: ../lib/rb-util.c:764
+#: ../lib/rb-util.c:761
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d మిగిలింది మొత్తం %d:%02d:%02d లో"
 
-#: ../lib/rb-util.c:769
+#: ../lib/rb-util.c:766
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d మొత్తం %d:%02d లో"
 
-#: ../lib/rb-util.c:773
+#: ../lib/rb-util.c:770
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d మొత్తం %d:%02d:%02d లో"
@@ -771,7 +772,7 @@ msgstr "playbin2 మూలకం సృష్టించుటకు విఫ�
 #: ../metadata/rb-metadata-gst.c:794
 #, c-format
 msgid "File corrupted during write"
-msgstr "వ్రాయునప్పుడు ఫైలు పాడైనది"
+msgstr "వ్రాయునప్పుడు దస్త్రము పాడైనది"
 
 #: ../plugins/artsearch/artsearch.plugin.in.h:1
 msgid "Cover art search"
@@ -799,7 +800,7 @@ msgstr "ఆడియో CD ప్లేయర్"
 
 #: ../plugins/audiocd/audiocd.plugin.in.h:2
 msgid "Support for playing of audio CDs as music source"
-msgstr "మ్యూజిక్ సోర్సువలె ఆడియో CDలను ప్లేచేయుటకు మద్దతు"
+msgstr "సంగీతం సోర్సువలె ఆడియో CDలను ప్లేచేయుటకు మద్దతు"
 
 #: ../plugins/audiocd/multiple-album.ui.h:1
 msgid "Multiple Albums Found"
@@ -859,42 +860,42 @@ msgstr "MusicBrainz నందు ఈ ఆల్బమును కనుగొన
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr "ఈ ఆల్బమును జతచేయుటద్వారా మీరు MusicBrainz డాటాబేస్‌ను మెరుగు పరచవచ్చును."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:612
+#: ../plugins/audiocd/rb-audiocd-source.c:611
 msgid "<Invalid unicode>"
 msgstr "<చెల్లని యూనికోడ్>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:655
+#: ../plugins/audiocd/rb-audiocd-source.c:654
 #, c-format
 msgid "Track %u"
 msgstr "పాట %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:716
-#: ../plugins/audiocd/rb-audiocd-source.c:724
-#: ../plugins/audiocd/rb-audiocd-source.c:1146
+#: ../plugins/audiocd/rb-audiocd-source.c:715
+#: ../plugins/audiocd/rb-audiocd-source.c:723
+#: ../plugins/audiocd/rb-audiocd-source.c:1145
 msgid "Couldn't load Audio CD"
 msgstr "ఆడియో CDను లోడు చేయలేకపోయింది"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:717
+#: ../plugins/audiocd/rb-audiocd-source.c:716
 msgid "Rhythmbox couldn't access the CD."
 msgstr "CDను రిథమ్‌బాక్స్ యాక్సెస్ చేయలేకపోయింది."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:725
+#: ../plugins/audiocd/rb-audiocd-source.c:724
 msgid "Rhythmbox couldn't read the CD information."
-msgstr "CD సమాచారమును రిథమ్‌బాక్స్ చదువలేక పోయింది."
+msgstr "CD సమాచారమును రిథమ్‌బాక్స్ చదువలేకపోయింది."
 
-#: ../plugins/audiocd/rb-audiocd-source.c:996
-#: ../podcast/rb-podcast-add-dialog.c:711 ../sources/rb-library-source.c:133
+#: ../plugins/audiocd/rb-audiocd-source.c:995
+#: ../podcast/rb-podcast-add-dialog.c:705 ../sources/rb-library-source.c:133
 #: ../widgets/rb-entry-view.c:1429
 msgid "Title"
 msgstr "శీర్షిక"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1003
+#: ../plugins/audiocd/rb-audiocd-source.c:1002
 #: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:124
 #: ../widgets/rb-entry-view.c:1439 ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "కళాకారి"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1147
+#: ../plugins/audiocd/rb-audiocd-source.c:1146
 msgid "Rhythmbox could not get access to the CD device."
 msgstr "CD పరికరమునకు రిథమ్‌బాక్స్ యాక్సెస్‌ను పొందలేకపోయింది."
 
@@ -921,11 +922,6 @@ msgstr "పరికరము '%s' యెటువంటి మాధ్యమ�
 msgid ""
 "Device '%s' could not be opened. Check the access permissions on the device."
 msgstr "పరికరము '%s' తెరువబడలేక పోయింది. పరికరముపైన యాక్సెస్ అనుమతులను పరిశీలించుము."
-
-#: ../plugins/audiocd/sj-metadata-getter.c:253
-#, c-format
-msgid "Could not create CD lookup thread"
-msgstr "CD లుకప్ త్రెడ్‌ను సృష్టించలేక పోయింది"
 
 #: ../plugins/audiocd/sj-metadata-gvfs.c:90
 #, c-format
@@ -1403,7 +1399,7 @@ msgstr "ఆడియో పాటల జాబితాను నిర్మి
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:412
 #, c-format
 msgid "Unable to write audio project file %s: %s"
-msgstr "ఆడియో ప్రోజెక్టు ఫైల్ %sను వ్రాయలేకపోయింది: %s"
+msgstr "ఆడియో ప్రోజెక్టు దస్త్రం %sను వ్రాయలేకపోయింది: %s"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:238
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:419
@@ -1480,7 +1476,7 @@ msgstr ""
 msgid "Links"
 msgstr "లంకెలు"
 
-#: ../plugins/context/LinksTab.py:183
+#: ../plugins/context/LinksTab.py:182
 msgid "No artist specified."
 msgstr "ఏ కళాకారుడో తెలుపలేదు."
 
@@ -1494,7 +1490,7 @@ msgstr "లిరిక్సు"
 msgid "Loading lyrics for %s by %s"
 msgstr ""
 
-#: ../plugins/context/LyricsTab.py:122
+#: ../plugins/context/LyricsTab.py:120
 msgid "Lyrics not found"
 msgstr "లిరిక్సు కనబడలేదు"
 
@@ -1525,7 +1521,7 @@ msgstr "పాటల జాబితా అందుబాటులోలేద�
 
 #: ../plugins/context/tmpl/album-tmpl.html:101
 msgid "Unable to retrieve album information:"
-msgstr "దర్శనీయతను ప్రారంభించలేక పోయింది"
+msgstr "దర్శనీయతను ప్రారంభించలేకపోయింది"
 
 #: ../plugins/context/tmpl/artist-tmpl.html:9
 msgid "No information available"
@@ -1553,8 +1549,8 @@ msgid "Share music and play shared music on your local network"
 msgstr "సంగీతమును భాగస్వామ్య పరచు మరియు భాగస్వామ్య సంగీతమును మీ స్థానిక నెట్వర్కునందు ప్లేచేయి"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
-msgid "<b>Sharing</b>"
-msgstr "<b>భాగస్వామ్యం</b>"
+msgid "Sharing"
+msgstr "భాగస్వామ్యం"
 
 #: ../plugins/daap/daap-prefs.ui.h:2
 msgid "_Look for touch Remotes"
@@ -1570,24 +1566,23 @@ msgstr "లైబ్రరీ పేరు (_n):"
 
 #: ../plugins/daap/daap-prefs.ui.h:5
 msgid "Forget known Remotes"
-msgstr ""
+msgstr "తెలిసిన సుదూరాలను మరచిపొమ్ము"
 
 #: ../plugins/daap/daap-prefs.ui.h:6
 msgid "Require _password:"
 msgstr "సంకేతపదము అవసరము (_p):"
 
 #: ../plugins/daap/daap-prefs.ui.h:7
-msgid "<b>Add Remote</b>"
-msgstr "<b>సుదూరాన్ని జతచేయి</b>"
+msgid "Add Remote"
+msgstr "సుదూరాన్ని జతచేయి"
 
 #: ../plugins/daap/daap-prefs.ui.h:8
 msgid "Please enter the passcode displayed on your device."
 msgstr ""
 
 #: ../plugins/daap/daap-prefs.ui.h:9
-msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
+msgid "Could not pair with this Remote"
 msgstr ""
-"<span weight=\"bold\" foreground=\"red\">మీ క్రెటిడ్ కార్డు కాలపరిమితి తేదిను దాటింది</span>"
 
 #: ../plugins/daap/daap-prefs.ui.h:10
 msgid "You can now control Rhythmbox through your Remote"
@@ -1674,7 +1669,7 @@ msgid "Genres"
 msgstr "సాహిత్యం"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2409
-#: ../shell/rb-playlist-manager.c:1103 ../sources/rb-display-page-group.c:92
+#: ../shell/rb-playlist-manager.c:1106 ../sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "పాటలజాబితాలు"
 
@@ -1736,12 +1731,12 @@ msgstr "తయారీదారు:"
 #: ../plugins/generic-player/generic-player-info.ui.h:7
 #: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:9
 msgid "Audio formats:"
-msgstr "ఆడియో ఫార్మాట్లు:"
+msgstr "ఆడియో ఆకృతులు:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:8
 #: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:10
-msgid "<b>System</b>"
-msgstr "<b>వ్యవస్థ</b>"
+msgid "System"
+msgstr "వ్యవస్థ"
 
 #: ../plugins/generic-player/generic-player.plugin.in.h:1
 msgid "Portable Players"
@@ -1752,7 +1747,7 @@ msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "జనరిక్ ఆడియో ప్లేయర్ పరికరముల కొరకు మద్దతు (plus psp మరియు Nokia 770)"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:90
-#: ../shell/rb-playlist-manager.c:839 ../shell/rb-playlist-manager.c:879
+#: ../shell/rb-playlist-manager.c:839 ../shell/rb-playlist-manager.c:882
 msgid "New Playlist"
 msgstr "కొత్త పాటలజాబితా"
 
@@ -1782,7 +1777,7 @@ msgstr "పరికరం లక్షణములను ప్రదర్శ�
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1383
 #: ../plugins/ipod/rb-ipod-source.c:2006
-#: ../plugins/mtpdevice/rb-mtp-source.c:1611
+#: ../plugins/mtpdevice/rb-mtp-source.c:1606
 msgid "Advanced"
 msgstr "అధునాతనం"
 
@@ -1802,7 +1797,7 @@ msgstr "విహరించు (_B)"
 msgid "Fetch more tracks"
 msgstr "మరిన్ని పాటలను తీసుకొనిరమ్ము"
 
-#: ../plugins/grilo/rb-grilo-source.c:840
+#: ../plugins/grilo/rb-grilo-source.c:859
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -1907,12 +1902,8 @@ msgstr ""
 "లేదా మీరు సిద్దీకరించాలని అనుకోకపోతే, రద్దుచేయి నొక్కండి."
 
 #: ../plugins/ipod/ipod-init.ui.h:6
-msgid ""
-"<span size=\"x-large\" weight=\"bold\">Do you want to initialize your iPod?</"
-"span>"
+msgid "Do you want to initialize your iPod?"
 msgstr ""
-"<span size=\"x-large\" weight=\"bold\">మీ మీ iPodను సిద్దపరచాలని అనుకొనుచున్నారా?</"
-"span>"
 
 #: ../plugins/ipod/ipod.plugin.in.h:1
 msgid "Portable Players - iPod"
@@ -2028,14 +2019,14 @@ msgstr "అంతర్జాల రేడియో స్టేషన్ యొ
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
 #: ../podcast/rb-podcast-properties-dialog.c:507
-#: ../sources/rb-media-player-source.c:426 ../widgets/rb-song-info.c:1078
+#: ../sources/rb-media-player-source.c:426 ../widgets/rb-song-info.c:1075
 #, c-format
 msgid "%s Properties"
 msgstr "%s లక్షణములు"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:491
 #: ../podcast/rb-podcast-properties-dialog.c:620
-#: ../widgets/rb-entry-view.c:1011 ../widgets/rb-song-info.c:1155
+#: ../widgets/rb-entry-view.c:1011 ../widgets/rb-song-info.c:1152
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
@@ -2074,16 +2065,16 @@ msgid "Fetch song lyrics from the Internet"
 msgstr "అంతర్జాలం నుండి పాట లిరిక్‌ను పొందు"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:1
-msgid "<b>Search engines</b>"
-msgstr "<b>శోధన యంత్రాలు</b>"
+msgid "Search engines"
+msgstr "శోధన యంత్రాలు"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:2
 msgid "Browse..."
 msgstr "విహరించు..."
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:3
-msgid "<b>Lyrics Folder</b>"
-msgstr "<b>లిరిక్స్ సంచయం</b>"
+msgid "Lyrics Folder"
+msgstr "లిరిక్స్ సంచయం"
 
 #: ../plugins/lyrics/lyrics.py:164 ../plugins/lyrics/lyrics.py:166
 #: ../plugins/lyrics/lyrics.py:175
@@ -2132,8 +2123,8 @@ msgid "Dark Lyrics (darklyrics.com)"
 msgstr "డార్క్ లిరిక్స్ (darklyrics.com)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
-msgid "<b>Magnatune online music store</b>"
-msgstr "<b>మాగ్నాట్యూన్ ఆన్‌లైన్ మ్యూజిక్ స్టోర్</b>"
+msgid "Magnatune online music store"
+msgstr "మాగ్నాట్యూన్ ఆన్‌లైన్ మ్యూజిక్ స్టోర్"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:2
 msgid "Magnatune is an online record label that is not evil.\n"
@@ -2183,7 +2174,7 @@ msgid ""
 "Adds support to Rhythmbox for playing and purchasing from the Magnatune "
 "online music store"
 msgstr ""
-"మాగ్నాట్యూన్ ఆన్‌లైన్ మ్యూజిక్ స్టోర్‌నుండి ప్లే చేయుటకు మరియు కొనుగోలు చేయుటకు రిథమ్‌బాక్స్కు మద్దతును "
+"మాగ్నాట్యూన్ ఆన్‌లైన్ సంగీత స్టోర్‌నుండి ప్లే చేయుటకు మరియు కొనుగోలు చేయుటకు రిథమ్‌బాక్సుకు మద్దతును "
 "జతచేస్తుంది"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
@@ -2453,6 +2444,14 @@ msgstr "మాధ్యమ ప్రదర్శకం మీటలు"
 msgid "Control Rhythmbox using key shortcuts"
 msgstr "మీట అడ్డదారులను ఉపయోగించి రిథమ్‌బాక్సుని నియంత్రించండి"
 
+#: ../plugins/mpris/mpris.plugin.in.h:1
+msgid "MPRIS D-Bus interface"
+msgstr ""
+
+#: ../plugins/mpris/mpris.plugin.in.h:2
+msgid "Provides an implementation of the MPRIS D-Bus interface specification"
+msgstr ""
+
 #: ../plugins/mtpdevice/mtpdevice.plugin.in.h:1
 msgid "Portable Players - MTP"
 msgstr "పోర్టబుల్ ప్లేయర్స్ - MTP"
@@ -2461,21 +2460,21 @@ msgstr "పోర్టబుల్ ప్లేయర్స్ - MTP"
 msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr "MTP పరికరముల కొరకు మద్దతు (సారమును, బదిలీకరణను, ప్లేను పరికరమునుండి చూపుము)"
 
-#: ../plugins/mtpdevice/rb-mtp-gst-sink.c:157
+#: ../plugins/mtpdevice/rb-mtp-gst-sink.c:154
 #: ../plugins/mtpdevice/rb-mtp-thread.c:545
 #, c-format
 msgid "Unable to open temporary file: %s"
-msgstr "తాత్కాలిక ఫైలు తెరువలేక పోయింది: %s"
+msgstr "తాత్కాలిక దస్త్రం తెరువలేకపోయింది: %s"
 
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:120
 msgid "Rename MTP-device"
 msgstr "MTP-పరికరము పేరుమార్చు"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:614
+#: ../plugins/mtpdevice/rb-mtp-source.c:609
 msgid "Media Player"
 msgstr "మాధ్యమ ప్రదర్శకం"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:893
+#: ../plugins/mtpdevice/rb-mtp-source.c:888
 #: ../plugins/mtpdevice/rb-mtp-thread.c:856
 msgid "Media player device error"
 msgstr "మాధ్యమ ప్రదర్శక్ పరికరము దోషము"
@@ -2483,12 +2482,12 @@ msgstr "మాధ్యమ ప్రదర్శక్ పరికరము ద
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:897
+#: ../plugins/mtpdevice/rb-mtp-source.c:892
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "%s %s పరికరమును తెరుచుట వీలుకాదు"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:941
+#: ../plugins/mtpdevice/rb-mtp-source.c:936
 msgid "Digital Audio Player"
 msgstr "డిజిటల్ ఆడియో ప్లేయర్"
 
@@ -2497,7 +2496,7 @@ msgstr "డిజిటల్ ఆడియో ప్లేయర్"
 #: ../plugins/mtpdevice/rb-mtp-thread.c:576
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
-msgstr "ఫైలును MTP పరికరమునుండి నకలుతీయలేదు: %s"
+msgstr "దస్త్రాన్ని MTP పరికరమునుండి నకలుతీయలేదు: %s"
 
 #: ../plugins/mtpdevice/rb-mtp-thread.c:521
 #, c-format
@@ -2540,22 +2539,22 @@ msgstr "తరువాతది"
 
 #. Translators: by Artist
 #: ../plugins/notification/rb-notification-plugin.c:310
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:142
+#: ../plugins/visualizer/rb-visualizer-fullscreen.c:148
 #, c-format
 msgid "by <i>%s</i>"
-msgstr "పాడినవారు <i>%s</i>"
+msgstr "గానం <i>%s</i>"
 
 #. Translators: from Album
 #: ../plugins/notification/rb-notification-plugin.c:312
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:144
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:208
+#: ../plugins/visualizer/rb-visualizer-fullscreen.c:150
+#: ../plugins/visualizer/rb-visualizer-fullscreen.c:213
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "చిత్రం <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:390
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:202
-#: ../widgets/rb-header.c:821
+#: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
+#: ../widgets/rb-header.c:835
 msgid "Not Playing"
 msgstr "ఆడించుటలేదు"
 
@@ -2607,7 +2606,7 @@ msgid ""
 "use the default password ('rhythmbox')."
 msgstr ""
 "మీరు సరే వత్తిన తర్వాత, రిథమ్‌బాక్స్ మీరు దానికి winpdb లేదా rpdb2తో అనుసంధానం అగునంతవరకు "
-"వేచివుంటుంది. మీరు %s ఫైలులోు డీబగ్గర్ సంకేతపదము అమర్చక పోతే, అది అప్రమేయ సంకేతపదము "
+"వేచివుంటుంది. మీరు %s దస్త్రంలో డీబగ్గర్ సంకేతపదము అమర్చకపోతే, అది అప్రమేయ సంకేతపదము "
 "('rhythmbox')ను వుపయోగిస్తుంది."
 
 #. ex:noet:ts=8:
@@ -2740,7 +2739,7 @@ msgstr "అధిక నాణ్యత"
 msgid "_Visual Effect"
 msgstr "దృశ్యమాన ప్రభావాలు (_V)"
 
-#: ../plugins/visualizer/rb-visualizer-page.c:76
+#: ../plugins/visualizer/rb-visualizer-page.c:78
 msgid "Visual Effects"
 msgstr "దృశ్య ప్రభావాలు"
 
@@ -2768,21 +2767,21 @@ msgstr "దర్శనీయతలను ప్రదర్శిస్తు�
 msgid "Unable to load the feed. Check your network connection."
 msgstr "ఫీడ్‌ను లోడు చేయలేకపోయింది. మీ నెట్‌వర్క్ అనుసంధానాన్ని సరిచూచుకోండి."
 
-#: ../podcast/rb-podcast-add-dialog.c:400
+#: ../podcast/rb-podcast-add-dialog.c:394
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr ""
 
-#: ../podcast/rb-podcast-add-dialog.c:722
+#: ../podcast/rb-podcast-add-dialog.c:716
 msgid "Author"
 msgstr "స్వరకర్త"
 
-#: ../podcast/rb-podcast-add-dialog.c:727
-#: ../podcast/rb-podcast-add-dialog.c:730
+#: ../podcast/rb-podcast-add-dialog.c:721
+#: ../podcast/rb-podcast-add-dialog.c:724
 msgid "Episodes"
 msgstr "ధారావాహికలు"
 
-#: ../podcast/rb-podcast-add-dialog.c:758
-#: ../podcast/rb-podcast-add-dialog.c:769 ../podcast/rb-podcast-source.c:1397
+#: ../podcast/rb-podcast-add-dialog.c:752
+#: ../podcast/rb-podcast-add-dialog.c:763 ../podcast/rb-podcast-source.c:1397
 #: ../podcast/rb-podcast-source.c:1408
 msgid "Date"
 msgstr "తేది"
@@ -2825,21 +2824,21 @@ msgstr "పాడ్‌కాస్ట్ డౌన్‌లోడు డైర�
 msgid "Unable to create the download directory for %s: %s"
 msgstr "%s కొరకు డౌనులోడు డైరెక్టరీను సృష్టించలేక పోయింది: %s"
 
-#: ../podcast/rb-podcast-manager.c:1030
+#: ../podcast/rb-podcast-manager.c:1025
 msgid "Invalid URL"
 msgstr "చెల్లని URL"
 
-#: ../podcast/rb-podcast-manager.c:1031
+#: ../podcast/rb-podcast-manager.c:1026
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL \"%s\" చెల్లునది కాదు, దయచేసి దానిని పరిశీలించండి."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1041
+#: ../podcast/rb-podcast-manager.c:1036
 msgid "URL already added"
 msgstr "URL యిప్పటికే జతచేయబడింది"
 
-#: ../podcast/rb-podcast-manager.c:1042
+#: ../podcast/rb-podcast-manager.c:1037
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2848,7 +2847,7 @@ msgstr ""
 "URL \"%s\" వొక రేడియో స్టేషన్ వలె యిప్పటికే జతచేయబడింది. ఒక వేళ యిది పాడ్‌కాస్ట్ ఫీడైతే, దయచేసి రేడియో "
 "స్టేషన్‌ను తీసివేయండి."
 
-#: ../podcast/rb-podcast-manager.c:1118
+#: ../podcast/rb-podcast-manager.c:1114
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2858,11 +2857,11 @@ msgstr ""
 "URL '%s' పాడ్‌కాస్ట్ ఫీడ్ వలె అనిపించుటలేదు. ఇది చెడ్డ URL కావచ్చు, లేదా ఫీడ్ పాడైవుండవచ్చు. మీరు ఏమైనా "
 "సరే Rythmbox దీనిని వుపయోగించుటకు ప్రయత్నించాలని అనుకొనుచున్నారా?"
 
-#: ../podcast/rb-podcast-manager.c:1249
+#: ../podcast/rb-podcast-manager.c:1245
 msgid "Podcast"
 msgstr "పాడ్‌కాస్ట్"
 
-#: ../podcast/rb-podcast-manager.c:2189
+#: ../podcast/rb-podcast-manager.c:2185
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "ఈ పాడ్‌కాస్ట్‌ను జతచేయుటలో అక్కడ వొక దోషమువుంది: %s.  దయచేసి URL నిర్ధారించండి: %s"
@@ -3017,7 +3016,7 @@ msgid ""
 "file by choosing to delete the episode only."
 msgstr ""
 "మీరు భాగమును మరియు దస్త్రమును తొలగించుటకు యెంచుకొంటే, అవి శాశ్వతంగా పోతాయి.  భాగమును మాత్రమే "
-"తొలగించు అను ఐచ్చికాన్ని యెంచుకొనుట ద్వారా మీరు భాగమును తొలగించి డౌనులోడు చేసిన దస్త్రమును "
+"తొలగించు అను ఐచ్చికాన్ని యెంచుకొనుట ద్వారా మీరు భాగమును తొలగించి దింపుకున్న దస్త్రమును "
 "వుంచుకొనగలరని గమనించండి."
 
 #: ../podcast/rb-podcast-source.c:1149
@@ -3128,7 +3127,7 @@ msgstr "డీబగ్ అవుట్పుట్ తెలుపబడిన 
 
 #: ../remote/dbus/rb-client.c:102
 msgid "Source to select"
-msgstr "ఎంపికను కోయుము"
+msgstr "మూలము నుండి ఎంపిక"
 
 #: ../remote/dbus/rb-client.c:103
 msgid "Activate the source matching the specified URI"
@@ -3172,12 +3171,12 @@ msgstr "ప్రస్తుత పాట యొక్క రేటింగ్
 msgid "Not playing"
 msgstr "ఆడుటలేదు"
 
-#: ../remote/dbus/rb-client.c:894
+#: ../remote/dbus/rb-client.c:909
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "ప్లేబాక్ ధ్వని %f.\n"
 
-#: ../rhythmdb/rhythmdb.c:777
+#: ../rhythmdb/rhythmdb.c:768
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "%sను యాక్సెస్ చేయలేదు: %s"
@@ -3187,7 +3186,7 @@ msgstr "%sను యాక్సెస్ చేయలేదు: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1805
+#: ../rhythmdb/rhythmdb.c:1788
 msgid "The Beatles"
 msgstr "బీటెల్సు"
 
@@ -3195,7 +3194,7 @@ msgstr "బీటెల్సు"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1811
+#: ../rhythmdb/rhythmdb.c:1794
 msgid "Help!"
 msgstr "సహాయము!"
 
@@ -3203,51 +3202,51 @@ msgstr "సహాయము!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1817
+#: ../rhythmdb/rhythmdb.c:1800
 msgid "Ticket To Ride"
 msgstr "రైడ్ చేయుటకు టికెట్"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2275
+#: ../rhythmdb/rhythmdb.c:2258
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
-msgstr "ఈ ఫైలును ప్లే చేయుటకు అదనపు GStreamer ప్లగ్‌యిన్లు అవసరము: %s"
+msgstr "ఈ దస్త్రాన్ని ప్లే చేయుటకు అదనపు GStreamer చొప్పింతలు అవసరము: %s"
 
-#: ../rhythmdb/rhythmdb.c:2307
+#: ../rhythmdb/rhythmdb.c:2290
 msgid "invalid unicode in error message"
 msgstr "దోష సందేశమునందు చెల్లని యూనికోడ్"
 
-#: ../rhythmdb/rhythmdb.c:2374
+#: ../rhythmdb/rhythmdb.c:2357
 #, c-format
 msgid "Empty file"
-msgstr "ఖాళీ ఫైల్"
+msgstr "ఖాళీ దస్త్రం"
 
-#: ../rhythmdb/rhythmdb.c:3046
+#: ../rhythmdb/rhythmdb.c:3029
 msgid "Could not load the music database:"
-msgstr "మ్యూజిక్ డాటాబేస్‌ను లోడు చేయలేకపోయింది:"
+msgstr "సంగీత డాటాబేస్‌ను లోడు చేయలేకపోయింది:"
 
-#: ../rhythmdb/rhythmdb.c:4458
+#: ../rhythmdb/rhythmdb.c:4442
 #, c-format
 msgid "Checking (%d/%d)"
 msgstr "పరిశీలించుచున్నది (%d/%d)"
 
-#: ../rhythmdb/rhythmdb.c:4502
+#: ../rhythmdb/rhythmdb.c:4486
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld నిముషము"
 msgstr[1] "%ld నిముషాలు"
 
-#: ../rhythmdb/rhythmdb.c:4503
+#: ../rhythmdb/rhythmdb.c:4487
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld గంట"
 msgstr[1] "%ld గంటలు"
 
-#: ../rhythmdb/rhythmdb.c:4504
+#: ../rhythmdb/rhythmdb.c:4488
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3255,7 +3254,7 @@ msgstr[0] "%ld రోజు"
 msgstr[1] "%ld రోజులు"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4510
+#: ../rhythmdb/rhythmdb.c:4494
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s మరియు %s"
@@ -3263,8 +3262,8 @@ msgstr "%s, %s మరియు %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4516 ../rhythmdb/rhythmdb.c:4524
-#: ../rhythmdb/rhythmdb.c:4535
+#: ../rhythmdb/rhythmdb.c:4500 ../rhythmdb/rhythmdb.c:4508
+#: ../rhythmdb/rhythmdb.c:4519
 #, c-format
 msgid "%s and %s"
 msgstr "%s మరియు %s"
@@ -3273,7 +3272,7 @@ msgstr "%s మరియు %s"
 msgid "All"
 msgstr "అన్ని"
 
-#: ../rhythmdb/rhythmdb-tree.c:414
+#: ../rhythmdb/rhythmdb-tree.c:408
 #, c-format
 msgid ""
 "The database was created by a later version of Rhythmbox.  This version of "
@@ -3356,7 +3355,7 @@ msgstr "ఈ ప్లేలిస్టు నందలి ట్రాక్ల
 
 #: ../shell/rb-playlist-manager.c:219
 msgid "Save the play queue to a file"
-msgstr "ప్రదర్శిత వరుసను ఒక ఫైలులో భద్రపరుచు"
+msgstr "ప్రదర్శిత వరుసను ఒక దస్త్రంలో భద్రపరుచు"
 
 #: ../shell/rb-playlist-manager.c:323
 msgid "Unnamed playlist"
@@ -3364,44 +3363,44 @@ msgstr "పేరులేని పాటలజాబితా"
 
 #: ../shell/rb-playlist-manager.c:366
 msgid "The playlist file may be in an unknown format or corrupted."
-msgstr "పాటలజాబితా ఫైలు బహుశా తెలియని రూపంలో ఉండివుండవచ్చు లేదా పాడైవుండవచ్చు"
+msgstr "పాటలజాబితా దస్త్రం బహుశా తెలియని రూపంలో ఉండివుండవచ్చు లేదా పాడైవుండవచ్చు"
 
 #: ../shell/rb-playlist-manager.c:794
 msgid "Untitled Playlist"
 msgstr "శీర్షికలేని పాటలజాబితా"
 
-#: ../shell/rb-playlist-manager.c:1083
+#: ../shell/rb-playlist-manager.c:1086
 msgid "Couldn't read playlist"
 msgstr "పాటలజాబితాను చదువలేకపోయింది"
 
-#: ../shell/rb-playlist-manager.c:1109
+#: ../shell/rb-playlist-manager.c:1112
 msgid "All Files"
 msgstr "అన్ని దస్త్రాలు"
 
-#: ../shell/rb-playlist-manager.c:1114
+#: ../shell/rb-playlist-manager.c:1117
 msgid "Load Playlist"
 msgstr "పాటలజాబితాను లోడుచేయి"
 
-#: ../shell/rb-playlist-manager.c:1170 ../sources/rb-playlist-source.c:669
+#: ../shell/rb-playlist-manager.c:1173 ../sources/rb-playlist-source.c:669
 msgid "Couldn't save playlist"
 msgstr "పాటలజాబితాను భద్రపరచలేకపోయింది"
 
-#: ../shell/rb-playlist-manager.c:1170
+#: ../shell/rb-playlist-manager.c:1173
 msgid "Unsupported file extension given."
 msgstr "మద్దతీయని దస్త్రము పొడిగింపు యివ్వబడింది."
 
-#: ../shell/rb-playlist-manager.c:1466
+#: ../shell/rb-playlist-manager.c:1469
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "%s పాటలజాబితా ఇదివరకే వుంది"
 
-#: ../shell/rb-playlist-manager.c:1496 ../shell/rb-playlist-manager.c:1529
-#: ../shell/rb-playlist-manager.c:1569 ../shell/rb-playlist-manager.c:1612
+#: ../shell/rb-playlist-manager.c:1499 ../shell/rb-playlist-manager.c:1532
+#: ../shell/rb-playlist-manager.c:1572 ../shell/rb-playlist-manager.c:1615
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "తెలియని పాటలజాబితా: %s"
 
-#: ../shell/rb-playlist-manager.c:1537 ../shell/rb-playlist-manager.c:1577
+#: ../shell/rb-playlist-manager.c:1540 ../shell/rb-playlist-manager.c:1580
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "ప్లేలిస్టు %s వొక స్వయంచాలక ప్లేలిస్టు"
@@ -3501,7 +3500,7 @@ msgstr "అన్ని పాటలను చూపించు (_A)"
 
 #: ../shell/rb-shell.c:369
 msgid "Show all tracks in this music source"
-msgstr "ఈ మ్యూజిక్ సోర్సు నందలి అన్ని పాటలను చూపించు"
+msgstr "ఈ సంగీత మూలం నందలి అన్ని పాటలను చూపించు"
 
 #: ../shell/rb-shell.c:371
 msgid "_Jump to Playing Song"
@@ -3567,43 +3566,43 @@ msgstr "విహరించు (_B)"
 msgid "Change the visibility of the browser"
 msgstr "విహారకం యొక్క దర్శనీయతను మార్చు"
 
-#: ../shell/rb-shell.c:890
+#: ../shell/rb-shell.c:893
 msgid "Change the music volume"
 msgstr "సంగీత శబ్దస్థాయిని మార్చు"
 
-#: ../shell/rb-shell.c:1995
+#: ../shell/rb-shell.c:1973
 msgid "Enable debug output"
 msgstr "డీబగ్ అవుట్పుట్‌ను చేతనముచేయి"
 
-#: ../shell/rb-shell.c:1996
+#: ../shell/rb-shell.c:1974
 msgid "Enable debug output matching a specified string"
 msgstr "డీబగ్ అవుట్పుట్ తెలుపబడిన స్ట్రింగ్‌ను పోల్చునట్లు చేతనముచేయి"
 
-#: ../shell/rb-shell.c:1997
+#: ../shell/rb-shell.c:1975
 msgid "Do not update the library with file changes"
 msgstr "దస్త్ర మార్పులతో లైబ్రరీను నవీకరించవద్దు"
 
-#: ../shell/rb-shell.c:1998
+#: ../shell/rb-shell.c:1976
 msgid "Do not register the shell"
 msgstr "షెల్‌ను నమోదు చేయవద్దు"
 
-#: ../shell/rb-shell.c:1999
+#: ../shell/rb-shell.c:1977
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "ఏ డాటాను శాశ్వంతగా దాయవద్దు (--no-registration)"
 
-#: ../shell/rb-shell.c:2000
+#: ../shell/rb-shell.c:1978
 msgid "Disable loading of plugins"
 msgstr "చొప్పింతలు లోడవుటను అచేతనపరుచు"
 
-#: ../shell/rb-shell.c:2001
+#: ../shell/rb-shell.c:1979
 msgid "Path for database file to use"
 msgstr "డాటాబేస్ దస్త్రం వినియోగించుటకు బాట"
 
-#: ../shell/rb-shell.c:2002
+#: ../shell/rb-shell.c:1980
 msgid "Path for playlists file to use"
 msgstr "పాటలజాబితాల దస్త్రాన్ని వినియోగించుటకు బాట"
 
-#: ../shell/rb-shell.c:2013
+#: ../shell/rb-shell.c:1991
 #, c-format
 msgid ""
 "%s\n"
@@ -3613,33 +3612,33 @@ msgstr ""
 "అందుబాటులో వున్న ఆదేశ వరుస ఐచ్చికముల పూర్తి జాబితా కొరకు '%s --help' నడుపండి.\n"
 
 #. Translators: this is the short label for the 'import folder' action
-#: ../shell/rb-shell.c:2114
+#: ../shell/rb-shell.c:2088
 msgctxt "Library"
 msgid "Import"
 msgstr "దిగుమతించు"
 
 #. Translators: this is the short label for the 'view all tracks' action
-#: ../shell/rb-shell.c:2116
+#: ../shell/rb-shell.c:2090
 msgid "Show All"
 msgstr "అన్నీ చూపించు"
 
-#: ../shell/rb-shell.c:2401
+#: ../shell/rb-shell.c:2375
 msgid "Error while saving song information"
 msgstr "పాట సమాచారము దాయుటలో దోషము"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2681
+#: ../shell/rb-shell.c:2655
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (నిలిపివేయబడింది)"
 
-#: ../shell/rb-shell.c:2756
+#: ../shell/rb-shell.c:2730
 msgid "translator-credits"
 msgstr ""
 "కృష్ణబాబు కె <kkrothap@redhat.com> 2009.\n"
 "Praveen Illa <mail2ipn@gmail.com>, 2011-12."
 
-#: ../shell/rb-shell.c:2759
+#: ../shell/rb-shell.c:2733
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3651,7 +3650,7 @@ msgstr ""
 "తరువాత రూపాంతరపు నిబంధనలకు అనుగుణంగా \n"
 "పునఃపంపిణీ చెయ్యవచ్చు మరియు/లేదా సవరించుకోవచ్చు.\n"
 
-#: ../shell/rb-shell.c:2763
+#: ../shell/rb-shell.c:2737
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3663,7 +3662,7 @@ msgstr ""
 "రిథమ్‌బాక్స్ పంచబడుతుంది.\n"
 "మరిన్ని వివరాలకు గ్నూ జనరల్ పబ్లిక్ లైసెన్సుని చూడండి.\n"
 
-#: ../shell/rb-shell.c:2767
+#: ../shell/rb-shell.c:2741
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3673,63 +3672,63 @@ msgstr ""
 "పొందకపోతే, Free Software Foundation, Inc., 51 Franklin Street, Fifth\n"
 "Floor, Boston. MA02110-1301, USA కు వ్రాయండి.\n"
 
-#: ../shell/rb-shell.c:2774
+#: ../shell/rb-shell.c:2748
 msgid "Maintainers:"
 msgstr "నిర్వాహకులు:"
 
-#: ../shell/rb-shell.c:2777
+#: ../shell/rb-shell.c:2751
 msgid "Former Maintainers:"
 msgstr "గత నిర్వాహకులు:"
 
-#: ../shell/rb-shell.c:2780
+#: ../shell/rb-shell.c:2754
 msgid "Contributors:"
 msgstr "సహాయకులు:"
 
-#: ../shell/rb-shell.c:2782
+#: ../shell/rb-shell.c:2756
 msgid "Music management and playback software for GNOME."
 msgstr "గ్నోమ్ కొరకు సంగీత నిర్వహణ మరియు ప్లేబాక్ సాఫ్ట్‍వేర్."
 
-#: ../shell/rb-shell.c:2791
+#: ../shell/rb-shell.c:2765
 msgid "Rhythmbox Website"
 msgstr "రిథమ్‌బాక్స్ వెబ్‌సైటు"
 
-#: ../shell/rb-shell.c:2838 ../shell/rb-shell-preferences.c:162
+#: ../shell/rb-shell.c:2812 ../shell/rb-shell-preferences.c:162
 msgid "Couldn't display help"
 msgstr "సహాయము ప్రదర్శించలేక పోయింది"
 
-#: ../shell/rb-shell.c:2883
+#: ../shell/rb-shell.c:2857
 msgid "Configure Plugins"
 msgstr "చొప్పింతలను స్వరూపించండి"
 
-#: ../shell/rb-shell.c:2972
+#: ../shell/rb-shell.c:2946
 msgid "Import Folder into Library"
 msgstr "సంచయాన్ని లైబ్రరీకు దిగుమతిచేయి"
 
-#: ../shell/rb-shell.c:2991
+#: ../shell/rb-shell.c:2965
 msgid "Import File into Library"
-msgstr "ఫైలునును లైబ్రరీనకు దిగుమతిచేయి"
+msgstr "దస్త్రాన్ని లైబ్రరీనకు దిగుమతిచేయి"
 
-#: ../shell/rb-shell.c:3419 ../sources/rb-play-queue-source.c:629
+#: ../shell/rb-shell.c:3392 ../sources/rb-play-queue-source.c:629
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "ఏ నమోదైన సోర్సు కూడా URI %s ను సంభాలించలేదు"
 
-#: ../shell/rb-shell.c:3748
+#: ../shell/rb-shell.c:3721
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "ఏ నమోదైన సోర్సు కూడా URI %s ను సంభాలించలేదు"
 
-#: ../shell/rb-shell.c:3781 ../shell/rb-shell.c:3824
+#: ../shell/rb-shell.c:3754 ../shell/rb-shell.c:3797
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "తెలియని పాట URI: %s"
 
-#: ../shell/rb-shell.c:3833
+#: ../shell/rb-shell.c:3806
 #, c-format
 msgid "Unknown property %s"
 msgstr "తెలియని లక్షణము %s"
 
-#: ../shell/rb-shell.c:3847
+#: ../shell/rb-shell.c:3820
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "చెల్లని లక్షణము రకము %s లక్షణము %s కొరకు"
@@ -3988,7 +3987,7 @@ msgstr "ప్లేబాక్"
 #: ../shell/rb-track-transfer-queue.c:175
 #, c-format
 msgid "The file \"%s\" already exists. Do you want to replace it?"
-msgstr ""
+msgstr "\"%s\" దస్త్రం ఇప్పటికే ఉన్నది. మీరు దానిని ప్రతిస్థాపించాలనుకుంటున్నారా?"
 
 #: ../shell/rb-track-transfer-queue.c:188
 msgid "_Cancel"
@@ -4042,10 +4041,10 @@ msgid_plural ""
 "by the target device:\n"
 "%s"
 msgstr[0] ""
-"లక్ష్య పరికరం మద్ధతున్న ఫార్మేటుకు %d ఫైలును పరివర్తించుటకు అదనపు సాఫ్టువేర్ అవసరము:\n"
+"లక్ష్య పరికరం మద్ధతున్న ఫార్మేటుకు %d దస్త్రాన్ని పరివర్తించుటకు అదనపు సాఫ్టువేర్ అవసరము:\n"
 "%s"
 msgstr[1] ""
-"లక్ష్య పరికర మద్ధతున్న ఫార్మేటుకు %d ఫైళ్ళును పరివర్తించుటకు అదనపు సాఫ్టువేర్ అవసరము:\n"
+"లక్ష్య పరికర మద్ధతున్న ఫార్మేటుకు %d దస్త్రాలను పరివర్తించుటకు అదనపు సాఫ్టువేర్ అవసరము:\n"
 "%s"
 
 #: ../shell/rb-track-transfer-queue.c:484
@@ -4144,7 +4143,7 @@ msgstr "అదనపు సాఫ్ట్‍వేరుని స్థాప�
 
 #: ../sources/rb-import-errors-source.c:249
 msgid "Additional software is required to play some of these files."
-msgstr "ఈ ఫైళ్ళలో కొన్నిటిని ఆడించుటకు అదనపు సాఫ్ట్‍వేర్ అవసరం."
+msgstr "ఈ దస్త్రాలలో కొన్నిటిని ఆడించుటకు అదనపు సాఫ్ట్‍వేర్ అవసరం."
 
 #: ../sources/rb-import-errors-source.c:354
 msgid "Import Errors"
@@ -4199,7 +4198,7 @@ msgstr "సంఖ్య. కళాకారి - శీర్షిక"
 #: ../sources/sync/rb-sync-settings-ui.c:217
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
-msgstr "మ్యూజిక్"
+msgstr "సంగీతం"
 
 #: ../sources/rb-library-source.c:407
 msgid "Choose Library Location"
@@ -4310,11 +4309,11 @@ msgstr "గులకరించు"
 msgid "Play Queue"
 msgstr "వరుసని ఆడించు"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:797
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:811
 msgid "from"
 msgstr "నుండి"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:796
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:810
 msgid "by"
 msgstr "చే"
 
@@ -4379,7 +4378,7 @@ msgid "Show more _details"
 msgstr "మరిన్ని వివరాలను చూపించు (_d)"
 
 #: ../widgets/rb-entry-view.c:1005 ../widgets/rb-entry-view.c:1508
-#: ../widgets/rb-song-info.c:1151
+#: ../widgets/rb-song-info.c:1148
 msgid "Lossless"
 msgstr "లాసులేని"
 
@@ -4444,13 +4443,13 @@ msgid "Drop artwork here"
 msgstr "చిత్రకళను యిక్కడ వదులుము"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1038
+#: ../widgets/rb-header.c:1080
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1049
+#: ../widgets/rb-header.c:1092
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
@@ -4708,7 +4707,7 @@ msgstr "సమానము"
 #: ../widgets/rb-query-creator-properties.c:135
 #: ../widgets/rb-query-creator-properties.c:165
 msgid "not equal to"
-msgstr ""
+msgstr "దీనికి సమానం కాదు"
 
 #: ../widgets/rb-query-creator-properties.c:136
 msgid "starts with"
@@ -4735,7 +4734,7 @@ msgstr "లో"
 #. Translators: this matches songs before 1-Jan-YEAR or after 31-Dec-YEAR
 #: ../widgets/rb-query-creator-properties.c:179
 msgid "not in"
-msgstr ""
+msgstr "ఇందులో ఉండదు"
 
 #. Translators: this matches songs after 31-Dec-YEAR
 #: ../widgets/rb-query-creator-properties.c:181
@@ -4810,25 +4809,35 @@ msgstr "శోధించు"
 msgid "_Search:"
 msgstr "శోధించు (_S):"
 
-#: ../widgets/rb-song-info.c:371
+#: ../widgets/rb-song-info.c:367
 msgid "Song Properties"
 msgstr "పాట లక్షణములు"
 
-#: ../widgets/rb-song-info.c:428
+#: ../widgets/rb-song-info.c:424
 msgid "Multiple Song Properties"
 msgstr "బహుళ పాట లక్షణములు"
 
-#: ../widgets/rb-song-info.c:1214
+#: ../widgets/rb-song-info.c:1211
 msgid "Unknown file name"
-msgstr "తెలియని ఫైల్ పేరు"
+msgstr "తెలియని దస్త్రం పేరు"
 
-#: ../widgets/rb-song-info.c:1236
+#: ../widgets/rb-song-info.c:1233
 msgid "On the desktop"
 msgstr "డెస్కుటాపు పైన"
 
-#: ../widgets/rb-song-info.c:1259
+#: ../widgets/rb-song-info.c:1256
 msgid "Unknown location"
 msgstr "తెలియని స్థానము"
+
+#~ msgid "Could not create CD lookup thread"
+#~ msgstr "CD లుకప్ త్రెడ్‌ను సృష్టించలేక పోయింది"
+
+#~ msgid ""
+#~ "<span size=\"x-large\" weight=\"bold\">Do you want to initialize your "
+#~ "iPod?</span>"
+#~ msgstr ""
+#~ "<span size=\"x-large\" weight=\"bold\">మీ మీ iPodను సిద్దపరచాలని అనుకొనుచున్నారా?</"
+#~ "span>"
 
 #~ msgid "New Podcast Feed"
 #~ msgstr "కొత్త పాడ్‌కాస్టు ఫీడు"
