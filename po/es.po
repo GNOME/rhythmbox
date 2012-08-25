@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-07-30 11:16+0000\n"
-"PO-Revision-Date: 2012-07-30 16:07+0200\n"
+"POT-Creation-Date: 2012-08-22 23:05+0000\n"
+"PO-Revision-Date: 2012-08-25 12:01+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "Language: \n"
@@ -36,17 +36,17 @@ msgstr "Could not create a GStreamer sink element to write to %s"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:493
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2833
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2832
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Falló al abrir el dispositivo de salida: %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:638
+#: ../backends/gstreamer/rb-player-gst.c:680
 #, c-format
-msgid "Failed to create playbin2 element; check your GStreamer installation"
-msgstr ""
-"Ocurrió un error al crear el elemento playbin2; compruebe su instalación de "
-"GStreamer"
+#| msgid "Failed to create playbin2 element; check your GStreamer installation"
+msgid "Failed to create %s element; check your GStreamer installation"
+msgstr "Falló al crear el elemento %s; compruebe su instalación de GStreamer"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1122
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1136
@@ -61,36 +61,36 @@ msgid "Failed to start new stream"
 msgstr "Ocurrió un error al inicializar un nuevo flujo"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2758
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2757
 #, c-format
 msgid "Failed to open output device"
 msgstr "Falló al abrir el dispositivo de salida"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3111
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3184
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3110
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3183
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Ocurrió un error al crear el elemento GStreamer; compruebe su instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3125
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3124
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Ocurrió un error al crear un elemento de salida de audio; compruebe su "
 "instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3158
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3200
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3226
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3235
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3244
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3157
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3199
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3225
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3234
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3243
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Ocurrió un error al enlazar la tubería de GStreamer; compruebe su instalación"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3339
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3338
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Ocurrió un error al crear una tubería de GStreamer para reproducir %s"
@@ -286,13 +286,11 @@ msgid "Media Player Properties"
 msgstr "Propiedades del reproductor multimedia"
 
 #: ../data/ui/media-player-properties.ui.h:2
-#| msgid "<b>Information</b>"
 msgid "Information"
 msgstr "Información"
 
 #. Translators: This refers to the usage of media space
 #: ../data/ui/media-player-properties.ui.h:4
-#| msgid "<b>Volume usage</b>"
 msgid "Volume usage"
 msgstr "Uso del volumen"
 
@@ -304,12 +302,10 @@ msgid "Basic"
 msgstr "Básico"
 
 #: ../data/ui/media-player-properties.ui.h:6 ../data/ui/sync-dialog.ui.h:1
-#| msgid "<b>Sync Preferences</b>"
 msgid "Sync Preferences"
 msgstr "Sincronizar preferencias"
 
 #: ../data/ui/media-player-properties.ui.h:7 ../data/ui/sync-dialog.ui.h:2
-#| msgid "<b>Sync Preview</b>"
 msgid "Sync Preview"
 msgstr "Sincronizar vista previa"
 
@@ -342,7 +338,6 @@ msgid "Select playlist format:"
 msgstr "Seleccione el formato de la lista de reproducción:"
 
 #: ../data/ui/playlist-save.ui.h:4
-#| msgid "<b>Playlist format</b>"
 msgid "Playlist format"
 msgstr "Formato de la lista de reproducción"
 
@@ -714,8 +709,8 @@ msgstr "%d %b %Y"
 #: ../shell/rb-shell-player.c:3759 ../shell/rb-shell-player.c:3761
 #: ../widgets/rb-entry-view.c:985 ../widgets/rb-entry-view.c:1007
 #: ../widgets/rb-entry-view.c:1483 ../widgets/rb-entry-view.c:1495
-#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1130
-#: ../widgets/rb-header.c:1156 ../widgets/rb-song-info.c:917
+#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1141
+#: ../widgets/rb-header.c:1167 ../widgets/rb-song-info.c:917
 #: ../widgets/rb-song-info.c:929 ../widgets/rb-song-info.c:1150
 #: ../widgets/rb-song-info.c:1489
 msgid "Unknown"
@@ -1591,7 +1586,6 @@ msgid "Share music and play shared music on your local network"
 msgstr "Compartir música y reproducir la música compartida en tu red local"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
-#| msgid "<b>Sharing</b>"
 msgid "Sharing"
 msgstr "Compartición"
 
@@ -1616,7 +1610,6 @@ msgid "Require _password:"
 msgstr "Requerir contrase_ña:"
 
 #: ../plugins/daap/daap-prefs.ui.h:7
-#| msgid "<b>Add Remote</b>"
 msgid "Add Remote"
 msgstr "Añadir remota"
 
@@ -1625,7 +1618,6 @@ msgid "Please enter the passcode displayed on your device."
 msgstr "Introduzca la contraseña mostrada en su dispositivo."
 
 #: ../plugins/daap/daap-prefs.ui.h:9
-#| msgid "Could not pair with this Remote."
 msgid "Could not pair with this Remote"
 msgstr "No se pudo emparejar con este mando a distancia"
 
@@ -1782,7 +1774,6 @@ msgstr "Formato de sonido:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:8
 #: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:10
-#| msgid "<b>System</b>"
 msgid "System"
 msgstr "Sistema"
 
@@ -1847,7 +1838,7 @@ msgstr "Examinar"
 msgid "Fetch more tracks"
 msgstr "Obtener más pistas"
 
-#: ../plugins/grilo/rb-grilo-source.c:840
+#: ../plugins/grilo/rb-grilo-source.c:859
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -1955,7 +1946,6 @@ msgstr ""
 "el dispositivo no es un iPod o no quiere inicializarlo, pulse Cancelar."
 
 #: ../plugins/ipod/ipod-init.ui.h:6
-#| msgid "Unable to initialize new iPod"
 msgid "Do you want to initialize your iPod?"
 msgstr "¿Quiere inicializar su iPod?"
 
@@ -2122,7 +2112,6 @@ msgid "Fetch song lyrics from the Internet"
 msgstr "Obtener letras de canciones desde internet"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:1
-#| msgid "<b>Search engines</b>"
 msgid "Search engines"
 msgstr "Motores de búsqueda"
 
@@ -2131,7 +2120,6 @@ msgid "Browse..."
 msgstr "Examinar…"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:3
-#| msgid "<b>Lyrics Folder</b>"
 msgid "Lyrics Folder"
 msgstr "Carpeta de las letras"
 
@@ -2182,7 +2170,6 @@ msgid "Dark Lyrics (darklyrics.com)"
 msgstr "Dark Lyrics (darklyrics.com)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
-#| msgid "<b>Magnatune online music store</b>"
 msgid "Magnatune online music store"
 msgstr "Tienda en línea de música Magnatune"
 
@@ -2627,7 +2614,7 @@ msgstr "de <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:390
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
-#: ../widgets/rb-header.c:827
+#: ../widgets/rb-header.c:835
 msgid "Not Playing"
 msgstr "No se reproduce nada"
 
@@ -4419,11 +4406,11 @@ msgstr "Mezclar"
 msgid "Play Queue"
 msgstr "Cola de reproducción"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:803
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:811
 msgid "from"
 msgstr "de"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:802
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:810
 msgid "by"
 msgstr "por"
 
@@ -4554,13 +4541,13 @@ msgid "Drop artwork here"
 msgstr "Soltar aquí la portada"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1070
+#: ../widgets/rb-header.c:1080
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1081
+#: ../widgets/rb-header.c:1092
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
