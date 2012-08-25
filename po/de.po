@@ -20,16 +20,16 @@ msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-07-22 09:01+0000\n"
-"PO-Revision-Date: 2012-07-22 21:48+0100\n"
-"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
+"POT-Creation-Date: 2012-08-23 22:09+0000\n"
+"PO-Revision-Date: 2012-08-25 10:18+0200\n"
+"Last-Translator: Christian Kirbach <Christian.Kirbach@googlemail.com>\n"
 "Language-Team: Deutsch <gnome-de@gnome.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"X-Generator: Virtaal 0.7.0\n"
+"X-Generator: Gtranslator 2.91.5\n"
 "X-Poedit-Language: German\n"
 "X-Poedit-Country: GERMANY\n"
 "X-Project-Style: gnome\n"
@@ -42,16 +42,17 @@ msgstr ""
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:493
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2833
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2832
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Ausgabegerät konnte nicht geöffnet werden: %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:638
+#: ../backends/gstreamer/rb-player-gst.c:680
 #, c-format
-msgid "Failed to create playbin2 element; check your GStreamer installation"
+msgid "Failed to create %s element; check your GStreamer installation"
 msgstr ""
-"Das Element »playbin2« konnte nicht angelegt werden; überprüfen Sie die "
+"Das Element »%s« konnte nicht angelegt werden; überprüfen Sie die "
 "Installation von GStreamer"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1122
@@ -67,38 +68,38 @@ msgid "Failed to start new stream"
 msgstr "Neuer Datenstrom konnte nicht gestartet werden"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2758
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2757
 #, c-format
 msgid "Failed to open output device"
 msgstr "Ausgabegerät konnte nicht geöffnet werden"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3111
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3184
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3110
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3183
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "GStreamer-Element konnte nicht angelegt werden; bitte überprüfen Sie Ihre "
 "Installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3125
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3124
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Audioausgabeelement konnte nicht angelegt werden; bitte überprüfen Sie Ihre "
 "Installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3158
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3200
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3226
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3235
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3244
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3157
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3199
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3225
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3234
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3243
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "GStreamer-Weiterleitung konnte nicht verbunden werden; bitte überprüfen Sie "
 "Ihre Installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3339
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3338
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr ""
@@ -295,13 +296,13 @@ msgid "Media Player Properties"
 msgstr "Medienwiedergabe-Eigenschaften"
 
 #: ../data/ui/media-player-properties.ui.h:2
-msgid "<b>Information</b>"
-msgstr "<b>Information</b>"
+msgid "Information"
+msgstr "Information"
 
 #. Translators: This refers to the usage of media space
 #: ../data/ui/media-player-properties.ui.h:4
-msgid "<b>Volume usage</b>"
-msgstr "<b>Datenträgerbelegung</b>"
+msgid "Volume usage"
+msgstr "Datenträgerbelegung"
 
 #: ../data/ui/media-player-properties.ui.h:5
 #: ../data/ui/podcast-feed-properties.ui.h:6
@@ -311,12 +312,12 @@ msgid "Basic"
 msgstr "Grundlegend"
 
 #: ../data/ui/media-player-properties.ui.h:6 ../data/ui/sync-dialog.ui.h:1
-msgid "<b>Sync Preferences</b>"
-msgstr "<b>Abgleicheinstellungen</b>"
+msgid "Sync Preferences"
+msgstr "Abgleicheinstellungen"
 
 #: ../data/ui/media-player-properties.ui.h:7 ../data/ui/sync-dialog.ui.h:2
-msgid "<b>Sync Preview</b>"
-msgstr "<b>Abgleichvorschau</b>"
+msgid "Sync Preview"
+msgstr "Abgleichvorschau"
 
 #: ../data/ui/media-player-properties.ui.h:8
 msgid "Sync"
@@ -349,8 +350,8 @@ msgid "Select playlist format:"
 msgstr "Format der Wiedergabeliste auswählen:"
 
 #: ../data/ui/playlist-save.ui.h:4
-msgid "<b>Playlist format</b>"
-msgstr "<b>Format der Wiedergabeliste</b>"
+msgid "Playlist format"
+msgstr "Format der Wiedergabeliste"
 
 #: ../data/ui/podcast-add-dialog.ui.h:1
 msgid "Subscribe"
@@ -720,8 +721,8 @@ msgstr "%d. %B %Y"
 #: ../shell/rb-shell-player.c:3759 ../shell/rb-shell-player.c:3761
 #: ../widgets/rb-entry-view.c:985 ../widgets/rb-entry-view.c:1007
 #: ../widgets/rb-entry-view.c:1483 ../widgets/rb-entry-view.c:1495
-#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1130
-#: ../widgets/rb-header.c:1156 ../widgets/rb-song-info.c:917
+#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1141
+#: ../widgets/rb-header.c:1167 ../widgets/rb-song-info.c:917
 #: ../widgets/rb-song-info.c:929 ../widgets/rb-song-info.c:1150
 #: ../widgets/rb-song-info.c:1489
 msgid "Unknown"
@@ -1526,7 +1527,7 @@ msgstr ""
 msgid "Links"
 msgstr "Verweise"
 
-#: ../plugins/context/LinksTab.py:183
+#: ../plugins/context/LinksTab.py:182
 msgid "No artist specified."
 msgstr "Kein Künstler angegeben."
 
@@ -1540,7 +1541,7 @@ msgstr "Liedtexte"
 msgid "Loading lyrics for %s by %s"
 msgstr "Texte für %s von %s werden geladen"
 
-#: ../plugins/context/LyricsTab.py:122
+#: ../plugins/context/LyricsTab.py:120
 msgid "Lyrics not found"
 msgstr "Texte nicht gefunden"
 
@@ -1601,8 +1602,8 @@ msgstr ""
 "lokalen Netzwerk zu"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
-msgid "<b>Sharing</b>"
-msgstr "<b>Verteilen</b>"
+msgid "Sharing"
+msgstr "Verteilen"
 
 #: ../plugins/daap/daap-prefs.ui.h:2
 msgid "_Look for touch Remotes"
@@ -1627,17 +1628,16 @@ msgid "Require _password:"
 msgstr "_Passwort erforderlich:"
 
 #: ../plugins/daap/daap-prefs.ui.h:7
-msgid "<b>Add Remote</b>"
-msgstr "<b>Gegenstelle hinzufügen</b>"
+msgid "Add Remote"
+msgstr "Gegenstelle hinzufügen"
 
 #: ../plugins/daap/daap-prefs.ui.h:8
 msgid "Please enter the passcode displayed on your device."
 msgstr "Bitte geben Sie das auf Ihrem Gerät angezeigte Passwort ein."
 
 #: ../plugins/daap/daap-prefs.ui.h:9
-msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
-msgstr ""
-"<span foreground=\"red\">Koppeln mit dieser Gegenstelle schlug fehl.</span>"
+msgid "Could not pair with this Remote"
+msgstr "Koppeln mit dieser Gegenstelle schlug fehl"
 
 #: ../plugins/daap/daap-prefs.ui.h:10
 msgid "You can now control Rhythmbox through your Remote"
@@ -1795,8 +1795,8 @@ msgstr "Audioformate:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:8
 #: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:10
-msgid "<b>System</b>"
-msgstr "<b>System</b>"
+msgid "System"
+msgstr "System"
 
 #: ../plugins/generic-player/generic-player.plugin.in.h:1
 msgid "Portable Players"
@@ -1858,7 +1858,7 @@ msgstr "Durchsuchen"
 msgid "Fetch more tracks"
 msgstr "Weitere Titel holen"
 
-#: ../plugins/grilo/rb-grilo-source.c:840
+#: ../plugins/grilo/rb-grilo-source.c:859
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -1969,12 +1969,8 @@ msgstr ""
 "klicken Sie auf »Abbrechen«."
 
 #: ../plugins/ipod/ipod-init.ui.h:6
-msgid ""
-"<span size=\"x-large\" weight=\"bold\">Do you want to initialize your iPod?</"
-"span>"
-msgstr ""
-"<span size=\"x-large\" weight=\"bold\">Möchten Sie Ihren iPod initialisieren?"
-"</span>"
+msgid "Do you want to initialize your iPod?"
+msgstr "Möchten Sie Ihren iPod initialisieren?"
 
 #: ../plugins/ipod/ipod.plugin.in.h:1
 msgid "Portable Players - iPod"
@@ -2140,16 +2136,16 @@ msgid "Fetch song lyrics from the Internet"
 msgstr "Liedtexte aus dem Internet laden"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:1
-msgid "<b>Search engines</b>"
-msgstr "<b>Suchmaschinen</b>"
+msgid "Search engines"
+msgstr "Suchmaschinen"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:2
 msgid "Browse..."
 msgstr "Auswählen …"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:3
-msgid "<b>Lyrics Folder</b>"
-msgstr "<b>Ordner für Liedtexte</b>"
+msgid "Lyrics Folder"
+msgstr "Ordner für Liedtexte"
 
 #: ../plugins/lyrics/lyrics.py:164 ../plugins/lyrics/lyrics.py:166
 #: ../plugins/lyrics/lyrics.py:175
@@ -2198,8 +2194,8 @@ msgid "Dark Lyrics (darklyrics.com)"
 msgstr "Dark Lyrics (darklyrics.com)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
-msgid "<b>Magnatune online music store</b>"
-msgstr "<b>Magnatune-Online-Musikladen</b>"
+msgid "Magnatune online music store"
+msgstr "Magnatune-Online-Musikladen"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:2
 msgid "Magnatune is an online record label that is not evil.\n"
@@ -2640,7 +2636,7 @@ msgstr "aus <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:390
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
-#: ../widgets/rb-header.c:827
+#: ../widgets/rb-header.c:835
 msgid "Not Playing"
 msgstr "Keine Wiedergabe"
 
@@ -4449,11 +4445,11 @@ msgstr "Zufällig"
 msgid "Play Queue"
 msgstr "Warteschlange"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:803
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:811
 msgid "from"
 msgstr "aus"
 
-#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:802
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:810
 msgid "by"
 msgstr "von"
 
@@ -4583,13 +4579,13 @@ msgid "Drop artwork here"
 msgstr "Bild hier ablegen"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1070
+#: ../widgets/rb-header.c:1080
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1081
+#: ../widgets/rb-header.c:1092
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
@@ -4968,6 +4964,18 @@ msgstr "Auf der Arbeitsfläche"
 #: ../widgets/rb-song-info.c:1256
 msgid "Unknown location"
 msgstr "Unbekannter Speicherort"
+
+#~ msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
+#~ msgstr ""
+#~ "<span foreground=\"red\">Koppeln mit dieser Gegenstelle schlug fehl.</"
+#~ "span>"
+
+#~ msgid ""
+#~ "<span size=\"x-large\" weight=\"bold\">Do you want to initialize your "
+#~ "iPod?</span>"
+#~ msgstr ""
+#~ "<span size=\"x-large\" weight=\"bold\">Möchten Sie Ihren iPod "
+#~ "initialisieren?</span>"
 
 #~ msgid "Could not create CD lookup thread"
 #~ msgstr "Programmprozess für die CD-Suche konnte nicht erstellt werden"
