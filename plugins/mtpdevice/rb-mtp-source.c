@@ -1199,6 +1199,7 @@ prepare_encoder_sink_cb (RBEncoderFactory *factory,
 	LIBMTP_track_t *track;
 	char **bits;
 	char *extension;
+	char *track_str;
 	LIBMTP_filetype_t filetype;
 	gulong track_id;
 	GDate d;
@@ -1230,10 +1231,21 @@ prepare_encoder_sink_cb (RBEncoderFactory *factory,
 	track->genre = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_GENRE);
 
 	/* build up device filename */
-	track->filename = g_strdup_printf ("%s - %s.%s",
+	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER) > 0) {
+		track_str = g_strdup_printf ("%.2lu.%.2lu ",
+					     rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER),
+					     rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER));
+	} else {
+		track_str = g_strdup_printf ("%.2lu ",
+					     rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER));
+	}
+	
+	track->filename = g_strdup_printf ("%s%s - %s.%s",
+					   track_str,
 					   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
 					   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE),
 					   extension);
+	g_free (track_str);
 	g_free (extension);
 
 	/* construct folder path: artist/album */
