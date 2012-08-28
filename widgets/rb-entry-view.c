@@ -1102,9 +1102,6 @@ rb_entry_view_sync_sorting (RBEntryView *view)
 	else
 		view->priv->type_ahead_propid = RHYTHMDB_PROP_TITLE;
 
-	rb_debug ("emitting sort order changed");
-	g_object_notify (G_OBJECT (view), "sort-order");
-
 	g_free (column_name);
 }
 
@@ -1181,6 +1178,7 @@ rb_entry_view_set_sorting_type (RBEntryView *view,
 	g_strfreev (strs);
 
 	rb_entry_view_sync_sorting (view);
+	g_object_notify (G_OBJECT (view), "sort-order");
 }
 
 /**
@@ -1228,6 +1226,7 @@ rb_entry_view_set_sorting_order (RBEntryView *view,
 	view->priv->sorting_order = sort_order;
 
 	rb_entry_view_sync_sorting (view);
+	g_object_notify (G_OBJECT (view), "sort-order");
 }
 
 static void
