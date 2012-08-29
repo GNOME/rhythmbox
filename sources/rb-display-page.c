@@ -671,7 +671,7 @@ rb_display_page_class_init (RBDisplayPageClass *klass)
 							      "Pixbuf",
 							      "Page pixbuf",
 							      GDK_TYPE_PIXBUF,
-							      G_PARAM_READWRITE));
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 	/**
 	 * RBDisplayPage:visibility:
 	 *

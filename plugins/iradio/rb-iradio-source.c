@@ -227,20 +227,7 @@ rb_iradio_source_class_finalize (RBIRadioSourceClass *klass)
 static void
 rb_iradio_source_init (RBIRadioSource *source)
 {
-	gint size;
-	GdkPixbuf *pixbuf;
-
 	source->priv = RB_IRADIO_SOURCE_GET_PRIVATE (source);
-
-	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					   IRADIO_SOURCE_ICON,
-					   size,
-					   0, NULL);
-	g_object_set (source, "pixbuf", pixbuf, NULL);
-	if (pixbuf != NULL) {
-		g_object_unref (pixbuf);
-	}
 }
 
 static void
@@ -296,6 +283,8 @@ rb_iradio_source_constructed (GObject *object)
 	GtkWidget *grid;
 	GtkWidget *paned;
 	RBSourceToolbar *toolbar;
+	gint size;
+	GdkPixbuf *pixbuf;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_iradio_source_parent_class, constructed, object);
 	source = RB_IRADIO_SOURCE (object);
@@ -309,6 +298,16 @@ rb_iradio_source_constructed (GObject *object)
 		      "ui-manager", &ui_manager,
 		      NULL);
 	g_object_unref (shell);
+
+	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
+	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+					   IRADIO_SOURCE_ICON,
+					   size,
+					   0, NULL);
+	g_object_set (source, "pixbuf", pixbuf, NULL);
+	if (pixbuf != NULL) {
+		g_object_unref (pixbuf);
+	}
 
 	settings = g_settings_new ("org.gnome.rhythmbox.plugins.iradio");
 	if (g_settings_get_boolean (settings, "initial-stations-loaded") == FALSE) {

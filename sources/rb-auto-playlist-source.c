@@ -173,7 +173,7 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 }
 
 static void
-rb_auto_playlist_source_init (RBAutoPlaylistSource *source)
+set_playlist_pixbuf (RBAutoPlaylistSource *source)
 {
 	if (playlist_pixbuf == NULL) {
 		gint size;
@@ -193,7 +193,11 @@ rb_auto_playlist_source_init (RBAutoPlaylistSource *source)
 	} else {
 		g_object_set (source, "pixbuf", playlist_pixbuf, NULL);
 	}
+}
 
+static void
+rb_auto_playlist_source_init (RBAutoPlaylistSource *source)
+{
 }
 
 static void
@@ -279,6 +283,8 @@ rb_auto_playlist_source_constructed (GObject *object)
 	priv = GET_PRIVATE (source);
 
 	priv->paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
+
+	set_playlist_pixbuf (source);
 
 	g_object_get (RB_PLAYLIST_SOURCE (source), "entry-type", &entry_type, NULL);
 	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)),

@@ -220,8 +220,9 @@ rb_static_playlist_source_create_actions (RBShell *shell)
 
 	g_type_class_unref (klass);
 }
+
 static void
-rb_static_playlist_source_init (RBStaticPlaylistSource *source)
+set_playlist_pixbuf (RBStaticPlaylistSource *source)
 {
 	if (playlist_pixbuf == NULL) {
 		gint size;
@@ -242,6 +243,11 @@ rb_static_playlist_source_init (RBStaticPlaylistSource *source)
 	} else {
 		g_object_set (source, "pixbuf", playlist_pixbuf, NULL);
 	}
+}
+
+static void
+rb_static_playlist_source_init (RBStaticPlaylistSource *source)
+{
 }
 
 static void
@@ -310,6 +316,8 @@ rb_static_playlist_source_constructed (GObject *object)
 	source = RB_STATIC_PLAYLIST_SOURCE (object);
 	priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
 	psource = RB_PLAYLIST_SOURCE (source);
+
+	set_playlist_pixbuf (source);
 
 	priv->base_model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (psource));
 	g_object_set (priv->base_model, "show-hidden", TRUE, NULL);
