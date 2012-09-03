@@ -3,9 +3,13 @@ plugindatadir = $(PLUGINDATADIR)/audiocd
 plugin_LTLIBRARIES = libaudiocd.la
 
 libaudiocd_la_SOURCES =					\
+	rb-audiocd-info.c				\
+	rb-audiocd-info.h				\
 	rb-audiocd-plugin.c				\
 	rb-audiocd-source.c				\
-	rb-audiocd-source.h
+	rb-audiocd-source.h				\
+	rb-musicbrainz-lookup.c				\
+	rb-musicbrainz-lookup.h
 
 libaudiocd_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libaudiocd_la_LIBTOOLFLAGS = --tag=disable-static
@@ -22,12 +26,9 @@ INCLUDES = 						\
 	-I$(top_srcdir)/lib                             \
 	-I$(top_srcdir)/lib/libmediaplayerid            \
 	-I$(top_srcdir)/metadata                       	\
-	-I$(top_srcdir)/player                       	\
 	-I$(top_srcdir)/rhythmdb                       	\
 	-I$(top_srcdir)/widgets                    	\
 	-I$(top_srcdir)/sources                    	\
-	-I$(top_srcdir)/iradio                    	\
-	-I$(top_srcdir)/podcast                    	\
 	-I$(top_srcdir)/remote				\
 	-I$(top_builddir)/remote			\
 	-I$(top_srcdir)/plugins				\
@@ -42,25 +43,25 @@ INCLUDES = 						\
 	-DUSE_TOTEM_PL_PARSER				\
 	-D_BSD_SOURCE
 
-if HAVE_MUSICBRAINZ3
-libaudiocd_la_LIBADD +=$(MUSICBRAINZ3_LIBS)
-INCLUDES += $(MUSICBRAINZ3_CFLAGS)
-endif
-if HAVE_MUSICBRAINZ4
-libaudiocd_la_LIBADD +=$(MUSICBRAINZ4_LIBS)
-INCLUDES += $(MUSICBRAINZ4_CFLAGS)
-endif
-
 libaudiocd_la_LIBADD += $(NULL)
 
 
 gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA = 					\
-	album-info.ui					\
-	multiple-album.ui
+	album-info.ui
 
 uixmldir = $(plugindatadir)
 uixml_DATA = audiocd-ui.xml
+
+noinst_PROGRAMS = test-cd
+
+test_cd_SOURCES = 					\
+	test-cd.c					\
+	rb-audiocd-info.c				\
+	rb-audiocd-info.h				\
+	rb-musicbrainz-lookup.c				\
+	rb-musicbrainz-lookup.h
+test_cd_LDADD = $(RHYTHMBOX_LIBS) $(GSTCDDA_LIBS)
 
 plugin_in_files = audiocd.plugin.in
 
@@ -68,60 +69,8 @@ plugin_in_files = audiocd.plugin.in
 
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
-EXTRA_DIST = $(gtkbuilder_DATA) $(uixml_DATA) $(plugin_in_files) sj-metadata-marshal.list
+EXTRA_DIST = $(gtkbuilder_DATA) $(uixml_DATA) $(plugin_in_files)
 
-SJ_FILES =									\
-	sj-error.c sj-error.h							\
-	sj-metadata.c sj-metadata.h						\
-	sj-metadata-gvfs.c sj-metadata-gvfs.h					\
-	sj-metadata-getter.c sj-metadata-getter.h				\
-	sj-metadata-musicbrainz3.c sj-metadata-musicbrainz3.h			\
-	sj-metadata-musicbrainz4.c sj-metadata-musicbrainz4.h			\
-	sj-structures.c sj-structures.h						\
-	sj-metadata-marshal.list
-
-EGGDIR=$(srcdir)/../../../sound-juicer/libjuicer
-regenerate-built-sources:
-	EGGFILES="$(SJ_FILES)" EGGDIR="$(EGGDIR)" $(srcdir)/update-from-egg.sh || true
-
-MARSHALFILES = 
-
-if HAVE_SJ_METADATA_GETTER
-libaudiocd_la_SOURCES +=							\
-	sj-metadata.h sj-metadata.c						\
-	sj-metadata-getter.c sj-metadata-getter.h				\
-	sj-metadata-gvfs.c sj-metadata-gvfs.h					\
-	sj-structures.h sj-structures.c						\
-	sj-error.h sj-error.c							\
-	$(MARSHALFILES)
-
-if HAVE_MUSICBRAINZ3
-libaudiocd_la_SOURCES += sj-metadata-musicbrainz3.c sj-metadata-musicbrainz3.h
-endif
-if HAVE_MUSICBRAINZ4
-libaudiocd_la_SOURCES += sj-metadata-musicbrainz4.c sj-metadata-musicbrainz4.h
-endif
-
-MARSHALFILES += sj-metadata-marshal.h sj-metadata-marshal.c
-
-sj-metadata-marshal.h: sj-metadata-marshal.list
-	( $(GLIB_GENMARSHAL) --prefix=metadata_marshal $< \
-	--header > marshal-header.tmp \
-	&& mv marshal-header.tmp $@ ) \
-	|| ( rm -f marshal-header.tmp && exit 1 )
-
-sj-metadata-marshal.c: sj-metadata-marshal.list
-	( $(GLIB_GENMARSHAL) --prefix=metadata_marshal $< \
-	--body > marshal-source.tmp \
-	&& echo "#include \"sj-metadata-marshal.h\"" > $@ \
-	&& cat marshal-source.tmp >> $@ \
-	&& rm -f marshal-source.tmp ) \
-	|| ( rm -f marshal-source.tmp && exit 1 )
-
-endif
-
-BUILT_SOURCES = $(MARSHALFILES)
-
-CLEANFILES = $(plugin_DATA) $(BUILT_SOURCES)
+CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)
 

@@ -74,14 +74,6 @@ IGNORE_HFILES= \
 	rb-sync-state-ui.h \
 	\
 	rb-audiocd-source.h \
-	sj-error.h \
-	sj-metadata-getter.h \
-	sj-metadata-gvfs.h \
-	sj-metadata-marshal.h \
-	sj-metadata-musicbrainz.h \
-	sj-metadata-musicbrainz3.h \
-	sj-metadata.h \
-	sj-structures.h \
 	rb-audioscrobbler-entry.h \
 	rb-lastfm-play-order.h \
 	rb-audioscrobbler.h \

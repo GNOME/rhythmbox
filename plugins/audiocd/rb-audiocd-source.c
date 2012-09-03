@@ -26,18 +26,13 @@
  *
  */
 
-/*
- * TODO
- *    * save user-edited metadata somewhere (use S-J stuff?)
- */
-
 #include "config.h"
 
 #include <string.h>
+
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <gst/gst.h>
-#include <gst/cdda/gstcddabasesrc.h>
 
 #include "rhythmdb.h"
 #include "rb-shell.h"
@@ -50,11 +45,8 @@
 #include "rb-file-helpers.h"
 #include "rb-source-toolbar.h"
 #include "rb-shell-player.h"
-
-#ifdef HAVE_SJ_METADATA_GETTER
-#include "sj-metadata-getter.h"
-#include "sj-structures.h"
-#endif
+#include "rb-audiocd-info.h"
+#include "rb-musicbrainz-lookup.h"
 
 enum
 {
@@ -76,20 +68,15 @@ static guint impl_want_uri (RBSource *source, const char *uri);
 static gboolean impl_uri_is_source (RBSource *source, const char *uri);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 
-static gpointer rb_audiocd_load_songs (RBAudioCdSource *source);
-static void rb_audiocd_load_metadata (RBAudioCdSource *source, RhythmDB *db);
-static void rb_audiocd_load_metadata_cancel (RBAudioCdSource *source);
-
 static gboolean update_artist_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
 static gboolean update_artist_sort_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
 static gboolean update_album_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
 static gboolean update_genre_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
 static gboolean update_year_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
 static gboolean update_disc_number_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource *source);
-#if defined(HAVE_SJ_METADATA_GETTER)
-static void info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *source);
-#endif
 
+static void rb_audiocd_source_load_disc_info (RBAudioCdSource *source);
+static gboolean rb_audiocd_source_load_metadata (RBAudioCdSource *source);
 static void reload_metadata_cmd (GtkAction *action, RBAudioCdSource *source);
 static void copy_tracks_cmd (GtkAction *action, RBAudioCdSource *source);
 
@@ -114,11 +101,14 @@ struct _RBAudioCdSourcePrivate
 	GVolume *volume;
 
 	gchar *device_path;
+	RBAudioCDInfo *disc_info;
+	RBMusicBrainzData *mb_data;
+	GList *releases;
 	GList *tracks;
 
-	GstElement *pipeline;
-	GstElement *cdda;
-	GstElement *fakesink;
+	GCancellable *cancel_disc_info;
+	GtkWidget *infogrid;
+	GtkWidget *info_bar;
 
 	RBEntryView *entry_view;
 	GtkWidget *artist_entry;
@@ -127,19 +117,6 @@ struct _RBAudioCdSourcePrivate
 	GtkWidget *year_entry;
 	GtkWidget *genre_entry;
 	GtkWidget *disc_number_entry;
-
-#ifdef HAVE_SJ_METADATA_GETTER
-	SjMetadataGetter *metadata;
-	GtkWidget *multiple_album_dialog;
-	GtkWidget *albums_listview;
-	GtkListStore *albums_store;
-	GList *albums;
-
-	GtkWidget *info_bar;
-	GtkWidget *info_bar_label;
-
-	char *submit_url;
-#endif
 
 	GtkActionGroup *action_group;
 };
@@ -160,10 +137,6 @@ typedef struct _RhythmDBEntryTypeClass RBAudioCdEntryTypeClass;
 GType rb_audiocd_entry_type_get_type (void);
 
 G_DEFINE_DYNAMIC_TYPE (RBAudioCdEntryType, rb_audiocd_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
-
-#ifdef HAVE_SJ_METADATA_GETTER
-static void multiple_album_dialog (RBAudioCdSource *source, GList *albums);
-#endif
 
 static GtkActionEntry rb_audiocd_source_actions[] = {
 	{ "AudioCdCopyTracks", GTK_STOCK_CDROM, N_("_Extract to Library"), NULL,
@@ -265,13 +238,16 @@ rb_audiocd_source_finalize (GObject *object)
 	RBAudioCdSource *source = RB_AUDIOCD_SOURCE (object);
 
 	g_free (source->priv->device_path);
-#ifdef HAVE_SJ_METADATA_GETTER
-	g_free (source->priv->submit_url);
-#endif
 
 	if (source->priv->tracks) {
 		g_list_free (source->priv->tracks);
-		source->priv->tracks = NULL;
+	}
+
+	if (source->priv->disc_info) {
+		rb_audiocd_info_free (source->priv->disc_info);
+	}
+	if (source->priv->mb_data) {
+		rb_musicbrainz_data_free (source->priv->mb_data);
 	}
 
 	G_OBJECT_CLASS (rb_audiocd_source_parent_class)->finalize (object);
@@ -285,11 +261,6 @@ rb_audiocd_source_dispose (GObject *object)
 	if (source->priv->action_group != NULL) {
 		g_object_unref (source->priv->action_group);
 		source->priv->action_group = NULL;
-	}
-
-	if (source->priv->pipeline) {
-		gst_object_unref (GST_OBJECT (source->priv->pipeline));
-		source->priv->pipeline = NULL;
 	}
 
 	G_OBJECT_CLASS (rb_audiocd_source_parent_class)->dispose (object);
@@ -332,7 +303,6 @@ rb_audiocd_source_constructed (GObject *object)
 	GtkBuilder *builder;
 	GtkWidget *grid;
 	GtkWidget *widget;
-	GtkWidget *infogrid;
 	GtkAction *action;
 	GObject *plugin;
 	RBShell *shell;
@@ -344,15 +314,12 @@ rb_audiocd_source_constructed (GObject *object)
 	RBSourceToolbar *toolbar;
 	char *ui_file;
 	int toggle_width;
-#if defined(HAVE_SJ_METADATA_GETTER)
-	GtkWidget *box;
-	char *message;
-#endif
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audiocd_source_parent_class, constructed, object);
 	source = RB_AUDIOCD_SOURCE (object);
 
 	rb_device_source_set_display_details (RB_DEVICE_SOURCE (source));
+	source->priv->device_path = g_volume_get_identifier (source->priv->volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell,
@@ -377,10 +344,6 @@ rb_audiocd_source_constructed (GObject *object)
 	   for Copy to Library action. */
 	g_object_set (action, "short-label", _("Extract"), NULL);
 
-#if !defined(HAVE_SJ_METADATA_GETTER)
-	action = gtk_action_group_get_action (source->priv->action_group, "AudioCdSourceReloadMetadata");
-	g_object_set (action, "visible", FALSE, NULL);
-#endif
 	/* source toolbar */
 	toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
 	g_object_unref (ui_manager);
@@ -458,28 +421,8 @@ rb_audiocd_source_constructed (GObject *object)
 	builder = rb_builder_load (ui_file, NULL);
 	g_free (ui_file);
 
-	infogrid = GTK_WIDGET (gtk_builder_get_object (builder, "album_info"));
-	g_assert (infogrid != NULL);
-
-#if defined(HAVE_SJ_METADATA_GETTER)
-	/* Info bar for non-Musicbrainz data */
-	source->priv->info_bar = gtk_info_bar_new_with_buttons (_("S_ubmit Album"), GTK_RESPONSE_OK,
-								_("Hide"), GTK_RESPONSE_CANCEL,
-								NULL);
-	message = g_strdup_printf ("<b>%s</b>\n%s", _("Could not find this album on MusicBrainz."),
-				   _("You can improve the MusicBrainz database by adding this album."));
-	source->priv->info_bar_label = gtk_label_new (NULL);
-	gtk_label_set_markup (GTK_LABEL (source->priv->info_bar_label), message);
-	gtk_label_set_justify (GTK_LABEL (source->priv->info_bar_label), GTK_JUSTIFY_LEFT);
-	g_free (message);
-	box = gtk_info_bar_get_content_area (GTK_INFO_BAR (source->priv->info_bar));
-	gtk_container_add (GTK_CONTAINER (box), source->priv->info_bar_label);
-	gtk_widget_show_all (box);
-	gtk_widget_set_no_show_all (source->priv->info_bar, TRUE);
-	g_signal_connect (G_OBJECT (source->priv->info_bar), "response",
-			  G_CALLBACK (info_bar_response_cb), source);
-	gtk_grid_attach (GTK_GRID (infogrid), source->priv->info_bar, 0, 0, 2, 1);
-#endif
+	source->priv->infogrid = GTK_WIDGET (gtk_builder_get_object (builder, "album_info"));
+	g_assert (source->priv->infogrid != NULL);
 
 	source->priv->artist_entry = GTK_WIDGET (gtk_builder_get_object (builder, "artist_entry"));
 	source->priv->artist_sort_entry = GTK_WIDGET (gtk_builder_get_object (builder, "artist_sort_entry"));
@@ -498,7 +441,7 @@ rb_audiocd_source_constructed (GObject *object)
 	grid = gtk_grid_new ();
 	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
 	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (toolbar), 0, 0, 1, 1);
-	gtk_grid_attach (GTK_GRID (grid), infogrid, 0, 1, 1, 1);
+	gtk_grid_attach (GTK_GRID (grid), source->priv->infogrid, 0, 1, 1, 1);
 	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (source->priv->entry_view), 0, 2, 1, 1);
 	gtk_widget_set_margin_top (GTK_WIDGET (grid), 6);
 	g_object_unref (builder);
@@ -508,7 +451,9 @@ rb_audiocd_source_constructed (GObject *object)
 	gtk_widget_show_all (grid);
 	gtk_container_add (GTK_CONTAINER (source), grid);
 
-	g_thread_new ("audiocd-scan", (GThreadFunc)rb_audiocd_load_songs, g_object_ref (source));
+	source->priv->cancel_disc_info = g_cancellable_new ();
+	rb_audiocd_source_load_disc_info (source);
+
 	g_object_unref (db);
 	g_object_unref (shell_player);
 }
@@ -617,558 +562,601 @@ entry_set_string_prop (RhythmDB *db,
 	g_value_unset (&value);
 }
 
-static RhythmDBEntry *
-rb_audiocd_create_track_entry (RBAudioCdSource *source,
-			       RhythmDB *db,
-			       guint track_number)
+static void
+clear_info_bar (RBAudioCdSource *source)
 {
-	RhythmDBEntry *entry;
-	char *audio_path;
-	guint64 duration;
-	GValue value = {0, };
-	gchar *str;
-	RhythmDBEntryType *entry_type;
-	RBAudioCDEntryData *extra_data;
-
-	audio_path = g_strdup_printf ("cdda://%d#%s", track_number, source->priv->device_path);
-
-	g_object_get (source, "entry-type", &entry_type, NULL);
-	rb_debug ("Audio CD - create entry for track %d from %s", track_number, audio_path);
-	entry = rhythmdb_entry_new (db, entry_type, audio_path);
-	g_object_unref (entry_type);
-	if (entry == NULL) {
-		g_free (audio_path);
-		return NULL;
+	if (source->priv->info_bar != NULL) {
+		gtk_widget_hide (source->priv->info_bar);
+		gtk_container_remove (GTK_CONTAINER (source->priv->infogrid), source->priv->info_bar);
+		source->priv->info_bar = NULL;
 	}
-
-	/* generate track # */
-	g_value_init (&value, G_TYPE_ULONG);
-	g_value_set_ulong (&value, track_number);
-	rhythmdb_entry_set (db, entry,
-			    RHYTHMDB_PROP_TRACK_NUMBER,
-			    &value);
-	g_value_unset (&value);
-
-	/* generate track name */
-	g_value_init (&value, G_TYPE_STRING);
-	str = g_strdup_printf (_("Track %u"), track_number);
-	g_value_take_string (&value, str);
-	rhythmdb_entry_set (db, entry,
-			    RHYTHMDB_PROP_TITLE,
-			    &value);
-	g_value_unset (&value);
-
-	/* determine the duration
-	 * FIXME: http://bugzilla.gnome.org/show_bug.cgi?id=551011 */
-	if (gst_tag_list_get_uint64 (GST_CDDA_BASE_SRC(source->priv->cdda)->tracks[track_number - 1].tags, GST_TAG_DURATION, &duration)) {
-		g_value_init (&value, G_TYPE_ULONG);
-		g_value_set_ulong (&value, (gulong)(duration / GST_SECOND));
-		rhythmdb_entry_set (db, entry,
-				    RHYTHMDB_PROP_DURATION,
-				    &value);
-		g_value_unset (&value);
-	} else {
-		g_warning ("Failed to query cd track duration");
-	}
-
-	entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST, FALSE, NULL);
-	entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM, FALSE, NULL);
-	entry_set_string_prop (db, entry, RHYTHMDB_PROP_GENRE, FALSE, NULL);
-	entry_set_string_prop (db, entry, RHYTHMDB_PROP_MEDIA_TYPE, TRUE, "audio/x-raw-int");
-
-	extra_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioCDEntryData);
-	extra_data->extract = TRUE;
-
-	rhythmdb_commit (db);
-	g_free (audio_path);
-
-	return entry;
 }
 
-static gboolean
-rb_audiocd_get_cd_info (RBAudioCdSource *source,
-			gint64 *num_tracks)
+static void
+show_info_bar (RBAudioCdSource *source, GtkWidget *info_bar)
 {
-	GstFormat fmt = gst_format_get_by_nick ("track");
-	GstFormat out_fmt = fmt;
-	if (!gst_element_query_duration (source->priv->cdda, &out_fmt, num_tracks) || out_fmt != fmt) {
-		return FALSE;
-	}
+	clear_info_bar (source);
 
-	return TRUE;
+	gtk_widget_show_all (info_bar);
+	gtk_grid_attach (GTK_GRID (source->priv->infogrid), info_bar, 0, 0, 2, 1);
+	source->priv->info_bar = info_bar;
 }
 
-static gboolean
-rb_audiocd_scan_songs (RBAudioCdSource *source,
-		       RhythmDB *db)
+
+static void
+submit_info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *source)
 {
-	gint64 i, num_tracks;
-        GstStateChangeReturn ret;
-	gboolean ok = TRUE;
+	GError *error = NULL;
 
-	ret = gst_element_set_state (source->priv->pipeline, GST_STATE_PAUSED);
-	if (ret == GST_STATE_CHANGE_ASYNC) {
-		ret = gst_element_get_state (source->priv->pipeline, NULL, NULL, 3 * GST_SECOND);
-	}
-        if (ret == GST_STATE_CHANGE_FAILURE) {
-		gdk_threads_enter ();
-		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
-					_("Rhythmbox couldn't access the CD."));
-		gdk_threads_leave ();
-		ok = FALSE;
-	}
+	if (response_id == GTK_RESPONSE_OK) {
+		char *submit_url;
 
-	if (ok && !rb_audiocd_get_cd_info (source, &num_tracks)) {
-		gdk_threads_enter ();
-		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
-					_("Rhythmbox couldn't read the CD information."));
-		gdk_threads_leave ();
-		ok = FALSE;
-	}
+		submit_url = rb_musicbrainz_create_submit_url (
+			source->priv->disc_info->musicbrainz_disc_id,
+			source->priv->disc_info->musicbrainz_full_disc_id);
 
-	if (ok) {
-		rb_debug ("importing Audio Cd %s - %d tracks", source->priv->device_path, (int)num_tracks);
-		for (i = 1; i <= num_tracks; i++) {
-			RhythmDBEntry* entry = rb_audiocd_create_track_entry (source, db, i);
-
-			if (entry)
-				source->priv->tracks = g_list_prepend (source->priv->tracks, entry);
-			else
-				g_warning ("Could not create audio cd track entry");
+		if (!gtk_show_uri (NULL, submit_url, GDK_CURRENT_TIME, &error)) {
+			rb_debug ("Could not launch submit URL %s: %s", submit_url, error->message);
+			g_error_free (error);
 		}
-		source->priv->tracks = g_list_reverse (source->priv->tracks);
+		g_free (submit_url);
 	}
 
-	if (gst_element_set_state (source->priv->pipeline, GST_STATE_NULL) == GST_STATE_CHANGE_FAILURE) {
-		rb_debug ("failed to set cd state");
-	}
+	clear_info_bar (source);
+}
 
-	return ok;
+static void
+show_submit_info_bar (RBAudioCdSource *source)
+{
+	GtkWidget *info_bar;
+	GtkWidget *label;
+	GtkWidget *box;
+	char *message;
+
+	rb_debug ("showing musicbrainz submit info bar");
+
+	info_bar = gtk_info_bar_new_with_buttons (_("S_ubmit Album"), GTK_RESPONSE_OK,
+						  _("Hide"), GTK_RESPONSE_CANCEL,
+						  NULL);
+
+	message = g_strdup_printf ("<b>%s</b>\n%s", _("Could not find this album on MusicBrainz."),
+				   _("You can improve the MusicBrainz database by adding this album."));
+	label = gtk_label_new (NULL);
+	gtk_label_set_markup (GTK_LABEL (label), message);
+	gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_LEFT);
+	g_free (message);
+
+	box = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
+	gtk_container_add (GTK_CONTAINER (box), label);
+
+	g_signal_connect (G_OBJECT (info_bar), "response",
+			  G_CALLBACK (submit_info_bar_response_cb), source);
+	show_info_bar (source, info_bar);
+}
+
+static void
+mb_error_info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *source)
+{
+	if (response_id == GTK_RESPONSE_OK) {
+		rb_audiocd_source_load_metadata (source);
+	}
+	clear_info_bar (source);
+}
+
+static void
+show_lookup_error_info_bar (RBAudioCdSource *source, GError *error)
+{
+	GtkWidget *info_bar;
+	GtkWidget *label;
+	GtkWidget *box;
+	char *message;
+
+	rb_debug ("showing musicbrainz error info bar");
+
+	info_bar = gtk_info_bar_new_with_buttons (_("_Retry"), GTK_RESPONSE_OK,
+						  _("_Hide"), GTK_RESPONSE_CANCEL,
+						  NULL);
+
+	message = g_strdup_printf ("<b>%s</b>\n%s", _("Could not search MusicBrainz for album details."),
+				   error->message);
+	label = gtk_label_new (NULL);
+	gtk_label_set_markup (GTK_LABEL (label), message);
+	gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_LEFT);
+	g_free (message);
+
+	box = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
+	gtk_container_add (GTK_CONTAINER (box), label);
+
+	g_signal_connect (G_OBJECT (info_bar), "response",
+			  G_CALLBACK (mb_error_info_bar_response_cb), source);
+	show_info_bar (source, info_bar);
+}
+
+static void
+cd_error_info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *source)
+{
+	if (response_id == GTK_RESPONSE_OK) {
+		rb_audiocd_source_load_disc_info (source);
+	}
+	clear_info_bar (source);
+}
+
+static void
+show_cd_error_info_bar (RBAudioCdSource *source, GError *error)
+{
+	GtkWidget *info_bar;
+	GtkWidget *label;
+	GtkWidget *box;
+	char *message;
+
+	rb_debug ("showing cd read error info bar");
+
+	info_bar = gtk_info_bar_new_with_buttons (_("_Retry"), GTK_RESPONSE_OK,
+						  _("_Hide"), GTK_RESPONSE_CANCEL,
+						  NULL);
+
+	message = g_strdup_printf ("<b>%s</b>\n%s", _("Could not read the CD device."),
+				   error->message);
+	label = gtk_label_new (NULL);
+	gtk_label_set_markup (GTK_LABEL (label), message);
+	gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_LEFT);
+	g_free (message);
+
+	box = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
+	gtk_container_add (GTK_CONTAINER (box), label);
+
+	g_signal_connect (G_OBJECT (info_bar), "response",
+			  G_CALLBACK (cd_error_info_bar_response_cb), source);
+	show_info_bar (source, info_bar);
 }
 
 
 static void
-reload_metadata_cmd (GtkAction *action, RBAudioCdSource *source)
+apply_musicbrainz_release (RBAudioCdSource *source, RBMusicBrainzData *release)
 {
-#ifdef HAVE_SJ_METADATA_GETTER
+	RBMusicBrainzData *medium;
 	RhythmDB *db;
+	GList *l;
+	const char *value;
+	int disc_num = 0;
+	gulong release_date = 0;
+	const char *album;
+	const char *album_id;
+	const char *album_artist;
+	const char *album_artist_id;
+	const char *album_artist_sortname;
 
-	g_return_if_fail (RB_IS_AUDIOCD_SOURCE (source));
+	medium = rb_musicbrainz_data_find_child (release,
+						 "disc-id",
+						 source->priv->disc_info->musicbrainz_disc_id);
+	g_assert (medium != NULL);
 
-	db = get_db_for_source (RB_AUDIOCD_SOURCE (source));
-	rb_audiocd_load_metadata (RB_AUDIOCD_SOURCE (source), db);
-	g_object_unref (db);
-#endif
-}
+	/* set album stuff in widgets */
+	album = rb_musicbrainz_data_get_attr_value (release, RB_MUSICBRAINZ_ATTR_ALBUM);
+	if (album != NULL) {
+		rb_debug ("album title: %s", album);
+		gtk_entry_set_text (GTK_ENTRY (source->priv->album_entry), album);
+		g_object_set (source, "name", album, NULL);
+	}
 
-#ifdef HAVE_SJ_METADATA_GETTER
+	album_artist = rb_musicbrainz_data_get_attr_value (release, RB_MUSICBRAINZ_ATTR_ALBUM_ARTIST);
+	if (album_artist != NULL) {
+		rb_debug ("album artist: %s", album_artist);
+		gtk_entry_set_text (GTK_ENTRY (source->priv->artist_entry), album_artist);
+	}
 
-static void
-apply_album_metadata (RBAudioCdSource *source, AlbumDetails *album)
-{
-	RhythmDB *db;
-	GValue true_value = {0,};
-	GList *cd_track;
+	album_artist_sortname = rb_musicbrainz_data_get_attr_value (release, RB_MUSICBRAINZ_ATTR_ALBUM_ARTIST_SORTNAME);
+	if (album_artist_sortname != NULL) {
+		rb_debug ("album artist sortname: %s", album_artist_sortname);
+		gtk_entry_set_text (GTK_ENTRY (source->priv->artist_sort_entry), album_artist_sortname);
+	}
+
+	value = rb_musicbrainz_data_get_attr_value (release, RB_MUSICBRAINZ_ATTR_DATE);
+	if (value != NULL) {
+		int year = 1;
+		int month = 1;
+		int day = 1;
+
+		if (sscanf (value, "%u-%u-%u", &year, &month, &day) > 0) {
+			GDate date;
+			char *year_text;
+
+			year_text = g_strdup_printf ("%d", year);
+			gtk_entry_set_text (GTK_ENTRY (source->priv->year_entry), year_text);
+			g_free (year_text);
+
+			g_date_set_dmy (&date,
+					(day == 0) ? 1 : day,
+					(month == 0) ? 1 : month,
+					year);
+			release_date = g_date_get_julian (&date);
+		} else {
+			rb_debug ("unable to parse release date: %s", value);
+		}
+	}
+
+	value = rb_musicbrainz_data_get_attr_value (medium, RB_MUSICBRAINZ_ATTR_DISC_NUMBER);
+	if (value != NULL) {
+		disc_num = strtol (value, NULL, 10);	/* 0 is ok if this fails */
+		gtk_entry_set_text (GTK_ENTRY (source->priv->disc_number_entry), value);
+		rb_debug ("disc number %d", disc_num);
+	}
+
+	album_id = rb_musicbrainz_data_get_attr_value (release, RB_MUSICBRAINZ_ATTR_ALBUM_ID);
+	rb_debug ("musicbrainz_albumid: %s", album_id);
+
+	album_artist_id = rb_musicbrainz_data_get_attr_value (release, RB_MUSICBRAINZ_ATTR_ALBUM_ARTIST_ID);
+	rb_debug ("musicbrainz_albumartistid: %s", album_artist_id);
 
 	db = get_db_for_source (source);
 
-	g_value_init (&true_value, G_TYPE_BOOLEAN);
-	g_value_set_boolean (&true_value, TRUE);
-
-	if (album->metadata_source != SOURCE_MUSICBRAINZ) {
-		source->priv->submit_url = sj_metadata_getter_get_submit_url (source->priv->metadata);
-		if (source->priv->submit_url != NULL)
-			gtk_widget_show (source->priv->info_bar);
-	}
-
-	if (album->metadata_source == SOURCE_FALLBACK) {
-		rb_debug ("ignoring CD metadata from fallback source");
-		g_object_unref (source->priv->metadata);
-		source->priv->metadata = NULL;
-		g_object_unref (db);
-		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
-		return;
-	}
-
-	if (album->artist != NULL) {
-		gtk_entry_set_text (GTK_ENTRY (source->priv->artist_entry), album->artist);
-	}
-	if (album->artist_sortname != NULL) {
-		gtk_entry_set_text (GTK_ENTRY (source->priv->artist_sort_entry), album->artist_sortname);
-	}
-	if (album->title != NULL) {
-		gtk_entry_set_text (GTK_ENTRY (source->priv->album_entry), album->title);
-	}
-	if (album->release_date != NULL) {
-		char *year;
-		year = g_strdup_printf ("%d", g_date_get_year (album->release_date));
-		gtk_entry_set_text (GTK_ENTRY (source->priv->year_entry), year);
-		g_free (year);
-	}
-	if (album->disc_number != 0) {
-		char *num;
-		num = g_strdup_printf ("%d", album->disc_number);
-		gtk_entry_set_text (GTK_ENTRY (source->priv->disc_number_entry), num);
-		g_free (num);
-	}
-	if (album->genre != NULL) {
-		gtk_entry_set_text (GTK_ENTRY (source->priv->genre_entry), album->genre);
-	}
-
-	g_object_set (G_OBJECT (source), "name", album->title, NULL);
-	rb_debug ("musicbrainz_albumid: %s", album->album_id);
-	rb_debug ("musicbrainz_albumartistid: %s", album->artist_id);
-	rb_debug ("album artist: %s", album->artist);
-	rb_debug ("album artist sortname: %s", album->artist_sortname);
-	rb_debug ("disc number: %d", album->disc_number);
-	rb_debug ("genre: %s", album->genre);
-
-	cd_track = source->priv->tracks;
-	while (album->tracks && cd_track) {
-		TrackDetails *track = (TrackDetails*)album->tracks->data;
-		RhythmDBEntry *entry = cd_track->data;
+	/* apply things to tracks */
+	l = rb_musicbrainz_data_get_children (medium);
+	for (l = rb_musicbrainz_data_get_children (medium); l != NULL; l = l->next) {
+		RhythmDBEntry *entry;
+		RBMusicBrainzData *mb_track = l->data;
+		GList *tl;
 		GValue value = {0, };
+		const char *attr;
+		int mb_track_num;
+	
+		attr = rb_musicbrainz_data_get_attr_value (mb_track, RB_MUSICBRAINZ_ATTR_TRACK_NUMBER);
+		rb_debug ("processing musicbrainz track %s", attr);
+		mb_track_num = strtol (attr, 0, 10);
 
-		rb_debug ("storing metadata for %s - %s - %s", track->artist, album->title, track->title);
-
-		rb_debug ("musicbrainz_trackid: %s", track->track_id);
-		rb_debug ("musicbrainz_artistid: %s", track->artist_id);
-		rb_debug ("artist sortname: %s", track->artist_sortname);
-
-		/* record track info in entry*/
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_TITLE, FALSE, track->title);
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST, FALSE, track->artist);
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM, FALSE, album->title);
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_GENRE, FALSE, album->genre);
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, TRUE, track->track_id);
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, TRUE, track->artist_id);
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, TRUE, album->album_id);
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, TRUE, album->artist_id);
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST_SORTNAME, TRUE, track->artist_sortname);
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM_ARTIST, TRUE, album->artist);
-		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, TRUE, album->artist_sortname);
-
-		g_value_init (&value, G_TYPE_ULONG);
-		g_value_set_ulong (&value, track->duration);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &value);
-		g_value_unset (&value);
-
-		if (album->disc_number != 0) {
-			g_value_init (&value, G_TYPE_ULONG);
-			g_value_set_ulong (&value, album->disc_number);
-			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DISC_NUMBER, &value);
-			g_value_unset (&value);
+		/* find matching track */
+		entry = NULL;
+		for (tl = source->priv->tracks; tl != NULL; tl = tl->next) {
+			gulong tn;
+			tn = rhythmdb_entry_get_ulong (tl->data, RHYTHMDB_PROP_TRACK_NUMBER);
+			if (tn == mb_track_num) {
+				entry = tl->data;
+				break;
+			}
 		}
 
-		/*album->release_date (could potentially have multiple values)*/
-		/* in current sj-structures.h, however, it does not */
+		if (entry == NULL) {
+			g_warning ("couldn't find track entry for musicbrainz track %d",
+				   mb_track_num);
+			continue;
+		}
 
-		if (album->release_date) {
-			GType type = rhythmdb_get_property_type (db, RHYTHMDB_PROP_DATE);
-			g_value_init (&value, type);
-			g_value_set_ulong (&value, g_date_get_julian (album->release_date));
+		/* apply release stuff */
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM, FALSE, album);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID, TRUE, album_id);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID, TRUE, album_artist_id);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM_ARTIST, TRUE, album_artist);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, TRUE, album_artist_sortname);
+
+		if (release_date != 0) {
+			g_value_init (&value, G_TYPE_ULONG);
+			g_value_set_ulong (&value, release_date);
 			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DATE, &value);
 			g_value_unset (&value);
 		}
 
-		rhythmdb_commit (db);
+		/* apply medium stuff */
+		if (disc_num != 0) {
+			g_value_init (&value, G_TYPE_ULONG);
+			g_value_set_ulong (&value, disc_num);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DISC_NUMBER, &value);
+			g_value_unset (&value);
+		}
 
-		album->tracks = g_list_next (album->tracks);
-		cd_track = g_list_next (cd_track);
+		/* apply track stuff */
+		attr = rb_musicbrainz_data_get_attr_value (mb_track, RB_MUSICBRAINZ_ATTR_TITLE);
+		rb_debug ("title: %s", attr);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_TITLE, FALSE, attr);
+
+		attr = rb_musicbrainz_data_get_attr_value (mb_track, RB_MUSICBRAINZ_ATTR_TRACK_ID);
+		rb_debug ("musicbrainz track id: %s", attr);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID, TRUE, attr);
+
+		attr = rb_musicbrainz_data_get_attr_value (mb_track, RB_MUSICBRAINZ_ATTR_ARTIST);
+		rb_debug ("artist: %s", attr);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST, FALSE, attr);
+
+		attr = rb_musicbrainz_data_get_attr_value (mb_track, RB_MUSICBRAINZ_ATTR_ARTIST_SORTNAME);
+		rb_debug ("artist sortname: %s", attr);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST_SORTNAME, TRUE, attr);
+
+		attr = rb_musicbrainz_data_get_attr_value (mb_track, RB_MUSICBRAINZ_ATTR_ARTIST_ID);
+		rb_debug ("musicbrainz_artistid: %s", attr);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MUSICBRAINZ_ARTISTID, TRUE, attr);
 	}
 
-	while (cd_track) {
-		/* Musicbrainz doesn't report data tracks on multisession CDs.
-		 * These aren't interesting to us anyway, so they should be hidden.
-		 */
-		RhythmDBEntry *entry = cd_track->data;
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_HIDDEN, &true_value);
-		rhythmdb_commit (db);
-
-		cd_track = g_list_next (cd_track);
-	}
-
-	g_object_unref (source->priv->metadata);
-	source->priv->metadata = NULL;
+	rhythmdb_commit (db);
 
 	g_object_unref (db);
-
-	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
-}
-
-
-/*
- * Called by the Multiple Album dialog when the user hits return in
- * the list view
- */
-static void
-album_row_activated (GtkTreeView *treeview,
-		     GtkTreePath *arg1,
-		     GtkTreeViewColumn *arg2,
-		     gpointer user_data)
-{
-	GtkDialog *dialog = GTK_DIALOG (user_data);
-	g_assert (dialog != NULL);
-	gtk_dialog_response (dialog, GTK_RESPONSE_OK);
 }
 
 static void
-multiple_album_response_cb (GtkWidget *dialog, int response, RBAudioCdSource *source)
+album_combo_changed_cb (GtkWidget *combo, RBAudioCdSource *source)
 {
-	AlbumDetails *album;
-	GtkTreeIter iter;
-	GtkTreeSelection *selection;
+	GList *l;
+	int active;
 
-	/* maybe assert? */
-	if (dialog == source->priv->multiple_album_dialog) {
-		source->priv->multiple_album_dialog = NULL;
+	active = gtk_combo_box_get_active (GTK_COMBO_BOX (combo));
+	if (active == -1)
+		return;
+
+	l = g_list_nth (source->priv->releases, active);
+	if (l != NULL) {
+		apply_musicbrainz_release (source, l->data);
+	}
+}
+
+static void
+show_multiple_release_info_bar (RBAudioCdSource *source)
+{
+	GtkWidget *info_bar;
+	GtkWidget *label;
+	GtkWidget *box;
+	GtkWidget *combo;
+	GList *l;
+
+	rb_debug ("showing musicbrainz multiple release info bar");
+
+	info_bar = gtk_info_bar_new ();
+
+	label = gtk_label_new (_("This disc matches multiple albums. Select the correct album."));
+	gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_LEFT);
+	box = gtk_info_bar_get_content_area (GTK_INFO_BAR (info_bar));
+	gtk_container_add (GTK_CONTAINER (box), label);
+
+	combo = gtk_combo_box_text_new ();
+	for (l = source->priv->releases; l != NULL; l = l->next) {
+		const char *artist;
+		const char *album;
+		const char *country;
+		char *text;
+
+		artist = rb_musicbrainz_data_get_attr_value (l->data, RB_MUSICBRAINZ_ATTR_ALBUM_ARTIST);
+		album = rb_musicbrainz_data_get_attr_value (l->data, RB_MUSICBRAINZ_ATTR_ALBUM);
+		country = rb_musicbrainz_data_get_attr_value (l->data, RB_MUSICBRAINZ_ATTR_COUNTRY);
+		text = g_strdup_printf ("%s - %s (%s)", artist, album, country);
+		gtk_combo_box_text_append (GTK_COMBO_BOX_TEXT (combo), NULL, text);
+		g_free (text);
 	}
 
-	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (source->priv->albums_listview));
+	g_signal_connect (combo, "changed", G_CALLBACK (album_combo_changed_cb), source);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
 
-	if (response == GTK_RESPONSE_DELETE_EVENT) {
-		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->albums_store), &iter);
-	} else {
-		gtk_tree_selection_get_selected (selection, NULL, &iter);
-	}
+	box = gtk_info_bar_get_action_area (GTK_INFO_BAR (info_bar));
+	gtk_container_add (GTK_CONTAINER (box), combo);
 
-	gtk_tree_model_get (GTK_TREE_MODEL (source->priv->albums_store), &iter, 2, &album, -1);
-	apply_album_metadata (source, album);
-
-	gtk_widget_destroy (dialog);
-
-	g_list_foreach (source->priv->albums, (GFunc)album_details_free, NULL);
-	g_list_free (source->priv->albums);
-	source->priv->albums = NULL;
+	show_info_bar (source, info_bar);
 }
 
-/*
- * Utility function for when there are more than one albums
- * available. Borrowed from Sound Juicer.
- */
 static void
-multiple_album_dialog (RBAudioCdSource *source, GList *albums)
+musicbrainz_lookup_cb (GObject *obj, GAsyncResult *result, RBAudioCdSource **source_ptr)
 {
-	GtkTreeSelection *selection;
-	GtkTreeIter iter;
-	GtkBuilder *builder;
-	GtkTreeViewColumn *column;
-	GtkCellRenderer *text_renderer;
-	GObject *plugin;
-	char *builder_file;
+	RBAudioCdSource *source;
+	GError *error = NULL;
+	GList *l;
 
-	gdk_threads_enter ();
-
-	g_object_get (source, "plugin", &plugin, NULL);
-	g_assert (plugin != NULL);
-
-	/* create dialog */
-	builder_file = rb_find_plugin_data_file (plugin, "multiple-album.ui");
-	g_object_unref (plugin);
-
-	if (builder_file == NULL) {
-		g_warning ("couldn't find multiple-album.ui");
-		apply_album_metadata (source, (AlbumDetails *)albums->data);
-		g_list_foreach (albums, (GFunc)album_details_free, NULL);
-		g_list_free (albums);
+	source = *source_ptr;
+	if (source == NULL) {
+		rb_debug ("cd source was destroyed");
+		g_free (source_ptr);
 		return;
 	}
+	g_object_remove_weak_pointer (G_OBJECT (source), (gpointer *)source_ptr);
+	g_free (source_ptr);
 
-	source->priv->albums = albums;
-
-	builder = rb_builder_load (builder_file, NULL);
-	g_free (builder_file);
-
-	source->priv->multiple_album_dialog = GTK_WIDGET (gtk_builder_get_object (builder, "multiple_dialog"));
-	g_assert (source->priv->multiple_album_dialog != NULL);
-	gtk_window_set_transient_for (GTK_WINDOW (source->priv->multiple_album_dialog),
-				      GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source))));
-	source->priv->albums_listview = GTK_WIDGET (gtk_builder_get_object (builder, "albums_listview"));
-
-	g_signal_connect (source->priv->albums_listview,
-			  "row-activated",
-			  G_CALLBACK (album_row_activated),
-			  source->priv->multiple_album_dialog);
-
-	/* add columns */
-	text_renderer = gtk_cell_renderer_text_new ();
-	column = gtk_tree_view_column_new_with_attributes (_("Title"),
-							   text_renderer,
-							   "text", 0,
-							   NULL);
-
-	gtk_tree_view_append_column (GTK_TREE_VIEW (source->priv->albums_listview), column);
-
-	column = gtk_tree_view_column_new_with_attributes (_("Artist"),
-							   text_renderer,
-							   "text", 1,
-							   NULL);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (source->priv->albums_listview), column);
-
-	/* create model for the tree view */
-	source->priv->albums_store = gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
-	gtk_tree_view_set_model (GTK_TREE_VIEW (source->priv->albums_listview), GTK_TREE_MODEL (source->priv->albums_store));
-
-	for (; albums ; albums = g_list_next (albums)) {
-		GtkTreeIter iter;
-		AlbumDetails *album = (AlbumDetails*)(albums->data);
-		gtk_list_store_append (source->priv->albums_store, &iter);
-		gtk_list_store_set (source->priv->albums_store, &iter,
-				    0, album->title,
-				    1, album->artist,
-				    2, album,
-				    -1);
+	if (source->priv->releases != NULL) {
+		g_list_free (source->priv->releases);
+		source->priv->releases = NULL;
+	}
+	if (source->priv->mb_data != NULL) {
+		rb_musicbrainz_data_free (source->priv->mb_data);
 	}
 
-	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (source->priv->albums_listview));
-	gtk_tree_selection_set_mode (selection, GTK_SELECTION_BROWSE);
+	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
 
-	/* select the first row */
-	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->albums_store), &iter);
-	gtk_tree_selection_select_iter (selection, &iter);
-
-	g_signal_connect (source->priv->multiple_album_dialog,
-			  "response",
-			  G_CALLBACK (multiple_album_response_cb),
-			  source);
-	gtk_widget_grab_focus (source->priv->albums_listview);
-	gtk_widget_show_all (source->priv->multiple_album_dialog);
-
-	gdk_threads_leave ();
-}
-
-
-static void
-metadata_cb (SjMetadataGetter *metadata,
-	     GList *albums,
-	     GError *error,
-	     RBAudioCdSource *source)
-{
-	g_assert (metadata == source->priv->metadata);
-
+	source->priv->mb_data = rb_musicbrainz_lookup_finish (result, &error);
 	if (error != NULL) {
-		rb_debug ("Failed to load cd metadata: %s", error->message);
-		/* TODO display error to user? */
-		g_object_unref (metadata);
-		source->priv->metadata = NULL;
-		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
-		return;
-	}
-	if (albums == NULL) {
-		rb_debug ("Musicbrainz didn't return any CD metadata, but didn't give an error");
-		g_object_unref (metadata);
-		source->priv->metadata = NULL;
-		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
-		return;
-	}
-	if (source->priv->tracks == NULL) {
-		/* empty cd? */
-		rb_debug ("no tracks on the CD?");
-		g_object_unref (metadata);
-		source->priv->metadata = NULL;
-		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
+		if (error->domain == G_IO_ERROR &&
+		    error->code == G_IO_ERROR_CANCELLED) {
+			/* do nothing */
+		} else if (error->domain == RB_MUSICBRAINZ_ERROR &&
+		    error->code == RB_MUSICBRAINZ_ERROR_NOT_FOUND) {
+			show_submit_info_bar (source);
+		} else {
+			show_lookup_error_info_bar (source, error);
+		}
+		g_clear_error (&error);
 		return;
 	}
 
-	g_free (source->priv->submit_url);
-	source->priv->submit_url = NULL;
+	/* find the release and medium matching the disc id */
+	l = rb_musicbrainz_data_get_children (source->priv->mb_data);
+	if (l == NULL) {
+		show_submit_info_bar (source);
+		return;
+	}
 
-	/* if we have multiple results, ask the user to pick one */
-	if (g_list_length (albums) > 1) {
-		multiple_album_dialog (source, albums);
+	for (; l != NULL; l = l->next) {
+		RBMusicBrainzData *m;
+
+		m = rb_musicbrainz_data_find_child (l->data,
+						    "disc-id",
+						    source->priv->disc_info->musicbrainz_disc_id);
+		if (m == NULL)
+			continue;
+
+		source->priv->releases = g_list_append (source->priv->releases, l->data);
+	}
+
+	if (source->priv->releases == NULL) {
+		show_submit_info_bar (source);
+	} else if (g_list_length (source->priv->releases) > 1) {
+		show_multiple_release_info_bar (source);
 	} else {
-		apply_album_metadata (source, (AlbumDetails *)albums->data);
-		g_list_foreach (albums, (GFunc)album_details_free, NULL);
-		g_list_free (albums);
+		apply_musicbrainz_release (source, source->priv->releases->data);
 	}
 }
 
-static void
-metadata_cancelled_cb (SjMetadataGetter *metadata,
-		       GList *albums,
-		       GError *error,
-		       gpointer old_source)
+static gboolean
+rb_audiocd_source_load_metadata (RBAudioCdSource *source)
 {
-	/* NOTE: the source may have been finalised, and so should NOT be used*/
-	g_list_foreach (albums, (GFunc)album_details_free, NULL);
-	g_list_free (albums);
-	g_object_unref (metadata);
-}
-#endif
+	RBAudioCdSource **source_ptr;
+	const char *disc_includes[] = { "recordings", "artist-credits", NULL };
 
-static void
-rb_audiocd_load_metadata (RBAudioCdSource *source,
-			  RhythmDB *db)
-{
-#ifdef HAVE_SJ_METADATA_GETTER
-	source->priv->metadata = sj_metadata_getter_new ();
-	sj_metadata_getter_set_cdrom (source->priv->metadata, source->priv->device_path);
-
-	g_signal_connect (G_OBJECT (source->priv->metadata), "metadata",
-			  G_CALLBACK (metadata_cb), source);
-	sj_metadata_getter_list_albums (source->priv->metadata, NULL);
-#else
-	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
-#endif
-}
-
-static void
-rb_audiocd_load_metadata_cancel (RBAudioCdSource *source)
-{
-#ifdef HAVE_SJ_METADATA_GETTER
-	if (source->priv->metadata) {
-		g_signal_handlers_disconnect_by_func (G_OBJECT (source->priv->metadata),
-						      G_CALLBACK (metadata_cb), source);
-		g_signal_connect (G_OBJECT (source->priv->metadata), "metadata",
-				  G_CALLBACK (metadata_cancelled_cb), source);
+	if (source->priv->disc_info->musicbrainz_disc_id == NULL) {
+		rb_debug ("not doing musicbrainz lookup as we don't have a disc id");
+		return FALSE;
 	}
-#endif
+
+	source_ptr = g_new0 (RBAudioCdSource *, 1);
+	*source_ptr = source;
+	g_object_add_weak_pointer (G_OBJECT (source), (gpointer *)source_ptr);
+	rb_debug ("looking up musicbrainz data for disc %s",
+		  source->priv->disc_info->musicbrainz_disc_id);
+	rb_musicbrainz_lookup ("discid",
+			       source->priv->disc_info->musicbrainz_disc_id,
+			       disc_includes,
+			       source->priv->cancel_disc_info,
+			       (GAsyncReadyCallback) musicbrainz_lookup_cb,
+			       source_ptr);
+	return TRUE;
 }
 
-static gpointer
-rb_audiocd_load_songs (RBAudioCdSource *source)
+static void
+reload_metadata_cmd (GtkAction *action, RBAudioCdSource *source)
 {
+	g_return_if_fail (RB_IS_AUDIOCD_SOURCE (source));
+
+	rb_audiocd_source_load_metadata (source);
+}
+
+static void
+disc_info_cb (GObject *obj, GAsyncResult *result, RBAudioCdSource **source_ptr)
+{
+	RBAudioCdSource *source;
+	GError *error = NULL;
 	RhythmDB *db;
-	GVolume *volume;
+	int i;
 
-	g_object_get (source, "volume", &volume, NULL);
-	source->priv->device_path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
-	g_object_unref (volume);
+	source = *source_ptr;
+	if (source == NULL) {
+		rb_debug ("cd source was destroyed");
+		g_free (source_ptr);
+		return;
+	}
+	g_object_remove_weak_pointer (G_OBJECT (source), (gpointer *)source_ptr);
+	g_free (source_ptr);
+
+	source->priv->disc_info = rb_audiocd_info_finish (result, &error);
+	if (error != NULL) {
+		if (error->domain == G_IO_ERROR &&
+		    error->code == G_IO_ERROR_CANCELLED) {
+			/* do nothing */
+		} else {
+			show_cd_error_info_bar (source, error);
+		}
+		g_clear_error (&error);
+
+		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
+		return;
+	}
+
+	if (source->priv->disc_info->album_artist != NULL) {
+		gtk_entry_set_text (GTK_ENTRY (source->priv->artist_entry), source->priv->disc_info->album_artist);
+	}
+	if (source->priv->disc_info->album != NULL) {
+		gtk_entry_set_text (GTK_ENTRY (source->priv->album_entry), source->priv->disc_info->album);
+		g_object_set (source, "name", source->priv->disc_info->album, NULL);
+	}
+	if (source->priv->disc_info->genre != NULL) {
+		gtk_entry_set_text (GTK_ENTRY (source->priv->genre_entry), source->priv->disc_info->genre);
+	}
 
 	db = get_db_for_source (source);
+	for (i = 0; i < source->priv->disc_info->num_tracks; i++) {
+		RhythmDBEntry *entry;
+		char *audio_path;
+		GValue value = {0, };
+		gchar *str;
+		RhythmDBEntryType *entry_type;
+		RBAudioCDEntryData *extra_data;
+		RBAudioCDTrack *track = &source->priv->disc_info->tracks[i];
 
-	rb_debug ("loading Audio CD from %s", source->priv->device_path);
-	/* create a cdda gstreamer element, to get cd info from */
-	source->priv->cdda = gst_element_make_from_uri (GST_URI_SRC, "cdda://", NULL);
-	if (!source->priv->cdda) {
-		gdk_threads_enter ();
-		rb_error_dialog (NULL, _("Couldn't load Audio CD"),
-					_("Rhythmbox could not get access to the CD device."));
-		gdk_threads_leave ();
-		goto error_out;
+		/* ignore data tracks */
+		if (track->is_audio == FALSE) {
+			rb_debug ("ignoring non-audio track %d", track->track_num);
+			continue;
+		}
+
+		audio_path = g_strdup_printf ("cdda://%s#%d", source->priv->disc_info->device, track->track_num);
+
+		g_object_get (source, "entry-type", &entry_type, NULL);
+		rb_debug ("creating entry for track %d from %s", track->track_num, source->priv->disc_info->device);
+		entry = rhythmdb_entry_new (db, entry_type, audio_path);
+		g_object_unref (entry_type);
+		if (entry == NULL) {
+			g_warning ("unable to create entry %s", audio_path);
+			g_free (audio_path);
+			continue;
+		}
+
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, track->track_num);
+		rhythmdb_entry_set (db, entry,
+				    RHYTHMDB_PROP_TRACK_NUMBER,
+				    &value);
+		g_value_unset (&value);
+
+		g_value_init (&value, G_TYPE_STRING);
+		str = g_strdup_printf (_("Track %u"), track->track_num);
+		g_value_take_string (&value, str);
+		rhythmdb_entry_set (db, entry,
+				    RHYTHMDB_PROP_TITLE,
+				    &value);
+		g_value_unset (&value);
+
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, track->duration / 1000);
+		rhythmdb_entry_set (db, entry,
+				    RHYTHMDB_PROP_DURATION,
+				    &value);
+		g_value_unset (&value);
+
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ARTIST, FALSE, track->artist);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_TITLE, FALSE, track->title);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM, FALSE, source->priv->disc_info->album);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_ALBUM_ARTIST, FALSE, source->priv->disc_info->album_artist);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_GENRE, FALSE, source->priv->disc_info->genre);
+		entry_set_string_prop (db, entry, RHYTHMDB_PROP_MEDIA_TYPE, TRUE, "audio/x-raw-int");
+
+		extra_data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioCDEntryData);
+		extra_data->extract = TRUE;
+
+		rhythmdb_commit (db);
+		g_free (audio_path);
+
+		source->priv->tracks = g_list_prepend (source->priv->tracks, entry);
 	}
 
-	rb_debug ("cdda longname: %s", gst_element_factory_get_longname (gst_element_get_factory (source->priv->cdda)));
-	g_object_set (G_OBJECT (source->priv->cdda), "device", source->priv->device_path, NULL);
-	source->priv->pipeline = gst_pipeline_new ("pipeline");
-	source->priv->fakesink = gst_element_factory_make ("fakesink", "fakesink");
-	gst_bin_add_many (GST_BIN (source->priv->pipeline), source->priv->cdda, source->priv->fakesink, NULL);
-	gst_element_link (source->priv->cdda, source->priv->fakesink);
-
-	/* disable paranoia (if using cdparanoia) since we're only reading track information here.
-	 * this reduces cdparanoia's cache size, so the process is much faster.
-	 */
-	if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "paranoia-mode"))
-		g_object_set (source, "paranoia-mode", 0, NULL);
-
-	if (rb_audiocd_scan_songs (source, db))
-		rb_audiocd_load_metadata (source, db);
-
-error_out:
 	g_object_unref (db);
-	g_object_unref (source);
 
-	return NULL;
+	if (rb_audiocd_source_load_metadata (source) == FALSE) {
+		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
+	}
+}
+
+static void
+rb_audiocd_source_load_disc_info (RBAudioCdSource *source)
+{
+	RBAudioCdSource **source_ptr;
+
+	source_ptr = g_new0 (RBAudioCdSource *, 1);
+	*source_ptr = source;
+	g_object_add_weak_pointer (G_OBJECT (source), (gpointer *)source_ptr);
+	rb_audiocd_info_get (source->priv->device_path,
+			     source->priv->cancel_disc_info,
+			     (GAsyncReadyCallback) disc_info_cb,
+			     source_ptr);
 }
 
 static void
@@ -1180,13 +1168,9 @@ impl_delete_thyself (RBDisplayPage *page)
 
 	rb_debug ("audio cd ejected");
 
-#ifdef HAVE_SJ_METADATA_GETTER
-	if (source->priv->multiple_album_dialog != NULL) {
-		gtk_dialog_response (GTK_DIALOG (source->priv->multiple_album_dialog), GTK_RESPONSE_DELETE_EVENT);
+	if (source->priv->cancel_disc_info) {
+		g_cancellable_cancel (source->priv->cancel_disc_info);
 	}
-#endif
-
-	rb_audiocd_load_metadata_cancel (source);
 
 	db = get_db_for_source (source);
 
@@ -1371,26 +1355,6 @@ update_disc_number_cb (GtkWidget *widget, GdkEventFocus *event, RBAudioCdSource 
 
 	return FALSE;
 }
-
-#if defined(HAVE_SJ_METADATA_GETTER)
-static void
-info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSource *source)
-{
-	GError *error = NULL;
-
-	g_return_if_fail (source->priv->submit_url != NULL);
-
-	if (response_id == GTK_RESPONSE_OK) {
-		if (!gtk_show_uri (NULL, source->priv->submit_url, GDK_CURRENT_TIME, &error)) {
-			rb_debug ("Could not launch submit URL %s: %s", source->priv->submit_url, error->message);
-			g_error_free (error);
-			return;
-		}
-	}
-
-	gtk_widget_hide (source->priv->info_bar);
-}
-#endif
 
 static void
 extract_cell_data_func (GtkTreeViewColumn *column,
