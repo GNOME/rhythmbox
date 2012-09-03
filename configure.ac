@@ -588,8 +588,10 @@ AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
 
 PLUGINDIR='${libdir}/rhythmbox/plugins'
 PLUGINDATADIR='${datadir}/rhythmbox/plugins'
+SAMPLEPLUGINDIR='${libdir}/rhythmbox/sample-plugins'
 AC_SUBST(PLUGINDIR)
 AC_SUBST(PLUGINDATADIR)
+AC_SUBST(SAMPLEPLUGINDIR)
 
 dnl ================================================================
 dnl Python plugins
@@ -797,7 +799,6 @@ data/icons/src/Makefile
 sources/Makefile
 sources/sync/Makefile
 plugins/Makefile
-plugins/sample/Makefile
 plugins/audiocd/Makefile
 plugins/audioscrobbler/Makefile
 plugins/brasero-disc-recorder/Makefile
@@ -809,8 +810,6 @@ plugins/mtpdevice/Makefile
 plugins/iradio/Makefile
 plugins/lirc/Makefile
 plugins/lyrics/Makefile
-plugins/sample-python/Makefile
-plugins/sample-vala/Makefile
 plugins/pythonconsole/Makefile
 plugins/artsearch/Makefile
 plugins/magnatune/Makefile
@@ -827,6 +826,10 @@ plugins/rbzeitgeist/Makefile
 plugins/notification/Makefile
 plugins/visualizer/Makefile
 plugins/grilo/Makefile
+sample-plugins/Makefile
+sample-plugins/sample/Makefile
+sample-plugins/sample-python/Makefile
+sample-plugins/sample-vala/Makefile
 bindings/Makefile
 bindings/vala/Makefile
 bindings/gi/Makefile

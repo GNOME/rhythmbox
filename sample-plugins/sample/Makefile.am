@@ -1,6 +1,5 @@
-plugindir = $(PLUGINDIR)
-#plugin_LTLIBRARIES = libsample.la
-noinst_LTLIBRARIES = libsample.la
+plugindir = $(SAMPLEPLUGINDIR)/sample
+plugin_LTLIBRARIES = libsample.la
 
 libsample_la_SOURCES = \
 	rb-sample-plugin.c
@@ -31,7 +30,7 @@ plugin_in_files = sample.plugin.in
 
 %.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-#plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
+plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
 EXTRA_DIST = $(plugin_in_files)
 

@@ -9,8 +9,7 @@ SUBDIRS =						\
 	iradio						\
 	mmkeys						\
 	mpris						\
-	power-manager					\
-	sample
+	power-manager
 
 if ENABLE_PYTHON
 SUBDIRS +=						\
@@ -22,15 +21,9 @@ SUBDIRS +=						\
 	pythonconsole					\
 	rbzeitgeist					\
 	replaygain					\
-	sample-python					\
 	sendto						\
 	rb
 
-endif
-
-if ENABLE_VALA
-SUBDIRS +=						\
-	sample-vala
 endif
 
 if WITH_LIRC

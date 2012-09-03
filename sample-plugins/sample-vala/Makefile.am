@@ -1,6 +1,5 @@
-plugindir = $(PLUGINDIR)/sample-vala
+plugindir = $(SAMPLEPLUGINDIR)/sample-vala
 plugin_LTLIBRARIES = libsample-vala.la
-#noinst_LTLIBRARIES = libsample-vala.la
 
 libsample_vala_la_SOURCES = \
 	rb-sample-vala-plugin.vala
@@ -18,11 +17,9 @@ INCLUDES = 						\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib                        	\
 	-I$(top_srcdir)/metadata                       	\
-	-I$(top_srcdir)/player                       	\
 	-I$(top_srcdir)/rhythmdb                       	\
 	-I$(top_srcdir)/widgets                    	\
 	-I$(top_srcdir)/sources                    	\
-	-I$(top_srcdir)/iradio                    	\
 	-I$(top_srcdir)/podcast                    	\
 	-I$(top_srcdir)/plugins				\
 	-I$(top_srcdir)/shell				\
@@ -42,7 +39,7 @@ VALAFLAGS = --vapidir=$(top_srcdir)/bindings/vala --pkg=rhythmdb --pkg=rb --pkg=
 %.c %.h: %.vala
 	$(VALAC) -C $(VALAFLAGS) $^
 	
-# plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
+plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
 EXTRA_DIST = $(plugin_in_files)
 
