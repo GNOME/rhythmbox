@@ -4,12 +4,18 @@
 # pomóc w jego rozwijaniu i pielęgnowaniu, napisz do nas:
 # gnomepl@aviary.pl
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# Zbigniew Chyla <chyla@alice.ci.pwr.wroc.pl>, 2003.
+# Artur Flinta <aflinta@at.kernel.pl>, 2003-2004.
+# Tomasz Dominikowski <dominikowski@gmail.com>, 2007-2009.
+# Wadim Dziedzic <wdziedzic@aviary.pl>, 2008.
+# Piotr Drąg <piotrdrag@gmail.com>, 2009-2012.
+# Aviary.pl <gnomepl@aviary.pl>, 2007-2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-23 01:28+0200\n"
-"PO-Revision-Date: 2012-08-23 01:30+0200\n"
+"POT-Creation-Date: 2012-09-03 16:42+0200\n"
+"PO-Revision-Date: 2012-09-03 16:49+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -213,7 +219,7 @@ msgstr "_Liczba odtworzeń"
 msgid "C_omment"
 msgstr "K_omentarz"
 
-#: ../data/ui/general-prefs.ui.h:15 ../widgets/rb-entry-view.c:1594
+#: ../data/ui/general-prefs.ui.h:15 ../widgets/rb-entry-view.c:1593
 msgid "BPM"
 msgstr "Uderzenia na minutę"
 
@@ -630,7 +636,7 @@ msgstr "Wyświetla opcje zarządzania sesją"
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
 #: ../rhythmdb/rhythmdb.c:3587 ../widgets/rb-entry-view.c:933
-#: ../widgets/rb-entry-view.c:1542 ../widgets/rb-entry-view.c:1555
+#: ../widgets/rb-entry-view.c:1541 ../widgets/rb-entry-view.c:1554
 #: ../widgets/rb-song-info.c:1462
 msgid "Never"
 msgstr "Nigdy"
@@ -676,7 +682,7 @@ msgstr "%d %b %Y"
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:710
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
-#: ../plugins/audiocd/rb-audiocd-source.c:605
+#: ../plugins/audiocd/rb-audiocd-source.c:550
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:589
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:593
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
@@ -684,13 +690,13 @@ msgstr "%d %b %Y"
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
 #: ../plugins/generic-player/rb-generic-player-source.c:1094
 #: ../plugins/ipod/rb-ipod-source.c:567
-#: ../plugins/iradio/rb-iradio-source.c:563
-#: ../plugins/iradio/rb-iradio-source.c:1055
+#: ../plugins/iradio/rb-iradio-source.c:562
+#: ../plugins/iradio/rb-iradio-source.c:1054
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78 ../plugins/lyrics/lyrics.py:80
 #: ../plugins/mtpdevice/rb-mtp-source.c:654
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
-#: ../plugins/mtpdevice/rb-mtp-source.c:1512
+#: ../plugins/mtpdevice/rb-mtp-source.c:1524
 #: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:570 ../podcast/rb-podcast-manager.c:1900
@@ -705,8 +711,8 @@ msgstr "%d %b %Y"
 #: ../rhythmdb/rhythmdb-tree.c:1350 ../shell/rb-shell-player.c:1790
 #: ../shell/rb-shell-player.c:3759 ../shell/rb-shell-player.c:3761
 #: ../widgets/rb-entry-view.c:985 ../widgets/rb-entry-view.c:1007
-#: ../widgets/rb-entry-view.c:1483 ../widgets/rb-entry-view.c:1495
-#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1141
+#: ../widgets/rb-entry-view.c:1482 ../widgets/rb-entry-view.c:1494
+#: ../widgets/rb-entry-view.c:1506 ../widgets/rb-header.c:1141
 #: ../widgets/rb-header.c:1167 ../widgets/rb-song-info.c:917
 #: ../widgets/rb-song-info.c:929 ../widgets/rb-song-info.c:1150
 #: ../widgets/rb-song-info.c:1489
@@ -826,153 +832,94 @@ msgstr "Odtwarzacz CD-Audio"
 msgid "Support for playing of audio CDs as music source"
 msgstr "Obsługa odtwarzania płyt CD-Audio jako źródła muzyki"
 
-#: ../plugins/audiocd/multiple-album.ui.h:1
-msgid "Multiple Albums Found"
-msgstr "Odnaleziono wiele albumów"
+#: ../plugins/audiocd/rb-audiocd-info.c:58
+msgid "Could not find a GStreamer CD source plugin"
+msgstr "Nie można odnaleźć wtyczki źródła CD biblioteki GStreamer"
 
-#: ../plugins/audiocd/multiple-album.ui.h:2
-msgid ""
-"This CD could be more than one album. Please select which album it is below "
-"and press <i>Continue</i>."
-msgstr ""
-"Ta płyta CD może być jednym z kilku albumów. Proszę wybrać album poniżej i "
-"nacisnąć przycisk <i>Kontynuuj</i>."
-
-#: ../plugins/audiocd/multiple-album.ui.h:3
-msgid "_Continue"
-msgstr "_Kontynuuj"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:169
+#: ../plugins/audiocd/rb-audiocd-source.c:142
 msgid "_Extract to Library"
 msgstr "_Zgraj do kolekcji"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:170
+#: ../plugins/audiocd/rb-audiocd-source.c:143
 msgid "Copy tracks to the library"
 msgstr "Skopiuj ścieżki do kolekcji"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:172
+#: ../plugins/audiocd/rb-audiocd-source.c:145
 msgid "Reload"
 msgstr "Wczytaj ponownie"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:173
+#: ../plugins/audiocd/rb-audiocd-source.c:146
 msgid "Reload Album Information"
 msgstr "Ponowne wczytanie informacji o albumie"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../plugins/audiocd/rb-audiocd-source.c:378
+#: ../plugins/audiocd/rb-audiocd-source.c:345
 msgid "Extract"
 msgstr "Zgraj"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:450
+#: ../plugins/audiocd/rb-audiocd-source.c:413
 msgid "Select tracks to be extracted"
 msgstr "Wybór ścieżki do zgrania"
 
-#. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:466
-msgid "S_ubmit Album"
-msgstr "Wyślij alb_um"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:467
-msgid "Hide"
-msgstr "Ukryj"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:469
-msgid "Could not find this album on MusicBrainz."
-msgstr "Nie można odnaleźć tego albumu w MusicBrainz."
-
-#: ../plugins/audiocd/rb-audiocd-source.c:470
-msgid "You can improve the MusicBrainz database by adding this album."
-msgstr "Można ulepszyć bazę MusicBrainz przez dodanie tego albumu."
-
-#: ../plugins/audiocd/rb-audiocd-source.c:611
+#: ../plugins/audiocd/rb-audiocd-source.c:556
 msgid "<Invalid unicode>"
 msgstr "<nieprawidłowy unikod>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:654
+#: ../plugins/audiocd/rb-audiocd-source.c:618
+msgid "S_ubmit Album"
+msgstr "Wyślij alb_um"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:619
+msgid "Hide"
+msgstr "Ukryj"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:622
+msgid "Could not find this album on MusicBrainz."
+msgstr "Nie można odnaleźć tego albumu w MusicBrainz."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:623
+msgid "You can improve the MusicBrainz database by adding this album."
+msgstr "Można ulepszyć bazę MusicBrainz przez dodanie tego albumu."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:656
+#: ../plugins/audiocd/rb-audiocd-source.c:694
+msgid "_Retry"
+msgstr "_Ponów"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:657
+#: ../plugins/audiocd/rb-audiocd-source.c:695
+msgid "_Hide"
+msgstr "_Ukryj"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:660
+msgid "Could not search MusicBrainz for album details."
+msgstr "Nie można wyszukać informacji o albumie w serwisie MusicBrainz."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:698
+msgid "Could not read the CD device."
+msgstr "Nie można odczytać urządzenia CD."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:902
+msgid "This disc matches multiple albums. Select the correct album."
+msgstr "Ta płyta pasuje do wielu albumów. Proszę wybrać właściwy."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:1111
 #, c-format
 msgid "Track %u"
 msgstr "Ścieżka %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:715
-#: ../plugins/audiocd/rb-audiocd-source.c:723
-#: ../plugins/audiocd/rb-audiocd-source.c:1145
-msgid "Couldn't load Audio CD"
-msgstr "Nie można wczytać płyty CD-Audio"
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:406
+msgid "Not found"
+msgstr "Nie odnaleziono"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:716
-msgid "Rhythmbox couldn't access the CD."
-msgstr "Program Rhythmbox nie mógł uzyskać dostępu do płyty CD."
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:411
+msgid "Unable to connect to Musicbrainz server"
+msgstr "Nie można połączyć z serwerem MusicBrainz"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:724
-msgid "Rhythmbox couldn't read the CD information."
-msgstr "Program Rhythmbox nie mógł odczytać informacji z płyty CD."
-
-#: ../plugins/audiocd/rb-audiocd-source.c:995
-#: ../podcast/rb-podcast-add-dialog.c:705 ../sources/rb-library-source.c:133
-#: ../widgets/rb-entry-view.c:1429
-msgid "Title"
-msgstr "Tytuł"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:1002
-#: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:124
-#: ../widgets/rb-entry-view.c:1439 ../widgets/rb-library-browser.c:135
-msgid "Artist"
-msgstr "Wykonawca"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:1146
-msgid "Rhythmbox could not get access to the CD device."
-msgstr "Program Rhythmbox nie mógł uzyskać dostępu do napędu CD."
-
-#. FIXME: would be nicer to only check if "cdrom" is being probed,
-#. * but libbrasero doesn't seem to have an API for that
-#.
-#: ../plugins/audiocd/sj-metadata.c:182 ../plugins/audiocd/sj-metadata.c:205
-#: ../plugins/audiocd/sj-metadata.c:216
-#, c-format
-msgid "Cannot read CD: %s"
-msgstr "Nie można odczytać płyty CD: %s"
-
-#: ../plugins/audiocd/sj-metadata.c:183
-msgid "Devices haven't been all probed yet"
-msgstr "Nie wykryto jeszcze wszystkich urządzeń"
-
-#: ../plugins/audiocd/sj-metadata.c:199
-#, c-format
-msgid "Device '%s' does not contain any media"
-msgstr "Urządzenie \"%s\" nie zawiera multimediów"
-
-#: ../plugins/audiocd/sj-metadata.c:202
-#, c-format
-msgid ""
-"Device '%s' could not be opened. Check the access permissions on the device."
-msgstr ""
-"Urządzenie \"%s\" nie może zostać otwarte. Proszę sprawdzić uprawnienia "
-"dostępu do urządzenia."
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:90
-#, c-format
-msgid "Cannot access CD"
-msgstr "Nie można uzyskać dostępu do płyty CD"
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:109
-msgid "Unknown Title"
-msgstr "Nieznany tytuł"
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:113
-#: ../plugins/audiocd/sj-metadata-gvfs.c:139
-msgid "Unknown Artist"
-msgstr "Nieznany wykonawca"
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:135
-#, c-format
-msgid "Track %d"
-msgstr "Ścieżka %d"
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:160
-#, c-format
-msgid "Cannot access CD: %s"
-msgstr "Nie można uzyskać dostępu do płyty CD: %s"
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:416
+msgid "Musicbrainz server error"
+msgstr "Błąd serwera MusicBrainz"
 
 #: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:1
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:2
@@ -1463,6 +1410,11 @@ msgstr "Albumy"
 msgid "Loading top albums for %s"
 msgstr "Wczytywanie najpopularniejszych albumów wykonawcy %s"
 
+#: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:124
+#: ../widgets/rb-entry-view.c:1438 ../widgets/rb-library-browser.c:135
+msgid "Artist"
+msgstr "Wykonawca"
+
 #: ../plugins/context/ArtistTab.py:118
 #, python-format
 msgid "Loading biography for %s"
@@ -1812,7 +1764,7 @@ msgstr "Wyświetla właściwości urządzenia"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1383
 #: ../plugins/ipod/rb-ipod-source.c:2006
-#: ../plugins/mtpdevice/rb-mtp-source.c:1606
+#: ../plugins/mtpdevice/rb-mtp-source.c:1618
 msgid "Advanced"
 msgstr "Zaawansowane"
 
@@ -2024,25 +1976,25 @@ msgstr "Tworzy nową stację radia internetowego"
 
 #. Translators: this is the toolbar button label for
 #. New Internet Radio Station action.
-#: ../plugins/iradio/rb-iradio-source.c:343
+#: ../plugins/iradio/rb-iradio-source.c:342
 msgctxt "Radio"
 msgid "Add"
 msgstr "Dodaj"
 
-#: ../plugins/iradio/rb-iradio-source.c:380 ../widgets/rb-entry-view.c:1459
+#: ../plugins/iradio/rb-iradio-source.c:379 ../widgets/rb-entry-view.c:1458
 #: ../widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Gatunek"
 
-#: ../plugins/iradio/rb-iradio-source.c:400
+#: ../plugins/iradio/rb-iradio-source.c:399
 msgid "Search your internet radio stations"
 msgstr "Przeszukiwanie internetowych stacji radiowych"
 
-#: ../plugins/iradio/rb-iradio-source.c:487
+#: ../plugins/iradio/rb-iradio-source.c:486
 msgid "Radio"
 msgstr "Radio"
 
-#: ../plugins/iradio/rb-iradio-source.c:627
+#: ../plugins/iradio/rb-iradio-source.c:626
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -2051,12 +2003,12 @@ msgstr[1] "%d stacje"
 msgstr[2] "%d stacji"
 
 #. should prevent multiple dialogs?  going to kill this nonsense anyway soon..
-#: ../plugins/iradio/rb-iradio-source.c:968
+#: ../plugins/iradio/rb-iradio-source.c:967
 #: ../plugins/iradio/rb-station-properties-dialog.c:403
 msgid "New Internet Radio Station"
 msgstr "Nowa stacja radia internetowego"
 
-#: ../plugins/iradio/rb-iradio-source.c:968
+#: ../plugins/iradio/rb-iradio-source.c:967
 msgid "URL of internet radio station:"
 msgstr "Adres URL internetowej stacji radiowej:"
 
@@ -2465,7 +2417,7 @@ msgstr ""
 "Serwer Magnatune zwrócił:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:429 ../widgets/rb-entry-view.c:1603
+#: ../plugins/magnatune/MagnatuneSource.py:429 ../widgets/rb-entry-view.c:1602
 msgid "Error"
 msgstr "Błąd"
 
@@ -2828,6 +2780,11 @@ msgstr "Nie można wczytać kanału. Proszę sprawdzić połączenie sieciowe."
 #: ../podcast/rb-podcast-add-dialog.c:394
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Nie można wyszukać podcastów. Proszę sprawdzić połączenie sieciowe."
+
+#: ../podcast/rb-podcast-add-dialog.c:705 ../sources/rb-library-source.c:133
+#: ../widgets/rb-entry-view.c:1428
+msgid "Title"
+msgstr "Tytuł"
 
 #: ../podcast/rb-podcast-add-dialog.c:716
 msgid "Author"
@@ -3706,7 +3663,13 @@ msgstr "%s (wstrzymany)"
 
 #: ../shell/rb-shell.c:2730
 msgid "translator-credits"
-msgstr "Aviary.pl <gnomepl@aviary.pl>, 2008, 2009, 2010, 2011, 2012"
+msgstr ""
+"Zbigniew Chyla <chyla@alice.ci.pwr.wroc.pl>, 2003\n"
+"Artur Flinta <aflinta@at.kernel.pl>, 2003-2004\n"
+"Tomasz Dominikowski <dominikowski@gmail.com>, 2007-2009\n"
+"Wadim Dziedzic <wdziedzic@aviary.pl>, 2008\n"
+"Piotr Drąg <piotrdrag@gmail.com>, 2009-2012\n"
+"Aviary.pl <gnomepl@aviary.pl>, 2007-2012"
 
 #: ../shell/rb-shell.c:2733
 msgid ""
@@ -4263,7 +4226,7 @@ msgstr "Wykonawca/Album"
 msgid "Artist - Album"
 msgstr "Wykonawca - Album"
 
-#: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1449
+#: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1448
 #: ../widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Album"
@@ -4478,64 +4441,64 @@ msgstr "Przycisk wyświetlany w oknie alarmu"
 msgid "Show more _details"
 msgstr "Więcej _szczegółów"
 
-#: ../widgets/rb-entry-view.c:1005 ../widgets/rb-entry-view.c:1508
+#: ../widgets/rb-entry-view.c:1005 ../widgets/rb-entry-view.c:1507
 #: ../widgets/rb-song-info.c:1148
 msgid "Lossless"
 msgstr "Bezstratne"
 
-#: ../widgets/rb-entry-view.c:1418
+#: ../widgets/rb-entry-view.c:1417
 msgid "Track"
 msgstr "Ścieżka"
 
-#: ../widgets/rb-entry-view.c:1469
+#: ../widgets/rb-entry-view.c:1468
 msgid "Comment"
 msgstr "Komentarz"
 
-#: ../widgets/rb-entry-view.c:1479
+#: ../widgets/rb-entry-view.c:1478
 msgid "Time"
 msgstr "Długość"
 
-#: ../widgets/rb-entry-view.c:1491
+#: ../widgets/rb-entry-view.c:1490
 msgid "Year"
 msgstr "Rok"
 
-#: ../widgets/rb-entry-view.c:1503
+#: ../widgets/rb-entry-view.c:1502
 msgid "Quality"
 msgstr "Jakość"
 
-#: ../widgets/rb-entry-view.c:1506
+#: ../widgets/rb-entry-view.c:1505
 msgid "000 kbps"
 msgstr "000 kb/s"
 
-#: ../widgets/rb-entry-view.c:1517
+#: ../widgets/rb-entry-view.c:1516
 msgid "Rating"
 msgstr "Ocena"
 
-#: ../widgets/rb-entry-view.c:1539
+#: ../widgets/rb-entry-view.c:1538
 msgid "Play Count"
 msgstr "Liczba odtworzeń"
 
-#: ../widgets/rb-entry-view.c:1551
+#: ../widgets/rb-entry-view.c:1550
 msgid "Last Played"
 msgstr "Ostatnio odtwarzany"
 
-#: ../widgets/rb-entry-view.c:1563
+#: ../widgets/rb-entry-view.c:1562
 msgid "Date Added"
 msgstr "Data dodania"
 
-#: ../widgets/rb-entry-view.c:1574
+#: ../widgets/rb-entry-view.c:1573
 msgid "Last Seen"
 msgstr "Ostatnio widziany"
 
-#: ../widgets/rb-entry-view.c:1585
+#: ../widgets/rb-entry-view.c:1584
 msgid "Location"
 msgstr "Położenie"
 
-#: ../widgets/rb-entry-view.c:1854
+#: ../widgets/rb-entry-view.c:1853
 msgid "Now Playing"
 msgstr "Odtwarza"
 
-#: ../widgets/rb-entry-view.c:1910
+#: ../widgets/rb-entry-view.c:1909
 msgid "Playback Error"
 msgstr "Błąd odtwarzania"
 
