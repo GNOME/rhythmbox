@@ -34,6 +34,9 @@
 static void rb_source_toolbar_class_init (RBSourceToolbarClass *klass);
 static void rb_source_toolbar_init (RBSourceToolbar *toolbar);
 
+static void toolbar_add_widget_cb (GtkUIManager *ui_manager, GtkWidget *widget, RBSourceToolbar *toolbar);
+static void popup_add_widget_cb (GtkUIManager *ui_manager, GtkWidget *widget, RBSourceToolbar *toolbar);
+
 struct _RBSourceToolbarPrivate
 {
 	GtkUIManager *ui_manager;
@@ -241,6 +244,9 @@ impl_dispose (GObject *object)
 	RBSourceToolbar *toolbar = RB_SOURCE_TOOLBAR (object);
 
 	if (toolbar->priv->ui_manager != NULL) {
+		g_signal_handlers_disconnect_by_func (toolbar->priv->ui_manager, G_CALLBACK (popup_add_widget_cb), toolbar);
+		g_signal_handlers_disconnect_by_func (toolbar->priv->ui_manager, G_CALLBACK (toolbar_add_widget_cb), toolbar);
+
 		g_object_unref (toolbar->priv->ui_manager);
 		toolbar->priv->ui_manager = NULL;
 	}
