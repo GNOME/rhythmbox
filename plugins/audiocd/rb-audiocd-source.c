@@ -616,7 +616,7 @@ show_submit_info_bar (RBAudioCdSource *source)
 	rb_debug ("showing musicbrainz submit info bar");
 
 	info_bar = gtk_info_bar_new_with_buttons (_("S_ubmit Album"), GTK_RESPONSE_OK,
-						  _("Hide"), GTK_RESPONSE_CANCEL,
+						  _("H_ide"), GTK_RESPONSE_CANCEL,
 						  NULL);
 
 	message = g_strdup_printf ("<b>%s</b>\n%s", _("Could not find this album on MusicBrainz."),
@@ -654,7 +654,7 @@ show_lookup_error_info_bar (RBAudioCdSource *source, GError *error)
 	rb_debug ("showing musicbrainz error info bar");
 
 	info_bar = gtk_info_bar_new_with_buttons (_("_Retry"), GTK_RESPONSE_OK,
-						  _("_Hide"), GTK_RESPONSE_CANCEL,
+						  _("H_ide"), GTK_RESPONSE_CANCEL,
 						  NULL);
 
 	message = g_strdup_printf ("<b>%s</b>\n%s", _("Could not search MusicBrainz for album details."),
@@ -692,7 +692,7 @@ show_cd_error_info_bar (RBAudioCdSource *source, GError *error)
 	rb_debug ("showing cd read error info bar");
 
 	info_bar = gtk_info_bar_new_with_buttons (_("_Retry"), GTK_RESPONSE_OK,
-						  _("_Hide"), GTK_RESPONSE_CANCEL,
+						  _("H_ide"), GTK_RESPONSE_CANCEL,
 						  NULL);
 
 	message = g_strdup_printf ("<b>%s</b>\n%s", _("Could not read the CD device."),
