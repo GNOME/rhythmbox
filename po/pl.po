@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-03 16:42+0200\n"
-"PO-Revision-Date: 2012-09-03 16:49+0200\n"
+"POT-Creation-Date: 2012-09-06 02:11+0200\n"
+"PO-Revision-Date: 2012-09-06 02:12+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -871,8 +871,10 @@ msgid "S_ubmit Album"
 msgstr "Wyślij alb_um"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:619
-msgid "Hide"
-msgstr "Ukryj"
+#: ../plugins/audiocd/rb-audiocd-source.c:657
+#: ../plugins/audiocd/rb-audiocd-source.c:695
+msgid "H_ide"
+msgstr "U_kryj"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:622
 msgid "Could not find this album on MusicBrainz."
@@ -886,11 +888,6 @@ msgstr "Można ulepszyć bazę MusicBrainz przez dodanie tego albumu."
 #: ../plugins/audiocd/rb-audiocd-source.c:694
 msgid "_Retry"
 msgstr "_Ponów"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:657
-#: ../plugins/audiocd/rb-audiocd-source.c:695
-msgid "_Hide"
-msgstr "_Ukryj"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:660
 msgid "Could not search MusicBrainz for album details."
@@ -1860,7 +1857,7 @@ msgstr "Wersja bazy danych:"
 
 #: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
 msgid "Firmware version:"
-msgstr "Wersja oprogramowania wewnętrznego:"
+msgstr "Wersja oprogramowania sprzętowego:"
 
 #: ../plugins/ipod/ipod-init.ui.h:1
 msgid "iPod detected"
@@ -2687,36 +2684,6 @@ msgstr "Według radio (taka sama głośność dla wszystkich ścieżek)"
 msgid "Album (ideal loudness for all tracks)"
 msgstr "Według albumów (najlepsza głośność dla wszystkich ścieżek)"
 
-#: ../plugins/sample-python/sample-python.plugin.in.h:1
-msgid "Python Sample Plugin"
-msgstr "Przykładowa wtyczka w języku Python"
-
-#: ../plugins/sample-python/sample-python.plugin.in.h:2
-msgid "A sample plugin in Python with no features"
-msgstr "Przykładowa wtyczka bez funkcji, napisana w języku Python"
-
-#: ../plugins/sample-python/sample-python.py:20
-msgid "Python Source"
-msgstr "Źródło języka Python"
-
-#: ../plugins/sample/rb-sample-plugin.c:82
-#: ../plugins/sample/rb-sample-plugin.c:89
-#: ../plugins/sample/sample.plugin.in.h:1
-msgid "Sample Plugin"
-msgstr "Przykładowa wtyczka"
-
-#: ../plugins/sample/sample.plugin.in.h:2
-msgid "A sample plugin in C with no features"
-msgstr "Przykładowa wtyczka bez funkcji, napisana w języku C"
-
-#: ../plugins/sample-vala/sample-vala.plugin.in.h:1
-msgid "Vala Sample Plugin"
-msgstr "Przykładowa wtyczka w języku Vala"
-
-#: ../plugins/sample-vala/sample-vala.plugin.in.h:2
-msgid "A sample plugin in Vala with no features"
-msgstr "Przykładowa wtyczka bez funkcji napisana w języku Vala"
-
 #: ../plugins/sendto/sendto.plugin.in.h:1
 msgid "Send tracks"
 msgstr "Wyślij ścieżki"
@@ -3305,6 +3272,36 @@ msgid ""
 msgstr ""
 "Baza danych została utworzona przez późniejszą wersję programu Rhythmbox. Ta "
 "wersja programu Rhythmbox nie może tej bazy odczytać."
+
+#: ../sample-plugins/sample-python/sample-python.plugin.in.h:1
+msgid "Python Sample Plugin"
+msgstr "Przykładowa wtyczka w języku Python"
+
+#: ../sample-plugins/sample-python/sample-python.plugin.in.h:2
+msgid "A sample plugin in Python with no features"
+msgstr "Przykładowa wtyczka bez funkcji, napisana w języku Python"
+
+#: ../sample-plugins/sample-python/sample-python.py:20
+msgid "Python Source"
+msgstr "Źródło języka Python"
+
+#: ../sample-plugins/sample/rb-sample-plugin.c:82
+#: ../sample-plugins/sample/rb-sample-plugin.c:89
+#: ../sample-plugins/sample/sample.plugin.in.h:1
+msgid "Sample Plugin"
+msgstr "Przykładowa wtyczka"
+
+#: ../sample-plugins/sample/sample.plugin.in.h:2
+msgid "A sample plugin in C with no features"
+msgstr "Przykładowa wtyczka bez funkcji, napisana w języku C"
+
+#: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:1
+msgid "Vala Sample Plugin"
+msgstr "Przykładowa wtyczka w języku Vala"
+
+#: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:2
+msgid "A sample plugin in Vala with no features"
+msgstr "Przykładowa wtyczka bez funkcji napisana w języku Vala"
 
 #: ../shell/rb-playlist-manager.c:180
 msgid "MPEG Version 3.0 URL"
