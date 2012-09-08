@@ -1219,6 +1219,19 @@ impl_search (RBSource *asource, RBSourceSearch *search, const char *cur_text, co
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
 
+static void
+impl_reset_filters (RBSource *asource)
+{
+	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
+	if (source->priv->search_query != NULL) {
+		rhythmdb_query_free (source->priv->search_query);
+		source->priv->search_query = NULL;
+	}
+	rb_source_toolbar_clear_search_entry (source->priv->toolbar);
+
+	rb_property_view_set_selection (source->priv->feeds, NULL);
+}
+
 static gboolean
 impl_show_popup (RBDisplayPage *page)
 {
@@ -1720,6 +1733,7 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	source_class->impl_search = impl_search;
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_get_delete_action = impl_get_delete_action;
+	source_class->impl_reset_filters = impl_reset_filters;
 
 	g_object_class_install_property (object_class,
 					 PROP_PODCAST_MANAGER,
