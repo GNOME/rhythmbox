@@ -107,6 +107,7 @@ static void impl_add_uri (RBSource *source,
 			  GDestroyNotify destroy_data);
 
 static void rb_iradio_source_do_query (RBIRadioSource *source);
+static void impl_reset_filters (RBSource *source);
 
 void rb_iradio_source_show_columns_changed_cb (GtkToggleButton *button,
 					     RBIRadioSource *source);
@@ -135,6 +136,7 @@ struct RBIRadioSourcePrivate
 
 	GtkActionGroup *action_group;
 
+	RBSourceToolbar *toolbar;
 	RBPropertyView *genres;
 	RBEntryView *stations;
 	gboolean setting_new_query;
@@ -211,6 +213,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
+	source_class->impl_reset_filters = impl_reset_filters;
 
 	g_object_class_override_property (object_class,
 					  PROP_SHOW_BROWSER,
@@ -282,7 +285,6 @@ rb_iradio_source_constructed (GObject *object)
 	GtkUIManager *ui_manager;
 	GtkWidget *grid;
 	GtkWidget *paned;
-	RBSourceToolbar *toolbar;
 	gint size;
 	GdkPixbuf *pixbuf;
 
@@ -395,14 +397,14 @@ rb_iradio_source_constructed (GObject *object)
 	gtk_paned_pack2 (GTK_PANED (paned), GTK_WIDGET (source->priv->stations), TRUE, FALSE);
 
 	/* set up toolbar */
-	toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
-	rb_source_toolbar_add_search_entry (toolbar, NULL, _("Search your internet radio stations"));
+	source->priv->toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	rb_source_toolbar_add_search_entry (source->priv->toolbar, NULL, _("Search your internet radio stations"));
 
 	grid = gtk_grid_new ();
 	gtk_grid_set_column_spacing (GTK_GRID (grid), 6);
 	gtk_grid_set_row_spacing (GTK_GRID (grid), 6);
 	gtk_widget_set_margin_top (GTK_WIDGET (grid), 6);
-	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (toolbar), 0, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (grid), GTK_WIDGET (source->priv->toolbar), 0, 0, 1, 1);
 	gtk_grid_attach (GTK_GRID (grid), paned, 0, 1, 1, 1);
 
 	gtk_container_add (GTK_CONTAINER (source), grid);
@@ -851,6 +853,20 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 	g_object_unref (station_query_model);
 
 	source->priv->setting_new_query = FALSE;
+}
+
+static void
+impl_reset_filters (RBSource *asource)
+{
+	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
+
+	if (source->priv->search_query != NULL) {
+		rhythmdb_query_free (source->priv->search_query);
+		source->priv->search_query = NULL;
+	}
+	rb_source_toolbar_clear_search_entry (source->priv->toolbar);
+
+	rb_property_view_set_selection (source->priv->genres, NULL);
 }
 
 static void

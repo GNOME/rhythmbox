@@ -880,6 +880,11 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 					    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, &is_all, -1);
 			g_signal_emit (G_OBJECT (view), rb_property_view_signals[PROPERTY_SELECTED], 0,
 				       is_all ? NULL : selected_prop);
+		} else {
+			if (gtk_tree_model_get_iter_first (model, &iter))
+				gtk_tree_selection_select_iter (selection, &iter);
+			g_signal_emit (G_OBJECT (view), rb_property_view_signals[PROPERTY_SELECTED], 0,
+				       NULL);
 		}
 	}
 
