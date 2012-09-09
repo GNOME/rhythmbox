@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-08-28 23:16+0000\n"
-"PO-Revision-Date: 2012-09-03 14:51+0100\n"
-"Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
+"POT-Creation-Date: 2012-09-08 23:30+0000\n"
+"PO-Revision-Date: 2012-09-09 19:43+0100\n"
+"Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -691,7 +691,7 @@ msgstr "%d. %b. %Y"
 #: ../lib/rb-util.c:710
 #: ../plugins/artsearch/lastfm.py:163
 #: ../plugins/artsearch/lastfm.py:164
-#: ../plugins/audiocd/rb-audiocd-source.c:605
+#: ../plugins/audiocd/rb-audiocd-source.c:550
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:589
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:593
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
@@ -699,8 +699,8 @@ msgstr "%d. %b. %Y"
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
 #: ../plugins/generic-player/rb-generic-player-source.c:1094
 #: ../plugins/ipod/rb-ipod-source.c:567
-#: ../plugins/iradio/rb-iradio-source.c:563
-#: ../plugins/iradio/rb-iradio-source.c:1055
+#: ../plugins/iradio/rb-iradio-source.c:564
+#: ../plugins/iradio/rb-iradio-source.c:1070
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78
 #: ../plugins/lyrics/lyrics.py:80
@@ -844,150 +844,91 @@ msgstr "Predvajalnik zvočnih CD-jev"
 msgid "Support for playing of audio CDs as music source"
 msgstr "Podpora za predvajanje zvočnih CD-jev kot glasbenih virov"
 
-#: ../plugins/audiocd/multiple-album.ui.h:1
-msgid "Multiple Albums Found"
-msgstr "Najdenih je več albumov"
+#: ../plugins/audiocd/rb-audiocd-info.c:58
+msgid "Could not find a GStreamer CD source plugin"
+msgstr "Vtičnika GStreamer za izvorni CD ni mogoče najti"
 
-#: ../plugins/audiocd/multiple-album.ui.h:2
-msgid "This CD could be more than one album. Please select which album it is below and press <i>Continue</i>."
-msgstr "Na tem CD-ju je lahko več kot en album. Izberite pravi album spodaj in pritisnite <i>Nadaljuj</i>."
-
-#: ../plugins/audiocd/multiple-album.ui.h:3
-msgid "_Continue"
-msgstr "_Nadaljuj"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:169
+#: ../plugins/audiocd/rb-audiocd-source.c:142
 msgid "_Extract to Library"
 msgstr "_Pretvori v knjižnico"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:170
+#: ../plugins/audiocd/rb-audiocd-source.c:143
 msgid "Copy tracks to the library"
 msgstr "Kopiranje posnetkov v knjižnico"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:172
+#: ../plugins/audiocd/rb-audiocd-source.c:145
 msgid "Reload"
 msgstr "Znova naloži"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:173
+#: ../plugins/audiocd/rb-audiocd-source.c:146
 msgid "Reload Album Information"
 msgstr "Znova naloži podatke albuma"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../plugins/audiocd/rb-audiocd-source.c:378
+#: ../plugins/audiocd/rb-audiocd-source.c:345
 msgid "Extract"
 msgstr "Pretvori"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:450
+#: ../plugins/audiocd/rb-audiocd-source.c:413
 msgid "Select tracks to be extracted"
 msgstr "Izberite posnetke za pretvarjanje"
 
-#. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:466
-msgid "S_ubmit Album"
-msgstr "P_ošlji album"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:467
-msgid "Hide"
-msgstr "Skrij"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:469
-msgid "Could not find this album on MusicBrainz."
-msgstr "Tega albuma na MusicBrainz ni mogoče najti."
-
-#: ../plugins/audiocd/rb-audiocd-source.c:470
-msgid "You can improve the MusicBrainz database by adding this album."
-msgstr "Z dodajanjem tega albuma lahko izboljšate podatkovno zbirko MusicBrainz."
-
-#: ../plugins/audiocd/rb-audiocd-source.c:611
+#: ../plugins/audiocd/rb-audiocd-source.c:556
 msgid "<Invalid unicode>"
 msgstr "<neveljaven unicode>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:654
+#: ../plugins/audiocd/rb-audiocd-source.c:618
+msgid "S_ubmit Album"
+msgstr "P_ošlji album"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:619
+#: ../plugins/audiocd/rb-audiocd-source.c:657
+#: ../plugins/audiocd/rb-audiocd-source.c:695
+msgid "H_ide"
+msgstr "Skr_ij"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:622
+msgid "Could not find this album on MusicBrainz."
+msgstr "Tega albuma na MusicBrainz ni mogoče najti."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:623
+msgid "You can improve the MusicBrainz database by adding this album."
+msgstr "Z dodajanjem tega albuma lahko izboljšate podatkovno zbirko MusicBrainz."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:656
+#: ../plugins/audiocd/rb-audiocd-source.c:694
+msgid "_Retry"
+msgstr "_Poskusi znova"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:660
+msgid "Could not search MusicBrainz for album details."
+msgstr "Na strežniku MusicBrainz ni mogoče iskati podrobnosti albuma."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:698
+msgid "Could not read the CD device."
+msgstr "Naprave CD ni mogoče prebrati."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:902
+msgid "This disc matches multiple albums. Select the correct album."
+msgstr "Disk ustreza več albumov. Izberite pravega."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:1111
 #, c-format
 msgid "Track %u"
 msgstr "Posnetek %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:715
-#: ../plugins/audiocd/rb-audiocd-source.c:723
-#: ../plugins/audiocd/rb-audiocd-source.c:1145
-msgid "Couldn't load Audio CD"
-msgstr "Zvočnega CD-ja ni mogoče naložiti"
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:406
+msgid "Not found"
+msgstr "Ni zadetkov"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:716
-msgid "Rhythmbox couldn't access the CD."
-msgstr "S programom ni mogoč dostop do CD-ja."
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:411
+msgid "Unable to connect to Musicbrainz server"
+msgstr "S strežnikom MusicBrainz se ni mogoče povezati"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:724
-msgid "Rhythmbox couldn't read the CD information."
-msgstr "S programom ni mogoče prebrati podatkov CD-ja."
-
-#: ../plugins/audiocd/rb-audiocd-source.c:995
-#: ../podcast/rb-podcast-add-dialog.c:705
-#: ../sources/rb-library-source.c:133
-#: ../widgets/rb-entry-view.c:1428
-msgid "Title"
-msgstr "Naslov"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:1002
-#: ../plugins/context/ArtistTab.py:58
-#: ../sources/rb-library-source.c:124
-#: ../widgets/rb-entry-view.c:1438
-#: ../widgets/rb-library-browser.c:135
-msgid "Artist"
-msgstr "Izvajalec"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:1146
-msgid "Rhythmbox could not get access to the CD device."
-msgstr "Dostop do CD naprave ni mogoč."
-
-#. FIXME: would be nicer to only check if "cdrom" is being probed,
-#. * but libbrasero doesn't seem to have an API for that
-#.
-#: ../plugins/audiocd/sj-metadata.c:182
-#: ../plugins/audiocd/sj-metadata.c:205
-#: ../plugins/audiocd/sj-metadata.c:216
-#, c-format
-msgid "Cannot read CD: %s"
-msgstr "CD-ja ni mogoče prebrati: %s"
-
-#: ../plugins/audiocd/sj-metadata.c:183
-msgid "Devices haven't been all probed yet"
-msgstr "Naprave še niso preučene"
-
-#: ../plugins/audiocd/sj-metadata.c:199
-#, c-format
-msgid "Device '%s' does not contain any media"
-msgstr "V napravi '%s' ni medija"
-
-#: ../plugins/audiocd/sj-metadata.c:202
-#, c-format
-msgid "Device '%s' could not be opened. Check the access permissions on the device."
-msgstr "Naprave '%s' ni mogoče odpreti. Preverite dovoljenja dostopa na napravi."
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:90
-#, c-format
-msgid "Cannot access CD"
-msgstr "Dostop do CD-ja ni mogoč"
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:109
-msgid "Unknown Title"
-msgstr "Neznan naslov"
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:113
-#: ../plugins/audiocd/sj-metadata-gvfs.c:139
-msgid "Unknown Artist"
-msgstr "Neznan izvajalec"
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:135
-#, c-format
-msgid "Track %d"
-msgstr "Posnetek %d"
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:160
-#, c-format
-msgid "Cannot access CD: %s"
-msgstr "Dostop do CD-ja ni mogoč: %s"
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:416
+msgid "Musicbrainz server error"
+msgstr "Napaka strežnika MusicBrainz"
 
 #: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:1
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:2
@@ -1475,6 +1416,13 @@ msgstr "Albumi"
 #, python-format
 msgid "Loading top albums for %s"
 msgstr "Nalaganje najboljših albumov od %s"
+
+#: ../plugins/context/ArtistTab.py:58
+#: ../sources/rb-library-source.c:124
+#: ../widgets/rb-entry-view.c:1438
+#: ../widgets/rb-library-browser.c:135
+msgid "Artist"
+msgstr "Izvajalec"
 
 #: ../plugins/context/ArtistTab.py:118
 #, python-format
@@ -2021,36 +1969,36 @@ msgstr "Medmrežni radio "
 msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "Podpora za storitve razpršenega oddajanja, prenesene preko medmrežja"
 
-#: ../plugins/iradio/rb-iradio-source.c:157
+#: ../plugins/iradio/rb-iradio-source.c:159
 msgid "New Internet _Radio Station..."
 msgstr "Nova medmrežna _radijska postaja ..."
 
-#: ../plugins/iradio/rb-iradio-source.c:158
+#: ../plugins/iradio/rb-iradio-source.c:160
 msgid "Create a new Internet Radio station"
 msgstr "Ustvarjanje nove medmrežne radijske postaje"
 
 #. Translators: this is the toolbar button label for
 #. New Internet Radio Station action.
-#: ../plugins/iradio/rb-iradio-source.c:343
+#: ../plugins/iradio/rb-iradio-source.c:344
 msgctxt "Radio"
 msgid "Add"
 msgstr "Dodaj"
 
-#: ../plugins/iradio/rb-iradio-source.c:380
+#: ../plugins/iradio/rb-iradio-source.c:381
 #: ../widgets/rb-entry-view.c:1458
 #: ../widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Zvrst"
 
-#: ../plugins/iradio/rb-iradio-source.c:400
+#: ../plugins/iradio/rb-iradio-source.c:401
 msgid "Search your internet radio stations"
 msgstr "Preišči internetne radijske postaje"
 
-#: ../plugins/iradio/rb-iradio-source.c:487
+#: ../plugins/iradio/rb-iradio-source.c:488
 msgid "Radio"
 msgstr "Radio"
 
-#: ../plugins/iradio/rb-iradio-source.c:627
+#: ../plugins/iradio/rb-iradio-source.c:628
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -2060,12 +2008,12 @@ msgstr[2] "%d postaji"
 msgstr[3] "%d postaje"
 
 #. should prevent multiple dialogs?  going to kill this nonsense anyway soon..
-#: ../plugins/iradio/rb-iradio-source.c:968
+#: ../plugins/iradio/rb-iradio-source.c:983
 #: ../plugins/iradio/rb-station-properties-dialog.c:403
 msgid "New Internet Radio Station"
 msgstr "Nova medmrežna radijska postaja"
 
-#: ../plugins/iradio/rb-iradio-source.c:968
+#: ../plugins/iradio/rb-iradio-source.c:983
 msgid "URL of internet radio station:"
 msgstr "URL medmrežne radijske postaje:"
 
@@ -2716,36 +2664,6 @@ msgstr "Radio (enaka glasnost za vse posnetke)"
 msgid "Album (ideal loudness for all tracks)"
 msgstr "Album (najustreznejša glasnost za vse posnetke)"
 
-#: ../plugins/sample-python/sample-python.plugin.in.h:1
-msgid "Python Sample Plugin"
-msgstr "Vzorčni vstavek Python"
-
-#: ../plugins/sample-python/sample-python.plugin.in.h:2
-msgid "A sample plugin in Python with no features"
-msgstr "Vzorčni vstavek v Python-u brez zmožnosti"
-
-#: ../plugins/sample-python/sample-python.py:20
-msgid "Python Source"
-msgstr "Vir Python"
-
-#: ../plugins/sample/rb-sample-plugin.c:82
-#: ../plugins/sample/rb-sample-plugin.c:89
-#: ../plugins/sample/sample.plugin.in.h:1
-msgid "Sample Plugin"
-msgstr "Vzorčni vstavek"
-
-#: ../plugins/sample/sample.plugin.in.h:2
-msgid "A sample plugin in C with no features"
-msgstr "Vzorčni vstavek v C-ju brez zmožnosti"
-
-#: ../plugins/sample-vala/sample-vala.plugin.in.h:1
-msgid "Vala Sample Plugin"
-msgstr "Vzorčni vstavek Vala"
-
-#: ../plugins/sample-vala/sample-vala.plugin.in.h:2
-msgid "A sample plugin in Vala with no features"
-msgstr "Vzorčni vstavek v Vala-ju brez zmožnosti"
-
 #: ../plugins/sendto/sendto.plugin.in.h:1
 msgid "Send tracks"
 msgstr "Pošiljanje posnetkov"
@@ -2810,6 +2728,12 @@ msgstr "Vira ni mogoče naložiti. Preveriti je treba omrežno povezavo."
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Ni mogoče iskati med podcasti. Preveriti je treba omrežno povezavo."
 
+#: ../podcast/rb-podcast-add-dialog.c:705
+#: ../sources/rb-library-source.c:133
+#: ../widgets/rb-entry-view.c:1428
+msgid "Title"
+msgstr "Naslov"
+
 #: ../podcast/rb-podcast-add-dialog.c:716
 msgid "Author"
 msgstr "Avtor"
@@ -2821,8 +2745,8 @@ msgstr "Epizode"
 
 #: ../podcast/rb-podcast-add-dialog.c:752
 #: ../podcast/rb-podcast-add-dialog.c:763
-#: ../podcast/rb-podcast-source.c:1397
-#: ../podcast/rb-podcast-source.c:1408
+#: ../podcast/rb-podcast-source.c:1410
+#: ../podcast/rb-podcast-source.c:1421
 msgid "Date"
 msgstr "Datum"
 
@@ -3009,17 +2933,17 @@ msgid "_Delete Feed And Files"
 msgstr "_Izbriši vir in datoteke"
 
 #: ../podcast/rb-podcast-source.c:616
-#: ../podcast/rb-podcast-source.c:1451
+#: ../podcast/rb-podcast-source.c:1464
 msgid "Downloaded"
 msgstr "Prejeto"
 
 #: ../podcast/rb-podcast-source.c:620
-#: ../podcast/rb-podcast-source.c:1453
+#: ../podcast/rb-podcast-source.c:1466
 msgid "Failed"
 msgstr "Spodletelo"
 
 #: ../podcast/rb-podcast-source.c:624
-#: ../podcast/rb-podcast-source.c:1452
+#: ../podcast/rb-podcast-source.c:1465
 msgid "Waiting"
 msgstr "Čakanje"
 
@@ -3052,7 +2976,7 @@ msgstr "Izbriši le _epizodo"
 msgid "_Delete Episode And File"
 msgstr "_Izbriši epizodo in datoteko"
 
-#: ../podcast/rb-podcast-source.c:1245
+#: ../podcast/rb-podcast-source.c:1258
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -3063,25 +2987,25 @@ msgstr[3] "%d epizode"
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
-#: ../podcast/rb-podcast-source.c:1349
+#: ../podcast/rb-podcast-source.c:1362
 msgctxt "Podcast"
 msgid "Add"
 msgstr "Dodaj"
 
 #. Translators: this is the toolbar button label
 #. for Update Feed action.
-#: ../podcast/rb-podcast-source.c:1355
+#: ../podcast/rb-podcast-source.c:1368
 msgid "Update"
 msgstr "Posodobi"
 
-#: ../podcast/rb-podcast-source.c:1430
-#: ../podcast/rb-podcast-source.c:1485
-#: ../podcast/rb-podcast-source.c:1533
+#: ../podcast/rb-podcast-source.c:1443
+#: ../podcast/rb-podcast-source.c:1498
+#: ../podcast/rb-podcast-source.c:1546
 msgid "Feed"
 msgstr "Vir"
 
-#: ../podcast/rb-podcast-source.c:1450
-#: ../podcast/rb-podcast-source.c:1468
+#: ../podcast/rb-podcast-source.c:1463
+#: ../podcast/rb-podcast-source.c:1481
 msgid "Status"
 msgstr "Stanje"
 
@@ -3314,6 +3238,36 @@ msgstr "Vse"
 #, c-format
 msgid "The database was created by a later version of Rhythmbox.  This version of Rhythmbox cannot read the database."
 msgstr "Podatkovna zbirka je bila ustvarjena z novejšo različico Rhythmbox. Ta različica Rhythmbox ne more brati podatkovne zbirke."
+
+#: ../sample-plugins/sample-python/sample-python.plugin.in.h:1
+msgid "Python Sample Plugin"
+msgstr "Vzorčni vstavek Python"
+
+#: ../sample-plugins/sample-python/sample-python.plugin.in.h:2
+msgid "A sample plugin in Python with no features"
+msgstr "Vzorčni vstavek v Python-u brez zmožnosti"
+
+#: ../sample-plugins/sample-python/sample-python.py:20
+msgid "Python Source"
+msgstr "Vir Python"
+
+#: ../sample-plugins/sample/rb-sample-plugin.c:82
+#: ../sample-plugins/sample/rb-sample-plugin.c:89
+#: ../sample-plugins/sample/sample.plugin.in.h:1
+msgid "Sample Plugin"
+msgstr "Vzorčni vstavek"
+
+#: ../sample-plugins/sample/sample.plugin.in.h:2
+msgid "A sample plugin in C with no features"
+msgstr "Vzorčni vstavek v C-ju brez zmožnosti"
+
+#: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:1
+msgid "Vala Sample Plugin"
+msgstr "Vzorčni vstavek Vala"
+
+#: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:2
+msgid "A sample plugin in Vala with no features"
+msgstr "Vzorčni vstavek v Vala-ju brez zmožnosti"
 
 #: ../shell/rb-playlist-manager.c:180
 msgid "MPEG Version 3.0 URL"
@@ -4898,21 +4852,3 @@ msgstr "Na namizju"
 msgid "Unknown location"
 msgstr "Neznano mesto"
 
-#~ msgid "Could not create CD lookup thread"
-#~ msgstr "Iskalne niti CD-ja ni mogoče ustvariti"
-
-#~ msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
-#~ msgstr "<span foreground=\"red\">Ni mogoče pariti s tem daljincem.</span>"
-
-#~ msgid ""
-#~ "<span size=\"x-large\" weight=\"bold\">Do you want to initialize your "
-#~ "iPod?</span>"
-#~ msgstr ""
-#~ "<span size=\"x-large\" weight=\"bold\">Ali želite nastaviti začetne "
-#~ "vrednosti iPoda?</span>"
-
-#~ msgid "New Podcast Feed"
-#~ msgstr "Nov vir podcasta"
-
-#~ msgid "URL of podcast feed:"
-#~ msgstr "URL vira podcasta:"
