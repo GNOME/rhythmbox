@@ -51,11 +51,14 @@ struct _RBFadingImagePrivate
 	gdouble alpha;
 
 	GdkPixbuf *current;
+	int current_width;
+	int current_height;
 	GdkPixbuf *current_full;
 	GdkPixbuf *next;
 	GdkPixbuf *next_full;
 	GdkPixbuf *fallback;
 	GdkPixbufLoader *loader;
+	gboolean next_set;
 
 	guint64 start;
 	guint64 end;
@@ -136,20 +139,20 @@ impl_realize (GtkWidget *widget)
 }
 
 static void
-draw_image (cairo_t *cr, GdkPixbuf *image, int width, int height, cairo_extend_t extend, double alpha)
+draw_image (cairo_t *cr, int image_width, int image_height, int width, int height, cairo_extend_t extend, double alpha, gboolean border)
 {
 	cairo_matrix_t matrix;
-	int image_width;
-	int image_height;
-
-	image_width = gdk_pixbuf_get_width (image);
-	image_height = gdk_pixbuf_get_height (image);
-
 	cairo_save (cr);
 
-	cairo_matrix_init_translate (&matrix,
-				     - (BORDER_WIDTH + (width/2 - image_width/2)),
-				     - (BORDER_WIDTH + (height/2 - image_height/2)));
+	if (border) {
+		cairo_matrix_init_translate (&matrix,
+					     - (BORDER_WIDTH + (width/2 - image_width/2)),
+					     - (BORDER_WIDTH + (height/2 - image_height/2)));
+	} else {
+		cairo_matrix_init_translate (&matrix,
+					     - (width/2 - image_width/2),
+					     - (height/2 - image_height/2));
+	}
 	cairo_pattern_set_matrix (cairo_get_source (cr), &matrix);
 	cairo_pattern_set_filter (cairo_get_source (cr), CAIRO_FILTER_BEST);
 	cairo_pattern_set_extend (cairo_get_source (cr), extend);
@@ -162,73 +165,112 @@ draw_image (cairo_t *cr, GdkPixbuf *image, int width, int height, cairo_extend_t
 	cairo_restore (cr);
 }
 
+static void
+render_current (RBFadingImage *image, cairo_t *cr, int width, int height, gboolean border)
+{
+	if (prepare_image (cr, &image->priv->current_pat, image->priv->current)) {
+		draw_image (cr,
+			    image->priv->current_width,
+			    image->priv->current_height,
+			    width,
+			    height,
+			    CAIRO_EXTEND_NONE,
+			    1.0 - image->priv->alpha,
+			    border);
+	} else if (prepare_image (cr, &image->priv->fallback_pat, image->priv->fallback)) {
+		draw_image (cr,
+			    gdk_pixbuf_get_width (image->priv->fallback),
+			    gdk_pixbuf_get_height (image->priv->fallback),
+			    width,
+			    height,
+			    CAIRO_EXTEND_PAD,
+			    1.0 - image->priv->alpha,
+			    border);
+	} else {
+		cairo_save (cr);
+		cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+		cairo_rectangle (cr,
+				 border ? BORDER_WIDTH : 0,
+				 border ? BORDER_WIDTH : 0,
+				 width,
+				 height);
+		cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+		cairo_clip (cr);
+		cairo_paint (cr);
+		cairo_restore (cr);
+	}
+}
+
+static void
+render_next (RBFadingImage *image, cairo_t *cr, int width, int height, gboolean border)
+{
+	if (image->priv->alpha < 0.001) {
+		/* do nothing */
+	} else if (prepare_image (cr, &image->priv->next_pat, image->priv->next)) {
+		draw_image (cr,
+			    gdk_pixbuf_get_width (image->priv->next),
+			    gdk_pixbuf_get_height (image->priv->next),
+			    width,
+			    height,
+			    CAIRO_EXTEND_NONE,
+			    image->priv->alpha,
+			    border);
+	} else if (prepare_image (cr, &image->priv->fallback_pat, image->priv->fallback)) {
+		draw_image (cr,
+			    gdk_pixbuf_get_width (image->priv->fallback),
+			    gdk_pixbuf_get_height (image->priv->fallback),
+			    width,
+			    height,
+			    CAIRO_EXTEND_PAD,
+			    image->priv->alpha,
+			    border);
+	} else {
+		/* also do nothing */
+	}
+}
+
 static gboolean
 impl_draw (GtkWidget *widget, cairo_t *cr)
 {
 	RBFadingImage *image;
+	int border_width;
+	int border_height;
 	int width;
 	int height;
 
-	image = RB_FADING_IMAGE (widget);
 	width = gtk_widget_get_allocated_width (widget);
 	height = gtk_widget_get_allocated_height (widget);
+	border_width = width;
+	border_height = height;
+
+	image = RB_FADING_IMAGE (widget);
+	if (image->priv->alpha > 0.01) {
+		if (image->priv->next) {
+			border_width = gdk_pixbuf_get_width (image->priv->next) + 2 * BORDER_WIDTH;
+			border_height = gdk_pixbuf_get_height (image->priv->next) + 2 * BORDER_WIDTH;
+		}
+	} else if (image->priv->current) {
+		border_width = gdk_pixbuf_get_width (image->priv->current) + 2 * BORDER_WIDTH;
+		border_height = gdk_pixbuf_get_height (image->priv->current) + 2 * BORDER_WIDTH;
+	}
 
 	cairo_save (cr);
 	cairo_set_line_width (cr, BORDER_WIDTH);
 	cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 1.0);
 	cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
-	cairo_rectangle (cr, 0, 0, width, height);
+	cairo_rectangle (cr,
+			 (width - border_width) / 2,
+			 (height - border_height) / 2,
+			 border_width,
+			 border_height);
 	cairo_stroke (cr);
 	cairo_restore (cr);
 
 	width -= 2 * BORDER_WIDTH;
 	height -= 2 * BORDER_WIDTH;
 
-	/* draw current image */
-	if (prepare_image (cr, &image->priv->current_pat, image->priv->current)) {
-		draw_image (cr,
-			    image->priv->current,
-			    width,
-			    height,
-			    CAIRO_EXTEND_NONE,
-			    1.0 - image->priv->alpha);
-	} else if (prepare_image (cr, &image->priv->fallback_pat, image->priv->fallback)) {
-		draw_image (cr,
-			    image->priv->fallback,
-			    width,
-			    height,
-			    CAIRO_EXTEND_PAD,
-			    1.0 - image->priv->alpha);
-	} else {
-		cairo_save (cr);
-		cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-		cairo_rectangle (cr, BORDER_WIDTH, BORDER_WIDTH, width, height);
-		cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
-		cairo_clip (cr);
-		cairo_paint (cr);
-		cairo_restore (cr);
-	}
-
-	/* if we're fading to a new image, draw that too */
-	if (image->priv->alpha < 0.001) {
-		/* do nothing */
-	} else if (prepare_image (cr, &image->priv->next_pat, image->priv->next)) {
-		draw_image (cr,
-			    image->priv->next,
-			    width,
-			    height,
-			    CAIRO_EXTEND_NONE,
-			    image->priv->alpha);
-	} else if (prepare_image (cr, &image->priv->fallback_pat, image->priv->fallback)) {
-		draw_image (cr,
-			    image->priv->fallback,
-			    width,
-			    height,
-			    CAIRO_EXTEND_PAD,
-			    image->priv->alpha);
-	} else {
-		/* also do nothing */
-	}
+	render_current (image, cr, width, height, TRUE);
+	render_next (image, cr, width, height, TRUE);
 
 	return TRUE;
 }
@@ -566,6 +608,7 @@ clear_next (RBFadingImage *image)
 		g_object_unref (image->priv->next_full);
 		image->priv->next_full = NULL;
 	}
+	image->priv->next_set = FALSE;
 }
 
 static void
@@ -585,11 +628,36 @@ replace_current (RBFadingImage *image, GdkPixbuf *next, GdkPixbuf *next_full)
 	}
 	if (next != NULL) {
 		image->priv->current = g_object_ref (next);
+		image->priv->current_width = gdk_pixbuf_get_width (image->priv->current);
+		image->priv->current_height = gdk_pixbuf_get_height (image->priv->current);
 	}
 	if (next_full != NULL) {
 		image->priv->current_full = g_object_ref (next_full);
 	}
+}
 
+static void
+composite_into_current (RBFadingImage *image)
+{
+	cairo_t *cr;
+	cairo_surface_t *dest;
+	int width;
+	int height;
+
+	width = gtk_widget_get_allocated_width (GTK_WIDGET (image)) - 2 * BORDER_WIDTH;
+	height = gtk_widget_get_allocated_height (GTK_WIDGET (image)) - 2 * BORDER_WIDTH;
+	dest = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
+
+	cr = cairo_create (dest);
+	render_current (image, cr, width, height, FALSE);
+	render_next (image, cr, width, height, FALSE);
+
+	if (image->priv->current_pat != NULL) {
+		cairo_pattern_destroy (image->priv->current_pat);
+	}
+	image->priv->current_pat = cairo_pattern_create_for_surface (dest);
+	image->priv->current_width = width;
+	image->priv->current_height = height;
 }
 
 /**
@@ -605,16 +673,20 @@ rb_fading_image_set_pixbuf (RBFadingImage *image, GdkPixbuf *pixbuf)
 	GdkPixbuf *scaled = NULL;
 	GdkPixbuf *full = NULL;
 
-	clear_next (image);
 	if (pixbuf != NULL) {
 		scaled = scale_thumbnail_if_necessary (image, pixbuf);
 		full = scale_full_if_necessary (image, pixbuf);
 	}
 
 	if (image->priv->render_timer_id != 0) {
+		composite_into_current (image);
+		clear_next (image);
+
 		image->priv->next_full = full;
 		image->priv->next = scaled;
+		image->priv->next_set = TRUE;
 	} else {
+		clear_next (image);
 		replace_current (image, scaled, full);
 		gtk_widget_queue_draw (GTK_WIDGET (image));
 		gtk_widget_trigger_tooltip_query (GTK_WIDGET (image));
@@ -683,6 +755,12 @@ rb_fading_image_start (RBFadingImage *image, guint64 duration)
 {
 	image->priv->start = g_get_monotonic_time ();
 	image->priv->end = image->priv->start + (duration * 1000);
+
+	if (image->priv->next_set) {
+		replace_current (image, image->priv->next, image->priv->next_full);
+		clear_next (image);
+		image->priv->next_set = TRUE;
+	}
 
 	update_render_timer (image);
 }
