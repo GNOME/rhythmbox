@@ -449,6 +449,8 @@ rb_header_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, 
 	if (header->priv->entry == entry)
 		return;
 
+	rb_fading_image_start (RB_FADING_IMAGE (header->priv->image), 2000);
+
 	header->priv->entry = entry;
 	if (header->priv->entry) {
 		RBExtDBKey *key;
@@ -471,8 +473,6 @@ rb_header_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, 
 
 	g_free (header->priv->image_path);
 	header->priv->image_path = NULL;
-
-	rb_fading_image_start (RB_FADING_IMAGE (header->priv->image), 2000);
 }
 
 static GtkSizeRequestMode
