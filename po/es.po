@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-08-22 23:05+0000\n"
-"PO-Revision-Date: 2012-08-25 12:01+0200\n"
+"POT-Creation-Date: 2012-09-05 21:47+0000\n"
+"PO-Revision-Date: 2012-09-10 18:12+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "Language: \n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Gtranslator 2.91.5\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:502
 #, c-format
@@ -44,7 +44,6 @@ msgstr "Falló al abrir el dispositivo de salida: %s"
 #: ../backends/gstreamer/rb-player-gst.c:638
 #: ../backends/gstreamer/rb-player-gst.c:680
 #, c-format
-#| msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr "Falló al crear el elemento %s; compruebe su instalación de GStreamer"
 
@@ -216,7 +215,7 @@ msgstr "_Número de reproducciones"
 msgid "C_omment"
 msgstr "C_omentario"
 
-#: ../data/ui/general-prefs.ui.h:15 ../widgets/rb-entry-view.c:1594
+#: ../data/ui/general-prefs.ui.h:15 ../widgets/rb-entry-view.c:1593
 msgid "BPM"
 msgstr "GPM"
 
@@ -633,7 +632,7 @@ msgstr "Mostrar opciones de gestión de sesión"
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
 #: ../rhythmdb/rhythmdb.c:3587 ../widgets/rb-entry-view.c:933
-#: ../widgets/rb-entry-view.c:1542 ../widgets/rb-entry-view.c:1555
+#: ../widgets/rb-entry-view.c:1541 ../widgets/rb-entry-view.c:1554
 #: ../widgets/rb-song-info.c:1462
 msgid "Never"
 msgstr "Nunca"
@@ -679,7 +678,7 @@ msgstr "%d %b %Y"
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:710
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
-#: ../plugins/audiocd/rb-audiocd-source.c:605
+#: ../plugins/audiocd/rb-audiocd-source.c:550
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:589
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:593
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
@@ -687,13 +686,13 @@ msgstr "%d %b %Y"
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
 #: ../plugins/generic-player/rb-generic-player-source.c:1094
 #: ../plugins/ipod/rb-ipod-source.c:567
-#: ../plugins/iradio/rb-iradio-source.c:563
-#: ../plugins/iradio/rb-iradio-source.c:1055
+#: ../plugins/iradio/rb-iradio-source.c:562
+#: ../plugins/iradio/rb-iradio-source.c:1054
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78 ../plugins/lyrics/lyrics.py:80
 #: ../plugins/mtpdevice/rb-mtp-source.c:654
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
-#: ../plugins/mtpdevice/rb-mtp-source.c:1512
+#: ../plugins/mtpdevice/rb-mtp-source.c:1524
 #: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:570 ../podcast/rb-podcast-manager.c:1900
@@ -708,8 +707,8 @@ msgstr "%d %b %Y"
 #: ../rhythmdb/rhythmdb-tree.c:1350 ../shell/rb-shell-player.c:1790
 #: ../shell/rb-shell-player.c:3759 ../shell/rb-shell-player.c:3761
 #: ../widgets/rb-entry-view.c:985 ../widgets/rb-entry-view.c:1007
-#: ../widgets/rb-entry-view.c:1483 ../widgets/rb-entry-view.c:1495
-#: ../widgets/rb-entry-view.c:1507 ../widgets/rb-header.c:1141
+#: ../widgets/rb-entry-view.c:1482 ../widgets/rb-entry-view.c:1494
+#: ../widgets/rb-entry-view.c:1506 ../widgets/rb-header.c:1141
 #: ../widgets/rb-header.c:1167 ../widgets/rb-song-info.c:917
 #: ../widgets/rb-song-info.c:929 ../widgets/rb-song-info.c:1150
 #: ../widgets/rb-song-info.c:1489
@@ -783,8 +782,7 @@ msgstr "Falló al crear un elemento de origen; compruebe su instalación"
 msgid ""
 "Failed to create the 'decodebin2' element; check your GStreamer installation"
 msgstr ""
-"Falló al crear el elemento «decodebin2»; compruebe su instalación de "
-"GStreamer"
+"Falló al crear el elemento «decodebin2»; compruebe su instalación de GStreamer"
 
 #: ../metadata/rb-metadata-gst.c:711
 #, c-format
@@ -828,153 +826,95 @@ msgstr "Reproductor de CD de sonido"
 msgid "Support for playing of audio CDs as music source"
 msgstr "Soporte para reproducción de audio CD como fuente de música"
 
-#: ../plugins/audiocd/multiple-album.ui.h:1
-msgid "Multiple Albums Found"
-msgstr "Se han encontrado varios álbumes"
+#: ../plugins/audiocd/rb-audiocd-info.c:58
+#| msgid "Could not find temporary space!"
+msgid "Could not find a GStreamer CD source plugin"
+msgstr "No se pudo encontrar una fuente para el complemento GStreamer CD"
 
-#: ../plugins/audiocd/multiple-album.ui.h:2
-msgid ""
-"This CD could be more than one album. Please select which album it is below "
-"and press <i>Continue</i>."
-msgstr ""
-"Este CD podría ser más de un álbum. Seleccione qué álbum es abajo y pulse "
-"<i>Continuar</i>."
-
-#: ../plugins/audiocd/multiple-album.ui.h:3
-msgid "_Continue"
-msgstr "_Continuar"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:169
+#: ../plugins/audiocd/rb-audiocd-source.c:142
 msgid "_Extract to Library"
 msgstr "_Extraer a la fonoteca"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:170
+#: ../plugins/audiocd/rb-audiocd-source.c:143
 msgid "Copy tracks to the library"
 msgstr "Copiar pistas a la biblioteca"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:172
+#: ../plugins/audiocd/rb-audiocd-source.c:145
 msgid "Reload"
 msgstr "Recargar"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:173
+#: ../plugins/audiocd/rb-audiocd-source.c:146
 msgid "Reload Album Information"
 msgstr "Recargar la información del álbum"
 
 #. Translators: this is the toolbar button label
 #. for Copy to Library action.
-#: ../plugins/audiocd/rb-audiocd-source.c:378
+#: ../plugins/audiocd/rb-audiocd-source.c:345
 msgid "Extract"
 msgstr "Extraer"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:450
+#: ../plugins/audiocd/rb-audiocd-source.c:413
 msgid "Select tracks to be extracted"
 msgstr "Seleccionar las pistas que extraer"
 
-#. Info bar for non-Musicbrainz data
-#: ../plugins/audiocd/rb-audiocd-source.c:466
-msgid "S_ubmit Album"
-msgstr "_Enviar á_lbum"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:467
-msgid "Hide"
-msgstr "Ocultar"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:469
-msgid "Could not find this album on MusicBrainz."
-msgstr "No se pudo obtener información acerca de este álbum en MusicBrainz."
-
-#: ../plugins/audiocd/rb-audiocd-source.c:470
-msgid "You can improve the MusicBrainz database by adding this album."
-msgstr "Puede mejorar la base de datos de MusicBrainz añadiendo este álbum."
-
-#: ../plugins/audiocd/rb-audiocd-source.c:611
+#: ../plugins/audiocd/rb-audiocd-source.c:556
 msgid "<Invalid unicode>"
 msgstr "<Unicode no válido>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:654
+#: ../plugins/audiocd/rb-audiocd-source.c:618
+msgid "S_ubmit Album"
+msgstr "_Enviar á_lbum"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:619
+#: ../plugins/audiocd/rb-audiocd-source.c:657
+#: ../plugins/audiocd/rb-audiocd-source.c:695
+msgid "H_ide"
+msgstr "_Ocultar"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:622
+msgid "Could not find this album on MusicBrainz."
+msgstr "No se pudo obtener información acerca de este álbum en MusicBrainz."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:623
+msgid "You can improve the MusicBrainz database by adding this album."
+msgstr "Puede mejorar la base de datos de MusicBrainz añadiendo este álbum."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:656
+#: ../plugins/audiocd/rb-audiocd-source.c:694
+msgid "_Retry"
+msgstr "_Reintentar"
+
+#: ../plugins/audiocd/rb-audiocd-source.c:660
+msgid "Could not search MusicBrainz for album details."
+msgstr "No se pudieron buscar los detalles del álbum en Musicbrainz."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:698
+#| msgid "Could not add service"
+msgid "Could not read the CD device."
+msgstr "No se pudo leer el dispositivo del CD."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:902
+msgid "This disc matches multiple albums. Select the correct album."
+msgstr "Este disco coincide con varios álbumes. Seleccione el álbum correcto."
+
+#: ../plugins/audiocd/rb-audiocd-source.c:1111
 #, c-format
 msgid "Track %u"
 msgstr "Pista %u"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:715
-#: ../plugins/audiocd/rb-audiocd-source.c:723
-#: ../plugins/audiocd/rb-audiocd-source.c:1145
-msgid "Couldn't load Audio CD"
-msgstr "No se pudo cargar un CD de sonido"
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:406
+#| msgid "No lyrics found"
+msgid "Not found"
+msgstr "No se encontró"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:716
-msgid "Rhythmbox couldn't access the CD."
-msgstr "Rhythmbox no pudo acceder al CD."
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:411
+#| msgid "Unable to change station property"
+msgid "Unable to connect to Musicbrainz server"
+msgstr "No se pudo conectar al servidor Musicbrainz"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:724
-msgid "Rhythmbox couldn't read the CD information."
-msgstr "Rhythmbox pudo leer la información del CD."
-
-#: ../plugins/audiocd/rb-audiocd-source.c:995
-#: ../podcast/rb-podcast-add-dialog.c:705 ../sources/rb-library-source.c:133
-#: ../widgets/rb-entry-view.c:1429
-msgid "Title"
-msgstr "Título"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:1002
-#: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:124
-#: ../widgets/rb-entry-view.c:1439 ../widgets/rb-library-browser.c:135
-msgid "Artist"
-msgstr "Artista"
-
-#: ../plugins/audiocd/rb-audiocd-source.c:1146
-msgid "Rhythmbox could not get access to the CD device."
-msgstr "Rhythmbox no pudo obtener acceso al dispositivo CD."
-
-#. FIXME: would be nicer to only check if "cdrom" is being probed,
-#. * but libbrasero doesn't seem to have an API for that
-#.
-#: ../plugins/audiocd/sj-metadata.c:182 ../plugins/audiocd/sj-metadata.c:205
-#: ../plugins/audiocd/sj-metadata.c:216
-#, c-format
-msgid "Cannot read CD: %s"
-msgstr "No se pudo leer el CD: %s"
-
-#: ../plugins/audiocd/sj-metadata.c:183
-msgid "Devices haven't been all probed yet"
-msgstr "Los dispositivos no se han probado todavía"
-
-#: ../plugins/audiocd/sj-metadata.c:199
-#, c-format
-msgid "Device '%s' does not contain any media"
-msgstr "El dispositivo «%s» no contiene ningún soporte"
-
-#: ../plugins/audiocd/sj-metadata.c:202
-#, c-format
-msgid ""
-"Device '%s' could not be opened. Check the access permissions on the device."
-msgstr ""
-"El dispositivo «%s» no se pudo abrir. Compruebe los permisos de acceso en el "
-"dispositivo."
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:90
-#, c-format
-msgid "Cannot access CD"
-msgstr "No se puede acceder al CD"
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:109
-msgid "Unknown Title"
-msgstr "Título desconocido"
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:113
-#: ../plugins/audiocd/sj-metadata-gvfs.c:139
-msgid "Unknown Artist"
-msgstr "Artista desconocido"
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:135
-#, c-format
-msgid "Track %d"
-msgstr "Pista %d"
-
-#: ../plugins/audiocd/sj-metadata-gvfs.c:160
-#, c-format
-msgid "Cannot access CD: %s"
-msgstr "No se puede acceder al CD: %s"
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:416
+msgid "Musicbrainz server error"
+msgstr "Error del servidor Musicbrainz"
 
 #: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:1
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:2
@@ -1466,6 +1406,11 @@ msgstr "Álbumes"
 msgid "Loading top albums for %s"
 msgstr "Cargando mejores álbumes de %s"
 
+#: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:124
+#: ../widgets/rb-entry-view.c:1438 ../widgets/rb-library-browser.c:135
+msgid "Artist"
+msgstr "Artista"
+
 #: ../plugins/context/ArtistTab.py:118
 #, python-format
 msgid "Loading biography for %s"
@@ -1818,7 +1763,7 @@ msgstr "Mostrar las propiedades del dispositivo"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1383
 #: ../plugins/ipod/rb-ipod-source.c:2006
-#: ../plugins/mtpdevice/rb-mtp-source.c:1606
+#: ../plugins/mtpdevice/rb-mtp-source.c:1618
 msgid "Advanced"
 msgstr "Avanzado"
 
@@ -2027,25 +1972,25 @@ msgstr "Crear una emisora de radio de Internet nueva"
 
 #. Translators: this is the toolbar button label for
 #. New Internet Radio Station action.
-#: ../plugins/iradio/rb-iradio-source.c:343
+#: ../plugins/iradio/rb-iradio-source.c:342
 msgctxt "Radio"
 msgid "Add"
 msgstr "Añadir"
 
-#: ../plugins/iradio/rb-iradio-source.c:380 ../widgets/rb-entry-view.c:1459
+#: ../plugins/iradio/rb-iradio-source.c:379 ../widgets/rb-entry-view.c:1458
 #: ../widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Género"
 
-#: ../plugins/iradio/rb-iradio-source.c:400
+#: ../plugins/iradio/rb-iradio-source.c:399
 msgid "Search your internet radio stations"
 msgstr "Buscar emisoras de radio de Internet"
 
-#: ../plugins/iradio/rb-iradio-source.c:487
+#: ../plugins/iradio/rb-iradio-source.c:486
 msgid "Radio"
 msgstr "Radio"
 
-#: ../plugins/iradio/rb-iradio-source.c:627
+#: ../plugins/iradio/rb-iradio-source.c:626
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -2053,12 +1998,12 @@ msgstr[0] "%d emisora"
 msgstr[1] "%d emisoras"
 
 #. should prevent multiple dialogs?  going to kill this nonsense anyway soon..
-#: ../plugins/iradio/rb-iradio-source.c:968
+#: ../plugins/iradio/rb-iradio-source.c:967
 #: ../plugins/iradio/rb-station-properties-dialog.c:403
 msgid "New Internet Radio Station"
 msgstr "Emisora de radio de Internet nueva"
 
-#: ../plugins/iradio/rb-iradio-source.c:968
+#: ../plugins/iradio/rb-iradio-source.c:967
 msgid "URL of internet radio station:"
 msgstr "URL de la emisora de radio de Internet:"
 
@@ -2470,7 +2415,7 @@ msgstr ""
 "El servidor de Magnatune devolvió:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:429 ../widgets/rb-entry-view.c:1603
+#: ../plugins/magnatune/MagnatuneSource.py:429 ../widgets/rb-entry-view.c:1602
 msgid "Error"
 msgstr "Error"
 
@@ -2741,36 +2686,6 @@ msgstr "Radio (volumen igual para todas las pistas)"
 msgid "Album (ideal loudness for all tracks)"
 msgstr "Álbum (volumen ideal para todas las pistas)"
 
-#: ../plugins/sample-python/sample-python.plugin.in.h:1
-msgid "Python Sample Plugin"
-msgstr "Complemento de ejemplo de Python"
-
-#: ../plugins/sample-python/sample-python.plugin.in.h:2
-msgid "A sample plugin in Python with no features"
-msgstr "Un complemento de ejemplo en Python sin características"
-
-#: ../plugins/sample-python/sample-python.py:20
-msgid "Python Source"
-msgstr "Fuente Python"
-
-#: ../plugins/sample/rb-sample-plugin.c:82
-#: ../plugins/sample/rb-sample-plugin.c:89
-#: ../plugins/sample/sample.plugin.in.h:1
-msgid "Sample Plugin"
-msgstr "Complemento de ejemplo"
-
-#: ../plugins/sample/sample.plugin.in.h:2
-msgid "A sample plugin in C with no features"
-msgstr "Un complemento de ejemplo en C sin características"
-
-#: ../plugins/sample-vala/sample-vala.plugin.in.h:1
-msgid "Vala Sample Plugin"
-msgstr "Complemento de ejemplo de Vala"
-
-#: ../plugins/sample-vala/sample-vala.plugin.in.h:2
-msgid "A sample plugin in Vala with no features"
-msgstr "Un complemento de ejemplo en Vala sin características"
-
 #: ../plugins/sendto/sendto.plugin.in.h:1
 msgid "Send tracks"
 msgstr "Enviar pistas"
@@ -2834,6 +2749,11 @@ msgstr "No se pudo cargar el proveedor. Compruebe su conexión de red."
 #: ../podcast/rb-podcast-add-dialog.c:394
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "No se pudieron buscar podcasts. Compruebe su conexión de red."
+
+#: ../podcast/rb-podcast-add-dialog.c:705 ../sources/rb-library-source.c:133
+#: ../widgets/rb-entry-view.c:1428
+msgid "Title"
+msgstr "Título"
 
 #: ../podcast/rb-podcast-add-dialog.c:716
 msgid "Author"
@@ -2918,8 +2838,8 @@ msgid ""
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
 msgstr ""
-"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el "
-"URL, o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
+"El URL «%s» no parece ser un proveedor Podcast. Quizá esté equivocado el URL, "
+"o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
 "todas formas?"
 
 #: ../podcast/rb-podcast-manager.c:1245
@@ -3347,6 +3267,36 @@ msgid ""
 msgstr ""
 "Una versión posterior de Rhythmbox creó la base de datos. Esta versión de "
 "Rhythmbox no puede leer la base de datos."
+
+#: ../sample-plugins/sample-python/sample-python.plugin.in.h:1
+msgid "Python Sample Plugin"
+msgstr "Complemento de ejemplo de Python"
+
+#: ../sample-plugins/sample-python/sample-python.plugin.in.h:2
+msgid "A sample plugin in Python with no features"
+msgstr "Un complemento de ejemplo en Python sin características"
+
+#: ../sample-plugins/sample-python/sample-python.py:20
+msgid "Python Source"
+msgstr "Fuente Python"
+
+#: ../sample-plugins/sample/rb-sample-plugin.c:82
+#: ../sample-plugins/sample/rb-sample-plugin.c:89
+#: ../sample-plugins/sample/sample.plugin.in.h:1
+msgid "Sample Plugin"
+msgstr "Complemento de ejemplo"
+
+#: ../sample-plugins/sample/sample.plugin.in.h:2
+msgid "A sample plugin in C with no features"
+msgstr "Un complemento de ejemplo en C sin características"
+
+#: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:1
+msgid "Vala Sample Plugin"
+msgstr "Complemento de ejemplo de Vala"
+
+#: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:2
+msgid "A sample plugin in Vala with no features"
+msgstr "Un complemento de ejemplo en Vala sin características"
 
 #: ../shell/rb-playlist-manager.c:180
 msgid "MPEG Version 3.0 URL"
@@ -4261,7 +4211,7 @@ msgstr "Artista/Álbum"
 msgid "Artist - Album"
 msgstr "Artista - Álbum"
 
-#: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1449
+#: ../sources/rb-library-source.c:123 ../widgets/rb-entry-view.c:1448
 #: ../widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Álbum"
@@ -4475,64 +4425,64 @@ msgstr "Los botones mostrados en el diálogo de alerta"
 msgid "Show more _details"
 msgstr "Mostrar más _detalles"
 
-#: ../widgets/rb-entry-view.c:1005 ../widgets/rb-entry-view.c:1508
+#: ../widgets/rb-entry-view.c:1005 ../widgets/rb-entry-view.c:1507
 #: ../widgets/rb-song-info.c:1148
 msgid "Lossless"
 msgstr "Sin pérdida"
 
-#: ../widgets/rb-entry-view.c:1418
+#: ../widgets/rb-entry-view.c:1417
 msgid "Track"
 msgstr "Pista"
 
-#: ../widgets/rb-entry-view.c:1469
+#: ../widgets/rb-entry-view.c:1468
 msgid "Comment"
 msgstr "Comentario"
 
-#: ../widgets/rb-entry-view.c:1479
+#: ../widgets/rb-entry-view.c:1478
 msgid "Time"
 msgstr "Duración"
 
-#: ../widgets/rb-entry-view.c:1491
+#: ../widgets/rb-entry-view.c:1490
 msgid "Year"
 msgstr "Año"
 
-#: ../widgets/rb-entry-view.c:1503
+#: ../widgets/rb-entry-view.c:1502
 msgid "Quality"
 msgstr "Calidad"
 
-#: ../widgets/rb-entry-view.c:1506
+#: ../widgets/rb-entry-view.c:1505
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1517
+#: ../widgets/rb-entry-view.c:1516
 msgid "Rating"
 msgstr "Evaluación"
 
-#: ../widgets/rb-entry-view.c:1539
+#: ../widgets/rb-entry-view.c:1538
 msgid "Play Count"
 msgstr "Número de reproducciones"
 
-#: ../widgets/rb-entry-view.c:1551
+#: ../widgets/rb-entry-view.c:1550
 msgid "Last Played"
 msgstr "Última reproducción"
 
-#: ../widgets/rb-entry-view.c:1563
+#: ../widgets/rb-entry-view.c:1562
 msgid "Date Added"
 msgstr "Fecha de adición"
 
-#: ../widgets/rb-entry-view.c:1574
+#: ../widgets/rb-entry-view.c:1573
 msgid "Last Seen"
 msgstr "Última visita"
 
-#: ../widgets/rb-entry-view.c:1585
+#: ../widgets/rb-entry-view.c:1584
 msgid "Location"
 msgstr "Situación"
 
-#: ../widgets/rb-entry-view.c:1854
+#: ../widgets/rb-entry-view.c:1853
 msgid "Now Playing"
 msgstr "Reproduciendo"
 
-#: ../widgets/rb-entry-view.c:1910
+#: ../widgets/rb-entry-view.c:1909
 msgid "Playback Error"
 msgstr "Error de reproducción"
 
@@ -4926,6 +4876,65 @@ msgstr "En el escritorio"
 #: ../widgets/rb-song-info.c:1256
 msgid "Unknown location"
 msgstr "Dirección desconocida"
+
+#~ msgid "Multiple Albums Found"
+#~ msgstr "Se han encontrado varios álbumes"
+
+#~ msgid ""
+#~ "This CD could be more than one album. Please select which album it is "
+#~ "below and press <i>Continue</i>."
+#~ msgstr ""
+#~ "Este CD podría ser más de un álbum. Seleccione qué álbum es abajo y pulse "
+#~ "<i>Continuar</i>."
+
+#~ msgid "_Continue"
+#~ msgstr "_Continuar"
+
+#~ msgid "Hide"
+#~ msgstr "Ocultar"
+
+#~ msgid "Couldn't load Audio CD"
+#~ msgstr "No se pudo cargar un CD de sonido"
+
+#~ msgid "Rhythmbox couldn't access the CD."
+#~ msgstr "Rhythmbox no pudo acceder al CD."
+
+#~ msgid "Rhythmbox couldn't read the CD information."
+#~ msgstr "Rhythmbox pudo leer la información del CD."
+
+#~ msgid "Rhythmbox could not get access to the CD device."
+#~ msgstr "Rhythmbox no pudo obtener acceso al dispositivo CD."
+
+#~ msgid "Cannot read CD: %s"
+#~ msgstr "No se pudo leer el CD: %s"
+
+#~ msgid "Devices haven't been all probed yet"
+#~ msgstr "Los dispositivos no se han probado todavía"
+
+#~ msgid "Device '%s' does not contain any media"
+#~ msgstr "El dispositivo «%s» no contiene ningún soporte"
+
+#~ msgid ""
+#~ "Device '%s' could not be opened. Check the access permissions on the "
+#~ "device."
+#~ msgstr ""
+#~ "El dispositivo «%s» no se pudo abrir. Compruebe los permisos de acceso en "
+#~ "el dispositivo."
+
+#~ msgid "Cannot access CD"
+#~ msgstr "No se puede acceder al CD"
+
+#~ msgid "Unknown Title"
+#~ msgstr "Título desconocido"
+
+#~ msgid "Unknown Artist"
+#~ msgstr "Artista desconocido"
+
+#~ msgid "Track %d"
+#~ msgstr "Pista %d"
+
+#~ msgid "Cannot access CD: %s"
+#~ msgstr "No se puede acceder al CD: %s"
 
 #~ msgid "Could not create CD lookup thread"
 #~ msgstr "No se pudo crear un hilo de búsqueda de CD"
@@ -5798,9 +5807,6 @@ msgstr "Dirección desconocida"
 #~ msgid "Playlist too long"
 #~ msgstr "Lista de reproducción demasiado grande"
 
-#~ msgid "Could not find temporary space!"
-#~ msgstr "No se pudo encontrar espacio temporal."
-
 #~ msgid ""
 #~ "Could not find enough temporary space to convert audio tracks.  %s MB "
 #~ "required."
@@ -5960,9 +5966,6 @@ msgstr "Dirección desconocida"
 
 #~ msgid "Could not create AvahiEntryGroup for publishing"
 #~ msgstr "No se pudo crear AvahiEntryGroup para publicar"
-
-#~ msgid "Could not add service"
-#~ msgstr "No se ha podido añadir el servicio"
 
 #~ msgid "Could not commit service"
 #~ msgstr "No se ha podido efectuar el servicio"
