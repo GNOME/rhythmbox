@@ -1133,7 +1133,7 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 	if (stream->src_blocked) {
 		GstStateChangeReturn state_ret;
 
-		g_mutex_lock (stream->lock);
+		g_mutex_lock (&stream->lock);
 
 		rb_debug ("stream %s is unblocked -> FADING_IN | PLAYING", stream->uri);
 		stream->src_blocked = FALSE;
@@ -1142,7 +1142,7 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 		else
 			stream->state = PLAYING;
 		
-		g_mutex_unlock (stream->lock);
+		g_mutex_unlock (&stream->lock);
 
 		adjust_stream_base_time (stream);
 
@@ -2101,6 +2101,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	GstCaps *caps;
 	GArray *stream_filters = NULL;
 	GstElement *tail;
+	gint i;
 
 	rb_debug ("creating new stream for %s (stream data %p)", uri, stream_data);
 	stream = g_object_new (RB_TYPE_XFADE_STREAM, NULL, NULL);
