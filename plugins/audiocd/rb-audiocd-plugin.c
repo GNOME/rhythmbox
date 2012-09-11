@@ -127,14 +127,8 @@ rb_audiocd_plugin_playing_uri_changed_cb (RBShellPlayer   *player,
 static void
 set_source_properties (GstElement *source, const char *uri, gboolean playback_mode)
 {
-	char *device = NULL;
-	gulong track;
-
-	if (parse_cdda_uri (uri, &device, &track) == FALSE)
-		return;
-
-	g_object_set (source, "device", device, "track", track, NULL);
-	g_free (device);
+	g_return_if_fail (GST_IS_URI_HANDLER (source));
+	gst_uri_handler_set_uri (GST_URI_HANDLER (source), uri, NULL);
 
 	if (playback_mode) {
 		/* disable paranoia (if using cdparanoiasrc) and set read speed to 1 */

@@ -602,7 +602,6 @@ submit_info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSo
 		}
 		g_free (submit_url);
 	}
-#endif
 
 
 	clear_info_bar (source);
