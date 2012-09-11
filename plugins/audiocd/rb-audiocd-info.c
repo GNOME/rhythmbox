@@ -27,9 +27,11 @@
 
 #include "config.h"
 
+#include <stdio.h>
 #include <glib/gi18n.h>
 #include <gst/gst.h>
-#include <gst/cdda/gstcddabasesrc.h>
+#include <gst/audio/gstaudiocdsrc.h>
+#include <gst/tag/tag.h>
 #include <gio/gio.h>
 
 #include "rb-audiocd-info.h"
@@ -40,14 +42,11 @@ read_gst_disc_info (RBAudioCDInfo *info, GError **error)
 	GstElement *source;
 	GstElement *sink;
 	GstElement *pipeline;
-	GstFormat format;
-	GstFormat out_format;
 	GstBus *bus;
-	gint64 num_tracks;
 	gboolean done;
-	int i;
+	GstToc *toc = NULL;
 
-	source = gst_element_make_from_uri (GST_URI_SRC, "cdda://", NULL);
+	source = gst_element_make_from_uri (GST_URI_SRC, "cdda://", NULL, NULL);
 	if (source == NULL) {
 		/* if cdparanoiasrc wasn't in base and installed by default
 		 * everywhere, plugin install might be worth trying here.
@@ -109,6 +108,11 @@ read_gst_disc_info (RBAudioCDInfo *info, GError **error)
 			gst_message_parse_error (msg, error, NULL);
 			done = TRUE;
 			break;
+		case GST_MESSAGE_TOC:
+			GST_ERROR ("YAY, we have a TOC message !");
+			gst_message_parse_toc(msg, &toc, NULL);
+			done = TRUE;
+			break;
 		default:
 			break;
 		}
@@ -116,23 +120,26 @@ read_gst_disc_info (RBAudioCDInfo *info, GError **error)
 		gst_message_unref (msg);
 	}
 
-	if (*error == NULL) {
-		format = gst_format_get_by_nick ("track");
-		out_format = format;
-		gst_element_query_duration (source, &out_format, &num_tracks);
-		info->num_tracks = num_tracks;
+	if (toc != NULL) {
+		gint i;
+		GList *tmp, *entries = gst_toc_get_entries (toc);
 
-		info->tracks = g_new0 (RBAudioCDTrack, num_tracks);
-		for (i = 0; i < num_tracks; i++) {
+		info->num_tracks = g_list_length (entries);
+		info->tracks = g_new0 (RBAudioCDTrack, info->num_tracks);
+		for (i = 0, tmp = entries; tmp; tmp = tmp->next, i++) {
 			RBAudioCDTrack *track = &info->tracks[i];
-			GstCddaBaseSrcTrack *gst_track = &GST_CDDA_BASE_SRC (source)->tracks[i];
+			GstTocEntry *entry = (GstTocEntry*) tmp->data;
 			guint64 duration = 0;
+			gint64 start, stop;
 
-			track->is_audio = gst_track->is_audio;
-			track->track_num = gst_track->num;
+			/* FIXME : GstToc can't give us this kind of info */
+			track->is_audio = TRUE;
+			/* FIXME : Might not be 100% the same thing as the entry order */
+			track->track_num = i + 1;
 
-			gst_tag_list_get_uint64 (gst_track->tags, GST_TAG_DURATION, &duration);
-			track->duration = (duration / GST_MSECOND);
+			if (gst_toc_entry_get_start_stop_times (entry, &start, &stop))
+				duration = stop - start;
+			track->duration = duration / GST_MSECOND;
 		}
 	}
 
@@ -195,6 +202,9 @@ read_gvfs_disc_info (RBAudioCDInfo *info)
 			if (track_num < 1 || track_num > info->num_tracks) {
 				continue;
 			}
+			GST_ERROR ("track_num:%d info->tracks[track_num-1].track_num:%d",
+				   track_num,
+				   info->tracks[track_num-1].track_num);
 			g_assert (track_num == info->tracks[track_num-1].track_num);
 
 			attr = g_file_info_get_attribute_string (fileinfo, "xattr::org.gnome.audio.title");
