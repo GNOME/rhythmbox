@@ -220,7 +220,7 @@ rb_missing_plugins_install (const char **details, gboolean ignore_blacklist, GCl
 #endif
 	}
 
-	status = gst_install_plugins_async (ctx->details, install_ctx,
+	status = gst_install_plugins_async ((const gchar* const*) ctx->details, install_ctx,
 	                                    on_plugin_installation_done,
 	                                    ctx);
 
