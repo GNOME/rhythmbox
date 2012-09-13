@@ -3341,6 +3341,9 @@ rb_shell_guess_source_for_uri (RBShell *shell,
 		RBSource *source;
 
 		source = (RBSource *)t->data;
+		if (rb_source_uri_is_source (source, uri))
+			return source;
+
 		s = rb_source_want_uri (source, uri);
 		if (s > strength) {
 			gchar *name;
