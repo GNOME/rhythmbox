@@ -188,6 +188,8 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_paste = impl_paste;
+	source_class->impl_want_uri = rb_device_source_want_uri;
+	source_class->impl_uri_is_source = rb_device_source_uri_is_source;
 
 	mps_class->impl_get_entries = impl_get_entries;
 	mps_class->impl_get_capacity = impl_get_capacity;

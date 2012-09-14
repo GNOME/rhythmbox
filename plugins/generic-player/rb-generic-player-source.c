@@ -172,6 +172,8 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_paste = impl_can_paste;
 	source_class->impl_paste = impl_paste;
+	source_class->impl_want_uri = rb_device_source_want_uri;
+	source_class->impl_uri_is_source = rb_device_source_uri_is_source;
 
 	mps_class->impl_get_entries = impl_get_entries;
 	mps_class->impl_get_capacity = impl_get_capacity;
