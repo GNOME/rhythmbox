@@ -821,7 +821,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 								     "encoding target",
 								     "GstEncodingTarget",
 								     GST_TYPE_ENCODING_TARGET,
-								     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+								     G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 	/**
 	 * RBTrackTransferBatch:source:
 	 *

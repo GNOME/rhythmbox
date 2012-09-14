@@ -393,13 +393,11 @@ rb_transfer_target_transfer (RBTransferTarget *target, GList *entries, gboolean 
 	GList *l;
 	RhythmDBEntryType *our_entry_type;
 	RBTrackTransferBatch *batch;
-	GstEncodingTarget *encoding_target;
 	gboolean start_batch = FALSE;
 
 	g_object_get (target,
 		      "shell", &shell,
 		      "entry-type", &our_entry_type,
-		      "encoding-target", &encoding_target,
 		      NULL);
 	g_object_get (shell, "track-transfer-queue", &xferq, NULL);
 	g_object_unref (shell);
@@ -407,14 +405,13 @@ rb_transfer_target_transfer (RBTransferTarget *target, GList *entries, gboolean 
 	batch = g_object_steal_data (G_OBJECT (target), "transfer-target-batch");
 
 	if (batch == NULL) {
-		batch = rb_track_transfer_batch_new (encoding_target, NULL, G_OBJECT (target));
+		batch = rb_track_transfer_batch_new (NULL, NULL, G_OBJECT (target));
 
 		g_signal_connect_object (batch, "get-dest-uri", G_CALLBACK (get_dest_uri_cb), target, 0);
 		g_signal_connect_object (batch, "track-done", G_CALLBACK (track_done_cb), target, 0);
 	} else {
 		start_batch = TRUE;
 	}
-	gst_encoding_target_unref (encoding_target);
 
 	for (l = entries; l != NULL; l = l->next) {
 		RhythmDBEntry *entry;
@@ -443,6 +440,11 @@ rb_transfer_target_transfer (RBTransferTarget *target, GList *entries, gboolean 
 		if (defer) {
 			g_object_set_data_full (G_OBJECT (target), "transfer-target-batch", g_object_ref (batch), g_object_unref);
 		} else {
+			GstEncodingTarget *encoding_target;
+			g_object_get (target, "encoding-target", &encoding_target, NULL);
+			g_object_set (batch, "encoding-target", encoding_target, NULL);
+			gst_encoding_target_unref (encoding_target);
+
 			rb_track_transfer_queue_start_batch (xferq, batch);
 		}
 	} else {
