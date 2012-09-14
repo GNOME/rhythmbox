@@ -232,8 +232,8 @@ rb_device_source_eject (RBDeviceSource *source)
  *
  * Return value: URI match strength
  */
-int
-rb_device_source_want_uri (RBDeviceSource *source, const char *uri)
+guint
+rb_device_source_want_uri (RBSource *source, const char *uri)
 {
 	GMount *mount = NULL;
 	GVolume *volume = NULL;
@@ -244,16 +244,11 @@ rb_device_source_want_uri (RBDeviceSource *source, const char *uri)
 
 	retval = 0;
 
-	/* ignore anything that isn't a local file */
 	file = g_file_new_for_uri (uri);
-	if (g_file_has_uri_scheme (file, "file") == FALSE) {
-		g_object_unref (file);
-		return 0;
-	}
 
 	/* Deal with the mount root being passed, eg. file:///media/IPODNAME */
 	if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "mount")) {
-		g_object_get (source, "mount", &volume, NULL);
+		g_object_get (source, "mount", &mount, NULL);
 	}
 	if (mount != NULL) {
 		GFile *root;
@@ -274,7 +269,8 @@ rb_device_source_want_uri (RBDeviceSource *source, const char *uri)
 		}
 	}
 
-	if (volume == NULL) {
+	/* ignore anything that isn't a local file or doesn't have a volume */
+	if (g_file_has_uri_scheme (file, "file") == FALSE || volume == NULL) {
 		g_object_unref (file);
 		return 0;
 	}
@@ -316,7 +312,7 @@ rb_device_source_want_uri (RBDeviceSource *source, const char *uri)
  * Return value: %TRUE if @uri matches @source
  */
 gboolean
-rb_device_source_uri_is_source (RBDeviceSource *source, const char *uri)
+rb_device_source_uri_is_source (RBSource *source, const char *uri)
 {
 	return (rb_device_source_want_uri (source, uri) == 100);
 }

@@ -30,6 +30,8 @@
 
 #include <glib-object.h>
 
+#include "rb-source.h"
+
 G_BEGIN_DECLS
 
 #define RB_TYPE_DEVICE_SOURCE         (rb_device_source_get_type ())
@@ -53,8 +55,8 @@ GType		rb_device_source_get_type	(void);
 gboolean	rb_device_source_can_eject	(RBDeviceSource *source);
 void		rb_device_source_eject		(RBDeviceSource *source);
 
-int		rb_device_source_want_uri	(RBDeviceSource *source, const char *uri);
-gboolean	rb_device_source_uri_is_source	(RBDeviceSource *source, const char *uri);
+guint		rb_device_source_want_uri	(RBSource *source, const char *uri);
+gboolean	rb_device_source_uri_is_source	(RBSource *source, const char *uri);
 
 void		rb_device_source_set_display_details (RBDeviceSource *source);
 
