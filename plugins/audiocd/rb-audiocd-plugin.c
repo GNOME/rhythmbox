@@ -90,6 +90,31 @@ rb_audiocd_plugin_init (RBAudioCdPlugin *plugin)
 	rb_debug ("RBAudioCdPlugin initialising");
 }
 
+static gboolean
+parse_cdda_uri (const char *uri, char **device, gulong *track)
+{
+	const char *fragment;
+	const char *device_name;
+
+	if (g_str_has_prefix (uri, "cdda://") == FALSE)
+		return FALSE;
+
+	fragment = g_utf8_strrchr (uri, -1, '#');
+	if (fragment == NULL)
+		return FALSE;
+
+	if (track != NULL) {
+		*track = strtoul (fragment + 1, NULL, 0);
+	}
+
+	if (device != NULL) {
+		device_name = uri + strlen("cdda://");
+		*device = g_malloc0 ((fragment - device_name) + 1);
+		memcpy (*device, device_name, (fragment - device_name));
+	}
+	return TRUE;
+}
+
 static void
 rb_audiocd_plugin_playing_uri_changed_cb (RBShellPlayer   *player,
 					  const char      *uri,
@@ -102,38 +127,33 @@ rb_audiocd_plugin_playing_uri_changed_cb (RBShellPlayer   *player,
 static void
 set_source_properties (GstElement *source, const char *uri, gboolean playback_mode)
 {
-	const char *device;
+	char *device = NULL;
+	gulong track;
 
-	if (g_str_has_prefix (uri, "cdda://") == FALSE)
+	if (parse_cdda_uri (uri, &device, &track) == FALSE)
 		return;
 
-	device = g_utf8_strrchr (uri, -1, '#');
-	if (device != NULL) {
-		int track;
+	g_object_set (source, "device", device, "track", track, NULL);
+	g_free (device);
 
-		device++;	/* skip the # */
-		track = strtoul (uri + 7, NULL, 0);
-		g_object_set (source, "device", device, "track", track, NULL);
+	if (playback_mode) {
+		/* disable paranoia (if using cdparanoiasrc) and set read speed to 1 */
+		if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "paranoia-mode"))
+			g_object_set (source, "paranoia-mode", 0, NULL);
 
-		if (playback_mode) {
-			/* disable paranoia (if using cdparanoiasrc) and set read speed to 1 */
-			if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "paranoia-mode"))
-				g_object_set (source, "paranoia-mode", 0, NULL);
+		if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "read-speed"))
+			g_object_set (source, "read-speed", 1, NULL);
+	} else {
+		/* enable full paranoia; maybe this should be configurable. */
+		/* also, sound-juicer defaults to 8 (scratch) not 0xff (full) here.. */
+		if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "paranoia-mode"))
+			g_object_set (source, "paranoia-mode", 0xff, NULL);
 
-			if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "read-speed"))
-				g_object_set (source, "read-speed", 1, NULL);
-		} else {
-			/* enable full paranoia; maybe this should be configurable. */
-			/* also, sound-juicer defaults to 8 (scratch) not 0xff (full) here.. */
-			if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "paranoia-mode"))
-				g_object_set (source, "paranoia-mode", 0xff, NULL);
-
-			/* trick cdparanoiasrc into resetting the device speed in case we've
-			 * previously set it to 1 for playback
-			 */
-			if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "read-speed"))
-				g_object_set (source, "read-speed", 0xffff, NULL);
-		}
+		/* trick cdparanoiasrc into resetting the device speed in case we've
+		 * previously set it to 1 for playback
+		 */
+		if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "read-speed"))
+			g_object_set (source, "read-speed", 0xffff, NULL);
 	}
 }
 
@@ -162,23 +182,18 @@ rb_audiocd_plugin_can_reuse_stream_cb (RBPlayer *player,
 				       GstElement *stream_bin,
 				       RBAudioCdPlugin *plugin)
 {
-	const char *new_device;
-	const char *old_device;
+	char *new_device = NULL;
+	char *old_device = NULL;
+	gboolean result = FALSE;
 
-	/* can't do anything with non-cdda URIs */
-	if (g_str_has_prefix (new_uri, "cdda://") == FALSE ||
-	    g_str_has_prefix (stream_uri, "cdda://") == FALSE) {
-		return FALSE;
+	if (parse_cdda_uri (new_uri, &new_device, NULL) &&
+	    parse_cdda_uri (stream_uri, &old_device, NULL)) {
+		result = (g_strcmp0 (old_device, new_device) == 0);
 	}
 
-	/* check the device matches */
-	new_device = g_utf8_strrchr (new_uri, -1, '#');
-	old_device = g_utf8_strrchr (stream_uri, -1, '#');
-	if (new_device == NULL || old_device == NULL || strcmp (old_device, new_device) != 0) {
-		return FALSE;
-	}
-
-	return TRUE;
+	g_free (new_device);
+	g_free (old_device);
+	return result;
 }
 
 static void
@@ -189,20 +204,15 @@ rb_audiocd_plugin_reuse_stream_cb (RBPlayer *player,
 				   RBAudioCdPlugin *plugin)
 {
 	GstFormat track_format = gst_format_get_by_nick ("track");
-	char *track_str;
-	char *new_device;
-	guint track;
-	guint cdda_len;
+	gulong track;
+	char *device = NULL;
 
-	/* get the new track number */
-	cdda_len = strlen ("cdda://");
-	new_device = g_utf8_strrchr (new_uri, -1, '#');
-	g_assert (new_device != NULL);
-	track_str = g_strndup (new_uri + cdda_len, new_device - (new_uri + cdda_len));
-	track = atoi (track_str);
-	g_free (track_str);
+	if (parse_cdda_uri (new_uri, &device, &track) == FALSE) {
+		g_assert_not_reached ();
+	}
 
-	rb_debug ("seeking to track %d on CD device %s", track, new_device+1);
+	rb_debug ("seeking to track %lu on CD device %s", track, device);
+	g_free (device);
 
 	gst_element_seek (element,
 			  1.0, track_format, GST_SEEK_FLAG_FLUSH,
