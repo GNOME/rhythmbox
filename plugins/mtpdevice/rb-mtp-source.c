@@ -983,6 +983,14 @@ mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source)
 	rb_mtp_thread_get_track_list (priv->device_thread, (RBMtpTrackListCallback) mtp_tracklist_cb, g_object_ref (source), g_object_unref);
 }
 
+static gboolean
+device_loaded_idle (RBMtpSource *source)
+{
+	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
+	rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), NULL, FALSE);
+	return FALSE;
+}
+
 static void
 mtp_tracklist_cb (LIBMTP_track_t *tracks, RBMtpSource *source)
 {
@@ -996,9 +1004,7 @@ mtp_tracklist_cb (LIBMTP_track_t *tracks, RBMtpSource *source)
 	}
 	g_object_unref (db);
 
-	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
-
-	rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), NULL, FALSE);
+	g_idle_add ((GSourceFunc) device_loaded_idle, source);
 }
 
 static char *
