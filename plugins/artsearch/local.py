@@ -33,8 +33,6 @@ from gi.repository import GObject, GLib, Gio
 IMAGE_NAMES = ["cover", "album", "albumart", "front", ".folder", "folder"]
 ITEMS_PER_NOTIFICATION = 10
 
-IGNORED_SCHEMES = ('http', 'cdda', 'daap', 'mms')
-
 def file_root (f_name):
 	return os.path.splitext (f_name)[0].lower ()
 
@@ -148,10 +146,6 @@ class LocalSearch:
 			return
 
 		self.file = Gio.file_new_for_uri(location)
-		if self.file.get_uri_scheme() in IGNORED_SCHEMES:
-			print 'not searching for local art for %s' % (self.file.get_uri())
-			callback(args)
-			return
 
 		self.album = key.get_field("album")
 		self.artists = key.get_field_values("artist")
