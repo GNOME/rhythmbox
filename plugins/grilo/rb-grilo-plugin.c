@@ -137,7 +137,7 @@ grilo_source_added_cb (GrlRegistry *registry, GrlSource *grilo_source, RBGriloPl
 	rb_debug ("new grilo source: %s", grl_source_get_name (grilo_source));
 
 	source = rb_grilo_source_new (G_OBJECT (plugin), grilo_source);
-	g_hash_table_insert (plugin->sources, grilo_source, source);
+	g_hash_table_insert (plugin->sources, g_object_ref (grilo_source), g_object_ref_sink (source));
 
 	/* probably put some sources under 'shared', some under 'stores'? */
 	g_object_get (plugin, "object", &shell, NULL);
