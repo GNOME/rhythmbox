@@ -144,24 +144,6 @@ actually_add_monitor (RhythmDB *db, GFile *directory, GError **error)
 	g_mutex_unlock (&db->priv->monitor_mutex);
 }
 
-static void
-monitor_entry_file (RhythmDBEntry *entry, RhythmDB *db)
-{
-	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
-		const char *loc;
-		int i;
-
-		loc = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-
-		/* don't add add monitor if it's in the library path */
-		for (i = 0; db->priv->library_locations[i] != NULL; i++) {
-			if (g_str_has_prefix (loc, db->priv->library_locations[i]))
-				return;
-		}
-		rhythmdb_monitor_uri_path (db, loc, NULL);
-	}
-}
-
 static gboolean
 monitor_subdirectory (GFile *file, gboolean dir, RhythmDB *db)
 {
@@ -237,19 +219,9 @@ rhythmdb_process_changed_files (RhythmDB *db)
 	return TRUE;
 }
 
-static gpointer
-_monitor_entry_thread (RhythmDB *db)
-{
-	rhythmdb_entry_foreach (db, (GFunc) monitor_entry_file, db);
-	g_object_unref (G_OBJECT (db));
-	return NULL;
-}
-
 void
 rhythmdb_start_monitoring (RhythmDB *db)
 {
-	g_thread_new ("monitor-entry", (GThreadFunc)_monitor_entry_thread, g_object_ref (db));
-
 	/* monitor all library locations */
 	if (db->priv->library_locations) {
 		int i;
