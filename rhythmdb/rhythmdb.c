@@ -1008,9 +1008,6 @@ rhythmdb_shutdown (RhythmDB *db)
 	action->type = RHYTHMDB_ACTION_QUIT;
 	g_async_queue_push (db->priv->action_queue, action);
 
-	g_strfreev (db->priv->library_locations);
-	db->priv->library_locations = NULL;
-
 	/* abort all async io operations */
 	g_mutex_lock (&db->priv->stat_mutex);
 	g_list_foreach (db->priv->outstanding_stats, (GFunc)_shutdown_foreach_swapped, db);
@@ -1104,6 +1101,8 @@ rhythmdb_finalize (GObject *object)
 	g_return_if_fail (db->priv != NULL);
 
 	rhythmdb_finalize_monitoring (db);
+	g_strfreev (db->priv->library_locations);
+	db->priv->library_locations = NULL;
 
 	g_thread_pool_free (db->priv->query_thread_pool, FALSE, TRUE);
 	g_async_queue_unref (db->priv->action_queue);
