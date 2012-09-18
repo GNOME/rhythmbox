@@ -123,8 +123,9 @@ class LocalSearch:
 			enumfiles.next_files_async(ITEMS_PER_NOTIFICATION, GLib.PRIORITY_DEFAULT, None, self._enum_dir_cb, [])
 		except Exception, e:
 			print "okay, probably done: %s" % e
-			import sys
-			sys.excepthook(*sys.exc_info())
+			if not isinstance(e, GLib.GError):
+				import sys
+				sys.excepthook(*sys.exc_info())
 			self.callback(self.callback_args)
 
 
