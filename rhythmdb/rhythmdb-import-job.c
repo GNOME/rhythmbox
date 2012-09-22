@@ -319,6 +319,7 @@ emit_scan_complete_idle (RhythmDBImportJob *job)
 {
 	rb_debug ("emitting scan complete");
 	g_signal_emit (job, signals[SCAN_COMPLETE], 0, job->priv->total);
+	emit_status_changed (job);
 	g_object_unref (job);
 	return FALSE;
 }
