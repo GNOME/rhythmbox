@@ -78,6 +78,7 @@ gboolean	rhythmdb_import_job_complete		(RhythmDBImportJob *job);
 gboolean	rhythmdb_import_job_scan_complete	(RhythmDBImportJob *job);
 int		rhythmdb_import_job_get_total		(RhythmDBImportJob *job);
 int		rhythmdb_import_job_get_imported	(RhythmDBImportJob *job);
+int		rhythmdb_import_job_get_processed	(RhythmDBImportJob *job);
 
 G_END_DECLS
 

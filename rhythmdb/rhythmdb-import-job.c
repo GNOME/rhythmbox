@@ -63,6 +63,7 @@ struct _RhythmDBImportJobPrivate
 {
 	int		total;
 	int		imported;
+	int		processed;
 	GHashTable	*outstanding;
 	RhythmDB	*db;
 	RhythmDBEntryType *entry_type;
@@ -161,7 +162,7 @@ missing_plugins_retry_cb (gpointer instance, gboolean installed, RhythmDBImportJ
 		/* reset the job state to just show the retry information */
 		job->priv->total = g_slist_length (job->priv->retry_entries);
 		rb_debug ("plugin installation was successful, retrying %d entries", job->priv->total);
-		job->priv->imported = 0;
+		job->priv->processed = 0;
 
 		/* remove the import error entries and build the list of URIs to retry */
 		for (i = job->priv->retry_entries; i != NULL; i = i->next) {
@@ -198,14 +199,14 @@ emit_status_changed (RhythmDBImportJob *job)
 	g_mutex_lock (&job->priv->lock);
 	job->priv->status_changed_id = 0;
 
-	rb_debug ("emitting status changed: %d/%d", job->priv->imported, job->priv->total);
-	g_signal_emit (job, signals[STATUS_CHANGED], 0, job->priv->total, job->priv->imported);
+	rb_debug ("emitting status changed: %d/%d", job->priv->processed, job->priv->total);
+	g_signal_emit (job, signals[STATUS_CHANGED], 0, job->priv->total, job->priv->processed);
 
 	/* temporary ref while emitting this signal as we're expecting the caller
 	 * to release the final reference there.
 	 */
 	g_object_ref (job);
-	if (job->priv->scan_complete && job->priv->imported >= job->priv->total) {
+	if (job->priv->scan_complete && job->priv->processed >= job->priv->total) {
 
 		if (job->priv->retry_entries != NULL && job->priv->retried == FALSE) {
 			gboolean processing = FALSE;
@@ -392,7 +393,7 @@ rhythmdb_import_job_get_total (RhythmDBImportJob *job)
  * rhythmdb_import_job_get_imported:
  * @job: the #RhythmDBImportJob
  *
- * Returns the number of files processed by the import job so far.
+ * Returns the number of files successfully imported by the import job so far.
  *
  * Return value: file count
  */
@@ -400,6 +401,20 @@ int
 rhythmdb_import_job_get_imported (RhythmDBImportJob *job)
 {
 	return job->priv->imported;
+}
+
+/**
+ * rhythmdb_import_job_get_processed:
+ * @job: the #RhythmDBImportJob
+ *
+ * Returns the number of files processed by the import job so far.
+ *
+ * Return value: file count
+ */
+int
+rhythmdb_import_job_get_processed (RhythmDBImportJob *job)
+{
+	return job->priv->processed;
 }
 
 /**
@@ -462,14 +477,21 @@ entry_added_cb (RhythmDB *db,
 
 	if (ours) {
 		const char *details;
+		RhythmDBEntryType *entry_type;
 
-		job->priv->imported++;
-		rb_debug ("got entry %s; %d now imported", uri, job->priv->imported);
-		g_signal_emit (job, signals[ENTRY_ADDED], 0, entry);
+		entry_type = rhythmdb_entry_get_entry_type (entry);
+
+		job->priv->processed++;
+
+		if (entry_type == job->priv->entry_type) {
+			job->priv->imported++;
+			g_signal_emit (job, signals[ENTRY_ADDED], 0, entry);
+		}
+		rb_debug ("got entry %s; %d imported, %d processed", uri, job->priv->imported, job->priv->processed);
 
 		/* if it's an import error with missing plugins, add it to the retry list */
 		details = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_COMMENT);
-		if (rhythmdb_entry_get_entry_type (entry) == job->priv->error_type &&
+		if (entry_type == job->priv->error_type &&
 		    (details != NULL && details[0] != '\0')) {
 			rb_debug ("entry %s is an import error with missing plugin details: %s", uri, details);
 			job->priv->retry_entries = g_slist_prepend (job->priv->retry_entries, rhythmdb_entry_ref (entry));
