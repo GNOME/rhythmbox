@@ -1570,6 +1570,23 @@ rhythmdb_tree_entry_set (RhythmDB *adb,
 	/* Handle special properties */
 	switch (propid)
 	{
+	case RHYTHMDB_PROP_TYPE:
+	{
+		RhythmDBTreeProperty *artist;
+		RhythmDBTreeProperty *genre;
+
+		g_mutex_lock (&db->priv->genres_lock);
+		remove_entry_from_album (db, entry);
+
+		entry->type = g_value_get_object (value);
+
+		genre = get_or_create_genre (db, entry->type, entry->genre);
+		artist = get_or_create_artist (db, genre, entry->artist);
+		set_entry_album (db, entry, artist, entry->album);
+		g_mutex_unlock (&db->priv->genres_lock);
+
+		return TRUE;
+	}
 	case RHYTHMDB_PROP_LOCATION:
 	{
 		RBRefString *s;

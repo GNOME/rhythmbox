@@ -3321,6 +3321,9 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 	case G_TYPE_DOUBLE:
 		nop = (g_value_get_double (value) == g_value_get_double (&old_value));
 		break;
+	case G_TYPE_OBJECT:
+		nop = (g_value_get_object (value) == g_value_get_object (&old_value));
+		break;
 	default:
 		g_assert_not_reached ();
 		break;
