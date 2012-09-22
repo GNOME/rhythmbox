@@ -82,6 +82,7 @@ struct _RBTrackTransferBatchClass
 					 RhythmDBEntry *entry,
 					 const char *dest,
 					 guint64 dest_size,
+					 const char *mediatype,
 					 GError *error);
 };
 
