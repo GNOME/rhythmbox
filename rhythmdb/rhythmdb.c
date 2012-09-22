@@ -2212,7 +2212,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 			/* delete the existing entry, then create a new one below */
 			rhythmdb_entry_delete (db, entry);
 			entry = NULL;
-		} else if (error_entry_type == event->error_type) {
+		} else if (error_entry_type == event->error_type && event->error) {
 			/* we've already got an error for this file, so just update it */
 			g_value_init (&value, G_TYPE_STRING);
 			g_value_set_string (&value, event->error->message);
@@ -2281,7 +2281,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 			} else if (rb_metadata_has_missing_plugins (event->metadata)) {
 				rb_debug ("ignoring missing plugins for non-audio file");
 			}
-		} else if (error_entry_type == event->error_type && event->error->message) {
+		} else if (error_entry_type == event->error_type && event->error && event->error->message) {
 			g_value_init (&value, G_TYPE_STRING);
 			if (g_utf8_validate (event->error->message, -1, NULL))
 				g_value_set_string (&value, event->error->message);
