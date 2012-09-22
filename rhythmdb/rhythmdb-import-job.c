@@ -262,11 +262,15 @@ static void
 uri_recurse_func (GFile *file, gboolean dir, RhythmDBImportJob *job)
 {
 	RhythmDBEntry *entry;
+	gboolean add_uri;
 	char *uri;
 
 	if (dir) {
 		return;
 	}
+
+	if (g_cancellable_is_cancelled (job->priv->cancel))
+		return;
 
 	uri = g_file_get_uri (file);
 
@@ -285,13 +289,28 @@ uri_recurse_func (GFile *file, gboolean dir, RhythmDBImportJob *job)
 		}
 
 		g_mutex_unlock (&job->priv->lock);
+
+		add_uri = TRUE;
+	} else {
+		/* skip it if it's a different entry type */
+		RhythmDBEntryType *et;
+		et = rhythmdb_entry_get_entry_type (entry);
+		if (et != job->priv->entry_type &&
+		    et != job->priv->ignore_type &&
+		    et != job->priv->error_type) {
+			add_uri = FALSE;
+		} else {
+			add_uri = TRUE;
+		}
 	}
 
-	rhythmdb_add_uri_with_types (job->priv->db,
-				     uri,
-				     job->priv->entry_type,
-				     job->priv->ignore_type,
-				     job->priv->error_type);
+	if (add_uri) {
+		rhythmdb_add_uri_with_types (job->priv->db,
+					     uri,
+					     job->priv->entry_type,
+					     job->priv->ignore_type,
+					     job->priv->error_type);
+	}
 	g_free (uri);
 }
 
