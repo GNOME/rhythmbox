@@ -68,6 +68,10 @@
 #include "rb-missing-plugins.h"
 #include "rb-gst-media-types.h"
 #include "rb-object-property-editor.h"
+#include "rb-import-dialog.h"
+
+#define SOURCE_PAGE		0
+#define IMPORT_DIALOG_PAGE	1
 
 static void rb_library_source_class_init (RBLibrarySourceClass *klass);
 static void rb_library_source_init (RBLibrarySource *source);
@@ -90,6 +94,7 @@ static void impl_add_uri (RBSource *source,
 			  RBSourceAddCallback callback,
 			  gpointer data,
 			  GDestroyNotify destroy_data);
+static void impl_pack_content (RBBrowserSource *source, GtkWidget *content);
 
 static void library_settings_changed_cb (GSettings *settings, const char *key, RBLibrarySource *source);
 static void encoding_settings_changed_cb (GSettings *settings, const char *key, RBLibrarySource *source);
@@ -141,10 +146,11 @@ struct RBLibrarySourcePrivate
 {
 	RhythmDB *db;
 
-	gboolean loading_prefs;
 	RBShellPreferences *shell_prefs;
 
+	GtkWidget *notebook;
 	GtkWidget *config_widget;
+	GtkWidget *import_dialog;
 
 	GList *child_sources;
 
@@ -167,6 +173,7 @@ struct RBLibrarySourcePrivate
 	gulong profile_changed_id;
 	gboolean custom_settings_exists;
 	gboolean profile_init;
+	gboolean do_initial_import;
 
 	GSettings *settings;
 	GSettings *db_settings;
@@ -200,6 +207,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_add_uri = impl_add_uri;
 
 	browser_source_class->has_drop_support = (RBBrowserSourceFeatureFunc) rb_true_function;
+	browser_source_class->pack_content = impl_pack_content;
 
 	g_type_class_add_private (klass, sizeof (RBLibrarySourcePrivate));
 }
@@ -275,10 +283,42 @@ rb_library_source_finalize (GObject *object)
 }
 
 static void
+initial_import_job_complete_cb (RhythmDBImportJob *job, int total, RBLibrarySource *source)
+{
+	if (rhythmdb_import_job_get_imported (job) == 0) {
+		rb_library_source_show_import_dialog (source);
+	}
+}
+
+static void
 db_load_complete_cb (RhythmDB *db, RBLibrarySource *source)
 {
+	RhythmDBImportJob *job;
+
 	/* once the database is loaded, we can run the query to populate the library source */
 	g_object_set (source, "populate", TRUE, NULL);
+
+	if (source->priv->do_initial_import) {
+		const char *music_dir;
+		char *music_dir_uri;
+		
+		music_dir = rb_music_dir ();
+		music_dir_uri = g_filename_to_uri (music_dir, NULL, NULL);
+
+		/* create the music dir if it doesn't exist */
+		if (g_file_test (music_dir, G_FILE_TEST_EXISTS) == FALSE) {
+			g_mkdir_with_parents (music_dir, 0700);
+		}
+
+		/* import anything that's already in there */
+		job = maybe_create_import_job (source);
+		rhythmdb_import_job_add_uri (job, music_dir_uri);
+
+		/* if this doesn't import anything, show the import dialog */
+		g_signal_connect (job, "complete", G_CALLBACK (initial_import_job_complete_cb), source);
+
+		g_free (music_dir_uri);
+	}
 }
 
 static void
@@ -289,11 +329,20 @@ rb_library_source_constructed (GObject *object)
 	RBEntryView *songs;
 	char **locations;
 
-	RB_CHAIN_GOBJECT_METHOD (rb_library_source_parent_class, constructed, object);
 	source = RB_LIBRARY_SOURCE (object);
+	source->priv->notebook = gtk_notebook_new ();
+	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (source->priv->notebook), FALSE);
+	gtk_notebook_set_show_border (GTK_NOTEBOOK (source->priv->notebook), FALSE);
+
+	RB_CHAIN_GOBJECT_METHOD (rb_library_source_parent_class, constructed, object);
 
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "db", &source->priv->db, NULL);
+
+	gtk_container_add (GTK_CONTAINER (source), source->priv->notebook);
+
+	gtk_notebook_set_current_page (GTK_NOTEBOOK (source->priv->notebook), 0);
+	gtk_widget_show_all (source->priv->notebook);
 
 	source->priv->settings = g_settings_new ("org.gnome.rhythmbox.library");
 	g_signal_connect_object (source->priv->settings, "changed", G_CALLBACK (library_settings_changed_cb), source, 0);
@@ -314,9 +363,12 @@ rb_library_source_constructed (GObject *object)
 		music_dir_uri = g_filename_to_uri (rb_music_dir (), NULL, NULL);
 		if (music_dir_uri != NULL) {
 			const char *set_locations[2];
+
 			set_locations[0] = music_dir_uri;
 			set_locations[1] = NULL;
 			g_settings_set_strv (source->priv->db_settings, "locations", set_locations);
+
+			source->priv->do_initial_import = TRUE;
 
 			g_free (music_dir_uri);
 		}
@@ -373,6 +425,14 @@ rb_library_source_new (RBShell *shell)
 	rb_shell_register_entry_type_for_source (shell, source, RHYTHMDB_ENTRY_TYPE_SONG);
 
 	return source;
+}
+
+static void
+impl_pack_content (RBBrowserSource *bsource, GtkWidget *content)
+{
+	RBLibrarySource *source = RB_LIBRARY_SOURCE (bsource);
+	gtk_notebook_append_page (GTK_NOTEBOOK (source->priv->notebook), content, NULL);
+	gtk_widget_show_all (content);
 }
 
 static void
@@ -1875,5 +1935,53 @@ impl_get_status (RBDisplayPage *source, char **text, char **progress_text, float
 	if (lsource->priv->import_jobs != NULL) {
 		RhythmDBImportJob *job = RHYTHMDB_IMPORT_JOB (lsource->priv->import_jobs->data);
 		_rb_source_set_import_status (RB_SOURCE (source), job, progress_text, progress);
+	} else if (gtk_notebook_get_current_page (GTK_NOTEBOOK (lsource->priv->notebook)) == IMPORT_DIALOG_PAGE) {
+		g_free (*text);
+		g_object_get (lsource->priv->import_dialog, "status", text, NULL);
+	}
+}
+
+static void
+import_dialog_closed_cb (RBImportDialog *dialog, RBLibrarySource *source)
+{
+	gtk_notebook_set_current_page (GTK_NOTEBOOK (source->priv->notebook), 0);
+	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
+}
+
+static void
+import_dialog_status_notify_cb (GObject *dialog, GParamSpec *pspec, RBLibrarySource *source)
+{
+	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
+}
+
+void
+rb_library_source_show_import_dialog (RBLibrarySource *source)
+{
+	if (source->priv->import_dialog == NULL) {
+		RBShell *shell;
+
+		g_object_get (source, "shell", &shell, NULL);
+		source->priv->import_dialog = rb_import_dialog_new (shell);
+		g_object_unref (shell);
+
+		g_signal_connect (source->priv->import_dialog,
+				  "closed",
+				  G_CALLBACK (import_dialog_closed_cb),
+				  source);
+		g_signal_connect (source->priv->import_dialog,
+				  "notify::status",
+				  G_CALLBACK (import_dialog_status_notify_cb),
+				  source);
+
+		gtk_widget_show_all (GTK_WIDGET (source->priv->import_dialog));
+		gtk_notebook_append_page (GTK_NOTEBOOK (source->priv->notebook),
+					  source->priv->import_dialog,
+					  NULL);
+	}
+
+	if (gtk_notebook_get_current_page (GTK_NOTEBOOK (source->priv->notebook)) != IMPORT_DIALOG_PAGE) {
+		rb_import_dialog_reset (RB_IMPORT_DIALOG (source->priv->import_dialog));
+		gtk_notebook_set_current_page (GTK_NOTEBOOK (source->priv->notebook), IMPORT_DIALOG_PAGE);
+		rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 	}
 }

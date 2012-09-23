@@ -15,7 +15,8 @@ widgetinclude_HEADERS =					\
 	rb-source-toolbar.h				\
 	rb-uri-dialog.h					\
 	rb-fading-image.h				\
-	rb-object-property-editor.h
+	rb-object-property-editor.h			\
+	rb-import-dialog.h
 
 librbwidgets_la_SOURCES =				\
 	$(widgetinclude_HEADERS)			\
@@ -48,7 +49,8 @@ librbwidgets_la_SOURCES =				\
 	eggwrapbox-enums.h				\
 	rb-source-toolbar.c				\
 	rb-fading-image.c				\
-	rb-object-property-editor.c
+	rb-object-property-editor.c			\
+	rb-import-dialog.c
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

@@ -168,10 +168,7 @@ static void rb_shell_cmd_preferences (GtkAction *action,
 		                      RBShell *shell);
 static void rb_shell_cmd_plugins (GtkAction *action,
 		                  RBShell *shell);
-static void rb_shell_cmd_add_folder_to_library (GtkAction *action,
-						RBShell *shell);
-static void rb_shell_cmd_add_file_to_library (GtkAction *action,
-					      RBShell *shell);
+static void rb_shell_cmd_add_music (GtkAction *action, RBShell *shell);
 
 static void rb_shell_cmd_current_song (GtkAction *action,
 				       RBShell *shell);
@@ -283,7 +280,6 @@ struct _RBShellPrivate
 
 	guint async_state_save_id;
 	guint save_playlist_id;
-	guint save_db_id;
 
 	gboolean shutting_down;
 	gboolean load_complete;
@@ -344,12 +340,9 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "Tools", NULL, N_("_Tools") },
 	{ "Help", NULL, N_("_Help") },
 
-	{ "MusicImportFolder", GTK_STOCK_OPEN, N_("_Import Folder..."), "<control>O",
-	  N_("Choose folder to be added to the Library"),
-	  G_CALLBACK (rb_shell_cmd_add_folder_to_library) },
-	{ "MusicImportFile", GTK_STOCK_FILE, N_("Import _File..."), NULL,
-	  N_("Choose file to be added to the Library"),
-	  G_CALLBACK (rb_shell_cmd_add_file_to_library) },
+	{ "MusicAdd", GTK_STOCK_OPEN, N_("Add Music..."), "<control>O",
+	  N_("Add music to the library"),
+	  G_CALLBACK (rb_shell_cmd_add_music) },
 	{ "HelpAbout", GTK_STOCK_ABOUT, N_("_About"), NULL,
 	  N_("Show information about Rhythmbox"),
 	  G_CALLBACK (rb_shell_cmd_about) },
@@ -1802,16 +1795,6 @@ rb_shell_sync_state (RBShell *shell)
 }
 
 static gboolean
-idle_save_rhythmdb (RBShell *shell)
-{
-	rhythmdb_save (shell->priv->db);
-
-	shell->priv->save_db_id = 0;
-
-	return FALSE;
-}
-
-static gboolean
 idle_save_playlist_manager (RBShell *shell)
 {
 	GDK_THREADS_ENTER ();
@@ -1869,11 +1852,6 @@ rb_shell_finalize (GObject *object)
 	if (shell->priv->save_playlist_id > 0) {
 		g_source_remove (shell->priv->save_playlist_id);
 		shell->priv->save_playlist_id = 0;
-	}
-
-	if (shell->priv->save_db_id > 0) {
-		g_source_remove (shell->priv->save_db_id);
-		shell->priv->save_db_id = 0;
 	}
 
 	if (shell->priv->queue_sidebar != NULL) {
@@ -2084,8 +2062,8 @@ rb_shell_constructed (GObject *object)
 					     rb_shell_n_toggle_entries,
 					     shell);
 
-	/* Translators: this is the short label for the 'import folder' action */
-	gtk_action_set_short_label (gtk_action_group_get_action (shell->priv->actiongroup, "MusicImportFolder"), C_("Library", "Import"));
+	/* Translators: this is the short label for the 'add music' action */
+	gtk_action_set_short_label (gtk_action_group_get_action (shell->priv->actiongroup, "MusicAdd"), C_("Library", "Import"));
 	/* Translators: this is the short label for the 'view all tracks' action */
 	gtk_action_set_short_label (gtk_action_group_get_action (shell->priv->actiongroup, "ViewAll"), _("Show All"));
 
@@ -2883,96 +2861,10 @@ rb_shell_cmd_plugins (GtkAction *action,
 }
 
 static void
-add_to_library_response_cb (GtkDialog *dialog,
-			    int response_id,
-			    RBShell *shell)
+rb_shell_cmd_add_music (GtkAction *action, RBShell *shell)
 {
-
-	char *current_dir = NULL;
-	GSList *uri_list = NULL, *uris = NULL;
-	GSettings *library_settings;
-
-	if (response_id != GTK_RESPONSE_ACCEPT) {
-		gtk_widget_destroy (GTK_WIDGET (dialog));
-		return;
-	}
-
-	library_settings = g_settings_new ("org.gnome.rhythmbox.library");
-	current_dir = gtk_file_chooser_get_current_folder_uri (GTK_FILE_CHOOSER (dialog));
-	g_settings_set_string (library_settings, "add-dir", current_dir);
-	g_object_unref (library_settings);
-
-	uri_list = gtk_file_chooser_get_uris (GTK_FILE_CHOOSER (dialog));
-	if (uri_list == NULL) {
-		uri_list = g_slist_prepend (uri_list, g_strdup (current_dir));
-	}
-
-	for (uris = uri_list; uris; uris = uris->next) {
-		rb_shell_load_uri (shell, (char *)uris->data, FALSE, NULL);
-		g_free (uris->data);
-	}
-	g_slist_free (uri_list);
-	g_free (current_dir);
-	gtk_widget_destroy (GTK_WIDGET (dialog));
-
-	if (shell->priv->save_db_id > 0) {
-		g_source_remove (shell->priv->save_db_id);
-	}
-	shell->priv->save_db_id = g_timeout_add_seconds (10, (GSourceFunc) idle_save_rhythmdb, shell);
-}
-
-static void
-set_current_folder_uri (RBShell *shell, GtkWidget *dialog)
-{
-	GSettings *settings;
-	char *dir;
-
-	settings = g_settings_new ("org.gnome.rhythmbox.library");
-	dir = g_settings_get_string (settings, "add-dir");
-	if (dir && dir[0] != '\0') {
-		gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (dialog),
-							 dir);
-	}
-	g_free (dir);
-	g_object_unref (settings);
-}
-
-static void
-rb_shell_cmd_add_folder_to_library (GtkAction *action,
-				    RBShell *shell)
-{
-	GtkWidget *dialog;
-
-	dialog = rb_file_chooser_new (_("Import Folder into Library"),
-			              GTK_WINDOW (shell->priv->window),
-				      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-				      FALSE);
-	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (dialog), TRUE);
-	set_current_folder_uri (shell, dialog);
-
-	g_signal_connect_object (G_OBJECT (dialog),
-				 "response",
-				 G_CALLBACK (add_to_library_response_cb),
-				 shell, 0);
-}
-
-static void
-rb_shell_cmd_add_file_to_library (GtkAction *action,
-				  RBShell *shell)
-{
-	GtkWidget *dialog;
-
-	dialog = rb_file_chooser_new (_("Import File into Library"),
-			              GTK_WINDOW (shell->priv->window),
-				      GTK_FILE_CHOOSER_ACTION_OPEN,
-				      FALSE);
-	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (dialog), TRUE);
-	set_current_folder_uri (shell, dialog);
-
-	g_signal_connect_object (G_OBJECT (dialog),
-				 "response",
-				 G_CALLBACK (add_to_library_response_cb),
-				 shell, 0);
+	rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
+	rb_library_source_show_import_dialog (shell->priv->library_source);
 }
 
 static gboolean

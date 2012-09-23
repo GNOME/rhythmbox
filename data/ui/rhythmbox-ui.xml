@@ -1,8 +1,7 @@
 <ui>
   <menubar name="MenuBar">
     <menu name="MusicMenu" action="Music">
-      <menuitem name="MusicImportFileMenu" action="MusicImportFile"/>
-      <menuitem name="MusicImportFolderMenu" action="MusicImportFolder"/>
+      <menuitem name="MusicImport" action="MusicAdd"/>
       <separator/>
       <menuitem name="MusicCheckDevices" action="MusicCheckDevices"/>
       <separator/>
@@ -158,7 +157,7 @@
   <toolbar name="LibrarySourceToolBar">
     <toolitem name="Browse" action="ViewBrowser"/>
     <toolitem name="ViewAll" action="ViewAll"/>
-    <toolitem name="LibraryImport" action="MusicImportFolder"/>
+    <toolitem name="LibraryAdd" action="MusicAdd"/>
     <placeholder name="PluginPlaceholder"/>
   </toolbar>
 
@@ -251,8 +250,7 @@
   </popup>
 
   <popup name="LibrarySourcePopup">
-    <menuitem name="LibrarySrcPopupAddFile" action="MusicImportFile"/>
-    <menuitem name="LibrarySrcPopupAddFolder" action="MusicImportFolder"/>
+    <menuitem name="LibraryPopupAdd" action="MusicAdd"/>
     <separator/>
     <placeholder name="PluginPlaceholder"/>
   </popup>
