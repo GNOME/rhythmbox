@@ -5,6 +5,7 @@ UI_XML_FILES = rhythmbox-ui.xml
 GTK_BUILDER_FILES =					\
 	create-playlist.ui				\
 	general-prefs.ui				\
+	import-dialog.ui				\
 	library-prefs.ui				\
 	media-player-properties.ui			\
 	playback-prefs.ui				\
