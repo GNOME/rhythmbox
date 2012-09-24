@@ -305,7 +305,7 @@ rb_auto_playlist_source_constructed (GObject *object)
 	/* set up toolbar */
 	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "ui-manager", &ui_manager, NULL);
-	priv->toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), ui_manager);
 	rb_source_toolbar_add_search_entry (priv->toolbar, "/AutoPlaylistSourceSearchMenu", NULL);
 
 	g_object_unref (ui_manager);

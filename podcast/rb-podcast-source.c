@@ -1584,7 +1584,7 @@ impl_constructed (GObject *object)
 			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
 
 	/* set up toolbar */
-	source->priv->toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	source->priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), ui_manager);
 	rb_source_toolbar_add_search_entry (source->priv->toolbar, "/PodcastSourceSearchMenu", NULL);
 
 	/* pack the feed and post views into the source */

@@ -59,7 +59,7 @@ struct _RBSourceToolbarClass
 
 GType		rb_source_toolbar_get_type 		(void);
 
-RBSourceToolbar *rb_source_toolbar_new 			(RBSource *source,
+RBSourceToolbar *rb_source_toolbar_new 			(RBDisplayPage *page,
 							 GtkUIManager *ui_manager);
 
 void		rb_source_toolbar_add_search_entry 	(RBSourceToolbar *toolbar,

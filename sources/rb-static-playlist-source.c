@@ -359,7 +359,7 @@ rb_static_playlist_source_constructed (GObject *object)
 	gtk_paned_pack2 (GTK_PANED (paned), GTK_WIDGET (songs), TRUE, FALSE);
 
 	/* set up search box / toolbar */
-	priv->toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), ui_manager);
 	rb_source_toolbar_add_search_entry (priv->toolbar, "/StaticPlaylistSourceSearchMenu", NULL);
 	g_object_unref (ui_manager);
 

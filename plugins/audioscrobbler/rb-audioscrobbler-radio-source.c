@@ -457,7 +457,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	gtk_container_add (GTK_CONTAINER (source), main_vbox);
 
 	/* toolbar */
-	toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), ui_manager);
 	gtk_box_pack_start (GTK_BOX (main_vbox), GTK_WIDGET (toolbar), FALSE, FALSE, 0);
 	gtk_widget_show_all (GTK_WIDGET (toolbar));
 

@@ -386,7 +386,7 @@ rb_source_toolbar_class_init (RBSourceToolbarClass *klass)
 					 g_param_spec_object ("source",
 							      "source",
 							      "RBSource instance",
-							      RB_TYPE_SOURCE,
+							      RB_TYPE_DISPLAY_PAGE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
 	 * RBSourceToolbar:ui-manager:
@@ -405,21 +405,21 @@ rb_source_toolbar_class_init (RBSourceToolbarClass *klass)
 
 /**
  * rb_source_toolbar_new:
- * @source: a #RBSource
+ * @page: a #RBDisplayPage
  * @ui_manager: the #GtkUIManager
  *
- * Creates a new source toolbar for @source.  The toolbar does not
+ * Creates a new source toolbar for @page.  The toolbar does not
  * initially include a search entry.  Call #rb_source_toolbar_add_search_entry
  * to add one.  The toolbar content comes from the @RBSource:toolbar-path property.
  *
  * Return value: the #RBSourceToolbar
  */
 RBSourceToolbar *
-rb_source_toolbar_new (RBSource *source, GtkUIManager *ui_manager)
+rb_source_toolbar_new (RBDisplayPage *page, GtkUIManager *ui_manager)
 {
 	GObject *object;
 	object = g_object_new (RB_TYPE_SOURCE_TOOLBAR,
-			       "source", source,
+			       "source", page,
 			       "ui-manager", ui_manager,
 			       "column-spacing", 6,
 			       "column-homogeneous", TRUE,

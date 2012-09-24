@@ -185,7 +185,7 @@ rb_fm_radio_source_constructed (GObject *object)
 		G_N_ELEMENTS (rb_fm_radio_source_actions),
 		self);
 
-	toolbar = rb_source_toolbar_new (RB_SOURCE (self), ui_manager);
+	toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (self), ui_manager);
 	g_object_unref (toolbar);
 
 	self->priv->stations = rb_entry_view_new (self->priv->db,

@@ -345,7 +345,7 @@ rb_audiocd_source_constructed (GObject *object)
 	g_object_set (action, "short-label", _("Extract"), NULL);
 
 	/* source toolbar */
-	toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), ui_manager);
 	g_object_unref (ui_manager);
 
 	g_object_get (source, "entry-type", &entry_type, NULL);

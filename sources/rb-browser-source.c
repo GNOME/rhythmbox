@@ -410,7 +410,7 @@ rb_browser_source_constructed (GObject *object)
 	gtk_paned_pack2 (GTK_PANED (paned), GTK_WIDGET (source->priv->songs), TRUE, FALSE);
 
 	/* set up toolbar */
-	source->priv->toolbar = rb_source_toolbar_new (RB_SOURCE (source), ui_manager);
+	source->priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), ui_manager);
 	rb_source_toolbar_add_search_entry (source->priv->toolbar, "/BrowserSourceSearchMenu", NULL);
 
 	content = gtk_grid_new ();
