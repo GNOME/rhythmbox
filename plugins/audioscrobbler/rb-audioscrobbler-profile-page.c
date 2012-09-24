@@ -642,6 +642,7 @@ init_actions (RBAudioscrobblerProfilePage *page)
 	GtkUIManager *ui_manager;
 	RhythmDBEntry *entry;
 	char *group_name;
+	char *toolbar_name;
 
 	g_object_get (page, "shell", &shell, "plugin", &plugin, "ui-manager", &ui_manager, NULL);
 	ui_file = rb_find_plugin_data_file (plugin, "audioscrobbler-profile-ui.xml");
@@ -693,13 +694,15 @@ init_actions (RBAudioscrobblerProfilePage *page)
 	g_object_unref (player);
 
 	/* set up toolbar */
+	toolbar_name = g_strdup_printf ("%sSourceToolBar", rb_audioscrobbler_service_get_name (page->priv->service));
 	page->priv->toolbar_path = g_strdup_printf ("/%sSourceToolBar", rb_audioscrobbler_service_get_name (page->priv->service));
-	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, "/ui", "AudioscrobblerToolBar", NULL, GTK_UI_MANAGER_TOOLBAR, TRUE);
+	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, "/", toolbar_name, NULL, GTK_UI_MANAGER_TOOLBAR, TRUE);
 	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, page->priv->toolbar_path, "Love", page->priv->love_action_name, GTK_UI_MANAGER_TOOLITEM, FALSE);
 	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, page->priv->toolbar_path, "Ban", page->priv->ban_action_name, GTK_UI_MANAGER_TOOLITEM, FALSE);
 	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, page->priv->toolbar_path, "Download", page->priv->download_action_name, GTK_UI_MANAGER_TOOLITEM, FALSE);
 
 	g_free (ui_file);
+	g_free (toolbar_name);
 	g_object_unref (shell);
 	g_object_unref (plugin);
 	g_object_unref (ui_manager);
