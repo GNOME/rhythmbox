@@ -42,6 +42,7 @@
 #include <sources/rb-display-page-tree.h>
 #include <sources/rb-display-page-group.h>
 #include <widgets/eggwrapbox.h>
+#include <widgets/rb-source-toolbar.h>
 
 #include "rb-audioscrobbler-profile-page.h"
 #include "rb-audioscrobbler.h"
@@ -68,6 +69,7 @@ struct _RBAudioscrobblerProfilePagePrivate {
 	guint scrobbling_enabled_notification_id;
 
 	GtkWidget *main_vbox;
+	RBSourceToolbar *toolbar;
 
 	/* Login related UI */
 	GtkWidget *login_bar;
@@ -363,9 +365,11 @@ rb_audioscrobbler_profile_page_constructed (GObject *object)
 	gtk_box_pack_start (GTK_BOX (page), page->priv->main_vbox, TRUE, TRUE, 0);
 	gtk_widget_show (page->priv->main_vbox);
 
+	init_actions (page);
+
 	init_login_ui (page);
 	init_profile_ui (page);
-	init_actions (page);
+
 
 	/* create the user */
 	page->priv->user = rb_audioscrobbler_user_new (page->priv->service);
@@ -700,6 +704,10 @@ init_actions (RBAudioscrobblerProfilePage *page)
 	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, page->priv->toolbar_path, "Love", page->priv->love_action_name, GTK_UI_MANAGER_TOOLITEM, FALSE);
 	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, page->priv->toolbar_path, "Ban", page->priv->ban_action_name, GTK_UI_MANAGER_TOOLITEM, FALSE);
 	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, page->priv->toolbar_path, "Download", page->priv->download_action_name, GTK_UI_MANAGER_TOOLITEM, FALSE);
+
+	page->priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (page), ui_manager);
+	gtk_box_pack_start (GTK_BOX (page->priv->main_vbox), GTK_WIDGET (page->priv->toolbar), FALSE, FALSE, 0);
+	gtk_widget_show (GTK_WIDGET (page->priv->toolbar));
 
 	g_free (ui_file);
 	g_free (toolbar_name);
