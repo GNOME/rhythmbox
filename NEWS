@@ -1,3 +1,80 @@
+Overview of changes in Rhythmbox 2.98  "Faults"
+===============================================
+
+* New dialog for importing music into the library
+* New audio CD metadata lookup library, replacing libmusicbrainz
+* Improved transitions between album art images
+* Nautilus cluebar buttons now result in the right source
+    being selected
+* Update notification buttons when playback state changes
+* Grilo plugin ported to grilo 0.2 API
+* Search musicbrainz for album art by album and artist name
+* Love/ban buttons visible in last.fm/libre.fm sources
+
+Bugs fixed:
+
+604734 - "Hide" (for MusicBrainz) is missing a mnemonic
+653781 - No mention of ALT+S keyboard shortcut in documentation
+671705 - lib: Fix deprecated use of g_value_get_char()
+673956 - context pane won't resize properly
+676007 - Configure doesn't work with dash
+676689 - Switching from mp3 to ogg file cases Rhythmbox to stop playing
+677079 - Remove markup from UI files
+677464 - rhythmbox crashes on startup
+677955 - Clicking under/above the time slider causes a pause of the slider and the time label
+678138 - Opening properties dialog on MTP device that is not ready crashes Rhythmbox
+678208 - Fix memory leak in rb_gst_media_type_matches_profile
+678254 - Rhythmbox UI hangs when double clicking on visualisation window
+678261 - --no-start option not working
+678661 - context plugin uses insecure temporary directory
+678923 - Clicking on the seek slider doesn't seek
+678995 - Treeview in add podcast dialog lacks border
+679222 - Untranslated strings in visualization plugin
+679326 - Rhythmbox grilo plugin showing Optical Media when there is no optical media tray
+680204 - Incorrectly displays the previous album cover on an album with no cover
+680842 - preferences: don't free consumed floating GVariant
+681018 - artsearch: try harder to find album art from musicbrainz
+681178 - Rapidly switching between internet radio stations results in crash
+681259 - audioscrobbler: use single image download for multiple data items
+681924 - Notification Plugin: fix updating for Play/Pause
+682309 - A bar appears to the left of the volume under some gtk themes
+682404 - FTBS grilo plugin in latest git r7d5be17
+682677 - cluebar content type buttons don't open app with item visible
+682970 - podcast: Handle itms URLs if browser plugin is built
+684142 - Last.fm "love track" button not present
+684304 - [PATCH] Crash in monitor_entry_file()
+684333 - grilo: fix reference counting
+
+Translation updates:
+
+- be, courtesy of Olya Matsuk
+- de, courtesy of Christian Kirbach
+- en_GB, courtesy of Bruce Cowan
+- es, courtesy of Daniel Mustieles
+- fa, courtesy of Arash Mousavi
+- fi, courtesy of Jiri Grönroos
+- fr, courtesy of Claude Paroz
+- gl, courtesy of Fran Dieguez
+- hu, courtesy of Gabor Kelemen
+- id, courtesy of Andika Triwidada
+- it, courtesy of Milo Casagrande
+- ja, courtesy of Jiro Matsuzawa
+- lt, courtesy of Aurimas Černius
+- lv, courtesy of Rūdolfs Mazurs
+- nb, courtesy of Kjartan Maraas
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Henrique P. Machado
+- pt, courtesy of Filipe Gomes
+- ru, courtesy of Yuri Myasoedov
+- sl, courtesy of Matej Urbančič
+- sr, courtesy of Мирослав Николић
+- sr@latin, courtesy of Miroslav Nikolić
+- te, courtesy of Praveen Illa
+- th, courtesy of K Ratanatharathorn
+- tr, courtesy of Muhammet Kara
+- vi, courtesy of Nguyễn Thái Ngọc Duy
+
+
 Overview of changes in Rhythmbox 2.97  "Blue Skied an' Clear"
 =============================================================
 
