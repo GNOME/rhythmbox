@@ -56,6 +56,11 @@ static gboolean stop = FALSE;
 
 static gboolean enqueue = FALSE;
 
+static gboolean repeat = FALSE;
+static gboolean no_repeat = FALSE;
+static gboolean shuffle = FALSE;
+static gboolean no_shuffle = FALSE;
+
 static gboolean clear_queue = FALSE;
 
 static gchar *select_source = NULL;
@@ -102,6 +107,11 @@ static GOptionEntry args[] = {
 	{ "select-source", 0, 0, G_OPTION_ARG_STRING, &select_source, N_("Select the source matching the specified URI"), N_("Source to select")},
 	{ "activate-source", 0, 0, G_OPTION_ARG_STRING, &activate_source, N_("Activate the source matching the specified URI"), N_("Source to activate")},
 	{ "play-source", 0, 0, G_OPTION_ARG_STRING, &play_source, N_("Play from the source matching the specified URI"), N_("Source to play from")},
+
+	{ "repeat", 0, 0, G_OPTION_ARG_NONE, &repeat, N_("Enable repeat playback order"), NULL },
+	{ "no-repeat", 0, 0, G_OPTION_ARG_NONE, &no_repeat, N_("Disable repeat playback order"), NULL },
+	{ "shuffle", 0, 0, G_OPTION_ARG_NONE, &shuffle, N_("Enable shuffle playback order"), NULL },
+	{ "no-shuffle", 0, 0, G_OPTION_ARG_NONE, &no_shuffle, N_("Disable shuffle playback order"), NULL },
 
 	{ "set-volume", 0, 0, G_OPTION_ARG_DOUBLE, &set_volume, N_("Set the playback volume"), NULL },
 	{ "volume-up", 0, 0, G_OPTION_ARG_NONE, &volume_up, N_("Increase the playback volume"), NULL },
@@ -697,7 +707,11 @@ main (int argc, char **argv)
 				       &error);
 	if (mpris == NULL || proxy_has_name_owner (mpris) == FALSE) {
 		g_warning ("MPRIS D-Bus interface not available, some things won't work");
-		if (next || previous || (seek != 0) || play || do_pause || play_pause || stop || volume_up || volume_down || (set_volume > -0.01)) {
+		if (next   || previous  || (seek != 0) ||
+		    play   || do_pause  || play_pause  ||
+		    stop   || volume_up || volume_down ||
+		    repeat || no_repeat || shuffle     ||
+		    no_shuffle || (set_volume > -0.01)) {
 			exit (1);
 		}
 	}
@@ -730,6 +744,7 @@ main (int argc, char **argv)
 	    play_uri || other_stuff ||
 	    play || do_pause || play_pause || stop ||
 	    print_playing || print_playing_format ||
+	    repeat || no_repeat || shuffle || no_shuffle ||
 	    (set_volume > -0.01) || volume_up || volume_down || print_volume /*|| mute || unmute*/ || (set_rating > -0.01))
 		no_present = TRUE;
 
@@ -743,6 +758,48 @@ main (int argc, char **argv)
 		rb_debug ("rate song");
 
 		rate_song (mpris, set_rating);
+	}
+
+	if (repeat) {
+		g_dbus_proxy_call_sync (mpris,
+					"org.freedesktop.DBus.Properties.Set",
+					g_variant_new ("(ssv)", "org.mpris.MediaPlayer2.Player", "LoopStatus", g_variant_new_string ("Playlist")),
+					G_DBUS_CALL_FLAGS_NONE,
+					-1,
+					NULL,
+					&error);
+		annoy (&error);
+
+	} else if (no_repeat) {
+		g_dbus_proxy_call_sync (mpris,
+					"org.freedesktop.DBus.Properties.Set",
+					g_variant_new ("(ssv)", "org.mpris.MediaPlayer2.Player", "LoopStatus", g_variant_new_string ("None")),
+					G_DBUS_CALL_FLAGS_NONE,
+					-1,
+					NULL,
+					&error);
+		annoy (&error);
+	}
+
+	if (shuffle) {
+		g_dbus_proxy_call_sync (mpris,
+					"org.freedesktop.DBus.Properties.Set",
+					g_variant_new ("(ssv)", "org.mpris.MediaPlayer2.Player", "Shuffle", g_variant_new_boolean (TRUE)),
+					G_DBUS_CALL_FLAGS_NONE,
+					-1,
+					NULL,
+					&error);
+		annoy (&error);
+
+	} else if (no_shuffle) {
+		g_dbus_proxy_call_sync (mpris,
+					"org.freedesktop.DBus.Properties.Set",
+					g_variant_new ("(ssv)", "org.mpris.MediaPlayer2.Player", "Shuffle", g_variant_new_boolean (FALSE)),
+					G_DBUS_CALL_FLAGS_NONE,
+					-1,
+					NULL,
+					&error);
+		annoy (&error);
 	}
 
 	/* skip to next or previous track */
