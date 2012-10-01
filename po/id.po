@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
 "POT-Creation-Date: 2012-09-25 17:43+0000\n"
-"PO-Revision-Date: 2012-09-29 19:43+0700\n"
+"PO-Revision-Date: 2012-10-01 23:07+0700\n"
 "Last-Translator: Andika Triwidada <andika@gmail.com>\n"
 "Language-Team: Indonesian <gnome@i15n.org>\n"
 "Language: id_ID\n"
@@ -132,7 +132,7 @@ msgstr "Menit"
 
 #: ../data/ui/create-playlist.ui.h:5
 msgid "Create automatically updating playlist where:"
-msgstr "Buat daftar lagu yang otomatis diupdate dengan syarat:"
+msgstr "Buat daftar putar yang otomatis dimutakhirkan dimana:"
 
 #: ../data/ui/create-playlist.ui.h:6
 msgid "A_dd if any criteria are matched"
@@ -549,7 +549,7 @@ msgstr "Pesan galat"
 
 #: ../data/ui/song-info.ui.h:17
 msgid "File name:"
-msgstr "Nama file:"
+msgstr "Nama berkas:"
 
 #: ../data/ui/song-info.ui.h:19
 msgid "Location:"
@@ -624,7 +624,7 @@ msgstr "Nyatakan berkas yang memuat konfigurasi tersimpan"
 
 #: ../lib/eggsmclient.c:229
 msgid "FILE"
-msgstr "FILE"
+msgstr "BERKAS"
 
 #: ../lib/eggsmclient.c:232
 msgid "Specify session management ID"
@@ -1347,7 +1347,7 @@ msgstr "_Buat CD audio..."
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:96
 msgid "Create an audio CD from playlist"
-msgstr "Buat CD audio dari daftar lagu"
+msgstr "Buat CD audio dari daftar putar"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:98
 msgid "Duplicate Audio CD..."
@@ -1740,7 +1740,7 @@ msgstr "Buat daftar putar baru pada perangkat ini"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:93
 msgid "Delete Playlist"
-msgstr "Hapus Daftar Lagu _Baru..."
+msgstr "Hapus Daftar Putar"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:94
 msgid "Delete this playlist"
@@ -1880,19 +1880,25 @@ msgid ""
 "initialize the iPod, please fill in the information below. If the device is "
 "not an iPod, or you do not wish to initialize it, please click cancel."
 msgstr ""
+"Rhythmbox telah mendeteksi perangkat yang mungkin adalah iPod yang belum "
+"diinisialisasi atau rusak. Ini mesti diinisialisasi sebelum Rhythmbox dapat "
+"memakainya, tapi ini akan merusak sebarang metadata lagu yang telah ada. "
+"Bila Anda menghendaki Rhythmbox untuk menginisialisasi iPod, harap isi "
+"informasi di bawah. Bila perangkat bukan iPod atau Anda tidak ingin "
+"menginisialisasinya, harap klik batal."
 
 #: ../plugins/ipod/ipod-init.ui.h:6
 msgid "Do you want to initialize your iPod?"
-msgstr ""
+msgstr "Apakah Anda ingin menginisialisasi iPod Anda?"
 
 #: ../plugins/ipod/ipod.plugin.in.h:1
-#, fuzzy
 msgid "Portable Players - iPod"
-msgstr "<b>Pemutar Musik Portabel</b>"
+msgstr "Pemutar Musik Portabel - iPod"
 
 #: ../plugins/ipod/ipod.plugin.in.h:2
 msgid "Support for Apple iPod devices (show the content, play from device)"
 msgstr ""
+"Dukungan bagi perangkat iPod Apple (menampilkan isi, memutar dari perangkat)"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:99 ../plugins/ipod/rb-ipod-plugin.c:108
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:119 ../shell/rb-playlist-manager.c:203
@@ -1908,14 +1914,12 @@ msgid "Display iPod properties"
 msgstr "Tampilkan properti iPod"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:105 ../shell/rb-shell-clipboard.c:177
-#, fuzzy
 msgid "_New Playlist"
-msgstr "Daftar Putar Baru"
+msgstr "_Daftar Putar Baru"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:106
-#, fuzzy
 msgid "Add new playlist to iPod"
-msgstr "Simpan daftar lagu ke dalam file"
+msgstr "Tambahkan daftar putar baru ke iPod"
 
 #: ../plugins/ipod/rb-ipod-plugin.c:109 ../shell/rb-playlist-manager.c:204
 msgid "Rename playlist"
@@ -1932,7 +1936,7 @@ msgstr "Hapus daftar putar"
 
 #: ../plugins/ipod/rb-ipod-source.c:384
 msgid "Unable to initialize new iPod"
-msgstr ""
+msgstr "Tak bisa menginisialisasi iPod baru"
 
 #: ../plugins/ipod/rb-ipod-source.c:1424
 #: ../podcast/rb-podcast-main-source.c:70
@@ -1952,7 +1956,7 @@ msgstr "Radio Internet"
 
 #: ../plugins/iradio/iradio.plugin.in.h:2
 msgid "Support for broadcasting services transmitted via the Internet"
-msgstr ""
+msgstr "Dukungan untuk layanan siaran yang dipancarkan melalui internet"
 
 #: ../plugins/iradio/rb-iradio-source.c:159
 msgid "New Internet _Radio Station..."
@@ -1995,9 +1999,8 @@ msgid "New Internet Radio Station"
 msgstr "Tambah Stasiun Radio Internet"
 
 #: ../plugins/iradio/rb-iradio-source.c:983
-#, fuzzy
 msgid "URL of internet radio station:"
-msgstr "Tambah Stasiun Radio Internet"
+msgstr "URL stasiun radio internet:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
@@ -2016,12 +2019,12 @@ msgstr "%lu kbps"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:582
 msgid "Unable to change station property"
-msgstr ""
+msgstr "Tak bisa mengubah properti stasiun"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:582
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
-msgstr ""
+msgstr "Tak bisa mengubah URI stasiun ke %s, karena stasiun tersebut telah ada"
 
 #: ../plugins/iradio/station-properties.ui.h:5
 msgid "L_ocation:"
@@ -2033,12 +2036,11 @@ msgstr "LIRC"
 
 #: ../plugins/lirc/rblirc.plugin.in.h:2
 msgid "Control Rhythmbox using an infrared remote control"
-msgstr ""
+msgstr "Kendalikan Rhythmbox memakai pengendali jarak jauh infra merah"
 
 #: ../plugins/lyrics/LyricsConfigureDialog.py:103
-#, fuzzy
 msgid "Choose lyrics folder..."
-msgstr "Pilih folder tujuan"
+msgstr "Pilih folder lirik lagu..."
 
 #: ../plugins/lyrics/lyrics.plugin.in.h:1
 msgid "Song Lyrics"
@@ -2046,21 +2048,19 @@ msgstr "Lirik Lagu"
 
 #: ../plugins/lyrics/lyrics.plugin.in.h:2
 msgid "Fetch song lyrics from the Internet"
-msgstr ""
+msgstr "Ambil lirik lagu dari internet"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:1
-#, fuzzy
 msgid "Search engines"
-msgstr "<b>Mesin Pencari</b>"
+msgstr "Mesin pencari"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:2
 msgid "Browse..."
 msgstr "Ramban..."
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:3
-#, fuzzy
 msgid "Lyrics Folder"
-msgstr "<b>Folder Lirik</b>"
+msgstr "Folder Lirik Lagu"
 
 #: ../plugins/lyrics/lyrics.py:164 ../plugins/lyrics/lyrics.py:166
 #: ../plugins/lyrics/lyrics.py:175
@@ -2109,23 +2109,24 @@ msgid "Dark Lyrics (darklyrics.com)"
 msgstr "Dark Lyrics (darklyrics.com)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
-#, fuzzy
 msgid "Magnatune online music store"
-msgstr "Toko Magnatune"
+msgstr "Toko musik daring Magnatune"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:2
 msgid "Magnatune is an online record label that is not evil.\n"
-msgstr ""
+msgstr "Magnatune adalah label rekaman daring yang tidak jahat.\n"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:4
 msgid "    * Free listening of all songs"
-msgstr ""
+msgstr "    * Bebas mendengar semua lagu"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:5
 msgid ""
 "    * Paid members get totally unlimited downloading of the entire catalog "
 "(no other service allows that)"
 msgstr ""
+"    * Anggota berbayar mendapat jatah pengunduhan tanpa batas atas seluruh "
+"katalog (tak ada layanan lain yang mengijinkan hal itu)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:7
 #, no-c-format
@@ -2133,20 +2134,24 @@ msgid ""
 "    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's "
 "worth joining"
 msgstr ""
+"    * !0% dari biaya keanggotaan Magnatune Anda disalurkan ke Rhythmbox/"
+"GNOME - ada gunanya bergabung"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:8
 msgid ""
 "    * Open-Source friendly file formats: MP3s and WAVs, but also OGG and "
 "FLAC files."
 msgstr ""
+"    * Format berkas yang bersahabat dengan Open Source: MP3 dan WAV, juga "
+"berkas OGG dan FLAC."
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:9
 msgid "    * All albums and artists hand-picked"
-msgstr ""
+msgstr "    * Semua album dan artis dipilih secara khusu"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:10
 msgid "You can find more information at "
-msgstr ""
+msgstr "Anda dapat menemukan informasi lebih jauh di "
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:11
 msgid "http://www.magnatune.com/"
@@ -2161,6 +2166,8 @@ msgid ""
 "Adds support to Rhythmbox for playing and purchasing from the Magnatune "
 "online music store"
 msgstr ""
+"Menambah dukungan ke Rhythmbox untuk memutar dan membeli dari toko musing "
+"daring Magnatune"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
 msgid "Magnatune Information"
@@ -2192,7 +2199,7 @@ msgstr "_Format audio yang disukai:"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:8
 msgid "Get an account at "
-msgstr "Dapatkan akun di"
+msgstr "Dapatkan akun di "
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:9
 msgid "http://magnatune.com/compare_plans"
@@ -2200,7 +2207,7 @@ msgstr "http://magnatune.com/compare_plans"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:10
 msgid "Find out about Magnatune at "
-msgstr "Cari tahu tentang Magnatune di"
+msgstr "Cari tahu tentang Magnatune di "
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:11
 msgid "http://www.magnatune.com/info/"
@@ -2807,6 +2814,8 @@ msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr ""
+"URL \"%s\" telah pernah ditambahkan sebagai stasiun radio. Bila ini adalah "
+"asupan podcast, harap hapus stasiun radio tersebut."
 
 #: ../podcast/rb-podcast-manager.c:1114
 #, c-format
@@ -2815,6 +2824,8 @@ msgid ""
 "or the feed may be broken. Would you like Rhythmbox to attempt to use it "
 "anyway?"
 msgstr ""
+"URL '%s' nampaknya bukan asupan podcast. Mungkin itu URL yang salah, atau "
+"asupannya rusak. Apakah Anda ingin agar Rhythmbox tetap mencoba memakainya?"
 
 #: ../podcast/rb-podcast-manager.c:1245
 msgid "Podcast"
@@ -2823,83 +2834,75 @@ msgstr "Podcast"
 #: ../podcast/rb-podcast-manager.c:2185
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
-msgstr ""
+msgstr "Ada masalah ketika menambahkan podcast ini: %s. Harap periksa URL: %s"
 
 #: ../podcast/rb-podcast-parse.c:181
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to check file type: %s"
-msgstr "Gagal mengenali tipe file"
+msgstr "Gagal memeriksa tipe berkas: %s"
 
 #: ../podcast/rb-podcast-parse.c:200
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected file type: %s"
-msgstr "Ketikkan nama berkas"
+msgstr "Tipe berkas tak diharapkan: %s"
 
 #: ../podcast/rb-podcast-parse.c:223
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse the feed contents"
-msgstr "Tidak dapat membaca URI \"%s\"\n"
+msgstr "Tak bisa mengurai isi asupan"
 
 #: ../podcast/rb-podcast-parse.c:237
 #, c-format
 msgid "The feed does not contain any downloadable items"
-msgstr ""
+msgstr "Asupan tak memuat sebarang butir yang dapat diunduh"
 
 #: ../podcast/rb-podcast-properties-dialog.c:195
-#, fuzzy
 msgid "Unable to display requested URI"
-msgstr "Tidak dapat membaca URI \"%s\"\n"
+msgstr "Tak bisa menampilkan URI yang diminta"
 
 #: ../podcast/rb-podcast-properties-dialog.c:570
 msgid "Not Downloaded"
 msgstr "Tak Diunduh"
 
 #: ../podcast/rb-podcast-source.c:115
-#, fuzzy
 msgid "_New Podcast Feed..."
-msgstr "Berlangganan ke podcast baru"
+msgstr "Asupa_n Podcast Baru..."
 
 #: ../podcast/rb-podcast-source.c:116
 msgid "Subscribe to a new podcast feed"
-msgstr ""
+msgstr "Berlangganan ke asupan podcast baru"
 
 #: ../podcast/rb-podcast-source.c:118
-#, fuzzy
 msgid "Download _Episode"
-msgstr "Properti Episoda"
+msgstr "Undu _Episoda"
 
 #: ../podcast/rb-podcast-source.c:119
-#, fuzzy
 msgid "Download Podcast Episode"
-msgstr "Unduh episoda terbaru"
+msgstr "Unduh Episoda Podcast"
 
 #: ../podcast/rb-podcast-source.c:121
-#, fuzzy
 msgid "_Cancel Download"
-msgstr "Batalkan Unduhan"
+msgstr "_Batalkan Unduhan"
 
 #: ../podcast/rb-podcast-source.c:122
-#, fuzzy
 msgid "Cancel Episode Download"
-msgstr "Unduh episoda terbaru"
+msgstr "Batalkan Pengunduhan Episoda"
 
 #: ../podcast/rb-podcast-source.c:125
-#, fuzzy
 msgid "Episode Properties"
 msgstr "Properti Episoda"
 
 #: ../podcast/rb-podcast-source.c:127
 msgid "_Update Podcast Feed"
-msgstr ""
+msgstr "Asupa_n Podcast Baru…"
 
 #: ../podcast/rb-podcast-source.c:128
-#, fuzzy
 msgid "Update Feed"
-msgstr "URL Asupan:"
+msgstr "Mutakhirkan Asupan"
 
 #: ../podcast/rb-podcast-source.c:130
 msgid "_Delete Podcast Feed"
-msgstr ""
+msgstr "Hapus Asupan Po_dcast"
 
 #: ../podcast/rb-podcast-source.c:131
 msgid "Delete Feed"
@@ -2907,30 +2910,29 @@ msgstr "Hapus Asupan"
 
 #: ../podcast/rb-podcast-source.c:133
 msgid "_Update All Feeds"
-msgstr ""
+msgstr "M_utakhirkan Semua Asupan"
 
 #: ../podcast/rb-podcast-source.c:134
 msgid "Update all feeds"
-msgstr ""
+msgstr "Mutakhirkan semua asupan"
 
 #: ../podcast/rb-podcast-source.c:140 ../sources/rb-auto-playlist-source.c:103
 #: ../sources/rb-browser-source.c:148
 #: ../sources/rb-static-playlist-source.c:123
-#, fuzzy
 msgid "Search all fields"
-msgstr "Pencarian Semua Akun"
+msgstr "Carian semua ruas"
 
 #: ../podcast/rb-podcast-source.c:141
 msgid "Search podcast feeds"
-msgstr ""
+msgstr "Cari asupan podcast"
 
 #: ../podcast/rb-podcast-source.c:142
 msgid "Search podcast episodes"
-msgstr ""
+msgstr "Cari episoda podcast"
 
 #: ../podcast/rb-podcast-source.c:520
 msgid "Delete the podcast feed and downloaded files?"
-msgstr ""
+msgstr "Hapus asupan podcast dan berkas yang terunduh?"
 
 #: ../podcast/rb-podcast-source.c:523
 msgid ""
@@ -2938,21 +2940,21 @@ msgid ""
 "Please note that you can delete the feed but keep the downloaded files by "
 "choosing to delete the feed only."
 msgstr ""
+"Bila Anda memilih untuk menghapus asupan dan berkas, mereka akan hilang "
+"selamanya. Harap catat bahwa Anda dapat menghapus asupan tapi mempertahankan "
+"berkas yang telah diunduh dengan memilih untuk hanya menghapus asupan."
 
 #: ../podcast/rb-podcast-source.c:531
-#, fuzzy
 msgid "Delete _Feed Only"
-msgstr "Hapus yang sudah dipilih"
+msgstr "Hapus _Asupan Saja"
 
 #: ../podcast/rb-podcast-source.c:538
-#, fuzzy
 msgid "_Delete Feed And Files"
-msgstr "Menghapus berkas dan folder"
+msgstr "Hapus Asupan _Dan Berkas"
 
 #: ../podcast/rb-podcast-source.c:616 ../podcast/rb-podcast-source.c:1464
-#, fuzzy
 msgid "Downloaded"
-msgstr "Terunduh"
+msgstr "Diunduh"
 
 #: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1466
 msgid "Failed"
@@ -2974,7 +2976,7 @@ msgstr "Galat Podcast"
 
 #: ../podcast/rb-podcast-source.c:1138
 msgid "Delete the podcast episode and downloaded file?"
-msgstr ""
+msgstr "Hapus episoda podcast dan berkas yang terunduh?"
 
 #: ../podcast/rb-podcast-source.c:1141
 msgid ""
@@ -2982,14 +2984,18 @@ msgid ""
 "lost.  Please note that you can delete the episode but keep the downloaded "
 "file by choosing to delete the episode only."
 msgstr ""
+"Bila Anda memilih untuk menghapus episoda dan berkas, mereka akan hilang "
+"selamanya. Harap catat bahwa Anda dapat menghapus episoda tapi "
+"mempertahankan berkas yang telah diunduh dengan memilih untuk hanya "
+"menghapus episoda."
 
 #: ../podcast/rb-podcast-source.c:1149
 msgid "Delete _Episode Only"
-msgstr ""
+msgstr "Hapus _Episoda Saja"
 
 #: ../podcast/rb-podcast-source.c:1155
 msgid "_Delete Episode And File"
-msgstr ""
+msgstr "Hapus Episoda _Dan Berkas"
 
 #: ../podcast/rb-podcast-source.c:1258
 #, c-format
@@ -3021,7 +3027,7 @@ msgstr "Status"
 
 #: ../remote/dbus/rb-client.c:81
 msgid "Don't start a new instance of Rhythmbox"
-msgstr ""
+msgstr "Jangan memulai instansi baru Rhythmbox"
 
 #: ../remote/dbus/rb-client.c:82 ../shell/rb-shell.c:353
 msgid "Quit Rhythmbox"
@@ -3029,11 +3035,11 @@ msgstr "Keluar dari Rhythmbox"
 
 #: ../remote/dbus/rb-client.c:83
 msgid "Check if Rhythmbox is already running"
-msgstr ""
+msgstr "Periksa apakah Rhythmbox telah berjalan"
 
 #: ../remote/dbus/rb-client.c:85
 msgid "Don't present an existing Rhythmbox window"
-msgstr ""
+msgstr "Jangan sajikan jendela Rhythmbox yang telah ada"
 
 #: ../remote/dbus/rb-client.c:87
 msgid "Jump to next song"
@@ -3045,15 +3051,15 @@ msgstr "Lompat ke lagu sebelumnya"
 
 #: ../remote/dbus/rb-client.c:89
 msgid "Seek in current track"
-msgstr ""
+msgstr "Seek dalam trek saat ini"
 
 #: ../remote/dbus/rb-client.c:91
 msgid "Resume playback if currently paused"
-msgstr ""
+msgstr "Lanjutkan memutar bila kini sedang jeda"
 
 #: ../remote/dbus/rb-client.c:92
 msgid "Pause playback if currently playing"
-msgstr ""
+msgstr "Istirahatkan memutar bila kini sedang diputar"
 
 #: ../remote/dbus/rb-client.c:93
 msgid "Toggle play/pause mode"
@@ -3062,97 +3068,87 @@ msgstr "Ubah mode main/istirahat"
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
 #: ../remote/dbus/rb-client.c:96
 msgid "Play a specified URI, importing it if necessary"
-msgstr ""
+msgstr "Mainkan URI yang dinyatakan, mengimpornya bila perlu"
 
 #: ../remote/dbus/rb-client.c:96
-#, fuzzy
 msgid "URI to play"
-msgstr "Tidak ada URI untuk dimainkan"
+msgstr "URI untuk dimainkan"
 
 #: ../remote/dbus/rb-client.c:97
-#, fuzzy
 msgid "Add specified tracks to the play queue"
-msgstr "Tambahkan trek acak lagi ke antrian main"
+msgstr "Tambahkan trek yang dinyatakan ke antrian main"
 
 #: ../remote/dbus/rb-client.c:98
 msgid "Empty the play queue before adding new tracks"
-msgstr ""
+msgstr "Kosongkan antrian main sebelum menambah trek baru"
 
 #: ../remote/dbus/rb-client.c:100
-#, fuzzy
 msgid "Print the title and artist of the playing song"
-msgstr ""
-"Cetak waktu yang lagu yang sudah dimainkan saat ini dan langsung keluar"
+msgstr "Cetak judul dan artis dari lagu yang sedang diputar"
 
 #: ../remote/dbus/rb-client.c:101
 msgid "Print formatted details of the song"
-msgstr ""
+msgstr "Cetak rincian terformat dari lagu"
 
 #: ../remote/dbus/rb-client.c:102
 msgid "Select the source matching the specified URI"
-msgstr ""
+msgstr "Pilih sumber yang cocok dengan URI yang dinyatakan"
 
 #: ../remote/dbus/rb-client.c:102
-#, fuzzy
 msgid "Source to select"
-msgstr "Untuk memilih objek"
+msgstr "Sumber untuk dipilih"
 
 #: ../remote/dbus/rb-client.c:103
 msgid "Activate the source matching the specified URI"
-msgstr ""
+msgstr "Aktifkan pencocokan sumber dari URI yang dinyatakan"
 
 #: ../remote/dbus/rb-client.c:103
-#, fuzzy
 msgid "Source to activate"
-msgstr "IID untuk diaktivasi"
+msgstr "Sumber untuk diaktivasi"
 
 #: ../remote/dbus/rb-client.c:104
 msgid "Play from the source matching the specified URI"
-msgstr ""
+msgstr "Putar dari sumber yang cocok dengan URI yang dinyatakan"
 
 #: ../remote/dbus/rb-client.c:104
 msgid "Source to play from"
-msgstr ""
+msgstr "Sumber untuk diputar"
 
 #: ../remote/dbus/rb-client.c:106
-#, fuzzy
 msgid "Set the playback volume"
-msgstr "Naikkan volume suara"
+msgstr "Atur volume putar"
 
 #: ../remote/dbus/rb-client.c:107
-#, fuzzy
 msgid "Increase the playback volume"
-msgstr "Naikkan volume suara"
+msgstr "Naikkan volume putar"
 
 #: ../remote/dbus/rb-client.c:108
-#, fuzzy
 msgid "Decrease the playback volume"
-msgstr "Turunkan volume suara"
+msgstr "Turunkan volume putar"
 
 #: ../remote/dbus/rb-client.c:109
 msgid "Print the current playback volume"
-msgstr ""
+msgstr "Cetak volume putar saat ini"
 
 #. { "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
 #. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
 #: ../remote/dbus/rb-client.c:112
-#, fuzzy
 msgid "Set the rating of the current song"
-msgstr "Informasi lagu yang sedang diputar"
+msgstr "Atur nilai dari lagu yang sedang diputar"
 
 #: ../remote/dbus/rb-client.c:459 ../remote/dbus/rb-client.c:483
 msgid "Not playing"
 msgstr "Sedang berhenti"
 
 #: ../remote/dbus/rb-client.c:909
-#, fuzzy, c-format
+#, c-format
 msgid "Playback volume is %f.\n"
-msgstr "Volume dibisukan."
+msgstr "Volume putar adalah %f.\n"
 
 #: ../rhythmdb/rhythmdb.c:768
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't access %s: %s"
-msgstr "Tidak dapat mengakses tempat sampah."
+msgstr "Tak bisa mengakses %s: %s"
 
 #. Translators: this is an example artist name.  It should
 #. * not be translated literally, but could be replaced with
@@ -3185,11 +3181,11 @@ msgstr "Ticket To Ride"
 #: ../rhythmdb/rhythmdb.c:2263
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
-msgstr ""
+msgstr "Pengaya GStreamer tambahan diperlukan untuk memutar berkas ini: %s"
 
 #: ../rhythmdb/rhythmdb.c:2295
 msgid "invalid unicode in error message"
-msgstr ""
+msgstr "Unicode yang tak valid dalam pesan galat"
 
 #: ../rhythmdb/rhythmdb.c:2362
 #, c-format
@@ -3198,7 +3194,7 @@ msgstr "Berkas kosong"
 
 #: ../rhythmdb/rhythmdb.c:3034
 msgid "Could not load the music database:"
-msgstr ""
+msgstr "Tak bisa memuat basis data musik:"
 
 #: ../rhythmdb/rhythmdb.c:4450
 #, c-format
@@ -3248,15 +3244,16 @@ msgid ""
 "The database was created by a later version of Rhythmbox.  This version of "
 "Rhythmbox cannot read the database."
 msgstr ""
+"Basis data dibuat oleh versi Rhythmbox yang lebih baru. Versi Rhythmbox ini "
+"tak bisa membaca basis data tersebut."
 
 #: ../sample-plugins/sample-python/sample-python.plugin.in.h:1
-#, fuzzy
 msgid "Python Sample Plugin"
-msgstr "Plugin Uji Python"
+msgstr "Pengaya Contoh Python"
 
 #: ../sample-plugins/sample-python/sample-python.plugin.in.h:2
 msgid "A sample plugin in Python with no features"
-msgstr ""
+msgstr "Pengaya contoh dalam Python tanpa fitur"
 
 #: ../sample-plugins/sample-python/sample-python.py:20
 msgid "Python Source"
@@ -3265,76 +3262,69 @@ msgstr "Sumber Python"
 #: ../sample-plugins/sample/rb-sample-plugin.c:82
 #: ../sample-plugins/sample/rb-sample-plugin.c:89
 #: ../sample-plugins/sample/sample.plugin.in.h:1
-#, fuzzy
 msgid "Sample Plugin"
-msgstr "Contoh Plugin"
+msgstr "Pengaya Contoh"
 
 #: ../sample-plugins/sample/sample.plugin.in.h:2
 msgid "A sample plugin in C with no features"
-msgstr ""
+msgstr "Pengaya contoh dalam C tanpa fitur"
 
 #: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:1
-#, fuzzy
 msgid "Vala Sample Plugin"
-msgstr "Plugin dukungan Vala"
+msgstr "Pengaya Contoh Vala"
 
 #: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:2
 msgid "A sample plugin in Vala with no features"
-msgstr ""
+msgstr "Pengaya contoh dalam Vala tanpa fitur"
 
 #: ../shell/rb-playlist-manager.c:180
-#, fuzzy
 msgid "MPEG Version 3.0 URL"
-msgstr "DivX MPEG-4 Versi %d"
+msgstr "URL MPEG Versi 3.0"
 
 #: ../shell/rb-playlist-manager.c:181
-#, fuzzy
 msgid "Shoutcast playlist"
-msgstr "Daftar main ShoutCast MP3"
+msgstr "Daftar putar ShoutCast"
 
 #: ../shell/rb-playlist-manager.c:182
 msgid "XML Shareable Playlist Format"
-msgstr ""
+msgstr "Format Daftar Putar XML Yang Dapat Dibagikan"
 
 #. Submenu of Music
 #: ../shell/rb-playlist-manager.c:189
-#, fuzzy
 msgid "_Playlist"
-msgstr "Daftar Putar"
+msgstr "Daftar _Putar"
 
 #: ../shell/rb-playlist-manager.c:191
 msgid "_New Playlist..."
-msgstr "Buat Daftar Lagu _Baru..."
+msgstr "Buat Daftar Putar _Baru…"
 
 #: ../shell/rb-playlist-manager.c:192
 msgid "Create a new playlist"
-msgstr "Buat daftar lagu yang baru"
+msgstr "Buat daftar putar yang baru"
 
 #: ../shell/rb-playlist-manager.c:194
 msgid "New _Automatic Playlist..."
-msgstr "Buat daftar lagu baru otomatis"
+msgstr "Buat Daftar Put_ar Baru Otomatis..."
 
 #: ../shell/rb-playlist-manager.c:195
 msgid "Create a new automatically updating playlist"
-msgstr "Buat daftar lagu yang otomatis diupdate"
+msgstr "Buat daftar putar yang otomatis dimutakhirkan"
 
 #: ../shell/rb-playlist-manager.c:197
-#, fuzzy
 msgid "_Load from File..."
-msgstr "Muat Dari _Berkas:"
+msgstr "Muat dari _Berkas…"
 
 #: ../shell/rb-playlist-manager.c:198
 msgid "Choose a playlist to be loaded"
-msgstr "Pilih daftar lagu yang hendak dibuka"
+msgstr "Pilih daftar putar yang hendak dimuat"
 
 #: ../shell/rb-playlist-manager.c:200 ../shell/rb-playlist-manager.c:218
-#, fuzzy
 msgid "_Save to File..."
-msgstr "Untuk Menyimpan Berkas"
+msgstr "Simpan ke Berkas..."
 
 #: ../shell/rb-playlist-manager.c:201
 msgid "Save a playlist to a file"
-msgstr "Simpan daftar lagu ke dalam file"
+msgstr "Simpan daftar putar ke dalam berkas"
 
 #: ../shell/rb-playlist-manager.c:209
 msgid "_Edit..."
@@ -3342,103 +3332,95 @@ msgstr "_Sunting..."
 
 #: ../shell/rb-playlist-manager.c:210
 msgid "Change this automatic playlist"
-msgstr "Ubah daftar lagu otomatis ini"
+msgstr "Ubah daftar putar otomatis ini"
 
 #: ../shell/rb-playlist-manager.c:212
-#, fuzzy
 msgid "_Queue All Tracks"
-msgstr "Pilih semua trek"
+msgstr "_Antrikan Semua Trek"
 
 #: ../shell/rb-playlist-manager.c:213
 msgid "Add all tracks in this playlist to the queue"
-msgstr ""
+msgstr "Tambahkan semua trek dalam daftar putar ini ke antrian"
 
 #: ../shell/rb-playlist-manager.c:215
-#, fuzzy
 msgid "_Shuffle Playlist"
-msgstr "Acak daftar putar"
+msgstr "_Acak Daftar Putar"
 
 #: ../shell/rb-playlist-manager.c:216
 msgid "Shuffle the tracks in this playlist"
-msgstr ""
+msgstr "Acak urutan trek dalam daftar putar ini"
 
 #: ../shell/rb-playlist-manager.c:219
-#, fuzzy
 msgid "Save the play queue to a file"
-msgstr "Simpan daftar lagu ke dalam file"
+msgstr "Simpan antrian main ke dalam berkas"
 
 #: ../shell/rb-playlist-manager.c:323
-#, fuzzy
 msgid "Unnamed playlist"
-msgstr "Hapus Daftar Putar"
+msgstr "Daftar putar tanpa nama"
 
 #: ../shell/rb-playlist-manager.c:366
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr ""
+"Berkas daftar putar mungkin dalam format yang tak dikenal atau terkorupsi."
 
 #: ../shell/rb-playlist-manager.c:794
-#, fuzzy
 msgid "Untitled Playlist"
-msgstr "Hapus Daftar Putar"
+msgstr "Daftar Putar Tanpa Nama"
 
 #: ../shell/rb-playlist-manager.c:1086
-#, fuzzy
 msgid "Couldn't read playlist"
-msgstr "Tidak dapat membaca konfigurasi lirc."
+msgstr "Tidak dapat membaca daftar putar"
 
 #: ../shell/rb-playlist-manager.c:1112
 msgid "All Files"
 msgstr "Semua Berkas"
 
 #: ../shell/rb-playlist-manager.c:1117
-#, fuzzy
 msgid "Load Playlist"
-msgstr "Hapus Daftar Putar"
+msgstr "Muat Daftar Putar"
 
 #: ../shell/rb-playlist-manager.c:1173 ../sources/rb-playlist-source.c:669
-#, fuzzy
 msgid "Couldn't save playlist"
-msgstr "Saya tidak dapat menyimpan sisa data"
+msgstr "Tak bisa menyimpan daftar putar"
 
 #: ../shell/rb-playlist-manager.c:1173
 msgid "Unsupported file extension given."
-msgstr ""
+msgstr "Ekstensi berkas yang tak didukung diberikan."
 
 #: ../shell/rb-playlist-manager.c:1469
-#, fuzzy, c-format
+#, c-format
 msgid "Playlist %s already exists"
-msgstr "Filter \"%s\" sudah ada."
+msgstr "Daftar putar %s sudah ada"
 
 #: ../shell/rb-playlist-manager.c:1499 ../shell/rb-playlist-manager.c:1532
 #: ../shell/rb-playlist-manager.c:1572 ../shell/rb-playlist-manager.c:1615
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown playlist: %s"
-msgstr "Hapus Daftar Putar"
+msgstr "Daftar putar tak dikenal: %s"
 
 #: ../shell/rb-playlist-manager.c:1540 ../shell/rb-playlist-manager.c:1580
-#, fuzzy, c-format
+#, c-format
 msgid "Playlist %s is an automatic playlist"
-msgstr "Buat daftar lagu baru otomatis"
+msgstr "Daftar putar %s adalah daftar putar otomatis"
 
 #: ../shell/rb-removable-media-manager.c:150
-#, fuzzy
 msgid "_Eject"
-msgstr "_Keluarkan"
+msgstr "K_eluarkan"
 
 #: ../shell/rb-removable-media-manager.c:151
-#, fuzzy
 msgid "Eject this medium"
-msgstr "Mengeluarkan media dari pengandar"
+msgstr "Mengeluarkan media ini"
 
 #: ../shell/rb-removable-media-manager.c:153
-#, fuzzy
 msgid "_Check for New Devices"
-msgstr "Periksa Episoda Baru"
+msgstr "_Periksa Perangkat Baru"
 
 #: ../shell/rb-removable-media-manager.c:154
 msgid ""
 "Check for new media storage devices that have not been automatically detected"
 msgstr ""
+"Memeriksa apakah ada perangkat penyimpanan media baru yang belum terdeteksi "
+"secara otomatis"
 
 #: ../shell/rb-shell.c:336
 msgid "_Music"
@@ -3461,32 +3443,28 @@ msgid "_Help"
 msgstr "_Bantuan"
 
 #: ../shell/rb-shell.c:343
-#, fuzzy
 msgid "Add Music..."
-msgstr "Folder Musik"
+msgstr "Tambahkan Musik..."
 
 #: ../shell/rb-shell.c:344
-#, fuzzy
 msgid "Add music to the library"
-msgstr "Menambahkan pustaka pada target"
+msgstr "Menambahkan musik ke pustaka"
 
 #: ../shell/rb-shell.c:346
 msgid "_About"
 msgstr "Info progr_am"
 
 #: ../shell/rb-shell.c:347
-#, fuzzy
 msgid "Show information about Rhythmbox"
-msgstr "Tampilkan informasi tentang Evolution"
+msgstr "Tampilkan informasi tentang Rhythmbox"
 
 #: ../shell/rb-shell.c:349
 msgid "_Contents"
 msgstr "_Isi"
 
 #: ../shell/rb-shell.c:350
-#, fuzzy
 msgid "Display Rhythmbox help"
-msgstr "Tampilkan bantuan alamat"
+msgstr "Tampilkan bantuan Rhythmbox"
 
 #: ../shell/rb-shell.c:352
 msgid "_Quit"
@@ -3497,26 +3475,24 @@ msgid "Prefere_nces"
 msgstr "Pe_ngatur"
 
 #: ../shell/rb-shell.c:356
-#, fuzzy
 msgid "Edit Rhythmbox preferences"
-msgstr "Sunting preferensi Glade"
+msgstr "Sunting preferensi Rhythmbox"
 
 #: ../shell/rb-shell.c:358
 msgid "Plu_gins"
-msgstr ""
+msgstr "Pen_gaya"
 
 #: ../shell/rb-shell.c:359
 msgid "Change and configure plugins"
-msgstr ""
+msgstr "Ubah dan tata pengaya"
 
 #: ../shell/rb-shell.c:361
-#, fuzzy
 msgid "Show _All Tracks"
-msgstr "Tampilkan semua trek"
+msgstr "Tampilkan Semu_a Trek"
 
 #: ../shell/rb-shell.c:362
 msgid "Show all tracks in this music source"
-msgstr ""
+msgstr "Tunjukkan semua trek dalam sumber musik ini"
 
 #: ../shell/rb-shell.c:364
 msgid "_Jump to Playing Song"
@@ -3544,11 +3520,11 @@ msgstr "Ubah status mode pesta"
 
 #: ../shell/rb-shell.c:378
 msgid "Play _Queue as Side Pane"
-msgstr ""
+msgstr "_Antrian Putar sebagai Panel Sisi"
 
 #: ../shell/rb-shell.c:379
 msgid "Change whether the queue is visible as a source or a sidebar"
-msgstr ""
+msgstr "Mengubah apakah antrian nampak sebagai suatu sumber atau bilah sisi"
 
 #: ../shell/rb-shell.c:381
 msgid "S_tatusbar"
@@ -3560,21 +3536,19 @@ msgstr "Ubah tampilan statusbar"
 
 #: ../shell/rb-shell.c:384
 msgid "_Song Position Slider"
-msgstr ""
+msgstr "Penggeser Po_sisi Lagu"
 
 #: ../shell/rb-shell.c:385
 msgid "Change the visibility of the song position slider"
 msgstr "Ubah kenampakan penggeser posisi lagu"
 
 #: ../shell/rb-shell.c:387
-#, fuzzy
 msgid "_Album Art"
-msgstr "Judul Album"
+msgstr "Seni _Album"
 
 #: ../shell/rb-shell.c:388
-#, fuzzy
 msgid "Change the visibility of the album art display"
-msgstr "Ubah tampilan daftar sumber lagu"
+msgstr "Ubah kenampakan tampilan seni album"
 
 #: ../shell/rb-shell.c:390
 msgid "_Browse"
@@ -3589,18 +3563,16 @@ msgid "Change the music volume"
 msgstr "Ubah volume suara musik"
 
 #: ../shell/rb-shell.c:1951
-#, fuzzy
 msgid "Enable debug output"
 msgstr "Aktifkan keluaran awakutu"
 
 #: ../shell/rb-shell.c:1952
 msgid "Enable debug output matching a specified string"
-msgstr ""
+msgstr "Fungsikan keluaran awakutu yang cocok dengan string yang dinyatakan"
 
 #: ../shell/rb-shell.c:1953
-#, fuzzy
 msgid "Do not update the library with file changes"
-msgstr "Jangan update daftarnya"
+msgstr "Jangan mutakhirkan pustaka dengan perubahan berkas"
 
 #: ../shell/rb-shell.c:1954
 msgid "Do not register the shell"
@@ -3611,21 +3583,19 @@ msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Jangan simpan data secara permanen (berarti --no-registration)"
 
 #: ../shell/rb-shell.c:1956
-#, fuzzy
 msgid "Disable loading of plugins"
-msgstr "Jangan buka plugin."
+msgstr "Nonaktifkan pemuatan pengaya"
 
 #: ../shell/rb-shell.c:1957
 msgid "Path for database file to use"
-msgstr "File database yang akan dipakai"
+msgstr "Path berkas basis data yang akan dipakai"
 
 #: ../shell/rb-shell.c:1958
-#, fuzzy
 msgid "Path for playlists file to use"
-msgstr "File database yang akan dipakai"
+msgstr "Path daftar putar yang akan dipakai"
 
 #: ../shell/rb-shell.c:1969
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s\n"
 "Run '%s --help' to see a full list of available command line options.\n"
@@ -3647,7 +3617,7 @@ msgstr "Tampilkan Semua"
 
 #: ../shell/rb-shell.c:2353
 msgid "Error while saving song information"
-msgstr ""
+msgstr "Galat saat menyimpan informasi lagu"
 
 #. Translators: %s is the song name
 #: ../shell/rb-shell.c:2633
@@ -3668,19 +3638,22 @@ msgid ""
 "the Free Software Foundation; either version 2 of the License, or\n"
 "(at your option) any later version.\n"
 msgstr ""
+"Rhythmbox adalah perangkat lunak bebas; Anda dapat menyebarluaskannya\n"
+"dan/atau mengubahnya di bawah syarat GNU General Public License\n"
+"sebagaimana dipublikasikan oleh Free Software Foundation; baik versi 2\n"
+"dari Lisensi, atau (terserah pilihan Anda) versi setelahnya.\n"
 
 #: ../shell/rb-shell.c:2715
-#, fuzzy
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
 "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 "GNU General Public License for more details.\n"
 msgstr ""
-"Manajer Daya didistribusikan dengan harapan akan berguna, tapi\n"
-"TANPA JAMINAN APAPUN; bahkan tanpa jaminan tak langsung (implied) tentang\n"
-"MERCHANTABILITY atau KECOCOKAN UNTUK SEBUAH TUJUAN KHUSUS. Lihat\n"
-"GNU General Public License untuk detil lebih lanjut."
+"Rhythmbox didistribusikan dengan harapan akan berguna, tapi\n"
+"TANPA JAMINAN APAPUN; bahkan tanpa jaminan tak langsung tentang\n"
+"KETERDAGANGAN atau KECOCOKAN UNTUK SEBUAH TUJUAN KHUSUS. Lihat\n"
+"GNU General Public License untuk detil lebih lanjut.\n"
 
 #: ../shell/rb-shell.c:2719
 msgid ""
@@ -3688,6 +3661,10 @@ msgid ""
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 msgstr ""
+"Anda seharusnya menerima salinan dari GNU General Public License\n"
+"bersama Rhythmbox; jika tidak, kirimkan surat Anda ke Free Software "
+"Foundation, Inc.,\n"
+"51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.\n"
 
 #: ../shell/rb-shell.c:2726
 msgid "Maintainers:"
@@ -3695,7 +3672,7 @@ msgstr "Pengelola:"
 
 #: ../shell/rb-shell.c:2729
 msgid "Former Maintainers:"
-msgstr "Pengelola Yang Lama:"
+msgstr "Pengelola Terdahulu:"
 
 #: ../shell/rb-shell.c:2732
 msgid "Contributors:"
@@ -3703,36 +3680,34 @@ msgstr "Kontributor:"
 
 #: ../shell/rb-shell.c:2734
 msgid "Music management and playback software for GNOME."
-msgstr "Pengatur musik dan pemutar lagu pada GNOME"
+msgstr "Pengatur musik dan pemutar lagu pada GNOME."
 
 #: ../shell/rb-shell.c:2743
 msgid "Rhythmbox Website"
 msgstr "Situs Web Rhythmbox"
 
 #: ../shell/rb-shell.c:2790 ../shell/rb-shell-preferences.c:162
-#, fuzzy
 msgid "Couldn't display help"
-msgstr "Tidak dapat menampilkan bantuan: %s"
+msgstr "Tidak dapat menampilkan bantuan"
 
 #: ../shell/rb-shell.c:2835
-#, fuzzy
 msgid "Configure Plugins"
-msgstr "Mengatur Plugin"
+msgstr "Mengatur Pengaya"
 
 #: ../shell/rb-shell.c:3287 ../sources/rb-play-queue-source.c:629
 #, c-format
 msgid "No registered source can handle URI %s"
-msgstr ""
+msgstr "Tak ada sumber terdaftar yang dapat menangani URI %s"
 
 #: ../shell/rb-shell.c:3616
 #, c-format
 msgid "No registered source matches URI %s"
-msgstr ""
+msgstr "Tak ada sumber terdaftar yang cocok dengan URI %s"
 
 #: ../shell/rb-shell.c:3649 ../shell/rb-shell.c:3692
 #, c-format
 msgid "Unknown song URI: %s"
-msgstr ""
+msgstr "URI lagu yang tak dikenal: %s"
 
 #: ../shell/rb-shell.c:3701
 #, c-format
@@ -3740,9 +3715,9 @@ msgid "Unknown property %s"
 msgstr "Properti tak dikenal %s"
 
 #: ../shell/rb-shell.c:3715
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid property type %s for property %s"
-msgstr "salah tipe pada properti"
+msgstr "Tipe properti %s yang tak valid bagi properti %s"
 
 #: ../shell/rb-shell-clipboard.c:151
 msgid "Select _All"
@@ -3794,7 +3769,7 @@ msgstr "_Hapus"
 
 #: ../shell/rb-shell-clipboard.c:170
 msgid "Remove each selected item from the library"
-msgstr ""
+msgstr "Hapus setiap butir yang dipilih dari pustaka"
 
 #: ../shell/rb-shell-clipboard.c:172
 msgid "_Move to Trash"
@@ -3813,9 +3788,8 @@ msgid "Add each selected song to a new playlist"
 msgstr "Tambahkan setiap lagu yang dipilih ke dalam daftar putar baru"
 
 #: ../shell/rb-shell-clipboard.c:180
-#, fuzzy
 msgid "Add _to Play Queue"
-msgstr "Tambahkan ke Antrian Main"
+msgstr "_Tambahkan ke Antrian Main"
 
 #: ../shell/rb-shell-clipboard.c:181
 msgid "Add each selected song to the play queue"
@@ -3827,16 +3801,15 @@ msgstr "Hapus"
 
 #: ../shell/rb-shell-clipboard.c:184
 msgid "Remove each selected item from the play queue"
-msgstr ""
+msgstr "Hapus setiap butir yang dipilih dari antrian main"
 
 #: ../shell/rb-shell-clipboard.c:187
 msgid "Pr_operties"
 msgstr "Pr_operti"
 
 #: ../shell/rb-shell-clipboard.c:188 ../shell/rb-shell-clipboard.c:191
-#, fuzzy
 msgid "Show information on each selected song"
-msgstr "Tampilkan informasi mengenai lagu ini"
+msgstr "Tampilkan informasi mengenai setiap lagu yang dipilih"
 
 #: ../shell/rb-shell-player.c:297
 msgid "Pre_vious"
@@ -3932,7 +3905,7 @@ msgstr "Acak menurut waktu sejak terakhir diputar dan ratingnya"
 
 #: ../shell/rb-shell-player.c:1024
 msgid "Linear, removing entries once played"
-msgstr ""
+msgstr "Linier, menghapus entri setelah dimainkan"
 
 #: ../shell/rb-shell-player.c:1034
 #, c-format
@@ -3970,12 +3943,12 @@ msgstr "Tak bisa berhenti memutar"
 #: ../shell/rb-shell-player.c:3314
 #, c-format
 msgid "Playback position not available"
-msgstr ""
+msgstr "Posisi putar tak tersedia"
 
 #: ../shell/rb-shell-player.c:3346 ../shell/rb-shell-player.c:3380
 #, c-format
 msgid "Current song is not seekable"
-msgstr ""
+msgstr "Lagu saat ini tak dapat di-seek"
 
 #: ../shell/rb-shell-player.c:3850
 msgid "Pause playback"
@@ -3998,9 +3971,9 @@ msgid "Playback"
 msgstr "Putar"
 
 #: ../shell/rb-track-transfer-queue.c:175
-#, fuzzy, c-format
+#, c-format
 msgid "The file \"%s\" already exists. Do you want to replace it?"
-msgstr "Berkas \"%s\" sudah ada. Ingin menimpanya?"
+msgstr "Berkas \"%s\" sudah ada. Apakah Anda ingin menimpanya?"
 
 #: ../shell/rb-track-transfer-queue.c:188
 msgid "_Cancel"
@@ -4033,6 +4006,8 @@ msgid_plural ""
 "supported by the target device but no suitable encoding profiles are "
 "available"
 msgstr[0] ""
+"%d berkas tak dapat ditransfer karena mereka mesti dikonversi ke format yang "
+"didukung oleh perangkat target tapi tak tersedia profil pengkodean yang cocok"
 
 #. XXX should provide the option of picking a different format?
 #: ../shell/rb-track-transfer-queue.c:463
@@ -4041,6 +4016,9 @@ msgid ""
 "Additional software is required to encode media in your preferred format:\n"
 "%s"
 msgstr ""
+"Perangkat lunak tambahan diperlukan untuk mengenkode media dalam format yang "
+"Anda sukai:\n"
+"%s"
 
 #: ../shell/rb-track-transfer-queue.c:467
 #, c-format
@@ -4053,6 +4031,9 @@ msgid_plural ""
 "by the target device:\n"
 "%s"
 msgstr[0] ""
+"Perangkat lunak tambahan diperlukan untuk mengkonversi %d berkas ke dalam "
+"format yang didukung oleh perangkat target:\n"
+"%s"
 
 #: ../shell/rb-track-transfer-queue.c:484
 msgid "Unable to transfer tracks"
@@ -4063,9 +4044,8 @@ msgid "_Cancel the transfer"
 msgstr "_Batalkan transfer"
 
 #: ../shell/rb-track-transfer-queue.c:491
-#, fuzzy
 msgid "_Skip these files"
-msgstr "L_ewati tahap ini"
+msgstr "L_ewati berkas-berkas ini"
 
 #: ../shell/rb-track-transfer-queue.c:494
 msgid "_Install"
@@ -4074,12 +4054,12 @@ msgstr "_Pasang"
 #: ../shell/rb-track-transfer-queue.c:592
 #, c-format
 msgid "Transferring track %d out of %d (%.0f%%)"
-msgstr ""
+msgstr "Mentransfer trek %d dari %d (%.0f%%)"
 
 #: ../shell/rb-track-transfer-queue.c:595
 #, c-format
 msgid "Transferring track %d out of %d"
-msgstr ""
+msgstr "Mentransfer trek %d dari %d"
 
 #: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:149
 #: ../sources/rb-static-playlist-source.c:124
@@ -4097,27 +4077,24 @@ msgid "Search titles"
 msgstr "Cari judul"
 
 #: ../sources/rb-browser-source.c:135
-#, fuzzy
 msgid "Browse This _Genre"
-msgstr "Lihat jenis musik ini saja"
+msgstr "Ramban _Genre Ini"
 
 #: ../sources/rb-browser-source.c:136
 msgid "Set the browser to view only this genre"
 msgstr "Pilih lagu-lagu dari jenis musik ini saja"
 
 #: ../sources/rb-browser-source.c:138
-#, fuzzy
 msgid "Browse This _Artist"
-msgstr "Lihat artis ini saja"
+msgstr "Ramban _Artis Ini"
 
 #: ../sources/rb-browser-source.c:139
 msgid "Set the browser to view only this artist"
 msgstr "Pilih lagu-lagu dari artis ini saja"
 
 #: ../sources/rb-browser-source.c:141
-#, fuzzy
 msgid "Browse This A_lbum"
-msgstr "Lihat album ini saja"
+msgstr "Ramban A_lbum Ini"
 
 #: ../sources/rb-browser-source.c:142
 msgid "Set the browser to view only this album"
@@ -4133,31 +4110,29 @@ msgstr "Tak bisa melepas kait"
 
 #: ../sources/rb-display-page-group.c:86
 msgid "Library"
-msgstr "Kumpulan Lagu"
+msgstr "Pustaka"
 
 #: ../sources/rb-display-page-group.c:89
-#, fuzzy
 msgid "Stores"
-msgstr "_Kumpulan Lagu"
+msgstr "Penyimpanan"
 
 #: ../sources/rb-display-page-group.c:95
 msgid "Devices"
 msgstr "Perangkat"
 
 #: ../sources/rb-display-page-group.c:99
-#, fuzzy
 msgid "Shared"
-msgstr "Pakai-bersama"
+msgstr "Dibagikan"
 
 #. set up info bar for triggering codec installation
 #: ../sources/rb-import-errors-source.c:243
-#, fuzzy
 msgid "Install Additional Software"
-msgstr "Tentang Pasang Perangkat Lunak"
+msgstr "Pasang Perangkat Lunak Tambahan"
 
 #: ../sources/rb-import-errors-source.c:249
 msgid "Additional software is required to play some of these files."
 msgstr ""
+"Perangkat lunak tambahan diperlukan untuk memutar sebagian dari berkas ini."
 
 #: ../sources/rb-import-errors-source.c:354
 msgid "Import Errors"
@@ -4214,14 +4189,12 @@ msgid "Music"
 msgstr "Musik"
 
 #: ../sources/rb-library-source.c:467
-#, fuzzy
 msgid "Choose Library Location"
-msgstr "Pilih lokasi pustaka"
+msgstr "Pilih Lokasi Pustaka"
 
 #: ../sources/rb-library-source.c:506
-#, fuzzy
 msgid "Multiple locations set"
-msgstr "Keterangan Lagu"
+msgstr "Lokasi berganda telah ditata"
 
 #: ../sources/rb-library-source.c:632
 msgid "Default settings"
@@ -4237,30 +4210,32 @@ msgstr "Path Contoh:"
 
 #: ../sources/rb-library-source.c:1620 ../sources/rb-library-source.c:1624
 #: ../sources/rb-transfer-target.c:189
-#, fuzzy
 msgid "Error transferring track"
-msgstr "Kesalahan Ketika Memindah"
+msgstr "Galat saat mentransfer trek"
 
 #: ../sources/rb-media-player-source.c:99
-#, fuzzy
 msgid "Sync with Library"
-msgstr "Selaraskan seluruh pustaka"
+msgstr "Selaraskan dengan Pustaka"
 
 #: ../sources/rb-media-player-source.c:100
 msgid "Synchronize media player with the library"
-msgstr ""
+msgstr "Menyelaraskan pemutar media dengan pustaka"
 
 #: ../sources/rb-media-player-source.c:660
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
 msgstr ""
+"Anda belum memilih musik, daftar putar, atau podcast apapun untuk ditransfer "
+"ke perangkat ini."
 
 #: ../sources/rb-media-player-source.c:664
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
 msgstr ""
+"Tak cukup ruang pada perangkat untuk mentransfer musik, daftar putar, dan "
+"podcast yang dipilih."
 
 #: ../sources/rb-media-player-source.c:715
 #, c-format
@@ -4269,7 +4244,7 @@ msgstr "Pengaturan Sync %s"
 
 #: ../sources/rb-media-player-source.c:720
 msgid "Sync with the device"
-msgstr ""
+msgstr "Selaraskan dengan perangkat"
 
 #: ../sources/rb-media-player-source.c:722
 msgid "Don't sync"
@@ -4298,18 +4273,16 @@ msgid "Clear _Queue"
 msgstr "Bersihkan _Antrian"
 
 #: ../sources/rb-play-queue-source.c:142
-#, fuzzy
 msgid "Remove all songs from the play queue"
-msgstr "Hapus semua trek dari antrian main"
+msgstr "Hapus semua lagu dari antrian main"
 
 #: ../sources/rb-play-queue-source.c:144
 msgid "Shuffle Queue"
 msgstr "Acak Antrian"
 
 #: ../sources/rb-play-queue-source.c:145
-#, fuzzy
 msgid "Shuffle the tracks in the play queue"
-msgstr "Segarkan trek acak di antrian main"
+msgstr "Acak trek di antrian main"
 
 #. Translators: this is the toolbutton label for Clear Queue action
 #: ../sources/rb-play-queue-source.c:283
@@ -4333,7 +4306,7 @@ msgstr "dari album"
 
 #: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:810
 msgid "by"
-msgstr "oleh "
+msgstr "oleh"
 
 #: ../sources/rb-source.c:546
 #, c-format
@@ -4351,7 +4324,6 @@ msgid "Connecting"
 msgstr "Menyambung"
 
 #: ../sources/rb-streaming-source.c:221
-#, fuzzy
 msgid "Buffering"
 msgstr "Menyangga"
 
@@ -4368,14 +4340,12 @@ msgid "Available"
 msgstr "Ada"
 
 #: ../widgets/rb-alert-dialog.c:87
-#, fuzzy
 msgid "Image/label border"
-msgstr "Bingkai gambar/label"
+msgstr "Batas gambar/label"
 
 #: ../widgets/rb-alert-dialog.c:88
-#, fuzzy
 msgid "Width of border around the label and image in the alert dialog"
-msgstr "Lebar bingkai di sekeliling label dan gambar pada dialog peringatan"
+msgstr "Lebar batas di sekeliling label dan gambar pada dialog peringatan"
 
 #: ../widgets/rb-alert-dialog.c:97
 msgid "Alert Type"
@@ -4386,12 +4356,10 @@ msgid "The type of alert"
 msgstr "Jenis alert"
 
 #: ../widgets/rb-alert-dialog.c:106
-#, fuzzy
 msgid "Alert Buttons"
 msgstr "Tombol Peringatan"
 
 #: ../widgets/rb-alert-dialog.c:107
-#, fuzzy
 msgid "The buttons shown in the alert dialog"
 msgstr "Tombol yang ditampilkan dalam dialog peringatan"
 
@@ -4401,9 +4369,8 @@ msgstr "Tampilkan le_bih banyak rincian"
 
 #: ../widgets/rb-entry-view.c:1005 ../widgets/rb-entry-view.c:1507
 #: ../widgets/rb-song-info.c:1148
-#, fuzzy
 msgid "Lossless"
-msgstr "Nirhi_lang"
+msgstr "Nirhilang"
 
 #: ../widgets/rb-entry-view.c:1417
 msgid "Track"
@@ -4463,7 +4430,7 @@ msgstr "Galat Memutar"
 
 #: ../widgets/rb-fading-image.c:295
 msgid "Drop artwork here"
-msgstr ""
+msgstr "Jatuhkan gambar di sini"
 
 #. Translators: remaining time / total time
 #: ../widgets/rb-header.c:1080
@@ -4478,25 +4445,23 @@ msgid "%s / %s"
 msgstr "%s / %s"
 
 #: ../widgets/rb-import-dialog.c:314
-#, fuzzy
 msgid "Copying..."
-msgstr "menyalin..."
+msgstr "Menyalin…"
 
 #. this isn't a terribly helpful message.
 #: ../widgets/rb-import-dialog.c:479
 #, c-format
 msgid "The location you have selected is on the device %s."
-msgstr ""
+msgstr "Lokasi yang telah Anda pilih ada pada perangkat %s."
 
 #: ../widgets/rb-import-dialog.c:485
-#, fuzzy, c-format
+#, c-format
 msgid "Show %s"
 msgstr "Tampilkan %s"
 
 #: ../widgets/rb-import-dialog.c:502
-#, fuzzy
 msgid "Scanning..."
-msgstr "Memindai..."
+msgstr "Memindai…"
 
 #: ../widgets/rb-property-view.c:636
 #, c-format
@@ -4529,7 +4494,7 @@ msgstr "%s (%d)"
 
 #: ../widgets/rb-query-creator.c:210
 msgid "Create Automatic Playlist"
-msgstr "Buat daftar lagu otomatis"
+msgstr "Buat Daftar Putar Otomatis"
 
 #: ../widgets/rb-query-creator.c:212
 msgid "Edit Automatic Playlist"
@@ -4608,7 +4573,7 @@ msgstr "Durasi"
 #: ../widgets/rb-query-creator-properties.c:93
 msgctxt "query-criteria"
 msgid "Beats Per Minute"
-msgstr ""
+msgstr "Ketukan Per Menit"
 
 #: ../widgets/rb-query-creator-properties.c:94
 msgctxt "query-criteria"
@@ -4631,9 +4596,8 @@ msgstr "Artis"
 #: ../widgets/rb-query-creator-properties.c:109
 #: ../widgets/rb-query-creator-properties.c:110
 #: ../widgets/rb-query-creator-properties.c:118
-#, fuzzy
 msgid "_In reverse alphabetical order"
-msgstr "Diurut berdasarkan alfabet"
+msgstr "D_iurut berdasarkan alfabet terbalik"
 
 #: ../widgets/rb-query-creator-properties.c:107
 msgctxt "query-sort"
@@ -4662,7 +4626,7 @@ msgstr "Rating"
 
 #: ../widgets/rb-query-creator-properties.c:111
 msgid "W_ith more highly rated tracks first"
-msgstr ""
+msgstr "Dengan trek yang d_inilai lebih tinggi di awal"
 
 #: ../widgets/rb-query-creator-properties.c:112
 msgctxt "query-sort"
@@ -4671,7 +4635,7 @@ msgstr "Cacah Diputar"
 
 #: ../widgets/rb-query-creator-properties.c:112
 msgid "W_ith more often played songs first"
-msgstr ""
+msgstr "Dengan lagu yang leb_ih sering diputar di awal"
 
 #: ../widgets/rb-query-creator-properties.c:113
 msgctxt "query-sort"
@@ -4680,7 +4644,7 @@ msgstr "Tahun"
 
 #: ../widgets/rb-query-creator-properties.c:113
 msgid "W_ith newer tracks first"
-msgstr ""
+msgstr "Dengan trek leb_ih baru di awal"
 
 #: ../widgets/rb-query-creator-properties.c:114
 msgctxt "query-sort"
@@ -4689,7 +4653,7 @@ msgstr "Durasi"
 
 #: ../widgets/rb-query-creator-properties.c:114
 msgid "W_ith longer tracks first"
-msgstr ""
+msgstr "Dengan trek yang leb_ih panjang di awal"
 
 #: ../widgets/rb-query-creator-properties.c:115
 msgctxt "query-sort"
@@ -4697,9 +4661,8 @@ msgid "Track Number"
 msgstr "Nomor Trek"
 
 #: ../widgets/rb-query-creator-properties.c:115
-#, fuzzy
 msgid "_In decreasing order"
-msgstr "Bilangan berurutan"
+msgstr "Dalam urutan na_ik"
 
 #: ../widgets/rb-query-creator-properties.c:116
 msgctxt "query-sort"
@@ -4708,7 +4671,7 @@ msgstr "Terakhir Diputar"
 
 #: ../widgets/rb-query-creator-properties.c:116
 msgid "W_ith more recently played tracks first"
-msgstr ""
+msgstr "Dengan trek yang leb_ih akhir dimainkan di awal"
 
 #: ../widgets/rb-query-creator-properties.c:117
 msgctxt "query-sort"
@@ -4717,7 +4680,7 @@ msgstr "Tanggal Ditambahkan"
 
 #: ../widgets/rb-query-creator-properties.c:117
 msgid "W_ith more recently added tracks first"
-msgstr ""
+msgstr "Dengan trek yang baru-baru _ini ditambah di awal"
 
 #: ../widgets/rb-query-creator-properties.c:118
 msgctxt "query-sort"
@@ -4727,11 +4690,11 @@ msgstr "Komentar"
 #: ../widgets/rb-query-creator-properties.c:119
 msgctxt "query-sort"
 msgid "Beats Per Minute"
-msgstr ""
+msgstr "Ketukan Per Menit"
 
 #: ../widgets/rb-query-creator-properties.c:119
 msgid "W_ith faster tempo tracks first"
-msgstr ""
+msgstr "Dengan trek bertempo leb_ih cepat di awal"
 
 #: ../widgets/rb-query-creator-properties.c:132
 msgid "contains"
