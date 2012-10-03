@@ -92,11 +92,19 @@ class LocalSearch:
 
 		self.callback(self.callback_args)
 
+	def _close_enum_cb(self, fileenum, result, results):
+		try:
+			fileenum.close_finish(result)
+		except Exception, e:
+			print "couldn't close file enumerator: %s" % e
+		
+
 	def _enum_dir_cb(self, fileenum, result, results):
 		try:
 			files = fileenum.next_files_finish(result)
 			if files is None or len(files) == 0:
 				print "okay, done; got %d files" % len(results)
+				fileenum.close_async(GLib.PRIORITY_DEFAULT, None, self._close_enum_cb, None)
 				self.finished(results)
 				return
 
@@ -115,6 +123,7 @@ class LocalSearch:
 			import sys
 			sys.excepthook(*sys.exc_info())
 			self.finished(results)
+			fileenum.close_async(GLib.PRIORITY_DEFAULT, None, self._close_enum_cb, None)
 
 
 	def _enum_children_cb(self, parent, result, data):
