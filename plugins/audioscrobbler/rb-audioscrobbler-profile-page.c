@@ -707,7 +707,6 @@ init_actions (RBAudioscrobblerProfilePage *page)
 
 	page->priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (page), ui_manager);
 	gtk_box_pack_start (GTK_BOX (page->priv->main_vbox), GTK_WIDGET (page->priv->toolbar), FALSE, FALSE, 0);
-	gtk_widget_show (GTK_WIDGET (page->priv->toolbar));
 
 	g_free (ui_file);
 	g_free (toolbar_name);
@@ -846,11 +845,13 @@ login_status_change_cb (RBAudioscrobblerAccount *account,
 		gtk_widget_hide (page->priv->login_bar);
 	}
 	if (show_profile == TRUE) {
+		gtk_widget_show (GTK_WIDGET (page->priv->toolbar));
 		gtk_label_set_label (GTK_LABEL (page->priv->username_label),
 			             username);
 		gtk_widget_show (page->priv->username_label);
 		gtk_widget_show (page->priv->profile_window);
 	} else {
+		gtk_widget_hide (GTK_WIDGET (page->priv->toolbar));
 		gtk_widget_hide (page->priv->profile_window);
 	}
 
