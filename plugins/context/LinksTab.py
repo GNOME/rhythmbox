@@ -27,6 +27,7 @@
 import os
 import cgi
 import urllib
+import rb
 
 from gi.repository import GObject, Gtk
 from gi.repository import RB
