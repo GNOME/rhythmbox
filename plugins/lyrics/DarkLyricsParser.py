@@ -27,6 +27,7 @@
 import re
 import string
 import rb
+import stringmatch
 
 min_artist_match = .5
 min_song_match = .5
@@ -57,14 +58,14 @@ class DarkLyricsParser (object):
 		if artist_page is None:
 			callback (None, *data)
 			return
-
-		link_section = re.split ('<SCRIPT LANGUAGE="javascript" src="tban2.js"></SCRIPT>', 
+		link_section = re.split ('tban.js',
 					 artist_page, 1)[1]
 		pattern_link =  '<a href="'
-		pattern_artist = '([^"]*)">*([^<]*)</a><br><br>'
+		pattern_artist = '([^"]*)">*([^<]*)<'
 		links = re.split (pattern_link, link_section.lower())
 		links.pop(0)
 		best_match = ()
+		smvalue_bestmatch = 0
 		for line in links:
 			artist = re.findall(pattern_artist, line)
 			if len(artist) == 0:
@@ -74,9 +75,10 @@ class DarkLyricsParser (object):
 			if artist_link[:5] == 'http:':
 				continue
 			artist_name = artist_name.strip()
-			smvalue = rb.string_match (artist_name, self.artist_ascii)
-			if smvalue > min_artist_match:
+			smvalue = stringmatch.string_match (artist_name, self.artist_ascii)
+			if smvalue > min_artist_match and smvalue > smvalue_bestmatch:
 				best_match = (smvalue, artist_url, artist_name)
+				smvalue_bestmatch = smvalue
 
 		if not best_match:
 			# Lyrics are located in external site
@@ -111,14 +113,14 @@ class DarkLyricsParser (object):
 		#        and for those which its content is artist string_match
 		# Sort by values given from string_match
 		# and get the best
-		link_section = re.split('LYRICS<BR></FONT>', songlist)[1]
+		link_section = re.split('LYRICS</h1>', songlist)[1]
 		link_section = link_section.lower()
-		pattern_song = '<a href="../lyrics/(.*)/(.*).html#([^"]+)" target="_blank"><FONT COLOR="#CCCCCC">(.*)</FONT></a><br>'
+		pattern_song = '<a href="../lyrics/(.*)/(.*).html#([^"]+)">(.*)</a>'
 		matches = re.findall (pattern_song.lower(), link_section)
 		best_match = ""
 		for line in matches:
 			artist, album, number, title = line
-			smvalue = rb.string_match (title.lower().replace(' ', '' ),
+			smvalue = stringmatch.string_match (title.lower().replace(' ', '' ),
 					   self.title.lower().replace(' ', ''))
 			if smvalue > min_song_match:
 				best_match  = self.SongFound(smvalue,
@@ -126,6 +128,7 @@ class DarkLyricsParser (object):
 							     number,
 							     album,
 							     artist)
+				break
 		if not best_match:
 			callback (None, *data)
 			return
@@ -144,11 +147,12 @@ class DarkLyricsParser (object):
 		if album is None:
 			callback (None, *data)
 			return
-		titleline = '(?mis)<a name=%s><FONT color=#DDDDDD><b>%s. %s</b></font>(.+?)<[a|f]' % \
+		titleline = '<a name="%s">%s. %s(.*?)</a>' % \
 		    (self.titlenumber, self.titlenumber, re.escape(self.title.title()))
 		lyricmatch = re.split (titleline, album)
-		if len (lyricmatch) > 1:
-			lyrics = lyricmatch[1]
+		if len (lyricmatch) > 2:
+			lyrics = lyricmatch[2]
+			lyrics = lyrics.split('<h3>')[0]
 			lyrics = lyrics.replace ('\r', "")
 			lyrics = re.sub (r'<.*?>', "", lyrics)
 			lyrics = lyrics.strip ("\n")
