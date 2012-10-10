@@ -2310,7 +2310,7 @@ display_page_inserted_cb (RBDisplayPageModel *model, RBDisplayPage *page, GtkTre
 
 			if (category_data->match_source (source)) {
 				char *dbus_path;
-				dbus_path = g_strdup_printf ("%s/%" G_GINTPTR_FORMAT,
+				dbus_path = g_strdup_printf ("%s/%" G_GINTPTR_MODIFIER "u",
 							     category_data->dbus_path,
 							     (gintptr) source);
 				rb_debug ("adding new source %s to category %s", dbus_path, category_data->name);
