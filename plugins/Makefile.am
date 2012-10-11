@@ -14,7 +14,6 @@ SUBDIRS =						\
 if ENABLE_PYTHON
 SUBDIRS +=						\
 	artsearch					\
-	context						\
 	im-status					\
 	lyrics						\
 	magnatune					\
@@ -24,7 +23,11 @@ SUBDIRS +=						\
 	sendto						\
 	rb
 
+if WITH_WEBKIT
+SUBDIRS += context
 endif
+
+endif # ENABLE_PYTHON
 
 if WITH_LIRC
 SUBDIRS += lirc
