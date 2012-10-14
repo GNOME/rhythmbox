@@ -57,6 +57,7 @@ class WinampcnParser(object):
 	def got_lyrics(self, xmltext, callback, *data):
 		# retrieve xml content
 		if xmltext is None:
+			print "no response"
 			callback (None, *data)
 			return
 
@@ -68,15 +69,16 @@ class WinampcnParser(object):
 
 			lrcurl = root.getElementsByTagName('LyricUrl')[0].childNodes[0].data
 			if lrcurl is None:
+				print "no lyric urls"
 				callback (xmltext, *data)
 				return
 
 			# download the lyrics file
-			lrcurl_encode = urllib.quote(detect_charset(lrcurl).encode('gbk'))
-			lrcurl_encode = lrcurl_encode.replace('%3A', ':');
+			lrcurl = lrcurl.replace('%3A', ':');
+			print "url: %s" % lrcurl
 
 			loader = rb.Loader()
-			loader.get_url (lrcurl_encode, self.parse_lyrics, callback, *data)
+			loader.get_url (lrcurl, self.parse_lyrics, callback, *data)
 		except:
 			callback (None, *data)
 
@@ -84,6 +86,7 @@ class WinampcnParser(object):
 	def parse_lyrics(self, lyrics, callback, *data):
 
 		if lyrics is None:
+			print "no lyrics"
 			callback (None, *data)
 			return
 
@@ -93,6 +96,7 @@ class WinampcnParser(object):
 			lrcplaintext = re.sub('\[.*?\]', '', lrcplaintext)
 			lrcplaintext = lrcplaintext.decode('gbk').encode('UTF-8')
 		except:
+			print "unable to decode lyrics"
 			callback (lrcplaintext, *data)
 			return
 
