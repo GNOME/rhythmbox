@@ -870,7 +870,11 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 		 * pass it out to metadata consumers
 		 */
 		g_signal_emit (store, signals[LOAD], 0, req->data, &req->value);
-		rb_debug ("converted encoded data into value of type %s", G_VALUE_TYPE_NAME (req->value));
+		if (req->value != NULL) {
+			rb_debug ("converted encoded data into value of type %s", G_VALUE_TYPE_NAME (req->value));
+		} else {
+			rb_debug ("failed to convert encoded data");
+		}
 	} else if (req->value != NULL) {
 		/* we got an object representing the data; store it so we
 		 * can write it to a file
