@@ -741,22 +741,32 @@ rb_daap_plugin_shutdown (RBDaapPlugin *plugin)
 
 static void
 forget_remotes_button_toggled_cb (GtkToggleButton *button,
-				  RBDaapPlugin *plugin)
+				  gpointer data)
 {
-	g_settings_reset (plugin->dacp_settings, "known-remotes");
+	GSettings *dacp_settings;
+	GSettings *daap_settings;
+
+	daap_settings = g_settings_new ("org.gnome.rhythmbox.plugins.daap");
+	dacp_settings = g_settings_get_child (daap_settings, "dacp");
+	g_settings_reset (dacp_settings, "known-remotes");
+
+	g_object_unref (dacp_settings);
+	g_object_unref (daap_settings);
 }
 
 static gboolean
 share_name_entry_focus_out_event_cb (GtkEntry *entry,
 				     GdkEventFocus *event,
-				     RBDaapPlugin *plugin)
+				     gpointer data)
 {
+	GSettings  *settings;
 	gboolean    changed;
 	const char *name;
 	char       *old_name;
 
+	settings = g_settings_new ("org.gnome.rhythmbox.sharing");
 	name = gtk_entry_get_text (entry);
-	old_name = g_settings_get_string (plugin->settings, "share-name");
+	old_name = g_settings_get_string (settings, "share-name");
 
 	if (name == NULL && old_name == NULL) {
 		changed = FALSE;
@@ -769,10 +779,11 @@ share_name_entry_focus_out_event_cb (GtkEntry *entry,
 	}
 
 	if (changed) {
-		g_settings_set_string (plugin->settings, "share-name", name);
+		g_settings_set_string (settings, "share-name", name);
 	}
 
 	g_free (old_name);
+	g_object_unref (settings);
 
 	return FALSE;
 }
@@ -782,12 +793,14 @@ share_password_entry_focus_out_event_cb (GtkEntry *entry,
 					 GdkEventFocus *event,
 					 RBDaapPlugin *plugin)
 {
+	GSettings  *settings;
 	gboolean    changed;
 	const char *pw;
 	char       *old_pw;
 
 	pw = gtk_entry_get_text (entry);
-	old_pw = g_settings_get_string (plugin->settings, "share-password");
+	settings = g_settings_new ("org.gnome.rhythmbox.sharing");
+	old_pw = g_settings_get_string (settings, "share-password");
 
 	if (pw == NULL && old_pw == NULL) {
 		changed = FALSE;
@@ -800,10 +813,11 @@ share_password_entry_focus_out_event_cb (GtkEntry *entry,
 	}
 
 	if (changed) {
-		g_settings_set_string (plugin->settings, "share-password", pw);
+		g_settings_set_string (settings, "share-password", pw);
 	}
 
 	g_free (old_pw);
+	g_object_unref (settings);
 
 	return FALSE;
 }
@@ -850,7 +864,7 @@ update_config_widget (RBDaapPlugin *plugin)
 	g_signal_connect (name_entry,
 			  "focus-out-event",
 			  G_CALLBACK (share_name_entry_focus_out_event_cb),
-			  plugin);
+			  NULL);
 
 	password = g_settings_get_string (plugin->settings, "share-password");
 	if (password != NULL) {
@@ -860,7 +874,7 @@ update_config_widget (RBDaapPlugin *plugin)
 	g_signal_connect (password_entry,
 			  "focus-out-event",
 			  G_CALLBACK (share_password_entry_focus_out_event_cb),
-			  plugin);
+			  NULL);
 
 	/*gtk_widget_set_sensitive (password_entry, require_password);*/
 }
