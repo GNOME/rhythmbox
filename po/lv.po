@@ -16,9 +16,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD.lv\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-28 00:13+0300\n"
-"PO-Revision-Date: 2012-09-28 00:17+0300\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=rhythmbox&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2012-10-14 06:54+0000\n"
+"PO-Revision-Date: 2012-10-15 18:14+0300\n"
 "Last-Translator: Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>\n"
 "Language-Team: Latvian <lata-l10n@googlegroups.com>\n"
 "Language: lv\n"
@@ -27,7 +28,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "#-#-#-#-#  lv.po (monkey-media)  #-#-#-#-#\n"
 "#-#-#-#-#  lv.po (rhythmbox)  #-#-#-#-#\n"
-"X-Generator: Lokalize 1.4\n"
+"X-Generator: Lokalize 1.5\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : "
 "2);\n"
 
@@ -1471,11 +1472,11 @@ msgstr ""
 "Last.fm spraudnis ir aktivēts, izvēlieties Last.fm sānu rūtī un "
 "ierakstieties."
 
-#: ../plugins/context/LinksTab.py:54
+#: ../plugins/context/LinksTab.py:55
 msgid "Links"
 msgstr "Saites"
 
-#: ../plugins/context/LinksTab.py:182
+#: ../plugins/context/LinksTab.py:183
 msgid "No artist specified."
 msgstr "Izpildītājs nav norādīts."
 
@@ -2113,10 +2114,7 @@ msgstr "Dziesmas _vārdi"
 msgid "Display lyrics for the playing song"
 msgstr "Rādīt atskaņotās dziesmas vārdus"
 
-#: ../plugins/lyrics/LyricsSites.py:39
-msgid "Astraweb (www.astraweb.com)"
-msgstr "Astraweb (www.astraweb.com)"
-
+#. { 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
 #: ../plugins/lyrics/LyricsSites.py:40
 msgid "WinampCN (www.winampcn.com)"
 msgstr "WinampCN (www.winampcn.com)"
@@ -4522,7 +4520,7 @@ msgstr "Skenē..."
 msgid "%d artist (%d)"
 msgid_plural "All %d artists (%d)"
 msgstr[0] "%d izpildītājs (%d)"
-msgstr[1] "Visi %d izpildītājus (%d)"
+msgstr[1] "Visi %d izpildītāji (%d)"
 msgstr[2] "%d izpildītāju (%d)"
 
 #: ../widgets/rb-property-view.c:639
@@ -4530,7 +4528,7 @@ msgstr[2] "%d izpildītāju (%d)"
 msgid "%d album (%d)"
 msgid_plural "All %d albums (%d)"
 msgstr[0] "%d albums (%d)"
-msgstr[1] "Visi %d albumus (%d)"
+msgstr[1] "Visi %d albumi (%d)"
 msgstr[2] "%d albumu (%d)"
 
 #: ../widgets/rb-property-view.c:642
@@ -4538,7 +4536,7 @@ msgstr[2] "%d albumu (%d)"
 msgid "%d genre (%d)"
 msgid_plural "All %d genres (%d)"
 msgstr[0] "%d žanrs (%d)"
-msgstr[1] "Visus %d žanrus (%d)"
+msgstr[1] "Visi %d žanri (%d)"
 msgstr[2] "%d žanru (%d)"
 
 #: ../widgets/rb-property-view.c:645
@@ -4546,7 +4544,7 @@ msgstr[2] "%d žanru (%d)"
 msgid "%d (%d)"
 msgid_plural "All %d (%d)"
 msgstr[0] "%d (%d)"
-msgstr[1] "Visus %d (%d)"
+msgstr[1] "Visi %d (%d)"
 msgstr[2] "%d (%d)"
 
 #: ../widgets/rb-property-view.c:651
@@ -4896,6 +4894,9 @@ msgstr "Uz darbvirsmas"
 #: ../widgets/rb-song-info.c:1256
 msgid "Unknown location"
 msgstr "Nezināma atrašanās vieta"
+
+#~ msgid "Astraweb (www.astraweb.com)"
+#~ msgstr "Astraweb (www.astraweb.com)"
 
 #~ msgid "Multiple Albums Found"
 #~ msgstr "Atrasti vairāki albumi"
