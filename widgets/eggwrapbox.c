@@ -360,7 +360,7 @@ egg_wrap_box_get_property (GObject      *object,
   switch (prop_id)
     {
     case PROP_ORIENTATION:
-      g_value_set_boolean (value, priv->orientation);
+      g_value_set_enum (value, priv->orientation);
       break;
     case PROP_ALLOCATION_MODE:
       g_value_set_uint (value, priv->mode);
