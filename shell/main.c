@@ -34,6 +34,11 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#ifdef GDK_WINDOWING_X11
+/* X11 headers */
+#include <X11/Xlib.h>
+#endif
+
 #include <girepository.h>
 
 #include "rb-shell.h"
@@ -50,6 +55,13 @@ main (int argc, char **argv)
 	char *desktop_file_path;
 	int new_argc;
 	char **new_argv;
+
+#ifdef GDK_WINDOWING_X11
+	if (XInitThreads () == 0) {
+		g_critical ("Initialising threading support failed.");
+		return 1;
+	}
+#endif
 
 	/* disable multidevice so clutter-gtk events work.
 	 * this needs to be done before gtk_open, so the visualizer

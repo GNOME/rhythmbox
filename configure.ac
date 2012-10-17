@@ -86,10 +86,25 @@ PKG_PROG_PKG_CONFIG
 
 PKG_CHECK_MODULES(RB_CLIENT, glib-2.0 >= $GLIB_REQS gio-2.0 >= $GLIB_REQS gio-unix-2.0 >= $GLIB_REQS)
 
+dnl Always require libX11 for XInitThreads() on X11 systems
+X11_PKG=""
+gdk_targets=`$PKG_CONFIG --variable targets gdk-3.0`
+for target in $gdk_targets; do
+	case "$target" in
+		x11)
+			X11_PKG=x11
+			break
+			;;
+		*)
+			;;
+	esac
+done
+
 dnl  note: gio-unix-2.0 is here for libmediaplayerid
 PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  gobject-introspection-1.0 >= $GOBJECT_INTROSPECTION_REQS \
 		  gtk+-3.0 >= $GTK_REQS			\
+		  $X11_PKG				\
 		  gdk-pixbuf-2.0 >= $GDK_PIXBUF_REQS	\
 		  glib-2.0 >= $GLIB_REQS		\
 		  gio-2.0 >= $GLIB_REQS			\
