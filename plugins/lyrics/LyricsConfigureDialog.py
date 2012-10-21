@@ -106,7 +106,7 @@ class LyricsConfigureDialog (GObject.Object, PeasGtk.Configurable):
 					buttons=buttons)
 		self.chooser.connect("response", response_handler)
 		self.chooser.set_modal(True)
-		self.chooser.set_transient_for(self.dialog)
+		self.chooser.set_transient_for(self.config.get_toplevel())
 		self.chooser.present()
 
 	def get_prefs (self):
