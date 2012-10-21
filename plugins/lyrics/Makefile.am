@@ -11,7 +11,9 @@ plugin_PYTHON =				\
        LyricWikiParser.py		\
        WinampcnParser.py		\
        TerraParser.py			\
-       DarkLyricsParser.py
+       DarkLyricsParser.py	\
+       JlyricParser.py	\
+       JetlyricsParser.py
 
 %.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
