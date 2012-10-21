@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-09-24 17:37+0000\n"
-"PO-Revision-Date: 2012-10-20 00:02+0100\n"
+"POT-Creation-Date: 2012-10-21 12:50+0000\n"
+"PO-Revision-Date: 2012-10-21 19:47+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "Language: \n"
@@ -1489,11 +1489,11 @@ msgstr "Ni predvajanja"
 msgid "This information is only available to Last.fm users. Ensure the Last.fm plugin is enabled, select Last.fm in the side pane, and log in."
 msgstr "Ti podatki so dostopni samo uporabnikom Last.fm. Prepričajte se, da je vstavek Last.fm omogočen, izberite Last.fm v stranskem pladnju in se prijavite."
 
-#: ../plugins/context/LinksTab.py:54
+#: ../plugins/context/LinksTab.py:55
 msgid "Links"
 msgstr "Povezave"
 
-#: ../plugins/context/LinksTab.py:182
+#: ../plugins/context/LinksTab.py:183
 msgid "No artist specified."
 msgstr "Izvajalec ni določen."
 
@@ -2140,21 +2140,26 @@ msgstr "Besedilo _skladbe"
 msgid "Display lyrics for the playing song"
 msgstr "Prikaži besedilo predvajane skladbe"
 
-#: ../plugins/lyrics/LyricsSites.py:39
-msgid "Astraweb (www.astraweb.com)"
-msgstr "Astraweb (www.astraweb.com)"
-
-#: ../plugins/lyrics/LyricsSites.py:40
+#. { 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
+#: ../plugins/lyrics/LyricsSites.py:42
 msgid "WinampCN (www.winampcn.com)"
 msgstr "WinampCN (www.winampcn.com)"
 
-#: ../plugins/lyrics/LyricsSites.py:41
+#: ../plugins/lyrics/LyricsSites.py:43
 msgid "TerraBrasil (terra.com.br)"
 msgstr "TerraBrasil (terra.com.br)"
 
-#: ../plugins/lyrics/LyricsSites.py:42
+#: ../plugins/lyrics/LyricsSites.py:44
 msgid "Dark Lyrics (darklyrics.com)"
 msgstr "Dark Lyrics (darklyrics.com)"
+
+#: ../plugins/lyrics/LyricsSites.py:45
+msgid "Jlyric (j-lyric.net)"
+msgstr "Jlyric (j-lyric.net)"
+
+#: ../plugins/lyrics/LyricsSites.py:46
+msgid "Jetlyrics (jetlyrics.com)"
+msgstr "Jetlyrics (jetlyrics.com)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
 msgid "Magnatune online music store"
@@ -4255,24 +4260,24 @@ msgstr "Uskladi s knjižnico"
 msgid "Synchronize media player with the library"
 msgstr "Uskladi predvajalnik predstavnih vsebin s knjižnico"
 
-#: ../sources/rb-media-player-source.c:660
+#: ../sources/rb-media-player-source.c:663
 msgid "You have not selected any music, playlists, or podcasts to transfer to this device."
 msgstr "Niste izbrali glasbe, seznamov predvajanja ali podcastov za prenos na to napravo."
 
-#: ../sources/rb-media-player-source.c:664
+#: ../sources/rb-media-player-source.c:667
 msgid "There is not enough space on the device to transfer the selected music, playlists and podcasts."
 msgstr "Na tej napravi ni dovolj prostora za prenos izbrane glasbe, seznamov predvajanja in podcastov."
 
-#: ../sources/rb-media-player-source.c:715
+#: ../sources/rb-media-player-source.c:718
 #, c-format
 msgid "%s Sync Settings"
 msgstr "Nastavitve usklajevanja %s"
 
-#: ../sources/rb-media-player-source.c:720
+#: ../sources/rb-media-player-source.c:723
 msgid "Sync with the device"
 msgstr "Uskladi z napravo"
 
-#: ../sources/rb-media-player-source.c:722
+#: ../sources/rb-media-player-source.c:725
 msgid "Don't sync"
 msgstr "Ne uskladi"
 
@@ -4884,3 +4889,5 @@ msgstr "Na namizju"
 msgid "Unknown location"
 msgstr "Neznano mesto"
 
+#~ msgid "Astraweb (www.astraweb.com)"
+#~ msgstr "Astraweb (www.astraweb.com)"
