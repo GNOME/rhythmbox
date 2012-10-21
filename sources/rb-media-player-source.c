@@ -567,6 +567,9 @@ sync_idle_cb_cleanup (RBMediaPlayerSource *source)
 
 	gtk_action_set_sensitive (priv->sync_action, TRUE);
 
+	/* release the ref taken at the start of the sync */
+	g_object_unref (source);
+
 	return FALSE;
 }
 
@@ -804,7 +807,8 @@ rb_media_player_source_sync (RBMediaPlayerSource *source)
 
 	gtk_action_set_sensitive (priv->sync_action, FALSE);
 
-	g_idle_add ((GSourceFunc)sync_idle_cb_update_sync, source);
+	/* ref the source for the duration of the sync operation */
+	g_idle_add ((GSourceFunc)sync_idle_cb_update_sync, g_object_ref (source));
 }
 
 void
