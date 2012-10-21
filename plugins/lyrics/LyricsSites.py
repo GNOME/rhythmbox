@@ -41,7 +41,7 @@ lyrics_sites = [
 	#{ 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
 	{ 'id': 'winampcn.com', 	'class': WinampcnParser, 	'name': _("WinampCN (www.winampcn.com)") 	},
 	{ 'id': 'terra.com.br',		'class': TerraParser,		'name': _("TerraBrasil (terra.com.br)")		},
-	{ 'id': 'darklyrics.com',	'class': DarkLyricsParser,	'name': _("Dark Lyrics (darklyrics.com)")	}
+	{ 'id': 'darklyrics.com',	'class': DarkLyricsParser,	'name': _("Dark Lyrics (darklyrics.com)")	},
 	{ 'id': 'j-lyric.net', 		'class': JlyricParser, 		'name': _("Jlyric (j-lyric.net)") 		},
 	{ 'id': 'jetlyrics.com', 	'class': JetlyricsParser, 	'name': _("Jetlyrics (jetlyrics.com)") 		}
 ]
