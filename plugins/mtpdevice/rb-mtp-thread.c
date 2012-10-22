@@ -394,11 +394,8 @@ static void
 get_track_list (RBMtpThread *thread, RBMtpThreadTask *task)
 {
 	RBMtpTrackListCallback cb = task->callback;
-	gboolean device_forgets_albums = TRUE;
-	GHashTable *update_albums = NULL;
 	LIBMTP_track_t *tracks = NULL;
 	LIBMTP_album_t *albums;
-	LIBMTP_album_t *album;
 
 	/* get all the albums */
 	albums = LIBMTP_Get_Album_List (thread->device);
@@ -412,73 +409,19 @@ get_track_list (RBMtpThread *thread, RBMtpThreadTask *task)
 
 			rb_debug ("album: %s, %d tracks", album->name, album->no_tracks);
 			g_hash_table_insert (thread->albums, album->name, album);
-			if (album->no_tracks != 0) {
-				device_forgets_albums = FALSE;
-			}
-		}
-
-		if (device_forgets_albums) {
-			rb_debug ("stupid mtp device detected.  will rebuild all albums.");
 		}
 	} else {
 		rb_debug ("No albums");
-		device_forgets_albums = FALSE;
 	}
 
 	tracks = LIBMTP_Get_Tracklisting_With_Callback (thread->device, NULL, NULL);
 	rb_mtp_thread_report_errors (thread, FALSE);
 	if (tracks == NULL) {
 		rb_debug ("no tracks on the device");
-	} else if (device_forgets_albums) {
-		LIBMTP_track_t *track;
-	       
-		rb_debug ("rebuilding albums");
-		update_albums = g_hash_table_new (g_direct_hash, g_direct_equal);
-		for (track = tracks; track != NULL; track = track->next) {
-			if (track->album != NULL) {
-				gboolean new_album = FALSE;
-				album = add_track_to_album (thread, track->album, track->item_id, track->parent_id, track->storage_id, &new_album);
-				g_hash_table_insert (update_albums, album, GINT_TO_POINTER (new_album));
-			}
-		}
-		rb_debug ("finished rebuilding albums");
 	}
 
 	cb (tracks, task->user_data);
 	/* the callback owns the tracklist */
-
-	if (device_forgets_albums) {
-		GHashTableIter iter;
-		gpointer album_ptr;
-		gpointer new_album_ptr;
-
-		rb_debug ("writing rebuilt albums back to the device");
-		g_hash_table_iter_init (&iter, update_albums);
-		while (g_hash_table_iter_next (&iter, &album_ptr, &new_album_ptr)) {
-			album = album_ptr;
-			rb_debug ("writing album \"%s\"", album->name);
-			write_album_to_device (thread, album, GPOINTER_TO_INT (new_album_ptr));
-		}
-		g_hash_table_destroy (update_albums);
-
-		rb_debug ("removing remaining empty albums");
-		g_hash_table_iter_init (&iter, thread->albums);
-		while (g_hash_table_iter_next (&iter, NULL, &album_ptr)) {
-			int ret;
-
-			album = album_ptr;
-			if (album->no_tracks == 0) {
-				rb_debug ("pruning empty album \"%s\"", album->name); 
-				ret = LIBMTP_Delete_Object (thread->device, album->album_id);
-				if (ret != 0) {
-					rb_mtp_thread_report_errors (thread, FALSE);
-				}
-				g_hash_table_iter_remove (&iter);
-			}
-		}
-
-		rb_debug ("finished updating albums on the device");
-	}
 }
 
 static void
