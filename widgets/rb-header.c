@@ -839,6 +839,7 @@ rb_header_sync (RBHeader *header)
 		gtk_label_set_text (GTK_LABEL (header->priv->details), "");
 
 		rb_header_sync_time (header);
+		gtk_widget_set_sensitive (header->priv->scale, FALSE);
 	}
 }
 
