@@ -886,6 +886,8 @@ slider_press_callback (GtkWidget *widget,
 		       GdkEventButton *event,
 		       RBHeader *header)
 {
+	int height;
+
 	header->priv->slider_dragging = TRUE;
 	header->priv->slider_drag_moved = FALSE;
 	header->priv->latest_set_time = -1;
@@ -900,6 +902,10 @@ slider_press_callback (GtkWidget *widget,
 	event->button = 2;
 #endif
 
+	/* more hack: pretend the trough is at least 20 pixels high */
+	height = gtk_widget_get_allocated_height (widget);
+	if (abs (event->y - (height / 2)) < 10)
+		event->y = height / 2;
 
 	return FALSE;
 }
