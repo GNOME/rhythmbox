@@ -2378,6 +2378,10 @@ rb_shell_player_playpause (RBShellPlayer *player,
 			rb_debug ("playing source is already NULL");
 		} else if (rb_source_can_pause (player->priv->source)) {
 			rb_debug ("pausing mm player");
+			if (player->priv->parser_cancellable != NULL) {
+				g_object_unref (player->priv->parser_cancellable);
+				player->priv->parser_cancellable = NULL;
+			}
 			rb_player_pause (player->priv->mmplayer);
 			songs = rb_source_get_entry_view (player->priv->current_playing_source);
 			if (songs)
