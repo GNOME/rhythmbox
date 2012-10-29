@@ -1,10 +1,8 @@
-include $(top_srcdir)/gnome-doc-utils.make
-dist-hook: doc-dist-hook
+@YELP_HELP_RULES@
 
-DOC_MODULE = rhythmbox
-DOC_ENTITIES = fdl-appendix.xml legal.xml
-DOC_INCLUDES = 
-DOC_FIGURES = \
+HELP_ID = rhythmbox
+HELP_FILES = fdl-appendix.xml index.docbook legal.xml
+HELP_MEDIA = \
 	figures/rb-iradio-main.png		\
 	figures/rb-notification-area-menu.png	\
 	figures/rb-notification-window.png	\
@@ -19,4 +17,4 @@ DOC_FIGURES = \
 	figures/rb-window.png			\
 	figures/rb-window-small.png
 
-DOC_LINGUAS = cs da de es el eu fr gl it ja oc pt ro ru sl sv uk zh_CN
+HELP_LINGUAS = cs da de es el eu fr gl it ja oc pt ro ru sl sv uk zh_CN

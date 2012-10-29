@@ -2782,7 +2782,7 @@ rb_shell_cmd_contents (GtkAction *action,
 	GError *error = NULL;
 
 	gtk_show_uri (gtk_widget_get_screen (shell->priv->window),
-		      "ghelp:rhythmbox",
+		      "help:rhythmbox",
 		      gtk_get_current_event_time (),
 		      &error);
 

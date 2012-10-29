@@ -11,7 +11,6 @@ INCLUDES = rhythmbox.h
 EXTRA_DIST = 			\
 	autogen.sh		\
 	config.h.in		\
-	gnome-doc-utils.make	\
 	rhythmbox.pc.in		\
 	MAINTAINERS		\
 	MAINTAINERS.old		\
@@ -20,7 +19,6 @@ EXTRA_DIST = 			\
 
 DISTCLEANFILES =			\
 	ChangeLog			\
-	gnome-doc-utils.make		\
 	intltool-extract		\
 	intltool-merge			\
 	intltool-update

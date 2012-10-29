@@ -575,9 +575,8 @@ AC_SUBST([NO_STRICT_ALIASING_CFLAGS])
 dnl Enable gtk-doc
 GTK_DOC_CHECK(1.4)
 
-dnl Enable gnome-doc-utils
-GNOME_DOC_INIT
-
+dnl Enable yelp-tools
+YELP_HELP_INIT
 
 dnl ================================================================
 dnl Plugins

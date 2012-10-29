@@ -153,7 +153,7 @@ help_cb (GtkWidget *widget,
 	GError *error = NULL;
 
 	gtk_show_uri (gtk_widget_get_screen (widget),
-		      "ghelp:rhythmbox?prefs",
+		      "help:rhythmbox/prefs",
 		      gtk_get_current_event_time (),
 		      &error);
 
