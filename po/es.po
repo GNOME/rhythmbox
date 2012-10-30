@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-10-21 08:44+0000\n"
-"PO-Revision-Date: 2012-10-22 10:24+0200\n"
+"POT-Creation-Date: 2012-10-30 13:57+0000\n"
+"PO-Revision-Date: 2012-10-30 16:38+0100\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "Language: \n"
@@ -728,17 +728,17 @@ msgstr "%d %b %Y"
 #: ../podcast/rb-podcast-manager.c:1994
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
-#: ../podcast/rb-podcast-source.c:787 ../remote/dbus/rb-client.c:144
+#: ../podcast/rb-podcast-source.c:787 ../remote/dbus/rb-client.c:154
 #: ../rhythmdb/rhythmdb.c:2010 ../rhythmdb/rhythmdb.c:2016
 #: ../rhythmdb/rhythmdb.c:2031 ../rhythmdb/rhythmdb.c:5388
 #: ../rhythmdb/rhythmdb.c:5393 ../rhythmdb/rhythmdb-tree.c:1338
 #: ../rhythmdb/rhythmdb-tree.c:1342 ../rhythmdb/rhythmdb-tree.c:1346
 #: ../rhythmdb/rhythmdb-tree.c:1350 ../shell/rb-shell-player.c:1790
-#: ../shell/rb-shell-player.c:3759 ../shell/rb-shell-player.c:3761
+#: ../shell/rb-shell-player.c:3763 ../shell/rb-shell-player.c:3765
 #: ../widgets/rb-entry-view.c:985 ../widgets/rb-entry-view.c:1007
 #: ../widgets/rb-entry-view.c:1482 ../widgets/rb-entry-view.c:1494
-#: ../widgets/rb-entry-view.c:1506 ../widgets/rb-header.c:1141
-#: ../widgets/rb-header.c:1167 ../widgets/rb-song-info.c:917
+#: ../widgets/rb-entry-view.c:1506 ../widgets/rb-header.c:1148
+#: ../widgets/rb-header.c:1174 ../widgets/rb-song-info.c:917
 #: ../widgets/rb-song-info.c:929 ../widgets/rb-song-info.c:1150
 #: ../widgets/rb-song-info.c:1489
 msgid "Unknown"
@@ -755,13 +755,13 @@ msgid "Cannot get free space at %s: %s"
 msgstr "No se puede obtener espacio libre en %s: %s"
 
 #: ../lib/rb-util.c:691 ../plugins/context/tmpl/album-tmpl.html:21
-#: ../remote/dbus/rb-client.c:146
+#: ../remote/dbus/rb-client.c:156
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
 #: ../lib/rb-util.c:693 ../plugins/context/tmpl/album-tmpl.html:19
-#: ../remote/dbus/rb-client.c:148
+#: ../remote/dbus/rb-client.c:158
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -2141,7 +2141,6 @@ msgid "Jlyric (j-lyric.net)"
 msgstr "Jlyric (j-lyric.net)"
 
 #: ../plugins/lyrics/LyricsSites.py:46
-#| msgid "Leo's Lyrics (www.leoslyrics.com)"
 msgid "Jetlyrics (jetlyrics.com)"
 msgstr "Jetlyrics (jetlyrics.com)"
 
@@ -2497,7 +2496,7 @@ msgstr ""
 "dispositivo)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:154
-#: ../plugins/mtpdevice/rb-mtp-thread.c:545
+#: ../plugins/mtpdevice/rb-mtp-thread.c:488
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "No se puede abrir el archivo temporal: %s"
@@ -2511,7 +2510,7 @@ msgid "Media Player"
 msgstr "Reproductor multimedia"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:888
-#: ../plugins/mtpdevice/rb-mtp-thread.c:856
+#: ../plugins/mtpdevice/rb-mtp-thread.c:799
 msgid "Media player device error"
 msgstr "Error del dispositivo reproductor multimedia"
 
@@ -2527,24 +2526,24 @@ msgstr "No se pudo abrir el dispositivo %2$s de %1$s"
 msgid "Digital Audio Player"
 msgstr "Reproductor de sonido digital"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:500
-#: ../plugins/mtpdevice/rb-mtp-thread.c:558
-#: ../plugins/mtpdevice/rb-mtp-thread.c:576
+#: ../plugins/mtpdevice/rb-mtp-thread.c:443
+#: ../plugins/mtpdevice/rb-mtp-thread.c:501
+#: ../plugins/mtpdevice/rb-mtp-thread.c:519
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
 msgstr "No se pudo copiar el archivo del dispositivo MTP: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:521
+#: ../plugins/mtpdevice/rb-mtp-thread.c:464
 #, c-format
 msgid "Not enough space in %s"
 msgstr "No hay espacio suficiente en %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:602
+#: ../plugins/mtpdevice/rb-mtp-thread.c:545
 #, c-format
 msgid "No space left on MTP device"
 msgstr "No queda espacio libre en el dispositivo MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:605
+#: ../plugins/mtpdevice/rb-mtp-thread.c:548
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "No se pudo copiar el archivo al dispositivo MTP: %s"
@@ -3072,122 +3071,142 @@ msgstr "Proveedor"
 msgid "Status"
 msgstr "Estado"
 
-#: ../remote/dbus/rb-client.c:81
+#: ../remote/dbus/rb-client.c:86
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "No iniciar una instancia nueva de Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:82 ../shell/rb-shell.c:353
+#: ../remote/dbus/rb-client.c:87 ../shell/rb-shell.c:353
 msgid "Quit Rhythmbox"
 msgstr "Salir de Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:83
+#: ../remote/dbus/rb-client.c:88
 msgid "Check if Rhythmbox is already running"
 msgstr "Comprobar si Rhythmbox ya se está ejecutando"
 
-#: ../remote/dbus/rb-client.c:85
+#: ../remote/dbus/rb-client.c:90
 msgid "Don't present an existing Rhythmbox window"
 msgstr "No presentar una ventana de Rhythmbox existente"
 
-#: ../remote/dbus/rb-client.c:87
+#: ../remote/dbus/rb-client.c:92
 msgid "Jump to next song"
 msgstr "Saltar a la siguiente canción"
 
-#: ../remote/dbus/rb-client.c:88
+#: ../remote/dbus/rb-client.c:93
 msgid "Jump to previous song"
 msgstr "Saltar a la canción anterior"
 
-#: ../remote/dbus/rb-client.c:89
+#: ../remote/dbus/rb-client.c:94
 msgid "Seek in current track"
 msgstr "Buscar en la pista actual"
 
-#: ../remote/dbus/rb-client.c:91
+#: ../remote/dbus/rb-client.c:96
 msgid "Resume playback if currently paused"
 msgstr "Continuar la reproducción si está parada"
 
-#: ../remote/dbus/rb-client.c:92
+#: ../remote/dbus/rb-client.c:97
 msgid "Pause playback if currently playing"
 msgstr "Pausar la reproducción si se está reproduciendo"
 
-#: ../remote/dbus/rb-client.c:93
+#: ../remote/dbus/rb-client.c:98
 msgid "Toggle play/pause mode"
 msgstr "Cambiar modo reproducir/pausar"
 
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
-#: ../remote/dbus/rb-client.c:96
+#: ../remote/dbus/rb-client.c:101
 msgid "Play a specified URI, importing it if necessary"
 msgstr "Reproducir un URI especifico, importándolo si es necesario"
 
-#: ../remote/dbus/rb-client.c:96
+#: ../remote/dbus/rb-client.c:101
 msgid "URI to play"
 msgstr "URI para reproducir"
 
-#: ../remote/dbus/rb-client.c:97
+#: ../remote/dbus/rb-client.c:102
 msgid "Add specified tracks to the play queue"
 msgstr "Añadir las pistas especificadas a la cola de reproducción"
 
-#: ../remote/dbus/rb-client.c:98
+#: ../remote/dbus/rb-client.c:103
 msgid "Empty the play queue before adding new tracks"
 msgstr "Vaciar cola de reproducción antes de añadir pistas nuevas"
 
-#: ../remote/dbus/rb-client.c:100
+#: ../remote/dbus/rb-client.c:105
 msgid "Print the title and artist of the playing song"
 msgstr "Imprimir el título y artista de la canción reproducida"
 
-#: ../remote/dbus/rb-client.c:101
+#: ../remote/dbus/rb-client.c:106
 msgid "Print formatted details of the song"
 msgstr "Imprimir los detalles formateados de la canción"
 
-#: ../remote/dbus/rb-client.c:102
+#: ../remote/dbus/rb-client.c:107
 msgid "Select the source matching the specified URI"
 msgstr "Seleccionar la fuente que coincida con el URI especificado"
 
-#: ../remote/dbus/rb-client.c:102
+#: ../remote/dbus/rb-client.c:107
 msgid "Source to select"
 msgstr "Fuente que seleccionar"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:108
 msgid "Activate the source matching the specified URI"
 msgstr "Activar la coincidencia de fuente que coincida con el URI especificado"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:108
 msgid "Source to activate"
 msgstr "Fuente que activar"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:109
 msgid "Play from the source matching the specified URI"
 msgstr "Reproducir de la fuente que coincida con el URI especificado"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:109
 msgid "Source to play from"
 msgstr "Fuente desde la que reproducir"
 
-#: ../remote/dbus/rb-client.c:106
+#: ../remote/dbus/rb-client.c:111
+#| msgid "Unable to start playback pipeline"
+msgid "Enable repeat playback order"
+msgstr "Activar la repetición de la reproducción"
+
+#: ../remote/dbus/rb-client.c:112
+#| msgid "Decrease playback volume"
+msgid "Disable repeat playback order"
+msgstr "Desactivar la repetición de la reproducción"
+
+#: ../remote/dbus/rb-client.c:113
+#| msgid "Increase the playback volume"
+msgid "Enable shuffle playback order"
+msgstr "Activar la reproducción aleatoria"
+
+#: ../remote/dbus/rb-client.c:114
+#| msgid "Decrease the playback volume"
+msgid "Disable shuffle playback order"
+msgstr "Desactivar la reproducción aleatoria"
+
+#: ../remote/dbus/rb-client.c:116
 msgid "Set the playback volume"
 msgstr "Define el volumen de reproducción"
 
-#: ../remote/dbus/rb-client.c:107
+#: ../remote/dbus/rb-client.c:117
 msgid "Increase the playback volume"
 msgstr "Incrementa el volumen de reproducción"
 
-#: ../remote/dbus/rb-client.c:108
+#: ../remote/dbus/rb-client.c:118
 msgid "Decrease the playback volume"
 msgstr "Decrementa el volumen de reproducción"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:119
 msgid "Print the current playback volume"
 msgstr "Imprimir el volumen de reproducción actual"
 
 #. { "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
 #. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
-#: ../remote/dbus/rb-client.c:112
+#: ../remote/dbus/rb-client.c:122
 msgid "Set the rating of the current song"
 msgstr "Establecer la puntuación de la canción actual"
 
-#: ../remote/dbus/rb-client.c:459 ../remote/dbus/rb-client.c:483
+#: ../remote/dbus/rb-client.c:469 ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "No se está reproduciendo nada"
 
-#: ../remote/dbus/rb-client.c:909
+#: ../remote/dbus/rb-client.c:966
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "El volumen de reproducción es %f.\n"
@@ -3905,7 +3924,7 @@ msgstr "Reducir el volumen de reproducción"
 msgid "_Play"
 msgstr "_Reproducir"
 
-#: ../shell/rb-shell-player.c:315 ../shell/rb-shell-player.c:3855
+#: ../shell/rb-shell-player.c:315 ../shell/rb-shell-player.c:3859
 msgid "Start playback"
 msgstr "Iniciar reproducción"
 
@@ -3992,29 +4011,29 @@ msgstr "No hay canción anterior"
 msgid "No next song"
 msgstr "No hay siguiente canción"
 
-#: ../shell/rb-shell-player.c:2344 ../shell/rb-shell-player.c:3492
+#: ../shell/rb-shell-player.c:2344 ../shell/rb-shell-player.c:3496
 msgid "Couldn't start playback"
 msgstr "No se ha podido iniciar la reproducción"
 
-#: ../shell/rb-shell-player.c:3195
+#: ../shell/rb-shell-player.c:3199
 msgid "Couldn't stop playback"
 msgstr "No se ha podido detener la reproducción"
 
-#: ../shell/rb-shell-player.c:3314
+#: ../shell/rb-shell-player.c:3318
 #, c-format
 msgid "Playback position not available"
 msgstr "La posición de la reproducción no está disponible"
 
-#: ../shell/rb-shell-player.c:3346 ../shell/rb-shell-player.c:3380
+#: ../shell/rb-shell-player.c:3350 ../shell/rb-shell-player.c:3384
 #, c-format
 msgid "Current song is not seekable"
 msgstr "La canción actual no se puede buscar"
 
-#: ../shell/rb-shell-player.c:3850
+#: ../shell/rb-shell-player.c:3854
 msgid "Pause playback"
 msgstr "Pausar la reproducción"
 
-#: ../shell/rb-shell-player.c:3852
+#: ../shell/rb-shell-player.c:3856
 msgid "Stop playback"
 msgstr "Detener reproducción"
 
@@ -4291,7 +4310,7 @@ msgstr "Sincronizar con la biblioteca"
 msgid "Synchronize media player with the library"
 msgstr "Sincronizar el reproductor de sonido con la biblioteca"
 
-#: ../sources/rb-media-player-source.c:660
+#: ../sources/rb-media-player-source.c:663
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
@@ -4299,7 +4318,7 @@ msgstr ""
 "No ha seleccionado ninguna música, listas de reproducción o podcast para "
 "transferir a este dispositivo."
 
-#: ../sources/rb-media-player-source.c:664
+#: ../sources/rb-media-player-source.c:667
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
@@ -4307,16 +4326,16 @@ msgstr ""
 "No queda suficiente espacio libre en el dispositivo para transferir la "
 "música, listas de reproducción y podcast seleccionados."
 
-#: ../sources/rb-media-player-source.c:715
+#: ../sources/rb-media-player-source.c:718
 #, c-format
 msgid "%s Sync Settings"
 msgstr "Ajustes de sincronización de %s"
 
-#: ../sources/rb-media-player-source.c:720
+#: ../sources/rb-media-player-source.c:723
 msgid "Sync with the device"
 msgstr "Sincronizar con dispositivo"
 
-#: ../sources/rb-media-player-source.c:722
+#: ../sources/rb-media-player-source.c:725
 msgid "Don't sync"
 msgstr "No sincronizar"
 
@@ -4506,13 +4525,13 @@ msgid "Drop artwork here"
 msgstr "Soltar aquí la portada"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1080
+#: ../widgets/rb-header.c:1087
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1092
+#: ../widgets/rb-header.c:1099
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
@@ -6033,9 +6052,6 @@ msgstr "Dirección desconocida"
 
 #~ msgid "%s of %s"
 #~ msgstr "%s de %s"
-
-#~ msgid "Unable to start playback pipeline"
-#~ msgstr "No se pudo iniciar la tubería de reproducción"
 
 #~ msgid "Purchase Album"
 #~ msgstr "Comprar álbum"
