@@ -611,7 +611,7 @@ rb_podcast_manager_head_query_cb (GtkTreeModel *query_model,
         uri = get_remote_location (entry);
 	status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
 
-	if (status == 1)
+	if (status == RHYTHMDB_PODCAST_FEED_STATUS_NORMAL)
 		rb_podcast_manager_subscribe_feed (manager, uri, TRUE);
 
 	rhythmdb_entry_unref (entry);
@@ -1005,6 +1005,7 @@ gboolean
 rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboolean automatic)
 {
 	RBPodcastThreadInfo *info;
+	RhythmDBEntry *entry;
 	GFile *feed;
 	char *feed_url;
 	gboolean existing_feed;
@@ -1029,8 +1030,9 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 #endif
 
 	feed_url = g_file_get_uri (feed);		/* not sure this buys us anything at all */
-	RhythmDBEntry *entry = rhythmdb_entry_lookup_by_location (pd->priv->db, feed_url);
+	entry = rhythmdb_entry_lookup_by_location (pd->priv->db, feed_url);
 	if (entry) {
+		GValue v = {0,};
 		if (rhythmdb_entry_get_entry_type (entry) != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
 			/* added as something else, probably iradio */
 			rb_error_dialog (NULL, _("URL already added"),
@@ -1039,6 +1041,12 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 			return FALSE;
 		}
 		existing_feed = TRUE;
+
+		g_value_init (&v, G_TYPE_ULONG);
+		g_value_set_ulong (&v, RHYTHMDB_PODCAST_FEED_STATUS_UPDATING);
+		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &v);
+		rhythmdb_commit (pd->priv->db);
+		g_value_unset (&v);
 	} else {
 		existing_feed = FALSE;
 	}
@@ -1707,11 +1715,10 @@ rb_podcast_manager_unsubscribe_feed (RhythmDB *db, const char *url)
 	if (entry) {
 		GValue val = {0, };
 		g_value_init (&val, G_TYPE_ULONG);
-		g_value_set_ulong (&val, 0);
+		g_value_set_ulong (&val, RHYTHMDB_PODCAST_FEED_STATUS_HIDDEN);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &val);
 		g_value_unset (&val);
 	}
-
 }
 
 gboolean
@@ -1877,6 +1884,10 @@ rb_podcast_manager_insert_feed_url (RBPodcastManager *pd, const char *url)
 	entry = rhythmdb_entry_lookup_by_location (pd->priv->db, url);
 	if (entry) {
 		rb_debug ("podcast feed entry for %s found", url);
+		g_value_init (&status_val, G_TYPE_ULONG);
+		g_value_set_ulong (&status_val, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
+		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &status_val);
+		g_value_unset (&status_val);
 		return;
 	}
 	rb_debug ("adding podcast feed %s with no entries", url);
@@ -1887,7 +1898,7 @@ rb_podcast_manager_insert_feed_url (RBPodcastManager *pd, const char *url)
 		return;
 
 	g_value_init (&status_val, G_TYPE_ULONG);
-	g_value_set_ulong (&status_val, 1);
+	g_value_set_ulong (&status_val, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
 	rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &status_val);
 	g_value_unset (&status_val);
 
@@ -1942,7 +1953,7 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 
 		rb_debug ("Podcast feed entry for %s found", data->url);
 		g_value_init (&status_val, G_TYPE_ULONG);
-		g_value_set_ulong (&status_val, 1);
+		g_value_set_ulong (&status_val, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
 		g_value_unset (&status_val);
 		last_post = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_POST_TIME);
@@ -1970,7 +1981,7 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 			return;
 
 		g_value_init (&status_val, G_TYPE_ULONG);
-		g_value_set_ulong (&status_val, 1);
+		g_value_set_ulong (&status_val, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
 		g_value_unset (&status_val);
 	}
@@ -2173,6 +2184,11 @@ rb_podcast_manager_handle_feed_error (RBPodcastManager *mgr,
 		g_value_init (&v, G_TYPE_STRING);
 		g_value_set_string (&v, error->message);
 		rhythmdb_entry_set (mgr->priv->db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &v);
+		g_value_unset (&v);
+
+		g_value_init (&v, G_TYPE_ULONG);
+		g_value_set_ulong (&v, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
+		rhythmdb_entry_set (mgr->priv->db, entry, RHYTHMDB_PROP_STATUS, &v);
 		g_value_unset (&v);
 
 		rhythmdb_commit (mgr->priv->db);

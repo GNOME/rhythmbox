@@ -107,6 +107,7 @@ struct _RBPodcastSourcePrivate
 	RBPodcastManager *podcast_mgr;
 
 	GdkPixbuf *error_pixbuf;
+	GdkPixbuf *refresh_pixbuf;
 };
 
 
@@ -744,11 +745,11 @@ podcast_feed_title_cell_data_func (GtkTreeViewColumn *column,
 }
 
 static void
-podcast_feed_error_cell_data_func (GtkTreeViewColumn *column,
-				   GtkCellRenderer *renderer,
-				   GtkTreeModel *tree_model,
-				   GtkTreeIter *iter,
-				   RBPodcastSource *source)
+podcast_feed_pixbuf_cell_data_func (GtkTreeViewColumn *column,
+				    GtkCellRenderer *renderer,
+				    GtkTreeModel *tree_model,
+				    GtkTreeIter *iter,
+				    RBPodcastSource *source)
 {
 	char *title;
 	RhythmDBEntry *entry = NULL;
@@ -762,7 +763,10 @@ podcast_feed_error_cell_data_func (GtkTreeViewColumn *column,
 	g_free (title);
 
 	if (entry != NULL) {
-		if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR)) {
+		gulong status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
+		if (status == RHYTHMDB_PODCAST_FEED_STATUS_UPDATING) {
+			pixbuf = source->priv->refresh_pixbuf;
+		} else if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR)) {
 			pixbuf = source->priv->error_pixbuf;
 		}
 	}
@@ -913,8 +917,12 @@ podcast_entry_changed_cb (RhythmDB *db,
 		GValue *v = &g_array_index (changes, GValue, i);
 		RhythmDBEntryChange *change = g_value_get_boxed (v);
 
-		if (change->prop == RHYTHMDB_PROP_PLAYBACK_ERROR) {
+		switch (change->prop) {
+		case RHYTHMDB_PROP_PLAYBACK_ERROR:
+		case RHYTHMDB_PROP_STATUS:
 			feed_changed = TRUE;
+			break;
+		default:
 			break;
 		}
 	}
@@ -1514,7 +1522,7 @@ impl_constructed (GObject *object)
 	renderer = rb_cell_renderer_pixbuf_new ();
 	gtk_tree_view_column_pack_start (column, renderer, TRUE);
 	gtk_tree_view_column_set_cell_data_func (column, renderer,
-						 (GtkTreeCellDataFunc) podcast_feed_error_cell_data_func,
+						 (GtkTreeCellDataFunc) podcast_feed_pixbuf_cell_data_func,
 						 source, NULL);
 	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
 	gtk_tree_view_column_set_fixed_width (column, gdk_pixbuf_get_width (source->priv->error_pixbuf) + 5);
@@ -1664,6 +1672,11 @@ impl_dispose (GObject *object)
 		source->priv->error_pixbuf = NULL;
 	}
 
+	if (source->priv->refresh_pixbuf != NULL) {
+		g_object_unref (source->priv->refresh_pixbuf);
+		source->priv->refresh_pixbuf = NULL;
+	}
+
 	G_OBJECT_CLASS (rb_podcast_source_parent_class)->dispose (object);
 }
 
@@ -1699,10 +1712,15 @@ rb_podcast_source_init (RBPodcastSource *source)
 
 	icon_theme = gtk_icon_theme_get_default ();
 	source->priv->error_pixbuf = gtk_icon_theme_load_icon (icon_theme,
-							       "dialog-error",
+							       "dialog-error-symbolic",
 							       16,
 							       0,
 							       NULL);
+	source->priv->refresh_pixbuf = gtk_icon_theme_load_icon (icon_theme,
+								 "view-refresh-symbolic",
+								 16,
+								 0,
+								 NULL);
 }
 
 static void
