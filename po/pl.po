@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-21 20:00+0200\n"
-"PO-Revision-Date: 2012-10-21 20:01+0200\n"
+"POT-Creation-Date: 2012-11-01 01:17+0100\n"
+"PO-Revision-Date: 2012-11-01 01:18+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -731,17 +731,17 @@ msgstr "%d %b %Y"
 #: ../podcast/rb-podcast-manager.c:1994
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
-#: ../podcast/rb-podcast-source.c:787 ../remote/dbus/rb-client.c:144
+#: ../podcast/rb-podcast-source.c:787 ../remote/dbus/rb-client.c:154
 #: ../rhythmdb/rhythmdb.c:2010 ../rhythmdb/rhythmdb.c:2016
 #: ../rhythmdb/rhythmdb.c:2031 ../rhythmdb/rhythmdb.c:5388
 #: ../rhythmdb/rhythmdb.c:5393 ../rhythmdb/rhythmdb-tree.c:1338
 #: ../rhythmdb/rhythmdb-tree.c:1342 ../rhythmdb/rhythmdb-tree.c:1346
 #: ../rhythmdb/rhythmdb-tree.c:1350 ../shell/rb-shell-player.c:1790
-#: ../shell/rb-shell-player.c:3759 ../shell/rb-shell-player.c:3761
+#: ../shell/rb-shell-player.c:3763 ../shell/rb-shell-player.c:3765
 #: ../widgets/rb-entry-view.c:985 ../widgets/rb-entry-view.c:1007
 #: ../widgets/rb-entry-view.c:1482 ../widgets/rb-entry-view.c:1494
-#: ../widgets/rb-entry-view.c:1506 ../widgets/rb-header.c:1141
-#: ../widgets/rb-header.c:1167 ../widgets/rb-song-info.c:917
+#: ../widgets/rb-entry-view.c:1506 ../widgets/rb-header.c:1148
+#: ../widgets/rb-header.c:1174 ../widgets/rb-song-info.c:917
 #: ../widgets/rb-song-info.c:929 ../widgets/rb-song-info.c:1150
 #: ../widgets/rb-song-info.c:1489
 msgid "Unknown"
@@ -758,13 +758,13 @@ msgid "Cannot get free space at %s: %s"
 msgstr "Nie można uzyskać wolnego miejsca na %s: %s"
 
 #: ../lib/rb-util.c:691 ../plugins/context/tmpl/album-tmpl.html:21
-#: ../remote/dbus/rb-client.c:146
+#: ../remote/dbus/rb-client.c:156
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
 #: ../lib/rb-util.c:693 ../plugins/context/tmpl/album-tmpl.html:19
-#: ../remote/dbus/rb-client.c:148
+#: ../remote/dbus/rb-client.c:158
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -2497,7 +2497,7 @@ msgstr ""
 "urządzenia)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:154
-#: ../plugins/mtpdevice/rb-mtp-thread.c:545
+#: ../plugins/mtpdevice/rb-mtp-thread.c:488
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "Nie można otworzyć tymczasowego pliku: %s"
@@ -2511,7 +2511,7 @@ msgid "Media Player"
 msgstr "Odtwarzacz muzyki"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:888
-#: ../plugins/mtpdevice/rb-mtp-thread.c:856
+#: ../plugins/mtpdevice/rb-mtp-thread.c:799
 msgid "Media player device error"
 msgstr "Błąd odtwarzacza muzyki"
 
@@ -2527,24 +2527,24 @@ msgstr "Nie można otworzyć urządzenia %s %s"
 msgid "Digital Audio Player"
 msgstr "Cyfrowy odtwarzacz muzyki"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:500
-#: ../plugins/mtpdevice/rb-mtp-thread.c:558
-#: ../plugins/mtpdevice/rb-mtp-thread.c:576
+#: ../plugins/mtpdevice/rb-mtp-thread.c:443
+#: ../plugins/mtpdevice/rb-mtp-thread.c:501
+#: ../plugins/mtpdevice/rb-mtp-thread.c:519
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
 msgstr "Nie można skopiować pliku z urządzenia MTP: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:521
+#: ../plugins/mtpdevice/rb-mtp-thread.c:464
 #, c-format
 msgid "Not enough space in %s"
 msgstr "Brak wystarczającej ilości miejsca w %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:602
+#: ../plugins/mtpdevice/rb-mtp-thread.c:545
 #, c-format
 msgid "No space left on MTP device"
 msgstr "Brak miejsca na urządzeniu MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:605
+#: ../plugins/mtpdevice/rb-mtp-thread.c:548
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "Nie można wysłać pliku do urządzenia MTP: %s"
@@ -3076,122 +3076,138 @@ msgstr "Kanał"
 msgid "Status"
 msgstr "Stan"
 
-#: ../remote/dbus/rb-client.c:81
+#: ../remote/dbus/rb-client.c:86
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Bez uruchamiania nowej instancji programu Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:82 ../shell/rb-shell.c:353
+#: ../remote/dbus/rb-client.c:87 ../shell/rb-shell.c:353
 msgid "Quit Rhythmbox"
 msgstr "Kończy działanie programu Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:83
+#: ../remote/dbus/rb-client.c:88
 msgid "Check if Rhythmbox is already running"
 msgstr "Sprawdza, czy program Rhythmbox jest już uruchomiony"
 
-#: ../remote/dbus/rb-client.c:85
+#: ../remote/dbus/rb-client.c:90
 msgid "Don't present an existing Rhythmbox window"
 msgstr "Bez wyświetlania istniejącego okna programu Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:87
+#: ../remote/dbus/rb-client.c:92
 msgid "Jump to next song"
 msgstr "Przechodzi do następnego utworu"
 
-#: ../remote/dbus/rb-client.c:88
+#: ../remote/dbus/rb-client.c:93
 msgid "Jump to previous song"
 msgstr "Przechodzi do poprzedniego utworu"
 
-#: ../remote/dbus/rb-client.c:89
+#: ../remote/dbus/rb-client.c:94
 msgid "Seek in current track"
 msgstr "Przewija bieżącą ścieżkę"
 
-#: ../remote/dbus/rb-client.c:91
+#: ../remote/dbus/rb-client.c:96
 msgid "Resume playback if currently paused"
 msgstr "Wznawia odtwarzanie, jeśli jest wstrzymane"
 
-#: ../remote/dbus/rb-client.c:92
+#: ../remote/dbus/rb-client.c:97
 msgid "Pause playback if currently playing"
 msgstr "Wstrzymuje odtwarzanie, jeśli jest uruchomione"
 
-#: ../remote/dbus/rb-client.c:93
+#: ../remote/dbus/rb-client.c:98
 msgid "Toggle play/pause mode"
 msgstr "Przełącza tryby odtwarzania/wstrzymania"
 
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
-#: ../remote/dbus/rb-client.c:96
+#: ../remote/dbus/rb-client.c:101
 msgid "Play a specified URI, importing it if necessary"
 msgstr "Odtwarza podany adres URI, importując go, jeśli to konieczne"
 
-#: ../remote/dbus/rb-client.c:96
+#: ../remote/dbus/rb-client.c:101
 msgid "URI to play"
 msgstr "Adres URI do odtworzenia"
 
-#: ../remote/dbus/rb-client.c:97
+#: ../remote/dbus/rb-client.c:102
 msgid "Add specified tracks to the play queue"
 msgstr "Dodaje podane ścieżki do kolejki odtwarzania"
 
-#: ../remote/dbus/rb-client.c:98
+#: ../remote/dbus/rb-client.c:103
 msgid "Empty the play queue before adding new tracks"
 msgstr "Opróżnia kolejkę odtwarzania przed dodawaniem nowych ścieżek"
 
-#: ../remote/dbus/rb-client.c:100
+#: ../remote/dbus/rb-client.c:105
 msgid "Print the title and artist of the playing song"
 msgstr "Wyświetla tytuł i wykonawcę odtwarzanego utworu"
 
-#: ../remote/dbus/rb-client.c:101
+#: ../remote/dbus/rb-client.c:106
 msgid "Print formatted details of the song"
 msgstr "Wyświetla sformatowane szczegóły utworu"
 
-#: ../remote/dbus/rb-client.c:102
+#: ../remote/dbus/rb-client.c:107
 msgid "Select the source matching the specified URI"
 msgstr "Wybiera źródło pasujące do podanego adresu URI"
 
-#: ../remote/dbus/rb-client.c:102
+#: ../remote/dbus/rb-client.c:107
 msgid "Source to select"
 msgstr "Źródło do wybrania"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:108
 msgid "Activate the source matching the specified URI"
 msgstr "Aktywuje źródło pasujące do podanego adresu URI"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:108
 msgid "Source to activate"
 msgstr "Źródło do aktywacji"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:109
 msgid "Play from the source matching the specified URI"
 msgstr "Odtwarza ze źródła pasujące do podanego adresu URI"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:109
 msgid "Source to play from"
 msgstr "Źródło do odtworzenia"
 
-#: ../remote/dbus/rb-client.c:106
+#: ../remote/dbus/rb-client.c:111
+msgid "Enable repeat playback order"
+msgstr "Włącza powtarzanie odtwarzania"
+
+#: ../remote/dbus/rb-client.c:112
+msgid "Disable repeat playback order"
+msgstr "Wyłącza powtarzanie odtwarzania"
+
+#: ../remote/dbus/rb-client.c:113
+msgid "Enable shuffle playback order"
+msgstr "Włącza losową kolejność odtwarzania"
+
+#: ../remote/dbus/rb-client.c:114
+msgid "Disable shuffle playback order"
+msgstr "Wyłącza losową kolejność odtwarzania"
+
+#: ../remote/dbus/rb-client.c:116
 msgid "Set the playback volume"
 msgstr "Ustawia głośność odtwarzania"
 
-#: ../remote/dbus/rb-client.c:107
+#: ../remote/dbus/rb-client.c:117
 msgid "Increase the playback volume"
 msgstr "Zwiększa głośność odtwarzania"
 
-#: ../remote/dbus/rb-client.c:108
+#: ../remote/dbus/rb-client.c:118
 msgid "Decrease the playback volume"
 msgstr "Zmniejsza głośność odtwarzania"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:119
 msgid "Print the current playback volume"
 msgstr "Wyświetla bieżącą głośność odtwarzania"
 
 #. { "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
 #. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
-#: ../remote/dbus/rb-client.c:112
+#: ../remote/dbus/rb-client.c:122
 msgid "Set the rating of the current song"
 msgstr "Ustawia ocenę bieżącego utworu"
 
-#: ../remote/dbus/rb-client.c:459 ../remote/dbus/rb-client.c:483
+#: ../remote/dbus/rb-client.c:469 ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "Nie odtwarza"
 
-#: ../remote/dbus/rb-client.c:909
+#: ../remote/dbus/rb-client.c:966
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Głośność odtwarzania wynosi %f.\n"
@@ -3912,7 +3928,7 @@ msgstr "Zmniejsza głośność odtwarzania"
 msgid "_Play"
 msgstr "_Odtwarzanie"
 
-#: ../shell/rb-shell-player.c:315 ../shell/rb-shell-player.c:3855
+#: ../shell/rb-shell-player.c:315 ../shell/rb-shell-player.c:3859
 msgid "Start playback"
 msgstr "Rozpoczyna odtwarzanie"
 
@@ -3997,29 +4013,29 @@ msgstr "Brak poprzedniego utworu"
 msgid "No next song"
 msgstr "Brak następnego utworu"
 
-#: ../shell/rb-shell-player.c:2344 ../shell/rb-shell-player.c:3492
+#: ../shell/rb-shell-player.c:2344 ../shell/rb-shell-player.c:3496
 msgid "Couldn't start playback"
 msgstr "Nie można rozpocząć odtwarzania"
 
-#: ../shell/rb-shell-player.c:3195
+#: ../shell/rb-shell-player.c:3199
 msgid "Couldn't stop playback"
 msgstr "Nie można zatrzymać odtwarzania"
 
-#: ../shell/rb-shell-player.c:3314
+#: ../shell/rb-shell-player.c:3318
 #, c-format
 msgid "Playback position not available"
 msgstr "Położenie odtwarzania niedostępne"
 
-#: ../shell/rb-shell-player.c:3346 ../shell/rb-shell-player.c:3380
+#: ../shell/rb-shell-player.c:3350 ../shell/rb-shell-player.c:3384
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Nie ma możliwości przewijania bieżącego utworu"
 
-#: ../shell/rb-shell-player.c:3850
+#: ../shell/rb-shell-player.c:3854
 msgid "Pause playback"
 msgstr "Wstrzymuje odtwarzanie"
 
-#: ../shell/rb-shell-player.c:3852
+#: ../shell/rb-shell-player.c:3856
 msgid "Stop playback"
 msgstr "Zatrzymuje odtwarzanie"
 
@@ -4521,13 +4537,13 @@ msgid "Drop artwork here"
 msgstr "Tutaj można upuścić okładkę"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1080
+#: ../widgets/rb-header.c:1087
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s/%s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1092
+#: ../widgets/rb-header.c:1099
 #, c-format
 msgid "%s / %s"
 msgstr "%s/%s"
