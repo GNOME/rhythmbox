@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-10-21 08:44+0000\n"
-"PO-Revision-Date: 2012-10-25 23:13+0300\n"
+"POT-Creation-Date: 2012-10-30 13:57+0000\n"
+"PO-Revision-Date: 2012-11-01 15:52+0300\n"
 "Last-Translator: Aurimas Černius <aurisc4@gmail.com>\n"
 "Language-Team: Lithuanian\n"
 "Language: lt\n"
@@ -743,7 +743,7 @@ msgstr "%Y %b %d"
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
 #: ../podcast/rb-podcast-source.c:787
-#: ../remote/dbus/rb-client.c:144
+#: ../remote/dbus/rb-client.c:154
 #: ../rhythmdb/rhythmdb.c:2010
 #: ../rhythmdb/rhythmdb.c:2016
 #: ../rhythmdb/rhythmdb.c:2031
@@ -754,15 +754,15 @@ msgstr "%Y %b %d"
 #: ../rhythmdb/rhythmdb-tree.c:1346
 #: ../rhythmdb/rhythmdb-tree.c:1350
 #: ../shell/rb-shell-player.c:1790
-#: ../shell/rb-shell-player.c:3759
-#: ../shell/rb-shell-player.c:3761
+#: ../shell/rb-shell-player.c:3763
+#: ../shell/rb-shell-player.c:3765
 #: ../widgets/rb-entry-view.c:985
 #: ../widgets/rb-entry-view.c:1007
 #: ../widgets/rb-entry-view.c:1482
 #: ../widgets/rb-entry-view.c:1494
 #: ../widgets/rb-entry-view.c:1506
-#: ../widgets/rb-header.c:1141
-#: ../widgets/rb-header.c:1167
+#: ../widgets/rb-header.c:1148
+#: ../widgets/rb-header.c:1174
 #: ../widgets/rb-song-info.c:917
 #: ../widgets/rb-song-info.c:929
 #: ../widgets/rb-song-info.c:1150
@@ -782,14 +782,14 @@ msgstr "Nepavyko gauti %s laisvos vietos: %s"
 
 #: ../lib/rb-util.c:691
 #: ../plugins/context/tmpl/album-tmpl.html:21
-#: ../remote/dbus/rb-client.c:146
+#: ../remote/dbus/rb-client.c:156
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
 #: ../lib/rb-util.c:693
 #: ../plugins/context/tmpl/album-tmpl.html:19
-#: ../remote/dbus/rb-client.c:148
+#: ../remote/dbus/rb-client.c:158
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -2154,7 +2154,6 @@ msgid "Jlyric (j-lyric.net)"
 msgstr "Jlyric (j-lyric.net)"
 
 #: ../plugins/lyrics/LyricsSites.py:46
-#| msgid "Dark Lyrics (darklyrics.com)"
 msgid "Jetlyrics (jetlyrics.com)"
 msgstr "Jetlyrics (jetlyrics.com)"
 
@@ -2487,7 +2486,7 @@ msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr "MTP įrenginių palaikymas (rodyti turinį, perkelti, groti iš įrenginio)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:154
-#: ../plugins/mtpdevice/rb-mtp-thread.c:545
+#: ../plugins/mtpdevice/rb-mtp-thread.c:488
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "Nepavyko atverti laikinojo failo: %s"
@@ -2501,7 +2500,7 @@ msgid "Media Player"
 msgstr "Muzikos grotuvas"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:888
-#: ../plugins/mtpdevice/rb-mtp-thread.c:856
+#: ../plugins/mtpdevice/rb-mtp-thread.c:799
 msgid "Media player device error"
 msgstr "Muzikos grotuvo įrenginio klaida"
 
@@ -2517,24 +2516,24 @@ msgstr "Nepavyko atverti įrenginio %s %s"
 msgid "Digital Audio Player"
 msgstr "Skaitmeninis garso grotuvas"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:500
-#: ../plugins/mtpdevice/rb-mtp-thread.c:558
-#: ../plugins/mtpdevice/rb-mtp-thread.c:576
+#: ../plugins/mtpdevice/rb-mtp-thread.c:443
+#: ../plugins/mtpdevice/rb-mtp-thread.c:501
+#: ../plugins/mtpdevice/rb-mtp-thread.c:519
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
 msgstr "Nepavyko nukopijuoti failo iš MTP įrenginio: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:521
+#: ../plugins/mtpdevice/rb-mtp-thread.c:464
 #, c-format
 msgid "Not enough space in %s"
 msgstr "Nepakanka vietos įrenginyje %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:602
+#: ../plugins/mtpdevice/rb-mtp-thread.c:545
 #, c-format
 msgid "No space left on MTP device"
 msgstr "Neliko vietos MTP įrenginyje"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:605
+#: ../plugins/mtpdevice/rb-mtp-thread.c:548
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "Nepavyko nusiųsti failo į MTP įrenginį: %s"
@@ -3040,124 +3039,144 @@ msgstr "Kanalas"
 msgid "Status"
 msgstr "Būsena"
 
-#: ../remote/dbus/rb-client.c:81
+#: ../remote/dbus/rb-client.c:86
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Nepaleisti dar vienos Rhythmbox kopijos"
 
-#: ../remote/dbus/rb-client.c:82
+#: ../remote/dbus/rb-client.c:87
 #: ../shell/rb-shell.c:353
 msgid "Quit Rhythmbox"
 msgstr "Išeiti iš Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:83
+#: ../remote/dbus/rb-client.c:88
 msgid "Check if Rhythmbox is already running"
 msgstr "Patikrinti, ar Rhythmbox jau veikia"
 
-#: ../remote/dbus/rb-client.c:85
+#: ../remote/dbus/rb-client.c:90
 msgid "Don't present an existing Rhythmbox window"
 msgstr "Neparodyti egzistuojančio Rhythmbox lango"
 
-#: ../remote/dbus/rb-client.c:87
+#: ../remote/dbus/rb-client.c:92
 msgid "Jump to next song"
 msgstr "Peršokti prie kitos dainos"
 
-#: ../remote/dbus/rb-client.c:88
+#: ../remote/dbus/rb-client.c:93
 msgid "Jump to previous song"
 msgstr "Peršokti prie ankstesnės dainos"
 
-#: ../remote/dbus/rb-client.c:89
+#: ../remote/dbus/rb-client.c:94
 msgid "Seek in current track"
 msgstr "Ieškoti dabartiniame takelyje"
 
-#: ../remote/dbus/rb-client.c:91
+#: ../remote/dbus/rb-client.c:96
 msgid "Resume playback if currently paused"
 msgstr "Tęsti grojimą, jei dabar pristabdyta"
 
-#: ../remote/dbus/rb-client.c:92
+#: ../remote/dbus/rb-client.c:97
 msgid "Pause playback if currently playing"
 msgstr "Pristabdyti grojimą, jei dabar grojama"
 
-#: ../remote/dbus/rb-client.c:93
+#: ../remote/dbus/rb-client.c:98
 msgid "Toggle play/pause mode"
 msgstr "Perjungti grojimo / pauzės veikseną"
 
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
-#: ../remote/dbus/rb-client.c:96
+#: ../remote/dbus/rb-client.c:101
 msgid "Play a specified URI, importing it if necessary"
 msgstr "Groti nurodytą URI, jei reikia, importuojant"
 
-#: ../remote/dbus/rb-client.c:96
+#: ../remote/dbus/rb-client.c:101
 msgid "URI to play"
 msgstr "Grotinas URI"
 
-#: ../remote/dbus/rb-client.c:97
+#: ../remote/dbus/rb-client.c:102
 msgid "Add specified tracks to the play queue"
 msgstr "Įdėti nurodytas dainas į grojimo eilę"
 
-#: ../remote/dbus/rb-client.c:98
+#: ../remote/dbus/rb-client.c:103
 msgid "Empty the play queue before adding new tracks"
 msgstr "Prieš įdedant naujus takelius išvalyti grojimo eilę"
 
-#: ../remote/dbus/rb-client.c:100
+#: ../remote/dbus/rb-client.c:105
 msgid "Print the title and artist of the playing song"
 msgstr "Rodyti grojamos dainos pavadinimą ir atlikėją"
 
-#: ../remote/dbus/rb-client.c:101
+#: ../remote/dbus/rb-client.c:106
 msgid "Print formatted details of the song"
 msgstr "Rodyti suformuotą dainos informaciją"
 
-#: ../remote/dbus/rb-client.c:102
+#: ../remote/dbus/rb-client.c:107
 msgid "Select the source matching the specified URI"
 msgstr "Pasirinkti šaltinį, atitinkantį nurodytą URI"
 
-#: ../remote/dbus/rb-client.c:102
+#: ../remote/dbus/rb-client.c:107
 msgid "Source to select"
 msgstr "Pasirinkti šaltinį"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:108
 msgid "Activate the source matching the specified URI"
 msgstr "Suaktyvinti šaltinį, atitinkantį nurodytą URI"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:108
 msgid "Source to activate"
 msgstr "Suaktyvintinas šaltinis"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:109
 msgid "Play from the source matching the specified URI"
 msgstr "Groti iš šaltinio, atitinkančio nurodytą URI"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:109
 msgid "Source to play from"
 msgstr "Šaltinis, iš kurio groti"
 
-#: ../remote/dbus/rb-client.c:106
+#: ../remote/dbus/rb-client.c:111
+#| msgid "Increase playback volume"
+msgid "Enable repeat playback order"
+msgstr "Įjungti kartojamą grojimo tvarką"
+
+#: ../remote/dbus/rb-client.c:112
+#| msgid "Decrease playback volume"
+msgid "Disable repeat playback order"
+msgstr "Išjungti kartojamą grojimo tvarką"
+
+#: ../remote/dbus/rb-client.c:113
+#| msgid "Increase the playback volume"
+msgid "Enable shuffle playback order"
+msgstr "Įjungti maišytą grojimo tvarką"
+
+#: ../remote/dbus/rb-client.c:114
+#| msgid "Decrease the playback volume"
+msgid "Disable shuffle playback order"
+msgstr "Išjungti maišytą grojimo tvarką"
+
+#: ../remote/dbus/rb-client.c:116
 msgid "Set the playback volume"
 msgstr "Nustatyti grojimo garsumą"
 
-#: ../remote/dbus/rb-client.c:107
+#: ../remote/dbus/rb-client.c:117
 msgid "Increase the playback volume"
 msgstr "Padidinti grojimo garsumą"
 
-#: ../remote/dbus/rb-client.c:108
+#: ../remote/dbus/rb-client.c:118
 msgid "Decrease the playback volume"
 msgstr "Sumažinti grojimo garsumą"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:119
 msgid "Print the current playback volume"
 msgstr "Rodyti dabartinį grojimo garsumą"
 
 #. { "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
 #. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
-#: ../remote/dbus/rb-client.c:112
+#: ../remote/dbus/rb-client.c:122
 msgid "Set the rating of the current song"
 msgstr "Nustatyti dabartinės dainos įvertinimą"
 
-#: ../remote/dbus/rb-client.c:459
-#: ../remote/dbus/rb-client.c:483
+#: ../remote/dbus/rb-client.c:469
+#: ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "Negroja"
 
-#: ../remote/dbus/rb-client.c:909
+#: ../remote/dbus/rb-client.c:966
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Grojimo garsumas – %f.\n"
@@ -3873,7 +3892,7 @@ msgid "_Play"
 msgstr "_Groti"
 
 #: ../shell/rb-shell-player.c:315
-#: ../shell/rb-shell-player.c:3855
+#: ../shell/rb-shell-player.c:3859
 msgid "Start playback"
 msgstr "Pradėti grojimą"
 
@@ -3959,30 +3978,30 @@ msgid "No next song"
 msgstr "Nėra kitos dainos"
 
 #: ../shell/rb-shell-player.c:2344
-#: ../shell/rb-shell-player.c:3492
+#: ../shell/rb-shell-player.c:3496
 msgid "Couldn't start playback"
 msgstr "Nepavyko paleisti grojimo"
 
-#: ../shell/rb-shell-player.c:3195
+#: ../shell/rb-shell-player.c:3199
 msgid "Couldn't stop playback"
 msgstr "Nepavyko sustabdyti grojimo"
 
-#: ../shell/rb-shell-player.c:3314
+#: ../shell/rb-shell-player.c:3318
 #, c-format
 msgid "Playback position not available"
 msgstr "Grojimo pozicija neprieinama"
 
-#: ../shell/rb-shell-player.c:3346
-#: ../shell/rb-shell-player.c:3380
+#: ../shell/rb-shell-player.c:3350
+#: ../shell/rb-shell-player.c:3384
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Šios dainos prasukti negalima"
 
-#: ../shell/rb-shell-player.c:3850
+#: ../shell/rb-shell-player.c:3854
 msgid "Pause playback"
 msgstr "Pristabdyti grojimą"
 
-#: ../shell/rb-shell-player.c:3852
+#: ../shell/rb-shell-player.c:3856
 msgid "Stop playback"
 msgstr "Sustabdyti grojimą"
 
@@ -4251,24 +4270,24 @@ msgstr "Sinchronizuoti su fonoteka"
 msgid "Synchronize media player with the library"
 msgstr "Sinchronizuoti grotuvą su biblioteka"
 
-#: ../sources/rb-media-player-source.c:660
+#: ../sources/rb-media-player-source.c:663
 msgid "You have not selected any music, playlists, or podcasts to transfer to this device."
 msgstr "Nepasirinkote jokios muzikos, grojaraščio ar tinklalaidės, perkeltinos į šį įrenginį."
 
-#: ../sources/rb-media-player-source.c:664
+#: ../sources/rb-media-player-source.c:667
 msgid "There is not enough space on the device to transfer the selected music, playlists and podcasts."
 msgstr "Įrenginyje nėra pakankamai laisvos vietos norint perkelti pasirinktą muziką, grojaraščius ir tinklalaides."
 
-#: ../sources/rb-media-player-source.c:715
+#: ../sources/rb-media-player-source.c:718
 #, c-format
 msgid "%s Sync Settings"
 msgstr "%s parametrų sinchronizavimas"
 
-#: ../sources/rb-media-player-source.c:720
+#: ../sources/rb-media-player-source.c:723
 msgid "Sync with the device"
 msgstr "Sinchronizuoti su įrenginiu"
 
-#: ../sources/rb-media-player-source.c:722
+#: ../sources/rb-media-player-source.c:725
 msgid "Don't sync"
 msgstr "Nesinchronizuoti"
 
@@ -4463,13 +4482,13 @@ msgid "Drop artwork here"
 msgstr "Vilkite viršelių paveikslėlius čia"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1080
+#: ../widgets/rb-header.c:1087
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1092
+#: ../widgets/rb-header.c:1099
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
