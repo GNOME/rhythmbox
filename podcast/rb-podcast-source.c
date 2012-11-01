@@ -948,9 +948,9 @@ podcast_entry_changed_cb (RhythmDB *db,
 }
 
 static void
-podcast_error_pixbuf_clicked_cb (RBCellRendererPixbuf *renderer,
-				 const char *path_string,
-				 RBPodcastSource *source)
+podcast_status_pixbuf_clicked_cb (RBCellRendererPixbuf *renderer,
+				  const char *path_string,
+				  RBPodcastSource *source)
 {
 	GtkTreePath *path;
 	GtkTreeIter iter;
@@ -1517,7 +1517,7 @@ impl_constructed (GObject *object)
 				       source->priv->base_query);
 	g_object_unref (query_model);
 
-	/* error indicator column */
+	/* status indicator column */
 	column = gtk_tree_view_column_new ();
 	renderer = rb_cell_renderer_pixbuf_new ();
 	gtk_tree_view_column_pack_start (column, renderer, TRUE);
@@ -1531,10 +1531,10 @@ impl_constructed (GObject *object)
 	rb_property_view_append_column_custom (source->priv->feeds, column);
 	g_signal_connect_object (renderer,
 				 "pixbuf-clicked",
-				 G_CALLBACK (podcast_error_pixbuf_clicked_cb),
+				 G_CALLBACK (podcast_status_pixbuf_clicked_cb),
 				 source, 0);
 
-	/* redraw error indicator when errors are set or cleared */
+	/* redraw status when errors are set or cleared */
 	g_signal_connect_object (source->priv->db,
 				 "entry_changed",
 				 G_CALLBACK (podcast_entry_changed_cb),

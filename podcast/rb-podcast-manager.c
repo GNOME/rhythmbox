@@ -1935,9 +1935,14 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 	gulong new_last_post;
 	const char *title;
 	GList *download_entries = NULL;
-	gboolean new_feed, updated, download_last;
+	gboolean new_feed, updated;
 	RhythmDB *db = pd->priv->db;
 	RhythmDBQueryModel *existing_entries = NULL;
+	enum {
+		DOWNLOAD_NONE,
+		DOWNLOAD_NEWEST,
+		DOWNLOAD_NEW
+	} download_mode;
 
 	RhythmDBEntry *entry;
 
@@ -2048,11 +2053,23 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &error_val);
 	g_value_unset (&error_val);
 
+	if (g_settings_get_enum (pd->priv->settings, PODCAST_DOWNLOAD_INTERVAL) == PODCAST_INTERVAL_MANUAL) {
+		/* if automatic updates are disabled, don't download anything */
+		rb_debug ("not downloading any new episodes");
+		download_mode = DOWNLOAD_NONE;
+	} else if (new_feed) {
+		/* don't download the entire backlog for new feeds */
+		rb_debug ("downloading most recent episodes");
+		download_mode = DOWNLOAD_NEWEST;
+	} else {
+		/* download all episodes since the last update for existing feeds */
+		rb_debug ("downloading all new episodes");
+		download_mode = DOWNLOAD_NEW;
+	}
+
 	/* insert episodes */
 	new_last_post = last_post;
-
 	updated = FALSE;
-	download_last = (g_settings_get_enum (pd->priv->settings, PODCAST_DOWNLOAD_INTERVAL) != PODCAST_INTERVAL_MANUAL);
 	for (lst_songs = data->posts; lst_songs != NULL; lst_songs = g_list_next (lst_songs)) {
 		RBPodcastItem *item = (RBPodcastItem *) lst_songs->data;
 		RhythmDBEntry *post_entry;
@@ -2099,16 +2116,23 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 			updated = TRUE;
 
                 if (post_entry && item->pub_date >= new_last_post) {
-			if (item->pub_date > new_last_post) {
-				g_list_free (download_entries);
-				download_entries = NULL;
+			switch (download_mode) {
+			case DOWNLOAD_NEWEST:
+				if (item->pub_date > new_last_post) {
+					g_list_free (download_entries);
+					download_entries = NULL;
+				}
+				new_last_post = item->pub_date;
+				break;
+			case DOWNLOAD_NONE:
+			case DOWNLOAD_NEW:
+				break;
 			}
 			download_entries = g_list_prepend (download_entries, post_entry);
-			new_last_post = item->pub_date;
                 }
 	}
 
-	if (download_last) {
+	if (download_mode != DOWNLOAD_NONE) {
 		GValue status = {0,};
 		GList *t;
 
