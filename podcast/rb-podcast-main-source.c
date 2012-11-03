@@ -74,6 +74,7 @@ rb_podcast_main_source_new (RBShell *shell, RBPodcastManager *podcast_manager)
 					  "base-query", base_query,
 					  "settings", g_settings_get_child (settings, "source"),
 					  "toolbar-path", "/PodcastSourceToolBar",
+					  "show-all-feeds", TRUE,
 					  NULL));
 	g_object_unref (settings);
 

@@ -103,6 +103,7 @@ struct _RBPodcastSourcePrivate
 	RhythmDBQuery *base_query;
 	RhythmDBQuery *search_query;
 	RBSourceSearch *default_search;
+	gboolean show_all_feeds;
 
 	RBPodcastManager *podcast_mgr;
 
@@ -154,6 +155,7 @@ enum
 	PROP_0,
 	PROP_PODCAST_MANAGER,
 	PROP_BASE_QUERY,
+	PROP_SHOW_ALL_FEEDS,
 	PROP_SHOW_BROWSER
 };
 
@@ -290,7 +292,7 @@ construct_query_from_selection (RBPodcastSource *source)
 }
 
 static void
-rb_podcast_source_do_query (RBPodcastSource *source)
+rb_podcast_source_do_query (RBPodcastSource *source, gboolean feed_query)
 {
 	RhythmDBQueryModel *query_model;
 	GPtrArray *query;
@@ -300,6 +302,41 @@ rb_podcast_source_do_query (RBPodcastSource *source)
 
 	rb_entry_view_set_model (source->priv->posts, query_model);
 	g_object_set (source, "query-model", query_model, NULL);
+
+	if (feed_query) {
+		if (source->priv->feed_model != NULL) {
+			g_object_unref (source->priv->feed_model);
+			source->priv->feed_model = NULL;
+		}
+
+		if (source->priv->show_all_feeds && (source->priv->search_query == NULL)) {
+			RhythmDBQueryModel *feed_query_model;
+
+			rb_debug ("showing all feeds in browser");
+			source->priv->feed_model = rhythmdb_property_model_new (source->priv->db, RHYTHMDB_PROP_LOCATION);
+			g_object_set (source->priv->feeds, "property-model", source->priv->feed_model, NULL);
+
+			feed_query_model = rhythmdb_query_model_new_empty (source->priv->db);
+			g_object_set (source->priv->feed_model, "query-model", feed_query_model, NULL);
+
+			rhythmdb_do_full_query_async (source->priv->db,
+						      RHYTHMDB_QUERY_RESULTS (feed_query_model),
+						      RHYTHMDB_QUERY_PROP_EQUALS,
+						      RHYTHMDB_PROP_TYPE,
+						      RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
+						      RHYTHMDB_QUERY_PROP_NOT_EQUAL,
+						      RHYTHMDB_PROP_STATUS,
+						      RHYTHMDB_PODCAST_FEED_STATUS_HIDDEN,
+						      RHYTHMDB_QUERY_END);
+			g_object_unref (feed_query_model);
+		} else {
+			rb_debug ("only showing matching feeds in browser");
+			source->priv->feed_model = rhythmdb_property_model_new (source->priv->db, RHYTHMDB_PROP_SUBTITLE);
+			g_object_set (source->priv->feeds, "property-model", source->priv->feed_model, NULL);
+
+			g_object_set (source->priv->feed_model, "query-model", query_model, NULL);
+		}
+	}
 
 	/* build and run the query */
 	query = construct_query_from_selection (source);
@@ -327,7 +364,7 @@ feed_select_change_cb (RBPropertyView *propview,
 
 	source->priv->selected_feeds = rb_string_list_copy (feeds);
 
-	rb_podcast_source_do_query (source);
+	rb_podcast_source_do_query (source, FALSE);
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
 
@@ -348,7 +385,7 @@ posts_view_drag_data_received_cb (GtkWidget *widget,
 static void
 podcast_add_dialog_closed_cb (RBPodcastAddDialog *dialog, RBPodcastSource *source)
 {
-	rb_podcast_source_do_query (source);
+	rb_podcast_source_do_query (source, FALSE);
 	gtk_widget_set_margin_top (GTK_WIDGET (source->priv->grid), 6);
 	gtk_widget_hide (source->priv->add_dialog);
 	gtk_widget_show (GTK_WIDGET (source->priv->toolbar));
@@ -1222,7 +1259,7 @@ impl_search (RBSource *asource, RBSourceSearch *search, const char *cur_text, co
 		source->priv->search_query = NULL;
 	}
 	source->priv->search_query = rb_source_search_create_query (search, source->priv->db, new_text);
-	rb_podcast_source_do_query (source);
+	rb_podcast_source_do_query (source, TRUE);
 
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
@@ -1299,6 +1336,9 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 	case PROP_BASE_QUERY:
 		source->priv->base_query = rhythmdb_query_copy (g_value_get_pointer (value));
 		break;
+	case PROP_SHOW_ALL_FEEDS:
+		source->priv->show_all_feeds = g_value_get_boolean (value);
+		break;
 	case PROP_SHOW_BROWSER:
 		gtk_widget_set_visible (GTK_WIDGET (source->priv->feeds), g_value_get_boolean (value));
 		break;
@@ -1320,6 +1360,9 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 	case PROP_BASE_QUERY:
 		g_value_set_pointer (value, source->priv->base_query);
 		break;
+	case PROP_SHOW_ALL_FEEDS:
+		g_value_set_boolean (value, source->priv->show_all_feeds);
+		break;
 	case PROP_SHOW_BROWSER:
 		g_value_set_boolean (value, gtk_widget_get_visible (GTK_WIDGET (source->priv->feeds)));
 		break;
@@ -1337,7 +1380,6 @@ impl_constructed (GObject *object)
 	GtkCellRenderer *renderer;
 	RBShell *shell;
 	RBShellPlayer *shell_player;
-	RhythmDBQueryModel *query_model;
 	GtkAction *action;
 	GSettings *settings;
 	int position;
@@ -1507,16 +1549,6 @@ impl_constructed (GObject *object)
 	rb_property_view_set_selection_mode (RB_PROPERTY_VIEW (source->priv->feeds),
 					     GTK_SELECTION_MULTIPLE);
 
-	query_model = rhythmdb_query_model_new_empty (source->priv->db);
-	source->priv->feed_model = rb_property_view_get_model (RB_PROPERTY_VIEW (source->priv->feeds));
-	g_object_set (source->priv->feed_model, "query-model", query_model, NULL);
-
-	/* maybe do this async? */
-	rhythmdb_do_full_query_parsed (source->priv->db,
-				       RHYTHMDB_QUERY_RESULTS (query_model),
-				       source->priv->base_query);
-	g_object_unref (query_model);
-
 	/* status indicator column */
 	column = gtk_tree_view_column_new ();
 	renderer = rb_cell_renderer_pixbuf_new ();
@@ -1637,7 +1669,7 @@ impl_constructed (GObject *object)
 	g_object_unref (ui_manager);
 	g_object_unref (shell);
 
-	rb_podcast_source_do_query (source);
+	rb_podcast_source_do_query (source, TRUE);
 }
 
 static void
@@ -1765,6 +1797,13 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 					 g_param_spec_pointer ("base-query",
 							       "Base query",
 							       "Base query for the source",
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+	g_object_class_install_property (object_class,
+					 PROP_SHOW_ALL_FEEDS,
+					 g_param_spec_boolean ("show-all-feeds",
+							       "show-all-feeds",
+							       "show all feeds",
+							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
 	g_object_class_override_property (object_class, PROP_SHOW_BROWSER, "show-browser");
