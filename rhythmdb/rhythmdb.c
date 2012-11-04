@@ -2982,8 +2982,16 @@ rhythmdb_add_uri_with_types (RhythmDB *db,
 			     RhythmDBEntryType *ignore_type,
 			     RhythmDBEntryType *error_type)
 {
+	RhythmDBEntry *entry;
+
 	rb_debug ("queueing stat for \"%s\"", uri);
 	g_assert (uri && *uri);
+
+	/* keep this outside the stat mutex, as there are other code
+	 * paths that take the stat mutex while already holding the
+	 * entry mutex.
+	 */
+	entry = rhythmdb_entry_lookup_by_location (db, uri);
 
 	/*
 	 * before the action thread is started, we queue up stat actions,
@@ -3008,11 +3016,7 @@ rhythmdb_add_uri_with_types (RhythmDB *db,
 
 		g_async_queue_push (db->priv->action_queue, action);
 	} else {
-		RhythmDBEntry *entry;
-
-		entry = rhythmdb_entry_lookup_by_location (db, uri);
 		rhythmdb_add_to_stat_list (db, uri, entry, type, ignore_type, error_type);
-
 		g_mutex_unlock (&db->priv->stat_mutex);
 	}
 }
