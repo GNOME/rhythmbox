@@ -177,6 +177,7 @@ rb_text_cat (PangoDirection base_dir, ...)
 	const char *embed_start;
 	const char *embed_stop = UNICODE_PDF;
 	GString *result;
+	int first_char;
 
 	va_start (args, base_dir);
 
@@ -191,6 +192,7 @@ rb_text_cat (PangoDirection base_dir, ...)
 		g_string_append (result, UNICODE_RLM);
 		embed_start = UNICODE_LRE;
 	}
+	first_char = result->len;
 
 	while (1) {
 		const char *text = va_arg (args, const char *);
@@ -205,7 +207,7 @@ rb_text_cat (PangoDirection base_dir, ...)
 		if (!format[0])
 			format = "%s";
 
-		if (result->len > 0) {
+		if (result->len > first_char) {
 			g_string_append (result, " ");
 		}
 
