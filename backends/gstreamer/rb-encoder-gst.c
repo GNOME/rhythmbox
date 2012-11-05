@@ -374,7 +374,7 @@ add_tags_from_entry (RBEncoderGst *encoder,
 }
 
 static void
-new_decoded_pad_cb (GstElement *decodebin, GstPad *new_pad, gboolean arg1, RBEncoderGst *encoder)
+pad_added_cb (GstElement *decodebin, GstPad *new_pad, RBEncoderGst *encoder)
 {
 	GstPad *enc_sinkpad;
 	GstCaps *caps;
@@ -424,8 +424,8 @@ add_decoding_pipeline (RBEncoderGst *encoder,
 	gst_bin_add (GST_BIN (encoder->priv->pipeline), decodebin);
 
 	g_signal_connect_object (decodebin,
-			"new-decoded-pad",
-			G_CALLBACK (new_decoded_pad_cb),
+			"pad-added",
+			G_CALLBACK (pad_added_cb),
 			encoder, 0);
 
 	return decodebin;
