@@ -380,23 +380,26 @@ pad_added_cb (GstElement *decodebin, GstPad *new_pad, RBEncoderGst *encoder)
 	GstCaps *caps;
 	gchar *caps_string;
 
-	rb_debug ("new decoded pad");
-
 	/* transcode only the first audio track. multitrack audio files are not
 	 * so common anyway */
-	if (encoder->priv->decoded_pads > 0)
+	if (encoder->priv->decoded_pads > 0) {
+		rb_debug ("already have an audio track to encode");
 		return;
+	}
 
-	caps = gst_pad_get_current_caps (new_pad);
+	caps = gst_pad_query_caps (new_pad, NULL);
 	caps_string = gst_caps_to_string (caps);
 	gst_caps_unref (caps);
 
 	/* only process audio data */
 	if (strncmp (caps_string, "audio/", 6) == 0) {
+		rb_debug ("linking first audio pad");
 		encoder->priv->decoded_pads++;
 		enc_sinkpad = gst_element_get_static_pad (encoder->priv->encodebin, "audio_0");
 		if (gst_pad_link (new_pad, enc_sinkpad) != GST_PAD_LINK_OK)
 			rb_debug ("error linking pads");
+	} else {
+		rb_debug ("ignoring non-audio pad");
 	}
 
 	g_free (caps_string);
