@@ -303,6 +303,7 @@ add_tags_from_entry (RBEncoderGst *encoder,
 		     GError **error)
 {
 	GstTagList *tags;
+	GValue obj = {0,};
 	GstTagSetter *tag_setter;
 	GstIterator *iter;
 	gulong day;
@@ -352,10 +353,12 @@ add_tags_from_entry (RBEncoderGst *encoder,
 	iter = gst_bin_iterate_all_by_interface (GST_BIN (encoder->priv->encodebin), GST_TYPE_TAG_SETTER);
 	done = FALSE;
 	while (!done) {
-		switch (gst_iterator_next (iter, (gpointer) & tag_setter)) {
+		g_value_init (&obj, GST_TYPE_ELEMENT);
+		switch (gst_iterator_next (iter, &obj)) {
 		case GST_ITERATOR_OK:
+			tag_setter = g_value_get_object (&obj);
 			gst_tag_setter_merge_tags (tag_setter, tags, GST_TAG_MERGE_REPLACE_ALL);
-			gst_object_unref (tag_setter);
+			g_value_unset (&obj);
 			break;
 		case GST_ITERATOR_RESYNC:
 			gst_iterator_resync (iter);
