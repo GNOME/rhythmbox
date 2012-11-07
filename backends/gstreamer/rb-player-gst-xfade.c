@@ -352,6 +352,7 @@ typedef struct
 	gboolean use_buffering;
 
 	gulong adjust_probe_id;
+	gulong block_probe_id;
 
 	double fade_end;
 
@@ -1039,41 +1040,6 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time)
 }
 
 
-#if 0
-static void
-link_unblocked_cb (GstPad *pad, gboolean blocked, RBXFadeStream *stream)
-{
-	GstStateChangeReturn state_ret;
-	g_mutex_lock (&stream->lock);
-
-	/* sometimes we seem to get called twice */
-	if (stream->state == FADING_IN || stream->state == PLAYING) {
-		rb_debug ("stream %s already unblocked", stream->uri);
-		g_mutex_unlock (&stream->lock);
-		return;
-	}
-
-	rb_debug ("stream %s is unblocked -> FADING_IN | PLAYING", stream->uri);
-	stream->src_blocked = FALSE;
-	if (stream->fading)
-		stream->state = FADING_IN;
-	else
-		stream->state = PLAYING;
-	
-	g_mutex_unlock (&stream->lock);
-
-	adjust_stream_base_time (stream);
-
-	/* should handle state change failures here.. */
-	state_ret = gst_element_set_state (GST_ELEMENT (stream), GST_STATE_PLAYING);
-	rb_debug ("stream %s state change returned: %s", stream->uri,
-		  gst_element_state_change_return_get_name (state_ret));
-
-	post_stream_playing_message (stream, FALSE);
-	g_object_unref (stream);
-}
-#endif
-
 /* links a stream bin to the adder
  * - adds the bin to the pipeline
  * - links to a new adder pad
@@ -1132,6 +1098,9 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 
 	if (stream->src_blocked) {
 		GstStateChangeReturn state_ret;
+
+		gst_pad_remove_probe (stream->src_pad, stream->block_probe_id);
+		stream->block_probe_id = 0;
 
 		g_mutex_lock (&stream->lock);
 
@@ -2486,7 +2455,7 @@ stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream
 
 	g_mutex_lock (&stream->lock);
 	if (stream->src_blocked) {
-		rb_debug ("stream %s already blocked", stream->uri);
+		/*rb_debug ("stream %s already blocked", stream->uri);*/
 		g_mutex_unlock (&stream->lock);
 		return;
 	}
@@ -2533,8 +2502,6 @@ stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream
 			emit_stream_error (stream, error);
 		}
 	}
-
-	gst_pad_remove_probe (pad, info->id);
 }
 
 /*
@@ -2553,11 +2520,12 @@ preroll_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 	GstMessage *message;
 	GstBus *bus;
 
-	gst_pad_add_probe (stream->src_pad,
-			   GST_PAD_PROBE_TYPE_BLOCK,
-			   (GstPadProbeCallback) stream_src_blocked_cb,
-			   stream,
-			   NULL);
+	stream->block_probe_id =
+		gst_pad_add_probe (stream->src_pad,
+				   GST_PAD_PROBE_TYPE_BLOCK,
+				   (GstPadProbeCallback) stream_src_blocked_cb,
+				   stream,
+				   NULL);
 
 	stream->emitted_playing = FALSE;
 	stream->state = PREROLLING;
