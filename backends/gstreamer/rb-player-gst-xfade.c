@@ -1953,7 +1953,7 @@ stream_pad_added_cb (GstElement *decoder, GstPad *pad, RBXFadeStream *stream)
 	GstPad *vpad;
 
 	/* make sure this is an audio pad */
-	caps = gst_pad_get_current_caps (pad);
+	caps = gst_pad_query_caps (pad, NULL);
 	if (caps == NULL) {
 		caps = gst_pad_query_caps (pad, NULL);
 	}
