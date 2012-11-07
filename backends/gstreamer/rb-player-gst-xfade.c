@@ -2172,6 +2172,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				 player, 0);
 
 	stream->fader = GST_TIMED_VALUE_CONTROL_SOURCE (gst_interpolation_control_source_new ());
+	gst_timed_value_control_source_set (GST_TIMED_VALUE_CONTROL_SOURCE (stream->fader), 0, 1.0);
 	g_object_set (stream->fader, "mode", GST_INTERPOLATION_MODE_LINEAR, NULL);
 
 	gst_object_add_control_binding (GST_OBJECT (stream->volume),
