@@ -1275,7 +1275,7 @@ unlink_reuse_relink (RBPlayerGstXFade *player, RBXFadeStream *stream)
 	 * before we get around to relinking
 	 */
 	gst_pad_add_probe (stream->src_pad,
-			   GST_PAD_PROBE_TYPE_BLOCK,
+			   GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
 			   (GstPadProbeCallback) unlink_reuse_blocked_cb,
 			   stream,
 			   NULL);
@@ -2523,7 +2523,7 @@ preroll_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 
 	stream->block_probe_id =
 		gst_pad_add_probe (stream->src_pad,
-				   GST_PAD_PROBE_TYPE_BLOCK,
+				   GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
 				   (GstPadProbeCallback) stream_src_blocked_cb,
 				   stream,
 				   NULL);
@@ -3780,7 +3780,7 @@ rb_player_gst_xfade_set_time (RBPlayer *iplayer, gint64 time)
 					   stream);
 					   */
 		gst_pad_add_probe (stream->src_pad,
-				   GST_PAD_PROBE_TYPE_BLOCK,
+				   GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
 				   (GstPadProbeCallback) post_eos_seek_blocked_cb,
 				   stream,
 				   NULL);
