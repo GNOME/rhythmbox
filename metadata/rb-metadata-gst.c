@@ -476,7 +476,7 @@ error:
 }
 
 static void
-metadata_save_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean last, RBMetaData *md)
+metadata_save_pad_added_cb (GstElement *decodebin, GstPad *pad, RBMetaData *md)
 {
 	RBAddTaggerElem add_tagger_func = NULL;
 	GstElement *retag_end;
@@ -500,7 +500,7 @@ metadata_save_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean l
 	}
 
 	/* find a tagger function that accepts the caps */
-	caps = gst_pad_get_current_caps (pad);		/* is this right? */
+	caps = gst_pad_query_caps (pad, NULL);
 	caps_str = gst_caps_to_string (caps);
 	rb_debug ("finding tagger for src caps %s", caps_str);
 	g_free (caps_str);
@@ -690,8 +690,8 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 	gst_element_link (urisrc, decodebin);
 
 	g_signal_connect_object (decodebin,
-				 "new-decoded-pad",
-				 G_CALLBACK (metadata_save_new_decoded_pad_cb),
+				 "pad-added",
+				 G_CALLBACK (metadata_save_pad_added_cb),
 				 md, 0);
 	g_signal_connect_object (decodebin,
 				 "autoplug-select",
