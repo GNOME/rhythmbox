@@ -1239,8 +1239,6 @@ post_eos_seek_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *str
 static void
 unlink_reuse_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 {
-	rb_debug ("stream %s pad blocked during reuse", stream->uri);
-	gst_pad_remove_probe (pad, info->id);
 }
 
 static void
@@ -1301,10 +1299,7 @@ unlink_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 	g_mutex_lock (&stream->lock);
 
 	if (stream->needs_unlink == FALSE || stream->adder_pad == NULL) {
-		rb_debug ("stream %s doesn't need to be unlinked", stream->uri);
 		g_mutex_unlock (&stream->lock);
-		if (info != NULL)
-			gst_pad_remove_probe (pad, info->id);
 		return;
 	}
 
@@ -1353,9 +1348,6 @@ unlink_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 
 		break;
 	}
-
-	if (info != NULL)
-		gst_pad_remove_probe (pad, info->id);
 }
 
 /*
@@ -1376,11 +1368,12 @@ unlink_and_block_stream (RBXFadeStream *stream)
 		/* probably shouldn't happen, but we'll handle it anyway */
 		unlink_blocked_cb (stream->src_pad, NULL, stream);
 	} else {
-		gst_pad_add_probe (stream->src_pad,
-				   GST_PAD_PROBE_TYPE_IDLE,
-				   (GstPadProbeCallback) unlink_blocked_cb,
-				   stream,
-				   NULL);
+		g_assert (stream->block_probe_id == 0);
+		stream->block_probe_id = gst_pad_add_probe (stream->src_pad,
+							    GST_PAD_PROBE_TYPE_IDLE,
+							    (GstPadProbeCallback) unlink_blocked_cb,
+							    stream,
+							    NULL);
 	}
 }
 
@@ -1963,8 +1956,6 @@ stream_pad_added_cb (GstElement *decoder, GstPad *pad, RBXFadeStream *stream)
 		gst_caps_unref (caps);
 		return;
 	}
-
-	g_print ("buh %s", gst_caps_to_string (caps));
 
 	structure = gst_caps_get_structure (caps, 0);
 	mediatype = gst_structure_get_name (structure);
