@@ -1180,6 +1180,8 @@ perform_seek (RBXFadeStream *stream)
 	GstEvent *event;
 
 	rb_debug ("sending seek event..");
+	g_mutex_lock (&stream->lock);
+
 	event = gst_event_new_seek (1.0, GST_FORMAT_TIME,
 				    GST_SEEK_FLAG_FLUSH,
 				    GST_SEEK_TYPE_SET, stream->seek_target,
@@ -1200,6 +1202,8 @@ perform_seek (RBXFadeStream *stream)
 	default:
 		break;
 	}
+
+	g_mutex_unlock (&stream->lock);
 }
 
 static gboolean
