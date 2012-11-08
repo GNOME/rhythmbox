@@ -849,12 +849,12 @@ post_stream_playing_message (RBXFadeStream *stream, gboolean fake)
 	}
 }
 
-static gboolean
+static GstPadProbeReturn
 adjust_base_time_probe_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 {
 	rb_debug ("attempting to adjust base time for stream %s", stream->uri);
 	adjust_stream_base_time (stream);
-	return TRUE;
+	return GST_PAD_PROBE_OK;
 }
 
 /* updates a stream's base time so its position is reported correctly */
@@ -1215,7 +1215,7 @@ perform_seek_idle (RBXFadeStream *stream)
  * that the seek has completed (that's the only way data can flow out of
  * the stream bin), so the stream can be linked and unblocked.
  */
-static void
+static GstPadProbeReturn
 post_eos_seek_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 {
 	GError *error = NULL;
@@ -1229,16 +1229,18 @@ post_eos_seek_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *str
 	}
 
 	g_mutex_unlock (&stream->lock);
-	gst_pad_remove_probe (pad, info->id);
+
+	return GST_PAD_PROBE_REMOVE;
 }
 
 /*
  * called when a src pad for a stream is blocked during reuse.
  * we don't need to do anything here.
  */
-static void
+static GstPadProbeReturn
 unlink_reuse_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 {
+	return GST_PAD_PROBE_OK;
 }
 
 static void
@@ -1288,7 +1290,7 @@ unlink_reuse_relink (RBPlayerGstXFade *player, RBXFadeStream *stream)
 /* called when a stream's source pad is blocked, so it can be unlinked
  * from the pipeline.
  */
-static void
+static GstPadProbeReturn
 unlink_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 {
 	int stream_state;
@@ -1300,7 +1302,7 @@ unlink_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 
 	if (stream->needs_unlink == FALSE || stream->adder_pad == NULL) {
 		g_mutex_unlock (&stream->lock);
-		return;
+		return GST_PAD_PROBE_OK;
 	}
 
 	rb_debug ("stream %s is blocked; unlinking", stream->uri);
@@ -1348,6 +1350,8 @@ unlink_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 
 		break;
 	}
+
+	return GST_PAD_PROBE_OK;
 }
 
 /*
@@ -2002,7 +2006,7 @@ stream_pad_removed_cb (GstElement *decoder, GstPad *pad, RBXFadeStream *stream)
  * flush events are dropped, as they're only relevant inside the stream bin.
  * flushing the adder or the output bin mostly just breaks everything.
  */
-static gboolean
+static GstPadProbeReturn
 stream_src_event_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 {
 	GstMessage *msg;
@@ -2032,14 +2036,14 @@ stream_src_event_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 	case GST_EVENT_FLUSH_STOP:
 	case GST_EVENT_FLUSH_START:
 		rb_debug ("dropping %s event for stream %s", GST_EVENT_TYPE_NAME (event), stream->uri);
-		return FALSE;
+		return GST_PAD_PROBE_DROP;
 
 	default:
 		rb_debug ("got %s event for stream %s", GST_EVENT_TYPE_NAME (event), stream->uri);
 		break;
 	}
 
-	return TRUE;
+	return GST_PAD_PROBE_OK;
 }
 
 /*
@@ -2439,7 +2443,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
  * start playback immediately, otherwise we wait for something else
  * to happen.
  */
-static void
+static GstPadProbeReturn
 stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 {
 	GError *error = NULL;
@@ -2449,7 +2453,7 @@ stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream
 	if (stream->src_blocked) {
 		/*rb_debug ("stream %s already blocked", stream->uri);*/
 		g_mutex_unlock (&stream->lock);
-		return;
+		return GST_PAD_PROBE_OK;
 	}
 	stream->src_blocked = TRUE;
 
@@ -2468,7 +2472,7 @@ stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream
 			break;
 		}
 		g_mutex_unlock (&stream->lock);
-		return;
+		return GST_PAD_PROBE_OK;
 	}
 
 	/* update stream state */
@@ -2494,6 +2498,8 @@ stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream
 			emit_stream_error (stream, error);
 		}
 	}
+
+	return GST_PAD_PROBE_OK;
 }
 
 /*
@@ -3764,12 +3770,6 @@ rb_player_gst_xfade_set_time (RBPlayer *iplayer, gint64 time)
 		rb_debug ("seeking in EOS stream %s; target %"
 			  G_GINT64_FORMAT, stream->uri, stream->seek_target);
 		stream->state = SEEKING_EOS;
-		/*
-		gst_pad_set_blocked_async (stream->src_pad,
-					   TRUE,
-					   (GstPadBlockCallback) post_eos_seek_blocked_cb,
-					   stream);
-					   */
 		gst_pad_add_probe (stream->src_pad,
 				   GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
 				   (GstPadProbeCallback) post_eos_seek_blocked_cb,
