@@ -1378,7 +1378,7 @@ unlink_and_block_stream (RBXFadeStream *stream)
 	} else {
 		g_assert (stream->block_probe_id == 0);
 		stream->block_probe_id = gst_pad_add_probe (stream->src_pad,
-							    GST_PAD_PROBE_TYPE_IDLE,
+							    GST_PAD_PROBE_TYPE_IDLE | GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
 							    (GstPadProbeCallback) unlink_blocked_cb,
 							    stream,
 							    NULL);
