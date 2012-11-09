@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: Exaile\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythm"
 "box&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-09-23 07:29+0000\n"
-"PO-Revision-Date: 2012-09-29 05:51+0200\n"
+"POT-Creation-Date: 2012-10-30 13:57+0000\n"
+"PO-Revision-Date: 2012-11-09 10:37+0200\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <gnom@prevod.org>\n"
 "Language: sr\n"
@@ -227,22 +227,18 @@ msgid "_Quality"
 msgstr "_Квалитет"
 
 #: ../data/ui/import-dialog.ui.h:1
-#| msgid "All Tracks"
 msgid "Add Tracks"
 msgstr "Додај песме"
 
 #: ../data/ui/import-dialog.ui.h:2
-#| msgid "Copy tracks to the library"
 msgid "Add tracks to the library"
 msgstr "Додајте песме у аудиотеку"
 
 #: ../data/ui/import-dialog.ui.h:3
-#| msgid "Top Tracks"
 msgid "Copy Tracks"
 msgstr "Умножи песме"
 
 #: ../data/ui/import-dialog.ui.h:4
-#| msgid "Copy tracks to the library"
 msgid "Copy tracks to the library location"
 msgstr "Умножите песме у аудиотеку"
 
@@ -251,12 +247,10 @@ msgid "Close"
 msgstr "Затвори"
 
 #: ../data/ui/import-dialog.ui.h:6
-#| msgid "Loved Tracks"
 msgid "Remove Tracks"
 msgstr "Уклони песме"
 
 #: ../data/ui/import-dialog.ui.h:7
-#| msgid "Delete the selected station"
 msgid "Remove the selected tracks"
 msgstr "Уклоните изабране песме"
 
@@ -722,17 +716,17 @@ msgstr "%d %b %Y"
 #: ../podcast/rb-podcast-manager.c:1994
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
-#: ../podcast/rb-podcast-source.c:787 ../remote/dbus/rb-client.c:144
+#: ../podcast/rb-podcast-source.c:787 ../remote/dbus/rb-client.c:154
 #: ../rhythmdb/rhythmdb.c:2010 ../rhythmdb/rhythmdb.c:2016
 #: ../rhythmdb/rhythmdb.c:2031 ../rhythmdb/rhythmdb.c:5388
 #: ../rhythmdb/rhythmdb.c:5393 ../rhythmdb/rhythmdb-tree.c:1338
 #: ../rhythmdb/rhythmdb-tree.c:1342 ../rhythmdb/rhythmdb-tree.c:1346
 #: ../rhythmdb/rhythmdb-tree.c:1350 ../shell/rb-shell-player.c:1790
-#: ../shell/rb-shell-player.c:3759 ../shell/rb-shell-player.c:3761
+#: ../shell/rb-shell-player.c:3763 ../shell/rb-shell-player.c:3765
 #: ../widgets/rb-entry-view.c:985 ../widgets/rb-entry-view.c:1007
 #: ../widgets/rb-entry-view.c:1482 ../widgets/rb-entry-view.c:1494
-#: ../widgets/rb-entry-view.c:1506 ../widgets/rb-header.c:1141
-#: ../widgets/rb-header.c:1167 ../widgets/rb-song-info.c:917
+#: ../widgets/rb-entry-view.c:1506 ../widgets/rb-header.c:1148
+#: ../widgets/rb-header.c:1174 ../widgets/rb-song-info.c:917
 #: ../widgets/rb-song-info.c:929 ../widgets/rb-song-info.c:1150
 #: ../widgets/rb-song-info.c:1489
 msgid "Unknown"
@@ -749,13 +743,13 @@ msgid "Cannot get free space at %s: %s"
 msgstr "Не могу да добијем слободан простор на %s: %s"
 
 #: ../lib/rb-util.c:691 ../plugins/context/tmpl/album-tmpl.html:21
-#: ../remote/dbus/rb-client.c:146
+#: ../remote/dbus/rb-client.c:156
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
 #: ../lib/rb-util.c:693 ../plugins/context/tmpl/album-tmpl.html:19
-#: ../remote/dbus/rb-client.c:148
+#: ../remote/dbus/rb-client.c:158
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -978,7 +972,7 @@ msgid "Last submission time:"
 msgstr "Време последњег слања:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:877
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:888
 msgid "Disabled"
 msgstr "Онемогућен"
 
@@ -1046,78 +1040,78 @@ msgstr "Ово издање Ритам машине је забрањено."
 msgid "Track submission failed too many times"
 msgstr "Слање није успело превише пута"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:244
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:246
 msgid "Refresh Profile"
 msgstr "Освежи профил"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:245
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:247
 msgid "Refresh your Profile"
 msgstr "Освежите ваш профил"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:671
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:676
 msgid "Love"
 msgstr "Омиљена"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:672
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:677
 msgid "Mark this song as loved"
 msgstr "Означите ову песму омиљеном"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:674
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:679
 msgid "Ban"
 msgstr "Забрањена"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:675
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:680
 msgid "Ban the current track from being played again"
 msgstr "Забраните поновно преслушавање ове песме"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:677
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:682
 msgid "Download"
 msgstr "Преузми"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:678
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:683
 msgid "Download the currently playing track"
 msgstr "Преузмите тренутно пуштену нумеру"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:796
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:807
 msgid "You are not currently logged in."
 msgstr "Тренутно нисте пријављени."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:797
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:815
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:822
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:808
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:826
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:833
 msgid "Log in"
 msgstr "Пријави ме"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:803
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:814
 msgid "Waiting for authentication..."
 msgstr "Чекам на потврђивање идентитета..."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:804
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:815
 msgid "Cancel"
 msgstr "Откажи"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:814
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:825
 msgid "Authentication error. Please try logging in again."
 msgstr "Грешка потврђивања идентитета. Покушајте поново да се пријавите."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:821
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:832
 msgid "Connection error. Please try logging in again."
 msgstr "Грешка повезивања. Покушајте поново да се пријавите."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1237
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1248
 msgid "My Library"
 msgstr "Моја аудиотека"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1245
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1256
 msgid "My Recommendations"
 msgstr "Моје препоруке"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1253
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1264
 msgid "My Neighbourhood"
 msgstr "Мој комшијски радио"
 
 # Фуј, бљак
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1420
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1431
 #, c-format
 msgid "%s plays"
 msgstr "%s пуштања"
@@ -1125,16 +1119,16 @@ msgstr "%s пуштања"
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This is the label for menu item which when activated will take the user to the
 #. * artist/track's page on the service's website.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1677
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1688
 #, c-format
 msgid "_View on %s"
 msgstr "П_огледај на „%s“"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1694
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1705
 msgid "Listen to _Similar Artists Radio"
 msgstr "Слушајте радио _сличних извођача"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1708
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1719
 msgid "Listen to _Top Fans Radio"
 msgstr "Слушајте радио _врсних обожавалаца"
 
@@ -1468,11 +1462,11 @@ msgstr ""
 "Ова информација је доступна само корисницима Ласт.фм радија. Уверите се да "
 "је Ласт.фм додатак укључен, изаберите Ласт.фм у бочној површи и пријавите се."
 
-#: ../plugins/context/LinksTab.py:54
+#: ../plugins/context/LinksTab.py:55
 msgid "Links"
 msgstr "Везице"
 
-#: ../plugins/context/LinksTab.py:182
+#: ../plugins/context/LinksTab.py:183
 msgid "No artist specified."
 msgstr "Није одређен извођач."
 
@@ -2113,21 +2107,27 @@ msgstr "_Текст песме"
 msgid "Display lyrics for the playing song"
 msgstr "Приказује текст пуштене песме"
 
-#: ../plugins/lyrics/LyricsSites.py:39
-msgid "Astraweb (www.astraweb.com)"
-msgstr "Астравеб (www.astraweb.com)"
-
-#: ../plugins/lyrics/LyricsSites.py:40
+#. { 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
+#: ../plugins/lyrics/LyricsSites.py:42
 msgid "WinampCN (www.winampcn.com)"
 msgstr "ВинампЦН (www.winampcn.com)"
 
-#: ../plugins/lyrics/LyricsSites.py:41
+#: ../plugins/lyrics/LyricsSites.py:43
 msgid "TerraBrasil (terra.com.br)"
 msgstr "Тера Бразил (terra.com.br)"
 
-#: ../plugins/lyrics/LyricsSites.py:42
+#: ../plugins/lyrics/LyricsSites.py:44
 msgid "Dark Lyrics (darklyrics.com)"
 msgstr "Тамни текстови (www.leoslyrics.com)"
+
+#: ../plugins/lyrics/LyricsSites.py:45
+msgid "Jlyric (j-lyric.net)"
+msgstr "Џ текстови (j-lyric.net)"
+
+#: ../plugins/lyrics/LyricsSites.py:46
+#| msgid "Leo's Lyrics (www.leoslyrics.com)"
+msgid "Jetlyrics (jetlyrics.com)"
+msgstr "Џет текстови (jetlyrics.com)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
 msgid "Magnatune online music store"
@@ -2476,7 +2476,7 @@ msgstr ""
 "са уређаја)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:154
-#: ../plugins/mtpdevice/rb-mtp-thread.c:545
+#: ../plugins/mtpdevice/rb-mtp-thread.c:488
 #, c-format
 msgid "Unable to open temporary file: %s"
 msgstr "Не могу да отворим привремену датотеку: %s"
@@ -2490,7 +2490,7 @@ msgid "Media Player"
 msgstr "Медијски програм"
 
 #: ../plugins/mtpdevice/rb-mtp-source.c:888
-#: ../plugins/mtpdevice/rb-mtp-thread.c:856
+#: ../plugins/mtpdevice/rb-mtp-thread.c:799
 msgid "Media player device error"
 msgstr "Грешка у мултимедијалном уређају"
 
@@ -2506,24 +2506,24 @@ msgstr "Не могу да отворим %s-ов уређај %s"
 msgid "Digital Audio Player"
 msgstr "Дигитални звучни плејер"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:500
-#: ../plugins/mtpdevice/rb-mtp-thread.c:558
-#: ../plugins/mtpdevice/rb-mtp-thread.c:576
+#: ../plugins/mtpdevice/rb-mtp-thread.c:443
+#: ../plugins/mtpdevice/rb-mtp-thread.c:501
+#: ../plugins/mtpdevice/rb-mtp-thread.c:519
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
 msgstr "Не могу да умножим датотеку из МТП уређаја: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:521
+#: ../plugins/mtpdevice/rb-mtp-thread.c:464
 #, c-format
 msgid "Not enough space in %s"
 msgstr "Нема довољно места у %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:602
+#: ../plugins/mtpdevice/rb-mtp-thread.c:545
 #, c-format
 msgid "No space left on MTP device"
 msgstr "Нема више места на МТП уређају"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:605
+#: ../plugins/mtpdevice/rb-mtp-thread.c:548
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "Не могу да пошаљем датотеку у МТП уређај: %s"
@@ -3055,122 +3055,142 @@ msgstr "Довод"
 msgid "Status"
 msgstr "Стање"
 
-#: ../remote/dbus/rb-client.c:81
+#: ../remote/dbus/rb-client.c:86
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Не покрећи још једну Ритам машину"
 
-#: ../remote/dbus/rb-client.c:82 ../shell/rb-shell.c:353
+#: ../remote/dbus/rb-client.c:87 ../shell/rb-shell.c:353
 msgid "Quit Rhythmbox"
 msgstr "Изађи из Ритам машине"
 
-#: ../remote/dbus/rb-client.c:83
+#: ../remote/dbus/rb-client.c:88
 msgid "Check if Rhythmbox is already running"
 msgstr "Провери да ли је Ритам машина већ покренута"
 
-#: ../remote/dbus/rb-client.c:85
+#: ../remote/dbus/rb-client.c:90
 msgid "Don't present an existing Rhythmbox window"
 msgstr "Не приказуј постојећи прозор Ритам машине"
 
-#: ../remote/dbus/rb-client.c:87
+#: ../remote/dbus/rb-client.c:92
 msgid "Jump to next song"
 msgstr "Иди на следећу песму"
 
-#: ../remote/dbus/rb-client.c:88
+#: ../remote/dbus/rb-client.c:93
 msgid "Jump to previous song"
 msgstr "Иди на претходну песму"
 
-#: ../remote/dbus/rb-client.c:89
+#: ../remote/dbus/rb-client.c:94
 msgid "Seek in current track"
 msgstr "Премотај тренутну песму"
 
-#: ../remote/dbus/rb-client.c:91
+#: ../remote/dbus/rb-client.c:96
 msgid "Resume playback if currently paused"
 msgstr "Наставља репродукцију уколико је паузирана"
 
-#: ../remote/dbus/rb-client.c:92
+#: ../remote/dbus/rb-client.c:97
 msgid "Pause playback if currently playing"
 msgstr "Зауставља репродукцију уколико је пуштена"
 
-#: ../remote/dbus/rb-client.c:93
+#: ../remote/dbus/rb-client.c:98
 msgid "Toggle play/pause mode"
 msgstr "Укључи-искључи паузу"
 
 #. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
-#: ../remote/dbus/rb-client.c:96
+#: ../remote/dbus/rb-client.c:101
 msgid "Play a specified URI, importing it if necessary"
 msgstr "Пусти одређену адресу и увези је ако је неопходно"
 
-#: ../remote/dbus/rb-client.c:96
+#: ../remote/dbus/rb-client.c:101
 msgid "URI to play"
 msgstr "Адреса за извођење"
 
-#: ../remote/dbus/rb-client.c:97
+#: ../remote/dbus/rb-client.c:102
 msgid "Add specified tracks to the play queue"
 msgstr "Додај изабране песме у заказану листу песама"
 
-#: ../remote/dbus/rb-client.c:98
+#: ../remote/dbus/rb-client.c:103
 msgid "Empty the play queue before adding new tracks"
 msgstr "Испразни листу заказаних пре додавања нових песама"
 
-#: ../remote/dbus/rb-client.c:100
+#: ../remote/dbus/rb-client.c:105
 msgid "Print the title and artist of the playing song"
 msgstr "Испиши наслов и извођача текуће песме"
 
-#: ../remote/dbus/rb-client.c:101
+#: ../remote/dbus/rb-client.c:106
 msgid "Print formatted details of the song"
 msgstr "Испиши форматиране податке о песми"
 
-#: ../remote/dbus/rb-client.c:102
+#: ../remote/dbus/rb-client.c:107
 msgid "Select the source matching the specified URI"
 msgstr "Укључи извор који се поклапа са задатом адресом"
 
-#: ../remote/dbus/rb-client.c:102
+#: ../remote/dbus/rb-client.c:107
 msgid "Source to select"
 msgstr "Извор за бирање"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:108
 msgid "Activate the source matching the specified URI"
 msgstr "Покреће извор који се поклапа са задатом адресом"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:108
 msgid "Source to activate"
 msgstr "Покрени извор"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:109
 msgid "Play from the source matching the specified URI"
 msgstr "Пушта музику са извора који се поклапа са задатом адресом"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:109
 msgid "Source to play from"
 msgstr "Извор за пуштање"
 
-#: ../remote/dbus/rb-client.c:106
+#: ../remote/dbus/rb-client.c:111
+#| msgid "Increase playback volume"
+msgid "Enable repeat playback order"
+msgstr "Укључује понављање поретка пуштања"
+
+#: ../remote/dbus/rb-client.c:112
+#| msgid "Decrease playback volume"
+msgid "Disable repeat playback order"
+msgstr "Укључује понављање поретка пуштања"
+
+#: ../remote/dbus/rb-client.c:113
+#| msgid "Increase the playback volume"
+msgid "Enable shuffle playback order"
+msgstr "Укључује мешање поретка пуштања"
+
+#: ../remote/dbus/rb-client.c:114
+#| msgid "Decrease the playback volume"
+msgid "Disable shuffle playback order"
+msgstr "Искључује мешање поретка пуштања"
+
+#: ../remote/dbus/rb-client.c:116
 msgid "Set the playback volume"
 msgstr "Подеси јачину звука"
 
-#: ../remote/dbus/rb-client.c:107
+#: ../remote/dbus/rb-client.c:117
 msgid "Increase the playback volume"
 msgstr "Повећај јачину звука"
 
-#: ../remote/dbus/rb-client.c:108
+#: ../remote/dbus/rb-client.c:118
 msgid "Decrease the playback volume"
 msgstr "Смањи јачину звука"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:119
 msgid "Print the current playback volume"
 msgstr "Испиши тренутну јачину звука"
 
 #. { "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
 #. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
-#: ../remote/dbus/rb-client.c:112
+#: ../remote/dbus/rb-client.c:122
 msgid "Set the rating of the current song"
 msgstr "Оцењује тренутну песму"
 
-#: ../remote/dbus/rb-client.c:459 ../remote/dbus/rb-client.c:483
+#: ../remote/dbus/rb-client.c:469 ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "Не свирам"
 
-#: ../remote/dbus/rb-client.c:909
+#: ../remote/dbus/rb-client.c:966
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Јачина звука је %f.\n"
@@ -3481,12 +3501,10 @@ msgid "_Help"
 msgstr "_Помоћ"
 
 #: ../shell/rb-shell.c:343
-#| msgid "All Music"
 msgid "Add Music..."
 msgstr "Додај музику..."
 
 #: ../shell/rb-shell.c:344
-#| msgid "Copy tracks to the library"
 msgid "Add music to the library"
 msgstr "Додајте музику у аудиотеку"
 
@@ -3888,7 +3906,7 @@ msgstr "Смањите јачину звука"
 msgid "_Play"
 msgstr "Пу_сти"
 
-#: ../shell/rb-shell-player.c:315 ../shell/rb-shell-player.c:3855
+#: ../shell/rb-shell-player.c:315 ../shell/rb-shell-player.c:3859
 msgid "Start playback"
 msgstr "Започните репродукцију"
 
@@ -3973,29 +3991,29 @@ msgstr "Нема претходне песме"
 msgid "No next song"
 msgstr "Нема наредне песме"
 
-#: ../shell/rb-shell-player.c:2344 ../shell/rb-shell-player.c:3492
+#: ../shell/rb-shell-player.c:2344 ../shell/rb-shell-player.c:3496
 msgid "Couldn't start playback"
 msgstr "Не могу да почнем репродукцију"
 
-#: ../shell/rb-shell-player.c:3195
+#: ../shell/rb-shell-player.c:3199
 msgid "Couldn't stop playback"
 msgstr "Не могу да зауставим репродукцију"
 
-#: ../shell/rb-shell-player.c:3314
+#: ../shell/rb-shell-player.c:3318
 #, c-format
 msgid "Playback position not available"
 msgstr "Није доступно протекло време песме"
 
-#: ../shell/rb-shell-player.c:3346 ../shell/rb-shell-player.c:3380
+#: ../shell/rb-shell-player.c:3350 ../shell/rb-shell-player.c:3384
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Не могу да премотам текућу песму"
 
-#: ../shell/rb-shell-player.c:3850
+#: ../shell/rb-shell-player.c:3854
 msgid "Pause playback"
 msgstr "Паузирај песму"
 
-#: ../shell/rb-shell-player.c:3852
+#: ../shell/rb-shell-player.c:3856
 msgid "Stop playback"
 msgstr "Заустави репродукцију"
 
@@ -4286,13 +4304,13 @@ msgstr "Ажурирај из збирке"
 msgid "Synchronize media player with the library"
 msgstr "Усклађује уређај са збирком песама"
 
-#: ../sources/rb-media-player-source.c:660
+#: ../sources/rb-media-player-source.c:663
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
 msgstr "Нисте изабрали песме, листе нити подемисије за пренос на овај уређај."
 
-#: ../sources/rb-media-player-source.c:664
+#: ../sources/rb-media-player-source.c:667
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
@@ -4300,16 +4318,16 @@ msgstr ""
 "Нема довољно места на уређају за пренос изабраних песама, листи или "
 "подемисија."
 
-#: ../sources/rb-media-player-source.c:715
+#: ../sources/rb-media-player-source.c:718
 #, c-format
 msgid "%s Sync Settings"
 msgstr "%s подешавање усклађења"
 
-#: ../sources/rb-media-player-source.c:720
+#: ../sources/rb-media-player-source.c:723
 msgid "Sync with the device"
 msgstr "Усклађење са уређајем"
 
-#: ../sources/rb-media-player-source.c:722
+#: ../sources/rb-media-player-source.c:725
 msgid "Don't sync"
 msgstr "Не усклађуј"
 
@@ -4502,19 +4520,18 @@ msgid "Drop artwork here"
 msgstr "Превуците омоте албума овде"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1080
+#: ../widgets/rb-header.c:1087
 #, c-format
 msgid "-%s / %s"
 msgstr "—%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1092
+#: ../widgets/rb-header.c:1099
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
 
 #: ../widgets/rb-import-dialog.c:314
-#| msgid "Connecting..."
 msgid "Copying..."
 msgstr "Умножавам..."
 
@@ -4526,12 +4543,10 @@ msgstr "Место које сте изабрали се налази на ур�
 
 #: ../widgets/rb-import-dialog.c:485
 #, c-format
-#| msgid "Show All"
 msgid "Show %s"
 msgstr "Прикажи „%s“"
 
 #: ../widgets/rb-import-dialog.c:502
-#| msgid "Searching..."
 msgid "Scanning..."
 msgstr "Прегледам..."
 
@@ -4920,6 +4935,9 @@ msgstr "Унутар радне површи"
 #: ../widgets/rb-song-info.c:1256
 msgid "Unknown location"
 msgstr "Непознато место"
+
+#~ msgid "Astraweb (www.astraweb.com)"
+#~ msgstr "Астравеб (www.astraweb.com)"
 
 #~ msgid "_Import Folder..."
 #~ msgstr "У_вези фасциклу..."
@@ -5328,9 +5346,6 @@ msgstr "Непознато место"
 
 #~ msgid "Lyrc (lyrc.com.ar)"
 #~ msgstr "Лирка (lyrc.com.ar)"
-
-#~ msgid "Leo's Lyrics (www.leoslyrics.com)"
-#~ msgstr "Леови текстови (www.leoslyrics.com)"
 
 #~ msgid "Feeds"
 #~ msgstr "Доводи"
