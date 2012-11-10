@@ -2250,7 +2250,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 
 	/* watch for EOS events using a pad probe */
 	gst_pad_add_probe (stream->src_pad,
-			   GST_PAD_PROBE_TYPE_EVENT_BOTH,
+			   GST_PAD_PROBE_TYPE_EVENT_BOTH | GST_PAD_PROBE_TYPE_EVENT_FLUSH,
 			   (GstPadProbeCallback) stream_src_event_cb,
 			   stream,
 			   NULL);
