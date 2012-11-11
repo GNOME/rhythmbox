@@ -1018,14 +1018,14 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time)
 
 	gst_timed_value_control_source_unset_all (stream->fader);
 
-	if (gst_timed_value_control_source_set (stream->fader, pos, start) == FALSE) {
+	if (gst_timed_value_control_source_set (stream->fader, pos, start/10.0) == FALSE) {
 		rb_debug ("controller didn't like our start point");
 	}
-	if (gst_timed_value_control_source_set (stream->fader, 0, start) == FALSE) {
+	if (gst_timed_value_control_source_set (stream->fader, 0, start/10.0) == FALSE) {
 		rb_debug ("controller didn't like our 0 start point");
 	}
 
-	if (gst_timed_value_control_source_set (stream->fader, pos + time, end) == FALSE) {
+	if (gst_timed_value_control_source_set (stream->fader, pos + time, end/10.0) == FALSE) {
 		rb_debug ("controller didn't like our end point");
 	}
 
@@ -2171,7 +2171,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 				 player, 0);
 
 	stream->fader = GST_TIMED_VALUE_CONTROL_SOURCE (gst_interpolation_control_source_new ());
-	gst_timed_value_control_source_set (GST_TIMED_VALUE_CONTROL_SOURCE (stream->fader), 0, 1.0);
+	gst_timed_value_control_source_set (GST_TIMED_VALUE_CONTROL_SOURCE (stream->fader), 0, 0.1);
 	g_object_set (stream->fader, "mode", GST_INTERPOLATION_MODE_LINEAR, NULL);
 
 	gst_object_add_control_binding (GST_OBJECT (stream->volume),
@@ -2353,7 +2353,8 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 
 		if (stream->fading == FALSE) {
 			rb_debug ("stream isn't fading; setting volume to 1.0");
-			gst_timed_value_control_source_set (GST_TIMED_VALUE_CONTROL_SOURCE (stream->fader), 0, 1.0);
+			gst_timed_value_control_source_set (GST_TIMED_VALUE_CONTROL_SOURCE (stream->fader), 0, 0.1);
+			gst_base_transform_set_passthrough (GST_BASE_TRANSFORM (stream->volume), TRUE);
 		}
 
 		ret = link_and_unblock_stream (stream, error);
