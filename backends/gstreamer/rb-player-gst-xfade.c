@@ -937,7 +937,7 @@ volume_changed_cb (GObject *object, GParamSpec *pspec, RBPlayerGstXFade *player)
 	case FADING_IN:
 		if (vol > (stream->fade_end - EPSILON) && stream->fading) {
 			rb_debug ("stream %s fully faded in (at %f) -> PLAYING state", stream->uri, vol);
-			/*message = FADE_IN_DONE_MESSAGE;*/		/* not actually used */
+			message = FADE_IN_DONE_MESSAGE;
 			stream->fading = FALSE;
 			stream->state = PLAYING;
 			
@@ -1755,7 +1755,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			g_list_free (l);
 
 		} else if (strcmp (name, FADE_IN_DONE_MESSAGE) == 0) {
-			/* do something? */
+			gst_base_transform_set_passthrough (GST_BASE_TRANSFORM (stream->volume), TRUE);
 		} else if (strcmp (name, FADE_OUT_DONE_MESSAGE) == 0) {
 			switch (stream->state) {
 			case FADING_OUT:
