@@ -13,9 +13,9 @@ PKG_NAME="rhythmbox"
 }
 
 which gnome-autogen.sh || {
-	echo "You need to install gnome-common from the GNOME CVS"
+	echo "You need to install gnome-common"
 	exit 1
 }
 
 ACLOCAL_FLAGS="$ACLOCAL_FLAGS -I macros"
-REQUIRED_AUTOMAKE_VERSION=1.7 USE_GNOME2_MACROS=1 USE_COMMON_DOC_BUILD=yes . gnome-autogen.sh --enable-uninstalled-build "$@"
+REQUIRED_AUTOMAKE_VERSION=1.7 USE_GNOME2_MACROS=1 . gnome-autogen.sh --enable-uninstalled-build "$@"
