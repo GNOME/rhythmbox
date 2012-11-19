@@ -8,19 +8,20 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-10-30 15:39+0000\n"
-"PO-Revision-Date: 2012-10-30 21:45+0100\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=rhythmbox&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2012-11-18 19:31+0000\n"
+"PO-Revision-Date: 2012-11-19 13:42+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
-"Language: \n"
+"Language: sl_SI\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0);\n"
-"X-Poedit-Country: SLOVENIA\n"
-"X-Poedit-Language: Slovenian\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n"
+"%100==4 ? 3 : 0);\n"
 "X-Poedit-SourceCharset: utf-8\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:502
 #, c-format
@@ -66,7 +67,8 @@ msgstr "Ustvarjanje predmeta GStreamer je spodletelo; preverite namestitev"
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3124
 #, c-format
 msgid "Failed to create audio output element; check your installation"
-msgstr "Ustvarjanje predmeta zvočnega izhoda je spodletelo; preverite namestitev"
+msgstr ""
+"Ustvarjanje predmeta zvočnega izhoda je spodletelo; preverite namestitev"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3157
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3199
@@ -95,8 +97,7 @@ msgid "My Top Rated"
 msgstr "Moje najboljše ocenjeno"
 
 #: ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1
-#: ../shell/rb-shell.c:611
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/rb-shell.c:611
 #: ../shell/rb-shell.c:2613
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
@@ -115,6 +116,12 @@ msgstr "Rhythmbox predvajalnik glasbe"
 #: ../data/rhythmbox-device.desktop.in.in.h:4
 msgid "Play and organize your music collection"
 msgstr "Predvajajte in organizirajte glasbeno zbirko"
+
+#: ../data/rhythmbox.desktop.in.in.h:5
+msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio"
+msgstr ""
+"Zvok;Skladbe;Pesmi;Glasba;MP3;CD;Podcast;MTP;iPod;Seznam predvajanja;Last.fm;"
+"UPnP;DLNA;Radio"
 
 #: ../data/ui/create-playlist.ui.h:1
 msgid "songs"
@@ -204,8 +211,7 @@ msgstr "_Števec predvajanj"
 msgid "C_omment"
 msgstr "O_pomba"
 
-#: ../data/ui/general-prefs.ui.h:15
-#: ../widgets/rb-entry-view.c:1593
+#: ../data/ui/general-prefs.ui.h:15 ../widgets/rb-entry-view.c:1593
 msgid "BPM"
 msgstr "UNM"
 
@@ -242,8 +248,7 @@ msgstr "Kopiraj posnetke"
 msgid "Copy tracks to the library location"
 msgstr "Kopira posnetke v knjižnico"
 
-#: ../data/ui/import-dialog.ui.h:5
-#: ../data/ui/podcast-add-dialog.ui.h:4
+#: ../data/ui/import-dialog.ui.h:5 ../data/ui/podcast-add-dialog.ui.h:4
 msgid "Close"
 msgstr "Zapri"
 
@@ -318,20 +323,16 @@ msgstr "Uporaba nosilca"
 
 #: ../data/ui/media-player-properties.ui.h:5
 #: ../data/ui/podcast-feed-properties.ui.h:6
-#: ../data/ui/podcast-properties.ui.h:5
-#: ../data/ui/song-info-multiple.ui.h:8
-#: ../data/ui/song-info.ui.h:12
-#: ../plugins/iradio/station-properties.ui.h:4
+#: ../data/ui/podcast-properties.ui.h:5 ../data/ui/song-info-multiple.ui.h:8
+#: ../data/ui/song-info.ui.h:12 ../plugins/iradio/station-properties.ui.h:4
 msgid "Basic"
 msgstr "Osnovno"
 
-#: ../data/ui/media-player-properties.ui.h:6
-#: ../data/ui/sync-dialog.ui.h:1
+#: ../data/ui/media-player-properties.ui.h:6 ../data/ui/sync-dialog.ui.h:1
 msgid "Sync Preferences"
 msgstr "Možnosti usklajevanja"
 
-#: ../data/ui/media-player-properties.ui.h:7
-#: ../data/ui/sync-dialog.ui.h:2
+#: ../data/ui/media-player-properties.ui.h:7 ../data/ui/sync-dialog.ui.h:2
 msgid "Sync Preview"
 msgstr "Predogled usklajevanja"
 
@@ -373,11 +374,14 @@ msgstr "Naročanje"
 
 #: ../data/ui/podcast-add-dialog.ui.h:2
 msgid ""
-"Search for podcasts in the iTunes Store and on Miroguide.com, or enter a podcast feed URL.\n"
+"Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
+"podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
-"Poišči med podcasti v prodajalni iTunes in na Miroguide.com, ali pa vnesite naslov URL vira podcast.\n"
-"Prejemanje novih epizod ob objavi je mogoče le s predhodnim naročilom na storitev."
+"Poišči med podcasti v prodajalni iTunes in na Miroguide.com, ali pa vnesite "
+"naslov URL vira podcast.\n"
+"Prejemanje novih epizod ob objavi je mogoče le s predhodnim naročilom na "
+"storitev."
 
 #: ../data/ui/podcast-feed-properties.ui.h:1
 #: ../data/ui/podcast-properties.ui.h:1
@@ -415,8 +419,7 @@ msgid "Copyright:"
 msgstr "Avtorske pravice:"
 
 #: ../data/ui/podcast-feed-properties.ui.h:10
-#: ../data/ui/podcast-properties.ui.h:13
-#: ../data/ui/song-info.ui.h:26
+#: ../data/ui/podcast-properties.ui.h:13 ../data/ui/song-info.ui.h:26
 #: ../plugins/iradio/station-properties.ui.h:10
 msgid "Details"
 msgstr "Podrobnosti"
@@ -461,33 +464,27 @@ msgstr "Vir:"
 msgid "Date:"
 msgstr "Datum:"
 
-#: ../data/ui/podcast-properties.ui.h:7
-#: ../data/ui/song-info-multiple.ui.h:4
-#: ../data/ui/song-info.ui.h:22
-#: ../plugins/iradio/station-properties.ui.h:9
+#: ../data/ui/podcast-properties.ui.h:7 ../data/ui/song-info-multiple.ui.h:4
+#: ../data/ui/song-info.ui.h:22 ../plugins/iradio/station-properties.ui.h:9
 msgid "_Rating:"
 msgstr "_Ocena:"
 
-#: ../data/ui/podcast-properties.ui.h:8
-#: ../data/ui/song-info.ui.h:21
+#: ../data/ui/podcast-properties.ui.h:8 ../data/ui/song-info.ui.h:21
 #: ../plugins/iradio/station-properties.ui.h:8
 msgid "Play count:"
 msgstr "Števec predvajanj:"
 
-#: ../data/ui/podcast-properties.ui.h:9
-#: ../data/ui/song-info.ui.h:20
+#: ../data/ui/podcast-properties.ui.h:9 ../data/ui/song-info.ui.h:20
 #: ../plugins/iradio/station-properties.ui.h:7
 msgid "Last played:"
 msgstr "Zadnjič predvajano:"
 
-#: ../data/ui/podcast-properties.ui.h:10
-#: ../data/ui/song-info.ui.h:18
+#: ../data/ui/podcast-properties.ui.h:10 ../data/ui/song-info.ui.h:18
 #: ../plugins/iradio/station-properties.ui.h:6
 msgid "Bitrate:"
 msgstr "Bitna hitrost:"
 
-#: ../data/ui/podcast-properties.ui.h:11
-#: ../data/ui/song-info.ui.h:23
+#: ../data/ui/podcast-properties.ui.h:11 ../data/ui/song-info.ui.h:23
 msgid "Duration:"
 msgstr "Trajanje:"
 
@@ -495,62 +492,51 @@ msgstr "Trajanje:"
 msgid "Download location:"
 msgstr "Mesto prejema:"
 
-#: ../data/ui/song-info-multiple.ui.h:1
-#: ../data/ui/song-info.ui.h:1
+#: ../data/ui/song-info-multiple.ui.h:1 ../data/ui/song-info.ui.h:1
 msgid "Albu_m:"
 msgstr "Albu_m:"
 
-#: ../data/ui/song-info-multiple.ui.h:2
-#: ../data/ui/song-info.ui.h:5
+#: ../data/ui/song-info-multiple.ui.h:2 ../data/ui/song-info.ui.h:5
 #: ../plugins/audiocd/album-info.ui.h:2
 msgid "_Artist:"
 msgstr "_Izvajalec:"
 
-#: ../data/ui/song-info-multiple.ui.h:3
-#: ../data/ui/song-info.ui.h:4
+#: ../data/ui/song-info-multiple.ui.h:3 ../data/ui/song-info.ui.h:4
 #: ../plugins/audiocd/album-info.ui.h:4
 #: ../plugins/iradio/station-properties.ui.h:2
 msgid "_Genre:"
 msgstr "_Zvrst:"
 
-#: ../data/ui/song-info-multiple.ui.h:5
-#: ../data/ui/song-info.ui.h:7
+#: ../data/ui/song-info-multiple.ui.h:5 ../data/ui/song-info.ui.h:7
 #: ../plugins/audiocd/album-info.ui.h:5
 msgid "_Year:"
 msgstr "_Leto:"
 
-#: ../data/ui/song-info-multiple.ui.h:6
-#: ../data/ui/song-info.ui.h:6
+#: ../data/ui/song-info-multiple.ui.h:6 ../data/ui/song-info.ui.h:6
 msgid "_Disc number:"
 msgstr "_Številka diska:"
 
-#: ../data/ui/song-info-multiple.ui.h:7
-#: ../data/ui/song-info.ui.h:10
+#: ../data/ui/song-info-multiple.ui.h:7 ../data/ui/song-info.ui.h:10
 msgid "Album a_rtist:"
 msgstr "I_zvajalec albuma:"
 
-#: ../data/ui/song-info-multiple.ui.h:9
-#: ../data/ui/song-info.ui.h:13
+#: ../data/ui/song-info-multiple.ui.h:9 ../data/ui/song-info.ui.h:13
 msgid "Albu_m sort order:"
 msgstr "Red razvrščanja _albumov:"
 
-#: ../data/ui/song-info-multiple.ui.h:10
-#: ../data/ui/song-info.ui.h:14
+#: ../data/ui/song-info-multiple.ui.h:10 ../data/ui/song-info.ui.h:14
 msgid "_Artist sort order:"
 msgstr "Vrstni red razvrščanja _izvajalcev:"
 
-#: ../data/ui/song-info-multiple.ui.h:11
-#: ../data/ui/song-info.ui.h:15
+#: ../data/ui/song-info-multiple.ui.h:11 ../data/ui/song-info.ui.h:15
 msgid "Album a_rtist sort order:"
 msgstr "Red razvrščanja i_zvajalcev albuma:"
 
-#: ../data/ui/song-info-multiple.ui.h:12
-#: ../data/ui/song-info.ui.h:16
+#: ../data/ui/song-info-multiple.ui.h:12 ../data/ui/song-info.ui.h:16
 msgid "Sorting"
 msgstr "Razvrščanje"
 
-#: ../data/ui/song-info.ui.h:2
-#: ../plugins/iradio/station-properties.ui.h:1
+#: ../data/ui/song-info.ui.h:2 ../plugins/iradio/station-properties.ui.h:1
 msgid "_Title:"
 msgstr "_Naslov:"
 
@@ -566,8 +552,7 @@ msgstr "UNM:"
 msgid "_Comment:"
 msgstr "_Opomba:"
 
-#: ../data/ui/song-info.ui.h:11
-#: ../plugins/iradio/station-properties.ui.h:3
+#: ../data/ui/song-info.ui.h:11 ../plugins/iradio/station-properties.ui.h:3
 msgid "Error message"
 msgstr "Sporočilo o napaki"
 
@@ -631,7 +616,8 @@ msgstr "Nepoznana možnost zagona: %d"
 #: ../lib/eggdesktopfile.c:1383
 #, c-format
 msgid "Can't pass document URIs to a 'Type=Link' desktop entry"
-msgstr "URI naslova dokumenta ni mogoče poslati na vnos namizja 'Vrsta=Povezava' "
+msgstr ""
+"URI naslova dokumenta ni mogoče poslati na vnos namizja 'Vrsta=Povezava' "
 
 #: ../lib/eggdesktopfile.c:1404
 #, c-format
@@ -669,10 +655,8 @@ msgstr "Prikaže možnosti upravljanja seje"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3595
-#: ../widgets/rb-entry-view.c:933
-#: ../widgets/rb-entry-view.c:1541
-#: ../widgets/rb-entry-view.c:1554
+#: ../rhythmdb/rhythmdb.c:3599 ../widgets/rb-entry-view.c:933
+#: ../widgets/rb-entry-view.c:1541 ../widgets/rb-entry-view.c:1554
 #: ../widgets/rb-song-info.c:1462
 msgid "Never"
 msgstr "Nikoli"
@@ -716,10 +700,8 @@ msgstr "%d. %b. %Y"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158
-#: ../lib/rb-util.c:710
-#: ../plugins/artsearch/lastfm.py:163
-#: ../plugins/artsearch/lastfm.py:164
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:710
+#: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/audiocd/rb-audiocd-source.c:550
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:589
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:593
@@ -731,42 +713,28 @@ msgstr "%d. %b. %Y"
 #: ../plugins/iradio/rb-iradio-source.c:564
 #: ../plugins/iradio/rb-iradio-source.c:1070
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
-#: ../plugins/lyrics/lyrics.py:78
-#: ../plugins/lyrics/lyrics.py:80
+#: ../plugins/lyrics/lyrics.py:78 ../plugins/lyrics/lyrics.py:80
 #: ../plugins/mtpdevice/rb-mtp-source.c:654
 #: ../plugins/mtpdevice/rb-mtp-source.c:1144
 #: ../plugins/mtpdevice/rb-mtp-source.c:1530
 #: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:570
-#: ../podcast/rb-podcast-manager.c:1900
-#: ../podcast/rb-podcast-manager.c:1994
+#: ../podcast/rb-podcast-add-dialog.c:570 ../podcast/rb-podcast-manager.c:1911
+#: ../podcast/rb-podcast-manager.c:2010
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
-#: ../podcast/rb-podcast-source.c:787
-#: ../remote/dbus/rb-client.c:154
-#: ../rhythmdb/rhythmdb.c:2010
-#: ../rhythmdb/rhythmdb.c:2016
-#: ../rhythmdb/rhythmdb.c:2031
-#: ../rhythmdb/rhythmdb.c:5388
-#: ../rhythmdb/rhythmdb.c:5393
-#: ../rhythmdb/rhythmdb-tree.c:1338
-#: ../rhythmdb/rhythmdb-tree.c:1342
-#: ../rhythmdb/rhythmdb-tree.c:1346
-#: ../rhythmdb/rhythmdb-tree.c:1350
-#: ../shell/rb-shell-player.c:1790
-#: ../shell/rb-shell-player.c:3763
-#: ../shell/rb-shell-player.c:3765
-#: ../widgets/rb-entry-view.c:985
-#: ../widgets/rb-entry-view.c:1007
-#: ../widgets/rb-entry-view.c:1482
-#: ../widgets/rb-entry-view.c:1494
-#: ../widgets/rb-entry-view.c:1506
-#: ../widgets/rb-header.c:1148
-#: ../widgets/rb-header.c:1174
-#: ../widgets/rb-song-info.c:917
-#: ../widgets/rb-song-info.c:929
-#: ../widgets/rb-song-info.c:1150
+#: ../podcast/rb-podcast-source.c:828 ../remote/dbus/rb-client.c:154
+#: ../rhythmdb/rhythmdb.c:2010 ../rhythmdb/rhythmdb.c:2016
+#: ../rhythmdb/rhythmdb.c:2031 ../rhythmdb/rhythmdb.c:5392
+#: ../rhythmdb/rhythmdb.c:5397 ../rhythmdb/rhythmdb-tree.c:1338
+#: ../rhythmdb/rhythmdb-tree.c:1342 ../rhythmdb/rhythmdb-tree.c:1346
+#: ../rhythmdb/rhythmdb-tree.c:1350 ../shell/rb-shell-player.c:1790
+#: ../shell/rb-shell-player.c:3763 ../shell/rb-shell-player.c:3765
+#: ../widgets/rb-entry-view.c:985 ../widgets/rb-entry-view.c:1007
+#: ../widgets/rb-entry-view.c:1482 ../widgets/rb-entry-view.c:1494
+#: ../widgets/rb-entry-view.c:1506 ../widgets/rb-header.c:1148
+#: ../widgets/rb-header.c:1174 ../widgets/rb-song-info.c:917
+#: ../widgets/rb-song-info.c:929 ../widgets/rb-song-info.c:1150
 #: ../widgets/rb-song-info.c:1489
 msgid "Unknown"
 msgstr "Neznano"
@@ -781,15 +749,13 @@ msgstr "Preveč simbolnih povezav"
 msgid "Cannot get free space at %s: %s"
 msgstr "Na %s ni mogoče dobiti praznega prostora: %s"
 
-#: ../lib/rb-util.c:691
-#: ../plugins/context/tmpl/album-tmpl.html:21
+#: ../lib/rb-util.c:691 ../plugins/context/tmpl/album-tmpl.html:21
 #: ../remote/dbus/rb-client.c:156
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:693
-#: ../plugins/context/tmpl/album-tmpl.html:19
+#: ../lib/rb-util.c:693 ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:158
 #, c-format
 msgid "%d:%02d:%02d"
@@ -822,7 +788,8 @@ msgstr "V datoteko ni mogoče napisati oznak, saj vsebuje več pretokov"
 
 #: ../metadata/rb-metadata-gst.c:560
 #, c-format
-msgid "Unable to write tags to this file as it is not encoded in a supported format"
+msgid ""
+"Unable to write tags to this file as it is not encoded in a supported format"
 msgstr "Oznak ni mogoče zapisati v datoteko, saj ni kodirana v podprti vrsti"
 
 #: ../metadata/rb-metadata-gst.c:692
@@ -832,13 +799,20 @@ msgstr "Ustvarjanje predmeta vira je spodletelo; preverite namestitev"
 
 #: ../metadata/rb-metadata-gst.c:702
 #, c-format
-msgid "Failed to create the 'decodebin2' element; check your GStreamer installation"
-msgstr "Ustvarjanje predmeta 'decodebin2' je spodletelo, preverite vašo namestitev GStreamer"
+msgid ""
+"Failed to create the 'decodebin2' element; check your GStreamer installation"
+msgstr ""
+"Ustvarjanje predmeta 'decodebin2' je spodletelo, preverite vašo namestitev "
+"GStreamer"
 
 #: ../metadata/rb-metadata-gst.c:711
 #, c-format
-msgid "Failed to create the 'giostreamsink' element; check your GStreamer installation"
-msgstr "Ustvarjanje predmeta 'giostreamsink' je spodletelo, preverite vašo namestitev GStreamer"
+msgid ""
+"Failed to create the 'giostreamsink' element; check your GStreamer "
+"installation"
+msgstr ""
+"Ustvarjanje predmeta 'giostreamsink' je spodletelo, preverite vašo "
+"namestitev GStreamer"
 
 #: ../metadata/rb-metadata-gst.c:794
 #, c-format
@@ -923,7 +897,8 @@ msgstr "Tega albuma na MusicBrainz ni mogoče najti."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:623
 msgid "You can improve the MusicBrainz database by adding this album."
-msgstr "Z dodajanjem tega albuma lahko izboljšate podatkovno zbirko MusicBrainz."
+msgstr ""
+"Z dodajanjem tega albuma lahko izboljšate podatkovno zbirko MusicBrainz."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:656
 #: ../plugins/audiocd/rb-audiocd-source.c:694
@@ -966,11 +941,13 @@ msgstr "Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:2
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
-msgstr "Pošlje podatke posnetka na Last.fm in predvaja radijske pretoke Last.fm"
+msgstr ""
+"Pošlje podatke posnetka na Last.fm in predvaja radijske pretoke Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:1
 msgid "Which Audioscrobbler services do you wish to use?"
-msgstr "Katere storitve pošiljanja podatkov o poslušanosti skladb želite uporabiti?"
+msgstr ""
+"Katere storitve pošiljanja podatkov o poslušanosti skladb želite uporabiti?"
 
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:3
 msgid "Libre.fm"
@@ -1005,7 +982,7 @@ msgid "Last submission time:"
 msgstr "Čas zadnjega pošiljanja:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:888
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:889
 msgid "Disabled"
 msgstr "Onemogočeno"
 
@@ -1105,45 +1082,45 @@ msgstr "Prejmi"
 msgid "Download the currently playing track"
 msgstr "Prejme trenutno predvajan posnetek"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:807
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:806
 msgid "You are not currently logged in."
 msgstr "Trenutno niste prijavljeni."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:808
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:826
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:833
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:807
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:825
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:832
 msgid "Log in"
 msgstr "Prijava"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:814
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:813
 msgid "Waiting for authentication..."
 msgstr "Čakanje na overitev ..."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:815
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:814
 msgid "Cancel"
 msgstr "Prekliči"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:825
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:824
 msgid "Authentication error. Please try logging in again."
 msgstr "Napaka overitve. Poskusite se znova prijaviti."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:832
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:831
 msgid "Connection error. Please try logging in again."
 msgstr "Napaka povezave. Poskusite se znova prijaviti."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1248
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1249
 msgid "My Library"
 msgstr "Moja knjižnica"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1256
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1257
 msgid "My Recommendations"
 msgstr "Moja priporočila"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1264
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1265
 msgid "My Neighbourhood"
 msgstr "Moja soseščina"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1431
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1432
 #, c-format
 msgid "%s plays"
 msgstr "%s se predvaja"
@@ -1151,16 +1128,16 @@ msgstr "%s se predvaja"
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This is the label for menu item which when activated will take the user to the
 #. * artist/track's page on the service's website.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1688
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1689
 #, c-format
 msgid "_View on %s"
 msgstr "_Ogled na %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1705
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1706
 msgid "Listen to _Similar Artists Radio"
 msgstr "Poslušanje radio s _podobno glasbo"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1719
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1720
 msgid "Listen to _Top Fans Radio"
 msgstr "Poslušanje radio _največjih privržencev"
 
@@ -1446,10 +1423,8 @@ msgstr "Albumi"
 msgid "Loading top albums for %s"
 msgstr "Nalaganje najboljših albumov od %s"
 
-#: ../plugins/context/ArtistTab.py:58
-#: ../sources/rb-library-source.c:129
-#: ../widgets/rb-entry-view.c:1438
-#: ../widgets/rb-library-browser.c:135
+#: ../plugins/context/ArtistTab.py:58 ../sources/rb-library-source.c:129
+#: ../widgets/rb-entry-view.c:1438 ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Izvajalec"
 
@@ -1464,7 +1439,8 @@ msgstr "Vsebinski pladenj"
 
 #: ../plugins/context/context.plugin.in.h:2
 msgid "Show information related to the currently playing artist and song."
-msgstr "Prikaži podatke povezane s trenutno predvajajočim izvajalcem in skladbo."
+msgstr ""
+"Prikaži podatke povezane s trenutno predvajajočim izvajalcem in skladbo."
 
 #. Add button to toggle visibility of pane
 #: ../plugins/context/ContextView.py:95
@@ -1486,8 +1462,13 @@ msgid "Nothing Playing"
 msgstr "Ni predvajanja"
 
 #: ../plugins/context/LastFM.py:42
-msgid "This information is only available to Last.fm users. Ensure the Last.fm plugin is enabled, select Last.fm in the side pane, and log in."
-msgstr "Ti podatki so dostopni samo uporabnikom Last.fm. Prepričajte se, da je vstavek Last.fm omogočen, izberite Last.fm v stranskem pladnju in se prijavite."
+msgid ""
+"This information is only available to Last.fm users. Ensure the Last.fm "
+"plugin is enabled, select Last.fm in the side pane, and log in."
+msgstr ""
+"Ti podatki so dostopni samo uporabnikom Last.fm. Prepričajte se, da je "
+"vstavek Last.fm omogočen, izberite Last.fm v stranskem pladnju in se "
+"prijavite."
 
 #: ../plugins/context/LinksTab.py:55
 msgid "Links"
@@ -1497,8 +1478,7 @@ msgstr "Povezave"
 msgid "No artist specified."
 msgstr "Izvajalec ni določen."
 
-#: ../plugins/context/LyricsTab.py:53
-#: ../plugins/lyrics/lyrics.py:247
+#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:247
 #: ../plugins/lyrics/lyrics.py:332
 msgid "Lyrics"
 msgstr "Besedilo"
@@ -1671,7 +1651,8 @@ msgid "MediaServer2 D-Bus interface"
 msgstr "Vmesnik D-Bus MediaServer2 "
 
 #: ../plugins/dbus-media-server/dbus-media-server.plugin.in.h:2
-msgid "Provides an implementation of the MediaServer2 D-Bus interface specification"
+msgid ""
+"Provides an implementation of the MediaServer2 D-Bus interface specification"
 msgstr "Zagotovi podporo določila vmesnika D-Bus MediaServer2"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1250
@@ -1688,8 +1669,7 @@ msgid "Genres"
 msgstr "Zvrsti"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2409
-#: ../shell/rb-playlist-manager.c:1106
-#: ../sources/rb-display-page-group.c:92
+#: ../shell/rb-playlist-manager.c:1106 ../sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "Seznami predvajanja"
 
@@ -1724,26 +1704,22 @@ msgid "Device _name:"
 msgstr "Ime _naprave:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:2
-#: ../plugins/ipod/ipod-info.ui.h:2
-#: ../plugins/mtpdevice/mtp-info.ui.h:2
+#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:2
 msgid "Tracks:"
 msgstr "Skladbe:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:3
-#: ../plugins/ipod/ipod-info.ui.h:4
-#: ../plugins/mtpdevice/mtp-info.ui.h:4
+#: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:4
 msgid "Playlists:"
 msgstr "Seznami predvajanja:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:4
-#: ../plugins/ipod/ipod-info.ui.h:10
-#: ../plugins/mtpdevice/mtp-info.ui.h:5
+#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:5
 msgid "Model:"
 msgstr "Model:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:5
-#: ../plugins/ipod/ipod-info.ui.h:9
-#: ../plugins/mtpdevice/mtp-info.ui.h:6
+#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:6
 msgid "Serial number:"
 msgstr "Zaporedna številka:"
 
@@ -1753,14 +1729,12 @@ msgid "Manufacturer:"
 msgstr "Proizvajalec:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:7
-#: ../plugins/ipod/ipod-info.ui.h:11
-#: ../plugins/mtpdevice/mtp-info.ui.h:9
+#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:9
 msgid "Audio formats:"
 msgstr "Zvočni zapisi:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:8
-#: ../plugins/ipod/ipod-info.ui.h:12
-#: ../plugins/mtpdevice/mtp-info.ui.h:10
+#: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:10
 msgid "System"
 msgstr "Sistem"
 
@@ -1773,8 +1747,7 @@ msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "Podpora za izvorne predvajalnike zvoka (ter PSP in Nokia 770)"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:90
-#: ../shell/rb-playlist-manager.c:839
-#: ../shell/rb-playlist-manager.c:882
+#: ../shell/rb-playlist-manager.c:839 ../shell/rb-playlist-manager.c:882
 msgid "New Playlist"
 msgstr "Nov seznam predvajanja"
 
@@ -1792,8 +1765,7 @@ msgstr "Izbriše ta seznam predvajanja"
 
 #: ../plugins/generic-player/rb-generic-player-plugin.c:96
 #: ../plugins/ipod/rb-ipod-plugin.c:102
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:122
-#: ../podcast/rb-podcast-source.c:124
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:122 ../podcast/rb-podcast-source.c:126
 #: ../shell/rb-shell-clipboard.c:190
 msgid "_Properties"
 msgstr "_Lastnosti"
@@ -1839,8 +1811,12 @@ msgid "IM Status"
 msgstr "Stanje hipnega sporočanja"
 
 #: ../plugins/im-status/im-status.plugin.in.h:2
-msgid "Updates IM status according to the current song (works with Empathy, Gossip, and Pidgin)"
-msgstr "Posodobi stanje hipnega sporočanja glede na trenutno skladbo (deluje z Empathy, Gossip in Pidgin)"
+msgid ""
+"Updates IM status according to the current song (works with Empathy, Gossip, "
+"and Pidgin)"
+msgstr ""
+"Posodobi stanje hipnega sporočanja glede na trenutno skladbo (deluje z "
+"Empathy, Gossip in Pidgin)"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
@@ -1880,8 +1856,7 @@ msgstr "♫ Poslušanje glasbe ... ♫"
 msgid "iPod _name:"
 msgstr "Ime _iPoda:"
 
-#: ../plugins/ipod/ipod-info.ui.h:3
-#: ../plugins/mtpdevice/mtp-info.ui.h:3
+#: ../plugins/ipod/ipod-info.ui.h:3 ../plugins/mtpdevice/mtp-info.ui.h:3
 msgid "Podcasts:"
 msgstr "Podcasti:"
 
@@ -1897,8 +1872,7 @@ msgstr "Priklopna točka:"
 msgid "Database version:"
 msgstr "Različica podatkovne zbirke:"
 
-#: ../plugins/ipod/ipod-info.ui.h:8
-#: ../plugins/mtpdevice/mtp-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
 msgid "Firmware version:"
 msgstr "Različica programske strojne opreme:"
 
@@ -1919,8 +1893,19 @@ msgid "_Model:"
 msgstr "_Model:"
 
 #: ../plugins/ipod/ipod-init.ui.h:5
-msgid "Rhythmbox has detected a device that is probably an uninitialized or corrupted iPod. It must be initialized before Rhythmbox can use it, but this will destroy any song metadata already present. If you wish Rhythmbox to initialize the iPod, please fill in the information below. If the device is not an iPod, or you do not wish to initialize it, please click cancel."
-msgstr "Rhythmbox je zaznal napravo, ki je verjetno iPod brez nastavljenih začetnih vrednosti ali pa pokvarjen iPod. Preden ga lahko Rhythmbox uporabi morajo biti nastavljene začetne vrednosti naprave, kar bo prepisalo vse obstoječe metapodatke skladb. V primeru, da želite nastaviti začetne vrednosti iPoda, izpolnite spodnje podatke. V primeru, da naprava ni iPod, kliknite prekliči.  "
+msgid ""
+"Rhythmbox has detected a device that is probably an uninitialized or "
+"corrupted iPod. It must be initialized before Rhythmbox can use it, but this "
+"will destroy any song metadata already present. If you wish Rhythmbox to "
+"initialize the iPod, please fill in the information below. If the device is "
+"not an iPod, or you do not wish to initialize it, please click cancel."
+msgstr ""
+"Rhythmbox je zaznal napravo, ki je verjetno iPod brez nastavljenih začetnih "
+"vrednosti ali pa pokvarjen iPod. Preden ga lahko Rhythmbox uporabi morajo "
+"biti nastavljene začetne vrednosti naprave, kar bo prepisalo vse obstoječe "
+"metapodatke skladb. V primeru, da želite nastaviti začetne vrednosti iPoda, "
+"izpolnite spodnje podatke. V primeru, da naprava ni iPod, kliknite "
+"prekliči.  "
 
 #: ../plugins/ipod/ipod-init.ui.h:6
 msgid "Do you want to initialize your iPod?"
@@ -1934,10 +1919,8 @@ msgstr "Prenosni predvajalniki - iPod"
 msgid "Support for Apple iPod devices (show the content, play from device)"
 msgstr "Podpora za naprave Apple iPod (prikaz vsebine, predvajanje z naprave)"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:99
-#: ../plugins/ipod/rb-ipod-plugin.c:108
-#: ../plugins/mtpdevice/rb-mtp-plugin.c:119
-#: ../shell/rb-playlist-manager.c:203
+#: ../plugins/ipod/rb-ipod-plugin.c:99 ../plugins/ipod/rb-ipod-plugin.c:108
+#: ../plugins/mtpdevice/rb-mtp-plugin.c:119 ../shell/rb-playlist-manager.c:203
 msgid "_Rename"
 msgstr "_Preimenuj"
 
@@ -1949,8 +1932,7 @@ msgstr "Preimenovanje iPoda"
 msgid "Display iPod properties"
 msgstr "Prikaz lastnosti iPoda"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:105
-#: ../shell/rb-shell-clipboard.c:177
+#: ../plugins/ipod/rb-ipod-plugin.c:105 ../shell/rb-shell-clipboard.c:177
 msgid "_New Playlist"
 msgstr "_Nov seznam predvajanja"
 
@@ -1958,19 +1940,16 @@ msgstr "_Nov seznam predvajanja"
 msgid "Add new playlist to iPod"
 msgstr "Dodajanje novega seznama predvajanja na iPod"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:109
-#: ../shell/rb-playlist-manager.c:204
+#: ../plugins/ipod/rb-ipod-plugin.c:109 ../shell/rb-playlist-manager.c:204
 msgid "Rename playlist"
 msgstr "Preimenuj seznam predvajanja"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:111
-#: ../shell/rb-playlist-manager.c:206
+#: ../plugins/ipod/rb-ipod-plugin.c:111 ../shell/rb-playlist-manager.c:206
 #: ../shell/rb-shell-clipboard.c:166
 msgid "_Delete"
 msgstr "_Izbriši"
 
-#: ../plugins/ipod/rb-ipod-plugin.c:112
-#: ../shell/rb-playlist-manager.c:207
+#: ../plugins/ipod/rb-ipod-plugin.c:112 ../shell/rb-playlist-manager.c:207
 msgid "Delete playlist"
 msgstr "Izbris seznama predvajanja"
 
@@ -2013,8 +1992,7 @@ msgctxt "Radio"
 msgid "Add"
 msgstr "Dodaj"
 
-#: ../plugins/iradio/rb-iradio-source.c:381
-#: ../widgets/rb-entry-view.c:1458
+#: ../plugins/iradio/rb-iradio-source.c:381 ../widgets/rb-entry-view.c:1458
 #: ../widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Zvrst"
@@ -2049,16 +2027,14 @@ msgstr "URL medmrežne radijske postaje:"
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
 #: ../podcast/rb-podcast-properties-dialog.c:507
-#: ../sources/rb-media-player-source.c:426
-#: ../widgets/rb-song-info.c:1075
+#: ../sources/rb-media-player-source.c:426 ../widgets/rb-song-info.c:1075
 #, c-format
 msgid "%s Properties"
 msgstr "Lastnosti %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:491
 #: ../podcast/rb-podcast-properties-dialog.c:620
-#: ../widgets/rb-entry-view.c:1011
-#: ../widgets/rb-song-info.c:1152
+#: ../widgets/rb-entry-view.c:1011 ../widgets/rb-song-info.c:1152
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
@@ -2070,7 +2046,8 @@ msgstr "Lastnosti postaje ni mogoče spremeniti"
 #: ../plugins/iradio/rb-station-properties-dialog.c:582
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
-msgstr "Naslova URI postaje ni mogoče spremeniti v %s, saj ta postaja že obstaja"
+msgstr ""
+"Naslova URI postaje ni mogoče spremeniti v %s, saj ta postaja že obstaja"
 
 #: ../plugins/iradio/station-properties.ui.h:5
 msgid "L_ocation:"
@@ -2108,8 +2085,7 @@ msgstr "Prebrskaj ..."
 msgid "Lyrics Folder"
 msgstr "Mapa besedil"
 
-#: ../plugins/lyrics/lyrics.py:164
-#: ../plugins/lyrics/lyrics.py:166
+#: ../plugins/lyrics/lyrics.py:164 ../plugins/lyrics/lyrics.py:166
 #: ../plugins/lyrics/lyrics.py:175
 msgid "No lyrics found"
 msgstr "Besedila ni mogoče najti"
@@ -2118,8 +2094,7 @@ msgstr "Besedila ni mogoče najti"
 msgid "_Save"
 msgstr "_Shrani"
 
-#: ../plugins/lyrics/lyrics.py:214
-#: ../plugins/lyrics/lyrics.py:227
+#: ../plugins/lyrics/lyrics.py:214 ../plugins/lyrics/lyrics.py:227
 #: ../shell/rb-shell.c:337
 msgid "_Edit"
 msgstr "_Uredi"
@@ -2174,17 +2149,28 @@ msgid "    * Free listening of all songs"
 msgstr "    * Brezplačno poslušanje vseh skladb"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:5
-msgid "    * Paid members get totally unlimited downloading of the entire catalog (no other service allows that)"
-msgstr "    * Plačnikom članarine je omogočeno neomejeno prejemanje kar celih katalogov predstavnih datotek, česar ne ponuja nobeda druga storitev."
+msgid ""
+"    * Paid members get totally unlimited downloading of the entire catalog "
+"(no other service allows that)"
+msgstr ""
+"    * Plačnikom članarine je omogočeno neomejeno prejemanje kar celih "
+"katalogov predstavnih datotek, česar ne ponuja nobeda druga storitev."
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:7
 #, no-c-format
-msgid "    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's worth joining"
-msgstr "    * 10 % članarine za sistem Magnatune gre razvijalcem programa Rhythmbox/GNOME"
+msgid ""
+"    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's "
+"worth joining"
+msgstr ""
+"    * 10 % članarine za sistem Magnatune gre razvijalcem programa Rhythmbox/"
+"GNOME"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:8
-msgid "    * Open-Source friendly file formats: MP3s and WAVs, but also OGG and FLAC files."
-msgstr "    * Odprtokodno podprti zapisi datotek: MP3s in WAV ter seveda OGG in FLAC."
+msgid ""
+"    * Open-Source friendly file formats: MP3s and WAVs, but also OGG and "
+"FLAC files."
+msgstr ""
+"    * Odprtokodno podprti zapisi datotek: MP3s in WAV ter seveda OGG in FLAC."
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:9
 msgid "    * All albums and artists hand-picked"
@@ -2203,8 +2189,12 @@ msgid "Magnatune Store"
 msgstr "Trgovina Magnatune"
 
 #: ../plugins/magnatune/magnatune.plugin.in.h:2
-msgid "Adds support to Rhythmbox for playing and purchasing from the Magnatune online music store"
-msgstr "Rhythmboxu doda podporo za predvajanje in nakupovanje iz spletne glasbene trgovine Magnatune"
+msgid ""
+"Adds support to Rhythmbox for playing and purchasing from the Magnatune "
+"online music store"
+msgstr ""
+"Rhythmboxu doda podporo za predvajanje in nakupovanje iz spletne glasbene "
+"trgovine Magnatune"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
 msgid "Magnatune Information"
@@ -2423,8 +2413,10 @@ msgid "Unable to load catalog"
 msgstr "Kataloga ni mogoče naložiti"
 
 #: ../plugins/magnatune/MagnatuneSource.py:273
-msgid "Rhythmbox could not understand the Magnatune catalog, please file a bug."
-msgstr "Rhythmbox ne more razumeti kataloga Magnatune, pošljite poročilo o hrošču."
+msgid ""
+"Rhythmbox could not understand the Magnatune catalog, please file a bug."
+msgstr ""
+"Rhythmbox ne more razumeti kataloga Magnatune, pošljite poročilo o hrošču."
 
 #: ../plugins/magnatune/MagnatuneSource.py:425
 msgid "Download Error"
@@ -2441,8 +2433,7 @@ msgstr ""
 "Strežnik Magnatune je vrnil:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:429
-#: ../widgets/rb-entry-view.c:1602
+#: ../plugins/magnatune/MagnatuneSource.py:429 ../widgets/rb-entry-view.c:1602
 msgid "Error"
 msgstr "Napaka"
 
@@ -2487,7 +2478,8 @@ msgstr "Prenosni predvajalniki - MTP"
 
 #: ../plugins/mtpdevice/mtpdevice.plugin.in.h:2
 msgid "Support for MTP devices (show the content, transfer, play from device)"
-msgstr "Podpora za naprave MTP (prikaz vsebine, prenos in predvajanje z naprave)"
+msgstr ""
+"Podpora za naprave MTP (prikaz vsebine, prenos in predvajanje z naprave)"
 
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:154
 #: ../plugins/mtpdevice/rb-mtp-thread.c:488
@@ -2629,8 +2621,14 @@ msgstr "Do glavnega okna lahko dostopate preko spremenljivke 'shell':"
 
 #: ../plugins/pythonconsole/pythonconsole.py:143
 #, python-format
-msgid "After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in the file %s, it will use the default password ('rhythmbox')."
-msgstr "Po pritisku v redu bo Rhythmbox počakal dokler se z njim ne povežete z winpdb ali rpdb2. V primeru da v datoteki %s niste nastavili gesla razhroščevalnika, bo uporabljeno privzeto geslo ('rhythmbox') ."
+msgid ""
+"After you press OK, Rhythmbox will wait until you connect to it with winpdb "
+"or rpdb2. If you have not set a debugger password in the file %s, it will "
+"use the default password ('rhythmbox')."
+msgstr ""
+"Po pritisku v redu bo Rhythmbox počakal dokler se z njim ne povežete z "
+"winpdb ali rpdb2. V primeru da v datoteki %s niste nastavili gesla "
+"razhroščevalnika, bo uporabljeno privzeto geslo ('rhythmbox') ."
 
 #. ex:noet:ts=8:
 #: ../plugins/rbzeitgeist/rbzeitgeist.plugin.in.h:1
@@ -2655,8 +2653,12 @@ msgstr "15,0 dB"
 
 #: ../plugins/replaygain/player.py:49
 #, python-format
-msgid "The GStreamer elements required for ReplayGain processing are not available. The missing elements are: %s"
-msgstr "Predmeti GStreamer zahtevani za obdelavo pridobitve glasnosti niso na voljo. Manjkajoči predmeti so: %s"
+msgid ""
+"The GStreamer elements required for ReplayGain processing are not available. "
+"The missing elements are: %s"
+msgstr ""
+"Predmeti GStreamer zahtevani za obdelavo pridobitve glasnosti niso na voljo. "
+"Manjkajoči predmeti so: %s"
 
 #: ../plugins/replaygain/player.py:50
 msgid "ReplayGain GStreamer plugins not available"
@@ -2668,7 +2670,8 @@ msgstr "Pridobitev glasnosti"
 
 #: ../plugins/replaygain/replaygain.plugin.in.h:2
 msgid "Use ReplayGain to provide a consistent playback volume"
-msgstr "Uporaba pridobitve glasnosti za zagotovitev dosledne glasnosti predvajanja"
+msgstr ""
+"Uporaba pridobitve glasnosti za zagotovitev dosledne glasnosti predvajanja"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:1
 msgid "ReplayGain preferences"
@@ -2704,7 +2707,8 @@ msgstr "Pošiljanje posnetkov"
 
 #: ../plugins/sendto/sendto.plugin.in.h:2
 msgid "Send selected tracks by email or instant message"
-msgstr "Pošiljanje izbranih posnetkov z elektronsko pošto ali s hipnim sporočilom"
+msgstr ""
+"Pošiljanje izbranih posnetkov z elektronsko pošto ali s hipnim sporočilom"
 
 #: ../plugins/sendto/sendto.py:58
 msgid "Send to..."
@@ -2762,8 +2766,7 @@ msgstr "Vira ni mogoče naložiti. Preveriti je treba omrežno povezavo."
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Ni mogoče iskati med podcasti. Preveriti je treba omrežno povezavo."
 
-#: ../podcast/rb-podcast-add-dialog.c:705
-#: ../sources/rb-library-source.c:138
+#: ../podcast/rb-podcast-add-dialog.c:705 ../sources/rb-library-source.c:138
 #: ../widgets/rb-entry-view.c:1428
 msgid "Title"
 msgstr "Naslov"
@@ -2778,37 +2781,36 @@ msgid "Episodes"
 msgstr "Epizode"
 
 #: ../podcast/rb-podcast-add-dialog.c:752
-#: ../podcast/rb-podcast-add-dialog.c:763
-#: ../podcast/rb-podcast-source.c:1410
-#: ../podcast/rb-podcast-source.c:1421
+#: ../podcast/rb-podcast-add-dialog.c:763 ../podcast/rb-podcast-source.c:1460
+#: ../podcast/rb-podcast-source.c:1471
 msgid "Date"
 msgstr "Datum"
 
-#: ../podcast/rb-podcast-main-source.c:117
+#: ../podcast/rb-podcast-main-source.c:118
 msgid "New Episodes"
 msgstr "Nove epizode"
 
-#: ../podcast/rb-podcast-main-source.c:135
+#: ../podcast/rb-podcast-main-source.c:136
 msgid "New Downloads"
 msgstr "Novi prejemi"
 
-#: ../podcast/rb-podcast-main-source.c:156
+#: ../podcast/rb-podcast-main-source.c:157
 msgid "Downloading podcast"
 msgstr "Prejemanje podcasta"
 
-#: ../podcast/rb-podcast-main-source.c:173
+#: ../podcast/rb-podcast-main-source.c:174
 msgid "Finished downloading podcast"
 msgstr "Prejemanje podcasta je končano"
 
-#: ../podcast/rb-podcast-main-source.c:190
+#: ../podcast/rb-podcast-main-source.c:191
 msgid "New updates available from"
 msgstr "Nove posodobitve so dostopne od"
 
-#: ../podcast/rb-podcast-main-source.c:229
+#: ../podcast/rb-podcast-main-source.c:230
 msgid "Error in podcast"
 msgstr "Napaka v podcastu"
 
-#: ../podcast/rb-podcast-main-source.c:236
+#: ../podcast/rb-podcast-main-source.c:237
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Ali bi vseeno radi dodali vir podcasta?"
@@ -2822,35 +2824,44 @@ msgstr "Napaka med ustvarjanjem mape prejemanja podcastov"
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Mape prejemanj za %s ni mogoče ustvariti: %s"
 
-#: ../podcast/rb-podcast-manager.c:1025
+#: ../podcast/rb-podcast-manager.c:1026
 msgid "Invalid URL"
 msgstr "Neveljaven URL"
 
-#: ../podcast/rb-podcast-manager.c:1026
+#: ../podcast/rb-podcast-manager.c:1027
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL \"%s\" ni veljaven, preverite ga."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1036
+#: ../podcast/rb-podcast-manager.c:1038
 msgid "URL already added"
 msgstr "URL je bil že dodan"
 
-#: ../podcast/rb-podcast-manager.c:1037
+#: ../podcast/rb-podcast-manager.c:1039
 #, c-format
-msgid "The URL \"%s\" has already been added as a radio station. If this is a podcast feed, please remove the radio station."
-msgstr "URL \"%s\" je bil že dodan kot radijska postaja. V primeru da je to vir podcasta, odstranite radijsko postajo."
+msgid ""
+"The URL \"%s\" has already been added as a radio station. If this is a "
+"podcast feed, please remove the radio station."
+msgstr ""
+"URL \"%s\" je bil že dodan kot radijska postaja. V primeru da je to vir "
+"podcasta, odstranite radijsko postajo."
 
-#: ../podcast/rb-podcast-manager.c:1114
+#: ../podcast/rb-podcast-manager.c:1122
 #, c-format
-msgid "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, or the feed may be broken. Would you like Rhythmbox to attempt to use it anyway?"
-msgstr "Kaže da URL '%s' ni vir podcasta. Morda je URL napačen, ali pa je vir pokvarjen. Ali ga naj Rhythmbox vseeno poskusi uporabiti?"
+msgid ""
+"The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
+"or the feed may be broken. Would you like Rhythmbox to attempt to use it "
+"anyway?"
+msgstr ""
+"Kaže da URL '%s' ni vir podcasta. Morda je URL napačen, ali pa je vir "
+"pokvarjen. Ali ga naj Rhythmbox vseeno poskusi uporabiti?"
 
-#: ../podcast/rb-podcast-manager.c:1245
+#: ../podcast/rb-podcast-manager.c:1253
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2185
+#: ../podcast/rb-podcast-manager.c:2225
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Med dodajanjem podcasta %s je prišlo do težave. Preverite URL: %s"
@@ -2883,105 +2894,106 @@ msgstr "Zahtevanega naslova URI ni mogoče prikazati"
 msgid "Not Downloaded"
 msgstr "Ni prejeto"
 
-#: ../podcast/rb-podcast-source.c:115
+#: ../podcast/rb-podcast-source.c:117
 msgid "_New Podcast Feed..."
 msgstr "_Nov vir podcasta ..."
 
-#: ../podcast/rb-podcast-source.c:116
+#: ../podcast/rb-podcast-source.c:118
 msgid "Subscribe to a new podcast feed"
 msgstr "Naročanje na nov vir podcasta"
 
-#: ../podcast/rb-podcast-source.c:118
+#: ../podcast/rb-podcast-source.c:120
 msgid "Download _Episode"
 msgstr "Prejmi _epizodo"
 
-#: ../podcast/rb-podcast-source.c:119
+#: ../podcast/rb-podcast-source.c:121
 msgid "Download Podcast Episode"
 msgstr "Prejemanje epizode podcasta"
 
-#: ../podcast/rb-podcast-source.c:121
+#: ../podcast/rb-podcast-source.c:123
 msgid "_Cancel Download"
 msgstr "_Prekliči prejemanje"
 
-#: ../podcast/rb-podcast-source.c:122
+#: ../podcast/rb-podcast-source.c:124
 msgid "Cancel Episode Download"
 msgstr "Preklic prejemanja epizode"
 
-#: ../podcast/rb-podcast-source.c:125
+#: ../podcast/rb-podcast-source.c:127
 msgid "Episode Properties"
 msgstr "Lastnosti epizode"
 
-#: ../podcast/rb-podcast-source.c:127
+#: ../podcast/rb-podcast-source.c:129
 msgid "_Update Podcast Feed"
 msgstr "_Posodobi vir podcasta"
 
-#: ../podcast/rb-podcast-source.c:128
+#: ../podcast/rb-podcast-source.c:130
 msgid "Update Feed"
 msgstr "Posodobi vir"
 
-#: ../podcast/rb-podcast-source.c:130
+#: ../podcast/rb-podcast-source.c:132
 msgid "_Delete Podcast Feed"
 msgstr "_Izbriši vir podcasta"
 
-#: ../podcast/rb-podcast-source.c:131
+#: ../podcast/rb-podcast-source.c:133
 msgid "Delete Feed"
 msgstr "Izbriše vir"
 
-#: ../podcast/rb-podcast-source.c:133
+#: ../podcast/rb-podcast-source.c:135
 msgid "_Update All Feeds"
 msgstr "_Posodobi vse vire"
 
-#: ../podcast/rb-podcast-source.c:134
+#: ../podcast/rb-podcast-source.c:136
 msgid "Update all feeds"
 msgstr "Posodobi vse vire"
 
-#: ../podcast/rb-podcast-source.c:140
-#: ../sources/rb-auto-playlist-source.c:103
+#: ../podcast/rb-podcast-source.c:142 ../sources/rb-auto-playlist-source.c:103
 #: ../sources/rb-browser-source.c:148
 #: ../sources/rb-static-playlist-source.c:123
 msgid "Search all fields"
 msgstr "Iskanje vseh polj"
 
-#: ../podcast/rb-podcast-source.c:141
+#: ../podcast/rb-podcast-source.c:143
 msgid "Search podcast feeds"
 msgstr "Išči vire podcasta"
 
-#: ../podcast/rb-podcast-source.c:142
+#: ../podcast/rb-podcast-source.c:144
 msgid "Search podcast episodes"
 msgstr "Išči epizode podcasta"
 
-#: ../podcast/rb-podcast-source.c:520
+#: ../podcast/rb-podcast-source.c:558
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Izbris vira podcasta in prejetih datotek?"
 
-#: ../podcast/rb-podcast-source.c:523
-msgid "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the feed but keep the downloaded files by choosing to delete the feed only."
-msgstr "V primeru da izbrišete vir in datoteke, bodo trajno izgubljeni. Vir lahko izbrišete in obdržite prejete datoteke, če za izbris izberete le vir."
+#: ../podcast/rb-podcast-source.c:561
+msgid ""
+"If you choose to delete the feed and files, they will be permanently lost.  "
+"Please note that you can delete the feed but keep the downloaded files by "
+"choosing to delete the feed only."
+msgstr ""
+"V primeru da izbrišete vir in datoteke, bodo trajno izgubljeni. Vir lahko "
+"izbrišete in obdržite prejete datoteke, če za izbris izberete le vir."
 
-#: ../podcast/rb-podcast-source.c:531
+#: ../podcast/rb-podcast-source.c:569
 msgid "Delete _Feed Only"
 msgstr "Izbriši le _vir"
 
-#: ../podcast/rb-podcast-source.c:538
+#: ../podcast/rb-podcast-source.c:576
 msgid "_Delete Feed And Files"
 msgstr "_Izbriši vir in datoteke"
 
-#: ../podcast/rb-podcast-source.c:616
-#: ../podcast/rb-podcast-source.c:1464
+#: ../podcast/rb-podcast-source.c:654 ../podcast/rb-podcast-source.c:1514
 msgid "Downloaded"
 msgstr "Prejeto"
 
-#: ../podcast/rb-podcast-source.c:620
-#: ../podcast/rb-podcast-source.c:1466
+#: ../podcast/rb-podcast-source.c:658 ../podcast/rb-podcast-source.c:1516
 msgid "Failed"
 msgstr "Spodletelo"
 
-#: ../podcast/rb-podcast-source.c:624
-#: ../podcast/rb-podcast-source.c:1465
+#: ../podcast/rb-podcast-source.c:662 ../podcast/rb-podcast-source.c:1515
 msgid "Waiting"
 msgstr "Čakanje"
 
-#: ../podcast/rb-podcast-source.c:731
+#: ../podcast/rb-podcast-source.c:769
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
@@ -2990,27 +3002,33 @@ msgstr[1] "%d vir"
 msgstr[2] "Oba %d vira"
 msgstr[3] "Vsi %d viri"
 
-#: ../podcast/rb-podcast-source.c:968
+#: ../podcast/rb-podcast-source.c:1013
 msgid "Podcast Error"
 msgstr "Napaka podcasta"
 
-#: ../podcast/rb-podcast-source.c:1138
+#: ../podcast/rb-podcast-source.c:1183
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Izbris epizode podcasta in prejete datoteke?"
 
-#: ../podcast/rb-podcast-source.c:1141
-msgid "If you choose to delete the episode and file, they will be permanently lost.  Please note that you can delete the episode but keep the downloaded file by choosing to delete the episode only."
-msgstr "V primeru da izbrišete epizodo in datoteko, bosta trajno izgubljeni. Epizodo lahko izbrišete in obdržite prejeto datoteko, če za izbris izberete le epizodo."
+#: ../podcast/rb-podcast-source.c:1186
+msgid ""
+"If you choose to delete the episode and file, they will be permanently "
+"lost.  Please note that you can delete the episode but keep the downloaded "
+"file by choosing to delete the episode only."
+msgstr ""
+"V primeru da izbrišete epizodo in datoteko, bosta trajno izgubljeni. Epizodo "
+"lahko izbrišete in obdržite prejeto datoteko, če za izbris izberete le "
+"epizodo."
 
-#: ../podcast/rb-podcast-source.c:1149
+#: ../podcast/rb-podcast-source.c:1194
 msgid "Delete _Episode Only"
 msgstr "Izbriši le _epizodo"
 
-#: ../podcast/rb-podcast-source.c:1155
+#: ../podcast/rb-podcast-source.c:1200
 msgid "_Delete Episode And File"
 msgstr "_Izbriši epizodo in datoteko"
 
-#: ../podcast/rb-podcast-source.c:1258
+#: ../podcast/rb-podcast-source.c:1303
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -3021,25 +3039,23 @@ msgstr[3] "%d epizode"
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
-#: ../podcast/rb-podcast-source.c:1362
+#: ../podcast/rb-podcast-source.c:1412
 msgctxt "Podcast"
 msgid "Add"
 msgstr "Dodaj"
 
 #. Translators: this is the toolbar button label
 #. for Update Feed action.
-#: ../podcast/rb-podcast-source.c:1368
+#: ../podcast/rb-podcast-source.c:1418
 msgid "Update"
 msgstr "Posodobi"
 
-#: ../podcast/rb-podcast-source.c:1443
-#: ../podcast/rb-podcast-source.c:1498
-#: ../podcast/rb-podcast-source.c:1546
+#: ../podcast/rb-podcast-source.c:1493 ../podcast/rb-podcast-source.c:1548
+#: ../podcast/rb-podcast-source.c:1586
 msgid "Feed"
 msgstr "Vir"
 
-#: ../podcast/rb-podcast-source.c:1463
-#: ../podcast/rb-podcast-source.c:1481
+#: ../podcast/rb-podcast-source.c:1513 ../podcast/rb-podcast-source.c:1531
 msgid "Status"
 msgstr "Stanje"
 
@@ -3047,8 +3063,7 @@ msgstr "Stanje"
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Ne zaženi novega primerka programa"
 
-#: ../remote/dbus/rb-client.c:87
-#: ../shell/rb-shell.c:353
+#: ../remote/dbus/rb-client.c:87 ../shell/rb-shell.c:353
 msgid "Quit Rhythmbox"
 msgstr "Končaj Rhythmbox"
 
@@ -3171,8 +3186,7 @@ msgstr "Natisni trenutno glasnost predvajanja"
 msgid "Set the rating of the current song"
 msgstr "Nastavi oceno trenutne skladbe"
 
-#: ../remote/dbus/rb-client.c:469
-#: ../remote/dbus/rb-client.c:493
+#: ../remote/dbus/rb-client.c:469 ../remote/dbus/rb-client.c:493
 msgid "Not playing"
 msgstr "Ni predvajanja"
 
@@ -3228,16 +3242,16 @@ msgstr "neveljaven unicode v sporočilu o napaki"
 msgid "Empty file"
 msgstr "Prazna datoteka"
 
-#: ../rhythmdb/rhythmdb.c:3034
+#: ../rhythmdb/rhythmdb.c:3038
 msgid "Could not load the music database:"
 msgstr "Ni mogoče naložiti podatkovne zbirke glasbe: "
 
-#: ../rhythmdb/rhythmdb.c:4450
+#: ../rhythmdb/rhythmdb.c:4454
 #, c-format
 msgid "Checking (%d/%d)"
 msgstr "Preverjanje (%d/%d)"
 
-#: ../rhythmdb/rhythmdb.c:4494
+#: ../rhythmdb/rhythmdb.c:4498
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3246,7 +3260,7 @@ msgstr[1] "%ld minuta"
 msgstr[2] "%ld minuti"
 msgstr[3] "%ld minute"
 
-#: ../rhythmdb/rhythmdb.c:4495
+#: ../rhythmdb/rhythmdb.c:4499
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3255,7 +3269,7 @@ msgstr[1] "%ld ura"
 msgstr[2] "%ld uri"
 msgstr[3] "%ld ure"
 
-#: ../rhythmdb/rhythmdb.c:4496
+#: ../rhythmdb/rhythmdb.c:4500
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3265,7 +3279,7 @@ msgstr[2] "%ld dni"
 msgstr[3] "%ld dni"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4502
+#: ../rhythmdb/rhythmdb.c:4506
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s in %s"
@@ -3273,9 +3287,8 @@ msgstr "%s, %s in %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4508
-#: ../rhythmdb/rhythmdb.c:4516
-#: ../rhythmdb/rhythmdb.c:4527
+#: ../rhythmdb/rhythmdb.c:4512 ../rhythmdb/rhythmdb.c:4520
+#: ../rhythmdb/rhythmdb.c:4531
 #, c-format
 msgid "%s and %s"
 msgstr "%s in %s"
@@ -3286,8 +3299,12 @@ msgstr "Vse"
 
 #: ../rhythmdb/rhythmdb-tree.c:408
 #, c-format
-msgid "The database was created by a later version of Rhythmbox.  This version of Rhythmbox cannot read the database."
-msgstr "Podatkovna zbirka je bila ustvarjena z novejšo različico Rhythmbox. Ta različica Rhythmbox ne more brati podatkovne zbirke."
+msgid ""
+"The database was created by a later version of Rhythmbox.  This version of "
+"Rhythmbox cannot read the database."
+msgstr ""
+"Podatkovna zbirka je bila ustvarjena z novejšo različico Rhythmbox. Ta "
+"različica Rhythmbox ne more brati podatkovne zbirke."
 
 #: ../sample-plugins/sample-python/sample-python.plugin.in.h:1
 msgid "Python Sample Plugin"
@@ -3360,8 +3377,7 @@ msgstr "_Naloži iz datoteke ..."
 msgid "Choose a playlist to be loaded"
 msgstr "Izbor seznama predvajanja za nalaganje"
 
-#: ../shell/rb-playlist-manager.c:200
-#: ../shell/rb-playlist-manager.c:218
+#: ../shell/rb-playlist-manager.c:200 ../shell/rb-playlist-manager.c:218
 msgid "_Save to File..."
 msgstr "_Shrani v datoteko ..."
 
@@ -3421,8 +3437,7 @@ msgstr "Vse datoteke"
 msgid "Load Playlist"
 msgstr "Naloži seznam predvajanja"
 
-#: ../shell/rb-playlist-manager.c:1173
-#: ../sources/rb-playlist-source.c:669
+#: ../shell/rb-playlist-manager.c:1173 ../sources/rb-playlist-source.c:669
 msgid "Couldn't save playlist"
 msgstr "Seznama predvajanja ni mogoče shraniti"
 
@@ -3435,16 +3450,13 @@ msgstr "Podana je bila nepodprta pripona datotek."
 msgid "Playlist %s already exists"
 msgstr "Seznam predvajanja %s že obstaja"
 
-#: ../shell/rb-playlist-manager.c:1499
-#: ../shell/rb-playlist-manager.c:1532
-#: ../shell/rb-playlist-manager.c:1572
-#: ../shell/rb-playlist-manager.c:1615
+#: ../shell/rb-playlist-manager.c:1499 ../shell/rb-playlist-manager.c:1532
+#: ../shell/rb-playlist-manager.c:1572 ../shell/rb-playlist-manager.c:1615
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "Neznan seznam predvajanja: %s"
 
-#: ../shell/rb-playlist-manager.c:1540
-#: ../shell/rb-playlist-manager.c:1580
+#: ../shell/rb-playlist-manager.c:1540 ../shell/rb-playlist-manager.c:1580
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "Seznam predvajanja %s je samodejni seznam predvajanja"
@@ -3462,8 +3474,11 @@ msgid "_Check for New Devices"
 msgstr "_Preveri za nove naprave"
 
 #: ../shell/rb-removable-media-manager.c:154
-msgid "Check for new media storage devices that have not been automatically detected"
-msgstr "Preveri za nove naprave shrambe predstavnih vsebin, ki niso bile samodejno zaznane"
+msgid ""
+"Check for new media storage devices that have not been automatically detected"
+msgstr ""
+"Preveri za nove naprave shrambe predstavnih vsebin, ki niso bile samodejno "
+"zaznane"
 
 #: ../shell/rb-shell.c:336
 msgid "_Music"
@@ -3644,7 +3659,8 @@ msgid ""
 "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
 "%s\n"
-"Zaženite '%s --help' za podroben pregled razpoložljivih možnosti ukazne vrstice.\n"
+"Zaženite '%s --help' za podroben pregled razpoložljivih možnosti ukazne "
+"vrstice.\n"
 
 #. Translators: this is the short label for the 'add music' action
 #: ../shell/rb-shell.c:2066
@@ -3703,8 +3719,10 @@ msgid ""
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 msgstr ""
-"Skupaj s programom bi morali prejeti tudi kopijo GNU General Public License;\n"
-" v primeru, da kopije niste prejeli, pišite na Free Software Foundation, Inc.,\n"
+"Skupaj s programom bi morali prejeti tudi kopijo GNU General Public "
+"License;\n"
+" v primeru, da kopije niste prejeli, pišite na Free Software Foundation, "
+"Inc.,\n"
 "51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA\n"
 
 #: ../shell/rb-shell.c:2726
@@ -3727,8 +3745,7 @@ msgstr "GNOME program za upravljanje in predvajanje glasbe."
 msgid "Rhythmbox Website"
 msgstr "Spletišče Rhythmbox"
 
-#: ../shell/rb-shell.c:2790
-#: ../shell/rb-shell-preferences.c:162
+#: ../shell/rb-shell.c:2790 ../shell/rb-shell-preferences.c:162
 msgid "Couldn't display help"
 msgstr "Pomoči ni mogoče prikazati "
 
@@ -3736,8 +3753,7 @@ msgstr "Pomoči ni mogoče prikazati "
 msgid "Configure Plugins"
 msgstr "Nastavitve vstavkov"
 
-#: ../shell/rb-shell.c:3287
-#: ../sources/rb-play-queue-source.c:629
+#: ../shell/rb-shell.c:3287 ../sources/rb-play-queue-source.c:629
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ni vira za upravljanjem z naslovom URI %s"
@@ -3747,8 +3763,7 @@ msgstr "Ni vira za upravljanjem z naslovom URI %s"
 msgid "No registered source matches URI %s"
 msgstr "Noben vpisan vir ni skladen z naslovom URI %s"
 
-#: ../shell/rb-shell.c:3649
-#: ../shell/rb-shell.c:3692
+#: ../shell/rb-shell.c:3649 ../shell/rb-shell.c:3692
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Neznan URI skladbe: %s"
@@ -3851,8 +3866,7 @@ msgstr "Odstrani vse izbrane predmete iz vrste predvajanja"
 msgid "Pr_operties"
 msgstr "_Lastnosti"
 
-#: ../shell/rb-shell-clipboard.c:188
-#: ../shell/rb-shell-clipboard.c:191
+#: ../shell/rb-shell-clipboard.c:188 ../shell/rb-shell-clipboard.c:191
 msgid "Show information on each selected song"
 msgstr "Prikaz podatkov o vsaki izbrani skladbi"
 
@@ -3892,8 +3906,7 @@ msgstr "Zmanjšanje glasnosti predvajanja"
 msgid "_Play"
 msgstr "_Predvajaj"
 
-#: ../shell/rb-shell-player.c:315
-#: ../shell/rb-shell-player.c:3859
+#: ../shell/rb-shell-player.c:315 ../shell/rb-shell-player.c:3859
 msgid "Start playback"
 msgstr "Začetek predvajanja"
 
@@ -3978,8 +3991,7 @@ msgstr "Ni predhodne skladbe"
 msgid "No next song"
 msgstr "Ni naslednje skladbe"
 
-#: ../shell/rb-shell-player.c:2344
-#: ../shell/rb-shell-player.c:3496
+#: ../shell/rb-shell-player.c:2344 ../shell/rb-shell-player.c:3496
 msgid "Couldn't start playback"
 msgstr "Predvajanja ni mogoče začeti"
 
@@ -3992,8 +4004,7 @@ msgstr "Predvajanja ni mogoče zaustaviti"
 msgid "Playback position not available"
 msgstr "Položaj predvajanja ni dostopen"
 
-#: ../shell/rb-shell-player.c:3350
-#: ../shell/rb-shell-player.c:3384
+#: ../shell/rb-shell-player.c:3350 ../shell/rb-shell-player.c:3384
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Po trenutni skladbi ni mogoče iskati"
@@ -4045,12 +4056,30 @@ msgstr "Zamenjaj _vse"
 
 #: ../shell/rb-track-transfer-queue.c:439
 #, c-format
-msgid "%d file cannot be transferred as it must be converted into a format supported by the target device but no suitable encoding profiles are available"
-msgid_plural "%d files cannot be transferred as they must be converted into a format supported by the target device but no suitable encoding profiles are available"
-msgstr[0] "%d datotek ni mogoče prenesti na napravo, saj jih je treba pretvoriti v zapis, ki ga ciljna naprava podpira, vendar pa ni ustreznega kodirnika te vrste."
-msgstr[1] "%d datoteke ni mogoče prenesti na napravo, saj jo je treba pretvoriti v zapis, ki ga ciljna naprava podpira, vendar pa ni ustreznega kodirnika te vrste."
-msgstr[2] "%d datotek ni mogoče prenesti na napravo, saj ju je treba pretvoriti v zapis, ki ga ciljna naprava podpira, vendar pa ni ustreznega kodirnika te vrste."
-msgstr[3] "%d datotek ni mogoče prenesti na napravo, saj jih je treba pretvoriti v zapis, ki ga ciljna naprava podpira. Hkrati kodirniki za podprte vrste niso na voljo."
+msgid ""
+"%d file cannot be transferred as it must be converted into a format "
+"supported by the target device but no suitable encoding profiles are "
+"available"
+msgid_plural ""
+"%d files cannot be transferred as they must be converted into a format "
+"supported by the target device but no suitable encoding profiles are "
+"available"
+msgstr[0] ""
+"%d datotek ni mogoče prenesti na napravo, saj jih je treba pretvoriti v "
+"zapis, ki ga ciljna naprava podpira, vendar pa ni ustreznega kodirnika te "
+"vrste."
+msgstr[1] ""
+"%d datoteke ni mogoče prenesti na napravo, saj jo je treba pretvoriti v "
+"zapis, ki ga ciljna naprava podpira, vendar pa ni ustreznega kodirnika te "
+"vrste."
+msgstr[2] ""
+"%d datotek ni mogoče prenesti na napravo, saj ju je treba pretvoriti v "
+"zapis, ki ga ciljna naprava podpira, vendar pa ni ustreznega kodirnika te "
+"vrste."
+msgstr[3] ""
+"%d datotek ni mogoče prenesti na napravo, saj jih je treba pretvoriti v "
+"zapis, ki ga ciljna naprava podpira. Hkrati kodirniki za podprte vrste niso "
+"na voljo."
 
 #. XXX should provide the option of picking a different format?
 #: ../shell/rb-track-transfer-queue.c:463
@@ -4059,28 +4088,35 @@ msgid ""
 "Additional software is required to encode media in your preferred format:\n"
 "%s"
 msgstr ""
-"Za kodiranje predstavnih vsebin v želeno vrsto datoteke zahteva namestitev dodatnega programa:\n"
+"Za kodiranje predstavnih vsebin v želeno vrsto datoteke zahteva namestitev "
+"dodatnega programa:\n"
 "%s"
 
 #: ../shell/rb-track-transfer-queue.c:467
 #, c-format
 msgid ""
-"Additional software is required to convert %d file into a format supported by the target device:\n"
+"Additional software is required to convert %d file into a format supported "
+"by the target device:\n"
 "%s"
 msgid_plural ""
-"Additional software is required to convert %d files into a format supported by the target device:\n"
+"Additional software is required to convert %d files into a format supported "
+"by the target device:\n"
 "%s"
 msgstr[0] ""
-"Za pretvorbo teh %d datotek v zapis, ki ga podpira ciljna naprava, je zahtevana dodatna programska oprema:\n"
+"Za pretvorbo teh %d datotek v zapis, ki ga podpira ciljna naprava, je "
+"zahtevana dodatna programska oprema:\n"
 "%s"
 msgstr[1] ""
-"Za pretvorbo teh %d datoteke v zapis, ki ga podpira ciljna naprava, je zahtevana dodatna programska oprema:\n"
+"Za pretvorbo teh %d datoteke v zapis, ki ga podpira ciljna naprava, je "
+"zahtevana dodatna programska oprema:\n"
 "%s"
 msgstr[2] ""
-"Za pretvorbo teh %d datotek v zapis, ki ga podpira ciljna naprava, je zahtevana dodatna programska oprema:\n"
+"Za pretvorbo teh %d datotek v zapis, ki ga podpira ciljna naprava, je "
+"zahtevana dodatna programska oprema:\n"
 "%s"
 msgstr[3] ""
-"Za pretvorbo teh %d datotek v zapis, ki ga podpira ciljna naprava, je zahtevana dodatna programska oprema:\n"
+"Za pretvorbo teh %d datotek v zapis, ki ga podpira ciljna naprava, je "
+"zahtevana dodatna programska oprema:\n"
 "%s"
 
 #: ../shell/rb-track-transfer-queue.c:484
@@ -4109,20 +4145,17 @@ msgstr "Prenašanje posnetka %d od %d (%.0f%%)"
 msgid "Transferring track %d out of %d"
 msgstr "Prenašanje posnetka %d od %d"
 
-#: ../sources/rb-auto-playlist-source.c:104
-#: ../sources/rb-browser-source.c:149
+#: ../sources/rb-auto-playlist-source.c:104 ../sources/rb-browser-source.c:149
 #: ../sources/rb-static-playlist-source.c:124
 msgid "Search artists"
 msgstr "Iskanje izvajalcev"
 
-#: ../sources/rb-auto-playlist-source.c:105
-#: ../sources/rb-browser-source.c:150
+#: ../sources/rb-auto-playlist-source.c:105 ../sources/rb-browser-source.c:150
 #: ../sources/rb-static-playlist-source.c:125
 msgid "Search albums"
 msgstr "Iskanje albumov"
 
-#: ../sources/rb-auto-playlist-source.c:106
-#: ../sources/rb-browser-source.c:151
+#: ../sources/rb-auto-playlist-source.c:106 ../sources/rb-browser-source.c:151
 #: ../sources/rb-static-playlist-source.c:126
 msgid "Search titles"
 msgstr "Iskanje naslovov"
@@ -4209,8 +4242,7 @@ msgstr "Izvajalec/Album"
 msgid "Artist - Album"
 msgstr "Izvajalec - Album"
 
-#: ../sources/rb-library-source.c:128
-#: ../widgets/rb-entry-view.c:1448
+#: ../sources/rb-library-source.c:128 ../widgets/rb-entry-view.c:1448
 #: ../widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Album"
@@ -4262,8 +4294,7 @@ msgstr "Nastavitve po meri"
 msgid "Example Path:"
 msgstr "Primer poti:"
 
-#: ../sources/rb-library-source.c:1620
-#: ../sources/rb-library-source.c:1624
+#: ../sources/rb-library-source.c:1620 ../sources/rb-library-source.c:1624
 #: ../sources/rb-transfer-target.c:189
 msgid "Error transferring track"
 msgstr "Napaka med prenosom posnetka"
@@ -4277,12 +4308,20 @@ msgid "Synchronize media player with the library"
 msgstr "Uskladi predvajalnik predstavnih vsebin s knjižnico"
 
 #: ../sources/rb-media-player-source.c:663
-msgid "You have not selected any music, playlists, or podcasts to transfer to this device."
-msgstr "Niste izbrali glasbe, seznamov predvajanja ali podcastov za prenos na to napravo."
+msgid ""
+"You have not selected any music, playlists, or podcasts to transfer to this "
+"device."
+msgstr ""
+"Niste izbrali glasbe, seznamov predvajanja ali podcastov za prenos na to "
+"napravo."
 
 #: ../sources/rb-media-player-source.c:667
-msgid "There is not enough space on the device to transfer the selected music, playlists and podcasts."
-msgstr "Na tej napravi ni dovolj prostora za prenos izbrane glasbe, seznamov predvajanja in podcastov."
+msgid ""
+"There is not enough space on the device to transfer the selected music, "
+"playlists and podcasts."
+msgstr ""
+"Na tej napravi ni dovolj prostora za prenos izbrane glasbe, seznamov "
+"predvajanja in podcastov."
 
 #: ../sources/rb-media-player-source.c:718
 #, c-format
@@ -4345,19 +4384,16 @@ msgctxt "Queue"
 msgid "Shuffle"
 msgstr "Premešaj"
 
-#: ../sources/rb-play-queue-source.c:304
-#: ../sources/rb-play-queue-source.c:388
+#: ../sources/rb-play-queue-source.c:304 ../sources/rb-play-queue-source.c:388
 #: ../sources/rb-play-queue-source.c:531
 msgid "Play Queue"
 msgstr "Predvajalna vrsta"
 
-#: ../sources/rb-play-queue-source.c:499
-#: ../widgets/rb-header.c:811
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:811
 msgid "from"
 msgstr "iz"
 
-#: ../sources/rb-play-queue-source.c:499
-#: ../widgets/rb-header.c:810
+#: ../sources/rb-play-queue-source.c:499 ../widgets/rb-header.c:810
 msgid "by"
 msgstr "od"
 
@@ -4423,8 +4459,7 @@ msgstr "Gumbi prikazani v opozorilnemu pogovornemu oknu"
 msgid "Show more _details"
 msgstr "Pokaži več _podrobnosti"
 
-#: ../widgets/rb-entry-view.c:1005
-#: ../widgets/rb-entry-view.c:1507
+#: ../widgets/rb-entry-view.c:1005 ../widgets/rb-entry-view.c:1507
 #: ../widgets/rb-song-info.c:1148
 msgid "Lossless"
 msgstr "Brez izgub"
