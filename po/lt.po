@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2012-10-30 13:57+0000\n"
-"PO-Revision-Date: 2012-11-01 15:52+0300\n"
+"POT-Creation-Date: 2012-11-17 12:34+0000\n"
+"PO-Revision-Date: 2012-11-24 17:02+0300\n"
 "Last-Translator: Aurimas Černius <aurisc4@gmail.com>\n"
 "Language-Team: Lithuanian\n"
 "Language: lt\n"
@@ -114,6 +114,10 @@ msgstr "Muzikos grotuvas „Rhythmbox“"
 #: ../data/rhythmbox-device.desktop.in.in.h:4
 msgid "Play and organize your music collection"
 msgstr "Valdykite ir klausykitės savo muzikos kolekcijos"
+
+#: ../data/rhythmbox.desktop.in.in.h:5
+msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio"
+msgstr "Garsas;Daina;MP3;CD;Tinklalaidė;MTP;iPod;Grojaraštis;Last.fm;UpnP;DLNA;Radijas"
 
 #: ../data/ui/create-playlist.ui.h:1
 msgid "songs"
@@ -668,7 +672,7 @@ msgstr "Rodyti seanso valdymo parinktis"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3595
+#: ../rhythmdb/rhythmdb.c:3599
 #: ../widgets/rb-entry-view.c:933
 #: ../widgets/rb-entry-view.c:1541
 #: ../widgets/rb-entry-view.c:1554
@@ -738,17 +742,17 @@ msgstr "%Y %b %d"
 #: ../plugins/notification/rb-notification-plugin.c:475
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:570
-#: ../podcast/rb-podcast-manager.c:1900
-#: ../podcast/rb-podcast-manager.c:1994
+#: ../podcast/rb-podcast-manager.c:1911
+#: ../podcast/rb-podcast-manager.c:2010
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
-#: ../podcast/rb-podcast-source.c:787
+#: ../podcast/rb-podcast-source.c:828
 #: ../remote/dbus/rb-client.c:154
 #: ../rhythmdb/rhythmdb.c:2010
 #: ../rhythmdb/rhythmdb.c:2016
 #: ../rhythmdb/rhythmdb.c:2031
-#: ../rhythmdb/rhythmdb.c:5388
-#: ../rhythmdb/rhythmdb.c:5393
+#: ../rhythmdb/rhythmdb.c:5392
+#: ../rhythmdb/rhythmdb.c:5397
 #: ../rhythmdb/rhythmdb-tree.c:1338
 #: ../rhythmdb/rhythmdb-tree.c:1342
 #: ../rhythmdb/rhythmdb-tree.c:1346
@@ -1004,7 +1008,7 @@ msgid "Last submission time:"
 msgstr "Paskutinės publikacijos laikas:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:888
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:889
 msgid "Disabled"
 msgstr "Išjungta"
 
@@ -1104,45 +1108,45 @@ msgstr "Atsiųsti"
 msgid "Download the currently playing track"
 msgstr "Atsiųsti šiuo metu grojamą takelį"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:807
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:806
 msgid "You are not currently logged in."
 msgstr "Šiuo metu esate neprisijungę."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:808
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:826
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:833
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:807
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:825
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:832
 msgid "Log in"
 msgstr "Prisijungti"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:814
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:813
 msgid "Waiting for authentication..."
 msgstr "Laukiama tapatybės patvirtinimo..."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:815
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:814
 msgid "Cancel"
 msgstr "Atšaukti"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:825
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:824
 msgid "Authentication error. Please try logging in again."
 msgstr "Tapatybės patvirtinimo klaida. Pamėginkite prisijungti iš naujo."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:832
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:831
 msgid "Connection error. Please try logging in again."
 msgstr "Ryšio klaida. Pamėginkite prisijungti iš naujo."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1248
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1249
 msgid "My Library"
 msgstr "Mano fonoteka"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1256
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1257
 msgid "My Recommendations"
 msgstr "Mano rekomendacijos"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1264
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1265
 msgid "My Neighbourhood"
 msgstr "Mano kaimynai"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1431
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1432
 #, c-format
 msgid "%s plays"
 msgstr "%s perklausų"
@@ -1150,16 +1154,16 @@ msgstr "%s perklausų"
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This is the label for menu item which when activated will take the user to the
 #. * artist/track's page on the service's website.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1688
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1689
 #, c-format
 msgid "_View on %s"
 msgstr "_Rodyti %s svetainėje"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1705
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1706
 msgid "Listen to _Similar Artists Radio"
 msgstr "Klausyti _panašių atlikėjų radijo"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1719
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1720
 msgid "Listen to _Top Fans Radio"
 msgstr "Klausyti _didžiausių fanų radijo"
 
@@ -1791,7 +1795,7 @@ msgstr "Ištrinti šį grojaraštį"
 #: ../plugins/generic-player/rb-generic-player-plugin.c:96
 #: ../plugins/ipod/rb-ipod-plugin.c:102
 #: ../plugins/mtpdevice/rb-mtp-plugin.c:122
-#: ../podcast/rb-podcast-source.c:124
+#: ../podcast/rb-podcast-source.c:126
 #: ../shell/rb-shell-clipboard.c:190
 msgid "_Properties"
 msgstr "_Savybės"
@@ -2777,36 +2781,36 @@ msgstr "Epizodai"
 
 #: ../podcast/rb-podcast-add-dialog.c:752
 #: ../podcast/rb-podcast-add-dialog.c:763
-#: ../podcast/rb-podcast-source.c:1410
-#: ../podcast/rb-podcast-source.c:1421
+#: ../podcast/rb-podcast-source.c:1460
+#: ../podcast/rb-podcast-source.c:1471
 msgid "Date"
 msgstr "Data"
 
-#: ../podcast/rb-podcast-main-source.c:117
+#: ../podcast/rb-podcast-main-source.c:118
 msgid "New Episodes"
 msgstr "Nauji epizodai"
 
-#: ../podcast/rb-podcast-main-source.c:135
+#: ../podcast/rb-podcast-main-source.c:136
 msgid "New Downloads"
 msgstr "Nauji atsiuntimai"
 
-#: ../podcast/rb-podcast-main-source.c:156
+#: ../podcast/rb-podcast-main-source.c:157
 msgid "Downloading podcast"
 msgstr "Atsiunčiama tinklalaidė"
 
-#: ../podcast/rb-podcast-main-source.c:173
+#: ../podcast/rb-podcast-main-source.c:174
 msgid "Finished downloading podcast"
 msgstr "Tinklalaidė atsiųsta"
 
-#: ../podcast/rb-podcast-main-source.c:190
+#: ../podcast/rb-podcast-main-source.c:191
 msgid "New updates available from"
 msgstr "Čia yra prieinami atnaujinimai"
 
-#: ../podcast/rb-podcast-main-source.c:229
+#: ../podcast/rb-podcast-main-source.c:230
 msgid "Error in podcast"
 msgstr "Tinklalaidės klaida"
 
-#: ../podcast/rb-podcast-main-source.c:236
+#: ../podcast/rb-podcast-main-source.c:237
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Ar vis tiek norite pridėti tinklalaidžių kanalą?"
@@ -2820,35 +2824,35 @@ msgstr "Klaida kuriant tinklalaidžių atsiuntimų aplanką"
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Nepavyko sukurti atsiuntimo aplanko %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:1025
+#: ../podcast/rb-podcast-manager.c:1026
 msgid "Invalid URL"
 msgstr "Netinkamas URL"
 
-#: ../podcast/rb-podcast-manager.c:1026
+#: ../podcast/rb-podcast-manager.c:1027
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL „%s“ yra netinkamas, patikrinkite jį."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1036
+#: ../podcast/rb-podcast-manager.c:1038
 msgid "URL already added"
 msgstr "URL jau pridėtas"
 
-#: ../podcast/rb-podcast-manager.c:1037
+#: ../podcast/rb-podcast-manager.c:1039
 #, c-format
 msgid "The URL \"%s\" has already been added as a radio station. If this is a podcast feed, please remove the radio station."
 msgstr "URL „%s“ jau pridėtas kaip radijo stotis. Jei tai tinklalaidžių kanalas, pašalinkite šią radijo stotį."
 
-#: ../podcast/rb-podcast-manager.c:1114
+#: ../podcast/rb-podcast-manager.c:1122
 #, c-format
 msgid "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, or the feed may be broken. Would you like Rhythmbox to attempt to use it anyway?"
 msgstr "URL „%s“ nėra tinklalaidžių kanalas. Tai gali būti neteisingas URL, arba kanalas gali būti sugadintas. Ar norite, kad Rhythmbox vis tiek pabandytų jį naudoti?"
 
-#: ../podcast/rb-podcast-manager.c:1245
+#: ../podcast/rb-podcast-manager.c:1253
 msgid "Podcast"
 msgstr "Tinklalaidės"
 
-#: ../podcast/rb-podcast-manager.c:2185
+#: ../podcast/rb-podcast-manager.c:2225
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Pridedant šią tinklalaidę iškilo klaida: %s. Patikrinkite šį URL: %s"
@@ -2881,105 +2885,105 @@ msgstr "Nepavyko parodyti prašomo URI"
 msgid "Not Downloaded"
 msgstr "Neatsiųsta"
 
-#: ../podcast/rb-podcast-source.c:115
+#: ../podcast/rb-podcast-source.c:117
 msgid "_New Podcast Feed..."
 msgstr "_Naujas tinklalaidžių kanalas..."
 
-#: ../podcast/rb-podcast-source.c:116
+#: ../podcast/rb-podcast-source.c:118
 msgid "Subscribe to a new podcast feed"
 msgstr "Užsisakyti naują tinklalaidžių kanalą"
 
-#: ../podcast/rb-podcast-source.c:118
+#: ../podcast/rb-podcast-source.c:120
 msgid "Download _Episode"
 msgstr "Atsisiųsti _epizodą"
 
-#: ../podcast/rb-podcast-source.c:119
+#: ../podcast/rb-podcast-source.c:121
 msgid "Download Podcast Episode"
 msgstr "Atsisiųsti tinklalaidės epizodą"
 
-#: ../podcast/rb-podcast-source.c:121
+#: ../podcast/rb-podcast-source.c:123
 msgid "_Cancel Download"
 msgstr "_Nutraukti atsiuntimą"
 
-#: ../podcast/rb-podcast-source.c:122
+#: ../podcast/rb-podcast-source.c:124
 msgid "Cancel Episode Download"
 msgstr "Nutraukti epizodo atsiuntimą"
 
-#: ../podcast/rb-podcast-source.c:125
+#: ../podcast/rb-podcast-source.c:127
 msgid "Episode Properties"
 msgstr "Epizodo savybės"
 
-#: ../podcast/rb-podcast-source.c:127
+#: ../podcast/rb-podcast-source.c:129
 msgid "_Update Podcast Feed"
 msgstr "_Atnaujinti tinklalaidžių kanalą"
 
-#: ../podcast/rb-podcast-source.c:128
+#: ../podcast/rb-podcast-source.c:130
 msgid "Update Feed"
 msgstr "Atnaujinti kanalą"
 
-#: ../podcast/rb-podcast-source.c:130
+#: ../podcast/rb-podcast-source.c:132
 msgid "_Delete Podcast Feed"
 msgstr "_Ištrinti tinklalaidžių kanalą"
 
-#: ../podcast/rb-podcast-source.c:131
+#: ../podcast/rb-podcast-source.c:133
 msgid "Delete Feed"
 msgstr "Ištrinti kanalą"
 
-#: ../podcast/rb-podcast-source.c:133
+#: ../podcast/rb-podcast-source.c:135
 msgid "_Update All Feeds"
 msgstr "_Atnaujinti visus kanalus"
 
-#: ../podcast/rb-podcast-source.c:134
+#: ../podcast/rb-podcast-source.c:136
 msgid "Update all feeds"
 msgstr "Atnaujinti visus kanalus"
 
-#: ../podcast/rb-podcast-source.c:140
+#: ../podcast/rb-podcast-source.c:142
 #: ../sources/rb-auto-playlist-source.c:103
 #: ../sources/rb-browser-source.c:148
 #: ../sources/rb-static-playlist-source.c:123
 msgid "Search all fields"
 msgstr "Ieškoti visur"
 
-#: ../podcast/rb-podcast-source.c:141
+#: ../podcast/rb-podcast-source.c:143
 msgid "Search podcast feeds"
 msgstr "Ieškoti tinklalaidžių kanalų"
 
-#: ../podcast/rb-podcast-source.c:142
+#: ../podcast/rb-podcast-source.c:144
 msgid "Search podcast episodes"
 msgstr "Ieškoti tinklalaidžių epizodų"
 
-#: ../podcast/rb-podcast-source.c:520
+#: ../podcast/rb-podcast-source.c:558
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Ištrinti tinklalaidžių kanalą ir atsiųstus failus?"
 
-#: ../podcast/rb-podcast-source.c:523
+#: ../podcast/rb-podcast-source.c:561
 msgid "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the feed but keep the downloaded files by choosing to delete the feed only."
 msgstr "Jeigu pasirinksite ištrinti kanalus ir failus, jie bus negrįžtamai prarasti. Turėkite omenyje, kad galite ištrinti kanalą, bet atsiųstus failus pasilikti, Jums tereikia pasirinkti ištrinti tik kanalą."
 
-#: ../podcast/rb-podcast-source.c:531
+#: ../podcast/rb-podcast-source.c:569
 msgid "Delete _Feed Only"
 msgstr "Ištrinti tik _kanalą"
 
-#: ../podcast/rb-podcast-source.c:538
+#: ../podcast/rb-podcast-source.c:576
 msgid "_Delete Feed And Files"
 msgstr "_Ištrinti kanalą ir failus"
 
-#: ../podcast/rb-podcast-source.c:616
-#: ../podcast/rb-podcast-source.c:1464
+#: ../podcast/rb-podcast-source.c:654
+#: ../podcast/rb-podcast-source.c:1514
 msgid "Downloaded"
 msgstr "Atsiųsti"
 
-#: ../podcast/rb-podcast-source.c:620
-#: ../podcast/rb-podcast-source.c:1466
+#: ../podcast/rb-podcast-source.c:658
+#: ../podcast/rb-podcast-source.c:1516
 msgid "Failed"
 msgstr "Nepavyko"
 
-#: ../podcast/rb-podcast-source.c:624
-#: ../podcast/rb-podcast-source.c:1465
+#: ../podcast/rb-podcast-source.c:662
+#: ../podcast/rb-podcast-source.c:1515
 msgid "Waiting"
 msgstr "Laukiama"
 
-#: ../podcast/rb-podcast-source.c:731
+#: ../podcast/rb-podcast-source.c:769
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
@@ -2987,27 +2991,27 @@ msgstr[0] "%d kanalas"
 msgstr[1] "Visi %d kanalai"
 msgstr[2] "Visi %d kanalų"
 
-#: ../podcast/rb-podcast-source.c:968
+#: ../podcast/rb-podcast-source.c:1013
 msgid "Podcast Error"
 msgstr "Tinklalaidės klaida"
 
-#: ../podcast/rb-podcast-source.c:1138
+#: ../podcast/rb-podcast-source.c:1183
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Ištrinti tinklalaidės epizodą ir atsiųstą failą?"
 
-#: ../podcast/rb-podcast-source.c:1141
+#: ../podcast/rb-podcast-source.c:1186
 msgid "If you choose to delete the episode and file, they will be permanently lost.  Please note that you can delete the episode but keep the downloaded file by choosing to delete the episode only."
 msgstr "Jei parinksite ištrinti šį epizodą ir failą, jie bus visam laikui prarasti. Turėkite omenyje, kad galite ištrinti šį epizodą, bet atsiųstą failą galite pasilikti, tereikia pasirinkti ištrinti tik patį epizodą."
 
-#: ../podcast/rb-podcast-source.c:1149
+#: ../podcast/rb-podcast-source.c:1194
 msgid "Delete _Episode Only"
 msgstr "Ištrinti tik _epizodą"
 
-#: ../podcast/rb-podcast-source.c:1155
+#: ../podcast/rb-podcast-source.c:1200
 msgid "_Delete Episode And File"
 msgstr "_Ištrinti epizodą ir failą"
 
-#: ../podcast/rb-podcast-source.c:1258
+#: ../podcast/rb-podcast-source.c:1303
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -3017,25 +3021,25 @@ msgstr[2] "%d epizodų"
 
 #. Translators: this is the toolbar button label
 #. for New Podcast Feed action.
-#: ../podcast/rb-podcast-source.c:1362
+#: ../podcast/rb-podcast-source.c:1412
 msgctxt "Podcast"
 msgid "Add"
 msgstr "Pridėti"
 
 #. Translators: this is the toolbar button label
 #. for Update Feed action.
-#: ../podcast/rb-podcast-source.c:1368
+#: ../podcast/rb-podcast-source.c:1418
 msgid "Update"
 msgstr "Atnaujinti"
 
-#: ../podcast/rb-podcast-source.c:1443
-#: ../podcast/rb-podcast-source.c:1498
-#: ../podcast/rb-podcast-source.c:1546
+#: ../podcast/rb-podcast-source.c:1493
+#: ../podcast/rb-podcast-source.c:1548
+#: ../podcast/rb-podcast-source.c:1586
 msgid "Feed"
 msgstr "Kanalas"
 
-#: ../podcast/rb-podcast-source.c:1463
-#: ../podcast/rb-podcast-source.c:1481
+#: ../podcast/rb-podcast-source.c:1513
+#: ../podcast/rb-podcast-source.c:1531
 msgid "Status"
 msgstr "Būsena"
 
@@ -3130,22 +3134,18 @@ msgid "Source to play from"
 msgstr "Šaltinis, iš kurio groti"
 
 #: ../remote/dbus/rb-client.c:111
-#| msgid "Increase playback volume"
 msgid "Enable repeat playback order"
 msgstr "Įjungti kartojamą grojimo tvarką"
 
 #: ../remote/dbus/rb-client.c:112
-#| msgid "Decrease playback volume"
 msgid "Disable repeat playback order"
 msgstr "Išjungti kartojamą grojimo tvarką"
 
 #: ../remote/dbus/rb-client.c:113
-#| msgid "Increase the playback volume"
 msgid "Enable shuffle playback order"
 msgstr "Įjungti maišytą grojimo tvarką"
 
 #: ../remote/dbus/rb-client.c:114
-#| msgid "Decrease the playback volume"
 msgid "Disable shuffle playback order"
 msgstr "Išjungti maišytą grojimo tvarką"
 
@@ -3228,16 +3228,16 @@ msgstr "netinkamas unikodas klaidos pranešime"
 msgid "Empty file"
 msgstr "Tuščias failas"
 
-#: ../rhythmdb/rhythmdb.c:3034
+#: ../rhythmdb/rhythmdb.c:3038
 msgid "Could not load the music database:"
 msgstr "Nepavyko įkelti muzikos duomenų bazės:"
 
-#: ../rhythmdb/rhythmdb.c:4450
+#: ../rhythmdb/rhythmdb.c:4454
 #, c-format
 msgid "Checking (%d/%d)"
 msgstr "Tikrinama (%d/%d)"
 
-#: ../rhythmdb/rhythmdb.c:4494
+#: ../rhythmdb/rhythmdb.c:4498
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3245,7 +3245,7 @@ msgstr[0] "%ld minutė"
 msgstr[1] "%ld minutės"
 msgstr[2] "%ld minučių"
 
-#: ../rhythmdb/rhythmdb.c:4495
+#: ../rhythmdb/rhythmdb.c:4499
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3253,7 +3253,7 @@ msgstr[0] "%ld valanda"
 msgstr[1] "%ld valandos"
 msgstr[2] "%ld valandų"
 
-#: ../rhythmdb/rhythmdb.c:4496
+#: ../rhythmdb/rhythmdb.c:4500
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3262,7 +3262,7 @@ msgstr[1] "%ld dienos"
 msgstr[2] "%ld dienų"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4502
+#: ../rhythmdb/rhythmdb.c:4506
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s ir %s"
@@ -3270,9 +3270,9 @@ msgstr "%s, %s ir %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4508
-#: ../rhythmdb/rhythmdb.c:4516
-#: ../rhythmdb/rhythmdb.c:4527
+#: ../rhythmdb/rhythmdb.c:4512
+#: ../rhythmdb/rhythmdb.c:4520
+#: ../rhythmdb/rhythmdb.c:4531
 #, c-format
 msgid "%s and %s"
 msgstr "%s ir %s"
