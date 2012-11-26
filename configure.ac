@@ -691,13 +691,12 @@ AC_SUBST(ITMS_HANDLER)
 dnl ================================================================
 dnl Use libdmapsharing for DAAP?
 dnl ================================================================
-dnl AC_ARG_ENABLE(daap,
-dnl               AC_HELP_STRING([--disable-daap],
-dnl                             [Disable DAAP support]),,
-dnl              enable_daap=auto)
-enable_daap=no
+AC_ARG_ENABLE(daap,
+              AC_HELP_STRING([--disable-daap],
+                            [Disable DAAP support]),,
+              enable_daap=auto)
 if test "x$enable_daap" != "xno"; then
-	PKG_CHECK_MODULES(DMAPSHARING, libdmapsharing-3.0 >= 2.9.11,
+	PKG_CHECK_MODULES(DMAPSHARING, libdmapsharing-3.0 >= 2.9.16,
 			  have_libdmapsharing=yes,
 			  have_libdmapsharing=no)
 	if test "x$have_libdmapsharing" = "xno" -a "x$enable_daap" = "xyes"; then

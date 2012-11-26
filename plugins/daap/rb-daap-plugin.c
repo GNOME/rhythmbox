@@ -176,6 +176,8 @@ rb_daap_plugin_init (RBDaapPlugin *plugin)
 	daap_settings = g_settings_new ("org.gnome.rhythmbox.plugins.daap");
 	plugin->dacp_settings = g_settings_get_child (daap_settings, "dacp");
 	g_object_unref (daap_settings);
+
+	rb_register_gst_plugin ();
 }
 
 static void

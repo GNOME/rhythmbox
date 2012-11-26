@@ -69,33 +69,17 @@ static GstStaticPadTemplate srctemplate = GST_STATIC_PAD_TEMPLATE ("src",
 GST_DEBUG_CATEGORY_STATIC (rb_daap_src_debug);
 #define GST_CAT_DEFAULT rb_daap_src_debug
 
-static GstElementDetails rb_daap_src_details =
-GST_ELEMENT_DETAILS ("RBDAAP Source",
-	"Source/File",
-	"Read a DAAP (music share) file",
-	"Charles Schmidt <cschmidt2@emich.edu");
-
 static RBDaapPlugin *daap_plugin = NULL;
 
 static void rb_daap_src_uri_handler_init (gpointer g_iface, gpointer iface_data);
 
-static void
-_do_init (GType daap_src_type)
-{
-	static const GInterfaceInfo urihandler_info = {
-		rb_daap_src_uri_handler_init,
-		NULL,
-		NULL
-	};
-	GST_DEBUG_CATEGORY_INIT (rb_daap_src_debug,
-				 "daapsrc", GST_DEBUG_FG_WHITE,
+#define RB_DAAP_SRC_CATEGORY_INIT GST_DEBUG_CATEGORY_INIT (rb_daap_src_debug, \
+				 "daapsrc", GST_DEBUG_FG_WHITE, \
 				 "Rhythmbox built in DAAP source element");
 
-	g_type_add_interface_static (daap_src_type, GST_TYPE_URI_HANDLER,
-			&urihandler_info);
-}
-
-GST_BOILERPLATE_FULL (RBDAAPSrc, rb_daap_src, GstBin, GST_TYPE_BIN, _do_init);
+G_DEFINE_TYPE_WITH_CODE (RBDAAPSrc, rb_daap_src, GST_TYPE_BIN,
+	G_IMPLEMENT_INTERFACE(GST_TYPE_URI_HANDLER, rb_daap_src_uri_handler_init);
+	RB_DAAP_SRC_CATEGORY_INIT);
 
 static void rb_daap_src_dispose (GObject *object);
 static void rb_daap_src_set_property (GObject *object,
@@ -106,6 +90,8 @@ static void rb_daap_src_get_property (GObject *object,
 		          guint prop_id,
 			  GValue *value,
 			  GParamSpec *pspec);
+
+static gboolean plugin_init (GstPlugin *plugin);
 
 static GstStateChangeReturn rb_daap_src_change_state (GstElement *element, GstStateChange transition);
 
@@ -123,26 +109,22 @@ enum
 };
 
 static void
-rb_daap_src_base_init (gpointer g_class)
-{
-	GstElementClass *element_class = GST_ELEMENT_CLASS (g_class);
-	gst_element_class_add_pad_template (element_class,
-		gst_static_pad_template_get (&srctemplate));
-	gst_element_class_set_details (element_class, &rb_daap_src_details);
-}
-
-static void
 rb_daap_src_class_init (RBDAAPSrcClass *klass)
 {
-	GObjectClass *gobject_class;
-	GstElementClass *element_class;
+	GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+	GstElementClass *element_class = GST_ELEMENT_CLASS (klass);
 
-	gobject_class = G_OBJECT_CLASS (klass);
 	gobject_class->dispose = rb_daap_src_dispose;
 	gobject_class->set_property = rb_daap_src_set_property;
 	gobject_class->get_property = rb_daap_src_get_property;
 
-	element_class = GST_ELEMENT_CLASS (klass);
+	gst_element_class_add_pad_template (element_class,
+		gst_static_pad_template_get (&srctemplate));
+	gst_element_class_set_metadata (element_class, "RBDAAP Source",
+		"Source/File",
+		"Read a DAAP (music share) file",
+		"Charles Schmidt <cschmidt2@emich.edu");
+
 	element_class->change_state = rb_daap_src_change_state;
 
 	g_object_class_install_property (gobject_class, PROP_LOCATION,
@@ -154,7 +136,7 @@ rb_daap_src_class_init (RBDAAPSrcClass *klass)
 }
 
 static void
-rb_daap_src_init (RBDAAPSrc *src, RBDAAPSrcClass *klass)
+rb_daap_src_init (RBDAAPSrc *src)
 {
 	GstPad *pad;
 
@@ -169,7 +151,7 @@ rb_daap_src_init (RBDAAPSrc *src, RBDAAPSrcClass *klass)
 	gst_object_ref (src->souphttpsrc);
 
 	/* create ghost pad */
-	pad = gst_element_get_pad (src->souphttpsrc, "src");
+	pad = gst_element_get_static_pad (src->souphttpsrc, "src");
 	src->ghostpad = gst_ghost_pad_new ("src", pad);
 	gst_element_add_pad (GST_ELEMENT (src), src->ghostpad);
 	gst_object_ref (src->ghostpad);
@@ -197,7 +179,7 @@ rb_daap_src_dispose (GObject *object)
 	g_free (src->daap_uri);
 	src->daap_uri = NULL;
 
-	G_OBJECT_CLASS (parent_class)->dispose (object);
+	G_OBJECT_CLASS (rb_daap_src_parent_class)->dispose (object);
 }
 
 static void
@@ -250,7 +232,7 @@ rb_daap_src_set_header (const char *name, const char *value, gpointer headers)
 static GstStructure *
 rb_daap_src_soup_message_headers_to_gst_structure (SoupMessageHeaders *headers)
 {
-	GstStructure *gst_headers = gst_structure_new ("extra-headers", NULL);
+	GstStructure *gst_headers = gst_structure_new ("extra-headers", NULL, NULL);
 
 	if (gst_headers == NULL)
 		return gst_headers;
@@ -318,7 +300,7 @@ rb_daap_src_change_state (GstElement *element, GstStateChange transition)
 			break;
 	}
 
-	return GST_ELEMENT_CLASS (parent_class)->change_state (element, transition);
+	return GST_ELEMENT_CLASS (rb_daap_src_parent_class)->change_state (element, transition);
 }
 
 static gboolean
@@ -328,19 +310,26 @@ plugin_init (GstPlugin *plugin)
 	return ret;
 }
 
-GST_PLUGIN_DEFINE_STATIC (GST_VERSION_MAJOR,
-			  GST_VERSION_MINOR,
-			  "rbdaap",
-			  "element to access DAAP music share files",
-			  plugin_init,
-			  VERSION,
-			  "GPL",
-			  PACKAGE,
-			  "");
+
+gboolean
+rb_register_gst_plugin ()
+{
+	gboolean ret = gst_plugin_register_static (GST_VERSION_MAJOR,
+				    GST_VERSION_MINOR,
+				    "rbdaap",
+				    "element to access DAAP music share files",
+				    plugin_init,
+				    VERSION,
+				    "GPL",
+				    "",
+				    PACKAGE,
+				    "");
+	return ret;
+}
 
 /*** GSTURIHANDLER INTERFACE *************************************************/
 
-static guint
+static GstURIType
 rb_daap_src_uri_get_type (void)
 {
 	return GST_URI_SRC;
