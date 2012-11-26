@@ -38,6 +38,8 @@ G_BEGIN_DECLS
 GType rb_daap_src_get_type (void);
 void rb_daap_src_set_plugin (GObject *plugin);
 
+gboolean rb_register_gst_plugin ();
+
 G_END_DECLS
 
 #endif /* __RB_DAAP_SRC_H */
