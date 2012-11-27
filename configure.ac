@@ -693,16 +693,15 @@ AC_SUBST(DMAPSHARING_LIBS)
 dnl ================================================================
 dnl clutter for visualizer plugin
 dnl ================================================================
-dnl AC_ARG_ENABLE(visualizer,
-dnl               AC_HELP_STRING([--disable-visualizer],
-dnl                              [Disable visualizer plugin support]),,
-dnl               enable_visualizer=auto)
-enable_visualizer=no
+AC_ARG_ENABLE(visualizer,
+              AC_HELP_STRING([--disable-visualizer],
+                             [Disable visualizer plugin support]),,
+              enable_visualizer=auto)
 if test "x$enable_visualizer" != "xno"; then
 	PKG_CHECK_MODULES(CLUTTER,
 			  clutter-1.0 >= 1.8			\
 			  clutter-x11-1.0 >= 1.8		\
-			  clutter-gst-1.0 >= 1.4		\
+			  clutter-gst-2.0				\
 			  clutter-gtk-1.0 >= 1.0		\
 			  mx-1.0 >= 1.0.1,
 			  have_clutter=yes,

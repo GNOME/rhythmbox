@@ -338,9 +338,8 @@ impl_constructed (GObject *object)
 {
 	RBVisualizerPage *page;
 	ClutterInitError err;
-	GstElement *colorspace;
+	GstElement *videoconvert;
 	GstElement *realsink;
-	GstElement *capsfilter;
 	GstCaps *caps;
 	GstPad *pad;
 
@@ -368,18 +367,19 @@ impl_constructed (GObject *object)
 	realsink = gst_element_factory_make ("cluttersink", NULL);
 	g_object_set (realsink, "texture", page->texture, NULL);
 
-	colorspace = gst_element_factory_make ("ffmpegcolorspace", NULL);
-	/* capsfilter to force rgb format (without this we end up using ayuv)  - XXX check this in 0.11 */
-	capsfilter = gst_element_factory_make ("capsfilter", NULL);
-	caps = gst_caps_from_string ("video/x-raw,format=(string)xRGB");
-	g_object_set (capsfilter, "caps", caps, NULL);
-	gst_caps_unref (caps);
+	videoconvert = gst_element_factory_make ("videoconvert", NULL);
 
-	gst_bin_add_many (GST_BIN (page->sink), colorspace, capsfilter, realsink, NULL);
-	gst_element_link (colorspace, capsfilter);
-	gst_element_link (capsfilter, realsink);
+	/* force rgb format (without this we end up using ayuv)  -
+	 * XXX check this in 0.11 */
+	caps = gst_caps_from_string ("video/x-raw,format=(string)RGB");
 
-	pad = gst_element_get_static_pad (colorspace, "sink");
+	gst_bin_add_many (GST_BIN (page->sink),
+				 videoconvert, realsink, NULL);
+
+	gst_element_link_filtered(videoconvert, realsink, caps);
+	gst_caps_unref(caps);
+
+	pad = gst_element_get_static_pad (videoconvert, "sink");
 	gst_element_add_pad (page->sink, gst_ghost_pad_new ("sink", pad));
 	gst_object_unref (pad);
 

@@ -291,16 +291,16 @@ start_visualizer_cb (RBVisualizerPage *page, RBVisualizerPlugin *plugin)
 			rb_debug ("playback hasn't started yet");
 		}
 	} else {
-		GstElement *colorspace;
+		GstElement *videoconvert;
 		GstElement *queue;
 
-		colorspace = gst_element_factory_make ("ffmpegcolorspace", NULL);
+		videoconvert = gst_element_factory_make ("videoconvert", NULL);
 		queue = gst_element_factory_make ("queue", NULL);
 
 		g_object_set (queue, "max-size-buffers", 3, "max-size-bytes", 0, "max-size-time", (gint64) 0, NULL);
 
-		gst_bin_add_many (GST_BIN (plugin->visualizer), queue, colorspace, plugin->sink, NULL);
-		gst_element_link_many (plugin->capsfilter, queue, colorspace, plugin->sink, NULL);
+		gst_bin_add_many (GST_BIN (plugin->visualizer), queue, videoconvert, plugin->sink, NULL);
+		gst_element_link_many (plugin->capsfilter, queue, videoconvert, plugin->sink, NULL);
 
 		rb_debug ("adding visualizer bin to the pipeline");
 		rb_player_gst_tee_add_tee (RB_PLAYER_GST_TEE (plugin->player),
