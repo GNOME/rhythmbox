@@ -697,7 +697,7 @@ construct_widgets (RBShell *shell)
 	shell->priv->bottom_container = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
 	shell->priv->sidebar_container = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
 	shell->priv->right_sidebar_container = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-	gtk_widget_show (shell->priv->bottom_container);
+	gtk_widget_show (GTK_WIDGET (shell->priv->bottom_container));
 
 	/* set up sidebars */
 	shell->priv->paned = gtk_paned_new (GTK_ORIENTATION_HORIZONTAL);
