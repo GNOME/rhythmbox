@@ -1180,7 +1180,6 @@ perform_seek (RBXFadeStream *stream)
 	GstEvent *event;
 
 	rb_debug ("sending seek event..");
-	g_mutex_lock (&stream->lock);
 
 	event = gst_event_new_seek (1.0, GST_FORMAT_TIME,
 				    GST_SEEK_FLAG_FLUSH,
@@ -1188,6 +1187,7 @@ perform_seek (RBXFadeStream *stream)
 				    GST_SEEK_TYPE_NONE, -1);
 	gst_pad_send_event (stream->src_pad, event);
 
+	g_mutex_lock (&stream->lock);
 	switch (stream->state) {
 	case SEEKING:
 		stream->state = PLAYING;
