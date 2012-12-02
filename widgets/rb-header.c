@@ -1151,7 +1151,7 @@ pixbuf_dropped_cb (RBFadingImage *image, GdkPixbuf *pixbuf, RBHeader *header)
 	rb_ext_db_key_add_field (key, "artist", artist);
 
 	g_value_init (&v, GDK_TYPE_PIXBUF);
-	g_value_set_object (&v, image);
+	g_value_set_object (&v, pixbuf);
 	rb_ext_db_store (header->priv->art_store, key, RB_EXT_DB_SOURCE_USER_EXPLICIT, &v);
 	g_value_unset (&v);
 
