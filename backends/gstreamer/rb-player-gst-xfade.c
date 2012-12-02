@@ -2953,6 +2953,7 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 static gboolean
 stop_sink (RBPlayerGstXFade *player)
 {
+#if 0
 	GstStateChangeReturn sr;
 
 	switch (player->priv->sink_state) {
@@ -3007,6 +3008,8 @@ stop_sink (RBPlayerGstXFade *player)
 		break;
 	}
 
+	return TRUE;
+#endif
 	return TRUE;
 }
 
