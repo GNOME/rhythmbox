@@ -578,6 +578,31 @@ find_stream_by_state (RBPlayerGstXFade *player, gint state_mask)
 	return NULL;
 }
 
+static RBXFadeStream *
+find_stream_for_message (RBPlayerGstXFade *player, GstMessage *message)
+{
+	GstObject *message_src;
+	RBXFadeStream *stream;
+
+	/* first see if the message comes from an element in the stream bin */
+	message_src = GST_MESSAGE_SRC (message);
+	if (GST_IS_PAD (message_src)) {
+		message_src = GST_OBJECT_PARENT (message_src);
+	}
+	stream = find_stream_by_element (player, GST_ELEMENT (message_src));
+	if (stream != NULL)
+		return stream;
+
+	/* tag messages are emitted by the sink, so we can't find the message
+	 * source in a stream bin.  attribute them to the first playing stream.
+	 */
+	if (GST_MESSAGE_TYPE (message) == GST_MESSAGE_TAG) {
+		return find_stream_by_state (player, FADING_IN | PLAYING | FADING_OUT_PAUSED | PAUSED | PENDING_REMOVE | REUSING);
+	}
+
+	return NULL;
+}
+
 static void
 rb_player_gst_xfade_get_property (GObject *object,
 				  guint prop_id,
@@ -1631,17 +1656,12 @@ static gboolean
 rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *player)
 {
 	RBXFadeStream *stream;
-	GstObject *message_src;
 
 	g_return_val_if_fail (player != NULL, FALSE);
 
 	g_rec_mutex_lock (&player->priv->stream_list_lock);
 
-	message_src = GST_MESSAGE_SRC (message);
-	if (GST_IS_PAD (message_src)) {
-		message_src = GST_OBJECT_PARENT (message_src);
-	}
-	stream = find_stream_by_element (player, GST_ELEMENT (message_src));
+	stream = find_stream_for_message (player, message);
 	g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
 	switch (GST_MESSAGE_TYPE (message)) {
@@ -2777,14 +2797,12 @@ start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 			{
 				char *debug;
 				GError *gst_error = NULL;
-				GstObject *message_src;
 				RBXFadeStream *stream;
 
 				/* we only want to process errors from the sink here.
 				 * errors from streams should go to the normal message handler.
 				 */
-				message_src = GST_MESSAGE_SRC (message);
-				stream = find_stream_by_element (player, GST_ELEMENT (message_src));
+				stream = find_stream_for_message (player, message);
 				if (stream != NULL) {
 					rb_debug ("got an error from a stream; passing it to the bus handler");
 					*messages = g_list_append (*messages, gst_message_ref (message));
