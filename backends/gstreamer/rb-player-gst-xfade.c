@@ -1898,11 +1898,18 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				/* not sure */
 				break;
 
+			case FADING_OUT:
+				rb_debug ("fading out stream is buffering, abandoning it");
+				stream->state = PENDING_REMOVE;
+				schedule_stream_reap (player);
+				/* might need to remove it immediately to avoid stalling adder? */
+
+				/* since we're abandoning this stream, pretend it's not buffering */
+				progress = 100;
+				break;
 			default:
-				if (stream->adder_pad != NULL) {
-					rb_debug ("stream buffering, stopping playback");
-					unlink_and_block_stream (stream);
-				}
+				rb_debug ("stream buffering, stopping playback");
+				unlink_and_block_stream (stream);
 				break;
 			}
 		}
