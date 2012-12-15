@@ -878,7 +878,9 @@ static GstPadProbeReturn
 adjust_base_time_probe_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 {
 	rb_debug ("attempting to adjust base time for stream %s", stream->uri);
+	g_mutex_lock (&stream->lock);
 	adjust_stream_base_time (stream);
+	g_mutex_unlock (&stream->lock);
 	return GST_PAD_PROBE_OK;
 }
 
@@ -889,11 +891,8 @@ adjust_stream_base_time (RBXFadeStream *stream)
 	gint64 output_pos = -1;
 	gint64 stream_pos = -1;
 
-	g_mutex_lock (&stream->lock);
-
 	if (stream->adder_pad == NULL) {
 		rb_debug ("stream isn't linked, can't adjust base time");
-		g_mutex_unlock (&stream->lock);
 		return;
 	}
 
@@ -929,8 +928,6 @@ adjust_stream_base_time (RBXFadeStream *stream)
 						   NULL);
 		}
 	}
-		
-	g_mutex_unlock (&stream->lock);
 }
 
 /* called on a streaming thread when the volume level for a stream changes. */
@@ -1076,6 +1073,7 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 	GstPadLinkReturn plr;
 	GstStateChangeReturn scr;
 	RBPlayerGstXFade *player = stream->player;
+	gboolean result;
 	
 	if (start_sink (player, error) == FALSE) {
 		rb_debug ("sink didn't start, so we're not going to link the stream");
@@ -1121,13 +1119,13 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 	g_atomic_int_inc (&player->priv->linked_streams);
 	rb_debug ("now have %d linked streams", player->priv->linked_streams);
 
+	result = TRUE;
+	g_mutex_lock (&stream->lock);
 	if (stream->src_blocked) {
 		GstStateChangeReturn state_ret;
 
 		gst_pad_remove_probe (stream->src_pad, stream->block_probe_id);
 		stream->block_probe_id = 0;
-
-		g_mutex_lock (&stream->lock);
 
 		rb_debug ("stream %s is unblocked -> FADING_IN | PLAYING", stream->uri);
 		stream->src_blocked = FALSE;
@@ -1136,8 +1134,6 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 		else
 			stream->state = PLAYING;
 		
-		g_mutex_unlock (&stream->lock);
-
 		adjust_stream_base_time (stream);
 
 		/* should handle state change failures here.. */
@@ -1146,7 +1142,6 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 			  gst_element_state_change_return_get_name (state_ret));
 
 		post_stream_playing_message (stream, FALSE);
-		return TRUE;
 	} else {
 		rb_debug ("??? stream %s is already unblocked -> PLAYING", stream->uri);
 		stream->state = PLAYING;
@@ -1161,10 +1156,11 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 				     RB_PLAYER_ERROR,
 				     RB_PLAYER_ERROR_GENERAL,
 				     _("Failed to start new stream"));
-			return FALSE;
+			result = FALSE;
 		}
-		return TRUE;
 	}
+	g_mutex_unlock (&stream->lock);
+	return result;
 }
 
 /*
@@ -1250,14 +1246,14 @@ post_eos_seek_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *str
 	GError *error = NULL;
 
 	g_mutex_lock (&stream->lock);
-
 	rb_debug ("stream %s is blocked; linking and unblocking", stream->uri);
 	stream->src_blocked = TRUE;
+	g_mutex_unlock (&stream->lock);
+
 	if (link_and_unblock_stream (stream, &error) == FALSE) {
 		emit_stream_error (stream, error);
 	}
 
-	g_mutex_unlock (&stream->lock);
 
 	return GST_PAD_PROBE_REMOVE;
 }
@@ -1391,23 +1387,31 @@ unlink_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 static void
 unlink_and_block_stream (RBXFadeStream *stream)
 {
+	g_mutex_lock (&stream->lock);
 	if (stream->adder_pad == NULL) {
 		rb_debug ("stream %s is not linked", stream->uri);
+		g_mutex_unlock (&stream->lock);
 		return;
 	}
 
 	stream->needs_unlink = TRUE;
 	if (stream->src_blocked) {
 		/* probably shouldn't happen, but we'll handle it anyway */
+		g_mutex_unlock (&stream->lock);
 		unlink_blocked_cb (stream->src_pad, NULL, stream);
-	} else {
-		g_assert (stream->block_probe_id == 0);
+		return;
+	}
+
+	if (stream->block_probe_id == 0) {
 		stream->block_probe_id = gst_pad_add_probe (stream->src_pad,
-							    GST_PAD_PROBE_TYPE_IDLE | GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
+							    GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
 							    (GstPadProbeCallback) unlink_blocked_cb,
 							    stream,
 							    NULL);
+	} else {
+		rb_debug ("already unlinking");
 	}
+	g_mutex_unlock (&stream->lock);
 }
 
 /*
@@ -1857,7 +1861,6 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 			break;
 		}
 
-		g_mutex_lock (&stream->lock);
 		if (progress >= 100) {
 			GError *error = NULL;
 			switch (stream->state) {
@@ -1913,7 +1916,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				break;
 			}
 		}
-		g_mutex_unlock (&stream->lock);
+
 		_rb_player_emit_buffering (RB_PLAYER (player), stream->stream_data, progress);
 		break;
 	}
@@ -2061,7 +2064,9 @@ stream_src_event_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 
 	case GST_EVENT_SEGMENT:
 		rb_debug ("got new segment for stream %s", stream->uri);
+		g_mutex_lock (&stream->lock);
 		adjust_stream_base_time (stream);
+		g_mutex_unlock (&stream->lock);
 		break;
 
 	case GST_EVENT_FLUSH_STOP:
