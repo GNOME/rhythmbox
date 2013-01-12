@@ -509,7 +509,7 @@ sync_playlists (RBMediaPlayerSource *source)
 
 		/* is this playlist selected for syncing? */
 		g_object_get (playlist_source, "name", &name, NULL);
-		if (rb_sync_settings_group_enabled (priv->sync_settings, SYNC_CATEGORY_MUSIC, name) == FALSE) {
+		if (rb_sync_settings_sync_group (priv->sync_settings, SYNC_CATEGORY_MUSIC, name) == FALSE) {
 			rb_debug ("not syncing playlist %s", name);
 			g_free (name);
 			continue;
