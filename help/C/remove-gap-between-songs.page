@@ -5,7 +5,7 @@
 <info>
   <link type="guide" xref="index#rb-music"/>
   <desc>Enable gapless playback</desc>
-  <revision pkgversion="3.6" version="0.1" date="2012-05-06" status="stub"/>
+  <revision pkgversion="3.8" version="0.6" date="2013-01-12" status="draft"/>
   <credit type="author">
     <name>Jim Campbell</name>
     <email>jwcampbell@gmail.com</email>
@@ -13,5 +13,27 @@
 </info>
 
 <title>Remove the gap between songs when they play</title>
+
+  <p>Most songs include brief periods of silence at the end of each song, and
+  there are sometimes brief periods of silence at the beginning of a song, too.
+  In most cases, this is fine, but you may want to reduce or get rid of
+  these periods of silence when you listen to music. Reducing or removing
+  these periods of silence is called enabling <em>Gapless Playback</em>.</p>
+  
+  <p>To enable <em>Gapless Playback</em> in <app>Rhythmbox</app>, select
+  <guiseq><gui>Edit</gui><gui>Preferences</gui><gui>Playback</gui></guiseq> and
+  then check <gui>Crossfade between tracks</gui>. This will cause the start of
+  one song to overlap the end of the song before it.</p>
+  
+  <p>To change the amount of time that the songs overlap, you can move the
+  <gui>Crossface Duration (Seconds)</gui> slider to the left or right. As you
+  move the slider, <app>Rhythmbox</app> will display the length of the overlap 
+  in seconds.</p>
+
+  <p>You'll likely want to experiment with this setting to find the amount of
+  overlap that is right for you.</p>
+  
+  <note><p>You will need to restart <app>Rhythmbox</app> for these settings to
+  take effect.</p></note>
 
 </page>
