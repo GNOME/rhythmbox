@@ -59,6 +59,8 @@ LIBMTP_REQS=0.3.0
 LIBPEAS_REQS=0.7.3
 GRILO_REQS=0.2.0
 LIBXML2_REQS=2.7.8
+# Needed for libsecret commit ddd9bdd2 for the Magnatune plugin
+LIBSECRET_REQS=0.14
 
 LIBNOTIFY_REQS=0.7.0
 BRASERO_MIN_REQS=2.31.5
@@ -223,26 +225,28 @@ fi
 AM_CONDITIONAL(USE_MTP, test x"$use_mtp" = xyes)
 
 
-dnl gnome-keyring support
+dnl libsecret keyring support
 
-AC_ARG_WITH(gnome-keyring,
-            AC_HELP_STRING([--with-gnome-keyring],
-			   [Enable gnome-keyring support]),,
-	      with_gnome_keyring=auto)
-if test "x$with_gnome_keyring" != "xno"; then
+AC_ARG_WITH(libsecret,
+            AC_HELP_STRING([--with-libsecret],
+			   [Enable keyring support using libsecret]),,
+	      with_libsecret=auto)
+if test "x$with_libsecret" != "xno"; then
 
-	PKG_CHECK_MODULES(GNOME_KEYRING, gnome-keyring-1, have_gnome_keyring=yes, have_gnome_keyring=no)
-	if test "x$have_gnome_keyring" = "xno" -a "x$with_gnome_keyring" = "xyes"; then
-	  AC_MSG_ERROR([gnome-keyring support explicitly requested but gnome-keyring couldn't be found])
+	PKG_CHECK_MODULES(LIBSECRET, libsecret-1 >= $LIBSECRET_REQS,
+			  have_libsecret=yes, have_libsecret=no)
+	if test "x$have_libsecret" = "xno" -a "x$with_libsecret" = "xyes"; then
+	  AC_MSG_ERROR([keyring support explicitly requested but libsecret
+			could not be found])
 	fi
-	if test "x$have_gnome_keyring" = "xyes"; then
-	   AC_DEFINE(WITH_GNOME_KEYRING, 1, [Define if gnome-keyring support is enabled])
-	   use_gnome_keyring=yes
-	  AC_SUBST(GNOME_KEYRING_CFLAGS)
-	  AC_SUBST(GNOME_KEYRING_LIBS)
+	if test "x$have_libsecret" = "xyes"; then
+	   AC_DEFINE(WITH_LIBSECRET, 1, [Define if libsecret support is enabled])
+	   use_libsecret=yes
+	  AC_SUBST(LIBSECRET_CFLAGS)
+	  AC_SUBST(LIBSECRET_LIBS)
 	fi
 fi
-AM_CONDITIONAL(USE_GNOME_KEYRING, test x"$use_gnome_keyring" = xyes)
+AM_CONDITIONAL(USE_LIBSECRET, test x"$use_libsecret" = xyes)
 
 dnl Database
 AC_ARG_WITH(database,
@@ -919,10 +923,10 @@ if test x"$with_vala" = xyes; then
 else
 	AC_MSG_NOTICE([   Vala plugin support disabled])
 fi
-if test x"$use_gnome_keyring" = xyes; then
-	AC_MSG_NOTICE([** gnome-keyring support enabled])
+if test x"$use_libsecret" = xyes; then
+	AC_MSG_NOTICE([** Libsecret keyring support enabled])
 else
-	AC_MSG_NOTICE([   gnome-keyring support disabled])
+	AC_MSG_NOTICE([   Libsecret keyring support disabled])
 fi
 if test "x$enable_fm_radio" != xno; then
 	AC_MSG_NOTICE([** FM radio support enabled])

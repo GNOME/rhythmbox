@@ -1,4 +1,5 @@
 # -*- Mode: python; coding: utf-8; tab-width: 8; indent-tabs-mode: t; -*-
+# vim: set sts=0 ts=8 sw=8 tw=0 noet :
 #
 # Copyright (C) 2012 Jonathan Matthew  <jonathan@d14n.org>
 #
@@ -24,9 +25,24 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-from gi.repository import Gio, GnomeKeyring
+from gi.repository import Gio
+
+# Till libsecret completely replaces gnome-keyring, we'll fall back to not
+# saving the password if libsecret can't be found. This code can be removed later.
+try:
+	from gi.repository import Secret, SecretUnstable
+	# We need to be able to fetch passwords stored by libgnome-keyring, so we use
+	# a schema with SECRET_SCHEMA_DONT_MATCH_NAME set.
+	# See: http://developer.gnome.org/libsecret/unstable/migrating-schemas.html
+	MAGNATUNE_SCHEMA = Secret.Schema.new("org.gnome.rhythmbox.plugins.magnatune",
+						Secret.SchemaFlags.DONT_MATCH_NAME,
+						{"rhythmbox-plugin": Secret.SchemaAttributeType.STRING})
+except ImportError:
+	Secret = None
+	print ("You need to install libsecret and its introspection files to store your Magnatune password")
 
 __instance = None
+
 
 def instance():
 	global __instance
@@ -36,54 +52,48 @@ def instance():
 
 class MagnatuneAccount(object):
 	def __init__(self):
-		self.keyring_item = None
 		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
-
-		self.keyring_attributes = GnomeKeyring.attribute_list_new()
-		GnomeKeyring.attribute_list_append_string(self.keyring_attributes,
-							  "rhythmbox-plugin",
-							  "magnatune")
-		(result, items) = GnomeKeyring.find_items_sync(GnomeKeyring.ItemType.GENERIC_SECRET,
-							       self.keyring_attributes)
-		if result == GnomeKeyring.Result.OK and len(items) != 0:
-			(result, item) = GnomeKeyring.item_get_info_sync(None, items[0].item_id)
-			if result == GnomeKeyring.Result.OK:
-				self.keyring_item = item
-			else:
-				print "Couldn't get keyring item: " + GnomeKeyring.result_to_message(result)
-		else:
-			print "couldn't search keyring items: " + GnomeKeyring.result_to_message(result)
+		self.secret = None
+		self.keyring_attributes = {"rhythmbox-plugin": "magnatune"}
+		if Secret is None:
+			print ("Account details will not be saved because libsecret was not found")
+			return
+                # Haha.
+                self.secret_service = SecretUnstable.Service.get_sync(SecretUnstable.ServiceFlags.OPEN_SESSION, None)
+		items = self.secret_service.search_sync(MAGNATUNE_SCHEMA,
+							self.keyring_attributes,
+							SecretUnstable.SearchFlags.LOAD_SECRETS,
+							None)
+		if not items:
+			# The Python API doesn't seem to have a way to differentiate between errors and no results.
+			print ("Couldn't find an existing keyring entry")
+			return
+		self.secret = items[0].get_secret().get()
 
 	def get(self):
-		if self.keyring_item is None:
+		if self.secret is None:
 			return ('none', None, None)
 
 		account_type = self.settings['account-type']
 		try:
-			(username, password) = self.keyring_item.get_secret().split("\n")
+			(username, password) = self.secret.split("\n")
 			return (account_type, username, password)
 		except ValueError:
 			return ('none', None, None)
 
 	def update(self, username, password):
 		secret = '\n'.join((username, password))
-		if self.keyring_item is not None:
-			if secret == self.keyring_item.get_secret():
-				print "account details not changed"
-				return
-
-		(result, id) = GnomeKeyring.item_create_sync(None,
-							     GnomeKeyring.ItemType.GENERIC_SECRET,
-							     "Rhythmbox: Magnatune account information",
-							     self.keyring_attributes,
-							     secret,
-							     True)
-		if result == GnomeKeyring.Result.OK:
-			if self.keyring_item is None:
-				(result, item) = GnomeKeyring.item_get_info_sync(None, id)
-				if result == GnomeKeyring.Result.OK:
-					self.keyring_item = item
-				else:
-					print "couldn't fetch keyring itme: " + GnomeKeyring.result_to_message(result)
-		else:
-			print "couldn't create keyring item: " + GnomeKeyring.result_to_message(result)
+		if secret == self.secret:
+			print ("Account details not changed")
+			return
+		self.secret = secret
+		if Secret is None:
+			print ("Account details were not saved because libsecret was not found")
+			return
+		result = Secret.password_store_sync(MAGNATUNE_SCHEMA,
+							self.keyring_attributes,
+							Secret.COLLECTION_DEFAULT,
+							"Rhythmbox: Magnatune account information",
+							secret, None)
+		if not result:
+			print ("Couldn't create keyring item!")

@@ -35,8 +35,8 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#ifdef WITH_GNOME_KEYRING
-#include <gnome-keyring.h>
+#ifdef WITH_LIBSECRET
+#include <libsecret/secret.h>
 #endif
 
 #include "rhythmdb.h"
@@ -394,31 +394,36 @@ mount_op_reply_cb (GMountOperation *op,
 		   AuthData *auth_data)
 {
 	const char *password;
-	gchar *keyring;
-#ifdef WITH_GNOME_KEYRING
-	guint32 item_id;
+#ifdef WITH_LIBSECRET
+	gchar *label;
+	gchar *collection = NULL;
 #endif
 
 	rb_debug ("mount op reply: %d", result);
 	password = g_mount_operation_get_password (op);
 
-#ifdef WITH_GNOME_KEYRING
+#ifdef WITH_LIBSECRET
 	switch (g_mount_operation_get_password_save (op)) {
 	case G_PASSWORD_SAVE_NEVER:
 		break;
 
 	case G_PASSWORD_SAVE_FOR_SESSION:
-		keyring = "session";
+		collection = SECRET_COLLECTION_SESSION;
 		/* fall through */
 
 	case G_PASSWORD_SAVE_PERMANENTLY:
-		gnome_keyring_set_network_password_sync (keyring,
-			NULL,
-			"DAAP", auth_data->name,
-			NULL, "daap",
-			NULL, 0,
+		label = g_strdup_printf ("Rhythmbox DAAP password for %s", auth_data->name);
+		secret_password_store_sync (SECRET_SCHEMA_COMPAT_NETWORK,
+			collection,
+			label,
 			password,
-			&item_id);
+			NULL,
+			NULL,
+			"domain", "DAAP",
+			"server", auth_data->name,
+			"protocol", "daap",
+			NULL);
+		g_free (label);
 		break;
 
 	default:
@@ -443,7 +448,11 @@ mount_op_reply_cb (GMountOperation *op,
 }
 
 static void
-ask_password (RBDAAPSource *source, const char *name, const char *keyring, SoupSession *session, SoupMessage *msg, SoupAuth *auth)
+ask_password (RBDAAPSource *source,
+	      const char *name,
+	      SoupSession *session,
+	      SoupMessage *msg,
+	      SoupAuth *auth)
 {
 	GtkWindow *parent;
 	GMountOperation *mount_op;
@@ -465,10 +474,8 @@ ask_password (RBDAAPSource *source, const char *name, const char *keyring, SoupS
 	g_signal_connect (mount_op, "reply", G_CALLBACK (mount_op_reply_cb), auth_data);
 
 	flags = G_ASK_PASSWORD_NEED_PASSWORD;
-#ifdef WITH_GNOME_KEYRING
-	if (gnome_keyring_is_available ()) {
-		flags |= G_ASK_PASSWORD_SAVING_SUPPORTED;
-	}
+#ifdef WITH_LIBSECRET
+	flags |= G_ASK_PASSWORD_SAVING_SUPPORTED;
 #endif
 	message = g_strdup_printf (_("The music share '%s' requires a password to connect"), name);
 	g_signal_emit_by_name (mount_op, "ask-password", message, NULL, "DAAP", flags);
@@ -485,44 +492,31 @@ connection_auth_cb (DMAPConnection *connection,
 		    RBDAAPSource   *source)
 {
 	gchar *password = NULL;
-#ifdef WITH_GNOME_KEYRING
-	GnomeKeyringResult keyringret;
-	gchar *keyring;
-	GList *list = NULL;
+#ifdef WITH_LIBSECRET
+	GError *error = NULL;
 
-	keyring = NULL;
 	if (!source->priv->tried_password) {
-		gnome_keyring_get_default_keyring_sync (&keyring);
-		keyringret = gnome_keyring_find_network_password_sync (
-				NULL,
-				"DAAP", name,
-				NULL, "daap",
-				NULL, 0, &list);
-	} else {
-		keyringret = GNOME_KEYRING_RESULT_CANCELLED;
+		password = secret_password_lookup_sync (SECRET_SCHEMA_COMPAT_NETWORK,
+				NULL, &error,
+				"domain", "DAAP",
+				"server", name,
+				"protocol", "daap",
+				NULL);
 	}
 
-	if (keyringret == GNOME_KEYRING_RESULT_OK) {
-		GnomeKeyringNetworkPasswordData *pwd_data;
-
-		if (list != NULL) {
-			pwd_data = (GnomeKeyringNetworkPasswordData*)list->data;
-			password = g_strdup (pwd_data->password);
-		}
+	if (!error)
 		source->priv->tried_password = TRUE;
-	}
+	else
+		g_error_free (error);
 
 	if (password == NULL) {
-		ask_password (source, name, keyring, session, msg, auth);
+		ask_password (source, name, session, msg, auth);
 	} else {
 		dmap_connection_authenticate_message (connection, session, msg, auth, password);
 	}
 
-	if (list)
-		gnome_keyring_network_password_list_free (list);
-	g_free (keyring);
 #else
-	ask_password (source, name, NULL, session, msg, auth);
+	ask_password (source, name, session, msg, auth);
 #endif
 }
 

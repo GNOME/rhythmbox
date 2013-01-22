@@ -63,9 +63,9 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_BSD_SOURCE
 
-if USE_GNOME_KEYRING
-libdaap_la_LIBADD += $(GNOME_KEYRING_LIBS)
-INCLUDES += $(GNOME_KEYRING_CFLAGS)
+if USE_LIBSECRET
+libdaap_la_LIBADD += $(LIBSECRET_LIBS)
+INCLUDES += $(LIBSECRET_CFLAGS)
 endif
 
 gtkbuilderdir = $(plugindatadir)
