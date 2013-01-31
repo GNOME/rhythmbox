@@ -200,7 +200,7 @@ do_notify (RBNotificationPlugin *plugin,
 	}
 
         if (playback)
-          notify_notification_set_category (notification, "x-gnome.music");
+        	notify_notification_set_category (notification, "x-gnome.music");
         notify_notification_set_hint (notification, "desktop-entry",
                                       g_variant_new_string ("rhythmbox"));
 
