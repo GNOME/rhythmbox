@@ -199,6 +199,11 @@ do_notify (RBNotificationPlugin *plugin,
 					      g_variant_new_string (image_uri));
 	}
 
+        if (playback)
+          notify_notification_set_category (notification, "x-gnome.music");
+        notify_notification_set_hint (notification, "desktop-entry",
+                                      g_variant_new_string ("rhythmbox"));
+
 	notify_notification_clear_actions (notification);
 	if (playback && plugin->notify_supports_actions) {
 		if (plugin->notify_supports_icon_buttons) {
