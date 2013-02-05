@@ -168,7 +168,10 @@ rb_metadata_load (RBMetaData *md, const char *uri, GError **error)
 
 	rb_metadata_reset (md);
 
-	discoverer = gst_discoverer_new (30 * GST_SECOND, NULL);
+	discoverer = gst_discoverer_new (30 * GST_SECOND, error);
+	if (*error != NULL)
+		return;
+
 	md->priv->info = gst_discoverer_discover_uri (discoverer, g_strdup (uri), error);
 	g_object_unref (discoverer);
 
@@ -816,6 +819,9 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field, GValue *ret)
 	const char *tag;
 	GValue gstvalue = {0, };
 	GstClockTime duration;
+
+	if (md->priv->info == NULL)
+		return FALSE;
 
 	/* special cases: mostly duration */
 	switch (field) {
