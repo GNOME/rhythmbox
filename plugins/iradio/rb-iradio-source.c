@@ -1033,6 +1033,7 @@ info_available_cb (RBPlayer *backend,
 	case RB_METADATA_FIELD_ARTIST:
 	case RB_METADATA_FIELD_GENRE:
 	case RB_METADATA_FIELD_COMMENT:
+	case RB_METADATA_FIELD_ORGANIZATION:
 		str = g_value_dup_string (value);
 		if (!g_utf8_validate (str, -1, NULL)) {
 			g_warning ("Invalid UTF-8 from internet radio: %s", str);
@@ -1077,6 +1078,7 @@ info_available_cb (RBPlayer *backend,
 		break;
 	}
 	case RB_METADATA_FIELD_COMMENT:
+	case RB_METADATA_FIELD_ORGANIZATION:
 	{
 		const char *existing;
 		const char *location;

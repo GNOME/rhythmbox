@@ -276,6 +276,8 @@ rb_gst_process_tag_string (const GstTagList *taglist,
 		*field = RB_METADATA_FIELD_GENRE;
 	else if (!strcmp (tag, GST_TAG_COMMENT))
 		*field = RB_METADATA_FIELD_COMMENT;
+	else if (!strcmp (tag, GST_TAG_ORGANIZATION))
+		*field = RB_METADATA_FIELD_ORGANIZATION;
 	else if (!strcmp (tag, GST_TAG_BITRATE))
 		*field = RB_METADATA_FIELD_BITRATE;
 	else if (!strcmp (tag, GST_TAG_MUSICBRAINZ_TRACKID))
