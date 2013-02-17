@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-19 04:48+0100\n"
-"PO-Revision-Date: 2013-01-19 04:49+0100\n"
+"POT-Creation-Date: 2013-02-17 20:54+0100\n"
+"PO-Revision-Date: 2013-02-17 20:55+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -731,13 +731,13 @@ msgstr "%d %b %Y"
 #: ../plugins/generic-player/rb-generic-player-source.c:1096
 #: ../plugins/ipod/rb-ipod-source.c:569
 #: ../plugins/iradio/rb-iradio-source.c:564
-#: ../plugins/iradio/rb-iradio-source.c:1070
+#: ../plugins/iradio/rb-iradio-source.c:1071
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:78 ../plugins/lyrics/lyrics.py:80
 #: ../plugins/mtpdevice/rb-mtp-source.c:654
 #: ../plugins/mtpdevice/rb-mtp-source.c:1144
 #: ../plugins/mtpdevice/rb-mtp-source.c:1530
-#: ../plugins/notification/rb-notification-plugin.c:475
+#: ../plugins/notification/rb-notification-plugin.c:480
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:570 ../podcast/rb-podcast-manager.c:1911
 #: ../podcast/rb-podcast-manager.c:2010
@@ -801,13 +801,13 @@ msgstr "%d:%02d z %d:%02d"
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d z %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:493
+#: ../metadata/rb-metadata-gst.c:496
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
 msgstr ""
 "Nie można zapisać etykiet do tego pliku, ponieważ zawiera on wiele strumieni"
 
-#: ../metadata/rb-metadata-gst.c:533
+#: ../metadata/rb-metadata-gst.c:536
 #, c-format
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
@@ -815,14 +815,14 @@ msgstr ""
 "Nie można zapisać etykiet do tego pliku, ponieważ nie jest on zakodowany w "
 "obsługiwanym formacie"
 
-#: ../metadata/rb-metadata-gst.c:665
+#: ../metadata/rb-metadata-gst.c:668
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr ""
 "Utworzenie elementu źródłowego się nie powiodło; proszę sprawdzić poprawność "
 "instalacji"
 
-#: ../metadata/rb-metadata-gst.c:675
+#: ../metadata/rb-metadata-gst.c:678
 #, c-format
 msgid ""
 "Failed to create the 'decodebin' element; check your GStreamer installation"
@@ -830,7 +830,7 @@ msgstr ""
 "Nie można utworzyć elementu \"decodebin\"; proszę sprawdzić poprawność "
 "instalacji biblioteki GStreamer"
 
-#: ../metadata/rb-metadata-gst.c:684
+#: ../metadata/rb-metadata-gst.c:687
 #, c-format
 msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
@@ -839,7 +839,7 @@ msgstr ""
 "Nie można utworzyć elementu \"giostreamsink\"; proszę sprawdzić poprawność "
 "instalacji biblioteki GStreamer"
 
-#: ../metadata/rb-metadata-gst.c:767
+#: ../metadata/rb-metadata-gst.c:770
 #, c-format
 msgid "File corrupted during write"
 msgstr "Plik uszkodzony podczas zapisu"
@@ -1325,7 +1325,7 @@ msgstr "Nieprawidłowy adres URL stacji"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:830
 #, c-format
 msgid "This station is only available to %s subscribers"
-msgstr "Ta stacja jest dostępna tylko dla subskrybentów serwisu %s."
+msgstr "Ta stacja jest dostępna tylko dla subskrybentów serwisu %s"
 
 #. Not enough content
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:834
@@ -2569,38 +2569,38 @@ msgstr "Powiadamianie"
 msgid "Notification popups"
 msgstr "Wyskakujące powiadomienia"
 
-#: ../plugins/notification/rb-notification-plugin.c:210
+#: ../plugins/notification/rb-notification-plugin.c:215
 msgid "Previous"
 msgstr "Poprzedni"
 
-#: ../plugins/notification/rb-notification-plugin.c:216
+#: ../plugins/notification/rb-notification-plugin.c:221
 msgid "Pause"
 msgstr "Wstrzymaj"
 
-#: ../plugins/notification/rb-notification-plugin.c:216
+#: ../plugins/notification/rb-notification-plugin.c:221
 msgid "Play"
 msgstr "Odtwórz"
 
-#: ../plugins/notification/rb-notification-plugin.c:225
+#: ../plugins/notification/rb-notification-plugin.c:230
 msgid "Next"
 msgstr "Następny"
 
 #. Translators: by Artist
-#: ../plugins/notification/rb-notification-plugin.c:310
+#: ../plugins/notification/rb-notification-plugin.c:315
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:148
 #, c-format
 msgid "by <i>%s</i>"
 msgstr " <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/notification/rb-notification-plugin.c:312
+#: ../plugins/notification/rb-notification-plugin.c:317
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:150
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:213
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "z <i>%s</i>"
 
-#: ../plugins/notification/rb-notification-plugin.c:390
+#: ../plugins/notification/rb-notification-plugin.c:395
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
 #: ../widgets/rb-header.c:835
 msgid "Not Playing"
@@ -3266,7 +3266,7 @@ msgstr ""
 
 #: ../rhythmdb/rhythmdb.c:2295
 msgid "invalid unicode in error message"
-msgstr "Nieprawidłowy znak unikodu w komunikacie błędu"
+msgstr "nieprawidłowy znak unikodu w komunikacie błędu"
 
 #: ../rhythmdb/rhythmdb.c:2362
 #, c-format
@@ -3383,7 +3383,7 @@ msgstr "_Lista odtwarzania"
 
 #: ../shell/rb-playlist-manager.c:191
 msgid "_New Playlist..."
-msgstr "Nowa lista od_twarzania"
+msgstr "Nowa lista od_twarzania..."
 
 #: ../shell/rb-playlist-manager.c:192
 msgid "Create a new playlist"
@@ -3476,7 +3476,7 @@ msgstr "Podano nieobsługiwane rozszerzenie pliku."
 #: ../shell/rb-playlist-manager.c:1469
 #, c-format
 msgid "Playlist %s already exists"
-msgstr "Lista odtwarzania %s już istnieje."
+msgstr "Lista odtwarzania %s już istnieje"
 
 #: ../shell/rb-playlist-manager.c:1499 ../shell/rb-playlist-manager.c:1532
 #: ../shell/rb-playlist-manager.c:1572 ../shell/rb-playlist-manager.c:1615
@@ -4101,15 +4101,15 @@ msgid_plural ""
 msgstr[0] ""
 "%d plik nie może zostać przesłany, ponieważ nie jest w formacie obsługiwanym "
 "przez urządzenie docelowe, a nie są dostępne profile kodowania do "
-"obsługiwanych formatów."
+"obsługiwanych formatów"
 msgstr[1] ""
 "%d pliki nie mogą zostać przesłane, ponieważ nie są w formacie obsługiwanym "
 "przez urządzenie docelowe, a nie są dostępne profile kodowania do "
-"obsługiwanych formatów."
+"obsługiwanych formatów"
 msgstr[2] ""
 "%d plików nie może zostać przesłanych, ponieważ nie są w formacie "
 "obsługiwanym przez urządzenie docelowe, a nie są dostępne profile kodowania "
-"do obsługiwanych formatów."
+"do obsługiwanych formatów"
 
 #. XXX should provide the option of picking a different format?
 #: ../shell/rb-track-transfer-queue.c:463
