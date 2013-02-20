@@ -473,7 +473,7 @@ rb_iradio_source_new (RBShell *shell, GObject *plugin)
 
 	entry_type = rhythmdb_entry_type_get_by_name (db, "iradio");
 	if (entry_type == NULL) {
-		entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+		entry_type = g_object_new (rb_iradio_entry_type_get_type (),
 					   "db", db,
 					   "name", "iradio",
 					   "save-to-disk", TRUE,
