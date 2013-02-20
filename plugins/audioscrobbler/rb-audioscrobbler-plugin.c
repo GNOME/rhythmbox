@@ -148,6 +148,7 @@ impl_deactivate	(PeasActivatable *bplugin)
 
 	if (plugin->lastfm_page != NULL) {
 		rb_display_page_delete_thyself (plugin->lastfm_page);
+		g_object_unref (plugin->lastfm_page);
 		plugin->lastfm_page = NULL;
 	}
 
@@ -158,6 +159,7 @@ impl_deactivate	(PeasActivatable *bplugin)
 
 	if (plugin->librefm_page != NULL) {
 		rb_display_page_delete_thyself (plugin->librefm_page);
+		g_object_unref (plugin->librefm_page);
 		plugin->librefm_page = NULL;
 	}
 }
@@ -223,6 +225,7 @@ lastfm_settings_changed_cb (GSettings *settings,
 		g_object_unref (lastfm);
 	} else if (enabled == FALSE && plugin->lastfm_page != NULL) {
 		rb_display_page_delete_thyself (plugin->lastfm_page);
+		g_object_unref (plugin->lastfm_page);
 		plugin->lastfm_page = NULL;
 	}
 }
@@ -251,6 +254,7 @@ librefm_settings_changed_cb (GSettings *settings,
 		g_object_unref (shell);
 	} else if (enabled == FALSE && plugin->librefm_page != NULL) {
 		rb_display_page_delete_thyself (plugin->librefm_page);
+		g_object_unref (plugin->librefm_page);
 		plugin->librefm_page = NULL;
 	}
 }

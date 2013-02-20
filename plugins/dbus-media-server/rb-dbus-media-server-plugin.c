@@ -2492,6 +2492,11 @@ impl_deactivate	(PeasActivatable *bplugin)
 		plugin->name_own_id = 0;
 	}
 
+	if (plugin->node_info != NULL) {
+		g_dbus_node_info_unref (plugin->node_info);
+		plugin->node_info = NULL;
+	}
+
 	if (plugin->connection != NULL) {
 		g_object_unref (plugin->connection);
 		plugin->connection = NULL;

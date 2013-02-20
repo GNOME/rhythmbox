@@ -759,6 +759,11 @@ impl_deactivate	(PeasActivatable *plugin)
 	/* NOTE: don't deactivate libbrasero-media as it could be in use somewhere else */
 
 	g_object_unref (shell);
+
+	if (pi->action_group != NULL) {
+		g_object_unref (pi->action_group);
+		pi->action_group = NULL;
+	}
 }
 
 G_MODULE_EXPORT void

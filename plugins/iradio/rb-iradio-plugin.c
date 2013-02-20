@@ -121,6 +121,7 @@ impl_deactivate	(PeasActivatable *plugin)
 	g_object_unref (uimanager);
 
 	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (pi->source));
+	g_object_unref (pi->source);
 	pi->source = NULL;
 
 	g_object_unref (shell);

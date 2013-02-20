@@ -570,6 +570,7 @@ rb_entry_view_finalize (GObject *object)
 	g_hash_table_destroy (view->priv->column_key_map);
 
 	g_free (view->priv->sorting_column_name);
+	g_strfreev (view->priv->visible_columns);
 
 	G_OBJECT_CLASS (rb_entry_view_parent_class)->finalize (object);
 }

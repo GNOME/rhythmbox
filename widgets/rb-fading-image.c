@@ -651,6 +651,7 @@ composite_into_current (RBFadingImage *image)
 	cr = cairo_create (dest);
 	render_current (image, cr, width, height, FALSE);
 	render_next (image, cr, width, height, FALSE);
+	cairo_destroy (cr);
 
 	if (image->priv->current_pat != NULL) {
 		cairo_pattern_destroy (image->priv->current_pat);
@@ -658,6 +659,8 @@ composite_into_current (RBFadingImage *image)
 	image->priv->current_pat = cairo_pattern_create_for_surface (dest);
 	image->priv->current_width = width;
 	image->priv->current_height = height;
+
+	cairo_surface_destroy (dest);
 }
 
 /**
