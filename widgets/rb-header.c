@@ -1067,6 +1067,7 @@ rb_header_update_elapsed (RBHeader *header)
 		return;
 	}
 	gtk_widget_show (header->priv->timelabel);
+	gtk_widget_show (header->priv->timebutton);
 
 	seconds = header->priv->elapsed_time / RB_PLAYER_SECOND;
 	if (header->priv->duration == 0) {
@@ -1085,7 +1086,6 @@ rb_header_update_elapsed (RBHeader *header)
 
 		/* Translators: remaining time / total time */
 		label = g_strdup_printf (_("-%s / %s"), elapsed, duration);
-		gtk_widget_show (header->priv->timebutton);
 		gtk_label_set_text (GTK_LABEL (header->priv->timelabel), label);
 
 		g_free (elapsed);
