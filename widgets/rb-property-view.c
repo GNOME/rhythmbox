@@ -669,12 +669,8 @@ rb_property_view_constructed (GObject *object)
 
 	view = RB_PROPERTY_VIEW (object);
 
-	view->priv->prop_model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new_with_model (GTK_TREE_MODEL (view->priv->prop_model)));
 
-	if (view->priv->draggable)
-		rhythmdb_property_model_enable_drag (view->priv->prop_model,
-						     GTK_TREE_VIEW (view->priv->treeview));
 
 	g_signal_connect_object (G_OBJECT (view->priv->treeview),
 			         "row_activated",
@@ -701,6 +697,11 @@ rb_property_view_constructed (GObject *object)
 				 0);
 
 	gtk_container_add (GTK_CONTAINER (view), view->priv->treeview);
+
+	rb_property_view_set_model_internal (view, rhythmdb_property_model_new (view->priv->db, view->priv->propid));
+	if (view->priv->draggable)
+		rhythmdb_property_model_enable_drag (view->priv->prop_model,
+						     GTK_TREE_VIEW (view->priv->treeview));
 
 	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), TRUE);
 	gtk_tree_selection_set_mode (view->priv->selection, GTK_SELECTION_SINGLE);
@@ -880,11 +881,6 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 					    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, &is_all, -1);
 			g_signal_emit (G_OBJECT (view), rb_property_view_signals[PROPERTY_SELECTED], 0,
 				       is_all ? NULL : selected_prop);
-		} else {
-			if (gtk_tree_model_get_iter_first (model, &iter))
-				gtk_tree_selection_select_iter (selection, &iter);
-			g_signal_emit (G_OBJECT (view), rb_property_view_signals[PROPERTY_SELECTED], 0,
-				       NULL);
 		}
 	}
 
