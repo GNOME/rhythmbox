@@ -2508,7 +2508,6 @@ rb_shell_player_sync_volume (RBShellPlayer *player,
 			     gboolean notify,
 			     gboolean set_volume)
 {
-	GtkAction *action;
 	RhythmDBEntry *entry;
 
 	if (player->priv->volume <= 0.0){
@@ -2516,14 +2515,6 @@ rb_shell_player_sync_volume (RBShellPlayer *player,
 	} else if (player->priv->volume >= 1.0){
 		player->priv->volume = 1.0;
 	}
-
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "ControlVolumeUp");
-	g_object_set (G_OBJECT (action), "sensitive", player->priv->volume < 0.9999, NULL);
-
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "ControlVolumeDown");
-	g_object_set (G_OBJECT (action), "sensitive", player->priv->volume > 0.0001, NULL);
 
 	if (set_volume) {
 		rb_player_set_volume (player->priv->mmplayer,
