@@ -40,11 +40,8 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_BSD_SOURCE
 
-uixmldir = $(plugindatadir)
-uixml_DATA = generic-player-ui.xml
-
 gtkbuilderdir = $(plugindatadir)
-gtkbuilder_DATA = generic-player-info.ui
+gtkbuilder_DATA = generic-player-info.ui generic-player-toolbar.ui
 
 plugin_in_files = generic-player.plugin.in
 
@@ -52,7 +49,7 @@ plugin_in_files = generic-player.plugin.in
 
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
-EXTRA_DIST = $(uixml_DATA) $(gtkbuilder_DATA) $(plugin_in_files)
+EXTRA_DIST = $(gtkbuilder_DATA) $(plugin_in_files)
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

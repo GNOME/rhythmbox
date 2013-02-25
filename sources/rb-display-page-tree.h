@@ -49,14 +49,14 @@ typedef struct _RBDisplayPageTreePrivate RBDisplayPageTreePrivate;
 
 struct _RBDisplayPageTree
 {
-	GtkScrolledWindow    parent;
+	GtkGrid    parent;
 
 	RBDisplayPageTreePrivate *priv;
 };
 
 struct _RBDisplayPageTreeClass
 {
-	GtkScrolledWindowClass parent_class;
+	GtkGridClass parent_class;
 
 	/* signals */
 	void (*selected) (RBDisplayPageTree *tree, RBDisplayPage *page);

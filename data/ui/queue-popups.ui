@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<interface>
+  <menu id="queue-source-popup">
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Remove from Play Queue</attribute>
+	<attribute name="action">app.clipboard-delete</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Shuffle Play Queue</attribute>
+	<attribute name="action">app.queue-shuffle</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">_Save to File...</attribute>
+	<attribute name="action">app.save-playlist</attribute>
+      </item>
+    </section>
+    <section>
+      <attribute name="rb-plugin-menu-link">queue-popup</attribute>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Pr_operties</attribute>
+	<attribute name="action">app.clipboard-properties</attribute>
+      </item>
+    </section>
+  </menu>
+  <menu id="queue-sidepane-popup">
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Remove from Play Queue</attribute>
+	<attribute name="action">app.clipboard-delete</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Clear Play Queue</attribute>
+	<attribute name="action">app.queue-clear</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Shuffle Play Queue</attribute>
+	<attribute name="action">app.queue-shuffle</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">_Save to File...</attribute>
+	<attribute name="action">app.save-playlist</attribute>
+      </item>
+    </section>
+    <section>
+      <attribute name="rb-plugin-menu-link">queue-popup</attribute>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Pr_operties</attribute>
+	<attribute name="action">app.queue-properties</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

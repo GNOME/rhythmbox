@@ -17,7 +17,9 @@ plugin_in_files = magnatune.plugin.in
 gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA =	\
 		magnatune-loading.ui			\
+		magnatune-popup.ui			\
 		magnatune-prefs.ui			\
+		magnatune-toolbar.ui			\
 		magnatune_logo_color_small.png		\
 		magnatune_logo_color_tiny.png
 

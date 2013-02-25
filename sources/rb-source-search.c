@@ -44,6 +44,7 @@
 
 #include "config.h"
 
+#include "rb-source.h"
 #include "rb-source-search.h"
 
 static void	rb_source_search_class_init (RBSourceSearchClass *klass);
@@ -54,7 +55,7 @@ G_DEFINE_TYPE (RBSourceSearch, rb_source_search, G_TYPE_OBJECT)
 #define RB_SOURCE_SEARCH_DATA_ITEM	"rb-source-search"
 
 static gboolean
-default_is_subset (RBSourceSearch *source, const char *current, const char *next)
+default_is_subset (RBSourceSearch *search, const char *current, const char *next)
 {
 	/* the most common searches will return a strict subset if the
 	 * next search is the current search with a suffix.
@@ -62,16 +63,57 @@ default_is_subset (RBSourceSearch *source, const char *current, const char *next
 	return (current != NULL && g_str_has_prefix (next, current));
 }
 
+static char *
+default_get_description (RBSourceSearch *search)
+{
+	return g_strdup ("");
+}
+
 static void
 rb_source_search_class_init (RBSourceSearchClass *klass)
 {
+	klass->searches = g_hash_table_new (g_str_hash, g_str_equal);
+
 	klass->is_subset = default_is_subset;
+	klass->get_description = default_get_description;
 }
 
 static void
 rb_source_search_init (RBSourceSearch *search)
 {
 	/* nothing */
+}
+
+/**
+ * rb_source_search_get_by_name:
+ * @name: name to look up
+ *
+ * Finds the registered search instance with the specified name
+ *
+ * Returns: (transfer none): search instance, or NULL if not found
+ */
+RBSourceSearch *
+rb_source_search_get_by_name (const char *name)
+{
+	RBSourceSearchClass *klass;
+	klass = RB_SOURCE_SEARCH_CLASS (g_type_class_peek (RB_TYPE_SOURCE_SEARCH));
+	return g_hash_table_lookup (klass->searches, name);
+}
+
+/**
+ * rb_source_search_register:
+ * @search: search instance to register
+ * @name: name to register
+ *
+ * Registers a named search instance that can be used in menus and
+ * search action states.
+ */
+void
+rb_source_search_register (RBSourceSearch *search, const char *name)
+{
+	RBSourceSearchClass *klass;
+	klass = RB_SOURCE_SEARCH_CLASS (g_type_class_peek (RB_TYPE_SOURCE_SEARCH));
+	g_hash_table_insert (klass->searches, g_strdup (name), search);
 }
 
 /**
@@ -92,6 +134,21 @@ rb_source_search_is_subset (RBSourceSearch *search, const char *current, const c
 {
 	RBSourceSearchClass *klass = RB_SOURCE_SEARCH_GET_CLASS (search);
 	return klass->is_subset (search, current, next);
+}
+
+/**
+ * rb_source_search_get_description:
+ * @search: a #RBSourceSearch
+ *
+ * Returns a description of the search suitable for displaying in a menu
+ *
+ * Return value: description string
+ */
+char *
+rb_source_search_get_description (RBSourceSearch *search)
+{
+	RBSourceSearchClass *klass = RB_SOURCE_SEARCH_GET_CLASS (search);
+	return klass->get_description (search);
 }
 
 /**
@@ -171,3 +228,35 @@ rb_source_search_get_from_action (GObject *action)
 	return RB_SOURCE_SEARCH (data);
 }
 
+
+/**
+ * rb_source_search_add_to_menu:
+ * @menu: #GMenu instance to populate
+ * @action_namespace: muxer namespace for the action ("app" or "win")
+ * @action: search action to attach the menu item to
+ * @name: name of the search instance to add
+ *
+ * Adds a registered search instance to a search menu.
+ */
+void
+rb_source_search_add_to_menu (GMenu *menu, const char *action_namespace, GAction *action, const char *name)
+{
+	GMenuItem *item;
+	RBSourceSearch *search;
+	char *action_name;
+       
+	search = rb_source_search_get_by_name (name);
+	g_assert (search != NULL);
+
+	if (action_namespace != NULL) {
+		action_name = g_strdup_printf ("%s.%s", action_namespace, g_action_get_name (action));
+	} else {
+		action_name = g_strdup (g_action_get_name (action));
+	}
+
+	item = g_menu_item_new (rb_source_search_get_description (search), NULL);
+	g_menu_item_set_action_and_target (item, action_name, "s", name);
+	g_menu_append_item (menu, item);
+
+	g_free (action_name);
+}

@@ -52,8 +52,7 @@ typedef struct
 {
 	PeasExtensionBase parent;
 
-	GDBusProxy *proxy;
-	guint32 cookie;
+	guint cookie;
 	gint handler_id;
 	gint timeout_id;
 } RBGPMPlugin;
@@ -74,140 +73,40 @@ rb_gpm_plugin_init (RBGPMPlugin *plugin)
 }
 
 static gboolean
-ignore_error (GError *error)
-{
-	if (error == NULL)
-		return TRUE;
-
-	/* ignore 'no such service' type errors */
-	if (error->domain == G_DBUS_ERROR) {
-		if (error->code == G_DBUS_ERROR_NAME_HAS_NO_OWNER ||
-		    error->code == G_DBUS_ERROR_SERVICE_UNKNOWN)
-			return TRUE;
-	}
-
-	return FALSE;
-}
-
-static gboolean
-create_dbus_proxy (RBGPMPlugin *plugin)
-{
-	GError *error = NULL;
-
-	if (plugin->proxy != NULL) {
-		return TRUE;
-	}
-
-	plugin->proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
-						       G_DBUS_PROXY_FLAGS_NONE,
-						       NULL,
-						       "org.gnome.SessionManager",
-						       "/org/gnome/SessionManager",
-						       "org.gnome.SessionManager",
-						       NULL,
-						       &error);
-	if (error != NULL && ignore_error (error) == FALSE) {
-		g_warning ("Failed to create dbus proxy for org.gnome.SessionManager: %s",
-			   error->message);
-		g_error_free (error);
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
-static void
-inhibit_done (GObject *proxy, GAsyncResult *res, RBGPMPlugin *plugin)
-{
-	GError *error = NULL;
-	GVariant *result;
-
-	result = g_dbus_proxy_call_finish (G_DBUS_PROXY (proxy), res, &error);
-	if (error != NULL) {
-		if (!ignore_error (error)) {
-			g_warning ("Unable to inhibit session suspend: %s", error->message);
-		} else {
-			rb_debug ("unable to inhibit: %s", error->message);
-		}
-		g_clear_error (&error);
-	} else {
-		g_variant_get (result, "(u)", &plugin->cookie);
-		rb_debug ("inhibited, got cookie %u", plugin->cookie);
-
-		g_variant_unref (result);
-	}
-	g_object_unref (plugin);
-}
-
-static gboolean
 inhibit (RBGPMPlugin *plugin)
 {
-	GtkWindow *window;
-	gulong xid = 0;
-	GError *error = NULL;
 	RBShell *shell;
+	GtkApplication *app;
+	GtkWindow *window;
 
 	plugin->timeout_id = 0;
 	if (plugin->cookie != 0) {
-		rb_debug ("Was going to inhibit gnome-session, but we already have done");
-		return FALSE;
-	}
-
-	if (create_dbus_proxy (plugin) == FALSE) {
+		rb_debug ("Was going to inhibit session manager, but we already have done");
 		return FALSE;
 	}
 
 	rb_debug ("inhibiting");
-	g_object_ref (plugin);
 
 	g_object_get (plugin, "object", &shell, NULL);
-	g_object_get (shell, "window", &window, NULL);
+	g_object_get (shell,
+		      "application", &app,
+		      "window", &window,
+		      NULL);
 	g_object_unref (shell);
 
-	xid = gdk_x11_window_get_xid (gtk_widget_get_window (GTK_WIDGET (window)));
-	g_dbus_proxy_call (plugin->proxy,
-			   "Inhibit",
-			   g_variant_new ("(susu)", "rhythmbox", xid, _("Playing"), 4),
-			   G_DBUS_CALL_FLAGS_NONE,
-			   -1,
-			   NULL,
-			   (GAsyncReadyCallback) inhibit_done,
-			   plugin);
-	if (error != NULL) {
-		g_warning ("Unable to inhibit session suspend: %s", error->message);
-		g_clear_error (&error);
-	}
+	gtk_application_inhibit (app, window, GTK_APPLICATION_INHIBIT_IDLE, _("Playing"));
 
 	g_object_unref (window);
+	g_object_unref (app);
 	return FALSE;
-}
-
-static void
-uninhibit_done (GObject *proxy, GAsyncResult *res, RBGPMPlugin *plugin)
-{
-	GError *error = NULL;
-	GVariant *result;
-
-	result = g_dbus_proxy_call_finish (G_DBUS_PROXY (proxy), res, &error);
-	if (error != NULL) {
-		if (!ignore_error (error)) {
-			g_warning ("Failed to uninhibit session suspend: %s", error->message);
-		} else {
-			rb_debug ("failed to uninhibit: %s", error->message);
-		}
-		g_clear_error (&error);
-	} else {
-		rb_debug ("uninhibited");
-		plugin->cookie = 0;
-
-		g_variant_unref (result);
-	}
-	g_object_unref (plugin);
 }
 
 static gboolean
 uninhibit (RBGPMPlugin *plugin)
 {
+	GtkApplication *app;
+	RBShell *shell;
+
 	plugin->timeout_id = 0;
 
 	if (plugin->cookie == 0) {
@@ -215,19 +114,14 @@ uninhibit (RBGPMPlugin *plugin)
 		return FALSE;
 	}
 
-	if (create_dbus_proxy (plugin) == FALSE) {
-		return FALSE;
-	}
+	g_object_get (plugin, "object", &shell, NULL);
+	g_object_get (shell, "application", &app, NULL);
+	g_object_unref (shell);
 
 	rb_debug ("uninhibiting; cookie = %u", plugin->cookie);
-	g_dbus_proxy_call (plugin->proxy,
-			   "Uninhibit",
-			   g_variant_new ("(u)", plugin->cookie),
-			   G_DBUS_CALL_FLAGS_NONE,
-			   -1,
-			   NULL,
-			   (GAsyncReadyCallback) uninhibit_done,
-			   g_object_ref (plugin));
+	gtk_application_uninhibit (app, plugin->cookie);
+	plugin->cookie = 0;
+	g_object_unref (app);
 	return FALSE;
 }
 
@@ -303,11 +197,6 @@ impl_deactivate (PeasActivatable *bplugin)
 
 	g_object_unref (shell);
 	g_object_unref (shell_player);
-
-	if (plugin->proxy != NULL) {
-		g_object_unref (plugin->proxy);
-		plugin->proxy = NULL;
-	}
 }
 
 G_MODULE_EXPORT void

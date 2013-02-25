@@ -59,8 +59,6 @@ typedef struct _RBSource	RBSource;
 typedef struct _RBSourceClass	RBSourceClass;
 typedef struct _RBSourcePrivate	RBSourcePrivate;
 
-typedef void (*RBSourceActionCallback) (GtkAction *action, RBSource *source);
-
 GType rb_source_eof_type_get_type (void);
 #define RB_TYPE_SOURCE_EOF_TYPE	(rb_source_eof_type_get_type())
 
@@ -133,7 +131,7 @@ struct _RBSourceClass
 	gboolean	(*impl_can_pause)	(RBSource *source);
 	RBSourceEOFType	(*impl_handle_eos)	(RBSource *source);
 
-	char *		(*impl_get_delete_action) (RBSource *source);
+	char *		(*impl_get_delete_label) (RBSource *source);
 };
 
 GType		rb_source_get_type		(void);
@@ -189,7 +187,7 @@ void		rb_source_add_uri		(RBSource *source,
 gboolean	rb_source_can_pause		(RBSource *source);
 RBSourceEOFType	rb_source_handle_eos		(RBSource *source);
 
-char *		rb_source_get_delete_action	(RBSource *source);
+char *		rb_source_get_delete_label	(RBSource *source);
 
 GList *		rb_source_gather_selected_properties (RBSource *source, RhythmDBPropType prop);
 

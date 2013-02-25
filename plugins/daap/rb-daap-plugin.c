@@ -51,6 +51,7 @@
 #include "rb-builder-helpers.h"
 #include "rb-uri-dialog.h"
 #include "rb-display-page-group.h"
+#include "rb-application.h"
 
 #include "rb-daap-container-record.h"
 #include "rb-daap-record-factory.h"
@@ -92,8 +93,7 @@ struct _RBDaapPlugin
 	gboolean sharing;
 	gboolean shutdown;
 
-	GtkActionGroup *daap_action_group;
-	guint daap_ui_merge_id;
+	GSimpleAction *new_share_action;
 
 	DMAPMdnsBrowser *mdns_browser;
 
@@ -121,8 +121,7 @@ G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
 static void rb_daap_plugin_init (RBDaapPlugin *plugin);
 
-static void rb_daap_plugin_cmd_disconnect (GtkAction *action, RBSource *source);
-static void rb_daap_plugin_cmd_connect (GtkAction *action, RBDaapPlugin *plugin);
+static void new_share_action_cb (GSimpleAction *, GVariant *, gpointer);
 
 static void create_pixbufs (RBDaapPlugin *plugin);
 static void start_browsing (RBDaapPlugin *plugin);
@@ -149,20 +148,6 @@ RB_DEFINE_PLUGIN(RB_TYPE_DAAP_PLUGIN,
 		 (G_IMPLEMENT_INTERFACE_DYNAMIC (PEAS_GTK_TYPE_CONFIGURABLE,
 						peas_gtk_configurable_iface_init)))
 
-static GtkActionEntry rb_daap_plugin_actions [] =
-{
-	{ "MusicNewDAAPShare", GTK_STOCK_CONNECT, N_("Connect to _DAAP share..."), NULL,
-	  N_("Connect to a new DAAP share"),
-	  G_CALLBACK (rb_daap_plugin_cmd_connect) },
-};
-
-static GtkActionEntry rb_daap_source_actions[] =
-{
-	{ "DaapSourceDisconnect", GTK_STOCK_DISCONNECT, N_("_Disconnect"), NULL,
-	  N_("Disconnect from DAAP share"),
-	  G_CALLBACK (rb_daap_plugin_cmd_disconnect) },
-};
-
 static void
 rb_daap_plugin_init (RBDaapPlugin *plugin)
 {
@@ -185,9 +170,9 @@ impl_activate (PeasActivatable *bplugin)
 {
 	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (bplugin);
 	gboolean no_registration;
-	GtkUIManager *uimanager = NULL;
-	char *uifile;
 	RBShell *shell;
+	GApplication *app;
+	GMenuModel *menu;
 
 	plugin->shutdown = FALSE;
 
@@ -208,29 +193,15 @@ impl_activate (PeasActivatable *bplugin)
 
 	create_pixbufs (plugin);
 
-	g_object_get (shell, "ui-manager", &uimanager, NULL);
+	app = g_application_get_default ();
+	plugin->new_share_action = g_simple_action_new ("daap-new-share", NULL);
+	g_signal_connect (plugin->new_share_action, "activate", G_CALLBACK (new_share_action_cb), plugin);
+	g_action_map_add_action (G_ACTION_MAP (app), G_ACTION (plugin->new_share_action));
 
-	/* add actions */
-	plugin->daap_action_group = gtk_action_group_new ("DaapActions");
-	gtk_action_group_set_translation_domain (plugin->daap_action_group,
-						 GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (plugin->daap_action_group,
-				      rb_daap_plugin_actions, G_N_ELEMENTS (rb_daap_plugin_actions),
-				      plugin);
-	_rb_action_group_add_display_page_actions (plugin->daap_action_group,
-						   G_OBJECT (shell),
-						   rb_daap_source_actions,
-						   G_N_ELEMENTS (rb_daap_source_actions));
-	gtk_ui_manager_insert_action_group (uimanager, plugin->daap_action_group, 0);
-
-	/* add UI */
-	uifile = rb_find_plugin_data_file (G_OBJECT (plugin), "daap-ui.xml");
-	if (uifile != NULL) {
-		plugin->daap_ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager, uifile, NULL);
-		g_free (uifile);
-	}
-
-	g_object_unref (uimanager);
+	rb_application_add_plugin_menu_item (RB_APPLICATION (app),
+					     "display-page-add",
+					     "daap-new-share",
+					     g_menu_item_new (_("Connect to DAAP share..."), "app.daap-new-share"));
 
 	/*
 	 * Don't use daap when the no-registration flag is set.
@@ -256,7 +227,6 @@ static void
 impl_deactivate	(PeasActivatable *bplugin)
 {
 	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (bplugin);
-	GtkUIManager *uimanager = NULL;
 	RBShell *shell;
 
 	rb_debug ("Shutting down DAAP plugin");
@@ -266,6 +236,9 @@ impl_deactivate	(PeasActivatable *bplugin)
 	unregister_daap_dbus_iface (plugin);
 	plugin->shutdown = TRUE;
 
+	rb_application_remove_plugin_menu_item (RB_APPLICATION (g_application_get_default ()),
+						"display-page-add",
+						"daap-new-share");
 	if (plugin->sharing)
 		rb_daap_sharing_shutdown (shell);
 
@@ -279,13 +252,6 @@ impl_deactivate	(PeasActivatable *bplugin)
 	}
 
 	g_object_unref (plugin->dacp_share);
-
-	g_object_get (shell, "ui-manager", &uimanager, NULL);
-
-	gtk_ui_manager_remove_ui (uimanager, plugin->daap_ui_merge_id);
-	gtk_ui_manager_remove_action_group (uimanager, plugin->daap_action_group);
-
-	g_object_unref (uimanager);
 
 	if (plugin->daap_share_pixbuf != NULL) {
 		g_object_unref (plugin->daap_share_pixbuf);
@@ -622,19 +588,6 @@ libdmapsharing_debug (const char *domain,
 	}
 }
 
-/* daap share connect/disconnect commands */
-
-static void
-rb_daap_plugin_cmd_disconnect (GtkAction *action, RBSource *source)
-{
-	if (!RB_IS_DAAP_SOURCE (source)) {
-		g_warning ("got non-Daap source for Daap action");
-		return;
-	}
-
-	rb_daap_source_disconnect (RB_DAAP_SOURCE (source));
-}
-
 static void
 new_daap_share_location_added_cb (RBURIDialog *dialog,
 				  const char *location,
@@ -673,9 +626,9 @@ new_daap_share_response_cb (GtkDialog *dialog, int response, gpointer meh)
 }
 
 static void
-rb_daap_plugin_cmd_connect (GtkAction *action,
-			    RBDaapPlugin *plugin)
+new_share_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
+	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (data);
 	GtkWidget *dialog;
 
 	dialog = rb_uri_dialog_new (_("New DAAP share"), _("Host:port of DAAP share:"));
@@ -685,7 +638,6 @@ rb_daap_plugin_cmd_connect (GtkAction *action,
 	gtk_widget_show_all (dialog);
 	g_signal_connect (dialog, "response", G_CALLBACK (new_daap_share_response_cb), NULL);
 }
-
 
 /* daap:// URI -> RBDAAPSource mapping */
 

@@ -61,6 +61,7 @@
 
 static void rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass);
 static void rb_removable_media_manager_init (RBRemovableMediaManager *mgr);
+static void rb_removable_media_manager_constructed (GObject *object);
 static void rb_removable_media_manager_dispose (GObject *object);
 static void rb_removable_media_manager_finalize (GObject *object);
 static void rb_removable_media_manager_set_property (GObject *object,
@@ -72,13 +73,9 @@ static void rb_removable_media_manager_get_property (GObject *object,
 					      GValue *value,
 					      GParamSpec *pspec);
 
-static void rb_removable_media_manager_cmd_check_devices (GtkAction *action,
-							  RBRemovableMediaManager *manager);
-static void rb_removable_media_manager_cmd_eject_medium (GtkAction *action,
-					       RBRemovableMediaManager *mgr);
-static gboolean rb_removable_media_manager_source_can_eject (RBRemovableMediaManager *mgr);
-static void rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
-					     GtkUIManager *uimanager);
+static void eject_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
+static void check_devices_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
+static void page_changed_cb (RBShell *shell, GParamSpec *pspec, RBRemovableMediaManager *mgr);
 
 static void rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RBSource *source);
 
@@ -98,11 +95,7 @@ static void uevent_cb (GUdevClient *client, const char *action, GUdevDevice *dev
 typedef struct
 {
 	RBShell *shell;
-
-	RBSource *selected_source;
-
-	GtkActionGroup *actiongroup;
-	GtkUIManager *uimanager;
+	guint page_changed_id;
 
 	GList *sources;
 	GHashTable *volume_mapping;
@@ -130,7 +123,6 @@ enum
 {
 	PROP_0,
 	PROP_SHELL,
-	PROP_SOURCE,
 	PROP_SCANNED
 };
 
@@ -145,39 +137,17 @@ enum
 
 static guint rb_removable_media_manager_signals[LAST_SIGNAL] = { 0 };
 
-static GtkActionEntry rb_removable_media_manager_actions [] =
-{
-	{ "RemovableSourceEject", GNOME_MEDIA_EJECT, N_("_Eject"), NULL,
-	  N_("Eject this medium"),
-	  G_CALLBACK (rb_removable_media_manager_cmd_eject_medium) },
-	{ "MusicCheckDevices", NULL, N_("_Check for New Devices"), NULL,
-	  N_("Check for new media storage devices that have not been automatically detected"),
-	  G_CALLBACK (rb_removable_media_manager_cmd_check_devices) },
-};
-static guint rb_removable_media_manager_n_actions = G_N_ELEMENTS (rb_removable_media_manager_actions);
-
 static void
 rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->constructed = rb_removable_media_manager_constructed;
 	object_class->dispose = rb_removable_media_manager_dispose;
 	object_class->finalize = rb_removable_media_manager_finalize;
 	object_class->set_property = rb_removable_media_manager_set_property;
 	object_class->get_property = rb_removable_media_manager_get_property;
 
-	/**
-	 * RBRemovableMediaManager:source:
-	 *
-	 * The current selected source.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_SOURCE,
-					 g_param_spec_object ("source",
-							      "RBSource",
-							      "RBSource object",
-							      RB_TYPE_SOURCE,
-							      G_PARAM_READWRITE));
 	/**
 	 * RBRemovableMediaManager:shell:
 	 *
@@ -189,7 +159,7 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 							      "RBShell",
 							      "RBShell object",
 							      RB_TYPE_SHELL,
-							      G_PARAM_READWRITE));
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	/**
 	 * RBRemovableMediaManager:scanned:
@@ -344,7 +314,7 @@ rb_removable_media_manager_init (RBRemovableMediaManager *mgr)
 							      "mount-pre-unmount",
 							      G_CALLBACK (mount_removed_cb),
 							      mgr, 0);
-	priv->mount_removed_id = g_signal_connect_object (G_OBJECT (priv->volume_monitor),
+	priv->mount_removed_id = g_signal_connect_object (priv->volume_monitor,
 							  "mount-removed",
 							  G_CALLBACK (mount_removed_cb),
 							  mgr, 0);
@@ -369,6 +339,26 @@ rb_removable_media_manager_init (RBRemovableMediaManager *mgr)
 	if (rb_debug_matches ("mpid", "")) {
 		mpid_enable_debug (TRUE);
 	}
+}
+
+static void
+rb_removable_media_manager_constructed (GObject *object)
+{
+	RBRemovableMediaManager *mgr = RB_REMOVABLE_MEDIA_MANAGER (object);
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
+
+	GApplication *app;
+	GActionEntry actions[] = {
+		{ "check-devices", check_devices_action_cb },
+		{ "removable-media-eject", eject_action_cb }
+	};
+
+	RB_CHAIN_GOBJECT_METHOD (rb_removable_media_manager_parent_class, constructed, object);
+
+	app = g_application_get_default ();
+	g_action_map_add_action_entries (G_ACTION_MAP (app), actions, G_N_ELEMENTS (actions), mgr);
+
+	priv->page_changed_id = g_signal_connect (priv->shell, "notify::selected-page", G_CALLBACK (page_changed_cb), mgr);
 }
 
 static void
@@ -415,6 +405,11 @@ rb_removable_media_manager_dispose (GObject *object)
 		priv->sources = NULL;
 	}
 
+	if (priv->page_changed_id != 0) {
+		g_signal_handler_disconnect (priv->shell, priv->page_changed_id);
+		priv->page_changed_id = 0;
+	}
+
 	G_OBJECT_CLASS (rb_removable_media_manager_parent_class)->dispose (object);
 }
 
@@ -440,30 +435,10 @@ rb_removable_media_manager_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_SOURCE:
-	{
-		GtkAction *action;
-		gboolean can_eject;
-
-		priv->selected_source = g_value_get_object (value);
-		/* make 'eject' command sensitive if the source can be ejected. */
-		action = gtk_action_group_get_action (priv->actiongroup, "RemovableSourceEject");
-		can_eject = rb_removable_media_manager_source_can_eject (RB_REMOVABLE_MEDIA_MANAGER (object));
-		gtk_action_set_sensitive (action, can_eject);
-		break;
-	}
 	case PROP_SHELL:
-	{
-		GtkUIManager *uimanager;
-
 		priv->shell = g_value_get_object (value);
-		g_object_get (priv->shell,
-			      "ui-manager", &uimanager,
-			      NULL);
-		rb_removable_media_manager_set_uimanager (RB_REMOVABLE_MEDIA_MANAGER (object), uimanager);
-		g_object_unref (uimanager);
 		break;
-	}
+	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
@@ -479,9 +454,6 @@ rb_removable_media_manager_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_SOURCE:
-		g_value_set_object (value, priv->selected_source);
-		break;
 	case PROP_SHELL:
 		g_value_set_object (value, priv->shell);
 		break;
@@ -785,65 +757,45 @@ rb_removable_media_manager_append_media_source (RBRemovableMediaManager *mgr, RB
 }
 
 static void
-rb_removable_media_manager_set_uimanager (RBRemovableMediaManager *mgr,
-					  GtkUIManager *uimanager)
+page_changed_cb (RBShell *shell, GParamSpec *pspec, RBRemovableMediaManager *mgr)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
+	RBDisplayPage *page;
+	gboolean can_eject;
+	GApplication *app;
+	GAction *action;
 
-	if (priv->uimanager != NULL) {
-		if (priv->actiongroup != NULL) {
-			gtk_ui_manager_remove_action_group (priv->uimanager,
-							    priv->actiongroup);
-		}
-		g_object_unref (G_OBJECT (priv->uimanager));
-		priv->uimanager = NULL;
+	g_object_get (priv->shell, "selected-page", &page, NULL);
+
+	if (RB_IS_DEVICE_SOURCE (page)) {
+		can_eject = rb_device_source_can_eject (RB_DEVICE_SOURCE (page));
+	} else {
+		can_eject = FALSE;
 	}
 
-	priv->uimanager = uimanager;
-
-	if (priv->uimanager != NULL) {
-		g_object_ref (priv->uimanager);
-	}
-
-	if (priv->actiongroup == NULL) {
-		priv->actiongroup = gtk_action_group_new ("RemovableMediaActions");
-		gtk_action_group_set_translation_domain (priv->actiongroup,
-							 GETTEXT_PACKAGE);
-		gtk_action_group_add_actions (priv->actiongroup,
-					      rb_removable_media_manager_actions,
-					      rb_removable_media_manager_n_actions,
-					      mgr);
-	}
-
-	gtk_ui_manager_insert_action_group (priv->uimanager,
-					    priv->actiongroup,
-					    0);
-}
-
-static gboolean
-rb_removable_media_manager_source_can_eject (RBRemovableMediaManager *mgr)
-{
-	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
-
-	if (RB_IS_DEVICE_SOURCE (priv->selected_source) == FALSE) {
-		return FALSE;
-	}
-	return rb_device_source_can_eject (RB_DEVICE_SOURCE (priv->selected_source));
+	app = g_application_get_default ();
+	action = g_action_map_lookup_action (G_ACTION_MAP (app), "removable-media-eject");
+	g_object_set (action, "enabled", can_eject, NULL);
 }
 
 static void
-rb_removable_media_manager_cmd_eject_medium (GtkAction *action, RBRemovableMediaManager *mgr)
+eject_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
+	RBRemovableMediaManager *mgr = RB_REMOVABLE_MEDIA_MANAGER (data);
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
-	if (RB_IS_DEVICE_SOURCE (priv->selected_source)) {
-		rb_device_source_eject (RB_DEVICE_SOURCE (priv->selected_source));
+	RBDisplayPage *page;
+
+	g_object_get (priv->shell, "selected-page", &page, NULL);
+
+	if (RB_IS_DEVICE_SOURCE (page)) {
+		rb_device_source_eject (RB_DEVICE_SOURCE (page));
 	}
 }
 
 static void
-rb_removable_media_manager_cmd_check_devices (GtkAction *action, RBRemovableMediaManager *manager)
+check_devices_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
-	rb_removable_media_manager_scan (manager);
+	rb_removable_media_manager_scan (RB_REMOVABLE_MEDIA_MANAGER (data));
 }
 
 /**

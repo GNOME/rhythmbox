@@ -65,7 +65,6 @@ typedef struct
 	PeasExtensionBase parent;
 
 	RBShell    *shell;
-	guint       ui_merge_id;
 
 	GHashTable *sources;
 	char       *playing_uri;
@@ -251,24 +250,6 @@ create_source_cb (RBRemovableMediaManager *rmm,
 		g_signal_connect_object (G_OBJECT (source),
 					 "deleted", G_CALLBACK (rb_audiocd_plugin_source_deleted),
 					 plugin, 0);
-
-		if (plugin->ui_merge_id == 0) {
-			char *filename;
-			GtkUIManager *uimanager;
-
-			g_object_get (shell, "ui-manager", &uimanager, NULL);
-
-			filename = rb_find_plugin_data_file (G_OBJECT (plugin), "audiocd-ui.xml");
-			if (filename != NULL) {
-				plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager, filename, NULL);
-				gtk_ui_manager_ensure_update (uimanager);
-			} else {
-				g_warning ("Unable to find file: audiocd-ui.xml");
-			}
-
-			g_free (filename);
-			g_object_unref (uimanager);
-		}
 	}
 
 	g_object_unref (shell);
@@ -368,25 +349,18 @@ impl_deactivate	(PeasActivatable *bplugin)
 {
 	RBAudioCdPlugin         *plugin = RB_AUDIOCD_PLUGIN (bplugin);
 	RBRemovableMediaManager *rmm = NULL;
-	GtkUIManager            *uimanager = NULL;
 	RBShell                 *shell;
 
 	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell,
 		      "removable-media-manager", &rmm,
-		      "ui-manager", &uimanager,
 		      NULL);
 	g_signal_handlers_disconnect_by_func (rmm, create_source_cb, plugin);
 
 	g_hash_table_foreach (plugin->sources, (GHFunc)_delete_cb, plugin);
 	g_hash_table_destroy (plugin->sources);
 	plugin->sources = NULL;
-	if (plugin->ui_merge_id) {
-		gtk_ui_manager_remove_ui (uimanager, plugin->ui_merge_id);
-		plugin->ui_merge_id = 0;
-	}
 
-	g_object_unref (uimanager);
 	g_object_unref (rmm);
 	g_object_unref (shell);
 }

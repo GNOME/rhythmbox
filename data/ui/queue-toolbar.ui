@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<interface>
+  <menu id="queue-toolbar">
+    <section>
+      <submenu>
+	<attribute name="label" translatable="yes">Edit</attribute>
+	<attribute name="rb-menu-link">edit-menu</attribute>
+      </submenu>
+      <item>
+	<attribute name="label" translatable="yes">Shuffle</attribute>
+	<attribute name="action">app.queue-shuffle</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Clear</attribute>
+	<attribute name="action">app.queue-clear</attribute>
+      </item>
+      <submenu>
+	<attribute name="label" translatable="yes">Playlist</attribute>
+	<attribute name="rb-menu-link">playlist-menu</attribute>
+      </submenu>
+    </section>
+    <section>
+      <attribute name="rb-plugin-menu-link">queue-toolbar</attribute>
+    </section>
+  </menu>
+</interface>

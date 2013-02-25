@@ -57,7 +57,8 @@ struct _RBFMRadioSourceClass {
 
 GType     rb_fm_radio_source_get_type	       (void);
 
-RBSource *rb_fm_radio_source_new               (RBShell *shell,
+RBSource *rb_fm_radio_source_new               (GObject *plugin,
+						RBShell *shell,
 						RBRadioTuner *tuner);
 
 void	  rb_fm_radio_source_add_station       (RBFMRadioSource *source,

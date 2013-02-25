@@ -45,12 +45,14 @@
 #include "rb-playlist-source.h"
 #include "rb-debug.h"
 #include "rb-song-info.h"
+#include "rb-builder-helpers.h"
 
 #include "rb-playlist-xml.h"
 #include "rb-static-playlist-source.h"
 #include "rb-auto-playlist-source.h"
 
 #include "rb-playlist-manager.h"
+#include "rb-application.h"
 
 /**
  * SECTION:rb-playlist-source
@@ -85,7 +87,6 @@ static void rb_playlist_source_get_property (GObject *object,
 /* source methods */
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_song_properties (RBSource *source);
-static gboolean impl_show_popup (RBDisplayPage *page);
 
 static void rb_playlist_source_songs_show_popup_cb (RBEntryView *view,
 						    gboolean over_entry,
@@ -115,24 +116,13 @@ static void rb_playlist_source_songs_sort_order_changed_cb (GObject *object,
 							    GParamSpec *pspec,
 							    RBPlaylistSource *source);
 
-static void remove_from_playlist_cmd (GtkAction *action, RBSource *source);
-static char *impl_get_delete_action (RBSource *source);
-
-#define PLAYLIST_SOURCE_SONGS_POPUP_PATH "/PlaylistViewPopup"
-#define PLAYLIST_SOURCE_POPUP_PATH "/PlaylistSourcePopup"
-
-static GtkActionEntry rb_playlist_source_actions [] =
-{
-	{ "RemoveFromPlaylist", GTK_STOCK_REMOVE, N_("Remove From Playlist"), NULL,
-	  N_("Remove each selected song from the playlist"),
-	  G_CALLBACK (remove_from_playlist_cmd) },
-};
-
+static char *impl_get_delete_label (RBSource *source);
+static gboolean impl_can_remove (RBDisplayPage *page);
+static void impl_remove (RBDisplayPage *page);
 
 struct RBPlaylistSourcePrivate
 {
 	RhythmDB *db;
-	GtkActionGroup *action_group;
 
 	GHashTable *entries;
 
@@ -145,6 +135,8 @@ struct RBPlaylistSourcePrivate
 	gboolean dispose_has_run;
 
 	char *title;
+
+	GMenu *popup;
 };
 
 #define RB_PLAYLIST_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAYLIST_SOURCE, RBPlaylistSourcePrivate))
@@ -165,16 +157,14 @@ static void
 rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 
 	object_class->dispose = rb_playlist_source_dispose;
 	object_class->finalize = rb_playlist_source_finalize;
 	object_class->constructed = rb_playlist_source_constructed;
 	object_class->set_property = rb_playlist_source_set_property;
 	object_class->get_property = rb_playlist_source_get_property;
-
-	page_class->show_popup = impl_show_popup;
 
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
@@ -184,7 +174,10 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_get_delete_action = impl_get_delete_action;
+	source_class->impl_get_delete_label = impl_get_delete_label;
+
+	page_class->can_remove = impl_can_remove;
+	page_class->remove = impl_remove;
 
 	klass->impl_show_entry_view_popup = default_show_entry_view_popup;
 	klass->impl_mark_dirty = default_mark_dirty;
@@ -268,6 +261,7 @@ rb_playlist_source_constructed (GObject *object)
 	RBShell *shell;
 	RhythmDB *db;
 	RhythmDBQueryModel *query_model;
+	GtkBuilder *builder;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_playlist_source_parent_class, constructed, object);
 	source = RB_PLAYLIST_SOURCE (object);
@@ -280,16 +274,12 @@ rb_playlist_source_constructed (GObject *object)
 	rb_playlist_source_set_db (source, db);
 	g_object_unref (db);
 
-	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
-									     "PlaylistActions",
-									     NULL, 0,
-									     shell);
-	_rb_action_group_add_display_page_actions (source->priv->action_group,
-						   G_OBJECT (shell),
-						   rb_playlist_source_actions,
-						   G_N_ELEMENTS (rb_playlist_source_actions));
-
 	g_object_unref (shell);
+
+	builder = rb_builder_load ("playlist-popup.ui", NULL);
+	source->priv->popup = G_MENU (gtk_builder_get_object (builder, "playlist-popup"));
+	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()), source->priv->popup);
+	g_object_unref (builder);
 
 	source->priv->entries = g_hash_table_new_full (rb_refstring_hash, rb_refstring_equal,
 						       (GDestroyNotify)rb_refstring_unref, NULL);
@@ -458,9 +448,26 @@ default_show_entry_view_popup (RBPlaylistSource *source,
 			       RBEntryView *view,
 			       gboolean over_entry)
 {
-	if (over_entry) {
-		_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), PLAYLIST_SOURCE_SONGS_POPUP_PATH);
-	}
+	GtkWidget *menu;
+	GMenuModel *playlist_menu;
+
+	if (over_entry == FALSE)
+		return;
+
+	/* update add to playlist menu links */
+	g_object_get (source, "playlist-menu", &playlist_menu, NULL);
+	rb_menu_update_link (source->priv->popup, "rb-playlist-menu-link", playlist_menu);
+	g_object_unref (playlist_menu);
+
+	menu = gtk_menu_new_from_model (G_MENU_MODEL (source->priv->popup));
+	gtk_menu_attach_to_widget (GTK_MENU (menu), GTK_WIDGET (source), NULL);
+	gtk_menu_popup (GTK_MENU (menu),
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			3,
+			gtk_get_current_event_time ());
 }
 
 static void
@@ -494,13 +501,6 @@ impl_song_properties (RBSource *asource)
 		gtk_widget_show_all (song_info);
 	else
 		rb_debug ("failed to create dialog, or no selection!");
-}
-
-static gboolean
-impl_show_popup (RBDisplayPage *page)
-{
-	_rb_display_page_show_popup (page, PLAYLIST_SOURCE_POPUP_PATH);
-	return TRUE;
 }
 
 static void
@@ -1090,14 +1090,21 @@ rb_playlist_source_songs_sort_order_changed_cb (GObject *object,
 	rb_entry_view_resort_model (RB_ENTRY_VIEW (object));
 }
 
-static void
-remove_from_playlist_cmd (GtkAction *action, RBSource *source)
+static char *
+impl_get_delete_label (RBSource *source)
 {
-	rb_source_delete (source);
+	return g_strdup (_("Remove from Playlist"));
 }
 
-static char *
-impl_get_delete_action (RBSource *source)
+static gboolean
+impl_can_remove (RBDisplayPage *page)
 {
-	return g_strdup ("RemoveFromPlaylist");
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (page);
+	return (source->priv->is_local);
+}
+
+void
+impl_remove (RBDisplayPage *page)
+{
+	rb_display_page_delete_thyself (page);
 }

@@ -33,12 +33,14 @@
 G_BEGIN_DECLS
 
 GtkBuilder *rb_builder_load (const char *file, gpointer user_data);
+GtkBuilder *rb_builder_load_plugin_file (GObject *plugin, const char *file, gpointer user_data);
 
 void rb_builder_boldify_label (GtkBuilder *builder, const char *name);
 
 gboolean rb_combo_box_hyphen_separator_func (GtkTreeModel *model,
 					     GtkTreeIter *iter,
 					     gpointer data);
+
 G_END_DECLS
 
 #endif /* __RB_BUILDER_HELPERS_H */

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<interface>
+  <menu id="magnatune-toolbar">
+    <section>
+      <submenu>
+	<attribute name="label" translatable="yes">Edit</attribute>
+	<attribute name="rb-menu-link">edit-menu</attribute>
+      </submenu>
+      <item>
+	<attribute name="label" translatable="yes">Browse</attribute>
+	<attribute name="rb-property-bind">show-browser</attribute>
+	<attribute name="accel">&lt;Primary&gt;b</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Download</attribute>
+	<attribute name="action">app.magnatune-album-download</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Artist</attribute>
+	<attribute name="action">app.magnatune-artist-info</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Cancel</attribute>
+	<attribute name="action">app.magnatune-download-cancel</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

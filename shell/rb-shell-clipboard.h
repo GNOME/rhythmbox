@@ -60,9 +60,7 @@ struct _RBShellClipboardClass
 
 GType             rb_shell_clipboard_get_type		(void);
 
-RBShellClipboard *rb_shell_clipboard_new		(GtkActionGroup *actiongroup,
-							 GtkUIManager *ui_mgr,
-							 RhythmDB *db);
+RBShellClipboard *rb_shell_clipboard_new		(RhythmDB *db);
 
 void              rb_shell_clipboard_set_source		(RBShellClipboard *clipboard,
 							 RBSource *source);

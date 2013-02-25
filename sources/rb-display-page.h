@@ -72,14 +72,17 @@ struct _RBDisplayPageClass
 
 	void	(*get_status)		(RBDisplayPage *page, char **text, char **progress_text, float *progress);
 	gboolean (*receive_drag)	(RBDisplayPage *page, GtkSelectionData *data);
-	gboolean (*show_popup)		(RBDisplayPage *page);
+	/*gboolean (*show_popup)		(RBDisplayPage *page);*/
 	void	(*delete_thyself)	(RBDisplayPage *page);
+
+	gboolean (*can_remove)		(RBDisplayPage *page);
+	void	(*remove)		(RBDisplayPage *page);
 };
 
 GType		rb_display_page_get_type		(void);
 
 gboolean	rb_display_page_receive_drag		(RBDisplayPage *page, GtkSelectionData *data);
-gboolean	rb_display_page_show_popup		(RBDisplayPage *page);
+/*gboolean	rb_display_page_show_popup		(RBDisplayPage *page);*/
 
 gboolean	rb_display_page_selectable		(RBDisplayPage *page);
 void		rb_display_page_selected		(RBDisplayPage *page);
@@ -91,19 +94,16 @@ void		rb_display_page_get_status		(RBDisplayPage *page, char **text, char **prog
 
 void		rb_display_page_delete_thyself		(RBDisplayPage *page);
 
+gboolean	rb_display_page_can_remove		(RBDisplayPage *page);
+void		rb_display_page_remove			(RBDisplayPage *page);
+
 /* things for display page implementations */
 
 void		rb_display_page_notify_status_changed	(RBDisplayPage *page);
-void		_rb_display_page_show_popup		(RBDisplayPage *page, const char *ui_path);
 
-GtkActionGroup *_rb_display_page_register_action_group	(RBDisplayPage *page,
-							 const char *group_name,
-							 GtkActionEntry *actions,
-							 int num_actions,
-							 gpointer user_data);
-void		_rb_action_group_add_display_page_actions (GtkActionGroup *group,
+void		_rb_add_display_page_actions 		(GActionMap *map,
 							 GObject *shell,
-							 GtkActionEntry *actions,
+							 const GActionEntry *actions,
 							 int num_actions);
 
 /* things for the display page model */

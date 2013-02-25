@@ -60,7 +60,7 @@ enum {
 static guint signals[LAST_SIGNAL] = {0,};
 
 RBVisualizerPage *
-rb_visualizer_page_new (GObject *plugin, RBShell *shell, GtkToggleAction *fullscreen, GtkWidget *popup)
+rb_visualizer_page_new (GObject *plugin, RBShell *shell, GSimpleAction *fullscreen, GMenuModel *popup)
 {
 	GObject *page;
 	GdkPixbuf *pixbuf;
@@ -91,7 +91,7 @@ static void
 set_action_state (RBVisualizerPage *page, gboolean active)
 {
 	page->setting_state = TRUE;
-	g_object_set (page->fullscreen_action, "active", active, NULL);
+	g_simple_action_set_state (page->fullscreen_action, g_variant_new_boolean (active));
 	page->setting_state = FALSE;
 }
 
@@ -178,7 +178,7 @@ toggle_fullscreen (RBVisualizerPage *page)
 }
 
 static void
-toggle_fullscreen_cb (GtkAction *action, RBVisualizerPage *page)
+toggle_fullscreen_cb (GSimpleAction *action, GVariant *parameters, RBVisualizerPage *page)
 {
 	if (page->setting_state == FALSE) {
 		toggle_fullscreen (page);
@@ -193,7 +193,10 @@ stage_button_press_cb (ClutterActor *stage, ClutterEvent *event, RBVisualizerPag
 		toggle_fullscreen (page);
 		clutter_threads_enter ();
 	} else if (event->button.button == 3) {
-		rb_display_page_show_popup (RB_DISPLAY_PAGE (page));
+		GtkWidget *menu;
+
+		menu = gtk_menu_new_from_model (page->popup);
+		gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 3, event->any.time);
 	}
 
 	return FALSE;
@@ -231,14 +234,6 @@ create_embed (RBVisualizerPage *page)
 	g_signal_connect_object (stage, "key-release-event", G_CALLBACK (stage_key_release_cb), page, 0);
 
 	return embed;
-}
-
-static gboolean
-impl_show_popup (RBDisplayPage *page)
-{
-	RBVisualizerPage *vpage = RB_VISUALIZER_PAGE (page);
-	gtk_menu_popup (GTK_MENU (vpage->popup), NULL, NULL, NULL, NULL, 3, gtk_get_current_event_time ());
-	return TRUE;
 }
 
 static void
@@ -388,10 +383,7 @@ impl_constructed (GObject *object)
 	gst_element_add_pad (page->sink, gst_ghost_pad_new ("sink", pad));
 	gst_object_unref (pad);
 
-	g_signal_connect_object (page->fullscreen_action,
-				 "toggled",
-				 G_CALLBACK (toggle_fullscreen_cb),
-				 page, 0);
+	g_signal_connect (page->fullscreen_action, "activate", G_CALLBACK (toggle_fullscreen_cb), page);
 }
 
 static void
@@ -412,7 +404,6 @@ rb_visualizer_page_class_init (RBVisualizerPageClass *klass)
 
 	page_class->selected = impl_selected;
 	page_class->deselected = impl_deselected;
-	page_class->show_popup = impl_show_popup;
 
 	g_object_class_install_property (object_class,
 					 PROP_SINK,
@@ -426,14 +417,14 @@ rb_visualizer_page_class_init (RBVisualizerPageClass *klass)
 					 g_param_spec_object ("popup",
 							      "popup",
 							      "popup menu",
-							      GTK_TYPE_WIDGET,
+							      G_TYPE_MENU_MODEL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_FULLSCREEN_ACTION,
 					 g_param_spec_object ("fullscreen-action",
 							      "fullscreen action",
-							      "GtkToggleAction for fullscreen",
-							      GTK_TYPE_TOGGLE_ACTION,
+							      "fullscreen action",
+							      G_TYPE_SIMPLE_ACTION,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	signals[START] = g_signal_new ("start",

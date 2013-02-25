@@ -551,7 +551,7 @@ rate_song (GDBusProxy *mpris, gdouble song_rating)
 static void
 state_changed_cb (GActionGroup *action, const char *action_name, GVariant *state, GMainLoop *loop)
 {
-	if (g_strcmp0 (action_name, "LoadURI") == 0) {
+	if (g_strcmp0 (action_name, "load-uri") == 0) {
 		gboolean loaded, scanned;
 
 		g_variant_get (state, "(bb)", &loaded, &scanned);
@@ -572,7 +572,7 @@ state_changed_signal_cb (GDBusProxy *proxy, const char *sender_name, const char 
 	}
 
 	g_variant_get (parameters, "(sv)", &action, &state);
-	if (g_strcmp0 (action, "LoadURI") == 0) {
+	if (g_strcmp0 (action, "load-uri") == 0) {
 		GApplication *app;
 		app = g_object_get_data (G_OBJECT (proxy), "actual-app");
 		state_changed_cb (G_ACTION_GROUP (app), action, state, loop);
@@ -663,7 +663,7 @@ main (int argc, char **argv)
 	}
 
 	/* wait until it's ready to accept control */
-	state = g_action_group_get_action_state (G_ACTION_GROUP (app), "LoadURI");
+	state = g_action_group_get_action_state (G_ACTION_GROUP (app), "load-uri");
 	if (state == NULL) {
 		rb_debug ("couldn't get app startup state");
 		exit (0);
@@ -858,7 +858,7 @@ main (int argc, char **argv)
 				annoy (&error);
 			} else {
 				rb_debug ("importing %s", fileuri);
-				g_action_group_activate_action (G_ACTION_GROUP (app), "LoadURI", g_variant_new ("(sb)", fileuri, FALSE));
+				g_action_group_activate_action (G_ACTION_GROUP (app), "load-uri", g_variant_new ("(sb)", fileuri, FALSE));
 			}
 			g_free (fileuri);
 			g_object_unref (file);
@@ -868,13 +868,13 @@ main (int argc, char **argv)
 	/* select/activate/play source */
 	if (select_source) {
 		rb_debug ("selecting source %s", select_source);
-		g_action_group_activate_action (G_ACTION_GROUP (app), "ActivateSource", g_variant_new ("(su)", select_source, 0));
+		g_action_group_activate_action (G_ACTION_GROUP (app), "activate-source", g_variant_new ("(su)", select_source, 0));
 	} else if (activate_source) {
 		rb_debug ("activating source %s", activate_source);
-		g_action_group_activate_action (G_ACTION_GROUP (app), "ActivateSource", g_variant_new ("(su)", activate_source, 1));
+		g_action_group_activate_action (G_ACTION_GROUP (app), "activate-source", g_variant_new ("(su)", activate_source, 1));
 	} else if (play_source) {
 		rb_debug ("playing source %s", play_source);
-		g_action_group_activate_action (G_ACTION_GROUP (app), "ActivateSource", g_variant_new ("(su)", play_source, 2));
+		g_action_group_activate_action (G_ACTION_GROUP (app), "activate-source", g_variant_new ("(su)", play_source, 2));
 	}
 
 	/* play uri */
@@ -888,7 +888,7 @@ main (int argc, char **argv)
 			g_warning ("couldn't convert \"%s\" to a URI", play_uri);
 		} else {
 			rb_debug ("loading and playing %s", fileuri);
-			g_action_group_activate_action (G_ACTION_GROUP (app), "LoadURI", g_variant_new ("(sb)", fileuri, TRUE));
+			g_action_group_activate_action (G_ACTION_GROUP (app), "load-uri", g_variant_new ("(sb)", fileuri, TRUE));
 			annoy (&error);
 		}
 		g_free (fileuri);

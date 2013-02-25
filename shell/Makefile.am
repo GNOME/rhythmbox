@@ -64,6 +64,8 @@ shellinclude_HEADERS =					\
 
 librhythmbox_core_la_SOURCES =				\
 	$(shellinclude_HEADERS)				\
+	rb-application.c				\
+	rb-application.h				\
 	rb-history.c					\
 	rb-play-order.c					\
 	rb-play-order-linear.c				\

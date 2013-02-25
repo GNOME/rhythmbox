@@ -52,7 +52,8 @@ RBIpodStaticPlaylistSource *	rb_ipod_static_playlist_source_new (RBShell *shell,
 								    RBiPodSource *source,
 								    RbIpodDb *ipod_db,
 								    Itdb_Playlist *playlist,
-								    RhythmDBEntryType *entry_type);
+								    RhythmDBEntryType *entry_type,
+								    GMenuModel *playlist_menu);
 
 G_END_DECLS
 

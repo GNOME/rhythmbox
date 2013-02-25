@@ -36,6 +36,7 @@
 #include "rb-song-info.h"
 #include "rb-util.h"
 #include "rb-debug.h"
+#include "rb-builder-helpers.h"
 
 /**
  * SECTION:rb-missing-files-source
@@ -76,12 +77,11 @@ static void rb_missing_files_source_songs_sort_order_changed_cb (GObject *object
 								 GParamSpec *pspec,
 								 RBMissingFilesSource *source);
 
-#define MISSING_FILES_SOURCE_SONGS_POPUP_PATH "/MissingFilesViewPopup"
-
 struct RBMissingFilesSourcePrivate
 {
 	RhythmDB *db;
 	RBEntryView *view;
+	GMenuModel *popup;
 };
 
 G_DEFINE_TYPE (RBMissingFilesSource, rb_missing_files_source, RB_TYPE_SOURCE);
@@ -297,8 +297,28 @@ rb_missing_files_source_songs_show_popup_cb (RBEntryView *view,
 					     gboolean over_entry,
 					     RBMissingFilesSource *source)
 {
-	if (over_entry)
-		_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), MISSING_FILES_SOURCE_SONGS_POPUP_PATH);
+	GtkWidget *menu;
+	GtkBuilder *builder;
+
+	if (over_entry == FALSE)
+		return;
+
+	if (source->priv->popup == NULL) {
+		builder = rb_builder_load ("missing-files-popup.ui", NULL);
+		source->priv->popup = G_MENU_MODEL (gtk_builder_get_object (builder, "missing-files-popup"));
+		g_object_ref (source->priv->popup);
+		g_object_unref (builder);
+	}
+
+	menu = gtk_menu_new_from_model (source->priv->popup);
+	gtk_menu_attach_to_widget (GTK_MENU (menu), GTK_WIDGET (source), NULL);
+	gtk_menu_popup (GTK_MENU (menu),
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			3,
+			gtk_get_current_event_time ());
 }
 
 static void

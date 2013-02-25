@@ -111,7 +111,7 @@ fixate_vis_caps (RBVisualizerPlugin *plugin)
 	if (gst_caps_is_fixed (caps) == FALSE) {
 		guint i;
 		char *dbg;
-		const VisualizerQuality *q = &rb_visualizer_quality[g_settings_get_enum (plugin->settings, "quality")];
+		const VisualizerQuality *q = &rb_visualizer_quality[g_settings_get_enum (plugin->settings, "vis-quality")];
 
 		rb_debug ("fixating caps towards %dx%d, %d/%d", q->width, q->height, q->fps_n, q->fps_d);
 		caps = gst_caps_make_writable (caps);
@@ -355,8 +355,7 @@ impl_activate (PeasActivatable *activatable)
 	RBVisualizerPlugin *pi = RB_VISUALIZER_PLUGIN (activatable);
 	RBDisplayPageGroup *page_group;
 	RhythmDBEntry *entry;
-	GtkToggleAction *fullscreen;
-	GtkWidget *menu;
+	GSimpleAction *fullscreen;
 	RBShell *shell;
 
 	g_object_get (pi, "object", &shell, NULL);
@@ -365,10 +364,7 @@ impl_activate (PeasActivatable *activatable)
 	g_signal_connect_object (pi->settings, "changed", G_CALLBACK (settings_changed_cb), pi, 0);
 
 	/* create UI actions and menus and stuff */
-	fullscreen = gtk_toggle_action_new ("VisualizerFullscreen",
-					    _("Fullscreen"),
-					    _("Toggle fullscreen visual effects"),
-					    GTK_STOCK_FULLSCREEN);
+	fullscreen = g_simple_action_new_stateful ("visualizer-toggle", "b", "false");
 	menu = rb_visualizer_create_popup_menu (fullscreen);
 	g_object_ref_sink (menu);
 

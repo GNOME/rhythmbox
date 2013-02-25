@@ -51,6 +51,7 @@ struct _RBSourceSearch
 struct _RBSourceSearchClass
 {
 	GObjectClass parent_class;
+	GHashTable *searches;
 
 	/* virtual functions */
 	gboolean       (*is_subset)	(RBSourceSearch *search,
@@ -59,10 +60,14 @@ struct _RBSourceSearchClass
 	RhythmDBQuery *(*create_query)	(RBSourceSearch *search,
 					 RhythmDB *db,
 					 const char *search_text);
+	char *         (*get_description)(RBSourceSearch *search);
 
 };
 
 GType		rb_source_search_get_type	(void);
+
+RBSourceSearch *rb_source_search_get_by_name (const char *name);
+void            rb_source_search_register (RBSourceSearch *search, const char *name);
 
 gboolean 	rb_source_search_is_subset (RBSourceSearch *search,
 					    const char *current,
@@ -71,9 +76,16 @@ RhythmDBQuery *	rb_source_search_create_query (RBSourceSearch *search,
 					       RhythmDB *db,
 					       const char *search_text);
 
+char *		rb_source_search_get_description (RBSourceSearch *search);
+
 void		rb_source_search_action_attach (RBSourceSearch *search,
 						GObject *action);
 RBSourceSearch *rb_source_search_get_from_action (GObject *action);
+
+void		rb_source_search_add_to_menu (GMenu *menu,
+					      const char *action_namespace,
+					      GAction *action,
+					      const char *name);
 
 /* for search implementations */
 RhythmDBQuery *	_rb_source_search_create_simple_query (RBSourceSearch *search,

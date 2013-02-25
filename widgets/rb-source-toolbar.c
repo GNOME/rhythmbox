@@ -29,23 +29,19 @@
 #include <config.h>
 
 #include <widgets/rb-source-toolbar.h>
+#include <widgets/rb-button-bar.h>
 #include <lib/rb-util.h>
 
 static void rb_source_toolbar_class_init (RBSourceToolbarClass *klass);
 static void rb_source_toolbar_init (RBSourceToolbar *toolbar);
 
-static void toolbar_add_widget_cb (GtkUIManager *ui_manager, GtkWidget *widget, RBSourceToolbar *toolbar);
-static void popup_add_widget_cb (GtkUIManager *ui_manager, GtkWidget *widget, RBSourceToolbar *toolbar);
-
 struct _RBSourceToolbarPrivate
 {
-	GtkUIManager *ui_manager;
-	RBSource *source;
+	GtkAccelGroup *accel_group;
+	RBDisplayPage *page;
 	RBSearchEntry *search_entry;
 	GtkWidget *search_popup;
-	GtkWidget *toolbar;
-	GBinding *browse_binding;
-	GtkAction *browse_action;
+	GtkWidget *button_bar;
 	char *popup_path;
 
 	/* search state */
@@ -53,7 +49,8 @@ struct _RBSourceToolbarPrivate
 	gulong search_change_cb_id;
 	RBSourceSearch *active_search;
 	char *search_text;
-	GtkRadioAction *search_group;
+
+	GAction *search_action;
 };
 
 G_DEFINE_TYPE (RBSourceToolbar, rb_source_toolbar, GTK_TYPE_GRID)
@@ -72,46 +69,9 @@ G_DEFINE_TYPE (RBSourceToolbar, rb_source_toolbar, GTK_TYPE_GRID)
 enum
 {
 	PROP_0,
-	PROP_SOURCE,
-	PROP_UI_MANAGER,
+	PROP_PAGE,
+	PROP_ACCEL_GROUP,
 };
-
-static void
-prepare_toolbar (GtkWidget *toolbar)
-{
-	static GtkCssProvider *provider = NULL;
-
-	if (provider == NULL) {
-		const char *style =
-			"GtkToolbar {\n"
-                        "       -GtkToolbar-shadow-type: none;\n"
-                        "       border-style: none;\n"
-                        "}";
-
-		provider = gtk_css_provider_new ();
-		gtk_css_provider_load_from_data (provider, style, -1, NULL);
-	}
-
-	gtk_style_context_add_provider (gtk_widget_get_style_context (toolbar),
-					GTK_STYLE_PROVIDER (provider),
-					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-
-	gtk_widget_set_hexpand (toolbar, TRUE);
-
-	gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_TEXT);
-}
-
-static void
-search_change_cb (GtkRadioAction *group, GtkRadioAction *current, RBSourceToolbar *toolbar)
-{
-	toolbar->priv->active_search = rb_source_search_get_from_action (G_OBJECT (current));
-
-	if (toolbar->priv->search_text != NULL) {
-		rb_source_search (toolbar->priv->source, toolbar->priv->active_search, NULL, toolbar->priv->search_text);
-	}
-
-	rb_search_entry_set_placeholder (toolbar->priv->search_entry, gtk_action_get_label (GTK_ACTION (current)));
-}
 
 static void
 source_selected_cb (GObject *object, GParamSpec *pspec, RBSourceToolbar *toolbar)
@@ -121,87 +81,34 @@ source_selected_cb (GObject *object, GParamSpec *pspec, RBSourceToolbar *toolbar
 	g_object_get (object, "selected", &selected, NULL);
 
 	if (selected) {
-		char *toolbar_path;
-		char *browse_path;
-
-		if (toolbar->priv->toolbar != NULL) {
-			gtk_grid_attach (GTK_GRID (toolbar), toolbar->priv->toolbar, 0, 0, 2, 1);
-			gtk_widget_show_all (GTK_WIDGET (toolbar->priv->toolbar));
-		}
-
 		if (toolbar->priv->search_entry != NULL) {
 			rb_search_entry_set_mnemonic (toolbar->priv->search_entry, TRUE);
 
 			gtk_widget_add_accelerator (GTK_WIDGET (toolbar->priv->search_entry),
 						    "grab-focus",
-						    gtk_ui_manager_get_accel_group (toolbar->priv->ui_manager),
+						    toolbar->priv->accel_group,
 						    gdk_unicode_to_keyval ('f'),
 						    GDK_CONTROL_MASK,
 						    0);
 		}
 
-		if (toolbar->priv->search_group != NULL) {
-			if (toolbar->priv->search_value != -1) {
-				gtk_radio_action_set_current_value (toolbar->priv->search_group,
-								    toolbar->priv->search_value);
-			}
-
-			toolbar->priv->search_change_cb_id = g_signal_connect (toolbar->priv->search_group,
-									       "changed",
-									       G_CALLBACK (search_change_cb),
-									       toolbar);
-		}
-
-		g_object_get (toolbar->priv->source, "toolbar-path", &toolbar_path, NULL);
-		if (toolbar_path != NULL) {
-
-			browse_path = g_strdup_printf ("%s/Browse", toolbar_path);
-			toolbar->priv->browse_action = gtk_ui_manager_get_action (toolbar->priv->ui_manager,
-										  browse_path);
-			g_free (browse_path);
-
-			if (toolbar->priv->browse_action != NULL) {
-				toolbar->priv->browse_binding =
-					g_object_bind_property (toolbar->priv->source, "show-browser",
-								toolbar->priv->browse_action, "active",
-								G_BINDING_BIDIRECTIONAL | G_BINDING_SYNC_CREATE);
-				gtk_action_connect_accelerator (toolbar->priv->browse_action);
-			}
-			g_free (toolbar_path);
-		} else {
-			toolbar->priv->browse_action = NULL;
+		if (toolbar->priv->button_bar != NULL) {
+			rb_button_bar_add_accelerators (RB_BUTTON_BAR (toolbar->priv->button_bar),
+							toolbar->priv->accel_group);
 		}
 	} else {
-		if (toolbar->priv->toolbar != NULL) {
-			gtk_container_remove (GTK_CONTAINER (toolbar), toolbar->priv->toolbar);
-		}
-
 		if (toolbar->priv->search_entry != NULL) {
 			rb_search_entry_set_mnemonic (toolbar->priv->search_entry, FALSE);
 
 			gtk_widget_remove_accelerator (GTK_WIDGET (toolbar->priv->search_entry),
-						       gtk_ui_manager_get_accel_group (toolbar->priv->ui_manager),
+						       toolbar->priv->accel_group,
 						       gdk_unicode_to_keyval ('f'),
 						       GDK_CONTROL_MASK);
 		}
 
-		if (toolbar->priv->search_group != NULL) {
-			if (toolbar->priv->search_change_cb_id != 0) {
-				g_signal_handler_disconnect (toolbar->priv->search_group,
-							     toolbar->priv->search_change_cb_id);
-			}
-
-			toolbar->priv->search_value = gtk_radio_action_get_current_value (toolbar->priv->search_group);
-		}
-
-		if (toolbar->priv->browse_binding != NULL) {
-			g_object_unref (toolbar->priv->browse_binding);
-			toolbar->priv->browse_binding = NULL;
-		}
-
-		if (toolbar->priv->browse_action != NULL) {
-			gtk_action_disconnect_accelerator (toolbar->priv->browse_action);
-			toolbar->priv->browse_action = NULL;
+		if (toolbar->priv->button_bar != NULL) {
+			rb_button_bar_remove_accelerators (RB_BUTTON_BAR (toolbar->priv->button_bar),
+							   toolbar->priv->accel_group);
 		}
 	}
 }
@@ -209,7 +116,9 @@ source_selected_cb (GObject *object, GParamSpec *pspec, RBSourceToolbar *toolbar
 static void
 search_cb (RBSearchEntry *search_entry, const char *text, RBSourceToolbar *toolbar)
 {
-	rb_source_search (toolbar->priv->source, toolbar->priv->active_search, toolbar->priv->search_text, text);
+	g_return_if_fail (RB_IS_SOURCE (toolbar->priv->page));
+
+	rb_source_search (RB_SOURCE (toolbar->priv->page), toolbar->priv->active_search, toolbar->priv->search_text, text);
 
 	g_free (toolbar->priv->search_text);
 	toolbar->priv->search_text = NULL;
@@ -243,82 +152,41 @@ impl_dispose (GObject *object)
 {
 	RBSourceToolbar *toolbar = RB_SOURCE_TOOLBAR (object);
 
-	if (toolbar->priv->ui_manager != NULL) {
-		g_signal_handlers_disconnect_by_func (toolbar->priv->ui_manager, G_CALLBACK (popup_add_widget_cb), toolbar);
-		g_signal_handlers_disconnect_by_func (toolbar->priv->ui_manager, G_CALLBACK (toolbar_add_widget_cb), toolbar);
-
-		g_object_unref (toolbar->priv->ui_manager);
-		toolbar->priv->ui_manager = NULL;
-	}
-	if (toolbar->priv->search_popup != NULL) {
-		g_object_unref (toolbar->priv->search_popup);
-		toolbar->priv->search_popup = NULL;
-	}
-	if (toolbar->priv->toolbar != NULL) {
-		g_object_unref (toolbar->priv->toolbar);
-		toolbar->priv->toolbar = NULL;
-	}
-	if (toolbar->priv->browse_binding != NULL) {
-		g_object_unref (toolbar->priv->browse_binding);
-		toolbar->priv->browse_binding = NULL;
-	}
+	g_clear_object (&toolbar->priv->accel_group);
+	g_clear_object (&toolbar->priv->search_popup);
 
 	G_OBJECT_CLASS (rb_source_toolbar_parent_class)->dispose (object);
-}
-
-static void
-toolbar_add_widget_cb (GtkUIManager *ui_manager, GtkWidget *widget, RBSourceToolbar *toolbar)
-{
-	char *toolbar_path;
-	gboolean selected;
-
-	g_object_get (toolbar->priv->source, "toolbar-path", &toolbar_path, "selected", &selected, NULL);
-	toolbar->priv->toolbar = gtk_ui_manager_get_widget (toolbar->priv->ui_manager, toolbar_path);
-	g_free (toolbar_path);
-
-	if (toolbar->priv->toolbar) {
-		g_object_ref (toolbar->priv->toolbar);
-		g_signal_handlers_disconnect_by_func (ui_manager, G_CALLBACK (toolbar_add_widget_cb), toolbar);
-
-		prepare_toolbar (toolbar->priv->toolbar);
-
-		if (selected) {
-			gtk_grid_attach (GTK_GRID (toolbar), toolbar->priv->toolbar, 0, 0, 2, 1);
-			gtk_widget_show_all (GTK_WIDGET (toolbar->priv->toolbar));
-		}
-	}
 }
 
 static void
 impl_constructed (GObject *object)
 {
 	RBSourceToolbar *toolbar;
-	char *toolbar_path;
 	GtkWidget *blank;
+	GMenuModel *toolbar_menu;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_source_toolbar_parent_class, constructed, object);
 
 	toolbar = RB_SOURCE_TOOLBAR (object);
 
-	g_object_get (toolbar->priv->source, "toolbar-path", &toolbar_path, NULL);
-	if (toolbar_path) {
-		toolbar->priv->toolbar = gtk_ui_manager_get_widget (toolbar->priv->ui_manager, toolbar_path);
-		if (toolbar->priv->toolbar == NULL) {
-			g_signal_connect (toolbar->priv->ui_manager, "add-widget", G_CALLBACK (toolbar_add_widget_cb), toolbar);
-		} else {
-			g_object_ref (toolbar->priv->toolbar);
-			prepare_toolbar (toolbar->priv->toolbar);
-		}
+	g_object_get (toolbar->priv->page,
+		      "toolbar-menu", &toolbar_menu,
+		      NULL);
+	if (toolbar_menu != NULL) {
+		toolbar->priv->button_bar = rb_button_bar_new (toolbar_menu, G_OBJECT (toolbar->priv->page));
+		gtk_widget_show_all (toolbar->priv->button_bar);
+		gtk_grid_attach (GTK_GRID (toolbar), toolbar->priv->button_bar, 0, 0, 2 ,1);
+		g_object_unref (toolbar_menu);
 	} else {
 		blank = gtk_toolbar_new ();
-		prepare_toolbar (blank);
+		gtk_widget_set_hexpand (blank, TRUE);
+		gtk_toolbar_set_style (GTK_TOOLBAR (blank), GTK_TOOLBAR_TEXT);
 		gtk_grid_attach (GTK_GRID (toolbar), blank, 0, 0, 2 ,1);
 	}
-	g_free (toolbar_path);
 
 	/* search entry gets created later if required */
 
-	g_signal_connect (toolbar->priv->source, "notify::selected", G_CALLBACK (source_selected_cb), toolbar);
+	g_signal_connect (toolbar->priv->page, "notify::selected", G_CALLBACK (source_selected_cb), toolbar);
 }
 
 static void
@@ -327,11 +195,11 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 	RBSourceToolbar *toolbar = RB_SOURCE_TOOLBAR (object);
 
 	switch (prop_id) {
-	case PROP_SOURCE:
-		g_value_set_object (value, toolbar->priv->source);
+	case PROP_PAGE:
+		g_value_set_object (value, toolbar->priv->page);
 		break;
-	case PROP_UI_MANAGER:
-		g_value_set_object (value, toolbar->priv->ui_manager);
+	case PROP_ACCEL_GROUP:
+		g_value_set_object (value, toolbar->priv->accel_group);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -345,11 +213,11 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 	RBSourceToolbar *toolbar = RB_SOURCE_TOOLBAR (object);
 
 	switch (prop_id) {
-	case PROP_SOURCE:
-		toolbar->priv->source = g_value_get_object (value);	/* don't take a ref */
+	case PROP_PAGE:
+		toolbar->priv->page = g_value_get_object (value);	/* don't take a ref */
 		break;
-	case PROP_UI_MANAGER:
-		toolbar->priv->ui_manager = g_value_dup_object (value);
+	case PROP_ACCEL_GROUP:
+		toolbar->priv->accel_group = g_value_dup_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -377,28 +245,28 @@ rb_source_toolbar_class_init (RBSourceToolbarClass *klass)
 	object_class->get_property = impl_get_property;
 
 	/**
-	 * RBSourceToolbar:source:
+	 * RBSourceToolbar:page:
 	 *
-	 * The #RBSource the toolbar is associated with
+	 * The #RBDisplayPage the toolbar is associated with
 	 */
 	g_object_class_install_property (object_class,
-					 PROP_SOURCE,
-					 g_param_spec_object ("source",
-							      "source",
-							      "RBSource instance",
+					 PROP_PAGE,
+					 g_param_spec_object ("page",
+							      "page",
+							      "RBDisplayPage instance",
 							      RB_TYPE_DISPLAY_PAGE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
-	 * RBSourceToolbar:ui-manager:
+	 * RBSourceToolbar:accel-group:
 	 *
-	 * The #GtkUIManager instance
+	 * The #GtkAccelGroup to add accelerators to
 	 */
 	g_object_class_install_property (object_class,
-					 PROP_UI_MANAGER,
-					 g_param_spec_object ("ui-manager",
-							      "ui manager",
-							      "GtkUIManager instance",
-							      GTK_TYPE_UI_MANAGER,
+					 PROP_ACCEL_GROUP,
+					 g_param_spec_object ("accel-group",
+							      "accel group",
+							      "GtkAccelGroup instance",
+							      GTK_TYPE_ACCEL_GROUP,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_type_class_add_private (klass, sizeof (RBSourceToolbarPrivate));
 }
@@ -406,21 +274,21 @@ rb_source_toolbar_class_init (RBSourceToolbarClass *klass)
 /**
  * rb_source_toolbar_new:
  * @page: a #RBDisplayPage
- * @ui_manager: the #GtkUIManager
+ * @accel_group: a #GtkAccelGroup to add accelerators to
  *
  * Creates a new source toolbar for @page.  The toolbar does not
  * initially include a search entry.  Call #rb_source_toolbar_add_search_entry
- * to add one.  The toolbar content comes from the @RBSource:toolbar-path property.
+ * to add one.  The toolbar content comes from the @RBSource:toolbar-menu property.
  *
  * Return value: the #RBSourceToolbar
  */
 RBSourceToolbar *
-rb_source_toolbar_new (RBDisplayPage *page, GtkUIManager *ui_manager)
+rb_source_toolbar_new (RBDisplayPage *page, GtkAccelGroup *accel_group)
 {
 	GObject *object;
 	object = g_object_new (RB_TYPE_SOURCE_TOOLBAR,
-			       "source", page,
-			       "ui-manager", ui_manager,
+			       "page", page,
+			       "accel-group", accel_group,
 			       "column-spacing", 6,
 			       "column-homogeneous", TRUE,
 			       "row-spacing", 6,
@@ -430,83 +298,76 @@ rb_source_toolbar_new (RBDisplayPage *page, GtkUIManager *ui_manager)
 }
 
 static void
-setup_search_popup (RBSourceToolbar *toolbar, GtkWidget *popup)
+search_state_notify_cb (GObject *action, GParamSpec *pspec, RBSourceToolbar *toolbar)
 {
-	GList *items;
-	GSList *l;
-	int active_value;
+	GVariant *state;
 
-	toolbar->priv->search_popup = g_object_ref (popup);
+	/* get search for current state */
+	state = g_action_get_state (G_ACTION (action));
+	toolbar->priv->active_search = rb_source_search_get_by_name (g_variant_get_string (state, NULL));
+	g_variant_unref (state);
 
-	items = gtk_container_get_children (GTK_CONTAINER (toolbar->priv->search_popup));
-	toolbar->priv->search_group = GTK_RADIO_ACTION (gtk_activatable_get_related_action (GTK_ACTIVATABLE (items->data)));
-	g_list_free (items);
-
-	active_value = gtk_radio_action_get_current_value (toolbar->priv->search_group);
-	for (l = gtk_radio_action_get_group (toolbar->priv->search_group); l != NULL; l = l->next) {
-		int value;
-		g_object_get (G_OBJECT (l->data), "value", &value, NULL);
-		if (value == active_value) {
-			rb_search_entry_set_placeholder (toolbar->priv->search_entry,
-							 gtk_action_get_label (GTK_ACTION (l->data)));
-		}
+	if (toolbar->priv->search_text != NULL) {
+		rb_source_search (RB_SOURCE (toolbar->priv->page), toolbar->priv->active_search, NULL, toolbar->priv->search_text);
 	}
 
-	g_signal_connect (toolbar->priv->search_entry, "show-popup", G_CALLBACK (show_popup_cb), toolbar);
+	if (toolbar->priv->active_search != NULL) {
+		rb_search_entry_set_placeholder (toolbar->priv->search_entry, rb_source_search_get_description (toolbar->priv->active_search));
+	} else {
+		rb_search_entry_set_placeholder (toolbar->priv->search_entry, NULL);	/* ? */
+	}
 }
 
 static void
-popup_add_widget_cb (GtkUIManager *ui_manager, GtkWidget *widget, RBSourceToolbar *toolbar)
+add_search_entry (RBSourceToolbar *toolbar, gboolean menu)
 {
-	GtkWidget *popup;
-	popup = gtk_ui_manager_get_widget (toolbar->priv->ui_manager, toolbar->priv->popup_path);
+	g_assert (toolbar->priv->search_entry == NULL);
 
-	if (popup) {
-		setup_search_popup (toolbar, popup);
-		g_signal_handlers_disconnect_by_func (ui_manager, G_CALLBACK (popup_add_widget_cb), toolbar);
-	}
+	toolbar->priv->search_entry = rb_search_entry_new (menu);
+	gtk_widget_set_margin_right (GTK_WIDGET (toolbar->priv->search_entry), 6);
+	gtk_grid_attach (GTK_GRID (toolbar), GTK_WIDGET (toolbar->priv->search_entry), 2, 0, 1, 1);
+
+	g_signal_connect (toolbar->priv->search_entry, "search", G_CALLBACK (search_cb), toolbar);
 }
 
+/**
+ * rb_source_toolbar_add_search_entry_menu:
+ * @toolbar: a #RBSourceToolbar
+ * @search_menu: a #GMenu containing search items
+ * @search_action: the #GAction for search state
+ *
+ * Adds a search entry to the toolbar.
+ */
+void
+rb_source_toolbar_add_search_entry_menu (RBSourceToolbar *toolbar, GMenuModel *search_menu, GAction *search_action)
+{
+	g_return_if_fail (search_menu != NULL);
+	g_return_if_fail (search_action != NULL);
+
+	add_search_entry (toolbar, TRUE);
+
+	toolbar->priv->search_popup = gtk_menu_new_from_model (search_menu);
+	gtk_menu_attach_to_widget (GTK_MENU (toolbar->priv->search_popup), GTK_WIDGET (toolbar), NULL);
+	g_object_ref_sink (toolbar->priv->search_popup);
+	toolbar->priv->search_action = g_object_ref (search_action);
+
+	g_signal_connect (toolbar->priv->search_entry, "show-popup", G_CALLBACK (show_popup_cb), toolbar);
+	g_signal_connect (toolbar->priv->search_action, "notify::state", G_CALLBACK (search_state_notify_cb), toolbar);
+	search_state_notify_cb (G_OBJECT (toolbar->priv->search_action), NULL, toolbar);
+}
 
 /**
  * rb_source_toolbar_add_search_entry:
  * @toolbar: a #RBSourceToolbar
- * @popup_path: the UI path for the search popup (or NULL)
  * @placeholder: the placeholder text for the search entry (or NULL)
  *
- * Adds a search entry to the toolbar.  If a popup path is specified,
- * clicking on the primary icon will show a menu allowing the user to
- * select a search type, and the placeholder text for the entry will
- * be the selected search description.  Otherwise, the specified placeholder
- * text will be displayed.
+ * Adds a search entry with no search type menu.
  */
 void
-rb_source_toolbar_add_search_entry (RBSourceToolbar *toolbar, const char *popup_path, const char *placeholder)
+rb_source_toolbar_add_search_entry (RBSourceToolbar *toolbar, const char *placeholder)
 {
-	g_assert (toolbar->priv->search_entry == NULL);
-
-	toolbar->priv->search_entry = rb_search_entry_new (popup_path != NULL);
-	gtk_widget_set_margin_right (GTK_WIDGET (toolbar->priv->search_entry), 6);
-	gtk_grid_attach (GTK_GRID (toolbar), GTK_WIDGET (toolbar->priv->search_entry), 2, 0, 1, 1);
-
-	if (placeholder) {
-		rb_search_entry_set_placeholder (toolbar->priv->search_entry, placeholder);
-	}
-
-	g_signal_connect (toolbar->priv->search_entry, "search", G_CALLBACK (search_cb), toolbar);
-	/* activate? */
-
-	if (popup_path != NULL) {
-		GtkWidget *popup;
-		toolbar->priv->popup_path = g_strdup (popup_path);
-
-		popup = gtk_ui_manager_get_widget (toolbar->priv->ui_manager, popup_path);
-		if (popup != NULL) {
-			setup_search_popup (toolbar, popup);
-		} else {
-			g_signal_connect (toolbar->priv->ui_manager, "add-widget", G_CALLBACK (popup_add_widget_cb), toolbar);
-		}
-	}
+	add_search_entry (toolbar, FALSE);
+	rb_search_entry_set_placeholder (toolbar->priv->search_entry, placeholder);
 }
 
 /**

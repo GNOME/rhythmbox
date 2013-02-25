@@ -60,6 +60,8 @@
 #include "rb-stock-icons.h"
 #include "rb-builder-helpers.h"
 #include "rb-util.h"
+#include "rb-application.h"
+#include "rb-display-page-menu.h"
 
 #define RB_PLAYLIST_MGR_VERSION (xmlChar *) "1.0"
 #define RB_PLAYLIST_MGR_PL (xmlChar *) "rhythmdb-playlists"
@@ -100,26 +102,18 @@ static const char *rb_playlist_manager_dbus_spec =
 
 static void rb_playlist_manager_class_init (RBPlaylistManagerClass *klass);
 static void rb_playlist_manager_init (RBPlaylistManager *mgr);
-static void rb_playlist_manager_cmd_load_playlist (GtkAction *action,
-						   RBPlaylistManager *mgr);
-static void rb_playlist_manager_cmd_save_playlist (GtkAction *action,
-						   RBPlaylistManager *mgr);
-static void rb_playlist_manager_cmd_save_queue (GtkAction *action,
-						RBPlaylistManager *mgr);
-static void rb_playlist_manager_cmd_new_playlist (GtkAction *action,
-						  RBPlaylistManager *mgr);
-static void rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
-							    RBPlaylistManager *mgr);
-static void rb_playlist_manager_cmd_shuffle_playlist (GtkAction *action,
-						      RBPlaylistManager *mgr);
-static void rb_playlist_manager_cmd_rename_playlist (GtkAction *action,
-						     RBPlaylistManager *mgr);
-static void rb_playlist_manager_cmd_delete_playlist (GtkAction *action,
-						     RBPlaylistManager *mgr);
-static void rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
-							     RBPlaylistManager *mgr);
-static void rb_playlist_manager_cmd_queue_playlist (GtkAction *action,
-						    RBPlaylistManager *mgr);
+
+static void new_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
+static void new_auto_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
+static void load_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
+
+static void edit_auto_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
+static void rename_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
+static void queue_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
+static void shuffle_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
+static void save_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
+static void add_to_new_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
+static void add_to_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
 
 struct RBPlaylistManagerPrivate
 {
@@ -129,13 +123,8 @@ struct RBPlaylistManagerPrivate
 
 	char *playlists_file;
 
-	RBDisplayPageModel *page_model;
-	RBDisplayPageTree *display_page_tree;
-
-	GtkActionGroup *actiongroup;
-	GtkUIManager *uimanager;
-
 	RBStaticPlaylistSource *loading_playlist;
+	RBSource *new_playlist;
 
 	gint dirty;
 	gint saving;
@@ -147,9 +136,7 @@ enum
 	PROP_0,
 	PROP_PLAYLIST_NAME,
 	PROP_SHELL,
-	PROP_SOURCE,
-	PROP_DISPLAY_PAGE_MODEL,
-	PROP_DISPLAY_PAGE_TREE,
+	PROP_SOURCE
 };
 
 enum
@@ -183,44 +170,6 @@ static RBPlaylistExportFilter playlist_formats[] = {
 };
 
 
-static GtkActionEntry rb_playlist_manager_actions [] =
-{
-	/* Submenu of Music */
-	{ "Playlist", NULL, N_("_Playlist") },
-
-	{ "MusicPlaylistNewPlaylist", RB_STOCK_PLAYLIST_NEW, N_("_New Playlist..."), "<control>N",
-	  N_("Create a new playlist"),
-	  G_CALLBACK (rb_playlist_manager_cmd_new_playlist) },
-	{ "MusicPlaylistNewAutomaticPlaylist", RB_STOCK_AUTO_PLAYLIST_NEW, N_("New _Automatic Playlist..."), NULL,
-	  N_("Create a new automatically updating playlist"),
-	  G_CALLBACK (rb_playlist_manager_cmd_new_automatic_playlist) },
-	{ "MusicPlaylistLoadPlaylist", NULL, N_("_Load from File..."), NULL,
-	  N_("Choose a playlist to be loaded"),
-	  G_CALLBACK (rb_playlist_manager_cmd_load_playlist) },
-	{ "MusicPlaylistSavePlaylist", GTK_STOCK_SAVE_AS, N_("_Save to File..."), NULL,
-	  N_("Save a playlist to a file"),
-	  G_CALLBACK (rb_playlist_manager_cmd_save_playlist) },
-	{ "MusicPlaylistRenamePlaylist", NULL, N_("_Rename"), NULL,
-	  N_("Rename playlist"),
-	  G_CALLBACK (rb_playlist_manager_cmd_rename_playlist) },
-	{ "MusicPlaylistDeletePlaylist", GTK_STOCK_REMOVE, N_("_Delete"), NULL,
-	  N_("Delete playlist"),
-	  G_CALLBACK (rb_playlist_manager_cmd_delete_playlist) },
-	{ "EditAutomaticPlaylist", GTK_STOCK_PROPERTIES, N_("_Edit..."), NULL,
-	  N_("Change this automatic playlist"),
-	  G_CALLBACK (rb_playlist_manager_cmd_edit_automatic_playlist) },
-	{ "QueuePlaylist", NULL, N_("_Queue All Tracks"), NULL,
-	  N_("Add all tracks in this playlist to the queue"),
-	  G_CALLBACK (rb_playlist_manager_cmd_queue_playlist) },
-	{ "ShufflePlaylist", NULL, N_("_Shuffle Playlist"), NULL,
-	  N_("Shuffle the tracks in this playlist"),
-	  G_CALLBACK (rb_playlist_manager_cmd_shuffle_playlist) },
-	{ "MusicPlaylistSaveQueue", GTK_STOCK_SAVE_AS, N_("_Save to File..."), NULL,
-	  N_("Save the play queue to a file"),
-	  G_CALLBACK (rb_playlist_manager_cmd_save_queue) },
-};
-static guint rb_playlist_manager_n_actions = G_N_ELEMENTS (rb_playlist_manager_actions);
-
 G_DEFINE_TYPE (RBPlaylistManager, rb_playlist_manager, G_TYPE_OBJECT)
 
 
@@ -243,8 +192,6 @@ rb_playlist_manager_shutdown (RBPlaylistManager *mgr)
 /**
  * rb_playlist_manager_new:
  * @shell: the #RBShell
- * @page_model: the #RBDisplayPageModel
- * @page_tree: the #RBDisplayPageTree
  * @playlists_file: the full path to the playlist file to load
  *
  * Creates the #RBPlaylistManager instance
@@ -253,14 +200,10 @@ rb_playlist_manager_shutdown (RBPlaylistManager *mgr)
  */
 RBPlaylistManager *
 rb_playlist_manager_new (RBShell *shell,
-			 RBDisplayPageModel *page_model,
-			 RBDisplayPageTree *page_tree,
 			 const char *playlists_file)
 {
 	return g_object_new (RB_TYPE_PLAYLIST_MANAGER,
 			     "shell", shell,
-			     "display-page-model", page_model,
-			     "display-page-tree", page_tree,
 			     "playlists_file", playlists_file,
 			     NULL);
 }
@@ -513,10 +456,14 @@ static gboolean
 rb_playlist_manager_is_dirty (RBPlaylistManager *mgr)
 {
 	gboolean dirty = FALSE;
+	RBDisplayPageModel *page_model;
 
-	gtk_tree_model_foreach (GTK_TREE_MODEL (mgr->priv->page_model),
+	g_object_get (mgr->priv->shell, "display-page-model", &page_model, NULL);
+
+	gtk_tree_model_foreach (GTK_TREE_MODEL (page_model),
 				(GtkTreeModelForeachFunc) _is_dirty_playlist,
 				&dirty);
+	g_object_unref (page_model);
 
 	/* explicitly check the play queue */
 	if (dirty == FALSE) {
@@ -620,6 +567,7 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 {
 	xmlNodePtr root;
 	struct RBPlaylistManagerSaveData *data;
+	RBDisplayPageModel *page_model;
 	RBSource *queue_source;
 
 	if (!force && !rb_playlist_manager_is_dirty (mgr)) {
@@ -640,13 +588,18 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	root = xmlNewDocNode (data->doc, NULL, RB_PLAYLIST_MGR_PL, NULL);
 	xmlDocSetRootElement (data->doc, root);
 
-	gtk_tree_model_foreach (GTK_TREE_MODEL (mgr->priv->page_model),
+	g_object_get (mgr->priv->shell,
+		      "display-page-model", &page_model,
+		      "queue-source", &queue_source,
+		      NULL);
+	gtk_tree_model_foreach (GTK_TREE_MODEL (page_model),
 				(GtkTreeModelForeachFunc)save_playlist_cb,
 				root);
 
 	/* also save the play queue */
-	g_object_get (mgr->priv->shell, "queue-source", &queue_source, NULL);
 	rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (queue_source), root);
+
+	g_object_unref (page_model);
 	g_object_unref (queue_source);
 
 	/* mark clean here.  if the save fails, we'll mark it dirty again */
@@ -658,6 +611,28 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 		g_thread_new ("playlist-save", (GThreadFunc) rb_playlist_manager_save_data, data);
 
 	return TRUE;
+}
+
+static void
+new_playlist_deleted_cb (RBDisplayPage *page, RBPlaylistManager *mgr)
+{
+	if (RB_SOURCE (page) == mgr->priv->new_playlist) {
+		g_clear_object (&mgr->priv->new_playlist);
+	}
+}
+
+static gboolean
+edit_new_playlist_name (RBPlaylistManager *mgr)
+{
+	RBDisplayPageTree *page_tree;
+	if (mgr->priv->new_playlist != NULL) {
+		g_object_get (mgr->priv->shell, "display-page-tree", &page_tree, NULL);
+		rb_display_page_tree_edit_source_name (page_tree, mgr->priv->new_playlist);
+		g_object_unref (page_tree);
+		g_signal_handlers_disconnect_by_func (mgr->priv->new_playlist, new_playlist_deleted_cb, mgr);
+		mgr->priv->new_playlist = NULL;
+	}
+	return FALSE;
 }
 
 /**
@@ -676,6 +651,7 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 				  gboolean automatic)
 {
 	RBSource *playlist;
+	
 	if (automatic)
 		playlist = rb_auto_playlist_source_new (mgr->priv->shell,
 							suggested_name,
@@ -688,11 +664,15 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 							  RHYTHMDB_ENTRY_TYPE_SONG);
 
 	append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
-	rb_display_page_tree_edit_source_name (mgr->priv->display_page_tree, playlist);
+
 	rb_playlist_manager_set_dirty (mgr, TRUE);
 
 	g_signal_emit (mgr, rb_playlist_manager_signals[PLAYLIST_CREATED], 0,
 		       playlist);
+
+	mgr->priv->new_playlist = playlist;
+	g_signal_connect (playlist, "deleted", G_CALLBACK (new_playlist_deleted_cb), mgr);
+	g_idle_add ((GSourceFunc)edit_new_playlist_name, mgr);
 
 	return playlist;
 }
@@ -833,10 +813,9 @@ rb_playlist_manager_new_playlist_from_selection_data (RBPlaylistManager *mgr,
 }
 
 static void
-rb_playlist_manager_cmd_new_playlist (GtkAction *action,
-				      RBPlaylistManager *mgr)
+new_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
-	rb_playlist_manager_new_playlist (mgr, _("New Playlist"), FALSE);
+	rb_playlist_manager_new_playlist (RB_PLAYLIST_MANAGER (data), _("New Playlist"), FALSE);
 }
 
 static void
@@ -892,10 +871,12 @@ new_automatic_playlist_response_cb (GtkDialog *dialog, int response, RBPlaylistM
 }
 
 static void
-rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
-						RBPlaylistManager *mgr)
+new_auto_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
-	GtkWidget *creator = rb_query_creator_new (mgr->priv->db);
+	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (data);
+	GtkWidget *creator;
+
+	creator = rb_query_creator_new (mgr->priv->db);
 	gtk_widget_show_all (creator);
 
 	g_signal_connect (creator,
@@ -941,9 +922,9 @@ edit_auto_playlist_deleted_cb (RBAutoPlaylistSource *playlist, EditAutoPlaylistD
 }
 
 static void
-rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
-						 RBPlaylistManager *mgr)
+edit_auto_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
+	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (data);
 	RBQueryCreator *creator;
 	RBAutoPlaylistSource *playlist;
 
@@ -1013,9 +994,9 @@ _queue_track_cb (RhythmDBQueryModel *model,
 }
 
 static void
-rb_playlist_manager_cmd_queue_playlist (GtkAction *action,
-					RBPlaylistManager *mgr)
+queue_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
+	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (data);
 	RBSource *queue_source;
 	RhythmDBQueryModel *model;
 
@@ -1031,9 +1012,9 @@ rb_playlist_manager_cmd_queue_playlist (GtkAction *action,
 }
 
 static void
-rb_playlist_manager_cmd_shuffle_playlist (GtkAction *action,
-					RBPlaylistManager *mgr)
+shuffle_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
+	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (data);
 	RhythmDBQueryModel *base_model;
 
 	g_object_get (mgr->priv->selected_source, "base-query-model", &base_model, NULL);
@@ -1042,25 +1023,20 @@ rb_playlist_manager_cmd_shuffle_playlist (GtkAction *action,
 }
 
 static void
-rb_playlist_manager_cmd_rename_playlist (GtkAction *action,
-					 RBPlaylistManager *mgr)
+rename_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
+	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (data);
+	RBDisplayPageTree *page_tree;
+
 	rb_debug ("Renaming playlist %p", mgr->priv->selected_source);
 
-	rb_display_page_tree_edit_source_name (mgr->priv->display_page_tree,
-					       mgr->priv->selected_source);
+	g_object_get (mgr->priv->shell, "display-page-tree", &page_tree, NULL);
+	rb_display_page_tree_edit_source_name (page_tree, mgr->priv->selected_source);
+	g_object_unref (page_tree);
+
 	rb_playlist_manager_set_dirty (mgr, TRUE);
 }
 
-static void
-rb_playlist_manager_cmd_delete_playlist (GtkAction *action,
-					 RBPlaylistManager *mgr)
-{
-	rb_debug ("Deleting playlist %p", mgr->priv->selected_source);
-
-	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (mgr->priv->selected_source));
-	rb_playlist_manager_set_dirty (mgr, TRUE);
-}
 
 static void
 load_playlist_response_cb (GtkDialog *dialog,
@@ -1093,9 +1069,9 @@ load_playlist_response_cb (GtkDialog *dialog,
 }
 
 static void
-rb_playlist_manager_cmd_load_playlist (GtkAction *action,
-				       RBPlaylistManager *mgr)
+load_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
+	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (data);
 	GtkWindow *window;
 	GtkWidget *dialog;
 	GtkFileFilter *filter;
@@ -1172,8 +1148,7 @@ save_playlist_response_cb (GtkDialog *dialog,
 	if (export_type == RB_PLAYLIST_EXPORT_TYPE_UNKNOWN) {
 		rb_error_dialog (NULL, _("Couldn't save playlist"), _("Unsupported file extension given."));
 	} else {
-		rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (source),
-						  file, export_type);
+		rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (source), file, export_type);
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 	}
 
@@ -1264,14 +1239,16 @@ setup_format_menu (GtkWidget* menu, GtkWidget *dialog)
 				 dialog, 0);
 }
 
-static void
-save_playlist (RBPlaylistManager *mgr, RBSource *source)
+void
+rb_playlist_manager_save_playlist_file (RBPlaylistManager *mgr, RBSource *source)
 {
 	GtkBuilder *builder;
 	GtkWidget *dialog;
 	GtkWidget *menu;
 	char *name;
 	char *tmp;
+
+	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (source));
 
 	builder = rb_builder_load ("playlist-save.ui", mgr);
 	dialog = GTK_WIDGET (gtk_builder_get_object (builder, "playlist_save_dialog"));
@@ -1296,20 +1273,49 @@ save_playlist (RBPlaylistManager *mgr, RBSource *source)
 }
 
 static void
-rb_playlist_manager_cmd_save_playlist (GtkAction *action,
-				       RBPlaylistManager *mgr)
+save_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
-	save_playlist (mgr, mgr->priv->selected_source);
+	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (data);
+	rb_playlist_manager_save_playlist_file (mgr, mgr->priv->selected_source);
 }
 
 static void
-rb_playlist_manager_cmd_save_queue (GtkAction *action,
-				    RBPlaylistManager *mgr)
+add_to_new_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
-	RBSource *queue;
-	g_object_get (mgr->priv->shell, "queue-source", &queue, NULL);
-	save_playlist (mgr, queue);
-	g_object_unref (queue);
+	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (data);
+	GList *entries;
+	RBSource *playlist_source;
+
+	rb_debug ("add to new playlist");
+
+	entries = rb_source_copy (mgr->priv->selected_source);
+	playlist_source = rb_playlist_manager_new_playlist (mgr, NULL, FALSE);
+	rb_source_paste (playlist_source, entries);
+
+	g_list_foreach (entries, (GFunc)rhythmdb_entry_unref, NULL);
+	g_list_free (entries);
+}
+
+static void
+add_to_playlist_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
+{
+	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (data);
+	RBDisplayPageModel *model;
+	GList *entries;
+	RBDisplayPage *playlist_source;
+
+	g_object_get (mgr->priv->shell, "display-page-model", &model, NULL);
+	playlist_source = rb_display_page_menu_get_page (model, parameter);
+	if (playlist_source != NULL) {
+		entries = rb_source_copy (mgr->priv->selected_source);
+		rb_source_paste (RB_SOURCE (playlist_source), entries);
+
+		g_list_foreach (entries, (GFunc)rhythmdb_entry_unref, NULL);
+		g_list_free (entries);
+	}
+
+	g_object_unref (model);
+	g_object_unref (playlist_source);
 }
 
 static gboolean
@@ -1352,10 +1358,14 @@ GList *
 rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
 {
 	GList *playlists = NULL;
+	RBDisplayPageModel *page_model;
 
-	gtk_tree_model_foreach (GTK_TREE_MODEL (mgr->priv->page_model),
+	g_object_get (mgr->priv->shell, "display-page-model", &page_model, NULL);
+	gtk_tree_model_foreach (GTK_TREE_MODEL (page_model),
 				(GtkTreeModelForeachFunc)list_playlists_cb,
 				&playlists);
+	g_object_unref (page_model);
+
 	return g_list_reverse (playlists);
 }
 
@@ -1434,14 +1444,17 @@ static RBSource *
 _get_playlist_by_name (RBPlaylistManager *mgr,
 		       const char *name)
 {
+	RBDisplayPageModel *page_model;
 	FindPlaylistData d;
 
 	d.name = name;
 	d.source = NULL;
 
-	gtk_tree_model_foreach (GTK_TREE_MODEL (mgr->priv->page_model),
+	g_object_get (mgr->priv->shell, "display-page-model", &page_model, NULL);
+	gtk_tree_model_foreach (GTK_TREE_MODEL (page_model),
 				(GtkTreeModelForeachFunc)find_playlist_by_name_cb,
 				&d);
+	g_object_unref (page_model);
 	return d.source;
 }
 
@@ -1720,47 +1733,20 @@ static const GDBusInterfaceVTable playlist_manager_vtable = {
 };
 
 static void
-rb_playlist_manager_set_uimanager (RBPlaylistManager *mgr,
-				   GtkUIManager *uimanager)
-{
-	if (mgr->priv->uimanager != NULL) {
-		if (mgr->priv->actiongroup != NULL) {
-			gtk_ui_manager_remove_action_group (mgr->priv->uimanager,
-							    mgr->priv->actiongroup);
-		}
-		g_object_unref (mgr->priv->uimanager);
-	}
-
-	mgr->priv->uimanager = uimanager;
-
-	if (mgr->priv->actiongroup == NULL) {
-		mgr->priv->actiongroup = gtk_action_group_new ("PlaylistManagerActions");
-		gtk_action_group_set_translation_domain (mgr->priv->actiongroup,
-							 GETTEXT_PACKAGE);
-		gtk_action_group_add_actions (mgr->priv->actiongroup,
-					      rb_playlist_manager_actions,
-					      rb_playlist_manager_n_actions,
-					      mgr);
-	}
-
-	gtk_ui_manager_insert_action_group (mgr->priv->uimanager,
-					    mgr->priv->actiongroup,
-					    0);
-}
-
-static void
 rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 				RBSource *source)
 {
+	GApplication *app;
 	gboolean playlist_active;
 	gboolean playlist_local = FALSE;
 	gboolean party_mode;
 	gboolean can_save;
-	gboolean can_delete;
 	gboolean can_edit;
 	gboolean can_rename;
 	gboolean can_shuffle;
-	GtkAction *action;
+	GAction *gaction;
+
+	app = g_application_get_default ();
 
 	party_mode = rb_shell_get_party_mode (mgr->priv->shell);
 
@@ -1775,38 +1761,27 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 	}
 
 	can_save = playlist_local && !party_mode;
-	action = gtk_action_group_get_action (mgr->priv->actiongroup,
-					      "MusicPlaylistSavePlaylist");
-	gtk_action_set_visible (action, can_save);
-
-	can_delete = (playlist_local && !party_mode &&
-		      !RB_IS_PLAY_QUEUE_SOURCE (mgr->priv->selected_source));
-	action = gtk_action_group_get_action (mgr->priv->actiongroup,
-					      "MusicPlaylistDeletePlaylist");
-	gtk_action_set_visible (action, can_delete);
+	gaction = g_action_map_lookup_action (G_ACTION_MAP (app), "playlist-save");
+	g_object_set (gaction, "enabled", can_save, NULL);
 
 	can_edit = (playlist_local && RB_IS_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source) &&
 		    !party_mode);
-	action = gtk_action_group_get_action (mgr->priv->actiongroup,
-					      "EditAutomaticPlaylist");
-	gtk_action_set_visible (action, can_edit);
+	gaction = g_action_map_lookup_action (G_ACTION_MAP (app), "playlist-edit");
+	g_object_set (gaction, "enabled", can_edit, NULL);
 
 	can_rename = playlist_local && rb_source_can_rename (mgr->priv->selected_source);
-	action = gtk_action_group_get_action (mgr->priv->actiongroup,
-					      "MusicPlaylistRenamePlaylist");
-	gtk_action_set_visible (action, can_rename);
+	gaction = g_action_map_lookup_action (G_ACTION_MAP (app), "playlist-rename");
+	g_object_set (gaction, "enabled", can_rename, NULL);
 
 	can_shuffle = RB_IS_STATIC_PLAYLIST_SOURCE (mgr->priv->selected_source);
-	action = gtk_action_group_get_action (mgr->priv->actiongroup,
-					      "ShufflePlaylist");
-	gtk_action_set_sensitive (action, can_shuffle);
+	gaction = g_action_map_lookup_action (G_ACTION_MAP (app), "playlist-shuffle");
+	g_object_set (gaction, "enabled", can_shuffle, NULL);
 }
 
 static void
 rb_playlist_manager_set_shell_internal (RBPlaylistManager *mgr,
 					RBShell           *shell)
 {
-	GtkUIManager *uimanager = NULL;
 	RhythmDB     *db = NULL;
 
 	if (mgr->priv->db != NULL) {
@@ -1814,16 +1789,11 @@ rb_playlist_manager_set_shell_internal (RBPlaylistManager *mgr,
 	}
 
 	mgr->priv->shell = shell;
-
 	if (mgr->priv->shell != NULL) {
-		g_object_get (mgr->priv->shell,
-			      "ui-manager", &uimanager,
-			      "db", &db,
-			      NULL);
+		g_object_get (mgr->priv->shell, "db", &db, NULL);
 	}
 
 	mgr->priv->db = db;
-	rb_playlist_manager_set_uimanager (mgr, uimanager);
 }
 
 static void
@@ -1844,12 +1814,6 @@ rb_playlist_manager_set_property (GObject *object,
 		break;
 	case PROP_SHELL:
 		rb_playlist_manager_set_shell_internal (mgr, g_value_get_object (value));
-		break;
-	case PROP_DISPLAY_PAGE_MODEL:
-		mgr->priv->page_model = g_value_dup_object (value);
-		break;
-	case PROP_DISPLAY_PAGE_TREE:
-		mgr->priv->display_page_tree = g_value_dup_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1875,12 +1839,6 @@ rb_playlist_manager_get_property (GObject *object,
 	case PROP_SHELL:
 		g_value_set_object (value, mgr->priv->shell);
 		break;
-	case PROP_DISPLAY_PAGE_MODEL:
-		g_value_set_object (value, mgr->priv->page_model);
-		break;
-	case PROP_DISPLAY_PAGE_TREE:
-		g_value_set_object (value, mgr->priv->display_page_tree);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1891,9 +1849,33 @@ static void
 rb_playlist_manager_constructed (GObject *object)
 {
 	GDBusConnection *bus;
+	GApplication *app;
 	RBPlaylistManager *mgr = RB_PLAYLIST_MANAGER (object);
+	GtkBuilder *builder;
+	GMenuModel *menu;
+
+	GActionEntry actions[] = {
+		{ "playlist-new", new_playlist_action_cb },
+		{ "playlist-new-auto", new_auto_playlist_action_cb },
+		{ "playlist-load", load_playlist_action_cb },
+		{ "playlist-edit", edit_auto_playlist_action_cb },
+		{ "playlist-rename", rename_playlist_action_cb },
+		{ "playlist-queue", queue_playlist_action_cb },
+		{ "playlist-shuffle", shuffle_playlist_action_cb },
+		{ "playlist-save", save_playlist_action_cb },
+		{ "playlist-add-to-new", add_to_new_playlist_action_cb },
+		{ "playlist-add-to", add_to_playlist_action_cb, "s" }
+	};
 
 	RB_CHAIN_GOBJECT_METHOD(rb_playlist_manager_parent_class, constructed, G_OBJECT (mgr));
+
+	app = g_application_get_default ();
+	g_action_map_add_action_entries (G_ACTION_MAP (app), actions, G_N_ELEMENTS (actions), mgr);
+
+	builder = rb_builder_load ("playlist-menu.ui", NULL);
+	menu = G_MENU_MODEL (gtk_builder_get_object (builder, "playlist-menu"));
+	rb_application_add_shared_menu (RB_APPLICATION (app), "playlist-menu", menu);
+	g_object_unref (builder);
 
 	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
 	if (bus) {
@@ -1946,30 +1928,8 @@ rb_playlist_manager_dispose (GObject *object)
 
 	g_return_if_fail (mgr->priv != NULL);
 
-	if (mgr->priv->db != NULL) {
-		g_object_unref (mgr->priv->db);
-		mgr->priv->db = NULL;
-	}
-
-	if (mgr->priv->uimanager != NULL) {
-		g_object_unref (mgr->priv->uimanager);
-		mgr->priv->uimanager = NULL;
-	}
-
-	if (mgr->priv->page_model != NULL) {
-		g_object_unref (mgr->priv->page_model);
-		mgr->priv->page_model = NULL;
-	}
-
-	if (mgr->priv->display_page_tree != NULL) {
-		g_object_unref (mgr->priv->display_page_tree);
-		mgr->priv->display_page_tree = NULL;
-	}
-
-	if (mgr->priv->selected_source != NULL) {
-		g_object_unref (mgr->priv->selected_source);
-		mgr->priv->selected_source = NULL;
-	}
+	g_clear_object (&mgr->priv->db);
+	g_clear_object (&mgr->priv->selected_source);
 
 	G_OBJECT_CLASS (rb_playlist_manager_parent_class)->dispose (object);
 }
@@ -2030,20 +1990,6 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 							      RB_TYPE_SHELL,
 							      G_PARAM_READWRITE));
 
-	g_object_class_install_property (object_class,
-					 PROP_DISPLAY_PAGE_MODEL,
-					 g_param_spec_object ("display-page-model",
-							      "RBDisplayPageModel",
-							      "RBDisplayPageModel",
-							      RB_TYPE_DISPLAY_PAGE_MODEL,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
-					 PROP_DISPLAY_PAGE_TREE,
-					 g_param_spec_object ("display-page-tree",
-							      "RBDisplayPageTree",
-							      "RBDisplayPageTree",
-							      RB_TYPE_DISPLAY_PAGE_TREE,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
 	 * RBPlaylistManager::playlist-added:
 	 * @manager: the #RBPlaylistManager

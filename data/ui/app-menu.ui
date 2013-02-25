@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<interface>
+  <menu id="app-menu">
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">_Add Music</attribute>
+	<attribute name="action">app.library-import</attribute>
+      </item>
+    </section>
+    <section>
+      <submenu>
+	<attribute name="label" translatable="yes">_View</attribute>
+	<section>
+	  <item>
+	    <attribute name="label" translatable="yes">P_arty Mode</attribute>
+	    <attribute name="action">win.party-mode</attribute>
+	    <attribute name="accel">F11</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Side Pane</attribute>
+	    <attribute name="action">win.display-page-tree-visible</attribute>
+	    <attribute name="accel">F9</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Play Queue in Side Pane</attribute>
+	    <attribute name="action">win.queue-as-sidebar</attribute>
+	    <attribute name="accel">&lt;Primary&gt;k</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Status Bar</attribute>
+	    <attribute name="action">win.statusbar-visible</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Song Position Slider</attribute>
+	    <attribute name="action">win.show-song-position-slider</attribute>
+	  </item>
+	  <item>
+	    <attribute name="label" translatable="yes">Album Art</attribute>
+	    <attribute name="action">win.show-album-art</attribute>
+	  </item>
+	</section>
+	<section>
+	  <attribute name="rb-plugin-menu-link">view</attribute>
+	</section>
+      </submenu>
+      <submenu>
+	<attribute name="label" translatable="yes">_Tools</attribute>
+	<attribute name="rb-plugin-menu-link">tools</attribute>
+      </submenu>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">P_lugins</attribute>
+	<attribute name="action">app.plugins</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">_Preferences</attribute>
+	<attribute name="action">app.preferences</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">_Help</attribute>
+	<attribute name="action">app.help</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">_About</attribute>
+	<attribute name="action">app.about</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">_Quit</attribute>
+	<attribute name="action">app.quit</attribute>
+	<attribute name="accel">&lt;Primary&gt;q</attribute>
+      </item>
+    </section>
+  </menu>
+
+</interface>

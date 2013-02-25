@@ -39,15 +39,6 @@ from LyricsConfigureDialog import LyricsConfigureDialog
 import gettext
 gettext.install('rhythmbox', RB.locale_dir())
 
-ui_str = """
-<ui>
-  <menubar name="MenuBar">
-	<menu name="ViewMenu" action="View">
-	  <menuitem name="ViewSongLyrics" action="ViewSongLyrics"/>
-	</menu>
-  </menubar>
-</ui>
-"""
 
 LYRIC_TITLE_STRIP=["\(live[^\)]*\)", "\(acoustic[^\)]*\)", "\([^\)]*mix\)", "\([^\)]*version\)", "\([^\)]*edit\)", "\(feat[^\)]*\)"]
 LYRIC_TITLE_REPLACE=[("/", "-"), (" & ", " and ")]
@@ -344,18 +335,16 @@ class LyricsDisplayPlugin(GObject.Object, Peas.Activatable):
 
 	def do_activate (self):
 		shell = self.object
-		self.action = Gtk.Action (name='ViewSongLyrics', label=_("Song L_yrics"),
-					  tooltip=_("Display lyrics for the playing song"),
-					  stock_id='rb-song-lyrics')
-		self.activate_id = self.action.connect ('activate', self.show_song_lyrics, shell)
-		
-		self.action_group = Gtk.ActionGroup (name='SongLyricsPluginActions')
-		self.action_group.add_action_with_accel (self.action, "<control>L")
-		
-		uim = shell.props.ui_manager
-		uim.insert_action_group (self.action_group, 0)
-		self.ui_id = uim.add_ui_from_string (ui_str)
-		uim.ensure_update ()
+
+		self.action = Gio.SimpleAction.new("view-lyrics", None)
+		self.action.connect("activate", self.show_song_lyrics, shell)
+		# set accelerator?
+		window = shell.props.window
+		window.add_action(self.action)
+
+		app = shell.props.application
+		item = Gio.MenuItem.new(label=_("Song Lyrics"), detailed_action="win.view-lyrics")
+		app.add_plugin_menu_item("view", "view-lyrics", item)
 
 		sp = shell.props.shell_player
 		self.pec_id = sp.connect('playing-song-changed', self.playing_entry_changed)
@@ -369,11 +358,9 @@ class LyricsDisplayPlugin(GObject.Object, Peas.Activatable):
 	def do_deactivate (self):
 		shell = self.object
 			
-		uim = shell.props.ui_manager
-		uim.remove_ui (self.ui_id)
-		uim.remove_action_group (self.action_group)
-
-		self.action_group = None
+		app = shell.props.application
+		app.remove_plugin_menu_item("view", "view-lyrics")
+		app.remove_action("view-lyrics")
 		self.action = None
 
 		sp = shell.props.shell_player
@@ -388,7 +375,7 @@ class LyricsDisplayPlugin(GObject.Object, Peas.Activatable):
 			self.window = None
 
 
-	def show_song_lyrics (self, action, shell):
+	def show_song_lyrics (self, action, parameter, shell):
 
 		if self.window is not None:
 			self.window.destroy ()
@@ -404,11 +391,11 @@ class LyricsDisplayPlugin(GObject.Object, Peas.Activatable):
 
 	def playing_entry_changed (self, sp, entry):
 		if entry is not None:
-			self.action.set_sensitive (True)
+			self.action.set_enabled (True)
 			if self.window is not None:
 				self.window.update_song_lyrics(entry)
 		else:
-			self.action.set_sensitive (False)
+			self.action.set_enabled (False)
 
 	def window_deleted (self, window):
 		print "lyrics window destroyed"

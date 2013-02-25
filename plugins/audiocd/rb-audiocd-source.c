@@ -48,6 +48,7 @@
 #include "rb-shell-player.h"
 #include "rb-audiocd-info.h"
 #include "rb-musicbrainz-lookup.h"
+#include "rb-application.h"
 
 enum
 {
@@ -62,7 +63,6 @@ static void rb_audiocd_device_source_init (RBDeviceSourceInterface *interface);
 static void impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
 static void impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
 
-static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
 
 static guint impl_want_uri (RBSource *source, const char *uri);
@@ -78,8 +78,9 @@ static gboolean update_disc_number_cb (GtkWidget *widget, GdkEventFocus *event, 
 
 static void rb_audiocd_source_load_disc_info (RBAudioCdSource *source);
 static gboolean rb_audiocd_source_load_metadata (RBAudioCdSource *source);
-static void reload_metadata_cmd (GtkAction *action, RBAudioCdSource *source);
-static void copy_tracks_cmd (GtkAction *action, RBAudioCdSource *source);
+
+static void reload_metadata_action_cb (GSimpleAction *, GVariant *, gpointer);
+static void copy_tracks_action_cb (GSimpleAction *, GVariant *, gpointer);
 
 static void extract_cell_data_func (GtkTreeViewColumn *column,
 				    GtkCellRenderer *renderer,
@@ -118,8 +119,6 @@ struct _RBAudioCdSourcePrivate
 	GtkWidget *year_entry;
 	GtkWidget *genre_entry;
 	GtkWidget *disc_number_entry;
-
-	GtkActionGroup *action_group;
 };
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (
@@ -138,15 +137,6 @@ typedef struct _RhythmDBEntryTypeClass RBAudioCdEntryTypeClass;
 GType rb_audiocd_entry_type_get_type (void);
 
 G_DEFINE_DYNAMIC_TYPE (RBAudioCdEntryType, rb_audiocd_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
-
-static GtkActionEntry rb_audiocd_source_actions[] = {
-	{ "AudioCdCopyTracks", GTK_STOCK_CDROM, N_("_Extract to Library"), NULL,
-	  N_("Copy tracks to the library"),
-	  G_CALLBACK (copy_tracks_cmd) },
-	{ "AudioCdSourceReloadMetadata", GTK_STOCK_REFRESH, N_("Reload"), NULL,
-	N_("Reload Album Information"),
-	G_CALLBACK (reload_metadata_cmd) },
-};
 
 static void
 rb_audiocd_entry_type_class_init (RBAudioCdEntryTypeClass *klass)
@@ -198,7 +188,6 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 	object_class->set_property = impl_set_property;
 	object_class->get_property = impl_get_property;
 
-	page_class->show_popup = impl_show_popup;
 	page_class->delete_thyself = impl_delete_thyself;
 
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
@@ -257,12 +246,7 @@ rb_audiocd_source_finalize (GObject *object)
 static void
 rb_audiocd_source_dispose (GObject *object)
 {
-	RBAudioCdSource *source = RB_AUDIOCD_SOURCE (object);
-
-	if (source->priv->action_group != NULL) {
-		g_object_unref (source->priv->action_group);
-		source->priv->action_group = NULL;
-	}
+	/*RBAudioCdSource *source = RB_AUDIOCD_SOURCE (object);*/
 
 	G_OBJECT_CLASS (rb_audiocd_source_parent_class)->dispose (object);
 }
@@ -300,11 +284,10 @@ rb_audiocd_source_constructed (GObject *object)
 	RBAudioCdSource *source;
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *extract;
-	GtkUIManager *ui_manager;
+	GtkAccelGroup *accel_group;
 	GtkBuilder *builder;
 	GtkWidget *grid;
 	GtkWidget *widget;
-	GtkAction *action;
 	GObject *plugin;
 	RBShell *shell;
 	RBShellPlayer *shell_player;
@@ -313,8 +296,11 @@ rb_audiocd_source_constructed (GObject *object)
 	RhythmDBQuery *query;
 	RhythmDBEntryType *entry_type;
 	RBSourceToolbar *toolbar;
-	char *ui_file;
 	int toggle_width;
+	GActionEntry actions[] = {
+		{ "audiocd-copy-tracks", copy_tracks_action_cb },
+		{ "audiocd-reload-metadata", reload_metadata_action_cb }
+	};
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audiocd_source_parent_class, constructed, object);
 	source = RB_AUDIOCD_SOURCE (object);
@@ -326,28 +312,14 @@ rb_audiocd_source_constructed (GObject *object)
 	g_object_get (shell,
 		      "db", &db,
 		      "shell-player", &shell_player,
-		      "ui-manager", &ui_manager,
+		      "accel-group", &accel_group,
 		      NULL);
 
-	source->priv->action_group =
-		_rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
-							"AudioCdActions",
-							NULL, 0, NULL);
-	_rb_action_group_add_display_page_actions (source->priv->action_group,
-						   G_OBJECT (shell),
-						   rb_audiocd_source_actions,
-						   G_N_ELEMENTS (rb_audiocd_source_actions));
-	g_object_unref (shell);
-
-	action = gtk_action_group_get_action (source->priv->action_group,
-					      "AudioCdCopyTracks");
-	/* Translators: this is the toolbar button label
-	   for Copy to Library action. */
-	g_object_set (action, "short-label", _("Extract"), NULL);
+	_rb_add_display_page_actions (G_ACTION_MAP (g_application_get_default ()), G_OBJECT (shell), actions, G_N_ELEMENTS (actions));
 
 	/* source toolbar */
-	toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), ui_manager);
-	g_object_unref (ui_manager);
+	toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), accel_group);
+	g_object_unref (accel_group);
 
 	g_object_get (source, "entry-type", &entry_type, NULL);
 	query = rhythmdb_query_parse (db,
@@ -415,12 +387,8 @@ rb_audiocd_source_constructed (GObject *object)
 
 	/* set up the album info widgets */
 	g_object_get (source, "plugin", &plugin, NULL);
-	ui_file = rb_find_plugin_data_file (G_OBJECT (plugin), "album-info.ui");
-	g_assert (ui_file != NULL);
+	builder = rb_builder_load_plugin_file (G_OBJECT (plugin), "album-info.ui", NULL);
 	g_object_unref (plugin);
-
-	builder = rb_builder_load (ui_file, NULL);
-	g_free (ui_file);
 
 	source->priv->infogrid = GTK_WIDGET (gtk_builder_get_object (builder, "album_info"));
 	g_assert (source->priv->infogrid != NULL);
@@ -466,6 +434,8 @@ rb_audiocd_source_new (GObject *plugin,
 {
 	GObject *source;
 	GSettings *settings;
+	GMenu *toolbar;
+	GtkBuilder *builder;
 	RhythmDBEntryType *entry_type;
 	RhythmDB *db;
 	char *name;
@@ -487,6 +457,10 @@ rb_audiocd_source_new (GObject *plugin,
 	g_object_unref (db);
 	g_free (name);
 
+	builder = rb_builder_load_plugin_file (G_OBJECT (plugin), "audiocd-toolbar.ui", NULL);
+	toolbar = G_MENU (gtk_builder_get_object (builder, "audiocd-toolbar"));
+	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()), toolbar);
+
 	settings = g_settings_new ("org.gnome.rhythmbox.plugins.audiocd");
 	source = g_object_new (RB_TYPE_AUDIOCD_SOURCE,
 			       "entry-type", entry_type,
@@ -496,9 +470,10 @@ rb_audiocd_source_new (GObject *plugin,
 			       "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 			       "show-browser", FALSE,
 			       "settings", g_settings_get_child (settings, "source"),
-			       "toolbar-path", "/AudioCdSourceToolBar",
+			       "toolbar-menu", toolbar,
 			       NULL);
 	g_object_unref (settings);
+	g_object_unref (builder);
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
@@ -1025,10 +1000,9 @@ rb_audiocd_source_load_metadata (RBAudioCdSource *source)
 }
 
 static void
-reload_metadata_cmd (GtkAction *action, RBAudioCdSource *source)
+reload_metadata_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
-	g_return_if_fail (RB_IS_AUDIOCD_SOURCE (source));
-
+	RBAudioCdSource *source = RB_AUDIOCD_SOURCE (data);
 	rb_audiocd_source_load_metadata (source);
 }
 
@@ -1206,13 +1180,6 @@ rb_audiocd_is_mount_audiocd (GMount *mount)
 		g_strfreev (types);
 	}
 	return result;
-}
-
-static gboolean
-impl_show_popup (RBDisplayPage *page)
-{
-	_rb_display_page_show_popup (page, "/AudioCdSourcePopup");
-	return TRUE;
 }
 
 static guint
@@ -1469,8 +1436,9 @@ copy_entry (RhythmDBQueryModel *model,
 }
 
 static void
-copy_tracks_cmd (GtkAction *action, RBAudioCdSource *source)
+copy_tracks_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
+	RBAudioCdSource *source = RB_AUDIOCD_SOURCE (data);
 	RBShell *shell;
 	RBSource *library;
 	RhythmDBQueryModel *model;

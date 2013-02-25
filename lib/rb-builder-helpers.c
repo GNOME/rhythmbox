@@ -80,6 +80,33 @@ rb_builder_load (const char *file, gpointer user_data)
 	return builder;
 }
 
+/**
+ * rb_builder_load_plugin_file:
+ * @plugin: #RBPlugin instance
+ * @file: name of file to load
+ * @user_data: user data to pass to autoconnected signal handlers
+ *
+ * Like #rb_builder_load, except it finds files associated with
+ * plugins as well as those in the core data directories.
+ *
+ * Return value: (transfer full): #GtkBuilder object built from the file
+ */
+GtkBuilder *
+rb_builder_load_plugin_file (GObject *plugin, const char *file, gpointer user_data)
+{
+	char *path;
+	GtkBuilder *builder;
+
+	path = rb_find_plugin_data_file (plugin, file);
+	if (path == NULL) {
+		return NULL;
+	}
+
+	builder = rb_builder_load (path, user_data);
+	g_free (path);
+	return builder;
+}
+
 
 /**
  * rb_builder_boldify_label:
@@ -136,5 +163,4 @@ rb_combo_box_hyphen_separator_func (GtkTreeModel *model,
 
 	return (strcmp (s, "-") == 0);
 }
-
 

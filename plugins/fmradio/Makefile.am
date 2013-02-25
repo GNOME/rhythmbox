@@ -38,12 +38,12 @@ INCLUDES = \
 plugin_in_files = fmradio.plugin.in
 %.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-uixmldir = $(plugindatadir)
-uixml_DATA = fmradio-ui.xml
+gtkbuilderdir = $(plugindatadir)
+gtkbuilder_DATA = fmradio-toolbar.ui fmradio-popup.ui
 
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
-EXTRA_DIST = $(uixml_DATA) $(plugin_in_files)
+EXTRA_DIST = $(gtkbuilder_DATA) $(plugin_in_files)
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

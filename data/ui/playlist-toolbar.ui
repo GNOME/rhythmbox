@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<interface>
+  <menu id="playlist-toolbar">
+    <section>
+      <submenu>
+	<attribute name="label" translatable="yes">Edit</attribute>
+	<attribute name="rb-menu-link">edit-menu</attribute>
+      </submenu>
+      <item>
+	<attribute name="label" translatable="yes">Browse</attribute>
+	<attribute name="rb-property-bind">show-browser</attribute>
+	<attribute name="accel">&lt;Primary&gt;b</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">View All</attribute>
+	<attribute name="action">app.source-view-all</attribute>
+      </item>
+      <submenu>
+	<attribute name="label" translatable="yes">Playlist</attribute>
+	<attribute name="rb-menu-link">playlist-menu</attribute>
+      </submenu>
+    </section>
+    <section>
+      <attribute name="rb-plugin-menu-link">playlist-toolbar</attribute>
+    </section>
+  </menu>
+</interface>

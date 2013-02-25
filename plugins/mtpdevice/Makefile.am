@@ -51,16 +51,14 @@ plugin_in_files = mtpdevice.plugin.in
 
 %.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-uixmldir = $(plugindatadir)
-uixml_DATA = mtp-ui.xml
-
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
 gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA = 					\
-	mtp-info.ui
+	mtp-info.ui					\
+	mtp-toolbar.ui
 
-EXTRA_DIST = $(uixml_DATA) $(plugin_in_files) $(gtkbuilder_DATA)
+EXTRA_DIST = $(plugin_in_files) $(gtkbuilder_DATA)
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

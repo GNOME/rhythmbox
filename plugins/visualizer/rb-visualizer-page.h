@@ -53,8 +53,8 @@ struct _RBVisualizerPage
 	GtkWidget *fullscreen;
 	GtkWidget *fullscreen_embed;
 
-	GtkWidget *popup;
-	GtkToggleAction *fullscreen_action;
+	GMenuModel *popup_menu;
+	GSimpleAction *fullscreen_action;
 	gboolean setting_state;
 };
 
@@ -75,8 +75,8 @@ void           _rb_visualizer_page_register_type (GTypeModule *module);
 
 RBVisualizerPage        *rb_visualizer_page_new              (GObject *plugin,
 							      RBShell *shell,
-							      GtkToggleAction *fullscreen,
-							      GtkWidget *popup);
+							      GSimpleAction *fullscreen,
+							      GMenuModel *popup_menu);
 
 G_END_DECLS
 

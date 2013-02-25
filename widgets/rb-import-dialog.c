@@ -381,7 +381,7 @@ pulse_cb (RBImportDialog *dialog)
 static void
 start_scanning (RBImportDialog *dialog)
 {
-	rb_debug ("starting %s\n", dialog->priv->current_uri);
+	rb_debug ("starting %s", dialog->priv->current_uri);
 	dialog->priv->import_job = rhythmdb_import_job_new (dialog->priv->db,
 							    dialog->priv->entry_type,
 							    dialog->priv->ignore_type,

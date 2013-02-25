@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<interface>
+  <menu id="playlist-popup">
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Add to Queue</attribute>
+	<attribute name="action">app.clipboard-add-to-queue</attribute>
+      </item>
+      <submenu>
+	<attribute name="label" translatable="yes">Add to Playlist</attribute>
+	<attribute name="rb-playlist-menu-link"></attribute>
+      </submenu>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Copy</attribute>
+	<attribute name="action">app.clipboard-copy</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Cut</attribute>
+	<attribute name="action">app.clipboard-cut</attribute>
+      </item>
+    </section>
+    <section>
+      <section>
+	<attribute name="rb-menu-link">delete-menu</attribute>
+      </section>	
+      <item>
+	<attribute name="label" translatable="yes">_Move to Trash</attribute>
+	<attribute name="action">app.clipboard-trash</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Browse this Genre</attribute>
+	<attribute name="action">app.browser-select-genre</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Browse this Artist</attribute>
+	<attribute name="action">app.browser-select-artist</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Browse this Album</attribute>
+	<attribute name="action">app.browser-select-album</attribute>
+      </item>
+    </section>
+    <section>
+      <attribute name="rb-plugin-menu-link">playlist-popup</attribute>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Pr_operties</attribute>
+	<attribute name="action">app.clipboard-properties</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

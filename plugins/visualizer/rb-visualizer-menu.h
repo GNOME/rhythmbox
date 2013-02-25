@@ -47,7 +47,7 @@ extern const VisualizerQuality rb_visualizer_quality[];
 
 int	rb_visualizer_menu_clip_quality 	(int value);
 
-GtkWidget *rb_visualizer_create_popup_menu 	(GtkToggleAction *fullscreen_action);
+GMenu *rb_visualizer_create_popup_menu 	(const char *fullscreen_action);
 
 G_END_DECLS
 

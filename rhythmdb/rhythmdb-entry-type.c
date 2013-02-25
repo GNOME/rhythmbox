@@ -38,8 +38,7 @@ enum
 	PROP_NAME,
 	PROP_SAVE_TO_DISK,
 	PROP_TYPE_DATA_SIZE,
-	PROP_CATEGORY,
-	PROP_HAS_PLAYLISTS		/* temporary */
+	PROP_CATEGORY
 };
 
 static void rhythmdb_entry_type_class_init (RhythmDBEntryTypeClass *klass);
@@ -53,7 +52,6 @@ struct _RhythmDBEntryTypePrivate
 	gboolean save_to_disk;
 	guint entry_type_data_size;
 	RhythmDBEntryCategory category;
-	gboolean has_playlists;
 };
 
 G_DEFINE_TYPE (RhythmDBEntryType, rhythmdb_entry_type, G_TYPE_OBJECT)
@@ -235,9 +233,6 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 	case PROP_CATEGORY:
 		etype->priv->category = g_value_get_enum (value);
 		break;
-	case PROP_HAS_PLAYLISTS:
-		etype->priv->has_playlists = g_value_get_boolean (value);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -264,9 +259,6 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 		break;
 	case PROP_CATEGORY:
 		g_value_set_enum (value, etype->priv->category);
-		break;
-	case PROP_HAS_PLAYLISTS:
-		g_value_set_boolean (value, etype->priv->has_playlists);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -358,18 +350,6 @@ rhythmdb_entry_type_class_init (RhythmDBEntryTypeClass *klass)
 							    RHYTHMDB_TYPE_ENTRY_CATEGORY,
 							    RHYTHMDB_ENTRY_NORMAL,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	/**
-	 * RhythmDBEntryType:has-playlists:
-	 *
-	 * If %TRUE, entries of this type can be added to playlists.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_HAS_PLAYLISTS,
-					 g_param_spec_boolean ("has-playlists",
-							       "has playlists",
-							       "whether this type of entry has playlists",
-							       FALSE,
-							       G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RhythmDBEntryTypePrivate));
 }

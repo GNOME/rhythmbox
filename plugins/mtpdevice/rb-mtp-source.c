@@ -55,6 +55,7 @@
 #include "rb-sync-settings.h"
 #include "rb-gst-media-types.h"
 #include "rb-ext-db.h"
+#include "rb-application.h"
 
 #include "rb-mtp-source.h"
 #include "rb-mtp-thread.h"
@@ -76,7 +77,6 @@ static void rb_mtp_source_get_property (GObject *object,
 
 static void impl_delete (RBSource *asource);
 static RBTrackTransferBatch *impl_paste (RBSource *asource, GList *entries);
-static gboolean impl_show_popup (RBDisplayPage *page);
 static gboolean impl_uri_is_source (RBSource *asource, const char *uri);
 
 static gboolean impl_track_added (RBTransferTarget *target,
@@ -187,10 +187,8 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 	object_class->set_property = rb_mtp_source_set_property;
 	object_class->get_property = rb_mtp_source_get_property;
 
-	page_class->show_popup = impl_show_popup;
 	page_class->selected = impl_selected;
 
-	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
@@ -379,6 +377,7 @@ rb_mtp_source_constructed (GObject *object)
 	GtkIconTheme *theme;
 	GdkPixbuf *pixbuf;
 	gint size;
+
 
 	RB_CHAIN_GOBJECT_METHOD (rb_mtp_source_parent_class, constructed, object);
 	source = RB_MTP_SOURCE (object);
@@ -577,6 +576,8 @@ rb_mtp_source_new (RBShell *shell,
 	RhythmDBEntryType *entry_type;
 	RhythmDB *db = NULL;
 	GSettings *settings;
+	GtkBuilder *builder;
+	GMenu *toolbar;
 	char *name = NULL;
 
 	g_object_get (shell, "db", &db, NULL);
@@ -590,6 +591,10 @@ rb_mtp_source_new (RBShell *shell,
 				   NULL);
 	g_free (name);
 	g_object_unref (db);
+
+	builder = rb_builder_load_plugin_file (plugin, "mtp-toolbar.ui", NULL);
+	toolbar = G_MENU (gtk_builder_get_object (builder, "mtp-toolbar"));
+	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()), toolbar);
 
 	settings = g_settings_new ("org.gnome.rhythmbox.plugins.mtpdevice");
 	source = RB_MTP_SOURCE (g_object_new (RB_TYPE_MTP_SOURCE,
@@ -605,10 +610,11 @@ rb_mtp_source_new (RBShell *shell,
 #endif
 					      "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 					      "settings", g_settings_get_child (settings, "source"),
-					      "toolbar-path", "/MTPSourceToolBar",
+					      "toolbar-menu", toolbar,
 					      "name", _("Media Player"),
 					      NULL));
 	g_object_unref (settings);
+	g_object_unref (builder);
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
@@ -1084,13 +1090,6 @@ impl_paste (RBSource *source, GList *entries)
 	gboolean defer;
 	defer = (ensure_loaded (RB_MTP_SOURCE (source)) == FALSE);
 	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries, defer);
-}
-
-static gboolean
-impl_show_popup (RBDisplayPage *page)
-{
-	_rb_display_page_show_popup (page, "/MTPSourcePopup");
-	return TRUE;
 }
 
 static RhythmDB *

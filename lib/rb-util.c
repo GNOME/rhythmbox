@@ -377,28 +377,6 @@ rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size)
 }
 
 /**
- * rb_gtk_action_popup_menu: (skip):
- * @uimanager: a #GtkUIManager
- * @path: UI path for the popup to display
- *
- * Simple shortcut for getting a popup menu from a #GtkUIManager and
- * displaying it.
- */
-void
-rb_gtk_action_popup_menu (GtkUIManager *uimanager, const char *path)
-{
-	GtkWidget *menu;
-
-	menu = gtk_ui_manager_get_widget (uimanager, path);
-	if (menu == NULL) {
-		g_warning ("Couldn't get menu widget for %s", path);
-	} else {
-		gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 3, 
-				gtk_get_current_event_time ());
-	}
-}
-
-/**
  * rb_is_main_thread:
  *
  * Checks if currently executing on the main thread.
@@ -1349,5 +1327,50 @@ rb_settings_delayed_sync (GSettings *settings, RBDelayedSyncFunc sync_func, gpoi
 		g_object_set_data_full (G_OBJECT (settings), DELAYED_SYNC_ITEM, GUINT_TO_POINTER (id), remove_delayed_sync);
 		g_object_set_data (G_OBJECT (settings), DELAYED_SYNC_FUNC_ITEM, sync_func);
 		g_object_set_data_full (G_OBJECT (settings), DELAYED_SYNC_DATA_ITEM, data, destroy);
+	}
+}
+
+/**
+ * rb_menu_update_link:
+ * @menu: menu to update
+ * @link_attr: attribute indicating the menu link to update
+ * @target: new menu link target
+ *
+ * Updates a submenu link to point to the specified target menu.
+ */
+void
+rb_menu_update_link (GMenu *menu, const char *link_attr, GMenuModel *target)
+{
+	GMenuModel *mm = G_MENU_MODEL (menu);
+	int i;
+
+	for (i = 0; i < g_menu_model_get_n_items (mm); i++) {
+		const char *link;
+		const char *label;
+		GMenuModel *section;
+
+		/* only recurse into sections, not submenus */
+		section = g_menu_model_get_item_link (mm, i, G_MENU_LINK_SECTION);
+		if (section != NULL && G_IS_MENU (section)) {
+			rb_menu_update_link (G_MENU (section), link_attr, target);
+		}
+
+		if (g_menu_model_get_item_attribute (mm, i, link_attr, "s", &link)) {
+			GMenuItem *item;
+
+			g_menu_model_get_item_attribute (mm, i, "label", "s", &label);
+			g_menu_remove (menu, i);
+
+			item = g_menu_item_new (label, NULL);
+			g_menu_item_set_attribute (item, link_attr, "s", "hi");
+			if (target) {
+				g_menu_item_set_link (item, G_MENU_LINK_SUBMENU, target);
+			} else {
+				/* set a nonexistant action name so it gets disabled */
+				g_menu_item_set_detailed_action (item, "nonexistant-action");
+			}
+
+			g_menu_insert_item (menu, i, item);
+		}
 	}
 }

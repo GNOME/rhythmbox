@@ -44,15 +44,13 @@ plugin_in_files = ipod.plugin.in
 
 %.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-uixmldir = $(plugindatadir)
-uixml_DATA = ipod-ui.xml
-
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
 gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA = 					\
 	ipod-info.ui	 				\
-	ipod-init.ui
+	ipod-init.ui					\
+	ipod-toolbar.ui
 
 EXTRA_DIST = $(uixml_DATA) $(plugin_in_files) $(gtkbuilder_DATA)
 

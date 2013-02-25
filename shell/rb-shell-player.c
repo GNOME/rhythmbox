@@ -62,6 +62,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "rb-application.h"
 #include "rb-property-view.h"
 #include "rb-shell-player.h"
 #include "rb-stock-icons.h"
@@ -112,21 +113,6 @@ static void rb_shell_player_get_property (GObject *object,
 					  guint prop_id,
 					  GValue *value,
 					  GParamSpec *pspec);
-
-static void rb_shell_player_cmd_previous (GtkAction *action,
-			                  RBShellPlayer *player);
-static void rb_shell_player_cmd_play (GtkAction *action,
-			              RBShellPlayer *player);
-static void rb_shell_player_cmd_next (GtkAction *action,
-			              RBShellPlayer *player);
-static void rb_shell_player_cmd_volume_up (GtkAction *action,
-					   RBShellPlayer *player);
-static void rb_shell_player_cmd_volume_down (GtkAction *action,
-					     RBShellPlayer *player);
-static void rb_shell_player_shuffle_changed_cb (GtkAction *action,
-						RBShellPlayer *player);
-static void rb_shell_player_repeat_changed_cb (GtkAction *action,
-					       RBShellPlayer *player);
 static void rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 							 RBSource *source,
 							 gboolean sync_entry_view);
@@ -224,9 +210,6 @@ struct RBShellPlayerPrivate
 	gboolean did_retry;
 	GTimeVal last_retry;
 
-	GtkUIManager *ui_manager;
-	GtkActionGroup *actiongroup;
-
 	gboolean handling_error;
 
 	RBPlayer *mmplayer;
@@ -254,7 +237,6 @@ struct RBShellPlayerPrivate
 	float volume;
 
 	guint do_next_idle_id;
-	guint unblock_play_id;
 };
 
 #define RB_SHELL_PLAYER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHELL_PLAYER, RBShellPlayerPrivate))
@@ -292,440 +274,10 @@ enum
 	LAST_SIGNAL
 };
 
-static GtkActionEntry rb_shell_player_actions [] =
-{
-	{ "ControlPrevious", GTK_STOCK_MEDIA_PREVIOUS, N_("Pre_vious"), "<alt>Left",
-	  N_("Start playing the previous song"),
-	  G_CALLBACK (rb_shell_player_cmd_previous) },
-	{ "ControlNext", GTK_STOCK_MEDIA_NEXT, N_("_Next"), "<alt>Right",
-	  N_("Start playing the next song"),
-	  G_CALLBACK (rb_shell_player_cmd_next) },
-	{ "ControlVolumeUp", NULL, N_("_Increase Volume"), "<control>Up",
-	  N_("Increase playback volume"),
-	  G_CALLBACK (rb_shell_player_cmd_volume_up) },
-	{ "ControlVolumeDown", NULL, N_("_Decrease Volume"), "<control>Down",
-	  N_("Decrease playback volume"),
-	  G_CALLBACK (rb_shell_player_cmd_volume_down) },
-};
-static guint rb_shell_player_n_actions = G_N_ELEMENTS (rb_shell_player_actions);
-
-static GtkToggleActionEntry rb_shell_player_toggle_entries [] =
-{
-	{ "ControlPlay", GTK_STOCK_MEDIA_PLAY, N_("_Play"), "<control>space",
-	  N_("Start playback"),
-	  G_CALLBACK (rb_shell_player_cmd_play) },
-	{ "ControlShuffle", GNOME_MEDIA_SHUFFLE, N_("Sh_uffle"), "<control>U",
-	  N_("Play songs in a random order"),
-	  G_CALLBACK (rb_shell_player_shuffle_changed_cb) },
-	{ "ControlRepeat", GNOME_MEDIA_REPEAT, N_("_Repeat"), "<control>R",
-	  N_("Play first song again after all songs are played"),
-	  G_CALLBACK (rb_shell_player_repeat_changed_cb) },
-};
-static guint rb_shell_player_n_toggle_entries = G_N_ELEMENTS (rb_shell_player_toggle_entries);
 
 static guint rb_shell_player_signals[LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE (RBShellPlayer, rb_shell_player, G_TYPE_OBJECT)
-
-static void
-rb_shell_player_class_init (RBShellPlayerClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	object_class->dispose = rb_shell_player_dispose;
-	object_class->finalize = rb_shell_player_finalize;
-	object_class->constructed = rb_shell_player_constructed;
-
-	object_class->set_property = rb_shell_player_set_property;
-	object_class->get_property = rb_shell_player_get_property;
-
-	/**
-	 * RBShellPlayer:source:
-	 *
-	 * The current source that is selected for playback.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_SOURCE,
-					 g_param_spec_object ("source",
-							      "RBSource",
-							      "RBSource object",
-							      RB_TYPE_SOURCE,
-							      G_PARAM_READWRITE));
-
-	/**
-	 * RBShellPlayer:ui-manager:
-	 *
-	 * The GtkUIManager
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_UI_MANAGER,
-					 g_param_spec_object ("ui-manager",
-							      "GtkUIManager",
-							      "GtkUIManager object",
-							      GTK_TYPE_UI_MANAGER,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	/**
-	 * RBShellPlayer:db:
-	 *
-	 * The #RhythmDB
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_DB,
-					 g_param_spec_object ("db",
-							      "RhythmDB",
-							      "RhythmDB object",
-							      RHYTHMDB_TYPE,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	/**
-	 * RBShellPlayer:action-group:
-	 *
-	 * The #GtkActionGroup to use for player actions
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_ACTION_GROUP,
-					 g_param_spec_object ("action-group",
-							      "GtkActionGroup",
-							      "GtkActionGroup object",
-							      GTK_TYPE_ACTION_GROUP,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	/**
-	 * RBShellPlayer:queue-source:
-	 *
-	 * The play queue source
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_QUEUE_SOURCE,
-					 g_param_spec_object ("queue-source",
-							      "RBPlayQueueSource",
-							      "RBPlayQueueSource object",
-							      RB_TYPE_PLAYLIST_SOURCE,
-							      G_PARAM_READWRITE));
-
-	/**
-	 * RBShellPlayer:queue-only:
-	 *
-	 * If %TRUE, activating an entry should only add it to the play queue.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_QUEUE_ONLY,
-					 g_param_spec_boolean ("queue-only",
-							       "Queue only",
-							       "Activation only adds to queue",
-							       FALSE,
-							       G_PARAM_READWRITE));
-
-	/**
-	 * RBShellPlayer:playing-from-queue:
-	 *
-	 * If %TRUE, the current playing entry came from the play queue.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_PLAYING_FROM_QUEUE,
-					 g_param_spec_boolean ("playing-from-queue",
-							       "Playing from queue",
-							       "Whether playing from the play queue or not",
-							       FALSE,
-							       G_PARAM_READABLE));
-
-	/**
-	 * RBShellPlayer:player:
-	 *
-	 * The player backend object (an object implementing the #RBPlayer interface).
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_PLAYER,
-					 g_param_spec_object ("player",
-							      "RBPlayer",
-							      "RBPlayer object",
-							      G_TYPE_OBJECT,
-							      G_PARAM_READABLE));
-
-	/**
-	 * RBShellPlayer:play-order:
-	 *
-	 * The current play order object.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_PLAY_ORDER,
-					 g_param_spec_string ("play-order",
-							      "play-order",
-							      "What play order to use",
-							      "linear",
-							      G_PARAM_READABLE));
-	/**
-	 * RBShellPlayer:playing:
-	 *
-	 * Whether Rhythmbox is currently playing something
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_PLAYING,
-					 g_param_spec_boolean ("playing",
-							       "playing",
-							      "Whether Rhythmbox is currently playing",
-							       FALSE,
-							       G_PARAM_READABLE));
-	/**
-	 * RBShellPlayer:volume:
-	 *
-	 * The current playback volume (between 0.0 and 1.0)
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_VOLUME,
-					 g_param_spec_float ("volume",
-							     "volume",
-							     "Current playback volume",
-							     0.0f, 1.0f, 1.0f,
-							     G_PARAM_READWRITE));
-
-	/**
-	 * RBShellPlayer:header:
-	 *
-	 * The #RBHeader object
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_HEADER,
-					 g_param_spec_object ("header",
-							      "RBHeader",
-							      "RBHeader object",
-							      RB_TYPE_HEADER,
-							      G_PARAM_READWRITE));
-	/**
-	 * RBShellPlayer:mute:
-	 *
-	 * Whether playback is currently muted.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_MUTE,
-					 g_param_spec_boolean ("mute",
-							       "mute",
-							       "Whether playback is muted",
-							       FALSE,
-							       G_PARAM_READWRITE));
-	/**
-	 * RBShellPlayer:has-next:
-	 *
-	 * Whether there is a track to play after the current track.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_HAS_NEXT,
-					 g_param_spec_boolean ("has-next",
-							       "has-next",
-							       "Whether there is a next track",
-							       FALSE,
-							       G_PARAM_READABLE));
-	/**
-	 * RBShellPlayer:has-prev:
-	 *
-	 * Whether there was a previous track before the current track.
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_HAS_PREV,
-					 g_param_spec_boolean ("has-prev",
-							       "has-prev",
-							       "Whether there is a previous track",
-							       FALSE,
-							       G_PARAM_READABLE));
-
-	/**
-	 * RBShellPlayer::window-title-changed:
-	 * @player: the #RBShellPlayer
-	 * @title: the new window title
-	 *
-	 * Emitted when the main window title text should be changed
-	 */
-	rb_shell_player_signals[WINDOW_TITLE_CHANGED] =
-		g_signal_new ("window_title_changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellPlayerClass, window_title_changed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_STRING);
-
-	/**
-	 * RBShellPlayer::elapsed-changed:
-	 * @player: the #RBShellPlayer
-	 * @elapsed: the new playback position in seconds
-	 *
-	 * Emitted when the playback position changes.
-	 */
-	rb_shell_player_signals[ELAPSED_CHANGED] =
-		g_signal_new ("elapsed_changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellPlayerClass, elapsed_changed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__UINT,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_UINT);
-
-	/**
-	 * RBShellPlayer::playing-source-changed:
-	 * @player: the #RBShellPlayer
-	 * @source: the #RBSource that is now playing
-	 *
-	 * Emitted when a new #RBSource instance starts playing
-	 */
-	rb_shell_player_signals[PLAYING_SOURCE_CHANGED] =
-		g_signal_new ("playing-source-changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_source_changed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
-			      G_TYPE_NONE,
-			      1,
-			      RB_TYPE_SOURCE);
-
-	/**
-	 * RBShellPlayer::playing-changed:
-	 * @player: the #RBShellPlayer
-	 * @playing: flag indicating playback state
-	 *
-	 * Emitted when playback either stops or starts.
-	 */
-	rb_shell_player_signals[PLAYING_CHANGED] =
-		g_signal_new ("playing-changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_changed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOOLEAN,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_BOOLEAN);
-
-	/**
-	 * RBShellPlayer::playing-song-changed:
-	 * @player: the #RBShellPlayer
-	 * @entry: the new playing #RhythmDBEntry
-	 *
-	 * Emitted when the playing database entry changes
-	 */
-	rb_shell_player_signals[PLAYING_SONG_CHANGED] =
-		g_signal_new ("playing-song-changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_song_changed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOXED,
-			      G_TYPE_NONE,
-			      1,
-			      RHYTHMDB_TYPE_ENTRY);
-
-	/**
-	 * RBShellPlayer::playing-uri-changed:
-	 * @player: the #RBShellPlayer
-	 * @uri: the URI of the new playing entry
-	 *
-	 * Emitted when the playing database entry changes, providing the
-	 * URI of the entry.
-	 */
-	rb_shell_player_signals[PLAYING_URI_CHANGED] =
-		g_signal_new ("playing-uri-changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_uri_changed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_STRING);
-
-	/**
-	 * RBShellPlayer::playing-song-property-changed:
-	 * @player: the #RBShellPlayer
-	 * @uri: the URI of the playing entry
-	 * @property: the name of the property that changed
-	 * @old: the previous value for the property
-	 * @newvalue: the new value of the property
-	 *
-	 * Emitted when a property of the playing database entry changes.
-	 */
-	rb_shell_player_signals[PLAYING_SONG_PROPERTY_CHANGED] =
-		g_signal_new ("playing-song-property-changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_song_property_changed),
-			      NULL, NULL,
-			      rb_marshal_VOID__STRING_STRING_POINTER_POINTER,
-			      G_TYPE_NONE,
-			      4,
-			      G_TYPE_STRING, G_TYPE_STRING,
-			      G_TYPE_VALUE, G_TYPE_VALUE);
-
-	/**
-	 * RBShellPlayer::elapsed-nano-changed:
-	 * @player: the #RBShellPlayer
-	 * @elapsed: the new playback position in nanoseconds
-	 *
-	 * Emitted when the playback position changes.  Only use this (as opposed to
-	 * elapsed-changed) when you require subsecond precision.  This signal will be
-	 * emitted multiple times per second.
-	 */
-	rb_shell_player_signals[ELAPSED_NANO_CHANGED] =
-		g_signal_new ("elapsed-nano-changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBShellPlayerClass, elapsed_nano_changed),
-			      NULL, NULL,
-			      rb_marshal_VOID__INT64,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_INT64);
-
-	g_type_class_add_private (klass, sizeof (RBShellPlayerPrivate));
-}
-
-static void
-rb_shell_player_constructed (GObject *object)
-{
-	RBShellPlayer *player;
-	GtkAction *action;
-
-	RB_CHAIN_GOBJECT_METHOD (rb_shell_player_parent_class, constructed, object);
-
-	player = RB_SHELL_PLAYER (object);
-
-	gtk_action_group_add_actions (player->priv->actiongroup,
-				      rb_shell_player_actions,
-				      rb_shell_player_n_actions,
-				      player);
-	gtk_action_group_add_toggle_actions (player->priv->actiongroup,
-					     rb_shell_player_toggle_entries,
-					     rb_shell_player_n_toggle_entries,
-					     player);
-
-	player_settings_changed_cb (player->priv->settings, "transition-time", player);
-	player_settings_changed_cb (player->priv->settings, "play-order", player);
-
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "ControlPlay");
-	g_object_set (action, "is-important", TRUE, NULL);
-
-	action = gtk_action_group_get_action (player->priv->actiongroup, "ControlPrevious");
-	g_object_bind_property (player, "has-prev", action, "sensitive", G_BINDING_DEFAULT);
-	action = gtk_action_group_get_action (player->priv->actiongroup, "ControlNext");
-	g_object_bind_property (player, "has-next", action, "sensitive", G_BINDING_DEFAULT);
-
-	player->priv->syncing_state = TRUE;
-	rb_shell_player_set_playing_source (player, NULL);
-	rb_shell_player_sync_play_order (player);
-	rb_shell_player_sync_control_state (player);
-	rb_shell_player_sync_volume (player, FALSE, TRUE);
-	player->priv->syncing_state = FALSE;
-
-	g_signal_connect (player,
-			  "notify::playing",
-			  G_CALLBACK (rb_shell_player_playing_changed_cb),
-			  NULL);
-}
 
 static void
 volume_pre_unmount_cb (GVolumeMonitor *monitor,
@@ -991,446 +543,6 @@ rb_shell_player_handle_redirect (RBPlayer *player,
 	rb_shell_player_open_location (shell_player, entry, RB_PLAYER_PLAY_REPLACE, NULL);
 }
 
-static void
-rb_shell_player_init (RBShellPlayer *player)
-{
-	GError *error = NULL;
-
-	player->priv = RB_SHELL_PLAYER_GET_PRIVATE (player);
-
-	player->priv->settings = g_settings_new ("org.gnome.rhythmbox.player");
-	player->priv->ui_settings = g_settings_new ("org.gnome.rhythmbox");
-	g_signal_connect_object (player->priv->settings,
-				 "changed",
-				 G_CALLBACK (player_settings_changed_cb),
-				 player, 0);
-
-	player->priv->play_orders = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify)_play_order_description_free);
-	
-	rb_shell_player_add_play_order (player, "linear", N_("Linear"),
-					RB_TYPE_LINEAR_PLAY_ORDER, FALSE);
-	rb_shell_player_add_play_order (player, "linear-loop", N_("Linear looping"),
-					RB_TYPE_LINEAR_PLAY_ORDER_LOOP, FALSE);
-	rb_shell_player_add_play_order (player, "shuffle", N_("Shuffle"),
-					RB_TYPE_SHUFFLE_PLAY_ORDER, FALSE);
-	rb_shell_player_add_play_order (player, "random-equal-weights", N_("Random with equal weights"),
-					RB_TYPE_RANDOM_PLAY_ORDER_EQUAL_WEIGHTS, FALSE);
-	rb_shell_player_add_play_order (player, "random-by-age", N_("Random by time since last play"),
-					RB_TYPE_RANDOM_PLAY_ORDER_BY_AGE, FALSE);
-	rb_shell_player_add_play_order (player, "random-by-rating", N_("Random by rating"),
-					RB_TYPE_RANDOM_PLAY_ORDER_BY_RATING, FALSE);
-	rb_shell_player_add_play_order (player, "random-by-age-and-rating", N_("Random by time since last play and rating"),
-					RB_TYPE_RANDOM_PLAY_ORDER_BY_AGE_AND_RATING, FALSE);
-	rb_shell_player_add_play_order (player, "queue", N_("Linear, removing entries once played"),
-					RB_TYPE_QUEUE_PLAY_ORDER, TRUE);
-
-	player->priv->mmplayer = rb_player_new (g_settings_get_boolean (player->priv->settings, "use-xfade-backend"),
-					        &error);
-	if (error != NULL) {
-		GtkWidget *dialog;
-		dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL,
-						 GTK_MESSAGE_ERROR,
-						 GTK_BUTTONS_CLOSE,
-						 _("Failed to create the player: %s"),
-						 error->message);
-		gtk_dialog_run (GTK_DIALOG (dialog));
-		exit (1);
-	}
-
-	g_signal_connect_object (player->priv->mmplayer,
-				 "eos",
-				 G_CALLBACK (rb_shell_player_handle_eos),
-				 player, 0);
-
-	g_signal_connect_object (player->priv->mmplayer,
-				 "redirect",
-				 G_CALLBACK (rb_shell_player_handle_redirect),
-				 player, 0);
-
-	g_signal_connect_object (player->priv->mmplayer,
-				 "tick",
-				 G_CALLBACK (tick_cb),
-				 player, 0);
-
-	g_signal_connect_object (player->priv->mmplayer,
-				 "error",
-				 G_CALLBACK (error_cb),
-				 player, 0);
-
-	g_signal_connect_object (player->priv->mmplayer,
-				 "playing-stream",
-				 G_CALLBACK (playing_stream_cb),
-				 player, 0);
-
-	g_signal_connect_object (player->priv->mmplayer,
-				 "missing-plugins",
-				 G_CALLBACK (missing_plugins_cb),
-				 player, 0);
-	g_signal_connect_object (player->priv->mmplayer,
-				 "volume-changed",
-				 G_CALLBACK (rb_shell_player_volume_changed_cb),
-				 player, 0);
-
-	g_signal_connect_object (player->priv->mmplayer,
-				 "image",
-				 G_CALLBACK (player_image_cb),
-				 player, 0);
-
-	{
-		GVolumeMonitor *monitor = g_volume_monitor_get ();
-		g_signal_connect (G_OBJECT (monitor),
-				  "mount-pre-unmount",
-				  G_CALLBACK (volume_pre_unmount_cb),
-				  player);
-		g_object_unref (monitor);	/* hmm */
-	}
-
-	player->priv->volume = g_settings_get_double (player->priv->settings, "volume");
-
-	g_signal_connect (player, "notify::playing",
-			  G_CALLBACK (reemit_playing_signal), NULL);
-}
-
-static void
-rb_shell_player_set_source_internal (RBShellPlayer *player,
-				     RBSource      *source)
-{
-	if (player->priv->selected_source != NULL) {
-		RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
-		GList *property_views = rb_source_get_property_views (player->priv->selected_source);
-		GList *l;
-
-		if (songs != NULL) {
-			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-							      G_CALLBACK (rb_shell_player_entry_activated_cb),
-							      player);
-		}
-
-		for (l = property_views; l != NULL; l = g_list_next (l)) {
-			g_signal_handlers_disconnect_by_func (G_OBJECT (l->data),
-							      G_CALLBACK (rb_shell_player_property_row_activated_cb),
-							      player);
-		}
-
-		g_list_free (property_views);
-	}
-
-	player->priv->selected_source = source;
-
-	rb_debug ("selected source %p", player->priv->selected_source);
-
-	rb_shell_player_sync_with_selected_source (player);
-	rb_shell_player_sync_buttons (player);
-
-	if (player->priv->selected_source != NULL) {
-		RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
-		GList *property_views = rb_source_get_property_views (player->priv->selected_source);
-		GList *l;
-
-		if (songs)
-			g_signal_connect_object (G_OBJECT (songs),
-						 "entry-activated",
-						 G_CALLBACK (rb_shell_player_entry_activated_cb),
-						 player, 0);
-		for (l = property_views; l != NULL; l = g_list_next (l)) {
-			g_signal_connect_object (G_OBJECT (l->data),
-						 "property-activated",
-						 G_CALLBACK (rb_shell_player_property_row_activated_cb),
-						 player, 0);
-		}
-
-		g_list_free (property_views);
-	}
-
-	/* If we're not playing, change the play order's view of the current source;
-	 * if the selected source is the queue, however, set it to NULL so it'll stop
-	 * once the queue is empty.
-	 */
-	if (player->priv->current_playing_source == NULL) {
-		RBPlayOrder *porder = NULL;
-		RBSource *source = player->priv->selected_source;
-		if (source == RB_SOURCE (player->priv->queue_source)) {
-			source = NULL;
-		} else if (source != NULL) {
-			g_object_get (source, "play-order", &porder, NULL);
-		}
-
-		if (porder == NULL)
-			porder = g_object_ref (player->priv->play_order);
-
-		rb_play_order_playing_source_changed (porder, source);
-		g_object_unref (porder);
-	}
-}
-
-static void
-rb_shell_player_set_db_internal (RBShellPlayer *player,
-				 RhythmDB      *db)
-{
-	if (player->priv->db != NULL) {
-		g_signal_handlers_disconnect_by_func (player->priv->db,
-						      G_CALLBACK (rb_shell_player_entry_changed_cb),
-						      player);
-		g_signal_handlers_disconnect_by_func (player->priv->db,
-						      G_CALLBACK (rb_shell_player_extra_metadata_cb),
-						      player);
-	}
-
-	player->priv->db = db;
-
-	if (player->priv->db != NULL) {
-		/* Listen for changed entries to update metadata display */
-		g_signal_connect_object (G_OBJECT (player->priv->db),
-					 "entry_changed",
-					 G_CALLBACK (rb_shell_player_entry_changed_cb),
-					 player, 0);
-		g_signal_connect_object (G_OBJECT (player->priv->db),
-					 "entry_extra_metadata_notify",
-					 G_CALLBACK (rb_shell_player_extra_metadata_cb),
-					 player, 0);
-	}
-}
-
-static void
-rb_shell_player_set_queue_source_internal (RBShellPlayer     *player,
-					   RBPlayQueueSource *source)
-{
-	if (player->priv->queue_source != NULL) {
-		RBEntryView *sidebar;
-
-		g_object_get (player->priv->queue_source, "sidebar", &sidebar, NULL);
-		g_signal_handlers_disconnect_by_func (sidebar,
-						      G_CALLBACK (rb_shell_player_entry_activated_cb),
-						      player);
-		g_object_unref (sidebar);
-
-		if (player->priv->queue_play_order != NULL) {
-			g_signal_handlers_disconnect_by_func (player->priv->queue_play_order,
-							      G_CALLBACK (rb_shell_player_play_order_update_cb),
-							      player);
-			g_object_unref (player->priv->queue_play_order);
-		}
-
-	}
-
-	player->priv->queue_source = source;
-
-	if (player->priv->queue_source != NULL) {
-		RBEntryView *sidebar;
-
-		g_object_get (player->priv->queue_source, "play-order", &player->priv->queue_play_order, NULL);
-
-		g_signal_connect_object (G_OBJECT (player->priv->queue_play_order),
-					 "have_next_previous_changed",
-					 G_CALLBACK (rb_shell_player_play_order_update_cb),
-					 player, 0);
-		rb_shell_player_play_order_update_cb (player->priv->play_order,
-						      FALSE, FALSE,
-						      player);
-		rb_play_order_playing_source_changed (player->priv->queue_play_order,
-						      RB_SOURCE (player->priv->queue_source));
-
-		g_object_get (player->priv->queue_source, "sidebar", &sidebar, NULL);
-		g_signal_connect_object (G_OBJECT (sidebar),
-					 "entry-activated",
-					 G_CALLBACK (rb_shell_player_entry_activated_cb),
-					 player, 0);
-		g_object_unref (sidebar);
-	}
-}
-
-static void
-rb_shell_player_dispose (GObject *object)
-{
-	RBShellPlayer *player;
-
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_SHELL_PLAYER (object));
-
-	player = RB_SHELL_PLAYER (object);
-
-	g_return_if_fail (player->priv != NULL);
-
-	if (player->priv->ui_settings != NULL) {
-		g_object_unref (player->priv->ui_settings);
-		player->priv->ui_settings = NULL;
-	}
-
-	if (player->priv->settings != NULL) {
-		/* hm, is this really the place to do this? */
-		g_settings_set_double (player->priv->settings,
-				       "volume",
-				       player->priv->volume);
-
-		g_object_unref (player->priv->settings);
-		player->priv->settings = NULL;
-	}
-
-	if (player->priv->mmplayer != NULL) {
-		g_object_unref (player->priv->mmplayer);
-		player->priv->mmplayer = NULL;
-	}
-
-	if (player->priv->play_order != NULL) {
-		g_object_unref (player->priv->play_order);
-		player->priv->play_order = NULL;
-	}
-
-	if (player->priv->queue_play_order != NULL) {
-		g_object_unref (player->priv->queue_play_order);
-		player->priv->queue_play_order = NULL;
-	}
-
-	if (player->priv->do_next_idle_id != 0) {
-		g_source_remove (player->priv->do_next_idle_id);
-		player->priv->do_next_idle_id = 0;
-	}
-
-	if (player->priv->unblock_play_id != 0) {
-		g_source_remove (player->priv->unblock_play_id);
-		player->priv->unblock_play_id = 0;
-	}
-
-	G_OBJECT_CLASS (rb_shell_player_parent_class)->dispose (object);
-}
-
-static void
-rb_shell_player_finalize (GObject *object)
-{
-	RBShellPlayer *player;
-
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_SHELL_PLAYER (object));
-
-	player = RB_SHELL_PLAYER (object);
-
-	g_return_if_fail (player->priv != NULL);
-
-	g_hash_table_destroy (player->priv->play_orders);
-	
-	G_OBJECT_CLASS (rb_shell_player_parent_class)->finalize (object);
-}
-
-static void
-rb_shell_player_set_property (GObject *object,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *pspec)
-{
-	RBShellPlayer *player = RB_SHELL_PLAYER (object);
-
-	switch (prop_id) {
-	case PROP_SOURCE:
-		rb_shell_player_set_source_internal (player, g_value_get_object (value));
-		break;
-	case PROP_UI_MANAGER:
-		player->priv->ui_manager = g_value_get_object (value);
-		break;
-	case PROP_DB:
-		rb_shell_player_set_db_internal (player, g_value_get_object (value));
-		break;
-	case PROP_ACTION_GROUP:
-		player->priv->actiongroup = g_value_get_object (value);
-		break;
-	case PROP_PLAY_ORDER:
-		g_settings_set_string (player->priv->settings,
-				       "play-order",
-				       g_value_get_string (value));
-		break;
-	case PROP_VOLUME:
-		player->priv->volume = g_value_get_float (value);
-		rb_shell_player_sync_volume (player, FALSE, TRUE);
-		break;
-	case PROP_HEADER:
-		player->priv->header_widget = g_value_get_object (value);
-		g_signal_connect_object (player->priv->header_widget,
-					 "notify::slider-dragging",
-					 G_CALLBACK (rb_shell_player_slider_dragging_cb),
-					 player, 0);
-		break;
-	case PROP_QUEUE_SOURCE:
-		rb_shell_player_set_queue_source_internal (player, g_value_get_object (value));
-		break;
-	case PROP_QUEUE_ONLY:
-		player->priv->queue_only = g_value_get_boolean (value);
-		break;
-	case PROP_MUTE:
-		player->priv->mute = g_value_get_boolean (value);
-		rb_shell_player_sync_volume (player, FALSE, TRUE);
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
-static void
-rb_shell_player_get_property (GObject *object,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *pspec)
-{
-	RBShellPlayer *player = RB_SHELL_PLAYER (object);
-
-	switch (prop_id) {
-	case PROP_SOURCE:
-		g_value_set_object (value, player->priv->selected_source);
-		break;
-	case PROP_UI_MANAGER:
-		g_value_set_object (value, player->priv->ui_manager);
-		break;
-	case PROP_DB:
-		g_value_set_object (value, player->priv->db);
-		break;
-	case PROP_ACTION_GROUP:
-		g_value_set_object (value, player->priv->actiongroup);
-		break;
-	case PROP_PLAY_ORDER:
-	{
-		char *play_order = g_settings_get_string (player->priv->settings,
-							  "play-order");
-		if (play_order == NULL)
-			play_order = g_strdup ("linear");
-		g_value_take_string (value, play_order);
-		break;
-	}
-	case PROP_PLAYING:
-		if (player->priv->mmplayer != NULL)
-			g_value_set_boolean (value, rb_player_playing (player->priv->mmplayer));
-		else
-			g_value_set_boolean (value, FALSE);
-		break;
-	case PROP_VOLUME:
-		g_value_set_float (value, player->priv->volume);
-		break;
-	case PROP_HEADER:
-		g_value_set_object (value, player->priv->header_widget);
-		break;
-	case PROP_QUEUE_SOURCE:
-		g_value_set_object (value, player->priv->queue_source);
-		break;
-	case PROP_QUEUE_ONLY:
-		g_value_set_boolean (value, player->priv->queue_only);
-		break;
-	case PROP_PLAYING_FROM_QUEUE:
-		g_value_set_boolean (value, player->priv->current_playing_source == RB_SOURCE (player->priv->queue_source));
-		break;
-	case PROP_PLAYER:
-		g_value_set_object (value, player->priv->mmplayer);
-		break;
-	case PROP_MUTE:
-		g_value_set_boolean (value, player->priv->mute);
-		break;
-	case PROP_HAS_NEXT:
-		g_value_set_boolean (value, player->priv->has_next);
-		break;
-	case PROP_HAS_PREV:
-		g_value_set_boolean (value, player->priv->has_prev);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
 
 GQuark
 rb_shell_player_error_quark (void)
@@ -1489,28 +601,6 @@ RBSource *
 rb_shell_player_get_active_source (RBShellPlayer *player)
 {
 	return player->priv->source;
-}
-
-/**
- * rb_shell_player_new:
- * @db: the #RhythmDB
- * @mgr: the #GtkUIManager
- * @actiongroup: the #GtkActionGroup to use
- *
- * Creates the #RBShellPlayer
- * 
- * Return value: the #RBShellPlayer instance
- */
-RBShellPlayer *
-rb_shell_player_new (RhythmDB *db,
-		     GtkUIManager *mgr,
-		     GtkActionGroup *actiongroup)
-{
-	return g_object_new (RB_TYPE_SHELL_PLAYER,
-			     "ui-manager", mgr,
-			     "action-group", actiongroup,
-			     "db", db,
-			     NULL);
 }
 
 /**
@@ -2260,38 +1350,6 @@ rb_shell_player_do_next (RBShellPlayer *player,
 	return rb_shell_player_do_next_internal (player, FALSE, TRUE, error);
 }
 
-static void
-rb_shell_player_cmd_previous (GtkAction *action,
-			      RBShellPlayer *player)
-{
-	GError *error = NULL;
-
-	if (!rb_shell_player_do_previous (player, &error)) {
-		if (error->domain != RB_SHELL_PLAYER_ERROR ||
-		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST) {
-			g_warning ("cmd_previous: Unhandled error: %s", error->message);
-		} else if (error->code == RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST) {
-			rb_shell_player_stop (player);
-		}
-	}
-}
-
-static void
-rb_shell_player_cmd_next (GtkAction *action,
-			  RBShellPlayer *player)
-{
-	GError *error = NULL;
-
-	if (!rb_shell_player_do_next (player, &error)) {
-		if (error->domain != RB_SHELL_PLAYER_ERROR ||
-		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST) {
-			g_warning ("cmd_next: Unhandled error: %s", error->message);
-		} else if (error->code == RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST) {
-			rb_shell_player_stop (player);
-		}
-	}
-}
-
 /**
  * rb_shell_player_play_entry:
  * @player: the #RBShellPlayer
@@ -2317,33 +1375,6 @@ rb_shell_player_play_entry (RBShellPlayer *player,
 		rb_shell_player_error (player, FALSE, error);
 		g_clear_error (&error);
 	}
-}
-
-static void
-rb_shell_player_cmd_volume_up (GtkAction *action,
-			       RBShellPlayer *player)
-{
-	rb_shell_player_set_volume_relative (player, 0.1, NULL);
-}
-
-static void
-rb_shell_player_cmd_volume_down (GtkAction *action,
-				 RBShellPlayer *player)
-{
-	rb_shell_player_set_volume_relative (player, -0.1, NULL);
-}
-
-static void
-rb_shell_player_cmd_play (GtkAction *action,
-			  RBShellPlayer *player)
-{
-	GError *error = NULL;
-	rb_debug ("play!");
-	if (!rb_shell_player_playpause (player, FALSE, &error))
-		rb_error_dialog (NULL,
-				 _("Couldn't start playback"),
-				 "%s", (error) ? error->message : "(null)");
-	g_clear_error (&error);
 }
 
 /* unused parameter can't be removed without breaking dbus interface compatibility */
@@ -2482,19 +1513,21 @@ static void
 rb_shell_player_sync_control_state (RBShellPlayer *player)
 {
 	gboolean shuffle, repeat;
-	GtkAction *action;
+	GAction *action;
 	rb_debug ("syncing control state");
 
 	if (!rb_shell_player_get_playback_state (player, &shuffle,
 						 &repeat))
 		return;
 
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "ControlShuffle");
-	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), shuffle);
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "ControlRepeat");
-	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), repeat);
+
+	action = g_action_map_lookup_action (G_ACTION_MAP (g_application_get_default ()),
+					     "play-shuffle");
+	g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (shuffle));
+
+	action = g_action_map_lookup_action (G_ACTION_MAP (g_application_get_default ()),
+					     "play-repeat");
+	g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (repeat));
 }
 
 static void
@@ -2607,7 +1640,7 @@ rb_shell_player_volume_changed_cb (RBPlayer *player,
 }
 
 /**
- * rb_shell_player_set_mute:
+ * rb_shell_player_set_mute
  * @player: the #RBShellPlayer
  * @mute: %TRUE to mute playback
  * @error: returns error information
@@ -2643,45 +1676,6 @@ rb_shell_player_get_mute (RBShellPlayer *player,
 {
 	*mute = player->priv->mute;
 	return TRUE;
-}
-
-static void
-rb_shell_player_shuffle_changed_cb (GtkAction *action,
-				    RBShellPlayer *player)
-{
-	const char *neworder;
-	gboolean shuffle = FALSE;
-	gboolean repeat = FALSE;
-
-	if (player->priv->syncing_state)
-		return;
-
-	rb_debug ("shuffle changed");
-
-	rb_shell_player_get_playback_state (player, &shuffle, &repeat);
-
-	shuffle = !shuffle;
-	neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
-	g_settings_set_string (player->priv->settings, "play-order", neworder);
-}
-
-static void
-rb_shell_player_repeat_changed_cb (GtkAction *action,
-				   RBShellPlayer *player)
-{
-	const char *neworder;
-	gboolean shuffle = FALSE;
-	gboolean repeat = FALSE;
-	rb_debug ("repeat changed");
-
-	if (player->priv->syncing_state)
-		return;
-
-	rb_shell_player_get_playback_state (player, &shuffle, &repeat);
-
-	repeat = !repeat;
-	neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
-	g_settings_set_string (player->priv->settings, "play-order", neworder);
 }
 
 static void
@@ -3012,7 +2006,8 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 static void
 rb_shell_player_sync_buttons (RBShellPlayer *player)
 {
-	GtkAction *action;
+	GActionMap *map;
+	GAction *action;
 	RBSource *source;
 	RBEntryView *view;
 	int entry_view_state;
@@ -3032,13 +2027,15 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 
 	rb_debug ("syncing with source %p", source);
 
+	/* meh
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ViewJumpToPlaying");
 	g_object_set (action, "sensitive", entry != NULL, NULL);
+	*/
 
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "ControlPlay");
-	g_object_set (action, "sensitive", entry != NULL || source != NULL, NULL);
+	map = G_ACTION_MAP (g_application_get_default ());
+	action = g_action_map_lookup_action (map, "play");
+	g_simple_action_set_enabled (G_SIMPLE_ACTION (action), entry != NULL || source != NULL);
 
 	if (source != NULL) {
 		view = rb_source_get_entry_view (source);
@@ -3804,40 +2801,25 @@ rb_shell_player_get_playing_path (RBShellPlayer *player,
 	return TRUE;
 }
 
-static gboolean
-_idle_unblock_signal_cb (gpointer data)
-{
-	RBShellPlayer *player = (RBShellPlayer *)data;
-	GtkAction *action;
-	gboolean playing;
-
-	GDK_THREADS_ENTER ();
-
-	player->priv->unblock_play_id = 0;
-
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "ControlPlay");
-
-	/* sync the active state of the action again */
-	g_object_get (player, "playing", &playing, NULL);
-	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), playing);
-
-	g_signal_handlers_unblock_by_func (action, rb_shell_player_cmd_play, player);
-
-	GDK_THREADS_LEAVE ();
-	return FALSE;
-}
-
 static void
 rb_shell_player_playing_changed_cb (RBShellPlayer *player,
 				    GParamSpec *arg1,
 				    gpointer user_data)
 {
-	GtkAction *action;
 	gboolean playing;
-	char *tooltip;
+	GActionMap *map;
+	GAction *action;
+	/*char *tooltip;*/
 
+	/* sync play action state */
 	g_object_get (player, "playing", &playing, NULL);
+
+	map = G_ACTION_MAP (g_application_get_default ());
+	action = g_action_map_lookup_action (map, "play");
+	g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (playing));
+
+#if 0
+	/* -> header, set tooltip on button directly */
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlPlay");
 	if (playing) {
@@ -3851,44 +2833,109 @@ rb_shell_player_playing_changed_cb (RBShellPlayer *player,
 	}
 	g_object_set (action, "tooltip", tooltip, NULL);
 	g_free (tooltip);
-
-	/* block the signal, so that it doesn't get stuck by triggering recursively,
-	 * and don't unblock it until whatever else is happening has finished.
-	 * don't block it again if it's already blocked, though.
-	 */
-	if (player->priv->unblock_play_id == 0) {
-		g_signal_handlers_block_by_func (action, rb_shell_player_cmd_play, player);
-	}
-	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), playing);
-
-	if (player->priv->unblock_play_id == 0) {
-		player->priv->unblock_play_id = g_idle_add (_idle_unblock_signal_cb, player);
-	}
+#endif
 }
 
-/* This should really be standard. */
-#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
-
-GType
-rb_shell_player_error_get_type (void)
+static void
+play_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_data)
 {
-	static GType etype = 0;
+	RBShellPlayer *player = RB_SHELL_PLAYER (user_data);
+	GError *error = NULL;
 
-	if (etype == 0)	{
-		static const GEnumValue values[] = {
-			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_PLAYLIST_PARSE_ERROR, "playlist-parse-failed"),
-			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST, "end-of-playlist"),
-			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_NOT_PLAYING, "not-playing"),
-			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_NOT_SEEKABLE, "not-seekable"),
-			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_POSITION_NOT_AVAILABLE, "position-not-available"),
-			{ 0, 0, 0 }
-		};
-
-		etype = g_enum_register_static ("RBShellPlayerError", values);
+	rb_debug ("play!");
+	if (rb_shell_player_playpause (player, FALSE, &error) == FALSE) {
+		rb_error_dialog (NULL,
+				 _("Couldn't start playback"),
+				 "%s", (error) ? error->message : "(null)");
 	}
-
-	return etype;
+	g_clear_error (&error);
 }
+
+static void
+play_previous_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_data)
+{
+	RBShellPlayer *player = RB_SHELL_PLAYER (user_data);
+	GError *error = NULL;
+
+	if (!rb_shell_player_do_previous (player, &error)) {
+		if (error->domain != RB_SHELL_PLAYER_ERROR ||
+		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST) {
+			g_warning ("cmd_previous: Unhandled error: %s", error->message);
+		} else if (error->code == RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST) {
+			rb_shell_player_stop (player);
+		}
+	}
+}
+
+static void
+play_next_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_data)
+{
+	RBShellPlayer *player = RB_SHELL_PLAYER (user_data);
+	GError *error = NULL;
+
+	if (!rb_shell_player_do_next (player, &error)) {
+		if (error->domain != RB_SHELL_PLAYER_ERROR ||
+		    error->code != RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST) {
+			g_warning ("cmd_next: Unhandled error: %s", error->message);
+		} else if (error->code == RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST) {
+			rb_shell_player_stop (player);
+		}
+	}
+}
+
+static void
+play_repeat_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_data)
+{
+	RBShellPlayer *player = RB_SHELL_PLAYER (user_data);
+	const char *neworder;
+	gboolean shuffle = FALSE;
+	gboolean repeat = FALSE;
+	rb_debug ("repeat changed");
+
+	if (player->priv->syncing_state)
+		return;
+
+	rb_shell_player_get_playback_state (player, &shuffle, &repeat);
+
+	repeat = !repeat;
+	neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
+	g_settings_set_string (player->priv->settings, "play-order", neworder);
+}
+
+static void
+play_shuffle_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_data)
+{
+	RBShellPlayer *player = RB_SHELL_PLAYER (user_data);
+	const char *neworder;
+	gboolean shuffle = FALSE;
+	gboolean repeat = FALSE;
+
+	if (player->priv->syncing_state)
+		return;
+
+	rb_debug ("shuffle changed");
+
+	rb_shell_player_get_playback_state (player, &shuffle, &repeat);
+
+	shuffle = !shuffle;
+	neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
+	g_settings_set_string (player->priv->settings, "play-order", neworder);
+}
+
+static void
+play_volume_up_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_data)
+{
+	RBShellPlayer *player = RB_SHELL_PLAYER (user_data);
+	rb_shell_player_set_volume_relative (player, 0.1, NULL);
+}
+
+static void
+play_volume_down_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_data)
+{
+	RBShellPlayer *player = RB_SHELL_PLAYER (user_data);
+	rb_shell_player_set_volume_relative (player, -0.1, NULL);
+}
+
 
 static void
 _play_order_description_free (RBPlayOrderDescription *order)
@@ -3968,5 +3015,850 @@ void
 rb_shell_player_remove_play_order (RBShellPlayer *player, const char *name)
 {
 	g_hash_table_remove (player->priv->play_orders, name);
+}
+
+static void
+rb_shell_player_constructed (GObject *object)
+{
+	RBApplication *app;
+	RBShellPlayer *player;
+	GAction *action;
+
+	GActionEntry actions[] = {
+		{ "play", play_action_cb, "b", "false" },
+		{ "play-previous", play_previous_action_cb },
+		{ "play-next", play_next_action_cb },
+		{ "play-repeat", play_repeat_action_cb, "b", "false" },
+		{ "play-shuffle", play_shuffle_action_cb, "b", "false" },
+		{ "volume-up", play_volume_up_action_cb },
+		{ "volume-down", play_volume_down_action_cb }
+	};
+
+	RB_CHAIN_GOBJECT_METHOD (rb_shell_player_parent_class, constructed, object);
+
+	player = RB_SHELL_PLAYER (object);
+
+	app = RB_APPLICATION (g_application_get_default ());
+	g_action_map_add_action_entries (G_ACTION_MAP (app),
+					 actions,
+					 G_N_ELEMENTS (actions),
+					 player);
+
+	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>p", "app.play", g_variant_new_boolean (TRUE));
+	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>Left", "app.play-previous", NULL);
+	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>Right", "app.play-next", NULL);
+	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>Up", "app.volume-up", NULL);
+	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>Down", "app.volume-down", NULL);
+
+	player_settings_changed_cb (player->priv->settings, "transition-time", player);
+	player_settings_changed_cb (player->priv->settings, "play-order", player);
+
+	action = g_action_map_lookup_action (G_ACTION_MAP (app), "play-previous");
+	g_object_bind_property (player, "has-prev", action, "enabled", G_BINDING_DEFAULT);
+	action = g_action_map_lookup_action (G_ACTION_MAP (app), "play-next");
+	g_object_bind_property (player, "has-next", action, "enabled", G_BINDING_DEFAULT);
+
+	player->priv->syncing_state = TRUE;
+	rb_shell_player_set_playing_source (player, NULL);
+	rb_shell_player_sync_play_order (player);
+	rb_shell_player_sync_control_state (player);
+	rb_shell_player_sync_volume (player, FALSE, TRUE);
+	player->priv->syncing_state = FALSE;
+
+	g_signal_connect (player,
+			  "notify::playing",
+			  G_CALLBACK (rb_shell_player_playing_changed_cb),
+			  NULL);
+}
+
+static void
+rb_shell_player_set_source_internal (RBShellPlayer *player,
+				     RBSource      *source)
+{
+	if (player->priv->selected_source != NULL) {
+		RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
+		GList *property_views = rb_source_get_property_views (player->priv->selected_source);
+		GList *l;
+
+		if (songs != NULL) {
+			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+							      G_CALLBACK (rb_shell_player_entry_activated_cb),
+							      player);
+		}
+
+		for (l = property_views; l != NULL; l = g_list_next (l)) {
+			g_signal_handlers_disconnect_by_func (G_OBJECT (l->data),
+							      G_CALLBACK (rb_shell_player_property_row_activated_cb),
+							      player);
+		}
+
+		g_list_free (property_views);
+	}
+
+	player->priv->selected_source = source;
+
+	rb_debug ("selected source %p", player->priv->selected_source);
+
+	rb_shell_player_sync_with_selected_source (player);
+	rb_shell_player_sync_buttons (player);
+
+	if (player->priv->selected_source != NULL) {
+		RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
+		GList *property_views = rb_source_get_property_views (player->priv->selected_source);
+		GList *l;
+
+		if (songs)
+			g_signal_connect_object (G_OBJECT (songs),
+						 "entry-activated",
+						 G_CALLBACK (rb_shell_player_entry_activated_cb),
+						 player, 0);
+		for (l = property_views; l != NULL; l = g_list_next (l)) {
+			g_signal_connect_object (G_OBJECT (l->data),
+						 "property-activated",
+						 G_CALLBACK (rb_shell_player_property_row_activated_cb),
+						 player, 0);
+		}
+
+		g_list_free (property_views);
+	}
+
+	/* If we're not playing, change the play order's view of the current source;
+	 * if the selected source is the queue, however, set it to NULL so it'll stop
+	 * once the queue is empty.
+	 */
+	if (player->priv->current_playing_source == NULL) {
+		RBPlayOrder *porder = NULL;
+		RBSource *source = player->priv->selected_source;
+		if (source == RB_SOURCE (player->priv->queue_source)) {
+			source = NULL;
+		} else if (source != NULL) {
+			g_object_get (source, "play-order", &porder, NULL);
+		}
+
+		if (porder == NULL)
+			porder = g_object_ref (player->priv->play_order);
+
+		rb_play_order_playing_source_changed (porder, source);
+		g_object_unref (porder);
+	}
+}
+static void
+rb_shell_player_set_db_internal (RBShellPlayer *player,
+				 RhythmDB      *db)
+{
+	if (player->priv->db != NULL) {
+		g_signal_handlers_disconnect_by_func (player->priv->db,
+						      G_CALLBACK (rb_shell_player_entry_changed_cb),
+						      player);
+		g_signal_handlers_disconnect_by_func (player->priv->db,
+						      G_CALLBACK (rb_shell_player_extra_metadata_cb),
+						      player);
+	}
+
+	player->priv->db = db;
+
+	if (player->priv->db != NULL) {
+		/* Listen for changed entries to update metadata display */
+		g_signal_connect_object (G_OBJECT (player->priv->db),
+					 "entry_changed",
+					 G_CALLBACK (rb_shell_player_entry_changed_cb),
+					 player, 0);
+		g_signal_connect_object (G_OBJECT (player->priv->db),
+					 "entry_extra_metadata_notify",
+					 G_CALLBACK (rb_shell_player_extra_metadata_cb),
+					 player, 0);
+	}
+}
+
+static void
+rb_shell_player_set_queue_source_internal (RBShellPlayer     *player,
+					   RBPlayQueueSource *source)
+{
+	if (player->priv->queue_source != NULL) {
+		RBEntryView *sidebar;
+
+		g_object_get (player->priv->queue_source, "sidebar", &sidebar, NULL);
+		g_signal_handlers_disconnect_by_func (sidebar,
+						      G_CALLBACK (rb_shell_player_entry_activated_cb),
+						      player);
+		g_object_unref (sidebar);
+
+		if (player->priv->queue_play_order != NULL) {
+			g_signal_handlers_disconnect_by_func (player->priv->queue_play_order,
+							      G_CALLBACK (rb_shell_player_play_order_update_cb),
+							      player);
+			g_object_unref (player->priv->queue_play_order);
+		}
+
+	}
+
+	player->priv->queue_source = source;
+
+	if (player->priv->queue_source != NULL) {
+		RBEntryView *sidebar;
+
+		g_object_get (player->priv->queue_source, "play-order", &player->priv->queue_play_order, NULL);
+
+		g_signal_connect_object (G_OBJECT (player->priv->queue_play_order),
+					 "have_next_previous_changed",
+					 G_CALLBACK (rb_shell_player_play_order_update_cb),
+					 player, 0);
+		rb_shell_player_play_order_update_cb (player->priv->play_order,
+						      FALSE, FALSE,
+						      player);
+		rb_play_order_playing_source_changed (player->priv->queue_play_order,
+						      RB_SOURCE (player->priv->queue_source));
+
+		g_object_get (player->priv->queue_source, "sidebar", &sidebar, NULL);
+		g_signal_connect_object (G_OBJECT (sidebar),
+					 "entry-activated",
+					 G_CALLBACK (rb_shell_player_entry_activated_cb),
+					 player, 0);
+		g_object_unref (sidebar);
+	}
+}
+
+static void
+rb_shell_player_set_property (GObject *object,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *pspec)
+{
+	RBShellPlayer *player = RB_SHELL_PLAYER (object);
+
+	switch (prop_id) {
+	case PROP_SOURCE:
+		rb_shell_player_set_source_internal (player, g_value_get_object (value));
+		break;
+	case PROP_DB:
+		rb_shell_player_set_db_internal (player, g_value_get_object (value));
+		break;
+	case PROP_PLAY_ORDER:
+		g_settings_set_string (player->priv->settings,
+				       "play-order",
+				       g_value_get_string (value));
+		break;
+	case PROP_VOLUME:
+		player->priv->volume = g_value_get_float (value);
+		rb_shell_player_sync_volume (player, FALSE, TRUE);
+		break;
+	case PROP_HEADER:
+		player->priv->header_widget = g_value_get_object (value);
+		g_signal_connect_object (player->priv->header_widget,
+					 "notify::slider-dragging",
+					 G_CALLBACK (rb_shell_player_slider_dragging_cb),
+					 player, 0);
+		break;
+	case PROP_QUEUE_SOURCE:
+		rb_shell_player_set_queue_source_internal (player, g_value_get_object (value));
+		break;
+	case PROP_QUEUE_ONLY:
+		player->priv->queue_only = g_value_get_boolean (value);
+		break;
+	case PROP_MUTE:
+		player->priv->mute = g_value_get_boolean (value);
+		rb_shell_player_sync_volume (player, FALSE, TRUE);
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_shell_player_get_property (GObject *object,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *pspec)
+{
+	RBShellPlayer *player = RB_SHELL_PLAYER (object);
+
+	switch (prop_id) {
+	case PROP_SOURCE:
+		g_value_set_object (value, player->priv->selected_source);
+		break;
+	case PROP_DB:
+		g_value_set_object (value, player->priv->db);
+		break;
+	case PROP_PLAY_ORDER:
+	{
+		char *play_order = g_settings_get_string (player->priv->settings,
+							  "play-order");
+		if (play_order == NULL)
+			play_order = g_strdup ("linear");
+		g_value_take_string (value, play_order);
+		break;
+	}
+	case PROP_PLAYING:
+		if (player->priv->mmplayer != NULL)
+			g_value_set_boolean (value, rb_player_playing (player->priv->mmplayer));
+		else
+			g_value_set_boolean (value, FALSE);
+		break;
+	case PROP_VOLUME:
+		g_value_set_float (value, player->priv->volume);
+		break;
+	case PROP_HEADER:
+		g_value_set_object (value, player->priv->header_widget);
+		break;
+	case PROP_QUEUE_SOURCE:
+		g_value_set_object (value, player->priv->queue_source);
+		break;
+	case PROP_QUEUE_ONLY:
+		g_value_set_boolean (value, player->priv->queue_only);
+		break;
+	case PROP_PLAYING_FROM_QUEUE:
+		g_value_set_boolean (value, player->priv->current_playing_source == RB_SOURCE (player->priv->queue_source));
+		break;
+	case PROP_PLAYER:
+		g_value_set_object (value, player->priv->mmplayer);
+		break;
+	case PROP_MUTE:
+		g_value_set_boolean (value, player->priv->mute);
+		break;
+	case PROP_HAS_NEXT:
+		g_value_set_boolean (value, player->priv->has_next);
+		break;
+	case PROP_HAS_PREV:
+		g_value_set_boolean (value, player->priv->has_prev);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+static void
+rb_shell_player_init (RBShellPlayer *player)
+{
+	GError *error = NULL;
+
+	player->priv = RB_SHELL_PLAYER_GET_PRIVATE (player);
+
+	player->priv->settings = g_settings_new ("org.gnome.rhythmbox.player");
+	player->priv->ui_settings = g_settings_new ("org.gnome.rhythmbox");
+	g_signal_connect_object (player->priv->settings,
+				 "changed",
+				 G_CALLBACK (player_settings_changed_cb),
+				 player, 0);
+
+	player->priv->play_orders = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify)_play_order_description_free);
+	
+	rb_shell_player_add_play_order (player, "linear", N_("Linear"),
+					RB_TYPE_LINEAR_PLAY_ORDER, FALSE);
+	rb_shell_player_add_play_order (player, "linear-loop", N_("Linear looping"),
+					RB_TYPE_LINEAR_PLAY_ORDER_LOOP, FALSE);
+	rb_shell_player_add_play_order (player, "shuffle", N_("Shuffle"),
+					RB_TYPE_SHUFFLE_PLAY_ORDER, FALSE);
+	rb_shell_player_add_play_order (player, "random-equal-weights", N_("Random with equal weights"),
+					RB_TYPE_RANDOM_PLAY_ORDER_EQUAL_WEIGHTS, FALSE);
+	rb_shell_player_add_play_order (player, "random-by-age", N_("Random by time since last play"),
+					RB_TYPE_RANDOM_PLAY_ORDER_BY_AGE, FALSE);
+	rb_shell_player_add_play_order (player, "random-by-rating", N_("Random by rating"),
+					RB_TYPE_RANDOM_PLAY_ORDER_BY_RATING, FALSE);
+	rb_shell_player_add_play_order (player, "random-by-age-and-rating", N_("Random by time since last play and rating"),
+					RB_TYPE_RANDOM_PLAY_ORDER_BY_AGE_AND_RATING, FALSE);
+	rb_shell_player_add_play_order (player, "queue", N_("Linear, removing entries once played"),
+					RB_TYPE_QUEUE_PLAY_ORDER, TRUE);
+
+	player->priv->mmplayer = rb_player_new (g_settings_get_boolean (player->priv->settings, "use-xfade-backend"),
+					        &error);
+	if (error != NULL) {
+		GtkWidget *dialog;
+		dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL,
+						 GTK_MESSAGE_ERROR,
+						 GTK_BUTTONS_CLOSE,
+						 _("Failed to create the player: %s"),
+						 error->message);
+		gtk_dialog_run (GTK_DIALOG (dialog));
+		exit (1);
+	}
+
+	g_signal_connect_object (player->priv->mmplayer,
+				 "eos",
+				 G_CALLBACK (rb_shell_player_handle_eos),
+				 player, 0);
+
+	g_signal_connect_object (player->priv->mmplayer,
+				 "redirect",
+				 G_CALLBACK (rb_shell_player_handle_redirect),
+				 player, 0);
+
+	g_signal_connect_object (player->priv->mmplayer,
+				 "tick",
+				 G_CALLBACK (tick_cb),
+				 player, 0);
+
+	g_signal_connect_object (player->priv->mmplayer,
+				 "error",
+				 G_CALLBACK (error_cb),
+				 player, 0);
+
+	g_signal_connect_object (player->priv->mmplayer,
+				 "playing-stream",
+				 G_CALLBACK (playing_stream_cb),
+				 player, 0);
+
+	g_signal_connect_object (player->priv->mmplayer,
+				 "missing-plugins",
+				 G_CALLBACK (missing_plugins_cb),
+				 player, 0);
+	g_signal_connect_object (player->priv->mmplayer,
+				 "volume-changed",
+				 G_CALLBACK (rb_shell_player_volume_changed_cb),
+				 player, 0);
+
+	g_signal_connect_object (player->priv->mmplayer,
+				 "image",
+				 G_CALLBACK (player_image_cb),
+				 player, 0);
+
+	{
+		GVolumeMonitor *monitor = g_volume_monitor_get ();
+		g_signal_connect (G_OBJECT (monitor),
+				  "mount-pre-unmount",
+				  G_CALLBACK (volume_pre_unmount_cb),
+				  player);
+		g_object_unref (monitor);	/* hmm */
+	}
+
+	player->priv->volume = g_settings_get_double (player->priv->settings, "volume");
+
+	g_signal_connect (player, "notify::playing",
+			  G_CALLBACK (reemit_playing_signal), NULL);
+}
+
+static void
+rb_shell_player_dispose (GObject *object)
+{
+	RBShellPlayer *player;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_SHELL_PLAYER (object));
+
+	player = RB_SHELL_PLAYER (object);
+
+	g_return_if_fail (player->priv != NULL);
+
+	if (player->priv->ui_settings != NULL) {
+		g_object_unref (player->priv->ui_settings);
+		player->priv->ui_settings = NULL;
+	}
+
+	if (player->priv->settings != NULL) {
+		/* hm, is this really the place to do this? */
+		g_settings_set_double (player->priv->settings,
+				       "volume",
+				       player->priv->volume);
+
+		g_object_unref (player->priv->settings);
+		player->priv->settings = NULL;
+	}
+
+	if (player->priv->mmplayer != NULL) {
+		g_object_unref (player->priv->mmplayer);
+		player->priv->mmplayer = NULL;
+	}
+
+	if (player->priv->play_order != NULL) {
+		g_object_unref (player->priv->play_order);
+		player->priv->play_order = NULL;
+	}
+
+	if (player->priv->queue_play_order != NULL) {
+		g_object_unref (player->priv->queue_play_order);
+		player->priv->queue_play_order = NULL;
+	}
+
+	if (player->priv->do_next_idle_id != 0) {
+		g_source_remove (player->priv->do_next_idle_id);
+		player->priv->do_next_idle_id = 0;
+	}
+
+	G_OBJECT_CLASS (rb_shell_player_parent_class)->dispose (object);
+}
+
+static void
+rb_shell_player_finalize (GObject *object)
+{
+	RBShellPlayer *player;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_SHELL_PLAYER (object));
+
+	player = RB_SHELL_PLAYER (object);
+
+	g_return_if_fail (player->priv != NULL);
+
+	g_hash_table_destroy (player->priv->play_orders);
+	
+	G_OBJECT_CLASS (rb_shell_player_parent_class)->finalize (object);
+}
+
+static void
+rb_shell_player_class_init (RBShellPlayerClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = rb_shell_player_dispose;
+	object_class->finalize = rb_shell_player_finalize;
+	object_class->constructed = rb_shell_player_constructed;
+
+	object_class->set_property = rb_shell_player_set_property;
+	object_class->get_property = rb_shell_player_get_property;
+
+	/**
+	 * RBShellPlayer:source:
+	 *
+	 * The current source that is selected for playback.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_SOURCE,
+					 g_param_spec_object ("source",
+							      "RBSource",
+							      "RBSource object",
+							      RB_TYPE_SOURCE,
+							      G_PARAM_READWRITE));
+	/**
+	 * RBShellPlayer:db:
+	 *
+	 * The #RhythmDB
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_DB,
+					 g_param_spec_object ("db",
+							      "RhythmDB",
+							      "RhythmDB object",
+							      RHYTHMDB_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	/**
+	 * RBShellPlayer:queue-source:
+	 *
+	 * The play queue source
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_QUEUE_SOURCE,
+					 g_param_spec_object ("queue-source",
+							      "RBPlayQueueSource",
+							      "RBPlayQueueSource object",
+							      RB_TYPE_PLAYLIST_SOURCE,
+							      G_PARAM_READWRITE));
+
+	/**
+	 * RBShellPlayer:queue-only:
+	 *
+	 * If %TRUE, activating an entry should only add it to the play queue.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_QUEUE_ONLY,
+					 g_param_spec_boolean ("queue-only",
+							       "Queue only",
+							       "Activation only adds to queue",
+							       FALSE,
+							       G_PARAM_READWRITE));
+
+	/**
+	 * RBShellPlayer:playing-from-queue:
+	 *
+	 * If %TRUE, the current playing entry came from the play queue.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_PLAYING_FROM_QUEUE,
+					 g_param_spec_boolean ("playing-from-queue",
+							       "Playing from queue",
+							       "Whether playing from the play queue or not",
+							       FALSE,
+							       G_PARAM_READABLE));
+
+	/**
+	 * RBShellPlayer:player:
+	 *
+	 * The player backend object (an object implementing the #RBPlayer interface).
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_PLAYER,
+					 g_param_spec_object ("player",
+							      "RBPlayer",
+							      "RBPlayer object",
+							      G_TYPE_OBJECT,
+							      G_PARAM_READABLE));
+
+	/**
+	 * RBShellPlayer:play-order:
+	 *
+	 * The current play order object.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_PLAY_ORDER,
+					 g_param_spec_string ("play-order",
+							      "play-order",
+							      "What play order to use",
+							      "linear",
+							      G_PARAM_READABLE));
+	/**
+	 * RBShellPlayer:playing:
+	 *
+	 * Whether Rhythmbox is currently playing something
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_PLAYING,
+					 g_param_spec_boolean ("playing",
+							       "playing",
+							      "Whether Rhythmbox is currently playing",
+							       FALSE,
+							       G_PARAM_READABLE));
+	/**
+	 * RBShellPlayer:volume:
+	 *
+	 * The current playback volume (between 0.0 and 1.0)
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_VOLUME,
+					 g_param_spec_float ("volume",
+							     "volume",
+							     "Current playback volume",
+							     0.0f, 1.0f, 1.0f,
+							     G_PARAM_READWRITE));
+
+	/**
+	 * RBShellPlayer:header:
+	 *
+	 * The #RBHeader object
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_HEADER,
+					 g_param_spec_object ("header",
+							      "RBHeader",
+							      "RBHeader object",
+							      RB_TYPE_HEADER,
+							      G_PARAM_READWRITE));
+	/**
+	 * RBShellPlayer:mute:
+	 *
+	 * Whether playback is currently muted.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_MUTE,
+					 g_param_spec_boolean ("mute",
+							       "mute",
+							       "Whether playback is muted",
+							       FALSE,
+							       G_PARAM_READWRITE));
+	/**
+	 * RBShellPlayer:has-next:
+	 *
+	 * Whether there is a track to play after the current track.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_HAS_NEXT,
+					 g_param_spec_boolean ("has-next",
+							       "has-next",
+							       "Whether there is a next track",
+							       FALSE,
+							       G_PARAM_READABLE));
+	/**
+	 * RBShellPlayer:has-prev:
+	 *
+	 * Whether there was a previous track before the current track.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_HAS_PREV,
+					 g_param_spec_boolean ("has-prev",
+							       "has-prev",
+							       "Whether there is a previous track",
+							       FALSE,
+							       G_PARAM_READABLE));
+
+	/**
+	 * RBShellPlayer::window-title-changed:
+	 * @player: the #RBShellPlayer
+	 * @title: the new window title
+	 *
+	 * Emitted when the main window title text should be changed
+	 */
+	rb_shell_player_signals[WINDOW_TITLE_CHANGED] =
+		g_signal_new ("window_title_changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, window_title_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__STRING,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_STRING);
+
+	/**
+	 * RBShellPlayer::elapsed-changed:
+	 * @player: the #RBShellPlayer
+	 * @elapsed: the new playback position in seconds
+	 *
+	 * Emitted when the playback position changes.
+	 */
+	rb_shell_player_signals[ELAPSED_CHANGED] =
+		g_signal_new ("elapsed_changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, elapsed_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__UINT,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_UINT);
+
+	/**
+	 * RBShellPlayer::playing-source-changed:
+	 * @player: the #RBShellPlayer
+	 * @source: the #RBSource that is now playing
+	 *
+	 * Emitted when a new #RBSource instance starts playing
+	 */
+	rb_shell_player_signals[PLAYING_SOURCE_CHANGED] =
+		g_signal_new ("playing-source-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_source_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE,
+			      1,
+			      RB_TYPE_SOURCE);
+
+	/**
+	 * RBShellPlayer::playing-changed:
+	 * @player: the #RBShellPlayer
+	 * @playing: flag indicating playback state
+	 *
+	 * Emitted when playback either stops or starts.
+	 */
+	rb_shell_player_signals[PLAYING_CHANGED] =
+		g_signal_new ("playing-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__BOOLEAN,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_BOOLEAN);
+
+	/**
+	 * RBShellPlayer::playing-song-changed:
+	 * @player: the #RBShellPlayer
+	 * @entry: the new playing #RhythmDBEntry
+	 *
+	 * Emitted when the playing database entry changes
+	 */
+	rb_shell_player_signals[PLAYING_SONG_CHANGED] =
+		g_signal_new ("playing-song-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_song_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__BOXED,
+			      G_TYPE_NONE,
+			      1,
+			      RHYTHMDB_TYPE_ENTRY);
+
+	/**
+	 * RBShellPlayer::playing-uri-changed:
+	 * @player: the #RBShellPlayer
+	 * @uri: the URI of the new playing entry
+	 *
+	 * Emitted when the playing database entry changes, providing the
+	 * URI of the entry.
+	 */
+	rb_shell_player_signals[PLAYING_URI_CHANGED] =
+		g_signal_new ("playing-uri-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_uri_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__STRING,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_STRING);
+
+	/**
+	 * RBShellPlayer::playing-song-property-changed:
+	 * @player: the #RBShellPlayer
+	 * @uri: the URI of the playing entry
+	 * @property: the name of the property that changed
+	 * @old: the previous value for the property
+	 * @newvalue: the new value of the property
+	 *
+	 * Emitted when a property of the playing database entry changes.
+	 */
+	rb_shell_player_signals[PLAYING_SONG_PROPERTY_CHANGED] =
+		g_signal_new ("playing-song-property-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_song_property_changed),
+			      NULL, NULL,
+			      rb_marshal_VOID__STRING_STRING_POINTER_POINTER,
+			      G_TYPE_NONE,
+			      4,
+			      G_TYPE_STRING, G_TYPE_STRING,
+			      G_TYPE_VALUE, G_TYPE_VALUE);
+
+	/**
+	 * RBShellPlayer::elapsed-nano-changed:
+	 * @player: the #RBShellPlayer
+	 * @elapsed: the new playback position in nanoseconds
+	 *
+	 * Emitted when the playback position changes.  Only use this (as opposed to
+	 * elapsed-changed) when you require subsecond precision.  This signal will be
+	 * emitted multiple times per second.
+	 */
+	rb_shell_player_signals[ELAPSED_NANO_CHANGED] =
+		g_signal_new ("elapsed-nano-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, elapsed_nano_changed),
+			      NULL, NULL,
+			      rb_marshal_VOID__INT64,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_INT64);
+
+	g_type_class_add_private (klass, sizeof (RBShellPlayerPrivate));
+}
+
+/**
+ * rb_shell_player_new:
+ * @db: the #RhythmDB
+ *
+ * Creates the #RBShellPlayer
+ * 
+ * Return value: the #RBShellPlayer instance
+ */
+RBShellPlayer *
+rb_shell_player_new (RhythmDB *db)
+{
+	return g_object_new (RB_TYPE_SHELL_PLAYER,
+			     "db", db,
+			     NULL);
+}
+
+/* This should really be standard. */
+#define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
+
+GType
+rb_shell_player_error_get_type (void)
+{
+	static GType etype = 0;
+
+	if (etype == 0)	{
+		static const GEnumValue values[] = {
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_PLAYLIST_PARSE_ERROR, "playlist-parse-failed"),
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST, "end-of-playlist"),
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_NOT_PLAYING, "not-playing"),
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_NOT_SEEKABLE, "not-seekable"),
+			ENUM_ENTRY (RB_SHELL_PLAYER_ERROR_POSITION_NOT_AVAILABLE, "position-not-available"),
+			{ 0, 0, 0 }
+		};
+
+		etype = g_enum_register_static ("RBShellPlayerError", values);
+	}
+
+	return etype;
 }
 

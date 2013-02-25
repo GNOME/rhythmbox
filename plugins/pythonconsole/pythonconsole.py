@@ -37,7 +37,7 @@ import sys
 import re
 import traceback
 
-from gi.repository import Gtk, Gdk, GObject, Pango, Peas
+from gi.repository import GLib, Gtk, Gdk, Gio, GObject, Pango, Peas
 from gi.repository import RB
 
 import gettext
@@ -49,22 +49,6 @@ try:
 except:
 	have_rpdb2 = False
 
-import gettext
-gettext.install('rhythmbox', RB.locale_dir())
-
-ui_str = """
-<ui>
-  <menubar name="MenuBar">
-    <menu name="ToolsMenu" action="Tools">
-      <placeholder name="ToolsOps_5">
-        <menuitem name="PythonConsole" action="PythonConsole"/>
-        <menuitem name="PythonDebugger" action="PythonDebugger"/>
-      </placeholder>
-    </menu>
-  </menubar>
-</ui>
-"""
-
 class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 	__gtype_name__ = 'PythonConsolePlugin'
 
@@ -73,50 +57,44 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 	def __init__(self):
 		GObject.Object.__init__(self)
 		self.window = None
-			
+		
 	def do_activate(self):
-		data = dict()
 		shell = self.object
-		manager = shell.props.ui_manager
-		
-		data['action_group'] = Gtk.ActionGroup(name='PythonConsolePluginActions')
+		app = shell.props.application
 
-		action = Gtk.Action(name='PythonConsole', label=_("_Python Console"),
-		                    tooltip=_("Show Rhythmbox's python console"),
-		                    stock_id='gnome-mime-text-x-python')
+		action = Gio.SimpleAction.new("python-console", None)
 		action.connect('activate', self.show_console, shell)
-		data['action_group'].add_action(action)
+		app.add_action(action)
 
-		action = Gtk.Action(name='PythonDebugger', label=_("Python Debugger"),
-				    tooltip=_("Enable remote python debugging with rpdb2"),
-				    stock_id=None)
+		app.add_plugin_menu_item("tools",
+					 "python-console",
+					 Gio.MenuItem.new(label=_("Python Console"),
+						 	  detailed_action="app.python-console"))
+
 		if have_rpdb2:
+			action = Gio.SimpleAction.new("python-debugger", None)
 			action.connect('activate', self.enable_debugging, shell)
-		else:
-			action.set_visible(False)
-		data['action_group'].add_action(action)
-				
-		manager.insert_action_group(data['action_group'], 0)
-		data['ui_id'] = manager.add_ui_from_string(ui_str)
-		manager.ensure_update()
+			app.add_action(action)
+
+			app.add_plugin_menu_item("tools",
+						 "python-debugger",
+						 Gio.MenuItem.new(label=_("Python Debugger"),
+								  detailed_action="app.python-debugger"))
 		
-		shell.PythonConsolePluginInfo = data
-	
 	def do_deactivate(self):
 		shell = self.object
-		data = shell.PythonConsolePluginInfo
+		app = shell.props.application
 
-		manager = shell.props.ui_manager
-		manager.remove_ui(data['ui_id'])
-		manager.remove_action_group(data['action_group'])
-		manager.ensure_update()
-
-		shell.PythonConsolePluginInfo = None
+		app.remove_plugin_menu_item("tools", "python-console")
+		app.remove_plugin_menu_item("tools", "python-debugger")
+		app.remove_action("python-console")
+		app.remove_action("python-debugger")
 		
 		if self.window is not None:
 			self.window.destroy()
 		
-	def show_console(self, action, shell):
+
+	def show_console(self, action, parameter, shell):
 		if not self.window:
 			ns = {'__builtins__' : __builtins__, 
 			      'RB' : RB,
@@ -138,7 +116,7 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 			self.window.show_all()
 		self.window.grab_focus()
 
-	def enable_debugging(self, action, shell):
+	def enable_debugging(self, action, parameter, shell):
 		pwd_path = os.path.join(rb.user_data_dir(), "rpdb2_password")
 		msg = _("After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in the file %s, it will use the default password ('rhythmbox').") % pwd_path
 		dialog = Gtk.MessageDialog(None, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK_CANCEL, msg)

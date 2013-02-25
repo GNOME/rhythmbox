@@ -185,9 +185,6 @@ struct _RBAudioscrobblerRadioSourcePrivate
 
 	RBExtDB *art_store;
 
-	guint ui_merge_id;
-	GtkActionGroup *action_group;
-
 	/* used when streaming radio using old api */
 	char *old_api_password;
 	char *old_api_session_id;
@@ -247,18 +244,12 @@ static void password_info_bar_response_cb (GtkInfoBar *info_bar,
                                            int response_id,
                                            RBAudioscrobblerRadioSource *source);
 
-/* action callbacks */
-static void rename_station_action_cb (GtkAction *action,
-                                      RBAudioscrobblerRadioSource *source);
-static void delete_station_action_cb (GtkAction *action,
-                                      RBAudioscrobblerRadioSource *source);
-
-
 /* RBDisplayPage implementations */
 static void impl_selected (RBDisplayPage *page);
 static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
-static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
+static gboolean impl_can_remove (RBDisplayPage *page);
+static void impl_remove (RBDisplayPage *page);
 
 /* RBSource implementations */
 static RBEntryView *impl_get_entry_view (RBSource *asource);
@@ -272,18 +263,6 @@ enum {
 	PROP_SESSION_KEY,
 	PROP_STATION_URL,
 	PROP_PLAY_ORDER
-};
-
-#define AUDIOSCROBBLER_RADIO_SOURCE_POPUP_PATH "/AudioscrobblerRadioSourcePopup"
-
-static GtkActionEntry rb_audioscrobbler_radio_source_actions [] =
-{
-	{ "AudioscrobblerRadioRenameStation", NULL, N_("_Rename Station"), NULL,
-	  N_("Rename station"),
-	  G_CALLBACK (rename_station_action_cb) },
-	{ "AudioscrobblerRadioDeleteStation", GTK_STOCK_DELETE, N_("_Delete Station"), NULL,
-	  N_("Delete station"),
-	  G_CALLBACK (delete_station_action_cb) }
 };
 
 G_DEFINE_DYNAMIC_TYPE (RBAudioscrobblerRadioSource, rb_audioscrobbler_radio_source, RB_TYPE_STREAMING_SOURCE)
@@ -300,7 +279,7 @@ rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfilePage *parent,
 	RBShell *shell;
 	GObject *plugin;
 	RhythmDB *db;
-	char *toolbar_path;
+	GMenu *toolbar_menu;
 
 	g_object_get (parent, "shell", &shell, "plugin", &plugin, NULL);
 	g_object_get (shell, "db", &db, NULL);
@@ -309,7 +288,7 @@ rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfilePage *parent,
 		rb_audioscrobbler_radio_track_register_entry_type (db);
 	}
 
-	g_object_get (parent, "toolbar-path", &toolbar_path, NULL);
+	g_object_get (parent, "toolbar-menu", &toolbar_menu, NULL);
 
 	source = g_object_new (RB_TYPE_AUDIOSCROBBLER_RADIO_SOURCE,
 	                       "shell", shell,
@@ -321,13 +300,13 @@ rb_audioscrobbler_radio_source_new (RBAudioscrobblerProfilePage *parent,
                                "username", username,
 	                       "session-key", session_key,
 	                       "station-url", station_url,
-			       "toolbar-path", toolbar_path,
+			       "toolbar-menu", toolbar_menu,
 	                       NULL);
 
 	g_object_unref (shell);
 	g_object_unref (plugin);
 	g_object_unref (db);
-	g_free (toolbar_path);
+	g_object_unref (toolbar_menu);
 
 	return source;
 }
@@ -349,8 +328,9 @@ rb_audioscrobbler_radio_source_class_init (RBAudioscrobblerRadioSourceClass *kla
 	page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	page_class->selected = impl_selected;
 	page_class->get_status = impl_get_status;
-	page_class->show_popup = impl_show_popup;
 	page_class->delete_thyself = impl_delete_thyself;
+	page_class->can_remove = impl_can_remove;
+	page_class->remove = impl_remove;
 
 	source_class = RB_SOURCE_CLASS (klass);
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
@@ -435,10 +415,8 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	GtkWidget *error_info_bar_content_area;
 	GtkWidget *password_info_bar_label;
 	GtkWidget *password_info_bar_content_area;
-	GObject *plugin;
-	GtkUIManager *ui_manager;
+	GtkAccelGroup *accel_group;
 	RBSourceToolbar *toolbar;
-	char *ui_file;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_audioscrobbler_radio_source_parent_class, constructed, object);
 
@@ -447,7 +425,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	g_object_get (shell,
 		      "db", &db,
 		      "shell-player", &shell_player,
-		      "ui-manager", &ui_manager,
+		      "accel-group", &accel_group,
 		      NULL);
 
 	source->priv->art_store = rb_ext_db_new ("album-art");
@@ -457,7 +435,7 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 	gtk_container_add (GTK_CONTAINER (source), main_vbox);
 
 	/* toolbar */
-	toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), ui_manager);
+	toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), accel_group);
 	gtk_box_pack_start (GTK_BOX (main_vbox), GTK_WIDGET (toolbar), FALSE, FALSE, 0);
 	gtk_widget_show_all (GTK_WIDGET (toolbar));
 
@@ -512,29 +490,12 @@ rb_audioscrobbler_radio_source_constructed (GObject *object)
 				 G_CALLBACK (playing_song_changed_cb),
 				 source, 0);
 
-	/* merge ui */
-	g_object_get (source, "plugin", &plugin, NULL);
-	ui_file = rb_find_plugin_data_file (plugin, "audioscrobbler-radio-ui.xml");
-	source->priv->ui_merge_id = gtk_ui_manager_add_ui_from_file (ui_manager, ui_file, NULL);
-
-	/* actions */
-	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
-									     "AudioscrobblerRadioActions",
-									     NULL, 0,
-									     source);
-	_rb_action_group_add_display_page_actions (source->priv->action_group,
-						   G_OBJECT (shell),
-						   rb_audioscrobbler_radio_source_actions,
-						   G_N_ELEMENTS (rb_audioscrobbler_radio_source_actions));
-
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (source), RB_DISPLAY_PAGE (source->priv->parent));
 
 	g_object_unref (shell);
 	g_object_unref (shell_player);
 	g_object_unref (db);
-	g_object_unref (plugin);
-	g_object_unref (ui_manager);
-	g_free (ui_file);
+	g_object_unref (accel_group);
 }
 
 static void
@@ -1340,25 +1301,17 @@ password_info_bar_response_cb (GtkInfoBar *info_bar,
 	old_api_shake_hands (source);
 }
 
-static void
-rename_station_action_cb (GtkAction *action, RBAudioscrobblerRadioSource *source)
+static gboolean
+impl_can_remove (RBDisplayPage *page)
 {
-	RBShell *shell;
-	RBDisplayPageTree *page_tree;
-
-	g_object_get (source, "shell", &shell, NULL);
-	g_object_get (shell, "display-page-tree", &page_tree, NULL);
-
-	rb_display_page_tree_edit_source_name (page_tree, RB_SOURCE (source));
-
-	g_object_unref (shell);
-	g_object_unref (page_tree);
+	return TRUE;
 }
 
 static void
-delete_station_action_cb (GtkAction *action, RBAudioscrobblerRadioSource *source)
+impl_remove (RBDisplayPage *page)
 {
-	rb_audioscrobbler_profile_page_remove_radio_station (source->priv->parent, RB_SOURCE (source));
+	RBAudioscrobblerRadioSource *source = RB_AUDIOSCROBBLER_RADIO_SOURCE (page);
+	rb_audioscrobbler_profile_page_remove_radio_station (source->priv->parent, RB_SOURCE (page));
 }
 
 static void
@@ -1405,19 +1358,11 @@ impl_handle_eos (RBSource *asource)
 	return RB_SOURCE_EOF_NEXT;
 }
 
-static gboolean
-impl_show_popup (RBDisplayPage *page)
-{
-	_rb_display_page_show_popup (page, AUDIOSCROBBLER_RADIO_SOURCE_POPUP_PATH);
-	return TRUE;
-}
-
 static void
 impl_delete_thyself (RBDisplayPage *page)
 {
 	RBAudioscrobblerRadioSource *source;
 	RBShell *shell;
-	GtkUIManager *ui_manager;
 	RhythmDB *db;
 	GtkTreeIter iter;
 	gboolean loop;
@@ -1426,11 +1371,8 @@ impl_delete_thyself (RBDisplayPage *page)
 
 	source = RB_AUDIOSCROBBLER_RADIO_SOURCE (page);
 
-	g_object_get (source, "shell", &shell, "ui-manager", &ui_manager, NULL);
+	g_object_get (source, "shell", &shell, NULL);
 	g_object_get (shell, "db", &db, NULL);
-
-	/* unmerge ui */
-	gtk_ui_manager_remove_ui (ui_manager, source->priv->ui_merge_id);
 
 	/* Ensure playing entry isn't deleted twice */
 	source->priv->playing_entry = NULL;
@@ -1450,7 +1392,6 @@ impl_delete_thyself (RBDisplayPage *page)
 	rhythmdb_commit (db);
 
 	g_object_unref (shell);
-	g_object_unref (ui_manager);
 	g_object_unref (db);
 }
 

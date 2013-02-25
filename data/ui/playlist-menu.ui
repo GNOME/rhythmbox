@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<interface>
+  <menu id="playlist-menu">
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">_Edit...</attribute>
+	<attribute name="action">app.playlist-edit</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">_Rename</attribute>
+	<attribute name="action">app.playlist-rename</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">_Queue All Tracks</attribute>
+	<attribute name="action">app.playlist-queue</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">_Shuffle Playlist</attribute>
+	<attribute name="action">app.playlist-shuffle</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">_Save to File...</attribute>
+	<attribute name="action">app.playlist-save</attribute>
+      </item>
+    </section>
+    <section>
+      <attribute name="rb-plugin-menu-link">playlist-menu</attribute>
+    </section>
+  </menu>
+</interface>

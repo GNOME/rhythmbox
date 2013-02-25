@@ -51,7 +51,6 @@
 #include "rb-audioscrobbler-radio-source.h"
 #include "rb-audioscrobbler-radio-track-entry-type.h"
 
-#define AUDIOSCROBBLER_PROFILE_PAGE_POPUP_PATH "/AudioscrobblerProfilePagePopup"
 
 struct _RBAudioscrobblerProfilePagePrivate {
 	RBAudioscrobblerService *service;
@@ -111,13 +110,10 @@ struct _RBAudioscrobblerProfilePagePrivate {
 	GHashTable *button_to_popup_menu_map;
 	GHashTable *popup_menu_to_data_map;
 
-	guint ui_merge_id;
-	GtkActionGroup *profile_action_group;
-	GtkActionGroup *service_action_group;
-	char *love_action_name;
-	char *ban_action_name;
-	char *download_action_name;
-	char *toolbar_path;
+	GMenu *toolbar_menu;
+	GSimpleAction *love_action;
+	GSimpleAction *ban_action;
+	GSimpleAction *download_action;
 };
 
 
@@ -169,12 +165,11 @@ static void playing_song_changed_cb (RBShellPlayer *player,
                                      RBAudioscrobblerProfilePage *page);
 static void update_service_actions_sensitivity (RBAudioscrobblerProfilePage *page, RhythmDBEntry *entry);
 
-/* GtkAction callbacks */
-static void love_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page);
-static void ban_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page);
-static void download_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page);
+static void love_track_action_cb (GSimpleAction *, GVariant *, gpointer);
+static void ban_track_action_cb (GSimpleAction *, GVariant *, gpointer);
+static void download_track_action_cb (GSimpleAction *, GVariant *, gpointer);
+static void refresh_profile_action_cb (GSimpleAction *, GVariant *, gpointer);
 static void download_track_batch_complete_cb (RBTrackTransferBatch *batch, RBAudioscrobblerProfilePage *page);
-static void refresh_profile_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page);
 
 /* radio station creation/deletion */
 void station_creator_button_clicked_cb (GtkButton *button, RBAudioscrobblerProfilePage *page);
@@ -232,22 +227,13 @@ static void list_item_listen_top_fans_activated_cb (GtkMenuItem *menuitem,
 /* RBDisplayPage implementations */
 static void impl_selected (RBDisplayPage *page);
 static void impl_deselected (RBDisplayPage *page);
-static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
 
 enum {
 	PROP_0,
 	PROP_SERVICE,
-	PROP_TOOLBAR_PATH
+	PROP_TOOLBAR_MENU
 };
-
-static GtkActionEntry profile_actions [] =
-{
-	{ "AudioscrobblerProfileRefresh", NULL, N_("Refresh Profile"), NULL,
-	  N_("Refresh your Profile"),
-	  G_CALLBACK (refresh_profile_action_cb) }
-};
-
 
 G_DEFINE_DYNAMIC_TYPE (RBAudioscrobblerProfilePage, rb_audioscrobbler_profile_page, RB_TYPE_DISPLAY_PAGE)
 
@@ -303,7 +289,6 @@ rb_audioscrobbler_profile_page_class_init (RBAudioscrobblerProfilePageClass *kla
 	page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	page_class->selected = impl_selected;
 	page_class->deselected = impl_deselected;
-	page_class->show_popup = impl_show_popup;
 	page_class->delete_thyself = impl_delete_thyself;
 
 	g_object_class_install_property (object_class,
@@ -314,12 +299,12 @@ rb_audioscrobbler_profile_page_class_init (RBAudioscrobblerProfilePageClass *kla
 	                                                      RB_TYPE_AUDIOSCROBBLER_SERVICE,
                                                               G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
-					 PROP_TOOLBAR_PATH,
-					 g_param_spec_string ("toolbar-path",
-							      "toolbar path",
-							      "toolbar UI path",
-							      NULL,
-							      G_PARAM_READABLE));
+					 PROP_TOOLBAR_MENU,
+					 g_param_spec_object ("toolbar-menu",
+							      "toolbar menu",
+							      "toolbar menu",
+							      G_TYPE_MENU,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerProfilePagePrivate));
 }
@@ -474,13 +459,10 @@ rb_audioscrobbler_profile_page_dispose (GObject* object)
 static void
 rb_audioscrobbler_profile_page_finalize (GObject *object)
 {
+	/*
 	RBAudioscrobblerProfilePage *page;
 	page = RB_AUDIOSCROBBLER_PROFILE_PAGE (object);
-
-	g_free (page->priv->love_action_name);
-	g_free (page->priv->ban_action_name);
-	g_free (page->priv->download_action_name);
-	g_free (page->priv->toolbar_path);
+	*/
 
 	G_OBJECT_CLASS (rb_audioscrobbler_profile_page_parent_class)->finalize (object);
 }
@@ -493,8 +475,8 @@ rb_audioscrobbler_profile_page_get_property (GObject *object,
 {
 	RBAudioscrobblerProfilePage *page = RB_AUDIOSCROBBLER_PROFILE_PAGE (object);
 	switch (prop_id) {
-	case PROP_TOOLBAR_PATH:
-		g_value_set_string (value, page->priv->toolbar_path);
+	case PROP_TOOLBAR_MENU:
+		g_value_set_object (value, page->priv->toolbar_menu);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -512,6 +494,8 @@ rb_audioscrobbler_profile_page_set_property (GObject *object,
 	switch (prop_id) {
 	case PROP_SERVICE:
 		page->priv->service = g_value_dup_object (value);
+		break;
+	case PROP_TOOLBAR_MENU:
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -639,56 +623,51 @@ init_profile_ui (RBAudioscrobblerProfilePage *page)
 static void
 init_actions (RBAudioscrobblerProfilePage *page)
 {
-	char *ui_file;
 	RBShell *shell;
 	RBShellPlayer *player;
 	GObject *plugin;
-	GtkUIManager *ui_manager;
+	GtkAccelGroup *accel_group;
 	RhythmDBEntry *entry;
-	char *group_name;
-	char *toolbar_name;
-
-	g_object_get (page, "shell", &shell, "plugin", &plugin, "ui-manager", &ui_manager, NULL);
-	ui_file = rb_find_plugin_data_file (plugin, "audioscrobbler-profile-ui.xml");
-	page->priv->ui_merge_id = gtk_ui_manager_add_ui_from_file (ui_manager, ui_file, NULL);
-
-	page->priv->profile_action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (page),
-										   "AudioscrobblerProfileActions",
-										   NULL, 0,
-										   page);
-	_rb_action_group_add_display_page_actions (page->priv->profile_action_group,
-						   G_OBJECT (shell),
-						   profile_actions,
-						   G_N_ELEMENTS (profile_actions));
-
-	/* Unfortunately we can't use the usual trick of declaring a static array of GtkActionEntry,
-	 * and simply using _rb_source_register_action_group with that array.
-	 * This is because each instance of this page needs its own love and ban actions
-	 * so tracks can be loved/banned differently for different audioscrobbler services.
-	 */
-	group_name = g_strdup_printf ("%sActions", rb_audioscrobbler_service_get_name (page->priv->service));
-	page->priv->love_action_name = g_strdup_printf ("%sLoveTrack", rb_audioscrobbler_service_get_name (page->priv->service));
-	page->priv->ban_action_name = g_strdup_printf ("%sBanTrack", rb_audioscrobbler_service_get_name (page->priv->service));
-	page->priv->download_action_name = g_strdup_printf ("%sDownloadTrack", rb_audioscrobbler_service_get_name (page->priv->service));
-
-	GtkActionEntry service_actions [] =
-	{
-		{ page->priv->love_action_name, "emblem-favorite", N_("Love"), NULL,
-		  N_("Mark this song as loved"),
-		  G_CALLBACK (love_track_action_cb) },
-		{ page->priv->ban_action_name, GTK_STOCK_CANCEL, N_("Ban"), NULL,
-		  N_("Ban the current track from being played again"),
-		  G_CALLBACK (ban_track_action_cb) },
-		{ page->priv->download_action_name, GTK_STOCK_SAVE, N_("Download"), NULL,
-		  N_("Download the currently playing track"),
-		  G_CALLBACK (download_track_action_cb) }
+	GActionMap *map;
+	char *action_name;
+	int i;
+	GActionEntry actions[] = {
+		{ "audioscrobbler-profile-refresh", refresh_profile_action_cb }
+	};
+	GActionEntry service_actions[] = {
+		{ "audioscrobbler-%s-love-track", love_track_action_cb },
+		{ "audioscrobbler-%s-ban-track", ban_track_action_cb },
+		{ "audioscrobbler-%s-download-track", download_track_action_cb },
 	};
 
-	page->priv->service_action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (page),
-										   group_name,
-										   service_actions,
-										   G_N_ELEMENTS (service_actions),
-										   page);
+	g_object_get (page, "shell", &shell, "plugin", &plugin, "accel-group", &accel_group, NULL);
+
+	map = G_ACTION_MAP (g_application_get_default ());
+	_rb_add_display_page_actions (map,
+				      G_OBJECT (shell),
+				      actions,
+				      G_N_ELEMENTS (actions));
+
+	/* fill in action names; we need separate action instances for each service */
+	for (i = 0; i < G_N_ELEMENTS (service_actions); i++) {
+		service_actions[i].name = g_strdup_printf (service_actions[i].name,
+							   rb_audioscrobbler_service_get_name (page->priv->service));
+	}
+
+	_rb_add_display_page_actions (map,
+				      G_OBJECT (shell),
+				      service_actions,
+				      G_N_ELEMENTS (service_actions));
+
+	page->priv->love_action = G_SIMPLE_ACTION (g_action_map_lookup_action (map, service_actions[0].name));
+	page->priv->ban_action = G_SIMPLE_ACTION (g_action_map_lookup_action (map, service_actions[1].name));
+	page->priv->download_action = G_SIMPLE_ACTION (g_action_map_lookup_action (map, service_actions[2].name));
+	/* ugh leaks
+	for (i = 0; i < G_N_ELEMENTS (service_actions); i++) {
+		g_free (service_actions[i].name);
+	}
+	*/
+
 	g_object_get (shell, "shell-player", &player, NULL);
 	entry = rb_shell_player_get_playing_entry (player);
 	update_service_actions_sensitivity (page, entry);
@@ -698,22 +677,25 @@ init_actions (RBAudioscrobblerProfilePage *page)
 	g_object_unref (player);
 
 	/* set up toolbar */
-	toolbar_name = g_strdup_printf ("%sSourceToolBar", rb_audioscrobbler_service_get_name (page->priv->service));
-	page->priv->toolbar_path = g_strdup_printf ("/%sSourceToolBar", rb_audioscrobbler_service_get_name (page->priv->service));
-	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, "/", toolbar_name, NULL, GTK_UI_MANAGER_TOOLBAR, TRUE);
-	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, page->priv->toolbar_path, "Love", page->priv->love_action_name, GTK_UI_MANAGER_TOOLITEM, FALSE);
-	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, page->priv->toolbar_path, "Ban", page->priv->ban_action_name, GTK_UI_MANAGER_TOOLITEM, FALSE);
-	gtk_ui_manager_add_ui (ui_manager, page->priv->ui_merge_id, page->priv->toolbar_path, "Download", page->priv->download_action_name, GTK_UI_MANAGER_TOOLITEM, FALSE);
+	page->priv->toolbar_menu = g_menu_new ();
+	action_name = g_strdup_printf ("app.audioscrobbler-%s-love-track", rb_audioscrobbler_service_get_name (page->priv->service));
+	g_menu_append (page->priv->toolbar_menu, _("Love"), action_name);
+	g_free (action_name);
 
-	page->priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (page), ui_manager);
+	action_name = g_strdup_printf ("app.audioscrobbler-%s-ban-track", rb_audioscrobbler_service_get_name (page->priv->service));
+	g_menu_append (page->priv->toolbar_menu, _("Ban"), action_name);
+	g_free (action_name);
+
+	action_name = g_strdup_printf ("app.audioscrobbler-%s-download-track", rb_audioscrobbler_service_get_name (page->priv->service));
+	g_menu_append (page->priv->toolbar_menu, _("Download"), action_name);
+	g_free (action_name);
+
+	page->priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (page), accel_group);
 	gtk_box_pack_start (GTK_BOX (page->priv->main_vbox), GTK_WIDGET (page->priv->toolbar), FALSE, FALSE, 0);
 
-	g_free (ui_file);
-	g_free (toolbar_name);
 	g_object_unref (shell);
 	g_object_unref (plugin);
-	g_object_unref (ui_manager);
-	g_free (group_name);
+	g_object_unref (accel_group);
 }
 
 static void
@@ -954,45 +936,38 @@ playing_song_changed_cb (RBShellPlayer *player,
 static void
 update_service_actions_sensitivity (RBAudioscrobblerProfilePage *page, RhythmDBEntry *entry)
 {
-	GtkAction *love;
-	GtkAction *ban;
-	GtkAction *download;
-
 	/* enable love/ban if an entry is playing */
-	love = gtk_action_group_get_action (page->priv->service_action_group, page->priv->love_action_name);
-	ban = gtk_action_group_get_action (page->priv->service_action_group, page->priv->ban_action_name);
 	if (entry == NULL) {
-		gtk_action_set_sensitive (love, FALSE);
-		gtk_action_set_sensitive (ban, FALSE);
+		g_simple_action_set_enabled (page->priv->love_action, FALSE);
+		g_simple_action_set_enabled (page->priv->ban_action, FALSE);
 	} else {
-		gtk_action_set_sensitive (love, TRUE);
-		gtk_action_set_sensitive (ban, TRUE);
+		g_simple_action_set_enabled (page->priv->love_action, TRUE);
+		g_simple_action_set_enabled (page->priv->ban_action, TRUE);
 	}
 
 	/* enable download if the playing entry is a radio track from this service which provides a download url */
-	download = gtk_action_group_get_action (page->priv->service_action_group, page->priv->download_action_name);
 	if (entry != NULL &&
 	    rhythmdb_entry_get_entry_type (entry) == RHYTHMDB_ENTRY_TYPE_AUDIOSCROBBLER_RADIO_TRACK) {
 		RBAudioscrobblerRadioTrackData *data;
 		data = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RBAudioscrobblerRadioTrackData);
 
 		if (data->service == page->priv->service && data->download_url != NULL) {
-			gtk_action_set_sensitive (download, TRUE);
+			g_simple_action_set_enabled (page->priv->download_action, TRUE);
 		} else {
-			gtk_action_set_sensitive (download, FALSE);
+			g_simple_action_set_enabled (page->priv->download_action, FALSE);
 		}
 	} else {
-		gtk_action_set_sensitive (download, FALSE);
+		g_simple_action_set_enabled (page->priv->download_action, FALSE);
 	}
 }
 
 static void
-love_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page)
+love_track_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
+	RBAudioscrobblerProfilePage *page = RB_AUDIOSCROBBLER_PROFILE_PAGE (data);
 	RBShell *shell;
 	RBShellPlayer *shell_player;
 	RhythmDBEntry *playing;
-	GtkAction *ban_action;
 
 	g_object_get (page, "shell", &shell, NULL);
 	g_object_get (shell, "shell-player", &shell_player, NULL);
@@ -1005,18 +980,16 @@ love_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page)
 		rhythmdb_entry_unref (playing);
 	}
 
-	/* disable love/ban */
-	gtk_action_set_sensitive (action, FALSE);
-	ban_action = gtk_action_group_get_action (page->priv->service_action_group, page->priv->ban_action_name);
-	gtk_action_set_sensitive (ban_action, FALSE);
+	g_simple_action_set_enabled (page->priv->ban_action, FALSE);
 
 	g_object_unref (shell_player);
 	g_object_unref (shell);
 }
 
 static void
-ban_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page)
+ban_track_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
+	RBAudioscrobblerProfilePage *page = RB_AUDIOSCROBBLER_PROFILE_PAGE (data);
 	RBShell *shell;
 	RBShellPlayer *shell_player;
 	RhythmDBEntry *playing;
@@ -1040,14 +1013,14 @@ ban_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page)
 }
 
 static void
-download_track_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page)
+download_track_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
+	RBAudioscrobblerProfilePage *page = RB_AUDIOSCROBBLER_PROFILE_PAGE (data);
 	RBShell *shell;
 	RBShellPlayer *shell_player;
 	RhythmDBEntry *playing;
 
-	/* disable the action */
-	gtk_action_set_sensitive (action, FALSE);
+	g_simple_action_set_enabled (action, FALSE);
 
 	g_object_get (page, "shell", &shell, NULL);
 	g_object_get (shell, "shell-player", &shell_player, NULL);
@@ -1144,8 +1117,9 @@ download_track_batch_complete_cb (RBTrackTransferBatch *batch,
 }
 
 static void
-refresh_profile_action_cb (GtkAction *action, RBAudioscrobblerProfilePage *page)
+refresh_profile_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
+	RBAudioscrobblerProfilePage *page = RB_AUDIOSCROBBLER_PROFILE_PAGE (data);
 	rb_audioscrobbler_user_force_update (page->priv->user);
 }
 
@@ -1865,19 +1839,11 @@ impl_deselected (RBDisplayPage *bpage)
 	page->priv->update_timeout_id = 0;
 }
 
-static gboolean
-impl_show_popup (RBDisplayPage *page)
-{
-	_rb_display_page_show_popup (page, AUDIOSCROBBLER_PROFILE_PAGE_POPUP_PATH);
-	return TRUE;
-}
-
 static void
 impl_delete_thyself (RBDisplayPage *bpage)
 {
 	RBAudioscrobblerProfilePage *page;
 	GList *i;
-	GtkUIManager *ui_manager;
 
 	rb_debug ("deleting profile page");
 
@@ -1886,12 +1852,6 @@ impl_delete_thyself (RBDisplayPage *bpage)
 	for (i = page->priv->radio_sources; i != NULL; i = i->next) {
 		rb_display_page_delete_thyself (i->data);
 	}
-
-	g_object_get (page, "ui-manager", &ui_manager, NULL);
-	gtk_ui_manager_remove_ui (ui_manager, page->priv->ui_merge_id);
-	gtk_ui_manager_remove_action_group (ui_manager, page->priv->service_action_group);
-
-	g_object_unref (ui_manager);
 }
 
 void

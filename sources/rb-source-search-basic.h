@@ -53,6 +53,7 @@ struct _RBSourceSearchBasic
 {
 	RBSourceSearch parent;
 	RhythmDBPropType search_prop;
+	char *description;
 };
 
 struct _RBSourceSearchBasicClass
@@ -62,11 +63,17 @@ struct _RBSourceSearchBasicClass
 
 GType		rb_source_search_basic_get_type	(void);
 
-RBSourceSearch *rb_source_search_basic_new (RhythmDBPropType prop);
+RBSourceSearch *rb_source_search_basic_new (RhythmDBPropType prop, const char *description);
+void		rb_source_search_basic_register (RhythmDBPropType prop, const char *name, const char *description);
 
-void		rb_source_search_basic_create_for_actions (GtkActionGroup *action_group,
-							   GtkRadioActionEntry *actions,
-							   int n_actions);
+GAction *	rb_source_create_search_action (RBSource *source);
+
+void		rb_source_search_basic_add_to_menu (GMenu *menu,
+						    const char *action_namespace,
+						    GAction *search_action,
+						    RhythmDBPropType prop,
+						    const char *name,
+						    const char *label);
 
 G_END_DECLS
 

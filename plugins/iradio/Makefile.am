@@ -40,11 +40,10 @@ INCLUDES = 						\
 	-D_BSD_SOURCE
 
 gtkbuilderdir = $(plugindatadir)
-gtkbuilder_DATA = \
+gtkbuilder_DATA = 					\
+	iradio-popup.ui					\
+	iradio-toolbar.ui				\
 	station-properties.ui
-
-uixmldir = $(plugindatadir)
-uixml_DATA = iradio-ui.xml
 
 xspfdir = $(plugindatadir)
 xspf_DATA = iradio-initial.xspf

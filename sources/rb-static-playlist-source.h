@@ -56,13 +56,9 @@ struct _RBStaticPlaylistSource
 struct _RBStaticPlaylistSourceClass
 {
 	RBPlaylistSourceClass parent;
-
-	GtkActionGroup *action_group;
 };
 
 GType		rb_static_playlist_source_get_type 	(void);
-
-void		rb_static_playlist_source_create_actions (RBShell *shell);
 
 RBSource *	rb_static_playlist_source_new		(RBShell *shell,
 							 const char *name,

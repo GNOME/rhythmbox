@@ -2,6 +2,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "rb-application.h"
 #include "rb-async-copy.h"
 #include "rb-auto-playlist-source.h"
 #include "rb-cell-renderer-pixbuf.h"
@@ -71,6 +72,7 @@
 #include "rhythmdb-entry.h"
 #include "rhythmdb-entry-type.h"
 
+rb_application_get_type
 rb_auto_playlist_source_get_type
 rb_browser_source_get_type
 rb_cell_renderer_pixbuf_get_type

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<interface>
+  <menu id="display-page-add-menu">
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">_New Playlist</attribute>
+	<attribute name="action">app.playlist-new</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">New _Automatic Playlist</attribute>
+	<attribute name="action">app.playlist-new-auto</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">_Load from File</attribute>
+	<attribute name="action">app.playlist-load</attribute>
+      </item>
+    </section>
+    <section>
+      <attribute name="rb-plugin-menu-link">display-page-add-playlist</attribute>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">_Check for New Devices</attribute>
+	<attribute name="action">app.check-devices</attribute>
+      </item>
+    </section>
+    <section>
+      <attribute name="rb-plugin-menu-link">display-page-add</attribute>
+    </section>
+  </menu>
+</interface>

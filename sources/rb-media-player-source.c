@@ -50,9 +50,6 @@
 typedef struct {
 	RBSyncSettings *sync_settings;
 
-	GtkActionGroup *action_group;
-	GtkAction *sync_action;
-
 	/* properties dialog bits */
 	GtkDialog *properties_dialog;
 	RBSyncBarData volume_usage;
@@ -65,6 +62,10 @@ typedef struct {
 
 	/* sync state */
 	RBSyncState *sync_state;
+
+	GAction *sync_action;
+	GAction *properties_action;
+	gboolean syncing;
 
 	GstEncodingTarget *encoding_target;
 } RBMediaPlayerSourcePrivate;
@@ -87,19 +88,14 @@ static void rb_media_player_source_get_property (GObject *object,
 					 GParamSpec *pspec);
 static void rb_media_player_source_constructed (GObject *object);
 
-static void sync_cmd (GtkAction *action, RBSource *source);
+static void sync_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
+static void properties_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data);
 static gboolean sync_idle_delete_entries (RBMediaPlayerSource *source);
 
 static gboolean impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data);
 static void impl_delete_thyself (RBDisplayPage *page);
 
-static char *impl_get_delete_action (RBSource *source);
-
-static GtkActionEntry rb_media_player_source_actions[] = {
-	{ "MediaPlayerSourceSync", GTK_STOCK_REFRESH, N_("Sync with Library"), NULL,
-	  N_("Synchronize media player with the library"),
-	  G_CALLBACK (sync_cmd) },
-};
+static char *impl_get_delete_label (RBSource *source);
 
 enum
 {
@@ -107,30 +103,6 @@ enum
 	PROP_DEVICE_SERIAL,
 	PROP_ENCODING_TARGET
 };
-
-static GtkActionGroup *action_group = NULL;
-
-void
-rb_media_player_source_init_actions (RBShell *shell)
-{
-	GtkUIManager *uimanager;
-
-	if (action_group != NULL) {
-		return;
-	}
-
-	action_group = gtk_action_group_new ("MediaPlayerActions");
-	gtk_action_group_set_translation_domain (action_group, GETTEXT_PACKAGE);
-
-	g_object_get (shell, "ui-manager", &uimanager, NULL);
-	gtk_ui_manager_insert_action_group (uimanager, action_group, 0);
-	g_object_unref (uimanager);
-
-	_rb_action_group_add_display_page_actions (action_group,
-						   G_OBJECT (shell),
-						   rb_media_player_source_actions,
-						   G_N_ELEMENTS (rb_media_player_source_actions));
-}
 
 static void
 rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass)
@@ -152,7 +124,7 @@ rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass)
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_get_delete_action = impl_get_delete_action;
+	source_class->impl_get_delete_label = impl_get_delete_label;
 	source_class->impl_delete = NULL;
 
 	browser_source_class->has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
@@ -256,14 +228,29 @@ rb_media_player_source_get_property (GObject *object,
 }
 
 static void
+update_actions (RBMediaPlayerSource *source)
+{
+	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
+	RBSourceLoadStatus status;
+	gboolean selected;
+
+	g_object_get (source,
+		      "load-status", &status,
+		      "selected", &selected,
+		      NULL);
+
+	if (selected) {
+		g_simple_action_set_enabled (G_SIMPLE_ACTION (priv->sync_action),
+					     (status == RB_SOURCE_LOAD_STATUS_LOADED) && (priv->syncing == FALSE));
+		g_simple_action_set_enabled (G_SIMPLE_ACTION (priv->properties_action),
+					     (status == RB_SOURCE_LOAD_STATUS_LOADED));
+	}
+}
+
+static void
 load_status_changed_cb (GObject *object, GParamSpec *pspec, gpointer whatever)
 {
-	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (object);
-	RBSourceLoadStatus status;
-
-	g_object_get (object, "load-status", &status, NULL);
-
-	gtk_action_set_sensitive (priv->sync_action, (status == RB_SOURCE_LOAD_STATUS_LOADED));
+	update_actions (RB_MEDIA_PLAYER_SOURCE (object));
 }
 
 static void
@@ -271,16 +258,23 @@ rb_media_player_source_constructed (GObject *object)
 {
 	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (object);
 	RBShell *shell;
+	GApplication *app;
+	GActionEntry actions[] = {
+		{ "media-player-sync", sync_action_cb },
+		{ "media-player-properties", properties_action_cb }
+	};
 
 	RB_CHAIN_GOBJECT_METHOD (rb_media_player_source_parent_class, constructed, object);
 
+	app = g_application_get_default ();
 	g_object_get (object, "shell", &shell, NULL);
-	rb_media_player_source_init_actions (shell);
+	_rb_add_display_page_actions (G_ACTION_MAP (app), G_OBJECT (shell), actions, G_N_ELEMENTS (actions));
 	g_object_unref (shell);
 
-	priv->sync_action = gtk_action_group_get_action (action_group, "MediaPlayerSourceSync");
+	priv->sync_action = g_action_map_lookup_action (G_ACTION_MAP (app), "media-player-sync");
+	priv->properties_action = g_action_map_lookup_action (G_ACTION_MAP (app), "media-player-properties");
 	g_signal_connect (object, "notify::load-status", G_CALLBACK (load_status_changed_cb), NULL);
-	load_status_changed_cb (object, NULL, NULL);
+	update_actions (RB_MEDIA_PLAYER_SOURCE (object));
 }
 
 /* must be called once device information is available via source properties */
@@ -565,7 +559,8 @@ sync_idle_cb_cleanup (RBMediaPlayerSource *source)
 
 	rb_debug ("cleaning up after sync process");
 
-	gtk_action_set_sensitive (priv->sync_action, TRUE);
+	priv->syncing = FALSE;
+	update_actions (source);
 
 	/* release the ref taken at the start of the sync */
 	g_object_unref (source);
@@ -805,7 +800,8 @@ rb_media_player_source_sync (RBMediaPlayerSource *source)
 {
 	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
 
-	gtk_action_set_sensitive (priv->sync_action, FALSE);
+	priv->syncing = TRUE;
+	update_actions (source);
 
 	/* ref the source for the duration of the sync operation */
 	g_idle_add ((GSourceFunc)sync_idle_cb_update_sync, g_object_ref (source));
@@ -820,9 +816,15 @@ _rb_media_player_source_add_to_map (GHashTable *map, RhythmDBEntry *entry)
 }
 
 static void
-sync_cmd (GtkAction *action, RBSource *source)
+sync_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
-	rb_media_player_source_sync (RB_MEDIA_PLAYER_SOURCE (source));
+	rb_media_player_source_sync (RB_MEDIA_PLAYER_SOURCE (data));
+}
+
+static void
+properties_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
+{
+	rb_media_player_source_show_properties (RB_MEDIA_PLAYER_SOURCE (data));
 }
 
 static RhythmDB *
@@ -912,9 +914,9 @@ impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data)
 }
 
 static char *
-impl_get_delete_action (RBSource *source)
+impl_get_delete_label (RBSource *source)
 {
-	return g_strdup ("EditDelete");
+	return g_strdup (_("Delete"));
 }
 
 static void
@@ -936,21 +938,3 @@ impl_delete_thyself (RBDisplayPage *page)
 	rhythmdb_commit (db);
 	g_object_unref (db);
 }
-
-/* annotations for methods */
-
-/**
- * impl_delete_entries:
- * @source: the source
- * @entries: (element-type RB.RhythmDBEntry) (transfer full): list of entries to delete
- * @callback: callback to call on completion
- * @data: (closure) (scope notified): callback data
- * @destroy_data: callback to free callback data
- */
-
-/**
- * impl_add_playlist:
- * @source: the source
- * @name: new playlist name
- * @entries: (element-type RB.RhythmDBEntry) (transfer full): list of entries to add
- */

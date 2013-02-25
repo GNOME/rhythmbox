@@ -44,17 +44,15 @@
 #include "rb-shell.h"
 #include "rb-util.h"
 #include "eggdesktopfile.h"
-#include "eggsmclient.h"
 #include "rb-debug.h"
+#include "rb-application.h"
 
 int
 main (int argc, char **argv)
 {
-	RBShell *shell;
-	gboolean autostarted;
+	GApplication *app;
 	char *desktop_file_path;
-	int new_argc;
-	char **new_argv;
+	int rc;
 
 #ifdef GDK_WINDOWING_X11
 	if (XInitThreads () == 0) {
@@ -66,12 +64,12 @@ main (int argc, char **argv)
 	/* disable multidevice so clutter-gtk events work.
 	 * this needs to be done before gtk_open, so the visualizer
 	 * plugin can't do it.
+	 *
+	 * XXX not necessary any more?
 	 */
 	gdk_disable_multidevice ();
 	g_type_init ();
 	g_random_set_seed (time (0));
-
-	autostarted = (g_getenv ("DESKTOP_AUTOSTART_ID") != NULL);
 
 #ifdef USE_UNINSTALLED_DIRS
 	desktop_file_path = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "rhythmbox.desktop", NULL);
@@ -99,21 +97,10 @@ main (int argc, char **argv)
 
 	/* TODO: kill this function */
 	rb_threads_init ();
-	if (glib_check_version (2, 31, 1) != NULL) {
-		gdk_threads_enter ();
-	}
 
-	new_argc = argc;
-	new_argv = argv;
-	shell = rb_shell_new (autostarted, &argc, &argv);
+	app = rb_application_new ();
+	rc = rb_application_run (RB_APPLICATION (app), argc, argv);
+	g_object_unref (app);
 
-	g_application_run (G_APPLICATION (shell), new_argc, new_argv);
-
-	g_object_unref (shell);
-
-	if (glib_check_version (2, 31, 1) != NULL) {
-		gdk_threads_leave ();
-	}
-
-	exit (0);
+	return rc;
 }

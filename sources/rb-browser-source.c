@@ -62,6 +62,8 @@
 #include "rb-search-entry.h"
 #include "rb-source-toolbar.h"
 #include "rb-shell-preferences.h"
+#include "rb-builder-helpers.h"
+#include "rb-application.h"
 
 static void rb_browser_source_class_init (RBBrowserSourceClass *klass);
 static void rb_browser_source_init (RBBrowserSource *source);
@@ -76,9 +78,10 @@ static void rb_browser_source_get_property (GObject *object,
 			                  guint prop_id,
 			                  GValue *value,
 			                  GParamSpec *pspec);
-static void rb_browser_source_cmd_choose_genre (GtkAction *action, RBSource *source);
-static void rb_browser_source_cmd_choose_artist (GtkAction *action, RBSource *source);
-static void rb_browser_source_cmd_choose_album (GtkAction *action, RBSource *source);
+static void select_genre_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
+static void select_artist_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
+static void select_album_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
+
 static void songs_view_sort_order_changed_cb (GObject *object, GParamSpec *pspec, RBBrowserSource *source);
 static void rb_browser_source_browser_changed_cb (RBLibraryBrowser *entry,
 						  GParamSpec *param,
@@ -122,34 +125,12 @@ struct RBBrowserSourcePrivate
 	gboolean search_on_completion;
 	RBSourceSearch *default_search;
 
-	GtkActionGroup *action_group;
-	GtkActionGroup *search_action_group;
-
-	gboolean dispose_has_run;
+	GMenu *popup;
+	GMenu *search_popup;
+	GAction *search_action;
 };
 
 #define RB_BROWSER_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_BROWSER_SOURCE, RBBrowserSourcePrivate))
-
-static GtkActionEntry rb_browser_source_actions [] =
-{
-	{ "BrowserSrcChooseGenre", NULL, N_("Browse This _Genre"), NULL,
-	  N_("Set the browser to view only this genre"),
-	  G_CALLBACK (rb_browser_source_cmd_choose_genre) },
-	{ "BrowserSrcChooseArtist", NULL , N_("Browse This _Artist"), NULL,
-	  N_("Set the browser to view only this artist"),
-	  G_CALLBACK (rb_browser_source_cmd_choose_artist) },
-	{ "BrowserSrcChooseAlbum", NULL, N_("Browse This A_lbum"), NULL,
-	  N_("Set the browser to view only this album"),
-	  G_CALLBACK (rb_browser_source_cmd_choose_album) }
-};
-
-static GtkRadioActionEntry rb_browser_source_radio_actions [] =
-{
-	{ "BrowserSourceSearchAll", NULL, N_("Search all fields"), NULL, NULL, RHYTHMDB_PROP_SEARCH_MATCH },
-	{ "BrowserSourceSearchArtists", NULL, N_("Search artists"), NULL, NULL, RHYTHMDB_PROP_ARTIST_FOLDED },
-	{ "BrowserSourceSearchAlbums", NULL, N_("Search albums"), NULL, NULL, RHYTHMDB_PROP_ALBUM_FOLDED },
-	{ "BrowserSourceSearchTitles", NULL, N_("Search titles"), NULL, NULL, RHYTHMDB_PROP_TITLE_FOLDED }
-};
 
 static const GtkTargetEntry songs_view_drag_types[] = {
 	{ "application/x-rhythmbox-entry", 0, 0 },
@@ -226,37 +207,13 @@ rb_browser_source_dispose (GObject *object)
 	RBBrowserSource *source;
 	source = RB_BROWSER_SOURCE (object);
 
-	if (source->priv->dispose_has_run) {
-		/* If dispose did already run, return. */
-		return;
-	}
-	/* Make sure dispose does not run twice. */
-	source->priv->dispose_has_run = TRUE;
-
-	if (source->priv->db != NULL) {
-		g_object_unref (source->priv->db);
-		source->priv->db = NULL;
-	}
-
-	if (source->priv->search_query != NULL) {
-		rhythmdb_query_free (source->priv->search_query);
-		source->priv->search_query = NULL;
-	}
-
-	if (source->priv->cached_all_query != NULL) {
-		g_object_unref (source->priv->cached_all_query);
-		source->priv->cached_all_query = NULL;
-	}
-
-	if (source->priv->action_group != NULL) {
-		g_object_unref (source->priv->action_group);
-		source->priv->action_group = NULL;
-	}
-
-	if (source->priv->default_search != NULL) {
-		g_object_unref (source->priv->default_search);
-		source->priv->default_search = NULL;
-	}
+	g_clear_object (&source->priv->db);
+	g_clear_object (&source->priv->search_query);
+	g_clear_object (&source->priv->cached_all_query);
+	g_clear_object (&source->priv->default_search);
+	g_clear_object (&source->priv->popup);
+	g_clear_object (&source->priv->search_popup);
+	g_clear_object (&source->priv->search_action);
 
 	G_OBJECT_CLASS (rb_browser_source_parent_class)->dispose (object);
 }
@@ -285,15 +242,29 @@ rb_browser_source_songs_show_popup_cb (RBEntryView *view,
 		RBBrowserSourceClass *klass = RB_BROWSER_SOURCE_GET_CLASS (source);
 
 		klass->show_entry_popup (source);
-	} else {
-		rb_display_page_show_popup (RB_DISPLAY_PAGE (source));
 	}
 }
 
 static void
 default_show_entry_popup (RBBrowserSource *source)
 {
-	_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), "/BrowserSourceViewPopup");
+	GtkWidget *menu;
+	GMenuModel *playlist_menu;
+
+	/* update add to playlist menu links */
+	g_object_get (source, "playlist-menu", &playlist_menu, NULL);
+	rb_menu_update_link (source->priv->popup, "rb-playlist-menu-link", playlist_menu);
+	g_object_unref (playlist_menu);
+
+	menu = gtk_menu_new_from_model (G_MENU_MODEL (source->priv->popup));
+	gtk_menu_attach_to_widget (GTK_MENU (menu), GTK_WIDGET (source), NULL);
+	gtk_menu_popup (GTK_MENU (menu),
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			3,
+			gtk_get_current_event_time ());
 }
 
 static void
@@ -303,10 +274,17 @@ rb_browser_source_constructed (GObject *object)
 	RBBrowserSourceClass *klass;
 	RBShell *shell;
 	GObject *shell_player;
-	GtkUIManager *ui_manager;
+	GtkAccelGroup *accel_group;
 	RhythmDBEntryType *entry_type;
 	GtkWidget *content;
 	GtkWidget *paned;
+	GtkBuilder *builder;
+	GMenu *section;
+	GActionEntry actions[] = {
+		{ "browser-select-genre", select_genre_action_cb },
+		{ "browser-select-artist", select_artist_action_cb },
+		{ "browser-select-album", select_album_action_cb }
+	};
 
 	RB_CHAIN_GOBJECT_METHOD (rb_browser_source_parent_class, constructed, object);
 
@@ -319,34 +297,35 @@ rb_browser_source_constructed (GObject *object)
 	g_object_get (shell,
 		      "db", &source->priv->db,
 		      "shell-player", &shell_player,
-		      "ui-manager", &ui_manager,
+		      "accel-group", &accel_group,
 		      NULL);
 
-	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
-									     "BrowserSourceActions",
-									     NULL, 0, NULL);
-	_rb_action_group_add_display_page_actions (source->priv->action_group,
-						   G_OBJECT (shell),
-						   rb_browser_source_actions,
-						   G_N_ELEMENTS (rb_browser_source_actions));
-
-	/* only add the actions if we haven't already */
-	if (gtk_action_group_get_action (source->priv->action_group,
-					 rb_browser_source_radio_actions[0].name) == NULL) {
-		gtk_action_group_add_radio_actions (source->priv->action_group,
-						    rb_browser_source_radio_actions,
-						    G_N_ELEMENTS (rb_browser_source_radio_actions),
-						    0,
-						    NULL,
-						    NULL);
-
-		rb_source_search_basic_create_for_actions (source->priv->action_group,
-							   rb_browser_source_radio_actions,
-							   G_N_ELEMENTS (rb_browser_source_radio_actions));
-	}
+	_rb_add_display_page_actions (G_ACTION_MAP (g_application_get_default ()),
+				      G_OBJECT (shell),
+				      actions,
+				      G_N_ELEMENTS (actions));
 	g_object_unref (shell);
 
-	source->priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
+
+	source->priv->search_action = rb_source_create_search_action (RB_SOURCE (source));
+	g_action_map_add_action (G_ACTION_MAP (g_application_get_default ()), source->priv->search_action);
+
+	/* ensure search instances exist */
+	rb_source_search_basic_register (RHYTHMDB_PROP_SEARCH_MATCH, "search-match", _("Search all fields"));
+	rb_source_search_basic_register (RHYTHMDB_PROP_ARTIST_FOLDED, "artist", _("Search artists"));
+	rb_source_search_basic_register (RHYTHMDB_PROP_ALBUM_FOLDED, "album", _("Search albums"));
+	rb_source_search_basic_register (RHYTHMDB_PROP_TITLE_FOLDED, "title", _("Search titles"));
+	
+	section = g_menu_new ();
+	rb_source_search_add_to_menu (section, "app", source->priv->search_action, "search-match");
+	rb_source_search_add_to_menu (section, "app", source->priv->search_action, "artist");
+	rb_source_search_add_to_menu (section, "app", source->priv->search_action, "album");
+	rb_source_search_add_to_menu (section, "app", source->priv->search_action, "title");
+
+	source->priv->search_popup = g_menu_new ();
+	g_menu_append_section (source->priv->search_popup, NULL, G_MENU_MODEL (section));
+
+	source->priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH, _("Search all fields"));
 
 	paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
 
@@ -410,8 +389,8 @@ rb_browser_source_constructed (GObject *object)
 	gtk_paned_pack2 (GTK_PANED (paned), GTK_WIDGET (source->priv->songs), TRUE, FALSE);
 
 	/* set up toolbar */
-	source->priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), ui_manager);
-	rb_source_toolbar_add_search_entry (source->priv->toolbar, "/BrowserSourceSearchMenu", NULL);
+	source->priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), accel_group);
+	rb_source_toolbar_add_search_entry_menu (source->priv->toolbar, G_MENU_MODEL (source->priv->search_popup), source->priv->search_action);
 
 	content = gtk_grid_new ();
 	gtk_grid_set_column_spacing (GTK_GRID (content), 6);
@@ -435,8 +414,15 @@ rb_browser_source_constructed (GObject *object)
 	source->priv->cached_all_query = rhythmdb_query_model_new_empty (source->priv->db);
 	rb_browser_source_populate (source);
 
+	builder = rb_builder_load ("browser-popup.ui", NULL);
+	source->priv->popup = G_MENU (gtk_builder_get_object (builder, "browser-popup"));
+	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()),
+					  source->priv->popup);
+	g_object_unref (builder);
+
 	g_object_unref (entry_type);
 	g_object_unref (shell_player);
+	g_object_unref (accel_group);
 }
 
 static void
@@ -542,32 +528,32 @@ browse_property (RBBrowserSource *source, RhythmDBPropType prop)
 }
 
 static void
-rb_browser_source_cmd_choose_genre (GtkAction *action, RBSource *source)
+select_genre_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
 	rb_debug ("choosing genre");
 
-	if (RB_IS_BROWSER_SOURCE (source)) {
-		browse_property (RB_BROWSER_SOURCE (source), RHYTHMDB_PROP_GENRE);
+	if (RB_IS_BROWSER_SOURCE (data)) {
+		browse_property (RB_BROWSER_SOURCE (data), RHYTHMDB_PROP_GENRE);
 	}
 }
 
 static void
-rb_browser_source_cmd_choose_artist (GtkAction *action, RBSource *source)
+select_artist_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
 	rb_debug ("choosing artist");
 
-	if (RB_IS_BROWSER_SOURCE (source)) {
-		browse_property (RB_BROWSER_SOURCE (source), RHYTHMDB_PROP_ARTIST);
+	if (RB_IS_BROWSER_SOURCE (data)) {
+		browse_property (RB_BROWSER_SOURCE (data), RHYTHMDB_PROP_ARTIST);
 	}
 }
 
 static void
-rb_browser_source_cmd_choose_album (GtkAction *action, RBSource *source)
+select_album_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
 	rb_debug ("choosing album");
 
-	if (RB_IS_BROWSER_SOURCE (source)) {
-		browse_property (RB_BROWSER_SOURCE (source), RHYTHMDB_PROP_ALBUM);
+	if (RB_IS_BROWSER_SOURCE (data)) {
+		browse_property (RB_BROWSER_SOURCE (data), RHYTHMDB_PROP_ALBUM);
 	}
 }
 

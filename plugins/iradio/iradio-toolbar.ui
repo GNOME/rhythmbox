@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<interface>
+  <menu id="iradio-toolbar">
+    <section>
+      <submenu>
+	<attribute name="label" translatable="yes">Edit</attribute>
+	<attribute name="rb-menu-link">edit-menu</attribute>
+      </submenu>
+      <item>
+	<attribute name="label" translatable="yes">Browse</attribute>
+	<attribute name="rb-property-bind">show-browser</attribute>
+	<attribute name="accel">&lt;Primary&gt;b</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">View All</attribute>
+	<attribute name="action">app.source-view-all</attribute>
+      </item>
+      <item>
+	<attribute name="context">Radio</attribute>
+	<attribute name="label" translatable="yes">Add</attribute>
+	<attribute name="action">app.iradio-new-station</attribute>
+      </item>
+    </section>
+    <section>
+      <attribute name="rb-plugin-menu-link">iradio-toolbar</attribute>
+    </section>
+  </menu>
+</interface>

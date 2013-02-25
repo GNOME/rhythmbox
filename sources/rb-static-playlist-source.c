@@ -59,6 +59,8 @@
 #include "rb-playlist-xml.h"
 #include "rb-source-search-basic.h"
 #include "rb-source-toolbar.h"
+#include "rb-builder-helpers.h"
+#include "rb-application.h"
 
 static void rb_static_playlist_source_constructed (GObject *object);
 static void rb_static_playlist_source_dispose (GObject *object);
@@ -118,14 +120,6 @@ static void rb_static_playlist_source_rows_reordered (GtkTreeModel *model,
 						      gint *order_map,
 						      RBStaticPlaylistSource *source);
 
-static GtkRadioActionEntry rb_static_playlist_source_radio_actions [] =
-{
-	{ "StaticPlaylistSearchAll", NULL, N_("Search all fields"), NULL, NULL, RHYTHMDB_PROP_SEARCH_MATCH },
-	{ "StaticPlaylistSearchArtists", NULL, N_("Search artists"), NULL, NULL, RHYTHMDB_PROP_ARTIST_FOLDED },
-	{ "StaticPlaylistSearchAlbums", NULL, N_("Search albums"), NULL, NULL, RHYTHMDB_PROP_ALBUM_FOLDED },
-	{ "StaticPlaylistSearchTitles", NULL, N_("Search titles"), NULL, NULL, RHYTHMDB_PROP_TITLE_FOLDED }
-};
-
 enum
 {
 	PROP_0,
@@ -148,8 +142,9 @@ typedef struct
 
 	RBSourceSearch *default_search;
 	RhythmDBQuery *search_query;
+	GMenu *search_popup;
+	GAction *search_action;
 
-	gboolean dispose_has_run;
 } RBStaticPlaylistSourcePrivate;
 
 static gpointer playlist_pixbuf = NULL;
@@ -193,34 +188,6 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	g_type_class_add_private (klass, sizeof (RBStaticPlaylistSourcePrivate));
 }
 
-void
-rb_static_playlist_source_create_actions (RBShell *shell)
-{
-	RBStaticPlaylistSourceClass *klass;
-	GtkUIManager *uimanager;
-
-	klass = RB_STATIC_PLAYLIST_SOURCE_CLASS (g_type_class_ref (RB_TYPE_STATIC_PLAYLIST_SOURCE));
-
-	klass->action_group = gtk_action_group_new ("StaticPlaylistActions");
-	gtk_action_group_set_translation_domain (klass->action_group, GETTEXT_PACKAGE);
-
-	g_object_get (shell, "ui-manager", &uimanager, NULL);
-	gtk_ui_manager_insert_action_group (uimanager, klass->action_group, 0);
-	g_object_unref (uimanager);
-
-	gtk_action_group_add_radio_actions (klass->action_group,
-					    rb_static_playlist_source_radio_actions,
-					    G_N_ELEMENTS (rb_static_playlist_source_radio_actions),
-					    0,
-					    NULL,
-					    NULL);
-	rb_source_search_basic_create_for_actions (klass->action_group,
-						   rb_static_playlist_source_radio_actions,
-						   G_N_ELEMENTS (rb_static_playlist_source_radio_actions));
-
-	g_type_class_unref (klass);
-}
-
 static void
 set_playlist_pixbuf (RBStaticPlaylistSource *source)
 {
@@ -255,30 +222,13 @@ rb_static_playlist_source_dispose (GObject *object)
 {
 	RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (object);
 
-	if (priv->dispose_has_run) {
-		/* If dispose did already run, return. */
-		rb_debug ("Dispose has already run for static playlist source %p", object);
-		return;
-	}
-	/* Make sure dispose does not run twice. */
-	priv->dispose_has_run = TRUE;
-
 	rb_debug ("Disposing static playlist source %p", object);
 
-	if (priv->base_model != NULL) {
-		g_object_unref (priv->base_model);
-		priv->base_model = NULL;
-	}
-
-	if (priv->filter_model != NULL) {
-		g_object_unref (priv->filter_model);
-		priv->filter_model = NULL;
-	}
-
-	if (priv->default_search != NULL) {
-		g_object_unref (priv->default_search);
-		priv->default_search = NULL;
-	}
+	g_clear_object (&priv->base_model);
+	g_clear_object (&priv->filter_model);
+	g_clear_object (&priv->default_search);
+	g_clear_object (&priv->search_popup);
+	g_clear_object (&priv->search_action);
 
 	G_OBJECT_CLASS (rb_static_playlist_source_parent_class)->dispose (object);
 }
@@ -307,9 +257,11 @@ rb_static_playlist_source_constructed (GObject *object)
 	RBEntryView *songs;
 	RBShell *shell;
 	RhythmDBEntryType *entry_type;
-	GtkUIManager *ui_manager;
+	GtkAccelGroup *accel_group;
 	GtkWidget *grid;
 	GtkWidget *paned;
+	GMenu *section;
+	RBApplication *app = RB_APPLICATION (g_application_get_default ());
 
 	RB_CHAIN_GOBJECT_METHOD (rb_static_playlist_source_parent_class, constructed, object);
 
@@ -331,10 +283,10 @@ rb_static_playlist_source_constructed (GObject *object)
 	gtk_widget_set_hexpand (paned, TRUE);
 	gtk_widget_set_vexpand (paned, TRUE);
 
-	priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH);
+	priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH, NULL);
 
 	g_object_get (source, "shell", &shell, NULL);
-	g_object_get (shell, "ui-manager", &ui_manager, NULL);
+	g_object_get (shell, "accel-group", &accel_group, NULL);
 	g_object_unref (shell);
 
 	g_object_get (source, "entry-type", &entry_type, NULL);
@@ -359,9 +311,27 @@ rb_static_playlist_source_constructed (GObject *object)
 	gtk_paned_pack2 (GTK_PANED (paned), GTK_WIDGET (songs), TRUE, FALSE);
 
 	/* set up search box / toolbar */
-	priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), ui_manager);
-	rb_source_toolbar_add_search_entry (priv->toolbar, "/StaticPlaylistSourceSearchMenu", NULL);
-	g_object_unref (ui_manager);
+	priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), accel_group);
+	g_object_unref (accel_group);
+
+	priv->search_action = rb_source_create_search_action (RB_SOURCE (source));
+	g_action_change_state (priv->search_action, g_variant_new_string ("search-match"));
+	g_action_map_add_action (G_ACTION_MAP (app), priv->search_action);
+
+	rb_source_search_basic_register (RHYTHMDB_PROP_SEARCH_MATCH, "search-match", _("Search all fields"));
+	rb_source_search_basic_register (RHYTHMDB_PROP_ARTIST_FOLDED, "artist", _("Search artists"));
+	rb_source_search_basic_register (RHYTHMDB_PROP_ALBUM_FOLDED, "album", _("Search albums"));
+	rb_source_search_basic_register (RHYTHMDB_PROP_TITLE_FOLDED, "title", _("Search titles"));
+	
+	section = g_menu_new ();
+	rb_source_search_add_to_menu (section, "app", priv->search_action, "search-match");
+	rb_source_search_add_to_menu (section, "app", priv->search_action, "artist");
+	rb_source_search_add_to_menu (section, "app", priv->search_action, "album");
+	rb_source_search_add_to_menu (section, "app", priv->search_action, "title");
+
+	priv->search_popup = g_menu_new ();
+	g_menu_append_section (priv->search_popup, NULL, G_MENU_MODEL (section));
+	rb_source_toolbar_add_search_entry_menu (priv->toolbar, G_MENU_MODEL (priv->search_popup), priv->search_action);
 
 	/* put it all together */
 	grid = gtk_grid_new ();
@@ -374,6 +344,11 @@ rb_static_playlist_source_constructed (GObject *object)
 
 	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (songs), paned, GTK_WIDGET (priv->browser));
 	g_object_unref (songs);
+
+	/* set up playlist menu */
+	g_object_set (source,
+		      "playlist-menu", rb_application_get_shared_menu (app, "playlist-page-menu"),
+		      NULL);
 
 	/* watch these to find out when things are dropped into the entry view */
 	g_signal_connect_object (priv->base_model, "row-inserted",
@@ -404,7 +379,10 @@ rb_static_playlist_source_constructed (GObject *object)
 RBSource *
 rb_static_playlist_source_new (RBShell *shell, const char *name, const char *settings_name, gboolean local, RhythmDBEntryType *entry_type)
 {
+	RBSource *source;
 	GSettings *settings;
+	GtkBuilder *builder;
+	GMenu *toolbar;
 
 	if (name == NULL)
 		name = "";
@@ -418,14 +396,20 @@ rb_static_playlist_source_new (RBShell *shell, const char *name, const char *set
 		settings = NULL;
 	}
 
-	return RB_SOURCE (g_object_new (RB_TYPE_STATIC_PLAYLIST_SOURCE,
-					"name", name,
-					"settings", settings,
-					"shell", shell,
-					"is-local", local,
-					"entry-type", entry_type,
-					"toolbar-path", "/StaticPlaylistSourceToolBar",
-					NULL));
+	builder = rb_builder_load ("playlist-toolbar.ui", NULL);
+	toolbar = G_MENU (gtk_builder_get_object (builder, "playlist-toolbar"));
+	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()), toolbar);
+
+	source = RB_SOURCE (g_object_new (RB_TYPE_STATIC_PLAYLIST_SOURCE,
+					  "name", name,
+					  "settings", settings,
+					  "shell", shell,
+					  "is-local", local,
+					  "entry-type", entry_type,
+					  "toolbar-menu", toolbar,
+					  NULL));
+	g_object_unref (builder);
+	return source;
 }
 
 static void
