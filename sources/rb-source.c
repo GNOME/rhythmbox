@@ -69,7 +69,7 @@ static RBSourceEOFType default_handle_eos (RBSource *source);
 static RBEntryView *default_get_entry_view (RBSource *source);
 static void default_add_to_queue (RBSource *source, RBSource *queue);
 static void default_move_to_trash (RBSource *source);
-static char *default_get_delete_action (RBSource *source);
+static char *default_get_delete_label (RBSource *source);
 
 static void rb_source_post_entry_deleted_cb (GtkTreeModel *model,
 					     RhythmDBEntry *entry,
@@ -112,7 +112,8 @@ struct _RBSourcePrivate
 
 	GSettings *settings;
 
-	char *toolbar_path;
+	GMenu *toolbar_menu;
+	GMenuModel *playlist_menu;
 };
 
 enum
@@ -126,7 +127,8 @@ enum
 	PROP_SETTINGS,
 	PROP_SHOW_BROWSER,
 	PROP_LOAD_STATUS,
-	PROP_TOOLBAR_PATH
+	PROP_TOOLBAR_MENU,
+	PROP_PLAYLIST_MENU
 };
 
 enum
@@ -166,7 +168,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_handle_eos = default_handle_eos;
 	klass->impl_try_playlist = default_try_playlist;
 	klass->impl_add_to_queue = default_add_to_queue;
-	klass->impl_get_delete_action = default_get_delete_action;
+	klass->impl_get_delete_label = default_get_delete_label;
 	klass->impl_move_to_trash = default_move_to_trash;
 
 	/**
@@ -278,20 +280,34 @@ rb_source_class_init (RBSourceClass *klass)
 							       TRUE,
 							       G_PARAM_READWRITE));
 	/**
-	 * RBSource:toolbar-path:
+	 * RBSource:toolbar-menu:
 	 *
-	 * UI manager path for a toolbar to display at the top of the source.
-	 * The #RBSource class doesn't actually display the toolbar anywhere.
-	 * Adding the toolbar to a container is the responsibility of a subclass
-	 * such as #RBBrowserSource.
+	 * A GMenu instance describing the contents of a toolbar to display at
+	 * the top of the source.  The #RBSource class doesn't actually display
+	 * the toolbar anywhere.  Adding the toolbar to a container is the
+	 * responsibility of a subclass such as #RBBrowserSource.
 	 */
 	g_object_class_install_property (object_class,
-					 PROP_TOOLBAR_PATH,
-					 g_param_spec_string ("toolbar-path",
-							      "toolbar path",
-							      "toolbar UI path",
-							      NULL,
+					 PROP_TOOLBAR_MENU,
+					 g_param_spec_object ("toolbar-menu",
+							      "toolbar menu",
+							      "toolbar menu",
+							      G_TYPE_MENU_MODEL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	/**
+	 * RBSource:playlist-menu:
+	 *
+	 * A GMenu instance to attach to the 'add to playlist' item in the edit menu.
+	 * If NULL, the item will be disabled.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_PLAYLIST_MENU,
+					 g_param_spec_object ("playlist-menu",
+							      "playlist menu",
+							      "playlist menu",
+							      G_TYPE_MENU_MODEL,
+							      G_PARAM_READWRITE));
 
 	/**
 	 * RBSource::filter-changed:
@@ -338,10 +354,10 @@ rb_source_dispose (GObject *object)
 		g_source_remove (source->priv->update_status_id);
 		source->priv->update_status_id = 0;
 	}
-	if (source->priv->settings != NULL) {
-		g_object_unref (source->priv->settings);
-		source->priv->settings = NULL;
-	}
+
+	g_clear_object (&source->priv->settings);
+	g_clear_object (&source->priv->toolbar_menu);
+	g_clear_object (&source->priv->playlist_menu);
 
 	G_OBJECT_CLASS (rb_source_parent_class)->dispose (object);
 }
@@ -362,8 +378,6 @@ rb_source_finalize (GObject *object)
 			  G_OBJECT (source->priv->query_model)->ref_count);
 		g_object_unref (source->priv->query_model);
 	}
-
-	g_free (source->priv->toolbar_path);
 
 	G_OBJECT_CLASS (rb_source_parent_class)->finalize (object);
 }
@@ -471,8 +485,11 @@ rb_source_set_property (GObject *object,
 	case PROP_LOAD_STATUS:
 		source->priv->load_status = g_value_get_enum (value);
 		break;
-	case PROP_TOOLBAR_PATH:
-		source->priv->toolbar_path = g_value_dup_string (value);
+	case PROP_TOOLBAR_MENU:
+		source->priv->toolbar_menu = g_value_dup_object (value);
+		break;
+	case PROP_PLAYLIST_MENU:
+		source->priv->playlist_menu = g_value_dup_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -513,8 +530,11 @@ rb_source_get_property (GObject *object,
 	case PROP_LOAD_STATUS:
 		g_value_set_enum (value, source->priv->load_status);
 		break;
-	case PROP_TOOLBAR_PATH:
-		g_value_set_string (value, source->priv->toolbar_path);
+	case PROP_TOOLBAR_MENU:
+		g_value_set_object (value, source->priv->toolbar_menu);
+		break;
+	case PROP_PLAYLIST_MENU:
+		g_value_set_object (value, source->priv->playlist_menu);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1176,26 +1196,26 @@ default_get_entry_view (RBSource *source)
 }
 
 static char *
-default_get_delete_action (RBSource *source)
+default_get_delete_label (RBSource *source)
 {
-	return g_strdup ("EditRemove");
+	return g_strdup (_("Remove"));
 }
 
 /**
- * rb_source_get_delete_action:
+ * rb_source_get_delete_label:
  * @source: a #RBSource
  *
- * Returns the name of the UI action to use for 'delete'.
- * This allows the source to customise the visible action name
- * and description to better describe what deletion actually does.
+ * Returns a translated label for the 'delete' menu item, allowing
+ * sources to better describe what happens to deleted entries.
+ * Playlists, for example, return "Remove from Playlist" here.
  *
- * Return value: allocated string holding UI action name
+ * Return value: allocated string holding the label string
  */
 char *
-rb_source_get_delete_action (RBSource *source)
+rb_source_get_delete_label (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-	return klass->impl_get_delete_action (source);
+	return klass->impl_get_delete_label (source);
 }
 
 static gboolean

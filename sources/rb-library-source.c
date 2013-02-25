@@ -69,6 +69,10 @@
 #include "rb-gst-media-types.h"
 #include "rb-object-property-editor.h"
 #include "rb-import-dialog.h"
+#include "rb-application.h"
+#include "rb-display-page-menu.h"
+#include "rb-display-page-group.h"
+#include "rb-static-playlist-source.h"
 
 #define SOURCE_PAGE		0
 #define IMPORT_DIALOG_PAGE	1
@@ -79,7 +83,6 @@ static void rb_library_source_constructed (GObject *object);
 static void rb_library_source_dispose (GObject *object);
 static void rb_library_source_finalize (GObject *object);
 
-static gboolean impl_show_popup (RBDisplayPage *source);
 static GtkWidget *impl_get_config_widget (RBDisplayPage *source, RBShellPreferences *prefs);
 static gboolean impl_receive_drag (RBDisplayPage *source, GtkSelectionData *data);
 static void impl_get_status (RBDisplayPage *source, char **text, char **progress_text, float *progress);
@@ -195,7 +198,6 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	object_class->finalize = rb_library_source_finalize;
 	object_class->constructed = rb_library_source_constructed;
 
-	page_class->show_popup = impl_show_popup;
 	page_class->get_config_widget = impl_get_config_widget;
 	page_class->receive_drag = impl_receive_drag;
 	page_class->get_status = impl_get_status;
@@ -328,6 +330,10 @@ rb_library_source_constructed (GObject *object)
 	RBShell *shell;
 	RBEntryView *songs;
 	char **locations;
+	RBDisplayPageModel *model;
+	GMenuModel *playlist_menu;
+	GMenu *playlist_add_menu;
+	GMenu *playlist_add_section;
 
 	source = RB_LIBRARY_SOURCE (object);
 	source->priv->notebook = gtk_notebook_new ();
@@ -381,6 +387,23 @@ rb_library_source_constructed (GObject *object)
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_FIRST_SEEN, FALSE);
 
+	/* set up playlist menu */
+	g_object_get (shell, "display-page-model", &model, NULL);
+	playlist_add_menu = g_menu_new ();
+	playlist_add_section = g_menu_new ();
+	g_menu_append (playlist_add_section, _("Add to New Playlist"), "app.playlist-add-to-new");
+	playlist_menu = rb_display_page_menu_new (model,
+						  RB_DISPLAY_PAGE_GROUP_PLAYLISTS,
+						  RB_TYPE_STATIC_PLAYLIST_SOURCE,
+						  "app.playlist-add-to");
+	g_menu_append_section (playlist_add_menu, NULL, G_MENU_MODEL (playlist_add_section));
+	g_menu_append_section (playlist_add_menu, NULL, G_MENU_MODEL (playlist_menu));
+	rb_application_add_shared_menu (RB_APPLICATION (g_application_get_default ()),
+					"playlist-page-menu",
+					G_MENU_MODEL (playlist_add_menu));
+	g_object_set (source, "playlist-menu", playlist_add_menu, NULL);
+	g_object_unref (model);
+
 	rb_library_source_sync_child_sources (source);
 
 	g_object_unref (shell);
@@ -400,6 +423,8 @@ rb_library_source_new (RBShell *shell)
 	RBSource *source;
 	GdkPixbuf *icon;
 	GSettings *settings;
+	GtkBuilder *builder;
+	GMenu *toolbar;
 	gint size;
 
 	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
@@ -408,19 +433,25 @@ rb_library_source_new (RBShell *shell)
 					 size,
 					 0, NULL);
 	settings = g_settings_new ("org.gnome.rhythmbox.library");
+
+	builder = rb_builder_load ("library-toolbar.ui", NULL);
+	toolbar = G_MENU (gtk_builder_get_object (builder, "library-toolbar"));
+	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()), toolbar);
+
 	source = RB_SOURCE (g_object_new (RB_TYPE_LIBRARY_SOURCE,
 					  "name", _("Music"),
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
 					  "shell", shell,
 					  "pixbuf", icon,
 					  "populate", FALSE,		/* wait until the database is loaded */
-					  "toolbar-path", "/LibrarySourceToolBar",
+					  "toolbar-menu", toolbar,
 					  "settings", g_settings_get_child (settings, "source"),
 					  NULL));
 	if (icon != NULL) {
 		g_object_unref (icon);
 	}
 	g_object_unref (settings);
+	g_object_unref (builder);
 
 	rb_shell_register_entry_type_for_source (shell, source, RHYTHMDB_ENTRY_TYPE_SONG);
 
@@ -964,13 +995,6 @@ impl_receive_drag (RBDisplayPage *asource, GtkSelectionData *data)
 	}
 
 	g_list_free (list);
-	return TRUE;
-}
-
-static gboolean
-impl_show_popup (RBDisplayPage *source)
-{
-	_rb_display_page_show_popup (source, "/LibrarySourcePopup");
 	return TRUE;
 }
 
@@ -1865,10 +1889,13 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 	char *sort_column;
 	int sort_order;
 	GFile *file;
+	GMenuModel *playlist_menu;
 
 	g_object_get (library_source,
 		      "shell", &shell,
 		      "entry-type", &entry_type,
+		      "playlist-menu", &playlist_menu,
+		      "pixbuf", &icon,
 		      NULL);
 
 	file = g_file_new_for_uri (path);
@@ -1889,15 +1916,16 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 	rhythmdb_query_free (query);
 	g_free (sort_column);
 
-	g_object_get (library_source, "pixbuf", &icon, NULL);
-	g_object_set (source, "pixbuf", icon, NULL);
-	if (icon != NULL) {
-		g_object_unref (icon);
-	}
+	g_object_set (source,
+		      "pixbuf", icon,
+		      "playlist-menu", playlist_menu,
+		      NULL);
 
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (source), RB_DISPLAY_PAGE (library_source));
 	library_source->priv->child_sources = g_list_prepend (library_source->priv->child_sources, source);
 
+	g_clear_object (&icon);
+	g_object_unref (playlist_menu);
 	g_object_unref (entry_type);
 	g_object_unref (shell);
 	g_free (name);

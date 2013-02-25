@@ -91,8 +91,6 @@ struct RBStatusbarPrivate
 
         RhythmDB *db;
 
-        GtkUIManager *ui_manager;
-
         GtkWidget *progress;
 
         guint status_poll_id;
@@ -102,7 +100,6 @@ enum
 {
         PROP_0,
         PROP_DB,
-        PROP_UI_MANAGER,
         PROP_PAGE,
 	PROP_TRANSFER_QUEUE
 };
@@ -144,19 +141,6 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
                                                               "RBDisplayPage object",
                                                               RB_TYPE_DISPLAY_PAGE,
                                                               G_PARAM_READWRITE));
-	/**
-	 * RBStatusbar:ui-manager:
-	 *
-	 * The #GtkUIManager instance
-	 */
-        g_object_class_install_property (object_class,
-                                         PROP_UI_MANAGER,
-                                         g_param_spec_object ("ui-manager",
-                                                              "GtkUIManager",
-                                                              "GtkUIManager object",
-                                                              GTK_TYPE_UI_MANAGER,
-                                                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
 	/**
 	 * RBStatusbar::transfer-queue:
 	 *
@@ -212,11 +196,6 @@ rb_statusbar_dispose (GObject *object)
 		statusbar->priv->db = NULL;
 	}
 
-	if (statusbar->priv->ui_manager != NULL) {
-		g_object_unref (statusbar->priv->ui_manager);
-		statusbar->priv->ui_manager = NULL;
-	}
-
 	if (statusbar->priv->selected_page != NULL) {
 		g_object_unref (statusbar->priv->selected_page);
 		statusbar->priv->selected_page = NULL;
@@ -243,72 +222,6 @@ rb_statusbar_finalize (GObject *object)
         g_return_if_fail (statusbar->priv != NULL);
 
         G_OBJECT_CLASS (rb_statusbar_parent_class)->finalize (object);
-}
-
-typedef struct {
-        GtkWidget *statusbar;
-        char      *tooltip;
-} StatusTip;
-
-static void
-statustip_free (StatusTip *tip)
-{
-        g_object_unref (tip->statusbar);
-        g_free (tip->tooltip);
-        g_free (tip);
-}
-
-static void
-set_statusbar_tooltip (GtkWidget *widget,
-                       StatusTip *data)
-{
-        guint context_id;
-
-        context_id = gtk_statusbar_get_context_id (GTK_STATUSBAR (data->statusbar),
-                                                   "rb_statusbar_tooltip");
-        gtk_statusbar_push (GTK_STATUSBAR (data->statusbar),
-                            context_id,
-                            data->tooltip ? data->tooltip: "");
-}
-
-static void
-unset_statusbar_tooltip (GtkWidget *widget,
-                         GtkWidget *statusbar)
-{
-        guint context_id;
-
-        context_id = gtk_statusbar_get_context_id (GTK_STATUSBAR (statusbar),
-                                                   "rb_statusbar_tooltip");
-        gtk_statusbar_pop (GTK_STATUSBAR (statusbar), context_id);
-}
-
-static void
-rb_statusbar_connect_ui_manager (RBStatusbar    *statusbar,
-				 GtkAction      *action,
-				 GtkWidget      *proxy,
-				 GtkUIManager   *ui_manager)
-{
-        char *tooltip;
-
-        if (! GTK_IS_MENU_ITEM (proxy))
-                return;
-
-        g_object_get (action, "tooltip", &tooltip, NULL);
-
-        if (tooltip) {
-                StatusTip *statustip;
-
-                statustip = g_new (StatusTip, 1);
-                statustip->statusbar = g_object_ref (statusbar);
-                statustip->tooltip = tooltip;
-                g_signal_connect_data (proxy, "select",
-                                       G_CALLBACK (set_statusbar_tooltip),
-                                       statustip, (GClosureNotify)statustip_free, 0);
-
-                g_signal_connect (proxy, "deselect",
-                                  G_CALLBACK (unset_statusbar_tooltip),
-                                  statusbar);
-        }
 }
 
 static void
@@ -347,22 +260,6 @@ rb_statusbar_set_property (GObject *object,
 		rb_statusbar_sync_status (statusbar);
 
                 break;
-        case PROP_UI_MANAGER:
-                if (statusbar->priv->ui_manager) {
-                        g_signal_handlers_disconnect_by_func (G_OBJECT (statusbar->priv->ui_manager),
-                                                              G_CALLBACK (rb_statusbar_connect_ui_manager),
-                                                              statusbar);
-			g_object_unref (statusbar->priv->ui_manager);
-                }
-                statusbar->priv->ui_manager = g_value_get_object (value);
-		g_object_ref (statusbar->priv->ui_manager);
-
-                g_signal_connect_object (statusbar->priv->ui_manager,
-                                         "connect-proxy",
-                                         G_CALLBACK (rb_statusbar_connect_ui_manager),
-                                         statusbar,
-                                         G_CONNECT_SWAPPED);
-                break;
 	case PROP_TRANSFER_QUEUE:
 		statusbar->priv->transfer_queue = g_value_dup_object (value);
 		g_signal_connect_object (G_OBJECT (statusbar->priv->transfer_queue),
@@ -392,9 +289,6 @@ rb_statusbar_get_property (GObject *object,
                 break;
         case PROP_PAGE:
                 g_value_set_object (value, statusbar->priv->selected_page);
-                break;
-        case PROP_UI_MANAGER:
-                g_value_set_object (value, statusbar->priv->ui_manager);
                 break;
         case PROP_TRANSFER_QUEUE:
                 g_value_set_object (value, statusbar->priv->transfer_queue);
@@ -507,7 +401,6 @@ rb_statusbar_sync_status (RBStatusbar *status)
 /**
  * rb_statusbar_new:
  * @db: the #RhythmDB instance
- * @ui_manager: the #GtkUIManager
  * @transfer_queue: the #RBTrackTransferQueue
  *
  * Creates the status bar widget.
@@ -516,12 +409,10 @@ rb_statusbar_sync_status (RBStatusbar *status)
  */
 RBStatusbar *
 rb_statusbar_new (RhythmDB *db,
-                  GtkUIManager *ui_manager,
 		  RBTrackTransferQueue *queue)
 {
         RBStatusbar *statusbar = g_object_new (RB_TYPE_STATUSBAR,
                                                "db", db,
-                                               "ui-manager", ui_manager,
 					       "transfer-queue", queue,
                                                NULL);
 

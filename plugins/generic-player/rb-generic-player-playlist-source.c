@@ -385,7 +385,8 @@ rb_generic_player_playlist_source_new (RBShell *shell,
 				       RBGenericPlayerSource *player_source,
 				       const char *playlist_file,
 				       const char *device_root,
-				       RhythmDBEntryType *entry_type)
+				       RhythmDBEntryType *entry_type,
+				       GMenuModel *playlist_menu)
 {
 	RBSource *source;
 	source = RB_SOURCE (g_object_new (RB_TYPE_GENERIC_PLAYER_PLAYLIST_SOURCE,
@@ -395,6 +396,7 @@ rb_generic_player_playlist_source_new (RBShell *shell,
 					  "player-source", player_source,
 					  "playlist-path", playlist_file,
 					  "device-root", device_root,
+					  "playlist-menu", playlist_menu,
 					  NULL));
 
 	if (load_playlist (RB_GENERIC_PLAYER_PLAYLIST_SOURCE (source)) == FALSE) {
@@ -408,10 +410,17 @@ rb_generic_player_playlist_source_new (RBShell *shell,
 	return source;
 }
 
-void
-rb_generic_player_playlist_delete_from_player (RBGenericPlayerPlaylistSource *source)
+static gboolean
+impl_can_remove (RBDisplayPage *page)
 {
-	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (source);
+	/* maybe check if read only? */
+	return TRUE;
+}
+
+static void
+impl_remove (RBDisplayPage *page)
+{
+	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (page);
 
 	if (priv->playlist_path != NULL) {
 		GError *error = NULL;
@@ -427,6 +436,8 @@ rb_generic_player_playlist_delete_from_player (RBGenericPlayerPlaylistSource *so
 	} else {
 		rb_debug ("playlist was never saved: nothing to delete");
 	}
+
+	rb_display_page_delete_thyself (page);
 }
 
 static void
@@ -504,27 +515,21 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 	}
 }
 
-static gboolean
-impl_show_popup (RBDisplayPage *page)
-{
-	_rb_display_page_show_popup (page, "/GenericPlayerPlaylistSourcePopup");
-	return TRUE;
-}
-
 static void
 rb_generic_player_playlist_source_class_init (RBGenericPlayerPlaylistSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 
 	object_class->dispose = impl_dispose;
 	object_class->finalize = impl_finalize;
 	object_class->get_property = impl_get_property;
 	object_class->set_property = impl_set_property;
 
-	page_class->show_popup = impl_show_popup;
+	page_class->can_remove = impl_can_remove;
+	page_class->remove = impl_remove;
 
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 

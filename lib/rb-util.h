@@ -56,8 +56,6 @@ char *rb_make_time_string (guint seconds);
 char *rb_make_duration_string (guint duration);
 char *rb_make_elapsed_time_string (guint elapsed, guint duration, gboolean show_remaining);
 
-void rb_gtk_action_popup_menu (GtkUIManager *uimanager, const char *path);
-
 GtkWidget *rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size);
 
 void rb_threads_init (void);
@@ -114,6 +112,8 @@ GdkPixbuf *rb_scale_pixbuf_to_size (GdkPixbuf *pixbuf,
 typedef void (*RBDelayedSyncFunc)(GSettings *settings, gpointer data);
 
 void rb_settings_delayed_sync (GSettings *settings, RBDelayedSyncFunc sync_func, gpointer data, GDestroyNotify destroy);
+
+void rb_menu_update_link (GMenu *menu, const char *link_attr, GMenuModel *target);
 
 G_END_DECLS
 

@@ -44,7 +44,6 @@ static void rb_ipod_static_playlist_source_get_property (GObject *object,
 			                  GValue *value,
 			                  GParamSpec *pspec);
 
-static gboolean impl_show_popup (RBDisplayPage *page);
 
 typedef struct
 {
@@ -224,20 +223,33 @@ source_name_changed_cb (RBIpodStaticPlaylistSource *source,
 	g_free (name);
 }
 
+static gboolean
+impl_can_remove (RBDisplayPage *page)
+{
+	return TRUE;
+}
+
+static void
+impl_remove (RBDisplayPage *page)
+{
+	RBIpodStaticPlaylistSourcePrivate *priv = IPOD_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (page);
+	rb_ipod_source_remove_playlist (priv->ipod_source, RB_SOURCE (page));
+}
 
 static void
 rb_ipod_static_playlist_source_class_init (RBIpodStaticPlaylistSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 
 	object_class->constructed = rb_ipod_static_playlist_source_constructed;
 	object_class->dispose = rb_ipod_static_playlist_source_dispose;
 	object_class->get_property = rb_ipod_static_playlist_source_get_property;
 	object_class->set_property = rb_ipod_static_playlist_source_set_property;
 
-	page_class->show_popup = impl_show_popup;
+	page_class->can_remove = impl_can_remove;
+	page_class->remove = impl_remove;
 
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -329,7 +341,8 @@ rb_ipod_static_playlist_source_new (RBShell *shell,
 				    RBiPodSource *ipod_source,
 				    RbIpodDb *ipod_db,
 				    Itdb_Playlist *playlist,
-				    RhythmDBEntryType *entry_type)
+				    RhythmDBEntryType *entry_type,
+				    GMenuModel *playlist_menu)
 {
 	RBIpodStaticPlaylistSource *source;
 
@@ -343,6 +356,7 @@ rb_ipod_static_playlist_source_new (RBShell *shell,
 							       "ipod-source", ipod_source,
 							       "ipod-db", ipod_db,
 							       "itdb-playlist", playlist,
+							       "playlist-menu", playlist_menu,
 							       NULL));
 
 	return source;
@@ -395,13 +409,6 @@ rb_ipod_static_playlist_source_get_property (GObject *object,
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
-}
-
-static gboolean
-impl_show_popup (RBDisplayPage *page)
-{
-	_rb_display_page_show_popup (page, "/iPodPlaylistSourcePopup");
-	return TRUE;
 }
 
 void

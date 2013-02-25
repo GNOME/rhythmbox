@@ -58,18 +58,20 @@
 #include "rb-transfer-target.h"
 #include "rb-ext-db.h"
 #include "rb-dialog.h"
+#include "rb-application.h"
+#include "rb-display-page-menu.h"
 
 static void rb_ipod_device_source_init (RBDeviceSourceInterface *interface);
 static void rb_ipod_source_transfer_target_init (RBTransferTargetInterface *interface);
 
 static void rb_ipod_source_constructed (GObject *object);
 static void rb_ipod_source_dispose (GObject *object);
+static void rb_ipod_source_finalize (GObject *object);
 
 static void impl_delete (RBSource *asource);
 static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
 static void rb_ipod_load_songs (RBiPodSource *source);
 
-static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
 static void impl_selected (RBDisplayPage *page);
 
@@ -107,6 +109,7 @@ static void rb_ipod_source_get_property (GObject *object,
 					 GParamSpec *pspec);
 static gboolean ensure_loaded (RBiPodSource *source);
 
+static RBIpodStaticPlaylistSource *add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist);
 
 static RhythmDB *get_db_for_source (RBiPodSource *source);
 
@@ -138,6 +141,9 @@ typedef struct
 	GtkWidget *init_dialog;
 	GtkWidget *model_combo;
 	GtkWidget *name_entry;
+
+	GSimpleAction *new_playlist_action;
+	char *new_playlist_action_name;
 } RBiPodSourcePrivate;
 
 typedef struct {
@@ -173,16 +179,15 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 
 	object_class->constructed = rb_ipod_source_constructed;
 	object_class->dispose = rb_ipod_source_dispose;
+	object_class->finalize = rb_ipod_source_finalize;
 
 	object_class->set_property = rb_ipod_source_set_property;
 	object_class->get_property = rb_ipod_source_get_property;
 
 	page_class->delete_thyself = impl_delete_thyself;
-	page_class->show_popup = impl_show_popup;
 	page_class->selected = impl_selected;
 
 	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_delete = impl_delete;
 
@@ -299,6 +304,54 @@ rb_ipod_source_set_ipod_name (RBiPodSource *source, const char *name)
 }
 
 static void
+new_playlist_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
+{
+	RBiPodSource *source = RB_IPOD_SOURCE (data);
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	Itdb_Playlist *ipod_playlist;
+
+	if (priv->ipod_db == NULL) {
+		rb_debug ("can't create new ipod playlist with no ipod db");
+		return;
+	}
+
+	ipod_playlist = itdb_playlist_new (_("New playlist"), FALSE);
+	rb_ipod_db_add_playlist (priv->ipod_db, ipod_playlist);
+	add_rb_playlist (source, ipod_playlist);
+}
+
+static void
+create_new_playlist_item (RBiPodSource *source)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	char *label;
+	char *fullname;
+	char *name;
+
+	fullname = g_strdup_printf ("app.%s", priv->new_playlist_action_name);
+
+	g_object_get (source, "name", &name, NULL);
+	label = g_strdup_printf (_("New Playlist on %s"), name);
+
+	rb_application_add_plugin_menu_item (RB_APPLICATION (g_application_get_default ()),
+					     "display-page-add-playlist",
+					     priv->new_playlist_action_name,
+					     g_menu_item_new (label, fullname));
+	g_free (fullname);
+	g_free (label);
+	g_free (name);
+}
+
+static void
+remove_new_playlist_item (RBiPodSource *source)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
+	rb_application_remove_plugin_menu_item (RB_APPLICATION (g_application_get_default ()),
+						"display-page-add-playlist",
+						priv->new_playlist_action_name);
+}
+
+static void
 rb_ipod_source_name_changed_cb (RBiPodSource *source, GParamSpec *spec,
 				gpointer data)
 {
@@ -307,6 +360,9 @@ rb_ipod_source_name_changed_cb (RBiPodSource *source, GParamSpec *spec,
 	g_object_get (source, "name", &name, NULL);
 	rb_ipod_source_set_ipod_name (source, name);
 	g_free (name);
+
+	remove_new_playlist_item (source);
+	create_new_playlist_item (source);
 }
 
 static void
@@ -320,7 +376,9 @@ finish_construction (RBiPodSource *source)
 	RBEntryView *songs;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	GstEncodingTarget *target;
-
+	GMenuModel *playlist_menu;
+	RBDisplayPageModel *model;
+	RBShell *shell;
 
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
 	rb_entry_view_append_column (songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
@@ -337,6 +395,25 @@ finish_construction (RBiPodSource *source)
 	gst_encoding_target_add_profile (target, rb_gst_get_encoding_profile ("audio/x-aac"));
 	g_object_set (source, "encoding-target", target, NULL);
 
+	priv->new_playlist_action_name = g_strdup_printf ("ipod-%p-playlist-new", source);
+	priv->new_playlist_action = g_simple_action_new (priv->new_playlist_action_name, NULL);
+	if (priv->ipod_db == NULL) {
+		g_simple_action_set_enabled (priv->new_playlist_action, FALSE);
+	}
+	g_signal_connect (priv->new_playlist_action, "activate", G_CALLBACK (new_playlist_action_cb), source);
+	g_action_map_add_action (G_ACTION_MAP (g_application_get_default ()), G_ACTION (priv->new_playlist_action));
+
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "display-page-model", &model, NULL);
+	playlist_menu = rb_display_page_menu_new (model,
+						  RB_DISPLAY_PAGE (source),
+						  RB_TYPE_IPOD_STATIC_PLAYLIST_SOURCE,
+						  "app.playlist-add-to");
+	g_object_set (source, "playlist-menu", playlist_menu, NULL);
+	g_object_unref (model);
+	g_object_unref (shell);
+
+	create_new_playlist_item (source);
 }
 
 static void
@@ -463,14 +540,26 @@ rb_ipod_source_constructed (GObject *object)
 }
 
 static void
+rb_ipod_source_finalize (GObject *object)
+{
+	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (object);
+
+	g_free (priv->new_playlist_action_name);
+
+	G_OBJECT_CLASS (rb_ipod_source_parent_class)->finalize (object);
+}
+
+static void
 rb_ipod_source_dispose (GObject *object)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (object);
 
-	if (priv->ipod_db) {
-		g_object_unref (G_OBJECT (priv->ipod_db));
-		priv->ipod_db = NULL;
+	if (priv->new_playlist_action) {
+		remove_new_playlist_item (RB_IPOD_SOURCE (object));
+		g_clear_object (&priv->new_playlist_action);
 	}
+
+	g_clear_object (&priv->ipod_db);
 
 	if (priv->entry_map) {
 		g_hash_table_destroy (priv->entry_map);
@@ -489,15 +578,8 @@ rb_ipod_source_dispose (GObject *object)
 		priv->offline_plays = NULL;
 	}
 
-	if (priv->mount) {
-		g_object_unref (priv->mount);
-		priv->mount = NULL;
-	}
-
-	if (priv->art_store) {
-		g_object_unref (priv->art_store);
-		priv->art_store = NULL;
-	}
+	g_clear_object (&priv->mount);
+	g_clear_object (&priv->art_store);
 
 	if (priv->init_dialog) {
 		gtk_widget_destroy (priv->init_dialog);
@@ -516,6 +598,8 @@ rb_ipod_source_new (GObject *plugin,
 	RBiPodSource *source;
 	RhythmDBEntryType *entry_type;
 	RhythmDB *db;
+	GtkBuilder *builder;
+	GMenu *toolbar;
 	GVolume *volume;
 	GSettings *settings;
 	char *name;
@@ -540,6 +624,10 @@ rb_ipod_source_new (GObject *plugin,
 	g_free (name);
 	g_free (path);
 
+	builder = rb_builder_load_plugin_file (plugin, "ipod-toolbar.ui", NULL);
+	toolbar = G_MENU (gtk_builder_get_object (builder, "ipod-toolbar"));
+	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()), toolbar);
+
 	settings = g_settings_new ("org.gnome.rhythmbox.plugins.ipod");
 	source = RB_IPOD_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
 				               "plugin", plugin,
@@ -549,9 +637,10 @@ rb_ipod_source_new (GObject *plugin,
 					       "device-info", device_info,
 					       "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 					       "settings", g_settings_get_child (settings, "source"),
-					       "toolbar-path", "/iPodSourceToolBar",
+					       "toolbar-menu", toolbar,
 					       NULL));
 	g_object_unref (settings);
+	g_object_unref (builder);
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
         g_object_unref (entry_type);
@@ -616,17 +705,20 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 	GList *it;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	RhythmDBEntryType *entry_type;
+	GMenuModel *playlist_menu;
 
 	g_object_get (source,
 			  "shell", &shell,
 			  "entry-type", &entry_type,
+			  "playlist-menu", &playlist_menu,
 			  NULL);
 
 	playlist_source = rb_ipod_static_playlist_source_new (shell,
                                                               source,
                                                               priv->ipod_db,
                                                               playlist,
-                                                              entry_type);
+                                                              entry_type,
+							      playlist_menu);
 	g_object_unref (entry_type);
 
 	for (it = playlist->members; it != NULL; it = it->next) {
@@ -1194,19 +1286,14 @@ rb_ipod_load_songs (RBiPodSource *source)
 			g_object_set (RB_SOURCE (source),
 				      "name", name,
 				      NULL);
+			remove_new_playlist_item (source);
+			create_new_playlist_item (source);
 		}
                 g_signal_connect (G_OBJECT (source), "notify::name",
 		  	          (GCallback)rb_ipod_source_name_changed_cb,
                                   NULL);
 		priv->load_idle_id = g_idle_add ((GSourceFunc)load_ipod_db_idle_cb, source);
 	}
-}
-
-static gboolean
-impl_show_popup (RBDisplayPage *page)
-{
-	_rb_display_page_show_popup (page, "/iPodSourcePopup");
-	return TRUE;
 }
 
 typedef struct {
@@ -1869,23 +1956,6 @@ impl_delete_thyself (RBDisplayPage *page)
 	priv->ipod_db = NULL;
 
 	RB_DISPLAY_PAGE_CLASS (rb_ipod_source_parent_class)->delete_thyself (page);
-}
-
-Itdb_Playlist *
-rb_ipod_source_new_playlist (RBiPodSource *source)
-{
-	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
-	Itdb_Playlist *ipod_playlist;
-
-	if (priv->ipod_db == NULL) {
-		rb_debug ("can't create new ipod playlist with no ipod db");
-		return NULL;
-	}
-
-	ipod_playlist = itdb_playlist_new (_("New playlist"), FALSE);
-	rb_ipod_db_add_playlist (priv->ipod_db, ipod_playlist);
-	add_rb_playlist (source, ipod_playlist);
-	return ipod_playlist;
 }
 
 void

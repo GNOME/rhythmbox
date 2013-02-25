@@ -34,8 +34,6 @@ CFILE_GLOB=$(top_srcdir)/lib/*.c
 IGNORE_HFILES= \
 	config.h \
 	eggdesktopfile.h \
-	eggsmclient-private.h \
-	eggsmclient.h \
 	md5.h \
 	rb-cut-and-paste-code.h \
 	rb-marshal.h \

@@ -6,24 +6,38 @@ backends/rb-player.c
 data/playlists.xml.in
 data/rhythmbox.desktop.in.in
 data/rhythmbox-device.desktop.in.in
+[type: gettext/glade]data/ui/app-menu.ui
+[type: gettext/glade]data/ui/browser-popup.ui
 [type: gettext/glade]data/ui/create-playlist.ui
+[type: gettext/glade]data/ui/display-page-add-menu.ui
+[type: gettext/glade]data/ui/edit-menu.ui
 [type: gettext/glade]data/ui/general-prefs.ui
 [type: gettext/glade]data/ui/import-dialog.ui
+[type: gettext/glade]data/ui/import-errors-popup.ui
 [type: gettext/glade]data/ui/library-prefs.ui
+[type: gettext/glade]data/ui/library-toolbar.ui
+[type: gettext/glade]data/ui/main-toolbar.ui
 [type: gettext/glade]data/ui/media-player-properties.ui
+[type: gettext/glade]data/ui/missing-files-popup.ui
 [type: gettext/glade]data/ui/playback-prefs.ui
+[type: gettext/glade]data/ui/playlist-menu.ui
+[type: gettext/glade]data/ui/playlist-popup.ui
 [type: gettext/glade]data/ui/playlist-save.ui
+[type: gettext/glade]data/ui/playlist-toolbar.ui
 [type: gettext/glade]data/ui/podcast-add-dialog.ui
 [type: gettext/glade]data/ui/podcast-feed-properties.ui
+[type: gettext/glade]data/ui/podcast-popups.ui
 [type: gettext/glade]data/ui/podcast-prefs.ui
 [type: gettext/glade]data/ui/podcast-properties.ui
+[type: gettext/glade]data/ui/podcast-toolbar.ui
+[type: gettext/glade]data/ui/queue-popups.ui
+[type: gettext/glade]data/ui/queue-toolbar.ui
 [type: gettext/glade]data/ui/song-info-multiple.ui
 [type: gettext/glade]data/ui/song-info.ui
 [type: gettext/glade]data/ui/sync-dialog.ui
 [type: gettext/glade]data/ui/sync-state.ui
 [type: gettext/glade]data/ui/uri-new.ui
 lib/eggdesktopfile.c
-lib/eggsmclient.c
 lib/rb-cut-and-paste-code.c
 lib/rb-file-helpers.c
 lib/rb-util.c
@@ -34,6 +48,7 @@ plugins/artsearch/artsearch.py
 plugins/artsearch/lastfm.py
 [type: gettext/glade]plugins/audiocd/album-info.ui
 [type: gettext/ini]plugins/audiocd/audiocd.plugin.in
+[type: gettext/glade]plugins/audiocd/audiocd-toolbar.ui
 plugins/audiocd/rb-audiocd-info.c
 plugins/audiocd/rb-audiocd-plugin.c
 plugins/audiocd/rb-audiocd-source.c
@@ -61,6 +76,7 @@ plugins/context/tmpl/loading.html
 plugins/context/tmpl/lyrics-tmpl.html
 [type: gettext/ini]plugins/daap/daap.plugin.in
 [type: gettext/glade]plugins/daap/daap-prefs.ui
+[type: gettext/glade]plugins/daap/daap-toolbar.ui
 plugins/daap/rb-daap-plugin.c
 plugins/daap/rb-daap-sharing.c
 plugins/daap/rb-daap-source.c
@@ -69,8 +85,11 @@ plugins/daap/rb-rhythmdb-dmap-db-adapter.c
 [type: gettext/ini]plugins/dbus-media-server/dbus-media-server.plugin.in
 plugins/dbus-media-server/rb-dbus-media-server-plugin.c
 [type: gettext/ini]plugins/fmradio/fmradio.plugin.in
+[type: gettext/glade]plugins/fmradio/fmradio-popup.ui
+[type: gettext/glade]plugins/fmradio/fmradio-toolbar.ui
 plugins/fmradio/rb-fm-radio-source.c
 [type: gettext/glade]plugins/generic-player/generic-player-info.ui
+[type: gettext/glade]plugins/generic-player/generic-player-toolbar.ui
 [type: gettext/ini]plugins/generic-player/generic-player.plugin.in
 plugins/generic-player/rb-generic-player-plugin.c
 plugins/generic-player/rb-generic-player-source.c
@@ -83,11 +102,14 @@ plugins/grilo/rb-grilo-source.c
 plugins/im-status/im-status.py
 [type: gettext/glade]plugins/ipod/ipod-info.ui
 [type: gettext/glade]plugins/ipod/ipod-init.ui
+[type: gettext/glade]plugins/ipod/ipod-toolbar.ui
 [type: gettext/ini]plugins/ipod/ipod.plugin.in
 plugins/ipod/rb-ipod-helpers.c
 plugins/ipod/rb-ipod-plugin.c
 plugins/ipod/rb-ipod-source.c
 [type: gettext/ini]plugins/iradio/iradio.plugin.in
+[type: gettext/glade]plugins/iradio/iradio-popup.ui
+[type: gettext/glade]plugins/iradio/iradio-toolbar.ui
 plugins/iradio/rb-iradio-source.c
 plugins/iradio/rb-station-properties-dialog.c
 [type: gettext/glade]plugins/iradio/station-properties.ui
@@ -99,6 +121,8 @@ plugins/lyrics/LyricsConfigureDialog.py
 plugins/lyrics/lyrics.py
 plugins/lyrics/LyricsSites.py
 [type: gettext/glade]plugins/magnatune/magnatune-loading.ui
+[type: gettext/glade]plugins/magnatune/magnatune-popup.ui
+[type: gettext/glade]plugins/magnatune/magnatune-toolbar.ui
 [type: gettext/ini]plugins/magnatune/magnatune.plugin.in
 [type: gettext/glade]plugins/magnatune/magnatune-prefs.ui
 plugins/magnatune/magnatune.py
@@ -107,6 +131,7 @@ plugins/magnatune/MagnatuneSource.py
 [type: gettext/ini]plugins/mpris/mpris.plugin.in
 [type: gettext/ini]plugins/mtpdevice/mtpdevice.plugin.in
 [type: gettext/glade]plugins/mtpdevice/mtp-info.ui
+[type: gettext/glade]plugins/mtpdevice/mtp-toolbar.ui
 plugins/mtpdevice/rb-mtp-gst-sink.c
 plugins/mtpdevice/rb-mtp-gst-src.c
 plugins/mtpdevice/rb-mtp-plugin.c
@@ -148,6 +173,7 @@ sample-plugins/sample/rb-sample-plugin.c
 [type: gettext/ini]sample-plugins/sample/sample.plugin.in
 [type: gettext/ini]sample-plugins/sample-vala/sample-vala.plugin.in
 shell/main.c
+shell/rb-application.c
 shell/rb-playlist-manager.c
 shell/rb-play-order.c
 shell/rb-removable-media-manager.c

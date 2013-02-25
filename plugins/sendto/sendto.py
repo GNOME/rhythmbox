@@ -25,26 +25,11 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import rb
-from gi.repository import Gtk, GObject, GLib, Peas
+from gi.repository import Gio, GObject, GLib, Peas
 from gi.repository import RB
 
 import gettext
 gettext.install('rhythmbox', RB.locale_dir())
-
-ui_definition = """
-<ui>
-    <popup name="BrowserSourceViewPopup">
-        <menuitem name="SendToLibraryPopup" action="SendTo" />
-    </popup>
-
-    <popup name="PlaylistViewPopup">
-        <menuitem name="SendToPlaylistPopup" action="SendTo" />
-    </popup>
-
-    <popup name="QueuePlaylistViewPopup">
-        <menuitem name="SendToQueuePlaylistPopup" action="SendTo" />
-    </popup>
-</ui>"""
 
 class SendToPlugin (GObject.Object, Peas.Activatable):
     __gtype_name__ = 'SendToPlugin'
@@ -55,30 +40,32 @@ class SendToPlugin (GObject.Object, Peas.Activatable):
         GObject.Object.__init__(self)
 
     def do_activate(self):
-        self.__action = Gtk.Action(name='SendTo', label=_("Send to..."),
-                                tooltip=_("Send files by mail, instant message..."),
-                                stock_id='')
-	shell = self.object
-        self.__action.connect('activate', self.send_to, shell)
+	self.__action = Gio.SimpleAction(name='sendto')
+	self.__action.connect('activate', self.send_to)
 
-        self.__action_group = Gtk.ActionGroup(name='SendToActionGroup')
-        self.__action_group.add_action(self.__action)
+	app = Gio.Application.get_default()
+	app.add_action(self.__action)
 
-	uim = shell.props.ui_manager
-        uim.insert_action_group(self.__action_group, -1)
-        self.__ui_id = uim.add_ui_from_string(ui_definition)
+	item = Gio.MenuItem()
+	item.set_label(_("Send to..."))
+	item.set_detailed_action('app.sendto')
+	app.add_plugin_menu_item('edit', 'sendto', item)
+	app.add_plugin_menu_item('browser-popup', 'sendto', item)
+	app.add_plugin_menu_item('playlist-popup', 'sendto', item)
+	app.add_plugin_menu_item('queue-popup', 'sendto', item)
 
     def do_deactivate(self):
 	shell = self.object
-	uim = shell.props.ui_manager
-        uim.remove_action_group(self.__action_group)
-        uim.remove_ui(self.__ui_id)
-        uim.ensure_update()
+	app = Gio.Application.get_default()
+	app.remove_action('sendto')
+	app.remove_plugin_menu_item('edit', 'sendto')
+	app.remove_plugin_menu_item('browser-popup', 'sendto')
+	app.remove_plugin_menu_item('playlist-popup', 'sendto')
+	app.remove_plugin_menu_item('queue-popup', 'sendto')
+	del self.__action
 
-        del self.__action_group
-        del self.__action
-
-    def send_to(self, action, shell):
+    def send_to(self, action, data):
+	shell = self.object
         page = shell.props.selected_page
         if not hasattr(page, "get_entry_view"):
             return

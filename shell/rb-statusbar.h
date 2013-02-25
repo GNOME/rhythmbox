@@ -63,7 +63,6 @@ struct _RBStatusbarClass
 GType			rb_statusbar_get_type	(void);
 
 RBStatusbar *		rb_statusbar_new	(RhythmDB *db,
-						 GtkUIManager *ui_manager,
 						 RBTrackTransferQueue *transfer_queue);
 
 void			rb_statusbar_set_page	(RBStatusbar *statusbar,

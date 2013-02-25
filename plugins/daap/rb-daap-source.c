@@ -72,8 +72,8 @@ static void rb_daap_source_get_property  (GObject *object,
 				 	  GParamSpec *pspec);
 
 static void rb_daap_source_selected (RBDisplayPage *page);
-static gboolean rb_daap_source_show_popup (RBDisplayPage *page);
 static void rb_daap_source_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
+static void disconnect_action_cb (GSimpleAction *, GVariant *, gpointer);
 
 static void rb_daap_entry_type_class_init (RBDAAPEntryTypeClass *klass);
 static void rb_daap_entry_type_init (RBDAAPEntryType *etype);
@@ -81,8 +81,6 @@ GType rb_daap_entry_type_get_type (void);
 
 struct RBDAAPSourcePrivate
 {
-	GtkActionGroup *action_group;
-
 	char *service_name;
 	char *host;
 	guint port;
@@ -178,7 +176,6 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 
 	page_class->selected = rb_daap_source_selected;
 	page_class->get_status = rb_daap_source_get_status;
-	page_class->show_popup = rb_daap_source_show_popup;
 
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
@@ -294,6 +291,24 @@ rb_daap_source_get_property (GObject *object,
 	}
 }
 
+static void
+impl_constructed (GObject *object)
+{
+	RBShell *shell;
+	GActionEntry actions[] = {
+		{ "daap-disconnect", disconnect_action_cb },
+	};
+
+	RB_CHAIN_GOBJECT_METHOD (rb_daap_source_parent_class, constructed, object);
+
+	g_object_get (object, "shell", &shell, NULL);
+	_rb_add_display_page_actions (G_ACTION_MAP (g_application_get_default ()),
+				      G_OBJECT (shell),
+				      actions,
+				      G_N_ELEMENTS (actions));
+	g_object_unref (shell);
+}
+
 
 RBSource *
 rb_daap_source_new (RBShell *shell,
@@ -310,6 +325,8 @@ rb_daap_source_new (RBShell *shell,
 	RhythmDB *db;
 	char *entry_type_name;
 	GSettings *settings;
+	GtkBuilder *builder;
+	GMenu *toolbar;
 
 	g_object_get (shell, "db", &db, NULL);
 	entry_type_name = g_strdup_printf ("daap:%s:%s:%s", service_name, name, host);
@@ -326,6 +343,10 @@ rb_daap_source_new (RBShell *shell,
 
 	icon = rb_daap_plugin_get_icon (RB_DAAP_PLUGIN (plugin), password_protected, FALSE);
 
+	builder = rb_builder_load_plugin_file (plugin, "daap-toolbar.ui", NULL);
+	toolbar = G_MENU (gtk_builder_get_object (builder, "daap-toolbar"));
+	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()), toolbar);
+
 	settings = g_settings_new ("org.gnome.rhythmbox.plugins.daap");
 	source = RB_SOURCE (g_object_new (RB_TYPE_DAAP_SOURCE,
 					  "service-name", service_name,
@@ -340,16 +361,16 @@ rb_daap_source_new (RBShell *shell,
 					  "plugin", G_OBJECT (plugin),
 					  "load-status", RB_SOURCE_LOAD_STATUS_NOT_LOADED,
 					  "settings", g_settings_get_child (settings, "source"),
-					  "toolbar-path", "/DAAPSourceToolBar",
+					  "toolbar-menu", toolbar,
 					  NULL));
 	g_object_unref (settings);
+	g_object_unref (builder);
 
 	if (icon != NULL) {
 		g_object_unref (icon);
 	}
 
-	rb_shell_register_entry_type_for_source (shell, source,
-						 entry_type);
+	rb_shell_register_entry_type_for_source (shell, source, entry_type);
 
 	return source;
 }
@@ -792,11 +813,11 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 	rb_debug ("DAAP connection finished");
 }
 
-static gboolean
-rb_daap_source_show_popup (RBDisplayPage *page)
+static void
+disconnect_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
-	_rb_display_page_show_popup (page, "/DAAPSourcePopup");
-	return TRUE;
+	RBDaapSource *source = RB_DAAP_SOURCE (data);
+	rb_daap_source_disconnect (source);
 }
 
 SoupMessageHeaders *

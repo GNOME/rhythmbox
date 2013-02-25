@@ -40,6 +40,8 @@
 #include "rb-util.h"
 #include "rb-debug.h"
 #include "rb-play-order-queue.h"
+#include "rb-builder-helpers.h"
+#include "rb-application.h"
 
 /**
  * SECTION:rb-play-queue-source
@@ -94,11 +96,13 @@ static void impl_show_entry_view_popup (RBPlaylistSource *source,
 					gboolean over_entry);
 static void impl_save_contents_to_xml (RBPlaylistSource *source,
 				       xmlNodePtr node);
-static void rb_play_queue_source_cmd_clear (GtkAction *action,
-					    RBPlayQueueSource *source);
-static void rb_play_queue_source_cmd_shuffle (GtkAction *action,
-					      RBPlayQueueSource *source);
-static gboolean impl_show_popup (RBDisplayPage *page);
+
+static void queue_clear_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
+static void queue_shuffle_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
+static void queue_delete_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
+static void queue_properties_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
+static void queue_save_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
+
 
 static void rb_play_queue_dbus_method_call (GDBusConnection *connection,
 					    const char *sender,
@@ -109,21 +113,19 @@ static void rb_play_queue_dbus_method_call (GDBusConnection *connection,
 					    GDBusMethodInvocation *invocation,
 					    RBPlayQueueSource *source);
 
-#define PLAY_QUEUE_SOURCE_SONGS_POPUP_PATH "/QueuePlaylistViewPopup"
-#define PLAY_QUEUE_SOURCE_SIDEBAR_POPUP_PATH "/QueueSidebarViewPopup"
-#define PLAY_QUEUE_SOURCE_POPUP_PATH "/QueueSourcePopup"
-
 typedef struct _RBPlayQueueSourcePrivate RBPlayQueueSourcePrivate;
 
 struct _RBPlayQueueSourcePrivate
 {
 	RBEntryView *sidebar;
 	GtkTreeViewColumn *sidebar_column;
-	GtkActionGroup *action_group;
 	RBPlayOrder *queue_play_order;
 
 	guint dbus_object_id;
 	GDBusConnection *bus;
+
+	GMenuModel *popup;
+	GMenuModel *sidepane_popup;
 };
 
 enum
@@ -135,16 +137,6 @@ enum
 
 G_DEFINE_TYPE (RBPlayQueueSource, rb_play_queue_source, RB_TYPE_STATIC_PLAYLIST_SOURCE)
 #define RB_PLAY_QUEUE_SOURCE_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_PLAY_QUEUE_SOURCE, RBPlayQueueSourcePrivate))
-
-static GtkActionEntry rb_play_queue_source_actions [] =
-{
-	{ "ClearQueue", GTK_STOCK_CLEAR, N_("Clear _Queue"), NULL,
-	  N_("Remove all songs from the play queue"),
-	  G_CALLBACK (rb_play_queue_source_cmd_clear) },
-	{ "ShuffleQueue", GNOME_MEDIA_SHUFFLE, N_("Shuffle Queue"), NULL,
-	  N_("Shuffle the tracks in the play queue"),
-	  G_CALLBACK (rb_play_queue_source_cmd_shuffle) }
-};
 
 static const GDBusInterfaceVTable play_queue_vtable = {
 	(GDBusInterfaceMethodCallFunc) rb_play_queue_dbus_method_call,
@@ -168,15 +160,7 @@ rb_play_queue_source_dispose (GObject *object)
 {
 	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (object);
 
-	if (priv->action_group != NULL) {
-		g_object_unref (priv->action_group);
-		priv->action_group = NULL;
-	}
-
-	if (priv->queue_play_order != NULL) {
-		g_object_unref (priv->queue_play_order);
-		priv->queue_play_order = NULL;
-	}
+	g_clear_object (&priv->queue_play_order);
 
 	if (priv->bus != NULL) {
 		if (priv->dbus_object_id) {
@@ -201,7 +185,6 @@ static void
 rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 
@@ -209,8 +192,6 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 	object_class->get_property = rb_play_queue_source_get_property;
 	object_class->finalize = rb_play_queue_source_finalize;
 	object_class->dispose  = rb_play_queue_source_dispose;
-
-	page_class->show_popup = impl_show_popup;
 
 	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;
@@ -257,8 +238,15 @@ rb_play_queue_source_constructed (GObject *object)
 	RBShell *shell;
 	RhythmDB *db;
 	GtkCellRenderer *renderer;
+	GtkBuilder *builder;
 	RhythmDBQueryModel *model;
-	GtkAction *action;
+	GActionEntry actions[] = {
+		{ "queue-clear", queue_clear_action_cb },
+		{ "queue-shuffle", queue_shuffle_action_cb },
+		{ "queue-delete", queue_delete_action_cb },
+		{ "queue-properties", queue_properties_action_cb },
+		{ "queue-save", queue_save_action_cb }
+	};
 
 	RB_CHAIN_GOBJECT_METHOD (rb_play_queue_source_parent_class, constructed, object);
 
@@ -272,18 +260,10 @@ rb_play_queue_source_constructed (GObject *object)
 
 	priv->queue_play_order = rb_queue_play_order_new (RB_SHELL_PLAYER (shell_player));
 
-	priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
-								     "PlayQueueActions",
-								     rb_play_queue_source_actions,
-								     G_N_ELEMENTS (rb_play_queue_source_actions),
-								     source);
-	action = gtk_action_group_get_action (priv->action_group,
-					      "ClearQueue");
-	/* Translators: this is the toolbutton label for Clear Queue action */
-	g_object_set (G_OBJECT (action), "short-label", _("Clear"), NULL);
-
-	/* Translators: this is the toolbutton label for the 'shuffle queue' action */
-	gtk_action_set_short_label (gtk_action_group_get_action (priv->action_group, "ShuffleQueue"), C_("Queue", "Shuffle"));
+	g_action_map_add_action_entries (G_ACTION_MAP (g_application_get_default ()),
+					 actions,
+					 G_N_ELEMENTS (actions),
+					 source);
 
 	priv->sidebar = rb_entry_view_new (db, shell_player, TRUE, TRUE);
 	g_object_unref (shell_player);
@@ -323,6 +303,14 @@ rb_play_queue_source_constructed (GObject *object)
 				 source, 0);
 
 	rb_play_queue_source_update_count (source, GTK_TREE_MODEL (model), 0);
+
+	/* load popup menus */
+	builder = rb_builder_load ("queue-popups.ui", NULL);
+	priv->popup = G_MENU_MODEL (gtk_builder_get_object (builder, "queue-source-popup"));
+	priv->sidepane_popup = G_MENU_MODEL (gtk_builder_get_object (builder, "queue-sidepane-popup"));
+	g_object_ref (priv->popup);
+	g_object_ref (priv->sidepane_popup);
+	g_object_unref (builder);
 
 	/* register dbus interface */
 	priv->bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
@@ -384,57 +372,24 @@ rb_play_queue_source_get_property (GObject *object,
 RBSource *
 rb_play_queue_source_new (RBShell *shell)
 {
-	return RB_SOURCE (g_object_new (RB_TYPE_PLAY_QUEUE_SOURCE,
-					"name", _("Play Queue"),
-					"shell", shell,
-					"is-local", TRUE,
-					"entry-type", NULL,
-					"toolbar-path", "/QueueSourceToolBar",
-					"show-browser", FALSE,
-					NULL));
-}
+	RBSource *source;
+	GtkBuilder *builder;
+	GMenu *toolbar;
 
-/**
- * rb_play_queue_source_sidebar_song_info:
- * @source: the #RBPlayQueueSource
- *
- * Creates and displays a #RBSongInfo for the currently selected
- * entry in the side pane play queue view
- */
-void
-rb_play_queue_source_sidebar_song_info (RBPlayQueueSource *source)
-{
-	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
-	GtkWidget *song_info = NULL;
+	builder = rb_builder_load ("queue-toolbar.ui", NULL);
+	toolbar = G_MENU (gtk_builder_get_object (builder, "queue-toolbar"));
+	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()), toolbar);
 
-	g_return_if_fail (priv->sidebar != NULL);
-
-	song_info = rb_song_info_new (RB_SOURCE (source), priv->sidebar);
-	if (song_info)
-		gtk_widget_show_all (song_info);
-	else
-		rb_debug ("failed to create dialog, or no selection!");
-}
-
-/**
- * rb_play_queue_source_sidebar_delete:
- * @source: the #RBPlayQueueSource
- *
- * Deletes the selected entries from the play queue side pane.
- * This is called by the #RBShellClipboard.
- */
-void
-rb_play_queue_source_sidebar_delete (RBPlayQueueSource *source)
-{
-	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
-	RBEntryView *sidebar = priv->sidebar;
-	GList *sel, *tem;
-
-	sel = rb_entry_view_get_selected_entries (sidebar);
-	for (tem = sel; tem != NULL; tem = tem->next)
-		rb_static_playlist_source_remove_entry (RB_STATIC_PLAYLIST_SOURCE (source),
-							(RhythmDBEntry *) tem->data);
-	g_list_free (sel);
+	source = RB_SOURCE (g_object_new (RB_TYPE_PLAY_QUEUE_SOURCE,
+					  "name", _("Play Queue"),
+					  "shell", shell,
+					  "is-local", TRUE,
+					  "entry-type", NULL,
+					  "toolbar-menu", toolbar,
+					  "show-browser", FALSE,
+					  NULL));
+	g_object_unref (builder);
+	return source;
 }
 
 /**
@@ -467,12 +422,21 @@ impl_show_entry_view_popup (RBPlaylistSource *source,
 			    gboolean over_entry)
 {
 	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
-	const char *popup = PLAY_QUEUE_SOURCE_SONGS_POPUP_PATH;
-	if (view == priv->sidebar)
-		popup = PLAY_QUEUE_SOURCE_SIDEBAR_POPUP_PATH;
-	else if (!over_entry)
-		return;
-	_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), popup);
+	GtkWidget *menu;
+
+	if (view == priv->sidebar) {
+		menu = gtk_menu_new_from_model (priv->sidepane_popup);
+	} else {
+		menu = gtk_menu_new_from_model (priv->popup);
+	}
+	gtk_menu_attach_to_widget (GTK_MENU (menu), GTK_WIDGET (source), NULL);
+	gtk_menu_popup (GTK_MENU (menu),
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			3,
+			gtk_get_current_event_time ());
 }
 
 static void
@@ -526,10 +490,10 @@ rb_play_queue_source_update_count (RBPlayQueueSource *source,
 				   GtkTreeModel *model,
 				   gint offset)
 {
+	GAction *action;
 	gint count = gtk_tree_model_iter_n_children (model, NULL) + offset;
 	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
 	char *name = _("Play Queue");
-	GtkAction *action;
 
 	/* update source name */
 	if (count > 0)
@@ -542,12 +506,13 @@ rb_play_queue_source_update_count (RBPlayQueueSource *source,
 		g_free (name);
 
 	/* make 'clear queue' and 'shuffle queue' actions sensitive when there are entries in the queue */
-	action = gtk_action_group_get_action (priv->action_group,
-					      "ClearQueue");
-	g_object_set (G_OBJECT (action), "sensitive", (count > 0), NULL);
+	action = g_action_map_lookup_action (G_ACTION_MAP (g_application_get_default ()),
+					     "queue-clear");
+	g_simple_action_set_enabled (G_SIMPLE_ACTION (action), (count > 0));
 
-	action = gtk_action_group_get_action (priv->action_group, "ShuffleQueue");
-	g_object_set (G_OBJECT (action), "sensitive", (count > 0), NULL);
+	action = g_action_map_lookup_action (G_ACTION_MAP (g_application_get_default ()),
+					     "queue-shuffle");
+	g_simple_action_set_enabled (G_SIMPLE_ACTION (action), (count > 0));
 }
 
 static void
@@ -559,28 +524,64 @@ impl_save_contents_to_xml (RBPlaylistSource *source,
 }
 
 static void
-rb_play_queue_source_cmd_clear (GtkAction *action,
-				RBPlayQueueSource *source)
+queue_clear_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
-	rb_play_queue_source_clear_queue (source);
+	rb_play_queue_source_clear_queue (RB_PLAY_QUEUE_SOURCE (data));
 }
 
 static void
-rb_play_queue_source_cmd_shuffle (GtkAction *action,
-				  RBPlayQueueSource *source)
+queue_shuffle_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
 	RhythmDBQueryModel *model;
 
-	model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (source));
+	model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (data));
 	rhythmdb_query_model_shuffle_entries (model);
 }
 
-static gboolean
-impl_show_popup (RBDisplayPage *page)
+static void
+queue_delete_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
-	_rb_display_page_show_popup (page, PLAY_QUEUE_SOURCE_POPUP_PATH);
-	return TRUE;
+	RBPlayQueueSource *source = RB_PLAY_QUEUE_SOURCE (data);
+	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
+	RBEntryView *sidebar = priv->sidebar;
+	GList *sel, *tem;
+
+	sel = rb_entry_view_get_selected_entries (sidebar);
+	for (tem = sel; tem != NULL; tem = tem->next)
+		rb_static_playlist_source_remove_entry (RB_STATIC_PLAYLIST_SOURCE (source),
+							(RhythmDBEntry *) tem->data);
+	g_list_free (sel);
 }
+
+static void
+queue_properties_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
+{
+	RBPlayQueueSource *source = RB_PLAY_QUEUE_SOURCE (data);
+	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
+	GtkWidget *song_info = NULL;
+
+	g_return_if_fail (priv->sidebar != NULL);
+
+	song_info = rb_song_info_new (RB_SOURCE (source), priv->sidebar);
+	if (song_info)
+		gtk_widget_show_all (song_info);
+	else
+		rb_debug ("failed to create dialog, or no selection!");
+}
+
+static void
+queue_save_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
+{
+	RBShell *shell;
+	RBPlaylistManager *mgr;
+
+	g_object_get (data, "shell", &shell, NULL);
+	g_object_get (shell, "playlist-manager", &mgr, NULL);
+	rb_playlist_manager_save_playlist_file (mgr, RB_SOURCE (data));
+	g_object_unref (mgr);
+	g_object_unref (shell);
+}
+
 
 static void
 rb_play_queue_dbus_method_call (GDBusConnection *connection,

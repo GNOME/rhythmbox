@@ -41,53 +41,6 @@ const VisualizerQuality rb_visualizer_quality[] = {
 	{ N_("High quality"),	"high",	800,	600,	30,	1 }
 };
 
-static void
-set_check_item_foreach (GtkWidget *widget, GtkCheckMenuItem *item)
-{
-	GtkCheckMenuItem *check = GTK_CHECK_MENU_ITEM (widget);
-	gtk_check_menu_item_set_active (check, check == item);
-}
-
-static void
-quality_item_toggled_cb (GtkMenuItem *item, gpointer data)
-{
-	int index = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (item), "quality"));
-	GSettings *settings = g_object_get_data (G_OBJECT (item), "settings");
-
-	if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (item)) == FALSE) {
-		return;
-	}
-
-	rb_debug ("vis quality %d (%s) activated", index, rb_visualizer_quality[index].setting);
-	g_settings_set_string (settings, "quality", rb_visualizer_quality[index].setting);
-
-	g_signal_handlers_block_by_func (item, quality_item_toggled_cb, data);
-	gtk_container_foreach (GTK_CONTAINER (data),
-			       (GtkCallback) set_check_item_foreach,
-			       GTK_CHECK_MENU_ITEM (item));
-	g_signal_handlers_unblock_by_func (item, quality_item_toggled_cb, data);
-}
-
-static void
-vis_plugin_item_activate_cb (GtkMenuItem *item, gpointer data)
-{
-	const char *name = g_object_get_data (G_OBJECT (item), "element-name");
-	GSettings *settings = g_object_get_data (G_OBJECT (item), "settings");
-
-	if (gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (item)) == FALSE) {
-		return;
-	}
-
-	rb_debug ("vis element %s activated", name);
-	g_settings_set_string (settings, "vis-plugin", name);
-
-	g_signal_handlers_block_by_func (item, vis_plugin_item_activate_cb, data);
-	gtk_container_foreach (GTK_CONTAINER (data),
-			       (GtkCallback) set_check_item_foreach,
-			       GTK_CHECK_MENU_ITEM (item));
-	g_signal_handlers_unblock_by_func (item, vis_plugin_item_activate_cb, data);
-}
-
 static gboolean
 vis_plugin_filter (GstPluginFeature *feature, gpointer data)
 {
@@ -100,50 +53,45 @@ vis_plugin_filter (GstPluginFeature *feature, gpointer data)
 	return (g_strrstr (gst_element_factory_get_klass (f), "Visualization") != NULL);
 }
 
-GtkWidget *
-rb_visualizer_create_popup_menu (GtkToggleAction *fullscreen_action)
+GMenu *
+rb_visualizer_create_popup_menu (const char *fullscreen_action)
 {
 	GSettings *settings;
-	GtkWidget *menu;
-	GtkWidget *submenu;
-	GtkWidget *item;
+	GMenu *menu;
+	GMenu *section;
+	GMenu *submenu;
+	GMenuItem *item;
+	GAction *quality;
+	GAction *effect;
 	GList *features;
 	GList *t;
-	char *active_element;
-	int quality;
 	int i;
 
-	menu = gtk_menu_new ();
+	menu = g_menu_new ();
 
 	settings = g_settings_new ("org.gnome.rhythmbox.plugins.visualizer");
+	quality = g_settings_create_action (settings, "vis-quality");
+	effect = g_settings_create_action (settings, "vis-plugin");
 
 	/* fullscreen item */
-	item = gtk_action_create_menu_item (GTK_ACTION (fullscreen_action));
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+	section = g_menu_new ();
+	g_menu_append (section, _("Fullscreen"), fullscreen_action);
+	g_menu_append_section (menu, NULL, G_MENU_MODEL (section));
 
 	/* quality submenu */
-	quality = g_settings_get_enum (settings, "quality");
-	submenu = gtk_menu_new ();
+	submenu = g_menu_new ();
 	for (i = 0; i < G_N_ELEMENTS (rb_visualizer_quality); i++) {
-		item = gtk_check_menu_item_new_with_label (_(rb_visualizer_quality[i].name));
-
-		gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (item), (i == quality));
-
-		g_object_set_data (G_OBJECT (item), "quality", GINT_TO_POINTER (i));
-		g_object_set_data (G_OBJECT (item), "settings", settings);
-		g_signal_connect (item, "toggled", G_CALLBACK (quality_item_toggled_cb), submenu);
-		gtk_menu_shell_append (GTK_MENU_SHELL (submenu), item);
+		item = g_menu_item_new (_(rb_visualizer_quality[i].name), NULL);
+		g_menu_item_set_action_and_target (item, "app.vis-quality", "i", i);
+		g_menu_append_item (submenu, item);
 	}
 
-	item = gtk_menu_item_new_with_mnemonic (_("_Quality"));
-	gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), submenu);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+	g_menu_append_submenu (menu, _("Quality"), G_MENU_MODEL (submenu));
 
 	/* effect submenu */
-	submenu = gtk_menu_new ();
+	submenu = g_menu_new ();
 
 	rb_debug ("building vis plugin list");
-	active_element = g_settings_get_string (settings, "vis-plugin");
 	features = gst_registry_feature_filter (gst_registry_get (),
 						vis_plugin_filter,
 						FALSE, NULL);
@@ -157,24 +105,13 @@ rb_visualizer_create_popup_menu (GtkToggleAction *fullscreen_action)
 		element_name = gst_plugin_feature_get_name (f);
 		rb_debug ("adding visualizer element %s (%s)", element_name, name);
 
-		item = gtk_check_menu_item_new_with_label (name);
-		gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (item),
-						g_strcmp0 (element_name, active_element) == 0);
-		g_object_set_data (G_OBJECT (item), "element-name", g_strdup (element_name));
-		g_object_set_data (G_OBJECT (item), "settings", settings);
-		gtk_menu_shell_append (GTK_MENU_SHELL (submenu), item);
-		g_signal_connect (item,
-				  "activate",
-				  G_CALLBACK (vis_plugin_item_activate_cb),
-				  submenu);
+		item = g_menu_item_new (name, NULL);
+		g_menu_item_set_action_and_target (item, "app.vis-plugin", "s", element_name);
+		g_menu_append_item (submenu, item);
 	}
 	gst_plugin_feature_list_free (features);
 
-	item = gtk_menu_item_new_with_mnemonic (_("_Visual Effect"));
-	gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), submenu);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-
-	gtk_widget_show_all (menu);
+	g_menu_append_submenu (menu, _("Visual Effect"), G_MENU_MODEL (submenu));
 	return menu;
 }
 

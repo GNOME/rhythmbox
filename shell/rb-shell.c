@@ -58,6 +58,7 @@
 #include <X11/XF86keysym.h>
 #endif /* HAVE_MMKEYS */
 
+#include "rb-application.h"
 #include "rb-shell.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -98,8 +99,8 @@
 #include "rb-podcast-entry-types.h"
 #include "rb-ext-db.h"
 #include "rb-auto-playlist-source.h"
-
-#include "eggsmclient.h"
+#include "rb-builder-helpers.h"
+#include "rb-display-page-menu.h"
 
 #define UNINSTALLED_PLUGINS_LOCATION "plugins"
 
@@ -117,9 +118,6 @@ static void rb_shell_get_property (GObject *object,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *pspec);
-static void rb_shell_activate (GApplication *app);
-static void rb_shell_open (GApplication *app, GFile **files, int n_files, const char *hint);
-static gboolean rb_shell_local_command_line (GApplication *app, gchar ***args, int *exit_status);
 static gboolean rb_shell_get_visibility (RBShell *shell);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEventWindowState *event,
@@ -158,35 +156,13 @@ static void rb_shell_set_window_title (RBShell *shell, const char *window_title)
 static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 					             const char *window_title,
 					             RBShell *shell);
-static void rb_shell_cmd_about (GtkAction *action,
-		                RBShell *shell);
-static void rb_shell_cmd_contents (GtkAction *action,
-				   RBShell *shell);
-static void rb_shell_cmd_quit (GtkAction *action,
-			       RBShell *shell);
-static void rb_shell_cmd_preferences (GtkAction *action,
-		                      RBShell *shell);
-static void rb_shell_cmd_plugins (GtkAction *action,
-		                  RBShell *shell);
-static void rb_shell_cmd_add_music (GtkAction *action, RBShell *shell);
+static void rb_shell_playing_changed_cb (RBShellPlayer *player, gboolean playing, RBShell *shell);
 
-static void rb_shell_cmd_current_song (GtkAction *action,
-				       RBShell *shell);
 static void rb_shell_jump_to_current (RBShell *shell);
 static void rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
 						RhythmDBEntry *entry);
 static void rb_shell_play_entry (RBShell *shell, RhythmDBEntry *entry);
-static void rb_shell_cmd_view_all (GtkAction *action,
-				   RBShell *shell);
-static void rb_shell_view_party_mode_changed_cb (GtkAction *action,
-						 RBShell *shell);
-static void rb_shell_view_statusbar_changed_cb (GtkAction *action,
-						RBShell *shell);
-static void rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
-						       RBShell *shell);
 static void rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell);
-static void rb_shell_sync_pane_visibility (RBShell *shell);
-static void rb_shell_sync_statusbar_visibility (RBShell *shell);
 static void rb_shell_set_visibility (RBShell *shell,
 				     gboolean initial,
 				     gboolean visible);
@@ -198,20 +174,18 @@ static void display_page_tree_drag_received_cb (RBDisplayPageTree *display_page_
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 				    RBShell *shell);
-static void rb_shell_volume_widget_changed_cb (GtkScaleButton *vol,
-					       gdouble volume,
-					       RBShell *shell);
-static void rb_shell_player_volume_changed_cb (RBShellPlayer *player,
-					       GParamSpec *arg,
-					       RBShell *shell);
 
-static void rb_shell_session_init (RBShell *shell);
+/*static void view_all_action_cb (GSimpleAction *, GVariant *, gpointer);*/
+static void jump_to_playing_action_cb (GSimpleAction *, GVariant *, gpointer);
+static void add_music_action_cb (GAction *action, GVariant *parameter, RBShell *shell);
+static void view_party_mode_changed_cb (GAction *action, GVariant *parameter, RBShell *shell);
 
 static gboolean rb_shell_visibility_changing (RBShell *shell, gboolean initial, gboolean visible);
 
 enum
 {
 	PROP_NONE,
+	PROP_APPLICATION,
 	PROP_NO_REGISTRATION,
 	PROP_NO_UPDATE,
 	PROP_DRY_RUN,
@@ -219,7 +193,7 @@ enum
 	PROP_PLAYLISTS_FILE,
 	PROP_SELECTED_PAGE,
 	PROP_DB,
-	PROP_UI_MANAGER,
+	PROP_ACCEL_GROUP,
 	PROP_CLIPBOARD,
 	PROP_PLAYLIST_MANAGER,
 	PROP_REMOVABLE_MEDIA_MANAGER,
@@ -249,16 +223,15 @@ enum
 
 static guint rb_shell_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBShell, rb_shell, GTK_TYPE_APPLICATION)
+G_DEFINE_TYPE (RBShell, rb_shell, G_TYPE_OBJECT)
 
 struct _RBShellPrivate
 {
+	RBApplication *application;
 	GtkWidget *window;
 	gboolean iconified;
 
-	GtkUIManager *ui_manager;
-	GtkActionGroup *actiongroup;
-	guint source_ui_merge_id;
+	GtkAccelGroup *accel_group;
 
 	GtkWidget *main_vbox;
 	GtkWidget *paned;
@@ -315,9 +288,6 @@ struct _RBShellPrivate
 	GtkWidget *prefs;
 	GtkWidget *plugins;
 
-	GtkWidget *volume_button;
-	gboolean syncing_volume;
-
 	char *cached_title;
 	gboolean cached_playing;
 
@@ -329,119 +299,6 @@ struct _RBShellPrivate
 	PeasEngine *plugin_engine;
 	PeasExtensionSet *activatable;
 };
-
-
-static GtkActionEntry rb_shell_actions [] =
-{
-	{ "Music", NULL, N_("_Music") },
-	{ "Edit", NULL, N_("_Edit") },
-	{ "View", NULL, N_("_View") },
-	{ "Control", NULL, N_("_Control") },
-	{ "Tools", NULL, N_("_Tools") },
-	{ "Help", NULL, N_("_Help") },
-
-	{ "MusicAdd", GTK_STOCK_OPEN, N_("Add Music..."), "<control>O",
-	  N_("Add music to the library"),
-	  G_CALLBACK (rb_shell_cmd_add_music) },
-	{ "HelpAbout", GTK_STOCK_ABOUT, N_("_About"), NULL,
-	  N_("Show information about Rhythmbox"),
-	  G_CALLBACK (rb_shell_cmd_about) },
-	{ "HelpContents", GTK_STOCK_HELP, N_("_Contents"), "F1",
-	  N_("Display Rhythmbox help"),
-	  G_CALLBACK (rb_shell_cmd_contents) },
-	{ "MusicQuit", GTK_STOCK_QUIT, N_("_Quit"), "<control>Q",
-	  N_("Quit Rhythmbox"),
-	  G_CALLBACK (rb_shell_cmd_quit) },
-	{ "EditPreferences", GTK_STOCK_PREFERENCES, N_("Prefere_nces"), NULL,
-	  N_("Edit Rhythmbox preferences"),
-	  G_CALLBACK (rb_shell_cmd_preferences) },
-	{ "EditPlugins", NULL, N_("Plu_gins"), NULL,
-	  N_("Change and configure plugins"),
-	  G_CALLBACK (rb_shell_cmd_plugins) },
-	{ "ViewAll", NULL, N_("Show _All Tracks"), "<control>Y",
-	  N_("Show all tracks in this music source"),
-	  G_CALLBACK (rb_shell_cmd_view_all) },
-	{ "ViewJumpToPlaying", GTK_STOCK_JUMP_TO, N_("_Jump to Playing Song"), "<control>J",
-	  N_("Scroll the view to the currently playing song"),
-	  G_CALLBACK (rb_shell_cmd_current_song) },
-};
-static guint rb_shell_n_actions = G_N_ELEMENTS (rb_shell_actions);
-
-static GtkToggleActionEntry rb_shell_toggle_entries [] =
-{
-	{ "ViewSidePane", NULL, N_("Side _Pane"), "F9",
-	  N_("Change the visibility of the side pane"),
-	  NULL, TRUE },
-	{ "ViewPartyMode", NULL, N_("Party _Mode"), "F11",
-	  N_("Change the status of the party mode"),
-	  G_CALLBACK (rb_shell_view_party_mode_changed_cb), FALSE },
-	{ "ViewQueueAsSidebar", NULL, N_("Play _Queue as Side Pane"), "<control>K",
-	  N_("Change whether the queue is visible as a source or a sidebar"),
-	  G_CALLBACK (rb_shell_view_queue_as_sidebar_changed_cb) },
-        { "ViewStatusbar", NULL, N_("S_tatusbar"), NULL,
-	  N_("Change the visibility of the statusbar"),
-	  G_CALLBACK (rb_shell_view_statusbar_changed_cb), TRUE },
-	{ "ViewSongPositionSlider", NULL, N_("_Song Position Slider"), NULL,
-	  N_("Change the visibility of the song position slider"),
-	  NULL, TRUE },
-	{ "ViewAlbumArt", NULL, N_("_Album Art"), NULL,
-	  N_("Change the visibility of the album art display"),
-	  NULL, TRUE },
-        { "ViewBrowser", NULL, N_("_Browse"), "<control>B",
-	  N_("Change the visibility of the browser"),
-	  NULL, TRUE }
-};
-static guint rb_shell_n_toggle_entries = G_N_ELEMENTS (rb_shell_toggle_entries);
-
-static void
-rb_shell_activate (GApplication *app)
-{
-	rb_shell_present (RB_SHELL (app), gtk_get_current_event_time (), NULL);
-}
-
-static void
-rb_shell_open (GApplication *app, GFile **files, int n_files, const char *hint)
-{
-	int i;
-
-	for (i = 0; i < n_files; i++) {
-		char *uri;
-
-		uri = g_file_get_uri (files[i]);
-
-		/*
-		 * rb_uri_exists won't work if the location isn't mounted.
-		 * however, things that are interesting to mount are generally
-		 * non-local, so we'll process them anyway.
-		 */
-		if (rb_uri_is_local (uri) == FALSE || rb_uri_exists (uri)) {
-			rb_shell_load_uri (RB_SHELL (app), uri, TRUE, NULL);
-		}
-		g_free (uri);
-	}
-}
-
-static void
-load_state_changed_cb (GActionGroup *action_group, const char *action_name, GVariant *state, GPtrArray *files)
-{
-	gboolean loaded;
-	gboolean scanned;
-
-	if (g_strcmp0 (action_name, "LoadURI") != 0) {
-		return;
-	}
-
-	g_variant_get (state, "(bb)", &loaded, &scanned);
-	if (loaded) {
-		rb_debug ("opening files now");
-		g_signal_handlers_disconnect_by_func (action_group, load_state_changed_cb, files);
-
-		g_application_open (G_APPLICATION (action_group), (GFile **)files->pdata, files->len, "");
-		g_ptr_array_free (files, TRUE);
-	}
-}
-
-
 
 static GMountOperation *
 rb_shell_create_mount_op_cb (RhythmDB *db, RBShell *shell)
@@ -597,6 +454,23 @@ construct_db (RBShell *shell)
 	g_signal_connect (shell->priv->art_store, "store", G_CALLBACK (store_external_art_cb), shell);
 
 	rb_profile_end ("creating database object");
+
+	/* do the playlist manager too, since we need this before creating the play queue */
+	if (shell->priv->playlists_file) {
+		pathname = g_strdup (shell->priv->playlists_file);
+	} else {
+		pathname = rb_find_user_data_file ("playlists.xml");
+	}
+
+	shell->priv->playlist_manager = rb_playlist_manager_new (shell, pathname);
+
+	g_free (pathname);
+
+	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "playlist_added",
+				 G_CALLBACK (rb_shell_playlist_added_cb), shell, 0);
+	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "playlist_created",
+				 G_CALLBACK (rb_shell_playlist_created_cb), shell, 0);
+
 }
 
 static void
@@ -607,7 +481,7 @@ construct_widgets (RBShell *shell)
 	rb_profile_start ("constructing widgets");
 
 	/* initialize UI */
-	win = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
+	win = GTK_WINDOW (gtk_application_window_new (GTK_APPLICATION (shell->priv->application)));
 	gtk_window_set_title (win, _("Rhythmbox"));
 
 	shell->priv->window = GTK_WIDGET (win);
@@ -633,27 +507,27 @@ construct_widgets (RBShell *shell)
 
 	shell->priv->podcast_manager = rb_podcast_manager_new (shell->priv->db);
 	shell->priv->track_transfer_queue = rb_track_transfer_queue_new (shell);
-	shell->priv->ui_manager = gtk_ui_manager_new ();
-	shell->priv->source_ui_merge_id = gtk_ui_manager_new_merge_id (shell->priv->ui_manager);
+	shell->priv->accel_group = gtk_accel_group_new ();
+	gtk_window_add_accel_group (win, shell->priv->accel_group);
 
-	shell->priv->player_shell = rb_shell_player_new (shell->priv->db,
-							 shell->priv->ui_manager,
-							 shell->priv->actiongroup);
-	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
+	shell->priv->player_shell = rb_shell_player_new (shell->priv->db);
+	g_signal_connect_object (shell->priv->player_shell,
 				 "playing-source-changed",
 				 G_CALLBACK (rb_shell_playing_source_changed_cb),
 				 shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
+	g_signal_connect_object (shell->priv->player_shell,
 				 "notify::playing-from-queue",
 				 G_CALLBACK (rb_shell_playing_from_queue_cb),
 				 shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
+	g_signal_connect_object (shell->priv->player_shell,
 				 "window_title_changed",
 				 G_CALLBACK (rb_shell_player_window_title_changed_cb),
 				 shell, 0);
-	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->actiongroup,
-							       shell->priv->ui_manager,
-							       shell->priv->db);
+	g_signal_connect_object (shell->priv->player_shell,
+				 "playing-changed",
+				 G_CALLBACK (rb_shell_playing_changed_cb),
+				 shell, 0);
+	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->db);
 
 	shell->priv->display_page_tree = rb_display_page_tree_new (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->display_page_tree));
@@ -662,13 +536,13 @@ construct_widgets (RBShell *shell)
 	g_object_get (shell->priv->display_page_tree, "model", &shell->priv->display_page_model, NULL);
 	rb_display_page_group_add_core_groups (G_OBJECT (shell), shell->priv->display_page_model);
 
+
 	shell->priv->header = rb_header_new (shell->priv->player_shell, shell->priv->db);
 	g_object_set (shell->priv->player_shell, "header", shell->priv->header, NULL);
 	gtk_widget_show (GTK_WIDGET (shell->priv->header));
 	g_settings_bind (shell->priv->settings, "time-display", shell->priv->header, "show-remaining", G_SETTINGS_BIND_DEFAULT);
 
 	shell->priv->statusbar = rb_statusbar_new (shell->priv->db,
-						   shell->priv->ui_manager,
 						   shell->priv->track_transfer_queue);
 	gtk_widget_show (GTK_WIDGET (shell->priv->statusbar));
 
@@ -772,7 +646,6 @@ static void
 construct_sources (RBShell *shell)
 {
 	RBDisplayPage *page_group;
-	char *pathname;
 
 	rb_profile_start ("constructing sources");
 
@@ -791,33 +664,7 @@ construct_sources (RBShell *shell)
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (shell->priv->missing_files_source), page_group);
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (shell->priv->import_errors_source), page_group);
 
-	rb_auto_playlist_source_create_actions (shell);
-	rb_static_playlist_source_create_actions (shell);
-
 	rb_podcast_main_source_add_subsources (RB_PODCAST_MAIN_SOURCE (shell->priv->podcast_source));
-
-	/* Find the playlist name if none supplied */
-	if (shell->priv->playlists_file) {
-		pathname = g_strdup (shell->priv->playlists_file);
-	} else {
-		pathname = rb_find_user_data_file ("playlists.xml");
-	}
-
-	/* Initialize playlist manager */
-	rb_debug ("shell: creating playlist manager");
-	shell->priv->playlist_manager = rb_playlist_manager_new (shell,
-								 shell->priv->display_page_model,
-								 shell->priv->display_page_tree,
-								 pathname);
-
-	g_object_set (shell->priv->clipboard_shell,
-		      "playlist-manager", shell->priv->playlist_manager,
-		      NULL);
-
-	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "playlist_added",
-				 G_CALLBACK (rb_shell_playlist_added_cb), shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "playlist_created",
-				 G_CALLBACK (rb_shell_playlist_created_cb), shell, 0);
 
 	/* Initialize removable media manager */
 	rb_debug ("shell: creating removable media manager");
@@ -826,51 +673,37 @@ construct_sources (RBShell *shell)
 	g_signal_connect_object (G_OBJECT (shell->priv->removable_media_manager), "medium_added",
 				 G_CALLBACK (rb_shell_medium_added_cb), shell, 0);
 
-
-	g_free (pathname);
-
 	rb_profile_end ("constructing sources");
 }
 
 static void
 construct_load_ui (RBShell *shell)
 {
-	GtkWidget *menubar;
 	GtkWidget *toolbar;
 	GtkToolItem *tool_item;
-	GError *error = NULL;
+	GtkBuilder *builder;
+	gboolean shell_shows_app_menu;
 
 	rb_debug ("shell: loading ui");
 	rb_profile_start ("loading ui");
 
-	gtk_ui_manager_insert_action_group (shell->priv->ui_manager,
-					    shell->priv->actiongroup, 0);
-	gtk_ui_manager_add_ui_from_file (shell->priv->ui_manager,
-					 rb_file ("rhythmbox-ui.xml"), &error);
+	builder = rb_builder_load ("main-toolbar.ui", NULL);
+	toolbar = GTK_WIDGET (gtk_builder_get_object (builder, "main-toolbar"));
 
-	gtk_ui_manager_ensure_update (shell->priv->ui_manager);
-	gtk_window_add_accel_group (GTK_WINDOW (shell->priv->window),
-				    gtk_ui_manager_get_accel_group (shell->priv->ui_manager));
-	menubar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/MenuBar");
+	/* this seems a bit unnecessary */
+	gtk_actionable_set_action_target_value (GTK_ACTIONABLE (gtk_builder_get_object (builder, "play-button")),
+						g_variant_new_boolean (TRUE));
+	gtk_actionable_set_action_target_value (GTK_ACTIONABLE (gtk_builder_get_object (builder, "shuffle-button")),
+						g_variant_new_boolean (TRUE));
+	gtk_actionable_set_action_target_value (GTK_ACTIONABLE (gtk_builder_get_object (builder, "repeat-button")),
+						g_variant_new_boolean (TRUE));
 
-	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), menubar, FALSE, FALSE, 0);
-	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), menubar, 0);
-
-	toolbar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/ToolBar");
 	gtk_style_context_add_class (gtk_widget_get_style_context (toolbar),
 				     GTK_STYLE_CLASS_PRIMARY_TOOLBAR);
-	gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_BOTH);
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), toolbar, FALSE, FALSE, 0);
 	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), toolbar, 1);
 
-	shell->priv->volume_button = gtk_volume_button_new ();
-	g_signal_connect (shell->priv->volume_button, "value-changed",
-			  G_CALLBACK (rb_shell_volume_widget_changed_cb),
-			  shell);
-	g_signal_connect (shell->priv->player_shell, "notify::volume",
-			  G_CALLBACK (rb_shell_player_volume_changed_cb),
-			  shell);
-	rb_shell_player_volume_changed_cb (shell->priv->player_shell, NULL, shell);
+	g_object_unref (builder);
 
 	tool_item = gtk_tool_item_new ();
 	gtk_tool_item_set_expand (tool_item, TRUE);
@@ -878,18 +711,27 @@ construct_load_ui (RBShell *shell)
 	gtk_widget_show_all (GTK_WIDGET (tool_item));
 	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), tool_item, -1);
 
-	tool_item = gtk_tool_item_new ();
-	gtk_container_add (GTK_CONTAINER (tool_item), shell->priv->volume_button);
-	gtk_widget_show_all (GTK_WIDGET (tool_item));
-	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), tool_item, -1);
+	g_object_get (gtk_settings_get_default (),
+		      "gtk-shell-shows-app-menu", &shell_shows_app_menu,
+		      NULL);
+	if (shell_shows_app_menu == FALSE) {
+		GtkWidget *menu_button;
+		GtkWidget *image;
+		GMenuModel *model;
+		GApplication *app = g_application_get_default ();
 
-	gtk_widget_set_tooltip_text (shell->priv->volume_button,
-				     _("Change the music volume"));
+		menu_button = gtk_menu_button_new ();
 
-	if (error != NULL) {
-		g_warning ("Couldn't merge %s: %s",
-			   rb_file ("rhythmbox-ui.xml"), error->message);
-		g_clear_error (&error);
+		model = rb_application_get_shared_menu (RB_APPLICATION (app), "app-menu");
+		gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (menu_button), model);
+
+		image = gtk_image_new_from_icon_name ("emblem-system-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
+		gtk_container_add (GTK_CONTAINER (menu_button), image);
+
+		tool_item = gtk_tool_item_new ();
+		gtk_container_add (GTK_CONTAINER (tool_item), menu_button);
+		gtk_widget_show_all (GTK_WIDGET (tool_item));
+		gtk_toolbar_insert (GTK_TOOLBAR (toolbar), tool_item, -1);
 	}
 
 	rb_profile_end ("loading ui");
@@ -1075,178 +917,51 @@ construct_plugins (RBShell *shell)
 static gboolean
 _scan_idle (RBShell *shell)
 {
-	gboolean loaded, scanned;
 
 	GDK_THREADS_ENTER ();
 	rb_removable_media_manager_scan (shell->priv->removable_media_manager);
 	GDK_THREADS_LEAVE ();
 
 	if (shell->priv->no_registration == FALSE) {
-		g_variant_get (g_action_group_get_action_state (G_ACTION_GROUP (shell), "LoadURI"), "(bb)", &loaded, &scanned);
-		g_action_group_change_action_state (G_ACTION_GROUP (shell), "LoadURI", g_variant_new ("(bb)", loaded, TRUE));
+		gboolean loaded, scanned;
+		GVariant *state;
+
+		state = g_action_group_get_action_state (G_ACTION_GROUP (shell->priv->application), "load-uri");
+		g_variant_get (state, "(bb)", &loaded, &scanned);
+		g_action_group_change_action_state (G_ACTION_GROUP (shell->priv->application),
+						    "load-uri",
+						    g_variant_new ("(bb)", loaded, TRUE));
+
+		g_variant_unref (state);
 	}
 
 	return FALSE;
 }
 
 static void
-rb_shell_startup (GApplication *app)
-{
-	RBShell *shell = RB_SHELL (app);
-	GtkAction *gtkaction;
-	RBEntryView *view;
-
-	rb_debug ("Constructing shell");
-	rb_profile_start ("constructing shell");
-
-	gtkaction = gtk_action_group_get_action (shell->priv->actiongroup, "ViewSidePane");
-	g_settings_bind (shell->priv->settings, "display-page-tree-visible",
-			 gtkaction, "active",
-			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (shell->priv->settings, "display-page-tree-visible",
-			 shell->priv->sidebar_container, "visible",
-			 G_SETTINGS_BIND_DEFAULT);
-
-	gtkaction = gtk_action_group_get_action (shell->priv->actiongroup, "ViewSongPositionSlider");
-	g_settings_bind (shell->priv->settings, "show-song-position-slider",
-			 gtkaction, "active",
-			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (shell->priv->settings, "show-song-position-slider",
-			 shell->priv->header, "show-position-slider",
-			 G_SETTINGS_BIND_DEFAULT);
-
-	gtkaction = gtk_action_group_get_action (shell->priv->actiongroup, "ViewAlbumArt");
-	g_settings_bind (shell->priv->settings, "show-album-art",
-			 gtkaction, "active",
-			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (shell->priv->settings, "show-album-art",
-			 shell->priv->header, "show-album-art",
-			 G_SETTINGS_BIND_DEFAULT);
-
-	rb_debug ("shell: syncing with settings");
-	rb_shell_sync_pane_visibility (shell);
-
-	g_signal_connect_object (G_OBJECT (shell->priv->db), "save-error",
-				 G_CALLBACK (rb_shell_db_save_error_cb), shell, 0);
-
-	construct_sources (shell);
-
-	construct_load_ui (shell);
-
-	construct_plugins (shell);
-
-	rb_shell_sync_window_state (shell, FALSE);
-	rb_shell_sync_party_mode (shell);
-
-	rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
-
-	/* by now we've added the built in sources and any sources from plugins,
-	 * so we can consider the fixed page groups loaded
-	 */
-	rb_display_page_group_loaded (RB_DISPLAY_PAGE_GROUP (RB_DISPLAY_PAGE_GROUP_LIBRARY));
-	rb_display_page_group_loaded (RB_DISPLAY_PAGE_GROUP (RB_DISPLAY_PAGE_GROUP_STORES));
-
-	rb_missing_plugins_init (GTK_WINDOW (shell->priv->window));
-
-	g_idle_add ((GSourceFunc)_scan_idle, shell);
-
-	/* GO GO GO! */
-	rb_debug ("loading database");
-	rhythmdb_load (shell->priv->db);
-
-	rb_debug ("shell: syncing window state");
-	rb_shell_sync_paned (shell);
-
-	/* set initial visibility */
-	rb_shell_set_visibility (shell, TRUE, TRUE);
-
-	gdk_notify_startup_complete ();
-
-	view = rb_source_get_entry_view (RB_SOURCE (shell->priv->library_source));
-	if (view != NULL) {
-		gtk_widget_grab_focus (GTK_WIDGET (view));
-	}
-
-	rb_profile_end ("constructing shell");
-
-	/* window-based usage counting doesn't work for us, just hold the app until
-	 * we're asked to quit.
-	 */
-	g_application_hold (app);
-
-	(* G_APPLICATION_CLASS (rb_shell_parent_class)->startup) (app);
-}
-
-static gboolean
-rb_shell_local_command_line (GApplication *app, gchar ***args, int *exit_status)
-{
-	RBShell *shell;
-	GError *error = NULL;
-	gboolean scanned;
-	gboolean loaded;
-	GPtrArray *files;
-	int n_files;
-	int i;
-
-	n_files = g_strv_length (*args) - 1;
-
-	shell = RB_SHELL (app);
-	if (shell->priv->no_registration) {
-		if (n_files > 0) {
-			g_warning ("Unable to open files on the commandline with --no-registration");
-		}
-		rb_shell_startup (app);
-		return TRUE;
-	}
-
-	if (!g_application_register (app, NULL, &error)) {
-		g_critical ("%s", error->message);
-		g_error_free (error);
-		*exit_status = 1;
-		return TRUE;
-	}
-
-	if (n_files <= 0) {
-		g_application_activate (app);
-		*exit_status = 0;
-		return TRUE;
-	}
-
-	files = g_ptr_array_new_with_free_func (g_object_unref);
-	for (i = 0; i < n_files; i++) {
-		g_ptr_array_add (files, g_file_new_for_commandline_arg ((*args)[i + 1]));
-	}
-
-	g_variant_get (g_action_group_get_action_state (G_ACTION_GROUP (app), "LoadURI"), "(bb)", &loaded, &scanned);
-	if (loaded) {
-		rb_debug ("opening files immediately");
-		g_application_open (app, (GFile **)files->pdata, files->len, "");
-		g_ptr_array_free (files, TRUE);
-	} else {
-		rb_debug ("opening files once db is loaded");
-		g_signal_connect (app, "action-state-changed::LoadURI", G_CALLBACK (load_state_changed_cb), files);
-	}
-
-	return TRUE;
-}
-static void
 rb_shell_class_init (RBShellClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	GApplicationClass *app_class = G_APPLICATION_CLASS (klass);
 
 	object_class->set_property = rb_shell_set_property;
 	object_class->get_property = rb_shell_get_property;
         object_class->finalize = rb_shell_finalize;
 	object_class->constructed = rb_shell_constructed;
 
-	app_class->activate = rb_shell_activate;
-	app_class->open = rb_shell_open;
-	app_class->local_command_line = rb_shell_local_command_line;
-	app_class->startup = rb_shell_startup;
-
 	klass->visibility_changing = rb_shell_visibility_changing;
 
+	/*
+	 * RBShell:application:
+	 *
+	 * The #RBApplication instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_APPLICATION,
+					 g_param_spec_object ("application",
+							      "application",
+							      "RBApplication instance",
+							      RB_TYPE_APPLICATION,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
 	 * RBShell:no-registration:
 	 *
@@ -1333,16 +1048,16 @@ rb_shell_class_init (RBShellClass *klass)
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READABLE));
 	/**
-	 * RBShell:ui-manager:
+	 * RBShell:accel-group:
 	 *
-	 * The #GtkUIManager instance
+	 * A #GtkAccelGroup instance to use for additional accelerator keys
 	 */
 	g_object_class_install_property (object_class,
-					 PROP_UI_MANAGER,
-					 g_param_spec_object ("ui-manager",
-							      "GtkUIManager",
-							      "GtkUIManager object",
-							      GTK_TYPE_UI_MANAGER,
+					 PROP_ACCEL_GROUP,
+					 g_param_spec_object ("accel-group",
+							      "GtkAccelGroup",
+							      "GtkAccelGroup object",
+							      GTK_TYPE_ACCEL_GROUP,
 							      G_PARAM_READABLE));
 	/**
 	 * RBShell:clipboard:
@@ -1620,20 +1335,6 @@ static void
 rb_shell_init (RBShell *shell)
 {
 	shell->priv = G_TYPE_INSTANCE_GET_PRIVATE (shell, RB_TYPE_SHELL, RBShellPrivate);
-
-	rb_user_data_dir ();
-	rb_refstring_system_init ();
-
-#ifdef USE_UNINSTALLED_DIRS
-	rb_file_helpers_init (TRUE);
-#else
-	rb_file_helpers_init (FALSE);
-#endif
-	rb_stock_icons_init ();
-
-        rb_shell_session_init (shell);
-
-	g_setenv ("PULSE_PROP_media.role", "music", TRUE);
 }
 
 static void
@@ -1646,6 +1347,9 @@ rb_shell_set_property (GObject *object,
 
 	switch (prop_id)
 	{
+	case PROP_APPLICATION:
+		shell->priv->application = g_value_get_object (value);
+		break;
 	case PROP_NO_REGISTRATION:
 		shell->priv->no_registration = g_value_get_boolean (value);
 		break;
@@ -1690,6 +1394,9 @@ rb_shell_get_property (GObject *object,
 
 	switch (prop_id)
 	{
+	case PROP_APPLICATION:
+		g_value_set_object (value, shell->priv->application);
+		break;
 	case PROP_NO_REGISTRATION:
 		g_value_set_boolean (value, shell->priv->no_registration);
 		break;
@@ -1708,8 +1415,8 @@ rb_shell_get_property (GObject *object,
 	case PROP_DB:
 		g_value_set_object (value, shell->priv->db);
 		break;
-	case PROP_UI_MANAGER:
-		g_value_set_object (value, shell->priv->ui_manager);
+	case PROP_ACCEL_GROUP:
+		g_value_set_object (value, shell->priv->accel_group);
 		break;
 	case PROP_CLIPBOARD:
 		g_value_set_object (value, shell->priv->clipboard_shell);
@@ -1914,163 +1621,130 @@ rb_shell_finalize (GObject *object)
 		shell->priv->art_store = NULL;
 	}
 
-	rb_file_helpers_shutdown ();
-	rb_stock_icons_shutdown ();
-	rb_refstring_system_shutdown ();
-
         G_OBJECT_CLASS (rb_shell_parent_class)->finalize (object);
 
 	rb_debug ("shell shutdown complete");
 }
 
-/**
- * rb_shell_new:
- * @autostarted: %TRUE if autostarted by the session manager
- * @argc: a pointer to the number of command line arguments
- * @argv: a pointer to the array of command line arguments
- *
- * Creates the Rhythmbox shell.  This is effectively a singleton, so it doesn't
- * make sense to call this from anywhere other than main.c.
- *
- * Return value: the #RBShell instance
- */
-RBShell *
-rb_shell_new (gboolean autostarted, int *argc, char ***argv)
-{
-	GOptionContext *context;
-	gboolean debug = FALSE;
-	char *debug_match = NULL;
-	gboolean no_update = FALSE;
-	gboolean no_registration = FALSE;
-	gboolean dry_run = FALSE;
-	gboolean disable_plugins = FALSE;
-	char *rhythmdb_file = NULL;
-	char *playlists_file = NULL;
-	GError *error = NULL;
-
-	const GOptionEntry options []  = {
-		{ "debug",           'd', 0, G_OPTION_ARG_NONE,         &debug,           N_("Enable debug output"), NULL },
-		{ "debug-match",     'D', 0, G_OPTION_ARG_STRING,       &debug_match,     N_("Enable debug output matching a specified string"), NULL },
-		{ "no-update",	       0, 0, G_OPTION_ARG_NONE,         &no_update,       N_("Do not update the library with file changes"), NULL },
-		{ "no-registration", 'n', 0, G_OPTION_ARG_NONE,         &no_registration, N_("Do not register the shell"), NULL },
-		{ "dry-run",	       0, 0, G_OPTION_ARG_NONE,         &dry_run,         N_("Don't save any data permanently (implies --no-registration)"), NULL },
-		{ "disable-plugins",   0, 0, G_OPTION_ARG_NONE,		&disable_plugins, N_("Disable loading of plugins"), NULL },
-		{ "rhythmdb-file",     0, 0, G_OPTION_ARG_STRING,       &rhythmdb_file,   N_("Path for database file to use"), NULL },
-		{ "playlists-file",    0, 0, G_OPTION_ARG_STRING,       &playlists_file,   N_("Path for playlists file to use"), NULL },
-		{ NULL }
-	};
-
-	context = g_option_context_new (NULL);
-	g_option_context_add_main_entries (context, options, GETTEXT_PACKAGE);
-	g_option_context_add_group (context, gst_init_get_option_group ());
-	g_option_context_add_group (context, egg_sm_client_get_option_group ());
-	g_option_context_add_group (context, gtk_get_option_group (TRUE));
-
-	if (g_option_context_parse (context, argc, argv, &error) == FALSE) {
-		g_print (_("%s\nRun '%s --help' to see a full list of available command line options.\n"),
-			 error->message, (*argv)[0]);
-		g_error_free (error);
-		g_option_context_free (context);
-		exit (1);
-	}
-	g_option_context_free (context);
-
-	if (!debug && debug_match)
-		rb_debug_init_match (debug_match);
-	else
-		rb_debug_init (debug);
-
-	return g_object_new (RB_TYPE_SHELL,
-			     "application-id", "org.gnome.Rhythmbox3",
-			     "flags", G_APPLICATION_HANDLES_OPEN,
-			     "autostarted", autostarted,
-			     "no-registration", no_registration,
-			     "no-update", no_update,
-			     "dry-run", dry_run,
-			     "rhythmdb-file", rhythmdb_file,
-			     "playlists-file", playlists_file,
-			     "disable-plugins", disable_plugins,
-			     NULL);
-}
-
-static void
-load_uri_action_cb (GSimpleAction *action, GVariant *parameters, RBShell *shell)
-{
-	const char *uri;
-	gboolean play;
-
-	g_variant_get (parameters, "(&sb)", &uri, &play);
-
-	rb_shell_load_uri (shell, uri, play, NULL);
-}
-
-static void
-activate_source_action_cb (GSimpleAction *action, GVariant *parameters, RBShell *shell)
-{
-	const char *source;
-	guint play;
-
-	g_variant_get (parameters, "(&su)", &source, &play);
-	rb_shell_activate_source_by_uri (shell, source, play, NULL);
-}
-
-static void
-quit_action_cb (GSimpleAction *action, GVariant *parameters, RBShell *shell)
-{
-	rb_shell_quit (shell, NULL);
-}
 
 static void
 rb_shell_constructed (GObject *object)
 {
 	RBShell *shell;
-	GSimpleAction *action;
+	GAction *action;
+	RBEntryView *view;
 
+	/* need this? */
 	gtk_init (NULL, NULL);
 
 	RB_CHAIN_GOBJECT_METHOD (rb_shell_parent_class, constructed, object);
 
 	shell = RB_SHELL (object);
 
-	/* create application actions */
-	action = g_simple_action_new_stateful ("LoadURI", G_VARIANT_TYPE ("(sb)"), g_variant_new ("(bb)", FALSE, FALSE));
-	g_signal_connect_object (action, "activate", G_CALLBACK (load_uri_action_cb), shell, 0);
-	g_action_map_add_action (G_ACTION_MAP (shell), G_ACTION (action));
-	g_object_unref (action);
-
-	action = g_simple_action_new ("ActivateSource", G_VARIANT_TYPE ("(su)"));
-	g_signal_connect_object (action, "activate", G_CALLBACK (activate_source_action_cb), shell, 0);
-	g_action_map_add_action (G_ACTION_MAP (shell), G_ACTION (action));
-	g_object_unref (action);
-
-	action = g_simple_action_new ("Quit", NULL);
-	g_signal_connect_object (action, "activate", G_CALLBACK (quit_action_cb), shell, 0);
-	g_action_map_add_action (G_ACTION_MAP (shell), G_ACTION (action));
-	g_object_unref (action);
-
 	/* construct enough of the rest of it to display the window if required */
 
 	shell->priv->settings = g_settings_new ("org.gnome.rhythmbox");
 
-	shell->priv->actiongroup = gtk_action_group_new ("MainActions");
-	gtk_action_group_set_translation_domain (shell->priv->actiongroup,
-						 GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (shell->priv->actiongroup,
-				      rb_shell_actions,
-				      rb_shell_n_actions, shell);
-	gtk_action_group_add_toggle_actions (shell->priv->actiongroup,
-					     rb_shell_toggle_entries,
-					     rb_shell_n_toggle_entries,
-					     shell);
-
-	/* Translators: this is the short label for the 'add music' action */
-	gtk_action_set_short_label (gtk_action_group_get_action (shell->priv->actiongroup, "MusicAdd"), C_("Library", "Import"));
-	/* Translators: this is the short label for the 'view all tracks' action */
-	gtk_action_set_short_label (gtk_action_group_get_action (shell->priv->actiongroup, "ViewAll"), _("Show All"));
-
 	construct_db (shell);
 
+	rb_debug ("Constructing shell");
+	rb_profile_start ("constructing shell");
+
 	construct_widgets (shell);
+
+	action = g_settings_create_action (shell->priv->settings, "display-page-tree-visible");
+	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
+	g_settings_bind (shell->priv->settings, "display-page-tree-visible",
+			 shell->priv->sidebar_container, "visible",
+			 G_SETTINGS_BIND_DEFAULT);
+
+	action = g_settings_create_action (shell->priv->settings, "show-song-position-slider");
+	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
+	g_settings_bind (shell->priv->settings, "show-song-position-slider",
+			 shell->priv->header, "show-position-slider",
+			 G_SETTINGS_BIND_DEFAULT);
+
+	action = g_settings_create_action (shell->priv->settings, "show-album-art");
+	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
+	g_settings_bind (shell->priv->settings, "show-album-art",
+			 shell->priv->header, "show-album-art",
+			 G_SETTINGS_BIND_DEFAULT);
+
+	action = g_settings_create_action (shell->priv->settings, "queue-as-sidebar");
+	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
+	g_settings_bind (shell->priv->settings, "queue-as-sidebar",
+			 shell->priv->queue_sidebar, "visible",
+			 G_SETTINGS_BIND_DEFAULT);
+	g_settings_bind (shell->priv->settings, "queue-as-sidebar",
+			 shell->priv->queue_source, "visibility",
+			 G_SETTINGS_BIND_INVERT_BOOLEAN);
+
+	action = g_settings_create_action (shell->priv->settings, "statusbar-visible");
+	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
+	g_settings_bind (shell->priv->settings, "statusbar-visible",
+			 shell->priv->statusbar, "visible",
+			 G_SETTINGS_BIND_DEFAULT);
+
+	action = G_ACTION (g_simple_action_new_stateful ("party-mode",
+							 NULL,
+							 g_variant_new_boolean (FALSE)));
+	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
+	g_signal_connect (action, "activate", G_CALLBACK (view_party_mode_changed_cb), shell);
+
+	action = G_ACTION (g_simple_action_new ("library-import", NULL));
+	g_signal_connect (action, "activate", G_CALLBACK (add_music_action_cb), shell);
+	g_action_map_add_action (G_ACTION_MAP (g_application_get_default ()), action);
+
+	action = G_ACTION (g_simple_action_new ("jump-to-playing", NULL));
+	g_signal_connect (action, "activate", G_CALLBACK (jump_to_playing_action_cb), shell);
+	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
+
+
+	rb_debug ("shell: syncing with settings");
+
+	g_signal_connect_object (G_OBJECT (shell->priv->db), "save-error",
+				 G_CALLBACK (rb_shell_db_save_error_cb), shell, 0);
+
+
+	construct_sources (shell);
+
+	construct_load_ui (shell);
+
+	construct_plugins (shell);
+
+	rb_shell_sync_window_state (shell, FALSE);
+	rb_shell_sync_party_mode (shell);
+
+	rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
+
+	/* by now we've added the built in sources and any sources from plugins,
+	 * so we can consider the fixed page groups loaded
+	 */
+	rb_display_page_group_loaded (RB_DISPLAY_PAGE_GROUP (RB_DISPLAY_PAGE_GROUP_LIBRARY));
+	rb_display_page_group_loaded (RB_DISPLAY_PAGE_GROUP (RB_DISPLAY_PAGE_GROUP_STORES));
+
+	rb_missing_plugins_init (GTK_WINDOW (shell->priv->window));
+
+	g_idle_add ((GSourceFunc)_scan_idle, shell);
+
+	/* GO GO GO! */
+	rb_debug ("loading database");
+	rhythmdb_load (shell->priv->db);
+
+	rb_debug ("shell: syncing window state");
+	rb_shell_sync_paned (shell);
+
+	/* set initial visibility */
+	rb_shell_set_visibility (shell, TRUE, TRUE);
+
+	gdk_notify_startup_complete ();
+
+	view = rb_source_get_entry_view (RB_SOURCE (shell->priv->library_source));
+	if (view != NULL) {
+		gtk_widget_grab_focus (GTK_WIDGET (view));
+	}
+
+	rb_profile_end ("constructing shell");
 }
 
 static gboolean
@@ -2543,6 +2217,12 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 }
 
 static void
+rb_shell_playing_changed_cb (RBShellPlayer *player, gboolean playing, RBShell *shell)
+{
+	/* update tooltip on play/pause button */
+}
+
+static void
 rb_shell_select_page (RBShell *shell, RBDisplayPage *page)
 {
 	int pagenum;
@@ -2554,7 +2234,6 @@ rb_shell_select_page (RBShell *shell, RBDisplayPage *page)
 
 	if (shell->priv->selected_page) {
 		rb_display_page_deselected (shell->priv->selected_page);
-		gtk_ui_manager_remove_ui (shell->priv->ui_manager, shell->priv->source_ui_merge_id);
 	}
 
 	shell->priv->selected_page = page;
@@ -2579,13 +2258,11 @@ rb_shell_select_page (RBShell *shell, RBDisplayPage *page)
 		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, source);
 		rb_shell_player_set_selected_source (shell->priv->player_shell, source);
 		g_object_set (shell->priv->playlist_manager, "source", source, NULL);
-		g_object_set (shell->priv->removable_media_manager, "source", source, NULL);
 	} else {
 		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, NULL);
 		rb_shell_player_set_selected_source (shell->priv->player_shell, NULL);	/* ? */
 
 		/* clear playlist-manager:source? */
-		/* clear removable-media-manager:source? */
 	}
 	rb_statusbar_set_page (shell->priv->statusbar, page);
 
@@ -2643,114 +2320,17 @@ rb_shell_set_window_title (RBShell *shell,
 }
 
 static void
-rb_shell_view_statusbar_changed_cb (GtkAction *action,
-				    RBShell *shell)
+view_party_mode_changed_cb (GAction *action, GVariant *parameter, RBShell *shell)
 {
-	g_settings_set_boolean (shell->priv->settings,
-				"statusbar-hidden",
-				!gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
-
-	rb_shell_sync_statusbar_visibility (shell);
-}
-
-static void
-rb_shell_view_queue_as_sidebar_changed_cb (GtkAction *action,
-					   RBShell *shell)
-{
-	gboolean queue_as_sidebar = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
-	/* maybe use a settings binding? */
-	g_settings_set_boolean (shell->priv->settings,
-				"queue-as-sidebar",
-				queue_as_sidebar);
-
-	if (queue_as_sidebar &&
-	    shell->priv->selected_page == RB_DISPLAY_PAGE (shell->priv->queue_source)) {
-		/* queue no longer exists as a source, so change to the library */
-		rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
-	}
-
-	rb_shell_playing_from_queue_cb (shell->priv->player_shell, NULL, shell);
-
-	rb_shell_sync_pane_visibility (shell);
-}
-
-static void
-rb_shell_view_party_mode_changed_cb (GtkAction *action,
-				     RBShell *shell)
-{
-	shell->priv->party_mode = gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action));
+	shell->priv->party_mode = (shell->priv->party_mode == FALSE);
 	rb_shell_sync_party_mode (shell);
 }
 
 static void
-rb_shell_cmd_about (GtkAction *action,
-		    RBShell *shell)
+add_music_action_cb (GAction *action, GVariant *parameter, RBShell *shell)
 {
-	const char **tem;
-	GString *comment;
-
-	const char *authors[] = {
-		"",
-#include "MAINTAINERS.tab"
-		"",
-		NULL,
-#include "MAINTAINERS.old.tab"
-		"",
-		NULL,
-#include "AUTHORS.tab"
-		NULL
-	};
-
-	const char *documenters[] = {
-#include "DOCUMENTERS.tab"
-		NULL
-	};
-
-	const char *translator_credits = _("translator-credits");
-
-	const char *license[] = {
-		N_("Rhythmbox is free software; you can redistribute it and/or modify\n"
-		   "it under the terms of the GNU General Public License as published by\n"
-		   "the Free Software Foundation; either version 2 of the License, or\n"
-		   "(at your option) any later version.\n"),
-		N_("Rhythmbox is distributed in the hope that it will be useful,\n"
-		   "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-		   "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-		   "GNU General Public License for more details.\n"),
-		N_("You should have received a copy of the GNU General Public License\n"
-		   "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
-		   "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n")
-	};
-
-	char *license_trans;
-
-	authors[0] = _("Maintainers:");
-	for (tem = authors; *tem != NULL; tem++)
-		;
-	*tem = _("Former Maintainers:");
-	for (; *tem != NULL; tem++)
-		;
-	*tem = _("Contributors:");
-
-	comment = g_string_new (_("Music management and playback software for GNOME."));
-
-	license_trans = g_strconcat (_(license[0]), "\n", _(license[1]), "\n",
-				     _(license[2]), "\n", NULL);
-
-	gtk_show_about_dialog (GTK_WINDOW (shell->priv->window),
-			       "version", VERSION,
-			       "copyright", "Copyright \xc2\xa9 2005 - 2009 The Rhythmbox authors\nCopyright \xc2\xa9 2003 - 2005 Colin Walters\nCopyright \xc2\xa9 2002, 2003 Jorn Baayen",
-			       "license", license_trans,
-			       "website-label", _("Rhythmbox Website"),
-			       "website", "http://www.gnome.org/projects/rhythmbox",
-			       "comments", comment->str,
-			       "authors", (const char **) authors,
-			       "documenters", (const char **) documenters,
-			       "translator-credits", strcmp (translator_credits, "translator-credits") != 0 ? translator_credits : NULL,
-			       "logo-icon-name", "rhythmbox",
-			       NULL);
-	g_string_free (comment, TRUE);
-	g_free (license_trans);
+	rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
+	rb_library_source_show_import_dialog (shell->priv->library_source);
 }
 
 /**
@@ -2767,105 +2347,6 @@ rb_shell_toggle_visibility (RBShell *shell)
 	visible = rb_shell_get_visibility (shell);
 
 	rb_shell_set_visibility (shell, FALSE, !visible);
-}
-
-static void
-rb_shell_cmd_quit (GtkAction *action,
-		   RBShell *shell)
-{
-	rb_shell_quit (shell, NULL);
-}
-
-static void
-rb_shell_cmd_contents (GtkAction *action,
-		       RBShell *shell)
-{
-	GError *error = NULL;
-
-	gtk_show_uri (gtk_widget_get_screen (shell->priv->window),
-		      "help:rhythmbox",
-		      gtk_get_current_event_time (),
-		      &error);
-
-	if (error != NULL) {
-		rb_error_dialog (NULL, _("Couldn't display help"),
-				 "%s", error->message);
-		g_error_free (error);
-	}
-}
-
-static void
-rb_shell_cmd_preferences (GtkAction *action,
-		          RBShell *shell)
-{
-	RBShellPreferences *prefs;
-
-	g_object_get (shell, "prefs", &prefs, NULL);
-
-	gtk_window_present (GTK_WINDOW (prefs));
-	g_object_unref (prefs);
-}
-
-static gboolean
-rb_shell_plugins_window_delete_cb (GtkWidget *window,
-				   GdkEventAny *event,
-				   gpointer data)
-{
-	gtk_widget_hide (window);
-
-	return TRUE;
-}
-
-static void
-rb_shell_plugins_response_cb (GtkDialog *dialog,
-			      int response_id,
-			      gpointer data)
-{
-	if (response_id == GTK_RESPONSE_CLOSE)
-		gtk_widget_hide (GTK_WIDGET (dialog));
-}
-
-static void
-rb_shell_cmd_plugins (GtkAction *action,
-		      RBShell *shell)
-{
-	if (shell->priv->plugins == NULL) {
-		GtkWidget *content_area;
-		GtkWidget *manager;
-
-		shell->priv->plugins = gtk_dialog_new_with_buttons (_("Configure Plugins"),
-								    GTK_WINDOW (shell->priv->window),
-								    GTK_DIALOG_DESTROY_WITH_PARENT,
-								    GTK_STOCK_CLOSE,
-								    GTK_RESPONSE_CLOSE,
-								    NULL);
-		content_area = gtk_dialog_get_content_area (GTK_DIALOG (shell->priv->plugins));
-		gtk_container_set_border_width (GTK_CONTAINER (shell->priv->plugins), 5);
-		gtk_box_set_spacing (GTK_BOX (content_area), 2);
-
-		g_signal_connect_object (G_OBJECT (shell->priv->plugins),
-					 "delete_event",
-					 G_CALLBACK (rb_shell_plugins_window_delete_cb),
-					 NULL, 0);
-		g_signal_connect_object (G_OBJECT (shell->priv->plugins),
-					 "response",
-					 G_CALLBACK (rb_shell_plugins_response_cb),
-					 NULL, 0);
-
-		manager = peas_gtk_plugin_manager_new (NULL);
-		gtk_widget_show_all (GTK_WIDGET (manager));
-		gtk_box_pack_start (GTK_BOX (content_area), manager, TRUE, TRUE, 0);
-		gtk_window_set_default_size (GTK_WINDOW (shell->priv->plugins), 600, 400);
-	}
-
-	gtk_window_present (GTK_WINDOW (shell->priv->plugins));
-}
-
-static void
-rb_shell_cmd_add_music (GtkAction *action, RBShell *shell)
-{
-	rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
-	rb_library_source_show_import_dialog (shell->priv->library_source);
 }
 
 static gboolean
@@ -2903,7 +2384,10 @@ rb_shell_quit (RBShell *shell,
 	rb_shell_shutdown (shell);
 	rb_shell_sync_state (shell);
 
-	g_application_release (G_APPLICATION (shell));
+	/* or maybe just _quit */
+	/* g_application_release (G_APPLICATION (shell->priv->application)); */
+
+	gtk_widget_destroy (GTK_WIDGET (shell->priv->window));
 
 	g_timeout_add_seconds (10, quit_timeout, NULL);
 	return TRUE;
@@ -2912,7 +2396,6 @@ rb_shell_quit (RBShell *shell,
 static gboolean
 idle_handle_load_complete (RBShell *shell)
 {
-	gboolean loaded, scanned;
 	GDK_THREADS_ENTER ();
 
 	rb_debug ("load complete");
@@ -2923,8 +2406,17 @@ idle_handle_load_complete (RBShell *shell)
 	shell->priv->save_playlist_id = g_timeout_add_seconds (10, (GSourceFunc) idle_save_playlist_manager, shell);
 
 	if (shell->priv->no_registration == FALSE) {
-		g_variant_get (g_action_group_get_action_state (G_ACTION_GROUP (shell), "LoadURI"), "(bb)", &loaded, &scanned);
-		g_action_group_change_action_state (G_ACTION_GROUP (shell), "LoadURI", g_variant_new ("(bb)", TRUE, scanned));
+		GVariant *state;
+		gboolean loaded, scanned;
+
+		state = g_action_group_get_action_state (G_ACTION_GROUP (shell->priv->application), "load-uri");
+		g_variant_get (state, "(bb)", &loaded, &scanned);
+
+		g_action_group_change_action_state (G_ACTION_GROUP (shell->priv->application),
+						    "load-uri",
+						    g_variant_new ("(bb)", TRUE, scanned));
+
+		g_variant_unref (state);
 	}
 
 	rhythmdb_start_action_thread (shell->priv->db);
@@ -2939,27 +2431,6 @@ rb_shell_load_complete_cb (RhythmDB *db,
 			   RBShell *shell)
 {
 	g_idle_add ((GSourceFunc) idle_handle_load_complete, shell);
-}
-
-static void
-rb_shell_sync_pane_visibility (RBShell *shell)
-{
-	GtkAction *action;
-	gboolean queue_as_sidebar = g_settings_get_boolean (shell->priv->settings, "queue-as-sidebar");
-
-	if (shell->priv->queue_source != NULL) {
-		g_object_set (shell->priv->queue_source, "visibility", !queue_as_sidebar, NULL);
-	}
-
-	if (queue_as_sidebar) {
-		gtk_widget_show (shell->priv->queue_sidebar);
-	} else {
-		gtk_widget_hide (shell->priv->queue_sidebar);
-	}
-
-	action = gtk_action_group_get_action (shell->priv->actiongroup,
-					      "ViewQueueAsSidebar");
-	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), queue_as_sidebar);
 }
 
 static gboolean
@@ -2977,14 +2448,14 @@ window_state_event_cb (GtkWidget           *widget,
 static void
 rb_shell_sync_party_mode (RBShell *shell)
 {
-	GtkAction *action;
+	GAction *action;
 
 	/* party mode does not use gsettings as a model since it
 	   should not be persistent */
 
 	/* disable/enable quit action */
-	action = gtk_action_group_get_action (shell->priv->actiongroup, "MusicQuit");
-	g_object_set (action, "sensitive", !shell->priv->party_mode, NULL);
+	action = g_action_map_lookup_action (G_ACTION_MAP (shell->priv->application), "quit");
+	g_simple_action_set_enabled (G_SIMPLE_ACTION (action), !shell->priv->party_mode);
 
 	/* show/hide queue as sidebar ? */
 
@@ -3007,20 +2478,6 @@ rb_shell_sync_party_mode (RBShell *shell)
 		gtk_window_unfullscreen (GTK_WINDOW (shell->priv->window));
 		g_signal_handlers_disconnect_by_func (shell->priv->window, window_state_event_cb, shell);
 	}
-}
-
-static void
-rb_shell_sync_statusbar_visibility (RBShell *shell)
-{
-	gboolean visible;
-	GtkAction *action;
-
-	visible = !g_settings_get_boolean (shell->priv->settings, "statusbar-hidden");
-
-	action = gtk_action_group_get_action (shell->priv->actiongroup, "ViewStatusbar");
-	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), visible);
-
-	gtk_widget_set_visible (GTK_WIDGET (shell->priv->statusbar), visible);
 }
 
 static void
@@ -3065,18 +2522,18 @@ display_page_tree_drag_received_cb (RBDisplayPageTree *display_page_tree,
 }
 
 static void
-rb_shell_cmd_current_song (GtkAction *action,
-			   RBShell *shell)
+jump_to_playing_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
+	RBShell *shell = RB_SHELL (data);
 	rb_debug ("current song");
-
 	rb_shell_jump_to_current (shell);
 }
 
+/*
 static void
-rb_shell_cmd_view_all (GtkAction *action,
-		       RBShell *shell)
+view_all_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
+	RBShell *shell = RB_SHELL (data);
 	if (RB_IS_SOURCE (shell->priv->selected_page)) {
 		RBSource *source = RB_SOURCE (shell->priv->selected_page);
 		rb_debug ("view all");
@@ -3084,6 +2541,7 @@ rb_shell_cmd_view_all (GtkAction *action,
 		rb_source_reset_filters (source);
 	}
 }
+*/
 
 static void
 rb_shell_jump_to_entry_with_source (RBShell *shell,
@@ -3181,33 +2639,6 @@ rb_shell_error_quark (void)
 		quark = g_quark_from_static_string ("rb_shell_error");
 
 	return quark;
-}
-
-static void
-session_save_state_cb (EggSMClient *client,
-		       GKeyFile *key_file,
-		       RBShell *shell)
-{
-	rb_debug ("session save-state");
-	rb_shell_sync_state (shell);
-}
-
-static void
-session_quit_cb (EggSMClient *client,
-		 RBShell *shell)
-{
-	rb_debug ("session quit");
-	rb_shell_quit (shell, NULL);
-}
-
-static void
-rb_shell_session_init (RBShell *shell)
-{
-	EggSMClient *sm_client;
-
-	sm_client = egg_sm_client_get ();
-	g_signal_connect (sm_client, "save-state", G_CALLBACK (session_save_state_cb), shell);
-	g_signal_connect (sm_client, "quit", G_CALLBACK (session_quit_cb), shell);
 }
 
 /**
@@ -3726,30 +3157,6 @@ rb_shell_set_song_property (RBShell *shell,
 	}
 	rhythmdb_commit (shell->priv->db);
 	return TRUE;
-}
-
-static void
-rb_shell_volume_widget_changed_cb (GtkScaleButton *vol,
-				   gdouble volume,
-				   RBShell *shell)
-{
-	if (!shell->priv->syncing_volume) {
-		g_object_set (shell->priv->player_shell, "volume", volume, NULL);
-	}
-}
-
-static void
-rb_shell_player_volume_changed_cb (RBShellPlayer *player,
-				   GParamSpec *arg,
-				   RBShell *shell)
-{
-	float volume;
-
-	g_object_get (player, "volume", &volume, NULL);
-	shell->priv->syncing_volume = TRUE;
-	gtk_scale_button_set_value (GTK_SCALE_BUTTON (shell->priv->volume_button), volume);
-	shell->priv->syncing_volume = FALSE;
-
 }
 
 static GtkBox*

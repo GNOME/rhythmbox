@@ -35,7 +35,7 @@ import zipfile
 
 import rb
 from gi.repository import RB
-from gi.repository import GObject, Gtk, Gdk, Gio
+from gi.repository import GObject, Gtk, Gdk, Gio, GLib
 
 from TrackListHandler import TrackListHandler
 from DownloadAlbumHandler import DownloadAlbumHandler, MagnatuneDownloadError
@@ -65,6 +65,7 @@ class MagnatuneSource(RB.BrowserSource):
 		RB.BrowserSource.__init__(self)
 		self.hate = self
 
+		self.__popup = None
 		self.__settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
 		# source state
 		self.__activated = False
@@ -95,8 +96,16 @@ class MagnatuneSource(RB.BrowserSource):
 	# RBSource methods
 	#
 
-	def do_impl_show_entry_popup(self):
-		self.show_source_popup("/MagnatuneSourceViewPopup")
+	def do_show_entry_popup(self):
+		if self.__popup is None:
+			builder = Gtk.Builder()
+			builder.add_from_file(rb.find_plugin_file(self.props.plugin, "magnatune-popup.ui"))
+			self.__popup = builder.get_object("magnatune-popup")
+
+		menu = Gtk.Menu.new_from_model(self.__popup)
+		menu.attach_to_widget(self, None)
+		menu.popup(None, None, None, None, 3, Gtk.get_current_event_time())
+
 
 	def do_get_status(self, status, progress_text, progress):
 		if self.__updating:
@@ -135,7 +144,7 @@ class MagnatuneSource(RB.BrowserSource):
 			self.__show_loading_screen(True)
 
 			# start our catalogue updates
-			self.__update_id = GObject.timeout_add_seconds(6 * 60 * 60, self.__update_catalogue)
+			self.__update_id = GLib.timeout_add_seconds(6 * 60 * 60, self.__update_catalogue)
 			self.__update_catalogue()
 
 	def do_impl_can_delete(self):
@@ -383,7 +392,7 @@ class MagnatuneSource(RB.BrowserSource):
 			return False
 
 		if self.__notify_id == 0:
-			self.__notify_id = GObject.idle_add(change_idle_cb)
+			self.__notify_id = GLib.idle_add(change_idle_cb)
 
 	#
 	# internal purchasing code
@@ -459,9 +468,9 @@ class MagnatuneSource(RB.BrowserSource):
 				remove_download_files()
 
 			if len(self.__downloads) == 0: # All downloads are complete
-				shell = self.props.shell
-				manager = shell.props.ui_manager
-				manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(False)
+				app = Gio.Application.get_default()
+				action = app.lookup_action("magnatune-download-cancel")
+				action.set_enabled(False)
 				if success:
 					shell.notify_custom(4000, _("Finished Downloading"), _("All Magnatune downloads have been completed."), None, False)
 
@@ -505,9 +514,9 @@ class MagnatuneSource(RB.BrowserSource):
 					     Gio.FileCreateFlags.PRIVATE|Gio.FileCreateFlags.REPLACE_DESTINATION,
 					     None)
 
-		shell = self.props.shell
-		manager = shell.props.ui_manager
-		manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(True)
+		app = Gio.Application.get_default()
+		action = app.lookup_action("magnatune-download-cancel")
+		action.set_enabled(True)
 
 		try:
 			# For some reason, Gio.FileCopyFlags.OVERWRITE doesn't work for copy_async
@@ -526,9 +535,9 @@ class MagnatuneSource(RB.BrowserSource):
 		for download in self.__copies.values():
 			download.cancel()
 
-		shell = self.props.shell
-		manager = shell.props.ui_manager
-		manager.get_action("/MagnatuneSourceViewPopup/MagnatuneCancelDownload").set_sensitive(False)
+		app = Gio.Application.get_default()
+		action = app.lookup_action("magnatune-download-cancel")
+		action.set_enabled(False)
 
 	def playing_entry_changed(self, entry):
 		if not self.__db or not entry:

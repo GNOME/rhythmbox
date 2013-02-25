@@ -69,10 +69,7 @@ INCLUDES += $(GNOME_KEYRING_CFLAGS)
 endif
 
 gtkbuilderdir = $(plugindatadir)
-gtkbuilder_DATA = daap-prefs.ui
-
-uixmldir = $(plugindatadir)
-uixml_DATA = daap-ui.xml
+gtkbuilder_DATA = daap-prefs.ui daap-toolbar.ui
 
 plugin_in_files = daap.plugin.in
 

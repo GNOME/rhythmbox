@@ -61,7 +61,6 @@ typedef struct
 	PeasExtensionBase parent;
 
 	RBSource *source;
-	guint ui_merge_id;
 } RBIRadioPlugin;
 
 typedef struct
@@ -84,26 +83,12 @@ static void
 impl_activate (PeasActivatable *plugin)
 {
 	RBIRadioPlugin *pi = RB_IRADIO_PLUGIN (plugin);
-	GtkUIManager *uimanager;
-	char *filename;
 	RBShell *shell;
 
 	g_object_get (pi, "object", &shell, NULL);
 	pi->source = rb_iradio_source_new (shell, G_OBJECT (plugin));
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (pi->source), RB_DISPLAY_PAGE_GROUP_LIBRARY);
 
-	g_object_get (shell, "ui-manager", &uimanager, NULL);
-	filename = rb_find_plugin_data_file (G_OBJECT (plugin), "iradio-ui.xml");
-	if (filename != NULL) {
-		pi->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager,
-                                                             filename,
-                                                             NULL);
-	} else {
-		g_warning ("Unable to find file: iradio-ui.xml");
-	}
-
-	g_free (filename);
-	g_object_unref (uimanager);
 	g_object_unref (shell);
 }
 
@@ -111,20 +96,9 @@ static void
 impl_deactivate	(PeasActivatable *plugin)
 {
 	RBIRadioPlugin *pi = RB_IRADIO_PLUGIN (plugin);
-	GtkUIManager *uimanager;
-	RBShell *shell;
-
-	g_object_get (pi, "object", &shell, NULL);
-
-	g_object_get (shell, "ui-manager", &uimanager, NULL);
-	gtk_ui_manager_remove_ui (uimanager, pi->ui_merge_id);
-	g_object_unref (uimanager);
 
 	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (pi->source));
-	g_object_unref (pi->source);
 	pi->source = NULL;
-
-	g_object_unref (shell);
 }
 
 G_MODULE_EXPORT void

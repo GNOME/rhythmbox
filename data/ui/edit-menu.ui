@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<interface>
+  <menu id="edit-menu">
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Cu_t</attribute>
+	<attribute name="action">app.clipboard-cut</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">_Copy</attribute>
+	<attribute name="action">app.clipboard-copy</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">_Paste</attribute>
+	<attribute name="action">app.clipboard-paste</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Select _All</attribute>
+	<attribute name="action">app.clipboard-select-all</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">D_eselect All</attribute>
+	<attribute name="action">app.clipboard-select-none</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Add to Play Queue</attribute>
+	<attribute name="action">app.clipboard-add-to-queue</attribute>
+      </item>
+      <submenu>
+	<attribute name="label" translatable="yes">Add to Playlist</attribute>
+	<attribute name="rb-playlist-menu-link"></attribute>
+      </submenu>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Pr_operties</attribute>
+	<attribute name="action">app.clipboard-properties</attribute>
+      </item>
+    </section>
+    <section>
+      <section>
+	<attribute name="rb-menu-link">delete-menu</attribute>
+      </section>	
+      <item>
+	<attribute name="label" translatable="yes">_Move to Trash</attribute>
+	<attribute name="action">app.clipboard-move-to-trash</attribute>
+      </item>
+    </section>
+    <section>
+      <attribute name="rb-plugin-menu-link">edit</attribute>
+    </section>
+  </menu>
+</interface>

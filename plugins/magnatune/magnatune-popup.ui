@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<interface>
+  <menu id="magnatune-popup">
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Add to Queue</attribute>
+	<attribute name="action">app.clipboard-add-to-queue</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Download Album</attribute>
+	<attribute name="action">app.magnatune-album-download</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Artist Info</attribute>
+	<attribute name="action">app.magnatune-artist-info</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Cancel Download</attribute>
+	<attribute name="action">app.magnatune-download-cancel</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Browse this Genre</attribute>
+	<attribute name="action">app.browser-select-genre</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Browse this Artist</attribute>
+	<attribute name="action">app.browser-select-artist</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Browse this Album</attribute>
+	<attribute name="action">app.browser-select-album</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Pr_operties</attribute>
+	<attribute name="action">app.clipboard-properties</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

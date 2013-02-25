@@ -79,6 +79,8 @@ rb_introspection_sources = \
 		rhythmdb/rhythmdb-song-entry-types.c \
 		rhythmdb/rb-refstring.h \
 		rhythmdb/rb-refstring.c \
+		shell/rb-application.h \
+		shell/rb-application.c \
 		shell/rb-shell.h \
 		shell/rb-shell.c \
 		shell/rb-shell-player.h \
@@ -128,6 +130,8 @@ rb_introspection_sources = \
 		sources/rb-device-source.c \
 		sources/rb-transfer-target.h \
 		sources/rb-transfer-target.c \
+		widgets/rb-button-bar.h \
+		widgets/rb-button-bar.c \
 		widgets/rb-entry-view.h \
 		widgets/rb-entry-view.c \
 		widgets/rb-property-view.h \

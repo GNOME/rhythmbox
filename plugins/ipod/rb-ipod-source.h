@@ -60,7 +60,6 @@ RBMediaPlayerSource	*rb_ipod_source_new		(GObject *plugin,
 GType			rb_ipod_source_get_type		(void);
 void                    _rb_ipod_source_register_type   (GTypeModule *module);
 
-Itdb_Playlist *		rb_ipod_source_new_playlist	(RBiPodSource *source);
 void			rb_ipod_source_remove_playlist	(RBiPodSource *ipod_source,
 							 RBSource *source);
 

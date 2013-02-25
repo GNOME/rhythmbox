@@ -303,7 +303,6 @@ rhythmdb_register_song_entry_types (RhythmDB *db)
 					"db", db,
 					"name", "song",
 					"save-to-disk", TRUE,
-					"has-playlists", TRUE,
 					NULL);
 
 	ignore_entry_type = g_object_new (rhythmdb_ignore_entry_type_get_type (),

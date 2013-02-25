@@ -60,10 +60,13 @@ struct _RBSourceToolbarClass
 GType		rb_source_toolbar_get_type 		(void);
 
 RBSourceToolbar *rb_source_toolbar_new 			(RBDisplayPage *page,
-							 GtkUIManager *ui_manager);
+							 GtkAccelGroup *accel_group);
 
-void		rb_source_toolbar_add_search_entry 	(RBSourceToolbar *toolbar,
-							 const char *popup_path,
+void		rb_source_toolbar_add_search_entry_menu	(RBSourceToolbar *toolbar,
+							 GMenuModel *search_menu,
+							 GAction *search_action);
+
+void		rb_source_toolbar_add_search_entry	(RBSourceToolbar *toolbar,
 							 const char *placeholder);
 
 void		rb_source_toolbar_clear_search_entry	(RBSourceToolbar *toolbar);

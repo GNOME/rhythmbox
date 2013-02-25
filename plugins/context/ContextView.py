@@ -32,22 +32,12 @@ import LyricsTab as lt
 import LinksTab as lit
 
 import rb
-from gi.repository import GObject, Gtk, Gdk, Pango, Gio
+from gi.repository import GObject, Gtk, Gdk, Pango, Gio, GLib
 from gi.repository import RB
 from gi.repository import WebKit
 
 import gettext
 gettext.install('rhythmbox', RB.locale_dir())
-
-context_ui = """
-<ui>
-    <menubar name="MenuBar">
-        <menu name="ViewMenu" action="View">
-            <menuitem name="Context" action="ToggleContextView" />
-        </menu>
-    </menubar>
-</ui>
-"""
 
 class ContextView (GObject.GObject):
 
@@ -91,16 +81,16 @@ class ContextView (GObject.GObject):
         self.current = 'artist'
         self.tab[self.current].activate ()
 
-        # Add button to toggle visibility of pane
-        self.action = ('ToggleContextView','gtk-info', _("Conte_xt Pane"),
-                        None, _("Change the visibility of the context pane"),
-                        self.toggle_visibility, True)
-        self.action_group = Gtk.ActionGroup(name='ContextPluginActions')
-        self.action_group.add_toggle_actions([self.action])
-        uim = self.shell.props.ui_manager
-        uim.insert_action_group (self.action_group, 0)
-        self.ui_id = uim.add_ui_from_string(context_ui)
-        uim.ensure_update()
+	app = shell.props.application
+	action = Gio.SimpleAction.new_stateful("view-context-pane", None, GLib.Variant.new_boolean(True))
+	action.connect("activate", self.toggle_visibility, None)
+
+	window = shell.props.window
+	window.add_action(action)
+
+	item = Gio.MenuItem.new(label=_("Context Pane"), detailed_action="win.view-context-pane")
+	app.add_plugin_menu_item("view", "view-context-pane", item)
+
 
     def deactivate (self, shell):
         self.shell = None
@@ -122,9 +112,9 @@ class ContextView (GObject.GObject):
 	self.websettings = None
 	self.buttons = None
 	self.top_five_list = None
-        uim = shell.props.ui_manager
-        uim.remove_ui (self.ui_id)
-        uim.remove_action_group (self.action_group)
+
+	app = shell.props.application
+	app.remove_plugin_menu_item("view", "view-context-pane")
 
     def connect_signals(self):
         self.player_cb_ids = ( self.sp.connect ('playing-changed', self.playing_changed_cb),
@@ -145,13 +135,13 @@ class ContextView (GObject.GObject):
         for key, id in self.tab_cb_ids:
             self.tab[key].disconnect (id)
 
-    def toggle_visibility (self, action):
-        if not self.visible:
-            self.shell.add_widget (self.vbox, RB.ShellUILocation.RIGHT_SIDEBAR, True, True)
-            self.visible = True
-        else:
+    def toggle_visibility (self, action, parameter, data):
+	if self.visible:
             self.shell.remove_widget (self.vbox, RB.ShellUILocation.RIGHT_SIDEBAR)
             self.visible = False
+        else:
+            self.shell.add_widget (self.vbox, RB.ShellUILocation.RIGHT_SIDEBAR, True, True)
+            self.visible = True
 
     def change_tab (self, tab, newtab):
         print "swapping tab from %s to %s" % (self.current, newtab)

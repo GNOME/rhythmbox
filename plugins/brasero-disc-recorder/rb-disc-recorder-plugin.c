@@ -57,6 +57,7 @@
 #include "rb-playlist-source.h"
 #include "rb-dialog.h"
 #include "rb-file-helpers.h"
+#include "rb-application.h"
 
 #define RB_TYPE_DISC_RECORDER_PLUGIN		(rb_disc_recorder_plugin_get_type ())
 #define RB_DISC_RECORDER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_DISC_RECORDER_PLUGIN, RBDiscRecorderPlugin))
@@ -69,11 +70,12 @@ typedef struct
 {
 	PeasExtensionBase parent;
 
-	GtkActionGroup *action_group;
-	guint           ui_merge_id;
-
 	RBDisplayPage  *selected_page;
 	guint           enabled : 1;
+
+	GAction        *burn_action;
+	GAction        *copy_action;
+
 } RBDiscRecorderPlugin;
 
 typedef struct
@@ -86,19 +88,9 @@ G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 RB_DEFINE_PLUGIN(RB_TYPE_DISC_RECORDER_PLUGIN, RBDiscRecorderPlugin, rb_disc_recorder_plugin,)
 
 static void rb_disc_recorder_plugin_init (RBDiscRecorderPlugin *plugin);
-static void cmd_burn_source (GtkAction          *action,
-			     RBDiscRecorderPlugin *pi);
-static void cmd_duplicate_cd (GtkAction          *action,
-			      RBDiscRecorderPlugin *pi);
 
-static GtkActionEntry rb_disc_recorder_plugin_actions [] = {
-	{ "MusicPlaylistBurnToDiscPlaylist", "media-optical-audio-new", N_("_Create Audio CD..."), NULL,
-	  N_("Create an audio CD from playlist"),
-	  G_CALLBACK (cmd_burn_source) },
-	{ "MusicAudioCDDuplicate", "media-optical-copy", N_("Duplicate Audio CD..."), NULL,
-	  N_("Create a copy of this audio CD"),
-	  G_CALLBACK (cmd_duplicate_cd) },
-};
+static void burn_playlist_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
+static void duplicate_cd_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
 
 #define RB_RECORDER_ERROR rb_disc_recorder_error_quark ()
 
@@ -468,18 +460,16 @@ source_burn (RBDiscRecorderPlugin *pi,
 }
 
 static void
-cmd_burn_source (GtkAction            *action,
-		 RBDiscRecorderPlugin *pi)
+burn_playlist_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
-	if (pi->selected_page != NULL && RB_IS_SOURCE (pi->selected_page)) {
-		source_burn (pi, RB_SOURCE (pi->selected_page));
-	}
+	RBDiscRecorderPlugin *pi = RB_DISC_RECORDER_PLUGIN (data);
+	source_burn (pi, RB_SOURCE (pi->selected_page));
 }
 
 static void
-cmd_duplicate_cd (GtkAction         	*action,
-		  RBDiscRecorderPlugin	*pi)
+duplicate_cd_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
+	RBDiscRecorderPlugin *pi = RB_DISC_RECORDER_PLUGIN (data);
 	gchar *device;
 	GVolume *volume;
 
@@ -503,13 +493,11 @@ playlist_entries_changed (GtkTreeModel         *model,
 			  RhythmDBEntry        *entry,
 			  RBDiscRecorderPlugin *pi)
 {
-	int        num_tracks;
-	GtkAction *action;
+	int num_tracks;
 
 	num_tracks = gtk_tree_model_iter_n_children (model, NULL);
 
-	action = gtk_action_group_get_action (pi->action_group, "MusicPlaylistBurnToDiscPlaylist");
-	gtk_action_set_sensitive (action, (num_tracks > 0));
+	g_simple_action_set_enabled (G_SIMPLE_ACTION (pi->burn_action), (num_tracks > 0));
 }
 
 static void
@@ -566,7 +554,6 @@ static void
 update_source (RBDiscRecorderPlugin *pi,
 	       RBShell            *shell)
 {
-	GtkAction *burn_action, *copy_action;
 	gboolean   playlist_active, is_audiocd_active;
 	RBDisplayPage *selected_page;
 	const char *page_type;
@@ -592,11 +579,6 @@ update_source (RBDiscRecorderPlugin *pi,
 		is_audiocd_active = FALSE;
 	}
 
-	burn_action = gtk_action_group_get_action (pi->action_group,
-						   "MusicPlaylistBurnToDiscPlaylist");
-	copy_action = gtk_action_group_get_action (pi->action_group,
-						   "MusicAudioCDDuplicate");
-
 	if (pi->enabled && playlist_active && rb_disc_recorder_has_burner (pi)) {
 		RhythmDBQueryModel *model;
 
@@ -613,15 +595,14 @@ update_source (RBDiscRecorderPlugin *pi,
 
 		playlist_entries_changed (GTK_TREE_MODEL (model), NULL, pi);
 		g_object_unref (model);
-		gtk_action_set_visible (burn_action, TRUE);
 	} else {
-		gtk_action_set_visible (burn_action, FALSE);
+		g_simple_action_set_enabled (G_SIMPLE_ACTION (pi->burn_action), FALSE);
 	}
 
 	if (pi->enabled && is_audiocd_active && is_copy_available (pi)) {
-		gtk_action_set_visible (copy_action, TRUE);
+		g_simple_action_set_enabled (G_SIMPLE_ACTION (pi->copy_action), TRUE);
 	} else {
-		gtk_action_set_visible (copy_action, FALSE);
+		g_simple_action_set_enabled (G_SIMPLE_ACTION (pi->copy_action), FALSE);
 	}
 
 	if (pi->selected_page != NULL) {
@@ -639,29 +620,18 @@ shell_selected_page_notify_cb (RBShell            *shell,
 	update_source (pi, shell);
 }
 
-static struct ui_paths {
-	const char *path;
-	gboolean for_burn;
-	gboolean for_copy;
-} ui_paths[] = {
-	{ "/QueueSourceToolBar/PluginPlaceholder", TRUE, FALSE },
-	{ "/QueueSourcePopup/PluginPlaceholder", TRUE, FALSE },
-	{ "/PlaylistSourcePopup/PluginPlaceholder", TRUE, FALSE },
-	{ "/AutoPlaylistSourcePopup/PluginPlaceholder", TRUE, FALSE },
-	{ "/AutoPlaylistSourceToolBar/PluginPlaceholder", TRUE, FALSE },
-	{ "/StaticPlaylistSourceToolBar/PluginPlaceholder", TRUE, FALSE },
-	{ "/AudioCdSourcePopup/PluginPlaceholder", FALSE, TRUE },
-	{ "/AudioCdSourceToolBar/PluginPlaceholder", FALSE, TRUE },
-};
-
 static void
 impl_activate (PeasActivatable *plugin)
 {
 	RBDiscRecorderPlugin *pi = RB_DISC_RECORDER_PLUGIN (plugin);
-	GtkUIManager         *uimanager = NULL;
-	GtkAction            *action;
+	GMenuItem            *item;
 	RBShell              *shell;
-	int                   i;
+	GApplication         *app;
+
+	GActionEntry actions[] = {
+		{ "burn-playlist", burn_playlist_action_cb },
+		{ "burn-duplicate-cd", duplicate_cd_action_cb }
+	};
 
 	g_object_get (pi, "object", &shell, NULL);
 
@@ -671,54 +641,27 @@ impl_activate (PeasActivatable *plugin)
 
 	brasero_media_library_start ();
 
-	g_object_get (shell,
-		      "ui-manager", &uimanager,
-		      NULL);
-
 	g_signal_connect_object (G_OBJECT (shell),
 				 "notify::selected-page",
 				 G_CALLBACK (shell_selected_page_notify_cb),
 				 pi, 0);
 
-	/* add UI */
-	pi->action_group = gtk_action_group_new ("DiscRecorderActions");
-	gtk_action_group_set_translation_domain (pi->action_group,
-						 GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (pi->action_group,
-				      rb_disc_recorder_plugin_actions, G_N_ELEMENTS (rb_disc_recorder_plugin_actions),
-				      pi);
-	gtk_ui_manager_insert_action_group (uimanager, pi->action_group, 0);
-	pi->ui_merge_id = gtk_ui_manager_new_merge_id (uimanager);
-	for (i = 0; i < G_N_ELEMENTS (ui_paths); i++) {
-		if (ui_paths[i].for_burn)
-			gtk_ui_manager_add_ui (uimanager,
-					       pi->ui_merge_id,
-					       ui_paths[i].path,
-					       "MusicPlaylistBurnToDiscPlaylistMenu",
-					       "MusicPlaylistBurnToDiscPlaylist",
-					       GTK_UI_MANAGER_AUTO,
-					       FALSE);
-		if (ui_paths[i].for_copy)
-			gtk_ui_manager_add_ui (uimanager,
-					       pi->ui_merge_id,
-					       ui_paths[i].path,
-					       "MusicAudioCDDuplicateMenu",
-					       "MusicAudioCDDuplicate",
-					       GTK_UI_MANAGER_AUTO,
-					       FALSE);
-	}
-	g_object_unref (uimanager);
+	app = g_application_get_default ();
+	g_action_map_add_action_entries (G_ACTION_MAP (app), actions, G_N_ELEMENTS (actions), pi);
+	pi->burn_action = g_action_map_lookup_action (G_ACTION_MAP (app), "burn-playlist");
+	pi->copy_action = g_action_map_lookup_action (G_ACTION_MAP (app), "burn-duplicate-cd");
 
-        action = gtk_action_group_get_action (pi->action_group, "MusicPlaylistBurnToDiscPlaylist");
-	/* Translators: this is the toolbar button label for */
-	/* Create Audio CD action                            */
-	g_object_set (action, "short-label", _("Burn"), NULL);
+	item = g_menu_item_new (_("Create Audio CD..."), "app.burn-playlist");
+	rb_application_add_plugin_menu_item (RB_APPLICATION (g_application_get_default ()),
+					     "playlist-menu",
+					     "burn-playlist",
+					     item);
 
-        action = gtk_action_group_get_action (pi->action_group,
-					      "MusicAudioCDDuplicate");
-	/* Translators: this is the toolbar button label for */
-	/* Duplicate Audio CD action                         */
-	g_object_set (action, "short-label", _("Copy CD"), NULL);
+	item = g_menu_item_new (_("Duplicate Audio CD..."), "app.burn-duplicate-cd");
+	rb_application_add_plugin_menu_item (RB_APPLICATION (g_application_get_default ()),
+					     "audiocd-toolbar",
+					     "burn-duplicate-cd",
+					     item);
 
 	update_source (pi, shell);
 
@@ -729,7 +672,6 @@ static void
 impl_deactivate	(PeasActivatable *plugin)
 {
 	RBDiscRecorderPlugin *pi = RB_DISC_RECORDER_PLUGIN (plugin);
-	GtkUIManager         *uimanager = NULL;
 	RBShell              *shell;
 
 	g_object_get (pi, "object", &shell, NULL);
@@ -747,23 +689,15 @@ impl_deactivate	(PeasActivatable *plugin)
 
 	g_signal_handlers_disconnect_by_func (shell, shell_selected_page_notify_cb, pi);
 
-	g_object_get (shell,
-		      "ui-manager", &uimanager,
-		      NULL);
-
-	gtk_ui_manager_remove_ui (uimanager, pi->ui_merge_id);
-	gtk_ui_manager_remove_action_group (uimanager, pi->action_group);
-
-	g_object_unref (uimanager);
-
 	/* NOTE: don't deactivate libbrasero-media as it could be in use somewhere else */
+	rb_application_remove_plugin_menu_item (RB_APPLICATION (g_application_get_default ()),
+						"playlist-menu",
+						"burn-playlist");
+	rb_application_remove_plugin_menu_item (RB_APPLICATION (g_application_get_default ()),
+						"audiocd-toolbar",
+						"burn-duplicate-cd");
 
 	g_object_unref (shell);
-
-	if (pi->action_group != NULL) {
-		g_object_unref (pi->action_group);
-		pi->action_group = NULL;
-	}
 }
 
 G_MODULE_EXPORT void

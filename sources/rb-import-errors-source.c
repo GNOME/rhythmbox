@@ -35,6 +35,7 @@
 #include "rb-util.h"
 #include "rb-debug.h"
 #include "rb-missing-plugins.h"
+#include "rb-builder-helpers.h"
 
 static void rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass);
 static void rb_import_errors_source_init (RBImportErrorsSource *source);
@@ -77,6 +78,8 @@ struct _RBImportErrorsSourcePrivate
 
 	RhythmDBEntryType *normal_entry_type;
 	RhythmDBEntryType *ignore_entry_type;
+
+	GMenuModel *popup;
 };
 
 G_DEFINE_TYPE (RBImportErrorsSource, rb_import_errors_source, RB_TYPE_SOURCE);
@@ -397,7 +400,28 @@ rb_import_errors_source_songs_show_popup_cb (RBEntryView *view,
 					     gboolean over_entry,
 					     RBImportErrorsSource *source)
 {
-	_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), "/ImportErrorsViewPopup");
+	GtkWidget *menu;
+	GtkBuilder *builder;
+
+	if (over_entry == FALSE)
+		return;
+
+	if (source->priv->popup == NULL) {
+		builder = rb_builder_load ("import-errors-popup.ui", NULL);
+		source->priv->popup = G_MENU_MODEL (gtk_builder_get_object (builder, "import-errors-popup"));
+		g_object_ref (source->priv->popup);
+		g_object_unref (builder);
+	}
+
+	menu = gtk_menu_new_from_model (source->priv->popup);
+	gtk_menu_attach_to_widget (GTK_MENU (menu), GTK_WIDGET (source), NULL);
+	gtk_menu_popup (GTK_MENU (menu),
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			3,
+			gtk_get_current_event_time ());
 }
 
 static void

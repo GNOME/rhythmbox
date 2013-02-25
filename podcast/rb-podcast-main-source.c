@@ -39,6 +39,7 @@
 #include "rb-file-helpers.h"
 #include "rb-util.h"
 #include "rb-stock-icons.h"
+#include "rb-application.h"
 
 struct _RBPodcastMainSourcePrivate
 {
@@ -55,6 +56,8 @@ rb_podcast_main_source_new (RBShell *shell, RBPodcastManager *podcast_manager)
 	RhythmDBQuery *base_query;
 	RhythmDB *db;
 	GSettings *settings;
+	GtkBuilder *builder;
+	GMenu *toolbar;
 
 	g_object_get (shell, "db", &db, NULL);
 	base_query = rhythmdb_query_parse (db,
@@ -66,6 +69,10 @@ rb_podcast_main_source_new (RBShell *shell, RBPodcastManager *podcast_manager)
 
 	settings = g_settings_new (PODCAST_SETTINGS_SCHEMA);
 
+	builder = rb_builder_load ("podcast-toolbar.ui", NULL);
+	toolbar = G_MENU (gtk_builder_get_object (builder, "podcast-toolbar"));
+	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()), toolbar);
+
 	source = RB_SOURCE (g_object_new (RB_TYPE_PODCAST_MAIN_SOURCE,
 					  "name", _("Podcasts"),
 					  "shell", shell,
@@ -73,10 +80,11 @@ rb_podcast_main_source_new (RBShell *shell, RBPodcastManager *podcast_manager)
 					  "podcast-manager", podcast_manager,
 					  "base-query", base_query,
 					  "settings", g_settings_get_child (settings, "source"),
-					  "toolbar-path", "/PodcastSourceToolBar",
+					  "toolbar-menu", toolbar,
 					  "show-all-feeds", TRUE,
 					  NULL));
 	g_object_unref (settings);
+	g_object_unref (builder);
 
 	rhythmdb_query_free (base_query);
 

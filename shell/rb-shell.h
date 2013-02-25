@@ -103,8 +103,6 @@ struct _RBShellClass
 
 GType		rb_shell_get_type	(void);
 
-RBShell *	rb_shell_new		(gboolean autostarted, int *argc, char ***argv);
-
 gboolean        rb_shell_present        (RBShell *shell, guint32 timestamp, GError **error);
 
 RBSource *	rb_shell_guess_source_for_uri (RBShell *shell, const char *uri);

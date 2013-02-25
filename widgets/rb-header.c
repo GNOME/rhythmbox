@@ -63,6 +63,7 @@
 
 static void rb_header_class_init (RBHeaderClass *klass);
 static void rb_header_init (RBHeader *header);
+static void rb_header_constructed (GObject *object);
 static void rb_header_dispose (GObject *object);
 static void rb_header_finalize (GObject *object);
 static void rb_header_set_property (GObject *object,
@@ -97,6 +98,8 @@ static void uri_dropped_cb (RBFadingImage *image, const char *uri, RBHeader *hea
 static void pixbuf_dropped_cb (RBFadingImage *image, GdkPixbuf *pixbuf, RBHeader *header);
 static void image_button_press_cb (GtkWidget *widget, GdkEvent *event, RBHeader *header);
 static void art_added_cb (RBExtDB *db, RBExtDBKey *key, const char *filename, GValue *data, RBHeader *header);
+static void volume_widget_changed_cb (GtkScaleButton *widget, gdouble volume, RBHeader *header);
+static void player_volume_changed_cb (RBShellPlayer *player, GParamSpec *pspec, RBHeader *header);
 
 struct RBHeaderPrivate
 {
@@ -110,6 +113,7 @@ struct RBHeaderPrivate
 	GtkWidget *song;
 	GtkWidget *details;
 	GtkWidget *image;
+	GtkWidget *volume_button;
 
 	GtkWidget *scale;
 	GtkAdjustment *adjustment;
@@ -129,6 +133,8 @@ struct RBHeaderPrivate
 	char *image_path;
 	gboolean show_album_art;
 	gboolean show_slider;
+	
+	gboolean syncing_volume;
 };
 
 enum
@@ -162,6 +168,7 @@ rb_header_class_init (RBHeaderClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->constructed = rb_header_constructed;
 	object_class->dispose = rb_header_dispose;
 	object_class->finalize = rb_header_finalize;
 
@@ -269,6 +276,14 @@ static void
 rb_header_init (RBHeader *header)
 {
 	header->priv = G_TYPE_INSTANCE_GET_PRIVATE (header, RB_TYPE_HEADER, RBHeaderPrivate);
+}
+
+static void
+rb_header_constructed (GObject *object)
+{
+	RBHeader *header = RB_HEADER (object);
+
+	RB_CHAIN_GOBJECT_METHOD (rb_header_parent_class, constructed, object);
 
 	gtk_grid_set_column_spacing (GTK_GRID (header), 6);
 	gtk_grid_set_column_homogeneous (GTK_GRID (header), TRUE);
@@ -360,10 +375,20 @@ rb_header_init (RBHeader *header)
 			  G_CALLBACK (image_button_press_cb),
 			  header);
 
+	/* volume button */
+	header->priv->volume_button = gtk_volume_button_new ();
+	g_signal_connect (header->priv->volume_button, "value-changed",
+			  G_CALLBACK (volume_widget_changed_cb),
+			  header);
+	g_signal_connect (header->priv->shell_player, "notify::volume",
+			  G_CALLBACK (player_volume_changed_cb),
+			  header);
+
 	gtk_grid_attach (GTK_GRID (header), header->priv->image, 0, 0, 1, 1);
 	gtk_grid_attach (GTK_GRID (header), header->priv->songbox, 2, 0, 1, 1);
 	gtk_grid_attach (GTK_GRID (header), header->priv->timebutton, 3, 0, 1, 1);
 	gtk_grid_attach (GTK_GRID (header), header->priv->scale, 4, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (header), header->priv->volume_button, 5, 0, 1, 1);
 
 	/* currently, nothing sets this.  it should be set on track changes. */
 	header->priv->seekable = TRUE;
@@ -498,6 +523,7 @@ rb_header_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	int info_width;
 	int time_width;
 	int image_width;
+	int volume_width;
 	GtkAllocation child_alloc;
 	gboolean rtl;
 
@@ -523,6 +549,15 @@ rb_header_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	} else {
 		image_width = 0;
 	}
+
+	/* allocate space for the volume button at the end */
+	gtk_widget_get_preferred_width (RB_HEADER (widget)->priv->volume_button, &volume_width, NULL);
+	child_alloc.x = (allocation->x + allocation->width) - volume_width;
+	child_alloc.y = allocation->y;
+	child_alloc.width = volume_width;
+	child_alloc.height = allocation->height;
+	allocation->width -= volume_width + spacing;
+	gtk_widget_size_allocate (RB_HEADER (widget)->priv->volume_button, &child_alloc);
 
 	/* figure out how much space to allocate to the scale.
 	 * it gets at least its minimum size, at most 1/3 of the
@@ -1212,4 +1247,23 @@ static void
 time_button_clicked_cb (GtkWidget *widget, RBHeader *header)
 {
 	g_object_set (header, "show-remaining", !header->priv->show_remaining, NULL);
+}
+
+static void
+volume_widget_changed_cb (GtkScaleButton *vol, gdouble value, RBHeader *header)
+{
+	if (!header->priv->syncing_volume) {
+		g_object_set (header->priv->shell_player, "volume", value, NULL);
+	}
+}
+
+static void
+player_volume_changed_cb (RBShellPlayer *player, GParamSpec *pspec, RBHeader *header)
+{
+	float volume;
+
+	g_object_get (player, "volume", &volume, NULL);
+	header->priv->syncing_volume = TRUE;
+	gtk_scale_button_set_value (GTK_SCALE_BUTTON (header->priv->volume_button), volume);
+	header->priv->syncing_volume = FALSE;
 }

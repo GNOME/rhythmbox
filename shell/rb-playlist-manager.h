@@ -88,8 +88,6 @@ typedef enum
 GType			rb_playlist_manager_get_type	(void);
 
 RBPlaylistManager *	rb_playlist_manager_new		(RBShell *shell,
-							 RBDisplayPageModel *page_model,
-							 RBDisplayPageTree *page_tree,
 							 const char *playlists_file);
 
 void			rb_playlist_manager_shutdown	(RBPlaylistManager *mgr);
@@ -132,6 +130,8 @@ gboolean		rb_playlist_manager_export_playlist (RBPlaylistManager *mgr,
 							     const gchar *uri,
 							     gboolean m3u_format,
 							     GError **error);
+void			rb_playlist_manager_save_playlist_file (RBPlaylistManager *mgr,
+								RBSource *source);
 
 G_END_DECLS
 

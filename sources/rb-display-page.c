@@ -71,7 +71,6 @@ enum
 {
 	PROP_0,
 	PROP_SHELL,
-	PROP_UI_MANAGER,
 	PROP_NAME,
 	PROP_PIXBUF,
 	PROP_VISIBLE,
@@ -134,7 +133,7 @@ rb_display_page_receive_drag (RBDisplayPage *page, GtkSelectionData *data)
  * that should result in a popup menu being displayed for the page.
  *
  * Return value: TRUE if the page managed to display a popup
- */
+ *//*
 gboolean
 rb_display_page_show_popup (RBDisplayPage *page)
 {
@@ -145,6 +144,7 @@ rb_display_page_show_popup (RBDisplayPage *page)
 	else
 		return FALSE;
 }
+*/
 
 /**
  * rb_display_page_delete_thyself:
@@ -172,6 +172,40 @@ rb_display_page_delete_thyself (RBDisplayPage *page)
 	klass->delete_thyself (page);
 
 	g_signal_emit (G_OBJECT (page), signals[DELETED], 0);
+}
+
+/**
+ * rb_display_page_can_remove:
+ * @page: a #RBDisplayPage
+ *
+ * Called to check whether the user is able to remove the page
+ *
+ * Return value: %TRUE if the page can be removed
+ */
+gboolean
+rb_display_page_can_remove (RBDisplayPage *page)
+{
+	RBDisplayPageClass *klass;
+	klass = RB_DISPLAY_PAGE_GET_CLASS (page);
+	if (klass->can_remove)
+		return klass->can_remove (page);
+
+	return FALSE;
+}
+
+/**
+ * rb_display_page_remove:
+ * @page: a #RBDisplayPage
+ *
+ * Called when the user requests removal of a page.
+ */
+void
+rb_display_page_remove (RBDisplayPage *page)
+{
+	RBDisplayPageClass *klass;
+	klass = RB_DISPLAY_PAGE_GET_CLASS (page);
+	g_assert (klass->remove != NULL);
+	klass->remove (page);
 }
 
 /**
@@ -303,92 +337,14 @@ rb_display_page_notify_status_changed (RBDisplayPage *page)
 	g_signal_emit (G_OBJECT (page), signals[STATUS_CHANGED], 0);
 }
 
-/**
- * _rb_display_page_show_popup:
- * @page: a #RBDisplayPage
- * @ui_path: UI path to the popup to show
- *
- * Page implementations can use this as a shortcut to
- * display a popup that has been loaded into the UI manager.
- */
-void
-_rb_display_page_show_popup (RBDisplayPage *page, const char *ui_path)
-{
-	GtkUIManager *uimanager;
-
-	g_object_get (page->priv->shell, "ui-manager", &uimanager, NULL);
-	rb_gtk_action_popup_menu (uimanager, ui_path);
-	g_object_unref (uimanager);
-}
-
-static GtkActionGroup *
-find_action_group (GtkUIManager *uimanager, const char *group_name)
-{
-	GList *actiongroups;
-	GList *i;
-	actiongroups = gtk_ui_manager_get_action_groups (uimanager);
-
-	/* Don't create the action group if it's already registered */
-	for (i = actiongroups; i != NULL; i = i->next) {
-		const char *name;
-
-		name = gtk_action_group_get_name (GTK_ACTION_GROUP (i->data));
-		if (g_strcmp0 (name, group_name) == 0) {
-			return GTK_ACTION_GROUP (i->data);
-		}
-	}
-
-	return NULL;
-}
-
-/**
- * _rb_display_page_register_action_group:
- * @page: a #RBDisplayPage
- * @group_name: action group name
- * @actions: array of GtkActionEntry structures for the action group
- * @num_actions: number of actions in the @actions array
- * @user_data: user data to use for action signal handlers
- *
- * Creates and registers a GtkActionGroup for the page.
- *
- * Return value: the created action group
- */
-GtkActionGroup *
-_rb_display_page_register_action_group (RBDisplayPage *page,
-					const char *group_name,
-					GtkActionEntry *actions,
-					int num_actions,
-					gpointer user_data)
-{
-	GtkUIManager *uimanager;
-	GtkActionGroup *group;
-
-	g_return_val_if_fail (group_name != NULL, NULL);
-
-	g_object_get (page, "ui-manager", &uimanager, NULL);
-	group = find_action_group (uimanager, group_name);
-	if (group == NULL) {
-		group = gtk_action_group_new (group_name);
-		gtk_action_group_set_translation_domain (group,
-							 GETTEXT_PACKAGE);
-		if (actions != NULL) {
-			gtk_action_group_add_actions (group,
-						      actions, num_actions,
-						      user_data);
-		}
-		gtk_ui_manager_insert_action_group (uimanager, group, 0);
-	} else {
-		g_object_ref (group);
-	}
-	g_object_unref (uimanager);
-
-	return group;
-}
-
-typedef void (*DisplayPageActionCallback) (GtkAction *action, RBDisplayPage *page);
+typedef void (*DisplayPageActionActivateCallback) (GSimpleAction *action, GVariant *parameters, RBDisplayPage *page);
+typedef void (*DisplayPageActionChangeStateCallback) (GSimpleAction *action, GVariant *value, RBDisplayPage *page);
 
 typedef struct {
-	DisplayPageActionCallback callback;
+	union {
+		DisplayPageActionActivateCallback gaction;
+		DisplayPageActionChangeStateCallback gactionstate;
+	} u;
 	gpointer shell;
 } DisplayPageActionData;
 
@@ -402,7 +358,7 @@ display_page_action_data_destroy (DisplayPageActionData *data)
 }
 
 static void
-display_page_action_cb (GtkAction *action, DisplayPageActionData *data)
+display_page_action_activate_cb (GSimpleAction *action, GVariant *parameters, DisplayPageActionData *data)
 {
 	RBDisplayPage *page;
 
@@ -410,69 +366,94 @@ display_page_action_cb (GtkAction *action, DisplayPageActionData *data)
 		return;
 	}
 
-	/* get current page */
 	g_object_get (data->shell, "selected-page", &page, NULL);
 	if (page != NULL) {
-		data->callback (action, page);
+		data->u.gaction (action, parameters, page);
 		g_object_unref (page);
 	}
 }
 
-/**
- * _rb_action_group_add_display_page_actions:
- * @group: a #GtkActionGroup
- * @shell: the #RBShell
- * @actions: array of GtkActionEntry structures for the action group
- * @num_actions: number of actions in the @actions array
- *
- * Adds actions to an action group where the action callback is
- * called with the current selected display page.  This can safely be called
- * multiple times on the same action group.
- */
+static void
+display_page_action_change_state_cb (GSimpleAction *action, GVariant *value, DisplayPageActionData *data)
+{
+	RBDisplayPage *page;
+
+	if (data->shell == NULL) {
+		return;
+	}
+
+	g_object_get (data->shell, "selected-page", &page, NULL);
+	if (page != NULL) {
+		data->u.gactionstate (action, value, page);
+		g_object_unref (page);
+	}
+}
+
 void
-_rb_action_group_add_display_page_actions (GtkActionGroup *group,
-					   GObject *shell,
-					   GtkActionEntry *actions,
-					   int num_actions)
+_rb_add_display_page_actions (GActionMap *map, GObject *shell, const GActionEntry *actions, gint n_entries)
 {
 	int i;
-	for (i = 0; i < num_actions; i++) {
-		GtkAction *action;
-		const char *label;
-		const char *tooltip;
+	for (i = 0; i < n_entries; i++) {
+		GSimpleAction *action;
+		const GVariantType *parameter_type;
 		DisplayPageActionData *page_action_data;
 
-		if (gtk_action_group_get_action (group, actions[i].name) != NULL) {
+		if (g_action_map_lookup_action (map, actions[i].name) != NULL) {
 			/* action was already added */
 			continue;
 		}
 
-		label = gtk_action_group_translate_string (group, actions[i].label);
-		tooltip = gtk_action_group_translate_string (group, actions[i].tooltip);
-
-		action = gtk_action_new (actions[i].name, label, tooltip, NULL);
-		if (actions[i].stock_id != NULL) {
-			g_object_set (action, "stock-id", actions[i].stock_id, NULL);
-			if (gtk_icon_theme_has_icon (gtk_icon_theme_get_default (),
-						     actions[i].stock_id)) {
-				g_object_set (action, "icon-name", actions[i].stock_id, NULL);
-			}
+		if (actions[i].parameter_type) {
+			parameter_type = G_VARIANT_TYPE (actions[i].parameter_type);
+		} else {
+			parameter_type = NULL;
 		}
 
-		if (actions[i].callback) {
+		if (actions[i].state) {
+			GVariant *state;
+			GError *error = NULL;
+			state = g_variant_parse (NULL, actions[i].state, NULL, NULL, &error);
+			if (state == NULL) {
+				g_critical ("could not parse state value '%s' for action "
+					    "%s: %s",
+					    actions[i].state, actions[i].name, error->message);
+				g_error_free (error);
+				continue;
+			}
+			action = g_simple_action_new_stateful (actions[i].name,
+							       parameter_type,
+							       state);
+		} else {
+			action = g_simple_action_new (actions[i].name, parameter_type);
+		}
+
+		if (actions[i].activate) {
 			GClosure *closure;
 			page_action_data = g_slice_new0 (DisplayPageActionData);
-			page_action_data->callback = (DisplayPageActionCallback) actions[i].callback;
+			page_action_data->u.gaction = (DisplayPageActionActivateCallback) actions[i].activate;
 			page_action_data->shell = shell;
 			g_object_add_weak_pointer (shell, &page_action_data->shell);
 
-			closure = g_cclosure_new (G_CALLBACK (display_page_action_cb),
+			closure = g_cclosure_new (G_CALLBACK (display_page_action_activate_cb),
 						  page_action_data,
 						  (GClosureNotify) display_page_action_data_destroy);
 			g_signal_connect_closure (action, "activate", closure, FALSE);
 		}
 
-		gtk_action_group_add_action_with_accel (group, action, actions[i].accelerator);
+		if (actions[i].change_state) {
+			GClosure *closure;
+			page_action_data = g_slice_new0 (DisplayPageActionData);
+			page_action_data->u.gactionstate = (DisplayPageActionChangeStateCallback) actions[i].change_state;
+			page_action_data->shell = shell;
+			g_object_add_weak_pointer (shell, &page_action_data->shell);
+
+			closure = g_cclosure_new (G_CALLBACK (display_page_action_change_state_cb),
+						  page_action_data,
+						  (GClosureNotify) display_page_action_data_destroy);
+			g_signal_connect_closure (action, "change-state", closure, FALSE);
+		}
+
+		g_action_map_add_action (map, G_ACTION (action));
 		g_object_unref (action);
 	}
 }
@@ -486,14 +467,6 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 	case PROP_SHELL:
 		g_value_set_object (value, page->priv->shell);
 		break;
-	case PROP_UI_MANAGER:
-		{
-			GtkUIManager *manager;
-			g_object_get (page->priv->shell, "ui-manager", &manager, NULL);
-			g_value_set_object (value, manager);
-			g_object_unref (manager);
-			break;
-		}
 	case PROP_NAME:
 		g_value_set_string (value, page->priv->name);
 		break;
@@ -637,18 +610,6 @@ rb_display_page_class_init (RBDisplayPageClass *klass)
 							      RB_TYPE_SHELL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
-	 * RBDisplayPage:ui-manager:
-	 *
-	 * The Gtk UIManager object
-	 */
-	g_object_class_install_property (object_class,
-					 PROP_UI_MANAGER,
-					 g_param_spec_object ("ui-manager",
-							      "GtkUIManager",
-							      "GtkUIManager object",
-							      GTK_TYPE_UI_MANAGER,
-							      G_PARAM_READABLE));
-	/**
 	 * RBDisplayPage:name:
 	 *
 	 * Page name as displayed in the tree
@@ -753,21 +714,3 @@ rb_display_page_class_init (RBDisplayPageClass *klass)
 
 	g_type_class_add_private (object_class, sizeof (RBDisplayPagePrivate));
 }
-
-/* introspection annotations for vmethods */
-
-/**
- * impl_get_status:
- * @source: a #RBSource
- * @text: (inout) (allow-none) (transfer full): holds the returned status text
- * @progress_text: (inout) (allow-none) (transfer full): holds the returned text for the progress bar
- * @progress: (inout): holds the progress value
- */
-
-/**
- * impl_get_config_widget:
- * @source: a #RBSource
- * @prefs: a #RBShellPreferences
- *
- * Return value: (transfer none): configuration widget
- */

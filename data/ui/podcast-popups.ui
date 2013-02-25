@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<interface>
+  <menu id="podcast-feed-popup">
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">New Podcast Feed...</attribute>
+	<attribute name="action">app.podcast-add</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Update All Feeds</attribute>
+	<attribute name="action">app.podcast-feed-update-all</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Update Podcast Feed</attribute>
+	<attribute name="action">app.podcast-feed-update</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Delete Podcast Feed</attribute>
+	<attribute name="action">app.clipboard-delete</attribute>
+      </item>
+    </section>
+    <section>
+      <attribute name="rb-plugin-menu-link">podcast-feed-popup</attribute>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Properties</attribute>
+	<attribute name="action">app.clipboard-properties</attribute>
+      </item>
+    </section>
+  </menu>
+  <menu id="podcast-episode-popup">
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Download Episode</attribute>
+	<attribute name="action">app.podcast-download</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Cancel Download</attribute>
+	<attribute name="action">app.podcast-download-cancel</attribute>
+      </item>
+      <item>
+	<attribute name="label" translatable="yes">Delete</attribute>
+	<attribute name="action">app.clipboard-delete</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Add to Queue</attribute>
+	<attribute name="action">app.clipboard-add-to-queue</attribute>
+      </item>
+    </section>
+    <section>
+      <attribute name="rb-plugin-menu-link">podcast-episode-popup</attribute>
+    </section>
+    <section>
+      <item>
+	<attribute name="label" translatable="yes">Properties</attribute>
+	<attribute name="action">app.clipboard-properties</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

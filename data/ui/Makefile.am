@@ -1,19 +1,31 @@
 
-
-UI_XML_FILES = rhythmbox-ui.xml
-
 GTK_BUILDER_FILES =					\
+	app-menu.ui					\
+	browser-popup.ui				\
 	create-playlist.ui				\
+	display-page-add-menu.ui			\
+	edit-menu.ui					\
 	general-prefs.ui				\
 	import-dialog.ui				\
+	import-errors-popup.ui				\
 	library-prefs.ui				\
+	library-toolbar.ui				\
+	main-toolbar.ui					\
 	media-player-properties.ui			\
+	missing-files-popup.ui				\
 	playback-prefs.ui				\
+	playlist-menu.ui				\
+	playlist-popup.ui				\
 	playlist-save.ui				\
+	playlist-toolbar.ui				\
 	podcast-add-dialog.ui				\
 	podcast-feed-properties.ui			\
+	podcast-popups.ui				\
 	podcast-prefs.ui				\
 	podcast-properties.ui				\
+	podcast-toolbar.ui				\
+	queue-popups.ui					\
+	queue-toolbar.ui				\
 	song-info.ui					\
 	song-info-multiple.ui				\
 	sync-dialog.ui					\
@@ -21,7 +33,7 @@ GTK_BUILDER_FILES =					\
 	uri-new.ui
 
 uidir = $(pkgdatadir)
-ui_DATA = $(UI_XML_FILES) $(GTK_BUILDER_FILES)
+ui_DATA = $(GTK_BUILDER_FILES)
 
-EXTRA_DIST = $(UI_XML_FILES) $(GTK_BUILDER_FILES)
+EXTRA_DIST = $(GTK_BUILDER_FILES)
 

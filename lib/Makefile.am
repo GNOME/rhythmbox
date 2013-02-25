@@ -17,10 +17,6 @@ librb_la_SOURCES =					\
 	rb-debug.c					\
 	eggdesktopfile.c				\
 	eggdesktopfile.h				\
-	eggsmclient.c					\
-	eggsmclient.h					\
-	eggsmclient-private.h				\
-	eggsmclient-xsmp.c				\
 	rb-file-helpers.c				\
 	rb-builder-helpers.c				\
 	rb-stock-icons.c				\

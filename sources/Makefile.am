@@ -12,6 +12,7 @@ sourceinclude_HEADERS = 		\
 	rb-display-page.h		\
 	rb-display-page-group.h		\
 	rb-display-page-tree.h		\
+	rb-display-page-menu.h		\
 	rb-display-page-model.h		\
 	rb-browser-source.h		\
 	rb-media-player-source.h	\
@@ -31,6 +32,7 @@ libsources_la_SOURCES = 		\
 	rb-display-page.c		\
 	rb-display-page-group.c		\
 	rb-display-page-tree.c		\
+	rb-display-page-menu.c		\
 	rb-display-page-model.c		\
 	rb-browser-source.c		\
 	rb-library-source.c		\

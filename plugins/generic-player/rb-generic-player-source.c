@@ -55,6 +55,8 @@
 #include "rb-gst-media-types.h"
 #include "rb-sync-settings.h"
 #include "rb-missing-plugins.h"
+#include "rb-application.h"
+#include "rb-display-page-menu.h"
 
 static void rb_generic_player_device_source_init (RBDeviceSourceInterface *interface);
 static void rb_generic_player_source_transfer_target_init (RBTransferTargetInterface *interface);
@@ -72,7 +74,6 @@ static void impl_get_property (GObject *object,
 
 static void load_songs (RBGenericPlayerSource *source);
 
-static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_delete_thyself (RBDisplayPage *page);
 static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
 static void impl_selected (RBDisplayPage *page);
@@ -106,6 +107,8 @@ static char * default_uri_to_playlist_uri (RBGenericPlayerSource *source,
 					   const char *uri,
 					   TotemPlParserType playlist_type);
 
+static void new_playlist_action_cb (GSimpleAction *, GVariant *, gpointer);
+
 enum
 {
 	PROP_0,
@@ -137,6 +140,9 @@ typedef struct
 	MPIDDevice *device_info;
 	GMount *mount;
 
+	GSimpleAction *new_playlist_action;
+	char *new_playlist_action_name;
+
 } RBGenericPlayerSourcePrivate;
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (
@@ -162,7 +168,6 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	object_class->constructed = impl_constructed;
 	object_class->dispose = impl_dispose;
 
-	page_class->show_popup = impl_show_popup;
 	page_class->delete_thyself = impl_delete_thyself;
 	page_class->get_status = impl_get_status;
 	page_class->selected = impl_selected;
@@ -256,6 +261,9 @@ impl_constructed (GObject *object)
 	GFile *root;
 	GFileInfo *info;
 	GError *error = NULL;
+	char *label;
+	char *fullname;
+	char *name;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_generic_player_source_parent_class, constructed, object);
 	source = RB_GENERIC_PLAYER_SOURCE (object);
@@ -267,6 +275,7 @@ impl_constructed (GObject *object)
 	g_object_get (source,
 		      "shell", &shell,
 		      "entry-type", &entry_type,
+		      "name", &name,
 		      NULL);
 
 	g_object_get (shell, "db", &priv->db, NULL);
@@ -276,7 +285,19 @@ impl_constructed (GObject *object)
 							   entry_type,
 							   priv->ignore_type);
 
-	g_object_unref (shell);
+
+	priv->new_playlist_action_name = g_strdup_printf ("generic-player-%p-playlist-new", source);
+	fullname = g_strdup_printf ("app.%s", priv->new_playlist_action_name);
+
+	label = g_strdup_printf (_("New Playlist on %s"), name);
+
+	rb_application_add_plugin_menu_item (RB_APPLICATION (g_application_get_default ()),
+					     "display-page-add-playlist",
+					     priv->new_playlist_action_name,
+					     g_menu_item_new (label, fullname));
+	g_free (fullname);
+	g_free (label);
+	g_free (name);
 
 	root = g_mount_get_root (priv->mount);
 	mount_name = g_mount_get_name (priv->mount);
@@ -295,8 +316,27 @@ impl_constructed (GObject *object)
 	g_object_unref (root);
 
 	g_object_get (priv->device_info, "playlist-formats", &playlist_formats, NULL);
-	if (playlist_formats != NULL && g_strv_length (playlist_formats) > 0) {
-		g_object_set (entry_type, "has-playlists", TRUE, NULL);
+	if ((priv->read_only == FALSE) && playlist_formats != NULL && g_strv_length (playlist_formats) > 0) {
+		RBDisplayPageModel *model;
+		GMenu *playlist_menu;
+		GMenuModel *playlists;
+
+		priv->new_playlist_action = g_simple_action_new (priv->new_playlist_action_name, NULL);
+		g_signal_connect (priv->new_playlist_action, "activate", G_CALLBACK (new_playlist_action_cb), source);
+		g_action_map_add_action (G_ACTION_MAP (g_application_get_default ()), G_ACTION (priv->new_playlist_action));
+
+		g_object_get (shell, "display-page-model", &model, NULL);
+		playlists = rb_display_page_menu_new (model,
+						      RB_DISPLAY_PAGE (source),
+						      RB_TYPE_GENERIC_PLAYER_PLAYLIST_SOURCE,
+						      "app.playlist-add-to");
+		g_object_unref (model);
+
+		playlist_menu = g_menu_new ();
+		g_menu_append (playlist_menu, _("Add to New Playlist"), priv->new_playlist_action_name);
+		g_menu_append_section (playlist_menu, NULL, playlists);
+
+		g_object_set (source, "playlist-menu", playlist_menu, NULL);
 	}
 	g_strfreev (playlist_formats);
 	g_object_unref (entry_type);
@@ -321,6 +361,7 @@ impl_constructed (GObject *object)
 	}
 	g_strfreev (output_formats);
 
+	g_object_unref (shell);
 }
 
 static void
@@ -413,6 +454,10 @@ impl_dispose (GObject *object)
 		priv->mount = NULL;
 	}
 
+	rb_application_remove_plugin_menu_item (RB_APPLICATION (g_application_get_default ()),
+						"display-page-add-playlist",
+						priv->new_playlist_action_name);
+
 	G_OBJECT_CLASS (rb_generic_player_source_parent_class)->dispose (object);
 }
 
@@ -424,6 +469,8 @@ rb_generic_player_source_new (GObject *plugin, RBShell *shell, GMount *mount, MP
 	RhythmDBEntryType *error_type;
 	RhythmDBEntryType *ignore_type;
 	RhythmDB *db;
+	GtkBuilder *builder;
+	GMenu *toolbar;
 	GVolume *volume;
 	GSettings *settings;
 	char *name;
@@ -468,6 +515,10 @@ rb_generic_player_source_new (GObject *plugin, RBShell *shell, GMount *mount, MP
 	g_object_unref (volume);
 	g_free (path);
 
+	builder = rb_builder_load_plugin_file (plugin, "generic-player-toolbar.ui", NULL);
+	toolbar = G_MENU (gtk_builder_get_object (builder, "generic-player-toolbar"));
+	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()), toolbar);
+
 	settings = g_settings_new ("org.gnome.rhythmbox.plugins.generic-player");
 	source = RB_GENERIC_PLAYER_SOURCE (g_object_new (RB_TYPE_GENERIC_PLAYER_SOURCE,
 							 "plugin", plugin,
@@ -479,9 +530,10 @@ rb_generic_player_source_new (GObject *plugin, RBShell *shell, GMount *mount, MP
 							 "device-info", device_info,
 							 "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 							 "settings", g_settings_get_child (settings, "source"),
-							 "toolbar-path", "/GenericPlayerSourceToolBar",
+							 "toolbar-menu", toolbar,
 							 NULL));
 	g_object_unref (settings);
+	g_object_unref (builder);
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 
@@ -658,13 +710,6 @@ rb_generic_player_is_mount_player (GMount *mount, MPIDDevice *device_info)
 	return result;
 }
 
-static gboolean
-impl_show_popup (RBDisplayPage *page)
-{
-	_rb_display_page_show_popup (page, "/GenericPlayerSourcePopup");
-	return TRUE;
-}
-
 static void
 impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress)
 {
@@ -779,11 +824,13 @@ load_playlist_file (RBGenericPlayerSource *source,
 	RhythmDBEntryType *entry_type;
 	RBGenericPlayerPlaylistSource *playlist;
 	RBShell *shell;
+	GMenuModel *playlist_menu;
 	char *mount_path;
 
 	g_object_get (source,
 		      "shell", &shell,
 		      "entry-type", &entry_type,
+		      "playlist-menu", &playlist_menu,
 		      NULL);
 
 	mount_path = rb_generic_player_source_get_mount_path (source);
@@ -793,12 +840,14 @@ load_playlist_file (RBGenericPlayerSource *source,
 							       source,
 							       playlist_path,
 							       mount_path,
-							       entry_type));
+							       entry_type,
+							       playlist_menu));
 
 	if (playlist != NULL) {
 		rb_generic_player_source_add_playlist (source, shell, RB_SOURCE (playlist));
 	}
 
+	g_object_unref (playlist_menu);
 	g_object_unref (entry_type);
 	g_object_unref (shell);
 	g_free (mount_path);
@@ -1427,13 +1476,15 @@ impl_add_playlist (RBMediaPlayerSource *source, char *name, GList *entries)
 	RhythmDBEntryType *entry_type;
 	RBShell *shell;
 	GList *i;
+	GMenuModel *playlist_menu;
 
 	g_object_get (source,
 		      "shell", &shell,
 		      "entry-type", &entry_type,
+		      "playlist-menu", &playlist_menu,
 		      NULL);
 
-	playlist = rb_generic_player_playlist_source_new (shell, RB_GENERIC_PLAYER_SOURCE (source), NULL, NULL, entry_type);
+	playlist = rb_generic_player_playlist_source_new (shell, RB_GENERIC_PLAYER_SOURCE (source), NULL, NULL, entry_type, playlist_menu);
 	g_object_unref (entry_type);
 
 	rb_generic_player_source_add_playlist (RB_GENERIC_PLAYER_SOURCE (source),
@@ -1447,6 +1498,7 @@ impl_add_playlist (RBMediaPlayerSource *source, char *name, GList *entries)
 						     -1);
 	}
 
+	g_object_unref (playlist_menu);
 	g_object_unref (shell);
 }
 
@@ -1459,9 +1511,8 @@ impl_remove_playlists (RBMediaPlayerSource *source)
 
 	playlists = g_list_copy (priv->playlists);
 	for (t = playlists; t != NULL; t = t->next) {
-		RBGenericPlayerPlaylistSource *p = RB_GENERIC_PLAYER_PLAYLIST_SOURCE (t->data);
-		rb_generic_player_playlist_delete_from_player (p);
-		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (p));
+		RBDisplayPage *p = RB_DISPLAY_PAGE (t->data);
+		rb_display_page_remove (p);
 	}
 
 	g_list_free (playlists);
@@ -1471,4 +1522,33 @@ void
 _rb_generic_player_source_register_type (GTypeModule *module)
 {
 	rb_generic_player_source_register_type (module);
+}
+
+static void
+new_playlist_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
+{
+	RBGenericPlayerSource *source = RB_GENERIC_PLAYER_SOURCE (data);
+	RBShell *shell;
+	RBSource *playlist;
+	RBDisplayPageTree *page_tree;
+	RhythmDBEntryType *entry_type;
+	GMenuModel *playlist_menu;
+
+	g_object_get (source,
+		      "shell", &shell,
+		      "entry-type", &entry_type,
+		      "playlist-menu", &playlist_menu,
+		      NULL);
+
+	playlist = rb_generic_player_playlist_source_new (shell, source, NULL, NULL, entry_type, playlist_menu);
+	g_object_unref (entry_type);
+
+	rb_generic_player_source_add_playlist (source, shell, playlist);
+
+	g_object_get (shell, "display-page-tree", &page_tree, NULL);
+	rb_display_page_tree_edit_source_name (page_tree, playlist);
+	g_object_unref (page_tree);
+
+	g_object_unref (playlist_menu);
+	g_object_unref (shell);
 }

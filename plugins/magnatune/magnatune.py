@@ -43,31 +43,6 @@ import MagnatuneAccount
 import gettext
 gettext.install('rhythmbox', RB.locale_dir())
 
-popup_ui = """
-<ui>
-  <popup name="MagnatuneSourceViewPopup">
-    <menuitem name="AddToQueueLibraryPopup" action="AddToQueue"/>
-    <menuitem name="MagnatuneDownloadAlbum" action="MagnatuneDownloadAlbum"/>
-    <menuitem name="MagnatuneArtistInfo" action="MagnatuneArtistInfo"/>
-    <menuitem name="MagnatuneCancelDownload" action="MagnatuneCancelDownload"/>
-    <separator/>
-    <menuitem name="BrowseGenreLibraryPopup" action="BrowserSrcChooseGenre"/>
-    <menuitem name="BrowseArtistLibraryPopup" action="BrowserSrcChooseArtist"/>
-    <menuitem name="BrowseAlbumLibraryPopup" action="BrowserSrcChooseAlbum"/>
-    <separator/>
-    <menuitem name="PropertiesLibraryPopup" action="MusicProperties"/>
-  </popup>
-  <toolbar name="MagnatuneToolBar">
-    <toolitem name="Browse" action="ViewBrowser"/>
-    <toolitem name="MagnatuneDownloadAlbumToolbar" action="MagnatuneDownloadAlbum"/>
-    <toolitem name="MagnatuneArtistInfoToolbar" action="MagnatuneArtistInfo"/>
-    <toolitem name="MagnatuneCancelDownloadToolbar" action="MagnatuneCancelDownload"/>
-  </toolbar>
-</ui>
-"""
-
-
-
 class MagnatuneEntryType(RB.RhythmDBEntryType):
 	def __init__(self):
 		RB.RhythmDBEntryType.__init__(self, name='magnatune')
@@ -103,6 +78,18 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 	def __init__(self):
 		GObject.GObject.__init__(self)
 
+	def download_album_action_cb(self, action, parameter):
+		shell = self.object
+		shell.props.selected_page.download_album()
+
+	def artist_info_action_cb(self, action, parameter):
+		shell = self.object
+		shell.props.selected_page.display_artist_info()
+	
+	def cancel_download_action_cb(self, action, parameter):
+		shell = self.object
+		shell.props.selected_page.cancel_downloads()
+
 	def do_activate(self):
 		shell = self.object
 		self.db = shell.props.db
@@ -118,6 +105,25 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 		what, width, height = Gtk.icon_size_lookup(Gtk.IconSize.LARGE_TOOLBAR)
 		icon = rb.try_load_icon(theme, "magnatune", width, 0)
 
+		app = Gio.Application.get_default()
+		action = Gio.SimpleAction(name="magnatune-album-download")
+		action.connect("activate", self.download_album_action_cb)
+		app.add_action(action)
+
+		action = Gio.SimpleAction(name="magnatune-artist-info")
+		action.connect("activate", self.artist_info_action_cb)
+		app.add_action(action)
+
+		action = Gio.SimpleAction(name="magnatune-download-cancel")
+		action.connect("activate", self.cancel_download_action_cb)
+		action.set_enabled(False)
+		app.add_action(action)
+
+		builder = Gtk.Builder()
+		builder.add_from_file(rb.find_plugin_file(self, "magnatune-toolbar.ui"))
+		toolbar = builder.get_object("magnatune-toolbar")
+		app.link_shared_menus(toolbar)
+
 		group = RB.DisplayPageGroup.get_by_id ("stores")
 		settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
 		self.source = GObject.new(MagnatuneSource,
@@ -127,45 +133,15 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 					  plugin=self,
 					  settings=settings.get_child("source"),
 					  name=_("Magnatune"),
-					  toolbar_path="/MagnatuneToolBar")
+					  toolbar_menu=toolbar)
 
 		shell.register_entry_type_for_source(self.source, self.entry_type)
 		shell.append_display_page(self.source, group)
 
-		manager = shell.props.ui_manager
-		# Add the popup menu actions
-		self.action_group = Gtk.ActionGroup(name='MagnatunePluginActions')
-
-		action = Gtk.Action(name='MagnatuneDownloadAlbum', label=_("Download Album"),
-				tooltip=_("Download this album from Magnatune"),
-				stock_id='gtk-save')
-		action.connect('activate', lambda a: shell.props.selected_page.download_album())
-		self.action_group.add_action(action)
-		action = Gtk.Action(name='MagnatuneArtistInfo', label=_("Artist Information"),
-				tooltip=_("Get information about this artist"),
-				stock_id='gtk-info')
-		action.connect('activate', lambda a: shell.props.selected_page.display_artist_info())
-		self.action_group.add_action(action)
-		action = Gtk.Action(name='MagnatuneCancelDownload', label=_("Cancel Downloads"),
-				tooltip=_("Stop album downloads"),
-				stock_id='gtk-stop')
-		action.connect('activate', lambda a: shell.props.selected_page.cancel_downloads())
-		action.set_sensitive(False)
-		self.action_group.add_action(action)
-
-		manager.insert_action_group(self.action_group, 0)
-		self.ui_id = manager.add_ui_from_string(popup_ui)
-
 		self.pec_id = shell.props.shell_player.connect('playing-song-changed', self.playing_entry_changed)
-		manager.ensure_update()
-
 
 	def do_deactivate(self):
 		shell = self.object
-		manager = shell.props.ui_manager
-		manager.remove_ui(self.ui_id)
-		manager.remove_action_group(self.action_group)
-		self.action_group = None
 
 		shell.props.shell_player.disconnect(self.pec_id)
 

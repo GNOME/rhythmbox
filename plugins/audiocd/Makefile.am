@@ -46,10 +46,8 @@ libaudiocd_la_LIBADD += $(NULL)
 
 gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA = 					\
-	album-info.ui
-
-uixmldir = $(plugindatadir)
-uixml_DATA = audiocd-ui.xml
+	album-info.ui					\
+	audiocd-toolbar.ui
 
 noinst_PROGRAMS = test-cd
 
@@ -67,7 +65,7 @@ plugin_in_files = audiocd.plugin.in
 
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
-EXTRA_DIST = $(gtkbuilder_DATA) $(uixml_DATA) $(plugin_in_files)
+EXTRA_DIST = $(gtkbuilder_DATA) $(plugin_in_files)
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

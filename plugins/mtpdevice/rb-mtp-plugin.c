@@ -75,9 +75,6 @@ typedef struct
 {
 	PeasExtensionBase parent;
 
-	GtkActionGroup *action_group;
-	guint ui_merge_id;
-
 	guint create_device_source_id;
 
 	GList *mtp_sources;
@@ -107,23 +104,10 @@ static void rb_mtp_plugin_device_removed (LibHalContext *context, const char *ud
 static gboolean rb_mtp_plugin_setup_dbus_hal_connection (RBMtpPlugin *plugin);
 #endif
 
-static void rb_mtp_plugin_rename (GtkAction *action, RBSource *source);
-static void rb_mtp_plugin_properties (GtkAction *action, RBSource *source);
-
 GType rb_mtp_src_get_type (void);
 GType rb_mtp_sink_get_type (void);
 
 RB_DEFINE_PLUGIN(RB_TYPE_MTP_PLUGIN, RBMtpPlugin, rb_mtp_plugin,)
-
-static GtkActionEntry rb_mtp_plugin_actions [] =
-{
-	{ "MTPSourceRename", NULL, N_("_Rename"), NULL,
-	  N_("Rename MTP-device"),
-	  G_CALLBACK (rb_mtp_plugin_rename) },
-	{ "MTPSourceProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), NULL,
-	  N_("Display device properties"),
-	  G_CALLBACK (rb_mtp_plugin_properties) }
-};
 
 static void
 rb_mtp_plugin_init (RBMtpPlugin *plugin)
@@ -136,9 +120,7 @@ static void
 impl_activate (PeasActivatable *bplugin)
 {
 	RBMtpPlugin *plugin = RB_MTP_PLUGIN (bplugin);
-	GtkUIManager *uimanager = NULL;
 	RBRemovableMediaManager *rmm;
-	char *file = NULL;
 	RBShell *shell;
 #if defined(HAVE_GUDEV)
 	gboolean rmm_scanned = FALSE;
@@ -148,25 +130,7 @@ impl_activate (PeasActivatable *bplugin)
 #endif
 
 	g_object_get (plugin, "object", &shell, NULL);
-
-	g_object_get (shell,
-		     "ui-manager", &uimanager,
-		     "removable-media-manager", &rmm,
-		     NULL);
-
-	/* ui */
-	rb_media_player_source_init_actions (shell);
-	plugin->action_group = gtk_action_group_new ("MTPActions");
-	gtk_action_group_set_translation_domain (plugin->action_group,
-						 GETTEXT_PACKAGE);
-	_rb_action_group_add_display_page_actions (plugin->action_group,
-						   G_OBJECT (shell),
-						   rb_mtp_plugin_actions,
-						   G_N_ELEMENTS (rb_mtp_plugin_actions));
-	gtk_ui_manager_insert_action_group (uimanager, plugin->action_group, 0);
-	file = rb_find_plugin_data_file (G_OBJECT (bplugin), "mtp-ui.xml");
-	plugin->ui_merge_id = gtk_ui_manager_add_ui_from_file (uimanager, file, NULL);
-	g_object_unref (uimanager);
+	g_object_get (shell, "removable-media-manager", &rmm, NULL);
 	g_object_unref (shell);
 
 	/* device detection */
@@ -218,18 +182,13 @@ static void
 impl_deactivate (PeasActivatable *bplugin)
 {
 	RBMtpPlugin *plugin = RB_MTP_PLUGIN (bplugin);
-	GtkUIManager *uimanager = NULL;
 	RBRemovableMediaManager *rmm = NULL;
 	RBShell *shell;
 
 	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell,
-		      "ui-manager", &uimanager,
 		      "removable-media-manager", &rmm,
 		      NULL);
-
-	gtk_ui_manager_remove_ui (uimanager, plugin->ui_merge_id);
-	gtk_ui_manager_remove_action_group (uimanager, plugin->action_group);
 
 	g_list_foreach (plugin->mtp_sources, (GFunc)rb_display_page_delete_thyself, NULL);
 	g_list_free (plugin->mtp_sources);
@@ -255,70 +214,15 @@ impl_deactivate (PeasActivatable *bplugin)
 	}
 #endif
 
-	g_object_unref (uimanager);
 	g_object_unref (rmm);
 	g_object_unref (shell);
 }
-
-static void
-rb_mtp_plugin_rename (GtkAction *action, RBSource *source)
-{
-	RBShell *shell;
-	RBDisplayPageTree *page_tree;
-
-	g_return_if_fail (RB_IS_MTP_SOURCE (source));
-
-	g_object_get (source, "shell", &shell, NULL);
-	g_object_get (shell, "display-page-tree", &page_tree, NULL);
-
-	rb_display_page_tree_edit_source_name (page_tree, source);
-
-	g_object_unref (page_tree);
-	g_object_unref (shell);
-}
-
-static void
-rb_mtp_plugin_properties (GtkAction *action, RBSource *source)
-{
-	g_return_if_fail (RB_IS_MTP_SOURCE (source));
-	rb_media_player_source_show_properties (RB_MEDIA_PLAYER_SOURCE (source));
-}
-
 
 #if defined(HAVE_GUDEV)
 static void
 source_deleted_cb (RBMtpSource *source, RBMtpPlugin *plugin)
 {
 	plugin->mtp_sources = g_list_remove (plugin->mtp_sources, source);
-}
-
-static void
-set_properties_action_sensitive (RBMtpPlugin *plugin, RBMtpSource *source)
-{
-	gboolean selected;
-	RBSourceLoadStatus load_status;
-	GtkAction *action;
-
-	g_object_get (source,
-		      "selected", &selected,
-		      "load-status", &load_status,
-		      NULL);
-	if (selected) {
-		action = gtk_action_group_get_action (plugin->action_group, "MTPSourceProperties");
-		gtk_action_set_sensitive (action, (load_status == RB_SOURCE_LOAD_STATUS_LOADED));
-	}
-}
-
-static void
-source_selected_cb (GObject *object, GParamSpec *pspec, RBMtpPlugin *plugin)
-{
-	set_properties_action_sensitive (plugin, RB_MTP_SOURCE (object));
-}
-
-static void
-source_load_status_cb (GObject *object, GParamSpec *pspec, RBMtpPlugin *plugin)
-{
-	set_properties_action_sensitive (plugin, RB_MTP_SOURCE (object));
 }
 
 static int
@@ -391,12 +295,6 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device_obj, RBMt
 			g_signal_connect_object (G_OBJECT (source),
 						"deleted", G_CALLBACK (source_deleted_cb),
 						plugin, 0);
-			g_signal_connect_object (G_OBJECT (source),
-						 "notify::selected", G_CALLBACK (source_selected_cb),
-						 plugin, 0);
-			g_signal_connect_object (G_OBJECT (source),
-						 "notify::load-status", G_CALLBACK (source_load_status_cb),
-						 plugin, 0);
 			g_object_unref (shell);
 			return source;
 		}

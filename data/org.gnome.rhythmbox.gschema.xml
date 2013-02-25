@@ -16,6 +16,11 @@
       <summary>Position of browser pane (if it exists)</summary>
       <description>Position of browser pane.</description>
     </key>
+    <key name="search-type" type="s">
+      <default>'search-match'</default>
+      <summary>Selected search type</summary>
+      <description>The currently selected search type for the source.</description>
+    </key>
   </schema>
 
   <schema id="org.gnome.rhythmbox.encoding-settings">
@@ -70,10 +75,10 @@
       <summary>Position of the right pane</summary>
       <description>Position of the right pane</description>
     </key>
-    <key name="statusbar-hidden" type="b">
-      <default>false</default>
+    <key name="statusbar-visible" type="b">
+      <default>true</default>
       <summary>Statusbar visibility</summary>
-      <description>If true, the statusbar is hidden.</description>
+      <description>If true, the statusbar is visible.</description>
     </key>
     <key name="queue-as-sidebar" type="b">
       <default>false</default>
@@ -174,6 +179,7 @@
     <override name="sorting">('Feed',true)</override>
     <override name="paned-position">180</override>
     <override name="show-browser">true</override>
+    <override name="search-type">'search-match'</override>
   </schema>
   <schema id="org.gnome.rhythmbox.podcast" path="/org/gnome/rhythmbox/podcast/">
 
@@ -409,7 +415,7 @@
       <summary>GStreamer element to use for visual effects</summary>
       <description>The name of the GStreamer element to use for visual effects.</description>
     </key>
-    <key name="quality" enum="org.gnome.rhythmbox.plugins.visualizer.quality">
+    <key name="vis-quality" enum="org.gnome.rhythmbox.plugins.visualizer.quality">
       <default>'medium'</default>
       <summary>The frame rate and size to use for visual effects</summary>
       <description>The frame rate and size to use for visual effects</description>

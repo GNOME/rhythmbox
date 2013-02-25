@@ -54,6 +54,8 @@
 #include "rb-cut-and-paste-code.h"
 #include "rb-source-search-basic.h"
 #include "rb-source-toolbar.h"
+#include "rb-builder-helpers.h"
+#include "rb-application.h"
 
 /* icon names */
 #define IRADIO_SOURCE_ICON  "library-internet-radio"
@@ -89,7 +91,6 @@ static void rb_iradio_entry_type_init (RBIRadioEntryType *etype);
 GType rb_iradio_entry_type_get_type (void);
 
 /* page methods */
-static gboolean impl_show_popup (RBDisplayPage *page);
 static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
 
 /* source methods */
@@ -117,8 +118,7 @@ static void stations_view_drag_data_received_cb (GtkWidget *widget,
 						 GtkSelectionData *data,
 						 guint info, guint time,
 						 RBIRadioSource *source);
-static void rb_iradio_source_cmd_new_station (GtkAction *action,
-					      RBIRadioSource *source);
+static void new_station_action_cb (GSimpleAction *, GVariant *, gpointer);
 
 static void playing_source_changed_cb (RBShellPlayer *player,
 				       RBSource *source,
@@ -134,8 +134,6 @@ struct RBIRadioSourcePrivate
 {
 	RhythmDB *db;
 
-	GtkActionGroup *action_group;
-
 	RBSourceToolbar *toolbar;
 	RBPropertyView *genres;
 	RBEntryView *stations;
@@ -150,16 +148,11 @@ struct RBIRadioSourcePrivate
 	gint info_available_id;
 
 	gboolean dispose_has_run;
+
+	GMenuModel *popup;
 };
 
 #define RB_IRADIO_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IRADIO_SOURCE, RBIRadioSourcePrivate))
-
-static GtkActionEntry rb_iradio_source_actions [] =
-{
-	{ "MusicNewInternetRadioStation", IRADIO_NEW_STATION_ICON, N_("New Internet _Radio Station..."), "<control>I",
-	  N_("Create a new Internet Radio station"),
-	  G_CALLBACK (rb_iradio_source_cmd_new_station) }
-};
 
 static const GtkTargetEntry stations_view_drag_types[] = {
 	{  "text/uri-list", 0, 0 },
@@ -201,7 +194,6 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	object_class->set_property = rb_iradio_source_set_property;
 	object_class->get_property = rb_iradio_source_get_property;
 
-	page_class->show_popup = impl_show_popup;
 	page_class->get_status  = impl_get_status;
 
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
@@ -257,11 +249,6 @@ rb_iradio_source_dispose (GObject *object)
 		source->priv->db = NULL;
 	}
 
-	if (source->priv->action_group != NULL) {
-		g_object_unref (source->priv->action_group);
-		source->priv->action_group = NULL;
-	}
-
 	if (source->priv->default_search != NULL) {
 		g_object_unref (source->priv->default_search);
 		source->priv->default_search = NULL;
@@ -280,13 +267,16 @@ rb_iradio_source_constructed (GObject *object)
 {
 	RBIRadioSource *source;
 	RBShell *shell;
-	GtkAction *action;
+	GtkWidget *window;
 	GSettings *settings;
-	GtkUIManager *ui_manager;
+	GtkAccelGroup *accel_group;
 	GtkWidget *grid;
 	GtkWidget *paned;
 	gint size;
 	GdkPixbuf *pixbuf;
+	GActionEntry actions[] = {
+		{ "iradio-new-station", new_station_action_cb },
+	};
 
 	RB_CHAIN_GOBJECT_METHOD (rb_iradio_source_parent_class, constructed, object);
 	source = RB_IRADIO_SOURCE (object);
@@ -297,7 +287,7 @@ rb_iradio_source_constructed (GObject *object)
 	g_object_get (shell,
 		      "db", &source->priv->db,
 		      "shell-player", &source->priv->player,
-		      "ui-manager", &ui_manager,
+		      "accel-group", &accel_group,
 		      NULL);
 	g_object_unref (shell);
 
@@ -331,18 +321,7 @@ rb_iradio_source_constructed (GObject *object)
 		g_object_unref (plugin);
 	}
 
-	source->priv->action_group = _rb_display_page_register_action_group (RB_DISPLAY_PAGE (source),
-									     "IRadioActions",
-									     rb_iradio_source_actions,
-									     G_N_ELEMENTS (rb_iradio_source_actions),
-									     source);
-
-	action = gtk_action_group_get_action (source->priv->action_group,
-                                              "MusicNewInternetRadioStation");
-        /* Translators: this is the toolbar button label for 
-           New Internet Radio Station action. */
-        g_object_set (action, "short-label", C_("Radio", "Add"), NULL);
-
+	_rb_add_display_page_actions (G_ACTION_MAP (g_application_get_default ()), G_OBJECT (shell), actions, G_N_ELEMENTS (actions));
 
 	/* set up stations view */
 	source->priv->stations = rb_entry_view_new (source->priv->db, G_OBJECT (source->priv->player),
@@ -397,8 +376,8 @@ rb_iradio_source_constructed (GObject *object)
 	gtk_paned_pack2 (GTK_PANED (paned), GTK_WIDGET (source->priv->stations), TRUE, FALSE);
 
 	/* set up toolbar */
-	source->priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), ui_manager);
-	rb_source_toolbar_add_search_entry (source->priv->toolbar, NULL, _("Search your internet radio stations"));
+	source->priv->toolbar = rb_source_toolbar_new (RB_DISPLAY_PAGE (source), accel_group);
+	rb_source_toolbar_add_search_entry (source->priv->toolbar, _("Search your internet radio stations"));
 
 	grid = gtk_grid_new ();
 	gtk_grid_set_column_spacing (GTK_GRID (grid), 6);
@@ -423,6 +402,8 @@ rb_iradio_source_constructed (GObject *object)
 	source->priv->default_search = rb_iradio_source_search_new ();
 
 	rb_iradio_source_do_query (source);
+
+	g_object_unref (accel_group);
 }
 
 static void
@@ -468,6 +449,8 @@ rb_iradio_source_new (RBShell *shell, GObject *plugin)
 	RhythmDBEntryType *entry_type;
 	RhythmDB *db;
 	GSettings *settings;
+	GtkBuilder *builder;
+	GMenu *toolbar;
 
 	g_object_get (shell, "db", &db, NULL);
 
@@ -483,6 +466,10 @@ rb_iradio_source_new (RBShell *shell, GObject *plugin)
 	}
 	g_object_unref (db);
 
+	builder = rb_builder_load_plugin_file (plugin, "iradio-toolbar.ui", NULL);
+	toolbar = G_MENU (gtk_builder_get_object (builder, "iradio-toolbar"));
+	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()), toolbar);
+
 	settings = g_settings_new ("org.gnome.rhythmbox.plugins.iradio");
 	source = RB_SOURCE (g_object_new (RB_TYPE_IRADIO_SOURCE,
 					  "name", _("Radio"),
@@ -490,9 +477,10 @@ rb_iradio_source_new (RBShell *shell, GObject *plugin)
 					  "entry-type", entry_type,
 					  "plugin", plugin,
 					  "settings", g_settings_get_child (settings, "source"),
-					  "toolbar-path", "/IRadioSourceToolBar",
+					  "toolbar-menu", toolbar,
 					  NULL));
 	g_object_unref (settings);
+	g_object_unref (builder);
 	rb_shell_register_entry_type_for_source (shell, source, entry_type);
 	return source;
 }
@@ -721,14 +709,32 @@ rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
 				      gboolean over_entry,
 				      RBIRadioSource *source)
 {
-	if (source == NULL) {
+	GtkWidget *menu;
+
+	if (over_entry == FALSE)
 		return;
+
+	if (source->priv->popup == NULL) {
+		GtkBuilder *builder;
+		GObject *plugin;
+		g_object_get (source, "plugin", &plugin, NULL);
+		builder = rb_builder_load_plugin_file (plugin, "iradio-popup.ui", NULL);
+		g_object_unref (plugin);
+
+		source->priv->popup = G_MENU_MODEL (gtk_builder_get_object (builder, "iradio-popup"));
+		g_object_ref (source->priv->popup);
+		g_object_unref (builder);
 	}
 
-	if (over_entry)
-		_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), "/IRadioViewPopup");
-	else
-		_rb_display_page_show_popup (RB_DISPLAY_PAGE (source), "/IRadioSourcePopup");
+	menu = gtk_menu_new_from_model (source->priv->popup);
+	gtk_menu_attach_to_widget (GTK_MENU (menu), GTK_WIDGET (source), NULL);
+	gtk_menu_popup (GTK_MENU (menu),
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			3,
+			gtk_get_current_event_time ());
 }
 
 static void
@@ -949,13 +955,6 @@ stations_view_drag_data_received_cb (GtkWidget *widget,
 	return;
 }
 
-static gboolean
-impl_show_popup (RBDisplayPage *page)
-{
-	_rb_display_page_show_popup (page, "/IRadioSourcePopup");
-	return TRUE;
-}
-
 static void
 new_station_location_added (RBURIDialog    *dialog,
 			    const char     *uri,
@@ -971,9 +970,9 @@ new_station_response_cb (GtkDialog *dialog, int response, gpointer meh)
 }
 
 static void
-rb_iradio_source_cmd_new_station (GtkAction *action,
-				  RBIRadioSource *source)
+new_station_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
+	RBIRadioSource *source = RB_IRADIO_SOURCE (data);
 	GtkWidget *dialog;
 
 	rb_debug ("Got new station command");
