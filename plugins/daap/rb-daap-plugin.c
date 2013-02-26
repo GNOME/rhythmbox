@@ -172,7 +172,6 @@ impl_activate (PeasActivatable *bplugin)
 	gboolean no_registration;
 	RBShell *shell;
 	GApplication *app;
-	GMenuModel *menu;
 
 	plugin->shutdown = FALSE;
 

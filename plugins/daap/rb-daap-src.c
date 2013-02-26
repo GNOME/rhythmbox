@@ -330,30 +330,31 @@ rb_register_gst_plugin ()
 /*** GSTURIHANDLER INTERFACE *************************************************/
 
 static GstURIType
-rb_daap_src_uri_get_type (void)
+rb_daap_src_uri_get_type (GType type)
 {
 	return GST_URI_SRC;
 }
 
-static gchar **
-rb_daap_src_uri_get_protocols (void)
+static const gchar * const *
+rb_daap_src_uri_get_protocols (GType type)
 {
-	static gchar *protocols[] = {"daap", NULL};
+	static const gchar * const protocols[] = {"daap", NULL};
 
 	return protocols;
 }
 
-static const gchar *
+static gchar *
 rb_daap_src_uri_get_uri (GstURIHandler *handler)
 {
 	RBDAAPSrc *src = RB_DAAP_SRC (handler);
 
-	return src->daap_uri;
+	return g_strdup (src->daap_uri);
 }
 
 static gboolean
 rb_daap_src_uri_set_uri (GstURIHandler *handler,
-			 const gchar *uri)
+			 const gchar *uri,
+			 GError **error)
 {
 	RBDAAPSrc *src = RB_DAAP_SRC (handler);
 
