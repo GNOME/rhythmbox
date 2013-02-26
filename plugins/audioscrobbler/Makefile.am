@@ -61,11 +61,6 @@ gtkbuilder_DATA =					\
 	audioscrobbler-preferences.ui			\
 	audioscrobbler-profile.ui
 
-uixmldir = $(plugindatadir)
-uixml_DATA =						\
-	audioscrobbler-profile-ui.xml			\
-	audioscrobbler-radio-ui.xml
-
 plugin_in_files = audioscrobbler.plugin.in
 
 %.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
@@ -85,7 +80,6 @@ plugindata_DATA = 						\
 
 EXTRA_DIST = 					\
 	$(plugin_in_files)			\
-	$(uixml_DATA)				\
 	$(gtkbuilder_DATA)			\
 	$(top_srcdir)/plugins/audioscrobbler/Last.fm-icon.png		\
 	$(top_srcdir)/plugins/audioscrobbler/Libre.fm-icon.png		\
