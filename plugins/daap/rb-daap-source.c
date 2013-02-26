@@ -51,6 +51,8 @@
 #include "rb-daap-record-factory.h"
 #include "rb-rhythmdb-dmap-db-adapter.h"
 #include "rb-display-page.h"
+#include "rb-builder-helpers.h"
+#include "rb-application.h"
 
 #include "rb-daap-plugin.h"
 
@@ -61,6 +63,7 @@
 typedef struct _RhythmDBEntryType RBDAAPEntryType;
 typedef struct _RhythmDBEntryTypeClass RBDAAPEntryTypeClass;
 
+static void rb_daap_source_constructed (GObject *object);
 static void rb_daap_source_dispose (GObject *object);
 static void rb_daap_source_set_property  (GObject *object,
 					  guint prop_id,
@@ -169,6 +172,7 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 	RBBrowserSourceClass *browser_source_class = RB_BROWSER_SOURCE_CLASS (klass);
 
+	object_class->constructed  = rb_daap_source_constructed;
 	object_class->dispose      = rb_daap_source_dispose;
 	object_class->finalize     = rb_daap_source_finalize;
 	object_class->get_property = rb_daap_source_get_property;
@@ -292,7 +296,7 @@ rb_daap_source_get_property (GObject *object,
 }
 
 static void
-impl_constructed (GObject *object)
+rb_daap_source_constructed (GObject *object)
 {
 	RBShell *shell;
 	GActionEntry actions[] = {
@@ -816,7 +820,7 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 static void
 disconnect_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
-	RBDaapSource *source = RB_DAAP_SOURCE (data);
+	RBDAAPSource *source = RB_DAAP_SOURCE (data);
 	rb_daap_source_disconnect (source);
 }
 
