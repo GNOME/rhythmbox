@@ -640,7 +640,8 @@ init_actions (RBAudioscrobblerProfilePage *page)
 		{ "audioscrobbler-%s-download-track", download_track_action_cb },
 	};
 
-	g_object_get (page, "shell", &shell, "plugin", &plugin, "accel-group", &accel_group, NULL);
+	g_object_get (page, "shell", &shell, "plugin", &plugin, NULL);
+	g_object_get (shell, "accel-group", &accel_group, NULL);
 
 	map = G_ACTION_MAP (g_application_get_default ());
 	_rb_add_display_page_actions (map,
