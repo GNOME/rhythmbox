@@ -32,8 +32,8 @@
 #include <gst/gst.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-#include "rb-player.h"
-#include "rb-metadata.h"
+#include <backends/rb-player.h>
+#include <metadata/rb-metadata.h>
 
 G_BEGIN_DECLS
 

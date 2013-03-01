@@ -34,6 +34,8 @@ rb_introspection_sources = \
 		backends/rb-player-gst-tee.c \
 		backends/rb-player.h \
 		backends/rb-player.c \
+		backends/gstreamer/rb-player-gst-helper.h \
+		backends/gstreamer/rb-player-gst-helper.c \
 		lib/rb-async-copy.h \
 		lib/rb-async-copy.c \
 		lib/rb-builder-helpers.h \

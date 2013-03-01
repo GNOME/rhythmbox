@@ -150,7 +150,7 @@ rb_player_gst_find_element_with_property (GstElement *element, const char *prope
  * Converts embedded image data extracted from a tag list into
  * a #GdkPixbuf.  The returned #GdkPixbuf is owned by the caller.
  *
- * Returns: a #GdkPixbuf, or NULL.
+ * Returns: (transfer full): a #GdkPixbuf, or NULL.
  */
 GdkPixbuf *
 rb_gst_process_embedded_image (const GstTagList *taglist, const char *tag)
@@ -167,7 +167,7 @@ rb_gst_process_embedded_image (const GstTagList *taglist, const char *tag)
 		const GValue *value;
 		const char *media_type;
 		GstStructure *caps_struct;
-		int imgtype;
+		int imgtype = 0;
 
 		value = gst_tag_list_get_value_index (taglist, tag, i);
 		if (value == NULL) {
