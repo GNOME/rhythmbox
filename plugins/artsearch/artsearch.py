@@ -33,6 +33,7 @@ import oldcache
 from lastfm import LastFMSearch
 from local import LocalSearch
 from musicbrainz import MusicBrainzSearch
+from embedded import EmbeddedSearch
 
 class Search(object):
 	def __init__(self, store, key, last_time, searches):
@@ -76,6 +77,7 @@ class ArtSearchPlugin (GObject.GObject, Peas.Activatable):
 		searches = []
 		if oldcache.USEFUL:
 			searches.append(oldcache.OldCacheSearch())
+		searches.append(EmbeddedSearch())
 		searches.append(LocalSearch())
 		searches.append(MusicBrainzSearch())
 		searches.append(LastFMSearch())
