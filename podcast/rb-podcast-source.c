@@ -147,7 +147,7 @@ podcast_posts_show_popup_cb (RBEntryView *view,
 	gboolean downloadable = FALSE;
 	gboolean cancellable = FALSE;
 	GtkWidget *menu;
-	GtkWidget *window;
+	GActionMap *map;
 
 	lst = rb_entry_view_get_selected_entries (view);
 
@@ -167,11 +167,11 @@ podcast_posts_show_popup_cb (RBEntryView *view,
 	g_list_foreach (lst, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (lst);
 
-	window = gtk_widget_get_toplevel (GTK_WIDGET (source));
-	action = g_action_map_lookup_action (G_ACTION_MAP (window), "podcast-download");
+	map = G_ACTION_MAP (g_application_get_default ());
+	action = g_action_map_lookup_action (map, "podcast-download");
 	g_simple_action_set_enabled (G_SIMPLE_ACTION (action), downloadable);
 
-	action = g_action_map_lookup_action (G_ACTION_MAP (window), "podcast-cancel-download");
+	action = g_action_map_lookup_action (map, "podcast-cancel-download");
 	g_simple_action_set_enabled (G_SIMPLE_ACTION (action), cancellable);
 
 	menu = gtk_menu_new_from_model (source->priv->episode_popup);
@@ -183,19 +183,19 @@ static void
 podcast_feeds_show_popup_cb (RBPropertyView *view,
 			     RBPodcastSource *source)
 {
+	GActionMap *map;
 	GAction *act_update;
 	GAction *act_properties;
 	GAction *act_delete;
-	GtkWidget *window;
 	GtkWidget *menu;
 	GList *lst;
 
 	lst = source->priv->selected_feeds;
 
-	window = gtk_widget_get_toplevel (GTK_WIDGET (source));
-	act_update = g_action_map_lookup_action (G_ACTION_MAP (window), "podcast-feed-update");
-	act_properties = g_action_map_lookup_action (G_ACTION_MAP (window), "podcast-feed-properties");
-	act_delete = g_action_map_lookup_action (G_ACTION_MAP (window), "podcast-feed-delete");
+	map = G_ACTION_MAP (g_application_get_default ());
+	act_update = g_action_map_lookup_action (map, "podcast-feed-update");
+	act_properties = g_action_map_lookup_action (map, "podcast-feed-properties");
+	act_delete = g_action_map_lookup_action (map, "podcast-feed-delete");
 
 	g_simple_action_set_enabled (G_SIMPLE_ACTION (act_update), lst != NULL);
 	g_simple_action_set_enabled (G_SIMPLE_ACTION (act_properties), lst != NULL);
