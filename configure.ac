@@ -16,7 +16,7 @@ GNOME_MAINTAINER_MODE_DEFINES
 # Increment on interface addition, reset on removal
 RHYTHMBOX_CORE_AGE=0
 # Increment on interface add, remove, or change
-RHYTHMBOX_CORE_CURRENT=6
+RHYTHMBOX_CORE_CURRENT=7
 # Increment on source change, reset when CURRENT changes.
 RHYTHMBOX_CORE_REVISION=0
 
