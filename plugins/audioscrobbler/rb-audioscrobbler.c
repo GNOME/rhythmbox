@@ -1104,6 +1104,18 @@ rb_audioscrobbler_load_queue (RBAudioscrobbler *audioscrobbler)
 	char *end;
 	gsize size;
 
+	/* ensure we don't have a queue file saved without a username */
+	pathname = g_build_filename (rb_user_data_dir (),
+				     "audioscrobbler",
+				     "submission-queues",
+				     rb_audioscrobbler_service_get_name (audioscrobbler->priv->service),
+				     NULL);
+	if (g_file_test (pathname, G_FILE_TEST_IS_REGULAR)) {
+		rb_debug ("deleting usernameless queue file %s", pathname);
+		unlink (pathname);
+	}
+	g_free (pathname);
+
 	/* we don't really care about errors enough to report them here */
 	pathname = g_build_filename (rb_user_data_dir (),
 	                             "audioscrobbler",
@@ -1156,6 +1168,11 @@ rb_audioscrobbler_save_queue (RBAudioscrobbler *audioscrobbler)
 	GString *str;
 
 	if (!audioscrobbler->priv->queue_changed) {
+		return TRUE;
+	}
+
+	if (!audioscrobbler->priv->username) {
+		rb_debug ("can't save queue without a username");
 		return TRUE;
 	}
 
