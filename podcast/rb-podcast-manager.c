@@ -462,6 +462,9 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd,
 
 	if (entry == NULL)
 		return;
+	
+	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
+		return;
 
 	status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
 	if ((status < RHYTHMDB_PODCAST_STATUS_COMPLETE) ||
