@@ -175,7 +175,6 @@ static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 				    RBShell *shell);
 
-/*static void view_all_action_cb (GSimpleAction *, GVariant *, gpointer);*/
 static void jump_to_playing_action_cb (GSimpleAction *, GVariant *, gpointer);
 static void add_music_action_cb (GAction *action, GVariant *parameter, RBShell *shell);
 static void view_party_mode_changed_cb (GAction *action, GVariant *parameter, RBShell *shell);
@@ -2528,20 +2527,6 @@ jump_to_playing_action_cb (GSimpleAction *action, GVariant *parameters, gpointer
 	rb_debug ("current song");
 	rb_shell_jump_to_current (shell);
 }
-
-/*
-static void
-view_all_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
-{
-	RBShell *shell = RB_SHELL (data);
-	if (RB_IS_SOURCE (shell->priv->selected_page)) {
-		RBSource *source = RB_SOURCE (shell->priv->selected_page);
-		rb_debug ("view all");
-
-		rb_source_reset_filters (source);
-	}
-}
-*/
 
 static void
 rb_shell_jump_to_entry_with_source (RBShell *shell,
