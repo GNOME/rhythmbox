@@ -239,6 +239,7 @@ struct _RBShellPrivate
 	GtkWidget *notebook;
 	GtkWidget *queue_paned;
 	GtkWidget *queue_sidebar;
+	GtkWidget *menu_button;
 
 	GtkBox *sidebar_container;
 	GtkBox *right_sidebar_container;
@@ -678,10 +679,13 @@ construct_sources (RBShell *shell)
 static void
 construct_load_ui (RBShell *shell)
 {
+	GApplication *app = g_application_get_default ();
 	GtkWidget *toolbar;
-	GtkToolItem *tool_item;
 	GtkBuilder *builder;
-	gboolean shell_shows_app_menu;
+	GtkToolItem *tool_item;
+	GtkWidget *menu_button;
+	GtkWidget *image;
+	GMenuModel *model;
 
 	rb_debug ("shell: loading ui");
 	rb_profile_start ("loading ui");
@@ -710,28 +714,22 @@ construct_load_ui (RBShell *shell)
 	gtk_widget_show_all (GTK_WIDGET (tool_item));
 	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), tool_item, -1);
 
-	g_object_get (gtk_settings_get_default (),
-		      "gtk-shell-shows-app-menu", &shell_shows_app_menu,
-		      NULL);
-	if (shell_shows_app_menu == FALSE) {
-		GtkWidget *menu_button;
-		GtkWidget *image;
-		GMenuModel *model;
-		GApplication *app = g_application_get_default ();
 
-		menu_button = gtk_menu_button_new ();
+	/* menu tool button, only shown if the shell doesn't show the app menu,
+	 * or in party mode where the app menu is inaccessible.
+	 */
+	menu_button = gtk_menu_button_new ();
 
-		model = rb_application_get_shared_menu (RB_APPLICATION (app), "app-menu");
-		gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (menu_button), model);
+	model = rb_application_get_shared_menu (RB_APPLICATION (app), "app-menu");
+	gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (menu_button), model);
 
-		image = gtk_image_new_from_icon_name ("emblem-system-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
-		gtk_container_add (GTK_CONTAINER (menu_button), image);
+	image = gtk_image_new_from_icon_name ("emblem-system-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
+	gtk_container_add (GTK_CONTAINER (menu_button), image);
 
-		tool_item = gtk_tool_item_new ();
-		gtk_container_add (GTK_CONTAINER (tool_item), menu_button);
-		gtk_widget_show_all (GTK_WIDGET (tool_item));
-		gtk_toolbar_insert (GTK_TOOLBAR (toolbar), tool_item, -1);
-	}
+	shell->priv->menu_button = GTK_WIDGET (gtk_tool_item_new ());
+	gtk_container_add (GTK_CONTAINER (shell->priv->menu_button), menu_button);
+	gtk_widget_show_all (shell->priv->menu_button);
+	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), GTK_TOOL_ITEM (shell->priv->menu_button), -1);
 
 	rb_profile_end ("loading ui");
 }
@@ -2447,6 +2445,7 @@ window_state_event_cb (GtkWidget           *widget,
 static void
 rb_shell_sync_party_mode (RBShell *shell)
 {
+	gboolean shell_shows_app_menu = TRUE;
 	GAction *action;
 
 	/* party mode does not use gsettings as a model since it
@@ -2455,6 +2454,16 @@ rb_shell_sync_party_mode (RBShell *shell)
 	/* disable/enable quit action */
 	action = g_action_map_lookup_action (G_ACTION_MAP (shell->priv->application), "quit");
 	g_simple_action_set_enabled (G_SIMPLE_ACTION (action), !shell->priv->party_mode);
+
+	/* show/hide menu button */
+	g_object_get (gtk_settings_get_default (),
+		      "gtk-shell-shows-app-menu", &shell_shows_app_menu,
+		      NULL);
+	if (shell_shows_app_menu && (shell->priv->party_mode == FALSE)) {
+		gtk_widget_hide (GTK_WIDGET (shell->priv->menu_button));
+	} else {
+		gtk_widget_show (GTK_WIDGET (shell->priv->menu_button));
+	}
 
 	/* show/hide queue as sidebar ? */
 
