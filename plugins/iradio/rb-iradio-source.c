@@ -196,6 +196,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 
 	page_class->get_status  = impl_get_status;
 
+	source_class->reset_filters = impl_reset_filters;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
@@ -205,7 +206,6 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
-	source_class->impl_reset_filters = impl_reset_filters;
 
 	g_object_class_override_property (object_class,
 					  PROP_SHOW_BROWSER,

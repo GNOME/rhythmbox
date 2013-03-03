@@ -150,10 +150,10 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 
 	page_class->receive_drag = impl_receive_drag;
 
+	source_class->reset_filters = impl_reset_filters;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_search = impl_search;
-	source_class->impl_reset_filters = impl_reset_filters;
 	source_class->impl_get_property_views = impl_get_property_views;
 
 	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;

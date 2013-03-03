@@ -160,10 +160,10 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 	object_class->set_property = rb_browser_source_set_property;
 	object_class->get_property = rb_browser_source_get_property;
 
+	source_class->reset_filters = impl_reset_filters;
 	source_class->impl_search = impl_search;
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_get_property_views = impl_get_property_views;
-	source_class->impl_reset_filters = impl_reset_filters;
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;

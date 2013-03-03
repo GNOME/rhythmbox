@@ -90,6 +90,7 @@ struct _RBSourceClass
 
 	/* signals */
 	void (*filter_changed)	(RBSource *source);
+	void (*reset_filters)	(RBSource *source);
 
 	/* methods */
 
@@ -99,7 +100,6 @@ struct _RBSourceClass
 	gboolean	(*impl_can_rename)	(RBSource *source);
 
 	void		(*impl_search)		(RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
-	void		(*impl_reset_filters)	(RBSource *source);
 
 	gboolean	(*impl_can_cut)		(RBSource *source);
 	gboolean	(*impl_can_delete)	(RBSource *source);
@@ -153,8 +153,6 @@ void		rb_source_search		(RBSource *source,
 						 RBSourceSearch *search,
 						 const char *cur_text,
 						 const char *new_text);
-
-void		rb_source_reset_filters		(RBSource *source);
 
 gboolean	rb_source_can_cut		(RBSource *source);
 gboolean	rb_source_can_delete		(RBSource *source);
