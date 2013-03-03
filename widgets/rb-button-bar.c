@@ -67,6 +67,14 @@ clear_button_bar (RBButtonBar *bar)
 	bar->priv->position = 0;
 }
 
+static void
+signal_button_clicked_cb (GtkButton *button, RBButtonBar *bar)
+{
+	guint signal_id;
+	signal_id = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (button), "rb-signal-bind-id"));
+	g_signal_emit (bar->priv->target, signal_id, 0);
+}
+
 static gboolean
 append_menu (RBButtonBar *bar, GMenuModel *menu, gboolean need_separator)
 {
@@ -111,9 +119,11 @@ append_menu (RBButtonBar *bar, GMenuModel *menu, gboolean need_separator)
 			const char *name;
 			GVariant *value;
 			char *str;
+			guint signal_id;
 		
-			/* we can't do more than one of action and rb-property-bind,
-			 * so just do whichever turns up first in the iterator
+			/* we can't do more than one of action and rb-property-bind
+			 * and rb-signal-bind, so just do whichever turns up first
+			 * in the iterator
 			 */
 			iter = g_menu_model_iterate_item_attributes (menu, i);
 			while (g_menu_attribute_iter_get_next (iter, &name, &value)) {
@@ -131,6 +141,16 @@ append_menu (RBButtonBar *bar, GMenuModel *menu, gboolean need_separator)
 					g_object_bind_property (bar->priv->target, str,
 								button, "active",
 								G_BINDING_BIDIRECTIONAL | G_BINDING_SYNC_CREATE);
+					g_free (str);
+					break;
+				} else if (g_str_equal (name, "rb-signal-bind")) {
+					button = gtk_button_new ();
+					g_variant_get (value, "s", &str, NULL);
+					signal_id = g_signal_lookup (str, G_OBJECT_TYPE (bar->priv->target));
+					if (signal_id != 0) {
+						g_object_set_data (G_OBJECT (button), "rb-signal-bind-id", GUINT_TO_POINTER (signal_id));
+						g_signal_connect (button, "clicked", G_CALLBACK (signal_button_clicked_cb), bar);
+					}
 					g_free (str);
 					break;
 				}
