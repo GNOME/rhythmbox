@@ -374,7 +374,7 @@ rb_source_toolbar_add_search_entry (RBSourceToolbar *toolbar, const char *placeh
  * rb_source_toolbar_clear_search_entry:
  * @toolbar: a #RBSourceToolbar
  *
- * Clears the search entry text.  Call this from RBSource:impl_reset_filters.
+ * Clears the search entry text.  Call this from RBSource:reset_filters.
  */
 void
 rb_source_toolbar_clear_search_entry (RBSourceToolbar *toolbar)

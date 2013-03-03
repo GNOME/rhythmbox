@@ -165,6 +165,7 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 
 	page_class->receive_drag = impl_receive_drag;
 
+	source_class->reset_filters = impl_reset_filters;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -172,7 +173,6 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	source_class->impl_paste = impl_paste;
 	source_class->impl_delete = impl_delete;
 	source_class->impl_search = impl_search;
-	source_class->impl_reset_filters = impl_reset_filters;
 	source_class->impl_get_property_views = impl_get_property_views;
 	source_class->impl_want_uri = impl_want_uri;
 

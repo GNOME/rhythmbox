@@ -134,6 +134,7 @@ enum
 enum
 {
 	FILTER_CHANGED,
+	RESET_FILTERS,
 	LAST_SIGNAL
 };
 
@@ -153,6 +154,7 @@ rb_source_class_init (RBSourceClass *klass)
 	page_class->activate = default_activate;
 	page_class->get_status = default_get_status;
 
+	klass->reset_filters = default_reset_filters;
 	klass->impl_get_property_views = default_get_property_views;
 	klass->impl_can_rename = default_can_rename;
 	klass->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
@@ -164,7 +166,6 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
 	klass->impl_get_entry_view = default_get_entry_view;
 	klass->impl_copy = default_copy;
-	klass->impl_reset_filters = default_reset_filters;
 	klass->impl_handle_eos = default_handle_eos;
 	klass->impl_try_playlist = default_try_playlist;
 	klass->impl_add_to_queue = default_add_to_queue;
@@ -322,6 +323,21 @@ rb_source_class_init (RBSourceClass *klass)
 			      RB_TYPE_SOURCE,
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBSourceClass, filter_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
+	/**
+	 * RBSource::reset-filters:
+	 * @source: the #RBSource
+	 *
+	 * Action signal used to reset the source's filters.
+	 */
+	rb_source_signals[RESET_FILTERS] =
+		g_signal_new ("reset-filters",
+			      RB_TYPE_SOURCE,
+			      G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+			      G_STRUCT_OFFSET (RBSourceClass, reset_filters),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
@@ -1009,20 +1025,6 @@ static void
 default_reset_filters (RBSource *source)
 {
 	rb_debug ("no implementation of reset_filters for this source");
-}
-
-/**
- * rb_source_reset_filters:
- * @source: a #RBSource
- *
- * Clears all filters (browser selections, etc.) in this source.
- */
-void
-rb_source_reset_filters (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	klass->impl_reset_filters (source);
 }
 
 /**
