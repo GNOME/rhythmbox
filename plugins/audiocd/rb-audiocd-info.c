@@ -109,9 +109,7 @@ read_gst_disc_info (RBAudioCDInfo *info, GError **error)
 			done = TRUE;
 			break;
 		case GST_MESSAGE_TOC:
-			GST_ERROR ("YAY, we have a TOC message !");
-			gst_message_parse_toc(msg, &toc, NULL);
-			done = TRUE;
+			gst_message_parse_toc (msg, &toc, NULL);
 			break;
 		default:
 			break;
