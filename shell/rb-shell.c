@@ -240,6 +240,7 @@ struct _RBShellPrivate
 	GtkWidget *queue_paned;
 	GtkWidget *queue_sidebar;
 	GtkWidget *menu_button;
+	GtkWidget *play_button;
 
 	GtkBox *sidebar_container;
 	GtkBox *right_sidebar_container;
@@ -693,9 +694,9 @@ construct_load_ui (RBShell *shell)
 	builder = rb_builder_load ("main-toolbar.ui", NULL);
 	toolbar = GTK_WIDGET (gtk_builder_get_object (builder, "main-toolbar"));
 
+	shell->priv->play_button = GTK_WIDGET (gtk_builder_get_object (builder, "play-button"));
+
 	/* this seems a bit unnecessary */
-	gtk_actionable_set_action_target_value (GTK_ACTIONABLE (gtk_builder_get_object (builder, "play-button")),
-						g_variant_new_boolean (TRUE));
 	gtk_actionable_set_action_target_value (GTK_ACTIONABLE (gtk_builder_get_object (builder, "shuffle-button")),
 						g_variant_new_boolean (TRUE));
 	gtk_actionable_set_action_target_value (GTK_ACTIONABLE (gtk_builder_get_object (builder, "repeat-button")),
@@ -2216,7 +2217,23 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 static void
 rb_shell_playing_changed_cb (RBShellPlayer *player, gboolean playing, RBShell *shell)
 {
-	/* update tooltip on play/pause button */
+	const char *tooltip;
+	const char *icon_name;
+
+	if (playing) {
+		if (rb_source_can_pause (rb_shell_player_get_active_source (shell->priv->player_shell))) {
+			icon_name = "media-playback-pause";
+			tooltip = _("Pause playback");
+		} else {
+			icon_name = "media-playback-stop";
+			tooltip = _("Stop playback");
+		}
+	} else {
+		icon_name = "media-playback-start";
+		tooltip = _("Start playback");
+	}
+	gtk_tool_button_set_icon_name (GTK_TOOL_BUTTON (shell->priv->play_button), icon_name);
+	gtk_widget_set_tooltip_text (GTK_WIDGET (shell->priv->play_button), tooltip);
 }
 
 static void

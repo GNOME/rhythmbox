@@ -149,9 +149,6 @@ static void rb_shell_player_sync_buttons (RBShellPlayer *player);
 static void player_settings_changed_cb (GSettings *settings,
 					const char *key,
 					RBShellPlayer *player);
-static void rb_shell_player_playing_changed_cb (RBShellPlayer *player,
-						GParamSpec *arg1,
-						gpointer user_data);
 static void rb_shell_player_extra_metadata_cb (RhythmDB *db,
 					       RhythmDBEntry *entry,
 					       const char *field,
@@ -2802,41 +2799,6 @@ rb_shell_player_get_playing_path (RBShellPlayer *player,
 }
 
 static void
-rb_shell_player_playing_changed_cb (RBShellPlayer *player,
-				    GParamSpec *arg1,
-				    gpointer user_data)
-{
-	gboolean playing;
-	GActionMap *map;
-	GAction *action;
-	/*char *tooltip;*/
-
-	/* sync play action state */
-	g_object_get (player, "playing", &playing, NULL);
-
-	map = G_ACTION_MAP (g_application_get_default ());
-	action = g_action_map_lookup_action (map, "play");
-	g_simple_action_set_state (G_SIMPLE_ACTION (action), g_variant_new_boolean (playing));
-
-#if 0
-	/* -> header, set tooltip on button directly */
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "ControlPlay");
-	if (playing) {
-		if (rb_source_can_pause (player->priv->source)) {
-			tooltip = g_strdup (_("Pause playback"));
-		} else {
-			tooltip = g_strdup (_("Stop playback"));
-		}
-	} else {
-		tooltip = g_strdup (_("Start playback"));
-	}
-	g_object_set (action, "tooltip", tooltip, NULL);
-	g_free (tooltip);
-#endif
-}
-
-static void
 play_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_data)
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (user_data);
@@ -3025,7 +2987,7 @@ rb_shell_player_constructed (GObject *object)
 	GAction *action;
 
 	GActionEntry actions[] = {
-		{ "play", play_action_cb, "b", "false" },
+		{ "play", play_action_cb },
 		{ "play-previous", play_previous_action_cb },
 		{ "play-next", play_next_action_cb },
 		{ "play-repeat", play_repeat_action_cb, "b", "false" },
@@ -3064,11 +3026,6 @@ rb_shell_player_constructed (GObject *object)
 	rb_shell_player_sync_control_state (player);
 	rb_shell_player_sync_volume (player, FALSE, TRUE);
 	player->priv->syncing_state = FALSE;
-
-	g_signal_connect (player,
-			  "notify::playing",
-			  G_CALLBACK (rb_shell_player_playing_changed_cb),
-			  NULL);
 }
 
 static void
