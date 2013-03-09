@@ -361,6 +361,7 @@ rb_musicbrainz_data_parse (const char *data, gssize len, GError **error)
 	ctx.text.str = NULL;
 	ctx.text.len = 0;
 	ctx.text.allocated_len = 0;
+	ctx.item = NULL;
 	g_queue_init (&ctx.path);
 
 	pctx = g_markup_parse_context_new (&parser, 0, &ctx, NULL);
