@@ -4,7 +4,7 @@ AC_INIT([rhythmbox],
 	[https://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox])
 AC_CONFIG_SRCDIR(rhythmbox.pc.in)
 AC_CONFIG_MACRO_DIR(macros)
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([1.9 dist-xz no-dist-gzip])
 
 AC_SUBST(ACLOCAL_AMFLAGS, "-I macros")
