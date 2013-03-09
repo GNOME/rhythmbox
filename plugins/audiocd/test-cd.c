@@ -139,6 +139,7 @@ lookup_cb (GObject *object, GAsyncResult *result, RBAudioCDInfo *info)
 	} else {
 		g_print ("lookup failed: %s\n", error->message);
 		g_clear_error (&error);
+		g_main_loop_quit (mainloop);
 	}
 
 }
@@ -166,7 +167,7 @@ audiocd_info_cb (GObject *source, GAsyncResult *result, gpointer data)
 	}
 
 	if (info->musicbrainz_disc_id) {
-		const char *includes[] = { "artist-credits" };
+		const char *includes[] = { "artist-credits", NULL };
 
 		rb_musicbrainz_lookup ("discid",
 				       info->musicbrainz_disc_id,
