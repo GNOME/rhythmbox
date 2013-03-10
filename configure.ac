@@ -52,7 +52,6 @@ GLIB_REQS=2.32.0
 LIBGPOD_REQS=0.6
 TOTEM_PLPARSER_REQS=3.2.0
 VALA_REQS=0.9.4
-AVAHI_REQS=0.6
 LIBSOUP_REQS=2.26.0
 GUDEV_REQS=143
 LIBMTP_REQS=0.3.0
@@ -289,36 +288,6 @@ PKG_CHECK_MODULES(GSTREAMER, \
 
 RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $GSTREAMER_CFLAGS -DGST_USE_UNSTABLE_API"
 RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $GSTREAMER_LIBS"
-
-AC_ARG_WITH(mdns,
-   AC_HELP_STRING([--with-mdns=auto|avahi],
-   [Select the mDNS/DNS-SD implementation to use (default auto)]),,
-   with_mdns=auto)
-
-have_avahi=no
-have_mdns=no
-use_avahi=no
-
-PKG_CHECK_MODULES(AVAHI,
-   avahi-client >= $AVAHI_REQS
-   avahi-glib >= $AVAHI_REQS,
-   have_avahi=yes,
-   have_avahi=no)
-
-if test x"$with_mdns" = xauto || test x"$with_mdns" = xavahi; then
-   if test x"$have_avahi" = xyes; then
-      MDNS_CFLAGS=$AVAHI_CFLAGS
-      MDNS_LIBS=$AVAHI_LIBS
-      AC_DEFINE(WITH_AVAHI, 1, [Define if mDNS/DNS-SD implementation uses Avahi])
-      use_avahi=yes
-      AC_MSG_NOTICE([Detected Avahi, using it for mDNS/DNS-SD])
-      have_mdns=yes
-   elif test x"$with_mdns" = xavahi; then
-      AC_MSG_ERROR([Avahi explicitly requested but not found.])
-   fi
-fi
-
-AM_CONDITIONAL(USE_AVAHI, test "x$use_avahi" = "xyes")
 
 AC_ARG_ENABLE(libnotify,
             AC_HELP_STRING([--disable-libnotify],
