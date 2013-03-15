@@ -13,10 +13,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-14 02:36+0000\n"
-"PO-Revision-Date: 2012-07-18 18:27+0900\n"
-"Last-Translator: Jiro Matsuzawa <jmatsuzawa@gnome.org>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-03-14 19:39+0000\n"
+"PO-Revision-Date: 2013-03-15 10:13+0900\n"
+"Last-Translator: Akira Tanaka <root.167d36d4acb91@gmail.com>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -37,16 +37,14 @@ msgid "Failed to open output device: %s"
 msgstr "出力デバイスのオープンに失敗しました: %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:630
-#, fuzzy, c-format
-#| msgid "Failed to create playbin2 element; check your GStreamer installation"
+#, c-format
 msgid "Failed to create playbin element; check your GStreamer installation"
-msgstr "playbin2エレメントの生成に失敗しました(GStreamerのインストールを確認してください)"
+msgstr "playbinエレメントの生成に失敗しました(GStreamerのインストールを確認してください)"
 
 #: ../backends/gstreamer/rb-player-gst.c:671
-#, fuzzy, c-format
-#| msgid "Failed to create playbin2 element; check your GStreamer installation"
+#, c-format
 msgid "Failed to create %s element; check your GStreamer installation"
-msgstr "playbin2エレメントの生成に失敗しました(GStreamerのインストールを確認してください)"
+msgstr "%sエレメントの生成に失敗しました(GStreamerのインストールを確認してください)"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1100
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1114
@@ -128,66 +126,48 @@ msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
 
 #: ../data/ui/app-menu.ui.h:1
-#, fuzzy
-#| msgid "_Music"
 msgid "_Add Music"
-msgstr "再生(_M)"
+msgstr "楽曲の追加(_A)"
 
 #: ../data/ui/app-menu.ui.h:2
 msgid "_View"
 msgstr "表示(_V)"
 
 #: ../data/ui/app-menu.ui.h:3
-#, fuzzy
-#| msgid "Party _Mode"
 msgid "P_arty Mode"
-msgstr "パーティモード(_M)"
+msgstr "パーティモード(_A)"
 
 #: ../data/ui/app-menu.ui.h:4
-#, fuzzy
-#| msgid "Side _Pane"
 msgid "Side Pane"
-msgstr "サイドペイン(_P)"
+msgstr "サイドペイン"
 
 #: ../data/ui/app-menu.ui.h:5
-#, fuzzy
-#| msgid "Play _Queue as Side Pane"
 msgid "Play Queue in Side Pane"
-msgstr "再生キューの内容(_Q)"
+msgstr "サイドペインのキューを再生する"
 
 #: ../data/ui/app-menu.ui.h:6
-#, fuzzy
-#| msgid "S_tatusbar"
 msgid "Status Bar"
-msgstr "ステータスバー(_T)"
+msgstr "ステータスバー"
 
 #: ../data/ui/app-menu.ui.h:7
-#, fuzzy
-#| msgid "_Song Position Slider"
 msgid "Song Position Slider"
-msgstr "再生位置の調整スライダー(_S)"
+msgstr "再生位置の調整スライダー"
 
 #: ../data/ui/app-menu.ui.h:8
-#, fuzzy
-#| msgid "_Album Art"
 msgid "Album Art"
-msgstr "アルバムアート(_A)"
+msgstr "アルバムアート"
 
 #: ../data/ui/app-menu.ui.h:9
 msgid "_Tools"
 msgstr "ツール(_T)"
 
 #: ../data/ui/app-menu.ui.h:10
-#, fuzzy
-#| msgid "Plu_gins"
 msgid "P_lugins"
-msgstr "プラグイン(_G)"
+msgstr "プラグイン(_L)"
 
 #: ../data/ui/app-menu.ui.h:11
-#, fuzzy
-#| msgid "Prefere_nces"
 msgid "_Preferences"
-msgstr "設定(_N)"
+msgstr "設定(_P)"
 
 #: ../data/ui/app-menu.ui.h:12
 msgid "_Help"
@@ -204,29 +184,21 @@ msgstr "終了(_Q)"
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
 #: ../data/ui/podcast-popups.ui.h:9
 #: ../plugins/magnatune/magnatune-popup.ui.h:1
-#, fuzzy
-#| msgid "Add _to Play Queue"
 msgid "Add to Queue"
-msgstr "再生キューに追加する(_T)"
+msgstr "キューに追加する"
 
 #: ../data/ui/browser-popup.ui.h:2 ../data/ui/edit-menu.ui.h:7
 #: ../data/ui/playlist-popup.ui.h:2
-#, fuzzy
-#| msgid "Add to P_laylist"
 msgid "Add to Playlist"
-msgstr "プレイリストに追加する(_L)"
+msgstr "プレイリストに追加する"
 
 #: ../data/ui/browser-popup.ui.h:3 ../data/ui/playlist-popup.ui.h:3
-#, fuzzy
-#| msgid "_Copy"
 msgid "Copy"
-msgstr "コピー(_C)"
+msgstr "コピー"
 
 #: ../data/ui/browser-popup.ui.h:4 ../data/ui/playlist-popup.ui.h:4
-#, fuzzy
-#| msgid "Cu_t"
 msgid "Cut"
-msgstr "切り取り(_T)"
+msgstr "切り取り"
 
 #: ../data/ui/browser-popup.ui.h:5 ../data/ui/edit-menu.ui.h:9
 #: ../data/ui/import-errors-popup.ui.h:2 ../data/ui/playlist-popup.ui.h:5
@@ -235,24 +207,18 @@ msgstr "ゴミ箱へ移動(_M)"
 
 #: ../data/ui/browser-popup.ui.h:6 ../data/ui/playlist-popup.ui.h:6
 #: ../plugins/magnatune/magnatune-popup.ui.h:5
-#, fuzzy
-#| msgid "Browse This _Genre"
 msgid "Browse this Genre"
-msgstr "このジャンルだけ表示する(_G)"
+msgstr "このジャンルだけ表示する"
 
 #: ../data/ui/browser-popup.ui.h:7 ../data/ui/playlist-popup.ui.h:7
 #: ../plugins/magnatune/magnatune-popup.ui.h:6
-#, fuzzy
-#| msgid "Browse This _Artist"
 msgid "Browse this Artist"
-msgstr "このアーティストだけ表示する(_A)"
+msgstr "このアーティストだけ表示する"
 
 #: ../data/ui/browser-popup.ui.h:8 ../data/ui/playlist-popup.ui.h:8
 #: ../plugins/magnatune/magnatune-popup.ui.h:7
-#, fuzzy
-#| msgid "Browse This A_lbum"
 msgid "Browse this Album"
-msgstr "このアルバムだけ表示する(_L)"
+msgstr "このアルバムだけ表示する"
 
 #: ../data/ui/browser-popup.ui.h:9 ../data/ui/edit-menu.ui.h:8
 #: ../data/ui/playlist-popup.ui.h:9 ../data/ui/queue-popups.ui.h:4
@@ -303,10 +269,8 @@ msgid "New _Automatic Playlist"
 msgstr "新しい自動更新式のプレイリスト(_A)..."
 
 #: ../data/ui/display-page-add-menu.ui.h:3
-#, fuzzy
-#| msgid "_Load from File..."
 msgid "_Load from File"
-msgstr "プレイリストの読み込み(_L)..."
+msgstr "ファイルから読み込む(_L)"
 
 #: ../data/ui/display-page-add-menu.ui.h:4
 msgid "_Check for New Devices"
@@ -333,10 +297,8 @@ msgid "D_eselect All"
 msgstr "すべて選択解除(_E)"
 
 #: ../data/ui/edit-menu.ui.h:6
-#, fuzzy
-#| msgid "Add _to Play Queue"
 msgid "Add to Play Queue"
-msgstr "再生キューに追加する(_T)"
+msgstr "再生キューに追加する"
 
 #: ../data/ui/general-prefs.ui.h:1
 msgid "Browser Views"
@@ -415,44 +377,32 @@ msgid "_Quality"
 msgstr "音質(_Q)"
 
 #: ../data/ui/import-dialog.ui.h:1
-#, fuzzy
-#| msgid "All Tracks"
 msgid "Add Tracks"
-msgstr "すべてのトラック"
+msgstr "トラックを追加"
 
 #: ../data/ui/import-dialog.ui.h:2
-#, fuzzy
-#| msgid "Copy tracks to the library"
 msgid "Add tracks to the library"
-msgstr "すべてのトラックをライブラリにコピーします"
+msgstr "トラックをライブラリに追加します"
 
 #: ../data/ui/import-dialog.ui.h:3
-#, fuzzy
-#| msgid "Top Tracks"
 msgid "Copy Tracks"
-msgstr "トップトラック"
+msgstr "トラックをコピー"
 
 #: ../data/ui/import-dialog.ui.h:4
-#, fuzzy
-#| msgid "Copy tracks to the library"
 msgid "Copy tracks to the library location"
-msgstr "すべてのトラックをライブラリにコピーします"
+msgstr "トラックをライブラリの場所にコピーします"
 
 #: ../data/ui/import-dialog.ui.h:5 ../data/ui/podcast-add-dialog.ui.h:3
 msgid "Close"
 msgstr "閉じる"
 
 #: ../data/ui/import-dialog.ui.h:6
-#, fuzzy
-#| msgid "Loved Tracks"
 msgid "Remove Tracks"
-msgstr "お気に入りのトラック"
+msgstr "トラックを削除"
 
 #: ../data/ui/import-dialog.ui.h:7
-#, fuzzy
-#| msgid "Delete the selected station"
 msgid "Remove the selected tracks"
-msgstr "選択したラジオ局を削除します"
+msgstr "選択したトラックを削除します"
 
 #: ../data/ui/import-dialog.ui.h:8
 msgid "Select a location containing music to add to your library."
@@ -515,10 +465,8 @@ msgstr "このフォーマットを利用するために必要な追加ソフト
 #: ../plugins/ipod/ipod-toolbar.ui.h:1 ../plugins/iradio/iradio-toolbar.ui.h:1
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:1
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:1
-#, fuzzy
-#| msgid "_Edit"
 msgid "Edit"
-msgstr "編集(_E)"
+msgstr "編集"
 
 #: ../data/ui/library-toolbar.ui.h:2 ../data/ui/playlist-toolbar.ui.h:2
 #: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/daap/daap-toolbar.ui.h:2
@@ -579,10 +527,8 @@ msgid "Play first song again after all songs are played"
 msgstr "すべての楽曲を再生した後に再び先頭の楽曲を再生します"
 
 #: ../data/ui/main-toolbar.ui.h:8
-#, fuzzy
-#| msgid "_Repeat"
 msgid "Repeat"
-msgstr "リピート(_R)"
+msgstr "リピート"
 
 #: ../data/ui/main-toolbar.ui.h:9
 msgid "Play songs in a random order"
@@ -598,10 +544,8 @@ msgid "Media Player Properties"
 msgstr "メディアプレイヤーのプロパティ"
 
 #: ../data/ui/media-player-properties.ui.h:2
-#, fuzzy
-#| msgid "<b>Information</b>"
 msgid "Information"
-msgstr "<b>情報</b>"
+msgstr "情報"
 
 #. Translators: This refers to the usage of media space
 #: ../data/ui/media-player-properties.ui.h:4
@@ -618,16 +562,12 @@ msgid "Basic"
 msgstr "基本情報"
 
 #: ../data/ui/media-player-properties.ui.h:6 ../data/ui/sync-dialog.ui.h:1
-#, fuzzy
-#| msgid "<b>Sync Preferences</b>"
 msgid "Sync Preferences"
-msgstr "<b>同期の設定</b>"
+msgstr "同期の設定"
 
 #: ../data/ui/media-player-properties.ui.h:7 ../data/ui/sync-dialog.ui.h:2
-#, fuzzy
-#| msgid "<b>Sync Preview</b>"
 msgid "Sync Preview"
-msgstr "<b>同期のプレビュー</b>"
+msgstr "同期のプレビュー"
 
 #: ../data/ui/media-player-properties.ui.h:8
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:6
@@ -684,10 +624,8 @@ msgid "Select playlist format:"
 msgstr "フォーマットの選択:"
 
 #: ../data/ui/playlist-save.ui.h:4
-#, fuzzy
-#| msgid "<b>Playlist format</b>"
 msgid "Playlist format"
-msgstr "<b>プレイリストのフォーマット</b>"
+msgstr "プレイリストのフォーマット"
 
 #: ../data/ui/playlist-toolbar.ui.h:4 ../data/ui/queue-toolbar.ui.h:4
 msgid "Playlist"
@@ -747,43 +685,31 @@ msgid "Details"
 msgstr "詳細情報"
 
 #: ../data/ui/podcast-popups.ui.h:1
-#, fuzzy
-#| msgid "_New Podcast Feed..."
 msgid "New Podcast Feed..."
-msgstr "新しいPodcastの配信元(_N)..."
+msgstr "新しいPodcastの配信元..."
 
 #: ../data/ui/podcast-popups.ui.h:2
-#, fuzzy
-#| msgid "_Update All Feeds"
 msgid "Update All Feeds"
-msgstr "すべての配信元の更新(_U)"
+msgstr "すべての配信元の更新"
 
 #: ../data/ui/podcast-popups.ui.h:3
-#, fuzzy
-#| msgid "_Update Podcast Feed"
 msgid "Update Podcast Feed"
-msgstr "Podcastの配信元の更新(_U)"
+msgstr "Podcastの配信元の更新"
 
 #: ../data/ui/podcast-popups.ui.h:4
-#, fuzzy
-#| msgid "_Delete Podcast Feed"
 msgid "Delete Podcast Feed"
-msgstr "Podcastの配信元の削除(_D)"
+msgstr "Podcastの配信元の削除"
 
 #: ../data/ui/podcast-popups.ui.h:5 ../plugins/fmradio/fmradio-popup.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:4
 #: ../plugins/ipod/ipod-toolbar.ui.h:4 ../plugins/iradio/iradio-popup.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:4
-#, fuzzy
-#| msgid "_Properties"
 msgid "Properties"
-msgstr "ファイル情報(_P)"
+msgstr "プロパティ"
 
 #: ../data/ui/podcast-popups.ui.h:6
-#, fuzzy
-#| msgid "Download _Episode"
 msgid "Download Episode"
-msgstr "エピソードのダウンロード(_E)"
+msgstr "エピソードをダウンロードする"
 
 #: ../data/ui/podcast-popups.ui.h:7
 #: ../plugins/magnatune/magnatune-popup.ui.h:4
@@ -794,10 +720,8 @@ msgstr "ダウンロードのキャンセル"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
 #: ../podcast/rb-podcast-source.c:1296 ../sources/rb-media-player-source.c:919
-#, fuzzy
-#| msgid "_Delete"
 msgid "Delete"
-msgstr "削除(_D)"
+msgstr "削除"
 
 #: ../data/ui/podcast-prefs.ui.h:1
 msgid "Podcast Downloads"
@@ -879,22 +803,16 @@ msgid "Update"
 msgstr "配信元の更新"
 
 #: ../data/ui/queue-popups.ui.h:1
-#, fuzzy
-#| msgid "Remove From Playlist"
 msgid "Remove from Play Queue"
-msgstr "プレイリストから削除します"
+msgstr "プレイリストから削除する"
 
 #: ../data/ui/queue-popups.ui.h:2
-#, fuzzy
-#| msgid "Shuffle Queue"
 msgid "Shuffle Play Queue"
-msgstr "キューをシャッフルする"
+msgstr "再生キューをシャッフルする"
 
 #: ../data/ui/queue-popups.ui.h:5
-#, fuzzy
-#| msgid "Clear _Queue"
 msgid "Clear Play Queue"
-msgstr "キューのクリア(_Q)"
+msgstr "再生キューのクリア"
 
 #: ../data/ui/queue-toolbar.ui.h:3
 msgid "Clear"
@@ -1176,10 +1094,9 @@ msgid "Failed to create a source element; check your installation"
 msgstr "ソース要素の生成に失敗しました。インストール状況を確認してください"
 
 #: ../metadata/rb-metadata-gst.c:678
-#, fuzzy, c-format
-#| msgid "Failed to create the 'decodebin2' element; check your GStreamer installation"
+#, c-format
 msgid "Failed to create the 'decodebin' element; check your GStreamer installation"
-msgstr "'decodebin2'エレメントの生成に失敗しました。GStreamerのインストールを確認してください"
+msgstr "'decodebin'エレメントの生成に失敗しました。GStreamerのインストールを確認してください"
 
 #: ../metadata/rb-metadata-gst.c:687
 #, c-format
@@ -1226,10 +1143,8 @@ msgstr "ライブラリ化"
 #: ../plugins/audiocd/audiocd-toolbar.ui.h:3
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:5
 #: ../plugins/ipod/ipod-toolbar.ui.h:5 ../plugins/mtpdevice/mtp-toolbar.ui.h:5
-#, fuzzy
-#| msgid "_Eject"
 msgid "Eject"
-msgstr "取り出す(_E)"
+msgstr "取り出す"
 
 #: ../plugins/audiocd/audiocd-toolbar.ui.h:4
 msgid "Reload"
@@ -1298,10 +1213,8 @@ msgid "Not found"
 msgstr "歌詞が見つかりませんでした"
 
 #: ../plugins/audiocd/rb-musicbrainz-lookup.c:412
-#, fuzzy
-#| msgid "Unable to change station property"
 msgid "Unable to connect to Musicbrainz server"
-msgstr "ラジオ曲のプロパティを変更できません"
+msgstr "Musicbrainzサーバーに接続できませんでした"
 
 #: ../plugins/audiocd/rb-musicbrainz-lookup.c:417
 msgid "Musicbrainz server error"
@@ -1722,10 +1635,8 @@ msgid "Unable to create audio CD project"
 msgstr "音楽CDプロジェクトを作成できませんでした"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:654
-#, fuzzy
-#| msgid "_Create Audio CD..."
 msgid "Create Audio CD..."
-msgstr "音楽CDの作成(_C)..."
+msgstr "音楽CDの作成..."
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:660
 msgid "Duplicate Audio CD..."
@@ -1853,10 +1764,8 @@ msgid "Share music and play shared music on your local network"
 msgstr "ローカルのネットワーク上で共有した楽曲を再生します"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
-#, fuzzy
-#| msgid "<b>Sharing</b>"
 msgid "Sharing"
-msgstr "<b>共有</b>"
+msgstr "共有"
 
 #: ../plugins/daap/daap-prefs.ui.h:2
 msgid "_Look for touch Remotes"
@@ -1899,16 +1808,12 @@ msgid "You can now control Rhythmbox through your Remote"
 msgstr "RhythmboxをRemoteでコントロールできるようになりました。"
 
 #: ../plugins/daap/daap-toolbar.ui.h:4
-#, fuzzy
-#| msgid "_Disconnect"
 msgid "Disconnect"
-msgstr "接続を切る(_D)"
+msgstr "切断する"
 
 #: ../plugins/daap/rb-daap-plugin.c:203
-#, fuzzy
-#| msgid "Connect to _DAAP share..."
 msgid "Connect to DAAP share..."
-msgstr "DAAP共有に接続(_D)..."
+msgstr "DAAP共有に接続..."
 
 #: ../plugins/daap/rb-daap-plugin.c:633
 msgid "New DAAP share"
@@ -2039,10 +1944,8 @@ msgstr "楽曲の形式:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:8
 #: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:10
-#, fuzzy
-#| msgid "<b>System</b>"
 msgid "System"
-msgstr "<b>システム</b>"
+msgstr "システム"
 
 #: ../plugins/generic-player/generic-player.plugin.in.h:1
 msgid "Portable Players"
@@ -2061,10 +1964,8 @@ msgstr "新しいプレイリスト"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:336
 #: ../sources/rb-library-source.c:394
-#, fuzzy
-#| msgid "Add to P_laylist"
 msgid "Add to New Playlist"
-msgstr "プレイリストに追加する(_L)"
+msgstr "新しいプレイリストに追加する"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1434
 #: ../plugins/ipod/rb-ipod-source.c:2078
@@ -2297,20 +2198,16 @@ msgid "Fetch song lyrics from the Internet"
 msgstr "インターネットから曲の歌詞を取得します"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:1
-#, fuzzy
-#| msgid "<b>Search engines</b>"
 msgid "Search engines"
-msgstr "<b>検索エンジン</b>"
+msgstr "検索エンジン"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:2
 msgid "Browse..."
 msgstr "参照..."
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:3
-#, fuzzy
-#| msgid "<b>Lyrics Folder</b>"
 msgid "Lyrics Folder"
-msgstr "<b>歌詞を格納するフォルダー</b>"
+msgstr "歌詞を格納するフォルダー"
 
 #: ../plugins/lyrics/lyrics.py:155 ../plugins/lyrics/lyrics.py:157
 #: ../plugins/lyrics/lyrics.py:166
@@ -2891,10 +2788,8 @@ msgid "Quality"
 msgstr "音質"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:114
-#, fuzzy
-#| msgid "_Visual Effect"
 msgid "Visual Effect"
-msgstr "視覚効果(_V)"
+msgstr "視覚効果"
 
 #: ../plugins/visualizer/rb-visualizer-page.c:78
 msgid "Visual Effects"
@@ -3413,6 +3308,7 @@ msgstr ""
 "Kiyotaka NISHIBORI <ml.nishibori.kiyotaka@gmail.com>\n"
 "OKANO Takayoshi <kano@na.rim.or.jp>\n"
 "Kentaro KAZUHAMA <kazken3@gmail.com>\n"
+"Akira Tanaka <root.167d36d4acb91@gmail.com>\n"
 "日本GNOMEユーザー会 <http://www.gnome.gr.jp/>"
 
 #: ../shell/rb-application.c:211
@@ -3950,10 +3846,8 @@ msgid_plural "%d missing files"
 msgstr[0] "%d個のファイルがありません"
 
 #: ../sources/rb-playlist-source.c:1096
-#, fuzzy
-#| msgid "Remove From Playlist"
 msgid "Remove from Playlist"
-msgstr "プレイリストから削除します"
+msgstr "プレイリストから削除する"
 
 #: ../sources/rb-play-queue-source.c:284 ../sources/rb-play-queue-source.c:384
 #: ../sources/rb-play-queue-source.c:496
@@ -4101,10 +3995,8 @@ msgid "%s / %s"
 msgstr "%s / %s"
 
 #: ../widgets/rb-import-dialog.c:314
-#, fuzzy
-#| msgid "Loading..."
 msgid "Copying..."
-msgstr "読み込み中..."
+msgstr "コピー中..."
 
 #. this isn't a terribly helpful message.
 #: ../widgets/rb-import-dialog.c:479
