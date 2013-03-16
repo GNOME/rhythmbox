@@ -53,7 +53,7 @@ struct _RBVisualizerPage
 	GtkWidget *fullscreen;
 	GtkWidget *fullscreen_embed;
 
-	GMenuModel *popup_menu;
+	GMenuModel *popup;
 	GSimpleAction *fullscreen_action;
 	gboolean setting_state;
 };

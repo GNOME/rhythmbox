@@ -56,22 +56,22 @@ vis_plugin_filter (GstPluginFeature *feature, gpointer data)
 GMenu *
 rb_visualizer_create_popup_menu (const char *fullscreen_action)
 {
+	GActionMap *map;
 	GSettings *settings;
 	GMenu *menu;
 	GMenu *section;
 	GMenu *submenu;
 	GMenuItem *item;
-	GAction *quality;
-	GAction *effect;
 	GList *features;
 	GList *t;
 	int i;
 
 	menu = g_menu_new ();
 
+	map = G_ACTION_MAP (g_application_get_default ());
 	settings = g_settings_new ("org.gnome.rhythmbox.plugins.visualizer");
-	quality = g_settings_create_action (settings, "vis-quality");
-	effect = g_settings_create_action (settings, "vis-plugin");
+	g_action_map_add_action (map, g_settings_create_action (settings, "vis-quality"));
+	g_action_map_add_action (map, g_settings_create_action (settings, "vis-plugin"));
 
 	/* fullscreen item */
 	section = g_menu_new ();

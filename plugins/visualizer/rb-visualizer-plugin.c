@@ -357,6 +357,7 @@ impl_activate (PeasActivatable *activatable)
 	RhythmDBEntry *entry;
 	GSimpleAction *fullscreen;
 	RBShell *shell;
+	GMenu *menu;
 
 	g_object_get (pi, "object", &shell, NULL);
 
@@ -364,12 +365,12 @@ impl_activate (PeasActivatable *activatable)
 	g_signal_connect_object (pi->settings, "changed", G_CALLBACK (settings_changed_cb), pi, 0);
 
 	/* create UI actions and menus and stuff */
-	fullscreen = g_simple_action_new_stateful ("visualizer-toggle", "b", "false");
-	menu = rb_visualizer_create_popup_menu (fullscreen);
+	fullscreen = g_simple_action_new_stateful ("visualizer-toggle", G_VARIANT_TYPE_BOOLEAN, g_variant_new_boolean (FALSE));
+	menu = rb_visualizer_create_popup_menu ("app.visualizer-toggle");
 	g_object_ref_sink (menu);
 
 	/* create visualizer page */
-	pi->page = rb_visualizer_page_new (G_OBJECT (pi), shell, fullscreen, menu);
+	pi->page = rb_visualizer_page_new (G_OBJECT (pi), shell, fullscreen, G_MENU_MODEL (menu));
 	g_signal_connect_object (pi->page, "start", G_CALLBACK (start_visualizer_cb), pi, 0);
 	g_signal_connect_object (pi->page, "stop", G_CALLBACK (stop_visualizer_cb), pi, 0);
 
