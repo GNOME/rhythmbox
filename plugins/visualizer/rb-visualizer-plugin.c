@@ -53,8 +53,8 @@
 #define RB_IS_VISUALIZER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_VISUALIZER_PLUGIN))
 #define RB_VISUALIZER_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_VISUALIZER_PLUGIN, RBVisualizerPluginClass))
 
-/* playbin2 flag(s) */
-#define PLAYBIN2_FLAG_VIS	0x08
+/* playbin flag(s) */
+#define PLAYBIN_FLAG_VIS	0x08
 
 typedef struct
 {
@@ -189,7 +189,7 @@ mutate_playbin (RBVisualizerPlugin *plugin, GstElement *playbin)
 
 	/* start visualizer if it's supposed to be running */
 	if (plugin->visualizer != NULL) {
-		playbin_flags |= PLAYBIN2_FLAG_VIS;
+		playbin_flags |= PLAYBIN_FLAG_VIS;
 		g_object_set (plugin->playbin,
 			      "flags", playbin_flags,
 			      "vis-plugin", plugin->visualizer,
@@ -281,7 +281,7 @@ start_visualizer_cb (RBVisualizerPage *page, RBVisualizerPlugin *plugin)
 
 		g_object_get (plugin->playbin, "flags", &playbin_flags, NULL);
 		if (plugin->playbin != NULL) {
-			playbin_flags |= PLAYBIN2_FLAG_VIS;
+			playbin_flags |= PLAYBIN_FLAG_VIS;
 			rb_debug ("enabling vis; new playbin2 flags %x", playbin_flags);
 			g_object_set (plugin->playbin,
 				      "vis-plugin", plugin->visualizer,
@@ -319,7 +319,7 @@ stop_visualizer_cb (RBVisualizerPage *page, RBVisualizerPlugin *plugin)
 		int playbin_flags;
 
 		g_object_get (plugin->playbin, "flags", &playbin_flags, NULL);
-		playbin_flags &= ~PLAYBIN2_FLAG_VIS;
+		playbin_flags &= ~PLAYBIN_FLAG_VIS;
 		rb_debug ("disabling vis; new playbin2 flags %d", playbin_flags);
 		g_object_set (plugin->playbin,
 			      "flags", playbin_flags,
