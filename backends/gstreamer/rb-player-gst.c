@@ -1062,7 +1062,7 @@ impl_get_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_PLAYBIN:
-		g_value_set_object (value, mp->priv->playbin);
+		g_value_set_object (value, mp->priv->playbin ? g_object_ref (mp->priv->playbin) : NULL);
 		break;
 	case PROP_BUS:
 		if (mp->priv->playbin) {
