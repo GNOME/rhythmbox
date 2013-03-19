@@ -149,8 +149,11 @@ run_typefind (RBMetaData *md, const char *uri)
 				default:
 					break;
 				}
+
+				gst_message_unref (message);
 			}
 
+			g_object_unref (bus);
 			gst_element_set_state (GST_ELEMENT (pipeline), GST_STATE_NULL);
 		}
 
