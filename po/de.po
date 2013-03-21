@@ -9,7 +9,7 @@
 # Hendrik Brandt <heb@gnome-de.org>, 2005-2008.
 # Andre Klapper <ak-47@gmx.net>, 2007.
 # Jochen Skulj <jochen@jochenskulj.de>, 2008, 2009.
-# Mario Blättermann <mario.blaettermann@gmail.com>, 2008-2012.
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2008-2013.
 # Jakob Kramer <jakob.kramer@gmx.de>, 2010.
 # Wolfgang Stöggl <c72578@yahoo.de>, 2011, 2012.
 # Hendrik Knackstedt <kn.hendrik@gmail.com>, 2012.
@@ -18,10 +18,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-10 00:26+0100\n"
-"PO-Revision-Date: 2013-03-10 00:30+0100\n"
-"Last-Translator: Christian Kirbach <christian.kirbach@gmail.com>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=rhythmbox&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-03-19 22:28+0000\n"
+"PO-Revision-Date: 2013-03-16 19:41+0100\n"
+"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: Deutsch <gnome-de@gnome.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -47,10 +48,10 @@ msgid "Failed to open output device: %s"
 msgstr "Ausgabegerät konnte nicht geöffnet werden: %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:630
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create playbin element; check your GStreamer installation"
 msgstr ""
-"Das Element »%s« konnte nicht angelegt werden; überprüfen Sie die "
+"playbin-Element konnte nicht angelegt werden; überprüfen Sie die "
 "Installation von GStreamer"
 
 #: ../backends/gstreamer/rb-player-gst.c:671
@@ -146,6 +147,8 @@ msgstr "Ihre Musiksammlung wiedergeben und organisieren"
 #: ../data/rhythmbox.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
+"Audio;Musik;Lied;MP3;CD;Podcast;MTP;iPod;Wiedergabeliste;Last.fm;UPnP;DLNA;"
+"Radio;"
 
 #: ../data/ui/app-menu.ui.h:1
 msgid "_Add Music"
@@ -206,9 +209,8 @@ msgstr "_Beenden"
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
 #: ../data/ui/podcast-popups.ui.h:9
 #: ../plugins/magnatune/magnatune-popup.ui.h:1
-#, fuzzy
 msgid "Add to Queue"
-msgstr "In die _Warteschlange aufnehmen"
+msgstr "In die Warteschlange aufnehmen"
 
 #: ../data/ui/browser-popup.ui.h:2 ../data/ui/edit-menu.ui.h:7
 #: ../data/ui/playlist-popup.ui.h:2
@@ -230,21 +232,18 @@ msgstr "In den _Papierkorb verschieben"
 
 #: ../data/ui/browser-popup.ui.h:6 ../data/ui/playlist-popup.ui.h:6
 #: ../plugins/magnatune/magnatune-popup.ui.h:5
-#, fuzzy
 msgid "Browse this Genre"
-msgstr "Nach diesem _Genre suchen"
+msgstr "Nach diesem Genre suchen"
 
 #: ../data/ui/browser-popup.ui.h:7 ../data/ui/playlist-popup.ui.h:7
 #: ../plugins/magnatune/magnatune-popup.ui.h:6
-#, fuzzy
 msgid "Browse this Artist"
-msgstr "Nach diesem _Künstler suchen"
+msgstr "Nach diesem Künstler suchen"
 
 #: ../data/ui/browser-popup.ui.h:8 ../data/ui/playlist-popup.ui.h:8
 #: ../plugins/magnatune/magnatune-popup.ui.h:7
-#, fuzzy
 msgid "Browse this Album"
-msgstr "Nach diesem A_lbum suchen"
+msgstr "Nach diesem Album suchen"
 
 #: ../data/ui/browser-popup.ui.h:9 ../data/ui/edit-menu.ui.h:8
 #: ../data/ui/playlist-popup.ui.h:9 ../data/ui/queue-popups.ui.h:4
@@ -289,14 +288,12 @@ msgid "_New Playlist"
 msgstr "_Neue Wiedergabeliste …"
 
 #: ../data/ui/display-page-add-menu.ui.h:2
-#, fuzzy
 msgid "New _Automatic Playlist"
-msgstr "_Automatische Wiedergabeliste anlegen …"
+msgstr "Neue _automatische Wiedergabeliste"
 
 #: ../data/ui/display-page-add-menu.ui.h:3
-#, fuzzy
 msgid "_Load from File"
-msgstr "Aus Datei _laden …"
+msgstr "Aus Datei _laden"
 
 #: ../data/ui/display-page-add-menu.ui.h:4
 msgid "_Check for New Devices"
@@ -323,9 +320,8 @@ msgid "D_eselect All"
 msgstr "Alle a_bwählen"
 
 #: ../data/ui/edit-menu.ui.h:6
-#, fuzzy
 msgid "Add to Play Queue"
-msgstr "In die _Warteschlange aufnehmen"
+msgstr "In die Warteschlange aufnehmen"
 
 #: ../data/ui/general-prefs.ui.h:1
 msgid "Browser Views"
@@ -434,8 +430,8 @@ msgstr "Die ausgewählten Titel entfernen"
 #: ../data/ui/import-dialog.ui.h:8
 msgid "Select a location containing music to add to your library."
 msgstr ""
-"Wählen Sie einen Speicherort mit Musik, die Sie Ihrer Bibliothek hinzufügen "
-"möchten."
+"Wählen Sie einen Speicherort mit Musik, den Sie zu Ihrer Bibliothek "
+"hinzufügen möchten."
 
 #: ../data/ui/import-errors-popup.ui.h:1 ../data/ui/missing-files-popup.ui.h:1
 msgid "_Remove"
@@ -824,19 +820,16 @@ msgid "Update"
 msgstr "Aktualisieren"
 
 #: ../data/ui/queue-popups.ui.h:1
-#, fuzzy
 msgid "Remove from Play Queue"
-msgstr "Aus Wiedergabeliste löschen"
+msgstr "Aus Wiedergabewarteschlange löschen"
 
 #: ../data/ui/queue-popups.ui.h:2
-#, fuzzy
 msgid "Shuffle Play Queue"
-msgstr "Warteschlange mischen"
+msgstr "Wiedergabewarteschlange mischen"
 
 #: ../data/ui/queue-popups.ui.h:5
-#, fuzzy
 msgid "Clear Play Queue"
-msgstr "Warteschlange _leeren"
+msgstr "Wiedergabewarteschlange leeren"
 
 #: ../data/ui/queue-toolbar.ui.h:3
 msgid "Clear"
@@ -1104,14 +1097,14 @@ msgstr "%d:%02d von %d:%02d"
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d von %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:496
+#: ../metadata/rb-metadata-gst.c:499
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
 msgstr ""
 "Die Datei kann nicht mit Markierungen versehen werden, da sie mehrere "
 "Datenströme enthält"
 
-#: ../metadata/rb-metadata-gst.c:536
+#: ../metadata/rb-metadata-gst.c:539
 #, c-format
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
@@ -1119,22 +1112,22 @@ msgstr ""
 "Die Datei kann nicht mit Markierungen versehen werden, da sie nicht in einem "
 "unterstützten Format kodiert ist."
 
-#: ../metadata/rb-metadata-gst.c:668
+#: ../metadata/rb-metadata-gst.c:671
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr ""
 "Quellelement konnte nicht angelegt werden; bitte überprüfen Sie die "
 "Installation"
 
-#: ../metadata/rb-metadata-gst.c:678
-#, fuzzy, c-format
+#: ../metadata/rb-metadata-gst.c:681
+#, c-format
 msgid ""
 "Failed to create the 'decodebin' element; check your GStreamer installation"
 msgstr ""
-"Das Element »decodebin2« konnte nicht angelegt werden; überprüfen Sie die "
+"Das Element »decodebin« konnte nicht angelegt werden; überprüfen Sie die "
 "Installation von GStreamer"
 
-#: ../metadata/rb-metadata-gst.c:687
+#: ../metadata/rb-metadata-gst.c:690
 #, c-format
 msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
@@ -1143,7 +1136,7 @@ msgstr ""
 "Das Element »giostreamsink« konnte nicht angelegt werden; überprüfen Sie die "
 "Installation von GStreamer"
 
-#: ../metadata/rb-metadata-gst.c:770
+#: ../metadata/rb-metadata-gst.c:773
 #, c-format
 msgid "File corrupted during write"
 msgstr "Datei wurde während des Schreibvorgangs beschädigt"
@@ -1264,7 +1257,7 @@ msgstr "Last.fm"
 #: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:2
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
 msgstr ""
-"Titelinformationen an last.fm übermitteln und last.fm-Radio-Streams "
+"Titelinformationen an Last.fm übermitteln und Last.fm-Radio-Streams "
 "wiedergeben"
 
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:1
@@ -1857,9 +1850,8 @@ msgid "Disconnect"
 msgstr "Trennen"
 
 #: ../plugins/daap/rb-daap-plugin.c:203
-#, fuzzy
 msgid "Connect to DAAP share..."
-msgstr "Verbindung zur DAAP-Freigabe herstellen ..."
+msgstr "Verbindung zu DAAP-Freigabe herstellen …"
 
 #: ../plugins/daap/rb-daap-plugin.c:633
 msgid "New DAAP share"
@@ -2007,15 +1999,14 @@ msgstr ""
 
 #: ../plugins/generic-player/rb-generic-player-source.c:292
 #: ../plugins/ipod/rb-ipod-source.c:334
-#, fuzzy, c-format
+#, c-format
 msgid "New Playlist on %s"
-msgstr "Neue Wiedergabeliste"
+msgstr "Neue Wiedergabeliste auf %s"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:336
 #: ../sources/rb-library-source.c:394
-#, fuzzy
 msgid "Add to New Playlist"
-msgstr "Zur W_iedergabeliste hinzufügen"
+msgstr "Zu neuer Wiedergabeliste hinzufügen"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1434
 #: ../plugins/ipod/rb-ipod-source.c:2078
@@ -2376,7 +2367,6 @@ msgid "Download Album"
 msgstr "Album herunterladen"
 
 #: ../plugins/magnatune/magnatune-popup.ui.h:3
-#, fuzzy
 msgid "Artist Info"
 msgstr "Künstlerinformationen"
 
@@ -2389,8 +2379,8 @@ msgid ""
 "Adds support to Rhythmbox for playing and purchasing from the Magnatune "
 "online music store"
 msgstr ""
-"Erweitert Rhythmbox um die Möglichkeit Musik von Magnatune-Online-Musikladen "
-"abzuspielen und zu kaufen"
+"Erweitert Rhythmbox um die Möglichkeit, Musik von Magnatune-Online-"
+"Musikladen abzuspielen und zu kaufen"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
 msgid "Magnatune Information"
@@ -2972,7 +2962,7 @@ msgstr "%s. Möchten Sie den Podcast-Feed trotzdem hinzufügen?"
 
 #: ../podcast/rb-podcast-manager.c:907
 msgid "Error creating podcast download directory"
-msgstr "Fehler beim Erzeugen eines Ordners zum Herunterladen eines Podcast"
+msgstr "Fehler beim Erzeugen eines Ordners zum Herunterladen eines Podcasts"
 
 #: ../podcast/rb-podcast-manager.c:908
 #, c-format
@@ -3080,7 +3070,7 @@ msgstr "Heruntergeladen"
 
 #: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1470
 msgid "Failed"
-msgstr "fehlgeschlagen"
+msgstr "Fehlgeschlagen"
 
 #: ../podcast/rb-podcast-source.c:632 ../podcast/rb-podcast-source.c:1469
 msgid "Waiting"
@@ -3208,11 +3198,11 @@ msgstr "Die ausgewählten Titel in die Wiedergabeliste aufnehmen"
 
 #: ../remote/dbus/rb-client.c:103
 msgid "Empty the play queue before adding new tracks"
-msgstr "Die Warteschlange leeren ehe ein neuer Titel hinzugefügt wird"
+msgstr "Die Warteschlange leeren, ehe ein neuer Titel hinzugefügt wird"
 
 #: ../remote/dbus/rb-client.c:105
 msgid "Print the title and artist of the playing song"
-msgstr "Zeigt Name und Künstler für den aktuell wiedergegebenen Titel an"
+msgstr "Name und Künstler für den aktuell wiedergegebenen Titel anzeigen"
 
 #: ../remote/dbus/rb-client.c:106
 msgid "Print formatted details of the song"
@@ -4806,354 +4796,3 @@ msgstr "Unbekannter Speicherort"
 
 #~ msgid "Show all tracks in this music source"
 #~ msgstr "Alle Titel dieser Musikquelle anzeigen"
-
-# Kurz übersetzt aufgrund von Bug 636016 - Label "Jump to Playing" is in the german translation too long.
-#~ msgid "_Jump to Playing Song"
-#~ msgstr "Zu _aktivem Titel"
-
-#~ msgid "Scroll the view to the currently playing song"
-#~ msgstr ""
-#~ "Die Ansicht rollen, sodass der momentan wiedergegebene Titel sichtbar ist"
-
-#~ msgid "Change the visibility of the side pane"
-#~ msgstr "Sichtbarkeit der Seitenleiste verändern"
-
-#~ msgid "Change the status of the party mode"
-#~ msgstr "Status des Party-Modus ändern"
-
-#~ msgid "Change whether the queue is visible as a source or a sidebar"
-#~ msgstr ""
-#~ "Legt fest, ob die Warteschlange als Quelle oder als Seitenleiste "
-#~ "angezeigt wird"
-
-#~ msgid "Change the visibility of the statusbar"
-#~ msgstr "Die Statuszeile anzeigen/verbergen"
-
-#~ msgid "Change the visibility of the song position slider"
-#~ msgstr "Sichtbarkeit des Titelpositionsanzeige ändern"
-
-#~ msgid "Change the visibility of the album art display"
-#~ msgstr "Sichtbarkeit des Albumbildes ändern"
-
-#~ msgid "_Browse"
-#~ msgstr "_Durchsuchen"
-
-#~ msgid "Change the visibility of the browser"
-#~ msgstr "Den Browser anzeigen/verbergen"
-
-#~ msgid "Change the music volume"
-#~ msgstr "Die Wiedergabelautstärke festlegen"
-
-#~ msgid "Select all songs"
-#~ msgstr "Alle Titel auswählen"
-
-#~ msgid "Deselect all songs"
-#~ msgstr "Auswahl aufheben"
-
-#~ msgid "Cut selection"
-#~ msgstr "Auswahl ausschneiden"
-
-#~ msgid "Copy selection"
-#~ msgstr "Auswahl kopieren"
-
-#~ msgid "Paste selection"
-#~ msgstr "Auswahl einfügen"
-
-#~ msgid "Delete each selected item"
-#~ msgstr "Ausgewählte Einträge löschen"
-
-#~ msgid "Remove each selected item from the library"
-#~ msgstr "Jedes der ausgewählten Objekte aus der Bibliothek löschen"
-
-#~ msgid "Move each selected item to the trash"
-#~ msgstr "Auswahl in den Müll verschieben"
-
-#~ msgid "Add each selected song to a new playlist"
-#~ msgstr "Ausgewählte Titel zu einer neuen Wiedergabeliste hinzufügen"
-
-#~ msgid "Add each selected song to the play queue"
-#~ msgstr "Die ausgewählten Titel in die Warteschlange aufnehmen"
-
-#~ msgid "Remove each selected item from the play queue"
-#~ msgstr "Alle ausgewählten Titel aus der Warteschlange entfernen"
-
-#~ msgid "Show information on each selected song"
-#~ msgstr "Informationen zu jedem der gewählten Titel anzeigen"
-
-#~ msgid "Pre_vious"
-#~ msgstr "_Vorheriger"
-
-#~ msgid "_Next"
-#~ msgstr "_Nächster"
-
-#~ msgid "_Increase Volume"
-#~ msgstr "Lautstärke _erhöhen"
-
-#~ msgid "Increase playback volume"
-#~ msgstr "Wiedergabelautstärke erhöhen"
-
-#~ msgid "_Decrease Volume"
-#~ msgstr "Lautstärke _verringern"
-
-#~ msgid "Decrease playback volume"
-#~ msgstr "Wiedergabelautstärke verringern"
-
-#~ msgid "_Play"
-#~ msgstr "_Wiedergabe"
-
-#~ msgid "Sh_uffle"
-#~ msgstr "_Zufall"
-
-#~ msgid "Set the browser to view only this genre"
-#~ msgstr "Den Browser nur dieses Genre anzeigen lassen"
-
-#~ msgid "Set the browser to view only this artist"
-#~ msgstr "Den Browser nur diesen Künstler anzeigen lassen"
-
-#~ msgid "Set the browser to view only this album"
-#~ msgstr "Den Browser nur dieses Album anzeigen lassen"
-
-#~ msgid "Sync with Library"
-#~ msgstr "Mit Musiksammlung abgleichen"
-
-#~ msgid "Synchronize media player with the library"
-#~ msgstr "Das Medienwiedergabegerät mit der Bibliothek abgleichen"
-
-#~ msgid "Remove each selected song from the playlist"
-#~ msgstr "Alle ausgewählten Titel aus der Wiedergabeliste entfernen"
-
-#~ msgid "Remove all songs from the play queue"
-#~ msgstr "All Titel aus der Warteschlange entfernen"
-
-#~ msgid "Shuffle the tracks in the play queue"
-#~ msgstr "Titel Wiedergabeliste mischen"
-
-#~ msgctxt "Queue"
-#~ msgid "Shuffle"
-#~ msgstr "Zufällig"
-
-#~ msgid "Multiple Albums Found"
-#~ msgstr "Mehrere Alben gefunden"
-
-#~ msgid ""
-#~ "This CD could be more than one album. Please select which album it is "
-#~ "below and press <i>Continue</i>."
-#~ msgstr ""
-#~ "Diese CD kann auf mehrere Alben zutreffen. Bitte wählen Sie hier das "
-#~ "richtige Album aus und klicken Sie auf <i>Weiter</i>."
-
-#~ msgid "_Continue"
-#~ msgstr "_Fortsetzen"
-
-#~ msgid "Hide"
-#~ msgstr "Verbergen"
-
-#~ msgid "Couldn't load Audio CD"
-#~ msgstr "Audio-CD konnte nicht geladen werden"
-
-#~ msgid "Rhythmbox couldn't access the CD."
-#~ msgstr "Rhythmbox konnte nicht auf die CD zugreifen."
-
-#~ msgid "Rhythmbox couldn't read the CD information."
-#~ msgstr "Rhythmbox konnte die CD-Informationen nicht einlesen."
-
-#~ msgid "Cannot read CD: %s"
-#~ msgstr "CD konnte nicht gelesen werden: %s"
-
-#~ msgid "Devices haven't been all probed yet"
-#~ msgstr "Es sind noch nicht alle Geräte untersucht worden"
-
-#~ msgid "Device '%s' does not contain any media"
-#~ msgstr "Das Laufwerk »%s« enthält keinerlei Medium"
-
-#~ msgid ""
-#~ "Device '%s' could not be opened. Check the access permissions on the "
-#~ "device."
-#~ msgstr ""
-#~ "Das Laufwerk »%s« konnte nicht geöffnet werden. Bitte überprüfen Sie Ihre "
-#~ "Zugriffsrechte auf das Laufwerk."
-
-#~ msgid "Cannot access CD"
-#~ msgstr "Auf die CD konnte nicht zugegriffen werden"
-
-#~ msgid "Unknown Title"
-#~ msgstr "Unbekannter Titel"
-
-#~ msgid "Unknown Artist"
-#~ msgstr "Unbekannter Künstler"
-
-#~ msgid "Track %d"
-#~ msgstr "Titel %d"
-
-#~ msgid "Cannot access CD: %s"
-#~ msgstr "Auf die CD konnte nicht zugegriffen werden: %s"
-
-#~ msgid "Astraweb (www.astraweb.com)"
-#~ msgstr "Astraweb (www.astraweb.com)"
-
-#~ msgid "_Import Folder..."
-#~ msgstr "Ordner _importieren …"
-
-#~ msgid "Choose folder to be added to the Library"
-#~ msgstr "Einen zur Musiksammlung hinzuzufügenden Ordner auswählen"
-
-#~ msgid "Import _File..."
-#~ msgstr "_Datei importieren …"
-
-#~ msgid "Choose file to be added to the Library"
-#~ msgstr "Eine zur Musiksammlung hinzuzufügende Datei wählen"
-
-#~ msgid "Import Folder into Library"
-#~ msgstr "Ordner in Musiksammlung aufnehmen"
-
-#~ msgid "Import File into Library"
-#~ msgstr "Datei in Musiksammlung aufnehmen"
-
-#~ msgid "<span foreground=\"red\">Could not pair with this Remote.</span>"
-#~ msgstr ""
-#~ "<span foreground=\"red\">Koppeln mit dieser Gegenstelle schlug fehl.</"
-#~ "span>"
-
-#~ msgid ""
-#~ "<span size=\"x-large\" weight=\"bold\">Do you want to initialize your "
-#~ "iPod?</span>"
-#~ msgstr ""
-#~ "<span size=\"x-large\" weight=\"bold\">Möchten Sie Ihren iPod "
-#~ "initialisieren?</span>"
-
-#~ msgid "Could not create CD lookup thread"
-#~ msgstr "Programmprozess für die CD-Suche konnte nicht erstellt werden"
-
-#~ msgid "New Podcast Feed"
-#~ msgstr "Neuer Podcast-Feed"
-
-#~ msgid "URL of podcast feed:"
-#~ msgstr "Adresse des Podcast-Feeds:"
-
-#~ msgid "Default"
-#~ msgstr "Vorgabe"
-
-#~ msgid "Text below icons"
-#~ msgstr "Text unter Symbolen"
-
-#~ msgid "Text beside icons"
-#~ msgstr "Text neben Symbolen"
-
-#~ msgid "Icons only"
-#~ msgstr "Nur Symbole"
-
-#~ msgid "Text only"
-#~ msgstr "Nur Text"
-
-#~ msgid "Toolbar Button Labels"
-#~ msgstr "Werkzeugleisten-Stil"
-
-#~ msgid "_Settings"
-#~ msgstr "Ein_stellungen"
-
-#~ msgid "Cover art"
-#~ msgstr "Cover-Anzeige"
-
-#~ msgid "T_oolbar"
-#~ msgstr "_Werkzeugleiste"
-
-#~ msgid "_Small Display"
-#~ msgstr "_Kompakt"
-
-#~ msgid "Make the main window smaller"
-#~ msgstr "Das Hauptfenster verkleinern"
-
-#~ msgid "Invalid share name"
-#~ msgstr "Ungültiger Ordnername"
-
-#~ msgid "The shared music name '%s' is already taken. Please choose another."
-#~ msgstr ""
-#~ "Der Name »%s« für den gemeinsamen Musikordner ist bereits vergeben. Bitte "
-#~ "wählen Sie einen anderen."
-
-#~ msgid "Shared music _name:"
-#~ msgstr "_Name des gemeinsamen Musikordners:"
-
-#~ msgid "     * Founder/owner runs it -- support a small business"
-#~ msgstr ""
-#~ "    * Der Gründer/Eigentümer hält die Geschäfte am Laufen - als "
-#~ "Einmannfirma"
-
-#~ msgid ""
-#~ "    * 50% of payment goes to artist (makes buyer feel good: they're "
-#~ "helping the world)"
-#~ msgstr ""
-#~ "    * 50 % der Einnahmen gehen direkt an den Künstler (dies verschafft "
-#~ "Ihnen ein gutes Gefühl und rettet außerdem die Welt)"
-
-#~ msgid ""
-#~ "    * Downloads and CDs are both available (no other site on the internet "
-#~ "sells both)"
-#~ msgstr ""
-#~ "    * Musik kann heruntergeladen oder als CD gekauft werden (keine andere "
-#~ "Seite im Internet bietet beide Dienste an)"
-
-#~ msgid ""
-#~ "    * Extensive biographical info about each musician, and artist photo "
-#~ "-- feel a strong connection to the artist"
-#~ msgstr ""
-#~ "    * Ausführliche Biografien und Fotos zu jedem Musiker - gehen Sie "
-#~ "dadurch eine engere Bindung zum Künstler ein"
-
-#~ msgid ""
-#~ "    * Full color, high quality cover art PDF available for most albums - "
-#~ "easy to print"
-#~ msgstr ""
-#~ "    * Die CD-Cover liegen in Vollfarben und hoher Qualität als PDF vor - "
-#~ "dadurch ist es einfach, diese auszudrucken"
-
-#~ msgid ""
-#~ "    * Low pressure environment - nothing flashing, no audio ads while "
-#~ "listening to albums"
-#~ msgstr ""
-#~ "    * Angenehme Umgebung - keine blinkenden oder tönenden Werbe-Banner, "
-#~ "während man die Alben hört"
-
-#~ msgid ""
-#~ "    * Music selection is unique to Magnatune, unlike most on-line stores "
-#~ "that have more-or-less the same (gigantic) selection\n"
-#~ msgstr ""
-#~ "    * Die Musikauswahl auf Magnatune ist einmalig - anders als bei den "
-#~ "meisten Online-Läden, die alle mehr oder weniger die gleiche (riesige) "
-#~ "Auswahl haben\n"
-
-#~ msgid ""
-#~ "    * No copy protection on the music (DRM) which allows playing music on "
-#~ "any device (unlike iTunes/MSN/etc)"
-#~ msgstr ""
-#~ "    * Die Musik ist frei von einem Kopierschutz (DRM), so dass Sie sie "
-#~ "immer und überall abspielen können (anders als iTunes, MSN usw.)"
-
-#~ msgid "    * No need to \"register\" to listen or buy"
-#~ msgstr ""
-#~ "    * Sie müssen sich nicht registrieren, um Musik zu hören oder zu kaufen"
-
-#~ msgid ""
-#~ "    * Not part of the \"evil\" major label machine - for those that hate "
-#~ "the music biz and want to help topple it"
-#~ msgstr ""
-#~ "    * Kein Teil der »bösen« Maschinerie der Musikkonzerne - für all "
-#~ "diejenigen, die die Musikindustrie verachten und dabei helfen möchten, "
-#~ "sie zu überwinden"
-
-#~ msgid "    * Not venture-capital backed big business"
-#~ msgstr "    * Keine Risikokapitalanleger im Rücken"
-
-#~ msgid ""
-#~ "    * Our genres are hard to find in record stores and not on radio "
-#~ "(though do appear on college radio)"
-#~ msgstr ""
-#~ "    * Unsere Genres sind kaum im Laden zu finden und nicht im Radio zu "
-#~ "hören (außer auf einigen Studentenradios)"
-
-#~ msgid ""
-#~ "    * Perfect quality downloads (CD copy) are available when you download "
-#~ "(not inferior quality sound)"
-#~ msgstr ""
-#~ "    * Musik kann in CD-Qualität heruntergeladen werden (kein "
-#~ "qualitätsverminderter Klang)"
