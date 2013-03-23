@@ -72,7 +72,6 @@ struct _RBDisplayPageClass
 
 	void	(*get_status)		(RBDisplayPage *page, char **text, char **progress_text, float *progress);
 	gboolean (*receive_drag)	(RBDisplayPage *page, GtkSelectionData *data);
-	/*gboolean (*show_popup)		(RBDisplayPage *page);*/
 	void	(*delete_thyself)	(RBDisplayPage *page);
 
 	gboolean (*can_remove)		(RBDisplayPage *page);
@@ -82,7 +81,6 @@ struct _RBDisplayPageClass
 GType		rb_display_page_get_type		(void);
 
 gboolean	rb_display_page_receive_drag		(RBDisplayPage *page, GtkSelectionData *data);
-/*gboolean	rb_display_page_show_popup		(RBDisplayPage *page);*/
 
 gboolean	rb_display_page_selectable		(RBDisplayPage *page);
 void		rb_display_page_selected		(RBDisplayPage *page);

@@ -126,27 +126,6 @@ rb_display_page_receive_drag (RBDisplayPage *page, GtkSelectionData *data)
 }
 
 /**
- * rb_display_page_show_popup:
- * @page: a #RBDisplayPage
- *
- * Called when the user performs an action (such as right-clicking)
- * that should result in a popup menu being displayed for the page.
- *
- * Return value: TRUE if the page managed to display a popup
- *//*
-gboolean
-rb_display_page_show_popup (RBDisplayPage *page)
-{
-	RBDisplayPageClass *klass = RB_DISPLAY_PAGE_GET_CLASS (page);
-
-	if (klass->show_popup)
-		return klass->show_popup (page);
-	else
-		return FALSE;
-}
-*/
-
-/**
  * rb_display_page_delete_thyself:
  * @page: a #RBDisplayPage
  *
