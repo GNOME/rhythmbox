@@ -135,6 +135,7 @@ enum
 {
 	FILTER_CHANGED,
 	RESET_FILTERS,
+	PLAYBACK_STATUS_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -338,6 +339,21 @@ rb_source_class_init (RBSourceClass *klass)
 			      RB_TYPE_SOURCE,
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 			      G_STRUCT_OFFSET (RBSourceClass, reset_filters),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
+	/**
+	 * RBSource::playback-status-changed:
+	 * @source: the #RBSource
+	 *
+	 * Emitted to indicate playback status (buffering etc.) has changed
+	 */
+	rb_source_signals[PLAYBACK_STATUS_CHANGED] =
+		g_signal_new ("playback-status-changed",
+			      RB_TYPE_SOURCE,
+			      G_SIGNAL_RUN_LAST,
+			      0,
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
@@ -1465,6 +1481,37 @@ rb_source_bind_settings (RBSource *source, GtkWidget *entry_view, GtkWidget *pan
 
 	g_free (name);
 }
+
+/**
+ * rb_source_notify_playback_status_changed:
+ * @source: a #RBSource
+ *
+ * Source implementations call this when their playback status
+ * changes.
+ */
+void
+rb_source_notify_playback_status_changed (RBSource *source)
+{
+	g_signal_emit (G_OBJECT (source), rb_source_signals[PLAYBACK_STATUS_CHANGED], 0);
+}
+
+/**
+ * rb_source_get_playback_status:
+ * @source: a #RBSource
+ * @text: (inout) (allow-none) (transfer full): holds returned playback status text
+ * @progress: (inout) (allow-none): holds returned playback status progress value
+ *
+ * Retrieves playback status details, such as buffering progress.
+ */
+void
+rb_source_get_playback_status (RBSource *source, char **text, float *progress)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	if (klass->impl_get_playback_status)
+		klass->impl_get_playback_status (source, text, progress);
+}
+
 
 /* This should really be standard. */
 #define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }

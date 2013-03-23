@@ -130,6 +130,7 @@ struct _RBSourceClass
 
 	gboolean	(*impl_can_pause)	(RBSource *source);
 	RBSourceEOFType	(*impl_handle_eos)	(RBSource *source);
+	void		(*impl_get_playback_status) (RBSource *source, char **text, float *progress);
 
 	char *		(*impl_get_delete_label) (RBSource *source);
 };
@@ -191,6 +192,9 @@ GList *		rb_source_gather_selected_properties (RBSource *source, RhythmDBPropTyp
 
 void            rb_source_set_hidden_when_empty (RBSource *source,
                                                  gboolean  hidden);
+void		rb_source_get_playback_status	(RBSource *source,
+						 char **text,
+						 float *progress);
 
 /* Protected methods, should only be used by objects inheriting from RBSource */
 
@@ -205,6 +209,7 @@ void		rb_source_bind_settings		(RBSource *source,
 						 GtkWidget *entry_view,
 						 GtkWidget *paned,
 						 GtkWidget *browser);
+void		rb_source_notify_playback_status_changed (RBSource *source);
 
 G_END_DECLS
 
