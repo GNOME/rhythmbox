@@ -225,6 +225,7 @@ static void impl_remove (RBDisplayPage *page);
 /* RBSource implementations */
 static RBEntryView *impl_get_entry_view (RBSource *asource);
 static RBSourceEOFType impl_handle_eos (RBSource *asource);
+static void impl_get_playback_status (RBSource *source, char **text, float *progress);
 
 enum {
 	PROP_0,
@@ -311,6 +312,7 @@ rb_audioscrobbler_radio_source_class_init (RBAudioscrobblerRadioSourceClass *kla
 	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_handle_eos = impl_handle_eos;
+	source_class->impl_get_playback_status = impl_get_playback_status;
 
 	g_object_class_install_property (object_class,
 	                                 PROP_PARENT,
@@ -1016,17 +1018,19 @@ static void
 impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress)
 {
 	RBAudioscrobblerRadioSource *source = RB_AUDIOSCROBBLER_RADIO_SOURCE (page);
-
-	/* pulse progressbar if we're busy, otherwise see what the streaming source part of us has to say */
 	if (source->priv->is_busy) {
 		/* We could be calling either radio.tune or radio.getPlaylist methods.
 		 * "Tuning station" seems like a user friendly message to display for both cases.
 		 */
 		*progress_text = g_strdup (_("Tuning station"));
 		*progress = -1.0f;
-	} else {
-		rb_streaming_source_get_progress (RB_STREAMING_SOURCE (source), progress_text, progress);
 	}
+}
+
+static void
+impl_get_playback_status (RBSource *source, char **text, float *progress)
+{
+	rb_streaming_source_get_progress (RB_STREAMING_SOURCE (source), text, progress);
 }
 
 static RBSourceEOFType

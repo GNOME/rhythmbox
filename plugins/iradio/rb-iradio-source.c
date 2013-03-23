@@ -106,6 +106,7 @@ static void impl_add_uri (RBSource *source,
 			  RBSourceAddCallback callback,
 			  gpointer data,
 			  GDestroyNotify destroy_data);
+static void impl_get_playback_status (RBSource *source, char **text, float *progress);
 
 static void rb_iradio_source_do_query (RBIRadioSource *source);
 static void impl_reset_filters (RBSource *source);
@@ -206,6 +207,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_want_uri = impl_want_uri;
 	source_class->impl_add_uri = impl_add_uri;
+	source_class->impl_get_playback_status = impl_get_playback_status;
 
 	g_object_class_override_property (object_class,
 					  PROP_SHOW_BROWSER,
@@ -615,7 +617,12 @@ impl_get_status (RBDisplayPage *page,
 	*text = g_strdup_printf (ngettext ("%d station", "%d stations", num_entries),
 				 num_entries);
 
-	rb_streaming_source_get_progress (RB_STREAMING_SOURCE (source), progress_text, progress);
+}
+
+static void
+impl_get_playback_status (RBSource *source, char **text, float *progress)
+{
+	rb_streaming_source_get_progress (RB_STREAMING_SOURCE (source), text, progress);
 }
 
 static void

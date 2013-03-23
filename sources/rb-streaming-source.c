@@ -232,7 +232,7 @@ buffering_cb (GObject *backend, gpointer whatever, guint progress, RBStreamingSo
 
 	GDK_THREADS_ENTER ();
 	source->priv->buffering = progress;
-	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
+	rb_source_notify_playback_status_changed (RB_SOURCE (source));
 	GDK_THREADS_LEAVE ();
 }
 
