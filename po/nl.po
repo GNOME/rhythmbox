@@ -38,8 +38,8 @@ msgstr ""
 "Project-Id-Version: Rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-23 22:27+0100\n"
-"PO-Revision-Date: 2013-03-17 08:56+0100\n"
-"Last-Translator: Redmar <redmar@ubuntu.com>\n"
+"PO-Revision-Date: 2013-03-23 23:05+0100\n"
+"Last-Translator: Wouter Bolsterlee <wbolster@gnome.org>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -158,7 +158,7 @@ msgstr "Uw muziekcollectie beluisteren en beheren"
 
 #: ../data/rhythmbox.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
-msgstr "Audio;liedje;muziek;mp3;podcast;ipod;afspeellijst;radio;last.fm;cd;"
+msgstr "audio;liedje;muziek;mp3;podcast;ipod;afspeellijst;radio;last.fm;cd;upnp;dlna;mtp;"
 
 #: ../data/ui/app-menu.ui.h:1
 msgid "_Add Music"
@@ -507,7 +507,7 @@ msgstr "Formaatinstellingen:"
 
 #: ../data/ui/library-prefs.ui.h:11
 msgid "_Install additional software required to use this format"
-msgstr "_Installeer optionele software om dit formaat te kunnen gebruiken"
+msgstr "Aanvullende software installeren om dit formaat te kunnen gebruiken"
 
 #: ../data/ui/library-toolbar.ui.h:1 ../data/ui/playlist-toolbar.ui.h:1
 #: ../data/ui/podcast-toolbar.ui.h:1 ../data/ui/queue-toolbar.ui.h:1
@@ -628,14 +628,13 @@ msgid "_Properties"
 msgstr "_Eigenschappen"
 
 # de term 'backend' niet gebruiken, niemand begrijpt dat.
-#
 #: ../data/ui/playback-prefs.ui.h:1
 msgid "Player Backend"
 msgstr "Afspelen"
 
 #: ../data/ui/playback-prefs.ui.h:2
 msgid "_Crossfade between tracks"
-msgstr "_Overlopen tussen nummers"
+msgstr "_Overloop tussen nummers"
 
 #: ../data/ui/playback-prefs.ui.h:3
 msgid "Crossfade Duration (Seconds)"
@@ -689,9 +688,9 @@ msgid ""
 "podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
-"Zoek naar podcasts in de iTunes-winkel en op Miroguide.com, of voer een "
-"webadres (URL) in voor een podcast feed.\n"
-"Abonneer op podcasts om nieuwe episodes binnen te halen wanneer die worden "
+"Naar podcasts in de iTunes-winkel en op Miroguide.com zoeken, of een "
+"webadres (URL) in voor een podcast feed invoeren.\n"
+"Op podcasts abonneren om nieuwe episodes binnen te halen wanneer die worden "
 "gepubliceerd."
 
 #: ../data/ui/podcast-add-dialog.ui.h:4
@@ -780,7 +779,7 @@ msgstr "Verwijderen"
 
 #: ../data/ui/podcast-prefs.ui.h:1
 msgid "Podcast Downloads"
-msgstr "Podcast Downloads"
+msgstr "Podcast-downloads"
 
 #: ../data/ui/podcast-prefs.ui.h:2
 msgid "_Download location:"
@@ -1270,12 +1269,12 @@ msgstr "Kon niet naar albumdetails zoeken op MusicBrainz."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:675
 msgid "Could not read the CD device."
-msgstr "Kan de CD-speler niet lezen"
+msgstr "Kan de cd-speler niet lezen"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:879
 msgid "This disc matches multiple albums. Select the correct album."
 msgstr ""
-"Deze schijf komt overeen met meerder albums. Selecteer het juiste album."
+"Deze schijf komt overeen met meerdere albums. Selecteer het juiste album."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:1087
 #, c-format
@@ -1293,7 +1292,7 @@ msgstr "Kon niet met de Musicbrainz-server verbinden"
 
 #: ../plugins/audiocd/rb-musicbrainz-lookup.c:417
 msgid "Musicbrainz server error"
-msgstr "Musicbrainz serverfout"
+msgstr "Serverfout van Musicbrainz"
 
 #: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:1
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:2
@@ -1590,7 +1589,7 @@ msgstr "Omgeving van %s"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:137
 #, c-format
 msgid "%s's Loved Tracks"
-msgstr "%s's geliefde nummers"
+msgstr "%s's favoriete nummers"
 
 #. Translators: station is built from the tracks which are recommended to the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:139
@@ -1897,7 +1896,7 @@ msgstr "_Wachtwoord vragen:"
 
 #: ../plugins/daap/daap-prefs.ui.h:7
 msgid "Add Remote"
-msgstr "Afstandsbediening toevoegen</b>"
+msgstr "Afstandsbediening toevoegen"
 
 #: ../plugins/daap/daap-prefs.ui.h:8
 msgid "Please enter the passcode displayed on your device."
@@ -2086,7 +2085,7 @@ msgstr "Grilo mediabeheer"
 
 #: ../plugins/grilo/grilo.plugin.in.h:2
 msgid "Browse various local and Internet media sources"
-msgstr "Blader door verscheidene lokale en internet-mediabronnen"
+msgstr "Door verscheidene lokale en internet-mediabronnen bladeren"
 
 #: ../plugins/grilo/rb-grilo-source.c:385
 msgid "Fetch more tracks"
@@ -2096,8 +2095,8 @@ msgstr "Meer nummers ophalen"
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
-msgstr[0] "Laat slechts %d resultaat zien"
-msgstr[1] "Laat slechts %d resultaten zien"
+msgstr[0] "Slechts %d resultaat tonen"
+msgstr[1] "Slechts %d resultaten tonen"
 
 #: ../plugins/im-status/im-status.plugin.in.h:1
 msgid "IM Status"
@@ -2387,7 +2386,7 @@ msgstr "Magnatune online muziekwinkel"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:2
 msgid "Magnatune is an online record label that is not evil.\n"
-msgstr "Magnatune is een online opnamelabel die niet kwaadaardig is.\n"
+msgstr "Magnatune is een online muzieklabel dat niet kwaadaardig is.\n"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:4
 msgid "    * Free listening of all songs"
@@ -2407,7 +2406,7 @@ msgid ""
 "    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's "
 "worth joining"
 msgstr ""
-"    *10% van uw Magnatune accountkosten gaan naar Rhythmbox/GNOME - Het is "
+"    *10% van uw Magnatune accountkosten gaan naar Rhythmbox/GNOME - het is "
 "het waard mee te doen"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:8
@@ -2415,8 +2414,7 @@ msgid ""
 "    * Open-Source friendly file formats: MP3s and WAVs, but also OGG and "
 "FLAC files."
 msgstr ""
-"    *Open-Source geschikte formaten: MP3's en WAV's, maar ook OGG en FLAC "
-"bestanden."
+"    *Open-Source geschikte formaten: MP3's en WAV's, maar ook OGG- en FLAC-bestanden."
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:9
 msgid "    * All albums and artists hand-picked"
@@ -2710,7 +2708,7 @@ msgstr "Draagbare spelers - MTP"
 #: ../plugins/mtpdevice/mtpdevice.plugin.in.h:2
 msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr ""
-"Ondersteuning voor MTP-apparaten (inhoud tonen, overdrachten, beluisteren)"
+"Ondersteuning voor MTP-apparaten (inhoud tonen, overdracht, beluisteren)"
 
 # aanmaken van de recorder is mislukt
 #: ../plugins/mtpdevice/rb-mtp-gst-sink.c:127
@@ -2772,7 +2770,7 @@ msgstr "Mededelingen"
 
 #: ../plugins/notification/notification.plugin.in.h:2
 msgid "Notification popups"
-msgstr "Notificatie pop-ups"
+msgstr "Pop-ups met mededelingen"
 
 #: ../plugins/notification/rb-notification-plugin.c:221
 msgid "Pause"
@@ -2844,9 +2842,9 @@ msgid ""
 "or rpdb2. If you have not set a debugger password in the file %s, it will "
 "use the default password ('rhythmbox')."
 msgstr ""
-"Nadat u op OK drukt, zal Rhythmbox wachten tot u verbindt met het met winpdb "
-"of rpdb2. Indien u geen debugger wachtwoord in het %s bestand heeft "
-"ingesteld, zal het het standaard wachtwoord gebruiken ('rhythmbox')"
+"Wanneer u op OK klikt zal Rhythmbox wachten tot u verbinding maakt met winpdb "
+"of rpdb2. Wanneer u geen debuggerwachtwoord in het bestand %s heeft "
+"ingesteld, zal het standaardwachtwoord ‘rhythmbox’ gebruikt worden."
 
 #. ex:noet:ts=8:
 #: ../plugins/rbzeitgeist/rbzeitgeist.plugin.in.h:1
@@ -3904,13 +3902,11 @@ msgid_plural ""
 "supported by the target device but no suitable encoding profiles are "
 "available"
 msgstr[0] ""
-"%d bestand kan niet worden overgebracht omdat het geconverteerd moet zijn "
-"naar een formaat dat het doelapparaat ondersteunt, maar er zijn geen "
-"geschikte coderingsprofielen beschikbaar"
+"%d bestand kan niet worden overgezet omdat het geconverteerd moet worden "
+"naar een door het apparaat ondersteund formaat, maar er is geen codering beschikbaar voor de ondersteunde formaten."
 msgstr[1] ""
-"%d bestanden kunnen niet worden overgebracht omdat ze geconverteerd moeten "
-"zijn naar een formaat dat het doelapparaat ondersteunt, maar er zijn geen "
-"geschikte coderingsprofielen beschikbaar"
+"%d bestanden kunnen niet worden overgezet omdat deze geconverteerd moeten "
+"worden naar een door het apparaat ondersteund formaat, maar er is geen codering beschikbaar voor de ondersteunde formaten."
 
 #. XXX should provide the option of picking a different format?
 #: ../shell/rb-track-transfer-queue.c:463
@@ -3919,7 +3915,7 @@ msgid ""
 "Additional software is required to encode media in your preferred format:\n"
 "%s"
 msgstr ""
-"Er is extra software nodig om media te coderen in het door u gewenste "
+"Er is aanvullende software nodig om media te coderen in het door u gewenste "
 "formaat:\n"
 "%s"
 
@@ -3934,12 +3930,12 @@ msgid_plural ""
 "by the target device:\n"
 "%s"
 msgstr[0] ""
-"Er is extra software nodig om %d bestand naar een formaat te converteren dat "
-"ondersteund wordt door het doelapparaat:\n"
+"Er is aanvullende software nodig om %d bestand naar een formaat te converteren dat "
+"ondersteund wordt door het apparaat:\n"
 "%s"
 msgstr[1] ""
-"Er is extra software nodig om %d bestanden naar een formaat te converteren "
-"dat ondersteund wordt door het doelapparaat:\n"
+"Er is aanvullende software nodig om %d bestanden naar een formaat te converteren "
+"dat ondersteund wordt door het apparaat:\n"
 "%s"
 
 #: ../shell/rb-track-transfer-queue.c:484
@@ -3948,7 +3944,7 @@ msgstr "Kon nummers niet overzetten"
 
 #: ../shell/rb-track-transfer-queue.c:489
 msgid "_Cancel the transfer"
-msgstr "De overdracht _annuleren"
+msgstr "Overdracht _annuleren"
 
 #: ../shell/rb-track-transfer-queue.c:491
 msgid "_Skip these files"
@@ -4011,12 +4007,12 @@ msgstr "Gedeeld"
 #. set up info bar for triggering codec installation
 #: ../sources/rb-import-errors-source.c:246
 msgid "Install Additional Software"
-msgstr "Extra software installeren"
+msgstr "Aanvullende software installeren"
 
 #: ../sources/rb-import-errors-source.c:252
 msgid "Additional software is required to play some of these files."
 msgstr ""
-"Er is extra software nodig om een aantal van deze bestanden af te spelen."
+"Er is aanvullende software nodig om een aantal van deze bestanden af te spelen."
 
 #: ../sources/rb-import-errors-source.c:357
 msgid "Import Errors"
@@ -6034,7 +6030,7 @@ msgstr "Onbekende locatie:"
 #~ "target device, and no encoders are available for the supported formats."
 #~ msgstr ""
 #~ "%d bestand kan niet worden overgebracht omdat het geconverteerd moet zijn "
-#~ "naar een formaat dat het doelapparaat ondersteunt, maar er zijn geen "
+#~ "naar een formaat dat het apparaat ondersteunt, maar er zijn geen "
 #~ "geschikte coderingsprofielen beschikbaar"
 
 #, fuzzy
