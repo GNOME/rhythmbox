@@ -108,6 +108,9 @@ struct RBHeaderPrivate
 	RBExtDB *art_store;
 
 	RBShellPlayer *shell_player;
+	RBSource *playing_source;
+	gulong status_changed_id;
+	gboolean showing_playback_status;
 
 	GtkWidget *songbox;
 	GtkWidget *song;
@@ -292,6 +295,8 @@ rb_header_constructed (GObject *object)
 	/* set up position slider */
 	header->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 10.0, 1.0, 10.0, 0.0));
 	header->priv->scale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, header->priv->adjustment);
+	gtk_range_set_fill_level (GTK_RANGE (header->priv->scale), 0.0);
+	gtk_range_set_show_fill_level (GTK_RANGE (header->priv->scale), TRUE);
 	gtk_widget_set_hexpand (header->priv->scale, TRUE);
 	g_signal_connect_object (G_OBJECT (header->priv->scale),
 				 "button_press_event",
@@ -467,12 +472,21 @@ art_added_cb (RBExtDB *db, RBExtDBKey *key, const char *filename, GValue *data, 
 	art_cb (key, filename, data, header);
 }
 
+static void
+playback_status_changed_cb (RBSource *source, RBHeader *header)
+{
+	rb_header_sync (header);
+}
 
 static void
 rb_header_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBHeader *header)
 {
 	if (header->priv->entry == entry)
 		return;
+
+	if (header->priv->entry != NULL) {
+		g_signal_handler_disconnect (header->priv->playing_source, header->priv->status_changed_id);
+	}
 
 	rb_fading_image_start (RB_FADING_IMAGE (header->priv->image), 2000);
 
@@ -490,6 +504,13 @@ rb_header_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, 
 				   g_object_ref (header),
 				   g_object_unref);
 		rb_ext_db_key_free (key);
+
+		header->priv->playing_source = rb_shell_player_get_playing_source (player);
+		header->priv->status_changed_id =
+			g_signal_connect (header->priv->playing_source,
+					  "playback-status-changed",
+					  G_CALLBACK (playback_status_changed_cb),
+					  header);
 	} else {
 		header->priv->duration = 0;
 	}
@@ -761,13 +782,6 @@ static void
 rb_header_sync (RBHeader *header)
 {
 	char *label_text;
-	const char *location = "<null>";
-
-	if (header->priv->entry != NULL) {
-		location = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_LOCATION);
-	}
-	rb_debug ("syncing with entry = %s", location);
-
 	if (header->priv->entry != NULL) {
 		const char *title;
 		const char *album;
@@ -778,6 +792,8 @@ rb_header_sync (RBHeader *header)
 		char *streaming_album;
 		PangoDirection widget_dir;
 
+		rb_debug ("syncing with %s",
+			  rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_LOCATION));
 		gboolean have_duration = (header->priv->duration > 0);
 
 		title = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_TITLE);
@@ -859,6 +875,26 @@ rb_header_sync (RBHeader *header)
 			g_free (t);
 		}
 
+		if (header->priv->playing_source) {
+			char *text = NULL;
+			float progress = 0.0;
+
+			rb_source_get_playback_status (header->priv->playing_source, &text, &progress);
+			if (text) {
+				header->priv->showing_playback_status = TRUE;
+				gtk_widget_show (header->priv->timelabel);
+				gtk_widget_show (header->priv->timebutton);
+				gtk_label_set_text (GTK_LABEL (header->priv->timelabel), text);
+				g_free (text);
+			} else {
+				header->priv->showing_playback_status = FALSE;
+			}
+
+			progress = progress * gtk_adjustment_get_upper (header->priv->adjustment);
+			gtk_range_set_fill_level (GTK_RANGE (header->priv->scale), progress);
+		}
+
+
 		gtk_widget_set_sensitive (header->priv->scale, have_duration && header->priv->seekable);
 		rb_header_sync_time (header);
 
@@ -906,7 +942,7 @@ rb_header_sync_time (RBHeader *header)
 
 		g_object_freeze_notify (G_OBJECT (header->priv->adjustment));
 		gtk_adjustment_set_value (header->priv->adjustment, 0.0);
-		gtk_adjustment_set_upper (header->priv->adjustment, 0.0);
+		gtk_adjustment_set_upper (header->priv->adjustment, 1.0);
 		g_object_thaw_notify (G_OBJECT (header->priv->adjustment));
 
 		header->priv->slider_locked = FALSE;
@@ -1095,6 +1131,9 @@ rb_header_update_elapsed (RBHeader *header)
 	char *elapsed;
 	char *duration;
 	char *label;
+
+	if (header->priv->showing_playback_status)
+		return;
 
 	if (header->priv->entry == NULL) {
 		gtk_label_set_text (GTK_LABEL (header->priv->timelabel), "");
