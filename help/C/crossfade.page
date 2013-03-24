@@ -1,0 +1,71 @@
+<page xmlns="http://projectmallard.org/1.0/"
+      type="topic" style="task"
+      id="crossfade">
+
+  <info>
+    <link type="guide" xref="index#rb-music"/>
+    <desc>Enable gapless playback</desc>
+    <revision pkgversion="3.8" version="0.6" date="2013-01-12" status="draft"/>
+    <credit type="author">
+      <name>Jim Campbell</name>
+      <email>jwcampbell@gmail.com</email>
+    </credit>
+  </info>
+  <include href="legal.xml" xmlns="http://www.w3.org/2001/XInclude"/>
+
+  <title>Remove gap between tracks during playback</title>
+
+  <p>Most tracks include brief periods of silence at the end of each song, and
+  there are sometimes brief periods of silence at the beginning of a song, too.
+  Reducing or removing these periods of silence is called <em>Gapless
+  Playback</em>.</p>
+
+  <section id="enable-crossfade">
+    <title>Enable Gapless Playback</title>
+
+  <p>To enable <em>Gapless Playback</em> in <app>Rhythmbox</app>:</p>
+
+  <steps>
+    <item>
+      <p>Locate the settings icon to the right most corner of
+      <app>Rhythmbox</app>, next to the icon for
+      <link xref="volume-controls"/>. From the menu, select
+      <guiseq><gui style="menuitem">Preferences</gui>
+      <gui style="tab">Playback</gui></guiseq>.</p>
+    </item>
+    <item>
+      <p>Select <gui style="checkbox">Crossfade between tracks</gui>.
+      <app>Rhythmbox</app> is now set to overlap the few final playback
+      duration of a song with the initial playback duration of a song.</p>
+    </item>
+  </steps>
+
+  </section>
+
+  <section id="custom-crossfade">
+    <title>Customize Gapless Playback Duration</title>
+
+  <p>To change the amount of time that the tracks overlap:</p>
+
+  <steps>
+    <item>
+      <p>From the settings icon, select <guiseq>
+      <gui style="menuitem">Preferences</gui>
+      <gui style="tab">Playback</gui></guiseq>.</p>
+    </item>
+    <item>
+      <p>Once you can have enabled
+      <gui style="checkbox">Crossfade between tracks</gui>, you can move the
+      <gui style="button">Crossface Duration (Seconds)</gui> slider to the
+      left or right. As you move the slider, <app>Rhythmbox</app> will display
+      the length of the overlap in seconds.</p>
+    </item>
+  </steps>
+
+  </section>
+
+  <note style="important">
+    <p>For  will need to restart <app>Rhythmbox</app> for these settings to
+    take effect.</p></note>
+
+</page>
