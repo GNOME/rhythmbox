@@ -3,7 +3,7 @@
 HELP_ID = rhythmbox
 HELP_FILES = \
 	_manage-tags.page \
-	crossfade.page \
+	gapless-playback.page \
 	index.page \
 	intro.page \
 	lastfm-manage.page \
