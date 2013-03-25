@@ -12,7 +12,12 @@ HELP_FILES = \
 	legal.xml \
 	music-import.page \
 	overview.page \
-	play-queue.page \
+	play-queue-add.page \
+	play-queue-guide.page \
+	play-queue-remove.page \
+	play-queue-save-playlist.page \
+	play-queue-shuffle.page \
+	play-queue-sidepane.page \
 	playlists-automatic-create.page \
 	playlists-automatic.page \
 	playlists-save-to-file.page \
