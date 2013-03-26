@@ -19,56 +19,61 @@
 
   <title>Remove gap between tracks during playback</title>
 
-  <p>Most tracks include brief periods of silence at the end of each song, and
-  there are sometimes brief periods of silence at the beginning of a song, too.
-  Reducing or removing these periods of silence is called <em>Gapless
-  Playback</em>.</p>
+  <p>Most tracks include brief periods of silence at the beginning and end of
+  each song. Reducing or removing these periods of silence is called 
+  <em>Gapless Playback</em>. Enabling <gui>Crossfade between tracks</gui>
+  makes a track start and quickly quickly without any duration of silence.</p>
 
   <section id="enable-crossfade">
     <title>Enable Gapless Playback</title>
 
-  <p>To enable <em>Gapless Playback</em> in <app>Rhythmbox</app>:</p>
+    <p>To enable <em>Gapless Playback</em> in <app>Rhythmbox</app>:</p>
 
-  <steps>
-    <item>
-      <p>Locate the settings icon to the right most corner of
-      <app>Rhythmbox</app>, next to the icon for
-      <link xref="volume-controls"/>. From the menu, select
-      <guiseq><gui style="menuitem">Preferences</gui>
-      <gui style="tab">Playback</gui></guiseq>.</p>
-    </item>
-    <item>
-      <p>Select <gui style="checkbox">Crossfade between tracks</gui>.
-      <app>Rhythmbox</app> is now set to overlap the few final playback
-      duration of a song with the initial playback duration of a song.</p>
-    </item>
-  </steps>
-
+    <steps>
+      <item>
+        <p>In the <gui>Activities</gui> top bar, right click on
+        <app>Rhtyhmbox</app> and from the menu, select
+        <guiseq><gui style="menuitem">Preferences</gui>
+        <gui style="tab">Playback</gui></guiseq>.</p>
+      </item>
+      <item>
+        <p>Select <gui style="checkbox">Crossfade between tracks</gui>.</p>
+      </item>
+    </steps>
   </section>
 
   <section id="custom-crossfade">
     <title>Customize Gapless Playback Duration</title>
 
-  <p>To change the amount of time that the tracks overlap:</p>
+  <p>By default, the crossfade duration is set to zero seconds. To customize
+  this:</p>
 
   <steps>
     <item>
-      <p>From the settings icon, select <guiseq>
-      <gui style="menuitem">Preferences</gui>
+      <p>In the <gui>Activities</gui> top bar, right click on
+      <app>Rhtyhmbox</app> and from the menu, select
+      <guiseq><gui style="menuitem">Preferences</gui>
       <gui style="tab">Playback</gui></guiseq>.</p>
     </item>
     <item>
-      <p>Once you can have enabled
-      <gui style="checkbox">Crossfade between tracks</gui>, you can move the
+      <p>Ensure that you can have enabled
+      <gui style="checkbox">Crossfade between tracks</gui>. Now, drag the
       <gui style="button">Crossface Duration (Seconds)</gui> slider to the
-      left or right. As you move the slider, <app>Rhythmbox</app> will display
-      the length of the overlap in seconds.</p>
+      left or right. Moving the slider to the left decreases the crossfade
+      duration and moving the right will increase the duration. As you move
+      the slider, <app>Rhythmbox</app> will display the length of the
+      overlap.</p>
     </item>
   </steps>
 
+  <p>For example, if you set the crossfade duration to be eight seconds, when
+  you play a track, you will hear the first eight seconds of the next track in
+  the last eight seconds of the currently played track.</p>
+
   <note style="important">
     <p>For  will need to restart <app>Rhythmbox</app> for these settings to
-    take effect.</p></note>
+    take effect.</p>
+  </note>
 
   </section>
 
