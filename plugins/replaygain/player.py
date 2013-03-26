@@ -28,7 +28,7 @@
 import rb
 import gi
 
-gi.require_version("Gst", "0.11")
+gi.require_version("Gst", "1.0")
 from gi.repository import RB
 from gi.repository import GObject, Gio, Gst
 
@@ -139,38 +139,49 @@ class ReplayGainPlayer(object):
 			self.got_replaygain = True
 		# do something clever probably
 
-	def rgvolume_reset_done(self, pad, blocked, rgvolume):
-		print "rgvolume reset done"
-		self.set_rgvolume(rgvolume)
-
-	def rgvolume_blocked_cb(self, pad, blocked, rgvolume):
+	def rgvolume_blocked(self, pad, info, rgvolume):
 		print "bouncing rgvolume state to reset tags"
 		# somehow need to decide whether we've already got a gain value for the new track
 		#self.resetting_rgvolume = True
 		rgvolume.set_state(Gst.State.READY)
 		rgvolume.set_state(Gst.State.PLAYING)
 		#self.resetting_rgvolume = False
-		pad.set_blocked_async(False, self.rgvolume_reset_done, rgvolume)
+		pad.remove_probe(info.id)
+		self.set_rgvolume(rgvolume)
+		return Gst.PadProbeReturn.OK
 
 	def playing_entry_changed(self, player, entry):
 		if entry is None:
+			return
+		if self.first_entry:
+			self.first_entry = False
 			return
 
 		if self.got_replaygain is False:
 			print "blocking rgvolume to reset it"
 			pad = self.rgvolume.get_static_pad("sink").get_peer()
-			pad.set_blocked_async(True, self.rgvolume_blocked_cb, self.rgvolume)
+			pad.add_probe(Gst.PadProbeType.IDLE, self.rgvolume_blocked, self.rgvolume)
 		else:
 			print "no need to reset rgvolume"
 
 	def setup_playbin_mode(self):
 		print "using output filter for rgvolume and rglimiter"
+		self.rgfilter = Gst.Bin()
+
 		self.rgvolume = Gst.ElementFactory.make("rgvolume", None)
 		self.rgvolume.connect("notify::target-gain", self.playbin_target_gain_cb)
+		self.rgfilter.add(self.rgvolume)
+
 		self.rglimiter = Gst.ElementFactory.make("rglimiter", None)
+		self.rgfilter.add(self.rglimiter)
+
+		self.rgfilter.add_pad(Gst.GhostPad.new("sink", self.rgvolume.get_static_pad("sink")))
+		self.rgfilter.add_pad(Gst.GhostPad.new("src", self.rglimiter.get_static_pad("src")))
+		self.rgvolume.link(self.rglimiter)
 
 		# on track changes, we need to reset the rgvolume state, otherwise it
 		# carries over the tags from the previous track
+		self.first_entry = True
 		self.pec_id = self.shell_player.connect('playing-song-changed', self.playing_entry_changed)
 
 		# watch playbin's uri property to see when a new track is opened
@@ -180,19 +191,11 @@ class ReplayGainPlayer(object):
 		else:
 			playbin.connect("notify::uri", self.playbin_uri_notify_cb)
 
-		# work around bug #621632 by adding these as separate filters
-		# XXX try not doing this with 0.11 once filters exist again
-		self.player.add_filter(self.rgvolume)
-		self.player.add_filter(self.rglimiter)
-		self.rgfilter = None
+		self.player.add_filter(self.rgfilter)
 
 	def deactivate_playbin_mode(self):
-		if self.rgfilter == None:
-			self.player.remove_filter(self.rglimiter)
-			self.player.remove_filter(self.rgvolume)
-		else:
-			self.player.remove_filter(self.rgfilter)
-			self.rgfilter = None
+		self.player.remove_filter(self.rgfilter)
+		self.rgfilter = None
 
 		self.shell_player.disconnect(self.pec_id)
 		self.pec_id = None
