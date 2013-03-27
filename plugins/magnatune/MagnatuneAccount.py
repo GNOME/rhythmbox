@@ -27,18 +27,24 @@
 
 from gi.repository import Gio
 
-# Till libsecret completely replaces gnome-keyring, we'll fall back to not
-# saving the password if libsecret can't be found. This code can be removed later.
-try:
-	from gi.repository import Secret, SecretUnstable
-	# We need to be able to fetch passwords stored by libgnome-keyring, so we use
-	# a schema with SECRET_SCHEMA_DONT_MATCH_NAME set.
-	# See: http://developer.gnome.org/libsecret/unstable/migrating-schemas.html
-	MAGNATUNE_SCHEMA = Secret.Schema.new("org.gnome.rhythmbox.plugins.magnatune",
-						Secret.SchemaFlags.DONT_MATCH_NAME,
-						{"rhythmbox-plugin": Secret.SchemaAttributeType.STRING})
-except ImportError:
-	Secret = None
+# if libsecret isn't new enough, this will crash
+from rb import rbconfig
+Secret = None
+if rbconfig.libsecret_enabled:
+	# Till libsecret completely replaces gnome-keyring, we'll fall back to not
+	# saving the password if libsecret can't be found. This code can be removed later.
+	try:
+		from gi.repository import Secret, SecretUnstable
+		# We need to be able to fetch passwords stored by libgnome-keyring, so we use
+		# a schema with SECRET_SCHEMA_DONT_MATCH_NAME set.
+		# See: http://developer.gnome.org/libsecret/unstable/migrating-schemas.html
+		MAGNATUNE_SCHEMA = Secret.Schema.new("org.gnome.rhythmbox.plugins.magnatune",
+							Secret.SchemaFlags.DONT_MATCH_NAME,
+							{"rhythmbox-plugin": Secret.SchemaAttributeType.STRING})
+	except ImportError:
+		pass
+
+if Secret is None:
 	print ("You need to install libsecret and its introspection files to store your Magnatune password")
 
 __instance = None
