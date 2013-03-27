@@ -39,6 +39,7 @@ from Loader import Loader
 from Loader import UpdateCheck
 from Coroutine import Coroutine
 from URLCache import URLCache
+import rbconfig
 
 def try_load_icon(theme, icon, size, flags):
 	try:

@@ -5,8 +5,9 @@ plugin_PYTHON = \
 		Coroutine.py		\
 		URLCache.py		\
 		stringmatch.py		\
+		rbconfig.py		\
 		rb.py
 
 plugin_DATA = rb.plugin
 
-EXTRA_DIST = $(plugin_DATA)
+EXTRA_DIST = $(plugin_DATA) rbconfig.py.in

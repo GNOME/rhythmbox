@@ -244,7 +244,12 @@ if test "x$with_libsecret" != "xno"; then
 	   use_libsecret=yes
 	  AC_SUBST(LIBSECRET_CFLAGS)
 	  AC_SUBST(LIBSECRET_LIBS)
+	  AC_SUBST(PY_LIBSECRET_ENABLED, True)
+	else
+	  AC_SUBST(PY_LIBSECRET_ENABLED, False)
 	fi
+else
+	AC_SUBST(PY_LIBSECRET_ENABLED, False)
 fi
 AM_CONDITIONAL(USE_LIBSECRET, test x"$use_libsecret" = xyes)
 
@@ -830,6 +835,7 @@ plugins/artsearch/Makefile
 plugins/magnatune/Makefile
 plugins/generic-player/Makefile
 plugins/rb/Makefile
+plugins/rb/rbconfig.py
 plugins/power-manager/Makefile
 plugins/mmkeys/Makefile
 plugins/context/Makefile
