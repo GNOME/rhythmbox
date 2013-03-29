@@ -72,6 +72,9 @@ stream_close_cb (GObject *obj, GAsyncResult *res, gpointer data)
 		rb_debug ("unable to close input stream: %s", error->message);
 		g_clear_error (&error);
 	}
+
+	/* release reference taken before calling cleanup() */
+	g_object_unref (obj);
 }
 
 static void
@@ -95,10 +98,12 @@ stream_read_async_cb (GObject *obj, GAsyncResult *res, gpointer data)
 					   &loader->priv->error);
 	if (done == -1) {
 		rb_debug ("error reading from stream: %s", loader->priv->error->message);
+		g_object_ref (loader);
 		loader->priv->callback (loader, NULL, 0, loader->priv->callback_data);
 		cleanup (loader);
 	} else if (done == 0) {
-		rb_debug ("reached end up input stream");
+		rb_debug ("reached end of input stream");
+		g_object_ref (loader);
 		loader->priv->callback (loader, NULL, 0, loader->priv->callback_data);
 		cleanup (loader);
 	} else {
