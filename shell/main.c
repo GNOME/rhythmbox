@@ -61,13 +61,6 @@ main (int argc, char **argv)
 	}
 #endif
 
-	/* disable multidevice so clutter-gtk events work.
-	 * this needs to be done before gtk_open, so the visualizer
-	 * plugin can't do it.
-	 *
-	 * XXX not necessary any more?
-	 */
-	gdk_disable_multidevice ();
 	g_type_init ();
 	g_random_set_seed (time (0));
 
