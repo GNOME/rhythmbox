@@ -381,7 +381,7 @@ pipeline_op (GObject *player,
 		rb_debug ("blocking pad %s to perform an operation", whatpad);
 		g_free (whatpad);
 
-		gst_pad_add_probe (block_pad, GST_PAD_PROBE_TYPE_IDLE, callback, op, NULL);
+		gst_pad_add_probe (block_pad, GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM, callback, op, NULL);
 	} else {
 		rb_debug ("not using pad blocking, calling op directly");
 		(*callback) (block_pad, NULL, op);
