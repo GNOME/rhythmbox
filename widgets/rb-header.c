@@ -297,6 +297,7 @@ rb_header_constructed (GObject *object)
 	header->priv->scale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, header->priv->adjustment);
 	gtk_range_set_fill_level (GTK_RANGE (header->priv->scale), 0.0);
 	gtk_range_set_show_fill_level (GTK_RANGE (header->priv->scale), TRUE);
+	gtk_range_set_restrict_to_fill_level (GTK_RANGE (header->priv->scale), FALSE);
 	gtk_widget_set_hexpand (header->priv->scale, TRUE);
 	g_signal_connect_object (G_OBJECT (header->priv->scale),
 				 "button_press_event",
