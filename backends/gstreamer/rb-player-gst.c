@@ -518,7 +518,12 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 	}
 
 	case GST_MESSAGE_EOS:
-		_rb_player_emit_eos (RB_PLAYER (mp), mp->priv->stream_data, FALSE);
+		if (mp->priv->stream_change_pending) {
+			rb_debug ("got EOS with stream change pending");
+			start_state_change (mp, GST_STATE_READY, SET_NEXT_URI);
+		} else {
+			_rb_player_emit_eos (RB_PLAYER (mp), mp->priv->stream_data, FALSE);
+		}
 		break;
 
 	case GST_MESSAGE_STATE_CHANGED:
@@ -584,7 +589,7 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 		break;
 
 	case GST_MESSAGE_STREAM_START:
-		if (mp->priv->playbin_stream_changing){
+		if (mp->priv->playbin_stream_changing) {
 			rb_debug ("got STREAM_START message");
 			mp->priv->playbin_stream_changing = FALSE;
 			emit_playing_stream_and_tags (mp, TRUE);
@@ -823,12 +828,22 @@ impl_play (RBPlayer *player, RBPlayerPlayType play_type, gint64 crossfade, GErro
 		mp->priv->track_change = FALSE;
 		start_state_change (mp, GST_STATE_PLAYING, FINISH_TRACK_CHANGE);
 	} else if (mp->priv->current_track_finishing) {
-		rb_debug ("current track finishing -> just setting URI on playbin");
-		g_object_set (mp->priv->playbin, "uri", mp->priv->uri, NULL);
+		switch (play_type) {
+		case RB_PLAYER_PLAY_AFTER_EOS:
+			rb_debug ("current track finishing -> just setting URI on playbin");
+			g_object_set (mp->priv->playbin, "uri", mp->priv->uri, NULL);
+			mp->priv->playbin_stream_changing = TRUE;
+			track_change_done (mp, NULL);
+			break;
 
-		mp->priv->playbin_stream_changing = TRUE;
+		case RB_PLAYER_PLAY_REPLACE:
+		case RB_PLAYER_PLAY_CROSSFADE:
+			rb_debug ("current track finishing, waiting for EOS to start next");
+			break;
 
-		track_change_done (mp, NULL);
+		default:
+			g_assert_not_reached ();
+		}
 	} else {
 		gboolean reused = FALSE;
 
