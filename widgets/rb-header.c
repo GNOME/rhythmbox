@@ -296,7 +296,7 @@ rb_header_constructed (GObject *object)
 	header->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 10.0, 1.0, 10.0, 0.0));
 	header->priv->scale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, header->priv->adjustment);
 	gtk_range_set_fill_level (GTK_RANGE (header->priv->scale), 0.0);
-	gtk_range_set_show_fill_level (GTK_RANGE (header->priv->scale), TRUE);
+	gtk_range_set_show_fill_level (GTK_RANGE (header->priv->scale), FALSE);
 	gtk_range_set_restrict_to_fill_level (GTK_RANGE (header->priv->scale), FALSE);
 	gtk_widget_set_hexpand (header->priv->scale, TRUE);
 	g_signal_connect_object (G_OBJECT (header->priv->scale),
@@ -890,6 +890,7 @@ rb_header_sync (RBHeader *header)
 			} else {
 				header->priv->showing_playback_status = FALSE;
 			}
+			gtk_range_set_show_fill_level (GTK_RANGE (header->priv->scale), (text != NULL));
 
 			progress = progress * gtk_adjustment_get_upper (header->priv->adjustment);
 			gtk_range_set_fill_level (GTK_RANGE (header->priv->scale), progress);
