@@ -1,6 +1,6 @@
 AC_PREREQ(2.53)
 AC_INIT([rhythmbox],
-	[2.98],
+	[2.99],
 	[https://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox])
 AC_CONFIG_SRCDIR(rhythmbox.pc.in)
 AC_CONFIG_MACRO_DIR(macros)

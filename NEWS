@@ -1,3 +1,97 @@
+Overview of changes in Rhythmbox 2.99  "Future Delay Thinking"
+==============================================================
+
+* Menu bar replaced with app menu or menu button
+* GStreamer 1.0
+* Uses libsecret instead of gnome-keyring
+* Supports GNOME notification filtering
+* Small improvements to podcast browsing and updating
+* Play button now turns into a pause or stop button while playing
+* Buffering progress now appears in the song position slider
+  rather than an unlabelled progress indicator in the status bar
+* Media player sync works better with transcoded files
+
+
+Bugs fixed:
+
+376372 - if a podcast feed adds more than one podcast not all will be downloaded.
+381196 - rhythmbox-client has no option to toggle shuffle/repeat
+399012 - Rhythmbox wakes up too much
+454239 - Rhythmbox should have an option to copy files to the default folder when importing
+592455 - turning volume with ctrl+up/down arrow also skip the song
+663440 - CD does not resume playing after pausing
+672306 - Lyric plugin: buttons don't use mnemonics
+673533 - No way in Rhythmbox 2.96 to see a *full* list of podcast subscriptions
+674178 - fetch korean lyrics from jetlyrics.com
+678032 - The interface freezes at launch
+679880 - should use keywords in its .desktop entry
+679982 - Can't delete libraries from last.fm
+681469 - port to gstreamer 1.0
+683375 - add shuffle toggle command line interface
+684301 - artsearch: don't warn for GErrors enumerating files
+685004 - Last.fm profile page's toolbar is shown when not logged in
+685565 - error in dbus object path formatting
+685820 - rhythmbox context plugin: unable to display Links tab
+685821 - rhythmbox lyrics plugin: unable to set lyrics folder in preferences
+685822 - rhythmbox lyrics plugin: DarkLyrics IndexError: list index out of range
+685893 - rhythmbox lyrics plugin: some service no longer work
+685910 - Make sure to ref objects when using them in an idle call
+685945 - Disable the context pane plugin when webkit isn't available
+686320 - Crashes when enabling visualiser plugin
+686470 - eggwrapbox: Fix getting orientation as a property
+687109 - help: port to new documentation infrastructure
+688432 - Disable building of two static libraries by default
+688515 - Bottom panel for plugin widgets is not shown
+688638 - crash parsing musicbrainz audiocd search results
+689413 - Crash on drag'n'drop of album cover
+689883 - port visualizer plugin to gstreamer 1.0
+689899 - Deadlock using the xfade backend
+690113 - GStreamer-1.0: metadata - gst 1.0 audio_%d -> audio_%u
+690235 - crashes when audio sink cannot be created
+690993 - segfault in rb_track_transfer_batch_check_profiles()
+692158 - Rhythmbox crashes when changing internet radio station genre
+692941 - Support Notification Filtering GNOME feature
+694293 - Plug some small leaks
+694981 - Port from gnome-keyring to libsecret
+696517 - fix linking lastfm plugin
+697267 - Crash in rb-podcast-add-dialog.c
+
+
+Translation updates:
+
+- ar, courtesy of Ibrahim Saed
+- cs, courtesy of Marek Černocký
+- de, courtesy of Christian Kirbach
+- de, courtesy of Mario Blättermann
+- el, courtesy of Tom Tryfonidis
+- es, courtesy of Daniel Mustieles
+- fi, courtesy of Jiri Grönroos
+- fr, courtesy of Claude Paroz
+- gl, courtesy of Fran Dieguez
+- hu, courtesy of Gabor Kelemen
+- id, courtesy of Andika Triwidada
+- it, courtesy of Milo Casagrande
+- ja, courtesy of Akira Tanaka
+- lt, courtesy of Aurimas Černius
+- lv, courtesy of Rūdolfs Mazurs
+- nb, courtesy of Kjartan Maraas
+- nl, courtesy of Wouter Bolsterlee
+- pa, courtesy of A S Alam
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Enrico Nicoletto
+- ru, courtesy of Yuri Myasoedov
+- sk, courtesy of Pavol Klačanský
+- sl, courtesy of Andrej Žnidaršič
+- sl, courtesy of Matej Urbančič
+- sr, courtesy of Мирослав Николић
+- sr@latin, courtesy of Miroslav Nikolić
+- tr, courtesy of Muhammet Kara
+- zh_CN, courtesy of Wylmer Wang
+- zh_CN, courtesy of 甘露(Lu Gan)
+- zh_HK, courtesy of Cheng-Chia Tseng
+- zh_TW, courtesy of Cheng-Chia Tseng
+
+
 Overview of changes in Rhythmbox 2.98  "Faults"
 ===============================================
 
