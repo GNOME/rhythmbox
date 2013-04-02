@@ -34,10 +34,22 @@ CFILE_GLOB=$(top_srcdir)/lib/*.c
 IGNORE_HFILES= \
 	config.h \
 	eggdesktopfile.h \
+	eggwrapbox.h \
+	eggwrapbox-enums.h \
 	md5.h \
 	rb-cut-and-paste-code.h \
 	rb-marshal.h \
+	rb-thread.h \
 	rhythmdb-private.h \
+	rhythmdb-tree.h \
+	\
+	mediaplayerid.h \
+	mpid-private.h \
+	\
+	rb-encoder-gst.h \
+	rb-player-gst.h \
+	rb-player-gst-helper.h \
+	rb-player-gst-xfade.h \
 	\
 	rb-shell-glue.h \
 	rb-shell-binding.h \
@@ -61,9 +73,21 @@ IGNORE_HFILES= \
 	rb-podcast-parse.h \
 	rb-podcast-properties-dialog.h \
 	rb-podcast-source.h \
+	rb-podcast-main-source.h \
+	rb-podcast-add-dialog.h \
+	rb-podcast-search.h \
+	rb-podcast-entry-types.h \
+	rb-podcast-settings.h \
+	\
+	rb-metadata-dbus.h \
+	rb-metadata-gst-common.h \
 	\
 	gossip-cell-renderer-expander.h \
 	rb-query-creator-private.h \
+	rb-import-dialog.h \
+	rb-object-property-editor.h \
+	rb-source-search.h \
+	rb-source-search-basic.h \
 	\
 	rb-playlist-xml.h \
 	rb-sync-settings.h \
@@ -71,43 +95,57 @@ IGNORE_HFILES= \
 	rb-sync-state.h \
 	rb-sync-state-ui.h \
 	\
+	dbus-media-server-spec.h \
+	mpris-spec.h \
+	rb-audiocd-info.h \
 	rb-audiocd-source.h \
+	rb-audioscrobbler-account.h \
 	rb-audioscrobbler-entry.h \
-	rb-lastfm-play-order.h \
 	rb-audioscrobbler.h \
-	rb-lastfm-source.h \
-	rb-recorder.h \
-	rb-playlist-source-recorder.h \
-	rb-daap-record.h \
-	rb-rhythmdb-query-model-dmap-db-adapter.h \
-	rb-dmap-container-db-adapter.h \
-	rb-daap-dialog.h \
-	rb-rhythmdb-dmap-db-adapter.h \
-	rb-daap-glue.h \
-	rb-daap-src.h \
-	rb-daap-plugin.h \
-	rb-daap-source.h \
-	rb-daap-sharing.h \
-	rb-daap-record-factory.h \
+	rb-audioscrobbler-play-order.h \
+	rb-audioscrobbler-profile-page.h \
+	rb-audioscrobbler-radio-source.h \
+	rb-audioscrobbler-radio-track-entry-type.h \
+	rb-audioscrobbler-service.h \
+	rb-audioscrobbler-user.h \
 	rb-daap-container-record.h \
+	rb-daap-glue.h \
+	rb-daap-plugin.h \
+	rb-daap-record-factory.h \
+	rb-daap-record.h \
+	rb-daap-sharing.h \
+	rb-daap-source.h \
+	rb-daap-src.h \
+	rb-dacp-pairing-page.h \
+	rb-dacp-player.h \
+	rb-dmap-container-db-adapter.h \
 	rb-fm-radio-source.h \
-	rb-radio-tuner.h \
-	rb-psp-source.h \
-	rb-generic-player-source.h \
 	rb-generic-player-playlist-source.h \
-	rb-nokia770-source.h \
-	rb-ipod-static-playlist-source.h \
-	rb-ipod-source.h \
-	rb-ipod-helpers.h \
+	rb-generic-player-source.h \
+	rb-grilo-source.h \
 	rb-ipod-db.h \
-	rb-station-properties-dialog.h \
-	rb-iradio-source-search.h \
+	rb-ipod-helpers.h \
+	rb-ipod-source.h \
+	rb-ipod-static-playlist-source.h \
 	rb-iradio-source.h \
-	rb-mtp-thread.h \
+	rb-iradio-source-search.h \
+	rb-mtp-gst.h \
 	rb-mtp-source.h \
-	rb-static-icon-plugin.h \
-	rb-tray-icon-gtk.h \
-	rb-vis-widget.h
+	rb-mtp-thread.h \
+	rb-musicbrainz-lookup.h \
+	rb-nokia770-source.h \
+	rb-plugin-macros.h \
+	rb-psp-source.h \
+	rb-radio-tuner.h \
+	rb-rhythmdb-dmap-db-adapter.h \
+	rb-rhythmdb-query-model-dmap-db-adapter.h \
+	rb-station-properties-dialog.h \
+	rb-visualizer-fullscreen.h \
+	rb-visualizer-menu.h \
+	rb-visualizer-page.h \
+	sj-metadata-marshal.h \
+	\
+	test-utils.h
 
 
 
