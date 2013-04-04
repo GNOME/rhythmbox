@@ -479,6 +479,7 @@ subscribe_clicked_cb (GtkButton *button, RBPodcastAddDialog *dialog)
 	dialog->priv->clearing = FALSE;
 
 	gtk_tree_selection_unselect_all (gtk_tree_view_get_selection (GTK_TREE_VIEW (dialog->priv->feed_view)));
+	gtk_widget_set_sensitive (dialog->priv->subscribe_button, FALSE);
 }
 
 static void
