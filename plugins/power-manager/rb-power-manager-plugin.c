@@ -94,7 +94,7 @@ inhibit (RBGPMPlugin *plugin)
 		      NULL);
 	g_object_unref (shell);
 
-	gtk_application_inhibit (app, window, GTK_APPLICATION_INHIBIT_IDLE, _("Playing"));
+	plugin->cookie = gtk_application_inhibit (app, window, GTK_APPLICATION_INHIBIT_IDLE, _("Playing"));
 
 	g_object_unref (window);
 	g_object_unref (app);
