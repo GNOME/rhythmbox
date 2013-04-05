@@ -447,6 +447,7 @@ impl_shutdown (GApplication *app)
 	RBApplication *rb = RB_APPLICATION (app);
 
 	if (rb->priv->shell != NULL) {
+		rb_shell_quit (rb->priv->shell, NULL);
 		g_object_unref (rb->priv->shell);
 		rb->priv->shell = NULL;
 	}
@@ -630,6 +631,8 @@ rb_application_run (RBApplication *rb, int argc, char **argv)
 		rb_debug_init_match (debug_match);
 	else
 		rb_debug_init (debug);
+
+	g_object_set (rb, "register-session", !rb->priv->no_registration, NULL);
 
 	return g_application_run (G_APPLICATION (rb), nargc, nargv);
 }
