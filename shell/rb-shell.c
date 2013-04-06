@@ -1512,34 +1512,6 @@ idle_save_playlist_manager (RBShell *shell)
 }
 
 static void
-rb_shell_shutdown (RBShell *shell)
-{
-	GdkDisplay *display;
-
-	if (shell->priv->shutting_down)
-		return;
-	shell->priv->shutting_down = TRUE;
-
-	/* Hide the main window and tray icon as soon as possible */
-	display = gtk_widget_get_display (shell->priv->window);
-	gtk_widget_hide (shell->priv->window);
-	gdk_display_sync (display);
-
-	if (shell->priv->plugin_engine != NULL) {
-		g_object_unref (shell->priv->plugin_engine);
-		shell->priv->plugin_engine = NULL;
-	}
-	if (shell->priv->activatable != NULL) {
-		g_object_unref (shell->priv->activatable);
-		shell->priv->activatable = NULL;
-	}
-	if (shell->priv->plugin_settings != NULL) {
-		g_object_unref (shell->priv->plugin_settings);
-		shell->priv->plugin_settings = NULL;
-	}
-}
-
-static void
 rb_shell_finalize (GObject *object)
 {
         RBShell *shell = RB_SHELL (object);
@@ -2388,16 +2360,35 @@ gboolean
 rb_shell_quit (RBShell *shell,
 	       GError **error)
 {
-	rb_debug ("Quitting");
+	GdkDisplay *display;
 
-	/* Stop the playing source, if any */
+	if (shell->priv->shutting_down)
+		return;
+	shell->priv->shutting_down = TRUE;
+
+	rb_debug ("Quitting");
+	display = gtk_widget_get_display (shell->priv->window);
+	gtk_widget_hide (shell->priv->window);
+	gdk_display_sync (display);
+
 	rb_shell_player_stop (shell->priv->player_shell);
 
 	rb_podcast_manager_shutdown (shell->priv->podcast_manager);
 
-	rb_shell_shutdown (shell);
 	rb_shell_sync_state (shell);
 
+	if (shell->priv->plugin_engine != NULL) {
+		g_object_unref (shell->priv->plugin_engine);
+		shell->priv->plugin_engine = NULL;
+	}
+	if (shell->priv->activatable != NULL) {
+		g_object_unref (shell->priv->activatable);
+		shell->priv->activatable = NULL;
+	}
+	if (shell->priv->plugin_settings != NULL) {
+		g_object_unref (shell->priv->plugin_settings);
+		shell->priv->plugin_settings = NULL;
+	}
 	/* or maybe just _quit */
 	/* g_application_release (G_APPLICATION (shell->priv->application)); */
 
