@@ -2363,7 +2363,7 @@ rb_shell_quit (RBShell *shell,
 	GdkDisplay *display;
 
 	if (shell->priv->shutting_down)
-		return;
+		return TRUE;
 	shell->priv->shutting_down = TRUE;
 
 	rb_debug ("Quitting");
