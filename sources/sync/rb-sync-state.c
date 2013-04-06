@@ -108,17 +108,14 @@ rb_sync_state_make_track_uuid  (RhythmDBEntry *entry)
 	/*
 	 * possible improvements here:
 	 * - use musicbrainz track ID if known (maybe not a great idea?)
-	 * - fuzz the duration a bit (round to nearest 5 seconds?) to catch slightly
-	 *   different encodings of the same track
 	 * - maybe don't include genre, since there's no canonical genre for anything
 	 */
 
-	g_string_printf (str, "%s%s%s%s%lu%lu%lu",
+	g_string_printf (str, "%s%s%s%s%lu%lu",
 			 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE),
 			 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
 			 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE),
 			 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM),
-			 rhythmdb_entry_get_ulong  (entry, RHYTHMDB_PROP_DURATION),
 			 rhythmdb_entry_get_ulong  (entry, RHYTHMDB_PROP_TRACK_NUMBER),
 			 rhythmdb_entry_get_ulong  (entry, RHYTHMDB_PROP_DISC_NUMBER));
 
