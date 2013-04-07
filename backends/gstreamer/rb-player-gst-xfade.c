@@ -2120,7 +2120,6 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	}
 
 	/* kill the floating reference */
-	g_object_ref (stream);
 	gst_object_ref_sink (stream);
 	gst_element_set_locked_state (GST_ELEMENT (stream), TRUE);
 	stream->decoder = gst_element_factory_make ("uridecodebin", NULL);
