@@ -172,6 +172,10 @@ gint 			rhythmdb_query_model_artist_sort_func	(RhythmDBEntry *a,
 								 RhythmDBEntry *b,
 								 gpointer data);
 
+gint 			rhythmdb_query_model_composer_sort_func	(RhythmDBEntry *a,
+								 RhythmDBEntry *b,
+								 gpointer data);
+
 gint 			rhythmdb_query_model_genre_sort_func	(RhythmDBEntry *a,
 								 RhythmDBEntry *b,
 								 gpointer data);

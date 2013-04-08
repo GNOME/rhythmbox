@@ -60,7 +60,8 @@ typedef enum {
 	RB_ENTRY_VIEW_COL_LAST_SEEN,
 	RB_ENTRY_VIEW_COL_LOCATION,
 	RB_ENTRY_VIEW_COL_BPM,
-	RB_ENTRY_VIEW_COL_ERROR
+	RB_ENTRY_VIEW_COL_ERROR,
+	RB_ENTRY_VIEW_COL_COMPOSER
 } RBEntryViewColumn;
 
 GType rb_entry_view_column_get_type (void);

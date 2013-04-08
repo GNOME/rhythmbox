@@ -97,6 +97,7 @@ struct {
 } column_checks[] = {
 	{ "track_check",	RHYTHMDB_PROP_TRACK_NUMBER },
 	{ "artist_check",	RHYTHMDB_PROP_ARTIST },
+	{ "composer_check",	RHYTHMDB_PROP_COMPOSER },
 	{ "album_check",	RHYTHMDB_PROP_ALBUM },
 	{ "year_check",		RHYTHMDB_PROP_DATE },
 	{ "last_played_check",	RHYTHMDB_PROP_LAST_PLAYED },

@@ -786,9 +786,12 @@ create_ipod_song_from_entry (RhythmDBEntry *entry, guint64 filesize, const char 
 	track->title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
 	track->album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
 	track->artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
+	track->composer = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_COMPOSER);
 	track->albumartist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM_ARTIST);
 	track->sort_artist = rhythmdb_entry_dup_string (entry,
 	                                                RHYTHMDB_PROP_ARTIST_SORTNAME);
+	track->sort_composer = rhythmdb_entry_dup_string (entry,
+	                                                RHYTHMDB_PROP_COMPOSER_SORTNAME);
 	track->sort_album = rhythmdb_entry_dup_string (entry,
 	                                                RHYTHMDB_PROP_ALBUM_SORTNAME);
 	track->sort_albumartist = rhythmdb_entry_dup_string (entry,
@@ -1001,6 +1004,12 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
 	entry_set_string_prop (RHYTHMDB (db), entry,
 			       RHYTHMDB_PROP_ARTIST, song->artist);
 
+	if (song->composer != NULL) {
+                entry_set_string_prop (RHYTHMDB (db), entry,
+                                       RHYTHMDB_PROP_COMPOSER,
+                                       song->composer);
+	}
+
 	if (song->albumartist != NULL) {
                 entry_set_string_prop (RHYTHMDB (db), entry,
                                        RHYTHMDB_PROP_ALBUM_ARTIST,
@@ -1012,6 +1021,12 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
                                        RHYTHMDB_PROP_ARTIST_SORTNAME,
                                        song->sort_artist);
         }
+
+	if (song->sort_composer != NULL) {
+                entry_set_string_prop (RHYTHMDB (db), entry,
+                                       RHYTHMDB_PROP_COMPOSER_SORTNAME,
+                                       song->composer);
+	}
 
         if (song->sort_album != NULL) {
                 entry_set_string_prop (RHYTHMDB (db), entry,

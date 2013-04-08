@@ -49,6 +49,7 @@
  * @RB_ENTRY_VIEW_COL_TRACK_NUMBER: the track number column
  * @RB_ENTRY_VIEW_COL_TITLE: the title column
  * @RB_ENTRY_VIEW_COL_ARTIST: the artist column
+ * @RB_ENTRY_VIEW_COL_COMPOSER: the composer column
  * @RB_ENTRY_VIEW_COL_ALBUM: the album column
  * @RB_ENTRY_VIEW_COL_GENRE: the genre column
  * @RB_ENTRY_VIEW_COL_DURATION: the duration column
@@ -1278,6 +1279,9 @@ rb_entry_view_get_column (RBEntryView *view, RBEntryViewColumn coltype)
 	case RB_ENTRY_VIEW_COL_ARTIST:
 		propid = RHYTHMDB_PROP_ARTIST;
 		break;
+	case RB_ENTRY_VIEW_COL_COMPOSER:
+		propid = RHYTHMDB_PROP_COMPOSER;
+		break;
 	case RB_ENTRY_VIEW_COL_ALBUM:
 		propid = RHYTHMDB_PROP_ALBUM;
 		break;
@@ -1438,6 +1442,16 @@ rb_entry_view_append_column (RBEntryView *view,
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_artist_sort_func;
 		title = _("Artist");
 		key = "Artist";
+		ellipsize = TRUE;
+		break;
+	case RB_ENTRY_VIEW_COL_COMPOSER:
+		propid = RHYTHMDB_PROP_COMPOSER;
+		cell_data->propid = propid;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
+		sort_propid = RHYTHMDB_PROP_COMPOSER_SORT_KEY;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_composer_sort_func;
+		title = _("Composer");
+		key = "Composer";
 		ellipsize = TRUE;
 		break;
 	case RB_ENTRY_VIEW_COL_ALBUM:
@@ -2579,6 +2593,7 @@ rb_entry_view_column_get_type (void)
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_TRACK_NUMBER, "track-number"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_TITLE, "title"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_ARTIST, "artist"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_COMPOSER, "composer"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_ALBUM, "album"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_GENRE, "genre"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_COMMENT, "comment"),

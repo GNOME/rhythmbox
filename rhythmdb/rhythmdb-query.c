@@ -756,6 +756,7 @@ rhythmdb_query_preprocess (RhythmDB *db, GPtrArray *query)
 			case RHYTHMDB_PROP_TITLE_FOLDED:
 			case RHYTHMDB_PROP_GENRE_FOLDED:
 			case RHYTHMDB_PROP_ARTIST_FOLDED:
+			case RHYTHMDB_PROP_COMPOSER_FOLDED:
 			case RHYTHMDB_PROP_ALBUM_FOLDED:
 			{
 				/* as we are matching against a folded property, the string needs to also be folded */

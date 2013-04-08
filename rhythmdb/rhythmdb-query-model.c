@@ -3034,6 +3034,51 @@ rhythmdb_query_model_artist_sort_func (RhythmDBEntry *a,
 }
 
 /**
+ * rhythmdb_query_model_composer_sort_func:
+ * @a: a #RhythmDBEntry
+ * @b: a #RhythmDBEntry
+ * @data: nothing
+ *
+ * Sort function for sorting by composer.  Sorts by composer, then
+ * album, then disc number, then track number, then title.
+ *
+ * Returns: result of sort comparison between a and b.
+ */
+gint
+rhythmdb_query_model_composer_sort_func (RhythmDBEntry *a,
+				       RhythmDBEntry *b,
+				       gpointer data)
+{
+	const char *a_val;
+	const char *b_val;
+	gint ret;
+
+	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_COMPOSER_SORTNAME_SORT_KEY);
+	if (a_val[0] == '\0') {
+		a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_COMPOSER_SORT_KEY);
+	}
+	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_COMPOSER_SORTNAME_SORT_KEY);
+	if (b_val[0] == '\0') {
+		b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_COMPOSER_SORT_KEY);
+	}
+
+	if (a_val == NULL) {
+		if (b_val == NULL)
+			ret = 0;
+		else
+			ret = -1;
+	} else if (b_val == NULL)
+		ret = 1;
+	else
+		ret = strcmp (a_val, b_val);
+
+	if (ret != 0)
+		return ret;
+	else
+		return rhythmdb_query_model_album_sort_func (a, b, data);
+}
+
+/**
  * rhythmdb_query_model_genre_sort_func:
  * @a: a #RhythmDBEntry
  * @b: a #RhythmDBEntry

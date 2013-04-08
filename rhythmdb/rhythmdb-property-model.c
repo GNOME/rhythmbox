@@ -136,6 +136,7 @@ enum {
 	TARGET_LOCATION,
 	TARGET_ENTRIES,
 	TARGET_URIS,
+	TARGET_COMPOSERS
 };
 
 static const GtkTargetEntry targets_album  [] = {
@@ -158,11 +159,17 @@ static const GtkTargetEntry targets_location [] = {
 	{ "application/x-rhythmbox-entry", 0, TARGET_ENTRIES },
 	{ "text/uri-list", 0, TARGET_URIS },
 };
+static const GtkTargetEntry targets_composer [] = {
+	{ "text/x-rhythmbox-composer", 0, TARGET_COMPOSERS },
+	{ "application/x-rhythmbox-entry", 0, TARGET_ENTRIES },
+	{ "text/uri-list", 0, TARGET_URIS },
+};
 
 static GtkTargetList *rhythmdb_property_model_album_drag_target_list = NULL;
 static GtkTargetList *rhythmdb_property_model_artist_drag_target_list = NULL;
 static GtkTargetList *rhythmdb_property_model_genre_drag_target_list = NULL;
 static GtkTargetList *rhythmdb_property_model_location_drag_target_list = NULL;
+static GtkTargetList *rhythmdb_property_model_composer_drag_target_list = NULL;
 
 struct RhythmDBPropertyModelPrivate
 {
@@ -426,6 +433,10 @@ rhythmdb_property_model_set_property (GObject *object,
 		case RHYTHMDB_PROP_LOCATION:
 			append_sort_property (model, RHYTHMDB_PROP_TITLE);
 			break;
+		case RHYTHMDB_PROP_COMPOSER:
+			append_sort_property (model, RHYTHMDB_PROP_COMPOSER_SORTNAME);
+			append_sort_property (model, RHYTHMDB_PROP_COMPOSER);
+			break;
 		default:
 			g_assert_not_reached ();
 			break;
@@ -483,6 +494,10 @@ rhythmdb_property_model_init (RhythmDBPropertyModel *model)
 		rhythmdb_property_model_location_drag_target_list =
 			gtk_target_list_new (targets_location,
 					     G_N_ELEMENTS (targets_location));
+	if (!rhythmdb_property_model_composer_drag_target_list)
+		rhythmdb_property_model_composer_drag_target_list =
+			gtk_target_list_new (targets_composer,
+					     G_N_ELEMENTS (targets_composer));
 
 	model->priv = RHYTHMDB_PROPERTY_MODEL_GET_PRIVATE (model);
 
@@ -1215,6 +1230,9 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 	case RHYTHMDB_PROP_LOCATION:
 		drag_target_list = rhythmdb_property_model_location_drag_target_list;
 		break;
+	case RHYTHMDB_PROP_COMPOSER:
+		drag_target_list = rhythmdb_property_model_composer_drag_target_list;
+		break;
 	default:
 		g_assert_not_reached ();
 	}
@@ -1384,6 +1402,10 @@ rhythmdb_property_model_enable_drag (RhythmDBPropertyModel *model,
 	case RHYTHMDB_PROP_SUBTITLE:		/* more or less */
 		targets = targets_location;
 		n_elements = G_N_ELEMENTS (targets_location);
+		break;
+	case RHYTHMDB_PROP_COMPOSER:
+		targets = targets_composer;
+		n_elements = G_N_ELEMENTS (targets_composer);
 		break;
 	default:
 		g_assert_not_reached ();

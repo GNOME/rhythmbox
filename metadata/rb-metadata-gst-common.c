@@ -108,6 +108,10 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return RB_METADATA_FIELD_ALBUM_ARTIST;
 	else if (!strcmp (tag, GST_TAG_ALBUM_ARTIST_SORTNAME))
 		return RB_METADATA_FIELD_ALBUM_ARTIST_SORTNAME;
+	else if (!strcmp (tag, GST_TAG_COMPOSER))
+		return RB_METADATA_FIELD_COMPOSER;
+	else if (!strcmp (tag, GST_TAG_COMPOSER_SORTNAME))
+		return RB_METADATA_FIELD_COMPOSER_SORTNAME;
 	else
 		return -1;
 }
@@ -185,6 +189,10 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 		return GST_TAG_ALBUM_ARTIST;
 	case RB_METADATA_FIELD_ALBUM_ARTIST_SORTNAME:
 		return GST_TAG_ALBUM_ARTIST_SORTNAME;
+	case RB_METADATA_FIELD_COMPOSER:
+		return GST_TAG_COMPOSER;
+	case RB_METADATA_FIELD_COMPOSER_SORTNAME:
+		return GST_TAG_COMPOSER_SORTNAME;
 	default:
 		return NULL;
 	}

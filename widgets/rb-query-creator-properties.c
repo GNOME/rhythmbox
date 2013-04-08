@@ -76,6 +76,7 @@ const RBQueryCreatorPropertyOption property_options[] =
 {
 	{ NC_("query-criteria", "Title"), RHYTHMDB_PROP_TITLE, RHYTHMDB_PROP_TITLE_FOLDED, &string_property_type },
 	{ NC_("query-criteria", "Artist"), RHYTHMDB_PROP_ARTIST, RHYTHMDB_PROP_ARTIST_FOLDED, &string_property_type },
+	{ NC_("query-criteria", "Composer"), RHYTHMDB_PROP_COMPOSER, RHYTHMDB_PROP_COMPOSER_FOLDED, &string_property_type },
 	{ NC_("query-criteria", "Album"), RHYTHMDB_PROP_ALBUM, RHYTHMDB_PROP_ALBUM_FOLDED, &string_property_type },
 	{ NC_("query-criteria", "Album Artist"), RHYTHMDB_PROP_ALBUM_ARTIST, RHYTHMDB_PROP_ALBUM_ARTIST_FOLDED, &string_property_type },
 	{ NC_("query-criteria", "Genre"), RHYTHMDB_PROP_GENRE, RHYTHMDB_PROP_GENRE_FOLDED, &string_property_type },
@@ -104,6 +105,7 @@ const int num_property_options = G_N_ELEMENTS (property_options);
 const RBQueryCreatorSortOption sort_options[] =
 {
 	{ NC_("query-sort", "Artist"), "Artist", N_("_In reverse alphabetical order") },
+	{ NC_("query-sort", "Composer"), "Composer", N_("_In reverse alphabetical order") },
 	{ NC_("query-sort", "Album"), "Album", N_("_In reverse alphabetical order") },
 	{ NC_("query-sort", "Album Artist"), "AlbumArtist", N_("_In reverse alphabetical order") },
 	{ NC_("query-sort", "Genre"), "Genre", N_("_In reverse alphabetical order") },

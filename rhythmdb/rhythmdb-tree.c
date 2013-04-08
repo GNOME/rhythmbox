@@ -115,8 +115,8 @@ static void rhythmdb_hash_tree_foreach (RhythmDB *adb,
 					gpointer data);
 
 /* Update both of those! */
-#define RHYTHMDB_TREE_XML_VERSION "1.8"
-#define RHYTHMDB_TREE_XML_VERSION_INT 180
+#define RHYTHMDB_TREE_XML_VERSION "1.9"
+#define RHYTHMDB_TREE_XML_VERSION_INT 190
 
 static void destroy_tree_property (RhythmDBTreeProperty *prop);
 static RhythmDBTreeProperty *get_or_create_album (RhythmDBTree *db, RhythmDBTreeProperty *artist,
@@ -396,6 +396,9 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 						ctx->update_local_mountpoints = TRUE;
 					case 170:
 						rb_debug ("reloading all file metadata to get new media types");
+						ctx->reload_all_metadata = TRUE;
+					case 180:
+						rb_debug ("reloading all file metadata to get composer tag");
 						ctx->reload_all_metadata = TRUE;
 					case RHYTHMDB_TREE_XML_VERSION_INT:
 						/* current version */
@@ -997,6 +1000,9 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_ARTIST:
 			save_entry_string(ctx, elt_name, rb_refstring_get (entry->artist));
 			break;
+		case RHYTHMDB_PROP_COMPOSER:
+			save_entry_string_if_set(ctx, elt_name, rb_refstring_get (entry->composer));
+			break;
 		case RHYTHMDB_PROP_ALBUM_ARTIST:
 			save_entry_string_if_set(ctx, elt_name, rb_refstring_get (entry->album_artist));
 			break;
@@ -1020,6 +1026,9 @@ save_entry (RhythmDBTree *db,
 			break;
 		case RHYTHMDB_PROP_ARTIST_SORTNAME:
 			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->artist_sortname));
+			break;
+		case RHYTHMDB_PROP_COMPOSER_SORTNAME:
+			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->composer_sortname));
 			break;
 		case RHYTHMDB_PROP_ALBUM_SORTNAME:
 			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->album_sortname));
@@ -1136,17 +1145,21 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_TITLE_SORT_KEY:
 		case RHYTHMDB_PROP_GENRE_SORT_KEY:
 		case RHYTHMDB_PROP_ARTIST_SORT_KEY:
+		case RHYTHMDB_PROP_COMPOSER_SORT_KEY:
 		case RHYTHMDB_PROP_ALBUM_SORT_KEY:
 		case RHYTHMDB_PROP_ALBUM_ARTIST_SORT_KEY:
 		case RHYTHMDB_PROP_ARTIST_SORTNAME_SORT_KEY:
+		case RHYTHMDB_PROP_COMPOSER_SORTNAME_SORT_KEY:
 		case RHYTHMDB_PROP_ALBUM_SORTNAME_SORT_KEY:
 		case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_SORT_KEY:
 		case RHYTHMDB_PROP_TITLE_FOLDED:
 		case RHYTHMDB_PROP_GENRE_FOLDED:
 		case RHYTHMDB_PROP_ARTIST_FOLDED:
+		case RHYTHMDB_PROP_COMPOSER_FOLDED:
 		case RHYTHMDB_PROP_ALBUM_FOLDED:
 		case RHYTHMDB_PROP_ALBUM_ARTIST_FOLDED:
 		case RHYTHMDB_PROP_ARTIST_SORTNAME_FOLDED:
+		case RHYTHMDB_PROP_COMPOSER_SORTNAME_FOLDED:
 		case RHYTHMDB_PROP_ALBUM_SORTNAME_FOLDED:
 		case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_FOLDED:
 		case RHYTHMDB_PROP_LAST_PLAYED_STR:
@@ -1855,6 +1868,7 @@ search_match_properties (RhythmDB *db,
 		RHYTHMDB_PROP_TITLE_FOLDED,
 		RHYTHMDB_PROP_ALBUM_FOLDED,
 		RHYTHMDB_PROP_ARTIST_FOLDED,
+		RHYTHMDB_PROP_COMPOSER_FOLDED,
 		RHYTHMDB_PROP_GENRE_FOLDED
 	};
 	gboolean islike = TRUE;
