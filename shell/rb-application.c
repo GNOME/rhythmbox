@@ -264,7 +264,7 @@ help_action_cb (GSimpleAction *action, GVariant *parameters, gpointer user_data)
 	g_object_get (app->priv->shell, "window", &window, NULL);
 
 	gtk_show_uri (gtk_widget_get_screen (GTK_WIDGET (window)),
-		      "ghelp:rhythmbox",
+		      "help:rhythmbox",
 		      gtk_get_current_event_time (),
 		      &error);
 
