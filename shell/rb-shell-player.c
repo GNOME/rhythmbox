@@ -3006,11 +3006,13 @@ rb_shell_player_constructed (GObject *object)
 					 G_N_ELEMENTS (actions),
 					 player);
 
-	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>p", "app.play", g_variant_new_boolean (TRUE));
+	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>p", "app.play", NULL);
 	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>Left", "app.play-previous", NULL);
 	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>Right", "app.play-next", NULL);
 	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>Up", "app.volume-up", NULL);
 	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>Down", "app.volume-down", NULL);
+	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>r", "app.play-repeat", g_variant_new_boolean (TRUE));
+	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>u", "app.play-shuffle", g_variant_new_boolean (TRUE));
 
 	player_settings_changed_cb (player->priv->settings, "transition-time", player);
 	player_settings_changed_cb (player->priv->settings, "play-order", player);
