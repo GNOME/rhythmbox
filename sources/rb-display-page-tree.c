@@ -878,6 +878,7 @@ impl_constructed (GObject *object)
 	GMenuModel *menu;
 	GtkBuilder *builder;
 	GApplication *app;
+	GtkAccelGroup *accel_group;
 
 	GActionEntry actions[] = {
 		{ "display-page-remove", remove_action_cb },
@@ -1044,6 +1045,15 @@ impl_constructed (GObject *object)
 	gtk_container_add (GTK_CONTAINER (button), display_page_tree->priv->add_menubutton);
 	gtk_toolbar_insert (GTK_TOOLBAR (display_page_tree->priv->toolbar), button, -1);
 	g_object_unref (icon);
+
+	g_object_get (display_page_tree->priv->shell, "accel-group", &accel_group, NULL);
+	gtk_widget_add_accelerator (display_page_tree->priv->add_menubutton,
+				    "activate",
+				    accel_group,
+				    GDK_KEY_A,
+				    GDK_MOD1_MASK,
+				    GTK_ACCEL_VISIBLE);
+	g_object_unref (accel_group);
 
 	builder = rb_builder_load ("display-page-add-menu.ui", NULL);
 	menu = G_MENU_MODEL (gtk_builder_get_object (builder, "display-page-add-menu"));
