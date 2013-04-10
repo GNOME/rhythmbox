@@ -5,24 +5,29 @@
       <item>
 	<attribute name="label" translatable="yes">Cu_t</attribute>
 	<attribute name="action">app.clipboard-cut</attribute>
+	<attribute name="accel">&lt;Primary&gt;x</attribute>
       </item>
       <item>
 	<attribute name="label" translatable="yes">_Copy</attribute>
 	<attribute name="action">app.clipboard-copy</attribute>
+	<attribute name="accel">&lt;Primary&gt;c</attribute>
       </item>
       <item>
 	<attribute name="label" translatable="yes">_Paste</attribute>
 	<attribute name="action">app.clipboard-paste</attribute>
+	<attribute name="accel">&lt;Primary&gt;v</attribute>
       </item>
     </section>
     <section>
       <item>
 	<attribute name="label" translatable="yes">Select _All</attribute>
 	<attribute name="action">app.clipboard-select-all</attribute>
+	<attribute name="accel">&lt;Primary&gt;a</attribute>
       </item>
       <item>
 	<attribute name="label" translatable="yes">D_eselect All</attribute>
 	<attribute name="action">app.clipboard-select-none</attribute>
+	<attribute name="accel">&lt;Primary&gt;&lt;Shift&gt;a</attribute>
       </item>
     </section>
     <section>
@@ -39,6 +44,7 @@
       <item>
 	<attribute name="label" translatable="yes">Pr_operties</attribute>
 	<attribute name="action">app.clipboard-properties</attribute>
+	<attribute name="accel">&lt;Alt&gt;Return</attribute>
       </item>
     </section>
     <section>
