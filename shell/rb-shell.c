@@ -681,6 +681,7 @@ static void
 construct_load_ui (RBShell *shell)
 {
 	GApplication *app = g_application_get_default ();
+	gboolean shell_shows_app_menu;
 	GtkWidget *toolbar;
 	GtkBuilder *builder;
 	GtkToolItem *tool_item;
@@ -720,9 +721,21 @@ construct_load_ui (RBShell *shell)
 	 * or in party mode where the app menu is inaccessible.
 	 */
 	menu_button = gtk_menu_button_new ();
-
 	model = rb_application_get_shared_menu (RB_APPLICATION (app), "app-menu");
 	gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (menu_button), model);
+
+	g_object_get (gtk_settings_get_default (),
+		      "gtk-shell-shows-app-menu", &shell_shows_app_menu,
+		      NULL);
+	if (shell_shows_app_menu == FALSE) {
+		gtk_widget_add_accelerator (menu_button,
+					    "activate",
+					    shell->priv->accel_group,
+					    GDK_KEY_F10,
+					    0,
+					    GTK_ACCEL_VISIBLE);
+		rb_application_set_menu_accelerators (shell->priv->application, model, TRUE);
+	}
 
 	image = gtk_image_new_from_icon_name ("emblem-system-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
 	gtk_container_add (GTK_CONTAINER (menu_button), image);
