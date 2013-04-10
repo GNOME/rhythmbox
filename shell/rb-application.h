@@ -60,6 +60,7 @@ GApplication *	rb_application_new (void);
 int		rb_application_run (RBApplication *app, int argc, char **argv);
 
 void		rb_application_link_shared_menus (RBApplication *app, GMenu *menu);
+void		rb_application_set_menu_accelerators (RBApplication *app, GMenuModel *menu, gboolean enable);
 
 void		rb_application_add_shared_menu (RBApplication *app, const char *name, GMenuModel *menu);
 GMenuModel *	rb_application_get_shared_menu (RBApplication *app, const char *name);

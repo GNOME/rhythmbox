@@ -825,3 +825,66 @@ rb_application_link_shared_menus (RBApplication *app, GMenu *menu)
 		g_object_unref (iter);
 	}
 }
+
+static void
+set_accelerator (RBApplication *app, GMenuModel *model, int item, gboolean enable)
+{
+	GMenuAttributeIter *iter;
+	GVariant *value;
+	GVariant *target = NULL;
+	const char *key;
+	const char *accel = NULL;
+	const char *action = NULL;
+
+	iter = g_menu_model_iterate_item_attributes (model, item);
+	while (g_menu_attribute_iter_get_next (iter, &key, &value)) {
+		if (g_str_equal (key, "action") && g_variant_is_of_type (value, G_VARIANT_TYPE_STRING))
+			action = g_variant_get_string (value, NULL);
+		else if (g_str_equal (key, "accel") && g_variant_is_of_type (value, G_VARIANT_TYPE_STRING))
+			accel = g_variant_get_string (value, NULL);
+		else if (g_str_equal (key, "target"))
+			target = g_variant_ref (value);
+
+		g_variant_unref (value);
+	}
+	g_object_unref (iter);
+
+	if (accel && action) {
+		if (enable)
+			gtk_application_add_accelerator (GTK_APPLICATION (app), accel, action, target);
+		else
+			gtk_application_remove_accelerator (GTK_APPLICATION (app), action, target);
+	}
+
+	if (target)
+		g_variant_unref (target);
+}
+
+/**
+ * rb_application_set_menu_accelerators:
+ * @app: the #RBApplication
+ * @menu: a #GMenuModel for which to enable or disable accelerators
+ * @enable: %TRUE to enable accelerators, %FALSE to disable
+ *
+ * Enables or disables accelerators for items in @menu.
+ */
+void
+rb_application_set_menu_accelerators (RBApplication *app, GMenuModel *menu, gboolean enable)
+{
+	int i;
+
+	for (i = 0; i < g_menu_model_get_n_items (menu); i++) {
+		GMenuLinkIter *iter;
+		GMenuModel *more;
+		const char *key;
+
+		set_accelerator (app, menu, i, enable);
+
+		iter = g_menu_model_iterate_item_links (menu, i);
+		while (g_menu_link_iter_get_next (iter, &key, &more)) {
+			rb_application_set_menu_accelerators (app, more, enable);
+			g_object_unref (more);
+		}
+		g_object_unref (iter);
+	}
+}
