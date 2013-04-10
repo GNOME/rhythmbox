@@ -28,6 +28,7 @@
 
 #include <config.h>
 
+#include <shell/rb-application.h>
 #include <widgets/rb-button-bar.h>
 #include <lib/rb-util.h>
 
@@ -114,6 +115,8 @@ append_menu (RBButtonBar *bar, GMenuModel *menu, gboolean need_separator)
 		if (submenu != NULL) {
 			button = gtk_menu_button_new ();
 			gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (button), submenu);
+
+			g_object_set_data_full (G_OBJECT (button), "rb-menu-model", g_object_ref (submenu), (GDestroyNotify)g_object_unref);
 		} else {
 			GMenuAttributeIter *iter;
 			const char *name;
@@ -361,6 +364,15 @@ rb_button_bar_add_accelerators (RBButtonBar *bar, GtkAccelGroup *group)
 				gtk_widget_add_accelerator (widget, "activate", group, accel_key, accel_mods, 0);
 			}
 		}
+
+		/* handle menus attached to menu buttons */
+		if (GTK_IS_MENU_BUTTON (widget)) {
+			RBApplication *app = RB_APPLICATION (g_application_get_default ());
+			GMenuModel *model;
+			model = g_object_get_data (G_OBJECT (widget), "rb-menu-model");
+			if (model != NULL)
+				rb_application_set_menu_accelerators (app, model, TRUE);
+		}
 	}
 	g_list_free (c);
 }
@@ -390,6 +402,16 @@ rb_button_bar_remove_accelerators (RBButtonBar *bar, GtkAccelGroup *group)
 			if (accel_key != 0) {
 				gtk_widget_remove_accelerator (widget, group, accel_key, accel_mods);
 			}
+		}
+
+		/* handle menus attached to menu buttons */
+		if (GTK_IS_MENU_BUTTON (widget)) {
+			RBApplication *app = RB_APPLICATION (g_application_get_default ());
+			GMenuModel *model;
+
+			model = g_object_get_data (G_OBJECT (widget), "rb-menu-model");
+			if (model != NULL)
+				rb_application_set_menu_accelerators (app, model, FALSE);
 		}
 	}
 	g_list_free (c);
