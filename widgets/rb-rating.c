@@ -433,7 +433,7 @@ rb_rating_button_press_cb (GtkWidget *widget,
 	rating = RB_RATING (widget);
 
 	gdk_window_get_device_position (gtk_widget_get_window (widget),
-					gdk_event_get_source_device ((GdkEvent *)event),
+					gdk_event_get_device ((GdkEvent *)event),
 					&mouse_x, &mouse_y, NULL);
 	gtk_widget_get_allocation (widget, &allocation);
 

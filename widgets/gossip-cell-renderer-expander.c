@@ -324,7 +324,7 @@ gossip_cell_renderer_expander_activate (GtkCellRenderer      *cell,
 	path = gtk_tree_path_new_from_string (path_string);
 
 	gdk_window_get_device_position (gtk_widget_get_window (widget),
-					gdk_event_get_source_device (event),
+					gdk_event_get_device (event),
 					&mouse_x,
 					&mouse_y,
 					NULL);

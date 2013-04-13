@@ -133,7 +133,7 @@ rb_cell_renderer_pixbuf_activate (GtkCellRenderer *cell,
   }
 
   gdk_window_get_device_position (gtk_widget_get_window (widget),
-				  gdk_event_get_source_device (event),
+				  gdk_event_get_device (event),
 				  &mouse_x,
 				  &mouse_y,
 				  NULL);
