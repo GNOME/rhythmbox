@@ -492,6 +492,7 @@ rb_header_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, 
 	rb_fading_image_start (RB_FADING_IMAGE (header->priv->image), 2000);
 
 	header->priv->entry = entry;
+	header->priv->elapsed_time = 0;
 	if (header->priv->entry) {
 		RBExtDBKey *key;
 
