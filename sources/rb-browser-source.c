@@ -313,12 +313,14 @@ rb_browser_source_constructed (GObject *object)
 	/* ensure search instances exist */
 	rb_source_search_basic_register (RHYTHMDB_PROP_SEARCH_MATCH, "search-match", _("Search all fields"));
 	rb_source_search_basic_register (RHYTHMDB_PROP_ARTIST_FOLDED, "artist", _("Search artists"));
+	rb_source_search_basic_register (RHYTHMDB_PROP_COMPOSER_FOLDED, "composer", _("Search composers"));
 	rb_source_search_basic_register (RHYTHMDB_PROP_ALBUM_FOLDED, "album", _("Search albums"));
 	rb_source_search_basic_register (RHYTHMDB_PROP_TITLE_FOLDED, "title", _("Search titles"));
 	
 	section = g_menu_new ();
 	rb_source_search_add_to_menu (section, "app", source->priv->search_action, "search-match");
 	rb_source_search_add_to_menu (section, "app", source->priv->search_action, "artist");
+	rb_source_search_add_to_menu (section, "app", source->priv->search_action, "composer");
 	rb_source_search_add_to_menu (section, "app", source->priv->search_action, "album");
 	rb_source_search_add_to_menu (section, "app", source->priv->search_action, "title");
 
