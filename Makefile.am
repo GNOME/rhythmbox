@@ -1,9 +1,9 @@
-AUTOMAKE_OPTIONS = 1.7
+ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
 DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install --enable-gtk-doc --disable-scrollkeeper
 distuninstallcheck_listfiles = find . -type f -print | grep -v '^\./var/scrollkeeper'
 
-SUBDIRS = macros lib metadata rhythmdb widgets sources podcast \
+SUBDIRS = lib metadata rhythmdb widgets sources podcast \
 	backends shell bindings sample-plugins plugins remote data po help tests doc
 
 INCLUDES = rhythmbox.h

@@ -3,11 +3,9 @@ AC_INIT([rhythmbox],
 	[2.99.1],
 	[https://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox])
 AC_CONFIG_SRCDIR(rhythmbox.pc.in)
-AC_CONFIG_MACRO_DIR(macros)
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([1.11 tar-ustar dist-xz no-dist-gzip -Wno-portability])
-
-AC_SUBST(ACLOCAL_AMFLAGS, "-I macros")
 
 AM_MAINTAINER_MODE([enable])
 GNOME_MAINTAINER_MODE_DEFINES
