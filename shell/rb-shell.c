@@ -486,6 +486,7 @@ construct_widgets (RBShell *shell)
 
 	/* initialize UI */
 	win = GTK_WINDOW (gtk_application_window_new (GTK_APPLICATION (shell->priv->application)));
+	gtk_window_set_hide_titlebar_when_maximized (win, TRUE);
 	gtk_window_set_title (win, _("Rhythmbox"));
 
 	shell->priv->window = GTK_WIDGET (win);
