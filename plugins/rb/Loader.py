@@ -33,7 +33,7 @@ def callback_with_gdk_lock(callback, data, args):
 		v = callback(data, *args)
 		Gdk.threads_leave()
 		return v
-	except Exception, e:
+	except Exception as e:
 		sys.excepthook(*sys.exc_info())
 		Gdk.threads_leave()
 
@@ -49,7 +49,7 @@ class Loader(object):
 				callback_with_gdk_lock(self.callback, contents, self.args)
 			else:
 				callback_with_gdk_lock(self.callback, None, self.args)
-		except Exception, e:
+		except Exception as e:
 			sys.excepthook(*sys.exc_info())
 			callback_with_gdk_lock(self.callback, None, self.args)
 
@@ -60,7 +60,7 @@ class Loader(object):
 		try:
 			file = Gio.file_new_for_uri(url)
 			file.load_contents_async(self._cancel, self._contents_cb, None)
-		except Exception, e:
+		except Exception as e:
 			sys.excepthook(*sys.exc_info())
 			callback(None, *args)
 
@@ -78,7 +78,7 @@ class UpdateCheck(object):
 			rfi = file.query_info_finish(result)
 			remote_mod = rfi.get_attribute_uint64(Gio.FILE_ATTRIBUTE_TIME_MODIFIED)
 			callback_with_gdk_lock(self.callback, remote_mod != self.local_mod, self.args)
-		except Exception, e:
+		except Exception as e:
 			sys.excepthook(*sys.exc_info())
 			callback_with_gdk_lock(self.callback, False, self.args)
 
@@ -95,7 +95,7 @@ class UpdateCheck(object):
 
 			rf = Gio.file_new_for_uri(remote)
 			rf.query_info_async(Gio.FILE_ATTRIBUTE_TIME_MODIFIED, Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, self._cancel, self._file_info_cb, None)
-		except Exception, e:
+		except Exception as e:
 			sys.excepthook(*sys.exc_info())
 			self.callback(True, *self.args)
 
