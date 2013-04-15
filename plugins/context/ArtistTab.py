@@ -212,7 +212,7 @@ class ArtistDataSource (GObject.GObject):
         if LastFM.user_has_account() is False:
             return
 
-        artist = urllib.quote_plus (artist)
+        artist = urllib.parse.quote_plus(artist)
         function = self.artist['top_tracks']['function']
         cache = self.artist['top_tracks']['cache']
         cachekey = "lastfm:artist:%s:%s" % (function, artist)
@@ -234,7 +234,7 @@ class ArtistDataSource (GObject.GObject):
             return
 
         self.error = None
-        artist = urllib.quote_plus (artist)
+        artist = urllib.parse.quote_plus(artist)
         for key, value in self.artist.items():
             cachekey = "lastfm:artist:%s:%s" % (value['function'], artist)
             url = '%sartist.%s&artist=%s&api_key=%s' % (LastFM.URL_PREFIX,

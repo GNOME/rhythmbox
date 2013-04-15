@@ -186,7 +186,7 @@ class ContextView (GObject.GObject):
     def playing_changed_cb (self, playing, user_data):
         # this sometimes happens on a streaming thread, so we need to
         # move it to the main thread
-        GObject.idle_add (self.playing_changed_idle_cb)
+        GLib.idle_add (self.playing_changed_idle_cb)
 
     def playing_changed_idle_cb (self):
         if self.sp is None:

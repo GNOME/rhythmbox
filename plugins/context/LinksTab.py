@@ -26,7 +26,7 @@
 
 import os
 import cgi
-import urllib
+import urllib.request, urllib.parse
 import rb
 
 from gi.repository import GObject, Gtk
@@ -100,7 +100,7 @@ class LinksView (GObject.GObject):
         self.file     = ""
 
         plugindir = plugin.plugin_info.get_data_dir()
-        self.basepath = "file://" + urllib.pathname2url (plugindir)
+        self.basepath = "file://" + urllib.request.pathname2url(plugindir)
 
     def load_links (self, ds):
         print("Loading links into webview")
@@ -152,7 +152,7 @@ class LinksDataSource (GObject.GObject):
         artist = self.get_artist()
         if artist is not "" and artist is not None:
             wpartist = artist.replace(" ", "_")
-            artist = urllib.quote_plus (artist)
+            artist = urllib.parse.quote_plus(artist)
             artist_links = {
                 "Wikipedia" : "http://www.wikipedia.org/wiki/%s" % wpartist,
                 "Discogs"  : "http://www.discogs.com/artist/%s" % artist,
@@ -169,7 +169,7 @@ class LinksDataSource (GObject.GObject):
         album = self.get_album()
         if album is not "" and album is not None:
             wpalbum = album.replace(" ", "_")
-            album = urllib.quote_plus (album)
+            album = urllib.parse.quote_plus(album)
             album_links = {
                 "Wikipedia" : "http://www.wikipedia.org/wiki/%s" % wpalbum,
                 "Discogs" : "http://www.discogs.com/search?type=album&q=%s&f=html" % album,

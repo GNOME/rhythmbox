@@ -3,7 +3,7 @@
 <%!
     import re
     import cgi
-    import rfc822
+    import email.utils
     from gettext import ngettext
 
     def cleanup(text):
@@ -22,7 +22,7 @@
 
     def format_year(date):
         try:
-            parsed = rfc822.parsedate(date)
+            parsed = email.utils.parsedate(date)
         except Exception as e:
             return ""
         if parsed is None:

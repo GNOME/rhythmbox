@@ -69,7 +69,7 @@ class MagnatuneSource(RB.BrowserSource):
 		# source state
 		self.__activated = False
 		self.__db = None
-		self.__notify_id = 0 # GObject.idle_add id for status notifications
+		self.__notify_id = 0 # GLib.idle_add id for status notifications
 		self.__info_screen = None # the loading screen
 
 		# track data
@@ -80,7 +80,7 @@ class MagnatuneSource(RB.BrowserSource):
 		# catalogue stuff
 		self.__updating = True # whether we're loading the catalog right now
 		self.__has_loaded = False # whether the catalog has been loaded yet
-		self.__update_id = 0 # GObject.idle_add id for catalog updates
+		self.__update_id = 0 # GLib.idle_add id for catalog updates
 		self.__catalogue_loader = None
 		self.__catalogue_check = None
 		self.__load_progress = (0, 0) # (complete, total)
@@ -157,11 +157,11 @@ class MagnatuneSource(RB.BrowserSource):
 
 	def do_delete_thyself(self):
 		if self.__update_id != 0:
-			GObject.source_remove(self.__update_id)
+			GLib.source_remove(self.__update_id)
 			self.__update_id = 0
 
 		if self.__notify_id != 0:
-			GObject.source_remove(self.__notify_id)
+			GLib.source_remove(self.__notify_id)
 			self.__notify_id = 0
 
 		if self.__catalogue_loader is not None:

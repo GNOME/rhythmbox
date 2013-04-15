@@ -91,7 +91,7 @@ class ZeitgeistPlugin(GObject.Object, Peas.Activatable):
             self.send_to_zeitgeist_async(entry, Interpretation.ACCESS_EVENT)
 
         self.__current_song = entry
-        GObject.idle_add(self.reset_manual_switch)
+        GLib.idle_add(self.reset_manual_switch)
 
     def reset_manual_switch(self):
         """
@@ -111,7 +111,7 @@ class ZeitgeistPlugin(GObject.Object, Peas.Activatable):
         """
 	shell = self.object
         db = shell.props.db
-        GObject.idle_add(self.send_to_zeitgeist, db, entry, event_type)
+        GLib.idle_add(self.send_to_zeitgeist, db, entry, event_type)
 
     def send_to_zeitgeist(self, db, entry, event_type):
         song = self.get_song_info(db, entry)

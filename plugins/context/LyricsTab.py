@@ -87,7 +87,7 @@ class LyricsView (GObject.GObject):
         self.plugin  = plugin
         self.file    = ""
         plugindir = plugin.plugin_info.get_data_dir()
-        self.basepath = "file://" + urllib.pathname2url (plugindir)
+        self.basepath = "file://" + urllib.request.pathname2url(plugindir)
 
         self.load_tmpl ()
         self.connect_signals ()

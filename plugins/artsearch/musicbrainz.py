@@ -26,7 +26,8 @@
 
 import xml.dom.minidom as dom
 
-import rb, urllib
+import urllib.parse
+import rb
 from gi.repository import RB
 
 # musicbrainz URLs
@@ -97,7 +98,7 @@ class MusicBrainzSearch(object):
 			return
 
 		query = MUSICBRAINZ_SEARCH_QUERY % (artist.lower(), album.lower())
-		url = MUSICBRAINZ_SEARCH_URL % (urllib.quote(query, safe=':'),)
+		url = MUSICBRAINZ_SEARCH_URL % (urllib.parse.quote(query, safe=':'),)
 
 		loader = rb.Loader()
 		loader.get_url(url, self.get_release_cb, (key, store, callback, args))
