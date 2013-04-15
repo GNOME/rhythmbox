@@ -65,11 +65,11 @@ class URLCache(object):
         """
         now = time.time()
         if os.path.exists(self.path) == False:
-            print "cache directory %s does not exist" % self.path
+            print("cache directory %s does not exist" % self.path)
             return
             
 
-        print "cleaning cache directory %s" % self.path
+        print("cleaning cache directory %s" % self.path)
         for f in os.listdir(self.path):
             try:
                 path = os.path.join(self.path, f)
@@ -77,20 +77,20 @@ class URLCache(object):
 
                 if self.lifetime != -1:
                     if stat.st_ctime + (self.lifetime * SECS_PER_DAY) < now:
-                        print "removing stale cache file %s:%s: age %s (past lifetime limit)" % (self.name, f, int(now - stat.st_ctime))
+                        print("removing stale cache file %s:%s: age %s (past lifetime limit)" % (self.name, f, int(now - stat.st_ctime)))
                         os.unlink(path)
                         continue
 
                 if self.discard != -1:
                     # hmm, noatime mounts will break this, probably
                     if stat.st_atime + (self.discard * SECS_PER_DAY) < now:
-                        print "removing stale cache file %s:%s: age %s (past discard limit)" % (self.name, f, int(now - stat.st_atime))
+                        print("removing stale cache file %s:%s: age %s (past discard limit)" % (self.name, f, int(now - stat.st_atime)))
                         os.unlink(path)
                         continue
 
-            except Exception, e:
-                print "error while checking cache entry %s:%s: %s" % (self.name, f, str(e))
-        print "finished cleaning cache directory %s" % self.path
+            except Exception as e:
+                print("error while checking cache entry %s:%s: %s" % (self.name, f, str(e)))
+        print("finished cleaning cache directory %s" % self.path)
 
     def cachefile(self, key):
         """
@@ -129,15 +129,15 @@ class URLCache(object):
                     stale = True
 
             if stale:
-                print "removing stale cache entry %s:%s" % (self.name, key)
+                print("removing stale cache entry %s:%s" % (self.name, key))
                 os.unlink(path)
                 return None
 
             return path
 
-        except Exception, e:
+        except Exception as e:
             if hasattr(e, 'errno') is False or (e.errno != errno.ENOENT):
-                print "error checking cache for %s:%s: %s" % (self.name, key, e)
+                print("error checking cache for %s:%s: %s" % (self.name, key, e))
             return None
 
 
@@ -148,7 +148,7 @@ class URLCache(object):
         try:
             # construct cache filename
             if not os.path.exists(self.path):
-                os.makedirs(self.path, mode=0700)
+                os.makedirs(self.path, mode=0o700)
             path = self.cachefile(key)
 
             # consider using gio set contents async?
@@ -156,9 +156,9 @@ class URLCache(object):
             f.write(data)
             f.close()
 
-            print "stored cache data %s:%s" % (self.name, key)
-        except Exception, e:
-            print "exception storing cache data %s:%s: %s" % (self.name, key, e)
+            print("stored cache data %s:%s" % (self.name, key))
+        except Exception as e:
+            print("exception storing cache data %s:%s: %s" % (self.name, key, e))
     
 
     def __fetch_cb(self, data, url, key, callback, args):
@@ -169,13 +169,13 @@ class URLCache(object):
                 data = f.read()
                 f.close()
                 if callback(data, *args) is False:
-                    print "cache entry %s:%s invalidated by callback" % (self.name, key)
+                    print("cache entry %s:%s invalidated by callback" % (self.name, key))
                     os.unlink(cachefile)
             else:
                 callback(None, *args)
         else:
             if callback(data, *args) is False:
-                print "cache entry %s:%s invalidated by callback" % (self.name, key)
+                print("cache entry %s:%s invalidated by callback" % (self.name, key))
             else:
                 self.store(key, data)
 
@@ -190,7 +190,7 @@ class URLCache(object):
         from the origin site will result in valid data.
         """
         # check if we've got a fresh entry in the cache
-        print "fetching cache entry %s:%s [%s]" % (self.name, key, url)
+        print("fetching cache entry %s:%s [%s]" % (self.name, key, url))
         cachefile = self.check(key, True)
         if cachefile is not None:
             # could use a loader here, maybe
@@ -200,7 +200,7 @@ class URLCache(object):
             if callback(data, *args) is not False:
                 return
 
-            print "cache entry %s:%s invalidated by callback" % (self.name, key)
+            print("cache entry %s:%s invalidated by callback" % (self.name, key))
             os.unlink(cachefile)
 
         ld = rb.Loader()

@@ -30,7 +30,6 @@ import sys
 import os.path
 import os
 import time
-import thread
 
 from gi.repository import RB
 
@@ -70,7 +69,7 @@ def find_plugin_file(plugin, filename):
 	info = plugin.plugin_info
 	data_dir = info.get_data_dir()
 	path = os.path.join(data_dir, filename)
-	print "looking for " + filename + " in " + data_dir
+	print("looking for " + filename + " in " + data_dir)
 	if os.path.exists(path):
 		return path
 
@@ -112,8 +111,8 @@ class _rbdebugfile:
 	def readline(self):      return ''
 	def readlines(self):     return []
 	writelines = write
-	def seek(self, a):       raise IOError, (29, 'Illegal seek')
-	def tell(self):          raise IOError, (29, 'Illegal seek')
+	def seek(self, a):       raise IOError((29, 'Illegal seek'))
+	def tell(self):          raise IOError((29, 'Illegal seek'))
 	truncate = tell
 
 sys.stdout = _rbdebugfile(sys.stdout.fileno())
