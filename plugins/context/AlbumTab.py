@@ -176,7 +176,7 @@ class AlbumDataSource (GObject.GObject):
             return
 
         self.artist = artist
-        qartist = urllib.quote_plus (artist)
+        qartist = urllib.parse.quote_plus(artist)
         self.error  = None
         url = "%sartist.gettopalbums&artist=%s&api_key=%s" % (LastFM.URL_PREFIX,
                                                               qartist,
@@ -225,8 +225,8 @@ class AlbumDataSource (GObject.GObject):
         return self.albums
 
     def fetch_album_info (self, artist, album, index):
-        qartist = urllib.quote_plus (artist)
-        qalbum = urllib.quote_plus (album.encode('utf-8'))
+        qartist = urllib.parse.quote_plus(artist)
+        qalbum = urllib.parse.quote_plus(album.encode('utf-8'))
         cachekey = "lastfm:album:getinfo:%s:%s" % (qartist, qalbum)
         url = "%salbum.getinfo&artist=%s&album=%s&api_key=%s" % (LastFM.URL_PREFIX,
                                                                  qartist,
