@@ -786,7 +786,7 @@ construct_plugins (RBShell *shell)
 
 	shell->priv->plugin_engine = peas_engine_new ();
 	/* need an #ifdef for this? */
-	peas_engine_enable_loader (shell->priv->plugin_engine, "python");
+	peas_engine_enable_loader (shell->priv->plugin_engine, "python3");
 
 	typelib_dir = g_build_filename (LIBDIR,
 					"girepository-1.0",
