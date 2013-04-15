@@ -897,7 +897,6 @@ impl_constructed (GObject *object)
 	g_object_set (scrolled,
 		      "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
 		      "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
-		      "shadow_type", GTK_SHADOW_IN,
 		      "hexpand", TRUE,
 		      "vexpand", TRUE,
 		      NULL);
