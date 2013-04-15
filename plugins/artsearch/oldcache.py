@@ -49,12 +49,12 @@ class OldCacheSearch(object):
 		album = key.get_field("album")
 		artists = key.get_field_values("artist") or []
 
-		print "looking for %s by %s" % (album, str(artists))
+		print("looking for %s by %s" % (album, str(artists)))
 		for artist in artists:
 			for ext in ('jpg', 'png'):
 				path = self.filename(album, artist, ext)
 				if os.path.exists(path):
-					print "found %s" % path
+					print("found %s" % path)
 					uri = "file://" + urllib.pathname2url(path)
 					storekey = RB.ExtDBKey.create_storage('album', album)
 					storekey.add_field("artist", artist)

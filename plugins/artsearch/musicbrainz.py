@@ -48,7 +48,7 @@ class MusicBrainzSearch(object):
 	def get_release_cb (self, data, args):
 		(key, store, callback, cbargs) = args
 		if data is None:
-			print "musicbrainz release request returned nothing"
+			print("musicbrainz release request returned nothing")
 			callback(*cbargs)
 			return
 
@@ -66,7 +66,7 @@ class MusicBrainzSearch(object):
 					nametags = artist_tags[0].getElementsByTagName('name')
 					if len(nametags) > 0:
 						artistname = nametags[0].firstChild.data
-						print "got musicbrainz artist name %s" % artistname
+						print("got musicbrainz artist name %s" % artistname)
 						storekey.add_field('artist', artistname)
 
 
@@ -75,16 +75,16 @@ class MusicBrainzSearch(object):
 			if len(asin_tags) > 0:
 				asin = asin_tags[0].firstChild.data
 
-				print "got ASIN %s" % asin
+				print("got ASIN %s" % asin)
 				image_url = AMAZON_IMAGE_URL % asin
 
 				store.store_uri(storekey, RB.ExtDBSourceType.SEARCH, image_url)
 			else:
-				print "no ASIN for this release"
+				print("no ASIN for this release")
 
 			callback(*cbargs)
-		except Exception, e:
-			print "exception parsing musicbrainz response: %s" % e
+		except Exception as e:
+			print("exception parsing musicbrainz response: %s" % e)
 			callback(*cbargs)
 
 	def try_search_artist_album (self, key, store, callback, *args):
@@ -92,7 +92,7 @@ class MusicBrainzSearch(object):
 		artist = key.get_field("artist")
 
 		if not album or not artist:
-			print "artist or album information missing"
+			print("artist or album information missing")
 			callback(*args)
 			return
 
@@ -106,7 +106,7 @@ class MusicBrainzSearch(object):
 		key = key.copy()	# ugh
 		album_id = key.get_info("musicbrainz-albumid")
 		if album_id is None:
-			print "no musicbrainz release ID for this track"
+			print("no musicbrainz release ID for this track")
 			self.try_search_artist_album(key, store, callback, args)
 			return
 
@@ -116,7 +116,7 @@ class MusicBrainzSearch(object):
 		if album_id.endswith(MUSICBRAINZ_RELEASE_SUFFIX):
 			album_id = album_id[:-len(MUSICBRAINZ_RELEASE_SUFFIX)]
 
-		print "stripped release ID: %s" % album_id
+		print("stripped release ID: %s" % album_id)
 
 		url = MUSICBRAINZ_RELEASE_URL % (album_id)
 		loader = rb.Loader()

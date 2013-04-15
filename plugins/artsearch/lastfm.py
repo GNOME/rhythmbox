@@ -27,7 +27,7 @@
 import urllib
 import xml.dom.minidom as dom
 import re
-import ConfigParser
+import configparser
 import os
 import time
 
@@ -65,7 +65,7 @@ def user_has_account():
 	if os.path.exists(session_file) == False:
 		return False
 
-	sessions = ConfigParser.RawConfigParser()
+	sessions = configparser.RawConfigParser()
 	sessions.read(session_file)
 	try:
 		return (sessions.get('Last.fm', 'username') != "")
@@ -85,7 +85,7 @@ class LastFMSearch (object):
 
 		album.strip()
 
-		print "searching for (%s, %s, %s)" % (artist, album, album_mbid)
+		print("searching for (%s, %s, %s)" % (artist, album, album_mbid))
 		url = API_URL + "?method=album.getinfo&"
 		if artist != None:
 			url = url + "artist=%s&" % (urllib.quote_plus(artist))
@@ -95,13 +95,13 @@ class LastFMSearch (object):
 			url = url + "mbid=%s&" % (urllib.quote_plus(album_mbid))
 
 		url = url + "api_key=%s" % API_KEY
-		print "last.fm query url = %s" % url
+		print("last.fm query url = %s" % url)
 		return url
 
 
 	def album_info_cb (self, data):
 		if data is None:
-			print "last.fm query returned nothing"
+			print("last.fm query returned nothing")
 			self.search_next()
 			return
 
@@ -111,13 +111,13 @@ class LastFMSearch (object):
 		image_urls = []
 		for tag in parsed.getElementsByTagName('image'):
 			if tag.firstChild is None:
-				print "got useless image tag"
+				print("got useless image tag")
 				continue
 
 			url = tag.firstChild.data
 			url.strip()
 			if url != "":
-				print "found image url: %s" % url
+				print("found image url: %s" % url)
 				image_urls.append(url)
 
 		if len(image_urls) > 0:
@@ -147,12 +147,12 @@ class LastFMSearch (object):
 
 	def search(self, key, last_time, store, callback, args):
 		if last_time > (time.time() - REPEAT_SEARCH_PERIOD):
-			print "we already tried this one"
+			print("we already tried this one")
 			callback (args)
 			return
 
 		if user_has_account() == False:
-			print "can't search: no last.fm account details"
+			print("can't search: no last.fm account details")
 			callback (args)
 			return
 
@@ -165,7 +165,7 @@ class LastFMSearch (object):
 			album = None
 
 		if album == None or len(artists) == 0:
-			print "can't search: no useful details"
+			print("can't search: no useful details")
 			callback (args)
 			return
 
