@@ -872,7 +872,9 @@ impl_constructed (GObject *object)
 	GtkCellRenderer *renderer;
 	GtkWidget *scrolled;
 	GtkStyleContext *context;
-	GtkToolItem *button;
+	GtkWidget *box;
+	GtkToolItem *tool_item;
+	GtkWidget *button;
 	GtkWidget *image;
 	GIcon *icon;
 	GMenuModel *menu;
@@ -1038,13 +1040,16 @@ impl_constructed (GObject *object)
 
 	gtk_grid_attach (GTK_GRID (display_page_tree), display_page_tree->priv->toolbar, 0, 1, 1, 1);
 
-	button = gtk_tool_item_new ();
+	tool_item = gtk_tool_item_new ();
+	box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+	gtk_container_add (GTK_CONTAINER (tool_item), box);
+	gtk_toolbar_insert (GTK_TOOLBAR (display_page_tree->priv->toolbar), tool_item, -1);
+
 	display_page_tree->priv->add_menubutton = gtk_menu_button_new ();
 	icon = g_themed_icon_new_with_default_fallbacks ("list-add-symbolic");
 	image = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_SMALL_TOOLBAR);
 	gtk_button_set_image (GTK_BUTTON (display_page_tree->priv->add_menubutton), image);
-	gtk_container_add (GTK_CONTAINER (button), display_page_tree->priv->add_menubutton);
-	gtk_toolbar_insert (GTK_TOOLBAR (display_page_tree->priv->toolbar), button, -1);
+	gtk_box_pack_start (GTK_BOX (box), display_page_tree->priv->add_menubutton, FALSE, FALSE, 0);
 	g_object_unref (icon);
 
 	g_object_get (display_page_tree->priv->shell, "accel-group", &accel_group, NULL);
@@ -1062,21 +1067,21 @@ impl_constructed (GObject *object)
 	gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (display_page_tree->priv->add_menubutton), menu);
 	g_object_unref (builder);
 
-	button = gtk_tool_button_new (NULL, NULL);
+	button = gtk_button_new ();
 	icon = g_themed_icon_new_with_default_fallbacks ("list-remove-symbolic");
 	image = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_SMALL_TOOLBAR);
-	gtk_tool_button_set_icon_widget (GTK_TOOL_BUTTON (button), image);
-	gtk_toolbar_insert (GTK_TOOLBAR (display_page_tree->priv->toolbar), button, -1);
+	gtk_button_set_image (GTK_BUTTON (button), image);
+	gtk_box_pack_start (GTK_BOX (box), button, FALSE, FALSE, 0);
 	g_object_unref (icon);
 
 	gtk_actionable_set_action_name (GTK_ACTIONABLE (button), "app.display-page-remove");
 
 	/* maybe this should be a column in the tree instead.. */
-	button = gtk_tool_button_new (NULL, NULL);
+	button = gtk_button_new ();
 	icon = g_themed_icon_new_with_default_fallbacks ("media-eject-symbolic");
 	image = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_SMALL_TOOLBAR);
-	gtk_tool_button_set_icon_widget (GTK_TOOL_BUTTON (button), image);
-	gtk_toolbar_insert (GTK_TOOLBAR (display_page_tree->priv->toolbar), button, -1);
+	gtk_button_set_image (GTK_BUTTON (button), image);
+	gtk_box_pack_start (GTK_BOX (box), button, FALSE, FALSE, 0);
 	g_object_unref (icon);
 	
 	gtk_actionable_set_action_name (GTK_ACTIONABLE (button), "app.display-page-eject");
