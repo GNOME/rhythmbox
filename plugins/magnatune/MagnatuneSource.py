@@ -29,7 +29,6 @@ import os
 import sys
 import xml
 import urllib
-import urlparse
 import threading
 import zipfile
 
@@ -134,11 +133,11 @@ class MagnatuneSource(RB.BrowserSource):
 
 			if not magnatune_in_progress_dir.query_exists(None):
 				magnatune_in_progress_path = magnatune_in_progress_dir.get_path()
-				os.mkdir(magnatune_in_progress_path, 0700)
+				os.mkdir(magnatune_in_progress_path, 0o700)
 
 			if not magnatune_cache_dir.query_exists(None):
 				magnatune_cache_path = magnatune_cache_dir.get_path()
-				os.mkdir(magnatune_cache_path, 0700)
+				os.mkdir(magnatune_cache_path, 0o700)
 
 			self.__activated = True
 			self.__show_loading_screen(True)
@@ -213,7 +212,7 @@ class MagnatuneSource(RB.BrowserSource):
 			# Just use the first library location
 			library = Gio.Settings("org.gnome.rhythmbox.rhythmdb")
 			library_location = library['locations'][0]
-		except IndexError, e:
+		except IndexError as e:
 			RB.error_dialog(title = _("Couldn't download album"),
 				        message = _("You must have a library location set to download an album."))
 			return
@@ -242,14 +241,14 @@ class MagnatuneSource(RB.BrowserSource):
 				local_changes = ""
 
 			remote_changes = remote_changes.strip()
-			print "local checksum %s, remote checksum %s" % (local_changes, remote_changes)
+			print("local checksum %s, remote checksum %s" % (local_changes, remote_changes))
 			if local_changes != remote_changes:
 				try:
 					f = open(magnatune_changes, 'w')
 					f.write(remote_changes + "\n")
 					f.close()
-				except Exception, e:
-					print "unable to write local change id: %s" % str(e)
+				except Exception as e:
+					print("unable to write local change id: %s" % str(e))
 
 				download_catalogue()
 			elif self.__has_loaded is False:
@@ -268,11 +267,11 @@ class MagnatuneSource(RB.BrowserSource):
 
 			def download_finished(copy, success, self):
 				if not success:
-					print "catalog download failed"
-					print copy.get_error()
+					print("catalog download failed")
+					print(copy.get_error())
 					return
 
-				print "catalog download successful"
+				print("catalog download successful")
 				# done downloading, unzip to real location
 				catalog_zip = zipfile.ZipFile(magnatune_song_info_temp)
 				catalog = open(magnatune_song_info, 'w')
@@ -312,13 +311,13 @@ class MagnatuneSource(RB.BrowserSource):
 					error = loader.get_error()
 					if error:
 						# report error somehow?
-						print "error loading catalogue: %s" % error
+						print("error loading catalogue: %s" % error)
 
 					try:
 						parser.close()
-					except xml.sax.SAXParseException, e:
+					except xml.sax.SAXParseException as e:
 						# there isn't much we can do here
-						print "error parsing catalogue: %s" % e
+						print("error parsing catalogue: %s" % e)
 
 					self.__show_loading_screen(False)
 					self.__updating = False
@@ -331,7 +330,7 @@ class MagnatuneSource(RB.BrowserSource):
 						if not name.startswith("in_progress_"):
 							continue
 						(result, uri, etag) = magnatune_in_progress_dir.resolve_relative_path(name).load_contents(None)
-						print "restarting download from %s" % uri
+						print("restarting download from %s" % uri)
 						self.__download_album(uri, name[12:])
 				else:
 					# hack around some weird chars that show up in the catalogue for some reason
@@ -344,8 +343,8 @@ class MagnatuneSource(RB.BrowserSource):
 
 					try:
 						parser.feed(data)
-					except xml.sax.SAXParseException, e:
-						print "error parsing catalogue: %s" % e
+					except xml.sax.SAXParseException as e:
+						print("error parsing catalogue: %s" % e)
 
 					load_size['size'] += len(data)
 					self.__load_progress = (load_size['size'], total)
@@ -400,7 +399,7 @@ class MagnatuneSource(RB.BrowserSource):
 
 	def __auth_download(self, sku): # http://magnatune.com/info/api
 
-		def auth_data_cb(data, (username, password)):
+		def auth_data_cb(data, username, password):
 			dl_album_handler = DownloadAlbumHandler(self.__settings['format'])
 			auth_parser = xml.sax.make_parser()
 			auth_parser.setContentHandler(dl_album_handler)
@@ -417,7 +416,7 @@ class MagnatuneSource(RB.BrowserSource):
 				auth_parser.close()
 
 				# process the URI: add authentication info, quote the filename component for some reason
-				parsed = urlparse.urlparse(dl_album_handler.url)
+				parsed = urllib.parse.urlparse(dl_album_handler.url)
 				netloc = "%s:%s@%s" % (username, password, parsed.hostname)
 
 				spath = os.path.split(urllib.url2pathname(parsed.path))
@@ -427,18 +426,18 @@ class MagnatuneSource(RB.BrowserSource):
 				authed = (parsed[0], netloc, path) + parsed[3:]
 				audio_dl_uri = urlparse.urlunparse(authed)
 
-				print "download uri for %s is %s" % (sku, audio_dl_uri)
+				print("download uri for %s is %s" % (sku, audio_dl_uri))
 				self.__download_album(audio_dl_uri, sku)
 
-			except MagnatuneDownloadError, e:
+			except MagnatuneDownloadError as e:
 				RB.error_dialog(title = _("Download Error"),
 						message = _("An error occurred while trying to authorize the download.\nThe Magnatune server returned:\n%s") % str(e))
-			except Exception, e:
+			except Exception as e:
 				sys.excepthook(*sys.exc_info())
 				RB.error_dialog(title = _("Error"),
 						message = _("An error occurred while trying to download the album.\nThe error text is:\n%s") % str(e))
 
-		print "downloading album: " + sku
+		print("downloading album: " + sku)
 		account = MagnatuneAccount.instance()
 		(account_type, username, password) = account.get()
 		url_dict = {
@@ -461,7 +460,7 @@ class MagnatuneSource(RB.BrowserSource):
 			del self.__downloads[audio_dl_uri]
 			del self.__copies[audio_dl_uri]
 
-			print "download of %s finished: %s" % (audio_dl_uri, success)
+			print("download of %s finished: %s" % (audio_dl_uri, success))
 			if success:
 				threading.Thread(target=unzip_album).start()
 			else:
@@ -481,11 +480,11 @@ class MagnatuneSource(RB.BrowserSource):
 			library = Gio.Settings("org.gnome.rhythmbox.rhythmdb")
 			library_location = Gio.file_new_for_uri(library['locations'][0])
 
-			print "unzipping %s" % dest.get_path()
+			print("unzipping %s" % dest.get_path())
 			album = zipfile.ZipFile(dest.get_path())
 			for track in album.namelist():
 				track_uri = library_location.resolve_relative_path(track).get_uri()
-				print "zip file entry: %s => %s" % (track, track_uri)
+				print("zip file entry: %s => %s" % (track, track_uri))
 
 				track_uri = RB.sanitize_uri_for_filesystem(track_uri)
 				RB.uri_create_parent_dirs(track_uri)
@@ -494,14 +493,14 @@ class MagnatuneSource(RB.BrowserSource):
 				if track_out is not None:
 					track_out.write(album.read(track), None)
 					track_out.close(None)
-					print "adding %s to library" % track_uri
+					print("adding %s to library" % track_uri)
 					self.__db.add_uri(track_uri)
 
 			album.close()
 			remove_download_files()
 
 		def remove_download_files():
-			print "removing download files"
+			print("removing download files")
 			in_progress.delete(None)
 			dest.delete(None)
 
