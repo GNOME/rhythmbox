@@ -892,6 +892,8 @@ impl_constructed (GObject *object)
 				     GTK_STYLE_CLASS_SIDEBAR);
 
 	scrolled = gtk_scrolled_window_new (NULL, NULL);
+	context = gtk_widget_get_style_context (scrolled);
+	gtk_style_context_set_junction_sides (context, GTK_JUNCTION_BOTTOM);
 	g_object_set (scrolled,
 		      "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
 		      "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
@@ -1032,7 +1034,7 @@ impl_constructed (GObject *object)
 	gtk_toolbar_set_icon_size (GTK_TOOLBAR (display_page_tree->priv->toolbar), GTK_ICON_SIZE_MENU);
 
 	context = gtk_widget_get_style_context (display_page_tree->priv->toolbar);
-	gtk_style_context_set_junction_sides (context, GTK_JUNCTION_BOTTOM);
+	gtk_style_context_set_junction_sides (context, GTK_JUNCTION_TOP);
 	gtk_style_context_add_class (context, GTK_STYLE_CLASS_INLINE_TOOLBAR);
 
 	gtk_grid_attach (GTK_GRID (display_page_tree), display_page_tree->priv->toolbar, 0, 1, 1, 1);
