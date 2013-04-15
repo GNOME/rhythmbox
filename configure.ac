@@ -1,4 +1,5 @@
-AC_PREREQ(2.53)
+AC_PREREQ(2.63.2)
+
 AC_INIT([rhythmbox],
 	[2.99.1],
 	[https://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox])
@@ -22,7 +23,7 @@ AC_SUBST(RHYTHMBOX_CORE_AGE)
 AC_SUBST(RHYTHMBOX_CORE_CURRENT)
 AC_SUBST(RHYTHMBOX_CORE_REVISION)
 
-m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])],)
+AM_SILENT_RULES([yes])
 
 dnl XXXX hack to kill off all the libtool tags ...
 dnl it isn't like we are using C++ or Fortran.
@@ -414,11 +415,11 @@ if test "x$ac_cv_strftime_supports_E_O" = xyes; then
         AC_DEFINE(HAVE_STRFTIME_EXTENSION, 1, [Define if strftime supports %E and %O modifiers.])
 fi
 
-GETTEXT_PACKAGE=rhythmbox
-AC_SUBST(GETTEXT_PACKAGE)
-AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Define to the Gettext package name])
+AM_GNU_GETTEXT_VERSION([0.18])
+AM_GNU_GETTEXT([external])
 
-AM_GLIB_GNU_GETTEXT
+AC_SUBST([GETTEXT_PACKAGE], [rhythmbox])
+AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], "$GETTEXT_PACKAGE", [Define to the gettext package name.])
 
 dnl Workaround for automake 1.8
 AC_SUBST(mkdir_p) if test x"$mkdir_p" = "x"; then
