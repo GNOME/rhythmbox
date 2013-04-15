@@ -32,44 +32,44 @@ import gettext
 gettext.install('rhythmbox', RB.locale_dir())
 
 class SendToPlugin (GObject.Object, Peas.Activatable):
-    __gtype_name__ = 'SendToPlugin'
+	__gtype_name__ = 'SendToPlugin'
 
-    object = GObject.property (type = GObject.Object)
+	object = GObject.property (type = GObject.Object)
 
-    def __init__(self):
-        GObject.Object.__init__(self)
+	def __init__(self):
+		GObject.Object.__init__(self)
 
-    def do_activate(self):
-	self.__action = Gio.SimpleAction(name='sendto')
-	self.__action.connect('activate', self.send_to)
+	def do_activate(self):
+		self.__action = Gio.SimpleAction(name='sendto')
+		self.__action.connect('activate', self.send_to)
 
-	app = Gio.Application.get_default()
-	app.add_action(self.__action)
+		app = Gio.Application.get_default()
+		app.add_action(self.__action)
 
-	item = Gio.MenuItem()
-	item.set_label(_("Send to..."))
-	item.set_detailed_action('app.sendto')
-	app.add_plugin_menu_item('edit', 'sendto', item)
-	app.add_plugin_menu_item('browser-popup', 'sendto', item)
-	app.add_plugin_menu_item('playlist-popup', 'sendto', item)
-	app.add_plugin_menu_item('queue-popup', 'sendto', item)
+		item = Gio.MenuItem()
+		item.set_label(_("Send to..."))
+		item.set_detailed_action('app.sendto')
+		app.add_plugin_menu_item('edit', 'sendto', item)
+		app.add_plugin_menu_item('browser-popup', 'sendto', item)
+		app.add_plugin_menu_item('playlist-popup', 'sendto', item)
+		app.add_plugin_menu_item('queue-popup', 'sendto', item)
 
-    def do_deactivate(self):
-	shell = self.object
-	app = Gio.Application.get_default()
-	app.remove_action('sendto')
-	app.remove_plugin_menu_item('edit', 'sendto')
-	app.remove_plugin_menu_item('browser-popup', 'sendto')
-	app.remove_plugin_menu_item('playlist-popup', 'sendto')
-	app.remove_plugin_menu_item('queue-popup', 'sendto')
-	del self.__action
+	def do_deactivate(self):
+		shell = self.object
+		app = Gio.Application.get_default()
+		app.remove_action('sendto')
+		app.remove_plugin_menu_item('edit', 'sendto')
+		app.remove_plugin_menu_item('browser-popup', 'sendto')
+		app.remove_plugin_menu_item('playlist-popup', 'sendto')
+		app.remove_plugin_menu_item('queue-popup', 'sendto')
+		del self.__action
 
-    def send_to(self, action, data):
-	shell = self.object
-        page = shell.props.selected_page
-        if not hasattr(page, "get_entry_view"):
-            return
+	def send_to(self, action, data):
+		shell = self.object
+		page = shell.props.selected_page
+		if not hasattr(page, "get_entry_view"):
+			return
 
-        entries = page.get_entry_view().get_selected_entries()
-        cmdline = 'nautilus-sendto ' + " ".join(entry.get_playback_uri() for entry in entries)
-        GLib.spawn_command_line_async(cmdline)
+		entries = page.get_entry_view().get_selected_entries()
+		cmdline = 'nautilus-sendto ' + " ".join(entry.get_playback_uri() for entry in entries)
+		GLib.spawn_command_line_async(cmdline)
