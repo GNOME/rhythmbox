@@ -80,7 +80,7 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 						 "python-debugger",
 						 Gio.MenuItem.new(label=_("Python Debugger"),
 								  detailed_action="app.python-debugger"))
-		
+
 	def do_deactivate(self):
 		shell = self.object
 		app = shell.props.application
@@ -92,7 +92,7 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 		
 		if self.window is not None:
 			self.window.destroy()
-		
+
 
 	def show_console(self, action, parameter, shell):
 		if not self.window:
@@ -102,11 +102,11 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 			console = PythonConsole(namespace = ns, 
 			                        destroy_cb = self.destroy_console)
 			console.set_size_request(600, 400)
-			console.eval('print "' + \
+			console.eval('print("' + \
 			             _("You can access the main window " \
-			             "through the \'shell\' variable :") +  
-			             '\\n%s" % shell', False)
-	
+			             "through the \'shell\' variable :") +
+			             '\\n%s" % shell)', False)
+
 			self.window = Gtk.Window()
 			self.window.set_title('Rhythmbox Python Console')
 			self.window.add(console)
@@ -131,7 +131,7 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 				rpdb2.start_embedded_debugger(password)
 				return False
 
-			GObject.idle_add(start_debugger, password)
+			GLib.idle_add(start_debugger, password)
 		dialog.destroy()
 	
 	def destroy_console(self, *args):
@@ -186,12 +186,12 @@ class PythonConsole(Gtk.ScrolledWindow):
 		# Set up hooks for standard output.
 		self.stdout = gtkoutfile(self, sys.stdout.fileno(), self.normal)
 		self.stderr = gtkoutfile(self, sys.stderr.fileno(), self.error)
-		
+
 		# Signals
 		self.view.connect("key-press-event", self.__key_press_event_cb)
 		buffer.connect("mark-set", self.__mark_set_cb)
-		
- 		
+
+
 	def __key_press_event_cb(self, view, event):
 		if event.keyval == Gdk.KEY_D and \
 		   event.state == Gdk.ModifierType.CONTROL_MASK:
@@ -221,7 +221,7 @@ class PythonConsole(Gtk.ScrolledWindow):
 				cur = self.get_end_iter()
 				
 			buffer.place_cursor(cur)
-			GObject.idle_add(self.scroll_to_end)
+			GLib.idle_add(self.scroll_to_end)
 			return True
 		
 		elif event.keyval == Gdk.KEY_Return:
@@ -265,7 +265,7 @@ class PythonConsole(Gtk.ScrolledWindow):
 			cur = self.get_end_iter()
 			buffer.move_mark(inp_mark, cur)
 			buffer.place_cursor(cur)
-			GObject.idle_add(self.scroll_to_end)
+			GLib.idle_add(self.scroll_to_end)
 			return True
 
 		elif event.keyval == Gdk.KEY_KP_Down or \
@@ -273,7 +273,7 @@ class PythonConsole(Gtk.ScrolledWindow):
 			# Next entry from history
 			view.emit_stop_by_name("key_press_event")
 			self.history_down()
-			GObject.idle_add(self.scroll_to_end)
+			GLib.idle_add(self.scroll_to_end)
 			return True
 
 		elif event.keyval == Gdk.KEY_KP_Up or \
@@ -281,7 +281,7 @@ class PythonConsole(Gtk.ScrolledWindow):
 			# Previous entry from history
 			view.emit_stop_by_name("key_press_event")
 			self.history_up()
-			GObject.idle_add(self.scroll_to_end)
+			GLib.idle_add(self.scroll_to_end)
 			return True
 
 		elif event.keyval == Gdk.KEY_KP_Left or \
@@ -360,23 +360,23 @@ class PythonConsole(Gtk.ScrolledWindow):
 			start_iter = Gtk.TextIter()
 			start_iter = buffer.get_iter_at_offset(offset)
 			buffer.apply_tag(tag, start_iter, self.get_end_iter())
-		GObject.idle_add(self.scroll_to_end)
- 	
- 	def eval(self, command, display_command = False):
+		GLib.idle_add(self.scroll_to_end)
+
+	def eval(self, command, display_command = False):
 		buffer = self.view.get_buffer()
 		lin = buffer.get_mark("input-line")
 		buffer.delete(self.get_iter_at_mark(lin),
 			      self.get_end_iter())
- 
+
 		if isinstance(command, list) or isinstance(command, tuple):
- 			for c in command:
-		 		if display_command:
-		 			self.write(">>> " + c + "\n", self.command)
- 				self.__run(c)
+			for c in command:
+				if display_command:
+					self.write(">>> " + c + "\n", self.command)
+				self.__run(c)
 		else:
-	 		if display_command:
-	 			self.write(">>> " + c + "\n", self.command)
-			self.__run(command) 
+			if display_command:
+				self.write(">>> " + c + "\n", self.command)
+			self.__run(command)
 
 		cur = self.get_end_iter()
 		buffer.move_mark_by_name("input-line", cur)
@@ -385,7 +385,7 @@ class PythonConsole(Gtk.ScrolledWindow):
 		buffer.move_mark_by_name("input", cur)
 		self.view.scroll_to_iter(self.get_end_iter(), 0.0, False, 0.5, 0.5)
 	
- 	def __run(self, command):
+	def __run(self, command):
 		sys.stdout, self.stdout = self.stdout, sys.stdout
 		sys.stderr, self.stderr = self.stderr, sys.stderr
 		
@@ -393,9 +393,9 @@ class PythonConsole(Gtk.ScrolledWindow):
 			try:
 				r = eval(command, self.namespace, self.namespace)
 				if r is not None:
-					print `r`
+					print(r)
 			except SyntaxError:
-				exec command in self.namespace
+				exec(command, self.namespace)
 		except:
 			if hasattr(sys, 'last_type') and sys.last_type == SystemExit:
 				self.destroy()
@@ -426,8 +426,8 @@ class gtkoutfile:
 	def readlines(self):     return []
 	def write(self, s):      self.console.write(s, self.tag)
 	def writelines(self, l): self.console.write(l, self.tag)
-	def seek(self, a):       raise IOError, (29, 'Illegal seek')
-	def tell(self):          raise IOError, (29, 'Illegal seek')
+	def seek(self, a):       raise IOError((29, 'Illegal seek'))
+	def tell(self):          raise IOError((29, 'Illegal seek'))
 	truncate = tell
 
 # ex:noet:ts=8:
