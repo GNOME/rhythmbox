@@ -59,7 +59,7 @@ class MagnatuneEntryType(RB.RhythmDBEntryType):
 		if account_type != "none":
 			uri = self.URIre.sub("http://%s:%s@%s.magnatune.com/" % (username, password, account_type), uri)
 			uri = self.nsre.sub(r"_nospeech.\1", uri)
-			print "converted track uri: %s" % uri
+			print("converted track uri: %s" % uri)
 
 		return uri
 
@@ -197,7 +197,7 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 
 
 		def account_type_toggled(button):
-			print "account type radiobutton toggled: " + button.get_name()
+			print("account type radiobutton toggled: " + button.get_name())
 			account_type = {"no_account_radio": 'none', "stream_account_radio": 'stream', "download_account_radio": 'download'} 
 			if button.get_active():
 				self.settings['account-type'] = account_type[button.get_name()]
@@ -208,7 +208,7 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 			password = builder.get_object("password_entry").get_text()
 
 			if username == "" or password == "":
-				print "missing something"
+				print("missing something")
 				return
 
 			# should actually try a request to http://username:password@account-type.magnatune.com/

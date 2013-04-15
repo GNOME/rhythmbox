@@ -93,10 +93,10 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 				self.__art_dict[sku] = str(self.__track['cover_small'])
 
 				self.__db.commit()
-			except Exception,e: # This happens on duplicate uris being added
+			except Exception as e: # This happens on duplicate uris being added
 				import sys
 				sys.excepthook(*sys.exc_info())
-				print "Couldn't add %s - %s" % (self.__track['artist'], self.__track['trackname']), e
+				print("Couldn't add %s - %s" % (self.__track['artist'], self.__track['trackname']), e)
 
 			self.__track = {}
 		elif name == "AllSongs":

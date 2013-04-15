@@ -64,8 +64,8 @@ class MagnatuneAccount(object):
 		if Secret is None:
 			print ("Account details will not be saved because libsecret was not found")
 			return
-                # Haha.
-                self.secret_service = SecretUnstable.Service.get_sync(SecretUnstable.ServiceFlags.OPEN_SESSION, None)
+		# Haha.
+		self.secret_service = SecretUnstable.Service.get_sync(SecretUnstable.ServiceFlags.OPEN_SESSION, None)
 		items = self.secret_service.search_sync(MAGNATUNE_SCHEMA,
 							self.keyring_attributes,
 							SecretUnstable.SearchFlags.LOAD_SECRETS,
