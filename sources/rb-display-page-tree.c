@@ -1047,7 +1047,7 @@ impl_constructed (GObject *object)
 
 	display_page_tree->priv->add_menubutton = gtk_menu_button_new ();
 	icon = g_themed_icon_new_with_default_fallbacks ("list-add-symbolic");
-	image = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_SMALL_TOOLBAR);
+	image = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_MENU);
 	gtk_button_set_image (GTK_BUTTON (display_page_tree->priv->add_menubutton), image);
 	gtk_box_pack_start (GTK_BOX (box), display_page_tree->priv->add_menubutton, FALSE, FALSE, 0);
 	g_object_unref (icon);
@@ -1069,7 +1069,7 @@ impl_constructed (GObject *object)
 
 	button = gtk_button_new ();
 	icon = g_themed_icon_new_with_default_fallbacks ("list-remove-symbolic");
-	image = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_SMALL_TOOLBAR);
+	image = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_MENU);
 	gtk_button_set_image (GTK_BUTTON (button), image);
 	gtk_box_pack_start (GTK_BOX (box), button, FALSE, FALSE, 0);
 	g_object_unref (icon);
@@ -1079,7 +1079,7 @@ impl_constructed (GObject *object)
 	/* maybe this should be a column in the tree instead.. */
 	button = gtk_button_new ();
 	icon = g_themed_icon_new_with_default_fallbacks ("media-eject-symbolic");
-	image = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_SMALL_TOOLBAR);
+	image = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_MENU);
 	gtk_button_set_image (GTK_BUTTON (button), image);
 	gtk_box_pack_start (GTK_BOX (box), button, FALSE, FALSE, 0);
 	g_object_unref (icon);
