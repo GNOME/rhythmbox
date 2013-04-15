@@ -37,15 +37,15 @@ class EmbeddedSearch(object):
 		for tagname in ('image', 'preview-image'):
 			(found, sample) = tags.get_sample(tagname)
 			if not found:
-				print "no %s" % tagname
+				print("no %s" % tagname)
 				continue
 
 			pixbuf = RB.gst_process_embedded_image(tags, tagname)
 			if not pixbuf:
-				print "no pixbuf in %s" % tagname
+				print("no pixbuf in %s" % tagname)
 				continue
 
-			print "trying to store pixbuf from %s" % tagname
+			print("trying to store pixbuf from %s" % tagname)
 			key = RB.ExtDBKey.create_storage("album", self.search_key.get_field("album"))
 			artists = self.search_key.get_field_values("artist")
 			key.add_field("artist", artists[0])
@@ -56,12 +56,12 @@ class EmbeddedSearch(object):
 	def search (self, key, last_time, store, callback, args):
 		location = key.get_info("location")
 		if location is None:
-			print "not searching, we don't have a location"
+			print("not searching, we don't have a location")
 			callback(args)
 			return
 
 		if location.startswith("file://") is False:
-			print "not searching in non-local file %s" % location
+			print("not searching in non-local file %s" % location)
 			callback(args)
 			return
 
@@ -72,7 +72,7 @@ class EmbeddedSearch(object):
 		self.store = store
 		self.search_key = key
 
-		print "discovering %s" % location
+		print("discovering %s" % location)
 		self.discoverer = GstPbutils.Discoverer(timeout=Gst.SECOND*5)
 		self.discoverer.connect('finished', self.finished_cb)
 		self.discoverer.connect('discovered', self.discovered_cb)
