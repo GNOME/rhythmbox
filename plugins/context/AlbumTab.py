@@ -102,7 +102,7 @@ class AlbumView (GObject.GObject):
         self.file    = ""
 
         plugindir = plugin.plugin_info.get_data_dir()
-        self.basepath = "file://" + urllib.pathname2url (plugindir)
+        self.basepath = "file://" + urllib.request.pathname2url (plugindir)
 
         self.load_tmpl ()
         self.connect_signals ()
@@ -160,7 +160,7 @@ class AlbumDataSource (GObject.GObject):
         """
         try:
             return data[position].firstChild.data
-        except Exception, e:
+        except Exception as e:
             return None
 
     def get_artist (self):
@@ -186,13 +186,13 @@ class AlbumDataSource (GObject.GObject):
 
     def parse_album_list (self, data, artist):
         if data is None:
-            print "Nothing fetched for %s top albums" % artist
+            print("Nothing fetched for %s top albums" % artist)
             return
 
         try:
             parsed = dom.parseString (data)
-        except Exception, e:
-            print "Error parsing album list: %s" % e
+        except Exception as e:
+            print("Error parsing album list: %s" % e)
             return False
 
         lfm = parsed.getElementsByTagName ('lfm')[0]
@@ -203,7 +203,7 @@ class AlbumDataSource (GObject.GObject):
 
         self.albums = []
         album_nodes = parsed.getElementsByTagName ('album') 
-        print "num albums: %d" % len(album_nodes)
+        print("num albums: %d" % len(album_nodes))
         if len(album_nodes) == 0:
             self.error = "No albums found for %s" % artist
             self.emit('albums-ready')
@@ -241,8 +241,8 @@ class AlbumDataSource (GObject.GObject):
         try:
             parsed = dom.parseString (data)
             self.albums[index]['id'] = parsed.getElementsByTagName ('id')[0].firstChild.data
-        except Exception, e:
-            print "Error parsing album tracklist: %s" % e
+        except Exception as e:
+            print("Error parsing album tracklist: %s" % e)
             return False
 
         self.albums[index]['releasedate'] = self.extract(parsed.getElementsByTagName ('releasedate'),0)
@@ -257,7 +257,7 @@ class AlbumDataSource (GObject.GObject):
     def assemble_info (self, data, album, index):
         rv = True
         if data is None:
-            print "nothing fetched for %s tracklist" % album
+            print("nothing fetched for %s tracklist" % album)
         else:
             try:
                 parsed = dom.parseString (data)
@@ -271,12 +271,12 @@ class AlbumDataSource (GObject.GObject):
                     tracklist.append ((i, title, duration))
                 self.albums[index]['tracklist'] = tracklist
                 self.albums[index]['duration']  = album_length
-            except Exception, e:
-                print "Error parsing album playlist: %s" % e
+            except Exception as e:
+                print("Error parsing album playlist: %s" % e)
                 rv = False
 
         self.album_info_fetched -= 1
-        print "%s albums left to process" % self.album_info_fetched
+        print("%s albums left to process" % self.album_info_fetched)
         if self.album_info_fetched == 0:
             self.emit('albums-ready')
 

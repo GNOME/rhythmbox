@@ -69,20 +69,20 @@ class ArtistTab (GObject.GObject):
         buttons.pack_start (self.button, True, True, 0)
 
     def activate (self):
-        print "activating Artist Tab"
+        print("activating Artist Tab")
         self.button.set_active(True)
         self.active = True
         self.reload ()
 
     def deactivate (self):
-        print "deactivating Artist Tab"
+        print("deactivating Artist Tab")
         self.button.set_active(False)
         self.active = False
 
     def reload (self):
         entry = self.sp.get_playing_entry ()
         if entry is None:
-            print "Nothing playing"
+            print("Nothing playing")
             return None
         artist = entry.get_string (RB.RhythmDBPropType.ARTIST)
 
@@ -103,8 +103,8 @@ class ArtistView (GObject.GObject):
         self.plugin   = plugin
         self.file     = ""
 
-	plugindir = plugin.plugin_info.get_data_dir()
-        self.basepath = "file://" + urllib.pathname2url (plugindir)
+        plugindir = plugin.plugin_info.get_data_dir()
+        self.basepath = "file://" + urllib.request.pathname2url (plugindir)
 
         self.load_tmpl ()
         self.connect_signals ()
@@ -145,8 +145,8 @@ class ArtistView (GObject.GObject):
                                               datasource = LastFM.datasource_link (self.basepath),
                                               stylesheet = self.styles )
             self.load_view ()
-        except Exception, e:
-            print "Problem in info ready: %s" % e
+        except Exception as e:
+            print("Problem in info ready: %s" % e)
     
 
 class ArtistDataSource (GObject.GObject):
@@ -205,7 +205,7 @@ class ArtistDataSource (GObject.GObject):
         
         try:
             return data[position].firstChild.data
-        except Exception, e:
+        except Exception as e:
             return None
 
     def fetch_top_tracks (self, artist):
@@ -243,15 +243,15 @@ class ArtistDataSource (GObject.GObject):
 
     def fetch_artist_data_cb (self, data, category):
         if data is None:
-            print "no data fetched for artist %s" % category['function']
+            print("no data fetched for artist %s" % category['function'])
             return
 
         try:
             category['data'] = dom.parseString (data)
             category['parsed'] = False
             self.emit (category['signal'])
-        except Exception, e:
-            print "Error parsing artist %s: %s" % (category['function'], e)
+        except Exception as e:
+            print("Error parsing artist %s: %s" % (category['function'], e))
             return False
 
     def get_current_artist (self):
