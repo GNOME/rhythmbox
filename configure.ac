@@ -582,7 +582,7 @@ AC_SUBST(SAMPLEPLUGINDIR)
 dnl ================================================================
 dnl Python plugins
 dnl ================================================================
-AM_PATH_PYTHON
+AM_PATH_PYTHON(3.2.3)
 
 
 AC_ARG_ENABLE([python],
@@ -598,7 +598,7 @@ fi
 if test "x$enable_python" = "xyes"; then
 	PKG_CHECK_MODULES(PYTHON, [pygobject-3.0 >= $PYGOBJECT_REQUIRED])
 
-	pyoverridesdir=`$PKG_CONFIG --variable=overridesdir pygobject-3.0`
+	pyoverridesdir=`$PYTHON -c "import gi; print(gi._overridesdir)"`
 	AC_SUBST(pyoverridesdir)
 fi
 
