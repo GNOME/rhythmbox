@@ -737,13 +737,21 @@ AC_SUBST(GRILO_CFLAGS)
 AC_SUBST(GRILO_LIBS)
 
 dnl ================================================================
+dnl libgd
+dnl ================================================================
+LIBGD_INIT([
+	header-bar
+	static
+])
+
+dnl ================================================================
 dnl end-game
 dnl ================================================================
 
 AC_OUTPUT([
 rhythmbox.pc
 Makefile
-macros/Makefile
+libgd/Makefile
 lib/Makefile
 lib/libmediaplayerid/Makefile
 metadata/Makefile

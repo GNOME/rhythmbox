@@ -24,6 +24,8 @@ if test -z `which autopoint`; then
         exit 1
 fi
 
+git submodule update --init --recursive
+
 autopoint --force
 AUTOPOINT='intltoolize --automake --copy' autoreconf --force --install --verbose
 

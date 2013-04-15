@@ -1,9 +1,9 @@
-ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+ACLOCAL_AMFLAGS = -I m4 -I libgd ${ACLOCAL_FLAGS}
 
 DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install --enable-gtk-doc --disable-scrollkeeper
 distuninstallcheck_listfiles = find . -type f -print | grep -v '^\./var/scrollkeeper'
 
-SUBDIRS = lib metadata rhythmdb widgets sources podcast \
+SUBDIRS = libgd lib metadata rhythmdb widgets sources podcast \
 	backends shell bindings sample-plugins plugins remote data po help tests doc
 
 INCLUDES = rhythmbox.h

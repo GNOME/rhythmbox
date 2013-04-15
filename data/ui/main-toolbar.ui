@@ -1,113 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
-  <object class="GtkToolbar" id="main-toolbar">
+  <object class="GdHeaderBar" id="headerbar">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="toolbar_style">icons</property>
-    <property name="icon_size">6</property>
     <child>
-      <object class="GtkToolButton" id="previous-button">
-        <property name="use_action_appearance">False</property>
+      <object class="GtkBox" id="box1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Start playing the previous song</property>
-        <property name="use_action_appearance">False</property>
-        <property name="action_name">app.play-previous</property>
-        <property name="label" translatable="yes">Previous</property>
-        <property name="icon_name">media-skip-backward</property>
+        <property name="orientation">horizontal</property>
+        <style>
+          <class name="raised"/>
+          <class name="linked"/>
+        </style>
+        <child>
+          <object class="GdHeaderSimpleButton" id="previous-button">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="tooltip_text" translatable="yes">Start playing the previous song</property>
+            <property name="use_action_appearance">False</property>
+            <property name="action_name">app.play-previous</property>
+            <property name="label" translatable="yes">Previous</property>
+            <property name="symbolic_icon_name">media-skip-backward-symbolic</property>
+          </object>
+        </child>
+        <child>
+          <object class="GdHeaderSimpleButton" id="play-button">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="tooltip_text" translatable="yes">Pause playback</property>
+            <property name="use_action_appearance">False</property>
+            <property name="action_name">app.play</property>
+            <property name="label" translatable="yes">Play</property>
+            <property name="symbolic_icon_name">media-playback-start-symbolic</property>
+          </object>
+        </child>
+        <child>
+          <object class="GdHeaderSimpleButton" id="next-button">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="tooltip_text" translatable="yes">Start playing the next song</property>
+            <property name="use_action_appearance">False</property>
+            <property name="action_name">app.play-next</property>
+            <property name="label" translatable="yes">Next</property>
+            <property name="symbolic_icon_name">media-skip-forward-symbolic</property>
+          </object>
+        </child>
       </object>
       <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
+        <property name="pack_type">start</property>
       </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="play-button">
-        <property name="use_action_appearance">False</property>
+      <object class="GtkBox" id="box2">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Pause playback</property>
-        <property name="use_action_appearance">False</property>
-        <property name="action_name">app.play</property>
-        <property name="label" translatable="yes">Play</property>
-        <property name="icon_name">media-playback-start</property>
+        <property name="orientation">horizontal</property>
+        <style>
+          <class name="raised"/>
+          <class name="linked"/>
+        </style>
+        <child>
+          <object class="GdHeaderToggleButton" id="repeat-button">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="tooltip_text" translatable="yes">Play first song again after all songs are played</property>
+            <property name="use_action_appearance">False</property>
+            <property name="action_name">app.play-repeat</property>
+            <property name="label" translatable="yes">Repeat</property>
+            <property name="symbolic_icon_name">media-playlist-repeat-symbolic</property>
+          </object>
+        </child>
+        <child>
+          <object class="GdHeaderToggleButton" id="shuffle-button">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="tooltip_text" translatable="yes">Play songs in a random order</property>
+            <property name="use_action_appearance">False</property>
+            <property name="action_name">app.play-shuffle</property>
+            <property name="label" translatable="yes">Shuffle</property>
+            <property name="symbolic_icon_name">media-playlist-shuffle-symbolic</property>
+          </object>
+        </child>
       </object>
       <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
+        <property name="pack_type">start</property>
       </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="next-button">
-        <property name="use_action_appearance">False</property>
+      <object class="GdHeaderMenuButton" id="gear-menubutton">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Start playing the next song</property>
-        <property name="use_action_appearance">False</property>
-        <property name="action_name">app.play-next</property>
-        <property name="label" translatable="yes">Next</property>
-        <property name="icon_name">media-skip-forward</property>
+        <property name="symbolic_icon_name">emblem-system-symbolic</property>
+        <property name="action_name">win.gear-menu</property>
       </object>
       <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkSeparatorToolItem" id="separator1">
-        <property name="use_action_appearance">False</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="use_action_appearance">False</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkToggleToolButton" id="repeat-button">
-        <property name="use_action_appearance">False</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Play first song again after all songs are played</property>
-        <property name="use_action_appearance">False</property>
-        <property name="action_name">app.play-repeat</property>
-        <property name="label" translatable="yes">Repeat</property>
-        <property name="icon_name">media-playlist-repeat</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkToggleToolButton" id="shuffle-button">
-        <property name="use_action_appearance">False</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Play songs in a random order</property>
-        <property name="use_action_appearance">False</property>
-        <property name="action_name">app.play-shuffle</property>
-        <property name="label" translatable="yes">Shuffle</property>
-        <property name="icon_name">media-playlist-shuffle</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkSeparatorToolItem" id="separator2">
-        <property name="use_action_appearance">False</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="use_action_appearance">False</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
+        <property name="pack_type">end</property>
       </packing>
     </child>
   </object>

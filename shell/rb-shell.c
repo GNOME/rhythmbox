@@ -49,6 +49,8 @@
 #include <gtk/gtk.h>
 #include <girepository.h>
 
+#include <libgd/gd.h>
+
 #include <libpeas/peas.h>
 #include <libpeas-gtk/peas-gtk.h>
 
@@ -685,18 +687,15 @@ construct_load_ui (RBShell *shell)
 {
 	GApplication *app = g_application_get_default ();
 	gboolean shell_shows_app_menu;
-	GtkWidget *toolbar;
+	GdHeaderBar *headerbar;
 	GtkBuilder *builder;
-	GtkToolItem *tool_item;
-	GtkWidget *menu_button;
-	GtkWidget *image;
 	GMenuModel *model;
 
 	rb_debug ("shell: loading ui");
 	rb_profile_start ("loading ui");
 
 	builder = rb_builder_load ("main-toolbar.ui", NULL);
-	toolbar = GTK_WIDGET (gtk_builder_get_object (builder, "main-toolbar"));
+	headerbar = GD_HEADER_BAR (gtk_builder_get_object (builder, "headerbar"));
 
 	shell->priv->play_button = GTK_WIDGET (gtk_builder_get_object (builder, "play-button"));
 
@@ -706,32 +705,23 @@ construct_load_ui (RBShell *shell)
 	gtk_actionable_set_action_target_value (GTK_ACTIONABLE (gtk_builder_get_object (builder, "repeat-button")),
 						g_variant_new_boolean (TRUE));
 
-	gtk_style_context_add_class (gtk_widget_get_style_context (toolbar),
-				     GTK_STYLE_CLASS_PRIMARY_TOOLBAR);
-	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), toolbar, FALSE, FALSE, 0);
-	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), toolbar, 1);
+	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (headerbar), FALSE, FALSE, 0);
+	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (headerbar), 1);
 
-	g_object_unref (builder);
-
-	tool_item = gtk_tool_item_new ();
-	gtk_tool_item_set_expand (tool_item, TRUE);
-	gtk_container_add (GTK_CONTAINER (tool_item), GTK_WIDGET (shell->priv->header));
-	gtk_widget_show_all (GTK_WIDGET (tool_item));
-	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), tool_item, -1);
-
+	gd_header_bar_set_custom_title (headerbar, GTK_WIDGET (shell->priv->header));
 
 	/* menu tool button, only shown if the shell doesn't show the app menu,
 	 * or in party mode where the app menu is inaccessible.
 	 */
-	menu_button = gtk_menu_button_new ();
+	shell->priv->menu_button = GTK_WIDGET (gtk_builder_get_object (builder, "gear-menubutton"));
 	model = rb_application_get_shared_menu (RB_APPLICATION (app), "app-menu");
-	gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (menu_button), model);
+	gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (shell->priv->menu_button), model);
 
 	g_object_get (gtk_settings_get_default (),
 		      "gtk-shell-shows-app-menu", &shell_shows_app_menu,
 		      NULL);
 	if (shell_shows_app_menu == FALSE) {
-		gtk_widget_add_accelerator (menu_button,
+		gtk_widget_add_accelerator (shell->priv->menu_button,
 					    "activate",
 					    shell->priv->accel_group,
 					    GDK_KEY_F10,
@@ -740,14 +730,7 @@ construct_load_ui (RBShell *shell)
 		rb_application_set_menu_accelerators (shell->priv->application, model, TRUE);
 	}
 
-	image = gtk_image_new_from_icon_name ("emblem-system-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
-	gtk_container_add (GTK_CONTAINER (menu_button), image);
-
-	shell->priv->menu_button = GTK_WIDGET (gtk_tool_item_new ());
-	gtk_container_add (GTK_CONTAINER (shell->priv->menu_button), menu_button);
-	gtk_widget_show_all (shell->priv->menu_button);
-	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), GTK_TOOL_ITEM (shell->priv->menu_button), -1);
-
+	g_object_unref (builder);
 	rb_profile_end ("loading ui");
 }
 
@@ -2210,17 +2193,17 @@ rb_shell_playing_changed_cb (RBShellPlayer *player, gboolean playing, RBShell *s
 
 	if (playing) {
 		if (rb_source_can_pause (rb_shell_player_get_active_source (shell->priv->player_shell))) {
-			icon_name = "media-playback-pause";
+			icon_name = "media-playback-pause-symbolic";
 			tooltip = _("Pause playback");
 		} else {
-			icon_name = "media-playback-stop";
+			icon_name = "media-playback-stop-symbolic";
 			tooltip = _("Stop playback");
 		}
 	} else {
-		icon_name = "media-playback-start";
+		icon_name = "media-playback-start-symbolic";
 		tooltip = _("Start playback");
 	}
-	gtk_tool_button_set_icon_name (GTK_TOOL_BUTTON (shell->priv->play_button), icon_name);
+	gd_header_button_set_symbolic_icon_name (GD_HEADER_BUTTON (shell->priv->play_button), icon_name);
 	gtk_widget_set_tooltip_text (GTK_WIDGET (shell->priv->play_button), tooltip);
 }
 

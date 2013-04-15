@@ -38,6 +38,7 @@ INCLUDES = 						\
 	-I$(top_builddir)/lib				\
 	-I$(top_srcdir)/plugins				\
 	-I$(top_srcdir)/backends			\
+	-I$(top_srcdir)/libgd				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
@@ -109,6 +110,7 @@ librhythmbox_core_la_LIBADD =				\
 	$(top_builddir)/backends/librbbackends.la	\
 	$(top_builddir)/lib/librb.la			\
 	$(top_builddir)/lib/libmediaplayerid/libmediaplayerid.la		\
+	$(top_builddir)/libgd/libgd.la			\
 	$(DBUS_LIBS)					\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(GUDEV_LIBS)					\
