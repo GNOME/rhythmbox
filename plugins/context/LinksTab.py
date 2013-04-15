@@ -66,12 +66,12 @@ class LinksTab (GObject.GObject):
         buttons.pack_start (self.button, True, True, 0)
 
     def activate (self):
-        print "activating Links Tab"
+        print("activating Links Tab")
         self.button.set_active(True)
         self.reload ()
 
     def deactivate (self):
-        print "deactivating Links Tab"
+        print("deactivating Links Tab")
         self.button.set_active(False)
 
     def reload (self):
@@ -103,7 +103,7 @@ class LinksView (GObject.GObject):
         self.basepath = "file://" + urllib.pathname2url (plugindir)
 
     def load_links (self, ds):
-        print "Loading links into webview"
+        print("Loading links into webview")
         self.path = rb.find_plugin_file(self.plugin, 'tmpl/links-tmpl.html')
         self.images = self.basepath + '/img/links/'
         self.styles = self.basepath + '/tmpl/main.css'

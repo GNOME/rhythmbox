@@ -25,7 +25,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import os
-import ConfigParser
+import configparser
 
 from gi.repository import RB
 
@@ -45,14 +45,14 @@ def user_has_account():
     session_file = os.path.join(RB.user_data_dir(), "audioscrobbler", "sessions")
 
     if os.path.exists(session_file) == False:
-	return False
+        return False
 
-    sessions = ConfigParser.RawConfigParser()
+    sessions = configparser.RawConfigParser()
     sessions.read(session_file)
     try:
-	return (sessions.get('Last.fm', 'username') != "")
+        return (sessions.get('Last.fm', 'username') != "")
     except:
-	return False
+        return False
 
 def datasource_link(path):
     return "<a href='http://last.fm/'><img src='%s/img/lastfm.png'></a>" % path

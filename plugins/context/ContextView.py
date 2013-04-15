@@ -81,15 +81,15 @@ class ContextView (GObject.GObject):
         self.current = 'artist'
         self.tab[self.current].activate ()
 
-	app = shell.props.application
-	action = Gio.SimpleAction.new_stateful("view-context-pane", None, GLib.Variant.new_boolean(True))
-	action.connect("activate", self.toggle_visibility, None)
+        app = shell.props.application
+        action = Gio.SimpleAction.new_stateful("view-context-pane", None, GLib.Variant.new_boolean(True))
+        action.connect("activate", self.toggle_visibility, None)
 
-	window = shell.props.window
-	window.add_action(action)
+        window = shell.props.window
+        window.add_action(action)
 
-	item = Gio.MenuItem.new(label=_("Context Pane"), detailed_action="win.view-context-pane")
-	app.add_plugin_menu_item("view", "view-context-pane", item)
+        item = Gio.MenuItem.new(label=_("Context Pane"), detailed_action="win.view-context-pane")
+        app.add_plugin_menu_item("view", "view-context-pane", item)
 
 
     def deactivate (self, shell):
@@ -106,15 +106,15 @@ class ContextView (GObject.GObject):
         if self.visible:
             shell.remove_widget (self.vbox, RB.ShellUILocation.RIGHT_SIDEBAR)
             self.visible = False
-	self.vbox = None
-	self.label = None
-	self.webview = None
-	self.websettings = None
-	self.buttons = None
-	self.top_five_list = None
+        self.vbox = None
+        self.label = None
+        self.webview = None
+        self.websettings = None
+        self.buttons = None
+        self.top_five_list = None
 
-	app = shell.props.application
-	app.remove_plugin_menu_item("view", "view-context-pane")
+        app = shell.props.application
+        app.remove_plugin_menu_item("view", "view-context-pane")
 
     def connect_signals(self):
         self.player_cb_ids = ( self.sp.connect ('playing-changed', self.playing_changed_cb),
@@ -136,7 +136,7 @@ class ContextView (GObject.GObject):
             self.tab[key].disconnect (id)
 
     def toggle_visibility (self, action, parameter, data):
-	if self.visible:
+        if self.visible:
             self.shell.remove_widget (self.vbox, RB.ShellUILocation.RIGHT_SIDEBAR)
             self.visible = False
         else:
@@ -144,7 +144,7 @@ class ContextView (GObject.GObject):
             self.visible = True
 
     def change_tab (self, tab, newtab):
-        print "swapping tab from %s to %s" % (self.current, newtab)
+        print("swapping tab from %s to %s" % (self.current, newtab))
         if (self.current != newtab):
             self.tab[self.current].deactivate()
             self.tab[newtab].activate()
@@ -209,8 +209,8 @@ class ContextView (GObject.GObject):
     def navigation_request_cb(self, view, frame, request):
         # open HTTP URIs externally.  this isn't a web browser.
         if request.get_uri().startswith('http'):
-            print "opening uri %s" % request.get_uri()
-	    Gtk.show_uri(self.shell.props.window.get_screen(), request.get_uri(), Gdk.CURRENT_TIME)
+            print("opening uri %s" % request.get_uri())
+            Gtk.show_uri(self.shell.props.window.get_screen(), request.get_uri(), Gdk.CURRENT_TIME)
 
             return 1        # WEBKIT_NAVIGATION_RESPONSE_IGNORE
         else:
@@ -229,7 +229,7 @@ class ContextView (GObject.GObject):
             font_size /= Pango.SCALE
         self.websettings.props.default_font_size = font_size
         self.websettings.props.default_font_family = style.font_desc.get_family()
-        print "web view font settings: %s, %d" % (style.font_desc.get_family(), font_size)
+        print("web view font settings: %s, %d" % (style.font_desc.get_family(), font_size))
 
     def init_gui(self):
         self.vbox = Gtk.VBox()
@@ -261,9 +261,9 @@ class ContextView (GObject.GObject):
         
         top_five_view.set_headers_visible( False )
 
-	scroll = Gtk.ScrolledWindow()
-	scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
-	scroll.add(top_five_view)
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.NEVER)
+        scroll.add(top_five_view)
 
         frame.add (scroll)
 

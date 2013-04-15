@@ -62,12 +62,12 @@ class LyricsTab (GObject.GObject):
         toolbar.pack_start (self.button, True, True, 0)
 
     def activate (self):
-        print "activating Lyrics Tab"
+        print("activating Lyrics Tab")
         self.button.set_active(True)
         self.reload ()
 
     def deactivate (self):
-        print "deactivating Lyrics Tab"
+        print("deactivating Lyrics Tab")
         self.button.set_active(False)
 
     def reload (self):
@@ -105,7 +105,7 @@ class LyricsView (GObject.GObject):
             song     = song,
             basepath = self.basepath)
         self.webview.load_string (self.loading_file, 'text/html', 'utf-8', self.basepath)
-        print "loading screen loaded"
+        print("loading screen loaded")
 
     def load_tmpl (self):
         self.path = rb.find_plugin_file(self.plugin, 'tmpl/lyrics-tmpl.html')
@@ -115,7 +115,7 @@ class LyricsView (GObject.GObject):
         self.styles = self.basepath + '/tmpl/main.css'
 
     def lyrics_ready (self, ds, entry, lyrics):
-        print "loading lyrics into webview"
+        print("loading lyrics into webview")
         if lyrics is None:
             lyrics = _("Lyrics not found")
         else:

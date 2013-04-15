@@ -97,7 +97,7 @@ class _rbdebugfile:
 
 		# add the class name to the method, if 'self' exists
 		methodname = co.co_name
-		if fr.f_locals.has_key('self'):
+		if 'self' in fr.f_locals:
 			methodname = '%s.%s' % (fr.f_locals['self'].__class__.__name__, methodname)
 
 		ln = co.co_firstlineno + fr.f_lineno

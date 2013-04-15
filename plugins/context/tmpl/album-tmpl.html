@@ -23,7 +23,7 @@
     def format_year(date):
         try:
             parsed = rfc822.parsedate(date)
-        except Exception, e:
+        except Exception as e:
             return ""
         if parsed is None:
             return ""
