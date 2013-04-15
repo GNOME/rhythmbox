@@ -212,7 +212,7 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
         vstatus = GLib.Variant("(uss)", (status[0], status[1], new_status))
         # Set the status!
         acct_proxy.Set("(ssv)", MC5_ACCT_IFACE_NAME, "RequestedPresence", vstatus)
-    except gi._glib.GError as e:
+    except GLib.GError as e:
       print ("GError while setting status: " + str(e))
 
   def get_mc5_status (self):
@@ -234,7 +234,7 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
       # if all accounts have empty status, return that
       if got_status:
         return ""
-    except gi._glib.GError as e:
+    except GLib.GError as e:
       print ("GError while setting status: " + str(e))
     return None
 
@@ -244,7 +244,7 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
       status = proxy.PurpleSavedstatusGetCurrent()
       proxy.PurpleSavedstatusSetMessage("(is)", status, new_status)
       proxy.PurpleSavedstatusActivate("(i)", status)
-    except gi._glib.GError as e:
+    except GLib.GError as e:
       print ("GError while setting status: " + str(e))
 
   def get_purple_status (self):
@@ -252,6 +252,6 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
       proxy = self.proxies["purple"]
       status = proxy.PurpleSavedstatusGetCurrent()
       return proxy.PurpleSavedstatusGetMessage("(i)", status)
-    except gi._glib.GError as e:
+    except GLib.GError as e:
       print ("GError while setting status: " + str(e))
     return None
