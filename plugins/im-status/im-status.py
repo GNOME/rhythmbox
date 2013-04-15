@@ -32,7 +32,7 @@ from gi.repository import Gio, GLib, GObject, Peas
 from gi.repository import RB
 
 import gettext
-gettext.install('rhythmbox', RB.locale_dir(), unicode=True)
+gettext.install('rhythmbox', RB.locale_dir())
 
 NORMAL_SONG_ARTIST = 'artist'
 NORMAL_SONG_TITLE  = 'title'
@@ -213,7 +213,7 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
         # Set the status!
         acct_proxy.Set("(ssv)", MC5_ACCT_IFACE_NAME, "RequestedPresence", vstatus)
     except GLib.GError as e:
-      print ("GError while setting status: " + str(e))
+      print("GError while setting status: " + str(e))
 
   def get_mc5_status (self):
     try:
@@ -235,7 +235,7 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
       if got_status:
         return ""
     except GLib.GError as e:
-      print ("GError while setting status: " + str(e))
+      print("GError while setting status: " + str(e))
     return None
 
   def set_purple_status (self, new_status):
@@ -245,7 +245,7 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
       proxy.PurpleSavedstatusSetMessage("(is)", status, new_status)
       proxy.PurpleSavedstatusActivate("(i)", status)
     except GLib.GError as e:
-      print ("GError while setting status: " + str(e))
+      print("GError while setting status: " + str(e))
 
   def get_purple_status (self):
     try:
@@ -253,5 +253,5 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
       status = proxy.PurpleSavedstatusGetCurrent()
       return proxy.PurpleSavedstatusGetMessage("(i)", status)
     except GLib.GError as e:
-      print ("GError while setting status: " + str(e))
+      print("GError while setting status: " + str(e))
     return None
