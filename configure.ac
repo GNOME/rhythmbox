@@ -5,7 +5,7 @@ AC_INIT([rhythmbox],
 AC_CONFIG_SRCDIR(rhythmbox.pc.in)
 AC_CONFIG_MACRO_DIR(macros)
 AC_CONFIG_HEADERS(config.h)
-AM_INIT_AUTOMAKE([1.9 dist-xz no-dist-gzip])
+AM_INIT_AUTOMAKE([1.11 tar-ustar dist-xz no-dist-gzip -Wno-portability])
 
 AC_SUBST(ACLOCAL_AMFLAGS, "-I macros")
 
