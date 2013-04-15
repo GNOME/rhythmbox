@@ -79,7 +79,7 @@ class ReplayGainConfig(GObject.Object, PeasGtk.Configurable):
 
 	def sync_preamp(self, settings, preamp):
 		v = preamp.get_value()
-		print "preamp gain changed to %f" % v
+		print("preamp gain changed to %f" % v)
 		settings['preamp'] = v
 
 GObject.type_register(ReplayGainConfig)
