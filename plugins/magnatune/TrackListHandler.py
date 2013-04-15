@@ -25,6 +25,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
+import sys
 import xml.sax, xml.sax.handler
 import datetime, re, urllib
 
@@ -82,19 +83,18 @@ class TrackListHandler(xml.sax.handler.ContentHandler):
 				self.__db.entry_set(entry, RB.RhythmDBPropType.ALBUM, str(self.__track['albumname']))
 				self.__db.entry_set(entry, RB.RhythmDBPropType.TITLE, str(self.__track['trackname']))
 				self.__db.entry_set(entry, RB.RhythmDBPropType.GENRE, str(self.__track['magnatunegenres']))
-				self.__db.entry_set(entry, RB.RhythmDBPropType.TRACK_NUMBER, long(tracknum))
-				self.__db.entry_set(entry, RB.RhythmDBPropType.DATE, long(date))
-				self.__db.entry_set(entry, RB.RhythmDBPropType.DURATION, long(duration))
+				self.__db.entry_set(entry, RB.RhythmDBPropType.TRACK_NUMBER, int(tracknum))
+				self.__db.entry_set(entry, RB.RhythmDBPropType.DATE, int(date))
+				self.__db.entry_set(entry, RB.RhythmDBPropType.DURATION, int(duration))
 
 				key = str(trackurl)
-				sku = intern(str(self.__track['albumsku']))
+				sku = sys.intern(str(self.__track['albumsku']))
 				self.__sku_dict[key] = sku
 				self.__home_dict[sku] = str(self.__track['home'])
 				self.__art_dict[sku] = str(self.__track['cover_small'])
 
 				self.__db.commit()
 			except Exception as e: # This happens on duplicate uris being added
-				import sys
 				sys.excepthook(*sys.exc_info())
 				print("Couldn't add %s - %s" % (self.__track['artist'], self.__track['trackname']), e)
 

@@ -235,16 +235,16 @@ class MagnatuneSource(RB.BrowserSource):
 		def update_cb(remote_changes):
 			self.__catalogue_check = None
 			try:
-				f = open(magnatune_changes, 'r')
+				f = open(magnatune_changes, 'rt')
 				local_changes = f.read().strip()
 			except:
 				local_changes = ""
 
-			remote_changes = remote_changes.strip()
+			remote_changes = remote_changes.strip().decode("iso-8859-1")
 			print("local checksum %s, remote checksum %s" % (local_changes, remote_changes))
 			if local_changes != remote_changes:
 				try:
-					f = open(magnatune_changes, 'w')
+					f = open(magnatune_changes, 'wt')
 					f.write(remote_changes + "\n")
 					f.close()
 				except Exception as e:
@@ -274,7 +274,7 @@ class MagnatuneSource(RB.BrowserSource):
 				print("catalog download successful")
 				# done downloading, unzip to real location
 				catalog_zip = zipfile.ZipFile(magnatune_song_info_temp)
-				catalog = open(magnatune_song_info, 'w')
+				catalog = open(magnatune_song_info, 'wb')
 				filename = find_song_info(catalog_zip)
 				if filename is None:
 					RB.error_dialog(title=_("Unable to load catalog"),
