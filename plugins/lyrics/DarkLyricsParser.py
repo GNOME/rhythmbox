@@ -58,8 +58,8 @@ class DarkLyricsParser (object):
 		if artist_page is None:
 			callback (None, *data)
 			return
-		link_section = re.split ('tban.js',
-					 artist_page, 1)[1]
+		artist_page = artist_page.decode('iso-8859-1')
+		link_section = re.split ('tban.js', artist_page, 1)[1]
 		pattern_link =  '<a href="'
 		pattern_artist = '([^"]*)">*([^<]*)<'
 		links = re.split (pattern_link, link_section.lower())
@@ -108,6 +108,7 @@ class DarkLyricsParser (object):
 		if songlist is None:
 			callback (None, *data)
 			return
+		songlist = songlist.decode('iso-8859-1')
 		# Search for all the <a>
 		# filter for those that has the artist name string_match
 		#        and for those which its content is artist string_match
@@ -147,6 +148,7 @@ class DarkLyricsParser (object):
 		if album is None:
 			callback (None, *data)
 			return
+		album = album.decode('iso-8859-1')
 		titleline = '<a name="%s">%s. %s(.*?)</a>' % \
 		    (self.titlenumber, self.titlenumber, re.escape(self.title.title()))
 		lyricmatch = re.split (titleline, album)

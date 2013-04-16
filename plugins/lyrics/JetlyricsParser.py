@@ -25,51 +25,53 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import rb
-import urllib
+import urllib.parse
 import re
 
 class JetlyricsParser (object):
-  def __init__ (self, artist, title):
-    self.artist = artist
-    self.title = title
+	def __init__ (self, artist, title):
+		self.artist = artist
+		self.title = title
 
-  def search (self, callback, *data):
-    artist = re.sub('%20', '+', urllib.quote(self.artist))
-    title = re.sub('%20', '+', urllib.quote(self.title))
-    q = title + ' - ' + artist
-    url = 'http://www.jetlyrics.com/search.php?q=%s' % (q)
-    loader = rb.Loader()
-    loader.get_url (url, self.got_results, callback, *data)
+	def search (self, callback, *data):
+		artist = urllib.parse.quote_plus(self.artist)
+		title = urllib.parse.quote_plus(self.title)
+		q = title + ' - ' + artist
+		url = 'http://www.jetlyrics.com/search.php?q=%s' % (q)
+		loader = rb.Loader()
+		loader.get_url (url, self.got_results, callback, *data)
 
-  def got_results (self, result, callback, *data):
-    if result is None:
-      callback (None, *data)
-      return
+	def got_results (self, result, callback, *data):
+		if result is None:
+			callback (None, *data)
+			return
+		result = result.decode('utf-8')
 
-    m = re.search('<a href=\'(http://jetlyrics\.com/viewlyrics\.php\?id=[0-9]*)\'>', result)
-    if m is None:
-      callback (None, *data)
-      return
+		m = re.search('<a href=\'(http://jetlyrics\.com/viewlyrics\.php\?id=[0-9]*)\'>', result)
+		if m is None:
+			callback (None, *data)
+			return
 
-    loader = rb.Loader()
-    loader.get_url (m.group(1), self.parse_lyrics, callback, *data)
+		loader = rb.Loader()
+		loader.get_url (m.group(1), self.parse_lyrics, callback, *data)
     
-  def parse_lyrics (self, result, callback, *data):
-    if result is None:
-      callback (None, *data)
-      return
+	def parse_lyrics (self, result, callback, *data):
+		if result is None:
+			callback (None, *data)
+			return
+		result = result.decode('utf-8')
 
-    lyrics = re.split ('<div id=lyricsText>', result)[1]
-    lyrics = re.split ('</div>', lyrics)[0]
+		lyrics = re.split ('<div id=lyricsText>', result)[1]
+		lyrics = re.split ('</div>', lyrics)[0]
 
-    lyrics = re.sub('<br/>', '\n', lyrics)
-    lyrics = re.sub('<br />', '\n', lyrics)
-    lyrics = re.sub('<br>', '\n', lyrics)
-    lyrics = re.sub('<noscript><a href=\'http://jetlyrics.com\'>Lyrics</a></noscript>', '', lyrics)
-    lyrics = re.sub('<a href=\'http://jetlyrics.com\'>Jet Lyrics</a>', '', lyrics)
+		lyrics = re.sub('<br/>', '\n', lyrics)
+		lyrics = re.sub('<br />', '\n', lyrics)
+		lyrics = re.sub('<br>', '\n', lyrics)
+		lyrics = re.sub('<noscript><a href=\'http://jetlyrics.com\'>Lyrics</a></noscript>', '', lyrics)
+		lyrics = re.sub('<a href=\'http://jetlyrics.com\'>Jet Lyrics</a>', '', lyrics)
 
-    lyrics = self.title + "\n\n" + lyrics
-    lyrics += "\n\nLyrics provided by jetlyrics.com"
+		lyrics = self.title + "\n\n" + lyrics
+		lyrics += "\n\nLyrics provided by jetlyrics.com"
 
-    callback (lyrics, *data)
+		callback (lyrics, *data)
 

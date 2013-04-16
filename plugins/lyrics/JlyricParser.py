@@ -25,45 +25,46 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import rb
-import urllib
+import urllib.parse
 import re
 
 class JlyricParser (object):
-  def __init__ (self, artist, title):
-    self.artist = artist
-    self.title = title
+	def __init__ (self, artist, title):
+		self.artist = artist
+		self.title = title
 
-  def search (self, callback, *data):
-    artist = re.sub('%20', '+', urllib.quote(self.artist))
-    title = re.sub('%20', '+', urllib.quote(self.title))
-    url = 'http://j-lyric.net/index.php?kt=%s&ka=%s' % (title, artist)
-    loader = rb.Loader()
-    loader.get_url (url, self.got_results, callback, *data)
+	def search (self, callback, *data):
+		artist = urllib.parse.quote_plus(self.artist)
+		title = urllib.parse.quote_plus(self.title)
+		url = 'http://j-lyric.net/index.php?kt=%s&ka=%s' % (title, artist)
+		loader = rb.Loader()
+		loader.get_url (url, self.got_results, callback, *data)
 
-  def got_results (self, result, callback, *data):
-    if result is None:
-      callback (None, *data)
-      return
+	def got_results (self, result, callback, *data):
+		if result is None:
+			callback (None, *data)
+			return
 
-    m = re.search('<div class=\'title\'><a href=\'(/artist/[^\.]*\.html)\'>', result)
-    if m is None:
-      callback (None, *data)
-      return
+		result = result.decode('utf-8')
+		m = re.search('<div class=\'title\'><a href=\'(/artist/[^\.]*\.html)\'>', result)
+		if m is None:
+			callback (None, *data)
+			return
 
-    loader = rb.Loader()
-    loader.get_url ('http://j-lyric.net' + m.group(1), self.parse_lyrics, callback, *data)
-    
-  def parse_lyrics (self, result, callback, *data):
-    if result is None:
-      callback (None, *data)
-      return
+		loader = rb.Loader()
+		loader.get_url ('http://j-lyric.net' + m.group(1), self.parse_lyrics, callback, *data)
 
-    lyrics = re.split ('<p id=\'lyricBody\'>', result)[1]
-    lyrics = re.split ('</p>', lyrics)[0]
+	def parse_lyrics (self, result, callback, *data):
+		if result is None:
+			callback (None, *data)
+			return
 
-    lyrics = re.sub('<br />', '', lyrics)
-    lyrics = self.title + "\n\n" + lyrics
-    lyrics += "\n\nLyrics provided by j-lyric.net"
+		result = result.decode('utf-8')
+		lyrics = re.split ('<p id=\'lyricBody\'>', result)[1]
+		lyrics = re.split ('</p>', lyrics)[0]
 
-    callback (lyrics, *data)
+		lyrics = re.sub('<br />', '', lyrics)
+		lyrics = self.title + "\n\n" + lyrics
+		lyrics += "\n\nLyrics provided by j-lyric.net"
 
+		callback (lyrics, *data)

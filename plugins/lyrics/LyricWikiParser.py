@@ -25,7 +25,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 
-import urllib
+import urllib.parse
 import rb
 from xml.dom import minidom
 
@@ -35,8 +35,8 @@ class LyricWikiParser(object):
 		self.title = title
 	
 	def search(self, callback, *data):
-		artist = urllib.quote(self.artist.replace(' ', '_'))
-		title = urllib.quote(self.title.replace(' ', '_'))
+		artist = urllib.parse.quote(self.artist.replace(' ', '_'))
+		title = urllib.parse.quote(self.title.replace(' ', '_'))
 
 		htstring = 'http://lyricwiki.org/api.php?artist=%s&song=%s&fmt=text' % (artist, title)
 			
@@ -48,7 +48,7 @@ class LyricWikiParser(object):
 			callback (None, *data)
 			return
 
+		result = result.decode('iso-8859-1')
 		result += "\n\nLyrics provided by lyricwiki.org"
 
 		callback (result, *data)
-

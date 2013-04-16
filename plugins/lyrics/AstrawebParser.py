@@ -25,7 +25,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import urllib
+import urllib.parse
 import re
 import rb
 
@@ -39,8 +39,8 @@ class AstrawebParser (object):
 		self.title = title
 		
 	def search(self, callback, *data):
-		wartist = re.sub('%20', '+', urllib.quote(self.artist))
-		wtitle = re.sub('%20', '+', urllib.quote(self.title))
+		wartist = urllib.parse.quote_plus(self.artist)
+		wtitle = urllib.parse.quote_plus(self.title)
 
 		wurl = 'http://search.lyrics.astraweb.com/?word=%s+%s' % (wartist, wtitle)
 
@@ -52,6 +52,7 @@ class AstrawebParser (object):
 			callback (None, *data)
 			return
 
+		result = result.decode('iso-8859-1')	# no indication of anything else..
 		results = re.sub('\n', '', re.sub('\r', '', result))
 
 		if re.search('(<tr><td bgcolor="#BBBBBB".*)(More Songs &gt)', results) is not None:
@@ -85,6 +86,7 @@ class AstrawebParser (object):
 			callback (None, *data)
 			return
 
+		result = result.decode('iso-8859-1')
 		result = re.sub('\n', '', re.sub('\r', '', result))
 	   
 		artist_title = re.split('(<title>Lyrics: )([^<]*)', result)[2]
@@ -98,4 +100,3 @@ class AstrawebParser (object):
 		lyrics += "\n\nLyrics provided by lyrics.astraweb.com"
 
 		callback (lyrics, *data)
-
