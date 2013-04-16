@@ -40,19 +40,19 @@ class Parser (object):
 		try:
 			settings = Gio.Settings("org.gnome.rhythmbox.plugins.lyrics")
 			self.sites = settings['sites']
-		except GObject.GError, e:
-			print e
+		except GLib.GError as e:
+			print(e)
 			self.sites = []
 
 	def searcher(self, plexer, callback, *data):
 		for site in lyrics_sites:
 			if site['id'] not in self.sites:
-				print site['id'] + " search is disabled"
+				print(site['id'] + " search is disabled")
 				continue
 
 			plexer.clear()
 			parser = site['class'] (self.artist, self.title)
-			print "searching " + site['id'] + " for lyrics"
+			print("searching " + site['id'] + " for lyrics")
 
 			parser.search(plexer.send())
 			yield None

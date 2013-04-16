@@ -58,7 +58,7 @@ class AstrawebParser (object):
 			body = re.split('(<tr><td bgcolor="#BBBBBB".*)(More Songs &gt)', results)[1]
 			entries = re.split('<tr><td bgcolor="#BBBBBB"', body)
 			entries.pop(0)
-			print "found %d entries; looking for [%s,%s]" % (len(entries), self.title, self.artist)
+			print("found %d entries; looking for [%s,%s]" % (len(entries), self.title, self.artist))
 			for entry in entries:
 				url = re.split('(\/display[^"]*)', entry)[1]
 				artist = re.split('(Artist:.*html">)([^<]*)', entry)[2].strip()
@@ -71,7 +71,7 @@ class AstrawebParser (object):
 
 				title_str = rb.string_match(self.title, title)
 
-				print "checking [%s,%s]: match strengths [%f,%f]" % (title.strip(), artist.strip(), title_str, artist_str)
+				print("checking [%s,%s]: match strengths [%f,%f]" % (title.strip(), artist.strip(), title_str, artist_str))
 				if title_str > title_match and artist_str > artist_match:
 					loader = rb.Loader()
 					loader.get_url ('http://display.lyrics.astraweb.com' + url, self.parse_lyrics, callback, *data)
