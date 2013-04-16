@@ -27,7 +27,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import os, re
-import urllib
+import urllib.request
 
 import rb
 from gi.repository import Gtk, Gio, GObject, Peas
@@ -150,7 +150,7 @@ class LyricGrabber(object):
 		
 		if status:
 			l = rb.Loader()
-			l.get_url('file://' + urllib.pathname2url(self.cache_path), callback)
+			l.get_url('file://' + urllib.request.pathname2url(self.cache_path), callback)
 		elif cache_only:
 			self.callback(_("No lyrics found"))
 		elif self.artist == "" and self.title == "":
@@ -158,7 +158,7 @@ class LyricGrabber(object):
 		else:
 			def lyric_callback (text):
 				if text is not None:
-					f = file (self.cache_path, 'w')
+					f = open(self.cache_path, 'wt')
 					f.write (text)
 					f.close ()
 					self.callback(text)

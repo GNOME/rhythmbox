@@ -26,12 +26,12 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 
-import urllib
+import urllib.parse
 import rb
 import re
 import sys
 
-# Deal with html entitys and utf-8
+# Deal with html entities and utf-8
 # code taken from django/utils/text.py
 
 from html.entities import name2codepoint
@@ -47,12 +47,12 @@ def _replace_entity(match):
 				c = int(text[1:], 16)
 			else:
 				c = int(text)
-			return unichr(c)
+			return chr(c)
 		except ValueError:
 			return match.group(0)
 	else:
 		try:
-			return unichr(name2codepoint[text])
+			return chr(name2codepoint[text])
 		except (ValueError, KeyError):
 			return match.group(0)
 
@@ -65,11 +65,11 @@ class TerraParser (object):
 		self.title = title
 
 	def search(self, callback, *data):
-		path = 'http://letras.terra.com.br/'
+		path = 'http://letras.mus.br/'
 
-		artist = urllib.quote(self.artist)
-		title = urllib.quote(self.title)
-		join = urllib.quote(' - ')
+		artist = urllib.parse.quote(self.artist)
+		title = urllib.parse.quote(self.title)
+		join = urllib.parse.quote(' - ')
 
 		wurl = 'winamp.php?t=%s%s%s' % (artist, join, title)
 		print("search URL: " + wurl)
@@ -83,7 +83,7 @@ class TerraParser (object):
 			return
 
 		if result is not None:
-			result = result.decode('iso-8859-1').encode('UTF-8')
+			result = result.decode('utf-8')
 			if re.search('M&uacute;sica n&atilde;o encontrada', result):
 				print("not found")
 				callback (None, *data)
@@ -107,6 +107,5 @@ class TerraParser (object):
 		lyrics = re.sub('<[Bb][Rr]/>', '', lyrics)
 
 		lyrics = unescape_entities(artistitle) + "\n" + unescape_entities(lyrics)
-		lyrics += "\n\nEsta letra foi disponibilizada pelo site\nhttp://letras.terra.com.br"
-
+		lyrics += "\n\nEsta letra foi disponibilizada pelo site\nhttp://letras.mus.br"
 		return lyrics
