@@ -46,7 +46,6 @@ struct _RBChunkLoaderPrivate
 	char *uri;
 	gssize chunk_size;
 	guint8 *chunk;
-	GString chunk_string;
 	guint64 total;
 
 	GError *error;
@@ -107,8 +106,13 @@ stream_read_async_cb (GObject *obj, GAsyncResult *res, gpointer data)
 		loader->priv->callback (loader, NULL, 0, loader->priv->callback_data);
 		cleanup (loader);
 	} else {
-		loader->priv->chunk_string.len = done;
-		loader->priv->callback (loader, &loader->priv->chunk_string, loader->priv->total, loader->priv->callback_data);
+		GBytes *bytes;
+
+		bytes = g_bytes_new_take (loader->priv->chunk, done);
+		loader->priv->callback (loader, bytes, loader->priv->total, loader->priv->callback_data);
+		g_bytes_unref (bytes);
+
+		loader->priv->chunk = g_malloc0 (loader->priv->chunk_size+1);
 		g_input_stream_read_async (G_INPUT_STREAM (loader->priv->stream),
 					   loader->priv->chunk,
 					   loader->priv->chunk_size,
@@ -185,9 +189,6 @@ rb_chunk_loader_start (RBChunkLoader *loader, const char *uri, gssize chunk_size
 	loader->priv->uri = g_strdup (uri);
 	loader->priv->chunk_size = chunk_size;
 	loader->priv->chunk = g_malloc0 (chunk_size+1);
-	loader->priv->chunk_string.str = (gchar *)loader->priv->chunk;
-	loader->priv->chunk_string.len = 0;
-	loader->priv->chunk_string.allocated_len = chunk_size;
 
 	loader->priv->cancel = g_cancellable_new ();
 

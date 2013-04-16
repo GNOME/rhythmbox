@@ -43,7 +43,7 @@ typedef struct _RBChunkLoader RBChunkLoader;
 typedef struct _RBChunkLoaderClass RBChunkLoaderClass;
 typedef struct _RBChunkLoaderPrivate RBChunkLoaderPrivate;
 
-typedef void (*RBChunkLoaderCallback) (RBChunkLoader *loader, GString *data, goffset total, gpointer user_data);
+typedef void (*RBChunkLoaderCallback) (RBChunkLoader *loader, GBytes *data, goffset total, gpointer user_data);
 
 struct _RBChunkLoader
 {
