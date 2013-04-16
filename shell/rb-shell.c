@@ -827,6 +827,15 @@ construct_plugins (RBShell *shell)
 				     plugindir);
 	g_free (plugindir);
 
+#ifdef USE_UNINSTALLED_DIRS
+	plugindir = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "..", UNINSTALLED_PLUGINS_LOCATION, NULL);
+	rb_debug ("plugin search path: %s", plugindir);
+	peas_engine_add_search_path (shell->priv->plugin_engine,
+				     plugindir,
+				     plugindir);
+	g_free (plugindir);
+#endif
+
 	plugindir = g_build_filename (LIBDIR, "rhythmbox", "plugins", NULL);
 	plugindatadir = g_build_filename (DATADIR, "rhythmbox", "plugins", NULL);
 	rb_debug ("plugin search path: %s / %s", plugindir, plugindatadir);
@@ -836,14 +845,6 @@ construct_plugins (RBShell *shell)
 	g_free (plugindir);
 	g_free (plugindatadir);
 
-#ifdef USE_UNINSTALLED_DIRS
-	plugindir = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "..", UNINSTALLED_PLUGINS_LOCATION, NULL);
-	rb_debug ("plugin search path: %s", plugindir);
-	peas_engine_add_search_path (shell->priv->plugin_engine,
-				     plugindir,
-				     plugindir);
-	g_free (plugindir);
-#endif
 
 	shell->priv->activatable = peas_extension_set_new (shell->priv->plugin_engine,
 							   PEAS_TYPE_ACTIVATABLE,
