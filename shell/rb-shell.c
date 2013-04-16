@@ -478,6 +478,7 @@ static void
 construct_widgets (RBShell *shell)
 {
 	GtkWindow *win;
+	GtkStyleContext *context;
 
 	rb_profile_start ("constructing widgets");
 
@@ -576,6 +577,8 @@ construct_widgets (RBShell *shell)
 
 	/* set up sidebars */
 	shell->priv->paned = gtk_paned_new (GTK_ORIENTATION_HORIZONTAL);
+	context = gtk_widget_get_style_context (shell->priv->paned);
+	gtk_style_context_add_class (context, "sidebar-paned");
 	shell->priv->right_paned = gtk_paned_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_show_all (shell->priv->right_paned);
 	g_signal_connect_object (G_OBJECT (shell->priv->right_paned),

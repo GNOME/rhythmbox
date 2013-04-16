@@ -1037,6 +1037,7 @@ impl_constructed (GObject *object)
 	context = gtk_widget_get_style_context (display_page_tree->priv->toolbar);
 	gtk_style_context_set_junction_sides (context, GTK_JUNCTION_TOP);
 	gtk_style_context_add_class (context, GTK_STYLE_CLASS_INLINE_TOOLBAR);
+	gtk_style_context_add_class (context, "sidebar-toolbar");
 
 	gtk_grid_attach (GTK_GRID (display_page_tree), display_page_tree->priv->toolbar, 0, 1, 1, 1);
 

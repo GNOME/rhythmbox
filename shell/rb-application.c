@@ -334,6 +334,7 @@ impl_startup (GApplication *app)
 	gboolean shell_shows_app_menu;
 	GtkBuilder *builder;
 	GMenuModel *menu;
+	GtkCssProvider *provider;
 
 	GActionEntry app_actions[] = {
 
@@ -375,6 +376,14 @@ impl_startup (GApplication *app)
 	}
 	
 	g_object_unref (builder);
+
+	/* Use our own css provider */
+	provider = gtk_css_provider_new ();
+	if (gtk_css_provider_load_from_path (provider, rb_file ("style.css"), NULL)) {
+		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+		                                          GTK_STYLE_PROVIDER (provider),
+		                                          600);
+	}
 
 	rb->priv->shell = RB_SHELL (g_object_new (RB_TYPE_SHELL,
 				    "application", rb,
