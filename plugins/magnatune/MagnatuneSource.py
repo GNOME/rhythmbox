@@ -306,8 +306,8 @@ class MagnatuneSource(RB.BrowserSource):
 
 		def load_catalogue():
 
-			def catalogue_chunk_cb(loader, data, total, parser):
-				if data is None:
+			def catalogue_chunk_cb(loader, chunk, total, parser):
+				if chunk is None:
 					error = loader.get_error()
 					if error:
 						# report error somehow?
@@ -334,7 +334,7 @@ class MagnatuneSource(RB.BrowserSource):
 						self.__download_album(uri, name[12:])
 				else:
 					# hack around some weird chars that show up in the catalogue for some reason
-					data = str(data.str)
+					data = chunk.get_data().decode('utf-8', errors='replace')
 					data = data.replace("\x19", "'")
 					data = data.replace("\x13", "-")
 
