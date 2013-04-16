@@ -84,7 +84,7 @@ class LyricsConfigureDialog (GObject.Object, PeasGtk.Configurable):
 			if check.get_active():
 				sites.append(s['id'])
 
-		print "setting lyrics sites: " + str(sites)
+		print("setting lyrics sites: " + str(sites))
 		self.settings['sites'] = sites
 
 
@@ -112,11 +112,11 @@ class LyricsConfigureDialog (GObject.Object, PeasGtk.Configurable):
 	def get_prefs (self):
 		try:
 			sites = self.settings['sites']
-		except GObject.GError, e:
-			print e
+		except GLib.GError as e:
+			print(e)
 			engines = []
 		folder = self.settings['folder']
 
-		print "lyric sites: " + str (sites)
-		print "lyric folder: " + folder
+		print("lyric sites: " + str (sites))
+		print("lyric folder: " + folder)
 		return (sites, folder)

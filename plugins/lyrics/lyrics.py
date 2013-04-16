@@ -398,7 +398,7 @@ class LyricsDisplayPlugin(GObject.Object, Peas.Activatable):
 			self.action.set_enabled (False)
 
 	def window_deleted (self, window):
-		print "lyrics window destroyed"
+		print("lyrics window destroyed")
 		self.window = None
 	
 	def create_song_info (self, shell, song_info, is_multiple):

@@ -34,7 +34,7 @@ import sys
 # Deal with html entitys and utf-8
 # code taken from django/utils/text.py
 
-from htmlentitydefs import name2codepoint
+from html.entities import name2codepoint
 
 pattern = re.compile("&(#?\w+?);")
 
@@ -72,7 +72,7 @@ class TerraParser (object):
 		join = urllib.quote(' - ')
 
 		wurl = 'winamp.php?t=%s%s%s' % (artist, join, title)
-		print "search URL: " + wurl
+		print("search URL: " + wurl)
 
 		loader = rb.Loader()
 		loader.get_url (path + wurl, self.got_lyrics, callback, *data)
@@ -85,7 +85,7 @@ class TerraParser (object):
 		if result is not None:
 			result = result.decode('iso-8859-1').encode('UTF-8')
 			if re.search('M&uacute;sica n&atilde;o encontrada', result):
-				print "not found"
+				print("not found")
 				callback (None, *data)
 			elif re.search('<div id="letra">', result):
 				callback(self.parse_lyrics(result), *data)
