@@ -383,6 +383,9 @@ rb_header_constructed (GObject *object)
 
 	/* volume button */
 	header->priv->volume_button = gtk_volume_button_new ();
+	g_object_set (G_OBJECT (header->priv->volume_button),
+	              "use-symbolic", TRUE,
+	              NULL);
 	g_signal_connect (header->priv->volume_button, "value-changed",
 			  G_CALLBACK (volume_widget_changed_cb),
 			  header);
