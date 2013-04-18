@@ -12,7 +12,7 @@ class SamplePython(GObject.Object, Peas.Activatable):
 		GObject.Object.__init__(self)
 			
 	def do_activate(self):
-		print "activating sample python plugin"
+		print("activating sample python plugin")
 
 		shell = self.object
 		db = shell.props.db
@@ -23,7 +23,7 @@ class SamplePython(GObject.Object, Peas.Activatable):
 		shell.append_display_page(self.source, group)
 	
 	def do_deactivate(self):
-		print "deactivating sample python plugin"
+		print("deactivating sample python plugin")
 		self.source.delete_thyself()
 		self.source = None
 
@@ -38,7 +38,5 @@ class PythonSource(RB.Source):
 		songs.set_model(self.props.query_model)
 		songs.show_all()
 		self.pack_start(songs, expand=True, fill=True, padding=0)
-
-
 
 GObject.type_register(PythonSource)
