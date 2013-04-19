@@ -28,7 +28,7 @@
 import os
 import sys
 import xml
-import urllib
+import urllib.parse, urllib.request
 import threading
 import zipfile
 
@@ -115,7 +115,7 @@ class MagnatuneSource(RB.BrowserSource):
 				progress = -1.0
 			return (_("Loading Magnatune catalog"), None, progress)
 		elif len(self.__downloads) > 0:
-			complete, total = map(sum, zip(*self.__downloads.itervalues()))
+			complete, total = map(sum, zip(*self.__downloads.values()))
 			if total > 0:
 				progress = min(float(complete) / total, 1.0)
 			else:
@@ -197,7 +197,7 @@ class MagnatuneSource(RB.BrowserSource):
 
 		for tr in tracks:
 			sku = self.__sku_dict[tr.get_string(RB.RhythmDBPropType.LOCATION)]
-			url = magnatune_buy_album_uri + urllib.urlencode({ 'sku': sku, 'ref': magnatune_partner_id })
+			url = magnatune_buy_album_uri + urllib.parse.urlencode({ 'sku': sku, 'ref': magnatune_partner_id })
 			if url not in urls:
 				Gtk.show_uri(screen, url, Gdk.CURRENT_TIME)
 				urls.add(url)
@@ -330,6 +330,8 @@ class MagnatuneSource(RB.BrowserSource):
 						if not name.startswith("in_progress_"):
 							continue
 						(result, uri, etag) = magnatune_in_progress_dir.resolve_relative_path(name).load_contents(None)
+						uri = uri.decode('utf-8')
+
 						print("restarting download from %s" % uri)
 						self.__download_album(uri, name[12:])
 				else:
@@ -399,7 +401,8 @@ class MagnatuneSource(RB.BrowserSource):
 
 	def __auth_download(self, sku): # http://magnatune.com/info/api
 
-		def auth_data_cb(data, username, password):
+		def auth_data_cb(data, userpass):
+			(username, password) = userpass
 			dl_album_handler = DownloadAlbumHandler(self.__settings['format'])
 			auth_parser = xml.sax.make_parser()
 			auth_parser.setContentHandler(dl_album_handler)
@@ -409,6 +412,7 @@ class MagnatuneSource(RB.BrowserSource):
 				return
 
 			try:
+				data = data.decode("utf-8")
 				data = data.replace("<br>", "") # get rid of any stray <br> tags that will mess up the parser
 				data = data.replace(" & ", " &amp; ") # clean up some missing escaping
 				# print data
@@ -419,12 +423,12 @@ class MagnatuneSource(RB.BrowserSource):
 				parsed = urllib.parse.urlparse(dl_album_handler.url)
 				netloc = "%s:%s@%s" % (username, password, parsed.hostname)
 
-				spath = os.path.split(urllib.url2pathname(parsed.path))
+				spath = os.path.split(urllib.request.url2pathname(parsed.path))
 				basename = spath[1]
-				path = urllib.pathname2url(os.path.join(spath[0], urllib.quote(basename)))
+				path = urllib.request.pathname2url(os.path.join(spath[0], urllib.parse.quote(basename)))
 
 				authed = (parsed[0], netloc, path) + parsed[3:]
-				audio_dl_uri = urlparse.urlunparse(authed)
+				audio_dl_uri = urllib.parse.urlunparse(authed)
 
 				print("download uri for %s is %s" % (sku, audio_dl_uri))
 				self.__download_album(audio_dl_uri, sku)
@@ -445,7 +449,7 @@ class MagnatuneSource(RB.BrowserSource):
 			'sku':	sku
 		}
 		url = magnatune_api_download_uri % (username, password)
-		url = url + urllib.urlencode(url_dict)
+		url = url + urllib.parse.urlencode(url_dict)
 
 		l = rb.Loader()
 		l.get_url(url, auth_data_cb, (username, password))
@@ -471,7 +475,7 @@ class MagnatuneSource(RB.BrowserSource):
 				action = app.lookup_action("magnatune-download-cancel")
 				action.set_enabled(False)
 				if success:
-					shell.notify_custom(4000, _("Finished Downloading"), _("All Magnatune downloads have been completed."), None, False)
+					self.props.shell.notify_custom(4000, _("Finished Downloading"), _("All Magnatune downloads have been completed."), None, False)
 
 			self.__notify_status_changed()
 
@@ -507,7 +511,7 @@ class MagnatuneSource(RB.BrowserSource):
 		in_progress = magnatune_in_progress_dir.resolve_relative_path("in_progress_" + sku)
 		dest = magnatune_in_progress_dir.resolve_relative_path(sku)
 
-		in_progress.replace_contents(str(audio_dl_uri),
+		in_progress.replace_contents(audio_dl_uri.encode('utf-8'),
 					     None,
 					     False,
 					     Gio.FileCreateFlags.PRIVATE|Gio.FileCreateFlags.REPLACE_DESTINATION,

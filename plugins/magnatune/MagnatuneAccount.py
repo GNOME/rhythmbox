@@ -82,13 +82,13 @@ class MagnatuneAccount(object):
 
 		account_type = self.settings['account-type']
 		try:
-			(username, password) = self.secret.split("\n")
+			(username, password) = self.secret.decode("utf-8").split("\n")
 			return (account_type, username, password)
 		except ValueError:
 			return ('none', None, None)
 
 	def update(self, username, password):
-		secret = '\n'.join((username, password))
+		secret = '\n'.join((username, password)).encode("utf-8")
 		if secret == self.secret:
 			print ("Account details not changed")
 			return
