@@ -15,12 +15,6 @@
 <head>
 <meta http-equiv="content-type" content="text-html; charset=utf-8">
 <link rel="stylesheet" href="${stylesheet}" type="text/css" />
-<script language="javascript">
-    function swapClass (element, klass1, klass2) {
-        elt = document.getElementById(element);
-        elt.className = (elt.className == klass1) ? klass2 : klass1;
-    }
-</script>
 </head>
 <body class="artist">
 %if error is None:
@@ -28,20 +22,7 @@
 <img src="${image | h}" />
 <div id="shortbio" class="shown">
 <% shortbio = cleanup(shortbio) %>
-<button name="more" onclick="swapClass('shortbio', 'shown', 'hidden');swapClass('fullbio', 'shown', 'hidden')" />
-${ _("Read more") }
-</button>
 <p>${shortbio}</p>
-</div>
-<div id="fullbio" class="hidden">
-<% fullbio = cleanup(fullbio) %>
-<button name="more" onclick="swapClass('shortbio', 'shown', 'hidden');swapClass('fullbio', 'shown', 'hidden')" />
-${ _("Read less") }
-</button>
-<p>${fullbio}</p>
-<button name="more" onclick="swapClass('shortbio', 'shown', 'hidden');swapClass('fullbio', 'shown', 'hidden')" />
-${ _("Read less") }
-</button>
 </div>
 <p>${datasource}</p>
 %else:
