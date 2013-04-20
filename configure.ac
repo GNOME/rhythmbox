@@ -743,7 +743,6 @@ dnl ================================================================
 AC_OUTPUT([
 rhythmbox.pc
 Makefile
-macros/Makefile
 lib/Makefile
 lib/libmediaplayerid/Makefile
 metadata/Makefile
