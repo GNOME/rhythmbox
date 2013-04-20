@@ -28,5 +28,5 @@ autopoint --force
 AUTOPOINT='intltoolize --automake --copy' autoreconf --force --install --verbose
 
 cd "$olddir"
-test -n "$NOCONFIGURE" || "$srcdir/configure" "$@"
+test -n "$NOCONFIGURE" || "$srcdir/configure" --enable-uninstalled-build "$@"
 
