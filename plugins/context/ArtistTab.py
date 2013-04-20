@@ -173,21 +173,23 @@ class ArtistDataSource (GObject.GObject):
                 'parsed'    : False,
             },
             
-            'similar' : {
-                'data'      : None, 
-                'signal'    : 'artist-similar-ready', 
-                'function'  : 'getsimilar',
-                'cache'     : info_cache,
-                'parsed'    : False,
-            },
+            # nothing uses this
+            #'similar' : {
+            #    'data'      : None, 
+            #    'signal'    : 'artist-similar-ready', 
+            #    'function'  : 'getsimilar',
+            #    'cache'     : info_cache,
+            #    'parsed'    : False,
+            #},
 
-            'top_albums' : {
-                'data'      : None, 
-                'signal'    : 'artist-top-albums-ready',
-                'function'  : 'gettopalbums',
-                'cache'     : ranking_cache,
-                'parsed'    : False,
-            },
+            # or this
+            #'top_albums' : {
+            #    'data'      : None, 
+            #    'signal'    : 'artist-top-albums-ready',
+            #    'function'  : 'gettopalbums',
+            #    'cache'     : ranking_cache,
+            #    'parsed'    : False,
+            #},
         }
        
     def fetch_artist_data (self, artist): 
