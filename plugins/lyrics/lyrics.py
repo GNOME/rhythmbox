@@ -149,8 +149,10 @@ class LyricGrabber(object):
 		status = self.verify_lyric()
 		
 		if status:
-			l = rb.Loader()
-			l.get_url('file://' + urllib.request.pathname2url(self.cache_path), callback)
+			f = open(self.cache_path, 'rt')
+			text = f.read()
+			f.close()
+			self.callback(text)
 		elif cache_only:
 			self.callback(_("No lyrics found"))
 		elif self.artist == "" and self.title == "":
@@ -177,14 +179,14 @@ class LyricPane(object):
 		self.build_path()
 		
 		def save_lyrics(cache_path, text):
-			f = file (cache_path, 'w')
-			f.write (text)
-			f.close ()
+			f = open(cache_path, 'wt')
+			f.write(text)
+			f.close()
 		
 		def erase_lyrics(cache_path):
-			f = file (cache_path, 'w')
-			f.write ("")
-			f.close ()
+			f = open(cache_path, 'w')
+			f.write("")
+			f.close()
 		
 		def save_callback():
 			buf = self.buffer
@@ -269,7 +271,7 @@ class LyricPane(object):
 		self.get_lyrics()
 
 	def __got_lyrics(self, text):
-		self.buffer.set_text(str(text), -1)
+		self.buffer.set_text(text, -1)
 
 	def get_lyrics(self):
 		if self.entry is None:
