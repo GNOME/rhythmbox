@@ -152,7 +152,7 @@ class URLCache(object):
             path = self.cachefile(key)
 
             # consider using gio set contents async?
-            f = open(path, 'w')
+            f = open(path, 'wb')
             f.write(data)
             f.close()
 
@@ -165,7 +165,7 @@ class URLCache(object):
         if data is None:
             cachefile = self.check(key, False)
             if cachefile is not None:
-                f = open(cachefile)
+                f = open(cachefile, 'rb')
                 data = f.read()
                 f.close()
                 if callback(data, *args) is False:
@@ -194,7 +194,7 @@ class URLCache(object):
         cachefile = self.check(key, True)
         if cachefile is not None:
             # could use a loader here, maybe
-            f = open(cachefile)
+            f = open(cachefile, 'rb')
             data = f.read()
             f.close()
             if callback(data, *args) is not False:
