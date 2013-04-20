@@ -1,4 +1,4 @@
-<%page args="error, list, artist, stylesheet, datasource" />
+<%page args="error, albums, artist, stylesheet, datasource" />
 <html> <head> <meta http-equiv="content-type" content="text-html; charset=utf-8">
 <%!
     import re
@@ -52,15 +52,13 @@
 <body>
 %if error is None:
 <%  
-    num_albums = min(8, len(list))
+    num_albums = len(albums)
 %>
     <h1>${ _("Top albums by %s") % ("<em>" + cgi.escape(artist, True) + "</em>") }</h1>
-%for i, entry in enumerate(list) :
+%for i, entry in enumerate(albums) :
     <%
     if 'tracklist' not in entry or len(entry['tracklist']) == 0:
         continue
-    if i == num_albums:
-        break
     %>
     <div id="album${entry['id'] | h}" class="album">
     <img width="64" src="${entry['images'][1] | h}" alt="${entry['images'] | h}"/>
@@ -73,9 +71,9 @@
     <% 
         album_time = sec2hms(entry['duration'])
 	tracks = len(entry['tracklist'])
-	str = ngettext("%s (%d track)", "%s (%d tracks)", tracks)
+	s = ngettext("%s (%d track)", "%s (%d tracks)", tracks)
     %>
-    <p class="duration">${ str % (album_time, tracks) }</p>
+    <p class="duration">${ s % (album_time, tracks) }</p>
     %endif
     %if 'tracklist' in entry:
     <button id="btn_${entry['id'] | h}" onclick="toggle_vis(${entry['id'] | h})">

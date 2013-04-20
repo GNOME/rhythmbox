@@ -28,6 +28,7 @@ import re, os
 import cgi
 import urllib
 import xml.dom.minidom as dom
+import json
 
 from mako.template import Template
 
@@ -187,39 +188,8 @@ class ArtistDataSource (GObject.GObject):
                 'cache'     : ranking_cache,
                 'parsed'    : False,
             },
-
-            'top_tracks' : {
-                'data'      : None, 
-                'signal'    : 'artist-top-tracks-ready',
-                'function'  : 'gettoptracks',
-                'cache'     : ranking_cache,
-                'parsed'    : False,
-            },
         }
        
-    def extract (self, data, position):
-        """
-        Safely extract the data from an xml node. Returns data
-        at position or None if position does not exist
-        """
-        
-        try:
-            return data[position].firstChild.data
-        except Exception as e:
-            return None
-
-    def fetch_top_tracks (self, artist):
-        if LastFM.user_has_account() is False:
-            return
-
-        artist = urllib.parse.quote_plus(artist)
-        function = self.artist['top_tracks']['function']
-        cache = self.artist['top_tracks']['cache']
-        cachekey = "lastfm:artist:%s:%s" % (function, artist)
-        url = '%sartist.%s&artist=%s&api_key=%s' % (LastFM.URL_PREFIX,
-            function, artist, LastFM.API_KEY)
-        cache.fetch(cachekey, url, self.fetch_artist_data_cb, self.artist['top_tracks'])
-
     def fetch_artist_data (self, artist): 
         """
         Initiate the fetching of all artist data. Fetches artist info, similar
@@ -236,9 +206,10 @@ class ArtistDataSource (GObject.GObject):
         self.error = None
         artist = urllib.parse.quote_plus(artist)
         for key, value in self.artist.items():
-            cachekey = "lastfm:artist:%s:%s" % (value['function'], artist)
-            url = '%sartist.%s&artist=%s&api_key=%s' % (LastFM.URL_PREFIX,
+            cachekey = "lastfm:artist:%sjson:%s" % (value['function'], artist)
+            url = '%sartist.%s&artist=%s&api_key=%s&format=json' % (LastFM.URL_PREFIX,
                 value['function'], artist, LastFM.API_KEY)
+            print("fetching %s" % url)
             value['cache'].fetch(cachekey, url, self.fetch_artist_data_cb, value)
 
     def fetch_artist_data_cb (self, data, category):
@@ -247,7 +218,7 @@ class ArtistDataSource (GObject.GObject):
             return
 
         try:
-            category['data'] = dom.parseString (data)
+            category['data'] = json.loads(data.decode('utf-8'))
             category['parsed'] = False
             self.emit (category['signal'])
         except Exception as e:
@@ -263,11 +234,11 @@ class ArtistDataSource (GObject.GObject):
     def get_top_albums (self):
         if not self.artist['top_albums']['parsed']:
             albums = []
-            for album in self.artist['top_albums']['data'].getElementsByTagName ('album'):
-                album_name = self.extract(album.getElementsByTagName ('name'), 0)
-                imgs = album.getElementsByTagName ('image') 
-                images = self.extract(imgs, 0), self.extract(imgs, 1), self.extract(imgs,2)
-                albums.append ((album_name, images))
+            d = self.artist['top_albums']['data']
+            for album in d['topalbums'].get('album', []):
+                images = [img['#text'] for img in album.get('image', ())]
+                albums.append((album.get('name'), images[:3]))
+
             self.artist['top_albums']['data'] = albums
             self.artist['top_albums']['parsed'] = True
 
@@ -283,11 +254,9 @@ class ArtistDataSource (GObject.GObject):
 
         if not self.artist['similar']['parsed']:
             lst = []
-            for node in data.getElementsByTagName ('artist'):
-                artist = self.extract(node.getElementsByTagName('name'), 0)
-                similar = self.extract(node.getElementsByTagName('match') ,0)
-                image = self.extract(node.getElementsByTagName('image'), 0)
-                lst.append ((artist, similar, image))
+            for node in data['similarartists'].get('artist', []):
+                image = [img['#text'] for img in node.get('image', [])]
+                lst.append ((node.get('name'), node.get('match'), image[:1]))
             data = lst
             self.artist['similar']['parsed'] = True
             self.artist['similar']['data'] = data
@@ -302,8 +271,8 @@ class ArtistDataSource (GObject.GObject):
         if data is None:
             return None
 
-        images = data.getElementsByTagName ('image')
-        return self.extract(images,0), self.extract(images,1), self.extract(images,2)
+        images = [img['#text'] for img in data['artist'].get('image', ())]
+        return images[:3]
         
     def get_artist_bio (self):
         """
@@ -314,8 +283,8 @@ class ArtistDataSource (GObject.GObject):
             return None
 
         if not self.artist['info']['parsed']:
-            content = self.extract(data.getElementsByTagName ('content'), 0)
-            summary = self.extract(data.getElementsByTagName ('summary'), 0)
+            content = data['artist']['bio']['content']
+            summary = data['artist']['bio']['summary']
             return summary, content
 
         return self.artist['info']['data']['bio']
@@ -332,21 +301,3 @@ class ArtistDataSource (GObject.GObject):
             self.artist['info']['parsed'] = True
 
         return self.artist['info']['data']
-
-    def get_top_tracks (self):
-        """
-        Returns a list of the top track titles
-        """
-        data = self.artist['top_tracks']['data']
-        if data is None:
-            return None
-
-        if not self.artist['top_tracks']['parsed']:
-            tracks = []
-            for track in data.getElementsByTagName ('track'):
-                name = self.extract(track.getElementsByTagName('name'), 0)
-                tracks.append (name)
-            self.artist['top_tracks']['data'] = tracks
-            self.artist['top_tracks']['parsed'] = True
-
-        return self.artist['top_tracks']['data']
