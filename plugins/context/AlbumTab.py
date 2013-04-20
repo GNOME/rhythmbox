@@ -204,7 +204,6 @@ class AlbumDataSource (GObject.GObject):
             self.albums.append({'title': a.get('name'), 'images': images[:3]})
             self.fetch_album_info(artist, a.get('name'), i)
 
-        print(self.albums)
         return True
 
     def get_top_albums (self):
@@ -234,10 +233,8 @@ class AlbumDataSource (GObject.GObject):
                 duration = int(t['duration'])
                 tracklist.append((i, title, duration))
 
-            print(tracklist)
             self.albums[index]['tracklist'] = tracklist
             self.albums[index]['duration']  = sum([t[2] for t in tracklist])
-            print("duration: %s" % self.albums[index]['duration'])
 
         except Exception as e:
             print("Error parsing album tracklist: %s" % e)
