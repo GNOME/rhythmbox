@@ -10,7 +10,7 @@
         return re.sub(r'\([^\)]*\)', '', text)
 
     def sec2hms(time):
-        hr = time / 3600
+        hr = int(time / 3600)
         if hr > 0:
             time %= 3600
         mn = time / 60
