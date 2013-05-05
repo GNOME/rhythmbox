@@ -587,7 +587,9 @@ update_layout_filename (RBLibrarySource *source)
 	}
 	g_free (value);
 
-	gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->layout_filename_menu), active);
+	if (source->priv->layout_filename_menu != NULL) {
+		gtk_combo_box_set_active (GTK_COMBO_BOX (source->priv->layout_filename_menu), active);
+	}
 
 	update_layout_example_label (source);
 }
@@ -734,6 +736,9 @@ update_preferred_media_type (RBLibrarySource *source)
 	GtkTreeIter iter;
 	gboolean done;
 	char *str;
+
+	if (source->priv->profile_model == NULL)
+		return;
 
 	done = FALSE;
 	str = g_settings_get_string (source->priv->encoding_settings, "media-type");
@@ -1436,6 +1441,10 @@ update_layout_example_label (RBLibrarySource *source)
 	char *media_type;
 	RhythmDBEntryType *entry_type;
 	RhythmDBEntry *sample_entry;
+
+	if (source->priv->layout_example_label == NULL) {
+		return;
+	}
 
 	media_type = g_settings_get_string (source->priv->encoding_settings, "media-type");
 
