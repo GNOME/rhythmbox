@@ -1689,7 +1689,6 @@ impl_paste (RBSource *asource, GList *entries)
 		      "entry-type", &source_entry_type,
 		      NULL);
 	g_object_get (shell, "track-transfer-queue", &xferq, NULL);
-	g_object_unref (shell);
 
 	target = gst_encoding_target_new ("rhythmbox-library", "device", "", NULL);
 
@@ -1740,13 +1739,21 @@ impl_paste (RBSource *asource, GList *entries)
 	g_object_unref (source_entry_type);
 
 	if (start_batch) {
+		RBTaskList *tasklist;
+
+		g_object_set (batch, "task-label", _("Copying tracks to the library"), NULL);
 		rb_track_transfer_queue_start_batch (xferq, batch);
+
+		g_object_get (shell, "task-list", &tasklist, NULL);
+		rb_task_list_add_task (tasklist, RB_TASK_PROGRESS (batch));
+		g_object_unref (tasklist);
 	} else {
 		g_object_unref (batch);
 		batch = NULL;
 	}
 
 	g_object_unref (xferq);
+	g_object_unref (shell);
 	return batch;
 }
 

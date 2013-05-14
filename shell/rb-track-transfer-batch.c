@@ -40,6 +40,7 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-gst-media-types.h"
+#include "rb-task-progress.h"
 
 enum
 {
@@ -64,11 +65,18 @@ enum
 	PROP_TOTAL_ENTRIES,
 	PROP_DONE_ENTRIES,
 	PROP_PROGRESS,
-	PROP_ENTRY_LIST
+	PROP_ENTRY_LIST,
+	PROP_TASK_LABEL,
+	PROP_TASK_DETAIL,
+	PROP_TASK_PROGRESS,
+	PROP_TASK_OUTCOME,
+	PROP_TASK_NOTIFY,
+	PROP_TASK_CANCELLABLE
 };
 
 static void	rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass);
 static void	rb_track_transfer_batch_init (RBTrackTransferBatch *batch);
+static void	rb_track_transfer_batch_task_progress_init (RBTaskProgressInterface *iface);
 
 static gboolean start_next (RBTrackTransferBatch *batch);
 static void start_encoding (RBTrackTransferBatch *batch, gboolean overwrite);
@@ -104,9 +112,16 @@ struct _RBTrackTransferBatchPrivate
 	RBEncoder *current_encoder;
 	GstEncodingProfile *current_profile;
 	gboolean cancelled;
+
+	char *task_label;
+	gboolean task_notify;
 };
 
-G_DEFINE_TYPE (RBTrackTransferBatch, rb_track_transfer_batch, G_TYPE_OBJECT)
+G_DEFINE_TYPE_EXTENDED (RBTrackTransferBatch,
+			rb_track_transfer_batch,
+			G_TYPE_OBJECT,
+			0,
+			G_IMPLEMENT_INTERFACE (RB_TYPE_TASK_PROGRESS, rb_track_transfer_batch_task_progress_init));
 
 /**
  * SECTION:rb-track-transfer-batch
@@ -315,6 +330,12 @@ rb_track_transfer_batch_cancel (RBTrackTransferBatch *batch)
 	rb_track_transfer_queue_cancel_batch (batch->priv->queue, batch);
 }
 
+static void
+task_progress_cancel (RBTaskProgress *progress)
+{
+	rb_track_transfer_batch_cancel (RB_TRACK_TRANSFER_BATCH (progress));
+}
+
 /**
  * _rb_track_transfer_batch_start:
  * @batch: a #RBTrackTransferBatch
@@ -387,6 +408,8 @@ _rb_track_transfer_batch_start (RBTrackTransferBatch *batch, GObject *queue)
 	batch->priv->total_fraction = 0.0;
 
 	g_signal_emit (batch, signals[STARTED], 0);
+	g_object_notify (G_OBJECT (batch), "task-progress");
+	g_object_notify (G_OBJECT (batch), "task-detail");
 
 	start_next (batch);
 }
@@ -410,6 +433,7 @@ _rb_track_transfer_batch_cancel (RBTrackTransferBatch *batch)
 	}
 
 	g_signal_emit (batch, signals[CANCELLED], 0);
+	g_object_notify (G_OBJECT (batch), "task-outcome");
 
 	/* anything else? */
 }
@@ -450,6 +474,7 @@ emit_progress (RBTrackTransferBatch *batch)
 		       done,
 		       total,
 		       fraction);
+	g_object_notify (G_OBJECT (batch), "task-progress");
 }
 
 static void
@@ -576,6 +601,7 @@ start_next (RBTrackTransferBatch *batch)
 	if (batch->priv->entries == NULL) {
 		/* guess we must be done.. */
 		g_signal_emit (batch, signals[COMPLETE], 0);
+		g_object_notify (G_OBJECT (batch), "task-outcome");
 		return FALSE;
 	}
 
@@ -666,6 +692,7 @@ start_next (RBTrackTransferBatch *batch)
 			       batch->priv->current,
 			       batch->priv->current_dest_uri);
 		start_encoding (batch, FALSE);
+		g_object_notify (G_OBJECT (batch), "task-detail");
 	}
 
 	return TRUE;
@@ -697,6 +724,24 @@ impl_set_property (GObject *object,
 		break;
 	case PROP_DESTINATION:
 		batch->priv->destination = g_value_dup_object (value);
+		break;
+	case PROP_TASK_LABEL:
+		batch->priv->task_label = g_value_dup_string (value);
+		break;
+	case PROP_TASK_DETAIL:
+		/* ignore */
+		break;
+	case PROP_TASK_PROGRESS:
+		/* ignore */
+		break;
+	case PROP_TASK_OUTCOME:
+		/* ignore */
+		break;
+	case PROP_TASK_NOTIFY:
+		batch->priv->task_notify = g_value_get_boolean (value);
+		break;
+	case PROP_TASK_CANCELLABLE:
+		/* ignore */
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -735,7 +780,8 @@ impl_get_property (GObject *object,
 	case PROP_DONE_ENTRIES:
 		g_value_set_int (value, g_list_length (batch->priv->done_entries));
 		break;
-	case PROP_PROGRESS:
+	case PROP_TASK_PROGRESS:
+	case PROP_PROGRESS:		/* needed? */
 		{
 			double p = batch->priv->total_fraction;
 			if (batch->priv->current != NULL) {
@@ -755,6 +801,39 @@ impl_get_property (GObject *object,
 			g_list_foreach (l, (GFunc) rhythmdb_entry_ref, NULL);
 			g_value_set_pointer (value, l);
 		}
+		break;
+	case PROP_TASK_LABEL:
+		g_value_set_string (value, batch->priv->task_label);
+		break;
+	case PROP_TASK_DETAIL:
+		{
+			int done;
+			int total;
+
+			done = g_list_length (batch->priv->done_entries);
+			total = done + g_list_length (batch->priv->entries);
+			if (batch->priv->current) {
+				total++;
+				done++;
+			}
+			g_value_take_string (value, g_strdup_printf (_("%d of %d"), done, total));
+		}
+		break;
+	case PROP_TASK_OUTCOME:
+		if (batch->priv->cancelled) {
+			g_value_set_enum (value, RB_TASK_OUTCOME_CANCELLED);
+		} else if ((batch->priv->entries == NULL) && (batch->priv->done_entries != NULL)) {
+			g_value_set_enum (value, RB_TASK_OUTCOME_COMPLETE);
+		} else {
+			g_value_set_enum (value, RB_TASK_OUTCOME_NONE);
+		}
+		break;
+	case PROP_TASK_NOTIFY:
+		/* we might want to notify sometimes, but we never did before */
+		g_value_set_boolean (value, FALSE);
+		break;
+	case PROP_TASK_CANCELLABLE:
+		g_value_set_boolean (value, TRUE);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -795,8 +874,15 @@ impl_finalize (GObject *object)
 	if (batch->priv->current != NULL) {
 		rhythmdb_entry_unref (batch->priv->current);
 	}
+	g_free (batch->priv->task_label);
 
 	G_OBJECT_CLASS (rb_track_transfer_batch_parent_class)->finalize (object);
+}
+
+static void
+rb_track_transfer_batch_task_progress_init (RBTaskProgressInterface *interface)
+{
+	interface->cancel = task_progress_cancel;
 }
 
 static void
@@ -895,6 +981,13 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 							       "entry list",
 							       "list of all entries in the batch",
 							       G_PARAM_READABLE));
+
+	g_object_class_override_property (object_class, PROP_TASK_LABEL, "task-label");
+	g_object_class_override_property (object_class, PROP_TASK_DETAIL, "task-detail");
+	g_object_class_override_property (object_class, PROP_TASK_PROGRESS, "task-progress");
+	g_object_class_override_property (object_class, PROP_TASK_OUTCOME, "task-outcome");
+	g_object_class_override_property (object_class, PROP_TASK_NOTIFY, "task-notify");
+	g_object_class_override_property (object_class, PROP_TASK_CANCELLABLE, "task-cancellable");
 
 	/**
 	 * RBTrackTransferBatch::started:
@@ -1077,4 +1170,3 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 
 	g_type_class_add_private (klass, sizeof (RBTrackTransferBatchPrivate));
 }
-

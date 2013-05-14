@@ -41,6 +41,7 @@
 #include <lib/rb-debug.h>
 #include <lib/rb-file-helpers.h>
 #include <widgets/rb-dialog.h>
+#include <shell/rb-task-list.h>
 
 /* arbitrary length limit for file extensions */
 #define EXTENSION_LENGTH_LIMIT	8
@@ -389,6 +390,7 @@ RBTrackTransferBatch *
 rb_transfer_target_transfer (RBTransferTarget *target, GList *entries, gboolean defer)
 {
 	RBTrackTransferQueue *xferq;
+	RBTaskList *tasklist;
 	RBShell *shell;
 	GList *l;
 	RhythmDBEntryType *our_entry_type;
@@ -399,7 +401,10 @@ rb_transfer_target_transfer (RBTransferTarget *target, GList *entries, gboolean 
 		      "shell", &shell,
 		      "entry-type", &our_entry_type,
 		      NULL);
-	g_object_get (shell, "track-transfer-queue", &xferq, NULL);
+	g_object_get (shell,
+		      "track-transfer-queue", &xferq,
+		      "task-list", &tasklist,
+		      NULL);
 	g_object_unref (shell);
 
 	batch = g_object_steal_data (G_OBJECT (target), "transfer-target-batch");
@@ -441,9 +446,20 @@ rb_transfer_target_transfer (RBTransferTarget *target, GList *entries, gboolean 
 			g_object_set_data_full (G_OBJECT (target), "transfer-target-batch", g_object_ref (batch), g_object_unref);
 		} else {
 			GstEncodingTarget *encoding_target;
+			char *name;
+			char *label;
+
 			g_object_get (target, "encoding-target", &encoding_target, NULL);
 			g_object_set (batch, "encoding-target", encoding_target, NULL);
 			gst_encoding_target_unref (encoding_target);
+
+			g_object_get (target, "name", &name, NULL);
+			label = g_strdup_printf (_("Transferring tracks to %s"), name);
+			g_object_set (batch, "task-label", label, NULL);
+			g_free (name);
+			g_free (label);
+			
+			rb_task_list_add_task (tasklist, RB_TASK_PROGRESS (batch));
 
 			rb_track_transfer_queue_start_batch (xferq, batch);
 		}
@@ -452,6 +468,7 @@ rb_transfer_target_transfer (RBTransferTarget *target, GList *entries, gboolean 
 		batch = NULL;
 	}
 	g_object_unref (xferq);
+	g_object_unref (tasklist);
 	return batch;
 }
 

@@ -607,6 +607,16 @@ sync_delete_done_cb (RBMediaPlayerSource *source, gpointer dontcare)
 		rb_debug ("transferring %d files to media player", priv->sync_state->sync_add_count);
 		batch = rb_source_paste (RB_SOURCE (source), priv->sync_state->sync_to_add);
 		if (batch != NULL) {
+			char *name;
+			char *label;
+
+			g_object_get (source, "name", &name, NULL);
+			label = g_strdup_printf (_("Syncing tracks to %s"), name);
+			g_free (name);
+
+			g_object_set (batch, "task-label", label, NULL);
+			g_free (label);
+
 			g_signal_connect_object (batch, "complete", G_CALLBACK (transfer_batch_complete_cb), source, 0);
 			g_signal_connect_object (batch, "cancelled", G_CALLBACK (transfer_batch_cancelled_cb), source, 0);
 		} else {
