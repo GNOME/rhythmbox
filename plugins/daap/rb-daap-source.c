@@ -53,6 +53,8 @@
 #include "rb-display-page.h"
 #include "rb-builder-helpers.h"
 #include "rb-application.h"
+#include "rb-task-list.h"
+#include "rb-task-progress-simple.h"
 
 #include "rb-daap-plugin.h"
 
@@ -75,7 +77,6 @@ static void rb_daap_source_get_property  (GObject *object,
 				 	  GParamSpec *pspec);
 
 static void rb_daap_source_selected (RBDisplayPage *page);
-static void rb_daap_source_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
 static void disconnect_action_cb (GSimpleAction *, GVariant *, gpointer);
 
 static void rb_daap_entry_type_class_init (RBDAAPEntryTypeClass *klass);
@@ -93,8 +94,7 @@ struct RBDAAPSourcePrivate
 
 	GSList *playlist_sources;
 
-	const char *connection_status;
-	float connection_progress;
+	RBTaskProgress *connection_status;
 
 	gboolean tried_password;
 	gboolean disconnecting;
@@ -149,6 +149,7 @@ rb_daap_source_dispose (GObject *object)
 
 	/* we should already have been disconnected */
 	g_assert (source->priv->connection == NULL);
+	g_clear_object (&source->priv->connection_status);
 
 	G_OBJECT_CLASS (rb_daap_source_parent_class)->dispose (object);
 }
@@ -179,7 +180,6 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 	object_class->set_property = rb_daap_source_set_property;
 
 	page_class->selected = rb_daap_source_selected;
-	page_class->get_status = rb_daap_source_get_status;
 
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
@@ -535,7 +535,6 @@ connection_connecting_cb (DMAPConnection       *connection,
 	switch (state) {
 	case DMAP_GET_INFO:
 	case DMAP_LOGIN:
-		source->priv->connection_status = _("Connecting to music share");
 		break;
 	case DMAP_GET_REVISION_NUMBER:
 		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADING, NULL);
@@ -543,16 +542,17 @@ connection_connecting_cb (DMAPConnection       *connection,
 	case DMAP_GET_SONGS:
 	case DMAP_GET_PLAYLISTS:
 	case DMAP_GET_PLAYLIST_ENTRIES:
-		source->priv->connection_status = _("Retrieving songs from music share");
+		g_object_set (source->priv->connection_status,
+			      "task-label", _("Retrieving songs from music share"),
+			      "task-progress", progress,
+			      NULL);
 		break;
 	case DMAP_DONE:
 		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
+		g_object_set (source->priv->connection_status, "task-outcome", RB_TASK_OUTCOME_COMPLETE, NULL);
 	case DMAP_LOGOUT:
-		source->priv->connection_status = NULL;
 		break;
 	}
-
-	source->priv->connection_progress = progress;
 
 	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 
@@ -680,6 +680,7 @@ rb_daap_source_selected (RBDisplayPage *page)
 	DMAPDb *db = NULL;
 	char *name = NULL;
 	RhythmDBEntryType *entry_type;
+	RBTaskList *tasklist;
 
 	RB_DISPLAY_PAGE_CLASS (rb_daap_source_parent_class)->selected (page);
 
@@ -692,10 +693,21 @@ rb_daap_source_selected (RBDisplayPage *page)
 		      "name", &name,
 		      "entry-type", &entry_type,
 		      NULL);
-	g_object_get (shell, "db", &rdb, NULL);
+	g_object_get (shell,
+		      "db", &rdb,
+		      "task-list", &tasklist,
+		      NULL);
 	db = DMAP_DB (rb_rhythmdb_dmap_db_adapter_new (rdb, entry_type));
 
 	factory = DMAP_RECORD_FACTORY (rb_daap_record_factory_new ());
+
+	daap_source->priv->connection_status = rb_task_progress_simple_new ();
+	g_object_set (daap_source->priv->connection_status,
+		      "task-label", _("Connecting to music share"),
+		      "task-progress", -0.5,
+		      NULL);
+	rb_task_list_add_task (tasklist, RB_TASK_PROGRESS (daap_source->priv->connection_status));
+	g_object_unref (tasklist);
 
 	daap_source->priv->connection = daap_connection_new (name,
 							     daap_source->priv->host,
@@ -828,29 +840,6 @@ rb_daap_source_get_headers (RBDAAPSource *source,
 	}
 
 	return dmap_connection_get_headers (source->priv->connection, uri);
-}
-
-static void
-rb_daap_source_get_status (RBDisplayPage *page,
-			   char **text,
-			   char **progress_text,
-			   float *progress)
-{
-	RBDAAPSource *daap_source = RB_DAAP_SOURCE (page);
-
-	if (daap_source->priv->connection_status != NULL) {
-		if (text != NULL) {
-			*text = g_strdup (daap_source->priv->connection_status);
-		}
-
-		if (progress != NULL) {
-			*progress = daap_source->priv->connection_progress;
-		}
-
-		return;
-	}
-
-	RB_DISPLAY_PAGE_CLASS (rb_daap_source_parent_class)->get_status (page, text, progress_text, progress);
 }
 
 void
