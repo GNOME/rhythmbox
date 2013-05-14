@@ -8,6 +8,7 @@ rbinclude_HEADERS =					\
 	rb-builder-helpers.h				\
 	rb-debug.h					\
 	rb-file-helpers.h				\
+	rb-list-model.h					\
 	rb-stock-icons.h				\
 	rb-string-value-map.h				\
 	rb-util.h
@@ -37,7 +38,8 @@ librb_la_SOURCES =					\
 	rb-async-copy.c					\
 	rb-async-copy.h					\
 	rb-chunk-loader.c				\
-	rb-chunk-loader.h
+	rb-chunk-loader.h				\
+	rb-list-model.c
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
