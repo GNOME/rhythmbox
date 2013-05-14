@@ -69,7 +69,6 @@ class MagnatuneSource(RB.BrowserSource):
 		# source state
 		self.__activated = False
 		self.__db = None
-		self.__notify_id = 0 # GLib.idle_add id for status notifications
 		self.__info_screen = None # the loading screen
 
 		# track data
@@ -78,12 +77,12 @@ class MagnatuneSource(RB.BrowserSource):
 		self.__art_dict = {}
 
 		# catalogue stuff
-		self.__updating = True # whether we're loading the catalog right now
 		self.__has_loaded = False # whether the catalog has been loaded yet
 		self.__update_id = 0 # GLib.idle_add id for catalog updates
 		self.__catalogue_loader = None
 		self.__catalogue_check = None
-		self.__load_progress = (0, 0) # (complete, total)
+		self.__load_progress = None
+		self.__download_progress = None
 
 		# album download stuff
 		self.__downloads = {} # keeps track of download progress for each file
@@ -105,25 +104,6 @@ class MagnatuneSource(RB.BrowserSource):
 		menu.attach_to_widget(self, None)
 		menu.popup(None, None, None, None, 3, Gtk.get_current_event_time())
 
-
-	def do_get_status(self, status, progress_text, progress):
-		if self.__updating:
-			complete, total = self.__load_progress
-			if total > 0:
-				progress = min(float(complete) / total, 1.0)
-			else:
-				progress = -1.0
-			return (_("Loading Magnatune catalog"), None, progress)
-		elif len(self.__downloads) > 0:
-			complete, total = map(sum, zip(*self.__downloads.values()))
-			if total > 0:
-				progress = min(float(complete) / total, 1.0)
-			else:
-				progress = -1.0
-			return (_("Downloading Magnatune Album(s)"), None, progress)
-		else:
-			qm = self.props.query_model
-			return (qm.compute_status_normal("%d song", "%d songs"), None, 2.0)
 
 	def do_selected(self):
 		if not self.__activated:
@@ -159,10 +139,6 @@ class MagnatuneSource(RB.BrowserSource):
 		if self.__update_id != 0:
 			GLib.source_remove(self.__update_id)
 			self.__update_id = 0
-
-		if self.__notify_id != 0:
-			GLib.source_remove(self.__notify_id)
-			self.__notify_id = 0
 
 		if self.__catalogue_loader is not None:
 			self.__catalogue_loader.cancel()
@@ -262,8 +238,7 @@ class MagnatuneSource(RB.BrowserSource):
 				return None
 
 			def download_progress(copy, complete, total, self):
-				self.__load_progress = (complete, total)
-				self.__notify_status_changed()
+				self.__load_progress.props.task_progress = min(float(complete) / total, 1.0)
 
 			def download_finished(copy, success, self):
 				if not success:
@@ -286,20 +261,22 @@ class MagnatuneSource(RB.BrowserSource):
 
 				df = Gio.file_new_for_path(magnatune_song_info_temp)
 				df.delete(None)
-				self.__updating = False
 				self.__catalogue_loader = None
-				self.__notify_status_changed()
+
+				self.__load_progress.props.task_outcome = RB.TaskOutcome.COMPLETE
 
 				load_catalogue()
-
-
-			self.__updating = True
 
 			try:
 				df = Gio.file_new_for_path(magnatune_song_info_temp)
 				df.delete(None)
 			except:
 				pass
+
+			self.__load_progress = RB.TaskProgressSimple.new()
+			self.__load_progress.props.task_label = _("Loading Magnatune catalog")
+			self.props.shell.props.task_list.add_task(self.__load_progress)
+
 			self.__catalog_loader = RB.AsyncCopy()
 			self.__catalog_loader.set_progress(download_progress, self)
 			self.__catalog_loader.start(magnatune_song_info_uri, magnatune_song_info_temp, download_finished, self)
@@ -308,6 +285,7 @@ class MagnatuneSource(RB.BrowserSource):
 
 			def catalogue_chunk_cb(loader, chunk, total, parser):
 				if chunk is None:
+					self.__load_progress.props.task_outcome = RB.TaskOutcome.COMPLETE
 					error = loader.get_error()
 					if error:
 						# report error somehow?
@@ -320,7 +298,6 @@ class MagnatuneSource(RB.BrowserSource):
 						print("error parsing catalogue: %s" % e)
 
 					self.__show_loading_screen(False)
-					self.__updating = False
 					self.__catalogue_loader = None
 
 					# restart in-progress downloads
@@ -349,15 +326,13 @@ class MagnatuneSource(RB.BrowserSource):
 						print("error parsing catalogue: %s" % e)
 
 					load_size['size'] += len(data)
-					self.__load_progress = (load_size['size'], total)
-
-				self.__notify_status_changed()
+					self.__load_progress.props.task_progress = min(float(load_size['size']) / total, 1.0)
 
 
 			self.__has_loaded = True
-			self.__updating = True
-			self.__load_progress = (0, 0) # (complete, total)
-			self.__notify_status_changed()
+			self.__load_progress = RB.TaskProgressSimple.new()
+			self.__load_progress.props.task_label = _("Loading Magnatune catalog")
+			self.props.shell.props.task_list.add_task(self.__load_progress)
 
 			load_size = {'size': 0}
 
@@ -387,13 +362,7 @@ class MagnatuneSource(RB.BrowserSource):
 		self.__paned_box.set_property("visible", not show)
 
 	def __notify_status_changed(self):
-		def change_idle_cb():
-			self.notify_status_changed()
-			self.__notify_id = 0
-			return False
-
-		if self.__notify_id == 0:
-			self.__notify_id = GLib.idle_add(change_idle_cb)
+		pass
 
 	#
 	# internal purchasing code
@@ -456,13 +425,19 @@ class MagnatuneSource(RB.BrowserSource):
 
 
 	def __download_album(self, audio_dl_uri, sku):
+		def update_progress(self):
+			complete, total = map(sum, zip(*self.__downloads.values()))
+			if total > 0:
+				self.__download_progress.props.task_progress = min(float(complete) / total, 1.0)
+
 		def download_progress(copy, complete, total, self):
 			self.__downloads[audio_dl_uri] = (complete, total)
-			self.__notify_status_changed()
+			update_progress(self)
 
 		def download_finished(copy, success, self):
 			del self.__downloads[audio_dl_uri]
 			del self.__copies[audio_dl_uri]
+			update_progress(self)
 
 			print("download of %s finished: %s" % (audio_dl_uri, success))
 			if success:
@@ -470,14 +445,10 @@ class MagnatuneSource(RB.BrowserSource):
 			else:
 				remove_download_files()
 
-			if len(self.__downloads) == 0: # All downloads are complete
-				app = Gio.Application.get_default()
-				action = app.lookup_action("magnatune-download-cancel")
-				action.set_enabled(False)
-				if success:
-					self.props.shell.notify_custom(4000, _("Finished Downloading"), _("All Magnatune downloads have been completed."), None, False)
+			if len(self.__downloads) == 0:
+				self.__download_progress.props.task_outcome = RB.TaskOutcome.COMPLETE
+				self.__download_progress = None
 
-			self.__notify_status_changed()
 
 		def unzip_album():
 			# just use the first library location
@@ -517,15 +488,16 @@ class MagnatuneSource(RB.BrowserSource):
 					     Gio.FileCreateFlags.PRIVATE|Gio.FileCreateFlags.REPLACE_DESTINATION,
 					     None)
 
-		app = Gio.Application.get_default()
-		action = app.lookup_action("magnatune-download-cancel")
-		action.set_enabled(True)
-
 		try:
 			# For some reason, Gio.FileCopyFlags.OVERWRITE doesn't work for copy_async
 			dest.delete(None)
 		except:
 			pass
+
+		if self.__download_progress is None:
+			self.__download_progress = RB.TaskProgressSimple.new()
+			self.__download_progress.props.task_label = _("Downloading from Magnatune")
+			self.__download_progress.connect('cancel', self.cancel_downloads)
 
 		dl = RB.AsyncCopy()
 		dl.set_progress(download_progress, self)
@@ -533,14 +505,11 @@ class MagnatuneSource(RB.BrowserSource):
 		self.__downloads[audio_dl_uri] = (0, 0) # (current, total)
 		self.__copies[audio_dl_uri] = dl
 
-
-	def cancel_downloads(self):
+	def cancel_downloads(self, task):
 		for download in self.__copies.values():
 			download.cancel()
 
-		app = Gio.Application.get_default()
-		action = app.lookup_action("magnatune-download-cancel")
-		action.set_enabled(False)
+		task.props.task_outcome = RB.TaskOutcome.CANCELLED
 
 	def playing_entry_changed(self, entry):
 		if not self.__db or not entry:

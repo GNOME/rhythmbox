@@ -86,10 +86,6 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 		shell = self.object
 		shell.props.selected_page.display_artist_info()
 	
-	def cancel_download_action_cb(self, action, parameter):
-		shell = self.object
-		shell.props.selected_page.cancel_downloads()
-
 	def do_activate(self):
 		shell = self.object
 		self.db = shell.props.db
@@ -112,11 +108,6 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 
 		action = Gio.SimpleAction(name="magnatune-artist-info")
 		action.connect("activate", self.artist_info_action_cb)
-		app.add_action(action)
-
-		action = Gio.SimpleAction(name="magnatune-download-cancel")
-		action.connect("activate", self.cancel_download_action_cb)
-		action.set_enabled(False)
 		app.add_action(action)
 
 		builder = Gtk.Builder()
