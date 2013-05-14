@@ -2159,6 +2159,8 @@ rb_shell_display_page_deleted_cb (RBDisplayPage *page, RBShell *shell)
 			rb_shell_player_stop (shell->priv->player_shell);
 		}
 
+		rb_track_transfer_queue_cancel_for_source (shell->priv->track_transfer_queue, source);
+
 		shell->priv->sources = g_list_remove (shell->priv->sources, source);
 	}
 

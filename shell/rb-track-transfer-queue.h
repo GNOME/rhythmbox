@@ -72,6 +72,8 @@ void			rb_track_transfer_queue_cancel_batch	(RBTrackTransferQueue *queue,
 								 RBTrackTransferBatch *batch);
 GList *			rb_track_transfer_queue_find_batch_by_source (RBTrackTransferQueue *queue,
 								 RBSource *source);
+void			rb_track_transfer_queue_cancel_for_source (RBTrackTransferQueue *queue,
+								 RBSource *source);
 
 G_END_DECLS
 

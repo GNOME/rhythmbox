@@ -599,6 +599,26 @@ rb_track_transfer_queue_find_batch_by_source (RBTrackTransferQueue *queue, RBSou
 	return data.results;
 }
 
+/**
+ * rb_track_transfer_queue_cancel_for_source;
+ * @queue: the #RBTrackTransferQueue
+ * @source: the #RBSource to cancel transfers to/from
+ *
+ * Cancels all transfers to or from a specified source.
+ */
+void
+rb_track_transfer_queue_cancel_for_source (RBTrackTransferQueue *queue, RBSource *source)
+{
+	GList *batches;
+	GList *l;
+
+	batches = rb_track_transfer_queue_find_batch_by_source (queue, source);
+	for (l = batches; l != NULL; l = l->next) {
+		rb_track_transfer_queue_cancel_batch (queue, l->data);
+	}
+	g_list_free (batches);
+}
+
 static void
 rb_track_transfer_queue_init (RBTrackTransferQueue *queue)
 {
