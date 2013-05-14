@@ -11,7 +11,9 @@ rbinclude_HEADERS =					\
 	rb-list-model.h					\
 	rb-stock-icons.h				\
 	rb-string-value-map.h				\
-	rb-util.h
+	rb-util.h					\
+	rb-task-progress.h				\
+	rb-task-progress-simple.h
 
 librb_la_SOURCES =					\
 	$(rbinclude_HEADERS)				\
@@ -39,6 +41,8 @@ librb_la_SOURCES =					\
 	rb-async-copy.h					\
 	rb-chunk-loader.c				\
 	rb-chunk-loader.h				\
+	rb-task-progress.c				\
+	rb-task-progress-simple.c			\
 	rb-list-model.c
 
 INCLUDES =						\

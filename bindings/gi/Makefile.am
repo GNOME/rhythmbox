@@ -50,6 +50,10 @@ rb_introspection_sources = \
 		lib/rb-stock-icons.c \
 		lib/rb-string-value-map.h \
 		lib/rb-string-value-map.c \
+		lib/rb-task-progress.h \
+		lib/rb-task-progress.c \
+		lib/rb-task-progress-simple.h \
+		lib/rb-task-progress-simple.c \
 		lib/rb-util.h \
 		lib/rb-util.c \
 		metadata/rb-ext-db.h \
