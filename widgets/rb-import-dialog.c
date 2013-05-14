@@ -42,6 +42,7 @@
 #include "rb-device-source.h"
 #include "rb-file-helpers.h"
 #include "rb-task-list.h"
+#include "rhythmdb-import-job.h"
 
 /* normal entries */
 typedef struct _RhythmDBEntryType RBImportDialogEntryType;

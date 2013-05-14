@@ -74,6 +74,7 @@
 #include "rb-display-page-group.h"
 #include "rb-static-playlist-source.h"
 #include "rb-task-list.h"
+#include "rhythmdb-import-job.h"
 
 #define SOURCE_PAGE		0
 #define IMPORT_DIALOG_PAGE	1
