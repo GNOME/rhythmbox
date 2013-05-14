@@ -101,6 +101,9 @@
 #include "rb-auto-playlist-source.h"
 #include "rb-builder-helpers.h"
 #include "rb-display-page-menu.h"
+#include "rb-list-model.h"
+#include "rb-task-list.h"
+#include "rb-task-list-display.h"
 
 #define UNINSTALLED_PLUGINS_LOCATION "plugins"
 
@@ -207,7 +210,8 @@ enum
 	PROP_VISIBILITY,
 	PROP_TRACK_TRANSFER_QUEUE,
 	PROP_AUTOSTARTED,
-	PROP_DISABLE_PLUGINS
+	PROP_DISABLE_PLUGINS,
+	PROP_TASK_LIST
 };
 
 enum
@@ -277,6 +281,7 @@ struct _RBShellPrivate
 	RBRemovableMediaManager *removable_media_manager;
 	RBTrackTransferQueue *track_transfer_queue;
 	RBPodcastManager *podcast_manager;
+	GtkWidget *task_list_display;
 
 	RBLibrarySource *library_source;
 	RBPodcastSource *podcast_source;
@@ -299,6 +304,8 @@ struct _RBShellPrivate
 	GSettings *plugin_settings;
 	PeasEngine *plugin_engine;
 	PeasExtensionSet *activatable;
+
+	RBTaskList *task_list;
 };
 
 static GMountOperation *
@@ -507,6 +514,10 @@ construct_widgets (RBShell *shell)
 
 	rb_debug ("shell: initializing shell services");
 
+	shell->priv->task_list = rb_task_list_new ();
+	shell->priv->task_list_display = rb_task_list_display_new (rb_task_list_get_model (shell->priv->task_list));
+	gtk_widget_show (shell->priv->task_list_display);
+
 	shell->priv->podcast_manager = rb_podcast_manager_new (shell->priv->db);
 	shell->priv->track_transfer_queue = rb_track_transfer_queue_new (shell);
 	shell->priv->accel_group = gtk_accel_group_new ();
@@ -606,6 +617,9 @@ construct_widgets (RBShell *shell)
 				    TRUE, TRUE, 0);
 		gtk_box_pack_start (GTK_BOX (vbox2),
 				    GTK_WIDGET (shell->priv->bottom_container),
+				    FALSE, FALSE, 0);
+		gtk_box_pack_start (GTK_BOX (vbox2),
+				    GTK_WIDGET (shell->priv->task_list_display),
 				    FALSE, FALSE, 0);
 
 		gtk_paned_pack1 (GTK_PANED (shell->priv->right_paned),
@@ -1244,6 +1258,18 @@ rb_shell_class_init (RBShellClass *klass)
 							       "Whether or not to disable plugins",
 							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBShell:task-list:
+	 *
+	 * The #RBTaskList instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_TASK_LIST,
+					 g_param_spec_object ("task-list",
+							      "task list",
+							      "task list",
+							      RB_TYPE_TASK_LIST,
+							      G_PARAM_READABLE));
 
 	/**
 	 * RBShell::visibility-changed:
@@ -1488,6 +1514,9 @@ rb_shell_get_property (GObject *object,
 		break;
 	case PROP_DISABLE_PLUGINS:
 		g_value_set_boolean (value, shell->priv->disable_plugins);
+		break;
+	case PROP_TASK_LIST:
+		g_value_set_object (value, shell->priv->task_list);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
