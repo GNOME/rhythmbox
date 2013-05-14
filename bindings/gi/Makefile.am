@@ -101,6 +101,8 @@ rb_introspection_sources = \
 		shell/rb-history.c \
 		shell/rb-play-order.h \
 		shell/rb-play-order.c \
+		shell/rb-task-list.h \
+		shell/rb-task-list.c \
 		shell/rb-track-transfer-batch.c \
 		shell/rb-track-transfer-batch.h \
 		shell/rb-track-transfer-queue.c \
