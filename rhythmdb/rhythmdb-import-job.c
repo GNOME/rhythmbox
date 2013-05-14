@@ -28,6 +28,8 @@
 
 #include "config.h"
 
+#include <glib/gi18n.h>
+
 #include "rhythmdb-import-job.h"
 #include "rhythmdb-entry-type.h"
 #include "rb-util.h"
@@ -35,6 +37,7 @@
 #include "rb-marshal.h"
 #include "rb-debug.h"
 #include "rb-missing-plugins.h"
+#include "rb-task-progress.h"
 
 /* maximum number of new URIs in the rhythmdb action queue.
  * entries bounce around between different threads and processes a bit,
@@ -50,7 +53,13 @@ enum
 	PROP_DB,
 	PROP_ENTRY_TYPE,
 	PROP_IGNORE_TYPE,
-	PROP_ERROR_TYPE
+	PROP_ERROR_TYPE,
+	PROP_TASK_LABEL,
+	PROP_TASK_DETAIL,
+	PROP_TASK_PROGRESS,
+	PROP_TASK_OUTCOME,
+	PROP_TASK_NOTIFY,
+	PROP_TASK_CANCELLABLE
 };
 
 enum
@@ -64,6 +73,7 @@ enum
 
 static void	rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass);
 static void	rhythmdb_import_job_init (RhythmDBImportJob *job);
+static void	rhythmdb_import_job_task_progress_init (RBTaskProgressInterface *iface);
 
 static guint	signals[LAST_SIGNAL] = { 0 };
 
@@ -89,9 +99,16 @@ struct _RhythmDBImportJobPrivate
 	int		status_changed_id;
 	gboolean	scan_complete;
 	gboolean	complete;
+
+	char		*task_label;
+	gboolean	task_notify;
 };
 
-G_DEFINE_TYPE (RhythmDBImportJob, rhythmdb_import_job, G_TYPE_OBJECT)
+G_DEFINE_TYPE_EXTENDED (RhythmDBImportJob,
+			rhythmdb_import_job,
+			G_TYPE_OBJECT,
+			0,
+			G_IMPLEMENT_INTERFACE (RB_TYPE_TASK_PROGRESS, rhythmdb_import_job_task_progress_init));
 
 /**
  * SECTION:rhythmdb-import-job
@@ -189,7 +206,9 @@ missing_plugins_retry_cb (gpointer instance, gboolean installed, RhythmDBImportJ
 	g_assert (job->priv->retried == FALSE);
 	if (installed == FALSE) {
 		rb_debug ("plugin installation was not successful; job complete");
+		job->priv->complete = TRUE;
 		g_signal_emit (job, signals[COMPLETE], 0, job->priv->total);
+		g_object_notify (G_OBJECT (job), "task-outcome");
 	} else {
 		job->priv->retried = TRUE;
 
@@ -224,6 +243,8 @@ emit_status_changed (RhythmDBImportJob *job)
 
 	rb_debug ("emitting status changed: %d/%d", job->priv->processed, job->priv->total);
 	g_signal_emit (job, signals[STATUS_CHANGED], 0, job->priv->total, job->priv->processed);
+	g_object_notify (G_OBJECT (job), "task-progress");
+	g_object_notify (G_OBJECT (job), "task-detail");
 
 	/* temporary ref while emitting this signal as we're expecting the caller
 	 * to release the final reference there.
@@ -268,17 +289,23 @@ emit_status_changed (RhythmDBImportJob *job)
 				rb_debug ("plugin installation is in progress");
 			} else {
 				rb_debug ("no plugin installation attempted; job complete");
+				job->priv->complete = TRUE;
 				g_signal_emit (job, signals[COMPLETE], 0, job->priv->total);
+				g_object_notify (G_OBJECT (job), "task-outcome");
 			}
 			g_closure_sink (retry);
 		} else {
 			rb_debug ("emitting job complete");
+			job->priv->complete = TRUE;
 			g_signal_emit (job, signals[COMPLETE], 0, job->priv->total);
+			g_object_notify (G_OBJECT (job), "task-outcome");
 		}
 	} else if (g_cancellable_is_cancelled (job->priv->cancel) &&
 		   g_queue_is_empty (job->priv->processing)) {
 		rb_debug ("cancelled job has no processing entries, emitting complete");
+		job->priv->complete = TRUE;
 		g_signal_emit (job, signals[COMPLETE], 0, job->priv->total);
+		g_object_notify (G_OBJECT (job), "task-outcome");
 	}
 	g_mutex_unlock (&job->priv->lock);
 	g_object_unref (job);
@@ -479,6 +506,14 @@ rhythmdb_import_job_cancel (RhythmDBImportJob *job)
 	g_mutex_lock (&job->priv->lock);
 	g_cancellable_cancel (job->priv->cancel);
 	g_mutex_unlock (&job->priv->lock);
+
+	g_object_notify (G_OBJECT (job), "task-outcome");
+}
+
+static void
+task_progress_cancel (RBTaskProgress *progress)
+{
+	rhythmdb_import_job_cancel (RHYTHMDB_IMPORT_JOB (progress));
 }
 
 static void
@@ -565,6 +600,24 @@ impl_set_property (GObject *object,
 	case PROP_ERROR_TYPE:
 		job->priv->error_type = g_value_get_object (value);
 		break;
+	case PROP_TASK_LABEL:
+		job->priv->task_label = g_value_dup_string (value);
+		break;
+	case PROP_TASK_DETAIL:
+		/* ignore */
+		break;
+	case PROP_TASK_PROGRESS:
+		/* ignore */
+		break;
+	case PROP_TASK_OUTCOME:
+		/* ignore */
+		break;
+	case PROP_TASK_NOTIFY:
+		job->priv->task_notify = g_value_get_boolean (value);
+		break;
+	case PROP_TASK_CANCELLABLE:
+		/* ignore */
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -591,6 +644,43 @@ impl_get_property (GObject *object,
 		break;
 	case PROP_ERROR_TYPE:
 		g_value_set_object (value, job->priv->error_type);
+		break;
+	case PROP_TASK_LABEL:
+		g_value_set_string (value, job->priv->task_label);
+		break;
+	case PROP_TASK_DETAIL:
+		if (job->priv->scan_complete == FALSE) {
+			g_value_set_string (value, _("Scanning"));
+		} else {
+			g_value_take_string (value,
+					     g_strdup_printf (_("%d of %d"),
+							      job->priv->processed,
+							      job->priv->total));
+		}
+		break;
+	case PROP_TASK_PROGRESS:
+		if (job->priv->scan_complete == FALSE) {
+			g_value_set_double (value, -1.0);
+		} else if (job->priv->total == 0) {
+			g_value_set_double (value, 0.0);
+		} else {
+			g_value_set_double (value, ((float)job->priv->processed / (float)job->priv->total));
+		}
+		break;
+	case PROP_TASK_OUTCOME:
+		if (job->priv->complete) {
+			g_value_set_enum (value, RB_TASK_OUTCOME_COMPLETE);
+		} else if (g_cancellable_is_cancelled (job->priv->cancel)) {
+			g_value_set_enum (value, RB_TASK_OUTCOME_CANCELLED);
+		} else {
+			g_value_set_enum (value, RB_TASK_OUTCOME_NONE);
+		}
+		break;
+	case PROP_TASK_NOTIFY:
+		g_value_set_boolean (value, job->priv->task_notify);
+		break;
+	case PROP_TASK_CANCELLABLE:
+		g_value_set_boolean (value, TRUE);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -625,7 +715,15 @@ impl_finalize (GObject *object)
 
 	rb_slist_deep_free (job->priv->uri_list);
 
+	g_free (job->priv->task_label);
+
 	G_OBJECT_CLASS (rhythmdb_import_job_parent_class)->finalize (object);
+}
+
+static void
+rhythmdb_import_job_task_progress_init (RBTaskProgressInterface *interface)
+{
+	interface->cancel = task_progress_cancel;
 }
 
 static void
@@ -667,6 +765,13 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 							      "Entry type to use for import error entries added by this job",
 							      RHYTHMDB_TYPE_ENTRY_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_override_property (object_class, PROP_TASK_LABEL, "task-label");
+	g_object_class_override_property (object_class, PROP_TASK_DETAIL, "task-detail");
+	g_object_class_override_property (object_class, PROP_TASK_PROGRESS, "task-progress");
+	g_object_class_override_property (object_class, PROP_TASK_OUTCOME, "task-outcome");
+	g_object_class_override_property (object_class, PROP_TASK_NOTIFY, "task-notify");
+	g_object_class_override_property (object_class, PROP_TASK_CANCELLABLE, "task-cancellable");
 
 	/**
 	 * RhythmDBImportJob::entry-added:

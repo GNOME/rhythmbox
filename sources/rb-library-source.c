@@ -73,6 +73,7 @@
 #include "rb-display-page-menu.h"
 #include "rb-display-page-group.h"
 #include "rb-static-playlist-source.h"
+#include "rb-task-list.h"
 
 #define SOURCE_PAGE		0
 #define IMPORT_DIALOG_PAGE	1
@@ -1763,15 +1764,6 @@ impl_want_uri (RBSource *source, const char *uri)
 }
 
 static void
-import_job_status_changed_cb (RhythmDBImportJob *job, int total, int imported, RBLibrarySource *source)
-{
-	RhythmDBImportJob *head = RHYTHMDB_IMPORT_JOB (source->priv->import_jobs->data);
-	if (job == head) {		/* it was inevitable */
-		rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
-	}
-}
-
-static void
 import_job_complete_cb (RhythmDBImportJob *job, int total, RBLibrarySource *source)
 {
 	rb_debug ("import job complete");
@@ -1786,12 +1778,21 @@ static gboolean
 start_import_job (RBLibrarySource *source)
 {
 	RhythmDBImportJob *job;
+	RBTaskList *tasklist;
+	RBShell *shell;
+
 	source->priv->start_import_job_id = 0;
 
 	rb_debug ("starting import job");
 	job = RHYTHMDB_IMPORT_JOB (source->priv->import_jobs->data);
 
 	rhythmdb_import_job_start (job);
+
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "task-list", &tasklist, NULL);
+	rb_task_list_add_task (tasklist, RB_TASK_PROGRESS (job));
+	g_object_unref (tasklist);
+	g_object_unref (shell);
 
 	return FALSE;
 }
@@ -1807,11 +1808,8 @@ maybe_create_import_job (RBLibrarySource *source)
 					       RHYTHMDB_ENTRY_TYPE_SONG,
 					       RHYTHMDB_ENTRY_TYPE_IGNORE,
 					       RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
+		g_object_set (job, "task-label", _("Adding tracks to the library"), NULL);
 
-		g_signal_connect_object (job,
-					 "status-changed",
-					 G_CALLBACK (import_job_status_changed_cb),
-					 source, 0);
 		g_signal_connect_object (job,
 					 "complete",
 					 G_CALLBACK (import_job_complete_cb),
@@ -1966,13 +1964,11 @@ rb_library_source_sync_child_sources (RBLibrarySource *source)
 static void
 impl_get_status (RBDisplayPage *source, char **text, char **progress_text, float *progress)
 {
-	RB_DISPLAY_PAGE_CLASS (rb_library_source_parent_class)->get_status (source, text, progress_text, progress);
 	RBLibrarySource *lsource = RB_LIBRARY_SOURCE (source);
 
-	if (lsource->priv->import_jobs != NULL) {
-		RhythmDBImportJob *job = RHYTHMDB_IMPORT_JOB (lsource->priv->import_jobs->data);
-		_rb_source_set_import_status (RB_SOURCE (source), job, progress_text, progress);
-	} else if (gtk_notebook_get_current_page (GTK_NOTEBOOK (lsource->priv->notebook)) == IMPORT_DIALOG_PAGE) {
+	RB_DISPLAY_PAGE_CLASS (rb_library_source_parent_class)->get_status (source, text, progress_text, progress);
+
+	if (gtk_notebook_get_current_page (GTK_NOTEBOOK (lsource->priv->notebook)) == IMPORT_DIALOG_PAGE) {
 		g_free (*text);
 		g_object_get (lsource->priv->import_dialog, "status", text, NULL);
 	}

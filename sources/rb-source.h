@@ -37,7 +37,6 @@
 #include <widgets/rb-search-entry.h>
 #include <shell/rb-shell-preferences.h>
 #include <shell/rb-track-transfer-batch.h>
-#include <rhythmdb/rhythmdb-import-job.h>
 
 G_BEGIN_DECLS
 
@@ -201,10 +200,6 @@ void		rb_source_get_playback_status	(RBSource *source,
 gboolean	_rb_source_check_entry_type	(RBSource *source,
 						 RhythmDBEntry *entry);
 
-void		_rb_source_set_import_status	(RBSource *source,
-						 RhythmDBImportJob *job,
-						 char **progress_text,
-						 float *progress);
 void		rb_source_bind_settings		(RBSource *source,
 						 GtkWidget *entry_view,
 						 GtkWidget *paned,

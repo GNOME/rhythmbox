@@ -57,6 +57,7 @@
 #include "rb-missing-plugins.h"
 #include "rb-application.h"
 #include "rb-display-page-menu.h"
+#include "rb-task-list.h"
 
 static void rb_generic_player_device_source_init (RBDeviceSourceInterface *interface);
 static void rb_generic_player_source_transfer_target_init (RBTransferTargetInterface *interface);
@@ -75,7 +76,6 @@ static void impl_get_property (GObject *object,
 static void load_songs (RBGenericPlayerSource *source);
 
 static void impl_delete_thyself (RBDisplayPage *page);
-static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
 static void impl_selected (RBDisplayPage *page);
 
 static gboolean impl_can_paste (RBSource *source);
@@ -169,7 +169,6 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	object_class->dispose = impl_dispose;
 
 	page_class->delete_thyself = impl_delete_thyself;
-	page_class->get_status = impl_get_status;
 	page_class->selected = impl_selected;
 
 	source_class->impl_can_delete = impl_can_delete;
@@ -607,18 +606,11 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 	g_object_unref (priv->import_job);
 	priv->import_job = NULL;
 
-	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
 
 	rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), NULL, FALSE);
 
 	GDK_THREADS_LEAVE ();
-}
-
-static void
-import_status_changed_cb (RhythmDBImportJob *job, int total, int imported, RBGenericPlayerSource *source)
-{
-	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 }
 
 static void
@@ -628,6 +620,10 @@ load_songs (RBGenericPlayerSource *source)
 	RhythmDBEntryType *entry_type;
 	char **audio_folders;
 	char *mount_path;
+	RBShell *shell;
+	RBTaskList *tasklist;
+	char *name;
+	char *label;
 
 	mount_path = rb_generic_player_source_get_mount_path (source);
 	g_object_get (source, "entry-type", &entry_type, NULL);
@@ -636,9 +632,13 @@ load_songs (RBGenericPlayerSource *source)
 	 * load only those folders, otherwise add the whole volume.
 	 */
 	priv->import_job = rhythmdb_import_job_new (priv->db, entry_type, priv->ignore_type, priv->error_type);
+	g_object_get (source, "name", &name, NULL);
+	label = g_strdup_printf (_("Scanning %s"), name);
+	g_object_set (priv->import_job, "task-label", label, NULL);
+	g_free (label);
+	g_free (name);
 
 	g_signal_connect_object (priv->import_job, "complete", G_CALLBACK (import_complete_cb), source, 0);
-	g_signal_connect_object (priv->import_job, "status-changed", G_CALLBACK (import_status_changed_cb), source, 0);
 
 	g_object_get (priv->device_info, "audio-folders", &audio_folders, NULL);
 	if (audio_folders != NULL && g_strv_length (audio_folders) > 0) {
@@ -657,6 +657,12 @@ load_songs (RBGenericPlayerSource *source)
 	g_strfreev (audio_folders);
 
 	rhythmdb_import_job_start (priv->import_job);
+
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "task-list", &tasklist, NULL);
+	rb_task_list_add_task (tasklist, RB_TASK_PROGRESS (priv->import_job));
+	g_object_unref (tasklist);
+	g_object_unref (shell);
 
 	g_object_unref (entry_type);
 	g_free (mount_path);
@@ -708,20 +714,6 @@ rb_generic_player_is_mount_player (GMount *mount, MPIDDevice *device_info)
 	}
 
 	return result;
-}
-
-static void
-impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress)
-{
-	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (page);
-
-	/* get default status text first */
-	RB_DISPLAY_PAGE_CLASS (rb_generic_player_source_parent_class)->get_status (page, text, progress_text, progress);
-
-	/* override with bits of import status */
-	if (priv->import_job != NULL) {
-		_rb_source_set_import_status (RB_SOURCE (page), priv->import_job, progress_text, progress);
-	}
 }
 
 /* code for playlist loading */
