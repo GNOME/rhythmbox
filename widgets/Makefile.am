@@ -17,7 +17,8 @@ widgetinclude_HEADERS =					\
 	rb-fading-image.h				\
 	rb-object-property-editor.h			\
 	rb-import-dialog.h				\
-	rb-button-bar.h
+	rb-button-bar.h					\
+	rb-task-list-display.h
 
 librbwidgets_la_SOURCES =				\
 	$(widgetinclude_HEADERS)			\
@@ -52,7 +53,8 @@ librbwidgets_la_SOURCES =				\
 	rb-fading-image.c				\
 	rb-object-property-editor.c			\
 	rb-import-dialog.c				\
-	rb-button-bar.c
+	rb-button-bar.c					\
+	rb-task-list-display.c
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
