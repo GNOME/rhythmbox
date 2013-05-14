@@ -451,8 +451,6 @@ GValue *	rhythmdb_entry_request_extra_metadata	(RhythmDB *db, RhythmDBEntry *ent
 RBStringValueMap* rhythmdb_entry_gather_metadata	(RhythmDB *db, RhythmDBEntry *entry);
 void		rhythmdb_emit_entry_extra_metadata_notify (RhythmDB *db, RhythmDBEntry *entry, const gchar *property_name, const GValue *metadata);
 
-gboolean	rhythmdb_is_busy			(RhythmDB *db);
-void		rhythmdb_get_progress_info		(RhythmDB *db, char **text, float *progress);
 char *		rhythmdb_compute_status_normal		(gint n_songs, glong duration,
 							 guint64 size,
 							 const char *singular,

@@ -555,8 +555,7 @@ construct_widgets (RBShell *shell)
 	gtk_widget_show (GTK_WIDGET (shell->priv->header));
 	g_settings_bind (shell->priv->settings, "time-display", shell->priv->header, "show-remaining", G_SETTINGS_BIND_DEFAULT);
 
-	shell->priv->statusbar = rb_statusbar_new (shell->priv->db,
-						   shell->priv->track_transfer_queue);
+	shell->priv->statusbar = rb_statusbar_new (shell->priv->db);
 	gtk_widget_show (GTK_WIDGET (shell->priv->statusbar));
 
 	g_signal_connect_object (shell->priv->display_page_tree, "selected",

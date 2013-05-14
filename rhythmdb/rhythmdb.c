@@ -4413,51 +4413,6 @@ rhythmdb_entry_gather_metadata (RhythmDB *db,
 	return metadata;
 }
 
-static gboolean
-queue_is_empty (GAsyncQueue *queue)
-{
-	return g_async_queue_length (queue) <= 0;
-}
-
-/**
- * rhythmdb_is_busy:
- * @db: a #RhythmDB.
- *
- * Checks if the database has events to process.  This probably isn't
- * very useful.
- *
- * Returns: whether the #RhythmDB has events to process.
- */
-gboolean
-rhythmdb_is_busy (RhythmDB *db)
-{
-	return (!db->priv->action_thread_running ||
-		db->priv->stat_thread_running ||
-		!queue_is_empty (db->priv->event_queue) ||
-		!queue_is_empty (db->priv->action_queue) ||
-		(db->priv->outstanding_stats != NULL));
-}
-
-/**
- * rhythmdb_get_progress_info:
- * @db: a #RhythmDB.
- * @text: used to return progress text
- * @progress: used to return progress fraction
- *
- * Provides progress information for rhythmdb operations, if any are running.
- */
-void
-rhythmdb_get_progress_info (RhythmDB *db, char **text, float *progress)
-{
-	if (db->priv->stat_thread_running && db->priv->stat_thread_count > 0) {
-		g_free (*text);
-		*text = g_strdup_printf (_("Checking (%d/%d)"),
-					 db->priv->stat_thread_done,
-					 db->priv->stat_thread_count);
-		*progress = ((float)db->priv->stat_thread_done /
-			     (float)db->priv->stat_thread_count);
-	}
-}
 
 /**
  * rhythmdb_compute_status_normal:
