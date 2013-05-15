@@ -30,6 +30,9 @@ if test -z `which autopoint`; then
         exit 1
 fi
 
+# Need to mkdir -p the m4 directory in case it doesn't exist, to prevent
+# gtkdocize from failing.
+mkdir -p m4
 gtkdocize || exit $?
 autopoint --force
 AUTOPOINT='intltoolize --automake --copy' autoreconf --force --install --verbose
