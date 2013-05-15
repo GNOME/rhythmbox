@@ -489,6 +489,10 @@ playing_entry_changed_cb (RBShellPlayer *player,
 			  RhythmDBEntry *entry,
 			  RBNotificationPlugin *plugin)
 {
+	if (entry == NULL && plugin->notification == NULL) {
+		return;
+	}
+
 	update_current_playing_data (plugin, entry);
 	notify_playing_entry (plugin, FALSE);
 }
@@ -498,6 +502,10 @@ playing_changed_cb (RBShellPlayer *player,
 		    gboolean       playing,
 		    RBNotificationPlugin *plugin)
 {
+	if (playing == FALSE && plugin->notification == NULL) {
+		return;
+	}
+
 	notify_playing_entry (plugin, FALSE);
 }
 
