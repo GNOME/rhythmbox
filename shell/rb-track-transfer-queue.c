@@ -594,7 +594,10 @@ rb_track_transfer_queue_find_batch_by_source (RBTrackTransferQueue *queue, RBSou
 	data.source = source;
 
 	/* check the current batch */
-	find_batches (queue->priv->current, &data);
+	if (queue->priv->current != NULL) {
+		find_batches (queue->priv->current, &data);
+	}
+
 	g_queue_foreach (queue->priv->batch_queue, (GFunc) find_batches, &data);
 	return data.results;
 }
