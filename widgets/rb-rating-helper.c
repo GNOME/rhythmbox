@@ -90,7 +90,7 @@ rb_rating_install_rating_property (GObjectClass *klass, gulong prop)
 }
 
 /**
- * rb_rating_pixbufs_new:
+ * rb_rating_pixbufs_load:
  *
  * Creates and returns a structure holding a set of pixbufs
  * to use to display ratings.
@@ -99,7 +99,7 @@ rb_rating_install_rating_property (GObjectClass *klass, gulong prop)
  * the pixbufs could be loaded.
  */
 RBRatingPixbufs *
-rb_rating_pixbufs_new (void)
+rb_rating_pixbufs_load (void)
 {
 	RBRatingPixbufs *pixbufs;
 	GtkIconTheme *theme;

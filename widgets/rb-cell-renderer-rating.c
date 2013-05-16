@@ -105,6 +105,12 @@ static guint rb_cell_renderer_rating_signals[LAST_SIGNAL] = { 0 };
 static void
 rb_cell_renderer_rating_init (RBCellRendererRating *cellrating)
 {
+	RBCellRendererRatingClass *klass;
+
+	klass = RB_CELL_RENDERER_RATING_GET_CLASS (cellrating);
+	if (klass->priv->pixbufs == NULL) {
+		klass->priv->pixbufs = rb_rating_pixbufs_load ();
+	}
 
 	cellrating->priv = RB_CELL_RENDERER_RATING_GET_PRIVATE (cellrating);
 
@@ -113,7 +119,6 @@ rb_cell_renderer_rating_init (RBCellRendererRating *cellrating)
 		      "mode", GTK_CELL_RENDERER_MODE_ACTIVATABLE,
 		      NULL);
 
-	/* create the needed icons */
 }
 
 static void
@@ -130,7 +135,6 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 	cell_class->activate = rb_cell_renderer_rating_activate;
 
 	class->priv = g_new0 (RBCellRendererRatingClassPrivate, 1);
-	class->priv->pixbufs = rb_rating_pixbufs_new ();
 
 	/**
 	 * RBCellRendererRating:rating:

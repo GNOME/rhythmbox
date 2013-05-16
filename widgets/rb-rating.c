@@ -205,7 +205,7 @@ rb_rating_init (RBRating *rating)
 	rating->priv = RB_RATING_GET_PRIVATE (rating);
 
 	/* create the needed icons */
-	rating->priv->pixbufs = rb_rating_pixbufs_new ();
+	rating->priv->pixbufs = rb_rating_pixbufs_load ();
 	
 	rb_rating_set_accessible_name (GTK_WIDGET (rating), 0.0);
 

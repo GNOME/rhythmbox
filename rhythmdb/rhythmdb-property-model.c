@@ -220,23 +220,6 @@ rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	if (!rhythmdb_property_model_artist_drag_target_list)
-		rhythmdb_property_model_artist_drag_target_list =
-			gtk_target_list_new (targets_artist,
-					     G_N_ELEMENTS (targets_artist));
-	if (!rhythmdb_property_model_album_drag_target_list)
-		rhythmdb_property_model_album_drag_target_list =
-			gtk_target_list_new (targets_album,
-					     G_N_ELEMENTS (targets_album));
-	if (!rhythmdb_property_model_genre_drag_target_list)
-		rhythmdb_property_model_genre_drag_target_list =
-			gtk_target_list_new (targets_genre,
-					     G_N_ELEMENTS (targets_genre));
-	if (!rhythmdb_property_model_location_drag_target_list)
-		rhythmdb_property_model_location_drag_target_list =
-			gtk_target_list_new (targets_location,
-					     G_N_ELEMENTS (targets_location));
-
 	object_class->set_property = rhythmdb_property_model_set_property;
 	object_class->get_property = rhythmdb_property_model_get_property;
 
@@ -484,6 +467,23 @@ rhythmdb_property_model_get_property (GObject *object,
 static void
 rhythmdb_property_model_init (RhythmDBPropertyModel *model)
 {
+	if (!rhythmdb_property_model_artist_drag_target_list)
+		rhythmdb_property_model_artist_drag_target_list =
+			gtk_target_list_new (targets_artist,
+					     G_N_ELEMENTS (targets_artist));
+	if (!rhythmdb_property_model_album_drag_target_list)
+		rhythmdb_property_model_album_drag_target_list =
+			gtk_target_list_new (targets_album,
+					     G_N_ELEMENTS (targets_album));
+	if (!rhythmdb_property_model_genre_drag_target_list)
+		rhythmdb_property_model_genre_drag_target_list =
+			gtk_target_list_new (targets_genre,
+					     G_N_ELEMENTS (targets_genre));
+	if (!rhythmdb_property_model_location_drag_target_list)
+		rhythmdb_property_model_location_drag_target_list =
+			gtk_target_list_new (targets_location,
+					     G_N_ELEMENTS (targets_location));
+
 	model->priv = RHYTHMDB_PROPERTY_MODEL_GET_PRIVATE (model);
 
 	model->priv->stamp = g_random_int ();

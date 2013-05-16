@@ -311,11 +311,6 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	if (!rhythmdb_query_model_drag_target_list)
-		rhythmdb_query_model_drag_target_list
-			= gtk_target_list_new (rhythmdb_query_model_drag_types,
-					       G_N_ELEMENTS (rhythmdb_query_model_drag_types));
-
 	object_class->set_property = rhythmdb_query_model_set_property;
 	object_class->get_property = rhythmdb_query_model_get_property;
 
@@ -669,6 +664,11 @@ rhythmdb_query_model_get_property (GObject *object,
 static void
 rhythmdb_query_model_init (RhythmDBQueryModel *model)
 {
+	if (!rhythmdb_query_model_drag_target_list)
+		rhythmdb_query_model_drag_target_list
+			= gtk_target_list_new (rhythmdb_query_model_drag_types,
+					       G_N_ELEMENTS (rhythmdb_query_model_drag_types));
+
 	model->priv = RHYTHMDB_QUERY_MODEL_GET_PRIVATE (model);
 
 	model->priv->stamp = g_random_int ();

@@ -828,6 +828,9 @@ rb_display_page_model_new (void)
 static void
 rb_display_page_model_init (RBDisplayPageModel *model)
 {
+	if (!drag_target_list) {
+		drag_target_list = gtk_target_list_new (dnd_targets, G_N_ELEMENTS (dnd_targets));
+	}
 }
 
 static void
@@ -894,10 +897,6 @@ rb_display_page_model_class_init (RBDisplayPageModelClass *klass)
 			      G_TYPE_NONE,
 			      2,
 			      RB_TYPE_DISPLAY_PAGE, GTK_TYPE_TREE_ITER);
-
-	if (!drag_target_list) {
-		drag_target_list = gtk_target_list_new (dnd_targets, G_N_ELEMENTS (dnd_targets));
-	}
 }
 
 /**

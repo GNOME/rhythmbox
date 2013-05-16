@@ -45,7 +45,7 @@ double   rb_rating_get_rating_from_widget (GtkWidget *widget,
 					   gint widget_x, gint widget_width,
 					   double current_rating);
 
-RBRatingPixbufs *rb_rating_pixbufs_new (void);
+RBRatingPixbufs *rb_rating_pixbufs_load (void);
 void             rb_rating_pixbufs_free (RBRatingPixbufs *pixbufs);
 
 void   rb_rating_install_rating_property (GObjectClass *klass, gulong prop);
