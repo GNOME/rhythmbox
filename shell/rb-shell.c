@@ -1786,7 +1786,6 @@ rb_shell_window_state_cb (GtkWidget *widget,
 						"maximized",
 						maximised);
 		}
-		rb_shell_sync_window_state (shell, TRUE);
 		rb_shell_sync_paned (shell);
 	}
 
