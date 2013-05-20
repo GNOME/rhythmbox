@@ -58,6 +58,7 @@ static const char *ignored_plugins[] = {
 	"grl-flickr",
 	"grl-optical-media",
 	"grl-podcasts",
+	"grl-raitv",
 	"grl-tracker",
 	"grl-vimeo",
 	"grl-youtube"
