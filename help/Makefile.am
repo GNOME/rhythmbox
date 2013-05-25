@@ -17,4 +17,4 @@ HELP_MEDIA = \
 	figures/rb-window.png			\
 	figures/rb-window-small.png
 
-HELP_LINGUAS = cs da de es el eu fr gl it ja oc pt ro ru sl sv uk zh_CN
+HELP_LINGUAS = ca cs da de es el eu fr gl it ja oc pt ro ru sl sv uk zh_CN
