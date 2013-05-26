@@ -240,6 +240,7 @@ rb_play_queue_source_constructed (GObject *object)
 	GtkCellRenderer *renderer;
 	GtkBuilder *builder;
 	RhythmDBQueryModel *model;
+	GApplication *app;
 	GActionEntry actions[] = {
 		{ "queue-clear", queue_clear_action_cb },
 		{ "queue-shuffle", queue_shuffle_action_cb },
@@ -250,6 +251,7 @@ rb_play_queue_source_constructed (GObject *object)
 
 	RB_CHAIN_GOBJECT_METHOD (rb_play_queue_source_parent_class, constructed, object);
 
+	app = g_application_get_default ();
 	source = RB_PLAY_QUEUE_SOURCE (object);
 	priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
 	db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
@@ -260,7 +262,7 @@ rb_play_queue_source_constructed (GObject *object)
 
 	priv->queue_play_order = rb_queue_play_order_new (RB_SHELL_PLAYER (shell_player));
 
-	g_action_map_add_action_entries (G_ACTION_MAP (g_application_get_default ()),
+	g_action_map_add_action_entries (G_ACTION_MAP (app),
 					 actions,
 					 G_N_ELEMENTS (actions),
 					 source);
@@ -308,6 +310,8 @@ rb_play_queue_source_constructed (GObject *object)
 	builder = rb_builder_load ("queue-popups.ui", NULL);
 	priv->popup = G_MENU_MODEL (gtk_builder_get_object (builder, "queue-source-popup"));
 	priv->sidepane_popup = G_MENU_MODEL (gtk_builder_get_object (builder, "queue-sidepane-popup"));
+	rb_application_link_shared_menus (RB_APPLICATION (app), G_MENU (priv->popup));
+	rb_application_link_shared_menus (RB_APPLICATION (app), G_MENU (priv->sidepane_popup));
 	g_object_ref (priv->popup);
 	g_object_ref (priv->sidepane_popup);
 	g_object_unref (builder);
