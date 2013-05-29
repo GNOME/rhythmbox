@@ -552,7 +552,7 @@ impl_constructed (GObject *object)
 	g_strfreev (locations);
 	g_object_unref (settings);
 
-	g_signal_connect_object (dialog->priv->file_chooser, "current-folder-changed", G_CALLBACK (current_folder_changed_cb), dialog, 0);
+	g_signal_connect_object (dialog->priv->file_chooser, "selection-changed", G_CALLBACK (current_folder_changed_cb), dialog, 0);
 
 	/* not sure why we have to set this, it should be the default */
 	gtk_widget_set_vexpand (gtk_widget_get_parent (dialog->priv->file_chooser), FALSE);
