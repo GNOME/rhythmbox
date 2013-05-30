@@ -140,7 +140,7 @@ task_list_changed_cb (RBListModel *model, int position, int removed, int added, 
 		gtk_grid_attach (GTK_GRID (tw), w, 3, 0, 1, 1);
 
 		gtk_grid_insert_column (GTK_GRID (list), position + i);
-		gtk_grid_attach (GTK_GRID (list), tw, position + i, 0, 1, 1);
+		gtk_grid_attach (GTK_GRID (list), tw, 0, position + i, 1, 1);
 		gtk_widget_show_all (tw);
 		g_array_insert_val (list->priv->widgets, position + i, tw);
 	}
