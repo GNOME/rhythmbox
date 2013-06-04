@@ -269,10 +269,17 @@ add_delete_menu_item (RBShellClipboard *clipboard)
 static void
 setup_add_to_playlist_menu (RBShellClipboard *clipboard)
 {
-	g_clear_object (&clipboard->priv->playlist_menu);
+	GMenuModel *new_menu = NULL;
+
 	if (clipboard->priv->source) {
-		g_object_get (clipboard->priv->source, "playlist-menu", &clipboard->priv->playlist_menu, NULL);
+		g_object_get (clipboard->priv->source, "playlist-menu", &new_menu, NULL);
 	}
+	if (new_menu == clipboard->priv->playlist_menu) {
+		g_clear_object (&new_menu);
+		return;
+	}
+	g_clear_object (&clipboard->priv->playlist_menu);
+	clipboard->priv->playlist_menu = new_menu;
 
 	if (clipboard->priv->playlist_menu) {
 		rb_menu_update_link (clipboard->priv->edit_menu,
