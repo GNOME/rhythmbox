@@ -236,6 +236,7 @@ rb_auto_playlist_source_constructed (GObject *object)
 	GtkAccelGroup *accel_group;
 	GtkWidget *grid;
 	GMenu *section;
+	RBApplication *app = RB_APPLICATION (g_application_get_default ());
 
 	RB_CHAIN_GOBJECT_METHOD (rb_auto_playlist_source_parent_class, constructed, object);
 
@@ -306,6 +307,10 @@ rb_auto_playlist_source_constructed (GObject *object)
 
 	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (songs), priv->paned, GTK_WIDGET (priv->browser));
 	g_object_unref (songs);
+
+	g_object_set (source,
+		      "playlist-menu", rb_application_get_shared_menu (app, "playlist-page-menu"),
+		      NULL);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
 }
