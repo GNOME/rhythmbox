@@ -822,6 +822,7 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field, GValue *ret)
 	const char *tag;
 	GValue gstvalue = {0, };
 	GstClockTime duration;
+	GstDateTime *datetime;
 
 	if (md->priv->info == NULL)
 		return FALSE;
@@ -847,6 +848,31 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field, GValue *ret)
 		} else {
 			return FALSE;
 		}
+
+		break;
+
+	case RB_METADATA_FIELD_DATE:
+		tags = gst_discoverer_info_get_tags (md->priv->info);
+		if (tags == NULL)
+			return FALSE;
+
+		if (gst_tag_list_get_date_time (tags, GST_TAG_DATE_TIME, &datetime) == FALSE) {
+			return FALSE;
+		} else {
+			GDate date;
+
+			g_date_set_dmy (&date,
+					gst_date_time_has_day (datetime) ? gst_date_time_get_day (datetime) : 1,
+					gst_date_time_has_month (datetime) ? gst_date_time_get_month (datetime) : 1,
+					gst_date_time_get_year (datetime));
+
+			g_value_init (ret, G_TYPE_ULONG);
+			g_value_set_ulong (ret, g_date_get_julian (&date));
+
+			gst_date_time_unref (datetime);
+			return TRUE;
+		}
+		break;
 	default:
 		break;
 	}
@@ -860,7 +886,6 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field, GValue *ret)
 	if (tag == NULL) {
 		return FALSE;
 	}
-
 
 	if (rb_metadata_get_field_type (field) == G_TYPE_STRING) {
 		char *str = NULL;
@@ -909,19 +934,45 @@ rb_metadata_get_media_type (RBMetaData *md)
 gboolean
 rb_metadata_set (RBMetaData *md, RBMetaDataField field, const GValue *val)
 {
+	const char *tag;
+
 	/* don't write this out */
 	if (field == RB_METADATA_FIELD_DURATION)
 		return TRUE;
 
-	if (field == RB_METADATA_FIELD_DATE && g_value_get_ulong (val) == 0) {
-		/* we should ask gstreamer to remove the tag,
-		 * but there is no easy way of doing so
-		 */
+	tag = rb_metadata_gst_field_to_gst_tag (field);
+	if (field == RB_METADATA_FIELD_DATE) {
+	       	if (g_value_get_ulong (val) == 0) {
+			/* we should ask gstreamer to remove the tag,
+			 * but there is no easy way of doing so
+			 */
+		} else {
+			GstDateTime *datetime;
+			GDate date;
+			GValue newval = {0,};
+			g_value_init (&newval, GST_TYPE_DATE_TIME);
+
+			g_date_set_julian (&date, g_value_get_ulong (val));
+			datetime = gst_date_time_new (0.0,
+				       		      g_date_get_year (&date),
+						      g_date_get_month (&date),
+						      g_date_get_day (&date),
+					      	      0, 0, 0);
+			g_value_take_boxed (&newval, datetime);
+
+			if (md->priv->tags == NULL) {
+				md->priv->tags = gst_tag_list_new_empty ();
+			}
+
+			gst_tag_list_add_values (md->priv->tags,
+						 GST_TAG_MERGE_APPEND,
+						 tag, &newval,
+						 NULL);
+			g_value_unset (&newval);
+		}
 	} else {
-		const char *tag;
 		GValue newval = {0,};
 
-		tag = rb_metadata_gst_field_to_gst_tag (field);
 		g_value_init (&newval, gst_tag_get_type (tag));
 		if (g_value_transform (val, &newval)) {
 			rb_debug ("Setting %s",tag);

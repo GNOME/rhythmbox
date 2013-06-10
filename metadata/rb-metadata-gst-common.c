@@ -46,7 +46,7 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return RB_METADATA_FIELD_ARTIST;
 	else if (!strcmp (tag, GST_TAG_ALBUM))
 		return RB_METADATA_FIELD_ALBUM;
-	else if (!strcmp (tag, GST_TAG_DATE))
+	else if (!strcmp (tag, GST_TAG_DATE_TIME))
 		return RB_METADATA_FIELD_DATE;
 	else if (!strcmp (tag, GST_TAG_GENRE))
 		return RB_METADATA_FIELD_GENRE;
@@ -128,7 +128,7 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 	case RB_METADATA_FIELD_ALBUM:
 		return GST_TAG_ALBUM;
 	case RB_METADATA_FIELD_DATE:
-		return GST_TAG_DATE;
+		return GST_TAG_DATE_TIME;
 	case RB_METADATA_FIELD_GENRE:
 		return GST_TAG_GENRE;
 	case RB_METADATA_FIELD_COMMENT:
