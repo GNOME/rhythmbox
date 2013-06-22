@@ -1279,9 +1279,6 @@ rb_entry_view_get_column (RBEntryView *view, RBEntryViewColumn coltype)
 	case RB_ENTRY_VIEW_COL_ARTIST:
 		propid = RHYTHMDB_PROP_ARTIST;
 		break;
-	case RB_ENTRY_VIEW_COL_COMPOSER:
-		propid = RHYTHMDB_PROP_COMPOSER;
-		break;
 	case RB_ENTRY_VIEW_COL_ALBUM:
 		propid = RHYTHMDB_PROP_ALBUM;
 		break;
@@ -1318,8 +1315,14 @@ rb_entry_view_get_column (RBEntryView *view, RBEntryViewColumn coltype)
 	case RB_ENTRY_VIEW_COL_LOCATION:
 		propid = RHYTHMDB_PROP_LOCATION;
 		break;
+	case RB_ENTRY_VIEW_COL_BPM:
+		propid = RHYTHMDB_PROP_BPM;
+		break;
 	case RB_ENTRY_VIEW_COL_ERROR:
 		propid = RHYTHMDB_PROP_PLAYBACK_ERROR;
+		break;
+	case RB_ENTRY_VIEW_COL_COMPOSER:
+		propid = RHYTHMDB_PROP_COMPOSER;
 		break;
 	default:
 		g_assert_not_reached ();
@@ -2593,7 +2596,6 @@ rb_entry_view_column_get_type (void)
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_TRACK_NUMBER, "track-number"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_TITLE, "title"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_ARTIST, "artist"),
-			ENUM_ENTRY (RB_ENTRY_VIEW_COL_COMPOSER, "composer"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_ALBUM, "album"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_GENRE, "genre"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_COMMENT, "comment"),
@@ -2608,6 +2610,7 @@ rb_entry_view_column_get_type (void)
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_LOCATION, "location"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_BPM, "bpm"),
 			ENUM_ENTRY (RB_ENTRY_VIEW_COL_ERROR, "error"),
+			ENUM_ENTRY (RB_ENTRY_VIEW_COL_COMPOSER, "composer"),
 			{ 0, 0, 0 }
 		};
 
