@@ -36,7 +36,6 @@
 #include "rb-play-queue-source.h"
 #include "rb-playlist-xml.h"
 #include "rb-song-info.h"
-#include "rb-stock-icons.h"
 #include "rb-util.h"
 #include "rb-debug.h"
 #include "rb-play-order-queue.h"

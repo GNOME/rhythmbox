@@ -95,12 +95,6 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 
 		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
 
-		theme = Gtk.IconTheme.get_default()
-		rb.append_plugin_source_path(theme, "/icons")
-
-		what, width, height = Gtk.icon_size_lookup(Gtk.IconSize.LARGE_TOOLBAR)
-		icon = rb.try_load_icon(theme, "magnatune", width, 0)
-
 		app = Gio.Application.get_default()
 		action = Gio.SimpleAction(name="magnatune-album-download")
 		action.connect("activate", self.download_album_action_cb)
@@ -117,10 +111,11 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 
 		group = RB.DisplayPageGroup.get_by_id ("stores")
 		settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
+		iconfile = Gio.File.new_for_path(rb.find_plugin_file(self, "magnatune-symbolic.svg"))
 		self.source = GObject.new(MagnatuneSource,
 					  shell=shell,
 					  entry_type=self.entry_type,
-					  pixbuf=icon,
+					  icon=Gio.FileIcon.new(iconfile),
 					  plugin=self,
 					  settings=settings.get_child("source"),
 					  name=_("Magnatune"),

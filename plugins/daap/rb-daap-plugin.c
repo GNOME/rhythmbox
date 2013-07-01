@@ -104,9 +104,6 @@ struct _RBDaapPlugin
 	GSettings *settings;
 	GSettings *dacp_settings;
 
-	GdkPixbuf *daap_share_pixbuf;
-	GdkPixbuf *daap_share_locked_pixbuf;
-
 	GDBusConnection *bus;
 	guint dbus_intf_id;
 };
@@ -123,7 +120,6 @@ static void rb_daap_plugin_init (RBDaapPlugin *plugin);
 
 static void new_share_action_cb (GSimpleAction *, GVariant *, gpointer);
 
-static void create_pixbufs (RBDaapPlugin *plugin);
 static void start_browsing (RBDaapPlugin *plugin);
 static void stop_browsing (RBDaapPlugin *plugin);
 static void settings_changed_cb (GSettings *settings,
@@ -190,8 +186,6 @@ impl_activate (PeasActivatable *bplugin)
 		start_browsing (plugin);
 	}
 
-	create_pixbufs (plugin);
-
 	app = g_application_get_default ();
 	plugin->new_share_action = g_simple_action_new ("daap-new-share", NULL);
 	g_signal_connect (plugin->new_share_action, "activate", G_CALLBACK (new_share_action_cb), plugin);
@@ -252,16 +246,6 @@ impl_deactivate	(PeasActivatable *bplugin)
 
 	g_object_unref (plugin->dacp_share);
 
-	if (plugin->daap_share_pixbuf != NULL) {
-		g_object_unref (plugin->daap_share_pixbuf);
-		plugin->daap_share_pixbuf = NULL;
-	}
-
-	if (plugin->daap_share_locked_pixbuf != NULL) {
-		g_object_unref (plugin->daap_share_locked_pixbuf);
-		plugin->daap_share_locked_pixbuf = NULL;
-	}
-
 	if (plugin->preferences) {
 		gtk_widget_destroy (plugin->preferences);
 		plugin->preferences = NULL;
@@ -282,102 +266,16 @@ impl_deactivate	(PeasActivatable *bplugin)
 
 /* DAAP share icons */
 
-static GdkPixbuf *
-composite_icons (const GdkPixbuf *src1,
-		 const GdkPixbuf *src2)
-{
-	GdkPixbuf *dest;
-	GdkPixbuf *scaled;
-	gint       w1, w2, h1, h2;
-	gint       dest_x, dest_y;
-	gboolean   do_scale;
-
-	if (! src1) {
-		return NULL;
-	}
-
-	dest = gdk_pixbuf_copy (src1);
-
-	if (! src2) {
-		return dest;
-	}
-
-	w1 = gdk_pixbuf_get_width (src1);
-	h1 = gdk_pixbuf_get_height (src1);
-	w2 = gdk_pixbuf_get_width (src2);
-	h2 = gdk_pixbuf_get_height (src2);
-
-	do_scale = ((float)w1 * 0.8) < w2;
-
-	/* scale the emblem down if it will obscure the entire bottom image */
-	if (do_scale) {
-		scaled = gdk_pixbuf_scale_simple (src2, w1 / 2, h1 / 2, GDK_INTERP_BILINEAR);
-	} else {
-		scaled = (GdkPixbuf *)src2;
-	}
-
-	w2 = gdk_pixbuf_get_width (scaled);
-	h2 = gdk_pixbuf_get_height (scaled);
-
-	dest_x = w1 - w2;
-	dest_y = h1 - h2;
-
-	gdk_pixbuf_composite (scaled, dest,
-			      dest_x, dest_y,
-			      w2, h2,
-			      dest_x, dest_y,
-			      1.0, 1.0,
-			      GDK_INTERP_BILINEAR, 0xFF);
-
-	if (do_scale) {
-		g_object_unref (scaled);
-	}
-
-	return dest;
-}
-
-static void
-create_pixbufs (RBDaapPlugin *plugin)
-{
-	GdkPixbuf    *emblem;
-	GtkIconTheme *theme;
-	gint          size;
-
-	theme = gtk_icon_theme_get_default ();
-
-	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-	plugin->daap_share_pixbuf =
-		gtk_icon_theme_load_icon (theme, "gnome-fs-network", size, 0, NULL);
-
-	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &size, NULL);
-	emblem = gtk_icon_theme_load_icon (theme, "stock_lock", size, 0, NULL);
-
-	plugin->daap_share_locked_pixbuf = composite_icons (plugin->daap_share_pixbuf, emblem);
-
-	if (emblem != NULL) {
-		g_object_unref (emblem);
-	}
-}
-
-GdkPixbuf *
+GIcon *
 rb_daap_plugin_get_icon (RBDaapPlugin *plugin,
 			 gboolean password_protected,
 			 gboolean connected)
 {
-	GdkPixbuf *icon;
-
-	g_return_val_if_fail (plugin->daap_share_pixbuf != NULL, NULL);
-	g_return_val_if_fail (plugin->daap_share_locked_pixbuf != NULL, NULL);
-
-	if (password_protected == FALSE) {
-		icon = g_object_ref (plugin->daap_share_pixbuf);
-	} else if (connected) {
-		icon = g_object_ref (plugin->daap_share_pixbuf);
+	if (connected || (password_protected == FALSE)) {
+		return g_themed_icon_new ("folder-remote-symbolic");
 	} else {
-		icon = g_object_ref (plugin->daap_share_locked_pixbuf);
+		return g_themed_icon_new ("dialog-password-symbolic");
 	}
-
-	return icon;
 }
 
 /* mDNS browsing */

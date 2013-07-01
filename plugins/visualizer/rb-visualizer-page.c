@@ -63,26 +63,14 @@ RBVisualizerPage *
 rb_visualizer_page_new (GObject *plugin, RBShell *shell, GSimpleAction *fullscreen, GMenuModel *popup)
 {
 	GObject *page;
-	GdkPixbuf *pixbuf;
-	gint size;
-
-	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					   "visualization",
-					   size,
-					   0, NULL);
-
 	page = g_object_new (RB_TYPE_VISUALIZER_PAGE,
 			     "plugin", plugin,
 			     "shell", shell,
 			     "name", _("Visual Effects"),
-			     "pixbuf", pixbuf,
 			     "fullscreen-action", fullscreen,
 			     "popup", popup,
 			     NULL);
-	if (pixbuf != NULL) {
-		g_object_unref (pixbuf);
-	}
+	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (page), "video-display-symbolic");
 
 	return RB_VISUALIZER_PAGE (page);
 }

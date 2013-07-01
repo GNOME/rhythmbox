@@ -38,7 +38,6 @@
 #include "rb-library-browser.h"
 #include "rb-util.h"
 #include "rb-debug.h"
-#include "rb-stock-icons.h"
 #include "rb-playlist-xml.h"
 #include "rb-source-search-basic.h"
 #include "rb-source-toolbar.h"
@@ -129,8 +128,6 @@ struct _RBAutoPlaylistSourcePrivate
 	GAction *search_action;
 };
 
-static gpointer playlist_pixbuf = NULL;
-
 G_DEFINE_TYPE (RBAutoPlaylistSource, rb_auto_playlist_source, RB_TYPE_PLAYLIST_SOURCE)
 #define GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_AUTO_PLAYLIST_SOURCE, RBAutoPlaylistSourcePrivate))
 
@@ -162,29 +159,6 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 	g_object_class_override_property (object_class, PROP_SHOW_BROWSER, "show-browser");
 
 	g_type_class_add_private (klass, sizeof (RBAutoPlaylistSourcePrivate));
-}
-
-static void
-set_playlist_pixbuf (RBAutoPlaylistSource *source)
-{
-	if (playlist_pixbuf == NULL) {
-		gint size;
-
-		gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-		playlist_pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-							    RB_STOCK_AUTO_PLAYLIST,
-							    size,
-							    0, NULL);
-		if (playlist_pixbuf) {
-			g_object_add_weak_pointer (playlist_pixbuf,
-						   (gpointer *) &playlist_pixbuf);
-
-			g_object_set (source, "pixbuf", playlist_pixbuf, NULL);
-			g_object_unref (playlist_pixbuf);
-		}
-	} else {
-		g_object_set (source, "pixbuf", playlist_pixbuf, NULL);
-	}
 }
 
 static void
@@ -245,7 +219,7 @@ rb_auto_playlist_source_constructed (GObject *object)
 
 	priv->paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
 
-	set_playlist_pixbuf (source);
+	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "folder-saved-search-symbolic");
 
 	g_object_get (RB_PLAYLIST_SOURCE (source), "entry-type", &entry_type, NULL);
 	priv->browser = rb_library_browser_new (rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source)),

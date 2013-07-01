@@ -156,20 +156,9 @@ rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
 static void
 rb_import_errors_source_init (RBImportErrorsSource *source)
 {
-	gint size;
-	GdkPixbuf *pixbuf;
-
 	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source, RB_TYPE_IMPORT_ERRORS_SOURCE, RBImportErrorsSourcePrivate);
 
-	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					   "dialog-error",
-					   size,
-					   0, NULL);
-	g_object_set (source, "pixbuf", pixbuf, NULL);
-	if (pixbuf != NULL) {
-		g_object_unref (pixbuf);
-	}
+	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "dialog-error-symbolic");
 }
 
 static void

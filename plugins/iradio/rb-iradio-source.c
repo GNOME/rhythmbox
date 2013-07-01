@@ -38,7 +38,6 @@
 #include "rb-iradio-source-search.h"
 
 #include "rhythmdb-query-model.h"
-#include "rb-stock-icons.h"
 #include "rb-entry-view.h"
 #include "rb-property-view.h"
 #include "rb-util.h"
@@ -56,10 +55,6 @@
 #include "rb-source-toolbar.h"
 #include "rb-builder-helpers.h"
 #include "rb-application.h"
-
-/* icon names */
-#define IRADIO_SOURCE_ICON  "library-internet-radio"
-#define IRADIO_NEW_STATION_ICON "internet-radio-new"
 
 typedef struct _RhythmDBEntryType RBIRadioEntryType;
 typedef struct _RhythmDBEntryTypeClass RBIRadioEntryTypeClass;
@@ -273,8 +268,6 @@ rb_iradio_source_constructed (GObject *object)
 	GtkAccelGroup *accel_group;
 	GtkWidget *grid;
 	GtkWidget *paned;
-	gint size;
-	GdkPixbuf *pixbuf;
 	GActionEntry actions[] = {
 		{ "iradio-new-station", new_station_action_cb },
 	};
@@ -292,15 +285,7 @@ rb_iradio_source_constructed (GObject *object)
 		      NULL);
 	g_object_unref (shell);
 
-	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					   IRADIO_SOURCE_ICON,
-					   size,
-					   0, NULL);
-	g_object_set (source, "pixbuf", pixbuf, NULL);
-	if (pixbuf != NULL) {
-		g_object_unref (pixbuf);
-	}
+	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "network-server-symbolic");
 
 	settings = g_settings_new ("org.gnome.rhythmbox.plugins.iradio");
 	if (g_settings_get_boolean (settings, "initial-stations-loaded") == FALSE) {

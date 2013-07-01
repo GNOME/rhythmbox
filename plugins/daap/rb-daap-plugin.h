@@ -46,7 +46,7 @@ typedef struct _RBDaapPluginClass RBDaapPluginClass;
 
 GType		rb_daap_plugin_get_type		(void);
 
-GdkPixbuf *	rb_daap_plugin_get_icon 	(RBDaapPlugin *plugin,
+GIcon *		rb_daap_plugin_get_icon 	(RBDaapPlugin *plugin,
 					 	 gboolean password_protected,
 					 	 gboolean connected);
 

@@ -423,17 +423,9 @@ RBSource *
 rb_library_source_new (RBShell *shell)
 {
 	RBSource *source;
-	GdkPixbuf *icon;
 	GSettings *settings;
 	GtkBuilder *builder;
 	GMenu *toolbar;
-	gint size;
-
-	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-	icon = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					 "audio-x-generic",
-					 size,
-					 0, NULL);
 	settings = g_settings_new ("org.gnome.rhythmbox.library");
 
 	builder = rb_builder_load ("library-toolbar.ui", NULL);
@@ -444,14 +436,11 @@ rb_library_source_new (RBShell *shell)
 					  "name", _("Music"),
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
 					  "shell", shell,
-					  "pixbuf", icon,
 					  "populate", FALSE,		/* wait until the database is loaded */
 					  "toolbar-menu", toolbar,
 					  "settings", g_settings_get_child (settings, "source"),
 					  NULL));
-	if (icon != NULL) {
-		g_object_unref (icon);
-	}
+	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "folder-music-symbolic");
 	g_object_unref (settings);
 	g_object_unref (builder);
 
@@ -1899,7 +1888,7 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 	GPtrArray *query;
 	RBShell *shell;
 	char *name;
-	GdkPixbuf *icon;
+	GIcon *icon;
 	RhythmDBEntryType *entry_type;
 	char *sort_column;
 	int sort_order;
@@ -1910,7 +1899,7 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 		      "shell", &shell,
 		      "entry-type", &entry_type,
 		      "playlist-menu", &playlist_menu,
-		      "pixbuf", &icon,
+		      "icon", &icon,
 		      NULL);
 
 	file = g_file_new_for_uri (path);
@@ -1932,7 +1921,7 @@ rb_library_source_add_child_source (const char *path, RBLibrarySource *library_s
 	g_free (sort_column);
 
 	g_object_set (source,
-		      "pixbuf", icon,
+		      "icon", icon,
 		      "playlist-menu", playlist_menu,
 		      NULL);
 

@@ -440,6 +440,7 @@ rb_grilo_source_new (GObject *plugin, GrlSource *grilo_source)
 			       "grilo-source", grilo_source,
 			       NULL);
 	g_object_unref (settings);
+	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "network-server-symbolic");
 
 	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
 

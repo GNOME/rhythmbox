@@ -49,7 +49,6 @@
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
 #include "rb-shell-player.h"
-#include "rb-stock-icons.h"
 #include "rb-entry-view.h"
 #include "rb-property-view.h"
 #include "rb-util.h"
@@ -1026,24 +1025,9 @@ rb_podcast_source_new (RBShell *shell,
 					  "settings", g_settings_get_child (settings, "source"),
 					  "toolbar-menu", toolbar,
 					  NULL));
+	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), icon_name);
 	g_object_unref (settings);
 	g_object_unref (builder);
-
-	if (icon_name != NULL) {
-		GdkPixbuf *pixbuf;
-		gint size;
-
-		gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-						   icon_name,
-						   size,
-						   0, NULL);
-
-		if (pixbuf != NULL) {
-			g_object_set (source, "pixbuf", pixbuf, NULL);
-			g_object_unref (pixbuf);
-		}
-	}
 
 	return source;
 }

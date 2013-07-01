@@ -73,15 +73,13 @@ plugin_DATA =							\
 	$(NULL)
 
 plugindata_DATA = 						\
-	$(top_srcdir)/plugins/audioscrobbler/Last.fm-icon.png	\
-	$(top_srcdir)/plugins/audioscrobbler/Libre.fm-icon.png	\
+	$(top_srcdir)/plugins/audioscrobbler/Last.fm-symbolic.svg	\
 	$(NULL)
 
 EXTRA_DIST = 					\
 	$(plugin_in_files)			\
 	$(gtkbuilder_DATA)			\
-	$(top_srcdir)/plugins/audioscrobbler/Last.fm-icon.png		\
-	$(top_srcdir)/plugins/audioscrobbler/Libre.fm-icon.png		\
+	$(top_srcdir)/plugins/audioscrobbler/Last.fm-symbolic.svg		\
 	$(NULL)
 
 CLEANFILES = 			\

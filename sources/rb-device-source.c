@@ -332,7 +332,6 @@ rb_device_source_set_display_details (RBDeviceSource *source)
 	GVolume *volume = NULL;
 	GIcon *icon = NULL;
 	char *display_name;
-	GdkPixbuf *pixbuf = NULL;
 
 	if (g_object_class_find_property (G_OBJECT_GET_CLASS (source), "volume")) {
 		g_object_get (source, "volume", &volume, NULL);
@@ -352,58 +351,23 @@ rb_device_source_set_display_details (RBDeviceSource *source)
 
 	if (mount != NULL) {
 		display_name = g_mount_get_name (mount);
-		icon = g_mount_get_icon (mount);
+		icon = g_mount_get_symbolic_icon (mount);
 		rb_debug ("details from mount: display name = %s, icon = %p", display_name, icon);
 	} else if (volume != NULL) {
 		display_name = g_volume_get_name (volume);
-		icon = g_volume_get_icon (volume);
+		icon = g_volume_get_symbolic_icon (volume);
 		rb_debug ("details from volume: display name = %s, icon = %p", display_name, icon);
 	} else {
 		display_name = g_strdup ("Unknown Device");
-		icon = g_themed_icon_new ("multimedia-player");
+		icon = g_themed_icon_new ("multimedia-player-symbolic");
 	}
 
-	g_object_set (source, "name", display_name, NULL);
+	g_object_set (source, "name", display_name, "icon", icon, NULL);
 	g_free (display_name);
 
-	if (icon == NULL) {
-		rb_debug ("no icon set");
-		pixbuf = NULL;
-	} else if (G_IS_THEMED_ICON (icon)) {
-		GtkIconTheme *theme;
-		const char * const *names;
-		gint size;
-		int i;
-
-		theme = gtk_icon_theme_get_default ();
-		gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-
-		i = 0;
-		names = g_themed_icon_get_names (G_THEMED_ICON (icon));
-		while (names[i] != NULL && pixbuf == NULL) {
-			rb_debug ("looking up themed icon: %s", names[i]);
-			pixbuf = gtk_icon_theme_load_icon (theme, names[i], size, 0, NULL);
-			i++;
-		}
-
-	} else if (G_IS_LOADABLE_ICON (icon)) {
-		rb_debug ("loading of GLoadableIcons is not implemented yet");
-		pixbuf = NULL;
-	}
-
-	if (pixbuf != NULL) {
-		g_object_set (source, "pixbuf", pixbuf, NULL);
-		g_object_unref (pixbuf);
-	}
-	if (mount != NULL) {
-		g_object_unref (mount);
-	}
-	if (volume != NULL) {
-		g_object_unref (volume);
-	}
-	if (icon != NULL) {
-		g_object_unref (icon);
-	}
+	g_clear_object (&mount);
+	g_clear_object (&volume);
+	g_clear_object (&icon);
 }
 
 static void

@@ -54,7 +54,6 @@
 #include "rb-library-browser.h"
 #include "rb-util.h"
 #include "rb-debug.h"
-#include "rb-stock-icons.h"
 #include "rb-file-helpers.h"
 #include "rb-playlist-xml.h"
 #include "rb-source-search-basic.h"
@@ -147,8 +146,6 @@ typedef struct
 
 } RBStaticPlaylistSourcePrivate;
 
-static gpointer playlist_pixbuf = NULL;
-
 static void
 rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 {
@@ -186,30 +183,6 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 					  "show-browser");
 
 	g_type_class_add_private (klass, sizeof (RBStaticPlaylistSourcePrivate));
-}
-
-static void
-set_playlist_pixbuf (RBStaticPlaylistSource *source)
-{
-	if (playlist_pixbuf == NULL) {
-		gint size;
-		gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-		playlist_pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-							    RB_STOCK_PLAYLIST,
-							    size,
-							    0, NULL);
-		if (playlist_pixbuf) {
-			g_object_add_weak_pointer (playlist_pixbuf,
-					   (gpointer *) &playlist_pixbuf);
-
-			g_object_set (source, "pixbuf", playlist_pixbuf, NULL);
-
-			/* drop the initial reference to the icon */
-			g_object_unref (playlist_pixbuf);
-		}
-	} else {
-		g_object_set (source, "pixbuf", playlist_pixbuf, NULL);
-	}
 }
 
 static void
@@ -269,7 +242,7 @@ rb_static_playlist_source_constructed (GObject *object)
 	priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
 	psource = RB_PLAYLIST_SOURCE (source);
 
-	set_playlist_pixbuf (source);
+	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "folder-documents-symbolic");
 
 	priv->base_model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (psource));
 	g_object_set (priv->base_model, "show-hidden", TRUE, NULL);

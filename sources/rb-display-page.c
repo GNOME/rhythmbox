@@ -45,7 +45,7 @@ G_DEFINE_ABSTRACT_TYPE (RBDisplayPage, rb_display_page, GTK_TYPE_HBOX)
  * display pages too.
  *
  * The display page object itself is the widget shown in the main display area.
- * The pixbuf and name properties control its appearance in the display page
+ * The icon and name properties control its appearance in the display page
  * tree, and its location is determined by its parent display page, the sorting
  * rules for its source group (if any), and insertion order.  The visibility property
  * controls whether the display page is actually shown in the display page tree at all.
@@ -56,7 +56,7 @@ struct _RBDisplayPagePrivate
 	char *name;
 	gboolean visible;
 	gboolean selected;
-	GdkPixbuf *pixbuf;
+	GIcon *icon;
 	RBDisplayPage *parent;
 
 	GObject *plugin;
@@ -72,7 +72,7 @@ enum
 	PROP_0,
 	PROP_SHELL,
 	PROP_NAME,
-	PROP_PIXBUF,
+	PROP_ICON,
 	PROP_VISIBLE,
 	PROP_PARENT,
 	PROP_PLUGIN,
@@ -437,6 +437,23 @@ _rb_add_display_page_actions (GActionMap *map, GObject *shell, const GActionEntr
 	}
 }
 
+/**
+ * rb_display_page_set_icon_name:
+ * @page: a #RBDisplayPage
+ * @icon_name: icon name to use
+ *
+ * Sets the icon for the page to the specified icon name.
+ */
+void
+rb_display_page_set_icon_name (RBDisplayPage *page, const char *icon_name)
+{
+	GIcon *icon;
+
+	icon = g_themed_icon_new (icon_name);
+	g_object_set (page, "icon", icon, NULL);
+	g_object_unref (icon);
+}
+
 static void
 impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -449,8 +466,8 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 	case PROP_NAME:
 		g_value_set_string (value, page->priv->name);
 		break;
-	case PROP_PIXBUF:
-		g_value_set_object (value, page->priv->pixbuf);
+	case PROP_ICON:
+		g_value_set_object (value, page->priv->icon);
 		break;
 	case PROP_VISIBLE:
 		g_value_set_boolean (value, page->priv->visible);
@@ -483,11 +500,9 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 		g_free (page->priv->name);
 		page->priv->name = g_value_dup_string (value);
 		break;
-	case PROP_PIXBUF:
-		if (page->priv->pixbuf) {
-			g_object_unref (page->priv->pixbuf);
-		}
-		page->priv->pixbuf = g_value_dup_object (value);
+	case PROP_ICON:
+		g_clear_object (&page->priv->icon);
+		page->priv->icon = g_value_dup_object (value);
 		break;
 	case PROP_VISIBLE:
 		page->priv->visible = g_value_get_boolean (value);
@@ -529,10 +544,7 @@ impl_dispose (GObject *object)
 	page = RB_DISPLAY_PAGE (object);
 
 	rb_debug ("Disposing page %s", page->priv->name);
-	if (page->priv->pixbuf != NULL) {
-		g_object_unref (page->priv->pixbuf);
-		page->priv->pixbuf = NULL;
-	}
+	g_clear_object (&page->priv->icon);
 
 	G_OBJECT_CLASS (rb_display_page_parent_class)->dispose (object);
 }
@@ -601,16 +613,16 @@ rb_display_page_class_init (RBDisplayPageClass *klass)
 							      NULL,
 							      G_PARAM_READWRITE));
 	/**
-	 * RBDisplayPage:pixbuf:
+	 * RBDisplayPage:icon:
 	 *
-	 * Pixbuf to display in the page tree
+	 * Icon to display in the page tree
 	 */
 	g_object_class_install_property (object_class,
-					 PROP_PIXBUF,
-					 g_param_spec_object ("pixbuf",
-							      "Pixbuf",
-							      "Page pixbuf",
-							      GDK_TYPE_PIXBUF,
+					 PROP_ICON,
+					 g_param_spec_object ("icon",
+							      "Icon",
+							      "Page icon",
+							      G_TYPE_ICON,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 	/**
 	 * RBDisplayPage:visibility:

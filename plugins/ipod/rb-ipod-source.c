@@ -53,7 +53,6 @@
 #include "rb-playlist-manager.h"
 #include "rb-podcast-manager.h"
 #include "rb-podcast-entry-types.h"
-#include "rb-stock-icons.h"
 #include "rb-gst-media-types.h"
 #include "rb-transfer-target.h"
 #include "rb-ext-db.h"
@@ -679,24 +678,6 @@ ipod_path_to_uri (const char *mount_point, const char *ipod_path)
  	return uri;
 }
 
-static void
-set_podcast_icon (RBIpodStaticPlaylistSource *source)
-{
-	GdkPixbuf *pixbuf;
-	gint       size;
-
-	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					   RB_STOCK_PODCAST,
-					   size,
-					   0, NULL);
-
-	if (pixbuf != NULL) {
-		g_object_set (source, "pixbuf", pixbuf, NULL);
-		g_object_unref (pixbuf);
-	}
-}
-
 static RBIpodStaticPlaylistSource *
 add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 {
@@ -745,7 +726,7 @@ add_rb_playlist (RBiPodSource *source, Itdb_Playlist *playlist)
 
 	if (itdb_playlist_is_podcasts(playlist)) {
 		priv->podcast_pl = playlist_source;
-		set_podcast_icon (playlist_source);
+		rb_display_page_set_icon_name (RB_DISPLAY_PAGE (playlist_source), "application-rss+xml-symbolic");
 	}
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (playlist_source), RB_DISPLAY_PAGE (source));
 	g_object_unref (shell);

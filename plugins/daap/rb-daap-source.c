@@ -42,7 +42,6 @@
 #include "rhythmdb.h"
 #include "rb-shell.h"
 #include "rb-daap-source.h"
-#include "rb-stock-icons.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
@@ -325,7 +324,7 @@ rb_daap_source_new (RBShell *shell,
 {
 	RBSource *source;
 	RhythmDBEntryType *entry_type;
-	GdkPixbuf *icon;
+	GIcon *icon;
 	RhythmDB *db;
 	char *entry_type_name;
 	GSettings *settings;
@@ -358,7 +357,7 @@ rb_daap_source_new (RBShell *shell,
 					  "host", host,
 					  "port", port,
 					  "entry-type", entry_type,
-					  "pixbuf", icon,
+					  "icon", icon,
 					  "shell", shell,
 					  "visibility", TRUE,
 					  "password-protected", password_protected,
@@ -369,10 +368,7 @@ rb_daap_source_new (RBShell *shell,
 					  NULL));
 	g_object_unref (settings);
 	g_object_unref (builder);
-
-	if (icon != NULL) {
-		g_object_unref (icon);
-	}
+	g_object_unref (icon);
 
 	rb_shell_register_entry_type_for_source (shell, source, entry_type);
 
@@ -526,8 +522,8 @@ connection_connecting_cb (DMAPConnection       *connection,
 			  float		        progress,
 			  RBDAAPSource         *source)
 {
-	GdkPixbuf *icon;
-	gboolean   is_connected;
+	GIcon *icon;
+	gboolean is_connected;
 	GObject *plugin;
 
 	rb_debug ("DAAP connection status: %d/%f", state, progress);
@@ -564,11 +560,8 @@ connection_connecting_cb (DMAPConnection       *connection,
 	icon = rb_daap_plugin_get_icon (RB_DAAP_PLUGIN (plugin),
 					source->priv->password_protected,
 					is_connected);
-	g_object_set (source, "pixbuf", icon, NULL);
-	if (icon != NULL) {
-		g_object_unref (icon);
-	}
-
+	g_object_set (source, "icon", icon, NULL);
+	g_clear_object (&icon);
 	g_object_unref (plugin);
 }
 
@@ -576,8 +569,8 @@ static void
 connection_disconnected_cb (DMAPConnection   *connection,
 			    RBDAAPSource     *source)
 {
-	GdkPixbuf *icon;
-	GObject   *plugin;
+	GIcon *icon;
+	GObject *plugin;
 
 	rb_debug ("DAAP connection disconnected");
 
@@ -589,10 +582,8 @@ connection_disconnected_cb (DMAPConnection   *connection,
 		icon = rb_daap_plugin_get_icon (RB_DAAP_PLUGIN (plugin),
 						source->priv->password_protected,
 						FALSE);
-		g_object_set (source, "pixbuf", icon, NULL);
-		if (icon != NULL) {
-			g_object_unref (icon);
-		}
+		g_object_set (source, "icon", icon, NULL);
+		g_clear_object (&icon);
 	}
 
 	g_object_unref (plugin);

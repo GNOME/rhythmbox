@@ -40,7 +40,6 @@
 #include "rhythmdb.h"
 #include "rb-shell.h"
 #include "rb-display-page-group.h"
-#include "rb-stock-icons.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
@@ -340,18 +339,11 @@ rb_dacp_pairing_page_new (GObject *plugin,
 			  const char *service_name)
 {
 	RBDACPPairingPage *page;
-	char *icon_filename;
-	int icon_size;
-	GdkPixbuf *icon_pixbuf;
-
-	icon_filename = rb_find_plugin_data_file (plugin, "remote-icon.png");
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
-	icon_pixbuf = gdk_pixbuf_new_from_file_at_size (icon_filename, icon_size, icon_size, NULL);
 
 	page = RB_DACP_PAIRING_PAGE (g_object_new (RB_TYPE_DACP_PAIRING_PAGE,
 						   "name", display_name,
 						   "service-name", service_name,
-						   "pixbuf", icon_pixbuf,
+						   "icon", g_themed_icon_new ("phone-symbolic"),
 						   "shell", shell,
 						   "plugin", plugin,
 						   NULL));
@@ -360,9 +352,6 @@ rb_dacp_pairing_page_new (GObject *plugin,
 	page->priv->dacp_share = dacp_share;
 	/* Retrieve notifications when the remote is finished pairing */
 	g_signal_connect_object (dacp_share, "remote-paired", G_CALLBACK (remote_paired_cb), page, 0);
-
-	g_free (icon_filename);
-	g_object_unref (icon_pixbuf);
 
 	return page;
 }

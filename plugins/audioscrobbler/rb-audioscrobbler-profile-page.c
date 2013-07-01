@@ -245,22 +245,24 @@ rb_audioscrobbler_profile_page_new (RBShell *shell, GObject *plugin, RBAudioscro
 	char *name;
 	gchar *icon_name;
 	gchar *icon_path;
-	gint icon_size;
-	GdkPixbuf *icon_pixbuf;
+	GIcon *icon;
 
 	g_object_get (shell, "db", &db, NULL);
 	g_object_get (service, "name", &name, NULL);
 
-	icon_name = g_strconcat (rb_audioscrobbler_service_get_name (service), "-icon.png", NULL);
+	icon_name = g_strconcat (rb_audioscrobbler_service_get_name (service), "-symbolic.svg", NULL);
 	icon_path = rb_find_plugin_data_file (plugin, icon_name);
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
-	icon_pixbuf = gdk_pixbuf_new_from_file_at_size (icon_path, icon_size, icon_size, NULL);
+	if (icon_path != NULL) {
+		icon = g_file_icon_new (g_file_new_for_path (icon_path));
+	} else {
+		icon = g_themed_icon_new ("network-server-symbolic");
+	}
 
 	page = RB_DISPLAY_PAGE (g_object_new (RB_TYPE_AUDIOSCROBBLER_PROFILE_PAGE,
 					      "shell", shell,
 					      "plugin", plugin,
 					      "name", name,
-					      "pixbuf", icon_pixbuf,
+					      "icon", icon,
 					      "service", service,
 					      NULL));
 
@@ -268,7 +270,7 @@ rb_audioscrobbler_profile_page_new (RBShell *shell, GObject *plugin, RBAudioscro
 	g_free (name);
 	g_free (icon_name);
 	g_free (icon_path);
-	g_object_unref (icon_pixbuf);
+	g_object_unref (icon);
 
 	return page;
 }

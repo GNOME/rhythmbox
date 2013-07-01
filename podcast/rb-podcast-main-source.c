@@ -38,7 +38,6 @@
 #include "rb-builder-helpers.h"
 #include "rb-file-helpers.h"
 #include "rb-util.h"
-#include "rb-stock-icons.h"
 #include "rb-application.h"
 
 struct _RBPodcastMainSourcePrivate
@@ -124,7 +123,7 @@ rb_podcast_main_source_add_subsources (RBPodcastMainSource *source)
 						   podcast_mgr,
 						   query,
 						   _("New Episodes"),
-						   RB_STOCK_AUTO_PLAYLIST);
+						   "document-open-recent-symbolic");
 	rhythmdb_query_free (query);
 	rb_source_set_hidden_when_empty (podcast_subsource, TRUE);
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (podcast_subsource), RB_DISPLAY_PAGE (source));
@@ -142,7 +141,7 @@ rb_podcast_main_source_add_subsources (RBPodcastMainSource *source)
 						   podcast_mgr,
 						   query,
 						   _("New Downloads"),		/* better name? */
-						   RB_STOCK_AUTO_PLAYLIST);
+						   "folder-download-symbolic");
 	rhythmdb_query_free (query);
 	rb_source_set_hidden_when_empty (podcast_subsource, TRUE);
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (podcast_subsource), RB_DISPLAY_PAGE (source));
@@ -359,8 +358,6 @@ impl_constructed (GObject *object)
 {
 	RBPodcastMainSource *source;
 	RBPodcastManager *podcast_mgr;
-	GdkPixbuf *pixbuf;
-	gint size;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_main_source_parent_class, constructed, object);
 	source = RB_PODCAST_MAIN_SOURCE (object);
@@ -387,16 +384,7 @@ impl_constructed (GObject *object)
 				 G_CALLBACK (feed_error_cb),
 				 source, 0);
 
-	gtk_icon_size_lookup (RB_SOURCE_ICON_SIZE, &size, NULL);
-	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					   RB_STOCK_PODCAST,
-					   size,
-					   0, NULL);
-
-	if (pixbuf != NULL) {
-		g_object_set (source, "pixbuf", pixbuf, NULL);
-		g_object_unref (pixbuf);
-	}
+	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "application-rss+xml-symbolic");
 }
 
 static void

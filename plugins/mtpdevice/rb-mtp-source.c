@@ -374,10 +374,6 @@ rb_mtp_source_constructed (GObject *object)
 	RBShell *shell;
 	RBShellPlayer *shell_player;
 	GObject *player_backend;
-	GtkIconTheme *theme;
-	GdkPixbuf *pixbuf;
-	gint size;
-
 
 	RB_CHAIN_GOBJECT_METHOD (rb_mtp_source_parent_class, constructed, object);
 	source = RB_MTP_SOURCE (object);
@@ -409,14 +405,7 @@ rb_mtp_source_constructed (GObject *object)
 				 G_CALLBACK (prepare_encoder_sink_cb),
 				 source, 0);
 
-	/* icon */
-	theme = gtk_icon_theme_get_default ();
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &size, NULL);
-	pixbuf = gtk_icon_theme_load_icon (theme, "multimedia-player", size, 0, NULL);
-
-	g_object_set (source, "pixbuf", pixbuf, NULL);
-	g_object_unref (pixbuf);
-
+	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "multimedia-player-symbolic");
 }
 
 static void
