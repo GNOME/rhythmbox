@@ -612,11 +612,19 @@ page_notify_cb (GObject *object,
 	gtk_tree_model_row_changed (model, path, &iter);
 	gtk_tree_path_free (path);
 
-	/* update the page group's visibility */
 	if (g_strcmp0 (pspec->name, "visibility") == 0 && RB_IS_DISPLAY_PAGE_GROUP (page) == FALSE) {
-		GtkTreeIter group_iter;
-		walk_up_to_page_group (model, &group_iter, &iter);
-		update_group_visibility (model, &group_iter, page_model);
+		GtkTreeIter piter;
+
+		/* update the parent in case it needs to hide or show its expander */
+		if (gtk_tree_model_iter_parent (model, &piter, &iter)) {
+			path = gtk_tree_model_get_path (model, &piter);
+			gtk_tree_model_row_changed (model, path, &piter);
+			gtk_tree_path_free (path);
+		}
+
+		/* update the page group's visibility */
+		walk_up_to_page_group (model, &piter, &iter);
+		update_group_visibility (model, &piter, page_model);
 	}
 }
 
