@@ -1853,7 +1853,7 @@ rb_entry_view_constructed (GObject *object)
 							 view,
 							 NULL);
 
-		image_widget = gtk_image_new_from_icon_name ("audio-volume-high", GTK_ICON_SIZE_MENU);
+		image_widget = gtk_image_new_from_icon_name ("audio-volume-high-symbolic", GTK_ICON_SIZE_MENU);
 		gtk_tree_view_column_set_widget (column, image_widget);
 		gtk_widget_show (image_widget);
 

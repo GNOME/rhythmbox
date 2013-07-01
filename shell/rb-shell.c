@@ -67,7 +67,6 @@
 #else
 #error "no database specified. configure broken?"
 #endif
-#include "rb-stock-icons.h"
 #include "rb-display-page-tree.h"
 #include "rb-display-page-group.h"
 #include "rb-file-helpers.h"
@@ -694,6 +693,16 @@ construct_sources (RBShell *shell)
 }
 
 static void
+set_button_classes (GtkBuilder *builder, const char *name)
+{
+	GtkWidget *widget;
+
+	widget = GTK_WIDGET (gtk_builder_get_object (builder, name));
+	gtk_style_context_add_class (gtk_widget_get_style_context (widget), GTK_STYLE_CLASS_RAISED);
+	gtk_style_context_add_class (gtk_widget_get_style_context (widget), GTK_STYLE_CLASS_LINKED);
+}
+
+static void
 construct_load_ui (RBShell *shell)
 {
 	GApplication *app = g_application_get_default ();
@@ -704,6 +713,15 @@ construct_load_ui (RBShell *shell)
 	GtkWidget *menu_button;
 	GtkWidget *image;
 	GMenuModel *model;
+	gboolean rtl;
+	const char *raise_buttons[] = {
+		"previous-button",
+		"play-button",
+		"next-button",
+		"shuffle-button",
+		"repeat-button"
+	};
+	int i;
 
 	rb_debug ("shell: loading ui");
 	rb_profile_start ("loading ui");
@@ -712,6 +730,26 @@ construct_load_ui (RBShell *shell)
 	toolbar = GTK_WIDGET (gtk_builder_get_object (builder, "main-toolbar"));
 
 	shell->priv->play_button = GTK_WIDGET (gtk_builder_get_object (builder, "play-button"));
+
+	for (i = 0; i < G_N_ELEMENTS (raise_buttons); i++) {
+		set_button_classes (builder, raise_buttons[i]);
+	}
+
+	rtl = (gtk_widget_get_direction (shell->priv->play_button) == GTK_TEXT_DIR_RTL);
+	image = gtk_button_get_image (GTK_BUTTON (gtk_builder_get_object (builder, "next-button")));
+	gtk_image_set_from_icon_name (GTK_IMAGE (image),
+				      rtl ? "media-skip-forward-rtl-symbolic" : "media-skip-forward-symbolic",
+				      GTK_ICON_SIZE_LARGE_TOOLBAR);
+
+	image = gtk_button_get_image (GTK_BUTTON (gtk_builder_get_object (builder, "previous-button")));
+	gtk_image_set_from_icon_name (GTK_IMAGE (image),
+				      rtl ? "media-skip-backward-rtl-symbolic" : "media-skip-backward-symbolic",
+				      GTK_ICON_SIZE_LARGE_TOOLBAR);
+
+	image = gtk_button_get_image (GTK_BUTTON (gtk_builder_get_object (builder, "play-button")));
+	gtk_image_set_from_icon_name (GTK_IMAGE (image),
+				      rtl ? "media-playback-start-rtl-symbolic" : "media-playback-start-symbolic",
+				      GTK_ICON_SIZE_LARGE_TOOLBAR);
 
 	/* this seems a bit unnecessary */
 	gtk_actionable_set_action_target_value (GTK_ACTIONABLE (gtk_builder_get_object (builder, "shuffle-button")),
@@ -739,6 +777,8 @@ construct_load_ui (RBShell *shell)
 	menu_button = gtk_menu_button_new ();
 	model = rb_application_get_shared_menu (RB_APPLICATION (app), "app-menu");
 	gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (menu_button), model);
+	gtk_style_context_add_class (gtk_widget_get_style_context (menu_button), GTK_STYLE_CLASS_RAISED);
+	g_object_set (menu_button, "margin-top", 12, "margin-bottom", 12, NULL);
 
 	g_object_get (gtk_settings_get_default (),
 		      "gtk-shell-shows-app-menu", &shell_shows_app_menu,
@@ -2237,20 +2277,27 @@ rb_shell_playing_changed_cb (RBShellPlayer *player, gboolean playing, RBShell *s
 {
 	const char *tooltip;
 	const char *icon_name;
+	GtkWidget *image;
 
+	image = gtk_button_get_image (GTK_BUTTON (shell->priv->play_button));
 	if (playing) {
 		if (rb_source_can_pause (rb_shell_player_get_active_source (shell->priv->player_shell))) {
-			icon_name = "media-playback-pause";
+			icon_name = "media-playback-pause-symbolic";
 			tooltip = _("Pause playback");
 		} else {
-			icon_name = "media-playback-stop";
+			icon_name = "media-playback-stop-symbolic";
 			tooltip = _("Stop playback");
 		}
 	} else {
-		icon_name = "media-playback-start";
+		if (gtk_widget_get_direction (image) == GTK_TEXT_DIR_RTL) {
+			icon_name = "media-playback-start-rtl-symbolic";
+		} else {
+			icon_name = "media-playback-start-symbolic";
+		}
 		tooltip = _("Start playback");
 	}
-	gtk_tool_button_set_icon_name (GTK_TOOL_BUTTON (shell->priv->play_button), icon_name);
+	gtk_image_set_from_icon_name (GTK_IMAGE (image), icon_name, GTK_ICON_SIZE_LARGE_TOOLBAR);
+
 	gtk_widget_set_tooltip_text (GTK_WIDGET (shell->priv->play_button), tooltip);
 }
 

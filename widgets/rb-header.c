@@ -559,7 +559,6 @@ rb_header_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 		image_width = allocation->height;
 		if (rtl) {
 			child_alloc.x = allocation->x + allocation->width - image_width;
-			allocation->x -= image_width + spacing;
 		} else {
 			child_alloc.x = allocation->x;
 			allocation->x += image_width + spacing;
@@ -575,7 +574,12 @@ rb_header_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 
 	/* allocate space for the volume button at the end */
 	gtk_widget_get_preferred_width (RB_HEADER (widget)->priv->volume_button, &volume_width, NULL);
-	child_alloc.x = (allocation->x + allocation->width) - volume_width;
+	if (rtl) {
+		child_alloc.x = allocation->x;
+		allocation->x += volume_width + spacing;
+	} else {
+		child_alloc.x = (allocation->x + allocation->width) - volume_width;
+	}
 	child_alloc.y = allocation->y;
 	child_alloc.width = volume_width;
 	child_alloc.height = allocation->height;
