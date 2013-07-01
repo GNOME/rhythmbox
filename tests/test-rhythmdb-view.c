@@ -33,7 +33,6 @@
 #include "rb-debug.h"
 #include "rb-thread-helpers.h"
 #include "rb-file-helpers.h"
-#include "rb-stock-icons.h"
 #include "rb-entry-view.h"
 
 static RhythmDBEntry *

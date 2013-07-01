@@ -65,7 +65,6 @@
 #include "rb-application.h"
 #include "rb-property-view.h"
 #include "rb-shell-player.h"
-#include "rb-stock-icons.h"
 #include "rb-builder-helpers.h"
 #include "rb-file-helpers.h"
 #include "rb-cut-and-paste-code.h"

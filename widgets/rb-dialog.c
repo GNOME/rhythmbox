@@ -40,7 +40,6 @@
 
 #include "rb-dialog.h"
 #include "rb-file-helpers.h"
-#include "rb-stock-icons.h"
 
 /**
  * SECTION:rb-dialog

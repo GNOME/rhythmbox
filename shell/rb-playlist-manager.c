@@ -57,7 +57,6 @@
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rhythmdb.h"
-#include "rb-stock-icons.h"
 #include "rb-builder-helpers.h"
 #include "rb-util.h"
 #include "rb-application.h"

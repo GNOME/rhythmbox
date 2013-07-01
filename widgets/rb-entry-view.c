@@ -92,7 +92,6 @@
 #include "rhythmdb-query-model.h"
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cell-renderer-rating.h"
-#include "rb-stock-icons.h"
 #include "rb-shell-player.h"
 #include "rb-cut-and-paste-code.h"
 

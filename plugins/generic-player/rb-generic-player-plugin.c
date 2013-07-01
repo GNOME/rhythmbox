@@ -47,7 +47,6 @@
 #include "rb-generic-player-source.h"
 #include "rb-generic-player-playlist-source.h"
 #include "rb-file-helpers.h"
-#include "rb-stock-icons.h"
 #include "rb-nokia770-source.h"
 #include "rb-psp-source.h"
 #include "rb-display-page-tree.h"

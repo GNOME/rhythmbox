@@ -40,7 +40,6 @@
 #include "rb-debug.h"
 #include "rhythmdb.h"
 #include "rhythmdb-property-model.h"
-#include "rb-stock-icons.h"
 #include "rb-util.h"
 
 static void rb_property_view_class_init (RBPropertyViewClass *klass);

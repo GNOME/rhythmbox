@@ -54,7 +54,6 @@
 #include "rb-display-page-model.h"
 #include "rhythmdb.h"
 #include "rb-debug.h"
-#include "rb-stock-icons.h"
 #include "rb-util.h"
 #include "rb-application.h"
 #include "rb-builder-helpers.h"

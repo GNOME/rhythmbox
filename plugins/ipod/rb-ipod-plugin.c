@@ -49,7 +49,6 @@
 #include "rb-file-helpers.h"
 #include "rb-util.h"
 #include "rb-shell.h"
-#include "rb-stock-icons.h"
 #include "rb-display-page-tree.h"
 
 

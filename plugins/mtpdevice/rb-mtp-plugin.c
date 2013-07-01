@@ -58,7 +58,6 @@
 #include "rb-file-helpers.h"
 #include "rb-util.h"
 #include "rb-shell.h"
-#include "rb-stock-icons.h"
 #include "rb-removable-media-manager.h"
 #include "rb-mtp-gst.h"
 
