@@ -32,21 +32,10 @@
 G_BEGIN_DECLS
 
 extern const char RB_APP_ICON[];
-extern const char RB_STOCK_TRAY_ICON[];
 extern const char RB_STOCK_SET_STAR[];
 extern const char RB_STOCK_UNSET_STAR[];
 extern const char RB_STOCK_NO_STAR[];
-extern const char RB_STOCK_PODCAST[];
-extern const char RB_STOCK_PODCAST_NEW[];
-extern const char RB_STOCK_BROWSER[];
-extern const char RB_STOCK_PLAYLIST[];
-extern const char RB_STOCK_PLAYLIST_NEW[];
-extern const char RB_STOCK_AUTO_PLAYLIST[];
-extern const char RB_STOCK_AUTO_PLAYLIST_NEW[];
 extern const char RB_STOCK_MISSING_ARTWORK[];
-extern const char GNOME_MEDIA_SHUFFLE[];
-extern const char GNOME_MEDIA_REPEAT[];
-extern const char GNOME_MEDIA_EJECT[];
 
 void	rb_stock_icons_init	(void);
 

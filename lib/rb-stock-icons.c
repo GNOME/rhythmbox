@@ -48,21 +48,10 @@ typedef struct {
 } RBInlineIconData;
 
 const char RB_APP_ICON[] = "rhythmbox";
-const char RB_STOCK_TRAY_ICON[] = "rhythmbox";
 const char RB_STOCK_SET_STAR[] = "rhythmbox-set-star";
 const char RB_STOCK_UNSET_STAR[] = "rhythmbox-unset-star";
 const char RB_STOCK_NO_STAR[] = "rhythmbox-no-star";
-const char RB_STOCK_PODCAST[] = "library-podcast";
-const char RB_STOCK_PODCAST_NEW[] = "podcast-new";
-const char RB_STOCK_BROWSER[] = "music-library";
-const char RB_STOCK_PLAYLIST[] = "playlist";
-const char RB_STOCK_PLAYLIST_NEW[] = "playlist-new";
-const char RB_STOCK_AUTO_PLAYLIST[] = "playlist-automatic";
-const char RB_STOCK_AUTO_PLAYLIST_NEW[] = "playlist-automatic-new";
 const char RB_STOCK_MISSING_ARTWORK[] = "rhythmbox-missing-artwork";
-const char GNOME_MEDIA_SHUFFLE[] = "media-playlist-shuffle";
-const char GNOME_MEDIA_REPEAT[] = "media-playlist-repeat";
-const char GNOME_MEDIA_EJECT[] = "media-eject";
 
 static RBInlineIconData inline_icons[] = {
 	{ rhythmbox_set_star_inline, RB_STOCK_SET_STAR },
@@ -123,4 +112,3 @@ rb_stock_icons_shutdown (void)
 {
 	/* do nothing */
 }
-
