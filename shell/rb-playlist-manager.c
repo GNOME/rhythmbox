@@ -1873,6 +1873,7 @@ rb_playlist_manager_constructed (GObject *object)
 
 	builder = rb_builder_load ("playlist-menu.ui", NULL);
 	menu = G_MENU_MODEL (gtk_builder_get_object (builder, "playlist-menu"));
+	rb_application_link_shared_menus (RB_APPLICATION (app), G_MENU (menu));
 	rb_application_add_shared_menu (RB_APPLICATION (app), "playlist-menu", menu);
 	g_object_unref (builder);
 
