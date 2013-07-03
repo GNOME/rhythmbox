@@ -2279,6 +2279,14 @@ rb_podcast_manager_add_search (RBPodcastManager *pd, GType search_type)
 	pd->priv->searches = g_list_append (pd->priv->searches, GUINT_TO_POINTER (search_type));
 }
 
+/**
+ * rb_podcast_manager_get_searches:
+ * @pd: the #RBPodcastManager
+ *
+ * Returns the list of podcast searches
+ *
+ * Return value: (element-type RB.PodcastSearch) (transfer container): list of search instances
+ */
 GList *
 rb_podcast_manager_get_searches (RBPodcastManager *pd)
 {

@@ -467,6 +467,8 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 	 * Emitted when a metadata item needs to be written to a local file.
 	 * This only needs to be used for metadata that needs to be encoded
 	 * or compressed, such as images.
+	 *
+	 * Return value: (transfer full): the value to write to a file
 	 */
 	signals[STORE] =
 		g_signal_new ("store",
@@ -482,6 +484,8 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 	 *
 	 * Emitted when loading a metadata item from a local file or from a
 	 * URI.
+	 *
+	 * Return value: (transfer full): converted value
 	 */
 	signals[LOAD] =
 		g_signal_new ("load",

@@ -376,7 +376,7 @@ track_done_cb (RBTrackTransferBatch *batch,
 /**
  * rb_transfer_target_transfer:
  * @target: an #RBTransferTarget
- * @entries: a #GList of entries to transfer
+ * @entries: (element-type RB.RhythmDBEntry): a #GList of entries to transfer
  * @defer: if %TRUE, don't start the transfer until
  *
  * Starts tranferring @entries to the target.  This returns the

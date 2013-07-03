@@ -46,6 +46,8 @@ rb_introspection_sources = \
 		lib/rb-debug.c \
 		lib/rb-file-helpers.h \
 		lib/rb-file-helpers.c \
+		lib/rb-list-model.h \
+		lib/rb-list-model.c \
 		lib/rb-stock-icons.h \
 		lib/rb-stock-icons.c \
 		lib/rb-string-value-map.h \
@@ -66,6 +68,8 @@ rb_introspection_sources = \
 		podcast/rb-podcast-manager.c \
 		podcast/rb-podcast-parse.h \
 		podcast/rb-podcast-parse.c \
+		podcast/rb-podcast-search.h \
+		podcast/rb-podcast-search.c \
 		rhythmdb/rhythmdb.h \
 		rhythmdb/rhythmdb.c \
 		rhythmdb/rhythmdb-entry.h \

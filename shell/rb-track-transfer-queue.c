@@ -603,7 +603,7 @@ rb_track_transfer_queue_find_batch_by_source (RBTrackTransferQueue *queue, RBSou
 }
 
 /**
- * rb_track_transfer_queue_cancel_for_source;
+ * rb_track_transfer_queue_cancel_for_source:
  * @queue: the #RBTrackTransferQueue
  * @source: the #RBSource to cancel transfers to/from
  *

@@ -234,7 +234,7 @@ action_change_state_cb (GSimpleAction *action, GVariant *parameter, GSettings *s
  * settings instance are ignored.  If the source doesn't have a settings
  * instance, it should set a default state on the action at some point.
  *
- * Return value: #GAction instance
+ * Return value: (transfer full): #GAction instance
  */
 GAction *
 rb_source_create_search_action (RBSource *source)

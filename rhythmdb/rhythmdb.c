@@ -406,7 +406,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 	 * RhythmDB::entry-changed:
 	 * @db: the #RhythmDB
 	 * @entry: the changed #RhythmDBEntry
-	 * @changes: a #GArray of #RhythmDBEntryChange structures describing the changes
+	 * @changes: (element-type RB.RhythmDBEntryChange): a #GArray of #RhythmDBEntryChange structures describing the changes
 	 *
 	 * Emitted when a database entry is modified.  The @changes list
 	 * contains a structure for each entry property that has been modified.
@@ -5236,7 +5236,7 @@ rhythmdb_entry_keywords_get	(RhythmDB *db,
  * rhythmdb_entry_write_metadata_changes:
  * @db: the #RhythmDB
  * @entry: the #RhythmDBEntry to update
- * @changes: a list of changes to write
+ * @changes: (element-type RB.RhythmDBEntryChange): a list of changes to write
  * @error: returns error information
  *
  * This can be called from a #RhythmDBEntryType sync_metadata function

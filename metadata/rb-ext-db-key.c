@@ -541,9 +541,9 @@ create_store_key (RBExtDBKey *key, int option, TDB_DATA *data)
 }
 
 /**
- * rb_ext_db_key_lookups: (skip):
+ * rb_ext_db_key_lookups:
  * @key: a #RBExtDBKey
- * @callback: a callback to process lookup keys
+ * @callback: (scope call): a callback to process lookup keys
  * @user_data: data to pass to @callback
  *
  * Generates the set of possible lookup keys for @key and
@@ -577,7 +577,7 @@ rb_ext_db_key_lookups (RBExtDBKey *key,
 }
 
 /**
- * rb_ext_db_key_to_store_key: (skip):
+ * rb_ext_db_key_to_store_key: (skip)
  * @key: a @RBExtDBKey
  *
  * Generates the storage key for @key.  This is the value that should

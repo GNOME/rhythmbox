@@ -247,7 +247,7 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 	/**
 	 * RBPropertyView::properties-selected:
 	 * @view: the #RBPropertyView
-	 * @properties: a list containing the selected property values
+	 * @properties: (element-type utf8): a list containing the selected property values
 	 *
 	 * Emitted when the set of selected property values changes.  This is only
 	 * emitted for multiple selection property views.  For single-selection views,

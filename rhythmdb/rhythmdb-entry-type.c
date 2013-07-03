@@ -187,7 +187,7 @@ rhythmdb_entry_can_sync_metadata (RhythmDBEntry *entry)
 /**
  * rhythmdb_entry_sync_metadata:
  * @entry: a #RhythmDBEntry
- * @changes: a list of #RhythmDBEntryChange structures
+ * @changes: (element-type RB.RhythmDBEntryChange): a list of #RhythmDBEntryChange structures
  * @error: returns error information
  *
  * Calls the entry type's method to sync metadata changes for @entry.

@@ -148,7 +148,7 @@ rb_list_model_n_items (RBListModel *model)
  *
  * Returns an item from the list.
  *
- * Return value: item at the specified index
+ * Return value: (transfer none): item at the specified index
  */
 gpointer
 rb_list_model_get (RBListModel *model, int index)

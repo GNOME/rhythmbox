@@ -1636,7 +1636,7 @@ rb_shell_player_volume_changed_cb (RBPlayer *player,
 }
 
 /**
- * rb_shell_player_set_mute
+ * rb_shell_player_set_mute:
  * @player: the #RBShellPlayer
  * @mute: %TRUE to mute playback
  * @error: returns error information

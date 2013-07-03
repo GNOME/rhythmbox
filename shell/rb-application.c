@@ -586,7 +586,7 @@ rb_application_new (void)
 
 /**
  * rb_application_run:
- * @rb: the application instance
+ * @app: the application instance
  * @argc: arg count
  * @argv: arg values
  *
@@ -595,7 +595,7 @@ rb_application_new (void)
  * Return value: exit code
  */
 int
-rb_application_run (RBApplication *rb, int argc, char **argv)
+rb_application_run (RBApplication *app, int argc, char **argv)
 {
 	GOptionContext *context;
 	gboolean debug = FALSE;
@@ -605,18 +605,18 @@ rb_application_run (RBApplication *rb, int argc, char **argv)
 
 	GError *error = NULL;
 
-	g_application_set_default (G_APPLICATION (rb));
-	rb->priv->autostarted = (g_getenv ("DESKTOP_AUTOSTART_ID") != NULL);
+	g_application_set_default (G_APPLICATION (app));
+	app->priv->autostarted = (g_getenv ("DESKTOP_AUTOSTART_ID") != NULL);
 
 	const GOptionEntry options []  = {
 		{ "debug",           'd', 0, G_OPTION_ARG_NONE,         &debug,           N_("Enable debug output"), NULL },
 		{ "debug-match",     'D', 0, G_OPTION_ARG_STRING,       &debug_match,     N_("Enable debug output matching a specified string"), NULL },
-		{ "no-update",	       0, 0, G_OPTION_ARG_NONE,         &rb->priv->no_update, N_("Do not update the library with file changes"), NULL },
-		{ "no-registration", 'n', 0, G_OPTION_ARG_NONE,         &rb->priv->no_registration, N_("Do not register the shell"), NULL },
-		{ "dry-run",	       0, 0, G_OPTION_ARG_NONE,         &rb->priv->dry_run,         N_("Don't save any data permanently (implies --no-registration)"), NULL },
-		{ "disable-plugins",   0, 0, G_OPTION_ARG_NONE,		&rb->priv->disable_plugins, N_("Disable loading of plugins"), NULL },
-		{ "rhythmdb-file",     0, 0, G_OPTION_ARG_STRING,       &rb->priv->rhythmdb_file,   N_("Path for database file to use"), NULL },
-		{ "playlists-file",    0, 0, G_OPTION_ARG_STRING,       &rb->priv->playlists_file,   N_("Path for playlists file to use"), NULL },
+		{ "no-update",	       0, 0, G_OPTION_ARG_NONE,         &app->priv->no_update, N_("Do not update the library with file changes"), NULL },
+		{ "no-registration", 'n', 0, G_OPTION_ARG_NONE,         &app->priv->no_registration, N_("Do not register the shell"), NULL },
+		{ "dry-run",	       0, 0, G_OPTION_ARG_NONE,         &app->priv->dry_run,         N_("Don't save any data permanently (implies --no-registration)"), NULL },
+		{ "disable-plugins",   0, 0, G_OPTION_ARG_NONE,		&app->priv->disable_plugins, N_("Disable loading of plugins"), NULL },
+		{ "rhythmdb-file",     0, 0, G_OPTION_ARG_STRING,       &app->priv->rhythmdb_file,   N_("Path for database file to use"), NULL },
+		{ "playlists-file",    0, 0, G_OPTION_ARG_STRING,       &app->priv->playlists_file,   N_("Path for playlists file to use"), NULL },
 		{ NULL }
 	};
 
@@ -641,9 +641,9 @@ rb_application_run (RBApplication *rb, int argc, char **argv)
 	else
 		rb_debug_init (debug);
 
-	g_object_set (rb, "register-session", !rb->priv->no_registration, NULL);
+	g_object_set (app, "register-session", !app->priv->no_registration, NULL);
 
-	return g_application_run (G_APPLICATION (rb), nargc, nargv);
+	return g_application_run (G_APPLICATION (app), nargc, nargv);
 }
 
 /**
@@ -680,7 +680,7 @@ rb_application_get_shared_menu (RBApplication *app, const char *name)
 /**
  * rb_application_get_plugin_menu:
  * @app: the application instance
- * @name: name of plugin menu to return
+ * @menu: name of plugin menu to return
  *
  * Returns a plugin menu instance.  Plugin menus are like shared menus except
  * they are created empty on first access, and they consist solely of entries
@@ -689,18 +689,18 @@ rb_application_get_shared_menu (RBApplication *app, const char *name)
  * Return value: (transfer none): plugin menu instance.
  */
 GMenuModel *
-rb_application_get_plugin_menu (RBApplication *app, const char *name)
+rb_application_get_plugin_menu (RBApplication *app, const char *menu)
 {
-	GMenuModel *menu;
+	GMenuModel *pmenu;
 
-	menu = g_hash_table_lookup (app->priv->plugin_menus, name);
-	if (menu == NULL) {
-		menu = G_MENU_MODEL (g_menu_new ());
-		g_object_ref_sink (menu);
-		g_hash_table_insert (app->priv->plugin_menus, g_strdup (name), menu);
+	pmenu = g_hash_table_lookup (app->priv->plugin_menus, menu);
+	if (pmenu == NULL) {
+		pmenu = G_MENU_MODEL (g_menu_new ());
+		g_object_ref_sink (pmenu);
+		g_hash_table_insert (app->priv->plugin_menus, g_strdup (menu), pmenu);
 	}
 
-	return menu;
+	return pmenu;
 }
 
 /**

@@ -246,7 +246,7 @@ select_profile_for_entry (RBTrackTransferBatch *batch, RhythmDBEntry *entry, Gst
 /**
  * rb_track_transfer_batch_check_profiles:
  * @batch: a #RBTrackTransferBatch
- * @missing_plugin_profiles: holds a #GList of #GstEncodingProfiles on return
+ * @missing_plugin_profiles: (out) (element-type GstPbutils.EncodingProfile): holds a #GList of #GstEncodingProfiles on return
  * @error_count: holds the number of entries that cannot be transferred on return
  *
  * Checks that all entries in the batch can be transferred in a format

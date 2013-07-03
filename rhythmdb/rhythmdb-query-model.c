@@ -800,7 +800,7 @@ rhythmdb_query_model_finalize (GObject *object)
 }
 
 /**
- * rhythmdb_query_model_new:
+ * rhythmdb_query_model_new: (skip)
  * @db: the #RhythmDB
  * @query: the query for the new model
  * @sort_func: the sort function for the new model

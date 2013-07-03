@@ -205,6 +205,14 @@ rb_task_list_new ()
 	return RB_TASK_LIST (g_object_new (RB_TYPE_TASK_LIST, NULL));
 }
 
+/**
+ * rb_task_list_get_model:
+ * @list: a #RBTaskList
+ *
+ * Returns the #RBListModel backing the list
+ *
+ * Return value: (transfer none): list model
+ */
 RBListModel *
 rb_task_list_get_model (RBTaskList *list)
 {

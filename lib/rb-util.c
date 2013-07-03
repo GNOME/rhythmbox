@@ -52,7 +52,7 @@
 static GPrivate private_is_primary_thread;
 
 /**
- * rb_true_function: (skip):
+ * rb_true_function: (skip)
  * @dummy: unused
  *
  * Just returns %TRUE, useful as a callback function.
@@ -66,7 +66,7 @@ rb_true_function (gpointer dummy)
 }
 
 /**
- * rb_false_function: (skip):
+ * rb_false_function: (skip)
  * @dummy: unused
  *
  * Just returns %FALSE, useful as a callback function.
@@ -80,7 +80,7 @@ rb_false_function (gpointer dummy)
 }
 
 /**
- * rb_null_function: (skip):
+ * rb_null_function: (skip)
  * @dummy: unused
  *
  * Just returns NULL.  Useful as a callback function.
@@ -94,7 +94,7 @@ rb_null_function (gpointer dummy)
 }
 
 /**
- * rb_copy_function: (skip):
+ * rb_copy_function: (skip)
  * @data: generic argument
  *
  * Just returns its first argument.  Useful as a callback function.
@@ -109,7 +109,7 @@ rb_copy_function (gpointer data)
 
 
 /**
- * rb_gvalue_compare: (skip):
+ * rb_gvalue_compare: (skip)
  * @a: left hand side
  * @b: right hand size
  *
@@ -418,7 +418,7 @@ _threads_leave (void)
 
 
 /**
- * rb_assert_locked: (skip):
+ * rb_assert_locked: (skip)
  * @mutex: a #GMutex
  *
  * Asserts that @mutex is currently locked.  Does not work with all
@@ -432,7 +432,7 @@ rb_assert_locked (GMutex *mutex)
 }
 
 /**
- * rb_threads_init: (skip):
+ * rb_threads_init: (skip)
  *
  * Initializes various thread helpers.  Must be called on startup.
  */
@@ -752,7 +752,7 @@ rb_make_elapsed_time_string (guint elapsed, guint duration, gboolean show_remain
 }
 
 /**
- * rb_string_list_equal: (skip):
+ * rb_string_list_equal: (skip)
  * @a: (element-type utf8): list of strings to compare
  * @b: (element-type utf8): other list of strings to compare
  *
@@ -807,7 +807,7 @@ list_copy_cb (const char *s, GList **list)
 }
 
 /**
- * rb_string_list_copy: (skip):
+ * rb_string_list_copy: (skip)
  * @list: (element-type utf8): list of strings to copy
  *
  * Creates a deep copy of @list.
@@ -829,7 +829,7 @@ rb_string_list_copy (GList *list)
 }
 
 /**
- * rb_string_list_contains: (skip):
+ * rb_string_list_contains: (skip)
  * @list: (element-type utf8) list to check
  * @s: string to check for
  *
@@ -851,7 +851,7 @@ rb_string_list_contains (GList *list, const char *s)
 }
 
 /**
- * rb_list_destroy_free: (skip):
+ * rb_list_destroy_free: (skip)
  * @list: list to destroy
  * @destroyer: function to call to free elements of @list
  *
@@ -865,7 +865,7 @@ rb_list_destroy_free (GList *list, GDestroyNotify destroyer)
 }
 
 /**
- * rb_list_deep_free: (skip):
+ * rb_list_deep_free: (skip)
  * @list: (element-type any) (transfer full): list to free
  *
  * Frees each element of @list and @list itself.
@@ -877,7 +877,7 @@ rb_list_deep_free (GList *list)
 }
 
 /**
- * rb_slist_deep_free: (skip):
+ * rb_slist_deep_free: (skip)
  * @list: (element-type any) (transfer full): list to free
  *
  * Frees each element of @list and @list itself.
@@ -902,7 +902,7 @@ collate_values_cb (gpointer key, gpointer value, GList **list)
 }
 
 /**
- * rb_collate_hash_table_keys: (skip):
+ * rb_collate_hash_table_keys: (skip)
  * @table: #GHashTable to collate
  *
  * Returns a #GList containing all keys from @table.  The keys are
@@ -922,7 +922,7 @@ rb_collate_hash_table_keys (GHashTable *table)
 }
 
 /**
- * rb_collate_hash_table_values: (skip):
+ * rb_collate_hash_table_values: (skip)
  * @table: #GHashTable to collate
  *
  * Returns a #GList containing all values from @table.  The values are
@@ -993,7 +993,7 @@ rb_uri_list_parse (const char *uri_list)
 }
 
 /**
- * rb_signal_accumulator_object_handled: (skip):
+ * rb_signal_accumulator_object_handled: (skip)
  * @hint: a #GSignalInvocationHint
  * @return_accu: holds the accumulated return value
  * @handler_return: holds the return value to be accumulated
@@ -1025,7 +1025,7 @@ rb_signal_accumulator_object_handled (GSignalInvocationHint *hint,
 }
 
 /**
- * rb_signal_accumulator_value_handled: (skip):
+ * rb_signal_accumulator_value_handled: (skip)
  * @hint: a #GSignalInvocationHint
  * @return_accu: holds the accumulated return value
  * @handler_return: holds the return value to be accumulated
@@ -1057,7 +1057,7 @@ rb_signal_accumulator_value_handled (GSignalInvocationHint *hint,
 }
 
 /**
- * rb_signal_accumulator_value_array: (skip):
+ * rb_signal_accumulator_value_array: (skip)
  * @hint: a #GSignalInvocationHint
  * @return_accu: holds the accumulated return value
  * @handler_return: holds the return value to be accumulated
@@ -1104,7 +1104,7 @@ rb_signal_accumulator_value_array (GSignalInvocationHint *hint,
 }
 
 /**
- * rb_signal_accumulator_boolean_or: (skip):
+ * rb_signal_accumulator_boolean_or: (skip)
  * @hint: a #GSignalInvocationHint
  * @return_accu: holds the accumulated return value
  * @handler_return: holds the return value to be accumulated
@@ -1134,7 +1134,7 @@ rb_signal_accumulator_boolean_or (GSignalInvocationHint *hint,
 }
 
 /**
- * rb_value_array_append_data: (skip):
+ * rb_value_array_append_data: (skip)
  * @array: #GArray to append to
  * @type: #GType of the value being appended
  * @Varargs: value to append
@@ -1162,7 +1162,7 @@ rb_value_array_append_data (GArray *array, GType type, ...)
 }
 
 /**
- * rb_value_free: (skip):
+ * rb_value_free: (skip)
  * @val: (transfer full): a #GValue
  *
  * Unsets and frees @val.  @val must have been allocated using
@@ -1176,7 +1176,7 @@ rb_value_free (GValue *val)
 }
 
 /**
- * rb_str_in_strv: (skip):
+ * rb_str_in_strv: (skip)
  * @needle: string to search for
  * @haystack: array of strings to search
  *

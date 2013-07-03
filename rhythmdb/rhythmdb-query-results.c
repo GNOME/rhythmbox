@@ -66,7 +66,7 @@ rhythmdb_query_results_get_type (void)
 }
 
 /**
- * rhythmdb_query_results_set_query:
+ * rhythmdb_query_results_set_query: (skip)
  * @results: the #RhythmDBQueryResults implementation
  * @query: the new query
  *
@@ -87,7 +87,7 @@ rhythmdb_query_results_set_query (RhythmDBQueryResults *results,
 /**
  * rhythmdb_query_results_add_results:
  * @results: the #RhythmDBQueryResults implementation
- * @entries: #GPtrArray containing #RhythmDBEntry results
+ * @entries: (element-type RB.RhythmDBEntry): #GPtrArray containing #RhythmDBEntry results
  *
  * Provides a new set of query results.  References must be taken on the
  * entries.
