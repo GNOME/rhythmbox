@@ -406,20 +406,20 @@ rhythmdb_class_init (RhythmDBClass *klass)
 	 * RhythmDB::entry-changed:
 	 * @db: the #RhythmDB
 	 * @entry: the changed #RhythmDBEntry
-	 * @changes: (element-type RB.RhythmDBEntryChange): a #GArray of #RhythmDBEntryChange structures describing the changes
+	 * @changes: (element-type RB.RhythmDBEntryChange): a #GPtrArray of #RhythmDBEntryChange structures describing the changes
 	 *
 	 * Emitted when a database entry is modified.  The @changes list
 	 * contains a structure for each entry property that has been modified.
 	 */
 	rhythmdb_signals[ENTRY_CHANGED] =
-		g_signal_new ("entry_changed",
+		g_signal_new ("entry-changed",
 			      RHYTHMDB_TYPE,
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_changed),
 			      NULL, NULL,
 			      rb_marshal_VOID__BOXED_BOXED,
 			      G_TYPE_NONE, 2,
-			      RHYTHMDB_TYPE_ENTRY, G_TYPE_ARRAY);
+			      RHYTHMDB_TYPE_ENTRY, G_TYPE_PTR_ARRAY);
 
 	/**
 	 * RhythmDB::entry-keyword-added:
@@ -1331,19 +1331,15 @@ rhythmdb_emit_entry_signals_idle (RhythmDB *db)
 	if (changed_entries != NULL) {
 		g_hash_table_iter_init (&iter, changed_entries);
 		while (g_hash_table_iter_next (&iter, (gpointer *)&entry, (gpointer *)&entry_changes)) {
-			GArray *emit_changes;
+			GPtrArray *emit_changes;
 			GSList *c;
 
-			emit_changes = g_array_sized_new (FALSE, TRUE, sizeof (GValue), g_slist_length (entry_changes));
-			g_array_set_clear_func (emit_changes, (GDestroyNotify) g_value_unset);
+			emit_changes = g_ptr_array_new_full (g_slist_length (entry_changes), NULL);
 			for (c = entry_changes; c != NULL; c = c->next) {
-				GValue v = {0,};
-				g_value_init (&v, RHYTHMDB_TYPE_ENTRY_CHANGE);
-				g_value_take_boxed (&v, c->data);
-				g_array_append_val (emit_changes, v);
+				g_ptr_array_add (emit_changes, c->data); 
 			}
 			g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, entry, emit_changes);
-			g_array_unref (emit_changes);
+			g_ptr_array_unref (emit_changes);
 			g_hash_table_iter_remove (&iter);
 		}
 	}

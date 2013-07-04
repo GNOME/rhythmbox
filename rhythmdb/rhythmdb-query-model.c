@@ -82,7 +82,7 @@ static void rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 static void rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 						 RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
-						   GArray *changes, RhythmDBQueryModel *model);
+						   GPtrArray *changes, RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 						   RhythmDBQueryModel *model);
 
@@ -1018,7 +1018,7 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db,
 static void
 rhythmdb_query_model_entry_changed_cb (RhythmDB *db,
 				       RhythmDBEntry *entry,
-				       GArray *changes,
+				       GPtrArray *changes,
 				       RhythmDBQueryModel *model)
 {
 	gboolean hidden = FALSE;
@@ -1091,8 +1091,7 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db,
 	 * case we propagate the parent model's signals instead.
 	 */
 	for (i = 0; i < changes->len; i++) {
-		GValue *v = &g_array_index (changes, GValue, i);
-		RhythmDBEntryChange *change = g_value_get_boxed (v);
+		RhythmDBEntryChange *change = g_ptr_array_index (changes, i);
 
 		if (model->priv->base_model == NULL) {
 			g_signal_emit (G_OBJECT (model),

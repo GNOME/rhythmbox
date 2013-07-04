@@ -119,7 +119,7 @@ static void rb_shell_player_sync_with_source (RBShellPlayer *player);
 static void rb_shell_player_sync_with_selected_source (RBShellPlayer *player);
 static void rb_shell_player_entry_changed_cb (RhythmDB *db,
 					      RhythmDBEntry *entry,
-					      GArray *changes,
+					      GPtrArray *changes,
 					      RBShellPlayer *player);
 
 static void rb_shell_player_entry_activated_cb (RBEntryView *view,
@@ -1810,7 +1810,7 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 static void
 rb_shell_player_entry_changed_cb (RhythmDB *db,
 				  RhythmDBEntry *entry,
-				  GArray *changes,
+				  GPtrArray *changes,
 				  RBShellPlayer *player)
 {
 	gboolean synced = FALSE;
@@ -1830,8 +1830,7 @@ rb_shell_player_entry_changed_cb (RhythmDB *db,
 
 	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 	for (i = 0; i < changes->len; i++) {
-		GValue *v = &g_array_index (changes, GValue, i);
-		RhythmDBEntryChange *change = g_value_get_boxed (v);
+		RhythmDBEntryChange *change = g_ptr_array_index (changes, i);
 
 		/* update UI if the artist, title or album has changed */
 		switch (change->prop) {

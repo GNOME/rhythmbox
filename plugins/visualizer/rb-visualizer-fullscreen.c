@@ -263,14 +263,13 @@ playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, ClutterAct
 }
 
 static void
-entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry, GArray *changes, ClutterActor *label)
+entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry, GPtrArray *changes, ClutterActor *label)
 {
 	int i;
 	/* somehow check entry == playing entry */
 
 	for (i = 0; i < changes->len; i++) {
-		GValue *v = &g_array_index (changes, GValue, i);
-		RhythmDBEntryChange *change = g_value_get_boxed (v);
+		RhythmDBEntryChange *change = g_ptr_array_index (changes, i);
 		switch (change->prop) {
 		case RHYTHMDB_PROP_TITLE:
 		case RHYTHMDB_PROP_ARTIST:

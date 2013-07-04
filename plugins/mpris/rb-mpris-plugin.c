@@ -1240,7 +1240,7 @@ art_added_cb (RBExtDB *store, RBExtDBKey *key, const char *filename, GValue *dat
 }
 
 static void
-entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry, GArray *changes, RBMprisPlugin *plugin)
+entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry, GPtrArray *changes, RBMprisPlugin *plugin)
 {
 	RhythmDBEntry *playing_entry = rb_shell_player_get_playing_entry (plugin->player);
 	if (playing_entry == NULL) {
@@ -1252,7 +1252,7 @@ entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry, GArray *changes, RBMprisPl
 
 		/* make sure there's an interesting property change in there */
 		for (i = 0; i < changes->len; i++) {
-			RhythmDBEntryChange *change = g_value_get_boxed (&g_array_index (changes, GValue, i));
+			RhythmDBEntryChange *change = g_ptr_array_index (changes, i);
 			switch (change->prop) {
 				/* probably not complete */
 				case RHYTHMDB_PROP_MOUNTPOINT:
