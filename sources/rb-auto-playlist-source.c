@@ -755,7 +755,7 @@ rb_auto_playlist_source_do_query (RBAutoPlaylistSource *source, gboolean subset)
 }
 
 /**
- * rb_auto_playlist_source_set_query:
+ * rb_auto_playlist_source_set_query: (skip)
  * @source: the #RBAutoPlaylistSource
  * @query: (transfer none): the new database query
  * @limit_type: the playlist limit type
@@ -813,7 +813,7 @@ rb_auto_playlist_source_set_query (RBAutoPlaylistSource *source,
 }
 
 /**
- * rb_auto_playlist_source_get_query:
+ * rb_auto_playlist_source_get_query: (skip)
  * @source: the #RBAutoPlaylistSource
  * @query: (out caller-allocates) (transfer full): returns the database query for the playlist
  * @limit_type: (out callee-allocates): returns the playlist limit type
