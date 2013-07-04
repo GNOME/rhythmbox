@@ -322,3 +322,27 @@ rb_podcast_parse_item_free (RBPodcastItem *item)
 
 	g_free (item);
 }
+
+GType
+rb_podcast_channel_get_type (void)
+{
+	static GType type = 0;
+	if (G_UNLIKELY (type == 0)) {
+		type = g_boxed_type_register_static ("RBPodcastChannel",
+						     (GBoxedCopyFunc)rb_podcast_parse_channel_copy,
+						     (GBoxedFreeFunc)rb_podcast_parse_channel_free);
+	}
+	return type;
+}
+
+GType
+rb_podcast_item_get_type (void)
+{
+	static GType type = 0;
+	if (G_UNLIKELY (type == 0)) {
+		type = g_boxed_type_register_static ("RBPodcastItem",
+						     (GBoxedCopyFunc)rb_podcast_parse_item_copy,
+						     (GBoxedFreeFunc)rb_podcast_parse_item_free);
+	}
+	return type;
+}

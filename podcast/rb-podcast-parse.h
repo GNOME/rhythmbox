@@ -70,6 +70,11 @@ typedef struct
 	int num_posts;
 } RBPodcastChannel;
 
+GType	rb_podcast_channel_get_type (void);
+GType	rb_podcast_item_get_type (void);
+#define RB_TYPE_PODCAST_CHANNEL	(rb_podcast_channel_get_type ())
+#define RB_TYPE_PODCAST_ITEM (rb_podcast_item_get_type ())
+
 gboolean rb_podcast_parse_load_feed	(RBPodcastChannel *data,
 					 const char *url,
 					 gboolean existing_feed,
