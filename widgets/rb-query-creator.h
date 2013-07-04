@@ -60,14 +60,14 @@ GType		rb_query_creator_get_type	(void);
 GtkWidget *	rb_query_creator_new		(RhythmDB *db);
 
 GtkWidget *	rb_query_creator_new_from_query	(RhythmDB *db, GPtrArray *query,
-						 RhythmDBQueryModelLimitType limit_type, GArray *limit_value,
+						 RhythmDBQueryModelLimitType limit_type, GVariant *limit_value,
 						 const char *sort_column, gint sort_direction);
 
 GPtrArray *	rb_query_creator_get_query	(RBQueryCreator *creator);
 
 void		rb_query_creator_get_limit	(RBQueryCreator *creator,
 						 RhythmDBQueryModelLimitType *type,
-						 GArray **limit);
+						 GVariant **limit);
 
 void		rb_query_creator_get_sort_order (RBQueryCreator *creator, const char **sort_key, gint *sort_direction);
 

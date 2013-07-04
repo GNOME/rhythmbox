@@ -18,93 +18,6 @@
 #endif
 
 static gboolean
-rb_value_array_equal (GArray *a1, GArray *a2)
-{
-	int i;
-
-	if (a1 == NULL && a2 == NULL)
-		return TRUE;
-	else if (a1 == NULL || a2 == NULL)
-		return FALSE;
-
-	if (a1->len != a2->len)
-		return FALSE;
-
-	for (i = 0; i < a1->len; i++) {
-		GValue *v1, *v2;
-
-		v1 = &g_array_index (a1, GValue, i);
-		v2 = &g_array_index (a2, GValue, i);
-		if (rb_gvalue_compare (v1, v2) != 0)
-			return FALSE;
-	}
-
-	return TRUE;
-}
-
-static char *
-rb_gvalue_array_to_string (GArray *a)
-{
-	int i;
-	GString *s;
-
-	if (a == NULL)
-		return strdup ("");
-
-	s = g_string_new ("(");
-
-	for (i = 0; i < a->len; i++) {
-		GValue *val;
-	
-		if (i != 0)
-			g_string_append (s, ", ");
-
-		val = &g_array_index (a, GValue, i);
-		switch (G_VALUE_TYPE (val)) {
-		case G_TYPE_STRING:
-			g_string_append_printf (s, "\"%s\"", g_value_get_string (val));
-			break;
-		case G_TYPE_BOOLEAN:
-			g_string_append_printf (s, "%d", g_value_get_boolean (val));
-			break;
-		case G_TYPE_INT:
-			g_string_append_printf (s, "%d", g_value_get_int (val));
-			break;
-		case G_TYPE_LONG:
-			g_string_append_printf (s, "%ld", g_value_get_long (val));
-			break;
-		case G_TYPE_ULONG:
-			g_string_append_printf (s, "%lu", g_value_get_ulong (val));
-			break;
-		case G_TYPE_UINT64:
-			g_string_append_printf (s, "%" G_GUINT64_FORMAT, g_value_get_uint64 (val));
-			break;
-		case G_TYPE_FLOAT:
-			g_string_append_printf (s, "%f", g_value_get_float (val));
-			break;
-		case G_TYPE_DOUBLE:
-			g_string_append_printf (s, "%f", g_value_get_double (val));
-			break;
-		case G_TYPE_POINTER:
-			g_string_append_printf (s, "P:%p", g_value_get_pointer (val));
-			break;
-		case G_TYPE_BOXED:
-			g_string_append_printf (s, "B:%p", g_value_get_boxed (val));
-			break;
-		case G_TYPE_OBJECT:
-			g_string_append_printf (s, "O:%p", g_value_get_object (val));
-			break;
-		default:
-			g_string_append(s, "Unknown");
-		}
-	}
-
-	g_string_append_c (s, ')');
-
-	return g_string_free (s, FALSE);
-}
-
-static gboolean
 rhythmdb_query_equal (const RhythmDBQuery *q1, const RhythmDBQuery *q2)
 {
 	int i;
@@ -146,14 +59,14 @@ static void
 query_creator_test_load_query (RhythmDB *db,
 			       RhythmDBQuery *query,
 			       RhythmDBQueryModelLimitType limit_type,
-			       GArray *limit_value,
+			       GVariant *limit_value,
 			       const char *sort_column,
 			       gint sort_direction)
 {
 	GtkWidget *creator;
 	RhythmDBQuery *squery;
 	RhythmDBQuery *query2 = NULL;
-	GArray *limit_value2 = NULL;
+	GVariant *limit_value2 = NULL;
 	const char *sort_column2 = NULL;
 	RhythmDBQueryModelLimitType limit_type2;
 	gint sort_direction2;
@@ -185,16 +98,16 @@ query_creator_test_load_query (RhythmDB *db,
 	/* check limits */
 	rb_query_creator_get_limit (RB_QUERY_CREATOR (creator),
 				    &limit_type2, &limit_value2);
-	str1 = rb_gvalue_array_to_string (limit_value);
-	str2 = rb_gvalue_array_to_string (limit_value2);
 	fail_unless (limit_type == limit_type2,
 		     "limit types differ: %d; %d", limit_type, limit_type2);
-	fail_unless (rb_value_array_equal (limit_value, limit_value2),
-		     "limit values differ: %s; %s", str1, str2);
-	g_free (str2);
-	g_free (str1);
+	if (limit_value == NULL) {
+		fail_unless (limit_value == limit_value2, "wasn't supposed to get a limit value");
+	} else {
+		fail_unless (g_variant_equal (limit_value, limit_value2),
+			     "limit values differ: %s; %s", g_variant_print (limit_value, TRUE), g_variant_print (limit_value2, TRUE));
+	}
 	if (limit_value2)
-		g_array_unref (limit_value2);
+		g_variant_unref (limit_value2);
 
 	/* check sorting */
 	rb_query_creator_get_sort_order (RB_QUERY_CREATOR (creator),
@@ -274,114 +187,84 @@ END_TEST
 START_TEST (test_query_creator_load_limit_count)
 {
 	RhythmDBQuery *query;
-	GArray *array;
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_END);
-	array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
-	g_array_set_clear_func (array, (GDestroyNotify) g_value_unset);
-	rb_value_array_append_data (array, G_TYPE_ULONG, 47);
 	query_creator_test_load_query (db,
 				       query,
-				       RHYTHMDB_QUERY_MODEL_LIMIT_COUNT, array,
+				       RHYTHMDB_QUERY_MODEL_LIMIT_COUNT, g_variant_new_uint64 (47),
 				       "Title", GTK_SORT_ASCENDING);
 	rhythmdb_query_free (query);
-	g_array_unref (array);
 }
 END_TEST
 
 START_TEST (test_query_creator_load_limit_minutes)
 {
 	RhythmDBQuery *query;
-	GArray *array;
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_END);
-	array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
-	g_array_set_clear_func (array, (GDestroyNotify) g_value_unset);
-	rb_value_array_append_data (array, G_TYPE_ULONG, 37 * 60);
 	query_creator_test_load_query (db,
 				       query,
-				       RHYTHMDB_QUERY_MODEL_LIMIT_TIME, array,
+				       RHYTHMDB_QUERY_MODEL_LIMIT_TIME, g_variant_new_uint64 (37 * 60),
 				       "Title", GTK_SORT_ASCENDING);
 	rhythmdb_query_free (query);
-	g_array_unref (array);
 }
 END_TEST
 
 START_TEST (test_query_creator_load_limit_hours)
 {
 	RhythmDBQuery *query;
-	GArray *array;
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_END);
-	array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
-	g_array_set_clear_func (array, (GDestroyNotify) g_value_unset);
-	rb_value_array_append_data (array, G_TYPE_ULONG, 41 * 60 * 60);
 	query_creator_test_load_query (db,
 				       query,
-				       RHYTHMDB_QUERY_MODEL_LIMIT_TIME, array,
+				       RHYTHMDB_QUERY_MODEL_LIMIT_TIME, g_variant_new_uint64 (41 * 60 * 60),
 				       "Title", GTK_SORT_ASCENDING);
 	rhythmdb_query_free (query);
-	g_array_unref (array);
 }
 END_TEST
 
 START_TEST (test_query_creator_load_limit_days)
 {
 	RhythmDBQuery *query;
-	GArray *array;
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_END);
-	array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
-	g_array_set_clear_func (array, (GDestroyNotify) g_value_unset);
-	rb_value_array_append_data (array, G_TYPE_ULONG, 13 * 60 * 60 * 24);
 	query_creator_test_load_query (db,
 				       query,
-				       RHYTHMDB_QUERY_MODEL_LIMIT_TIME, array,
+				       RHYTHMDB_QUERY_MODEL_LIMIT_TIME, g_variant_new_uint64 (13 * 60 * 60 * 24),
 				       "Title", GTK_SORT_ASCENDING);
 	rhythmdb_query_free (query);
-	g_array_unref (array);
 }
 END_TEST
 
 START_TEST (test_query_creator_load_limit_mb)
 {
 	RhythmDBQuery *query;
-	GArray *array;
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_END);
-	array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
-	g_array_set_clear_func (array, (GDestroyNotify) g_value_unset);
-	rb_value_array_append_data (array, G_TYPE_UINT64, (guint64)13);
 	query_creator_test_load_query (db,
 				       query,
-				       RHYTHMDB_QUERY_MODEL_LIMIT_SIZE, array,
+				       RHYTHMDB_QUERY_MODEL_LIMIT_SIZE, g_variant_new_uint64 (13),
 				       "Title", GTK_SORT_ASCENDING);
 	rhythmdb_query_free (query);
-	g_array_unref (array);
 }
 END_TEST
 
 START_TEST (test_query_creator_load_limit_gb)
 {
 	RhythmDBQuery *query;
-	GArray *array;
 
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_END);
-	array = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
-	g_array_set_clear_func (array, (GDestroyNotify) g_value_unset);
-	rb_value_array_append_data (array, G_TYPE_UINT64, (guint64)(14 * 1000));
 	query_creator_test_load_query (db,
 				       query,
-				       RHYTHMDB_QUERY_MODEL_LIMIT_SIZE, array,
+				       RHYTHMDB_QUERY_MODEL_LIMIT_SIZE, g_variant_new_uint64 (14 * 1000),
 				       "Title", GTK_SORT_ASCENDING);
 	rhythmdb_query_free (query);
-	g_array_unref (array);
 }
 END_TEST
 

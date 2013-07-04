@@ -224,7 +224,7 @@ struct _RhythmDBQueryModelPrivate
 	guint stamp;
 
 	RhythmDBQueryModelLimitType limit_type;
-	GArray *limit_value;
+	GVariant *limit_value;
 
 	glong total_duration;
 	guint64 total_size;
@@ -366,11 +366,12 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_LIMIT_VALUE,
-					 g_param_spec_boxed ("limit-value",
-							     "limit-value",
-							     "value of limit",
-							     G_TYPE_ARRAY,
-							     G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_variant ("limit-value",
+							       "limit-value",
+							       "value of limit",
+							       G_VARIANT_TYPE_UINT64,
+							       NULL,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_SHOW_HIDDEN,
 					 g_param_spec_boolean ("show-hidden",
@@ -600,8 +601,8 @@ rhythmdb_query_model_set_property (GObject *object,
 		break;
 	case PROP_LIMIT_VALUE:
 		if (model->priv->limit_value)
-			g_array_unref (model->priv->limit_value);
-		model->priv->limit_value = (GArray*)g_value_dup_boxed (value);
+			g_variant_unref (model->priv->limit_value);
+		model->priv->limit_value = g_value_dup_variant (value);
 		break;
 	case PROP_SHOW_HIDDEN:
 		model->priv->show_hidden = g_value_get_boolean (value);
@@ -647,7 +648,7 @@ rhythmdb_query_model_get_property (GObject *object,
 		g_value_set_enum (value, model->priv->limit_type);
 		break;
 	case PROP_LIMIT_VALUE:
-		g_value_set_boxed (value, model->priv->limit_value);
+		g_value_set_variant (value, model->priv->limit_value);
 		break;
 	case PROP_SHOW_HIDDEN:
 		g_value_set_boolean (value, model->priv->show_hidden);
@@ -794,7 +795,7 @@ rhythmdb_query_model_finalize (GObject *object)
 		model->priv->sort_data_destroy (model->priv->sort_data);
 
 	if (model->priv->limit_value)
-		g_array_unref (model->priv->limit_value);
+		g_variant_unref (model->priv->limit_value);
 
 	G_OBJECT_CLASS (rhythmdb_query_model_parent_class)->finalize (object);
 }
@@ -3317,10 +3318,10 @@ rhythmdb_query_model_within_limit (RhythmDBQueryModel *model,
 
 	case RHYTHMDB_QUERY_MODEL_LIMIT_COUNT:
 		{
-			gulong limit_count;
-			gulong current_count;
+			guint64 limit_count;
+			guint64 current_count;
 
-			limit_count = g_value_get_ulong (&g_array_index (model->priv->limit_value, GValue, 0));
+			limit_count = g_variant_get_uint64 (model->priv->limit_value);
 			current_count = g_hash_table_size (model->priv->reverse_map);
 
 			if (entry)
@@ -3335,7 +3336,7 @@ rhythmdb_query_model_within_limit (RhythmDBQueryModel *model,
 			guint64 limit_size;
 			guint64 current_size;
 
-			limit_size = g_value_get_uint64 (&g_array_index (model->priv->limit_value, GValue, 0));
+			limit_size = g_variant_get_uint64 (model->priv->limit_value);
 			current_size = model->priv->total_size;
 
 			if (entry)
@@ -3348,10 +3349,10 @@ rhythmdb_query_model_within_limit (RhythmDBQueryModel *model,
 
 	case RHYTHMDB_QUERY_MODEL_LIMIT_TIME:
 		{
-			gulong limit_time;
-			gulong current_time;
+			guint64 limit_time;
+			guint64 current_time;
 
-			limit_time = g_value_get_ulong (&g_array_index (model->priv->limit_value, GValue, 0));
+			limit_time = g_variant_get_uint64 (model->priv->limit_value);
 			current_time = model->priv->total_duration;
 
 			if (entry)

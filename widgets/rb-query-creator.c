@@ -351,7 +351,7 @@ static gboolean
 rb_query_creator_load_query (RBQueryCreator *creator,
                              GPtrArray *query,
 			     RhythmDBQueryModelLimitType limit_type,
-                             GArray *limit_value)
+                             GVariant *limit_value)
 {
 	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
 	int i;
@@ -418,17 +418,17 @@ rb_query_creator_load_query (RBQueryCreator *creator,
 
 	case RHYTHMDB_QUERY_MODEL_LIMIT_COUNT:
 		gtk_combo_box_set_active (GTK_COMBO_BOX (priv->limit_option), 0);
-		limit = g_value_get_ulong (&g_array_index (limit_value, GValue, 0));
+		limit = g_variant_get_uint64 (limit_value);
 		break;
 
 	case RHYTHMDB_QUERY_MODEL_LIMIT_TIME:
 		gtk_combo_box_set_active (GTK_COMBO_BOX (priv->limit_option), 3);
 		/* convert to minutes */
-		limit = g_value_get_ulong (&g_array_index (limit_value, GValue, 0)) / 60;
+		limit = g_variant_get_uint64 (limit_value) / 60;
 		break;
 
 	case RHYTHMDB_QUERY_MODEL_LIMIT_SIZE:
-		limit = g_value_get_uint64 (&g_array_index (limit_value, GValue, 0));
+		limit = g_variant_get_uint64 (limit_value);
 
 		if (limit % 1000 == 0) {
 			gtk_combo_box_set_active (GTK_COMBO_BOX (priv->limit_option), 2);
@@ -495,7 +495,7 @@ GtkWidget *
 rb_query_creator_new_from_query (RhythmDB *db,
                                  GPtrArray *query,
 				 RhythmDBQueryModelLimitType limit_type,
-                                 GArray *limit_value,
+                                 GVariant *limit_value,
 				 const char *sort_column,
                                  gint sort_direction)
 {
@@ -632,13 +632,11 @@ rb_query_creator_get_query (RBQueryCreator *creator)
  * @limit: (out): used to return the limit value
  *
  * Retrieves the limit type and value from the query creator.
- * The limit value is returned as the first element in a
- * #GArray.
  */
 void
 rb_query_creator_get_limit (RBQueryCreator *creator,
 			    RhythmDBQueryModelLimitType *type,
-                            GArray **limit)
+                            GVariant **limit)
 {
 	RBQueryCreatorPrivate *priv;
 
@@ -648,29 +646,26 @@ rb_query_creator_get_limit (RBQueryCreator *creator,
 
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->limit_check))) {
 		guint64 l;
-
 		l = gtk_spin_button_get_value(GTK_SPIN_BUTTON (priv->limit_entry));
-		*limit = g_array_sized_new (FALSE, TRUE, sizeof (GValue), 0);
-		g_array_set_clear_func (*limit, (GDestroyNotify) g_value_unset);
 
 		switch (gtk_combo_box_get_active (GTK_COMBO_BOX (priv->limit_option))) {
 		case 0:
 			*type = RHYTHMDB_QUERY_MODEL_LIMIT_COUNT;
-			rb_value_array_append_data (*limit, G_TYPE_ULONG, (gulong)l);
+			*limit = g_variant_new_uint64 (l);
 			break;
 		case 1:
 			*type = RHYTHMDB_QUERY_MODEL_LIMIT_SIZE;
-			rb_value_array_append_data (*limit, G_TYPE_UINT64, l);
+			*limit = g_variant_new_uint64 (l);
 			break;
 
 		case 2:
 			*type = RHYTHMDB_QUERY_MODEL_LIMIT_SIZE;
-			rb_value_array_append_data (*limit, G_TYPE_UINT64, l * 1000);
+			*limit = g_variant_new_uint64 (l * 1000);
 			break;
 
 		case 3:
 			*type = RHYTHMDB_QUERY_MODEL_LIMIT_TIME;
-			rb_value_array_append_data (*limit, G_TYPE_ULONG, (gulong)l * 60);
+			*limit = g_variant_new_uint64 (l * 60);
 			break;
 
 		default:
