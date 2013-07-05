@@ -30,6 +30,19 @@ format = audio/x-vorbis
 presence = 1
 
 
+[profile-oggopus]
+name = oggopus
+description = Ogg Opus
+format = application/ogg
+type = container
+
+[streamprofile-oggopus-1]
+parent = oggopus
+type = audio
+format = audio/x-opus
+presence = 1
+
+
 [profile-flac]
 name = flac
 description = FLAC
@@ -54,3 +67,4 @@ presence = 1
 lamemp3enc = quality
 faac = quality
 vorbisenc = quality
+opusenc = bitrate

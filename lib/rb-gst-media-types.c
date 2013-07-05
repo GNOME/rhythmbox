@@ -163,6 +163,8 @@ rb_gst_media_type_to_extension (const char *media_type)
 		return "mp3";
 	} else if (!strcmp (media_type, "audio/x-vorbis") || !strcmp (media_type, "application/ogg") || !strcmp (media_type, "audio/ogg")) {
 		return "ogg";
+	} else if (!strcmp (media_type, "audio/x-opus")) {
+		return "opus";
 	} else if (!strcmp (media_type, "audio/x-flac") || !strcmp (media_type, "audio/flac")) {
 		return "flac";
 	} else if (!strcmp (media_type, "audio/x-aac") || !strcmp (media_type, "audio/aac") || !strcmp (media_type, "audio/x-alac")) {
