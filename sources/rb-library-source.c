@@ -657,7 +657,7 @@ update_property_editor_for_preset (RBLibrarySource *source, const char *media_ty
 	}
 
 	/* create new property editor, if required */
-	if (style != -1) {
+	if (style != -1 && source->priv->encoder_element) {
 		GstEncodingProfile *profile;
 		char **profile_settings;
 
