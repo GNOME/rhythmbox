@@ -368,7 +368,7 @@ get_audio_encoder_factory (GstEncodingProfile *profile)
 	if (fl != NULL) {
 		f = gst_object_ref (fl->data);
 	} else {
-		g_warning ("no encoder factory for profile %s", gst_encoding_profile_get_name (p));
+		g_warning ("no encoder factory for profile %s", gst_encoding_profile_get_name (profile));
 		f = NULL;
 	}
 	gst_plugin_feature_list_free (l);
