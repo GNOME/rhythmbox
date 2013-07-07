@@ -126,16 +126,16 @@ typedef struct {
 	char *path;
 } LibraryPathElement;
 
-const LibraryPathElement library_layout_paths[] = {
+static const LibraryPathElement library_layout_paths[] = {
 	{N_("Artist/Artist - Album"), "%aa/%aa - %at"},
 	{N_("Artist/Album"), "%aa/%at"},
 	{N_("Artist - Album"), "%aa - %at"},
 	{N_("Album"), "%at"},
 	{N_("Artist"), "%aa"},
 };
-const int num_library_layout_paths = G_N_ELEMENTS (library_layout_paths);
+static const int num_library_layout_paths = G_N_ELEMENTS (library_layout_paths);
 
-const LibraryPathElement library_layout_filenames[] = {
+static const LibraryPathElement library_layout_filenames[] = {
 	{N_("Number - Title"), "%tN - %tt"},
 	{N_("Artist - Title"), "%ta - %tt"},
 	{N_("Artist - Number - Title"), "%ta - %tN - %tt"},
@@ -143,9 +143,22 @@ const LibraryPathElement library_layout_filenames[] = {
 	{N_("Title"), "%tt"},
 	{N_("Number. Artist - Title"), "%tN. %ta - %tt"},
 };
-const int num_library_layout_filenames = G_N_ELEMENTS (library_layout_filenames);
+static const int num_library_layout_filenames = G_N_ELEMENTS (library_layout_filenames);
 
-#define CUSTOM_SETTINGS_PRESET	"rhythmbox-custom-settings"
+#define CUSTOM_SETTINGS_PREFIX "rhythmbox-custom-settings"
+#define CBR_SETTINGS_PRESET CUSTOM_SETTINGS_PREFIX "-cbr"
+/* this preset name was used in releases where we only had VBR custom settings */
+#define VBR_SETTINGS_PRESET CUSTOM_SETTINGS_PREFIX
+
+static struct {
+	const char *style;
+	const char *label;
+	const char *preset;
+} library_encoding_styles[] = {
+	{ "cbr", N_("Constant bit rate"), CBR_SETTINGS_PRESET },
+	{ "vbr", N_("Variable bit rate"), VBR_SETTINGS_PRESET },
+};
+
 
 struct RBLibrarySourcePrivate
 {
@@ -176,8 +189,8 @@ struct RBLibrarySourcePrivate
 	GList *import_jobs;
 	guint start_import_job_id;
 	gulong profile_changed_id;
-	gboolean custom_settings_exists;
 	gboolean profile_init;
+	char *preset_name;
 	gboolean do_initial_import;
 
 	GSettings *settings;
@@ -608,9 +621,78 @@ profile_changed_cb (RBObjectPropertyEditor *editor, RBLibrarySource *source)
 	if (source->priv->profile_init)
 		return;
 
-	if (source->priv->encoder_element)
+	if (source->priv->encoder_element) {
+		rb_debug ("updating preset %s", source->priv->preset_name);
 		gst_preset_save_preset (GST_PRESET (source->priv->encoder_element),
-						    CUSTOM_SETTINGS_PRESET);
+						    source->priv->preset_name);
+	}
+}
+
+static void
+update_property_editor_for_preset (RBLibrarySource *source, const char *media_type, const char *preset)
+{
+	int i;
+	int style;
+
+	/* figure out if this is a user-settings preset name */
+	style = -1;
+	for (i = 0; i < G_N_ELEMENTS (library_encoding_styles); i++) {
+		if (g_strcmp0 (preset, library_encoding_styles[i].preset) == 0) {
+			style = i;
+			break;
+		}
+	}
+
+	/* remove old property editor, if there is one */
+	if (source->priv->encoder_property_editor != NULL) {
+		g_signal_handler_disconnect (source->priv->encoder_property_editor,
+					     source->priv->profile_changed_id);
+
+		gtk_container_remove (GTK_CONTAINER (source->priv->encoder_property_holder),
+				      source->priv->encoder_property_editor);
+		source->priv->profile_changed_id = 0;
+		source->priv->encoder_property_editor = NULL;
+		g_free (source->priv->preset_name);
+		source->priv->preset_name = NULL;
+	}
+
+	/* create new property editor, if required */
+	if (style != -1) {
+		GstEncodingProfile *profile;
+		char **profile_settings;
+
+		/* make sure the preset exists so encoder batches can use it */
+		if (gst_preset_load_preset (GST_PRESET (source->priv->encoder_element), preset) == FALSE) {
+			if (rb_gst_encoder_set_encoding_style (source->priv->encoder_element,
+							       library_encoding_styles[style].style)) {
+				gst_preset_save_preset (GST_PRESET (source->priv->encoder_element),
+							preset);
+			}
+		}
+
+		profile = rb_gst_get_encoding_profile (media_type);
+		profile_settings =
+			rb_gst_encoding_profile_get_settings (profile,
+							      library_encoding_styles[style].style);
+		source->priv->encoder_property_editor =
+			rb_object_property_editor_new (G_OBJECT (source->priv->encoder_element),
+						       profile_settings);
+		g_strfreev (profile_settings);
+		gst_encoding_profile_unref (profile);
+
+		source->priv->profile_changed_id =
+			g_signal_connect (source->priv->encoder_property_editor,
+					  "changed",
+					  G_CALLBACK (profile_changed_cb),
+					  source);
+
+		gtk_grid_attach (GTK_GRID (source->priv->encoder_property_holder),
+				 source->priv->encoder_property_editor,
+				 0, 0, 1, 1);
+		gtk_widget_show_all (source->priv->encoder_property_editor);
+
+		source->priv->preset_name = g_strdup (preset);
+	}
 }
 
 static void
@@ -621,19 +703,12 @@ update_presets (RBLibrarySource *source, const char *media_type)
 	GstEncodingProfile *profile;
 	char **profile_settings;
 	char **profile_presets;
+	int i;
 
 	source->priv->profile_init = TRUE;
 
 	gtk_list_store_clear (GTK_LIST_STORE (source->priv->preset_model));
 
-	if (source->priv->encoder_property_editor != NULL) {
-		g_signal_handler_disconnect (source->priv->encoder_property_editor,
-					     source->priv->profile_changed_id);
-		gtk_container_remove (GTK_CONTAINER (source->priv->encoder_property_holder),
-				      source->priv->encoder_property_editor);
-		source->priv->profile_changed_id = 0;
-		source->priv->encoder_property_editor = NULL;
-	}
 	if (source->priv->encoder_element != NULL) {
 		gst_object_unref (source->priv->encoder_element);
 		source->priv->encoder_element = NULL;
@@ -663,40 +738,19 @@ update_presets (RBLibrarySource *source, const char *media_type)
 		source->priv->profile_init = FALSE;
 		return;
 	}
+	source->priv->encoder_element = rb_gst_encoding_profile_get_encoder (profile);
 
-	profile_settings = rb_gst_encoding_profile_get_settings (profile);
-	if (profile_settings != NULL) {
+	for (i = 0; i < G_N_ELEMENTS (library_encoding_styles); i++) {
+		profile_settings = rb_gst_encoding_profile_get_settings (profile, library_encoding_styles[i].style);
+		if (profile_settings == NULL)
+			continue;
 
-		rb_debug ("profile has custom settings");
+		rb_debug ("profile has custom settings for style %s", library_encoding_styles[i].style);
 		insert_preset (source,
-			       _("Custom settings"),
-			       CUSTOM_SETTINGS_PRESET,
-			       g_strcmp0 (active_preset, CUSTOM_SETTINGS_PRESET) == 0);
+			       gettext (library_encoding_styles[i].label),
+			       library_encoding_styles[i].preset,
+			       g_strcmp0 (active_preset, library_encoding_styles[i].preset) == 0);
 		gtk_widget_set_sensitive (source->priv->preset_menu, TRUE);
-
-		source->priv->encoder_element = rb_gst_encoding_profile_get_encoder (profile);
-		source->priv->custom_settings_exists =
-			gst_preset_load_preset (GST_PRESET (source->priv->encoder_element),
-						CUSTOM_SETTINGS_PRESET);
-
-		source->priv->encoder_property_editor =
-			rb_object_property_editor_new (G_OBJECT (source->priv->encoder_element),
-						       profile_settings);
-		source->priv->profile_changed_id =
-			g_signal_connect (source->priv->encoder_property_editor,
-					  "changed",
-					  G_CALLBACK (profile_changed_cb),
-					  source);
-
-		gtk_grid_attach (GTK_GRID (source->priv->encoder_property_holder),
-				 source->priv->encoder_property_editor,
-				 0, 0, 1, 1);
-		gtk_widget_show_all (source->priv->encoder_property_editor);
-		gtk_widget_set_no_show_all (source->priv->encoder_property_editor, TRUE);
-		if (g_strcmp0 (active_preset, CUSTOM_SETTINGS_PRESET) != 0) {
-			gtk_widget_hide (source->priv->encoder_property_editor);
-		}
-		g_strfreev (profile_settings);
 	}
 
 	/* get list of actual presets for the media type */
@@ -704,7 +758,7 @@ update_presets (RBLibrarySource *source, const char *media_type)
 	if (profile_presets) {
 		int i;
 		for (i = 0; profile_presets[i] != NULL; i++) {
-			if (g_strcmp0 (profile_presets[i], CUSTOM_SETTINGS_PRESET) == 0)
+			if (g_str_has_prefix (profile_presets[i], CUSTOM_SETTINGS_PREFIX))
 				continue;
 
 			rb_debug ("profile has preset %s", profile_presets[i]);
@@ -716,6 +770,8 @@ update_presets (RBLibrarySource *source, const char *media_type)
 		}
 		g_strfreev (profile_presets);
 	}
+
+	update_property_editor_for_preset (source, media_type, active_preset);
 
 	gst_encoding_profile_unref (profile);
 	source->priv->profile_init = FALSE;
@@ -822,7 +878,7 @@ impl_get_config_widget (RBDisplayPage *asource, RBShellPreferences *prefs)
 			  "clicked",
 			  G_CALLBACK (rb_library_source_location_button_clicked_cb),
 			  asource);
-	g_signal_connect (G_OBJECT (source->priv->library_location_entry),
+	g_signal_connect (source->priv->library_location_entry,
 			  "focus-out-event",
 			  G_CALLBACK (rb_library_source_library_location_cb),
 			  asource);
@@ -839,7 +895,7 @@ impl_get_config_widget (RBDisplayPage *asource, RBShellPreferences *prefs)
 	source->priv->layout_path_menu = gtk_combo_box_text_new ();
 	gtk_box_pack_start (GTK_BOX (tmp), source->priv->layout_path_menu, TRUE, TRUE, 0);
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->layout_path_menu);
-	g_signal_connect (G_OBJECT (source->priv->layout_path_menu),
+	g_signal_connect (source->priv->layout_path_menu,
 			  "changed",
 			  G_CALLBACK (rb_library_source_path_changed_cb),
 			  asource);
@@ -853,7 +909,7 @@ impl_get_config_widget (RBDisplayPage *asource, RBShellPreferences *prefs)
 	source->priv->layout_filename_menu = gtk_combo_box_text_new ();
 	gtk_box_pack_start (GTK_BOX (tmp), source->priv->layout_filename_menu, TRUE, TRUE, 0);
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), source->priv->layout_filename_menu);
-	g_signal_connect (G_OBJECT (source->priv->layout_filename_menu),
+	g_signal_connect (source->priv->layout_filename_menu,
 			  "changed",
 			  G_CALLBACK (rb_library_source_filename_changed_cb),
 			  asource);
@@ -891,7 +947,7 @@ impl_get_config_widget (RBDisplayPage *asource, RBShellPreferences *prefs)
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (source->priv->preferred_format_menu), renderer, TRUE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (source->priv->preferred_format_menu), renderer, "text", 1, NULL);
 
-	g_signal_connect (G_OBJECT (source->priv->preferred_format_menu),
+	g_signal_connect (source->priv->preferred_format_menu,
 			  "changed",
 			  G_CALLBACK (rb_library_source_format_changed_cb),
 			  asource);
@@ -902,7 +958,7 @@ impl_get_config_widget (RBDisplayPage *asource, RBShellPreferences *prefs)
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (source->priv->preset_menu), renderer, TRUE);
 	gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (source->priv->preset_menu), renderer, "text", 0, NULL);
 
-	g_signal_connect (G_OBJECT (source->priv->preset_menu),
+	g_signal_connect (source->priv->preset_menu,
 			  "changed",
 			  G_CALLBACK (rb_library_source_preset_changed_cb),
 			  asource);
@@ -912,7 +968,7 @@ impl_get_config_widget (RBDisplayPage *asource, RBShellPreferences *prefs)
 
 	source->priv->install_plugins_button = GTK_WIDGET (gtk_builder_get_object (builder, "install_plugins_button"));
 	gtk_widget_set_no_show_all (source->priv->install_plugins_button, TRUE);
-	g_signal_connect (G_OBJECT (source->priv->install_plugins_button), "clicked", G_CALLBACK (rb_library_source_install_plugins_cb), source);
+	g_signal_connect (source->priv->install_plugins_button, "clicked", G_CALLBACK (rb_library_source_install_plugins_cb), source);
 
 	source->priv->encoder_property_holder = GTK_WIDGET (gtk_builder_get_object (builder, "encoder_property_holder"));
 
@@ -1096,23 +1152,7 @@ rb_library_source_preset_changed_cb (GtkWidget *widget, RBLibrarySource *source)
 		rb_debug ("no preset selected for media type %s?", media_type);
 	}
 
-	/* update custom settings widgets */
-	if (g_strcmp0 (preset, CUSTOM_SETTINGS_PRESET) == 0) {
-		/* make sure the preset exists so encoder batches can use it */
-		if (source->priv->custom_settings_exists == FALSE) {
-			gst_preset_save_preset (GST_PRESET (source->priv->encoder_element),
-						CUSTOM_SETTINGS_PRESET);
-		}
-
-		if (source->priv->encoder_property_editor != NULL) {
-			gtk_widget_show (source->priv->encoder_property_editor);
-		}
-	} else {
-
-		if (source->priv->encoder_property_editor != NULL) {
-			gtk_widget_hide (source->priv->encoder_property_editor);
-		}
-	}
+	update_property_editor_for_preset (source, media_type, preset);
 
 	/* store selected preset */
 	settings = g_settings_get_value (source->priv->encoding_settings, "media-type-presets");

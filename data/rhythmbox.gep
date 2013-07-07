@@ -63,8 +63,38 @@ format = audio/mpeg, mpegversion=4, stream-format=raw
 presence = 1
 
 [rhythmbox-encoder-settings]
-# maps encoder elements to lists of settings to expose
-lamemp3enc = quality
-faac = quality
-vorbisenc = quality
-opusenc = bitrate
+# maps encoder elements and encoding types to lists of settings to expose
+lamemp3enc-vbr = quality
+lamemp3enc-cbr = bitrate
+faac-vbr = quality
+faac-cbr = bitrate
+vorbisenc-vbr = quality
+vorbisenc-cbr = bitrate
+opusenc-cbr = bitrate
+opusenc-vbr = bitrate
+
+# these bits tell us how to set up encoders for different encoding types
+[rhythmbox-encoding-lamemp3enc-vbr]
+target = 0
+
+[rhythmbox-encoding-lamemp3enc-cbr]
+target = 1
+
+[rhythmbox-encoding-vorbisenc-vbr]
+managed = false
+
+[rhythmbox-encoding-vorbisenc-cbr]
+managed = true
+
+[rhythmbox-encoding-faac-vbr]
+rate-control = 0
+
+[rhythmbox-encoding-faac-cbr]
+rate-control = 1
+
+[rhythmbox-encoding-opusenc-vbr]
+cbr = false
+constrained-vbr = true
+
+[rhythmbox-encoding-opusenc-cbr]
+cbr = true
