@@ -53,6 +53,7 @@ struct _RBEncoderGstPrivate {
 
 	GstElement *encodebin;
 	GstElement *pipeline;
+	guint bus_watch_id;
 
 	gboolean transcoding;
 	gint decoded_pads;
@@ -273,7 +274,9 @@ start_pipeline (RBEncoderGst *encoder)
 	g_assert (encoder->priv->pipeline != NULL);
 
 	bus = gst_pipeline_get_bus (GST_PIPELINE (encoder->priv->pipeline));
-	gst_bus_add_watch (bus, bus_watch_cb, encoder);
+	g_assert(encoder->priv->bus_watch_id == 0);
+	encoder->priv->bus_watch_id = gst_bus_add_watch (bus, bus_watch_cb, encoder);
+	g_object_unref (bus);
 
 	result = gst_element_set_state (encoder->priv->pipeline, GST_STATE_PLAYING);
 	if (result != GST_STATE_CHANGE_FAILURE) {
@@ -835,6 +838,11 @@ impl_finalize (GObject *object)
 
 	if (encoder->priv->progress_id != 0)
 		g_source_remove (encoder->priv->progress_id);
+
+	if (encoder->priv->bus_watch_id != 0) {
+		g_source_remove (encoder->priv->bus_watch_id);
+		encoder->priv->bus_watch_id = 0;
+	}
 
 	if (encoder->priv->pipeline) {
 		gst_element_set_state (encoder->priv->pipeline, GST_STATE_NULL);
