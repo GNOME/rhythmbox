@@ -94,8 +94,6 @@ struct _RBDisplayPageTreePrivate
 	GtkTreeRowReference *expand_select_row;
 	guint expand_rows_id;
 
-	GSettings *settings;
-
 	GSimpleAction *remove_action;
 	GSimpleAction *eject_action;
 
@@ -1016,8 +1014,6 @@ impl_constructed (GObject *object)
 						NULL);
 
 	gtk_container_add (GTK_CONTAINER (scrolled), display_page_tree->priv->treeview);
-
-	display_page_tree->priv->settings = g_settings_new ("org.gnome.rhythmbox.display-page-tree");
 }
 
 static void
