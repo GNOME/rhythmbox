@@ -1844,7 +1844,10 @@ rb_entry_view_constructed (GObject *object)
 		/* Playing icon column */
 		column = GTK_TREE_VIEW_COLUMN (gtk_tree_view_column_new ());
 		renderer = rb_cell_renderer_pixbuf_new ();
-		g_object_set (renderer, "stock-size", GTK_ICON_SIZE_MENU, NULL);
+		g_object_set (renderer,
+			      "stock-size", GTK_ICON_SIZE_MENU,
+			      "follow-state", TRUE,
+			      NULL);
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
 		gtk_tree_view_column_set_cell_data_func (column, renderer,
 							 (GtkTreeCellDataFunc)
