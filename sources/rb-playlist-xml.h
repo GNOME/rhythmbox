@@ -42,6 +42,9 @@
 /* common attributes for all playlists */
 #define RB_PLAYLIST_TYPE (xmlChar *) "type"
 #define RB_PLAYLIST_NAME (xmlChar *) "name"
+#define RB_PLAYLIST_SHOW_BROWSER (xmlChar *) "show-browser"
+#define RB_PLAYLIST_BROWSER_POSITION (xmlChar *) "browser-position"
+#define RB_PLAYLIST_SEARCH_TYPE (xmlChar *) "search-type"
 
 /* values for the 'type' attribute */
 #define RB_PLAYLIST_AUTOMATIC (xmlChar *) "automatic"

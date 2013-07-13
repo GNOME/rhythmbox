@@ -64,6 +64,7 @@ RBSource *	rb_auto_playlist_source_new		(RBShell *shell,
 							 gboolean local);
 
 RBSource *	rb_auto_playlist_source_new_from_xml	(RBShell *shell,
+							 const char *name,
 							 xmlNodePtr node);
 
 void		rb_auto_playlist_source_set_query	(RBAutoPlaylistSource *source,

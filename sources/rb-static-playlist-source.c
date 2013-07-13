@@ -270,6 +270,7 @@ rb_static_playlist_source_constructed (GObject *object)
 	}
 
 	gtk_paned_pack1 (GTK_PANED (paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
+	gtk_widget_set_no_show_all (GTK_WIDGET (priv->browser), TRUE);
 	g_signal_connect_object (priv->browser, "notify::output-model",
 				 G_CALLBACK (rb_static_playlist_source_browser_changed_cb),
 				 source, 0);
@@ -343,7 +344,7 @@ rb_static_playlist_source_constructed (GObject *object)
  * rb_static_playlist_source_new:
  * @shell: the #RBShell
  * @name: the playlist name
- * @settings_name: the settings name for the playlist (GSettings path friendly)
+ * @settings: GSettings instance, or NULL to have one created
  * @local: if %TRUE, the playlist is local to the library
  * @entry_type: type of database entries that can be added to the playlist.
  *
@@ -352,24 +353,14 @@ rb_static_playlist_source_constructed (GObject *object)
  * Return value: new playlist.
  */
 RBSource *
-rb_static_playlist_source_new (RBShell *shell, const char *name, const char *settings_name, gboolean local, RhythmDBEntryType *entry_type)
+rb_static_playlist_source_new (RBShell *shell, const char *name, GSettings *settings, gboolean local, RhythmDBEntryType *entry_type)
 {
 	RBSource *source;
-	GSettings *settings;
 	GtkBuilder *builder;
 	GMenu *toolbar;
 
 	if (name == NULL)
 		name = "";
-
-	if (settings_name != NULL) {
-		char *path;
-		path = g_strdup_printf ("/org/gnome/rhythmbox/playlist/%s/", settings_name);
-		settings = g_settings_new_with_path ("org.gnome.rhythmbox.source", path);
-		g_free (path);
-	} else {
-		settings = NULL;
-	}
 
 	builder = rb_builder_load ("playlist-toolbar.ui", NULL);
 	toolbar = G_MENU (gtk_builder_get_object (builder, "playlist-toolbar"));
@@ -460,6 +451,7 @@ rb_static_playlist_source_load_from_xml (RBStaticPlaylistSource *source, xmlNode
 /**
  * rb_static_playlist_source_new_from_xml:
  * @shell: the #RBShell
+ * @name: playlist name
  * @node: XML node containing playlist entries
  *
  * Constructs a new playlist from the given XML document node.
@@ -467,10 +459,10 @@ rb_static_playlist_source_load_from_xml (RBStaticPlaylistSource *source, xmlNode
  * Return value: playlist read from XML
  */
 RBSource *
-rb_static_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
+rb_static_playlist_source_new_from_xml (RBShell *shell, const char *name, xmlNodePtr node)
 {
 	RBSource *psource = rb_static_playlist_source_new (shell,
-							   NULL,
+							   name,
 							   NULL,
 							   TRUE,
 							   RHYTHMDB_ENTRY_TYPE_SONG);

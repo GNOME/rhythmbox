@@ -612,6 +612,8 @@ rb_daap_source_connection_cb (DMAPConnection   *connection,
 {
 	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
 	RBShell *shell = NULL;
+	GSettings *plugin_settings;
+	GSettings *settings;
 	GSList *playlists;
 	GSList *l;
 	RhythmDBEntryType *entry_type;
@@ -635,21 +637,15 @@ rb_daap_source_connection_cb (DMAPConnection   *connection,
 	g_object_get (daap_source,
 		      "shell", &shell,
 		      "entry-type", &entry_type,
+		      "settings", &plugin_settings,
 		      NULL);
+	settings = g_settings_get_child (plugin_settings, "source");
 	playlists = dmap_connection_get_playlists (DMAP_CONNECTION (daap_source->priv->connection));
 	for (l = playlists; l != NULL; l = g_slist_next (l)) {
 		DMAPPlaylist *playlist = l->data;
 		RBSource *playlist_source;
-		char *settings_name;
 
-		/* Construct a unique settings name for this playlist, as <Share Name>_<Playlist> */
-		/* XXX disabled for now, not sure it's a good idea */
-		/*settings_name = g_strjoin (NULL, daap_source->priv->service_name, "_", playlist->name, NULL); */
-
-		settings_name = "/org/gnome/rhythmbox/plugins/daap/source";
-
-		playlist_source = rb_static_playlist_source_new (shell, playlist->name, settings_name, FALSE, entry_type);
-		/*g_free (settings_name);*/
+		playlist_source = rb_static_playlist_source_new (shell, playlist->name, settings, FALSE, entry_type);
 
 		g_list_foreach (playlist->uris, (GFunc)_add_location_to_playlist, playlist_source);
 
@@ -657,6 +653,8 @@ rb_daap_source_connection_cb (DMAPConnection   *connection,
 		daap_source->priv->playlist_sources = g_slist_prepend (daap_source->priv->playlist_sources, playlist_source);
 	}
 
+	g_object_unref (settings);
+	g_object_unref (plugin_settings);
 	g_object_unref (shell);
 	g_object_unref (entry_type);
 }

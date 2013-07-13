@@ -226,6 +226,7 @@ rb_auto_playlist_source_constructed (GObject *object)
 						entry_type);
 	g_object_unref (entry_type);
 	gtk_paned_pack1 (GTK_PANED (priv->paned), GTK_WIDGET (priv->browser), TRUE, FALSE);
+	gtk_widget_set_no_show_all (GTK_WIDGET (priv->browser), TRUE);
 	g_signal_connect_object (G_OBJECT (priv->browser), "notify::output-model",
 				 G_CALLBACK (rb_auto_playlist_source_browser_changed_cb),
 				 source, 0);
@@ -319,6 +320,7 @@ rb_auto_playlist_source_new (RBShell *shell, const char *name, gboolean local)
 					  "is-local", local,
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
 					  "toolbar-menu", toolbar,
+					  "settings", NULL,
 					  NULL));
 	g_object_unref (builder);
 	return source;
@@ -369,6 +371,7 @@ rb_auto_playlist_source_get_property (GObject *object,
 /**
  * rb_auto_playlist_source_new_from_xml:
  * @shell: the #RBShell instance
+ * @name: playlist name
  * @node: libxml node containing the playlist
  *
  * Creates a new auto playlist source by parsing an XML-encoded query.
@@ -376,9 +379,9 @@ rb_auto_playlist_source_get_property (GObject *object,
  * Return value: the new source
  */
 RBSource *
-rb_auto_playlist_source_new_from_xml (RBShell *shell, xmlNodePtr node)
+rb_auto_playlist_source_new_from_xml (RBShell *shell, const char *name, xmlNodePtr node)
 {
-	RBAutoPlaylistSource *source = RB_AUTO_PLAYLIST_SOURCE (rb_auto_playlist_source_new (shell, NULL, TRUE));
+	RBAutoPlaylistSource *source = RB_AUTO_PLAYLIST_SOURCE (rb_auto_playlist_source_new (shell, name, TRUE));
 	xmlNodePtr child;
 	xmlChar *tmp;
 	GPtrArray *query;
