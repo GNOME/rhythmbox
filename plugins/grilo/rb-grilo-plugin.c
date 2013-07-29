@@ -57,6 +57,7 @@ static const char *ignored_plugins[] = {
 	"grl-dmap",
 	"grl-filesystem",
 	"grl-flickr",
+	"grl-magnatune",
 	"grl-optical-media",
 	"grl-podcasts",
 	"grl-raitv",
