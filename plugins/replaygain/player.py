@@ -146,9 +146,8 @@ class ReplayGainPlayer(object):
 		rgvolume.set_state(Gst.State.READY)
 		rgvolume.set_state(Gst.State.PLAYING)
 		#self.resetting_rgvolume = False
-		pad.remove_probe(info.id)
 		self.set_rgvolume(rgvolume)
-		return Gst.PadProbeReturn.OK
+		return Gst.PadProbeReturn.REMOVE
 
 	def playing_entry_changed(self, player, entry):
 		if entry is None:
@@ -159,8 +158,8 @@ class ReplayGainPlayer(object):
 
 		if self.got_replaygain is False:
 			print("blocking rgvolume to reset it")
-			pad = self.rgvolume.get_static_pad("sink").get_peer()
-			pad.add_probe(Gst.PadProbeType.IDLE, self.rgvolume_blocked, self.rgvolume)
+			pad = self.rgvolume.get_static_pad("sink")
+			pad.add_probe(Gst.PadProbeType.BLOCK_DOWNSTREAM, self.rgvolume_blocked, self.rgvolume)
 		else:
 			print("no need to reset rgvolume")
 
