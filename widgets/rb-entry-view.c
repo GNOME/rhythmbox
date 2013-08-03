@@ -830,7 +830,11 @@ rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column,
 	if (entry == view->priv->playing_entry) {
 		switch (view->priv->playing_state) {
 		case RB_ENTRY_VIEW_PLAYING:
-			name = "media-playback-start-symbolic";
+			if (gtk_widget_get_default_direction () == GTK_TEXT_DIR_RTL) {
+				name = "media-playback-start-rtl-symbolic";
+			} else {
+				name = "media-playback-start-symbolic";
+			}
 			break;
 		case RB_ENTRY_VIEW_PAUSED:
 			name = "media-playback-pause-symbolic";
