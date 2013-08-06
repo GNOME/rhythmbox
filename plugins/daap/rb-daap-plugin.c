@@ -539,21 +539,34 @@ new_share_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 /* daap:// URI -> RBDAAPSource mapping */
 
 static gboolean
-source_host_find (const char *key,
-		  RBDAAPSource *source,
-		  const char *host)
+source_host_and_port_find (const char *key,
+		           RBDAAPSource *source,
+		           const char *host_and_port)
 {
-	char *source_host;
-	gboolean result;
+	guint    source_port          = 0;
+	char    *source_host          = NULL;
+	char    *source_host_and_port = NULL;
+	gboolean result               = FALSE;
 
-	if (source == NULL || host == NULL) {
-		return FALSE;
+	if (source == NULL || host_and_port == NULL) {
+		goto out;
 	}
 
 	g_object_get (source, "host", &source_host, NULL);
+	g_object_get (source, "port", &source_port, NULL);
 
-	result = (strcmp (host, source_host) == 0);
-	g_free (source_host);
+	source_host_and_port = g_strdup_printf ("%s:%d", source_host, source_port);
+
+	result = (strcmp (host_and_port, source_host_and_port) == 0);
+
+out:
+	if (NULL != source_host) {
+		g_free (source_host);
+	}
+
+	if (NULL != source_host_and_port) {
+		g_free (source_host_and_port);
+	}
 
 	return result;
 }
@@ -561,21 +574,30 @@ source_host_find (const char *key,
 RBDAAPSource *
 rb_daap_plugin_find_source_for_uri (RBDaapPlugin *plugin, const char *uri)
 {
-	char *ip;
-	char *s;
-	RBDAAPSource *source = NULL;
+	char         *host_and_port = NULL;
+	char         *s             = NULL;
+	RBDAAPSource *source        = NULL;
 
-	if (uri == NULL) {
-		return NULL;
+	if (NULL == uri) {
+		goto out;
 	}
 
-	ip = strdup (uri + 7); /* daap:// */
-	s = strchr (ip, ':');
-	*s = '\0';
+	host_and_port = strdup (uri + 7); /* Skip daap://. */
+	if (NULL == host_and_port) {
+		goto out;
+	}
 
-	source = (RBDAAPSource *)g_hash_table_find (plugin->source_lookup, (GHRFunc)source_host_find, ip);
+	s = strchr (host_and_port, '/');  /* Include through port, but not path. */
+	if (NULL != s) {
+		*s = '\0';
+	}
 
-	g_free (ip);
+	source = (RBDAAPSource *)g_hash_table_find (plugin->source_lookup, (GHRFunc)source_host_and_port_find, host_and_port);
+
+out:
+	if (NULL != host_and_port) {
+		g_free (host_and_port);
+	}
 
 	return source;
 }
