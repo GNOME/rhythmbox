@@ -560,13 +560,8 @@ source_host_and_port_find (const char *key,
 	result = (strcmp (host_and_port, source_host_and_port) == 0);
 
 out:
-	if (NULL != source_host) {
-		g_free (source_host);
-	}
-
-	if (NULL != source_host_and_port) {
-		g_free (source_host_and_port);
-	}
+	g_free (source_host);
+	g_free (source_host_and_port);
 
 	return result;
 }
@@ -582,7 +577,7 @@ rb_daap_plugin_find_source_for_uri (RBDaapPlugin *plugin, const char *uri)
 		goto out;
 	}
 
-	host_and_port = strdup (uri + 7); /* Skip daap://. */
+	host_and_port = g_strdup (uri + 7); /* Skip daap://. */
 	if (NULL == host_and_port) {
 		goto out;
 	}
@@ -595,9 +590,7 @@ rb_daap_plugin_find_source_for_uri (RBDaapPlugin *plugin, const char *uri)
 	source = (RBDAAPSource *)g_hash_table_find (plugin->source_lookup, (GHRFunc)source_host_and_port_find, host_and_port);
 
 out:
-	if (NULL != host_and_port) {
-		g_free (host_and_port);
-	}
+	g_free (host_and_port);
 
 	return source;
 }
