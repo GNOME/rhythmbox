@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-07 22:13+0200\n"
-"PO-Revision-Date: 2013-07-07 22:14+0200\n"
+"POT-Creation-Date: 2013-08-20 23:49+0200\n"
+"PO-Revision-Date: 2013-08-20 23:50+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -27,7 +27,7 @@ msgstr ""
 "X-Poedit-Language: Polish\n"
 "X-Poedit-Country: Poland\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:505
+#: ../backends/gstreamer/rb-encoder-gst.c:508
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr ""
@@ -940,28 +940,28 @@ msgstr "Nigdy"
 #. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
 #: ../lib/rb-cut-and-paste-code.c:105
 msgid "Today %I:%M %p"
-msgstr "Dzisiaj %H:%M"
+msgstr "Dzisiaj o %H∶%M"
 
 #. Translators: "friendly time" string for the previous day,
 #. * strftime format. e.g. "Yesterday 12:34 am"
 #.
 #: ../lib/rb-cut-and-paste-code.c:116
 msgid "Yesterday %I:%M %p"
-msgstr "Wczoraj %H:%M"
+msgstr "Wczoraj o %H∶%M"
 
 #. Translators: "friendly time" string for a day in the current week,
 #. * strftime format. e.g. "Wed 12:34 am"
 #.
 #: ../lib/rb-cut-and-paste-code.c:130
 msgid "%a %I:%M %p"
-msgstr "%a %H:%M"
+msgstr "%a %H∶%M"
 
 #. Translators: "friendly time" string for a day in the current year,
 #. * strftime format. e.g. "Feb 12 12:34 am"
 #.
 #: ../lib/rb-cut-and-paste-code.c:143
 msgid "%b %d %I:%M %p"
-msgstr "%d %b %H:%M"
+msgstr "%d %b %H∶%M"
 
 #. Translators: "friendly time" string for a day in a different year,
 #. * strftime format. e.g. "Feb 12 1997"
@@ -1029,33 +1029,33 @@ msgstr "Nie można uzyskać wolnego miejsca na %s: %s"
 #: ../remote/dbus/rb-client.c:156
 #, c-format
 msgid "%d:%02d"
-msgstr "%d:%02d"
+msgstr "%d∶%02d"
 
 #: ../lib/rb-util.c:671 ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:158
 #, c-format
 msgid "%d:%02d:%02d"
-msgstr "%d:%02d:%02d"
+msgstr "%d∶%02d∶%02d"
 
 #: ../lib/rb-util.c:735
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
-msgstr "%d:%02d z pozostałych %d:%02d"
+msgstr "%d∶%02d z pozostałych %d∶%02d"
 
 #: ../lib/rb-util.c:739
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
-msgstr "%d:%02d:%02d z pozostałych %d:%02d:%02d"
+msgstr "%d∶%02d∶%02d z pozostałych %d∶%02d∶%02d"
 
 #: ../lib/rb-util.c:744
 #, c-format
 msgid "%d:%02d of %d:%02d"
-msgstr "%d:%02d z %d:%02d"
+msgstr "%d∶%02d z %d∶%02d"
 
 #: ../lib/rb-util.c:748
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
-msgstr "%d:%02d:%02d z %d:%02d:%02d"
+msgstr "%d∶%02d∶%02d z %d∶%02d∶%02d"
 
 #: ../metadata/rb-metadata-gst.c:499
 #, c-format
@@ -1793,11 +1793,11 @@ msgstr "Zasób muzyczny \"%s\" wymaga hasła do połączenia"
 msgid "Retrieving songs from music share"
 msgstr "Pobieranie utworów z zasobu muzycznego"
 
-#: ../plugins/daap/rb-daap-source.c:624
+#: ../plugins/daap/rb-daap-source.c:626
 msgid "Could not connect to shared music"
 msgstr "Nie można połączyć się z zasobem muzycznym"
 
-#: ../plugins/daap/rb-daap-source.c:697
+#: ../plugins/daap/rb-daap-source.c:695
 msgid "Connecting to music share"
 msgstr "Łączenie z zasobem muzycznym"
 
@@ -3040,9 +3040,9 @@ msgstr "Stan"
 
 #. ensure search instances exist
 #: ../podcast/rb-podcast-source.c:1569
-#: ../sources/rb-auto-playlist-source.c:252 ../sources/rb-browser-source.c:314
+#: ../sources/rb-auto-playlist-source.c:253 ../sources/rb-browser-source.c:314
 #: ../sources/rb-browser-source.c:330
-#: ../sources/rb-static-playlist-source.c:294
+#: ../sources/rb-static-playlist-source.c:295
 msgid "Search all fields"
 msgstr "Przeszukiwanie wszystkich pól"
 
@@ -3493,7 +3493,7 @@ msgstr "Wszystkie pliki"
 msgid "Load Playlist"
 msgstr "Wczytanie listy odtwarzania"
 
-#: ../shell/rb-playlist-manager.c:1148 ../sources/rb-playlist-source.c:670
+#: ../shell/rb-playlist-manager.c:1148 ../sources/rb-playlist-source.c:707
 msgid "Couldn't save playlist"
 msgstr "Nie można zapisać listy odtwarzania"
 
@@ -3753,23 +3753,23 @@ msgstr "_Pomiń te pliki"
 msgid "_Install"
 msgstr "Za_instaluj"
 
-#: ../sources/rb-auto-playlist-source.c:253 ../sources/rb-browser-source.c:315
-#: ../sources/rb-static-playlist-source.c:295
+#: ../sources/rb-auto-playlist-source.c:254 ../sources/rb-browser-source.c:315
+#: ../sources/rb-static-playlist-source.c:296
 msgid "Search artists"
 msgstr "Przeszukiwanie wykonawców"
 
-#: ../sources/rb-auto-playlist-source.c:254 ../sources/rb-browser-source.c:316
-#: ../sources/rb-static-playlist-source.c:296
+#: ../sources/rb-auto-playlist-source.c:255 ../sources/rb-browser-source.c:316
+#: ../sources/rb-static-playlist-source.c:297
 msgid "Search composers"
 msgstr "Przeszukiwanie kompozytorów"
 
-#: ../sources/rb-auto-playlist-source.c:255 ../sources/rb-browser-source.c:317
-#: ../sources/rb-static-playlist-source.c:297
+#: ../sources/rb-auto-playlist-source.c:256 ../sources/rb-browser-source.c:317
+#: ../sources/rb-static-playlist-source.c:298
 msgid "Search albums"
 msgstr "Przeszukiwanie albumów"
 
-#: ../sources/rb-auto-playlist-source.c:256 ../sources/rb-browser-source.c:318
-#: ../sources/rb-static-playlist-source.c:298
+#: ../sources/rb-auto-playlist-source.c:257 ../sources/rb-browser-source.c:318
+#: ../sources/rb-static-playlist-source.c:299
 msgid "Search titles"
 msgstr "Przeszukiwanie tytułów"
 
@@ -3946,7 +3946,7 @@ msgstr[0] "%d brakujący plik"
 msgstr[1] "%d brakujące pliki"
 msgstr[2] "%d brakujących plików"
 
-#: ../sources/rb-playlist-source.c:1097
+#: ../sources/rb-playlist-source.c:1189
 msgid "Remove from Playlist"
 msgstr "Usuń z listy odtwarzania"
 
@@ -4077,11 +4077,11 @@ msgstr "Ostatnio widziany"
 msgid "Location"
 msgstr "Położenie"
 
-#: ../widgets/rb-entry-view.c:1870
+#: ../widgets/rb-entry-view.c:1873
 msgid "Now Playing"
 msgstr "Odtwarza"
 
-#: ../widgets/rb-entry-view.c:1926
+#: ../widgets/rb-entry-view.c:1929
 msgid "Playback Error"
 msgstr "Błąd odtwarzania"
 
