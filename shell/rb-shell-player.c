@@ -214,7 +214,6 @@ struct RBShellPlayerPrivate
 	gint64 track_transition_time;
 	RhythmDBEntry *playing_entry;
 	gboolean playing_entry_eos;
-	gboolean jump_to_playing_entry;
 
 	RBPlayOrder *play_order;
 	RBPlayOrder *queue_play_order;
@@ -1071,41 +1070,6 @@ rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 	}
 }
 
-/**
- * rb_shell_player_jump_to_current:
- * @player: the #RBShellPlayer
- *
- * Scrolls the #RBEntryView for the current playing source so that
- * the current playing entry is visible and selects the row for the
- * entry.  If there is no current playing entry, the selection is
- * cleared instead.
- */
-void
-rb_shell_player_jump_to_current (RBShellPlayer *player)
-{
-	RBSource *source;
-	RhythmDBEntry *entry;
-	RBEntryView *songs;
-
-	source = player->priv->current_playing_source ? player->priv->current_playing_source :
-		player->priv->selected_source;
-
-	songs = rb_source_get_entry_view (source);
-	entry = rb_shell_player_get_playing_entry (player);
-	if (songs != NULL) {
-		if (entry != NULL) {
-			rb_entry_view_scroll_to_entry (songs, entry);
-			rb_entry_view_select_entry (songs, entry);
-		} else {
-			rb_entry_view_select_none (songs);
-		}
-	}
-
-	if (entry != NULL) {
-		rhythmdb_entry_unref (entry);
-	}
-}
-
 static void
 swap_playing_source (RBShellPlayer *player,
 		     RBSource *new_source)
@@ -1194,7 +1158,6 @@ rb_shell_player_do_previous (RBShellPlayer *player,
 		if (new_source != player->priv->current_playing_source)
 			swap_playing_source (player, new_source);
 
-		player->priv->jump_to_playing_entry = TRUE;
 		if (!rb_shell_player_set_playing_entry (player, entry, FALSE, FALSE, error)) {
 			rhythmdb_entry_unref (entry);
 			return FALSE;
@@ -1299,7 +1262,6 @@ rb_shell_player_do_next_internal (RBShellPlayer *player, gboolean from_eos, gboo
 		if (new_source != player->priv->current_playing_source)
 			swap_playing_source (player, new_source);
 
-		player->priv->jump_to_playing_entry = TRUE;
 		if (!rb_shell_player_set_playing_entry (player, entry, FALSE, from_eos, error))
 			rv = FALSE;
 	} else {
@@ -1366,7 +1328,6 @@ rb_shell_player_play_entry (RBShellPlayer *player,
 		source = player->priv->selected_source;
 	rb_shell_player_set_playing_source (player, source);
 
-	player->priv->jump_to_playing_entry = FALSE;
 	if (!rb_shell_player_set_playing_entry (player, entry, TRUE, FALSE, &error)) {
 		rb_shell_player_error (player, FALSE, error);
 		g_clear_error (&error);
@@ -1483,7 +1444,6 @@ rb_shell_player_playpause (RBShellPlayer *player,
 				if (new_source != player->priv->current_playing_source)
 					swap_playing_source (player, new_source);
 
-				player->priv->jump_to_playing_entry = TRUE;
 				if (!rb_shell_player_set_playing_entry (player, entry, out_of_order, FALSE, error))
 					ret = FALSE;
 			}
@@ -1683,7 +1643,6 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 	RhythmDBEntry *prev_entry = NULL;
 	GError *error = NULL;
 	gboolean source_set = FALSE;
-	gboolean jump_to_entry = FALSE;
 	char *playback_uri;
 
 	g_return_if_fail (entry != NULL);
@@ -1727,7 +1686,6 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 
 			was_from_queue = FALSE;
 			source_set = TRUE;
-			jump_to_entry = TRUE;
 		} else {
 			if (player->priv->queue_only) {
 				rb_source_add_to_queue (player->priv->selected_source,
@@ -1750,7 +1708,6 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 		source_set = TRUE;
 	}
 
-	player->priv->jump_to_playing_entry = jump_to_entry;
 	if (!rb_shell_player_set_playing_entry (player, entry, TRUE, FALSE, &error)) {
 		rb_shell_player_error (player, FALSE, error);
 		g_clear_error (&error);
@@ -1796,7 +1753,6 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 	if (entry != NULL) {
 		rb_play_order_go_next (porder);
 
-		player->priv->jump_to_playing_entry = TRUE;	/* ? */
 		if (!rb_shell_player_set_playing_entry (player, entry, TRUE, FALSE, &error)) {
 			rb_shell_player_error (player, FALSE, error);
 			g_clear_error (&error);
@@ -2021,12 +1977,6 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	source = (entry == NULL) ? player->priv->selected_source : player->priv->current_playing_source;
 
 	rb_debug ("syncing with source %p", source);
-
-	/* meh
-	action = gtk_action_group_get_action (player->priv->actiongroup,
-					      "ViewJumpToPlaying");
-	g_object_set (action, "sensitive", entry != NULL, NULL);
-	*/
 
 	map = G_ACTION_MAP (g_application_get_default ());
 	action = g_action_map_lookup_action (map, "play");
@@ -2535,11 +2485,6 @@ playing_stream_cb (RBPlayer *mmplayer,
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
 	g_object_notify (G_OBJECT (player), "playing");
-
-	if (player->priv->jump_to_playing_entry) {
-		rb_shell_player_jump_to_current (player);
-		player->priv->jump_to_playing_entry = FALSE;
-	}
 
 	GDK_THREADS_LEAVE ();
 }
