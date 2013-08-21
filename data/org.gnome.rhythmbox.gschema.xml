@@ -100,6 +100,11 @@
       <summary>Whether to show elapsed or remaining time</summary>
       <description>If true, the elapsed time will be shown in song duration displays. Otherwise the remaining time will be shown.</description>
     </key>
+    <key name="follow-playing" type="b">
+      <default>true</default>
+      <summary>Whether to follow the playing track in the track list</summary>
+      <description>If true, as the playing track changes, the track list will scroll to show the new track</description>
+    </key>
   </schema>
 
   <schema id="org.gnome.rhythmbox.rhythmdb" path="/org/gnome/rhythmbox/rhythmdb/">

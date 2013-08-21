@@ -159,10 +159,10 @@ static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 					             const char *window_title,
 					             RBShell *shell);
 static void rb_shell_playing_changed_cb (RBShellPlayer *player, gboolean playing, RBShell *shell);
+static void rb_shell_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBShell *shell);
+static void rb_shell_settings_changed_cb (GSettings *settings, const char *key, RBShell *shell);
 
-static void rb_shell_jump_to_current (RBShell *shell);
-static void rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
-						RhythmDBEntry *entry);
+static void rb_shell_jump_to_current (RBShell *shell, gboolean select_page);
 static void rb_shell_play_entry (RBShell *shell, RhythmDBEntry *entry);
 static void rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell);
 static void rb_shell_set_visibility (RBShell *shell,
@@ -538,6 +538,10 @@ construct_widgets (RBShell *shell)
 	g_signal_connect_object (shell->priv->player_shell,
 				 "playing-changed",
 				 G_CALLBACK (rb_shell_playing_changed_cb),
+				 shell, 0);
+	g_signal_connect_object (shell->priv->player_shell,
+				 "playing-song-changed",
+				 G_CALLBACK (rb_shell_playing_song_changed_cb),
 				 shell, 0);
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->db);
 
@@ -1688,6 +1692,7 @@ rb_shell_constructed (GObject *object)
 	RBShell *shell;
 	GAction *action;
 	RBEntryView *view;
+	GApplication *app;
 
 	/* need this? */
 	gtk_init (NULL, NULL);
@@ -1695,6 +1700,7 @@ rb_shell_constructed (GObject *object)
 	RB_CHAIN_GOBJECT_METHOD (rb_shell_parent_class, constructed, object);
 
 	shell = RB_SHELL (object);
+	app = g_application_get_default ();
 
 	/* construct enough of the rest of it to display the window if required */
 
@@ -1740,6 +1746,10 @@ rb_shell_constructed (GObject *object)
 			 shell->priv->statusbar, "visible",
 			 G_SETTINGS_BIND_DEFAULT);
 
+	action = g_settings_create_action (shell->priv->settings, "follow-playing");
+	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
+	g_signal_connect (shell->priv->settings, "changed", G_CALLBACK (rb_shell_settings_changed_cb), shell);
+
 	action = G_ACTION (g_simple_action_new_stateful ("party-mode",
 							 NULL,
 							 g_variant_new_boolean (FALSE)));
@@ -1748,11 +1758,13 @@ rb_shell_constructed (GObject *object)
 
 	action = G_ACTION (g_simple_action_new ("library-import", NULL));
 	g_signal_connect (action, "activate", G_CALLBACK (add_music_action_cb), shell);
-	g_action_map_add_action (G_ACTION_MAP (g_application_get_default ()), action);
+	g_action_map_add_action (G_ACTION_MAP (app), action);
 
 	action = G_ACTION (g_simple_action_new ("jump-to-playing", NULL));
 	g_signal_connect (action, "activate", G_CALLBACK (jump_to_playing_action_cb), shell);
 	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
+
+	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>j", "win.jump-to-playing", NULL);
 
 
 	rb_debug ("shell: syncing with settings");
@@ -2302,6 +2314,24 @@ rb_shell_playing_changed_cb (RBShellPlayer *player, gboolean playing, RBShell *s
 }
 
 static void
+rb_shell_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBShell *shell)
+{
+	if (g_settings_get_boolean (shell->priv->settings, "follow-playing")) {
+		rb_shell_jump_to_current (shell, FALSE);
+	}
+}
+
+static void
+rb_shell_settings_changed_cb (GSettings *settings, const char *key, RBShell *shell)
+{
+	if (g_strcmp0 (key, "follow-playing") == 0) {
+		if (g_settings_get_boolean (settings, key)) {
+			rb_shell_jump_to_current (shell, FALSE);
+		}
+	}
+}
+
+static void
 rb_shell_select_page (RBShell *shell, RBDisplayPage *page)
 {
 	int pagenum;
@@ -2635,35 +2665,7 @@ jump_to_playing_action_cb (GSimpleAction *action, GVariant *parameters, gpointer
 {
 	RBShell *shell = RB_SHELL (data);
 	rb_debug ("current song");
-	rb_shell_jump_to_current (shell);
-}
-
-static void
-rb_shell_jump_to_entry_with_source (RBShell *shell,
-				    RBSource *source,
-				    RhythmDBEntry *entry)
-{
-	RBEntryView *songs;
-
-	g_return_if_fail (entry != NULL);
-
-	if ((source == RB_SOURCE (shell->priv->queue_source) &&
-	     g_settings_get_boolean (shell->priv->settings, "queue-as-sidebar")) ||
-	     source == NULL) {
-		RhythmDBEntryType *entry_type;
-		entry_type = rhythmdb_entry_get_entry_type (entry);
-		source = rb_shell_get_source_by_entry_type (shell, entry_type);
-	}
-	if (source == NULL)
-		return;
-
-	songs = rb_source_get_entry_view (source);
-	rb_shell_select_page (shell, RB_DISPLAY_PAGE (source));
-
-	if (songs != NULL) {
-		rb_entry_view_scroll_to_entry (songs, entry);
-		rb_entry_view_select_entry (songs, entry);
-	}
+	rb_shell_jump_to_current (shell, TRUE);
 }
 
 static void
@@ -2671,24 +2673,32 @@ rb_shell_play_entry (RBShell *shell,
 		     RhythmDBEntry *entry)
 {
 	rb_shell_player_stop (shell->priv->player_shell);
-	rb_shell_jump_to_entry_with_source (shell, NULL, entry);
 	rb_shell_player_play_entry (shell->priv->player_shell, entry, NULL);
 }
 
 static void
-rb_shell_jump_to_current (RBShell *shell)
+rb_shell_jump_to_current (RBShell *shell, gboolean select_page)
 {
 	RBSource *source;
-	RhythmDBEntry *playing;
+	RhythmDBEntry *entry;
+	RBEntryView *songs;
 
 	source = rb_shell_player_get_playing_source (shell->priv->player_shell);
+	if (source == NULL)
+		return;
 
-	g_return_if_fail (source != NULL);
+	if (select_page) {
+		rb_shell_select_page (shell, RB_DISPLAY_PAGE (source));
+	}
 
-	playing = rb_shell_player_get_playing_entry (shell->priv->player_shell);
-
-	rb_shell_jump_to_entry_with_source (shell, source, playing);
-	rhythmdb_entry_unref (playing);
+	songs = rb_source_get_entry_view (source);
+	if (songs != NULL) {
+		entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
+		if (entry != NULL) {
+			rb_entry_view_scroll_to_entry (songs, entry);
+			rhythmdb_entry_unref (entry);
+		}
+	}
 }
 
 void
