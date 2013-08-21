@@ -153,6 +153,8 @@ static void rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 static void rb_entry_view_pixbuf_clicked_cb (RBEntryView *view,
 					     const char *path,
 					     RBCellRendererPixbuf *cellpixbuf);
+static void rb_entry_view_playing_column_clicked_cb (GtkTreeViewColumn *column,
+						     RBEntryView *view);
 static gboolean rb_entry_view_button_press_cb (GtkTreeView *treeview,
 					      GdkEventButton *event,
 					      RBEntryView *view);
@@ -1779,6 +1781,7 @@ static void
 rb_entry_view_constructed (GObject *object)
 {
 	RBEntryView *view;
+	RhythmDBQueryModel *query_model;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_entry_view_parent_class, constructed, object);
 
@@ -1857,10 +1860,9 @@ rb_entry_view_constructed (GObject *object)
 
 		image_widget = gtk_image_new_from_icon_name ("audio-volume-high-symbolic", GTK_ICON_SIZE_MENU);
 		gtk_tree_view_column_set_widget (column, image_widget);
-		gtk_widget_show (image_widget);
+		gtk_widget_show_all (image_widget);
 
 		gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-		gtk_tree_view_column_set_clickable (column, FALSE);
 		gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
 		gtk_tree_view_column_set_fixed_width (column, width + 5);
 		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), column);
@@ -1871,14 +1873,17 @@ rb_entry_view_constructed (GObject *object)
 
 		gtk_widget_set_tooltip_text (gtk_tree_view_column_get_widget (column),
 					     _("Now Playing"));
+
+		g_signal_connect (column,
+				  "clicked",
+				  G_CALLBACK (rb_entry_view_playing_column_clicked_cb),
+				  view);
+		gtk_tree_view_column_set_clickable (column, TRUE);
 	}
 
-	{
-		RhythmDBQueryModel *query_model;
-		query_model = rhythmdb_query_model_new_empty (view->priv->db);
-		rb_entry_view_set_model (view, RHYTHMDB_QUERY_MODEL (query_model));
-		g_object_unref (query_model);
-	}
+	query_model = rhythmdb_query_model_new_empty (view->priv->db);
+	rb_entry_view_set_model (view, RHYTHMDB_QUERY_MODEL (query_model));
+	g_object_unref (query_model);
 }
 
 static void
@@ -1930,6 +1935,15 @@ rb_entry_view_pixbuf_clicked_cb (RBEntryView          *view,
 	}
 
 	rhythmdb_entry_unref (entry);
+}
+
+static void
+rb_entry_view_playing_column_clicked_cb (GtkTreeViewColumn *column,
+					 RBEntryView *view)
+{
+	if (view->priv->playing_entry) {
+		rb_entry_view_scroll_to_entry (view, view->priv->playing_entry);
+	}
 }
 
 static void
