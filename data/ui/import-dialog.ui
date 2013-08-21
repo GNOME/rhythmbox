@@ -7,20 +7,16 @@
     <property name="margin_top">6</property>
     <property name="row_spacing">6</property>
     <child>
-      <object class="GtkGrid" id="grid4">
+      <object class="GtkGrid" id="file-button-container">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="halign">center</property>
         <property name="column_spacing">6</property>
         <child>
-          <object class="GtkFileChooserButton" id="file-chooser-button">
-            <property name="width_request">300</property>
+          <object class="GtkLabel" id="instructions">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="hexpand">True</property>
-            <property name="orientation">vertical</property>
-            <property name="action">select-folder</property>
-            <property name="local_only">False</property>
+            <property name="label" translatable="yes">Select a location containing music to add to your library:</property>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -30,14 +26,41 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="add-button">
-            <property name="label" translatable="yes">Add Tracks</property>
-            <property name="use_action_appearance">False</property>
+          <object class="GtkFileChooserButton" id="file-chooser-button">
+            <property name="width_request">300</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <property name="action">select-folder</property>
+            <property name="local_only">False</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">0</property>
+            <property name="width">1</property>
+            <property name="height">1</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="left_attach">0</property>
+        <property name="top_attach">0</property>
+        <property name="width">1</property>
+        <property name="height">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkGrid" id="import-button-container">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="halign">center</property>
+        <property name="column_spacing">6</property>
+        <child>
+          <object class="GtkButton" id="import-button">
+            <property name="label" translatable="yes">Import</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Add tracks to the library</property>
-            <property name="use_action_appearance">False</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -47,14 +70,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="copy-button">
-            <property name="label" translatable="yes">Copy Tracks</property>
-            <property name="use_action_appearance">False</property>
+          <object class="GtkButton" id="close-button">
+            <property name="label" translatable="yes">Close</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Copy tracks to the library location</property>
-            <property name="use_action_appearance">False</property>
           </object>
           <packing>
             <property name="left_attach">2</property>
@@ -64,33 +84,16 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="close-button">
-            <property name="label" translatable="yes">Close</property>
-            <property name="use_action_appearance">False</property>
+          <object class="GtkCheckButton" id="copy-check">
+            <property name="label" translatable="yes">Copy files that are outside the music library</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="use_action_appearance">False</property>
+            <property name="receives_default">False</property>
+            <property name="xalign">0</property>
+            <property name="draw_indicator">True</property>
           </object>
           <packing>
-            <property name="left_attach">4</property>
-            <property name="top_attach">0</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton" id="remove-button">
-            <property name="label" translatable="yes">Remove Tracks</property>
-            <property name="use_action_appearance">False</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Remove the selected tracks</property>
-            <property name="use_action_appearance">False</property>
-          </object>
-          <packing>
-            <property name="left_attach">3</property>
+            <property name="left_attach">0</property>
             <property name="top_attach">0</property>
             <property name="width">1</property>
             <property name="height">1</property>
@@ -105,14 +108,40 @@
       </packing>
     </child>
     <child>
-      <object class="GtkLabel" id="instructions">
+      <object class="GtkGrid" id="info-bar-container">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Select a location containing music to add to your library.</property>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
       </object>
       <packing>
         <property name="left_attach">0</property>
-        <property name="top_attach">0</property>
+        <property name="top_attach">2</property>
         <property name="width">1</property>
         <property name="height">1</property>
       </packing>
@@ -154,45 +183,6 @@
       <packing>
         <property name="left_attach">0</property>
         <property name="top_attach">3</property>
-        <property name="width">1</property>
-        <property name="height">1</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkGrid" id="info-bar-container">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-      </object>
-      <packing>
-        <property name="left_attach">0</property>
-        <property name="top_attach">2</property>
         <property name="width">1</property>
         <property name="height">1</property>
       </packing>

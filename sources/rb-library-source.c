@@ -87,7 +87,6 @@ static void rb_library_source_finalize (GObject *object);
 
 static GtkWidget *impl_get_config_widget (RBDisplayPage *source, RBShellPreferences *prefs);
 static gboolean impl_receive_drag (RBDisplayPage *source, GtkSelectionData *data);
-static void impl_get_status (RBDisplayPage *source, char **text, char **progress_text, float *progress);
 
 static gboolean impl_can_paste (RBSource *asource);
 static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
@@ -215,7 +214,6 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 
 	page_class->get_config_widget = impl_get_config_widget;
 	page_class->receive_drag = impl_receive_drag;
-	page_class->get_status = impl_get_status;
 
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_paste = (RBSourceFeatureFunc) impl_can_paste;
@@ -1996,19 +1994,6 @@ rb_library_source_sync_child_sources (RBLibrarySource *source)
 		}
 	}
 	g_strfreev (locations);
-}
-
-static void
-impl_get_status (RBDisplayPage *source, char **text, char **progress_text, float *progress)
-{
-	RBLibrarySource *lsource = RB_LIBRARY_SOURCE (source);
-
-	RB_DISPLAY_PAGE_CLASS (rb_library_source_parent_class)->get_status (source, text, progress_text, progress);
-
-	if (gtk_notebook_get_current_page (GTK_NOTEBOOK (lsource->priv->notebook)) == IMPORT_DIALOG_PAGE) {
-		g_free (*text);
-		g_object_get (lsource->priv->import_dialog, "status", text, NULL);
-	}
 }
 
 static void
