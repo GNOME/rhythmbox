@@ -734,7 +734,7 @@ main (int argc, char **argv)
 	/* activate or quit */
 	if (quit) {
 		rb_debug ("quitting existing instance");
-		g_action_group_activate_action (G_ACTION_GROUP (app), "Quit", NULL);
+		g_action_group_activate_action (G_ACTION_GROUP (app), "quit", NULL);
 		exit (0);
 	}
 
