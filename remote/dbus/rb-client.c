@@ -822,9 +822,12 @@ main (int argc, char **argv)
 		if (properties != NULL) {
 			GVariant *v = g_hash_table_lookup (properties, "mpris:trackid");
 			if (v != NULL) {
+				gint64 useek;
+
+				useek = seek * 1000000;
 				g_dbus_proxy_call_sync (mpris,
 							"SetPosition",
-							g_variant_new ("(ox)", g_variant_get_string (v, NULL), seek),
+							g_variant_new ("(ox)", g_variant_get_string (v, NULL), useek),
 							G_DBUS_CALL_FLAGS_NONE,
 							-1,
 							NULL,
