@@ -209,18 +209,24 @@ do_notify (RBNotificationPlugin *plugin,
 
 	notify_notification_clear_actions (notification);
 	if (playback && plugin->notify_supports_actions) {
+		gboolean rtl;
+		const char *play_icon;
+
+		rtl = (gtk_widget_get_default_direction () == GTK_TEXT_DIR_RTL);
+		play_icon = rtl ? "media-playback-start-rtl" : "media-playback-start";
+
 		if (plugin->notify_supports_icon_buttons) {
 			gboolean playing = FALSE;
 			rb_shell_player_get_playing (plugin->shell_player, &playing, NULL);
 
 			notify_notification_add_action (notification,
-							"media-skip-backward",
+							rtl ? "media-skip-backward-rtl" : "media-skip-backward",
 							_("Previous"),
 							(NotifyActionCallback) notification_previous_cb,
 							plugin,
 							NULL);
 			notify_notification_add_action (notification,
-							playing ? "media-playback-pause" : "media-playback-start",
+							playing ? "media-playback-pause" : play_icon,
 							playing ? _("Pause") : _("Play"),
 							(NotifyActionCallback) notification_playpause_cb,
 							plugin,
@@ -229,7 +235,7 @@ do_notify (RBNotificationPlugin *plugin,
 		}
 
 		notify_notification_add_action (notification,
-						"media-skip-forward",
+						rtl ? "media-skip-forward-rtl" : "media-skip-forward",
 						_("Next"),
 						(NotifyActionCallback) notification_next_cb,
 						plugin,
