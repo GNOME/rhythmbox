@@ -63,6 +63,7 @@ typedef struct
 
 	gchar *notify_art_path;
 	NotifyNotification *notification;
+	NotifyNotification *misc_notification;
 	gboolean notify_supports_actions;
 	gboolean notify_supports_icon_buttons;
 	gboolean notify_supports_persistence;
@@ -172,7 +173,7 @@ do_notify (RBNotificationPlugin *plugin,
 	if (playback) {
 		notification = plugin->notification;
 	} else {
-		notification = NULL;
+		notification = plugin->misc_notification;
 	}
 
 	if (notification == NULL) {
@@ -184,6 +185,8 @@ do_notify (RBNotificationPlugin *plugin,
 					 plugin, 0);
 		if (playback) {
 			plugin->notification = notification;
+		} else {
+			plugin->misc_notification = notification;
 		}
 	} else {
 		notify_notification_clear_hints (notification);
@@ -281,6 +284,13 @@ cleanup_notification (RBNotificationPlugin *plugin)
 						      plugin);
 		notify_notification_close (plugin->notification, NULL);
 		plugin->notification = NULL;
+	}
+	if (plugin->misc_notification != NULL) {
+		g_signal_handlers_disconnect_by_func (plugin->misc_notification,
+						      G_CALLBACK (notification_closed_cb),
+						      plugin);
+		notify_notification_close (plugin->misc_notification, NULL);
+		plugin->misc_notification = NULL;
 	}
 }
 
