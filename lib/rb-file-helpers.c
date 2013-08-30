@@ -585,7 +585,8 @@ rb_uri_could_be_podcast (const char *uri, gboolean *is_opml)
 	/* Check the scheme is a possible one first */
 	if (g_str_has_prefix (uri, "http") == FALSE &&
 	    g_str_has_prefix (uri, "itpc:") == FALSE &&
-	    g_str_has_prefix (uri, "itms:") == FALSE) {
+	    g_str_has_prefix (uri, "itms:") == FALSE &&
+	    g_str_has_prefix (uri, "itmss:") == FALSE) {
 	    	rb_debug ("'%s' can't be a Podcast or OPML file, not the right scheme", uri);
 	    	return FALSE;
 	}
@@ -595,6 +596,12 @@ rb_uri_could_be_podcast (const char *uri, gboolean *is_opml)
 	if (g_str_has_prefix (uri, "itms:") != FALSE
 	    && strstr (uri, "phobos.apple.com") != NULL
 	    && strstr (uri, "viewPodcast") != NULL)
+		return TRUE;
+
+	/* Check for new itmss stype iTunes Music Store link
+	 * to a podcast */
+	if (g_str_has_prefix (uri, "itmss:") != FALSE
+	    && strstr (uri, "podcast") != NULL)
 		return TRUE;
 
 	query_string = strchr (uri, '?');

@@ -103,6 +103,7 @@ static const char *podcast_uri_prefixes[] = {
 	"zune://",
 	"itpc://",
 	"itms://",
+	"itmss://",
 	"www.",
 };
 

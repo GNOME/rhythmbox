@@ -659,7 +659,7 @@ AC_ARG_VAR([MOZILLA_PLUGINDIR],[Where to install the browser plugin to])
 
 AM_CONDITIONAL([ENABLE_BROWSER_PLUGIN], test x$enable_browser_plugin = xyes)
 if test x$enable_browser_plugin = xyes; then
-	ITMS_HANDLER="x-scheme-handler/itms;"
+	ITMS_HANDLER="x-scheme-handler/itms;x-scheme-handler/itmss;"
 fi
 AC_SUBST(ITMS_HANDLER)
 
