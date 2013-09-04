@@ -823,6 +823,9 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field, GValue *ret)
 	GValue gstvalue = {0, };
 	GstClockTime duration;
 	GstDateTime *datetime;
+	char *str = NULL;
+	const char *v;
+	int i;
 
 	if (md->priv->info == NULL)
 		return FALSE;
@@ -873,6 +876,37 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field, GValue *ret)
 			return TRUE;
 		}
 		break;
+	case RB_METADATA_FIELD_COMMENT:
+		tags = gst_discoverer_info_get_tags (md->priv->info);
+		if (tags == NULL)
+			return FALSE;
+
+		/* pick the first valid utf8 string that looks like a comment */
+		i = 0;
+		while (gst_tag_list_peek_string_index (tags, GST_TAG_EXTENDED_COMMENT, i, &v)) {
+			if (g_utf8_validate (v, -1, NULL)) {
+				char **bits;
+
+				/* field must look like key=value,
+				 * key must be 'comment' or 'comment[lang]'
+				 */
+				bits = g_strsplit (v, "=", 2);
+				if (bits[1] != NULL &&
+				    (g_ascii_strcasecmp (bits[0], "comment") == 0 ||
+				    g_ascii_strncasecmp (bits[0], "comment[", 8) == 0)) {
+					g_value_init (ret, G_TYPE_STRING);
+					g_value_set_string (ret, bits[1]);
+					g_strfreev (bits);
+					return TRUE;
+				}
+
+				g_strfreev (bits);
+			} else {
+				rb_debug ("ignoring %s", v);
+			}
+			i++;
+		}
+		break;
 	default:
 		break;
 	}
@@ -888,9 +922,6 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field, GValue *ret)
 	}
 
 	if (rb_metadata_get_field_type (field) == G_TYPE_STRING) {
-		char *str = NULL;
-		const char *v;
-		int i;
 
 		/* pick the first valid utf8 string, or if we find a later
 		 * string of which the first is a prefix, pick that.
