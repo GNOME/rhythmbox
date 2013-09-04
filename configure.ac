@@ -1,7 +1,7 @@
 AC_PREREQ(2.63.2)
 
 AC_INIT([rhythmbox],
-	[2.99.1],
+	[3.0],
 	[https://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox])
 AC_CONFIG_SRCDIR(rhythmbox.pc.in)
 AC_CONFIG_MACRO_DIR([m4])
@@ -15,7 +15,7 @@ GNOME_MAINTAINER_MODE_DEFINES
 # Increment on interface addition, reset on removal
 RHYTHMBOX_CORE_AGE=0
 # Increment on interface add, remove, or change
-RHYTHMBOX_CORE_CURRENT=7
+RHYTHMBOX_CORE_CURRENT=8
 # Increment on source change, reset when CURRENT changes.
 RHYTHMBOX_CORE_REVISION=0
 

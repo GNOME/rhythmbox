@@ -1,3 +1,87 @@
+Overview of changes in Rhythmbox 3.0  "I Eat Tapes"
+===================================================
+
+* Plugins now use Python 3
+* New task progress display below the track list
+  (used for various things including track transfers and
+   import jobs)
+* Support for composer tags
+* Restyled playback controls
+* Restyled source list using symbolic icons
+* Better introspection of everything
+* Separate CBR and VBR encoding styles with different sets
+  of exposed properties
+* Playlist settings (browser visibility etc.) saved in 
+  playlists.xml
+* Better use of RTL icons where appropriate
+
+Bugs fixed:
+
+127939	support for composer/Music Director id3 tag in rhythmbox and the database
+516846	Use short labels in toolbar
+652892	Browser visibility is forgotten on program restart
+672044	Man page for rhythmbox-client should be updated
+675145	Provide an app menu
+677645	Improve custom recording settings
+697533	Several keyboard shortcuts don't work in 2.99
+697915	XI_BadDevice errors
+697959	Incorrect time shows briefly when song changes
+698043	fix im-status plugin load
+698429	click album or artist list -> window size returns
+698460	macros/Makefile.in is kinda missing
+698810	IM status plugin doesn't work
+698979	ReplayGain plugin cannot load
+700017	man: Remove --quit option
+700177	rhythmbox fails to build introspection with Gtk 3.9
+700401	replaygain crashes Rhythmbox on second play
+700424	Impossible to unmaximize the main window by double clicking on the title bar
+700590	rb-audiocd-source.c:1009: not doing musicbrainz lookup as we don't have a disc id
+701032	No external plugins menu items visible in the Play Queue popup
+701194	The library import tab does not update the available tracks
+701307	No longer able to examine and respond to changes in RhythmDB
+702679	exception hit when attempting to read an entry-view BPM column
+702683	Ctrl+Space no longer pauses/plays current song
+703624	"Add to playlist >" contextual menu item is disabled when inside a dynamic playlist
+703626	"Browse" togglebutton/pushbutton is initially inconsistent
+703627	Small UI nitpicks in 2.99.x: cut off inline toolbar, redundant separator widget
+703798	App is reading wrong ID3 tag used to show Year
+705307	Date tag not detected properly on FLAC files (and possibly others)
+705427	Set button arrow icons according to locale's text direction
+705626	Shortcuts missing
+706760	Set button arrow icons according to locale's text direction
+707082	IM status does nothing
+707184	Song comments disappear after closing Rhythmbox
+707360	Desktop file categories are wrong
+
+Translation updates:
+
+- ca, courtesy of Javi Ribera
+- cs, courtesy of Marek Černocký
+- de, courtesy of Christian Kirbach
+- el, courtesy of Dimitris Spingos (Δημήτρης Σπίγγος)
+- es, courtesy of Daniel Mustieles
+- es, courtesy of Miguel Rodríguez Núñez
+- fr, courtesy of Claude Paroz
+- gl, courtesy of Fran Dieguez
+- hu, courtesy of Gabor Kelemen
+- it, courtesy of Milo Casagrande
+- ja, courtesy of Jiro Matsuzawa
+- lt, courtesy of Aurimas Černius
+- lv, courtesy of Rūdolfs Mazurs
+- nb, courtesy of Kjartan Maraas
+- pa, courtesy of A S Alam
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Enrico Nicoletto
+- ru, courtesy of Yuri Myasoedov
+- si, courtesy of Danishka Navin
+- sk, courtesy of Pavol Klačanský
+- sl, courtesy of Matej Urbančič
+- sr, courtesy of Мирослав Николић
+- sr@latin, courtesy of Miroslav Nikolić
+- th, courtesy of Kiatkachorn Ratanatharathorn
+- zh_CN, courtesy of Wylmer Wang
+
+
 Overview of changes in Rhythmbox 2.99.1  "Strip Light Hate"
 ===========================================================
 
