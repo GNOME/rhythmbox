@@ -641,7 +641,7 @@ remove_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_data
 {
 	RBDisplayPage *page = get_selected_page (RB_DISPLAY_PAGE_TREE (user_data));
 	if (page) {
-		rb_display_page_delete_thyself (page);
+		rb_display_page_remove (page);
 		g_object_unref (page);
 	}
 }
