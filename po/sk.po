@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-08-27 23:26+0000\n"
-"PO-Revision-Date: 2013-08-15 14:56+0200\n"
+"POT-Creation-Date: 2013-09-04 13:20+0000\n"
+"PO-Revision-Date: 2013-09-06 20:38+0100\n"
 "Last-Translator: Pavol Klačanský <pavol@klacansky.com>\n"
 "Language-Team: slovenčina <>\n"
 "Language: sk\n"
@@ -182,10 +182,8 @@ msgid "Album Art"
 msgstr "Obal albumu"
 
 #: ../data/ui/app-menu.ui.h:9
-#, fuzzy
-#| msgid "Now Playing"
 msgid "Follow Playing Track"
-msgstr "Teraz sa prehráva"
+msgstr "Otvoriť prehrávanú stopu"
 
 # action entry
 #: ../data/ui/app-menu.ui.h:10
@@ -464,7 +462,6 @@ msgstr "_Kvalita"
 
 # label
 #: ../data/ui/import-dialog.ui.h:1
-#| msgid "Select a location containing music to add to your library."
 msgid "Select a location containing music to add to your library:"
 msgstr "Vyberte umiestnenie s hudbou, ktorú chcete pridať do vašej knižnice:"
 
@@ -4577,24 +4574,23 @@ msgstr "Umiestnenie, ktoré ste vybrali, je na zariadení %s."
 msgid "Show %s"
 msgstr "Zobraziť %s"
 
-# tooltip
+# label
 #: ../widgets/rb-import-dialog.c:459
-#, fuzzy, c-format
-#| msgid "Remove the selected tracks"
+#, c-format
 msgid "Import %d selected track"
 msgid_plural "Import %d selected tracks"
-msgstr[0] "Odstráni označené stopy"
-msgstr[1] "Odstráni označené stopy"
-msgstr[2] "Odstráni označené stopy"
+msgstr[0] "Importovať %d vybraných stôp"
+msgstr[1] "Importovať %d vybranú stopu"
+msgstr[2] "Importovať %d vybrané stopy"
 
+# label
 #: ../widgets/rb-import-dialog.c:462
-#, fuzzy, c-format
-#| msgid "Importing tracks"
+#, c-format
 msgid "Import %d listed track"
 msgid_plural "Import %d listed tracks"
-msgstr[0] "Importujú sa stopy"
-msgstr[1] "Importujú sa stopy"
-msgstr[2] "Importujú sa stopy"
+msgstr[0] "Importovať %d uvedených stôp"
+msgstr[1] "Importovať %d uvedenú stopu"
+msgstr[2] "Importovať %d uvedené stopy"
 
 # title in list view
 #: ../widgets/rb-property-view.c:660
