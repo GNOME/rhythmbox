@@ -59,7 +59,7 @@ static void playing_song_changed (RBShellPlayer *shell_player, RhythmDBEntry *en
 static void elapsed_changed (RBShellPlayer *shell_player, guint elapsed, RBDACPPlayer *player);
 
 static DAAPRecord *rb_dacp_player_now_playing_record  (DACPPlayer *player);
-static const guchar *rb_dacp_player_now_playing_artwork (DACPPlayer *player, guint width, guint height);
+static guchar *rb_dacp_player_now_playing_artwork (DACPPlayer *player, guint width, guint height);
 static void rb_dacp_player_play_pause          (DACPPlayer *player);
 static void rb_dacp_player_pause               (DACPPlayer *player);
 static void rb_dacp_player_next_item           (DACPPlayer *player);
@@ -305,7 +305,7 @@ rb_dacp_player_now_playing_record (DACPPlayer *player)
 	}
 }
 
-static const guchar *
+static guchar *
 rb_dacp_player_now_playing_artwork (DACPPlayer *player, guint width, guint height)
 {
 	return NULL;
