@@ -220,7 +220,7 @@ connection_closed_cb (GDBusConnection *connection,
 	svc->connection = NULL;
 }
 
-static void
+static gboolean
 new_connection_cb (GDBusServer *server,
 		   GDBusConnection *connection,
 		   ServiceData *svc)
@@ -231,7 +231,7 @@ new_connection_cb (GDBusServer *server,
 	/* don't allow more than one connection at a time */
 	if (svc->connection) {
 		rb_debug ("metadata service already has a client.  go away.");
-		return;
+		return FALSE;
 	}
 	g_dbus_connection_register_object (connection,
 					   RB_METADATA_DBUS_OBJECT_PATH,
@@ -243,11 +243,13 @@ new_connection_cb (GDBusServer *server,
 	if (error != NULL) {
 		rb_debug ("unable to register metadata object: %s", error->message);
 		g_clear_error (&error);
+		return FALSE;
 	} else {
 		svc->connection = g_object_ref (connection);
 		g_signal_connect (connection, "closed", G_CALLBACK (connection_closed_cb), svc);
 
 		g_dbus_connection_set_exit_on_close (connection, (svc->external == FALSE));
+		return TRUE;
 	}
 }
 
