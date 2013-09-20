@@ -612,7 +612,6 @@ rb_daap_source_connection_cb (DMAPConnection   *connection,
 {
 	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
 	RBShell *shell = NULL;
-	GSettings *plugin_settings;
 	GSettings *settings;
 	GSList *playlists;
 	GSList *l;
@@ -637,9 +636,8 @@ rb_daap_source_connection_cb (DMAPConnection   *connection,
 	g_object_get (daap_source,
 		      "shell", &shell,
 		      "entry-type", &entry_type,
-		      "settings", &plugin_settings,
+		      "settings", &settings,
 		      NULL);
-	settings = g_settings_get_child (plugin_settings, "source");
 	playlists = dmap_connection_get_playlists (DMAP_CONNECTION (daap_source->priv->connection));
 	for (l = playlists; l != NULL; l = g_slist_next (l)) {
 		DMAPPlaylist *playlist = l->data;
@@ -654,7 +652,6 @@ rb_daap_source_connection_cb (DMAPConnection   *connection,
 	}
 
 	g_object_unref (settings);
-	g_object_unref (plugin_settings);
 	g_object_unref (shell);
 	g_object_unref (entry_type);
 }
