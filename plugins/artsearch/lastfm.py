@@ -24,7 +24,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import urllib
+import urllib.parse
 import xml.dom.minidom as dom
 import re
 import configparser
@@ -88,11 +88,11 @@ class LastFMSearch (object):
 		print("searching for (%s, %s, %s)" % (artist, album, album_mbid))
 		url = API_URL + "?method=album.getinfo&"
 		if artist != None:
-			url = url + "artist=%s&" % (urllib.quote_plus(artist))
+			url = url + "artist=%s&" % (urllib.parse.quote_plus(artist))
 		if album != None:
-			url = url + "album=%s&" % (urllib.quote_plus(album))
+			url = url + "album=%s&" % (urllib.parse.quote_plus(album))
 		if album_mbid != None:
-			url = url + "mbid=%s&" % (urllib.quote_plus(album_mbid))
+			url = url + "mbid=%s&" % (urllib.parse.quote_plus(album_mbid))
 
 		url = url + "api_key=%s" % API_KEY
 		print("last.fm query url = %s" % url)
@@ -160,7 +160,7 @@ class LastFMSearch (object):
 		artists = key.get_field_values("artist")
 		album_mbid = key.get_info("musicbrainz-albumid")
 
-		artists = filter(lambda x: x not in (None, "", _("Unknown")), artists)
+		artists = list(filter(lambda x: x not in (None, "", _("Unknown")), artists))
 		if album in ("", _("Unknown")):
 			album = None
 

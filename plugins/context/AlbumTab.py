@@ -26,7 +26,7 @@
 
 import os
 import cgi
-import urllib
+import urllib.request, urllib.parse
 from mako.template import Template
 import json
 

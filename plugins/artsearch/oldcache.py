@@ -25,7 +25,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import os.path
-import urllib
+import urllib.request
 
 import rb
 from gi.repository import RB
@@ -55,7 +55,7 @@ class OldCacheSearch(object):
 				path = self.filename(album, artist, ext)
 				if os.path.exists(path):
 					print("found %s" % path)
-					uri = "file://" + urllib.pathname2url(path)
+					uri = "file://" + urllib.request.pathname2url(path)
 					storekey = RB.ExtDBKey.create_storage('album', album)
 					storekey.add_field("artist", artist)
 					store.store_uri(storekey, RB.ExtDBSourceType.SEARCH, uri)

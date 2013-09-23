@@ -26,7 +26,7 @@
 
 import re, os
 import cgi
-import urllib
+import urllib.request, urllib.parse
 import xml.dom.minidom as dom
 import json
 

@@ -12,7 +12,7 @@ rbplayerobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Player
 rbplayer = dbus.Interface(rbplayerobj, 'org.gnome.Rhythmbox.Player')
 
 def playing_uri_changed(uri):
-    print "Now playing: %s" % (uri,)
+    print("Now playing: %s" % (uri,))
     props = rbshell.getSongProperties(uri)
     interesting = ['title', 'artist', 'album', 'location']
     for prop in props:

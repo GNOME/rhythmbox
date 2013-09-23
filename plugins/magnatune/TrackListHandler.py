@@ -27,7 +27,7 @@
 
 import sys
 import xml.sax, xml.sax.handler
-import datetime, re, urllib
+import datetime, re
 
 import rb
 from gi.repository import RB
