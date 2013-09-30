@@ -280,7 +280,7 @@ rb_auto_playlist_source_constructed (GObject *object)
 	gtk_grid_attach (GTK_GRID (grid), priv->paned, 0, 1, 1, 1);
 	gtk_container_add (GTK_CONTAINER (source), grid);
 
-	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (songs), priv->paned, GTK_WIDGET (priv->browser));
+	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (songs), priv->paned, GTK_WIDGET (priv->browser), TRUE);
 	g_object_unref (songs);
 
 	g_object_set (source,

@@ -1404,6 +1404,7 @@ paned_position_changed_cb (GObject *paned, GParamSpec *pspec, GSettings *setting
  * @entry_view: (allow-none): the #RBEntryView for the source
  * @paned: (allow-none): the #GtkPaned containing the entry view and the browser
  * @browser: (allow-none):  the browser (typically a #RBLibraryBrowser) for the source
+ * @sort_order: whether to bind the entry view sort order
  *
  * Binds the source's #GSettings instance to the given widgets.  Should be called
  * from the source's constructed method.
@@ -1412,7 +1413,7 @@ paned_position_changed_cb (GObject *paned, GParamSpec *pspec, GSettings *setting
  * browser-views settings key.
  */
 void
-rb_source_bind_settings (RBSource *source, GtkWidget *entry_view, GtkWidget *paned, GtkWidget *browser)
+rb_source_bind_settings (RBSource *source, GtkWidget *entry_view, GtkWidget *paned, GtkWidget *browser, gboolean sort_order)
 {
 	char *name;
 	GSettings *common_settings;
@@ -1421,8 +1422,8 @@ rb_source_bind_settings (RBSource *source, GtkWidget *entry_view, GtkWidget *pan
 	g_object_get (source, "name", &name, NULL);
 
 	if (entry_view != NULL) {
-		rb_debug ("binding entry view sort order for %s", name);
-		if (source->priv->settings) {
+		if (sort_order && source->priv->settings) {
+			rb_debug ("binding entry view sort order for %s", name);
 			g_settings_bind_with_mapping (source->priv->settings, "sorting", entry_view, "sort-order",
 						      G_SETTINGS_BIND_GET | G_SETTINGS_BIND_SET | G_SETTINGS_BIND_NO_SENSITIVITY,
 						      (GSettingsBindGetMapping) sort_order_get_mapping,

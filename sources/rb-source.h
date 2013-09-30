@@ -201,7 +201,8 @@ gboolean	_rb_source_check_entry_type	(RBSource *source,
 void		rb_source_bind_settings		(RBSource *source,
 						 GtkWidget *entry_view,
 						 GtkWidget *paned,
-						 GtkWidget *browser);
+						 GtkWidget *browser,
+						 gboolean sort_order);
 void		rb_source_notify_playback_status_changed (RBSource *source);
 
 G_END_DECLS

@@ -391,7 +391,7 @@ rb_grilo_source_constructed (GObject *object)
 
 	/* don't allow the browser to be hidden? */
 	source->priv->paned = gtk_paned_new (GTK_ORIENTATION_HORIZONTAL);
-	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (source->priv->entry_view), source->priv->paned, NULL);
+	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (source->priv->entry_view), source->priv->paned, NULL, TRUE);
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned), browserbox, FALSE, FALSE);
 
 	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);

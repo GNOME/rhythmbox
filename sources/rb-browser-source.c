@@ -370,7 +370,8 @@ rb_browser_source_constructed (GObject *object)
 	rb_source_bind_settings (RB_SOURCE (source),
 				 GTK_WIDGET (source->priv->songs),
 				 paned,
-				 GTK_WIDGET (source->priv->browser));
+				 GTK_WIDGET (source->priv->browser),
+				 TRUE);
 
 	if (rb_browser_source_has_drop_support (source)) {
 		gtk_drag_dest_set (GTK_WIDGET (source->priv->songs),

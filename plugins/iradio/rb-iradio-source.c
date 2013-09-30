@@ -377,7 +377,8 @@ rb_iradio_source_constructed (GObject *object)
 	rb_source_bind_settings (RB_SOURCE (source),
 				 GTK_WIDGET (source->priv->stations),
 				 paned,
-				 GTK_WIDGET (source->priv->genres));
+				 GTK_WIDGET (source->priv->genres),
+				 TRUE);
 
 	gtk_widget_show_all (GTK_WIDGET (source));
 

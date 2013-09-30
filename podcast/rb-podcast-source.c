@@ -1615,7 +1615,8 @@ impl_constructed (GObject *object)
 	rb_source_bind_settings (RB_SOURCE (source),
 				 GTK_WIDGET (source->priv->posts),
 				 source->priv->paned,
-				 GTK_WIDGET (source->priv->feeds));
+				 GTK_WIDGET (source->priv->feeds),
+				 TRUE);
 
 	g_object_unref (settings);
 	g_object_unref (accel_group);

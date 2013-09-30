@@ -415,7 +415,7 @@ rb_audiocd_source_constructed (GObject *object)
 	gtk_widget_set_margin_top (GTK_WIDGET (grid), 6);
 	g_object_unref (builder);
 
-	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (source->priv->entry_view), NULL, NULL);
+	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (source->priv->entry_view), NULL, NULL, FALSE);
 
 	gtk_widget_show_all (grid);
 	gtk_container_add (GTK_CONTAINER (source), grid);

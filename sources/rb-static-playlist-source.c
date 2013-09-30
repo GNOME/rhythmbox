@@ -318,7 +318,7 @@ rb_static_playlist_source_constructed (GObject *object)
 	gtk_grid_attach (GTK_GRID (grid), paned, 0, 1, 1, 1);
 	gtk_container_add (GTK_CONTAINER (source), grid);
 
-	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (songs), paned, GTK_WIDGET (priv->browser));
+	rb_source_bind_settings (RB_SOURCE (source), GTK_WIDGET (songs), paned, GTK_WIDGET (priv->browser), FALSE);
 	g_object_unref (songs);
 
 	/* set up playlist menu */
