@@ -1285,9 +1285,9 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 			GPtrArray *subquery = g_ptr_array_new ();
 
  			for (row = paths; row; row = row->next) {
- 				char* name;
 				path = gtk_tree_row_reference_get_path (row->data);
  				if (path && gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path)) {
+					char *name;
 	 				gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
 	 						    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE,
 							    &name, -1);
@@ -1303,10 +1303,10 @@ rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
 	 							       model->priv->propid, name,
 	 							       RHYTHMDB_QUERY_END);
 	 				}
+					g_free (name);
 				}
 
 				gtk_tree_path_free (path);
- 				g_free (name);
  			}
 
 			g_object_set (query_model,
