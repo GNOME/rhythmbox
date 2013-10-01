@@ -90,6 +90,7 @@ task_list_changed_cb (RBListModel *model, int position, int removed, int added, 
 
 		w = g_array_index (list->priv->widgets, GtkWidget *, position);
 		gtk_container_remove (GTK_CONTAINER (list), w);
+		g_array_remove_index (list->priv->widgets, position);
 	}
 
 	for (i = 0; i < added; i++) {
