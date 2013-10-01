@@ -1269,7 +1269,7 @@ rb_generic_player_source_get_playlist_path (RBGenericPlayerSource *source)
 	char *path;
 
 	g_object_get (priv->device_info, "playlist-path", &path, NULL);
-	if (g_str_has_suffix (path, "%File")) {
+	if (path != NULL && g_str_has_suffix (path, "%File")) {
 		path[strlen (path) - strlen("%File")] = '\0';
 	}
 	return path;
