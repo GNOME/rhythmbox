@@ -125,6 +125,8 @@ struct _RBPlayQueueSourcePrivate
 
 	GMenuModel *popup;
 	GMenuModel *sidepane_popup;
+
+	guint update_count_idle_id;
 };
 
 enum
@@ -160,6 +162,11 @@ rb_play_queue_source_dispose (GObject *object)
 	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (object);
 
 	g_clear_object (&priv->queue_play_order);
+
+	if (priv->update_count_idle_id) {
+		g_source_remove (priv->update_count_idle_id);
+		priv->update_count_idle_id = 0;
+	}
 
 	if (priv->bus != NULL) {
 		if (priv->dbus_object_id) {
@@ -488,15 +495,16 @@ rb_play_queue_source_row_deleted_cb (GtkTreeModel *model,
 	rb_play_queue_source_update_count (source, model, -1);
 }
 
-static void
-rb_play_queue_source_update_count (RBPlayQueueSource *source,
-				   GtkTreeModel *model,
-				   gint offset)
+static gboolean
+update_count_idle (RBPlayQueueSource *source)
 {
-	GAction *action;
-	gint count = gtk_tree_model_iter_n_children (model, NULL) + offset;
 	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
+	RhythmDBQueryModel *model;
 	char *name = _("Play Queue");
+	int count;
+       
+	model = rb_playlist_source_get_query_model (RB_PLAYLIST_SOURCE (source));
+	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL);
 
 	/* update source name */
 	if (count > 0)
@@ -508,6 +516,24 @@ rb_play_queue_source_update_count (RBPlayQueueSource *source,
 	if (count > 0)
 		g_free (name);
 
+	priv->update_count_idle_id = 0;
+	return FALSE;
+}
+
+static void
+rb_play_queue_source_update_count (RBPlayQueueSource *source,
+				   GtkTreeModel *model,
+				   gint offset)
+{
+	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
+	GAction *action;
+	int count;
+
+	if (priv->update_count_idle_id == 0) {
+		priv->update_count_idle_id = g_idle_add ((GSourceFunc) update_count_idle, source);
+	}
+
+	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL) + offset;
 	/* make 'clear queue' and 'shuffle queue' actions sensitive when there are entries in the queue */
 	action = g_action_map_lookup_action (G_ACTION_MAP (g_application_get_default ()),
 					     "queue-clear");
