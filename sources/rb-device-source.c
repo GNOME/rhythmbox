@@ -129,8 +129,16 @@ unmount_cb (GObject *object, GAsyncResult *result, gpointer nothing)
 	}
 }
 
-static void
-default_eject (RBDeviceSource *source)
+/**
+ * rb_device_source_default_eject:
+ * @source: a #RBDeviceSource
+ *
+ * Default method for ejecting devices.  Implementations can
+ * perform any required work before ejecting, then call this do
+ * eject the device.
+ */
+void
+rb_device_source_default_eject (RBDeviceSource *source)
 {
 	GVolume *volume = NULL;
 	GMount *mount = NULL;
@@ -374,5 +382,5 @@ static void
 rb_device_source_default_init (RBDeviceSourceInterface *interface)
 {
 	interface->can_eject = default_can_eject;
-	interface->eject = default_eject;
+	interface->eject = rb_device_source_default_eject;
 }

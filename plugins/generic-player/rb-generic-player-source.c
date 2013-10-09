@@ -83,6 +83,8 @@ static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
 static gboolean impl_can_delete (RBSource *source);
 static void impl_delete (RBSource *source);
 
+static void impl_eject (RBDeviceSource *source);
+
 static char* impl_build_dest_uri (RBTransferTarget *target,
 				  RhythmDBEntry *entry,
 				  const char *media_type,
@@ -139,6 +141,7 @@ typedef struct
 
 	MPIDDevice *device_info;
 	GMount *mount;
+	gboolean ejecting;
 
 	GSimpleAction *new_playlist_action;
 	char *new_playlist_action_name;
@@ -154,6 +157,7 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (
 	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_TRANSFER_TARGET, rb_generic_player_source_transfer_target_init))
 
 #define GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_GENERIC_PLAYER_SOURCE, RBGenericPlayerSourcePrivate))
+
 
 static void
 rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
@@ -227,7 +231,7 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 static void
 rb_generic_player_device_source_init (RBDeviceSourceInterface *interface)
 {
-	/* nothing */
+	interface->eject = impl_eject;
 }
 
 static void
@@ -596,19 +600,23 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 
 	GDK_THREADS_ENTER ();
 
-	g_object_get (source, "shell", &shell, NULL);
-	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (priv->import_errors), RB_DISPLAY_PAGE (source));
-	g_object_unref (shell);
+	if (priv->ejecting) {
+		rb_device_source_default_eject (RB_DEVICE_SOURCE (source));
+	} else {
+		g_object_get (source, "shell", &shell, NULL);
+		rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (priv->import_errors), RB_DISPLAY_PAGE (source));
+		g_object_unref (shell);
 
-	if (klass->impl_load_playlists)
-		klass->impl_load_playlists (source);
+		if (klass->impl_load_playlists)
+			klass->impl_load_playlists (source);
+
+		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
+
+		rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), NULL, FALSE);
+	}
 
 	g_object_unref (priv->import_job);
 	priv->import_job = NULL;
-
-	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
-
-	rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), NULL, FALSE);
 
 	GDK_THREADS_LEAVE ();
 }
@@ -1079,6 +1087,21 @@ impl_delete (RBSource *source)
 	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (sel);
 }
+
+
+static void
+impl_eject (RBDeviceSource *source)
+{
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
+
+	if (priv->import_job != NULL) {
+		rhythmdb_import_job_cancel (priv->import_job);
+		priv->ejecting = TRUE;
+	} else {
+		rb_device_source_default_eject (source);
+	}
+}
+
 
 static char *
 sanitize_path (const char *str)

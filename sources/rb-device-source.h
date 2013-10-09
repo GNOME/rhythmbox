@@ -60,6 +60,8 @@ gboolean	rb_device_source_uri_is_source	(RBSource *source, const char *uri);
 
 void		rb_device_source_set_display_details (RBDeviceSource *source);
 
+void		rb_device_source_default_eject	(RBDeviceSource *source);
+
 G_END_DECLS
 
 #endif  /* RB_DEVICE_SOURCE_H */
