@@ -615,6 +615,8 @@ rb_metadata_can_save (RBMetaData *md, const char *media_type)
 
 	if (saveable_types == NULL) {
 		if (start_metadata_service (&error) == FALSE) {
+			g_warning ("unable to start metadata service: %s", error->message);
+			g_static_mutex_unlock (&conn_mutex);
 			g_error_free (error);
 			return FALSE;
 		}
