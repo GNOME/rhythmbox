@@ -462,7 +462,7 @@ AM_CONDITIONAL(WITH_WEBKIT, test x"$have_webkit" = xyes)
 AC_ARG_ENABLE(uninstalled-build,
               AC_HELP_STRING([--enable-uninstalled-build],
 			     [Search for files in build directory as well]),
-	      enable_uninstalled=yes,)
+	      enable_uninstalled=$enableval,)
 if test x"$enable_uninstalled" = xyes; then
 	AC_DEFINE(USE_UNINSTALLED_DIRS, 1, [Define to look for files in source tree locations])
 fi
