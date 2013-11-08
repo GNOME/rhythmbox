@@ -2498,6 +2498,24 @@ stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream
 		      "max-size-buffers", 200,		/* back to normal value */
 		      NULL);
 
+#if GST_CHECK_VERSION(1,2,0)
+	{
+		GstElement *src;
+		GstQuery *query;
+		g_object_get (stream->decoder, "source", &src, NULL);
+		query = gst_query_new_scheduling ();
+		if (gst_element_query (src, query)) {
+			GstSchedulingFlags flags;
+			gst_query_parse_scheduling (query, &flags, NULL, NULL, NULL);
+
+			/* this matches how uridecodebin decides whether to do buffering */
+			stream->use_buffering = (flags & GST_SCHEDULING_FLAG_BANDWIDTH_LIMITED);
+		}
+		gst_query_unref (query);
+		g_object_unref (src);
+	}
+#endif
+
 	if (stream->use_buffering) {
 		rb_debug ("stream %s requires buffering", stream->uri);
 		switch (stream->state) {
