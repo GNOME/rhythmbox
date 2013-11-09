@@ -313,18 +313,18 @@ emit_status_changed (RhythmDBImportJob *job)
 	return FALSE;
 }
 
-static void
+static gboolean
 uri_recurse_func (GFile *file, gboolean dir, RhythmDBImportJob *job)
 {
 	RhythmDBEntry *entry;
 	char *uri;
 
 	if (dir) {
-		return;
+		return TRUE;
 	}
 
 	if (g_cancellable_is_cancelled (job->priv->cancel))
-		return;
+		return FALSE;
 
 	uri = g_file_get_uri (file);
 
@@ -359,6 +359,7 @@ uri_recurse_func (GFile *file, gboolean dir, RhythmDBImportJob *job)
 	}
 
 	g_free (uri);
+	return TRUE;
 }
 
 static gboolean

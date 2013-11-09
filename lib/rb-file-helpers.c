@@ -51,6 +51,12 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 
+typedef struct _RBUriHandleRecursivelyAsyncData RBUriHandleRecursivelyAsyncData;
+
+static void _uri_handle_recursively_free (RBUriHandleRecursivelyAsyncData *data);
+static void _uri_handle_recursively_next_dir (RBUriHandleRecursivelyAsyncData *data);
+static void _uri_handle_recursively_next_files (RBUriHandleRecursivelyAsyncData *data);
+
 static GHashTable *files = NULL;
 
 static char *dot_dir = NULL;
@@ -76,6 +82,13 @@ static char *installed_paths[] = {
 };
 
 static char **search_paths;
+
+static const char *recurse_attributes =
+		G_FILE_ATTRIBUTE_STANDARD_NAME ","
+		G_FILE_ATTRIBUTE_STANDARD_TYPE ","
+		G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN ","
+		G_FILE_ATTRIBUTE_ID_FILE ","
+		G_FILE_ATTRIBUTE_ACCESS_CAN_READ;
 
 /**
  * rb_locale_dir:
@@ -672,19 +685,6 @@ rb_uri_make_hidden (const char *uri)
 	return ret;
 }
 
-typedef struct {
-	char *uri;
-	GCancellable *cancel;
-	RBUriRecurseFunc func;
-	gpointer user_data;
-	GDestroyNotify data_destroy;
-
-	GMutex results_lock;
-	guint results_idle_id;
-	GList *file_results;
-	GList *dir_results;
-} RBUriHandleRecursivelyAsyncData;
-
 static gboolean
 _should_process (GFileInfo *info)
 {
@@ -702,6 +702,54 @@ _should_process (GFileInfo *info)
 	return TRUE;
 }
 
+
+static gboolean
+_uri_handle_file (GFile *dir, GFileInfo *fileinfo, GHashTable *handled, RBUriRecurseFunc func, gpointer user_data, GFile **descend)
+{
+	const char *file_id;
+	gboolean is_dir;
+	gboolean ret;
+	GFileType file_type;
+	GFile *child;
+
+	*descend = NULL;
+	if (_should_process (fileinfo) == FALSE) {
+		rb_debug ("ignoring %s", g_file_info_get_name (fileinfo));
+		return TRUE;
+	}
+
+	/* already handled? */
+	file_id = g_file_info_get_attribute_string (fileinfo, G_FILE_ATTRIBUTE_ID_FILE);
+	if (file_id == NULL) {
+		/* have to hope for the best, I guess */
+	} else if (g_hash_table_lookup (handled, file_id) != NULL) {
+		return TRUE;
+	} else {
+		g_hash_table_insert (handled, g_strdup (file_id), GINT_TO_POINTER (1));
+	}
+
+	/* type? */
+	file_type = g_file_info_get_attribute_uint32 (fileinfo, G_FILE_ATTRIBUTE_STANDARD_TYPE);
+	switch (file_type) {
+	case G_FILE_TYPE_DIRECTORY:
+	case G_FILE_TYPE_MOUNTABLE:
+		is_dir = TRUE;
+		break;
+	default:
+		is_dir = FALSE;
+		break;
+	}
+
+	child = g_file_get_child (dir, g_file_info_get_name (fileinfo));
+	ret = (func) (child, is_dir, user_data);
+	if (is_dir && ret) {
+		*descend = child;
+	} else {
+		g_object_unref (child);
+	}
+	return ret;
+}
+
 static void
 _uri_handle_recurse (GFile *dir,
 		     GCancellable *cancel,
@@ -712,24 +760,16 @@ _uri_handle_recurse (GFile *dir,
 	GFileEnumerator *files;
 	GFileInfo *info;
 	GError *error = NULL;
-	GFileType file_type;
-	const char *file_id;
-	gboolean file_handled;
-	const char *attributes = 
-		G_FILE_ATTRIBUTE_STANDARD_NAME ","
-		G_FILE_ATTRIBUTE_STANDARD_TYPE ","
-		G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN ","
-		G_FILE_ATTRIBUTE_ID_FILE ","
-		G_FILE_ATTRIBUTE_ACCESS_CAN_READ;
+	GFile *descend;
 
-	files = g_file_enumerate_children (dir, attributes, G_FILE_QUERY_INFO_NONE, cancel, &error);
+	files = g_file_enumerate_children (dir, recurse_attributes, G_FILE_QUERY_INFO_NONE, cancel, &error);
 	if (error != NULL) {
 		char *where;
 
 		/* handle the case where we're given a single file to process */
 		if (error->code == G_IO_ERROR_NOT_DIRECTORY) {
 			g_clear_error (&error);
-			info = g_file_query_info (dir, attributes, G_FILE_QUERY_INFO_NONE, cancel, &error);
+			info = g_file_query_info (dir, recurse_attributes, G_FILE_QUERY_INFO_NONE, cancel, &error);
 			if (error == NULL) {
 				if (_should_process (info)) {
 					(func) (dir, FALSE, user_data);
@@ -747,11 +787,6 @@ _uri_handle_recurse (GFile *dir,
 	}
 
 	while (1) {
-		GFile *child;
-		gboolean is_dir;
-		gboolean ret;
-
-		ret = TRUE;
 		info = g_file_enumerator_next_file (files, cancel, &error);
 		if (error != NULL) {
 			rb_debug ("error enumerating files: %s", error->message);
@@ -760,50 +795,13 @@ _uri_handle_recurse (GFile *dir,
 			break;
 		}
 
-		if (_should_process (info) == FALSE) {
-			g_object_unref (info);
-			continue;
-		}
-
-		/* already handled? */
-		file_id = g_file_info_get_attribute_string (info, G_FILE_ATTRIBUTE_ID_FILE);
-		if (file_id == NULL) {
-			/* have to hope for the best, I guess */
-			file_handled = FALSE;
-		} else if (g_hash_table_lookup (handled, file_id) != NULL) {
-			file_handled = TRUE;
-		} else {
-			file_handled = FALSE;
-			g_hash_table_insert (handled, g_strdup (file_id), GINT_TO_POINTER (1));
-		}
-
-		/* type? */
-		file_type = g_file_info_get_attribute_uint32 (info, G_FILE_ATTRIBUTE_STANDARD_TYPE);
-		switch (file_type) {
-		case G_FILE_TYPE_DIRECTORY:
-		case G_FILE_TYPE_MOUNTABLE:
-			is_dir = TRUE;
+		if (_uri_handle_file (dir, info, handled, func, user_data, &descend) == FALSE)
 			break;
-		
-		default:
-			is_dir = FALSE;
-			break;
+
+		if (descend) {
+			_uri_handle_recurse (descend, cancel, handled, func, user_data);
+			g_object_unref (descend);
 		}
-
-		if (file_handled == FALSE) {
-			child = g_file_get_child (dir, g_file_info_get_name (info));
-			ret = (func) (child, is_dir, user_data);
-
-			if (is_dir) {
-				_uri_handle_recurse (child, cancel, handled, func, user_data);
-			}
-			g_object_unref (child);
-		}
-	
-		g_object_unref (info);
-
-		if (ret == FALSE)
-			break;
 	}
 
 	g_object_unref (files);
@@ -837,94 +835,133 @@ rb_uri_handle_recursively (const char *uri,
 	g_object_unref (file);
 }
 
+struct _RBUriHandleRecursivelyAsyncData {
+	GCancellable *cancel;
+	RBUriRecurseFunc func;
+	gpointer user_data;
+	GDestroyNotify data_destroy;
 
-/* runs in main thread */
-static gboolean
-_recurse_async_idle_cb (RBUriHandleRecursivelyAsyncData *data)
+	GHashTable *handled;
+
+	GQueue *dirs_left;
+	GFile *current;
+	GFileEnumerator *enumerator;
+};
+
+
+static void
+_uri_handle_recursively_free (RBUriHandleRecursivelyAsyncData *data)
 {
-	GList *ul, *dl;
-
-	g_mutex_lock (&data->results_lock);
-
-	for (ul = data->file_results, dl = data->dir_results;
-	     ul != NULL;
-	     ul = g_list_next (ul), dl = g_list_next (dl)) {
-		g_assert (dl != NULL);
-
-		data->func (G_FILE (ul->data), (GPOINTER_TO_INT (dl->data) == 1), data->user_data);
-		g_object_unref (ul->data);
-	}
-	g_assert (dl == NULL);
-
-	g_list_free (data->file_results);
-	data->file_results = NULL;
-	g_list_free (data->dir_results);
-	data->dir_results = NULL;
-
-	data->results_idle_id = 0;
-	g_mutex_unlock (&data->results_lock);
-	return FALSE;
+	if (data->data_destroy)
+		data->data_destroy (data->user_data);
+	g_clear_object (&data->current);
+	g_clear_object (&data->enumerator);
+	g_clear_object (&data->cancel);
+	g_hash_table_destroy (data->handled);
+	g_queue_free_full (data->dirs_left, g_object_unref);
+	g_free (data);
 }
 
-/* runs in main thread */
-static gboolean
-_recurse_async_data_free (RBUriHandleRecursivelyAsyncData *data)
+static void
+_uri_handle_recursively_process_files (GObject *src, GAsyncResult *result, gpointer ptr)
 {
-	GList *i;
+	GList *files;
+	GList *l;
+	GFile *descend;
+	GError *error = NULL;
+	RBUriHandleRecursivelyAsyncData *data = ptr;
 
-	if (data->results_idle_id) {
-		g_source_remove (data->results_idle_id);
-		_recurse_async_idle_cb (data); /* process last results */
+	files = g_file_enumerator_next_files_finish (G_FILE_ENUMERATOR (src), result, &error);
+	if (error != NULL) {
+		rb_debug ("error enumerating files: %s", error->message);
+		_uri_handle_recursively_next_dir (data);
+		g_clear_error (&error);
+		return;
 	}
 
-	for (i = data->file_results; i != NULL; i = i->next) {
-		GFile *file = G_FILE (i->data);
-		g_object_unref (file);
+	if (files == NULL) {
+		_uri_handle_recursively_next_dir (data);
+		return;
 	}
 
-	g_list_free (data->file_results);
-	data->file_results = NULL;
-	g_list_free (data->dir_results);
-	data->dir_results = NULL;
-
-	if (data->data_destroy != NULL) {
-		(data->data_destroy) (data->user_data);
+	rb_debug ("got %d file(s)", g_list_length (files));
+	for (l = files; l != NULL; l = l->next) {
+		descend = NULL;
+		if (_uri_handle_file (data->current, l->data, data->handled, data->func, data->user_data, &descend) == FALSE) {
+			rb_debug ("callback returned false");
+			g_cancellable_cancel (data->cancel);
+			break;
+		} else if (descend) {
+			char *uri = g_file_get_uri (descend);
+			rb_debug ("adding dir %s to processing list", uri);
+			g_free (uri);
+			g_queue_push_tail (data->dirs_left, descend);
+		}
 	}
-	if (data->cancel != NULL) {
-		g_object_unref (data->cancel);
-	}
 
-	g_free (data->uri);
-	return FALSE;
+	g_list_free_full (files, g_object_unref);
+	_uri_handle_recursively_next_files (data);
 }
 
-/* runs in worker thread */
-static gboolean
-_recurse_async_cb (GFile *file, gboolean dir, RBUriHandleRecursivelyAsyncData *data)
+static void
+_uri_handle_recursively_next_files (RBUriHandleRecursivelyAsyncData *data)
 {
-	g_mutex_lock (&data->results_lock);
+	g_file_enumerator_next_files_async (data->enumerator,
+					    16,		/* or something */
+					    G_PRIORITY_DEFAULT,
+					    data->cancel,
+					    _uri_handle_recursively_process_files,
+					    data);
+}
 
-	data->file_results = g_list_prepend (data->file_results, g_object_ref (file));
-	data->dir_results = g_list_prepend (data->dir_results, GINT_TO_POINTER (dir ? 1 : 0));
-	if (data->results_idle_id == 0) {
-		g_idle_add ((GSourceFunc)_recurse_async_idle_cb, data);
+static void
+_uri_handle_recursively_enum_files (GObject *src, GAsyncResult *result, gpointer ptr)
+{
+	GError *error = NULL;
+	RBUriHandleRecursivelyAsyncData *data = ptr;
+
+	data->enumerator = g_file_enumerate_children_finish (G_FILE (src), result, &error);
+	if (error != NULL) {
+		if (error->code == G_IO_ERROR_NOT_DIRECTORY) {
+			GFileInfo *info;
+
+			info = g_file_query_info (G_FILE (src), recurse_attributes, G_FILE_QUERY_INFO_NONE, data->cancel, &error);
+			if (error == NULL) {
+				if (_should_process (info)) {
+					(data->func) (G_FILE (src), FALSE, data->user_data);
+				}
+				g_object_unref (info);
+			}
+		} else {
+			rb_debug ("error enumerating folder: %s", error->message);
+		}
+		g_clear_error (&error);
+		_uri_handle_recursively_next_dir (data);
+	} else {
+		_uri_handle_recursively_next_files (data);
 	}
-
-	g_mutex_unlock (&data->results_lock);
-	return TRUE;
 }
 
-static gpointer
-_recurse_async_func (RBUriHandleRecursivelyAsyncData *data)
+static void
+_uri_handle_recursively_next_dir (RBUriHandleRecursivelyAsyncData *data)
 {
-	rb_uri_handle_recursively (data->uri,
-				   data->cancel,
-				   (RBUriRecurseFunc) _recurse_async_cb,
-				   data);
-
-	g_idle_add ((GSourceFunc)_recurse_async_data_free, data);
-	return NULL;
+	g_clear_object (&data->current);
+	g_clear_object (&data->enumerator);
+	data->current = g_queue_pop_head (data->dirs_left);
+	if (data->current != NULL) {
+		g_file_enumerate_children_async (data->current,
+						 recurse_attributes,
+						 G_FILE_QUERY_INFO_NONE,
+						 G_PRIORITY_DEFAULT,
+						 data->cancel,
+						 _uri_handle_recursively_enum_files,
+						 data);
+	} else {
+		rb_debug ("nothing more to do");
+		_uri_handle_recursively_free (data);
+	}
 }
+
 
 /**
  * rb_uri_handle_recursively_async:
@@ -938,9 +975,6 @@ _recurse_async_func (RBUriHandleRecursivelyAsyncData *data)
  * by @uri, or if @uri identifies a file, calls it once
  * with that.
  *
- * Directory recursion happens on a separate thread, but the callbacks
- * are called on the main thread.
- *
  * If non-NULL, @destroy_data will be called once all files have been
  * processed, or when the operation is cancelled.
  */
@@ -953,18 +987,21 @@ rb_uri_handle_recursively_async (const char *uri,
 {
 	RBUriHandleRecursivelyAsyncData *data = g_new0 (RBUriHandleRecursivelyAsyncData, 1);
 	
-	data->uri = g_strdup (uri);
-	data->user_data = user_data;
+	rb_debug ("processing %s", uri);
 	if (cancel != NULL) {
 		data->cancel = g_object_ref (cancel);
+	} else {
+		data->cancel = g_cancellable_new ();
 	}
-	data->data_destroy = data_destroy;
 
-	g_mutex_init (&data->results_lock);
 	data->func = func;
 	data->user_data = user_data;
+	data->data_destroy = data_destroy;
+	data->handled = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 
-	g_thread_new ("rb-uri-recurse", (GThreadFunc)_recurse_async_func, data);
+	data->dirs_left = g_queue_new ();
+	g_queue_push_tail (data->dirs_left, g_file_new_for_uri (uri));
+	_uri_handle_recursively_next_dir (data);
 }
 
 /**
