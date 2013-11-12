@@ -327,6 +327,10 @@ start_scanning (RBImportDialog *dialog)
 {
 	RBTaskList *tasklist;
 
+	rhythmdb_entry_delete_by_type (dialog->priv->db, dialog->priv->entry_type);
+	rhythmdb_entry_delete_by_type (dialog->priv->db, dialog->priv->ignore_type);
+	rhythmdb_commit (dialog->priv->db);
+
 	rb_debug ("starting %s", dialog->priv->current_uri);
 	dialog->priv->import_job = rhythmdb_import_job_new (dialog->priv->db,
 							    dialog->priv->entry_type,
@@ -383,10 +387,6 @@ current_folder_changed_cb (GtkFileChooser *chooser, RBImportDialog *dialog)
 		rhythmdb_import_job_cancel (dialog->priv->import_job);
 	}
 
-	rhythmdb_entry_delete_by_type (dialog->priv->db, dialog->priv->entry_type);
-	rhythmdb_entry_delete_by_type (dialog->priv->db, dialog->priv->ignore_type);
-	rhythmdb_commit (dialog->priv->db);
-
 	clear_info_bar (dialog);
 
 	source = rb_shell_guess_source_for_uri (dialog->priv->shell, uri);
@@ -395,6 +395,10 @@ current_folder_changed_cb (GtkFileChooser *chooser, RBImportDialog *dialog)
 			char *msg;
 			char *name;
 			GtkWidget *content;
+
+			rhythmdb_entry_delete_by_type (dialog->priv->db, dialog->priv->entry_type);
+			rhythmdb_entry_delete_by_type (dialog->priv->db, dialog->priv->ignore_type);
+			rhythmdb_commit (dialog->priv->db);
 
 			dialog->priv->info_bar = gtk_info_bar_new ();
 			g_object_set (dialog->priv->info_bar, "hexpand", TRUE, NULL);
