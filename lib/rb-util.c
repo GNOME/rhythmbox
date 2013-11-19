@@ -1222,6 +1222,14 @@ rb_set_tree_view_column_fixed_width (GtkWidget  *treeview,
 	int max_width = 0;
 	int i = 0;
 
+	/* Take into account the header button width */
+	GtkWidget *widget = gtk_tree_view_column_get_button (column);
+	if (widget != NULL) {
+		GtkRequisition natural_size;
+		gtk_widget_get_preferred_size (widget, NULL, &natural_size);
+		max_width = natural_size.width;
+	}
+
 	while (strings[i] != NULL) {
 		GtkRequisition natural_size;
 		g_object_set (renderer, "text", strings[i], NULL);

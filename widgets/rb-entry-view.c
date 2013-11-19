@@ -1650,20 +1650,6 @@ rb_entry_view_append_column (RBEntryView *view,
 		g_free (cell_data);
 	}
 
-	/*
-	 * Columns must either be expanding (ellipsized) or have a
-	 * fixed minimum width specified.  Otherwise, gtk+ gives them a
-	 * width of 0.
-	 */
-	if (ellipsize) {
-		g_object_set (renderer, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
-		gtk_tree_view_column_set_expand (GTK_TREE_VIEW_COLUMN (column), TRUE);
-	} else if (column_width != -1) {
-		gtk_tree_view_column_set_fixed_width (column, column_width);
-	} else {
-		rb_entry_view_set_fixed_column_width (view, column, renderer, strings);
-	}
-
 	if (resizable)
 		gtk_tree_view_column_set_resizable (column, TRUE);
 
@@ -1678,6 +1664,20 @@ rb_entry_view_append_column (RBEntryView *view,
 	g_hash_table_insert (view->priv->propid_column_map, GINT_TO_POINTER (propid), column);
 
 	rb_entry_view_append_column_custom (view, column, title, key, sort_func, GINT_TO_POINTER (sort_propid), NULL);
+
+	/*
+	 * Columns must either be expanding (ellipsized) or have a
+	 * fixed minimum width specified.  Otherwise, gtk+ gives them a
+	 * width of 0.
+	 */
+	if (ellipsize) {
+		g_object_set (renderer, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
+		gtk_tree_view_column_set_expand (GTK_TREE_VIEW_COLUMN (column), TRUE);
+	} else if (column_width != -1) {
+		gtk_tree_view_column_set_fixed_width (column, column_width);
+	} else {
+		rb_entry_view_set_fixed_column_width (view, column, renderer, strings);
+	}
 }
 
 /**
