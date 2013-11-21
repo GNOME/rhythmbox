@@ -39,7 +39,9 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <glib/gstdio.h>
+#ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
+#endif
 #include <brasero-media.h>
 #include <brasero-medium-monitor.h>
 
@@ -127,7 +129,7 @@ rb_disc_recorder_plugin_start_burning (RBDiscRecorderPlugin *pi,
 	GtkWidget *main_window;
 	GdkWindow *window;
 	GPtrArray *array;
-	char **args, *xid_str;
+	char **args, *xid_str = NULL;
 	GError *error = NULL;
 	gboolean ret;
 	RBShell *shell;
@@ -145,14 +147,12 @@ rb_disc_recorder_plugin_start_burning (RBDiscRecorderPlugin *pi,
 	g_object_unref (shell);
 
 	window = gtk_widget_get_window (main_window);
-	if (window) {
+	if (window && GDK_IS_X11_WINDOW (window)) {
 		int xid;
 		xid = gdk_x11_window_get_xid (window);
 		xid_str = g_strdup_printf ("%d", xid);
 		g_ptr_array_add (array, "-x");
 		g_ptr_array_add (array, xid_str);
-	} else {
-		xid_str = NULL;
 	}
 	
 	g_ptr_array_add (array, NULL);
