@@ -346,8 +346,10 @@ first_call_complete (GObject *proxy, GAsyncResult *res, RBMMKeysPlugin *plugin)
 		g_warning ("Unable to grab media player keys: %s", error->message);
 		g_clear_error (&error);
 #ifdef HAVE_MMKEYS
-		mmkeys_grab (plugin, TRUE);
-		plugin->grab_type = X_KEY_GRAB;
+		if (GDK_IS_X11_DISPLAY (gdk_display_get_default ())) {
+			mmkeys_grab (plugin, TRUE);
+			plugin->grab_type = X_KEY_GRAB;
+		}
 #endif
 		return;
 	}
@@ -411,7 +413,7 @@ impl_activate (PeasActivatable *pplugin)
 	}
 
 #ifdef HAVE_MMKEYS
-	if (plugin->grab_type == NONE) {
+	if (plugin->grab_type == NONE && GDK_IS_X11_DISPLAY (gdk_display_get_default ())) {
 		rb_debug ("attempting old-style key grabs");
 		mmkeys_grab (plugin, TRUE);
 		plugin->grab_type = X_KEY_GRAB;
