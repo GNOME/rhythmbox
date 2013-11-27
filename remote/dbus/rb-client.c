@@ -80,6 +80,8 @@ static gdouble set_rating = -1.0;
 
 static gchar **other_stuff = NULL;
 
+static GMainLoop *mainloop = NULL;
+
 static GOptionEntry args[] = {
 	{ "debug", 0, 0, G_OPTION_ARG_NONE, &debug, NULL, NULL },
 
@@ -548,36 +550,35 @@ rate_song (GDBusProxy *mpris, gdouble song_rating)
 	g_hash_table_destroy (properties);
 }
 
-static void
-state_changed_cb (GActionGroup *action, const char *action_name, GVariant *state, GMainLoop *loop)
-{
-	if (g_strcmp0 (action_name, "load-uri") == 0) {
-		gboolean loaded, scanned;
 
-		g_variant_get (state, "(bb)", &loaded, &scanned);
-		if (loaded && scanned) {
-			/* give it a tiny bit longer to populate sources etc. */
-			g_timeout_add (1500, (GSourceFunc) g_main_loop_quit, loop);
-		}
+static void
+check_loaded_state (GVariant *state)
+{
+	gboolean loaded, scanned;
+
+	g_variant_get (state, "(bb)", &loaded, &scanned);
+	if (loaded && scanned) {
+		/* give it a tiny bit longer to populate sources etc. */
+		g_timeout_add (1500, (GSourceFunc) g_main_loop_quit, mainloop);
 	}
 }
 
 static void
-state_changed_signal_cb (GDBusProxy *proxy, const char *sender_name, const char *signal_name, GVariant *parameters, GMainLoop *loop)
+state_changed_cb (GActionGroup *group, const char *action_name, GVariant *state, gpointer data)
 {
-	const char *action;
-	GVariant *state;
-	if (g_strcmp0 (signal_name, "StateChanged") != 0) {
-		return;
+	if (g_strcmp0 (action_name, "load-uri") == 0) {
+		check_loaded_state (state);
 	}
+}
 
-	g_variant_get (parameters, "(sv)", &action, &state);
-	if (g_strcmp0 (action, "load-uri") == 0) {
-		GApplication *app;
-		app = g_object_get_data (G_OBJECT (proxy), "actual-app");
-		state_changed_cb (G_ACTION_GROUP (app), action, state, loop);
+static void
+action_added_cb (GActionGroup *group, const char *action_name, gpointer data)
+{
+	if (g_strcmp0 (action_name, "load-uri") == 0) {
+		GVariant *state = g_action_group_get_action_state (group, "load-uri");
+		check_loaded_state (state);
+		g_variant_unref (state);
 	}
-	g_variant_unref (state);
 }
 
 static gboolean
@@ -671,29 +672,18 @@ main (int argc, char **argv)
 
 	g_variant_get (state, "(bb)", &loaded, &scanned);
 	if ((loaded && scanned) == FALSE) {
-		GMainLoop *loop;
-		GDBusProxy *app_proxy;
+		GDBusActionGroup *group;
 
 		rb_debug ("waiting for app startup");
-		loop = g_main_loop_new (NULL, FALSE);
-		g_signal_connect (app, "action-state-changed", G_CALLBACK (state_changed_cb), loop);
-
-		/* dbus implementation of GApplication doesn't do action state updates yet */
-		app_proxy = g_dbus_proxy_new_sync (bus, G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START, NULL,
-						   "org.gnome.Rhythmbox3",
-						   "/org/gnome/Rhythmbox3",
-						   "org.gtk.Actions",
-						   NULL,
-						   &error);
-		if (app_proxy == NULL || proxy_has_name_owner (app_proxy) == FALSE) {
-			g_warning ("unable to wait for app startup: %s", error->message);
-			g_clear_error (&error);
-		} else {
-			g_object_set_data (G_OBJECT (app_proxy), "actual-app", app);
-			g_signal_connect (app_proxy, "g-signal", G_CALLBACK (state_changed_signal_cb), loop);
-			g_main_loop_run (loop);
-			rb_debug ("app is now started enough");
-		}
+		mainloop = g_main_loop_new (NULL, FALSE);
+		group = g_dbus_action_group_get (bus, "org.gnome.Rhythmbox3", "/org/gnome/Rhythmbox3");
+		/* make sure the group gets initialised and put in strict mode */
+		g_action_group_has_action (G_ACTION_GROUP (group), "load-uri");
+		g_signal_connect (group, "action-state-changed", G_CALLBACK (state_changed_cb), NULL);
+		g_signal_connect (group, "action-added", G_CALLBACK (action_added_cb), NULL);
+		g_main_loop_run (mainloop);
+		rb_debug ("app is now started enough");
+		g_object_unref (group);
 	}
 
 	/* create proxies */
