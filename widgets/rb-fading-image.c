@@ -546,6 +546,10 @@ scale_thumbnail_if_necessary (RBFadingImage *image, GdkPixbuf *pixbuf)
 
 	w = gtk_widget_get_allocated_width (GTK_WIDGET (image)) - 2 * BORDER_WIDTH;
 	h = gtk_widget_get_allocated_height (GTK_WIDGET (image)) - 2 * BORDER_WIDTH;
+	if (w < 1 || h < 1) {
+		return NULL;
+	}
+
 	pw = gdk_pixbuf_get_width (pixbuf);
 	ph = gdk_pixbuf_get_height (pixbuf);
 
@@ -644,8 +648,18 @@ composite_into_current (RBFadingImage *image)
 	int width;
 	int height;
 
+	if (image->priv->current_pat != NULL) {
+		cairo_pattern_destroy (image->priv->current_pat);
+	}
 	width = gtk_widget_get_allocated_width (GTK_WIDGET (image)) - 2 * BORDER_WIDTH;
 	height = gtk_widget_get_allocated_height (GTK_WIDGET (image)) - 2 * BORDER_WIDTH;
+	if (width < 1 || height < 1) {
+		image->priv->current_pat = NULL;
+		image->priv->current_width = 0;
+		image->priv->current_height = 0;
+		return;
+	}
+
 	dest = cairo_image_surface_create (CAIRO_FORMAT_RGB24, width, height);
 
 	cr = cairo_create (dest);
@@ -653,9 +667,6 @@ composite_into_current (RBFadingImage *image)
 	render_next (image, cr, width, height, FALSE);
 	cairo_destroy (cr);
 
-	if (image->priv->current_pat != NULL) {
-		cairo_pattern_destroy (image->priv->current_pat);
-	}
 	image->priv->current_pat = cairo_pattern_create_for_surface (dest);
 	image->priv->current_width = width;
 	image->priv->current_height = height;
