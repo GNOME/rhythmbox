@@ -925,6 +925,7 @@ _uri_handle_recursively_enum_files (GObject *src, GAsyncResult *result, gpointer
 		if (error->code == G_IO_ERROR_NOT_DIRECTORY) {
 			GFileInfo *info;
 
+			g_clear_error (&error);
 			info = g_file_query_info (G_FILE (src), recurse_attributes, G_FILE_QUERY_INFO_NONE, data->cancel, &error);
 			if (error == NULL) {
 				if (_should_process (info)) {
