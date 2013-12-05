@@ -32,7 +32,6 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <libsoup/soup.h>
-#include <libsoup/soup-gnome.h>
 
 #include "rb-musicbrainz-lookup.h"
 
@@ -454,7 +453,7 @@ rb_musicbrainz_lookup (const char *entity,
 	g_simple_async_result_set_check_cancellable (result, cancellable);
 
 	session = soup_session_async_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-						       SOUP_TYPE_GNOME_FEATURES_2_26,
+						       SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
 						       SOUP_SESSION_USER_AGENT,
 						       "Rhythmbox/" VERSION " ",
 						       NULL);

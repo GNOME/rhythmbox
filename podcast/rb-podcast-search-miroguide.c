@@ -32,7 +32,6 @@
 #include "rb-debug.h"
 
 #include <libsoup/soup.h>
-#include <libsoup/soup-gnome.h>
 #include <json-glib/json-glib.h>
 #include <totem-pl-parser.h>
 
@@ -155,7 +154,7 @@ impl_start (RBPodcastSearch *bsearch, const char *text, int max_results)
 	RBPodcastSearchMiroGuide *search = RB_PODCAST_SEARCH_MIROGUIDE (bsearch);
 
 	search->session = soup_session_async_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-							       SOUP_TYPE_GNOME_FEATURES_2_26,
+							       SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
 							       NULL);
 
 	uri = soup_uri_new (MIROGUIDE_SEARCH_URI);

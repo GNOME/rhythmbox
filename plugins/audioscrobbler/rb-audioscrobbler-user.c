@@ -28,7 +28,6 @@
 
 #include <string.h>
 #include <libsoup/soup.h>
-#include <libsoup/soup-gnome.h>
 #include <json-glib/json-glib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
@@ -353,7 +352,7 @@ rb_audioscrobbler_user_init (RBAudioscrobblerUser *user)
 
 	user->priv->soup_session =
 		soup_session_async_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-		                                     SOUP_TYPE_GNOME_FEATURES_2_26,
+		                                     SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
 		                                     NULL);
 
 	user->priv->file_to_data_queue_map = g_hash_table_new_full (g_file_hash,

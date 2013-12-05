@@ -51,7 +51,7 @@ GLIB_REQS=2.32.0
 LIBGPOD_REQS=0.6
 TOTEM_PLPARSER_REQS=3.2.0
 VALA_REQS=0.9.4
-LIBSOUP_REQS=2.26.0
+LIBSOUP_REQS=2.34.0
 GUDEV_REQS=143
 LIBMTP_REQS=0.3.0
 LIBPEAS_REQS=0.7.3
@@ -110,7 +110,6 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  gio-2.0 >= $GLIB_REQS			\
 		  gio-unix-2.0 >= $GLIB_REQS		\
 		  libsoup-2.4 >= $LIBSOUP_REQS		\
-		  libsoup-gnome-2.4 >= $LIBSOUP_REQS	\
 		  libpeas-1.0 >= $LIBPEAS_REQS		\
 		  libpeas-gtk-1.0 >= $LIBPEAS_REQS	\
 		  libxml-2.0 >= $LIBXML2_REQS		\

@@ -43,7 +43,6 @@
 #include <gtk/gtk.h>
 
 #include <libsoup/soup.h>
-#include <libsoup/soup-gnome.h>
 
 #include "rb-audioscrobbler.h"
 #include "rb-debug.h"
@@ -804,7 +803,8 @@ rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 	if (!audioscrobbler->priv->soup_session) {
 		audioscrobbler->priv->soup_session =
 			soup_session_async_new_with_options (
-					SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_GNOME_FEATURES_2_26,
+					SOUP_SESSION_ADD_FEATURE_BY_TYPE,
+					SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
 					NULL);
 	}
 
