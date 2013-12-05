@@ -79,7 +79,7 @@ static GDBusConnection *dbus_connection = NULL;
 static GPid metadata_child = 0;
 static int metadata_stdout = -1;
 static GMainContext *main_context = NULL;
-static GStaticMutex conn_mutex = G_STATIC_MUTEX_INIT;
+static GMutex conn_mutex;
 static char **saveable_types = NULL;
 
 struct RBMetaDataPrivate
@@ -387,7 +387,7 @@ rb_metadata_load (RBMetaData *md,
 	rb_metadata_reset (md);
 	if (uri == NULL)
 		return;
-	g_static_mutex_lock (&conn_mutex);
+	g_mutex_lock (&conn_mutex);
 
 	start_metadata_service (error);
 
@@ -472,7 +472,7 @@ rb_metadata_load (RBMetaData *md,
 	if (fake_error)
 		g_error_free (fake_error);
 
-	g_static_mutex_unlock (&conn_mutex);
+	g_mutex_unlock (&conn_mutex);
 }
 
 /**
@@ -611,12 +611,12 @@ rb_metadata_can_save (RBMetaData *md, const char *media_type)
 	gboolean result = FALSE;
 	int i = 0;
 
-	g_static_mutex_lock (&conn_mutex);
+	g_mutex_lock (&conn_mutex);
 
 	if (saveable_types == NULL) {
 		if (start_metadata_service (&error) == FALSE) {
 			g_warning ("unable to start metadata service: %s", error->message);
-			g_static_mutex_unlock (&conn_mutex);
+			g_mutex_unlock (&conn_mutex);
 			g_error_free (error);
 			return FALSE;
 		}
@@ -631,7 +631,7 @@ rb_metadata_can_save (RBMetaData *md, const char *media_type)
 		}
 	}
 
-	g_static_mutex_unlock (&conn_mutex);
+	g_mutex_unlock (&conn_mutex);
 	return result;
 }
 
@@ -669,7 +669,7 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 	if (error == NULL)
 		error = &fake_error;
 
-	g_static_mutex_lock (&conn_mutex);
+	g_mutex_lock (&conn_mutex);
 
 	start_metadata_service (error);
 
@@ -707,7 +707,7 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 	if (fake_error)
 		g_error_free (fake_error);
 
-	g_static_mutex_unlock (&conn_mutex);
+	g_mutex_unlock (&conn_mutex);
 }
 
 gboolean
