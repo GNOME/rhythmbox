@@ -120,6 +120,7 @@ struct _RBPlayerGstPrivate
 	float cur_volume;
 
 	guint tick_timeout_id;
+	guint emit_stream_idle_id;
 
 	GList *waiting_tees;
 	GstElement *sinkbin;
@@ -127,6 +128,9 @@ struct _RBPlayerGstPrivate
 
 	GList *waiting_filters; /* in reverse order */
 	GstElement *filterbin;
+
+	GMutex eos_lock;
+	GCond eos_cond;
 };
 
 static void
@@ -149,6 +153,17 @@ _destroy_next_stream_data (RBPlayerGst *player)
 	player->priv->next_stream_data_destroy = NULL;
 }
 
+static gboolean
+about_to_finish_idle (RBPlayerGst *player)
+{
+	_rb_player_emit_eos (RB_PLAYER (player), player->priv->stream_data, TRUE);
+
+	g_mutex_lock (&player->priv->eos_lock);
+	g_cond_signal (&player->priv->eos_cond);
+	g_mutex_unlock (&player->priv->eos_lock);
+	return FALSE;
+}
+
 static void
 about_to_finish_cb (GstElement *playbin, RBPlayerGst *player)
 {
@@ -164,10 +179,13 @@ about_to_finish_cb (GstElement *playbin, RBPlayerGst *player)
 		return;
 	}
 
-	/* emit EOS now and hope we get something to play */
 	player->priv->current_track_finishing = TRUE;
 
-	_rb_player_emit_eos (RB_PLAYER (player), player->priv->stream_data, TRUE);
+	g_mutex_lock (&player->priv->eos_lock);
+	g_idle_add_full (G_PRIORITY_HIGH, (GSourceFunc) about_to_finish_idle, player, NULL);
+
+	g_cond_wait (&player->priv->eos_cond, &player->priv->eos_lock);
+	g_mutex_unlock (&player->priv->eos_lock);
 }
 
 static gboolean
@@ -222,19 +240,10 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayerGst *player)
 	}
 }
 
-static void
-emit_playing_stream_and_tags (RBPlayerGst *player, gboolean track_change)
+static gboolean
+actually_emit_stream_and_tags (RBPlayerGst *player)
 {
 	GList *t;
-
-	if (track_change) {
-		/* swap stream data */
-		_destroy_stream_data (player);
-		player->priv->stream_data = player->priv->next_stream_data;
-		player->priv->stream_data_destroy = player->priv->next_stream_data_destroy;
-		player->priv->next_stream_data = NULL;
-		player->priv->next_stream_data_destroy = NULL;
-	}
 
 	_rb_player_emit_playing_stream (RB_PLAYER (player), player->priv->stream_data);
 
@@ -249,6 +258,31 @@ emit_playing_stream_and_tags (RBPlayerGst *player, gboolean track_change)
 	}
 	g_list_free (player->priv->stream_tags);
 	player->priv->stream_tags = NULL;
+
+	player->priv->emit_stream_idle_id = 0;
+	return FALSE;
+}
+
+static void
+emit_playing_stream_and_tags (RBPlayerGst *player, gboolean track_change)
+{
+	if (track_change) {
+		/* swap stream data */
+		_destroy_stream_data (player);
+		player->priv->stream_data = player->priv->next_stream_data;
+		player->priv->stream_data_destroy = player->priv->next_stream_data_destroy;
+		player->priv->next_stream_data = NULL;
+		player->priv->next_stream_data_destroy = NULL;
+	}
+
+	if (rb_is_main_thread ()) {
+		if (player->priv->emit_stream_idle_id != 0) {
+			g_source_remove (player->priv->emit_stream_idle_id);
+		}
+		actually_emit_stream_and_tags (player);
+	} else if (player->priv->emit_stream_idle_id == 0) {
+		player->priv->emit_stream_idle_id = g_idle_add ((GSourceFunc) actually_emit_stream_and_tags, player);
+	}
 }
 
 static void
@@ -1065,6 +1099,9 @@ rb_player_gst_init (RBPlayerGst *mp)
 	mp->priv = (G_TYPE_INSTANCE_GET_PRIVATE ((mp),
 		    RB_TYPE_PLAYER_GST,
 		    RBPlayerGstPrivate));
+
+	g_mutex_init (&mp->priv->eos_lock);
+	g_cond_init (&mp->priv->eos_cond);
 }
 
 static void
@@ -1118,6 +1155,11 @@ impl_dispose (GObject *object)
 	if (mp->priv->tick_timeout_id != 0) {
 		g_source_remove (mp->priv->tick_timeout_id);
 		mp->priv->tick_timeout_id = 0;
+	}
+
+	if (mp->priv->emit_stream_idle_id != 0) {
+		g_source_remove (mp->priv->emit_stream_idle_id);
+		mp->priv->emit_stream_idle_id = 0;
 	}
 
 	if (mp->priv->playbin != NULL) {
