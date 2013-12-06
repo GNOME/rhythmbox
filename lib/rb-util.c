@@ -400,22 +400,7 @@ purge_useless_threads (gpointer data)
 	return TRUE;
 }
 
-
-static GRecMutex rb_gdk_mutex;
 static gboolean mutex_recurses;
-
-static void
-_threads_enter (void)
-{
-	g_rec_mutex_lock (&rb_gdk_mutex);
-}
-
-static void
-_threads_leave (void)
-{
-	g_rec_mutex_unlock (&rb_gdk_mutex);
-}
-
 
 /**
  * rb_assert_locked: (skip)
@@ -442,10 +427,6 @@ rb_threads_init (void)
 	GMutex m;
 
 	g_private_set (&private_is_primary_thread, GUINT_TO_POINTER (1));
-
-	g_rec_mutex_init (&rb_gdk_mutex);
-	gdk_threads_set_lock_functions (_threads_enter, _threads_leave);
-	gdk_threads_init ();
 
 	g_mutex_init (&m);
 	g_mutex_lock (&m);
