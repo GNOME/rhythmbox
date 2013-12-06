@@ -340,10 +340,8 @@ rb_shell_player_open_playlist_url (RBShellPlayer *player,
 		rb_player_play (player->priv->mmplayer, play_type, player->priv->track_transition_time, &error);
 
 	if (error) {
-		GDK_THREADS_ENTER ();
 		rb_shell_player_error_idle (player, TRUE, error);
 		g_error_free (error);
-		GDK_THREADS_LEAVE ();
 	}
 }
 
@@ -502,8 +500,6 @@ rb_shell_player_handle_eos (RBPlayer *player,
 		}
 	}
 
-	GDK_THREADS_ENTER ();
-
 	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 	if (entry != shell_player->priv->playing_entry) {
 		rb_debug ("got unexpected eos for %s", location);
@@ -512,8 +508,6 @@ rb_shell_player_handle_eos (RBPlayer *player,
 		/* don't allow playback to be stopped on early EOS notifications */
 		rb_shell_player_handle_eos_unlocked (shell_player, entry, (early == FALSE));
 	}
-
-	GDK_THREADS_LEAVE ();
 }
 
 
@@ -681,10 +675,8 @@ open_location_thread (OpenLocationThreadData *data)
 			GError *error = g_error_new (RB_SHELL_PLAYER_ERROR,
 						     RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST,
 						     _("Playlist was empty"));
-			GDK_THREADS_ENTER ();
 			rb_shell_player_error_idle (data->player, TRUE, error);
 			g_error_free (error);
-			GDK_THREADS_LEAVE ();
 		} else {
 			char *location;
 
@@ -2505,8 +2497,6 @@ playing_stream_cb (RBPlayer *mmplayer,
 
 	g_return_if_fail (entry != NULL);
 
-	GDK_THREADS_ENTER ();
-
 	entry_changed = (player->priv->playing_entry != entry);
 
 	/* update playing entry */
@@ -2532,8 +2522,6 @@ playing_stream_cb (RBPlayer *mmplayer,
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
 	g_object_notify (G_OBJECT (player), "playing");
-
-	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -2552,16 +2540,12 @@ error_cb (RBPlayer *mmplayer,
 		return;
 	}
 
-	GDK_THREADS_ENTER ();
-
 	if (entry != player->priv->playing_entry) {
 		rb_debug ("got error for unexpected entry %p (expected %p)", entry, player->priv->playing_entry);
 	} else {
 		rb_shell_player_error (player, TRUE, err);
 		rb_debug ("exiting error hander");
 	}
-
-	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -2577,11 +2561,8 @@ tick_cb (RBPlayer *mmplayer,
 	const char *uri;
 	long elapsed_sec;
 
-	GDK_THREADS_ENTER ();
-
 	if (player->priv->playing_entry != entry) {
 		rb_debug ("got tick for unexpected entry %p (expected %p)", entry, player->priv->playing_entry);
-		GDK_THREADS_LEAVE ();
 		return;
 	}
 
@@ -2641,8 +2622,6 @@ tick_cb (RBPlayer *mmplayer,
 			  remaining_check);
 		rb_shell_player_handle_eos_unlocked (player, entry, FALSE);
 	}
-
-	GDK_THREADS_LEAVE ();
 }
 
 typedef struct {

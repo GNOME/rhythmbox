@@ -107,8 +107,6 @@ main (int argc, char **argv)
 	g_type_init ();
 	rb_debug_init (TRUE);
 
-	GDK_THREADS_ENTER ();
-
 	/* setup tests */
 	s = rb_file_helpers_suite ();
 	sr = srunner_create (s);

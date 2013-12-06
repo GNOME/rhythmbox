@@ -47,7 +47,6 @@ init_once (gboolean test)
 		return;
 
 	gtk_init (&argc_, &argv_);
-	GDK_THREADS_ENTER ();
 }
 
 void

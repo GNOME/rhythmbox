@@ -106,8 +106,6 @@ main (int argc, char **argv)
 	rb_refstring_system_init ();
 	rb_file_helpers_init (TRUE);
 
-	GDK_THREADS_ENTER ();
-
 	db = rhythmdb_tree_new ("test");
 	g_object_set (G_OBJECT (db), "name", name, NULL);
 	g_free (name);
@@ -132,11 +130,9 @@ main (int argc, char **argv)
 	rhythmdb_shutdown (db);
 	g_object_unref (G_OBJECT (db));
 	db = NULL;
-
 	
 	rb_file_helpers_shutdown ();
         rb_refstring_system_shutdown ();
-
 
 	rb_profile_end ("load test");
 	return 0;

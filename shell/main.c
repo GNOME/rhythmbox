@@ -88,7 +88,6 @@ main (int argc, char **argv)
 	g_irepository_prepend_search_path (SHARE_UNINSTALLED_BUILDDIR "/../bindings/gi");
 #endif
 
-	/* TODO: kill this function */
 	rb_threads_init ();
 
 	app = rb_application_new ();

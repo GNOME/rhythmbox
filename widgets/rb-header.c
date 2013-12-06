@@ -991,14 +991,9 @@ slider_press_callback (GtkWidget *widget,
 static gboolean
 slider_moved_timeout (RBHeader *header)
 {
-	GDK_THREADS_ENTER ();
-
 	apply_slider_position (header);
 	header->priv->slider_moved_timeout = 0;
 	header->priv->slider_drag_moved = FALSE;
-
-	GDK_THREADS_LEAVE ();
-
 	return FALSE;
 }
 

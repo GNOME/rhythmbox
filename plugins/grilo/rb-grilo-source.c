@@ -818,7 +818,6 @@ grilo_media_browse_cb (GrlSource *grilo_source, guint operation_id, GrlMedia *me
 		return;
 	}
 
-	GDK_THREADS_ENTER ();
 	if (media != NULL) {
 		source->priv->media_browse_got_results = TRUE;
 		source->priv->media_browse_position++;
@@ -872,7 +871,6 @@ grilo_media_browse_cb (GrlSource *grilo_source, guint operation_id, GrlMedia *me
 			delete_marker_row (source, &source->priv->media_browse_container_iter);
 		}
 	}
-	GDK_THREADS_LEAVE ();
 }
 
 static void

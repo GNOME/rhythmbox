@@ -1423,8 +1423,6 @@ rhythmdb_property_model_perform_sync (RhythmDBPropertyModel *model)
 	GtkTreeIter iter;
 	GtkTreePath *path;
 
-	GDK_THREADS_ENTER ();
-
 	iter.stamp = model->priv->stamp;
 	iter.user_data = model->priv->all;
 	path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
@@ -1432,7 +1430,6 @@ rhythmdb_property_model_perform_sync (RhythmDBPropertyModel *model)
 	gtk_tree_path_free (path);
 
 	model->priv->syncing_id = 0;
-	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 

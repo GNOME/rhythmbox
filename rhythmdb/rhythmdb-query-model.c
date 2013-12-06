@@ -1160,9 +1160,7 @@ rhythmdb_query_model_entry_deleted_cb (RhythmDB *db,
 static gboolean
 idle_process_update_idle (struct RhythmDBQueryModelUpdate *update)
 {
-	GDK_THREADS_ENTER ();
 	idle_process_update (update);
-	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
@@ -3394,11 +3392,9 @@ rhythmdb_query_model_limit_type_get_type (void)
 static gboolean
 rhythmdb_query_model_reapply_query_cb (RhythmDBQueryModel *model)
 {
-	GDK_THREADS_ENTER ();
 	rhythmdb_query_model_reapply_query (model, FALSE);
 	rhythmdb_do_full_query_async_parsed (model->priv->db,
 					     RHYTHMDB_QUERY_RESULTS (model),
 					     model->priv->original_query);
-	GDK_THREADS_LEAVE ();
 	return TRUE;
 }

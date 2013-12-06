@@ -470,11 +470,8 @@ rb_shell_clipboard_new (RhythmDB *db)
 static gboolean
 rb_shell_clipboard_sync_idle (RBShellClipboard *clipboard)
 {
-	GDK_THREADS_ENTER ();
 	rb_shell_clipboard_sync (clipboard);
 	clipboard->priv->idle_sync_id = 0;
-	GDK_THREADS_LEAVE ();
-
 	return FALSE;
 }
 
@@ -661,7 +658,6 @@ rb_shell_clipboard_entry_deleted_cb (RhythmDB *db,
 {
 	GList *l;
 
-	GDK_THREADS_ENTER ();
 	l = g_list_find (clipboard->priv->entries, entry);
 	if (l != NULL) {
 		clipboard->priv->entries = g_list_delete_link (clipboard->priv->entries, l);
@@ -670,7 +666,6 @@ rb_shell_clipboard_entry_deleted_cb (RhythmDB *db,
 			clipboard->priv->idle_sync_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_sync_idle,
 								    clipboard);
 	}
-	GDK_THREADS_LEAVE ();
 }
 
 static void

@@ -606,8 +606,6 @@ dacp_remote_added (DACPShare    *share,
 
 	g_object_get (plugin, "object", &shell, NULL);
 
-	GDK_THREADS_ENTER ();
-
 	page = find_dacp_page (shell, service_name);
 	if (page == NULL) {
 		RBDisplayPageGroup *page_group;
@@ -628,8 +626,6 @@ dacp_remote_added (DACPShare    *share,
 		rb_dacp_pairing_page_remote_found (page);
 	}
 
-	GDK_THREADS_LEAVE ();
-
 	g_object_unref (shell);
 }
 
@@ -645,14 +641,10 @@ dacp_remote_removed (DACPShare       *share,
 
 	g_object_get (plugin, "object", &shell, NULL);
 
-	GDK_THREADS_ENTER ();
-
 	page = find_dacp_page (shell, service_name);
 	if (page != NULL) {
 		rb_dacp_pairing_page_remote_lost (page);
 	}
-
-	GDK_THREADS_LEAVE ();
 
 	g_object_unref (shell);
 }

@@ -649,8 +649,6 @@ rb_podcast_manager_update_feeds_cb (gpointer data)
 
 	g_assert (rb_is_main_thread ());
 
-	GDK_THREADS_ENTER ();
-
 	pd->priv->source_sync = 0;
 
 	g_file_set_attribute_uint64 (pd->priv->timestamp_file,
@@ -661,10 +659,7 @@ rb_podcast_manager_update_feeds_cb (gpointer data)
 				     NULL);
 
 	rb_podcast_manager_update_feeds (pd);
-
 	rb_podcast_manager_start_update_timer (pd);
-
-	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
@@ -712,20 +707,16 @@ rb_podcast_manager_next_file (RBPodcastManager * pd)
 
 	rb_debug ("looking for something to download");
 
-	GDK_THREADS_ENTER ();
-
 	pd->priv->next_file_id = 0;
 
 	if (pd->priv->active_download != NULL) {
 		rb_debug ("already downloading something");
-		GDK_THREADS_LEAVE ();
 		return FALSE;
 	}
 
 	d = g_list_first (pd->priv->download_list);
 	if (d == NULL) {
 		rb_debug ("download queue is empty");
-		GDK_THREADS_LEAVE ();
 		return FALSE;
 	}
 
@@ -754,8 +745,6 @@ rb_podcast_manager_next_file (RBPodcastManager * pd)
 	                   data->cancel,
 	                   (GAsyncReadyCallback) read_file_cb,
 	                   data);
-
-	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
@@ -974,10 +963,8 @@ download_podcast (GFileInfo *src_info, RBPodcastManagerInfo *data)
 
 	g_free (sane_local_file_uri);
 
-	GDK_THREADS_ENTER ();
 	g_signal_emit (data->pd, rb_podcast_manager_signals[START_DOWNLOAD],
 		       0, data->entry);
-	GDK_THREADS_LEAVE ();
 
 	data->cancel = g_cancellable_new ();
 	data->thread = g_thread_new ("podcast-download",
@@ -1079,9 +1066,7 @@ rb_podcast_manager_free_parse_result (RBPodcastManagerParseResult *result)
 static gboolean
 rb_podcast_manager_parse_complete_cb (RBPodcastManagerParseResult *result)
 {
-	GDK_THREADS_ENTER ();
 	if (result->pd->priv->shutdown) {
-		GDK_THREADS_LEAVE ();
 		return FALSE;
 	}
 
@@ -1093,8 +1078,6 @@ rb_podcast_manager_parse_complete_cb (RBPodcastManagerParseResult *result)
 	} else {
 		rb_podcast_manager_add_parsed_feed (result->pd, result->channel);
 	}
-
-	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
@@ -1119,8 +1102,6 @@ static gboolean
 confirm_bad_mime_type (RBPodcastThreadInfo *info)
 {
 	GtkWidget *dialog;
-
-	GDK_THREADS_ENTER ();
 	dialog = gtk_message_dialog_new (NULL, 0,
 					 GTK_MESSAGE_QUESTION,
 					 GTK_BUTTONS_YES_NO,
@@ -1130,7 +1111,6 @@ confirm_bad_mime_type (RBPodcastThreadInfo *info)
 					 info->url);
 	gtk_widget_show_all (dialog);
 	g_signal_connect (dialog, "response", G_CALLBACK (confirm_bad_mime_type_response_cb), info);
-	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
@@ -1488,16 +1468,12 @@ download_progress (RBPodcastManagerInfo *data, guint64 downloaded, guint64 total
 			  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION),
 			  downloaded, total);
 
-		GDK_THREADS_ENTER ();
-
 		g_value_init (&val, G_TYPE_ULONG);
 		g_value_set_ulong (&val, local_progress);
 		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
 		g_value_unset (&val);
 
 		rhythmdb_commit (data->pd->priv->db);
-
-		GDK_THREADS_LEAVE ();
 
 		data->progress = local_progress;
 	}
@@ -1678,10 +1654,8 @@ end_job	(RBPodcastManagerInfo *data)
 
 	data->pd->priv->download_list = g_list_remove (data->pd->priv->download_list, data);
 
-	GDK_THREADS_ENTER ();
 	g_signal_emit (data->pd, rb_podcast_manager_signals[FINISH_DOWNLOAD],
 		       0, data->entry);
-	GDK_THREADS_LEAVE ();
 
 	g_assert (pd->priv->active_download == data);
 	pd->priv->active_download = NULL;

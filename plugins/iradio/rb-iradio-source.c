@@ -1012,11 +1012,9 @@ info_available_cb (RBPlayer *backend,
 		return;
 	}
 
-	GDK_THREADS_ENTER ();
-
 	entry = rb_shell_player_get_playing_entry (source->priv->player);
 	if (check_entry_type (source, entry) == FALSE)
-		goto out_unlock;
+		return;
 
 	/* validate the value */
 	switch (field) {
@@ -1029,7 +1027,7 @@ info_available_cb (RBPlayer *backend,
 		if (!g_utf8_validate (str, -1, NULL)) {
 			g_warning ("Invalid UTF-8 from internet radio: %s", str);
 			g_free (str);
-			goto out_unlock;
+			return;
 		}
 		break;
 	default:
@@ -1117,8 +1115,6 @@ info_available_cb (RBPlayer *backend,
 	}
 
 	g_free (str);
- out_unlock:
-	GDK_THREADS_LEAVE ();
 }
 
 static void

@@ -419,13 +419,10 @@ update_visibility_idle (RBSource *source)
 {
 	gint count;
 
-	GDK_THREADS_ENTER ();
-
 	count = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source->priv->query_model), NULL);
 	g_object_set (source, "visibility", (count > 0), NULL);
 
 	source->priv->update_visibility_id = 0;
-	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 

@@ -598,8 +598,6 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
 	RBShell *shell;
 
-	GDK_THREADS_ENTER ();
-
 	if (priv->ejecting) {
 		rb_device_source_default_eject (RB_DEVICE_SOURCE (source));
 	} else {
@@ -617,8 +615,6 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 
 	g_object_unref (priv->import_job);
 	priv->import_job = NULL;
-
-	GDK_THREADS_LEAVE ();
 }
 
 static void

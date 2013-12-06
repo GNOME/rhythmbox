@@ -800,9 +800,7 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 	rb_debug ("Waiting for DAAP connection to finish");
 	while (daap_source->priv->connection != NULL) {
 		rb_debug ("Waiting for DAAP connection to finish...");
-		GDK_THREADS_ENTER ();
 		gtk_main_iteration ();
-		GDK_THREADS_LEAVE ();
 	}
 
 	daap_source->priv->disconnecting = FALSE;

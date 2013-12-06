@@ -635,8 +635,6 @@ sync_playing_entry_cb (RBPlayOrder *porder)
 {
 	RBShellPlayer *player;
 
-	GDK_THREADS_ENTER ();
-	
 	player = rb_play_order_get_player (porder);
 
 	if (porder->priv->playing_entry) {
@@ -655,8 +653,6 @@ sync_playing_entry_cb (RBPlayOrder *porder)
 		}
 	}
 	porder->priv->sync_playing_entry_id = 0;
-
-	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 

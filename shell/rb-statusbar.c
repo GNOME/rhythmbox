@@ -267,13 +267,8 @@ rb_statusbar_set_page (RBStatusbar *statusbar, RBDisplayPage *page)
 static gboolean
 poll_status (RBStatusbar *status)
 {
-        GDK_THREADS_ENTER ();
-
         status->priv->status_poll_id = 0;
         rb_statusbar_sync_status (status);
-
-        GDK_THREADS_LEAVE ();
-
         return FALSE;
 }
 

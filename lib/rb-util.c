@@ -1298,9 +1298,7 @@ do_delayed_apply (GSettings *settings)
 	data = g_object_get_data (G_OBJECT (settings), DELAYED_SYNC_DATA_ITEM);
 	sync_func = g_object_get_data (G_OBJECT (settings), DELAYED_SYNC_FUNC_ITEM);
 	if (sync_func != NULL) {
-		GDK_THREADS_ENTER ();
 		sync_func (settings, data);
-		GDK_THREADS_LEAVE ();
 	}
 
 	g_object_set_data (G_OBJECT (settings), DELAYED_SYNC_ITEM, GUINT_TO_POINTER (0));

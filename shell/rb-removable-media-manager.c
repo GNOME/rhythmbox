@@ -487,9 +487,7 @@ volume_added_cb (GVolumeMonitor *monitor,
 		 GVolume *volume,
 		 RBRemovableMediaManager *mgr)
 {
-	GDK_THREADS_ENTER ();
 	rb_removable_media_manager_add_volume (mgr, volume);
-	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -497,9 +495,7 @@ volume_removed_cb (GVolumeMonitor *monitor,
 		   GVolume *volume,
 		   RBRemovableMediaManager *mgr)
 {
-	GDK_THREADS_ENTER ();
 	rb_removable_media_manager_remove_volume (mgr, volume);
-	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -507,9 +503,7 @@ mount_added_cb (GVolumeMonitor *monitor,
 		GMount *mount,
 		RBRemovableMediaManager *mgr)
 {
-	GDK_THREADS_ENTER ();
 	rb_removable_media_manager_add_mount (mgr, mount);
-	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -527,8 +521,6 @@ uevent_cb (GUdevClient *client, const char *action, GUdevDevice *device, RBRemov
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 	guint64 devnum;
-
-	GDK_THREADS_ENTER ();
 
 	devnum = (guint64) g_udev_device_get_device_number (device);
 	rb_debug ("%s event for %s (%"G_GINT64_MODIFIER"x)", action,
@@ -559,8 +551,6 @@ uevent_cb (GUdevClient *client, const char *action, GUdevDevice *device, RBRemov
 			rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
 		}
 	}
-
-	GDK_THREADS_LEAVE ();
 }
 #endif
 

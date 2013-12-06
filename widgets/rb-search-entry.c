@@ -449,7 +449,6 @@ static gboolean
 rb_search_entry_timeout_cb (RBSearchEntry *entry)
 {
 	const char *text;
-	gdk_threads_enter ();
 
 	text = gtk_entry_get_text (GTK_ENTRY (entry->priv->entry));
 
@@ -457,8 +456,6 @@ rb_search_entry_timeout_cb (RBSearchEntry *entry)
 		g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[SEARCH], 0, text);
 	}
 	entry->priv->timeout = 0;
-
-	gdk_threads_leave ();
 
 	return FALSE;
 }

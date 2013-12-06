@@ -24,18 +24,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-from gi.repository import GObject, GLib, Gdk, Gio
+from gi.repository import GObject, GLib, Gio
 import sys
 
-def callback_with_gdk_lock(callback, data, args):
-	Gdk.threads_enter()
+def call_callback(callback, data, args):
 	try:
 		v = callback(data, *args)
-		Gdk.threads_leave()
 		return v
 	except Exception as e:
 		sys.excepthook(*sys.exc_info())
-		Gdk.threads_leave()
 
 
 class Loader(object):
@@ -46,12 +43,12 @@ class Loader(object):
 		try:
 			(ok, contents, etag) = file.load_contents_finish(result)
 			if ok:
-				callback_with_gdk_lock(self.callback, contents, self.args)
+				call_callback(self.callback, contents, self.args)
 			else:
-				callback_with_gdk_lock(self.callback, None, self.args)
+				call_callback(self.callback, None, self.args)
 		except Exception as e:
 			sys.excepthook(*sys.exc_info())
-			callback_with_gdk_lock(self.callback, None, self.args)
+			call_callback(self.callback, None, self.args)
 
 	def get_url (self, url, callback, *args):
 		self.url = url
@@ -77,10 +74,10 @@ class UpdateCheck(object):
 		try:
 			rfi = file.query_info_finish(result)
 			remote_mod = rfi.get_attribute_uint64(Gio.FILE_ATTRIBUTE_TIME_MODIFIED)
-			callback_with_gdk_lock(self.callback, remote_mod != self.local_mod, self.args)
+			call_callback(self.callback, remote_mod != self.local_mod, self.args)
 		except Exception as e:
 			sys.excepthook(*sys.exc_info())
-			callback_with_gdk_lock(self.callback, False, self.args)
+			call_callback(self.callback, False, self.args)
 
 	def check_for_update (self, local, remote, callback, *args):
 		self.local = local

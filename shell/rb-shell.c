@@ -989,10 +989,7 @@ construct_plugins (RBShell *shell)
 static gboolean
 _scan_idle (RBShell *shell)
 {
-
-	GDK_THREADS_ENTER ();
 	rb_removable_media_manager_scan (shell->priv->removable_media_manager);
-	GDK_THREADS_LEAVE ();
 
 	if (shell->priv->no_registration == FALSE) {
 		gboolean loaded, scanned;
@@ -1592,11 +1589,8 @@ rb_shell_sync_state (RBShell *shell)
 static gboolean
 idle_save_playlist_manager (RBShell *shell)
 {
-	GDK_THREADS_ENTER ();
 	rb_playlist_manager_save_playlists (shell->priv->playlist_manager,
 					    FALSE);
-	GDK_THREADS_LEAVE ();
-
 	return TRUE;
 }
 
@@ -2461,10 +2455,8 @@ rb_shell_toggle_visibility (RBShell *shell)
 static gboolean
 quit_timeout (gpointer dummy)
 {
-	GDK_THREADS_ENTER ();
 	rb_debug ("quit damn you");
 	gtk_main_quit ();
-	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
@@ -2524,8 +2516,6 @@ rb_shell_quit (RBShell *shell,
 static gboolean
 idle_handle_load_complete (RBShell *shell)
 {
-	GDK_THREADS_ENTER ();
-
 	rb_debug ("load complete");
 
 	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
@@ -2548,9 +2538,6 @@ idle_handle_load_complete (RBShell *shell)
 	}
 
 	rhythmdb_start_action_thread (shell->priv->db);
-
-	GDK_THREADS_LEAVE ();
-
 	return FALSE;
 }
 

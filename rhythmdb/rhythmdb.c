@@ -1325,8 +1325,6 @@ rhythmdb_emit_entry_signals_idle (RhythmDB *db)
 
 	g_mutex_unlock (&db->priv->change_mutex);
 
-	GDK_THREADS_ENTER ();
-
 	/* emit changed entries */
 	if (changed_entries != NULL) {
 		g_hash_table_iter_init (&iter, changed_entries);
@@ -1357,8 +1355,6 @@ rhythmdb_emit_entry_signals_idle (RhythmDB *db)
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_DELETED], 0, entry);
 		rhythmdb_entry_unref (entry);
 	}
-
-	GDK_THREADS_LEAVE ();
 
 	if (changed_entries != NULL) {
 		g_hash_table_destroy (changed_entries);
@@ -3058,13 +3054,10 @@ rhythmdb_sync_library_idle (RhythmDB *db)
 static gboolean
 rhythmdb_load_error_cb (GError *error)
 {
-	GDK_THREADS_ENTER ();
 	rb_error_dialog (NULL,
 			 _("Could not load the music database:"),
 			 "%s", error->message);
 	g_error_free (error);
-
-	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
