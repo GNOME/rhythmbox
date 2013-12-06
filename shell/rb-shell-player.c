@@ -135,6 +135,7 @@ static void missing_plugins_cb (RBPlayer *player, RhythmDBEntry *entry, const ch
 static void playing_stream_cb (RBPlayer *player, RhythmDBEntry *entry, RBShellPlayer *shell_player);
 static void player_image_cb (RBPlayer *player, RhythmDBEntry *entry, GdkPixbuf *image, RBShellPlayer *shell_player);
 static void rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err);
+static void rb_shell_player_error_idle (RBShellPlayer *player, gboolean async, const GError *err);
 
 static void rb_shell_player_play_order_update_cb (RBPlayOrder *porder,
 						  gboolean has_next,
@@ -232,6 +233,8 @@ struct RBShellPlayerPrivate
 	float volume;
 
 	guint do_next_idle_id;
+	GMutex error_idle_mutex;
+	guint error_idle_id;
 };
 
 #define RB_SHELL_PLAYER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHELL_PLAYER, RBShellPlayerPrivate))
@@ -338,7 +341,7 @@ rb_shell_player_open_playlist_url (RBShellPlayer *player,
 
 	if (error) {
 		GDK_THREADS_ENTER ();
-		rb_shell_player_error (player, TRUE, error);
+		rb_shell_player_error_idle (player, TRUE, error);
 		g_error_free (error);
 		GDK_THREADS_LEAVE ();
 	}
@@ -679,7 +682,7 @@ open_location_thread (OpenLocationThreadData *data)
 						     RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST,
 						     _("Playlist was empty"));
 			GDK_THREADS_ENTER ();
-			rb_shell_player_error (data->player, TRUE, error);
+			rb_shell_player_error_idle (data->player, TRUE, error);
 			g_error_free (error);
 			GDK_THREADS_LEAVE ();
 		} else {
@@ -2387,6 +2390,50 @@ do_next_not_found_idle (RBShellPlayer *player)
 	return FALSE;
 }
 
+typedef struct {
+	RBShellPlayer *player;
+	gboolean async;
+	GError *error;
+} ErrorIdleData;
+
+static void
+free_error_idle_data (ErrorIdleData *data)
+{
+	g_error_free (data->error);
+	g_free (data);
+}
+
+static gboolean
+error_idle_cb (ErrorIdleData *data)
+{
+	rb_shell_player_error (data->player, data->async, data->error);
+	g_mutex_lock (&data->player->priv->error_idle_mutex);
+	data->player->priv->error_idle_id = 0;
+	g_mutex_unlock (&data->player->priv->error_idle_mutex);
+	return FALSE;
+}
+
+static void
+rb_shell_player_error_idle (RBShellPlayer *player, gboolean async, const GError *error)
+{
+	ErrorIdleData *eid;
+
+	eid = g_new0 (ErrorIdleData, 1);
+	eid->player = player;
+	eid->async = async;
+	eid->error = g_error_copy (error);
+
+	g_mutex_lock (&player->priv->error_idle_mutex);
+	if (player->priv->error_idle_id != 0)
+		g_source_remove (player->priv->error_idle_id);
+
+	player->priv->error_idle_id = g_idle_add_full (G_PRIORITY_DEFAULT,
+						       (GSourceFunc) error_idle_cb,
+						       eid,
+						       (GDestroyNotify) free_error_idle_data);
+	g_mutex_unlock (&player->priv->error_idle_mutex);
+}
+
 static void
 rb_shell_player_error (RBShellPlayer *player,
 		       gboolean async,
@@ -3235,6 +3282,8 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	player->priv = RB_SHELL_PLAYER_GET_PRIVATE (player);
 
+	g_mutex_init (&player->priv->error_idle_mutex);
+
 	player->priv->settings = g_settings_new ("org.gnome.rhythmbox.player");
 	player->priv->ui_settings = g_settings_new ("org.gnome.rhythmbox");
 	g_signal_connect_object (player->priv->settings,
@@ -3373,6 +3422,10 @@ rb_shell_player_dispose (GObject *object)
 	if (player->priv->do_next_idle_id != 0) {
 		g_source_remove (player->priv->do_next_idle_id);
 		player->priv->do_next_idle_id = 0;
+	}
+	if (player->priv->error_idle_id != 0) {
+		g_source_remove (player->priv->error_idle_id);
+		player->priv->error_idle_id = 0;
 	}
 
 	G_OBJECT_CLASS (rb_shell_player_parent_class)->dispose (object);
