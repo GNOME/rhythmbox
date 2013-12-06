@@ -1104,7 +1104,9 @@ confirm_bad_mime_type_response_cb (GtkDialog *dialog, int response, RBPodcastThr
 	if (response == GTK_RESPONSE_YES) {
 		/* set the 'existing feed' flag to avoid the mime type check */
 		info->existing_feed = TRUE;
-		rb_podcast_manager_thread_parse_feed (info);
+		g_thread_new ("podcast-parse",
+			      (GThreadFunc) rb_podcast_manager_thread_parse_feed,
+			      info);
 	} else {
 		g_free (info->url);
 		g_free (info);
@@ -1113,7 +1115,7 @@ confirm_bad_mime_type_response_cb (GtkDialog *dialog, int response, RBPodcastThr
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
-static void
+static gboolean
 confirm_bad_mime_type (RBPodcastThreadInfo *info)
 {
 	GtkWidget *dialog;
@@ -1129,6 +1131,7 @@ confirm_bad_mime_type (RBPodcastThreadInfo *info)
 	gtk_widget_show_all (dialog);
 	g_signal_connect (dialog, "response", G_CALLBACK (confirm_bad_mime_type_response_cb), info);
 	GDK_THREADS_LEAVE ();
+	return FALSE;
 }
 
 static gpointer
@@ -1149,7 +1152,7 @@ rb_podcast_manager_thread_parse_feed (RBPodcastThreadInfo *info)
 		if (g_error_matches (result->error,
 				     RB_PODCAST_PARSE_ERROR,
 				     RB_PODCAST_PARSE_ERROR_MIME_TYPE)) {
-			confirm_bad_mime_type (info);
+			g_idle_add ((GSourceFunc) confirm_bad_mime_type, info);
 			return NULL;
 		}
 	}
