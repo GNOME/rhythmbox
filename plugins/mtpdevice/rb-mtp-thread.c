@@ -184,7 +184,7 @@ create_folder (RBMtpThread *thread, RBMtpThreadTask *task)
 	folders = LIBMTP_Get_Folder_List (thread->device);
 	if (folders == NULL) {
 		rb_debug ("unable to get folder list");
-		rb_mtp_thread_report_errors (thread, FALSE);
+		rb_mtp_thread_report_errors (thread);
 		cb (0, task->user_data);
 		return;
 	}
@@ -230,7 +230,7 @@ create_folder (RBMtpThread *thread, RBMtpThreadTask *task)
 		folder_id = LIBMTP_Create_Folder (thread->device, task->path[i], folder_id, storage_id);
 		if (folder_id == 0) {
 			rb_debug ("couldn't create path element %d: %s", i, task->path[i]);
-			rb_mtp_thread_report_errors (thread, FALSE);
+			rb_mtp_thread_report_errors (thread);
 			break;
 		}
 		rb_debug ("created path element %d: %s with folder ID %u", i, task->path[i], folder_id);
@@ -287,12 +287,12 @@ write_album_to_device (RBMtpThread *thread, LIBMTP_album_t *album, gboolean new_
 	if (new_album) {
 		if (LIBMTP_Create_New_Album (thread->device, album) != 0) {
 			rb_debug ("LIBMTP_Create_New_Album failed..");
-			rb_mtp_thread_report_errors (thread, FALSE);
+			rb_mtp_thread_report_errors (thread);
 		}
 	} else {
 		if (LIBMTP_Update_Album (thread->device, album) != 0) {
 			rb_debug ("LIBMTP_Update_Album failed..");
-			rb_mtp_thread_report_errors (thread, FALSE);
+			rb_mtp_thread_report_errors (thread);
 		}
 	}
 }
@@ -336,13 +336,13 @@ remove_track_from_album (RBMtpThread *thread, RBMtpThreadTask *task)
 	if (album->no_tracks == 0) {
 		rb_debug ("deleting empty album %d", album->album_id);
 		if (LIBMTP_Delete_Object (thread->device, album->album_id) != 0) {
-			rb_mtp_thread_report_errors (thread, FALSE);
+			rb_mtp_thread_report_errors (thread);
 		}
 		g_hash_table_remove (thread->albums, task->album);
 	} else {
 		rb_debug ("updating album %d: %d tracks remaining", album->album_id, album->no_tracks);
 		if (LIBMTP_Update_Album (thread->device, album) != 0) {
-			rb_mtp_thread_report_errors (thread, FALSE);
+			rb_mtp_thread_report_errors (thread);
 		}
 	}
 }
@@ -380,7 +380,7 @@ set_album_image (RBMtpThread *thread, RBMtpThreadTask *task)
 
 	ret = LIBMTP_Send_Representative_Sample (thread->device, album->album_id, albumart);
 	if (ret != 0) {
-		rb_mtp_thread_report_errors (thread, TRUE);
+		rb_mtp_thread_report_errors (thread);
 	} else {
 		rb_debug ("successfully set album art for %s (%" G_GSIZE_FORMAT " bytes)", task->album, image_size);
 	}
@@ -399,7 +399,7 @@ get_track_list (RBMtpThread *thread, RBMtpThreadTask *task)
 
 	/* get all the albums */
 	albums = LIBMTP_Get_Album_List (thread->device);
-	rb_mtp_thread_report_errors (thread, FALSE);
+	rb_mtp_thread_report_errors (thread);
 	if (albums != NULL) {
 		LIBMTP_album_t *album;
 
@@ -415,7 +415,7 @@ get_track_list (RBMtpThread *thread, RBMtpThreadTask *task)
 	}
 
 	tracks = LIBMTP_Get_Tracklisting_With_Callback (thread->device, NULL, NULL);
-	rb_mtp_thread_report_errors (thread, FALSE);
+	rb_mtp_thread_report_errors (thread);
 	if (tracks == NULL) {
 		rb_debug ("no tracks on the device");
 	}
@@ -572,7 +572,7 @@ run_task (RBMtpThread *thread, RBMtpThreadTask *task)
 
 	case SET_DEVICE_NAME:
 		if (LIBMTP_Set_Friendlyname (thread->device, task->name)) {
-			rb_mtp_thread_report_errors (thread, TRUE);
+			rb_mtp_thread_report_errors (thread);
 		}
 		break;
 
@@ -605,7 +605,7 @@ run_task (RBMtpThread *thread, RBMtpThreadTask *task)
 
 	case DELETE_TRACK:
 		if (LIBMTP_Delete_Object (thread->device, task->track_id)) {
-			rb_mtp_thread_report_errors (thread, TRUE);
+			rb_mtp_thread_report_errors (thread);
 		}
 		break;
 
@@ -789,21 +789,12 @@ rb_mtp_thread_queue_callback (RBMtpThread *thread,
 }
 
 void
-rb_mtp_thread_report_errors (RBMtpThread *thread, gboolean use_dialog)
+rb_mtp_thread_report_errors (RBMtpThread *thread)
 {
 	LIBMTP_error_t *stack;
 
 	for (stack = LIBMTP_Get_Errorstack (thread->device); stack != NULL; stack = stack->next) {
-		if (use_dialog) {
-			GDK_THREADS_ENTER ();
-			rb_error_dialog (NULL, _("Media player device error"), "%s", stack->error_text);
-			GDK_THREADS_LEAVE ();
-
-			/* only display one dialog box per error */
-			use_dialog = FALSE;
-		} else {
-			g_warning ("libmtp error: %s", stack->error_text);
-		}
+		g_warning ("libmtp error: %s", stack->error_text);
 	}
 
 	LIBMTP_Clear_Errorstack (thread->device);

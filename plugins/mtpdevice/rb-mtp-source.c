@@ -619,7 +619,7 @@ update_free_space_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source)
 
 	ret = LIBMTP_Get_Storage (device, LIBMTP_STORAGE_SORTBY_NOTSORTED);
 	if (ret != 0) {
-		rb_mtp_thread_report_errors (priv->device_thread, FALSE);
+		rb_mtp_thread_report_errors (priv->device_thread);
 	}
 
 	/* probably need a lock for this.. */
@@ -955,7 +955,7 @@ mtp_device_open_cb (LIBMTP_mtpdevice_t *device, RBMtpSource *source)
 	 * MTP devices that aren't interesting to us.
 	 */
 	if (LIBMTP_Get_Supported_Filetypes (device, &data->types, &data->num_types) != 0) {
-		rb_mtp_thread_report_errors (priv->device_thread, FALSE);
+		rb_mtp_thread_report_errors (priv->device_thread);
 	} else {
 		int i;
 		for (i = 0; i < data->num_types; i++) {
