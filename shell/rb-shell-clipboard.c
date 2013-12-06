@@ -666,7 +666,9 @@ rb_shell_clipboard_entry_deleted_cb (RhythmDB *db,
 	if (l != NULL) {
 		clipboard->priv->entries = g_list_delete_link (clipboard->priv->entries, l);
 		rhythmdb_entry_unref (entry);
-		rb_shell_clipboard_sync (clipboard);
+		if (clipboard->priv->idle_sync_id == 0)
+			clipboard->priv->idle_sync_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_sync_idle,
+								    clipboard);
 	}
 	GDK_THREADS_LEAVE ();
 }
