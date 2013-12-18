@@ -907,13 +907,14 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source,
 
 	g_object_get (source, "settings", &settings, NULL);
 	if (settings) {
-		char buf[99];
+		char *p;
 		xmlSetProp (node,
 			    RB_PLAYLIST_SHOW_BROWSER,
 			    (xmlChar *)(g_settings_get_boolean (settings, "show-browser") ? "true" : "false"));
 
-		sprintf (buf, "%d", g_settings_get_int (settings, "paned-position"));
-		xmlSetProp (node, RB_PLAYLIST_BROWSER_POSITION, (xmlChar *)buf);
+		p = g_strdup_printf ("%d", g_settings_get_int (settings, "paned-position"));
+		xmlSetProp (node, RB_PLAYLIST_BROWSER_POSITION, (xmlChar *)p);
+		g_free (p);
 
 		xmlSetProp (node, RB_PLAYLIST_SEARCH_TYPE, (xmlChar *)g_settings_get_string (settings, "search-type"));
 		g_object_unref (settings);
