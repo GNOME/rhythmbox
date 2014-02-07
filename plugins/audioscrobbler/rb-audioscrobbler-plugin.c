@@ -106,9 +106,9 @@ rb_audioscrobbler_plugin_init (RBAudioscrobblerPlugin *plugin)
 	rb_debug ("RBAudioscrobblerPlugin initialising");
 
 	plugin->lastfm_settings = g_settings_new_with_path (AUDIOSCROBBLER_SETTINGS_SCHEMA,
-							    AUDIOSCROBBLER_SETTINGS_PATH "/Last.fm");
+							    AUDIOSCROBBLER_SETTINGS_PATH "/Last.fm/");
 	plugin->librefm_settings = g_settings_new_with_path (AUDIOSCROBBLER_SETTINGS_SCHEMA,
-							     AUDIOSCROBBLER_SETTINGS_PATH "/Libre.fm");
+							     AUDIOSCROBBLER_SETTINGS_PATH "/Libre.fm/");
 }
 
 static void

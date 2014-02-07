@@ -394,6 +394,7 @@ rb_audioscrobbler_profile_page_constructed (GObject *object)
 	/* scrobbler settings */
 	scrobbler_settings = g_strconcat (AUDIOSCROBBLER_SETTINGS_PATH "/",
 					  rb_audioscrobbler_service_get_name (page->priv->service),
+					  "/",
 					  NULL);
 	page->priv->settings = g_settings_new_with_path (AUDIOSCROBBLER_SETTINGS_SCHEMA,
 							 scrobbler_settings);
