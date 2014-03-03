@@ -87,6 +87,9 @@ void		rb_display_page_model_remove_page (RBDisplayPageModel *page_model,
 gboolean	rb_display_page_model_find_page (RBDisplayPageModel *page_model,
 						 RBDisplayPage *page,
 						 GtkTreeIter *iter);
+gboolean	rb_display_page_model_find_page_full (RBDisplayPageModel *page_model,
+						      RBDisplayPage *page,
+						      GtkTreeIter *iter);
 
 void		rb_display_page_model_set_dnd_targets (RBDisplayPageModel *page_model,
 						       GtkTreeView *treeview);

@@ -38,6 +38,7 @@ static void rb_display_page_menu_init (RBDisplayPageMenu *menu);
 struct _RBDisplayPageMenuPrivate
 {
 	RBDisplayPageModel *model;
+	GtkTreeModel *real_model;
 	RBDisplayPage *root_page;
 	GType page_type;
 	char *action;
@@ -68,14 +69,25 @@ get_page_iter (RBDisplayPageMenu *menu, GtkTreeIter *iter)
 {
 	GtkTreeIter parent;
 
-	if (rb_display_page_model_find_page (menu->priv->model, menu->priv->root_page, &parent) == FALSE)
+	if (rb_display_page_model_find_page_full (menu->priv->model, menu->priv->root_page, &parent) == FALSE)
 		return FALSE;
 
-	if (gtk_tree_model_iter_children (GTK_TREE_MODEL (menu->priv->model), iter, &parent) == FALSE) {
+	if (gtk_tree_model_iter_children (menu->priv->real_model, iter, &parent) == FALSE) {
 		return FALSE;
 	}
 
 	return TRUE;
+}
+
+static GtkTreePath *
+get_root_path (RBDisplayPageMenu *menu)
+{
+	GtkTreeIter iter;
+
+	if (rb_display_page_model_find_page_full (menu->priv->model, menu->priv->root_page, &iter) == FALSE)
+		return NULL;
+
+	return gtk_tree_model_get_path (menu->priv->real_model, &iter);
 }
 
 static gboolean
@@ -103,7 +115,7 @@ get_page_at_index (RBDisplayPageMenu *menu, int index, GtkTreeIter *iter)
 		RBDisplayPage *page;
 		gboolean counted;
 
-		gtk_tree_model_get (GTK_TREE_MODEL (menu->priv->model),
+		gtk_tree_model_get (menu->priv->real_model,
 				    iter,
 				    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
 				    -1);
@@ -116,35 +128,37 @@ get_page_at_index (RBDisplayPageMenu *menu, int index, GtkTreeIter *iter)
 		}
 
 		g_object_unref (page);
-	} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (menu->priv->model), iter));
+	} while (gtk_tree_model_iter_next (menu->priv->real_model, iter));
 
 	return NULL;
 }
 
 static int
-count_items (RBDisplayPageMenu *menu)
+count_items (RBDisplayPageMenu *menu, int upto)
 {
 	GtkTreeIter iter;
 	int i;
+	int c;
 
-	if (get_page_iter (menu, &iter) == FALSE)
+	if (get_page_iter (menu, &iter) == FALSE) {
 		return 0;
+	}
 
 	i = 0;
+	c = 0;
 	do {
 		RBDisplayPage *page;
-		gboolean counted;
-
-		gtk_tree_model_get (GTK_TREE_MODEL (menu->priv->model),
+		gtk_tree_model_get (menu->priv->real_model,
 				    &iter,
 				    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
 				    -1);
 
-		counted = consider_page (menu, page);
-		g_object_unref (page);
-		if (counted)
+		if (consider_page (menu, page)) {
 			i++;
-	} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (menu->priv->model), &iter));
+		}
+		g_object_unref (page);
+		c++;
+	} while ((c < upto) && gtk_tree_model_iter_next (menu->priv->real_model, &iter));
 
 	return i;
 }
@@ -175,7 +189,7 @@ impl_get_item_attributes (GMenuModel *menu_model, int item_index, GHashTable **a
 	page = get_page_at_index (menu, item_index, &iter);
 	if (page != NULL) {
 		char *name;
-		char *path;
+		char *ptr;
 		GVariant *v;
 
 		g_object_get (page, "name", &name, NULL);
@@ -185,11 +199,12 @@ impl_get_item_attributes (GMenuModel *menu_model, int item_index, GHashTable **a
 
 		g_hash_table_insert (*attrs, g_strdup ("action"), g_variant_new_string (menu->priv->action));
 
-		path = gtk_tree_model_get_string_from_iter (GTK_TREE_MODEL (menu->priv->model), &iter);
-		/* this is a bit awkward.. */
-		v = g_variant_new_string (path);
+		ptr = g_strdup_printf ("%p", page);
+		v = g_variant_new_string (ptr);
 		g_hash_table_insert (*attrs, g_strdup ("target"), g_variant_ref_sink (v));
-		g_free (path);
+		g_free (ptr);
+
+		g_object_unref (page);
 	} else {
 		rb_debug ("no page at %d", item_index);
 	}
@@ -202,38 +217,127 @@ impl_get_item_links (GMenuModel *menu_model, int item_index, GHashTable **links)
 	*links = g_hash_table_new (g_str_hash, g_str_equal);
 }
 
+static int
+path_menu_index (RBDisplayPageMenu *menu, GtkTreePath *path)
+{
+	GtkTreePath *root;
+	GtkTreePath *compare;
+	int depth;
+	int *indices;
+	int index;
+
+	compare = gtk_tree_path_copy (path);
+	if (gtk_tree_path_up (compare) == FALSE) {
+		gtk_tree_path_free (compare);
+		return -1;
+	}
+
+	if (gtk_tree_path_get_depth (compare) == 0) {
+		gtk_tree_path_free (compare);
+		return -1;
+	}
+
+	root = get_root_path (menu);
+	if (root == NULL) {
+		gtk_tree_path_free (compare);
+		return -1;
+	}
+
+	if (gtk_tree_path_compare (compare, root) != 0) {
+		gtk_tree_path_free (root);
+		gtk_tree_path_free (compare);
+		return -1;
+	}
+
+	indices = gtk_tree_path_get_indices_with_depth (path, &depth);
+	index = count_items (menu, indices[depth-1]);
+	gtk_tree_path_free (root);
+	gtk_tree_path_free (compare);
+	return index;
+}
+
 static void
 rebuild_menu (RBDisplayPageMenu *menu)
 {
 	int oldnum;
 	oldnum = menu->priv->item_count;
-	menu->priv->item_count = count_items (menu);
+	menu->priv->item_count = count_items (menu, G_MAXINT);
 	rb_debug ("building menu, %d => %d items", oldnum, menu->priv->item_count);
 	g_menu_model_items_changed (G_MENU_MODEL (menu), 0, oldnum, menu->priv->item_count);
+}
+
+static gboolean
+consider_page_iter (RBDisplayPageMenu *menu, GtkTreeIter *iter)
+{
+	RBDisplayPage *page;
+	gboolean result;
+
+	gtk_tree_model_get (menu->priv->real_model,
+			    iter,
+			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
+			    -1);
+	if (page == NULL)
+		return FALSE;
+
+	result = consider_page (menu, page);
+	g_object_unref (page);
+	return result;
 }
 
 static void
 row_changed_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBDisplayPageMenu *menu)
 {
-	rebuild_menu (menu);
+	int index;
+
+	if (consider_page_iter (menu, iter) == FALSE) {
+		return;
+	}
+
+	index = path_menu_index (menu, path);
+	if (index != -1) {
+		g_menu_model_items_changed (G_MENU_MODEL (menu), index, 1, 1);
+	}
 }
 
 static void
 row_inserted_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBDisplayPageMenu *menu)
 {
-	rebuild_menu (menu);
+	int index;
+
+	if (consider_page_iter (menu, iter) == FALSE) {
+		return;
+	}
+       
+	index = path_menu_index (menu, path);
+	if (index != -1) {
+		menu->priv->item_count++;
+		g_menu_model_items_changed (G_MENU_MODEL (menu), index, 0, 1);
+	}
 }
 
 static void
 row_deleted_cb (GtkTreeModel *model, GtkTreePath *path, RBDisplayPageMenu *menu)
 {
-	rebuild_menu (menu);
+	int index = path_menu_index (menu, path);
+	if (index != -1) {
+		if (count_items (menu, G_MAXINT) != menu->priv->item_count) {
+			menu->priv->item_count--;
+			g_menu_model_items_changed (G_MENU_MODEL (menu), index, 1, 0);
+		}
+	}
 }
 
 static void
 rows_reordered_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer new_order, RBDisplayPageMenu *menu)
 {
-	rebuild_menu (menu);
+	GtkTreePath *root;
+	root = get_root_path (menu);
+	if (root != NULL) {
+		if (gtk_tree_path_compare (path, root) == 0)
+			rebuild_menu (menu);
+
+		gtk_tree_path_free (root);
+	}
 }
 
 
@@ -254,11 +358,13 @@ impl_dispose (GObject *object)
 	RBDisplayPageMenu *menu;
 
 	menu = RB_DISPLAY_PAGE_MENU (object);
-	if (menu->priv->model) {
-		g_signal_handlers_disconnect_by_data (menu->priv->model, menu);
-		g_clear_object (&menu->priv->model);
+
+	if (menu->priv->real_model) {
+		g_signal_handlers_disconnect_by_data (menu->priv->real_model, menu);
+		menu->priv->real_model = NULL;
 	}
 
+	g_clear_object (&menu->priv->model);
 	g_clear_object (&menu->priv->root_page);
 
 	G_OBJECT_CLASS (rb_display_page_menu_parent_class)->dispose (object);
@@ -268,17 +374,15 @@ static void
 impl_constructed (GObject *object)
 {
 	RBDisplayPageMenu *menu;
-	GtkTreeModel *real_model;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_display_page_menu_parent_class, constructed, object);
 
 	menu = RB_DISPLAY_PAGE_MENU (object);
 
-	real_model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (menu->priv->model));
-	g_signal_connect (real_model, "row-inserted", G_CALLBACK (row_inserted_cb), menu);
-	g_signal_connect (real_model, "row-deleted", G_CALLBACK (row_deleted_cb), menu);
-	g_signal_connect (real_model, "row-changed", G_CALLBACK (row_changed_cb), menu);
-	g_signal_connect (real_model, "rows-reordered", G_CALLBACK (rows_reordered_cb), menu);
+	g_signal_connect (menu->priv->real_model, "row-inserted", G_CALLBACK (row_inserted_cb), menu);
+	g_signal_connect (menu->priv->real_model, "row-deleted", G_CALLBACK (row_deleted_cb), menu);
+	g_signal_connect (menu->priv->real_model, "row-changed", G_CALLBACK (row_changed_cb), menu);
+	g_signal_connect (menu->priv->real_model, "rows-reordered", G_CALLBACK (rows_reordered_cb), menu);
 
 	rebuild_menu (menu);
 }
@@ -315,6 +419,7 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 	switch (prop_id) {
 	case PROP_MODEL:
 		menu->priv->model = g_value_get_object (value);
+		menu->priv->real_model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (menu->priv->model));
 		break;
 	case PROP_ROOT_PAGE:
 		menu->priv->root_page = g_value_get_object (value);
@@ -436,7 +541,7 @@ RBDisplayPage *
 rb_display_page_menu_get_page (RBDisplayPageModel *model, GVariant *parameters)
 {
 	GtkTreeIter iter;
-	RBDisplayPage *page;
+	void *ptr;
 
 	if (g_variant_is_of_type (parameters, G_VARIANT_TYPE_STRING) == FALSE) {
 		rb_debug ("can't find page, variant type is %s", g_variant_get_type_string (parameters));
@@ -445,15 +550,15 @@ rb_display_page_menu_get_page (RBDisplayPageModel *model, GVariant *parameters)
 
 	rb_debug ("trying to find page for %s", g_variant_get_string (parameters, NULL));
 
-	if (gtk_tree_model_get_iter_from_string (GTK_TREE_MODEL (model),
-						 &iter,
-						 g_variant_get_string (parameters, NULL)) == FALSE) {
+	if (sscanf (g_variant_get_string (parameters, NULL), "%p", &ptr) != 1) {
+		rb_debug ("can't parse parameter");
 		return NULL;
 	}
 
-	gtk_tree_model_get (GTK_TREE_MODEL (model),
-			    &iter,
-			    RB_DISPLAY_PAGE_MODEL_COLUMN_PAGE, &page,
-			    -1);
-	return page;
+	if (rb_display_page_model_find_page_full (model, ptr, &iter) == FALSE) {
+		rb_debug ("can't find page matching %p", ptr);
+		return NULL;
+	}
+
+	return RB_DISPLAY_PAGE (ptr);
 }

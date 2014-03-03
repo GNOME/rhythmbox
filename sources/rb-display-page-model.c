@@ -750,6 +750,37 @@ rb_display_page_model_find_page (RBDisplayPageModel *page_model, RBDisplayPage *
 	}
 }
 
+/**
+ * rb_display_page_model_find_page_full:
+ * @page_model: the #RBDisplayPageModel
+ * @page: the #RBDisplayPage to find
+ * @iter: returns a #GtkTreeIter for the page
+ *
+ * Finds a #GtkTreeIter for a specified page in the model.  This function
+ * searches the full page model, so it will find pages that are not currently
+ * visible, and the returned iterator can only be used with the child model
+ * (see #gtk_tree_model_filter_get_model).
+ *
+ * Return value: %TRUE if the page was found
+ */
+gboolean
+rb_display_page_model_find_page_full (RBDisplayPageModel *page_model, RBDisplayPage *page, GtkTreeIter *iter)
+{
+	GtkTreeModel *model;
+	DisplayPageIter dpi = {0, };
+	dpi.page = page;
+
+	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (page_model));
+
+	gtk_tree_model_foreach (model, (GtkTreeModelForeachFunc) match_page_to_iter, &dpi);
+	if (dpi.found) {
+		*iter = dpi.iter;
+		return TRUE;
+	} else {
+		return FALSE;
+	}
+}
+
 static gboolean
 set_playing_flag (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBDisplayPage *source)
 {
