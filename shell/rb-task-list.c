@@ -132,6 +132,22 @@ rb_task_list_class_init (RBTaskListClass *klass)
 							      G_PARAM_READABLE));
 }
 
+static void
+cancel_expiry (RBTaskList *list, RBTaskProgress *task)
+{
+	GList *l;
+	TaskExpiry *expiry;
+
+	for (l = list->expiring; l != NULL; l = l->next) {
+		expiry = l->data;
+		if (expiry->task == task) {
+			expiry->list->expiring = g_list_remove (expiry->list->expiring, expiry);
+			g_source_remove (expiry->expiry_id);
+			return;
+		}
+	}
+}
+
 static gboolean
 task_expired (TaskExpiry *expiry)
 {
@@ -144,18 +160,8 @@ static void
 expire_task (RBTaskList *list, RBTaskProgress *task, gint seconds)
 {
 	TaskExpiry *expiry;
-	GList *l;
 
-	/* remove any existing expiry for this task */
-	for (l = list->expiring; l != NULL; l = l->next) {
-		expiry = l->data;
-		if (expiry->task == task) {
-			expiry->list->expiring = g_list_remove (expiry->list->expiring, expiry);
-			g_source_remove (expiry->expiry_id);
-			break;
-		}
-	}
-
+	cancel_expiry (list, task);
 	expiry = g_new0 (TaskExpiry, 1);
 	expiry->task = task;
 	expiry->list = list;
@@ -196,6 +202,7 @@ rb_task_list_add_task (RBTaskList *list, RBTaskProgress *task)
 void
 rb_task_list_remove_task (RBTaskList *list, RBTaskProgress *task)
 {
+	cancel_expiry (list, task);
 	rb_list_model_remove_item (list->model, task);
 }
 
