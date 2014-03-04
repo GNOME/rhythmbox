@@ -50,12 +50,9 @@ INCLUDES =						\
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-DSHARE_DIR=\"$(pkgdatadir)\"			\
 	-DDATADIR=\""$(datadir)"\"			\
-	-DEGG_SM_CLIENT_BACKEND_XSMP			\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/widgets				\
 	$(RHYTHMBOX_CFLAGS)
-
-librb_la_LIBADD = -lSM -lICE
 
 BUILT_SOURCES=
 
