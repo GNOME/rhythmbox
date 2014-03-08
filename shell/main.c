@@ -77,7 +77,7 @@ main (int argc, char **argv)
 #endif
 
 	g_set_application_name (_("Rhythmbox"));
-	gtk_window_set_default_icon ("rhythmbox");
+	gtk_window_set_default_icon_name ("rhythmbox");
 
 #if defined(USE_UNINSTALLED_DIRS)
 	g_irepository_prepend_search_path (SHARE_UNINSTALLED_BUILDDIR "/../bindings/gi");
