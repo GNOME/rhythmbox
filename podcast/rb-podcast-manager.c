@@ -878,7 +878,7 @@ download_podcast (GFileInfo *src_info, RBPodcastManagerInfo *data)
 	conf_dir_uri = rb_podcast_manager_get_podcast_dir (data->pd);
 	local_file_uri = g_build_filename (conf_dir_uri,
 					   feed_folder,
-					   local_file_name,
+					   esc_local_file_name,
 					   NULL);
 
 	g_free (local_file_name);
