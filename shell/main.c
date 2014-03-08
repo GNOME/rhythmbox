@@ -43,7 +43,6 @@
 
 #include "rb-shell.h"
 #include "rb-util.h"
-#include "eggdesktopfile.h"
 #include "rb-debug.h"
 #include "rb-application.h"
 
@@ -51,7 +50,6 @@ int
 main (int argc, char **argv)
 {
 	GApplication *app;
-	char *desktop_file_path;
 	int rc;
 
 #ifdef GDK_WINDOWING_X11
@@ -65,14 +63,8 @@ main (int argc, char **argv)
 	g_random_set_seed (time (0));
 
 #ifdef USE_UNINSTALLED_DIRS
-	desktop_file_path = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "rhythmbox.desktop", NULL);
-
 	g_setenv ("GSETTINGS_SCHEMA_DIR", SHARE_UNINSTALLED_BUILDDIR, TRUE);
-#else
-	desktop_file_path = g_build_filename (DATADIR, "applications", "rhythmbox.desktop", NULL);
 #endif
-	egg_set_desktop_file (desktop_file_path);
-	g_free (desktop_file_path);
 
 	setlocale (LC_ALL, NULL);
 
@@ -83,6 +75,9 @@ main (int argc, char **argv)
 
 	textdomain (GETTEXT_PACKAGE);
 #endif
+
+	g_set_application_name (_("Rhythmbox"));
+	gtk_window_set_default_icon ("rhythmbox");
 
 #if defined(USE_UNINSTALLED_DIRS)
 	g_irepository_prepend_search_path (SHARE_UNINSTALLED_BUILDDIR "/../bindings/gi");

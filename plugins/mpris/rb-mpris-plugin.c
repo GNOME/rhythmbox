@@ -38,7 +38,6 @@
 
 #include <lib/rb-util.h>
 #include <lib/rb-debug.h>
-#include <lib/eggdesktopfile.h>
 #include <plugins/rb-plugin-macros.h>
 #include <shell/rb-shell.h>
 #include <shell/rb-shell-player.h>
@@ -269,16 +268,16 @@ get_root_property (GDBusConnection *connection,
 	} else if (g_strcmp0 (property_name, "HasTrackList") == 0) {
 		return g_variant_new_boolean (FALSE);
 	} else if (g_strcmp0 (property_name, "Identity") == 0) {
-		EggDesktopFile *desktop_file;
-		desktop_file = egg_get_desktop_file ();
-		return g_variant_new_string (egg_desktop_file_get_name (desktop_file));
+		return g_variant_new_string ("Rhythmbox");
 	} else if (g_strcmp0 (property_name, "DesktopEntry") == 0) {
-		EggDesktopFile *desktop_file;
 		GVariant *v = NULL;
 		char *path;
 
-		desktop_file = egg_get_desktop_file ();
-		path = g_filename_from_uri (egg_desktop_file_get_source (desktop_file), NULL, error);
+#ifdef USE_UNINSTALLED_DIRS
+		path = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "rhythmbox.desktop", NULL);
+#else
+		path = g_build_filename (DATADIR, "applications", "rhythmbox.desktop", NULL);
+#endif
 		if (path != NULL) {
 			char *basename;
 			char *ext;

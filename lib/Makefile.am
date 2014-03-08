@@ -18,8 +18,6 @@ rbinclude_HEADERS =					\
 librb_la_SOURCES =					\
 	$(rbinclude_HEADERS)				\
 	rb-debug.c					\
-	eggdesktopfile.c				\
-	eggdesktopfile.h				\
 	rb-file-helpers.c				\
 	rb-builder-helpers.c				\
 	rb-stock-icons.c				\
