@@ -497,7 +497,7 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 
 	switch (GST_MESSAGE_TYPE (message)) {
 	case GST_MESSAGE_ERROR: {
-		char *debug;
+		char *debug = NULL;
 		GError *error = NULL;
 		GError *sig_error = NULL;
 		int code;
