@@ -92,7 +92,7 @@ rb_transfer_target_build_dest_uri (RBTransferTarget *target,
 	if (uri != NULL) {
 		char *sane_uri;
 
-		sane_uri = rb_sanitize_uri_for_filesystem (uri);
+		sane_uri = rb_sanitize_uri_for_filesystem (uri, NULL);
 		g_return_val_if_fail (sane_uri != NULL, NULL);
 		g_free (uri);
 		uri = sane_uri;

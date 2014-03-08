@@ -1497,23 +1497,28 @@ rb_sanitize_path_for_msdos_filesystem (char *path)
 /**
  * rb_sanitize_uri_for_filesystem:
  * @uri: a URI to sanitize
+ * @filesystem: (allow none): a specific filesystem to sanitize for
  *
  * Removes characters from @uri that are not allowed by the filesystem
- * on which it would be stored.  At present, this only supports MS DOS
- * filesystems.
+ * on which it would be stored, or a specific type of filesystem if specified.
+ * At present, this only supports MS DOS filesystems.
  *
  * Return value: sanitized copy of @uri, must be freed by caller.
  */
 char *
-rb_sanitize_uri_for_filesystem (const char *uri)
+rb_sanitize_uri_for_filesystem (const char *uri, const char *filesystem)
 {
+	char *free_fs = NULL;
 	char *mountpoint = NULL;
-	char *filesystem;
 	char *sane_uri = NULL;
 
-	filesystem = rb_uri_get_filesystem_type (uri, &mountpoint);
-	if (!filesystem)
-		return g_strdup (uri);
+	if (filesystem == NULL) {
+		free_fs = rb_uri_get_filesystem_type (uri, &mountpoint);
+		if (!free_fs)
+			return g_strdup (uri);
+
+		filesystem = free_fs;
+	}
 
 	if (!strcmp (filesystem, "fat") ||
 	    !strcmp (filesystem, "vfat") ||
@@ -1527,7 +1532,7 @@ rb_sanitize_uri_for_filesystem (const char *uri)
 
 		if (error) {
 			g_error_free (error);
-			g_free (filesystem);
+			g_free (free_fs);
 			g_free (full_path);
 			g_free (mountpoint);
 			return g_strdup (uri);
@@ -1568,7 +1573,7 @@ rb_sanitize_uri_for_filesystem (const char *uri)
 
 		if (error) {
 			g_error_free (error);
-			g_free (filesystem);
+			g_free (free_fs);
 			g_free (mountpoint);
 			return g_strdup (uri);
 		}
@@ -1576,7 +1581,7 @@ rb_sanitize_uri_for_filesystem (const char *uri)
 
 	/* add workarounds for other filesystems limitations here */
 
-	g_free (filesystem);
+	g_free (free_fs);
 	g_free (mountpoint);
 	return sane_uri ? sane_uri : g_strdup (uri);
 }

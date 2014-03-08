@@ -885,7 +885,7 @@ download_podcast (GFileInfo *src_info, RBPodcastManagerInfo *data)
 	g_free (feed_folder);
 	g_free (esc_local_file_name);
 
-	sane_local_file_uri = rb_sanitize_uri_for_filesystem (local_file_uri);
+	sane_local_file_uri = rb_sanitize_uri_for_filesystem (local_file_uri, NULL);
 	g_free (local_file_uri);
 
 	rb_debug ("download URI: %s", sane_local_file_uri);

@@ -1631,7 +1631,7 @@ get_dest_uri_cb (RBTrackTransferBatch *batch,
 		return NULL;
 	}
 
-	sane_dest = rb_sanitize_uri_for_filesystem (dest);
+	sane_dest = rb_sanitize_uri_for_filesystem (dest, NULL);
 	g_free (dest);
 	rb_debug ("destination URI for %s is %s",
 		  rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),

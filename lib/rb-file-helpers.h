@@ -94,7 +94,7 @@ void		rb_file_helpers_shutdown(void);
 
 char *		rb_uri_get_filesystem_type (const char *uri, char **mount_point);
 void		rb_sanitize_path_for_msdos_filesystem (char *path);
-char *		rb_sanitize_uri_for_filesystem(const char *uri);
+char *		rb_sanitize_uri_for_filesystem(const char *uri, const char *filesystem);
 
 G_END_DECLS
 
