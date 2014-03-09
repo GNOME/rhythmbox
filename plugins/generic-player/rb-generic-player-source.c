@@ -930,7 +930,8 @@ default_load_playlists (RBGenericPlayerSource *source)
 		full_playlist_path = rb_uri_append_path (mount_path, playlist_path);
 		rb_debug ("constructed playlist search path %s", full_playlist_path);
 	} else {
-		full_playlist_path = g_strdup (mount_path);
+		g_free (playlist_path);
+		return;
 	}
 
 	/* only try to load playlists if the device has at least one playlist format */
