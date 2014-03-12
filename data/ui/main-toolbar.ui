@@ -53,6 +53,9 @@
             <property name="can_focus">False</property>
             <property name="margin_top">6</property>
             <property name="margin_bottom">6</property>
+            <style>
+              <class name="linked" />
+            </style>
             <child>
               <object class="GtkButton" id="previous-button">
                 <property name="visible">True</property>
@@ -61,6 +64,9 @@
                 <property name="action_name">app.play-previous</property>
                 <property name="image">image5</property>
                 <property name="always_show_image">True</property>
+                <style>
+                  <class name="raised" />
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -75,6 +81,9 @@
                 <property name="receives_default">True</property>
                 <property name="action_name">app.play</property>
                 <property name="image">image4</property>
+                <style>
+                  <class name="raised" />
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -89,6 +98,9 @@
                 <property name="receives_default">True</property>
                 <property name="action_name">app.play-next</property>
                 <property name="image">image3</property>
+                <style>
+                  <class name="raised" />
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -115,6 +127,9 @@
           <object class="GtkBox" id="box4">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <style>
+              <class name="linked" />
+            </style>
             <child>
               <object class="GtkToggleButton" id="repeat-button">
                 <property name="visible">True</property>
@@ -122,6 +137,9 @@
                 <property name="receives_default">True</property>
                 <property name="action_name">app.play-repeat</property>
                 <property name="image">image2</property>
+                <style>
+                  <class name="raised" />
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -136,6 +154,9 @@
                 <property name="receives_default">True</property>
                 <property name="action_name">app.play-shuffle</property>
                 <property name="image">image1</property>
+                <style>
+                  <class name="raised" />
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>

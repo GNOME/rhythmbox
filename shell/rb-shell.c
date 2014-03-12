@@ -697,16 +697,6 @@ construct_sources (RBShell *shell)
 }
 
 static void
-set_button_classes (GtkBuilder *builder, const char *name)
-{
-	GtkWidget *widget;
-
-	widget = GTK_WIDGET (gtk_builder_get_object (builder, name));
-	gtk_style_context_add_class (gtk_widget_get_style_context (widget), GTK_STYLE_CLASS_RAISED);
-	gtk_style_context_add_class (gtk_widget_get_style_context (widget), GTK_STYLE_CLASS_LINKED);
-}
-
-static void
 construct_load_ui (RBShell *shell)
 {
 	GApplication *app = g_application_get_default ();
@@ -718,14 +708,6 @@ construct_load_ui (RBShell *shell)
 	GtkWidget *image;
 	GMenuModel *model;
 	gboolean rtl;
-	const char *raise_buttons[] = {
-		"previous-button",
-		"play-button",
-		"next-button",
-		"shuffle-button",
-		"repeat-button"
-	};
-	int i;
 
 	rb_debug ("shell: loading ui");
 	rb_profile_start ("loading ui");
@@ -734,10 +716,6 @@ construct_load_ui (RBShell *shell)
 	toolbar = GTK_WIDGET (gtk_builder_get_object (builder, "main-toolbar"));
 
 	shell->priv->play_button = GTK_WIDGET (gtk_builder_get_object (builder, "play-button"));
-
-	for (i = 0; i < G_N_ELEMENTS (raise_buttons); i++) {
-		set_button_classes (builder, raise_buttons[i]);
-	}
 
 	rtl = (gtk_widget_get_direction (shell->priv->play_button) == GTK_TEXT_DIR_RTL);
 	image = gtk_button_get_image (GTK_BUTTON (gtk_builder_get_object (builder, "next-button")));
