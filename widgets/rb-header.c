@@ -47,6 +47,8 @@
 #include "rb-file-helpers.h"
 #include "rb-ext-db.h"
 
+#define LABEL_SELECT_PADDING	20
+
 /**
  * SECTION:rb-header
  * @short_description: playback area widgetry
@@ -97,6 +99,7 @@ static void rb_header_sync_time (RBHeader *header);
 static void uri_dropped_cb (RBFadingImage *image, const char *uri, RBHeader *header);
 static void pixbuf_dropped_cb (RBFadingImage *image, GdkPixbuf *pixbuf, RBHeader *header);
 static void image_button_press_cb (GtkWidget *widget, GdkEvent *event, RBHeader *header);
+static gboolean label_button_press_cb (GtkWidget *widget, GdkEventButton *event, RBHeader *header);
 static void art_added_cb (RBExtDB *db, RBExtDBKey *key, const char *filename, GValue *data, RBHeader *header);
 static void volume_widget_changed_cb (GtkScaleButton *widget, gdouble volume, RBHeader *header);
 static void player_volume_changed_cb (RBShellPlayer *player, GParamSpec *pspec, RBHeader *header);
@@ -337,6 +340,10 @@ rb_header_constructed (GObject *object)
 	gtk_label_set_ellipsize (GTK_LABEL (header->priv->song), PANGO_ELLIPSIZE_END);
 	gtk_misc_set_alignment (GTK_MISC (header->priv->song), 0.0, 0.5);
 	gtk_grid_attach (GTK_GRID (header->priv->songbox), header->priv->song, 0, 0, 1, 1);
+	g_signal_connect_object (header->priv->song,
+				 "button-press-event",
+				 G_CALLBACK (label_button_press_cb),
+				 header, 0);
 
 	header->priv->details = gtk_label_new ("");
 	gtk_label_set_use_markup (GTK_LABEL (header->priv->details), TRUE);
@@ -345,6 +352,10 @@ rb_header_constructed (GObject *object)
 	gtk_widget_set_hexpand (header->priv->details, TRUE);
 	gtk_misc_set_alignment (GTK_MISC (header->priv->details), 0.0, 0.5);
 	gtk_grid_attach (GTK_GRID (header->priv->songbox), header->priv->details, 0, 1, 1, 2);
+	g_signal_connect_object (header->priv->details,
+				 "button-press-event",
+				 G_CALLBACK (label_button_press_cb),
+				 header, 0);
 
 	/* elapsed time / duration display */
 	header->priv->timelabel = gtk_label_new ("");
@@ -1307,4 +1318,62 @@ player_volume_changed_cb (RBShellPlayer *player, GParamSpec *pspec, RBHeader *he
 	header->priv->syncing_volume = TRUE;
 	gtk_scale_button_set_value (GTK_SCALE_BUTTON (header->priv->volume_button), volume);
 	header->priv->syncing_volume = FALSE;
+}
+
+static gboolean
+do_window_drag (RBHeader *header)
+{
+	GtkWidget *widget;
+	gboolean window_dragging;
+
+	widget = GTK_WIDGET (header);
+	while (widget != NULL) {
+		if (GTK_IS_TOOLBAR (widget)) {
+			gtk_widget_style_get (widget, "window-dragging", &window_dragging, NULL);
+			return window_dragging;
+		}
+
+		widget = gtk_widget_get_parent (widget);
+	}
+
+	return FALSE;
+}
+
+static gboolean
+label_button_press_cb (GtkWidget *label, GdkEventButton *event, RBHeader *header)
+{
+	GtkWidget *window;
+	int min, nat;
+
+	if (do_window_drag (header) == FALSE) {
+		return FALSE;
+	}
+
+	if (gdk_event_triggers_context_menu ((GdkEvent *)event)) {
+		return FALSE;
+	}
+
+	if (event->type != GDK_BUTTON_PRESS) {
+		return FALSE;
+	}
+
+	/* if we're over or near the text, allow the normal selection thing to happen,
+	 * otherwise act like a bit of toolbar
+	 */
+	gtk_widget_get_preferred_width (label, &min, &nat);
+	if (gtk_widget_get_direction (label) == GTK_TEXT_DIR_RTL) {
+		if (event->x > (gtk_widget_get_allocated_width (label) - (nat + LABEL_SELECT_PADDING))) {
+			return FALSE;
+		}
+	} else if (event->x < (nat + LABEL_SELECT_PADDING)) {
+		return FALSE;
+	}
+
+	window = gtk_widget_get_toplevel (label);
+	gtk_window_begin_move_drag (GTK_WINDOW (window),
+				    event->button,
+				    event->x_root,
+				    event->y_root,
+				    event->time);
+	return TRUE;
 }
