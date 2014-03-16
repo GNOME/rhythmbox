@@ -118,6 +118,7 @@ struct RBHeaderPrivate
 	GtkWidget *songbox;
 	GtkWidget *song;
 	GtkWidget *details;
+	GtkWidget *not_playing;
 	GtkWidget *image;
 	GtkWidget *volume_button;
 
@@ -288,6 +289,7 @@ static void
 rb_header_constructed (GObject *object)
 {
 	RBHeader *header = RB_HEADER (object);
+	char *label;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_header_parent_class, constructed, object);
 
@@ -333,26 +335,42 @@ rb_header_constructed (GObject *object)
 	header->priv->songbox = gtk_grid_new ();
 	gtk_widget_set_hexpand (header->priv->songbox, TRUE);
 	gtk_widget_set_valign (header->priv->songbox, GTK_ALIGN_CENTER);
+	gtk_orientable_set_orientation (GTK_ORIENTABLE (header->priv->songbox), GTK_ORIENTATION_VERTICAL);
 
-	header->priv->song = gtk_label_new (" ");
+	header->priv->song = g_object_ref (gtk_label_new (" "));
+	gtk_widget_show (header->priv->song);
 	gtk_label_set_use_markup (GTK_LABEL (header->priv->song), TRUE);
 	gtk_label_set_selectable (GTK_LABEL (header->priv->song), TRUE);
 	gtk_label_set_ellipsize (GTK_LABEL (header->priv->song), PANGO_ELLIPSIZE_END);
 	gtk_misc_set_alignment (GTK_MISC (header->priv->song), 0.0, 0.5);
-	gtk_grid_attach (GTK_GRID (header->priv->songbox), header->priv->song, 0, 0, 1, 1);
 	g_signal_connect_object (header->priv->song,
 				 "button-press-event",
 				 G_CALLBACK (label_button_press_cb),
 				 header, 0);
 
-	header->priv->details = gtk_label_new ("");
+	header->priv->details = g_object_ref (gtk_label_new (""));
+	gtk_widget_show (header->priv->details);
 	gtk_label_set_use_markup (GTK_LABEL (header->priv->details), TRUE);
 	gtk_label_set_selectable (GTK_LABEL (header->priv->details), TRUE);
 	gtk_label_set_ellipsize (GTK_LABEL (header->priv->details), PANGO_ELLIPSIZE_END);
 	gtk_widget_set_hexpand (header->priv->details, TRUE);
 	gtk_misc_set_alignment (GTK_MISC (header->priv->details), 0.0, 0.5);
-	gtk_grid_attach (GTK_GRID (header->priv->songbox), header->priv->details, 0, 1, 1, 2);
 	g_signal_connect_object (header->priv->details,
+				 "button-press-event",
+				 G_CALLBACK (label_button_press_cb),
+				 header, 0);
+
+	label = g_markup_printf_escaped (TITLE_FORMAT, _("Not Playing"));
+	header->priv->not_playing = g_object_ref (gtk_label_new (label));
+	g_free (label);
+	gtk_widget_show (header->priv->not_playing);
+	gtk_label_set_use_markup (GTK_LABEL (header->priv->not_playing), TRUE);
+	gtk_label_set_selectable (GTK_LABEL (header->priv->not_playing), TRUE);
+	gtk_label_set_ellipsize (GTK_LABEL (header->priv->not_playing), PANGO_ELLIPSIZE_END);
+	gtk_widget_set_hexpand (header->priv->not_playing, TRUE);
+	gtk_misc_set_alignment (GTK_MISC (header->priv->not_playing), 0.0, 0.5);
+	gtk_container_add (GTK_CONTAINER (header->priv->songbox), header->priv->not_playing);
+	g_signal_connect_object (header->priv->not_playing,
 				 "button-press-event",
 				 G_CALLBACK (label_button_press_cb),
 				 header, 0);
@@ -432,6 +450,10 @@ rb_header_dispose (GObject *object)
 		g_object_unref (header->priv->art_store);
 		header->priv->art_store = NULL;
 	}
+
+	g_clear_object (&header->priv->song);
+	g_clear_object (&header->priv->details);
+	g_clear_object (&header->priv->not_playing);
 
 	G_OBJECT_CLASS (rb_header_parent_class)->dispose (object);
 }
@@ -798,7 +820,6 @@ get_extra_metadata (RhythmDB *db, RhythmDBEntry *entry, const char *field, char 
 static void
 rb_header_sync (RBHeader *header)
 {
-	char *label_text;
 	if (header->priv->entry != NULL) {
 		const char *title;
 		const char *album;
@@ -812,6 +833,12 @@ rb_header_sync (RBHeader *header)
 		rb_debug ("syncing with %s",
 			  rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_LOCATION));
 		gboolean have_duration = (header->priv->duration > 0);
+
+		if (gtk_widget_get_parent (header->priv->song) == NULL) {
+			gtk_container_remove (GTK_CONTAINER (header->priv->songbox), header->priv->not_playing);
+			gtk_container_add (GTK_CONTAINER (header->priv->songbox), header->priv->song);
+			gtk_container_add (GTK_CONTAINER (header->priv->songbox), header->priv->details);
+		}
 
 		title = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_TITLE);
 		album = rhythmdb_entry_get_string (header->priv->entry, RHYTHMDB_PROP_ALBUM);
@@ -921,11 +948,11 @@ rb_header_sync (RBHeader *header)
 		g_free (streaming_title);
 	} else {
 		rb_debug ("not playing");
-		label_text = g_markup_printf_escaped (TITLE_FORMAT, _("Not Playing"));
-		gtk_label_set_markup (GTK_LABEL (header->priv->song), label_text);
-		g_free (label_text);
-
-		gtk_label_set_text (GTK_LABEL (header->priv->details), "");
+		if (gtk_widget_get_parent (header->priv->not_playing) == NULL) {
+			gtk_container_remove (GTK_CONTAINER (header->priv->songbox), header->priv->song);
+			gtk_container_remove (GTK_CONTAINER (header->priv->songbox), header->priv->details);
+			gtk_container_add (GTK_CONTAINER (header->priv->songbox), header->priv->not_playing);
+		}
 
 		rb_header_sync_time (header);
 		gtk_widget_set_sensitive (header->priv->scale, FALSE);
