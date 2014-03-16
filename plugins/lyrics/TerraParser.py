@@ -96,16 +96,21 @@ class TerraParser (object):
 
 
 	def parse_lyrics(self, source):
-		source = re.split('<div id="letra">', source)[1]
-		source = re.split('<p>', source)
-		# Parse artist and title
-		artistitle = re.sub('<.*?>', '', source[0])
-		rx = re.compile('^(\t|\n)+',re.M | re.S)
-		artistitle = rx.sub('', artistitle)
-		# Parse lyrics
-		lyrics = re.split('</p>', source[1])[0]
-		lyrics = re.sub('<[Bb][Rr]/>', '', lyrics)
+		def unspace(x):
+			return " ".join(x.split())
+		def untag(x):
+			return re.sub('<.*?>', '', x)
 
-		lyrics = unescape_entities(artistitle) + "\n" + unescape_entities(lyrics)
+		source = re.split('<div id="letra">', source)[1]
+		source = re.split('</?div.*?>', source)
+		# source[1] = artist+title
+		# source[2] = lyrics
+
+		header = "".join(source[1].splitlines())
+		# <h1><a>title</a></h1> <h2><a>artist</a></h2>
+		bits = re.findall('<h.>(.*?)</h.>', header)
+		artistitle = unspace(untag(" - ".join(bits)))
+
+		lyrics = unescape_entities(artistitle) + "\n" + unescape_entities(untag(source[2]))
 		lyrics += "\n\nEsta letra foi disponibilizada pelo site\nhttp://letras.mus.br"
 		return lyrics
