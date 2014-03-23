@@ -1,3 +1,64 @@
+Overview of changes in Rhythmbox 3.0.2
+======================================
+
+* Assorted bug fixes
+
+Bugs fixed:
+
+678938 - Selectable text for playing song interferes with dragging by toolbar
+692485 - application hangs clicking on devices with undefined playlist_path
+701598 - rhythmbox seems to always be compiled with --enable-uninstalled-build
+705105 - Rhythmbox while playing disables automatic screen lock
+707144 - Rhythmbox doesn't support itmss:// links
+707525 - Last.fm radio stations can't be properly deleted
+707618 - Trying to play a file missing on disk crashes rhythmbox in
+         rb-player-gst.c:516
+708084 - podcast: Local file name is not escaped
+708201 - Core dumped when running on Wayland
+708341 - Transfer to mass storage player hangs after last song
+710493 - Gdk assertion failed: invalid cairo image surface format
+710832 - Removing a song from the Play Queue removes it from the Library
+711285 - Cannot play remote files (sftp/gvfs) in library
+712237 - Rhythmbox segfaults on broken cover images
+712699 - Take into account the size of header button for column width
+715177 - running rhythmbox-client --play-uri file:///path/to/song with
+         rhythmbox closed only starts the app, not the song
+719514 - cairo crash on playback whenever coverart search plugin is enabled
+719777 - data: Add audio/mp4 as a supported mime-type
+720116 - app menu: standardize Help/About/Quit
+720217 - If transfer to device fails with non-sanitized filename, try with
+         sanitized one
+720819 - header: vertically centralize the "Not playing" label
+721550 - License text contains obsolete FSF postal address
+721758 - Please add search by genre
+722069 - Incorrect links to the website
+722782 - link to Rhythmbox Home Page is invalid
+723839 - audioscrobbler: Invalid path passed to g_settings_new_with_path()
+724931 - rhythmbox crashed with SIGSEGV in rb_list_model_find()
+725625 - Absolute Radio Stations Should No Longer Be Included as Default
+         (not streaming outside of UK)
+726167 - .linked class is set on toolbar buttons instead of their container
+
+Translation updates:
+
+- cs, courtesy of Marek Černocký
+- de, courtesy of Christian Kirbach
+- es, courtesy of Daniel Mustieles
+- fr, courtesy of Claude Paroz
+- gl, courtesy of Fran Dieguez
+- hu, courtesy of Gabor Kelemen
+- it, courtesy of Milo Casagrande
+- lt, courtesy of Aurimas Černius
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Rafael Ferreira
+- pt, courtesy of Tiago S.
+- ru, courtesy of Yuri Myasoedov
+- sl, courtesy of Matej Urbančič
+- sr, courtesy of Мирослав Николић
+- sr@latin, courtesy of Miroslav Nikolić
+- zh_CN, courtesy of YunQiang Su
+
+
 Overview of changes in Rhythmbox 3.0.1  "I Am Nice To Tapes"
 ============================================================
 
