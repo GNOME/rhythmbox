@@ -661,20 +661,24 @@ update_sync_settings_dialog (RBMediaPlayerSource *source)
 {
 	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
 	gboolean can_continue;
+	gboolean show_error;
 
 	if (sync_has_items_enabled (source) == FALSE) {
 		can_continue = FALSE;
+		show_error = TRUE;
 		gtk_label_set_text (GTK_LABEL (priv->sync_dialog_label),
 				    _("You have not selected any music, playlists, or podcasts to transfer to this device."));
 	} else if (sync_has_enough_space (source) == FALSE) {
-		can_continue = FALSE;
+		can_continue = TRUE;
+		show_error = TRUE;
 		gtk_label_set_text (GTK_LABEL (priv->sync_dialog_label),
 				    _("There is not enough space on the device to transfer the selected music, playlists and podcasts."));
 	} else {
 		can_continue = TRUE;
+		show_error = FALSE;
 	}
 
-	gtk_widget_set_visible (priv->sync_dialog_error_box, !can_continue);
+	gtk_widget_set_visible (priv->sync_dialog_error_box, show_error);
 	gtk_dialog_set_response_sensitive (GTK_DIALOG (priv->sync_dialog), GTK_RESPONSE_YES, can_continue);
 }
 
