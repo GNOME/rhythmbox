@@ -120,7 +120,7 @@ grilo_source_added_cb (GrlRegistry *registry, GrlSource *grilo_source, RBGriloPl
 		if (g_str_equal (ignored_plugins[i], grl_plugin_get_id (grilo_plugin))) {
 			rb_debug ("grilo source %s is blacklisted",
 				  grl_source_get_name (grilo_source));
-			return;
+			goto ignore;
 		}
 	}
 
@@ -128,13 +128,13 @@ grilo_source_added_cb (GrlRegistry *registry, GrlSource *grilo_source, RBGriloPl
 	if (((ops & GRL_OP_BROWSE) == 0) && ((ops & GRL_OP_SEARCH) == 0)) {
 		rb_debug ("grilo source %s is not interesting",
 			  grl_source_get_name (grilo_source));
-		return;
+		goto ignore;
 	}
 
 	keys = grl_source_supported_keys (grilo_source);
 	if (g_list_find ((GList *)keys, GINT_TO_POINTER (GRL_METADATA_KEY_URL)) == NULL) {
 		rb_debug ("grilo source %s doesn't do urls", grl_source_get_name (grilo_source));
-		return;
+		goto ignore;
 	}
 
 	rb_debug ("new grilo source: %s", grl_source_get_name (grilo_source));
@@ -146,6 +146,11 @@ grilo_source_added_cb (GrlRegistry *registry, GrlSource *grilo_source, RBGriloPl
 	g_object_get (plugin, "object", &shell, NULL);
 	rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (source), RB_DISPLAY_PAGE_GROUP_SHARED);
 	g_object_unref (shell);
+
+	return;
+
+ignore:
+	grl_registry_unregister_source (registry, grilo_source, NULL);
 }
 
 static void
