@@ -51,19 +51,13 @@
 #define RB_GRILO_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_GRILO_PLUGIN, RBGriloPluginClass))
 
 static const char *ignored_plugins[] = {
-	"grl-apple-trailers",
-	"grl-bliptv",
 	"grl-bookmarks",
 	"grl-dmap",
 	"grl-filesystem",
-	"grl-flickr",
 	"grl-magnatune",
 	"grl-optical-media",
 	"grl-podcasts",
-	"grl-raitv",
-	"grl-tracker",
-	"grl-vimeo",
-	"grl-youtube"
+	"grl-tracker"
 };
 
 typedef struct
@@ -114,6 +108,12 @@ grilo_source_added_cb (GrlRegistry *registry, GrlSource *grilo_source, RBGriloPl
 	RBSource *source;
 	RBShell *shell;
 	int i;
+
+	if (!(grl_source_get_supported_media (grilo_source) & GRL_MEDIA_TYPE_AUDIO)) {
+		rb_debug ("grilo source %s doesn't support audio",
+			  grl_source_get_name (grilo_source));
+		goto ignore;
+	}
 
 	grilo_plugin = grl_source_get_plugin (grilo_source);
 	for (i = 0; i < G_N_ELEMENTS (ignored_plugins); i++) {
