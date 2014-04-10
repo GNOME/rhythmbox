@@ -146,7 +146,7 @@ count_items (RBDisplayPageMenu *menu, int upto)
 
 	i = 0;
 	c = 0;
-	do {
+	while (c < upto) {
 		RBDisplayPage *page;
 		gtk_tree_model_get (menu->priv->real_model,
 				    &iter,
@@ -158,7 +158,9 @@ count_items (RBDisplayPageMenu *menu, int upto)
 		}
 		g_object_unref (page);
 		c++;
-	} while ((c < upto) && gtk_tree_model_iter_next (menu->priv->real_model, &iter));
+		if (!gtk_tree_model_iter_next (menu->priv->real_model, &iter))
+			break;
+	}
 
 	return i;
 }
