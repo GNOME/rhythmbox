@@ -505,12 +505,12 @@ playing_entry_changed_cb (RBShellPlayer *player,
 			  RhythmDBEntry *entry,
 			  RBNotificationPlugin *plugin)
 {
-	if (entry == NULL && plugin->notification == NULL) {
-		return;
+	if (entry == NULL) {
+		cleanup_notification (plugin);
+	} else {
+		update_current_playing_data (plugin, entry);
+		notify_playing_entry (plugin, FALSE);
 	}
-
-	update_current_playing_data (plugin, entry);
-	notify_playing_entry (plugin, FALSE);
 }
 
 static void
@@ -518,11 +518,11 @@ playing_changed_cb (RBShellPlayer *player,
 		    gboolean       playing,
 		    RBNotificationPlugin *plugin)
 {
-	if (playing == FALSE && plugin->notification == NULL) {
-		return;
+	if (playing) {
+		notify_playing_entry (plugin, FALSE);
+	} else {
+		cleanup_notification (plugin);
 	}
-
-	notify_playing_entry (plugin, FALSE);
 }
 
 static gboolean
