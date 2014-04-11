@@ -58,6 +58,7 @@
 
 enum {
 	CONTAINER_UNKNOWN_MEDIA = 0,
+	CONTAINER_MARKER,
 	CONTAINER_NO_MEDIA,
 	CONTAINER_HAS_MEDIA
 };
@@ -73,6 +74,8 @@ static void rb_grilo_source_finalize (GObject *object);
 static void rb_grilo_source_constructed (GObject *object);
 static void impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
 static void impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
+
+static void start_media_browse (RBGriloSource *source, GrlSupportedOps op_type, GrlMedia *container, GtkTreeIter *container_iter, guint limit);
 
 static void browser_selection_changed_cb (GtkTreeSelection *selection, RBGriloSource *source);
 static void browser_row_expanded_cb (GtkTreeView *tree_view, GtkTreeIter *iter, GtkTreePath *path, RBGriloSource *source);
@@ -117,6 +120,7 @@ struct _RBGriloSourcePrivate
 	guint maybe_expand_idle;
 
 	/* current media browse operation */
+	GrlSupportedOps media_browse_op_type;
 	guint media_browse_op;
 	char *search_text;
 	GrlMedia *media_browse_container;
@@ -717,7 +721,7 @@ grilo_browse_cb (GrlSource *grilo_source, guint operation_id, GrlMedia *media, g
 						   -1,
 						   0, NULL,
 						   1, "...",	/* needs to be translatable? */
-						   2, CONTAINER_NO_MEDIA,
+						   2, CONTAINER_MARKER,
 						   3, 0,
 						   -1);
 	} else if (media && GRL_IS_MEDIA_AUDIO (media)) {
@@ -751,9 +755,29 @@ grilo_browse_cb (GrlSource *grilo_source, guint operation_id, GrlMedia *media, g
 				maybe_expand_container (source);
 			}
 
-		} else if (source->priv->browse_got_results && source->priv->browse_container == NULL) {
-			/* get all top-level containers */
-			browse_next (source);
+		} else if (source->priv->browse_container == NULL) {
+		       	if (source->priv->browse_got_results) {
+				/* get all top-level containers */
+				browse_next (source);
+			} else if (source->priv->browse_got_media) {
+				GtkTreeIter root_iter;
+				GtkTreeSelection *selection;
+				/* root container has media, so show it in the browser */
+				gtk_tree_store_insert_with_values (source->priv->browser_model,
+								   &root_iter,
+								   NULL,
+								   0,
+								   0, NULL,
+								   1, grl_source_get_name (source->priv->grilo_source),
+								   2, CONTAINER_HAS_MEDIA,
+								   3, 0,
+								   -1);
+
+				/* select it, so we start fetching the media */
+				selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (source->priv->browser_view));
+				gtk_tree_selection_select_iter (selection, &root_iter);
+
+			}
 		}
 	}
 }
@@ -883,7 +907,7 @@ media_browse_next (RBGriloSource *source)
 		  source->priv->media_browse_position);
 
 	source->priv->media_browse_got_results = FALSE;
-	if (source->priv->media_browse_container != NULL) {
+	if (source->priv->media_browse_op_type == GRL_OP_BROWSE) {
 		options = make_operation_options (source,
 						  GRL_OP_BROWSE,
 						  source->priv->media_browse_position);
@@ -894,7 +918,7 @@ media_browse_next (RBGriloSource *source)
 					   options,
 					   (GrlSourceResultCb) grilo_media_browse_cb,
 					   source);
-	} else {
+	} else if (source->priv->media_browse_op_type == GRL_OP_SEARCH) {
 		options = make_operation_options (source,
 						  GRL_OP_SEARCH,
 						  source->priv->media_browse_position);
@@ -905,11 +929,13 @@ media_browse_next (RBGriloSource *source)
 					   options,
 					   (GrlSourceResultCb) grilo_media_browse_cb,
 					   source);
+	} else {
+		g_assert_not_reached ();
 	}
 }
 
 static void
-start_media_browse (RBGriloSource *source, GrlMedia *container, GtkTreeIter *container_iter, guint limit)
+start_media_browse (RBGriloSource *source, GrlSupportedOps op_type, GrlMedia *container, GtkTreeIter *container_iter, guint limit)
 {
 	rb_debug ("starting media browse for %s",
 		  grl_source_get_name (source->priv->grilo_source));
@@ -930,6 +956,7 @@ start_media_browse (RBGriloSource *source, GrlMedia *container, GtkTreeIter *con
 	source->priv->media_browse_position = 0;
 	source->priv->media_browse_limit = limit;
 	source->priv->media_browse_got_containers = FALSE;
+	source->priv->media_browse_op_type = op_type;
 
 	if (source->priv->query_model != NULL) {
 		g_object_unref (source->priv->query_model);
@@ -996,13 +1023,18 @@ browser_selection_changed_cb (GtkTreeSelection *selection, RBGriloSource *source
 			    2, &container_type,
 			    -1);
 
-	if (container == NULL) {
+	switch (container_type) {
+	case CONTAINER_MARKER:
 		expand_from_marker (source, &iter);
-	} else if (container_type != CONTAINER_NO_MEDIA) {
-		/* fetch media directly under this container */
-		start_media_browse (source, container, &iter, CONTAINER_MAX_TRACKS);
-	} else {
+		break;
+	case CONTAINER_NO_MEDIA:
 		/* clear the track list? */
+		break;
+	case CONTAINER_UNKNOWN_MEDIA:
+	case CONTAINER_HAS_MEDIA:
+		/* fetch media directly under this container */
+		start_media_browse (source, GRL_OP_BROWSE, container, &iter, CONTAINER_MAX_TRACKS);
+		break;
 	}
 }
 
@@ -1014,7 +1046,7 @@ maybe_expand_container (RBGriloSource *source)
 	GtkTreeIter iter;
 	GtkTreeIter end_iter;
 	GtkTreeIter next;
-	GrlMedia *container;
+	int container_type;
 	gboolean last;
 
 	source->priv->maybe_expand_idle = 0;
@@ -1038,9 +1070,9 @@ maybe_expand_container (RBGriloSource *source)
 		path = gtk_tree_model_get_path (GTK_TREE_MODEL (source->priv->browser_model), &iter);
 		last = (gtk_tree_path_compare (path, end) >= 0);
 		gtk_tree_model_get (GTK_TREE_MODEL (source->priv->browser_model), &iter,
-				    0, &container,
+				    2, &container_type,
 				    -1);
-		if (container == NULL) {
+		if (container_type == CONTAINER_MARKER) {
 			if (expand_from_marker (source, &iter)) {
 				rb_debug ("expanding");
 				break;
@@ -1135,7 +1167,7 @@ search_cb (RBSearchEntry *search, const char *text, RBGriloSource *source)
 
 	gtk_tree_selection_unselect_all (gtk_tree_view_get_selection (GTK_TREE_VIEW (source->priv->browser_view)));
 
-	start_media_browse (source, NULL, NULL, CONTAINER_MAX_TRACKS);
+	start_media_browse (source, GRL_OP_SEARCH, NULL, NULL, CONTAINER_MAX_TRACKS);
 }
 
 static void
