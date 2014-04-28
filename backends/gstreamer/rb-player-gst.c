@@ -441,6 +441,16 @@ state_change_finished (RBPlayerGst *mp, GError *error)
 		if (error != NULL) {
 			g_warning ("unable to stop playback: %s\n", error->message);
 		} else {
+			GstBus *bus;
+
+			/* flush bus to ensure tags from the previous stream don't
+			 * get applied to the new one
+			 */
+			bus = gst_element_get_bus (mp->priv->playbin);
+			gst_bus_set_flushing (bus, TRUE);
+			gst_bus_set_flushing (bus, FALSE);
+			gst_object_unref (bus);
+
 			rb_debug ("setting new playback URI %s", mp->priv->uri);
 			g_object_set (mp->priv->playbin, "uri", mp->priv->uri, NULL);
 			start_state_change (mp, GST_STATE_PLAYING, FINISH_TRACK_CHANGE);
