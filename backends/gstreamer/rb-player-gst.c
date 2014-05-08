@@ -574,9 +574,15 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 
 	case GST_MESSAGE_TAG: {
 		GstTagList *tags;
+
+		if (mp->priv->playbin_stream_changing) {
+			rb_debug ("ignoring tags during playbin stream change");
+			break;
+		}
+
 		gst_message_parse_tag (message, &tags);
 
-		if (mp->priv->stream_change_pending || mp->priv->playbin_stream_changing) {
+		if (mp->priv->stream_change_pending) {
 			mp->priv->stream_tags = g_list_append (mp->priv->stream_tags, tags);
 		} else {
 			gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, mp);
