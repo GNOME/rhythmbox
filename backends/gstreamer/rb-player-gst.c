@@ -321,22 +321,9 @@ static gboolean
 tick_timeout (RBPlayerGst *mp)
 {
 	if (mp->priv->playing) {
-		gint64 position;
-
-		position = rb_player_get_time (RB_PLAYER (mp));
-
-		/* if we don't have stream-changed messages, do the track change when
-		 * the playback position is less than one second into the current track,
-		 * which pretty much has to be the new one.
-		 */
-		if (mp->priv->playbin_stream_changing && (position < GST_SECOND)) {
-			emit_playing_stream_and_tags (mp, TRUE);
-			mp->priv->playbin_stream_changing = FALSE;
-		}
-
 		_rb_player_emit_tick (RB_PLAYER (mp),
 				      mp->priv->stream_data,
-				      position,
+				      rb_player_get_time (RB_PLAYER (mp)),
 				      -1);
 	}
 	return TRUE;
