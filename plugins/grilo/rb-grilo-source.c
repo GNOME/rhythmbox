@@ -655,7 +655,7 @@ set_container_type (RBGriloSource *source, GtkTreeIter *iter, gboolean has_media
 			    iter,
 			    2, &container_type,
 			    -1);
-	if (container_type == CONTAINER_UNKNOWN_MEDIA) {
+	if (container_type != CONTAINER_HAS_MEDIA) {
 		container_type = has_media ? CONTAINER_HAS_MEDIA : CONTAINER_NO_MEDIA;
 	}
 
@@ -735,12 +735,20 @@ grilo_browse_cb (GrlSource *grilo_source, guint operation_id, GrlMedia *media, g
 			/* no more results for this container, so delete the marker row */
 			delete_marker_row (source, &source->priv->browse_container_iter);
 
-			set_container_type (source, &source->priv->browse_container_iter, source->priv->browse_got_media);
+			set_container_type (source,
+					    &source->priv->browse_container_iter,
+					    FALSE);
 			gtk_tree_store_set (source->priv->browser_model,
 					    &source->priv->browse_container_iter,
 					    3, -1,
 					    -1);
 		} else if (source->priv->browse_container != NULL) {
+			if (source->priv->browse_got_media) {
+				set_container_type (source,
+						    &source->priv->browse_container_iter,
+						    TRUE);
+			}
+
 			if (source->priv->browse_position >= CONTAINER_GIVE_UP_POINT &&
 			    gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source->priv->browser_model),
 							    &source->priv->browse_container_iter) == 1) {
