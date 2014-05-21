@@ -77,10 +77,8 @@ clear_button_bar (RBButtonBar *bar)
 
 	c = gtk_container_get_children (GTK_CONTAINER (bar));
 	for (l = c; l != NULL; l = l->next) {
-		if (GTK_IS_LABEL (l->data))
-			continue;
-
-		gtk_size_group_remove_widget (bar->priv->size_group, l->data);
+		if (!GTK_IS_LABEL (l->data))
+			gtk_size_group_remove_widget (bar->priv->size_group, l->data);
 		gtk_container_remove (GTK_CONTAINER (bar), l->data);
 	}
 	g_list_free (c);
@@ -136,6 +134,7 @@ append_menu (RBButtonBar *bar, GMenuModel *menu, gboolean need_separator)
 			if (bar->priv->position > 0) {
 				sep = gtk_separator_new (GTK_ORIENTATION_VERTICAL);
 				gtk_widget_show (sep);
+				g_object_set (sep, "margin-start", 6, "margin-end", 6, NULL);
 				gtk_grid_attach (GTK_GRID (bar), sep, bar->priv->position++, 0, 1, 1);
 			}
 
