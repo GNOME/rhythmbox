@@ -162,6 +162,9 @@ expire_task (RBTaskList *list, RBTaskProgress *task, gint seconds)
 	TaskExpiry *expiry;
 
 	cancel_expiry (list, task);
+	if (rb_list_model_find (list->model, task) == -1)
+		return;
+
 	expiry = g_new0 (TaskExpiry, 1);
 	expiry->task = task;
 	expiry->list = list;
