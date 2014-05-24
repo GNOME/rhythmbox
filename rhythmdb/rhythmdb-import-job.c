@@ -314,12 +314,12 @@ emit_status_changed (RhythmDBImportJob *job)
 }
 
 static gboolean
-uri_recurse_func (GFile *file, gboolean dir, RhythmDBImportJob *job)
+uri_recurse_func (GFile *file, GFileInfo *info, RhythmDBImportJob *job)
 {
 	RhythmDBEntry *entry;
 	char *uri;
 
-	if (dir) {
+	if (g_file_info_get_attribute_uint32 (info, G_FILE_ATTRIBUTE_STANDARD_TYPE) == G_FILE_TYPE_DIRECTORY) {
 		return TRUE;
 	}
 

@@ -64,7 +64,7 @@ char *		rb_uri_get_mount_point  (const char *uri);
 
 
 /* return TRUE to recurse further, FALSE to stop */
-typedef gboolean (*RBUriRecurseFunc) (GFile *file, gboolean dir, gpointer data);
+typedef gboolean (*RBUriRecurseFunc) (GFile *file, GFileInfo *info, gpointer data);
 
 void		rb_uri_handle_recursively(const char *uri,
 					  GCancellable *cancel,

@@ -88,7 +88,8 @@ static const char *recurse_attributes =
 		G_FILE_ATTRIBUTE_STANDARD_TYPE ","
 		G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN ","
 		G_FILE_ATTRIBUTE_ID_FILE ","
-		G_FILE_ATTRIBUTE_ACCESS_CAN_READ;
+		G_FILE_ATTRIBUTE_ACCESS_CAN_READ ","
+		G_FILE_ATTRIBUTE_STANDARD_IS_SYMLINK;
 
 /**
  * rb_locale_dir:
@@ -748,7 +749,7 @@ _uri_handle_file (GFile *dir, GFileInfo *fileinfo, GHashTable *handled, RBUriRec
 	}
 
 	child = g_file_get_child (dir, g_file_info_get_name (fileinfo));
-	ret = (func) (child, is_dir, user_data);
+	ret = (func) (child, fileinfo, user_data);
 	if (is_dir && ret) {
 		*descend = child;
 	} else {
@@ -779,7 +780,7 @@ _uri_handle_recurse (GFile *dir,
 			info = g_file_query_info (dir, recurse_attributes, G_FILE_QUERY_INFO_NONE, cancel, &error);
 			if (error == NULL) {
 				if (_should_process (info)) {
-					(func) (dir, FALSE, user_data);
+					(func) (dir, info, user_data);
 				}
 				g_object_unref (info);
 				return;
@@ -936,7 +937,7 @@ _uri_handle_recursively_enum_files (GObject *src, GAsyncResult *result, gpointer
 			info = g_file_query_info (G_FILE (src), recurse_attributes, G_FILE_QUERY_INFO_NONE, data->cancel, &error);
 			if (error == NULL) {
 				if (_should_process (info)) {
-					(data->func) (G_FILE (src), FALSE, data->user_data);
+					(data->func) (G_FILE (src), info, data->user_data);
 				}
 				g_object_unref (info);
 			}
