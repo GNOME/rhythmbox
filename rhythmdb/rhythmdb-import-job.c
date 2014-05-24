@@ -326,7 +326,18 @@ uri_recurse_func (GFile *file, GFileInfo *info, RhythmDBImportJob *job)
 	if (g_cancellable_is_cancelled (job->priv->cancel))
 		return FALSE;
 
-	uri = g_file_get_uri (file);
+	if (g_file_info_get_attribute_boolean (info, G_FILE_ATTRIBUTE_STANDARD_IS_SYMLINK)) {
+		GFile *r;
+		r = rb_file_resolve_symlink (file, NULL);
+		if (r != NULL) {
+			uri = g_file_get_uri (r);
+			g_object_unref (r);
+		} else {
+			return FALSE;
+		}
+	} else {
+		uri = g_file_get_uri (file);
+	}
 
 	/* if it's not already in the db, add it to the list of things to process */
 	entry = rhythmdb_entry_lookup_by_location (job->priv->db, uri);
