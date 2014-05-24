@@ -50,6 +50,7 @@ gboolean	rb_uri_mkstemp		(const char *prefix, char **uri_ret,
 					 GOutputStream **stream, GError **error);
 
 char *		rb_uri_resolve_symlink	(const char *uri, GError **error);
+GFile *		rb_file_resolve_symlink	(GFile *file, GError **error);
 gboolean	rb_uri_is_directory	(const char *uri);
 gboolean	rb_uri_exists		(const char *uri);
 gboolean	rb_uri_is_readable	(const char *uri);

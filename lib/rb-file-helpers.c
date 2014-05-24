@@ -347,44 +347,76 @@ rb_file_helpers_shutdown (void)
 char *
 rb_uri_resolve_symlink (const char *uri, GError **error)
 {
-	GFile *file = NULL;
+	GFile *file;
+	GFile *rfile;
+	char *result = NULL;
+
+	file = g_file_new_for_uri (uri);
+	rfile = rb_file_resolve_symlink (file, error);
+	g_object_unref (file);
+
+	if (rfile != NULL) {
+		result = g_file_get_uri (rfile);
+		g_object_unref (rfile);
+	}
+	return result;
+}
+
+/**
+ * rb_file_resolve_symlink:
+ * @file: the file to process
+ * @error: returns error information
+ *
+ * Attempts to resolve symlinks leading to @file and return a canonical location.
+ *
+ * Return value: a #GFile representing the canonical location, or NULL on error
+ */
+GFile *
+rb_file_resolve_symlink (GFile *file, GError **error)
+{
 	GFileInfo *file_info = NULL;
 	int link_count = 0;
-	char *result = NULL;
+	GFile *result = NULL;
+	GFile *current;
+	char *furi;
+	char *ruri;
 	const char *attr = G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET;
 	GError *l_error = NULL;
-	
-	file = g_file_new_for_uri (uri);
 
+	current = g_object_ref (file);
 	while (link_count < MAX_LINK_LEVEL) {
 		GFile *parent;
 		GFile *new_file;
 		const char *target;
 
 		/* look for a symlink target */
-		file_info = g_file_query_info (file,
+		file_info = g_file_query_info (current,
 					       attr,
 					       G_FILE_QUERY_INFO_NONE,
 					       NULL, &l_error);
 		if (l_error != NULL) {
 			/* argh */
-			result = g_file_get_uri (file);
-			rb_debug ("error querying %s: %s", result, l_error->message);
-			g_free (result);
+			ruri = g_file_get_uri (current);
+			rb_debug ("error querying %s: %s", ruri, l_error->message);
+			g_free (ruri);
 			result = NULL;
 			break;
 		} else if (g_file_info_has_attribute (file_info, attr) == FALSE) {
 			/* no symlink, so return the path */
-			result = g_file_get_uri (file);
+			result = g_object_ref (current);
 			if (link_count > 0) {
-				rb_debug ("resolved symlinks: %s -> %s", uri, result);
+				furi = g_file_get_uri (file);
+				ruri = g_file_get_uri (result);
+				rb_debug ("resolved symlinks: %s -> %s", furi, ruri);
+				g_free (furi);
+				g_free (ruri);
 			}
 			break;
 		}
 
 		/* resolve it and try again */
 		new_file = NULL;
-		parent = g_file_get_parent (file);
+		parent = g_file_get_parent (current);
 		if (parent == NULL) {
 			/* dang */
 			break;
@@ -397,10 +429,10 @@ rb_uri_resolve_symlink (const char *uri, GError **error)
 		g_object_unref (file_info);
 		file_info = NULL;
 
-		g_object_unref (file);
-		file = new_file;
+		g_object_unref (current);
+		current = new_file;
 
-		if (file == NULL) {
+		if (current == NULL) {
 			/* dang */
 			break;
 		}
@@ -408,14 +440,12 @@ rb_uri_resolve_symlink (const char *uri, GError **error)
 		link_count++;
 	}
 
-	if (file != NULL) {
-		g_object_unref (file);
-	}
-	if (file_info != NULL) {
-		g_object_unref (file_info);
-	}
+	g_clear_object (&current);
+	g_clear_object (&file_info);
 	if (result == NULL && error == NULL) {
-		rb_debug ("too many symlinks while resolving %s", uri);
+		furi = g_file_get_uri (file);
+		rb_debug ("too many symlinks while resolving %s", furi);
+		g_free (furi);
 		l_error = g_error_new (G_IO_ERROR,
 				       G_IO_ERROR_TOO_MANY_LINKS,
 				       _("Too many symlinks"));
