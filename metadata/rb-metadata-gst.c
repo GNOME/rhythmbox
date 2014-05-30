@@ -823,6 +823,7 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field, GValue *ret)
 	GValue gstvalue = {0, };
 	GstClockTime duration;
 	GstDateTime *datetime;
+	GDate *dateptr = NULL;
 	char *str = NULL;
 	const char *v;
 	int i;
@@ -859,11 +860,8 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field, GValue *ret)
 		if (tags == NULL)
 			return FALSE;
 
-		if (gst_tag_list_get_date_time (tags, GST_TAG_DATE_TIME, &datetime) == FALSE) {
-			return FALSE;
-		} else {
+		if (gst_tag_list_get_date_time (tags, GST_TAG_DATE_TIME, &datetime)) {
 			GDate date;
-
 			g_date_set_dmy (&date,
 					gst_date_time_has_day (datetime) ? gst_date_time_get_day (datetime) : 1,
 					gst_date_time_has_month (datetime) ? gst_date_time_get_month (datetime) : 1,
@@ -874,8 +872,14 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field, GValue *ret)
 
 			gst_date_time_unref (datetime);
 			return TRUE;
+		} else if (gst_tag_list_get_date (tags, GST_TAG_DATE, &dateptr)) {
+			g_value_init (ret, G_TYPE_ULONG);
+			g_value_set_ulong (ret, g_date_get_julian (dateptr));
+			g_date_free (dateptr);
+			return TRUE;
+		} else {
+			return FALSE;
 		}
-		break;
 	case RB_METADATA_FIELD_COMMENT:
 		tags = gst_discoverer_info_get_tags (md->priv->info);
 		if (tags == NULL)
