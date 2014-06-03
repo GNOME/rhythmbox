@@ -154,6 +154,19 @@ ignore:
 }
 
 static void
+grilo_source_removed_cb (GrlRegistry *registry, GrlSource *grilo_source, RBGriloPlugin *plugin)
+{
+	RBSource *source;
+
+	source = g_hash_table_lookup (plugin->sources, grilo_source);
+
+	if (source) {
+		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
+		g_hash_table_remove (plugin->sources, grilo_source);
+	}
+}
+
+static void
 playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, RBGriloPlugin *plugin)
 {
 	const char *uri;
@@ -199,6 +212,7 @@ impl_activate (PeasActivatable *plugin)
 	grl_init (0, NULL);
 	pi->registry = grl_registry_get_default ();
 	g_signal_connect (pi->registry, "source-added", G_CALLBACK (grilo_source_added_cb), pi);
+	g_signal_connect (pi->registry, "source-removed", G_CALLBACK (grilo_source_removed_cb), pi);
 	if (grl_registry_load_all_plugins (pi->registry, &error) == FALSE) {
 		g_warning ("Failed to load Grilo plugins: %s", error->message);
 		g_clear_error (&error);
