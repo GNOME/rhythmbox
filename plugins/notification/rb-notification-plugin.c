@@ -518,10 +518,8 @@ playing_changed_cb (RBShellPlayer *player,
 		    gboolean       playing,
 		    RBNotificationPlugin *plugin)
 {
-	if (playing) {
+	if (playing || plugin->notification != NULL) {
 		notify_playing_entry (plugin, FALSE);
-	} else {
-		cleanup_notification (plugin);
 	}
 }
 
