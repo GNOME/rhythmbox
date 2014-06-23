@@ -15,10 +15,10 @@ msgstr ""
 "Project-Id-Version: rhythmbox.HEAD.ar\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-03-28 23:55+0000\n"
+"POT-Creation-Date: 2014-06-23 10:15+0000\n"
 "PO-Revision-Date: 2014-03-29 11:04+0200\n"
 "Last-Translator: Ibrahim Saed <ibraheem5000@gmail.com>\n"
-"Language-Team: Arabic <doc@arabeyes.org>\n"
+"Language-Team: <doc@arabeyes.org>\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,18 +34,18 @@ msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "تعذّر إنشاء خط أنابيب جستريمر للكتابة إلى %s"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:527
+#: ../backends/gstreamer/rb-player-gst.c:524
 #: ../backends/gstreamer/rb-player-gst-xfade.c:2850
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "فشل فتح جهاز الخرج: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:669
+#: ../backends/gstreamer/rb-player-gst.c:672
 #, c-format
 msgid "Failed to create playbin element; check your GStreamer installation"
 msgstr "فشل إنشاء عنصر playbin، تحقق من تثبيت جستريمر"
 
-#: ../backends/gstreamer/rb-player-gst.c:710
+#: ../backends/gstreamer/rb-player-gst.c:713
 #, c-format
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr "فشل إنشاء العنصر %s، تأكد من تثبيت جستريمر"
@@ -148,29 +148,24 @@ msgid "Side Pane"
 msgstr "اللوحة الجانبية"
 
 #: ../data/ui/app-menu.ui.h:5
-#, fuzzy
 msgid "Play Queue in Side Pane"
-msgstr "اصطفاف التشغيل كلوح جانبي"
+msgstr "تشغيل الاصطفاف في اللوحة الجانبية"
 
 #: ../data/ui/app-menu.ui.h:6
-#, fuzzy
 msgid "Status Bar"
-msgstr "شريط ال_حالة"
+msgstr "شريط الحالة"
 
 #: ../data/ui/app-menu.ui.h:7
-#, fuzzy
 msgid "Song Position Slider"
-msgstr "مقب_ض موضع الأغنية"
+msgstr "مقبض موضع الأغنية"
 
 #: ../data/ui/app-menu.ui.h:8
-#, fuzzy
 msgid "Album Art"
-msgstr "صورة _غلاف الألبوم"
+msgstr "صورة غلاف الألبوم"
 
 #: ../data/ui/app-menu.ui.h:9
-#, fuzzy
 msgid "Follow Playing Track"
-msgstr "التشغيل الآن"
+msgstr "تابع المقطوعة المشغّلة"
 
 #: ../data/ui/app-menu.ui.h:10
 msgid "_Tools"
@@ -466,14 +461,13 @@ msgstr "مطلوب ت_ثبيت برمجية إضافية لاستخدام هذه
 #: ../plugins/ipod/ipod-toolbar.ui.h:1 ../plugins/iradio/iradio-toolbar.ui.h:1
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:1
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:1
-#, fuzzy
 msgid "Edit"
-msgstr "ت_حرّير"
+msgstr "تحرّير"
 
 #: ../data/ui/library-toolbar.ui.h:2 ../data/ui/playlist-toolbar.ui.h:2
 #: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/daap/daap-toolbar.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:2
-#: ../plugins/grilo/rb-grilo-source.c:342 ../plugins/ipod/ipod-toolbar.ui.h:2
+#: ../plugins/grilo/rb-grilo-source.c:346 ../plugins/ipod/ipod-toolbar.ui.h:2
 #: ../plugins/iradio/iradio-toolbar.ui.h:2
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:2
@@ -665,7 +659,7 @@ msgid "Cancel Download"
 msgstr "ألغِ التنزيل"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1279 ../sources/rb-media-player-source.c:929
+#: ../podcast/rb-podcast-source.c:1279 ../sources/rb-media-player-source.c:933
 msgid "Delete"
 msgstr "احذف"
 
@@ -746,19 +740,16 @@ msgid "Update"
 msgstr "حدّث"
 
 #: ../data/ui/queue-popups.ui.h:1
-#, fuzzy
 msgid "Remove from Play Queue"
-msgstr "أزِل من قائمة التشغيل"
+msgstr "أزِل من تشغيل الاصطفاف"
 
 #: ../data/ui/queue-popups.ui.h:2
-#, fuzzy
 msgid "Shuffle Play Queue"
-msgstr "اخلط الاصطفاف"
+msgstr "اخلط تشغيل الاصطفاف"
 
 #: ../data/ui/queue-popups.ui.h:5
-#, fuzzy
 msgid "Clear Play Queue"
-msgstr "نظّف الا_صطفاف"
+msgstr "نظّف تشغيل الاصطفاف"
 
 #: ../data/ui/queue-toolbar.ui.h:2 ../shell/rb-shell-player.c:3279
 msgid "Shuffle"
@@ -813,9 +804,8 @@ msgid "Album a_rtist sort order:"
 msgstr "ترتيب فرز ف_نّان الألبوم:"
 
 #: ../data/ui/song-info-multiple.ui.h:13 ../data/ui/song-info.ui.h:17
-#, fuzzy
 msgid "_Composer sort order:"
-msgstr "ترتيب فرز ال_ألبوم:"
+msgstr "ترتيب فرز ال_ملحن:"
 
 #: ../data/ui/song-info-multiple.ui.h:14 ../data/ui/song-info.ui.h:18
 msgid "Sorting"
@@ -960,12 +950,12 @@ msgstr "%d %b %Y"
 msgid "Unknown"
 msgstr "مجهول"
 
-#: ../lib/rb-file-helpers.c:420
+#: ../lib/rb-file-helpers.c:451
 #, c-format
 msgid "Too many symlinks"
 msgstr ""
 
-#: ../lib/rb-file-helpers.c:1254
+#: ../lib/rb-file-helpers.c:1285
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "لا يمكن إيجاد مساحة خالية على %s: %s"
@@ -1856,9 +1846,9 @@ msgid "Add to New Playlist"
 msgstr "أضف لقائمة تشغيل جديدة"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:640
-#, fuzzy, c-format
+#, c-format
 msgid "Scanning %s"
-msgstr "يبحث..."
+msgstr "يبحث %s"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1446
 #: ../plugins/ipod/rb-ipod-source.c:2070
@@ -1874,11 +1864,11 @@ msgstr "متصفح الوسائط جريللو"
 msgid "Browse various local and Internet media sources"
 msgstr ""
 
-#: ../plugins/grilo/rb-grilo-source.c:385
+#: ../plugins/grilo/rb-grilo-source.c:389
 msgid "Fetch more tracks"
 msgstr "اجلب المزيد من المقطوعات"
 
-#: ../plugins/grilo/rb-grilo-source.c:859
+#: ../plugins/grilo/rb-grilo-source.c:891
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -2159,10 +2149,9 @@ msgstr "دارك ليركس (darklyrics.com)"
 
 #: ../plugins/lyrics/LyricsSites.py:45
 msgid "Jlyric (j-lyric.net)"
-msgstr ""
+msgstr "جيه ليرك (j-lyric.net)"
 
 #: ../plugins/lyrics/LyricsSites.py:46
-#, fuzzy
 msgid "Jetlyrics (jetlyrics.com)"
 msgstr "دارك ليركس (darklyrics.com)"
 
@@ -2199,7 +2188,7 @@ msgstr ""
 msgid ""
 "    * Open-Source friendly file formats: MP3s and WAVs, but also OGG and "
 "FLAC files."
-msgstr ""
+msgstr "    * صيغ ملفات صديقة ومفتوحة المصدر: MP3 وWAV وأيضا ملفات OGG وFLAC."
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:9
 msgid "    * All albums and artists hand-picked"
@@ -2456,9 +2445,8 @@ msgstr ""
 "%s"
 
 #: ../plugins/magnatune/MagnatuneSource.py:499
-#, fuzzy
 msgid "Downloading from Magnatune"
-msgstr "نزّل هذا الألبوم من ماجناتون"
+msgstr "تنزيل من ماجناتون"
 
 #: ../plugins/mmkeys/mmkeys.plugin.in.h:1
 msgid "Media Player Keys"
@@ -3072,14 +3060,12 @@ msgid "Source to play from"
 msgstr "المصدر المراد التشغيل منه"
 
 #: ../remote/dbus/rb-client.c:113
-#, fuzzy
 msgid "Enable repeat playback order"
-msgstr "ارفع شدة الصوت"
+msgstr "تفعيل ترتيب تكرار التشغيل"
 
 #: ../remote/dbus/rb-client.c:114
-#, fuzzy
 msgid "Disable repeat playback order"
-msgstr "أأخفض شدة الصوت"
+msgstr "تعطيل ترتيب تكرار التشغيل"
 
 #: ../remote/dbus/rb-client.c:115
 msgid "Enable shuffle playback order"
@@ -3219,11 +3205,11 @@ msgstr "%s و %s و %s"
 msgid "%s and %s"
 msgstr "%s و %s"
 
-#: ../rhythmdb/rhythmdb-import-job.c:654
+#: ../rhythmdb/rhythmdb-import-job.c:665
 msgid "Scanning"
 msgstr "يبحث"
 
-#: ../rhythmdb/rhythmdb-import-job.c:657
+#: ../rhythmdb/rhythmdb-import-job.c:668
 #: ../shell/rb-track-transfer-batch.c:819
 #, c-format
 msgid "%d of %d"
@@ -3469,27 +3455,27 @@ msgstr "ابدأ التشغيل"
 msgid "%s (Paused)"
 msgstr "%s (مُلبث)"
 
-#: ../shell/rb-shell.c:2789 ../sources/rb-play-queue-source.c:659
+#: ../shell/rb-shell.c:2795 ../sources/rb-play-queue-source.c:659
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "لا يوجد مصدر مُسَجَّل للتعامل مع العنوان %s"
 
-#: ../shell/rb-shell.c:3118
+#: ../shell/rb-shell.c:3124
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "لا يوجد مصدر مُسَجَّل يطابق العنوان %s"
 
-#: ../shell/rb-shell.c:3151 ../shell/rb-shell.c:3194
+#: ../shell/rb-shell.c:3157 ../shell/rb-shell.c:3200
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "عنوان أغنية مجهول: %s"
 
-#: ../shell/rb-shell.c:3203
+#: ../shell/rb-shell.c:3209
 #, c-format
 msgid "Unknown property %s"
 msgstr "خاصية مجهولة %s"
 
-#: ../shell/rb-shell.c:3217
+#: ../shell/rb-shell.c:3223
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "نوع غير صالح %s للخاصية %s"
@@ -3719,6 +3705,7 @@ msgstr "ابحث في العناوين"
 #: ../sources/rb-auto-playlist-source.c:258 ../sources/rb-browser-source.c:319
 #: ../sources/rb-static-playlist-source.c:300
 #, fuzzy
+#| msgid "Search engines"
 msgid "Search genres"
 msgstr "محرّكات البحث"
 
@@ -3844,28 +3831,26 @@ msgid "Error transferring track"
 msgstr "خطأ عند نقل المقطوعة"
 
 #: ../sources/rb-library-source.c:1772
-#, fuzzy
 msgid "Copying tracks to the library"
-msgstr "انسخ المقطوعات إلى المكتبة"
+msgstr "نسخ المقطوعات إلى المكتبة"
 
 #: ../sources/rb-library-source.c:1846
-#, fuzzy
 msgid "Adding tracks to the library"
-msgstr "أضِف مقطوعات إلى المكتبة"
+msgstr "إضافة المقطوعات إلى المكتبة"
 
 #: ../sources/rb-media-player-source.c:614
 #, c-format
 msgid "Syncing tracks to %s"
-msgstr ""
+msgstr "مزامنة المقطوعات إلى %s"
 
-#: ../sources/rb-media-player-source.c:668
+#: ../sources/rb-media-player-source.c:670
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
 msgstr ""
 "أنت لم تحدد أي موسيقى، أو قوائم تشغيل، أو نشرات صوتية لنقلها إلى هذا الجهاز."
 
-#: ../sources/rb-media-player-source.c:672
+#: ../sources/rb-media-player-source.c:675
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
@@ -3873,16 +3858,16 @@ msgstr ""
 "لا توجد مساحة كافية في الجهاز لنقل الموسيقى، وقوائم التشغيل، والنشرات "
 "الصوتية المُختارة."
 
-#: ../sources/rb-media-player-source.c:723
+#: ../sources/rb-media-player-source.c:727
 #, c-format
 msgid "%s Sync Settings"
 msgstr "إعدادات مزامنة %s"
 
-#: ../sources/rb-media-player-source.c:728
+#: ../sources/rb-media-player-source.c:732
 msgid "Sync with the device"
 msgstr "زامن مع الجهاز"
 
-#: ../sources/rb-media-player-source.c:730
+#: ../sources/rb-media-player-source.c:734
 msgid "Don't sync"
 msgstr "لا تزامن"
 
@@ -3938,9 +3923,9 @@ msgid "Buffering"
 msgstr "الخزن المؤقت"
 
 #: ../sources/rb-transfer-target.c:456
-#, fuzzy, c-format
+#, c-format
 msgid "Transferring tracks to %s"
-msgstr "نقل المقطوعة %Id من %Id"
+msgstr "نقل المقطوعات إلى %s"
 
 #: ../sources/sync/rb-sync-settings-ui.c:228
 msgid "All Music"
@@ -4060,9 +4045,8 @@ msgid "%s / %s"
 msgstr "%s / %s"
 
 #: ../widgets/rb-import-dialog.c:339
-#, fuzzy
 msgid "Importing tracks"
-msgstr "تحويل المقطوعات الصوتية"
+msgstr "استيراد المقطوعات"
 
 #. this isn't a terribly helpful message.
 #: ../widgets/rb-import-dialog.c:409
