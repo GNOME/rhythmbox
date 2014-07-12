@@ -336,7 +336,7 @@ start_scanning (RBImportDialog *dialog)
 							    dialog->priv->entry_type,
 							    dialog->priv->ignore_type,
 							    dialog->priv->ignore_type);
-	g_object_set (dialog->priv->import_job, "task-label", _("Importing tracks"), NULL);
+	g_object_set (dialog->priv->import_job, "task-label", _("Examining files"), NULL);
 	g_signal_connect (dialog->priv->import_job, "complete", G_CALLBACK (import_complete_cb), dialog);
 	rhythmdb_import_job_add_uri (dialog->priv->import_job, dialog->priv->current_uri);
 	rhythmdb_import_job_start (dialog->priv->import_job);
