@@ -328,7 +328,9 @@ parse_finished (ParseThreadData *data)
 		}
 
 		/* if the row is selected, create entries for the channel contents */
-		if (data->dialog->priv->have_selection && found) {
+		if (found == FALSE) {
+			rb_podcast_parse_channel_free (data->channel);
+		} else if (data->dialog->priv->have_selection) {
 			GtkTreePath *a;
 			GtkTreePath *b;
 
@@ -340,8 +342,6 @@ parse_finished (ParseThreadData *data)
 
 			gtk_tree_path_free (a);
 			gtk_tree_path_free (b);
-		} else {
-			rb_podcast_parse_channel_free (data->channel);
 		}
 	} else {
 		/* model owns data->channel now */
