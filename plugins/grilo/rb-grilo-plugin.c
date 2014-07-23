@@ -248,7 +248,6 @@ impl_deactivate	(PeasActivatable *bplugin)
 	g_hash_table_destroy (plugin->sources);
 	plugin->sources = NULL;
 
-	g_object_unref (plugin->registry);
 	plugin->registry = NULL;
 
 	if (plugin->emit_cover_art_id != 0) {
