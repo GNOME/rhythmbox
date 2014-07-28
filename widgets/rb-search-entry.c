@@ -225,17 +225,13 @@ rb_search_entry_constructed (GObject *object)
 	gtk_entry_set_icon_tooltip_text (GTK_ENTRY (entry->priv->entry),
 					 GTK_ENTRY_ICON_SECONDARY,
 					 _("Clear the search text"));
+	gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->priv->entry),
+					   GTK_ENTRY_ICON_PRIMARY,
+					   "edit-find-symbolic");
 	if (entry->priv->has_popup) {
-		gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->priv->entry),
-						   GTK_ENTRY_ICON_PRIMARY,
-						   "edit-find-symbolic");
 		gtk_entry_set_icon_tooltip_text (GTK_ENTRY (entry->priv->entry),
 						 GTK_ENTRY_ICON_PRIMARY,
 						 _("Select the search type"));
-	} else {
-		gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->priv->entry),
-						   GTK_ENTRY_ICON_SECONDARY,
-						   "edit-find-symbolic");
 	}
 
 	gtk_box_pack_start (GTK_BOX (entry), entry->priv->entry, TRUE, TRUE, 0);
@@ -393,22 +389,11 @@ rb_search_entry_update_icons (RBSearchEntry *entry)
 {
 	const char *text;
 	const char *icon;
-	gboolean searching;
 
-	if (entry->priv->explicit_mode) {
-		searching = entry->priv->searching;
-	} else {
-		text = gtk_entry_get_text (GTK_ENTRY (entry->priv->entry));
-		searching = (text && *text);
-	}
-
-	if (searching) {
+	icon = NULL;
+	text = gtk_entry_get_text (GTK_ENTRY (entry->priv->entry));
+	if (text && *text) {
 		icon = "edit-clear-symbolic";
-	} else if (entry->priv->has_popup) {
-		/* we already use 'find' as the primary icon */
-		icon = NULL;
-	} else {
-		icon = "edit-find-symbolic";
 	}
 	gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->priv->entry),
 					   GTK_ENTRY_ICON_SECONDARY,
