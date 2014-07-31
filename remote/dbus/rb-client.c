@@ -98,7 +98,7 @@ static GOptionEntry args[] = {
 	{ "play", 0, 0, G_OPTION_ARG_NONE, &play, N_("Resume playback if currently paused"), NULL },
 	{ "pause", 0, 0, G_OPTION_ARG_NONE, &do_pause, N_("Pause playback if currently playing"), NULL },
 	{ "play-pause", 0, 0, G_OPTION_ARG_NONE, &play_pause, N_("Toggle play/pause mode"), NULL },
-/*	{ "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL }, */
+	{ "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
 
 	{ "play-uri", 0, 0, G_OPTION_ARG_FILENAME, &play_uri, N_("Play a specified URI, importing it if necessary"), N_("URI to play")},
 	{ "enqueue", 0, 0, G_OPTION_ARG_NONE, &enqueue, N_("Add specified tracks to the play queue"), NULL },
@@ -908,7 +908,8 @@ main (int argc, char **argv)
 				rb_debug ("no need to change playback state");
 			}
 		} else if (stop) {
-			g_warning ("not implemented yet");
+			g_dbus_proxy_call_sync (mpris, "Stop", NULL, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &error);
+			annoy (&error);
 		}
 	}
 
