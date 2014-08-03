@@ -28,6 +28,7 @@ import rb
 from gi.repository import Gio, GObject, GLib, Peas
 from gi.repository import RB
 
+import shlex
 import gettext
 gettext.install('rhythmbox', RB.locale_dir())
 
@@ -71,5 +72,5 @@ class SendToPlugin (GObject.Object, Peas.Activatable):
 			return
 
 		entries = page.get_entry_view().get_selected_entries()
-		cmdline = 'nautilus-sendto ' + " ".join(entry.get_playback_uri() for entry in entries)
+		cmdline = 'nautilus-sendto ' + " ".join(shlex.quote(entry.get_playback_uri()) for entry in entries)
 		GLib.spawn_command_line_async(cmdline)
