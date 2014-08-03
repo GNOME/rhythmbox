@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-12 15:22+0200\n"
-"PO-Revision-Date: 2014-07-12 15:23+0200\n"
+"POT-Creation-Date: 2014-08-03 20:21+0200\n"
+"PO-Revision-Date: 2014-08-03 20:22+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -139,9 +139,7 @@ msgstr "Odtwarzanie i organizowanie kolekcji muzycznej"
 
 #: ../data/rhythmbox.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
-msgstr ""
-"Dźwięk;Audio;Piosenka;Utwór;MP3;CD;Podcast;MTP;iPod;Playlista;Lista "
-"odtwarzania;Last.fm;UPnP;DLNA;Radio;"
+msgstr "Dźwięk;Audio;Piosenka;Utwór;MP3;CD;Podcast;MTP;iPod;Playlista;Lista;odtwarzania;Last.fm;UPnP;DLNA;Radio;"
 
 #: ../data/ui/app-menu.ui.h:1
 msgid "_Add Music"
@@ -380,9 +378,9 @@ msgstr "_Liczba odtworzeń"
 msgid "C_omment"
 msgstr "K_omentarz"
 
-#: ../data/ui/general-prefs.ui.h:16 ../widgets/rb-entry-view.c:1616
-msgid "BPM"
-msgstr "Uderzenia na minutę"
+#: ../data/ui/general-prefs.ui.h:16
+msgid "_BPM"
+msgstr "_Uderzenia na minutę"
 
 #: ../data/ui/general-prefs.ui.h:17
 msgid "_Rating"
@@ -832,11 +830,11 @@ msgid "Track _number:"
 msgstr "_Numer ścieżki:"
 
 #: ../data/ui/song-info.ui.h:8
-msgid "BPM:"
-msgstr "Uderzenia na minutę:"
+msgid "_BPM:"
+msgstr "_Uderzenia na minutę:"
 
 #: ../data/ui/song-info.ui.h:9
-msgid "_Comment:"
+msgid "Comm_ent:"
 msgstr "_Komentarz:"
 
 #: ../data/ui/song-info.ui.h:12 ../plugins/iradio/station-properties.ui.h:3
@@ -926,8 +924,8 @@ msgstr "%d %b %Y"
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:669
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/audiocd/rb-audiocd-source.c:526
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:588
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:592
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:587
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:591
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
@@ -942,7 +940,7 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1518
 #: ../plugins/notification/rb-notification-plugin.c:496
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:572 ../podcast/rb-podcast-manager.c:1891
+#: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1891
 #: ../podcast/rb-podcast-manager.c:1990
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
@@ -1241,31 +1239,31 @@ msgstr "Najczęściej odtwarzane ścieżki"
 msgid "Loved Tracks"
 msgstr "Ulubione ścieżki"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:497
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:496
 msgid "OK"
 msgstr "OK"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:500
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:499
 msgid "Logging in"
 msgstr "Logowanie"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:503
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:502
 msgid "Request failed"
 msgstr "Żądanie się nie powiodło"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:506
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:505
 msgid "Authentication error"
 msgstr "Błąd uwierzytelnienia"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:509
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:508
 msgid "Clock is not set correctly"
 msgstr "Zegar jest ustawiony niepoprawnie"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:512
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:511
 msgid "This version of Rhythmbox has been banned."
 msgstr "Ta wersja programu Rhythmbox została zablokowana przez serwis."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:515
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
 msgid "Track submission failed too many times"
 msgstr "Za dużo niepowodzeń podczas wysyłania informacji o ścieżkach"
 
@@ -2715,7 +2713,7 @@ msgstr "Wyślij ścieżki"
 msgid "Send selected tracks by email or instant message"
 msgstr "Wysyła wybrane ścieżki pocztą e-mail lub komunikator"
 
-#: ../plugins/sendto/sendto.py:50
+#: ../plugins/sendto/sendto.py:51
 msgid "Send to..."
 msgstr "Wyślij do..."
 
@@ -2760,30 +2758,30 @@ msgstr "Wizualizacja"
 msgid "Displays visualizations"
 msgstr "Wyświetla wizualizacje"
 
-#: ../podcast/rb-podcast-add-dialog.c:274
+#: ../podcast/rb-podcast-add-dialog.c:286
 msgid "Unable to load the feed. Check your network connection."
 msgstr "Nie można wczytać kanału. Proszę sprawdzić połączenie sieciowe."
 
-#: ../podcast/rb-podcast-add-dialog.c:395
+#: ../podcast/rb-podcast-add-dialog.c:408
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Nie można wyszukać podcastów. Proszę sprawdzić połączenie sieciowe."
 
-#: ../podcast/rb-podcast-add-dialog.c:707 ../sources/rb-library-source.c:142
+#: ../podcast/rb-podcast-add-dialog.c:720 ../sources/rb-library-source.c:142
 #: ../widgets/rb-entry-view.c:1441
 msgid "Title"
 msgstr "Tytuł"
 
-#: ../podcast/rb-podcast-add-dialog.c:718
+#: ../podcast/rb-podcast-add-dialog.c:731
 msgid "Author"
 msgstr "Autor"
 
-#: ../podcast/rb-podcast-add-dialog.c:723
-#: ../podcast/rb-podcast-add-dialog.c:726
+#: ../podcast/rb-podcast-add-dialog.c:736
+#: ../podcast/rb-podcast-add-dialog.c:739
 msgid "Episodes"
 msgstr "Odcinki"
 
-#: ../podcast/rb-podcast-add-dialog.c:754
-#: ../podcast/rb-podcast-add-dialog.c:765 ../podcast/rb-podcast-source.c:1397
+#: ../podcast/rb-podcast-add-dialog.c:767
+#: ../podcast/rb-podcast-add-dialog.c:778 ../podcast/rb-podcast-source.c:1397
 #: ../podcast/rb-podcast-source.c:1408
 msgid "Date"
 msgstr "Data"
@@ -3040,7 +3038,10 @@ msgstr "Wstrzymuje odtwarzanie, jeśli jest uruchomione"
 msgid "Toggle play/pause mode"
 msgstr "Przełącza tryby odtwarzania/wstrzymania"
 
-#. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
+#: ../remote/dbus/rb-client.c:101 ../shell/rb-shell.c:2273
+msgid "Stop playback"
+msgstr "Zatrzymuje odtwarzanie"
+
 #: ../remote/dbus/rb-client.c:103
 msgid "Play a specified URI, importing it if necessary"
 msgstr "Odtwarza podany adres URI, importując go, jeśli to konieczne"
@@ -3131,7 +3132,7 @@ msgstr "Ustawia ocenę bieżącego utworu"
 msgid "Not playing"
 msgstr "Nie odtwarza"
 
-#: ../remote/dbus/rb-client.c:959
+#: ../remote/dbus/rb-client.c:960
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Głośność odtwarzania wynosi %f.\n"
@@ -3470,10 +3471,6 @@ msgstr "Błąd podczas zapisywania informacji o utworze"
 #: ../shell/rb-shell.c:2270
 msgid "Pause playback"
 msgstr "Wstrzymuje odtwarzanie"
-
-#: ../shell/rb-shell.c:2273
-msgid "Stop playback"
-msgstr "Zatrzymuje odtwarzanie"
 
 #: ../shell/rb-shell.c:2281
 msgid "Start playback"
@@ -4028,6 +4025,10 @@ msgstr "Ostatnio widziany"
 msgid "Location"
 msgstr "Położenie"
 
+#: ../widgets/rb-entry-view.c:1616
+msgid "BPM"
+msgstr "Uderzenia na minutę"
+
 #: ../widgets/rb-entry-view.c:1879
 msgid "Now Playing"
 msgstr "Odtwarza"
@@ -4446,11 +4447,11 @@ msgstr "Czyści pole wyszukiwania"
 msgid "Select the search type"
 msgstr "Wybiera typ wyszukiwania"
 
-#: ../widgets/rb-search-entry.c:256
+#: ../widgets/rb-search-entry.c:252
 msgid "Search"
 msgstr "Wyszukaj"
 
-#: ../widgets/rb-search-entry.c:565
+#: ../widgets/rb-search-entry.c:550
 msgid "_Search:"
 msgstr "Wy_szukiwanie:"
 
