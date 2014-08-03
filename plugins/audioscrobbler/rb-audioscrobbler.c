@@ -54,7 +54,6 @@
 #include "rb-cut-and-paste-code.h"
 #include "rb-util.h"
 #include "rb-podcast-entry-types.h"
-#include "rb-marshal.h"
 #include "rb-audioscrobbler-entry.h"
 
 #define CLIENT_ID "rbx"
@@ -308,7 +307,7 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBAudioscrobblerClass, statistics_changed),
 			      NULL, NULL,
-			      rb_marshal_VOID__STRING_UINT_UINT_STRING,
+			      NULL,
 			      G_TYPE_NONE,
 		              4,
 			      G_TYPE_STRING,
