@@ -88,7 +88,7 @@ class MagnatuneAccount(object):
 			return ('none', None, None)
 
 	def update(self, username, password):
-		secret = '\n'.join((username, password)).encode("utf-8")
+		secret = '\n'.join((username, password))
 		if secret == self.secret:
 			print ("Account details not changed")
 			return
