@@ -1735,7 +1735,7 @@ rhythmdb_entry_insert (RhythmDB *db,
  * This may return NULL if entry creation fails. This can occur if there is
  * already an entry with the given uri.
  *
- * Returns: the newly created #RhythmDBEntry
+ * Returns: (transfer none): the newly created #RhythmDBEntry
  */
 RhythmDBEntry *
 rhythmdb_entry_new (RhythmDB *db,
