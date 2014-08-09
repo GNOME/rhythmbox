@@ -424,6 +424,7 @@ rb_browser_source_constructed (GObject *object)
 	source->priv->popup = G_MENU (gtk_builder_get_object (builder, "browser-popup"));
 	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()),
 					  source->priv->popup);
+	g_object_ref (source->priv->popup);
 	g_object_unref (builder);
 
 	g_object_unref (entry_type);

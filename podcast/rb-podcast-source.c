@@ -1365,6 +1365,8 @@ impl_constructed (GObject *object)
 	builder = rb_builder_load ("podcast-popups.ui", NULL);
 	source->priv->feed_popup = G_MENU_MODEL (gtk_builder_get_object (builder, "podcast-feed-popup"));
 	source->priv->episode_popup = G_MENU_MODEL (gtk_builder_get_object (builder, "podcast-episode-popup"));
+	g_object_ref (source->priv->feed_popup);
+	g_object_ref (source->priv->episode_popup);
 	g_object_unref (builder);
 
 	source->priv->default_search = rb_source_search_basic_new (RHYTHMDB_PROP_SEARCH_MATCH, NULL);

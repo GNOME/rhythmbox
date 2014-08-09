@@ -316,6 +316,7 @@ rb_playlist_source_constructed (GObject *object)
 	builder = rb_builder_load ("playlist-popup.ui", NULL);
 	source->priv->popup = G_MENU (gtk_builder_get_object (builder, "playlist-popup"));
 	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()), source->priv->popup);
+	g_object_ref (source->priv->popup);
 	g_object_unref (builder);
 
 	source->priv->entries = g_hash_table_new_full (rb_refstring_hash, rb_refstring_equal,
