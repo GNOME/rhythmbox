@@ -1,21 +1,48 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.18.3 -->
 <interface>
-  <requires lib="gtk+" version="2.16"/>
-  <!-- interface-naming-policy toplevel-contextual -->
+  <requires lib="gtk+" version="3.6"/>
+  <object class="GtkListStore" id="interval-values">
+    <columns>
+      <!-- column-name display -->
+      <column type="gchararray"/>
+      <!-- column-name setting -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Every hour</col>
+        <col id="1">hourly</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Every day</col>
+        <col id="1">daily</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Every week</col>
+        <col id="1">weekly</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Manually</col>
+        <col id="1">manual</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkVBox" id="podcast_vbox">
     <property name="visible">True</property>
-    <property name="border_width">12</property>
-    <property name="orientation">vertical</property>
-    <property name="spacing">18</property>
+    <property name="can_focus">False</property>
     <property name="valign">start</property>
+    <property name="border_width">12</property>
+    <property name="spacing">18</property>
     <child>
       <object class="GtkVBox" id="vbox9">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
+        <property name="can_focus">False</property>
         <property name="spacing">6</property>
         <child>
           <object class="GtkLabel" id="download_manager_label">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">Podcast Downloads</property>
             <attributes>
@@ -31,9 +58,11 @@
         <child>
           <object class="GtkHBox" id="hbox12">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <child>
               <object class="GtkLabel" id="label16">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -44,10 +73,13 @@
             <child>
               <object class="GtkHBox" id="hbox13">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkLabel" id="label17">
                     <property name="visible">True</property>
-                    <property name="xpad">8</property>
+                    <property name="can_focus">False</property>
+                    <property name="margin_left">8</property>
+                    <property name="margin_right">8</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -58,6 +90,7 @@
                 <child>
                   <object class="GtkTable" id="table1">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="n_rows">2</property>
                     <property name="n_columns">2</property>
                     <property name="column_spacing">12</property>
@@ -65,6 +98,7 @@
                     <child>
                       <object class="GtkLabel" id="label18">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">_Download location:</property>
                         <property name="use_underline">True</property>
@@ -73,12 +107,13 @@
                       </object>
                       <packing>
                         <property name="x_options">GTK_FILL</property>
-                        <property name="y_options"></property>
+                        <property name="y_options"/>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkLabel" id="label19">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">Check for _new episodes:</property>
                         <property name="use_underline">True</property>
@@ -88,12 +123,13 @@
                         <property name="top_attach">1</property>
                         <property name="bottom_attach">2</property>
                         <property name="x_options">GTK_FILL</property>
-                        <property name="y_options"></property>
+                        <property name="y_options"/>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkComboBox" id="update_interval">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="model">interval-values</property>
                         <child>
                           <object class="GtkCellRendererText" id="renderer1"/>
@@ -113,15 +149,18 @@
                     <child>
                       <object class="GtkVBox" id="vbox11">
                         <property name="visible">True</property>
-                        <property name="orientation">vertical</property>
+                        <property name="can_focus">False</property>
                         <child>
                           <object class="GtkFileChooserButton" id="location_chooser">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
                             <property name="action">select-folder</property>
                             <property name="show_hidden">True</property>
                             <property name="title" translatable="yes">Select Folder For Podcasts</property>
                           </object>
                           <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -135,16 +174,22 @@
                     </child>
                   </object>
                   <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>
@@ -155,31 +200,5 @@
         <property name="position">0</property>
       </packing>
     </child>
-  </object>
-  <object class="GtkListStore" id="interval-values">
-    <columns>
-      <!-- column-name display -->
-      <column type="gchararray"/>
-      <!-- column-name setting -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Every hour</col>
-        <col id="1" translatable="no">hourly</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Every day</col>
-        <col id="1" translatable="no">daily</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Every week</col>
-        <col id="1" translatable="no">weekly</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">Manually</col>
-        <col id="1" translatable="no">manual</col>
-      </row>
-    </data>
   </object>
 </interface>
