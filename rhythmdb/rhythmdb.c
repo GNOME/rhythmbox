@@ -4112,7 +4112,7 @@ rhythmdb_do_full_query_async_parsed (RhythmDB *db,
  * rhythmdb_do_full_query_async:
  * @db: the #RhythmDB
  * @results: a #RhythmDBQueryResults to feed results to
- * @Varargs: query parameters
+ * @...: query parameters
  *
  * Asynchronously runs a query specified in the function arguments
  * across the database, feeding matching entries to @results in chunks.
@@ -4186,7 +4186,7 @@ rhythmdb_do_full_query_parsed (RhythmDB *db,
  * rhythmdb_do_full_query:
  * @db: the #RhythmDB
  * @results: a #RhythmDBQueryResults instance to feed results to
- * @Varargs: query parameters
+ * @...: query parameters
  *
  * Synchronously evaluates @query, feeding results to @results in
  * chunks.  Does not return until the query is complete.

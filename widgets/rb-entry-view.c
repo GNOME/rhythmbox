@@ -1192,7 +1192,7 @@ rb_entry_view_set_sorting_type (RBEntryView *view,
  * rb_entry_view_get_sorting_order:
  * @view: a #RBEntryView
  * @column_name: (out callee-allocates) (allow-none) (transfer full): returns the sort column name
- * @sort_order: (out) (allow-none) returns the sort ordering as a #GtkSortType value
+ * @sort_order: (out) (allow-none): returns the sort ordering as a #GtkSortType value
  *
  * Retrieves the sort settings for the view.
  */

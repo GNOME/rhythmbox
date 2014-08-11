@@ -3131,7 +3131,7 @@ rb_shell_activate_source_by_uri (RBShell *shell,
  * rb_shell_get_song_properties:
  * @shell: the #RBShell
  * @uri: the URI to query
- * @properties: (out callee-allocates) (element-type utf8 GObject.Value) returns the properties of the specified URI
+ * @properties: (out callee-allocates) (element-type utf8 GObject.Value): returns the properties of the specified URI
  * @error: returns error information
  *
  * Gathers and returns all metadata (including extra metadata such as album

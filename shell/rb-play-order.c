@@ -395,7 +395,7 @@ rb_play_order_set_playing_entry (RBPlayOrder *porder,
  *
  * Returns the current playing entry in the play order.
  *
- * Returns: (transfer full) playing entry
+ * Returns: (transfer full): playing entry
  */
 RhythmDBEntry *
 rb_play_order_get_playing_entry (RBPlayOrder *porder)

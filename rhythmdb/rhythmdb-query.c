@@ -169,7 +169,7 @@ rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 /**
  * rhythmdb_query_parse:
  * @db: a #RhythmDB instance
- * @Varargs: query criteria to parse
+ * @...: query criteria to parse
  *
  * Creates a query from a list of criteria.
  *
@@ -228,7 +228,7 @@ rhythmdb_query_parse (RhythmDB *db, ...)
  * rhythmdb_query_append:
  * @db: a #RhythmDB instance
  * @query: a query.
- * @Varargs: query criteria to append
+ * @...: query criteria to append
  *
  * Appends new criteria to the query @query.
  *

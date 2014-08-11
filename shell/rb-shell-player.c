@@ -173,13 +173,13 @@ static void rb_shell_player_volume_changed_cb (RBPlayer *player,
 
 
 typedef struct {
-	/** Value of the state/play-order setting */
+	/* Value of the state/play-order setting */
 	char *name;
-	/** Contents of the play order dropdown; should be gettext()ed before use. */
+	/* Contents of the play order dropdown; should be gettext()ed before use. */
 	char *description;
-	/** the play order's gtype id */
+	/* the play order's gtype id */
 	GType order_type;
-	/** TRUE if the play order should appear in the dropdown */
+	/* TRUE if the play order should appear in the dropdown */
 	gboolean is_in_dropdown;
 } RBPlayOrderDescription;
 

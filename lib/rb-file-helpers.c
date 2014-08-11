@@ -369,7 +369,7 @@ rb_uri_resolve_symlink (const char *uri, GError **error)
  *
  * Attempts to resolve symlinks leading to @file and return a canonical location.
  *
- * Return value: a #GFile representing the canonical location, or NULL on error
+ * Return value: (transfer full): a #GFile representing the canonical location, or NULL on error
  */
 GFile *
 rb_file_resolve_symlink (GFile *file, GError **error)
@@ -1535,7 +1535,7 @@ rb_sanitize_path_for_msdos_filesystem (char *path)
 /**
  * rb_sanitize_uri_for_filesystem:
  * @uri: a URI to sanitize
- * @filesystem: (allow none): a specific filesystem to sanitize for
+ * @filesystem: (allow-none): a specific filesystem to sanitize for
  *
  * Removes characters from @uri that are not allowed by the filesystem
  * on which it would be stored, or a specific type of filesystem if specified.

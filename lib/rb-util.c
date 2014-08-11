@@ -811,7 +811,7 @@ rb_string_list_copy (GList *list)
 
 /**
  * rb_string_list_contains: (skip)
- * @list: (element-type utf8) list to check
+ * @list: (element-type utf8): list to check
  * @s: string to check for
  *
  * Checks if @list contains the string @s.
@@ -1118,7 +1118,7 @@ rb_signal_accumulator_boolean_or (GSignalInvocationHint *hint,
  * rb_value_array_append_data: (skip)
  * @array: #GArray to append to
  * @type: #GType of the value being appended
- * @Varargs: value to append
+ * @...: value to append
  *
  * Appends a single value to @array, collecting it from @Varargs.
  */
