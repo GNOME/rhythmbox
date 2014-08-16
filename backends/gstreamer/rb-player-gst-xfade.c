@@ -273,6 +273,9 @@ struct _RBPlayerGstXFadePrivate
 	guint stream_reap_id;
 	guint stop_sink_id;
 	guint bus_watch_id;
+
+	guint bus_idle_id;
+	GList *idle_messages;
 };
 
 
@@ -785,6 +788,14 @@ rb_player_gst_xfade_dispose (GObject *object)
 
 	g_rec_mutex_lock (&player->priv->sink_lock);
 	stop_sink (player);
+
+	if (player->priv->bus_idle_id != 0) {
+		g_source_remove (player->priv->bus_idle_id);
+		player->priv->bus_idle_id = 0;
+
+		rb_list_destroy_free (player->priv->idle_messages, (GDestroyNotify) gst_mini_object_unref);
+		player->priv->idle_messages = NULL;
+	}
 	g_rec_mutex_unlock (&player->priv->sink_lock);
 
 	if (player->priv->pipeline != NULL) {
@@ -1967,6 +1978,26 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 	return TRUE;
 }
 
+static gboolean
+bus_idle_cb (RBPlayerGstXFade *player)
+{
+	GList *messages, *l;
+	GstBus *bus;
+
+	g_rec_mutex_lock (&player->priv->sink_lock);
+	messages = player->priv->idle_messages;
+	player->priv->idle_messages = NULL;
+	player->priv->bus_idle_id = 0;
+	g_rec_mutex_unlock (&player->priv->sink_lock);
+
+	bus = gst_element_get_bus (GST_ELEMENT (player->priv->pipeline));
+	for (l = messages; l != NULL; l = l->next)
+		rb_player_gst_xfade_bus_cb (bus, l->data, player);
+
+	rb_list_destroy_free (messages, (GDestroyNotify) gst_mini_object_unref);
+	return FALSE;
+}
+
 static void
 stream_source_setup_cb (GstElement *decoder, GstElement *source, RBXFadeStream *stream)
 {
@@ -2570,6 +2601,7 @@ preroll_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 {
 	GstStateChangeReturn state;
 	GstMessage *message;
+	GList *messages;
 	GstBus *bus;
 
 	stream->block_probe_id =
@@ -2586,15 +2618,21 @@ preroll_stream (RBPlayerGstXFade *player, RBXFadeStream *stream)
 	case GST_STATE_CHANGE_FAILURE:
 		rb_debug ("preroll for stream %s failed (state change failed)", stream->uri);
 
-		/* process bus messages in case we got a redirect for this stream */
+		/* process messages in an idle handler in case we got a redirect */
 		bus = gst_element_get_bus (GST_ELEMENT (player->priv->pipeline));
+		messages = NULL;
 		message = gst_bus_pop (bus);
 		while (message != NULL) {
-			rb_player_gst_xfade_bus_cb (bus, message, player);
-			gst_message_unref (message);
+			messages = g_list_prepend (messages, message);
 			message = gst_bus_pop (bus);
 		}
 		g_object_unref (bus);
+
+		g_rec_mutex_lock (&player->priv->sink_lock);
+		player->priv->idle_messages = g_list_concat (player->priv->idle_messages, g_list_reverse (messages));
+		if (player->priv->bus_idle_id == 0)
+			player->priv->bus_idle_id = g_idle_add ((GSourceFunc) bus_idle_cb, player);
+		g_rec_mutex_unlock (&player->priv->sink_lock);
 		break;
 
 	case GST_STATE_CHANGE_NO_PREROLL:
@@ -2961,8 +2999,6 @@ static gboolean
 start_sink (RBPlayerGstXFade *player, GError **error)
 {
 	GList *messages = NULL;
-	GList *t;
-	GstBus *bus;
 	gboolean ret;
 
 	g_rec_mutex_lock (&player->priv->sink_lock);
@@ -2975,6 +3011,10 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 		/* prevent messages from being processed by the main thread while we're starting the sink */
 		g_source_remove (player->priv->bus_watch_id);
 		ret = start_sink_locked (player, &messages, error);
+
+		player->priv->idle_messages = g_list_concat (player->priv->idle_messages, messages);
+		if (player->priv->bus_idle_id == 0)
+			player->priv->bus_idle_id = g_idle_add ((GSourceFunc) bus_idle_cb, player);
 		add_bus_watch (player);
 		break;
 
@@ -2987,13 +3027,6 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 	}
 	g_rec_mutex_unlock (&player->priv->sink_lock);
 
-	bus = gst_element_get_bus (GST_ELEMENT (player->priv->pipeline));
-	for (t = messages; t != NULL; t = t->next) {
-		rb_player_gst_xfade_bus_cb (bus, t->data, player);
-	}
-	gst_object_unref (bus);
-
-	rb_list_destroy_free (messages, (GDestroyNotify) gst_mini_object_unref);
 	return ret;
 }
 
