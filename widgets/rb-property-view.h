@@ -73,6 +73,8 @@ RBPropertyView *rb_property_view_new			(RhythmDB *db, guint propid,
 							 const char *title);
 void		rb_property_view_append_column_custom	(RBPropertyView *view,
 							GtkTreeViewColumn *column);
+void		rb_property_view_set_column_visible	(RBPropertyView *view,
+							 gboolean visible);
 
 void		rb_property_view_set_selection_mode	(RBPropertyView *view,
 							 GtkSelectionMode mode);
