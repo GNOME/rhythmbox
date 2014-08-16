@@ -1485,6 +1485,7 @@ impl_constructed (GObject *object)
 	source->priv->feeds = rb_property_view_new (source->priv->db,
 						    RHYTHMDB_PROP_SUBTITLE,
 						    _("Feed"));
+	rb_property_view_set_column_visible (RB_PROPERTY_VIEW (source->priv->feeds), FALSE);
 	rb_property_view_set_selection_mode (RB_PROPERTY_VIEW (source->priv->feeds),
 					     GTK_SELECTION_MULTIPLE);
 
