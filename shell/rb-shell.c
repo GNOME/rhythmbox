@@ -2648,20 +2648,20 @@ rb_shell_jump_to_current (RBShell *shell, gboolean select_page)
 	RhythmDBEntry *entry;
 	RBEntryView *songs;
 
-	source = rb_shell_player_get_playing_source (shell->priv->player_shell);
+	if (g_settings_get_boolean (shell->priv->settings, "queue-as-sidebar")) {
+		source = rb_shell_player_get_active_source (shell->priv->player_shell);
+	} else {
+		source = rb_shell_player_get_playing_source (shell->priv->player_shell);
+	}
+
 	if (source == NULL)
 		return;
 
-	if (source == RB_SOURCE (shell->priv->queue_source) &&
-	    g_settings_get_boolean (shell->priv->settings, "queue-as-sidebar")) {
-		gtk_widget_grab_focus (shell->priv->queue_sidebar);
-		songs = RB_ENTRY_VIEW (shell->priv->queue_sidebar);
-	} else {
-		if (select_page) {
-			rb_shell_select_page (shell, RB_DISPLAY_PAGE (source));
-		}
-		songs = rb_source_get_entry_view (source);
+
+	if (select_page) {
+		rb_shell_select_page (shell, RB_DISPLAY_PAGE (source));
 	}
+	songs = rb_source_get_entry_view (source);
 
 	if (songs != NULL) {
 		entry = rb_shell_player_get_playing_entry (shell->priv->player_shell);
