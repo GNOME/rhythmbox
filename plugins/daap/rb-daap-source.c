@@ -487,8 +487,8 @@ connection_auth_cb (DMAPConnection *connection,
                     gboolean        retrying,
 		    RBDAAPSource   *source)
 {
-	gchar *password = NULL;
 #ifdef WITH_LIBSECRET
+	gchar *password = NULL;
 	GError *error = NULL;
 
 	if (!source->priv->tried_password) {
