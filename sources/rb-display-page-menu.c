@@ -562,5 +562,5 @@ rb_display_page_menu_get_page (RBDisplayPageModel *model, GVariant *parameters)
 		return NULL;
 	}
 
-	return RB_DISPLAY_PAGE (ptr);
+	return g_object_ref (RB_DISPLAY_PAGE (ptr));
 }
