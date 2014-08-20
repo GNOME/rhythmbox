@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-07-12 09:44+0000\n"
-"PO-Revision-Date: 2014-07-13 07:39+0200\n"
+"POT-Creation-Date: 2014-08-03 09:12+0000\n"
+"PO-Revision-Date: 2014-08-20 05:35+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -373,9 +373,9 @@ msgstr "_Počet přehrání"
 msgid "C_omment"
 msgstr "K_omentář"
 
-#: ../data/ui/general-prefs.ui.h:16 ../widgets/rb-entry-view.c:1616
-msgid "BPM"
-msgstr "Tempo"
+#: ../data/ui/general-prefs.ui.h:16
+msgid "_BPM"
+msgstr "_Tempo"
 
 #: ../data/ui/general-prefs.ui.h:17
 msgid "_Rating"
@@ -825,12 +825,12 @@ msgid "Track _number:"
 msgstr "Číslo _stopy:"
 
 #: ../data/ui/song-info.ui.h:8
-msgid "BPM:"
-msgstr "Tempo:"
+msgid "_BPM:"
+msgstr "_Tempo:"
 
 #: ../data/ui/song-info.ui.h:9
-msgid "_Comment:"
-msgstr "_Komentář:"
+msgid "Comm_ent:"
+msgstr "Kom_entář:"
 
 #: ../data/ui/song-info.ui.h:12 ../plugins/iradio/station-properties.ui.h:3
 msgid "Error message"
@@ -919,8 +919,8 @@ msgstr "%e. %b %Y"
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:669
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/audiocd/rb-audiocd-source.c:526
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:588
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:592
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:587
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:591
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
@@ -935,7 +935,7 @@ msgstr "%e. %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1518
 #: ../plugins/notification/rb-notification-plugin.c:496
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:572 ../podcast/rb-podcast-manager.c:1891
+#: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1891
 #: ../podcast/rb-podcast-manager.c:1990
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
@@ -1231,31 +1231,31 @@ msgstr "Nejlepší stopy:"
 msgid "Loved Tracks"
 msgstr "Oblíbené stopy"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:497
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:496
 msgid "OK"
 msgstr "Budiž"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:500
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:499
 msgid "Logging in"
 msgstr "Probíhá přihlášení"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:503
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:502
 msgid "Request failed"
 msgstr "Požadavek selhal"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:506
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:505
 msgid "Authentication error"
 msgstr "Chyba ověření identity"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:509
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:508
 msgid "Clock is not set correctly"
 msgstr "Hodiny nejsou správně nastavené"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:512
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:511
 msgid "This version of Rhythmbox has been banned."
 msgstr "Tato verze aplikace Rhythmbox byla zakázána."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:515
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
 msgid "Track submission failed too many times"
 msgstr "Odesílání skladeb selhalo příliš mnohokrát"
 
@@ -2744,30 +2744,30 @@ msgstr "Vizualizace"
 msgid "Displays visualizations"
 msgstr "Zobrazuje vizualizace"
 
-#: ../podcast/rb-podcast-add-dialog.c:274
+#: ../podcast/rb-podcast-add-dialog.c:286
 msgid "Unable to load the feed. Check your network connection."
 msgstr "Nelze načíst kanál. Zkontrolujte své připojení k Internetu."
 
-#: ../podcast/rb-podcast-add-dialog.c:395
+#: ../podcast/rb-podcast-add-dialog.c:408
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Nelze najít podcast. Zkontrolujte své připojení k internetu."
 
-#: ../podcast/rb-podcast-add-dialog.c:707 ../sources/rb-library-source.c:142
+#: ../podcast/rb-podcast-add-dialog.c:720 ../sources/rb-library-source.c:142
 #: ../widgets/rb-entry-view.c:1441
 msgid "Title"
 msgstr "Název"
 
-#: ../podcast/rb-podcast-add-dialog.c:718
+#: ../podcast/rb-podcast-add-dialog.c:731
 msgid "Author"
 msgstr "Autor"
 
-#: ../podcast/rb-podcast-add-dialog.c:723
-#: ../podcast/rb-podcast-add-dialog.c:726
+#: ../podcast/rb-podcast-add-dialog.c:736
+#: ../podcast/rb-podcast-add-dialog.c:739
 msgid "Episodes"
 msgstr "Díly"
 
-#: ../podcast/rb-podcast-add-dialog.c:754
-#: ../podcast/rb-podcast-add-dialog.c:765 ../podcast/rb-podcast-source.c:1397
+#: ../podcast/rb-podcast-add-dialog.c:767
+#: ../podcast/rb-podcast-add-dialog.c:778 ../podcast/rb-podcast-source.c:1397
 #: ../podcast/rb-podcast-source.c:1408
 msgid "Date"
 msgstr "Datum"
@@ -3024,7 +3024,10 @@ msgstr "Pozastavit přehrávání, pokud hraje"
 msgid "Toggle play/pause mode"
 msgstr "Přepnout mezi přehráváním a pozastavením"
 
-#. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
+#: ../remote/dbus/rb-client.c:101 ../shell/rb-shell.c:2273
+msgid "Stop playback"
+msgstr "Zastavit přehrávání"
+
 #: ../remote/dbus/rb-client.c:103
 msgid "Play a specified URI, importing it if necessary"
 msgstr "Přehrát zvolené URI, s případným importem, pokud je třeba"
@@ -3115,7 +3118,7 @@ msgstr "Nastavit hodnocení současné skladby"
 msgid "Not playing"
 msgstr "Nepřehrává se"
 
-#: ../remote/dbus/rb-client.c:959
+#: ../remote/dbus/rb-client.c:960
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Hlasitost přehrávání je %f.\n"
@@ -3452,10 +3455,6 @@ msgstr "Chyba při ukládání informací o skladbě"
 #: ../shell/rb-shell.c:2270
 msgid "Pause playback"
 msgstr "Pozastavit přehrávání"
-
-#: ../shell/rb-shell.c:2273
-msgid "Stop playback"
-msgstr "Zastavit přehrávání"
 
 #: ../shell/rb-shell.c:2281
 msgid "Start playback"
@@ -4007,6 +4006,10 @@ msgstr "Naposledy viděno"
 msgid "Location"
 msgstr "Umístění"
 
+#: ../widgets/rb-entry-view.c:1616
+msgid "BPM"
+msgstr "Tempo"
+
 #: ../widgets/rb-entry-view.c:1879
 msgid "Now Playing"
 msgstr "Právě se přehrává"
@@ -4425,11 +4428,11 @@ msgstr "Vymazat hledaný text"
 msgid "Select the search type"
 msgstr "Vybrat typ hledání"
 
-#: ../widgets/rb-search-entry.c:256
+#: ../widgets/rb-search-entry.c:252
 msgid "Search"
 msgstr "Hledat"
 
-#: ../widgets/rb-search-entry.c:565
+#: ../widgets/rb-search-entry.c:550
 msgid "_Search:"
 msgstr "_Hledat:"
 
