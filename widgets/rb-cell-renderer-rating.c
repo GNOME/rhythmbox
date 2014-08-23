@@ -232,22 +232,25 @@ rb_cell_renderer_rating_get_size (GtkCellRenderer *cell,
 {
 	gint icon_width;
 	gint xpad, ypad;
+	int h;
 	RBCellRendererRating *cellrating = (RBCellRendererRating *) cell;
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_width, NULL);
 	gtk_cell_renderer_get_padding (GTK_CELL_RENDERER (cellrating), &xpad, &ypad);
 
+	h = ypad * 2 + icon_width;
+
 	if (x_offset)
 		*x_offset = 0;
 
 	if (y_offset)
-		*y_offset = 0;
+		*y_offset = ((cell_area->height + 1) - h) / 2;
 
 	if (width)
 		*width = xpad * 2 + icon_width * RB_RATING_MAX_SCORE;
 
 	if (height)
-		*height = ypad * 2 + icon_width;
+		*height = h;
 }
 
 static void
