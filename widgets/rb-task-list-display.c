@@ -118,7 +118,7 @@ task_list_changed_cb (RBListModel *model, int position, int removed, int added, 
 
 		w = gtk_progress_bar_new ();
 		g_object_bind_property (task, "task-progress", w, "fraction", G_BINDING_SYNC_CREATE);
-		g_object_set (w, "hexpand", TRUE, NULL);
+		g_object_set (w, "hexpand", TRUE, "valign", GTK_ALIGN_CENTER, NULL);
 		gtk_grid_attach (GTK_GRID (tw), w, 2, 0, 1, 1);
 
 		/* pause/resume button? */
