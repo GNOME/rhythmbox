@@ -401,9 +401,6 @@ impl_constructed (GObject *object)
 
 	image = RB_FADING_IMAGE (object);
 
-	gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (image)),
-				     GTK_STYLE_CLASS_SPINNER);
-
 	if (image->priv->fallback_icon != NULL) {
 		GError *error = NULL;
 		image->priv->fallback =
