@@ -742,7 +742,7 @@ impl_constructed (GObject *object)
 	gtk_tree_view_append_column (GTK_TREE_VIEW (dialog->priv->feed_view), column);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "podcast-add-dialog"));
-	gtk_box_pack_start (GTK_BOX (dialog), widget, TRUE, TRUE, 12);
+	gtk_box_pack_start (GTK_BOX (dialog), widget, TRUE, TRUE, 0);
 
 	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (dialog->priv->feed_view), TRUE);
 
