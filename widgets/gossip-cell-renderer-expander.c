@@ -284,7 +284,11 @@ gossip_cell_renderer_expander_render (GtkCellRenderer      *cell,
 	if (priv->expander_style == GTK_EXPANDER_COLLAPSED) {
 		state |= GTK_STATE_FLAG_NORMAL;
 	} else {
+#if GTK_CHECK_VERSION(3,13,7)
+		state |= GTK_STATE_FLAG_CHECKED;
+#else
 		state |= GTK_STATE_FLAG_ACTIVE;
+#endif
 	}
 
 	gtk_style_context_set_state (style_context, state);
