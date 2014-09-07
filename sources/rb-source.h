@@ -91,45 +91,45 @@ struct _RBSourceClass
 
 	/* methods */
 
-	RBEntryView *	(*impl_get_entry_view)	(RBSource *source);
-	GList *		(*impl_get_property_views)	(RBSource *source);
+	RBEntryView *	(*get_entry_view)	(RBSource *source);
+	GList *		(*get_property_views)	(RBSource *source);
 
-	gboolean	(*impl_can_rename)	(RBSource *source);
+	gboolean	(*can_rename)		(RBSource *source);
 
-	void		(*impl_search)		(RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
+	void		(*search)		(RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
 
-	gboolean	(*impl_can_cut)		(RBSource *source);
-	gboolean	(*impl_can_delete)	(RBSource *source);
-	gboolean	(*impl_can_move_to_trash) (RBSource *source);
-	gboolean	(*impl_can_copy)	(RBSource *source);
-	gboolean	(*impl_can_paste)	(RBSource *source);
-	gboolean	(*impl_can_add_to_queue)(RBSource *source);
+	gboolean	(*can_cut)		(RBSource *source);
+	gboolean	(*can_delete)		(RBSource *source);
+	gboolean	(*can_move_to_trash) 	(RBSource *source);
+	gboolean	(*can_copy)		(RBSource *source);
+	gboolean	(*can_paste)		(RBSource *source);
+	gboolean	(*can_add_to_queue)	(RBSource *source);
 
-	GList *		(*impl_cut)		(RBSource *source);
-	GList *		(*impl_copy)		(RBSource *source);
-	RBTrackTransferBatch *(*impl_paste)	(RBSource *source, GList *entries);
-	void		(*impl_delete)		(RBSource *source);
-	void		(*impl_add_to_queue)	(RBSource *source, RBSource *queue);
-	void		(*impl_move_to_trash)	(RBSource *source);
+	GList *		(*cut)			(RBSource *source);
+	GList *		(*copy)			(RBSource *source);
+	RBTrackTransferBatch *(*paste)		(RBSource *source, GList *entries);
+	void		(*delete_selected)	(RBSource *source);
+	void		(*add_to_queue)		(RBSource *source, RBSource *queue);
+	void		(*move_to_trash)	(RBSource *source);
 
-	void		(*impl_song_properties)	(RBSource *source);
+	void		(*song_properties)	(RBSource *source);
 
-	gboolean	(*impl_try_playlist)	(RBSource *source);
-	guint		(*impl_want_uri)	(RBSource *source, const char *uri);
-	void		(*impl_add_uri)		(RBSource *source,
+	gboolean	(*try_playlist)		(RBSource *source);
+	guint		(*want_uri)		(RBSource *source, const char *uri);
+	void		(*add_uri)		(RBSource *source,
 						 const char *uri,
 						 const char *title,
 						 const char *genre,
 						 RBSourceAddCallback callback,
 						 gpointer data,
 						 GDestroyNotify destroy_data);
-	gboolean	(*impl_uri_is_source)	(RBSource *source, const char *uri);
+	gboolean	(*uri_is_source)	(RBSource *source, const char *uri);
 
-	gboolean	(*impl_can_pause)	(RBSource *source);
-	RBSourceEOFType	(*impl_handle_eos)	(RBSource *source);
-	void		(*impl_get_playback_status) (RBSource *source, char **text, float *progress);
+	gboolean	(*can_pause)		(RBSource *source);
+	RBSourceEOFType	(*handle_eos)		(RBSource *source);
+	void		(*get_playback_status) 	(RBSource *source, char **text, float *progress);
 
-	char *		(*impl_get_delete_label) (RBSource *source);
+	char *		(*get_delete_label) 	(RBSource *source);
 };
 
 GType		rb_source_get_type		(void);
@@ -162,8 +162,8 @@ gboolean	rb_source_can_show_properties	(RBSource *source);
 
 GList *		rb_source_cut			(RBSource *source);
 GList *		rb_source_copy			(RBSource *source);
-RBTrackTransferBatch *rb_source_paste			(RBSource *source, GList *entries);
-void		rb_source_delete		(RBSource *source);
+RBTrackTransferBatch *rb_source_paste		(RBSource *source, GList *entries);
+void		rb_source_delete_selected	(RBSource *source);
 void		rb_source_add_to_queue		(RBSource *source, RBSource *queue);
 void		rb_source_move_to_trash		(RBSource *source);
 

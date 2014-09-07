@@ -171,21 +171,21 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	object_class->set_property = rb_playlist_source_set_property;
 	object_class->get_property = rb_playlist_source_get_property;
 
-	source_class->impl_get_entry_view = impl_get_entry_view;
-	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_get_delete_label = impl_get_delete_label;
+	source_class->get_entry_view = impl_get_entry_view;
+	source_class->can_rename = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_cut = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_copy = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_add_to_queue = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
+	source_class->song_properties = impl_song_properties;
+	source_class->get_delete_label = impl_get_delete_label;
 
 	page_class->can_remove = impl_can_remove;
 	page_class->remove = impl_remove;
 
-	klass->impl_show_entry_view_popup = default_show_entry_view_popup;
-	klass->impl_mark_dirty = default_mark_dirty;
+	klass->show_entry_view_popup = default_show_entry_view_popup;
+	klass->mark_dirty = default_mark_dirty;
 
 	/**
 	 * RBPlaylistSource:db:
@@ -515,8 +515,8 @@ rb_playlist_source_songs_show_popup_cb (RBEntryView *view,
 					RBPlaylistSource *source)
 {
 	RBPlaylistSourceClass *klass = RB_PLAYLIST_SOURCE_GET_CLASS (source);
-	if (klass->impl_show_entry_view_popup)
-		klass->impl_show_entry_view_popup (source, view, over_entry);
+	if (klass->show_entry_view_popup)
+		klass->show_entry_view_popup (source, view, over_entry);
 }
 
 static RBEntryView *
@@ -922,7 +922,7 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source,
 	}
 
 
-	klass->impl_save_contents_to_xml (source, node);
+	klass->save_contents_to_xml (source, node);
 
 	source->priv->dirty = FALSE;
 }
@@ -1111,7 +1111,7 @@ rb_playlist_source_mark_dirty (RBPlaylistSource *source)
 	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (source));
 
 	klass = RB_PLAYLIST_SOURCE_GET_CLASS (source);
-	klass->impl_mark_dirty (source);
+	klass->mark_dirty (source);
 	g_object_notify (G_OBJECT (source), "dirty");
 }
 

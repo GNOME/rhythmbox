@@ -120,21 +120,21 @@ rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass)
 	page_class->receive_drag = impl_receive_drag;
 	page_class->delete_thyself = impl_delete_thyself;
 
-	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_get_delete_label = impl_get_delete_label;
-	source_class->impl_delete = NULL;
+	source_class->can_cut = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_copy = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_paste = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_false_function;
+	source_class->get_delete_label = impl_get_delete_label;
+	source_class->delete_selected = NULL;
 
 	browser_source_class->has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 
-	klass->impl_get_entries = NULL;
-	klass->impl_get_capacity = NULL;
-	klass->impl_get_free_space = NULL;
-	klass->impl_add_playlist = NULL;
-	klass->impl_remove_playlists = NULL;
-	klass->impl_show_properties = NULL;
+	klass->get_entries = NULL;
+	klass->get_capacity = NULL;
+	klass->get_free_space = NULL;
+	klass->add_playlist = NULL;
+	klass->remove_playlists = NULL;
+	klass->show_properties = NULL;
 
 	g_object_class_install_property (object_class,
 					 PROP_DEVICE_SERIAL,
@@ -311,7 +311,7 @@ rb_media_player_source_get_capacity (RBMediaPlayerSource *source)
 {
 	RBMediaPlayerSourceClass *klass = RB_MEDIA_PLAYER_SOURCE_GET_CLASS (source);
 
-	return klass->impl_get_capacity (source);
+	return klass->get_capacity (source);
 }
 
 guint64
@@ -319,7 +319,7 @@ rb_media_player_source_get_free_space (RBMediaPlayerSource *source)
 {
 	RBMediaPlayerSourceClass *klass = RB_MEDIA_PLAYER_SOURCE_GET_CLASS (source);
 
-	return klass->impl_get_free_space (source);
+	return klass->get_free_space (source);
 }
 
 /**
@@ -334,7 +334,7 @@ rb_media_player_source_get_entries (RBMediaPlayerSource *source,
 				    GHashTable *entries)
 {
 	RBMediaPlayerSourceClass *klass = RB_MEDIA_PLAYER_SOURCE_GET_CLASS (source);
-	klass->impl_get_entries (source, category, entries);
+	klass->get_entries (source, category, entries);
 }
 
 /**
@@ -354,7 +354,7 @@ rb_media_player_source_delete_entries	(RBMediaPlayerSource *source,
 {
 	RBMediaPlayerSourceClass *klass = RB_MEDIA_PLAYER_SOURCE_GET_CLASS (source);
 
-	klass->impl_delete_entries (source, entries, callback, user_data, destroy_data);
+	klass->delete_entries (source, entries, callback, user_data, destroy_data);
 }
 
 static void
@@ -441,8 +441,8 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	 * .. battery levels?) and add more tabs to the notebook to display 'advanced' stuff.
 	 */
 
-	if (klass->impl_show_properties) {
-		klass->impl_show_properties (source,
+	if (klass->show_properties) {
+		klass->show_properties (source,
 					     GTK_WIDGET (gtk_builder_get_object (builder, "device-info-box")),
 					     GTK_WIDGET (gtk_builder_get_object (builder, "media-player-notebook")));
 	}
@@ -473,7 +473,7 @@ sync_playlists (RBMediaPlayerSource *source)
 	GList *all_playlists;
 	GList *l;
 
-	if (klass->impl_add_playlist == NULL || klass->impl_remove_playlists == NULL) {
+	if (klass->add_playlist == NULL || klass->remove_playlists == NULL) {
 		rb_debug ("source class doesn't support playlists");
 		return;
 	}
@@ -485,7 +485,7 @@ sync_playlists (RBMediaPlayerSource *source)
 	rb_media_player_source_get_entries (source, SYNC_CATEGORY_MUSIC, device);
 
 	/* remove all playlists from the device, then add the synced playlists. */
-	klass->impl_remove_playlists (source);
+	klass->remove_playlists (source);
 
 	/* get all local playlists */
 	g_object_get (source, "shell", &shell, NULL);
@@ -542,7 +542,7 @@ sync_playlists (RBMediaPlayerSource *source)
 
 		/* transfer the playlist to the device */
 		rb_debug ("syncing playlist %s", name);
-		klass->impl_add_playlist (source, name, tracks);
+		klass->add_playlist (source, name, tracks);
 
 		g_free (name);
 		g_list_free (tracks);

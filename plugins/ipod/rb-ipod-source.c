@@ -67,7 +67,7 @@ static void rb_ipod_source_constructed (GObject *object);
 static void rb_ipod_source_dispose (GObject *object);
 static void rb_ipod_source_finalize (GObject *object);
 
-static void impl_delete (RBSource *asource);
+static void impl_delete_selected (RBSource *asource);
 static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
 static void rb_ipod_load_songs (RBiPodSource *source);
 
@@ -186,22 +186,22 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 	page_class->delete_thyself = impl_delete_thyself;
 	page_class->selected = impl_selected;
 
-	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_delete = impl_delete;
+	source_class->can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->delete_selected = impl_delete_selected;
 
-	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_paste = impl_paste;
-	source_class->impl_want_uri = rb_device_source_want_uri;
-	source_class->impl_uri_is_source = rb_device_source_uri_is_source;
+	source_class->can_paste = (RBSourceFeatureFunc) rb_true_function;
+	source_class->paste = impl_paste;
+	source_class->want_uri = rb_device_source_want_uri;
+	source_class->uri_is_source = rb_device_source_uri_is_source;
 
-	mps_class->impl_get_entries = impl_get_entries;
-	mps_class->impl_get_capacity = impl_get_capacity;
-	mps_class->impl_get_free_space = impl_get_free_space;
-	mps_class->impl_delete_entries = impl_delete_entries;
-	mps_class->impl_add_playlist = impl_add_playlist;
-	mps_class->impl_remove_playlists = impl_remove_playlists;
-	mps_class->impl_show_properties = impl_show_properties;
+	mps_class->get_entries = impl_get_entries;
+	mps_class->get_capacity = impl_get_capacity;
+	mps_class->get_free_space = impl_get_free_space;
+	mps_class->delete_entries = impl_delete_entries;
+	mps_class->add_playlist = impl_add_playlist;
+	mps_class->remove_playlists = impl_remove_playlists;
+	mps_class->show_properties = impl_show_properties;
 
 	g_object_class_install_property (object_class,
 					 PROP_DEVICE_INFO,
@@ -1378,7 +1378,7 @@ impl_paste (RBSource *source, GList *entries)
 }
 
 static void
-impl_delete (RBSource *source)
+impl_delete_selected (RBSource *source)
 {
 	GList *sel;
 	RBEntryView *songs;

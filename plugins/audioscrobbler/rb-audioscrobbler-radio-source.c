@@ -304,14 +304,14 @@ rb_audioscrobbler_radio_source_class_init (RBAudioscrobblerRadioSourceClass *kla
 	page_class->remove = impl_remove;
 
 	source_class = RB_SOURCE_CLASS (klass);
-	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_get_entry_view = impl_get_entry_view;
-	source_class->impl_handle_eos = impl_handle_eos;
-	source_class->impl_get_playback_status = impl_get_playback_status;
+	source_class->can_rename = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_copy = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_pause = (RBSourceFeatureFunc) rb_false_function;
+	source_class->try_playlist = (RBSourceFeatureFunc) rb_false_function;
+	source_class->get_entry_view = impl_get_entry_view;
+	source_class->handle_eos = impl_handle_eos;
+	source_class->get_playback_status = impl_get_playback_status;
 
 	g_object_class_install_property (object_class,
 	                                 PROP_PARENT,

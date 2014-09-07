@@ -1101,7 +1101,7 @@ delete_response_cb (GtkDialog *dialog, int response, RBPodcastSource *source)
 }
 
 static void
-impl_delete (RBSource *asource)
+impl_delete_selected (RBSource *asource)
 {
 	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
 	GtkWidget *dialog;
@@ -1680,17 +1680,17 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	page_class->receive_drag = impl_receive_drag;
 
 	source_class->reset_filters = impl_reset_filters;
-	source_class->impl_add_to_queue = impl_add_to_queue;
-	source_class->impl_can_add_to_queue = impl_can_add_to_queue;
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_delete = impl_delete;
-	source_class->impl_get_entry_view = impl_get_entry_view;
-	source_class->impl_handle_eos = impl_handle_eos;
-	source_class->impl_search = impl_search;
-	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_get_delete_label = impl_get_delete_label;
+	source_class->add_to_queue = impl_add_to_queue;
+	source_class->can_add_to_queue = impl_can_add_to_queue;
+	source_class->can_copy = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_cut = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->delete_selected = impl_delete_selected;
+	source_class->get_entry_view = impl_get_entry_view;
+	source_class->handle_eos = impl_handle_eos;
+	source_class->search = impl_search;
+	source_class->song_properties = impl_song_properties;
+	source_class->get_delete_label = impl_get_delete_label;
 
 	g_object_class_install_property (object_class,
 					 PROP_PODCAST_MANAGER,

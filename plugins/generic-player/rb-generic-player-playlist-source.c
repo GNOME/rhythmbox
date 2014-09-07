@@ -531,10 +531,10 @@ rb_generic_player_playlist_source_class_init (RBGenericPlayerPlaylistSourceClass
 	page_class->can_remove = impl_can_remove;
 	page_class->remove = impl_remove;
 
-	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
 
-	playlist_class->impl_save_contents_to_xml = impl_save_to_xml;
-	playlist_class->impl_mark_dirty = impl_mark_dirty;
+	playlist_class->save_contents_to_xml = impl_save_to_xml;
+	playlist_class->mark_dirty = impl_mark_dirty;
 
 	g_object_class_install_property (object_class,
 					 PROP_PLAYER_SOURCE,

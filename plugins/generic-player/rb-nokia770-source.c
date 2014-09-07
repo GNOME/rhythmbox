@@ -55,7 +55,7 @@ rb_nokia770_source_class_init (RBNokia770SourceClass *klass)
 {
 	RBGenericPlayerSourceClass *generic_class = RB_GENERIC_PLAYER_SOURCE_CLASS (klass);
 
-	generic_class->impl_uri_from_playlist_uri = impl_uri_from_playlist_uri;
+	generic_class->uri_from_playlist_uri = impl_uri_from_playlist_uri;
 }
 
 static void

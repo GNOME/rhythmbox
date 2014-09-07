@@ -421,8 +421,8 @@ rb_podcast_main_source_class_init (RBPodcastMainSourceClass *klass)
 
 	page_class->get_config_widget = impl_get_config_widget;
 
-	source_class->impl_want_uri = impl_want_uri;
-	source_class->impl_add_uri = impl_add_uri;
+	source_class->want_uri = impl_want_uri;
+	source_class->add_uri = impl_add_uri;
 
 	g_type_class_add_private (klass, sizeof (RBPodcastMainSourcePrivate));
 }

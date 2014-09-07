@@ -199,11 +199,11 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 	object_class->finalize = rb_play_queue_source_finalize;
 	object_class->dispose  = rb_play_queue_source_dispose;
 
-	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_rename = (RBSourceFeatureFunc) rb_false_function;
 
-	playlist_class->impl_show_entry_view_popup = impl_show_entry_view_popup;
-	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
+	playlist_class->show_entry_view_popup = impl_show_entry_view_popup;
+	playlist_class->save_contents_to_xml = impl_save_contents_to_xml;
 
 	/**
 	 * RBPlayQueueSource:sidebar:
@@ -548,7 +548,7 @@ static void
 impl_save_contents_to_xml (RBPlaylistSource *source,
 			   xmlNodePtr node)
 {
-	((RBPlaylistSourceClass*)rb_play_queue_source_parent_class)->impl_save_contents_to_xml (source, node);
+	((RBPlaylistSourceClass*)rb_play_queue_source_parent_class)->save_contents_to_xml (source, node);
 	xmlSetProp (node, RB_PLAYLIST_TYPE, RB_PLAYLIST_QUEUE);
 }
 

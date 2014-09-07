@@ -628,7 +628,7 @@ static void
 delete_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data)
 {
 	RBShellClipboard *clipboard = RB_SHELL_CLIPBOARD (data);
-	rb_source_delete (clipboard->priv->source);
+	rb_source_delete_selected (clipboard->priv->source);
 }
 
 static void

@@ -126,7 +126,7 @@ class MagnatuneSource(RB.BrowserSource):
 			self.__update_id = GLib.timeout_add_seconds(6 * 60 * 60, self.__update_catalogue)
 			self.__update_catalogue()
 
-	def do_impl_can_delete(self):
+	def do_can_delete(self):
 		return False
 
 	def do_pack_content(self, content):

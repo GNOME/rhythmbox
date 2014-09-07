@@ -186,7 +186,7 @@ rb_grilo_source_class_init (RBGriloSourceClass *klass)
 	page_class->selected = impl_selected;
 	page_class->deselected = impl_deselected;
 
-	source_class->impl_get_entry_view = impl_get_entry_view;
+	source_class->get_entry_view = impl_get_entry_view;
 
 	g_object_class_install_property (object_class,
 					 PROP_GRILO_SOURCE,

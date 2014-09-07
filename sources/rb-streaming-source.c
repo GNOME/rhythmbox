@@ -112,11 +112,11 @@ rb_streaming_source_class_init (RBStreamingSourceClass *klass)
 	object_class->dispose = rb_streaming_source_dispose;
 	object_class->constructed = rb_streaming_source_constructed;
 
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_handle_eos = impl_handle_eos;
-	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_copy = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_pause = (RBSourceFeatureFunc) rb_false_function;
+	source_class->handle_eos = impl_handle_eos;
+	source_class->try_playlist = (RBSourceFeatureFunc) rb_true_function;
 
 	g_type_class_add_private (klass, sizeof (RBStreamingSourcePrivate));
 }

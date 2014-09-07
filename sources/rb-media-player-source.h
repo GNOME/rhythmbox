@@ -58,17 +58,17 @@ struct _RBMediaPlayerSourceClass
 	RBBrowserSourceClass parent_class;
 
 	/* class members */
-	void		(*impl_get_entries)	(RBMediaPlayerSource *source, const char *category, GHashTable *map);
-	guint64		(*impl_get_capacity)	(RBMediaPlayerSource *source);
-	guint64		(*impl_get_free_space)	(RBMediaPlayerSource *source);
-	void		(*impl_delete_entries)	(RBMediaPlayerSource *source,
+	void		(*get_entries)	(RBMediaPlayerSource *source, const char *category, GHashTable *map);
+	guint64		(*get_capacity)	(RBMediaPlayerSource *source);
+	guint64		(*get_free_space)	(RBMediaPlayerSource *source);
+	void		(*delete_entries)	(RBMediaPlayerSource *source,
 						 GList *entries,
 						 RBMediaPlayerSourceDeleteCallback callback,
 						 gpointer data,
 						 GDestroyNotify destroy_data);
-	void		(*impl_add_playlist)	(RBMediaPlayerSource *source, gchar *name, GList *entries);
-	void		(*impl_remove_playlists) (RBMediaPlayerSource *source);
-	void		(*impl_show_properties)	(RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
+	void		(*add_playlist)	(RBMediaPlayerSource *source, gchar *name, GList *entries);
+	void		(*remove_playlists) (RBMediaPlayerSource *source);
+	void		(*show_properties)	(RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
 };
 
 GType	rb_media_player_source_get_type	(void);

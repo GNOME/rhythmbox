@@ -91,7 +91,7 @@ static void impl_get_status (RBDisplayPage *page, char **text, char **progress_t
 /* source methods */
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_search (RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
-static void impl_delete (RBSource *source);
+static void impl_delete_selected (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static guint impl_want_uri (RBSource *source, const char *uri);
 static void impl_add_uri (RBSource *source,
@@ -193,16 +193,16 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	page_class->get_status  = impl_get_status;
 
 	source_class->reset_filters = impl_reset_filters;
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_delete = impl_delete;
-	source_class->impl_get_entry_view = impl_get_entry_view;
-	source_class->impl_search = impl_search;
-	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_want_uri = impl_want_uri;
-	source_class->impl_add_uri = impl_add_uri;
-	source_class->impl_get_playback_status = impl_get_playback_status;
+	source_class->can_copy = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_pause = (RBSourceFeatureFunc) rb_false_function;
+	source_class->delete_selected = impl_delete_selected;
+	source_class->get_entry_view = impl_get_entry_view;
+	source_class->search = impl_search;
+	source_class->song_properties = impl_song_properties;
+	source_class->want_uri = impl_want_uri;
+	source_class->add_uri = impl_add_uri;
+	source_class->get_playback_status = impl_get_playback_status;
 
 	g_object_class_override_property (object_class,
 					  PROP_SHOW_BROWSER,
@@ -612,7 +612,7 @@ impl_get_playback_status (RBSource *source, char **text, float *progress)
 }
 
 static void
-impl_delete (RBSource *asource)
+impl_delete_selected (RBSource *asource)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 	GList *sel;

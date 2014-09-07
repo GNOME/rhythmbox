@@ -67,7 +67,7 @@ static void	new_station_action_cb (GSimpleAction *action, GVariant *parameter, g
 static void playing_entry_changed (RBShellPlayer *player, RhythmDBEntry *entry,
 				   RBFMRadioSource *self);
 
-static void         impl_delete         (RBSource *source);
+static void         impl_delete_selected         (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 
 static void rb_fm_radio_entry_type_class_init (RBFMRadioEntryTypeClass *klass);
@@ -125,11 +125,11 @@ rb_fm_radio_source_class_init (RBFMRadioSourceClass *class)
 	object_class->constructed = rb_fm_radio_source_constructed;
 	object_class->dispose = rb_fm_radio_source_dispose;
 
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_delete = impl_delete;
-	source_class->impl_get_entry_view = impl_get_entry_view;
+	source_class->can_copy = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_pause = (RBSourceFeatureFunc) rb_false_function;
+	source_class->delete_selected = impl_delete_selected;
+	source_class->get_entry_view = impl_get_entry_view;
 
 	g_type_class_add_private (class, sizeof (RBFMRadioSourcePrivate));
 }
@@ -451,7 +451,7 @@ playing_entry_changed (RBShellPlayer *player, RhythmDBEntry *entry,
 }
 
 static void
-impl_delete (RBSource *source)
+impl_delete_selected (RBSource *source)
 {
 	RBFMRadioSource *self = RB_FM_RADIO_SOURCE (source);
 	GList *selection, *tmp;

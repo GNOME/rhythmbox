@@ -876,19 +876,3 @@ rb_play_order_update_have_next_previous (RBPlayOrder *porder)
 		porder->priv->have_previous = have_previous;
 	}
 }
-
-/* annotations for methods */
-
-/**
- * get_next:
- * @porder: the play order
- *
- * Return value: (transfer full): the next entry
- */
-
-/**
- * get_previous:
- * @porder: the play order
- *
- * Return value: (transfer full): the previous entry
- */

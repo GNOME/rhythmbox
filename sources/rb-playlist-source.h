@@ -63,9 +63,9 @@ struct _RBPlaylistSourceClass
 	RBSourceClass parent;
 
 	/* methods */
-	void	(*impl_show_entry_view_popup)	(RBPlaylistSource *source, RBEntryView *view, gboolean over_entry);
-	void	(*impl_save_contents_to_xml)	(RBPlaylistSource *source, xmlNodePtr node);
-	void	(*impl_mark_dirty)		(RBPlaylistSource *source);
+	void	(*show_entry_view_popup)	(RBPlaylistSource *source, RBEntryView *view, gboolean over_entry);
+	void	(*save_contents_to_xml)	(RBPlaylistSource *source, xmlNodePtr node);
+	void	(*mark_dirty)		(RBPlaylistSource *source);
 };
 
 GType		rb_playlist_source_get_type	(void);

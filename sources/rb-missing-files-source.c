@@ -67,7 +67,7 @@ static void rb_missing_files_source_get_property (GObject *object,
 
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_song_properties (RBSource *source);
-static void impl_delete (RBSource *source);
+static void impl_delete_selected (RBSource *source);
 static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
 
 static void rb_missing_files_source_songs_show_popup_cb (RBEntryView *view,
@@ -101,20 +101,20 @@ rb_missing_files_source_class_init (RBMissingFilesSourceClass *klass)
 
 	page_class->get_status = impl_get_status;
 
-	source_class->impl_get_entry_view = impl_get_entry_view;
-	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;
+	source_class->get_entry_view = impl_get_entry_view;
+	source_class->can_rename = (RBSourceFeatureFunc) rb_false_function;
 
-	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_cut = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_copy = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 
-	source_class->impl_delete = impl_delete;
+	source_class->delete_selected = impl_delete_selected;
 
-	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
+	source_class->song_properties = impl_song_properties;
+	source_class->try_playlist = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_pause = (RBSourceFeatureFunc) rb_false_function;
 
 	g_type_class_add_private (klass, sizeof (RBMissingFilesSourcePrivate));
 }
@@ -326,7 +326,7 @@ impl_song_properties (RBSource *asource)
 }
 
 static void
-impl_delete (RBSource *asource)
+impl_delete_selected (RBSource *asource)
 {
 	RBMissingFilesSource *source = RB_MISSING_FILES_SOURCE (asource);
 	GList *sel, *tem;

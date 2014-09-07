@@ -76,7 +76,7 @@ static void rb_static_playlist_source_get_property (GObject *object,
 /* source methods */
 static GList * impl_cut (RBSource *source);
 static RBTrackTransferBatch *impl_paste (RBSource *asource, GList *entries);
-static void impl_delete (RBSource *source);
+static void impl_delete_selected (RBSource *source);
 static void impl_search (RBSource *asource, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_reset_filters (RBSource *asource);
 static gboolean impl_receive_drag (RBDisplayPage *page, GtkSelectionData *data);
@@ -163,17 +163,17 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	page_class->receive_drag = impl_receive_drag;
 
 	source_class->reset_filters = impl_reset_filters;
-	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_cut = impl_cut;
-	source_class->impl_paste = impl_paste;
-	source_class->impl_delete = impl_delete;
-	source_class->impl_search = impl_search;
-	source_class->impl_get_property_views = impl_get_property_views;
-	source_class->impl_want_uri = impl_want_uri;
+	source_class->can_cut = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_paste = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->cut = impl_cut;
+	source_class->paste = impl_paste;
+	source_class->delete_selected = impl_delete_selected;
+	source_class->search = impl_search;
+	source_class->get_property_views = impl_get_property_views;
+	source_class->want_uri = impl_want_uri;
 
-	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
+	playlist_class->save_contents_to_xml = impl_save_contents_to_xml;
 
 	g_object_class_override_property (object_class,
 					  PROP_BASE_QUERY_MODEL,
@@ -501,7 +501,7 @@ impl_paste (RBSource *asource, GList *entries)
 }
 
 static void
-impl_delete (RBSource *asource)
+impl_delete_selected (RBSource *asource)
 {
 	RBEntryView *songs = rb_source_get_entry_view (asource);
 	RBStaticPlaylistSource *source = RB_STATIC_PLAYLIST_SOURCE (asource);

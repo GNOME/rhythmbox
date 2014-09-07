@@ -81,7 +81,7 @@ static void impl_selected (RBDisplayPage *page);
 static gboolean impl_can_paste (RBSource *source);
 static RBTrackTransferBatch *impl_paste (RBSource *source, GList *entries);
 static gboolean impl_can_delete (RBSource *source);
-static void impl_delete (RBSource *source);
+static void impl_delete_selected (RBSource *source);
 
 static void impl_eject (RBDeviceSource *source);
 
@@ -175,26 +175,26 @@ rb_generic_player_source_class_init (RBGenericPlayerSourceClass *klass)
 	page_class->delete_thyself = impl_delete_thyself;
 	page_class->selected = impl_selected;
 
-	source_class->impl_can_delete = impl_can_delete;
-	source_class->impl_delete = impl_delete;
-	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_paste = impl_can_paste;
-	source_class->impl_paste = impl_paste;
-	source_class->impl_want_uri = rb_device_source_want_uri;
-	source_class->impl_uri_is_source = rb_device_source_uri_is_source;
+	source_class->can_delete = impl_can_delete;
+	source_class->delete_selected = impl_delete_selected;
+	source_class->can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_paste = impl_can_paste;
+	source_class->paste = impl_paste;
+	source_class->want_uri = rb_device_source_want_uri;
+	source_class->uri_is_source = rb_device_source_uri_is_source;
 
-	mps_class->impl_get_entries = impl_get_entries;
-	mps_class->impl_get_capacity = impl_get_capacity;
-	mps_class->impl_get_free_space = impl_get_free_space;
-	mps_class->impl_delete_entries = impl_delete_entries;
-	mps_class->impl_show_properties = impl_show_properties;
-	mps_class->impl_add_playlist = impl_add_playlist;
-	mps_class->impl_remove_playlists = impl_remove_playlists;
+	mps_class->get_entries = impl_get_entries;
+	mps_class->get_capacity = impl_get_capacity;
+	mps_class->get_free_space = impl_get_free_space;
+	mps_class->delete_entries = impl_delete_entries;
+	mps_class->show_properties = impl_show_properties;
+	mps_class->add_playlist = impl_add_playlist;
+	mps_class->remove_playlists = impl_remove_playlists;
 
-	klass->impl_get_mount_path = default_get_mount_path;
-	klass->impl_load_playlists = default_load_playlists;
-	klass->impl_uri_from_playlist_uri = default_uri_from_playlist_uri;
-	klass->impl_uri_to_playlist_uri = default_uri_to_playlist_uri;
+	klass->get_mount_path = default_get_mount_path;
+	klass->load_playlists = default_load_playlists;
+	klass->uri_from_playlist_uri = default_uri_from_playlist_uri;
+	klass->uri_to_playlist_uri = default_uri_to_playlist_uri;
 
 	g_object_class_install_property (object_class,
 					 PROP_ERROR_ENTRY_TYPE,
@@ -605,8 +605,8 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 		rb_shell_append_display_page (shell, RB_DISPLAY_PAGE (priv->import_errors), RB_DISPLAY_PAGE (source));
 		g_object_unref (shell);
 
-		if (klass->impl_load_playlists)
-			klass->impl_load_playlists (source);
+		if (klass->load_playlists)
+			klass->load_playlists (source);
 
 		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
 
@@ -677,7 +677,7 @@ rb_generic_player_source_get_mount_path (RBGenericPlayerSource *source)
 {
 	RBGenericPlayerSourceClass *klass = RB_GENERIC_PLAYER_SOURCE_GET_CLASS (source);
 
-	return klass->impl_get_mount_path (source);
+	return klass->get_mount_path (source);
 }
 
 static char *
@@ -801,7 +801,7 @@ rb_generic_player_source_uri_from_playlist_uri (RBGenericPlayerSource *source, c
 {
 	RBGenericPlayerSourceClass *klass = RB_GENERIC_PLAYER_SOURCE_GET_CLASS (source);
 
-	return klass->impl_uri_from_playlist_uri (source, uri);
+	return klass->uri_from_playlist_uri (source, uri);
 }
 
 char *
@@ -809,7 +809,7 @@ rb_generic_player_source_uri_to_playlist_uri (RBGenericPlayerSource *source, con
 {
 	RBGenericPlayerSourceClass *klass = RB_GENERIC_PLAYER_SOURCE_GET_CLASS (source);
 
-	return klass->impl_uri_to_playlist_uri (source, uri, playlist_type);
+	return klass->uri_to_playlist_uri (source, uri, playlist_type);
 }
 
 static void
@@ -1072,7 +1072,7 @@ rb_generic_player_source_delete_entries (RBGenericPlayerSource *source, GList *e
 }
 
 static void
-impl_delete (RBSource *source)
+impl_delete_selected (RBSource *source)
 {
 	RBEntryView *view;
 	GList *sel;

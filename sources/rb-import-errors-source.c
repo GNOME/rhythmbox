@@ -46,7 +46,7 @@ static void impl_get_property (GObject *object, guint prop_id, GValue *value, GP
 static void impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
 
 static RBEntryView *impl_get_entry_view (RBSource *source);
-static void impl_delete (RBSource *source);
+static void impl_delete_selected (RBSource *source);
 static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
 
 static void rb_import_errors_source_songs_show_popup_cb (RBEntryView *view,
@@ -121,19 +121,19 @@ rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
 
 	page_class->get_status = impl_get_status;
 
-	source_class->impl_get_entry_view = impl_get_entry_view;
-	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_false_function;
+	source_class->get_entry_view = impl_get_entry_view;
+	source_class->can_rename = (RBSourceFeatureFunc) rb_false_function;
 
-	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_cut = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_copy = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 
-	source_class->impl_delete = impl_delete;
+	source_class->delete_selected = impl_delete_selected;
 
-	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
+	source_class->try_playlist = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_pause = (RBSourceFeatureFunc) rb_false_function;
 
 	g_object_class_install_property (object_class,
 					 PROP_NORMAL_ENTRY_TYPE,
@@ -355,7 +355,7 @@ rb_import_errors_source_new (RBShell *shell,
 }
 
 static void
-impl_delete (RBSource *asource)
+impl_delete_selected (RBSource *asource)
 {
 	RBImportErrorsSource *source = RB_IMPORT_ERRORS_SOURCE (asource);
 	GList *sel, *tem;

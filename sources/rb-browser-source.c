@@ -90,7 +90,7 @@ static void rb_browser_source_browser_changed_cb (RBLibraryBrowser *entry,
 /* source methods */
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static GList *impl_get_property_views (RBSource *source);
-static void impl_delete (RBSource *source);
+static void impl_delete_selected (RBSource *source);
 static void impl_search (RBSource *source, RBSourceSearch *search, const char *cur_text, const char *new_text);
 static void impl_reset_filters (RBSource *source);
 static void impl_song_properties (RBSource *source);
@@ -161,16 +161,16 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 	object_class->get_property = rb_browser_source_get_property;
 
 	source_class->reset_filters = impl_reset_filters;
-	source_class->impl_search = impl_search;
-	source_class->impl_get_entry_view = impl_get_entry_view;
-	source_class->impl_get_property_views = impl_get_property_views;
-	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_add_to_queue = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_delete = impl_delete;
+	source_class->search = impl_search;
+	source_class->get_entry_view = impl_get_entry_view;
+	source_class->get_property_views = impl_get_property_views;
+	source_class->song_properties = impl_song_properties;
+	source_class->can_cut = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_copy = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_add_to_queue = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_move_to_trash = (RBSourceFeatureFunc) rb_true_function;
+	source_class->delete_selected = impl_delete_selected;
 
 	klass->pack_content = default_pack_content;
 	klass->has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
@@ -643,7 +643,7 @@ impl_reset_filters (RBSource *asource)
 }
 
 static void
-impl_delete (RBSource *asource)
+impl_delete_selected (RBSource *asource)
 {
 	RBBrowserSource *source = RB_BROWSER_SOURCE (asource);
 	GList *sel, *tem;

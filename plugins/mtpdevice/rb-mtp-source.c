@@ -75,7 +75,7 @@ static void rb_mtp_source_get_property (GObject *object,
 			                GValue *value,
 			                GParamSpec *pspec);
 
-static void impl_delete (RBSource *asource);
+static void impl_delete_selected (RBSource *asource);
 static RBTrackTransferBatch *impl_paste (RBSource *asource, GList *entries);
 static gboolean impl_uri_is_source (RBSource *asource, const char *uri);
 
@@ -189,20 +189,20 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 
 	page_class->selected = impl_selected;
 
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_paste = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_delete = impl_delete;
-	source_class->impl_paste = impl_paste;
-	source_class->impl_uri_is_source = impl_uri_is_source;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_paste = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_copy = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_cut = (RBSourceFeatureFunc) rb_false_function;
+	source_class->delete_selected = impl_delete_selected;
+	source_class->paste = impl_paste;
+	source_class->uri_is_source = impl_uri_is_source;
 
-	mps_class->impl_get_entries = impl_get_entries;
-	mps_class->impl_get_capacity = impl_get_capacity;
-	mps_class->impl_get_free_space = impl_get_free_space;
-	mps_class->impl_delete_entries = impl_delete_entries;
-	mps_class->impl_show_properties = impl_show_properties;
+	mps_class->get_entries = impl_get_entries;
+	mps_class->get_capacity = impl_get_capacity;
+	mps_class->get_free_space = impl_get_free_space;
+	mps_class->delete_entries = impl_delete_entries;
+	mps_class->show_properties = impl_show_properties;
 
 	g_object_class_install_property (object_class,
 					 PROP_RAW_DEVICE,
@@ -1044,7 +1044,7 @@ media_type_to_filetype (RBMtpSource *source, const char *media_type)
 }
 
 static void
-impl_delete (RBSource *source)
+impl_delete_selected (RBSource *source)
 {
 	GList *sel;
 	RBEntryView *songs;

@@ -54,7 +54,7 @@ static void
 rb_psp_source_class_init (RBPspSourceClass *klass)
 {
 	RBGenericPlayerSourceClass *generic_class = RB_GENERIC_PLAYER_SOURCE_CLASS (klass);
-	generic_class->impl_load_playlists = rb_psp_source_create_playlists;
+	generic_class->load_playlists = rb_psp_source_create_playlists;
 }
 
 static void

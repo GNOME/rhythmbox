@@ -251,8 +251,8 @@ rb_ipod_static_playlist_source_class_init (RBIpodStaticPlaylistSourceClass *klas
 	page_class->can_remove = impl_can_remove;
 	page_class->remove = impl_remove;
 
-	source_class->impl_can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_move_to_trash = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_true_function;
 
 	/* Don't override impl_delete here -- it's provided by RBStaticPlaylistSource */
 

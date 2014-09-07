@@ -215,11 +215,11 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	page_class->get_config_widget = impl_get_config_widget;
 	page_class->receive_drag = impl_receive_drag;
 
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_paste = (RBSourceFeatureFunc) impl_can_paste;
-	source_class->impl_paste = impl_paste;
-	source_class->impl_want_uri = impl_want_uri;
-	source_class->impl_add_uri = impl_add_uri;
+	source_class->can_copy = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_paste = (RBSourceFeatureFunc) impl_can_paste;
+	source_class->paste = impl_paste;
+	source_class->want_uri = impl_want_uri;
+	source_class->add_uri = impl_add_uri;
 
 	browser_source_class->has_drop_support = (RBBrowserSourceFeatureFunc) rb_true_function;
 	browser_source_class->pack_content = impl_pack_content;

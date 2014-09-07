@@ -148,12 +148,12 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 	page_class->receive_drag = impl_receive_drag;
 
 	source_class->reset_filters = impl_reset_filters;
-	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_search = impl_search;
-	source_class->impl_get_property_views = impl_get_property_views;
+	source_class->can_cut = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_false_function;
+	source_class->search = impl_search;
+	source_class->get_property_views = impl_get_property_views;
 
-	playlist_class->impl_save_contents_to_xml = impl_save_contents_to_xml;
+	playlist_class->save_contents_to_xml = impl_save_contents_to_xml;
 
 	g_object_class_override_property (object_class, PROP_BASE_QUERY_MODEL, "base-query-model");
 	g_object_class_override_property (object_class, PROP_SHOW_BROWSER, "show-browser");

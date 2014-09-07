@@ -180,9 +180,9 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 
 	page_class->selected = rb_daap_source_selected;
 
-	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_cut = (RBSourceFeatureFunc) rb_false_function;
+	source_class->can_copy = (RBSourceFeatureFunc) rb_true_function;
+	source_class->can_delete = (RBSourceFeatureFunc) rb_false_function;
 
 	browser_source_class->has_drop_support = (RBBrowserSourceFeatureFunc) rb_false_function;
 

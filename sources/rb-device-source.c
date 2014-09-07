@@ -235,7 +235,7 @@ rb_device_source_eject (RBDeviceSource *source)
  *
  * Checks whether @uri identifies a path underneath the
  * device's mount point.  Should be used to implement
- * the #RBSource impl_want_uri method.
+ * the #RBSource want_uri method.
  *
  * Return value: URI match strength
  */
@@ -314,7 +314,7 @@ rb_device_source_want_uri (RBSource *source, const char *uri)
  * @uri: a URI to check
  *
  * Returns %TRUE if @uri matches @source.  This should be
- * used to implement the impl_uri_is_source #RBSource method.
+ * used to implement the uri_is_source #RBSource method.
  *
  * Return value: %TRUE if @uri matches @source
  */
