@@ -1891,6 +1891,10 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				}
 				break;
 
+			case PAUSED:
+				rb_debug ("stream %s is buffered, leaving paused", stream->uri);
+				break;
+
 			default:
 				rb_debug ("stream %s is buffered, resuming", stream->uri);
 				link_and_unblock_stream (stream, &error);
