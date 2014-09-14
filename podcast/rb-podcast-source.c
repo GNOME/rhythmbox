@@ -883,27 +883,6 @@ podcast_post_status_sort_func (RhythmDBEntry *a,
 	return ret;
 }
 
-
-static void
-episode_activated_cb (RBEntryView *view,
-		      RhythmDBEntry *entry,
-		      RBPodcastSource *source)
-{
-	GValue val = {0,};
-
-	/* check to see if it has already been downloaded */
-	if (rb_podcast_manager_entry_downloaded (entry))
-		return;
-
-	g_value_init (&val, G_TYPE_ULONG);
-	g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_WAITING);
-	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
-	rhythmdb_commit (source->priv->db);
-	g_value_unset (&val);
-
-	rb_podcast_manager_download_entry (source->priv->podcast_mgr, entry);
-}
-
 static void
 podcast_entry_changed_cb (RhythmDB *db,
 			  RhythmDBEntry *entry,
@@ -1379,11 +1358,6 @@ impl_constructed (GObject *object)
 						 G_OBJECT (shell_player),
 						 TRUE, FALSE);
 	g_object_unref (shell_player);
-
-	g_signal_connect_object (source->priv->posts,
-				 "entry-activated",
-				 G_CALLBACK (episode_activated_cb),
-				 source, 0);
 
 	/* Podcast date column */
 	column = gtk_tree_view_column_new ();
