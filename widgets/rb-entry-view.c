@@ -2309,8 +2309,12 @@ rb_entry_view_scroll_to_iter (RBEntryView *view,
 	gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view->priv->treeview), path,
 				      gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0),
 				      TRUE, 0.5, 0.0);
-	gtk_tree_view_set_cursor (GTK_TREE_VIEW (view->priv->treeview), path,
-				  gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0), FALSE);
+
+	if ((gtk_tree_selection_count_selected_rows (view->priv->selection) != 1) ||
+	    (gtk_tree_selection_path_is_selected (view->priv->selection, path) == FALSE)) {
+		gtk_tree_selection_unselect_all (view->priv->selection);
+		gtk_tree_selection_select_iter (view->priv->selection, iter);
+	}
 
 	gtk_tree_path_free (path);
 }
