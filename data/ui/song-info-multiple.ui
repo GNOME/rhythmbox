@@ -1,13 +1,15 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.18.3 -->
 <interface>
-  <!-- interface-requires gtk+ 2.12 -->
-  <!-- interface-naming-policy toplevel-contextual -->
+  <requires lib="gtk+" version="3.6"/>
   <object class="GtkNotebook" id="song_info_notebook">
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <property name="show_border">False</property>
     <child>
       <object class="GtkTable" id="song_info_basic">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <property name="border_width">6</property>
         <property name="n_rows">7</property>
         <property name="n_columns">2</property>
@@ -17,20 +19,20 @@
           <object class="GtkEntry" id="song_info_artist">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="invisible_char">&#x25CF;</property>
+            <property name="invisible_char">●</property>
             <property name="activates_default">True</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
             <property name="right_attach">2</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkEntry" id="song_info_album">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="invisible_char">&#x25CF;</property>
+            <property name="invisible_char">●</property>
             <property name="activates_default">True</property>
           </object>
           <packing>
@@ -38,12 +40,13 @@
             <property name="right_attach">2</property>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="album_label">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">Albu_m:</property>
             <property name="use_underline">True</property>
@@ -59,6 +62,7 @@
         <child>
           <object class="GtkLabel" id="artist_label">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">_Artist:</property>
             <property name="use_underline">True</property>
@@ -72,6 +76,7 @@
         <child>
           <object class="GtkLabel" id="genre_label">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">_Genre:</property>
             <property name="use_underline">True</property>
@@ -81,14 +86,14 @@
             <property name="top_attach">4</property>
             <property name="bottom_attach">5</property>
             <property name="x_options">GTK_FILL</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkEntry" id="song_info_genre">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="invisible_char">&#x25CF;</property>
+            <property name="invisible_char">●</property>
             <property name="activates_default">True</property>
           </object>
           <packing>
@@ -96,12 +101,13 @@
             <property name="right_attach">2</property>
             <property name="top_attach">4</property>
             <property name="bottom_attach">5</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="rating_label">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="xalign">0</property>
             <property name="yalign">0</property>
             <property name="label" translatable="yes">_Rating:</property>
@@ -111,12 +117,13 @@
             <property name="top_attach">6</property>
             <property name="bottom_attach">7</property>
             <property name="x_options">GTK_FILL</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
-          <object class="GtkVBox" id="song_info_rating_container">
+          <object class="GtkBox" id="song_info_rating_container">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
               <placeholder/>
@@ -134,6 +141,7 @@
         <child>
           <object class="GtkLabel" id="year_label">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">_Year:</property>
             <property name="use_underline">True</property>
@@ -143,14 +151,14 @@
             <property name="top_attach">5</property>
             <property name="bottom_attach">6</property>
             <property name="x_options">GTK_FILL</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkEntry" id="song_info_year">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="invisible_char">&#x25CF;</property>
+            <property name="invisible_char">●</property>
             <property name="activates_default">True</property>
           </object>
           <packing>
@@ -158,12 +166,13 @@
             <property name="right_attach">2</property>
             <property name="top_attach">5</property>
             <property name="bottom_attach">6</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="discn_label">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">_Disc number:</property>
             <property name="use_underline">True</property>
@@ -173,14 +182,14 @@
             <property name="top_attach">7</property>
             <property name="bottom_attach">8</property>
             <property name="x_options">GTK_FILL</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkEntry" id="song_info_disc_cur">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="invisible_char">&#x25CF;</property>
+            <property name="invisible_char">●</property>
             <property name="activates_default">True</property>
           </object>
           <packing>
@@ -188,12 +197,13 @@
             <property name="right_attach">2</property>
             <property name="top_attach">7</property>
             <property name="bottom_attach">8</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="album_artist_label">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">Album a_rtist:</property>
             <property name="use_underline">True</property>
@@ -202,26 +212,27 @@
           <packing>
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkEntry" id="song_info_album_artist">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="invisible_char">&#x25CF;</property>
+            <property name="invisible_char">●</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
             <property name="right_attach">2</property>
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="composer_label">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">_Composer:</property>
             <property name="use_underline">True</property>
@@ -230,21 +241,21 @@
           <packing>
             <property name="top_attach">3</property>
             <property name="bottom_attach">4</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkEntry" id="song_info_composer">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="invisible_char">&#x25CF;</property>
+            <property name="invisible_char">●</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
             <property name="right_attach">2</property>
             <property name="top_attach">3</property>
             <property name="bottom_attach">4</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
       </object>
@@ -252,6 +263,7 @@
     <child type="tab">
       <object class="GtkLabel" id="label1">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <property name="label" translatable="yes">Basic</property>
         <property name="use_underline">True</property>
       </object>
@@ -262,6 +274,7 @@
     <child>
       <object class="GtkTable" id="song_info_sorting">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <property name="border_width">6</property>
         <property name="n_rows">3</property>
         <property name="n_columns">2</property>
@@ -271,20 +284,20 @@
           <object class="GtkEntry" id="song_info_artist_sortname">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="invisible_char">&#x25CF;</property>
+            <property name="invisible_char">●</property>
             <property name="activates_default">True</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
             <property name="right_attach">2</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkEntry" id="song_info_album_sortname">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="invisible_char">&#x25CF;</property>
+            <property name="invisible_char">●</property>
             <property name="activates_default">True</property>
           </object>
           <packing>
@@ -292,12 +305,13 @@
             <property name="right_attach">2</property>
             <property name="top_attach">1</property>
             <property name="bottom_attach">2</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkLabel" id="album_sortname_label">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">Albu_m sort order:</property>
             <property name="use_underline">True</property>
@@ -313,6 +327,7 @@
         <child>
           <object class="GtkLabel" id="artist_sortname_label">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">_Artist sort order:</property>
             <property name="use_underline">True</property>
@@ -326,6 +341,7 @@
         <child>
           <object class="GtkLabel" id="album_artist_sortname_label">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">Album a_rtist sort order:</property>
             <property name="use_underline">True</property>
@@ -335,14 +351,14 @@
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
             <property name="x_options">GTK_FILL</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkEntry" id="song_info_album_artist_sortname">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="invisible_char">&#x25CF;</property>
+            <property name="invisible_char">●</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -355,6 +371,7 @@
         <child>
           <object class="GtkLabel" id="composer_sortname_label">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="xalign">0</property>
             <property name="label" translatable="yes">_Composer sort order:</property>
             <property name="use_underline">True</property>
@@ -364,14 +381,14 @@
             <property name="top_attach">3</property>
             <property name="bottom_attach">4</property>
             <property name="x_options">GTK_FILL</property>
-            <property name="y_options"></property>
+            <property name="y_options"/>
           </packing>
         </child>
         <child>
           <object class="GtkEntry" id="song_info_composer_sortname">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="invisible_char">&#x25CF;</property>
+            <property name="invisible_char">●</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -389,6 +406,7 @@
     <child type="tab">
       <object class="GtkLabel" id="label2">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <property name="label" translatable="yes">Sorting</property>
       </object>
       <packing>
