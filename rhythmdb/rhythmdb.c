@@ -86,7 +86,9 @@ static const RhythmDBPropertyDef rhythmdb_properties[] = {
 	PROP_ENTRY(ARTIST, G_TYPE_STRING, "artist"),
 	PROP_ENTRY(ALBUM, G_TYPE_STRING, "album"),
 	PROP_ENTRY(TRACK_NUMBER, G_TYPE_ULONG, "track-number"),
+	PROP_ENTRY(TRACK_TOTAL, G_TYPE_ULONG, "track-total"),
 	PROP_ENTRY(DISC_NUMBER, G_TYPE_ULONG, "disc-number"),
+	PROP_ENTRY(DISC_TOTAL, G_TYPE_ULONG, "disc-total"),
 	PROP_ENTRY(DURATION, G_TYPE_ULONG, "duration"),
 	PROP_ENTRY(FILE_SIZE, G_TYPE_UINT64, "file-size"),
 	PROP_ENTRY(LOCATION, G_TYPE_STRING, "location"),
@@ -646,8 +648,14 @@ metadata_field_from_prop (RhythmDBPropType prop,
 	case RHYTHMDB_PROP_TRACK_NUMBER:
 		*field = RB_METADATA_FIELD_TRACK_NUMBER;
 		return TRUE;
+	case RHYTHMDB_PROP_TRACK_TOTAL:
+		*field = RB_METADATA_FIELD_MAX_TRACK_NUMBER;
+		return TRUE;
 	case RHYTHMDB_PROP_DISC_NUMBER:
 		*field = RB_METADATA_FIELD_DISC_NUMBER;
+		return TRUE;
+	case RHYTHMDB_PROP_DISC_TOTAL:
+		*field = RB_METADATA_FIELD_MAX_DISC_NUMBER;
 		return TRUE;
 	case RHYTHMDB_PROP_DATE:
 		*field = RB_METADATA_FIELD_DATE;
@@ -1929,6 +1937,17 @@ set_props_from_metadata (RhythmDB *db,
 				     RHYTHMDB_PROP_TRACK_NUMBER, &val);
 	g_value_unset (&val);
 
+	/* track total */
+	if (!rb_metadata_get (metadata,
+			      RB_METADATA_FIELD_MAX_TRACK_NUMBER,
+			      &val)) {
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, 0);
+	}
+	rhythmdb_entry_set_internal (db, entry, TRUE,
+				     RHYTHMDB_PROP_TRACK_TOTAL, &val);
+	g_value_unset (&val);
+
 	/* disc number */
 	if (!rb_metadata_get (metadata,
 			      RB_METADATA_FIELD_DISC_NUMBER,
@@ -1938,6 +1957,17 @@ set_props_from_metadata (RhythmDB *db,
 	}
 	rhythmdb_entry_set_internal (db, entry, TRUE,
 				     RHYTHMDB_PROP_DISC_NUMBER, &val);
+	g_value_unset (&val);
+
+	/* disc total */
+	if (!rb_metadata_get (metadata,
+			      RB_METADATA_FIELD_MAX_DISC_NUMBER,
+			      &val)) {
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, 0);
+	}
+	rhythmdb_entry_set_internal (db, entry, TRUE,
+				     RHYTHMDB_PROP_DISC_TOTAL, &val);
 	g_value_unset (&val);
 
 	/* duration */
@@ -3415,8 +3445,14 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 		case RHYTHMDB_PROP_TRACK_NUMBER:
 			entry->tracknum = g_value_get_ulong (value);
 			break;
+		case RHYTHMDB_PROP_TRACK_TOTAL:
+			entry->tracktotal = g_value_get_ulong (value);
+			break;
 		case RHYTHMDB_PROP_DISC_NUMBER:
 			entry->discnum = g_value_get_ulong (value);
+			break;
+		case RHYTHMDB_PROP_DISC_TOTAL:
+			entry->disctotal = g_value_get_ulong (value);
 			break;
 		case RHYTHMDB_PROP_DURATION:
 			entry->duration = g_value_get_ulong (value);
@@ -5051,8 +5087,12 @@ rhythmdb_entry_get_ulong (RhythmDBEntry *entry,
 		return entry->id;
 	case RHYTHMDB_PROP_TRACK_NUMBER:
 		return entry->tracknum;
+	case RHYTHMDB_PROP_TRACK_TOTAL:
+		return entry->tracktotal;
 	case RHYTHMDB_PROP_DISC_NUMBER:
 		return entry->discnum;
+	case RHYTHMDB_PROP_DISC_TOTAL:
+		return entry->disctotal;
 	case RHYTHMDB_PROP_DURATION:
 		return entry->duration;
 	case RHYTHMDB_PROP_MTIME:

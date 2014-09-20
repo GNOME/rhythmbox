@@ -89,7 +89,9 @@ struct _RhythmDBEntry {
 	RBRefString *album_sortname;
 	RBRefString *album_artist_sortname;
 	gulong tracknum;
+	gulong tracktotal;
 	gulong discnum;
+	gulong disctotal;
 	gulong duration;
 	gulong bitrate;
 	double bpm;

@@ -115,8 +115,8 @@ static void rhythmdb_hash_tree_foreach (RhythmDB *adb,
 					gpointer data);
 
 /* Update both of those! */
-#define RHYTHMDB_TREE_XML_VERSION "1.9"
-#define RHYTHMDB_TREE_XML_VERSION_INT 190
+#define RHYTHMDB_TREE_XML_VERSION "2.0"
+#define RHYTHMDB_TREE_XML_VERSION_INT 200
 
 static void destroy_tree_property (RhythmDBTreeProperty *prop);
 static RhythmDBTreeProperty *get_or_create_album (RhythmDBTree *db, RhythmDBTreeProperty *artist,
@@ -399,6 +399,9 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 						ctx->reload_all_metadata = TRUE;
 					case 180:
 						rb_debug ("reloading all file metadata to get composer tag");
+						ctx->reload_all_metadata = TRUE;
+					case 190:
+						rb_debug ("reloading all files metadata to get total tracks and discs");
 						ctx->reload_all_metadata = TRUE;
 					case RHYTHMDB_TREE_XML_VERSION_INT:
 						/* current version */
@@ -1039,8 +1042,14 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_TRACK_NUMBER:
 			save_entry_ulong (ctx, elt_name, entry->tracknum, FALSE);
 			break;
+		case RHYTHMDB_PROP_TRACK_TOTAL:
+			save_entry_ulong (ctx, elt_name, entry->tracktotal, FALSE);
+			break;
 		case RHYTHMDB_PROP_DISC_NUMBER:
 			save_entry_ulong (ctx, elt_name, entry->discnum, FALSE);
+			break;
+		case RHYTHMDB_PROP_DISC_TOTAL:
+			save_entry_ulong (ctx, elt_name, entry->disctotal, FALSE);
 			break;
 		case RHYTHMDB_PROP_DATE:
 			if (g_date_valid (&entry->date))
