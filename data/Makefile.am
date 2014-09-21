@@ -33,6 +33,10 @@ servicedir = $(datadir)/dbus-1/services
 service_in_files = org.gnome.Rhythmbox3.service.in
 service_DATA = $(service_in_files:.service.in=.service)
 
+appdatadir = $(datadir)/appdata
+appdata_DATA = $(appdata_in_files:.xml.in=.xml)
+appdata_in_files = rhythmbox.appdata.xml.in
+
 # Rule to make the service file with bindir expanded
 $(service_DATA): $(service_in_files) Makefile
 	@sed -e "s|\@bindir\@|$(bindir)|" $< > $@
@@ -56,6 +60,7 @@ EXTRA_DIST = $(service_in_files)    \
 	     $(man_MANS)            \
 	     $(playlists_in_files)  \
 	     $(profiles_DATA)       \
+	     $(appdata_in_files)    \
 	     rhythmbox.desktop.in.in \
 	     rhythmbox-device.desktop.in.in
 
@@ -66,4 +71,5 @@ CLEANFILES = 					\
 	playlists.xml				\
 	rhythmbox.desktop.in			\
 	rhythmbox-device.desktop.in		\
-	gschemas.compiled
+	gschemas.compiled			\
+	$(appdata_DATA)
