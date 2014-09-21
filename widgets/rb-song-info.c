@@ -1572,7 +1572,7 @@ rb_song_info_update_date_added (RBSongInfo *song_info)
 }
 
 static gboolean
-sync_string_property (RBSongInfo *dialog, RhythmDBPropType property, GtkWidget *entry)
+sync_string_property_multiple (RBSongInfo *dialog, RhythmDBPropType property, GtkWidget *entry)
 {
 	const char *new_text;
 	GValue val = {0,};
@@ -1602,7 +1602,7 @@ sync_string_property (RBSongInfo *dialog, RhythmDBPropType property, GtkWidget *
 }
 
 static gboolean
-sync_ulong_property (RBSongInfo *dialog, RhythmDBPropType property, GtkWidget *entry)
+sync_ulong_property_multiple (RBSongInfo *dialog, RhythmDBPropType property, GtkWidget *entry)
 {
 	const char *new_text;
 	gint val_int;
@@ -1648,15 +1648,15 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 	gboolean changed = FALSE;
 	RhythmDBEntry *entry;
 
-	changed |= sync_string_property (dialog, RHYTHMDB_PROP_ALBUM, dialog->priv->album);
-	changed |= sync_string_property (dialog, RHYTHMDB_PROP_ARTIST, dialog->priv->artist);
-	changed |= sync_string_property (dialog, RHYTHMDB_PROP_ALBUM_ARTIST, dialog->priv->album_artist);
-	changed |= sync_string_property (dialog, RHYTHMDB_PROP_COMPOSER, dialog->priv->composer);
-	changed |= sync_string_property (dialog, RHYTHMDB_PROP_GENRE, dialog->priv->genre);
-	changed |= sync_string_property (dialog, RHYTHMDB_PROP_ARTIST_SORTNAME, dialog->priv->artist_sortname);
-	changed |= sync_string_property (dialog, RHYTHMDB_PROP_ALBUM_SORTNAME, dialog->priv->album_sortname);
-	changed |= sync_string_property (dialog, RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, dialog->priv->album_artist_sortname);
-	changed |= sync_string_property (dialog, RHYTHMDB_PROP_COMPOSER_SORTNAME, dialog->priv->composer_sortname);
+	changed |= sync_string_property_multiple (dialog, RHYTHMDB_PROP_ALBUM, dialog->priv->album);
+	changed |= sync_string_property_multiple (dialog, RHYTHMDB_PROP_ARTIST, dialog->priv->artist);
+	changed |= sync_string_property_multiple (dialog, RHYTHMDB_PROP_ALBUM_ARTIST, dialog->priv->album_artist);
+	changed |= sync_string_property_multiple (dialog, RHYTHMDB_PROP_COMPOSER, dialog->priv->composer);
+	changed |= sync_string_property_multiple (dialog, RHYTHMDB_PROP_GENRE, dialog->priv->genre);
+	changed |= sync_string_property_multiple (dialog, RHYTHMDB_PROP_ARTIST_SORTNAME, dialog->priv->artist_sortname);
+	changed |= sync_string_property_multiple (dialog, RHYTHMDB_PROP_ALBUM_SORTNAME, dialog->priv->album_sortname);
+	changed |= sync_string_property_multiple (dialog, RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, dialog->priv->album_artist_sortname);
+	changed |= sync_string_property_multiple (dialog, RHYTHMDB_PROP_COMPOSER_SORTNAME, dialog->priv->composer_sortname);
 
 	if (strlen (year_str) > 0) {
 		GDate *date = NULL;
@@ -1685,11 +1685,55 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 
 	}
 
-	changed |= sync_ulong_property(dialog, RHYTHMDB_PROP_DISC_NUMBER, dialog->priv->disc_cur);
-	changed |= sync_ulong_property(dialog, RHYTHMDB_PROP_DISC_TOTAL, dialog->priv->disc_total);
+	changed |= sync_ulong_property_multiple (dialog, RHYTHMDB_PROP_DISC_NUMBER, dialog->priv->disc_cur);
+	changed |= sync_ulong_property_multiple (dialog, RHYTHMDB_PROP_DISC_TOTAL, dialog->priv->disc_total);
 
 	if (changed)
 		rhythmdb_commit (dialog->priv->db);
+}
+
+static gboolean
+sync_property_ulong_single (RBSongInfo *dialog,
+			    RhythmDBEntry *entry,
+			    guint property,
+			    GtkWidget *w)
+{
+	char *endptr;
+
+	const char *new_text = gtk_entry_get_text (GTK_ENTRY (w));
+	gulong prop_val = g_ascii_strtoull (new_text, &endptr, 10);
+	gulong entry_val = rhythmdb_entry_get_ulong (entry, property);
+
+	if ((endptr != new_text) && (prop_val != entry_val)) {
+		GValue val = {0,};
+
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, prop_val);
+		rhythmdb_entry_set (dialog->priv->db, entry, property, &val);
+
+		return TRUE;
+	}
+	return FALSE;
+}
+
+static gboolean
+sync_property_string_single (RBSongInfo *dialog,
+			     RhythmDBEntry *dbentry,
+			     guint property,
+			     const gchar *prop_val)
+{
+	const char *entry_string = rhythmdb_entry_get_string (dbentry,
+							      property);
+	if (g_strcmp0 (prop_val, entry_string)) {
+		GValue val = {0,};
+
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, prop_val);
+		rhythmdb_entry_set (dialog->priv->db, dbentry,
+				    property, &val);
+		return TRUE;
+	}
+	return FALSE;
 }
 
 static void
@@ -1701,24 +1745,15 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	const char *album;
 	const char *album_artist;
 	const char *composer;
-	const char *tracknum_str;
-	const char *tracktotal_str;
-	const char *discnum_str;
-	const char *disctotal_str;
 	const char *year_str;
 	const char *artist_sortname;
 	const char *album_sortname;
 	const char *album_artist_sortname;
 	const char *composer_sortname;
-	const char *entry_string;
 	const char *bpm_str;
 	char *comment = NULL;
 	char *endptr;
 	GType type;
-	gulong tracknum;
-	gulong tracktotal;
-	gulong discnum;
-	gulong disctotal;
 	gulong year;
 	gulong entry_val;
 	gdouble bpm;
@@ -1734,10 +1769,6 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	album = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album));
 	album_artist = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album_artist));
 	composer = gtk_entry_get_text (GTK_ENTRY (dialog->priv->composer));
-	tracknum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->track_cur));
-	tracktotal_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->track_total));
-	discnum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->disc_cur));
-	disctotal_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->disc_total));
 	year_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->year));
 	artist_sortname = gtk_entry_get_text (GTK_ENTRY (dialog->priv->artist_sortname));
 	album_sortname = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album_sortname));
@@ -1751,49 +1782,22 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	g_signal_emit (dialog, rb_song_info_signals[PRE_METADATA_CHANGE], 0,
 		       entry);
 
-	tracknum = g_ascii_strtoull (tracknum_str, &endptr, 10);
-	entry_val = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_NUMBER);
-	if ((endptr != tracknum_str) && (tracknum != entry_val)) {
-		type = rhythmdb_get_property_type (dialog->priv->db,
-						   RHYTHMDB_PROP_TRACK_NUMBER);
-		g_value_init (&val, type);
-		g_value_set_ulong (&val, tracknum);
-		rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
-
-	tracktotal = g_ascii_strtoull (tracktotal_str, &endptr, 10);
-	entry_val = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TRACK_TOTAL);
-	if ((endptr != tracktotal_str) && (tracktotal != entry_val)) {
-		g_value_init (&val, G_TYPE_ULONG);
-		g_value_set_ulong (&val, tracktotal);
-		rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_TRACK_TOTAL, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
-
-	discnum = g_ascii_strtoull (discnum_str, &endptr, 10);
-	entry_val = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER);
-	if ((endptr != discnum_str) && (discnum != entry_val)) {
-		type = rhythmdb_get_property_type (dialog->priv->db,
-						   RHYTHMDB_PROP_DISC_NUMBER);
-		g_value_init (&val, type);
-		g_value_set_ulong (&val, discnum);
-		rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_DISC_NUMBER, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
-
-	disctotal = g_ascii_strtoull (disctotal_str, &endptr, 10);
-	entry_val = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_TOTAL);
-	if ((endptr != discnum_str) && (discnum != entry_val)) {
-		g_value_init (&val, G_TYPE_ULONG);
-		g_value_set_ulong (&val, disctotal);
-		rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_DISC_TOTAL, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
+	changed |= sync_property_ulong_single (dialog,
+					       entry,
+					       RHYTHMDB_PROP_TRACK_NUMBER,
+					       dialog->priv->track_cur);
+	changed |= sync_property_ulong_single (dialog,
+					       entry,
+					       RHYTHMDB_PROP_TRACK_TOTAL,
+					       dialog->priv->track_total);
+	changed |= sync_property_ulong_single (dialog,
+					       entry,
+					       RHYTHMDB_PROP_DISC_NUMBER,
+					       dialog->priv->disc_cur);
+	changed |= sync_property_ulong_single (dialog,
+					       entry,
+					       RHYTHMDB_PROP_DISC_TOTAL,
+					       dialog->priv->disc_total);
 
 	year = g_ascii_strtoull (year_str, &endptr, 10);
 	entry_val = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_YEAR);
@@ -1837,137 +1841,18 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 		g_value_unset (&val);
 		changed = TRUE;
 	}
-	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE);
-	if (g_strcmp0 (title, entry_string)) {
-		type = rhythmdb_get_property_type (dialog->priv->db,
-						   RHYTHMDB_PROP_TITLE);
-		g_value_init (&val, type);
-		g_value_set_string (&val, title);
-		rhythmdb_entry_set (dialog->priv->db, entry,
-				    RHYTHMDB_PROP_TITLE, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
 
-	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
-	if (g_strcmp0 (album, entry_string)) {
-		type = rhythmdb_get_property_type (dialog->priv->db,
-						   RHYTHMDB_PROP_ALBUM);
-		g_value_init (&val, type);
-		g_value_set_string (&val, album);
-		rhythmdb_entry_set (dialog->priv->db, entry,
-				    RHYTHMDB_PROP_ALBUM, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
-
-	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
-	if (g_strcmp0 (artist, entry_string)) {
-		type = rhythmdb_get_property_type (dialog->priv->db,
-						   RHYTHMDB_PROP_ARTIST);
-		g_value_init (&val, type);
-		g_value_set_string (&val, artist);
-		rhythmdb_entry_set (dialog->priv->db, entry,
-				    RHYTHMDB_PROP_ARTIST, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
-
-	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_ARTIST);
-	if (g_strcmp0 (album_artist, entry_string)) {
-		type = rhythmdb_get_property_type (dialog->priv->db,
-						   RHYTHMDB_PROP_ALBUM_ARTIST);
-		g_value_init (&val, type);
-		g_value_set_string (&val, album_artist);
-		rhythmdb_entry_set (dialog->priv->db, entry,
-				    RHYTHMDB_PROP_ALBUM_ARTIST, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
-
-	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_COMPOSER);
-	if (g_strcmp0 (composer, entry_string)) {
-		type = rhythmdb_get_property_type (dialog->priv->db,
-						   RHYTHMDB_PROP_COMPOSER);
-		g_value_init (&val, type);
-		g_value_set_string (&val, composer);
-		rhythmdb_entry_set (dialog->priv->db, entry,
-				    RHYTHMDB_PROP_COMPOSER, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
-
-	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE);
-	if (g_strcmp0 (genre, entry_string)) {
-		type = rhythmdb_get_property_type (dialog->priv->db,
-						   RHYTHMDB_PROP_GENRE);
-		g_value_init (&val, type);
-		g_value_set_string (&val, genre);
-		rhythmdb_entry_set (dialog->priv->db, entry,
-				    RHYTHMDB_PROP_GENRE, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
-
-	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST_SORTNAME);
-	if (g_strcmp0 (artist_sortname, entry_string)) {
-		type = rhythmdb_get_property_type (dialog->priv->db,
-						   RHYTHMDB_PROP_ARTIST_SORTNAME);
-		g_value_init (&val, type);
-		g_value_set_string (&val, artist_sortname);
-		rhythmdb_entry_set (dialog->priv->db, entry,
-				    RHYTHMDB_PROP_ARTIST_SORTNAME, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
-
-	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_SORTNAME);
-	if (g_strcmp0 (album_sortname, entry_string)) {
-		type = rhythmdb_get_property_type (dialog->priv->db,
-						   RHYTHMDB_PROP_ALBUM_SORTNAME);
-		g_value_init (&val, type);
-		g_value_set_string (&val, album_sortname);
-		rhythmdb_entry_set (dialog->priv->db, entry,
-				    RHYTHMDB_PROP_ALBUM_SORTNAME, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
-
-	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_COMMENT);
-	if (g_strcmp0 (comment, entry_string)) {
-		type = rhythmdb_get_property_type (dialog->priv->db,
-						   RHYTHMDB_PROP_COMMENT);
-		g_value_init (&val, type);
-		g_value_set_string (&val, comment);
-		rhythmdb_entry_set (dialog->priv->db, entry,
-				    RHYTHMDB_PROP_COMMENT, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
-
-	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME);
-	if (g_strcmp0 (album_artist_sortname, entry_string)) {
-		type = rhythmdb_get_property_type (dialog->priv->db,
-						   RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME);
-		g_value_init (&val, type);
-		g_value_set_string (&val, album_artist_sortname);
-		rhythmdb_entry_set (dialog->priv->db, entry,
-				    RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
-
-	entry_string = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_COMPOSER_SORTNAME);
-	if (g_strcmp0 (composer_sortname, entry_string)) {
-		type = rhythmdb_get_property_type (dialog->priv->db,
-						   RHYTHMDB_PROP_COMPOSER_SORTNAME);
-		g_value_init (&val, type);
-		g_value_set_string (&val, composer_sortname);
-		rhythmdb_entry_set (dialog->priv->db, entry,
-				    RHYTHMDB_PROP_COMPOSER_SORTNAME, &val);
-		g_value_unset (&val);
-		changed = TRUE;
-	}
+	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_TITLE, title);
+	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_ALBUM, album);
+	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_ARTIST, artist);
+	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_ALBUM_ARTIST, album_artist);
+	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_COMPOSER, composer);
+	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_GENRE, genre);
+	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_ARTIST_SORTNAME, artist_sortname);
+	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_ALBUM_SORTNAME, album_sortname);
+	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_COMMENT, comment);
+	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, album_artist_sortname);
+	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_COMPOSER_SORTNAME, composer_sortname);
 
 	/* FIXME: when an entry is SYNCed, a changed signal is emitted, and
 	 * this signal is also emitted, aren't they redundant?
