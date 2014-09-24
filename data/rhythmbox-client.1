@@ -24,7 +24,8 @@ rhythmbox-client \- controls a running instance of rhythmbox
 is a tool for controlling an already running instance of
 .B rhythmbox. 
 It's useful for remote control scripting, adding specific files to the library
-from the shell, or printing details of what's playing. Any files specified after
+from the shell, or printing details of what's playing. It also has an interactive
+mode, useful for controlling playback remotely via ssh. Any files specified after
 the option arguments will be added to the library.  If the
 .B \-\-enqueue
 option is given, the files will also be added to the play queue.
@@ -42,6 +43,8 @@ Do not start a new instance of rhythmbox
 .B \-\-quit
 Quit rhythmbox
 .TP
+.B \-i,\-\-interactive
+Start interactive mode
 .B \-\-no-present
 Don't present an existing rhythmbox window
 .TP
