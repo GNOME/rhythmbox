@@ -10,9 +10,9 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-08-03 09:12+0000\n"
-"PO-Revision-Date: 2014-09-16 21:14+0100\n"
-"Last-Translator: Mattias Eriksson <snaggen@gmail.com>\n"
+"POT-Creation-Date: 2014-09-21 19:58+0000\n"
+"PO-Revision-Date: 2014-09-23 10:47+0100\n"
+"Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
@@ -28,7 +28,7 @@ msgstr "Kunde inte skapa ett GStreamer-sinkelement för att skriva till %s"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:524
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2850
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2892
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Misslyckades med att öppna utdataenhet: %s"
@@ -46,48 +46,48 @@ msgid "Failed to create %s element; check your GStreamer installation"
 msgstr ""
 "Misslyckades med att skapa %s-element; kontrollera din GStreamer-installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1100
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1114
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1111
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1125
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Misslyckades med att länka ny ström in i GStreamer-rörledning"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1158
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1169
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Misslyckades med att starta ny ström"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2777
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2819
 #, c-format
 msgid "Failed to open output device"
 msgstr "Misslyckades med att öppna utdataenhet"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3131
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3205
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3168
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3242
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Misslyckades med att skapa GStreamer-element; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3145
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3182
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Misslyckades med att skapa ljudutmatningselement; kontrollera din "
 "installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3179
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3222
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3249
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3216
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3259
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3269
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3286
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3296
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3306
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Misslyckades med att länka GStreamer-rörledning; kontrollera din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3364
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3401
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Misslyckades med att skapa GStreamer-rörledning för att spela upp %s"
@@ -659,41 +659,41 @@ msgid "Cancel Download"
 msgstr "Avbryt hämtning"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1279 ../sources/rb-media-player-source.c:933
+#: ../podcast/rb-podcast-source.c:1258 ../sources/rb-media-player-source.c:933
 msgid "Delete"
 msgstr "Ta bort"
 
 #: ../data/ui/podcast-prefs.ui.h:1
-msgid "Podcast Downloads"
-msgstr "Hämtade poddsändningar"
-
-#: ../data/ui/podcast-prefs.ui.h:2
-msgid "_Download location:"
-msgstr "_Plats att hämta till:"
-
-#: ../data/ui/podcast-prefs.ui.h:3
-msgid "Check for _new episodes:"
-msgstr "Kontrollera om det finns _nya avsnitt:"
-
-#: ../data/ui/podcast-prefs.ui.h:4
-msgid "Select Folder For Podcasts"
-msgstr "Välj mapp för poddsändningar"
-
-#: ../data/ui/podcast-prefs.ui.h:5
 msgid "Every hour"
 msgstr "Varje timme"
 
-#: ../data/ui/podcast-prefs.ui.h:6
+#: ../data/ui/podcast-prefs.ui.h:2
 msgid "Every day"
 msgstr "Varje dag"
 
-#: ../data/ui/podcast-prefs.ui.h:7
+#: ../data/ui/podcast-prefs.ui.h:3
 msgid "Every week"
 msgstr "Varje vecka"
 
-#: ../data/ui/podcast-prefs.ui.h:8
+#: ../data/ui/podcast-prefs.ui.h:4
 msgid "Manually"
 msgstr "Manuellt"
+
+#: ../data/ui/podcast-prefs.ui.h:5
+msgid "Podcast Downloads"
+msgstr "Hämtade poddsändningar"
+
+#: ../data/ui/podcast-prefs.ui.h:6
+msgid "_Download location:"
+msgstr "_Plats att hämta till:"
+
+#: ../data/ui/podcast-prefs.ui.h:7
+msgid "Check for _new episodes:"
+msgstr "Kontrollera om det finns _nya avsnitt:"
+
+#: ../data/ui/podcast-prefs.ui.h:8
+msgid "Select Folder For Podcasts"
+msgstr "Välj mapp för poddsändningar"
 
 #: ../data/ui/podcast-properties.ui.h:2
 msgid "Feed:"
@@ -820,12 +820,10 @@ msgid "Track _number:"
 msgstr "Spår_nummer:"
 
 #: ../data/ui/song-info.ui.h:8
-#| msgid "BPM:"
 msgid "_BPM:"
 msgstr "S_lag/minut:"
 
 #: ../data/ui/song-info.ui.h:9
-#| msgid "_Comment:"
 msgid "Comm_ent:"
 msgstr "Komm_entar:"
 
@@ -2698,7 +2696,7 @@ msgstr "Skicka spår"
 msgid "Send selected tracks by email or instant message"
 msgstr "Skicka markerade spår via e-post eller snabbmeddelande"
 
-#: ../plugins/sendto/sendto.py:50
+#: ../plugins/sendto/sendto.py:51
 msgid "Send to..."
 msgstr "Skicka till..."
 
@@ -2767,8 +2765,8 @@ msgid "Episodes"
 msgstr "Avsnitt"
 
 #: ../podcast/rb-podcast-add-dialog.c:767
-#: ../podcast/rb-podcast-add-dialog.c:778 ../podcast/rb-podcast-source.c:1397
-#: ../podcast/rb-podcast-source.c:1408
+#: ../podcast/rb-podcast-add-dialog.c:778 ../podcast/rb-podcast-source.c:1373
+#: ../podcast/rb-podcast-source.c:1384
 msgid "Date"
 msgstr "Datum"
 
@@ -2905,15 +2903,15 @@ msgstr "_Ta endast bort kanal"
 msgid "_Delete Feed And Files"
 msgstr "_Ta bort kanal och filer"
 
-#: ../podcast/rb-podcast-source.c:623 ../podcast/rb-podcast-source.c:1451
+#: ../podcast/rb-podcast-source.c:623 ../podcast/rb-podcast-source.c:1427
 msgid "Downloaded"
 msgstr "Hämtat"
 
-#: ../podcast/rb-podcast-source.c:627 ../podcast/rb-podcast-source.c:1453
+#: ../podcast/rb-podcast-source.c:627 ../podcast/rb-podcast-source.c:1429
 msgid "Failed"
 msgstr "Misslyckades"
 
-#: ../podcast/rb-podcast-source.c:631 ../podcast/rb-podcast-source.c:1452
+#: ../podcast/rb-podcast-source.c:631 ../podcast/rb-podcast-source.c:1428
 msgid "Waiting"
 msgstr "Väntar"
 
@@ -2924,15 +2922,15 @@ msgid_plural "All %d feeds"
 msgstr[0] "%d kanal"
 msgstr[1] "Alla %d kanaler"
 
-#: ../podcast/rb-podcast-source.c:981
+#: ../podcast/rb-podcast-source.c:960
 msgid "Podcast Error"
 msgstr "Fel i poddsändning"
 
-#: ../podcast/rb-podcast-source.c:1143
+#: ../podcast/rb-podcast-source.c:1122
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Ta bort detta poddsändningsavsnitt och den hämtade filen?"
 
-#: ../podcast/rb-podcast-source.c:1146
+#: ../podcast/rb-podcast-source.c:1125
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -2942,43 +2940,43 @@ msgstr ""
 "förlorade. Observera att du kan ta bort avsnittet men behålla den hämtade "
 "filen genom att välja att ta bort endast avsnittet."
 
-#: ../podcast/rb-podcast-source.c:1154
+#: ../podcast/rb-podcast-source.c:1133
 msgid "Delete _Episode Only"
 msgstr "Ta _endast bort avsnittet"
 
-#: ../podcast/rb-podcast-source.c:1160
+#: ../podcast/rb-podcast-source.c:1139
 msgid "_Delete Episode And File"
 msgstr "_Ta bort avsnitt och fil"
 
-#: ../podcast/rb-podcast-source.c:1258
+#: ../podcast/rb-podcast-source.c:1237
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d avsnitt"
 msgstr[1] "%d avsnitt"
 
-#: ../podcast/rb-podcast-source.c:1430 ../podcast/rb-podcast-source.c:1485
-#: ../podcast/rb-podcast-source.c:1523
+#: ../podcast/rb-podcast-source.c:1406 ../podcast/rb-podcast-source.c:1461
+#: ../podcast/rb-podcast-source.c:1500
 msgid "Feed"
 msgstr "Kanal"
 
-#: ../podcast/rb-podcast-source.c:1450 ../podcast/rb-podcast-source.c:1468
+#: ../podcast/rb-podcast-source.c:1426 ../podcast/rb-podcast-source.c:1444
 msgid "Status"
 msgstr "Status"
 
 #. ensure search instances exist
-#: ../podcast/rb-podcast-source.c:1569
+#: ../podcast/rb-podcast-source.c:1546
 #: ../sources/rb-auto-playlist-source.c:253 ../sources/rb-browser-source.c:314
 #: ../sources/rb-browser-source.c:332
 #: ../sources/rb-static-playlist-source.c:295
 msgid "Search all fields"
 msgstr "Sök i alla fält"
 
-#: ../podcast/rb-podcast-source.c:1570
+#: ../podcast/rb-podcast-source.c:1547
 msgid "Search podcast feeds"
 msgstr "Sök poddsändningskanaler"
 
-#: ../podcast/rb-podcast-source.c:1571
+#: ../podcast/rb-podcast-source.c:1548
 msgid "Search podcast episodes"
 msgstr "Sök poddsändningsavsnitt"
 
@@ -3120,6 +3118,26 @@ msgstr "Spelar inte"
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Uppspelningsvolym är %f.\n"
+
+#: ../rhythmbox.appdata.xml.in.h:1
+msgid ""
+"Rhythmbox is a music management application, designed to work well under the "
+"GNOME desktop. In addition to music stored on your computer, it supports "
+"network shares, podcasts, radio streams, portable music devices (including "
+"phones), and internet music services such as Last.fm and Magnatune."
+msgstr ""
+"Rhythmbox är ett program för musikhantering, designat för att fungera bra i "
+"skrivbordsmiljön GNOME. Förutom musik lagrad på din dator stöder det "
+"nätverksutdelningar, poddsändningar, radioströmmar, portabla musikenheter "
+"(inklusive mobiler) och musiktjänster på internet som Last.fm och Magnatune."
+
+#: ../rhythmbox.appdata.xml.in.h:2
+msgid ""
+"Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
+"via plugins written in Python or C."
+msgstr ""
+"Rhythmbox är fri programvara, baserad på GTK+ och GStreamer, och är "
+"utökningsbar genom insticksmoduler skrivna i Python eller C."
 
 #: ../rhythmdb/rhythmdb.c:781
 #, c-format
@@ -3418,7 +3436,7 @@ msgstr "Alla filer"
 msgid "Load Playlist"
 msgstr "Läs in spellista"
 
-#: ../shell/rb-playlist-manager.c:1148 ../sources/rb-playlist-source.c:707
+#: ../shell/rb-playlist-manager.c:1148 ../sources/rb-playlist-source.c:708
 msgid "Couldn't save playlist"
 msgstr "Kunde inte spara spellista"
 
@@ -3859,7 +3877,7 @@ msgid_plural "%d missing files"
 msgstr[0] "%d saknad fil"
 msgstr[1] "%d saknade filer"
 
-#: ../sources/rb-playlist-source.c:1190
+#: ../sources/rb-playlist-source.c:1191
 msgid "Remove from Playlist"
 msgstr "Ta bort från spellista"
 
@@ -4018,8 +4036,6 @@ msgid "%s / %s"
 msgstr "%s / %s"
 
 #: ../widgets/rb-import-dialog.c:339
-#| msgid "%d missing file"
-#| msgid_plural "%d missing files"
 msgid "Examining files"
 msgstr "Undersöker filer"
 
@@ -4048,35 +4064,35 @@ msgid_plural "Import %d listed tracks"
 msgstr[0] "Importera %d listat spår"
 msgstr[1] "Importera %d listade spår"
 
-#: ../widgets/rb-property-view.c:660
+#: ../widgets/rb-property-view.c:661
 #, c-format
 msgid "%d artist (%d)"
 msgid_plural "All %d artists (%d)"
 msgstr[0] "%d artist (%d)"
 msgstr[1] "Alla %d artister (%d)"
 
-#: ../widgets/rb-property-view.c:663
+#: ../widgets/rb-property-view.c:664
 #, c-format
 msgid "%d album (%d)"
 msgid_plural "All %d albums (%d)"
 msgstr[0] "%d album (%d)"
 msgstr[1] "Alla %d album (%d)"
 
-#: ../widgets/rb-property-view.c:666
+#: ../widgets/rb-property-view.c:667
 #, c-format
 msgid "%d genre (%d)"
 msgid_plural "All %d genres (%d)"
 msgstr[0] "%d genre (%d)"
 msgstr[1] "Alla %d genrer (%d)"
 
-#: ../widgets/rb-property-view.c:669
+#: ../widgets/rb-property-view.c:670
 #, c-format
 msgid "%d (%d)"
 msgid_plural "All %d (%d)"
 msgstr[0] "%d (%d)"
 msgstr[1] "Alla %d (%d)"
 
-#: ../widgets/rb-property-view.c:675
+#: ../widgets/rb-property-view.c:676
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
