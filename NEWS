@@ -1,3 +1,60 @@
+Overview of changes in Rhythmbox 3.1
+====================================
+
+* Assorted bug fixes
+* GTK+ 3.14 compatible
+* Now includes an AppData file
+
+Bugs fixed:
+
+637747 - "Edit > Preferences > General > Visibile Columns > BPM" missing mnemonic
+686082 - UPNP servers do not get removed after they become unavailable
+702885 - SendTo plugin does not work with music files containing apostrophe
+723020 - Rhythmbox incorrectly reads the year tag of m4a files
+725884 - support libsecret 0.18 (SecretUnstable to Secret API change)
+729373 - rhythmbox crashes upon "Jump to Playing Song"
+731025 - Song properties dialog "Basic" tab, "Comment" keyboard mnemonic is same as "Composer"
+731202 - Notification disappears when I pause my music
+731236 - New Radio Paradise URLs
+732764 - The latest rhythmbox needs atleast libglib 2.34
+732880 - Wording used for importing music in import screen is not clear
+733499 - rhythmbox crashes with SIGSEGV due to double free in rb_podcast_parse_channel_free
+733526 - rhythmbox / audioscrobbler fails if built from separate build dir
+733586 - Inequal sizing and alignment in rhythmbox UI.
+733636 - grilo: Do not free GrlRegistry
+734057 - rhythmbox-client --stop
+734123 - Rhythmbox 3.0.2 crashes if attempting to load pls stream before any other type
+734235 - AAC tags are improperly parsed for the "year" field
+735021 - daap source compilation failure with ubuntu 14.04
+735056 - Rating stars are not vertically aligned in GtkTreeView listing
+735083 - Rhythmbox crash when adding songs to a playlist
+735954 - Right-clicking on song causes Segmentation fault
+737053 - song-info ui files need update
+737368 - rhythmbox.appdata.xml.in is in wrong location
+
+
+Translation updates:
+
+- ar, courtesy of Ibrahim Saed
+- cs, courtesy of Marek Černocký
+- de, courtesy of Wolfgang Stoeggl
+- el, courtesy of Tom Tryfonidis
+- es, courtesy of Daniel Mustieles
+- fi, courtesy of Jiri Grönroos
+- fr, courtesy of Claude Paroz
+- gd, courtesy of GunChleoc
+- hu, courtesy of Balázs Úr
+- id, courtesy of Andika Triwidada
+- ja, courtesy of Jiro Matsuzawa
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Rafael Ferreira
+- ro, courtesy of Daniel Șerbănescu
+- sk, courtesy of Dušan Kazik
+- sl, courtesy of Matej Urbančič
+- sv, courtesy of Anders Jonsson
+- zh_TW, courtesy of Cheng-Chia Tseng
+
+
 Overview of changes in Rhythmbox 3.0.3  "Devilfish"
 ===================================================
 
