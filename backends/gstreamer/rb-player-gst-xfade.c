@@ -334,6 +334,7 @@ typedef struct
 	GstElement *identity;
 	gboolean decoder_linked;
 	gboolean emitted_playing;
+	gboolean emitted_image;
 	gboolean emitted_fake_playing;
 
 	GstPad *decoder_pad;
@@ -1198,6 +1199,7 @@ reuse_stream (RBXFadeStream *stream)
 	stream->new_stream_data_destroy = NULL;
 
 	stream->emitted_playing = FALSE;
+	stream->emitted_image = FALSE;
 }
 
 
@@ -1304,6 +1306,7 @@ unlink_reuse_relink (RBPlayerGstXFade *player, RBXFadeStream *stream)
 
 	stream->needs_unlink = FALSE;
 	stream->emitted_playing = FALSE;
+	stream->emitted_image = FALSE;
 
 	g_mutex_unlock (&stream->lock);
 
@@ -1353,6 +1356,7 @@ unlink_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 
 	stream->src_blocked = TRUE;
 	stream->emitted_playing = FALSE;
+	stream->emitted_image = FALSE;
 
 	stream_state = stream->state;
 	player = stream->player;
@@ -1542,13 +1546,17 @@ process_tag (const GstTagList *list, const gchar *tag, RBXFadeStream *stream)
 
 	/* process embedded images */
 	if (!g_strcmp0 (tag, GST_TAG_IMAGE) || !g_strcmp0 (tag, GST_TAG_PREVIEW_IMAGE)) {
-		GdkPixbuf *pixbuf;
-		pixbuf = rb_gst_process_embedded_image (list, tag);
-		if (pixbuf != NULL) {
-			_rb_player_emit_image (RB_PLAYER (stream->player),
-					       stream->stream_data,
-					       pixbuf);
-			g_object_unref (pixbuf);
+		if (stream->emitted_playing == FALSE || stream->emitted_image == FALSE) {
+			GdkPixbuf *pixbuf;
+			pixbuf = rb_gst_process_embedded_image (list, tag);
+			if (pixbuf != NULL) {
+				_rb_player_emit_image (RB_PLAYER (stream->player),
+						       stream->stream_data,
+						       pixbuf);
+				g_object_unref (pixbuf);
+				stream->emitted_image = TRUE;
+				rb_debug ("emitting tag %s (p %d)", tag, stream->emitted_playing);
+			}
 		}
 	} else if (rb_gst_process_tag_string (list, tag, &field, &value)) {
 		rb_debug ("emitting info field %d", field);
