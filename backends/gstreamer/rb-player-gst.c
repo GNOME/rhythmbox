@@ -110,6 +110,7 @@ struct _RBPlayerGstPrivate
 	gboolean current_track_finishing;
 	gboolean playbin_stream_changing;
 	gboolean track_change;
+	gboolean emitted_image;
 
 	gboolean emitted_error;
 
@@ -222,13 +223,16 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayerGst *player)
 
 	/* process embedded images */
 	if (!g_strcmp0 (tag, GST_TAG_IMAGE) || !g_strcmp0 (tag, GST_TAG_PREVIEW_IMAGE)) {
-		GdkPixbuf *pixbuf;
-		pixbuf = rb_gst_process_embedded_image (list, tag);
-		if (pixbuf != NULL) {
-			_rb_player_emit_image (RB_PLAYER (player),
-					       player->priv->stream_data,
-					       pixbuf);
-			g_object_unref (pixbuf);
+		if (player->priv->stream_change_pending || (player->priv->emitted_image == FALSE)) {
+			GdkPixbuf *pixbuf;
+			pixbuf = rb_gst_process_embedded_image (list, tag);
+			if (pixbuf != NULL) {
+				_rb_player_emit_image (RB_PLAYER (player),
+						       player->priv->stream_data,
+						       pixbuf);
+				g_object_unref (pixbuf);
+				player->priv->emitted_image = TRUE;
+			}
 		}
 	} else if (rb_gst_process_tag_string (list, tag, &field, &value)) {
 		rb_debug ("emitting info field %d", field);
@@ -839,6 +843,7 @@ impl_open (RBPlayer *player,
 	mp->priv->next_stream_data_destroy = stream_data_destroy;
 	mp->priv->emitted_error = FALSE;
 	mp->priv->stream_change_pending = TRUE;
+	mp->priv->emitted_image = FALSE;
 
 	return TRUE;
 }
