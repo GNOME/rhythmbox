@@ -402,10 +402,7 @@ podcast_add_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data
 void
 rb_podcast_source_add_feed (RBPodcastSource *source, const char *text)
 {
-	GtkWidget *window;
-
-	window = gtk_widget_get_toplevel (GTK_WIDGET (source));
-	g_action_group_activate_action (G_ACTION_GROUP (window), "podcast-add", NULL);
+	g_action_group_activate_action (G_ACTION_GROUP (g_application_get_default ()), "podcast-add", NULL);
 
 	rb_podcast_add_dialog_reset (RB_PODCAST_ADD_DIALOG (source->priv->add_dialog), text, TRUE);
 }
