@@ -78,6 +78,7 @@ typedef struct
 
 	GHashTable *player_property_changes;
 	GHashTable *playlist_property_changes;
+	gboolean emit_seeked;
 	guint property_emit_id;
 
 	gint64 last_elapsed;
@@ -162,6 +163,22 @@ emit_properties_idle (RBMprisPlugin *plugin)
 		plugin->playlist_property_changes = NULL;
 	}
 
+	if (plugin->emit_seeked) {
+		GError *error = NULL;
+		rb_debug ("emitting Seeked; new time %" G_GINT64_FORMAT, plugin->last_elapsed/1000);
+		g_dbus_connection_emit_signal (plugin->connection,
+					       NULL,
+					       MPRIS_OBJECT_NAME,
+					       MPRIS_PLAYER_INTERFACE,
+					       "Seeked",
+					       g_variant_new ("(x)", plugin->last_elapsed / 1000),
+					       &error);
+		if (error != NULL) {
+			g_warning ("Unable to set MPRIS Seeked signal: %s", error->message);
+			g_clear_error (&error);
+		}
+		plugin->emit_seeked = 0;
+	}
 	plugin->property_emit_id = 0;
 	return FALSE;
 }
@@ -1315,8 +1332,6 @@ player_has_prev_changed_cb (GObject *object, GParamSpec *pspec, RBMprisPlugin *p
 static void
 elapsed_nano_changed_cb (RBShellPlayer *player, gint64 elapsed, RBMprisPlugin *plugin)
 {
-	GError *error = NULL;
-
 	/* interpret any change in the elapsed time other than an
 	 * increase of less than one second as a seek.  this includes
 	 * the seek back that we do after pausing (with crossfading),
@@ -1329,18 +1344,10 @@ elapsed_nano_changed_cb (RBShellPlayer *player, gint64 elapsed, RBMprisPlugin *p
 		return;
 	}
 
-	rb_debug ("emitting Seeked; new time %" G_GINT64_FORMAT, elapsed/1000);
-	g_dbus_connection_emit_signal (plugin->connection,
-				       NULL,
-				       MPRIS_OBJECT_NAME,
-				       MPRIS_PLAYER_INTERFACE,
-				       "Seeked",
-				       g_variant_new ("(x)", elapsed / 1000),
-				       &error);
-	if (error != NULL) {
-		g_warning ("Unable to set MPRIS Seeked signal: %s", error->message);
-		g_clear_error (&error);
+	if (plugin->property_emit_id == 0) {
+		plugin->property_emit_id = g_idle_add ((GSourceFunc)emit_properties_idle, plugin);
 	}
+	plugin->emit_seeked = TRUE;
 	plugin->last_elapsed = elapsed;
 }
 
