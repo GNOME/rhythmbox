@@ -30,6 +30,7 @@
 
 #include <glib-object.h>
 
+#include <stdbool.h> /* for tdb.h */
 #include <sys/types.h>
 #include <tdb.h>
 
