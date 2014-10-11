@@ -115,7 +115,7 @@ struct RBPodcastManagerPrivate
 	gboolean shutdown;
 	RBExtDB *art_store;
 
-	GList *searches;
+	GArray *searches;
 	GSettings *settings;
 	GFile *timestamp_file;
 };
@@ -262,6 +262,7 @@ rb_podcast_manager_constructed (GObject *object)
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_manager_parent_class, constructed, object);
 
 	/* add built in search types */
+	pd->priv->searches = g_array_new (FALSE, FALSE, sizeof (GType));
 	rb_podcast_manager_add_search (pd, rb_podcast_search_itunes_get_type ());
 	rb_podcast_manager_add_search (pd, rb_podcast_search_miroguide_get_type ());
 
@@ -346,7 +347,7 @@ rb_podcast_manager_finalize (GObject *object)
 		g_list_free (pd->priv->download_list);
 	}
 
-	g_list_free (pd->priv->searches);
+	g_array_free (pd->priv->searches, TRUE);
 
 	G_OBJECT_CLASS (rb_podcast_manager_parent_class)->finalize (object);
 }
@@ -2253,7 +2254,7 @@ rb_podcast_manager_get_podcast_dir (RBPodcastManager *pd)
 void
 rb_podcast_manager_add_search (RBPodcastManager *pd, GType search_type)
 {
-	pd->priv->searches = g_list_append (pd->priv->searches, GUINT_TO_POINTER (search_type));
+	g_array_append_val (pd->priv->searches, search_type);
 }
 
 /**
@@ -2268,13 +2269,13 @@ GList *
 rb_podcast_manager_get_searches (RBPodcastManager *pd)
 {
 	GList *searches = NULL;
-	GList *i;
+	int i;
 
-	for (i = pd->priv->searches; i != NULL; i = i->next) {
+	for (i = 0; i < pd->priv->searches->len; i++) {
 		RBPodcastSearch *search;
 		GType search_type;
 
-		search_type = GPOINTER_TO_UINT (i->data);
+		search_type = g_array_index (pd->priv->searches, GType, i);
 		search = RB_PODCAST_SEARCH (g_object_new (search_type, NULL));
 		searches = g_list_append (searches, search);
 	}
