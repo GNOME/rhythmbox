@@ -95,7 +95,7 @@ rb_rhythmdb_dmap_db_adapter_foreach	(const DMAPDb *db,
 
 	rhythmdb_entry_foreach_by_type (RB_RHYTHMDB_DMAP_DB_ADAPTER (db)->priv->db,
 					RB_RHYTHMDB_DMAP_DB_ADAPTER (db)->priv->entry_type,
-				       (GFunc) foreach_adapter,
+				        foreach_adapter,
 				        foreach_adapter_data);
 
 	g_free (foreach_adapter_data);

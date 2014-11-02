@@ -83,9 +83,9 @@ static void rhythmdb_tree_entry_delete_by_type (RhythmDB *adb, RhythmDBEntryType
 
 static RhythmDBEntry * rhythmdb_tree_entry_lookup_by_location (RhythmDB *db, RBRefString *uri);
 static RhythmDBEntry * rhythmdb_tree_entry_lookup_by_id (RhythmDB *db, gint id);
-static void rhythmdb_tree_entry_foreach (RhythmDB *adb, GFunc func, gpointer user_data);
+static void rhythmdb_tree_entry_foreach (RhythmDB *adb, RhythmDBEntryForeachFunc func, gpointer user_data);
 static gint64 rhythmdb_tree_entry_count (RhythmDB *adb);
-static void rhythmdb_tree_entry_foreach_by_type (RhythmDB *adb, RhythmDBEntryType *type, GFunc func, gpointer user_data);
+static void rhythmdb_tree_entry_foreach_by_type (RhythmDB *adb, RhythmDBEntryType *type, RhythmDBEntryForeachFunc func, gpointer user_data);
 static gint64 rhythmdb_tree_entry_count_by_type (RhythmDB *adb, RhythmDBEntryType *type);
 static gboolean rhythmdb_tree_entry_keyword_add (RhythmDB *adb, RhythmDBEntry *entry, RBRefString *keyword);
 static gboolean rhythmdb_tree_entry_keyword_remove (RhythmDB *adb, RhythmDBEntry *entry, RBRefString *keyword);
@@ -2439,7 +2439,7 @@ rhythmdb_tree_entry_foreach_func (gpointer key, RhythmDBEntry *val, GPtrArray *l
 }
 
 static void
-rhythmdb_tree_entry_foreach (RhythmDB *rdb, GFunc foreach_func, gpointer user_data)
+rhythmdb_tree_entry_foreach (RhythmDB *rdb, RhythmDBEntryForeachFunc foreach_func, gpointer user_data)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (rdb);
 	GPtrArray *list;
@@ -2468,7 +2468,7 @@ rhythmdb_tree_entry_count (RhythmDB *rdb)
 }
 
 typedef struct {
-	GFunc foreach_func;
+	RhythmDBEntryForeachFunc foreach_func;
 	gpointer data;
 } ForeachTypeData;
 
@@ -2481,7 +2481,7 @@ _foreach_by_type_cb (RhythmDB *db, RhythmDBEntry *entry, ForeachTypeData *data)
 static void
 rhythmdb_tree_entry_foreach_by_type (RhythmDB *db,
 				     RhythmDBEntryType *type,
-				     GFunc foreach_func,
+				     RhythmDBEntryForeachFunc foreach_func,
 				     gpointer data)
 {
 	ForeachTypeData ftdata = {foreach_func, data};

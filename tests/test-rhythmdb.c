@@ -136,7 +136,7 @@ START_TEST (test_rhythmdb_indexing)
 	entry = NULL;
 
 	b = FALSE;
-	rhythmdb_entry_foreach (db, (GFunc)set_true, &b);
+	rhythmdb_entry_foreach (db, (RhythmDBEntryForeachFunc) set_true, &b);
 	fail_unless (b == FALSE, "entry not deleted");
 }
 END_TEST

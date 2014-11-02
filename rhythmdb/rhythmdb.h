@@ -197,6 +197,8 @@ enum {
 #define RHYTHMDB_PROP_COVER_ART			"rb:coverArt"
 #define RHYTHMDB_PROP_COVER_ART_URI		"rb:coverArt-uri"
 
+typedef void (*RhythmDBEntryForeachFunc) (RhythmDBEntry *entry, gpointer data);
+
 GType rhythmdb_query_type_get_type (void);
 GType rhythmdb_prop_type_get_type (void);
 
@@ -290,11 +292,11 @@ struct _RhythmDBClass
 
 	gboolean 	(*impl_evaluate_query)	(RhythmDB *db, RhythmDBQuery *query, RhythmDBEntry *entry);
 
-	void		(*impl_entry_foreach)	(RhythmDB *db, GFunc func, gpointer data);
+	void		(*impl_entry_foreach)	(RhythmDB *db, RhythmDBEntryForeachFunc func, gpointer data);
 
 	gint64		(*impl_entry_count)	(RhythmDB *db);
 
-	void		(*impl_entry_foreach_by_type) (RhythmDB *db, RhythmDBEntryType *type, GFunc func, gpointer data);
+	void		(*impl_entry_foreach_by_type) (RhythmDB *db, RhythmDBEntryType *type, RhythmDBEntryForeachFunc func, gpointer data);
 
 	gint64		(*impl_entry_count_by_type) (RhythmDB *db, RhythmDBEntryType *type);
 
@@ -366,13 +368,13 @@ gboolean	rhythmdb_evaluate_query		(RhythmDB *db, RhythmDBQuery *query,
 						 RhythmDBEntry *entry);
 
 void		rhythmdb_entry_foreach		(RhythmDB *db,
-						 GFunc func,
+						 RhythmDBEntryForeachFunc func,
 						 gpointer data);
 gint64		rhythmdb_entry_count		(RhythmDB *db);
 
 void		rhythmdb_entry_foreach_by_type  (RhythmDB *db,
 						 RhythmDBEntryType *entry_type,
-						 GFunc func,
+						 RhythmDBEntryForeachFunc func,
 						 gpointer data);
 gint64		rhythmdb_entry_count_by_type	(RhythmDB *db,
 						 RhythmDBEntryType *entry_type);

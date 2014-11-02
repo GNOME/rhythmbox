@@ -3978,7 +3978,7 @@ rhythmdb_entry_lookup_from_string (RhythmDB *db,
  */
 void
 rhythmdb_entry_foreach (RhythmDB *db,
-			GFunc func,
+			RhythmDBEntryForeachFunc func,
 			gpointer data)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
@@ -4015,7 +4015,7 @@ rhythmdb_entry_count (RhythmDB *db)
 void
 rhythmdb_entry_foreach_by_type (RhythmDB *db,
 				RhythmDBEntryType *entry_type,
-				GFunc func,
+				RhythmDBEntryForeachFunc func,
 				gpointer data)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
