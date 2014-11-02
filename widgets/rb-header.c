@@ -828,6 +828,7 @@ rb_header_sync (RBHeader *header)
 		char *streaming_title;
 		char *streaming_artist;
 		char *streaming_album;
+		char *t;
 		PangoDirection widget_dir;
 
 		rb_debug ("syncing with %s",
@@ -875,7 +876,6 @@ rb_header_sync (RBHeader *header)
 		widget_dir = (gtk_widget_get_direction (GTK_WIDGET (header->priv->song)) == GTK_TEXT_DIR_LTR) ?
 			     PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL;
 
-		char *t;
 		t = rb_text_cat (widget_dir, title, TITLE_FORMAT, NULL);
 		gtk_label_set_markup (GTK_LABEL (header->priv->song), t);
 		g_free (t);
@@ -909,12 +909,19 @@ rb_header_sync (RBHeader *header)
 				from = UNICODE_MIDDLE_DOT;
 			}
 
-			t = rb_text_cat (dir,
-					 by, "%s",
-					 artist, ARTIST_FORMAT,
-					 from, "%s",
-					 album, ALBUM_FORMAT,
-					 NULL);
+			if (album != NULL && album[0] != '\0') {
+				t = rb_text_cat (dir,
+						 by, "%s",
+						 artist, ARTIST_FORMAT,
+						 from, "%s",
+						 album, ALBUM_FORMAT,
+						 NULL);
+			} else {
+				t = rb_text_cat (dir,
+						 by, "%s",
+						 artist, ARTIST_FORMAT,
+						 NULL);
+			}
 			gtk_label_set_markup (GTK_LABEL (header->priv->details), t);
 			g_free (t);
 		}
