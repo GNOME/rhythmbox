@@ -5421,27 +5421,36 @@ rhythmdb_entry_create_ext_db_key (RhythmDBEntry *entry, RhythmDBPropType prop)
 
 	switch (prop) {
 	case RHYTHMDB_PROP_ALBUM:
-		key = rb_ext_db_key_create_lookup ("album", rhythmdb_entry_get_string (entry, prop));
-		rb_ext_db_key_add_field (key,
-					 "artist",
-					 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
-		str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_ARTIST);
+		str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
 		if (g_strcmp0 (str, "") != 0 && g_strcmp0 (str, _("Unknown")) != 0) {
-			rb_ext_db_key_add_field (key, "artist", str);
-		}
+			key = rb_ext_db_key_create_lookup ("album", str);
+			rb_ext_db_key_add_field (key,
+						 "artist",
+						 rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+			str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM_ARTIST);
+			if (g_strcmp0 (str, "") != 0 && g_strcmp0 (str, _("Unknown")) != 0) {
+				rb_ext_db_key_add_field (key, "artist", str);
+			}
 
-		str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID);
-		if (g_strcmp0 (str, "") != 0 && g_strcmp0 (str, _("Unknown")) != 0) {
-			rb_ext_db_key_add_info (key, "musicbrainz-albumid", str);
+			str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMID);
+			if (g_strcmp0 (str, "") != 0 && g_strcmp0 (str, _("Unknown")) != 0) {
+				rb_ext_db_key_add_info (key, "musicbrainz-albumid", str);
+			}
+			break;
 		}
-
-		break;
+		/* fall through if there's no album information */
 
 	case RHYTHMDB_PROP_TITLE:
 		key = rb_ext_db_key_create_lookup ("title", rhythmdb_entry_get_string (entry, prop));
 		/* maybe these should be info? */
-		rb_ext_db_key_add_field (key, "artist", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
-		rb_ext_db_key_add_field (key, "album", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM));
+		str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST);
+		if (g_strcmp0 (str, "") != 0 && g_strcmp0 (str, _("Unknown")) != 0) {
+			rb_ext_db_key_add_field (key, "artist", str);
+		}
+		str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM);
+		if (g_strcmp0 (str, "") != 0 && g_strcmp0 (str, _("Unknown")) != 0) {
+			rb_ext_db_key_add_field (key, "album", str);
+		}
 		break;
 
 	case RHYTHMDB_PROP_ARTIST:
