@@ -3887,7 +3887,7 @@ rhythmdb_propid_from_nice_elt_name (RhythmDB *db,
  *
  * Looks up the entry with location @uri.
  *
- * Returns: the entry with location @uri, or NULL if no such entry exists.
+ * Returns: (transfer none): the entry with location @uri, or NULL if no such entry exists.
  */
 RhythmDBEntry *
 rhythmdb_entry_lookup_by_location (RhythmDB *db,
@@ -3910,7 +3910,7 @@ rhythmdb_entry_lookup_by_location (RhythmDB *db,
  *
  * Looks up the entry with location @uri.
  *
- * Returns: the entry with location @uri, or NULL if no such entry exists.
+ * Returns: (transfer none): the entry with location @uri, or NULL if no such entry exists.
  */
 RhythmDBEntry *
 rhythmdb_entry_lookup_by_location_refstring (RhythmDB *db,
@@ -3928,7 +3928,7 @@ rhythmdb_entry_lookup_by_location_refstring (RhythmDB *db,
  *
  * Looks up the entry with id @id.
  *
- * Returns: the entry with id @id, or NULL if no such entry exists.
+ * Returns: (transfer none): the entry with id @id, or NULL if no such entry exists.
  */
 RhythmDBEntry *
 rhythmdb_entry_lookup_by_id (RhythmDB *db,
@@ -3948,7 +3948,7 @@ rhythmdb_entry_lookup_by_id (RhythmDB *db,
  * Locates an entry using a string containing either an entry ID
  * or a location.
  *
- * Returns: the entry matching the string, or NULL if no such entry exists.
+ * Returns: (transfer none): the entry matching the string, or NULL if no such entry exists.
  */
 RhythmDBEntry *
 rhythmdb_entry_lookup_from_string (RhythmDB *db,
