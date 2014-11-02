@@ -852,6 +852,30 @@ rhythmdb_query_model_new_empty (RhythmDB *db)
 			     "db", db, NULL);
 }
 
+/**
+ * rhythmdb_query_model_new_for_entry_type:
+ * @db: the #RhythmDB
+ * @entry_type: the #RhythmDBEntryType to display
+ * @show_hidden: if %TRUE, show hidden entries
+ *
+ * Return value: the newly constructed query model
+ */
+RhythmDBQueryModel *
+rhythmdb_query_model_new_for_entry_type (RhythmDB *db,
+					 RhythmDBEntryType *entry_type,
+					 gboolean show_hidden)
+{
+	RhythmDBQueryModel *model;
+	model = rhythmdb_query_model_new_empty (db);
+	g_object_set (model, "show-hidden", show_hidden, NULL);
+	rhythmdb_do_full_query_async (db,
+				      RHYTHMDB_QUERY_RESULTS (model),
+				      RHYTHMDB_QUERY_PROP_EQUALS, RHYTHMDB_PROP_TYPE, entry_type,
+				      RHYTHMDB_QUERY_END);
+	return model;
+}
+
+
 static void
 _copy_contents_foreach_cb (RhythmDBEntry *entry, RhythmDBQueryModel *dest)
 {

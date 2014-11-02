@@ -101,6 +101,10 @@ RhythmDBQueryModel *	rhythmdb_query_model_new		(RhythmDB *db,
 
 RhythmDBQueryModel *	rhythmdb_query_model_new_empty		(RhythmDB *db);
 
+RhythmDBQueryModel *	rhythmdb_query_model_new_for_entry_type (RhythmDB *db,
+								 RhythmDBEntryType *entry_type,
+								 gboolean show_hidden);
+
 void			rhythmdb_query_model_copy_contents	(RhythmDBQueryModel *dest,
 								 RhythmDBQueryModel *src);
 
