@@ -297,7 +297,7 @@ rhythmdb_query_append_params (RhythmDB *db, GPtrArray *query,
 		data->propid = prop;
 		data->val = g_new0 (GValue, 1);
 		g_value_init (data->val, rhythmdb_get_property_type (db, data->propid));
-		g_value_copy (value, data->val);
+		g_value_transform (value, data->val);
 		break;
 	}
 
