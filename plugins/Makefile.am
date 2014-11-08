@@ -21,6 +21,7 @@ SUBDIRS +=						\
 	rbzeitgeist					\
 	replaygain					\
 	sendto						\
+	soundcloud					\
 	rb
 
 if WITH_WEBKIT
