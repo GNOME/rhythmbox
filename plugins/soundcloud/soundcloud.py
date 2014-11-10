@@ -441,7 +441,7 @@ class SoundCloudSource(RB.StreamingSource):
 
 
 
-		self.search_popup.attach_to_widget(self.search_entry)
+		self.search_popup.attach_to_widget(self.search_entry, None)
 
 		self.containers = builder.get_object("container-store")
 		self.container_view = builder.get_object("containers")
