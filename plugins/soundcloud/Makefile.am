@@ -8,7 +8,7 @@ plugin_in_files = soundcloud.plugin.in
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
 gtkbuilderdir = $(plugindatadir)
-gtkbuilder_DATA = soundcloud.ui powered-by-soundcloud.png soundcloud-logo.png
+gtkbuilder_DATA = soundcloud.ui powered-by-soundcloud.png soundcloud-symbolic.svg
 
 EXTRA_DIST = $(plugin_in_files) $(gtkbuilder_DATA)
 

@@ -64,7 +64,7 @@ class SoundCloudPlugin(GObject.Object, Peas.Activatable):
 		self.entry_type = SoundCloudEntryType()
 		db.register_entry_type(self.entry_type)
 
-		logofile = rb.find_plugin_file(self, "soundcloud-logo.png")
+		logofile = rb.find_plugin_file(self, "soundcloud-symbolic.svg")
 		icon = Gio.FileIcon.new(Gio.File.new_for_path(logofile))
 
 		model = RB.RhythmDBQueryModel.new_empty(db)
