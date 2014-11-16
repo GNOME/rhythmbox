@@ -852,7 +852,7 @@ get_player_property (GDBusConnection *connection,
 		guint t;
 		ret = rb_shell_player_get_playing_time (plugin->player, &t, error);
 		if (ret) {
-			return g_variant_new_int64 (t * G_USEC_PER_SEC);
+			return g_variant_new_int64 ((gint64)t * G_USEC_PER_SEC);
 		} else {
 			return NULL;
 		}
