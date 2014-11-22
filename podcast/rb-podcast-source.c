@@ -1032,34 +1032,6 @@ impl_add_to_queue (RBSource *source, RBSource *queue)
 	g_list_free (selection);
 }
 
-static gboolean
-impl_can_add_to_queue (RBSource *source)
-{
-	RBEntryView *songs;
-	GList *selection;
-	GList *iter;
-	gboolean ok = FALSE;
-
-	songs = rb_source_get_entry_view (source);
-	selection = rb_entry_view_get_selected_entries (songs);
-
-	if (selection == NULL)
-		return FALSE;
-
-	/* If at least one entry has been downloaded, enable add to queue.
-	 * We'll filter out those that haven't when adding to the queue.
-	 */
-	for (iter = selection; iter && !ok; iter = iter->next) {
-		RhythmDBEntry *entry = (RhythmDBEntry *)iter->data;
-		ok |= rb_podcast_manager_entry_downloaded (entry);
-	}
-
-	g_list_foreach (selection, (GFunc)rhythmdb_entry_unref, NULL);
-	g_list_free (selection);
-
-	return ok;
-}
-
 static void
 delete_response_cb (GtkDialog *dialog, int response, RBPodcastSource *source)
 {
@@ -1678,7 +1650,7 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 
 	source_class->reset_filters = impl_reset_filters;
 	source_class->add_to_queue = impl_add_to_queue;
-	source_class->can_add_to_queue = impl_can_add_to_queue;
+	source_class->can_add_to_queue = (RBSourceFeatureFunc) rb_true_function;
 	source_class->can_copy = (RBSourceFeatureFunc) rb_false_function;
 	source_class->can_cut = (RBSourceFeatureFunc) rb_false_function;
 	source_class->can_delete = (RBSourceFeatureFunc) rb_true_function;
