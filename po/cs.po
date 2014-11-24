@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-10-07 12:25+0000\n"
-"PO-Revision-Date: 2014-10-29 22:50+0100\n"
+"POT-Creation-Date: 2014-11-08 11:21+0000\n"
+"PO-Revision-Date: 2014-11-24 21:11+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -190,7 +190,7 @@ msgstr "Grafika alba"
 
 #: ../data/ui/app-menu.ui.h:9
 msgid "Follow Playing Track"
-msgstr "Následovat přehrávanou stopu"
+msgstr "Následovat přehrávanou skladbu"
 
 #: ../data/ui/app-menu.ui.h:10
 msgid "_Tools"
@@ -355,7 +355,7 @@ msgstr "Viditelné sloupce"
 
 #: ../data/ui/general-prefs.ui.h:6
 msgid "Track _number"
-msgstr "Číslo _stopy"
+msgstr "Číslo _skladby"
 
 #: ../data/ui/general-prefs.ui.h:7
 msgid "_Artist"
@@ -567,7 +567,7 @@ msgstr "_Přejmenovat"
 
 #: ../data/ui/playlist-menu.ui.h:3
 msgid "_Queue All Tracks"
-msgstr "Přidat _všechny stopy do fronty"
+msgstr "Přidat _všechny skladby do fronty"
 
 #: ../data/ui/playlist-menu.ui.h:4
 msgid "_Shuffle Playlist"
@@ -851,7 +851,7 @@ msgstr "_Název:"
 
 #: ../data/ui/song-info.ui.h:3
 msgid "Track _number:"
-msgstr "Číslo _stopy:"
+msgstr "Číslo _skladby:"
 
 #: ../data/ui/song-info.ui.h:8
 msgid "_BPM:"
@@ -964,24 +964,25 @@ msgstr "%e. %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1518
 #: ../plugins/notification/rb-notification-plugin.c:496
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1891
-#: ../podcast/rb-podcast-manager.c:1990
+#: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1892
+#: ../podcast/rb-podcast-manager.c:1991
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:202
 #: ../remote/dbus/rb-client.c:715 ../rhythmdb/rhythmdb.c:2049
 #: ../rhythmdb/rhythmdb.c:2055 ../rhythmdb/rhythmdb.c:2070
-#: ../rhythmdb/rhythmdb.c:2104 ../rhythmdb/rhythmdb.c:5429
-#: ../rhythmdb/rhythmdb.c:5434 ../rhythmdb/rhythmdb-tree.c:1360
-#: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
-#: ../rhythmdb/rhythmdb-tree.c:1372 ../shell/rb-shell-player.c:870
-#: ../shell/rb-shell-player.c:2717 ../shell/rb-shell-player.c:2719
-#: ../widgets/rb-entry-view.c:992 ../widgets/rb-entry-view.c:1014
-#: ../widgets/rb-entry-view.c:1505 ../widgets/rb-entry-view.c:1517
-#: ../widgets/rb-entry-view.c:1529 ../widgets/rb-header.c:1262
-#: ../widgets/rb-header.c:1288 ../widgets/rb-song-info.c:949
-#: ../widgets/rb-song-info.c:961 ../widgets/rb-song-info.c:1233
-#: ../widgets/rb-song-info.c:1572
+#: ../rhythmdb/rhythmdb.c:2104 ../rhythmdb/rhythmdb.c:5425
+#: ../rhythmdb/rhythmdb.c:5431 ../rhythmdb/rhythmdb.c:5436
+#: ../rhythmdb/rhythmdb.c:5447 ../rhythmdb/rhythmdb.c:5451
+#: ../rhythmdb/rhythmdb-tree.c:1360 ../rhythmdb/rhythmdb-tree.c:1364
+#: ../rhythmdb/rhythmdb-tree.c:1368 ../rhythmdb/rhythmdb-tree.c:1372
+#: ../shell/rb-shell-player.c:870 ../shell/rb-shell-player.c:2717
+#: ../shell/rb-shell-player.c:2719 ../widgets/rb-entry-view.c:992
+#: ../widgets/rb-entry-view.c:1014 ../widgets/rb-entry-view.c:1505
+#: ../widgets/rb-entry-view.c:1517 ../widgets/rb-entry-view.c:1529
+#: ../widgets/rb-header.c:1269 ../widgets/rb-header.c:1295
+#: ../widgets/rb-song-info.c:949 ../widgets/rb-song-info.c:961
+#: ../widgets/rb-song-info.c:1233 ../widgets/rb-song-info.c:1572
 msgid "Unknown"
 msgstr "Neznámo"
 
@@ -1116,7 +1117,7 @@ msgstr "Nelze najít zásuvný modul GStreamer pro zdroj typu CD"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:386
 msgid "Select tracks to be extracted"
-msgstr "Vybrat stopy, které se mají zkopírovat"
+msgstr "Vyberte skladby, které se mají zkopírovat"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:532
 msgid "<Invalid unicode>"
@@ -1161,7 +1162,7 @@ msgstr "Tento disk odpovídá více albům. Vyberte správné album."
 #: ../plugins/audiocd/rb-audiocd-source.c:1087
 #, c-format
 msgid "Track %u"
-msgstr "Stopa %u"
+msgstr "Skladba %u"
 
 #: ../plugins/audiocd/rb-musicbrainz-lookup.c:406
 msgid "Not found"
@@ -1210,11 +1211,11 @@ msgstr "Stav:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:5
 msgid "Queued tracks:"
-msgstr "Stop ve frontě:"
+msgstr "Skladeb ve frontě:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:6
 msgid "Tracks submitted:"
-msgstr "Odeslaných stop:"
+msgstr "Odeslaných skladeb:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:7
 msgid "Last submission time:"
@@ -1243,7 +1244,7 @@ msgstr "Vytvořit stanici"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:14
 msgid "Recently Listened Tracks"
-msgstr "Nedávno poslouchané stopy"
+msgstr "Nedávno poslouchané skladby"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:15
 msgid "Top Artists"
@@ -1251,15 +1252,15 @@ msgstr "Nejlepší umělci"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:16
 msgid "Recommendations"
-msgstr "Doporučené stopy"
+msgstr "Doporučené skladby"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:17
 msgid "Top Tracks"
-msgstr "Nejlepší stopy:"
+msgstr "Nejlepší skladby"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:18
 msgid "Loved Tracks"
-msgstr "Oblíbené stopy"
+msgstr "Oblíbené skladby"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:496
 msgid "OK"
@@ -1335,7 +1336,7 @@ msgstr "Moje kolekce"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1235
 msgid "My Recommendations"
-msgstr "Moje doporučené stopy"
+msgstr "Moje doporučené skladby"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1243
 msgid "My Neighbourhood"
@@ -1395,14 +1396,14 @@ msgstr "Sousední stanice uživatele:"
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:71
 msgid "Tracks Loved by User:"
-msgstr "Stopy oblíbené uživatelem:"
+msgstr "Skladby oblíbené uživatelem:"
 
 #. Translators: describes a radio stream playing tracks recommended to a particular user.
 #. * Followed by a text entry box for the user name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:75
 msgid "Recommendations for User:"
-msgstr "Doporučené stopy pro uživatele:"
+msgstr "Doporučené skladby pro uživatele:"
 
 #. Translators: a type of station named "Mix Radio" by Last.fm.
 #. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for a description of it.
@@ -1417,7 +1418,7 @@ msgstr "Mix Radio pro uživatele:"
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:84
 msgid "Tracks Tagged with:"
-msgstr "Stopy oštítkované s:"
+msgstr "Skladby se štítkem:"
 
 #. Translators: describes a radio stream playing tracks often listened to by members of
 #. * a particular group. Followed by a text entry box for the group name.
@@ -1455,13 +1456,13 @@ msgstr "Sousední stanice uživatele %s"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:132
 #, c-format
 msgid "%s's Loved Tracks"
-msgstr "Oblíbené stopy %s"
+msgstr "Oblíbené skladby %s"
 
 #. Translators: station is built from the tracks which are recommended to the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:134
 #, c-format
 msgid "%s's Recommended Radio"
-msgstr "Doporučené stopy uživatele %s"
+msgstr "Doporučené skladby uživatele %s"
 
 #. Translators: station is the "Mix Radio" for the user %s.
 #. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for description.
@@ -1647,12 +1648,12 @@ msgstr "Text nenalezen"
 
 #: ../plugins/context/tmpl/album-tmpl.html:46
 msgid "Hide all tracks"
-msgstr "Skrýt všechny stopy"
+msgstr "Skrýt všechny skladby"
 
 #: ../plugins/context/tmpl/album-tmpl.html:47
 #: ../plugins/context/tmpl/album-tmpl.html:80
 msgid "Show all tracks"
-msgstr "Zobrazit všechny stopy"
+msgstr "Zobrazit všechny skladby"
 
 #: ../plugins/context/tmpl/album-tmpl.html:57
 #, c-format
@@ -1663,13 +1664,13 @@ msgstr "Nejlepší alba od %s"
 #, c-format
 msgid "%s (%d track)"
 msgid_plural "%s (%d tracks)"
-msgstr[0] "%s (%d stopa)"
-msgstr[1] "%s (%d stopy)"
-msgstr[2] "%s (%d stop)"
+msgstr[0] "%s (%d skladba)"
+msgstr[1] "%s (%d skladby)"
+msgstr[2] "%s (%d skladeb)"
 
 #: ../plugins/context/tmpl/album-tmpl.html:93
 msgid "Track list not available"
-msgstr "Seznam stop není dostupný"
+msgstr "Seznam skladeb není dostupný"
 
 #: ../plugins/context/tmpl/album-tmpl.html:99
 msgid "Unable to retrieve album information:"
@@ -1793,7 +1794,7 @@ msgstr "Poskytuje implementaci specifikace rozhraní MediaServer2 D-Bus"
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1250
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1382
 msgid "All Tracks"
-msgstr "Všechny stopy"
+msgstr "Všechny skladby"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2398
 msgid "Artists"
@@ -1837,7 +1838,7 @@ msgstr "_Název zařízení:"
 #: ../plugins/generic-player/generic-player-info.ui.h:2
 #: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:2
 msgid "Tracks:"
-msgstr "Stop:"
+msgstr "Skladeb:"
 
 #: ../plugins/generic-player/generic-player-info.ui.h:3
 #: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:4
@@ -1910,7 +1911,7 @@ msgstr "Procházet různorodé místní a Internetové zdroje médií"
 
 #: ../plugins/grilo/rb-grilo-source.c:389
 msgid "Fetch more tracks"
-msgstr "Získat více stop"
+msgstr "Získat více skladeb"
 
 #: ../plugins/grilo/rb-grilo-source.c:891
 #, c-format
@@ -2717,23 +2718,87 @@ msgstr "Dovědět se více o RaplayGain na replaygain.org"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:6
 msgid "Radio (equal loudness for all tracks)"
-msgstr "Rádio (vyrovnaná hlasitost pro všechny stopy)"
+msgstr "Rádio (vyrovnaná hlasitost pro všechny skladby)"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:7
 msgid "Album (ideal loudness for all tracks)"
-msgstr "Album (ideální hlasitost pro všechny stopy)"
+msgstr "Album (ideální hlasitost pro všechny skladby)"
 
 #: ../plugins/sendto/sendto.plugin.in.h:1
 msgid "Send tracks"
-msgstr "Odeslané stopy"
+msgstr "Odeslané skladby"
 
 #: ../plugins/sendto/sendto.plugin.in.h:2
 msgid "Send selected tracks by email or instant message"
-msgstr "Odeslat vybrané stopy pomocí poštovního nebo komunikačního programu"
+msgstr "Odeslat vybrané skladby pomocí poštovního nebo komunikačního programu"
 
 #: ../plugins/sendto/sendto.py:51
 msgid "Send to..."
 msgstr "Odeslat…"
+
+#: ../plugins/soundcloud/soundcloud.plugin.in.h:1
+#: ../plugins/soundcloud/soundcloud.py:73
+msgid "SoundCloud"
+msgstr "SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.plugin.in.h:2
+msgid "Browse and play sounds from SoundCloud®"
+msgstr "Procházet a přehrávat hudbu ze SoundCloud®"
+
+#: ../plugins/soundcloud/soundcloud.py:94
+msgid "Search tracks"
+msgstr "Hledat skladby"
+
+#: ../plugins/soundcloud/soundcloud.py:95
+msgid "Search tracks on SoundCloud"
+msgstr "Vyhledat skladby na SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:101
+msgid "Search sets"
+msgstr "Hledat sady"
+
+#: ../plugins/soundcloud/soundcloud.py:102
+msgid "Search sets on SoundCloud"
+msgstr "Vyhledat sady na SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:103
+msgid "SoundCloud Sets"
+msgstr "Sady SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:108
+msgid "Search users"
+msgstr "Hledat uživatele"
+
+#: ../plugins/soundcloud/soundcloud.py:109
+msgid "Search users on SoundCloud"
+msgstr "Vyhledat uživatele na SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:110
+msgid "SoundCloud Users"
+msgstr "Uživatelé SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:115
+msgid "Search groups"
+msgstr "Hledat skupiny"
+
+#: ../plugins/soundcloud/soundcloud.py:116
+msgid "Search groups on SoundCloud"
+msgstr "Vyhledat skupiny na SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:117
+msgid "SoundCloud Groups"
+msgstr "Skupiny SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:374
+#: ../plugins/soundcloud/soundcloud.py:382
+#, python-format
+msgid "View '%(title)s' on SoundCloud"
+msgstr "Zobrazit „%(title)s“ na SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:390
+#, python-format
+msgid "View '%(container)s' on SoundCloud"
+msgstr "Zobrazit „%(container)s“ na SoundCloud"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:39
 msgid "Low quality"
@@ -2833,30 +2898,30 @@ msgstr "Chyba v podcastu"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Chcete i přesto přidat podcast?"
 
-#: ../podcast/rb-podcast-manager.c:896
+#: ../podcast/rb-podcast-manager.c:897
 msgid "Error creating podcast download directory"
 msgstr "Chyba při vytváření složky pro stahování podcastů"
 
-#: ../podcast/rb-podcast-manager.c:897
+#: ../podcast/rb-podcast-manager.c:898
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Nepodařilo se vytvořit složku pro stažení %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:1016
+#: ../podcast/rb-podcast-manager.c:1017
 msgid "Invalid URL"
 msgstr "Neplatná adresa URL"
 
-#: ../podcast/rb-podcast-manager.c:1017
+#: ../podcast/rb-podcast-manager.c:1018
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "Adresa URL „%s“ není platná, zkontrolujte ji, prosím."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1028
+#: ../podcast/rb-podcast-manager.c:1029
 msgid "URL already added"
 msgstr "URL je již přidáno"
 
-#: ../podcast/rb-podcast-manager.c:1029
+#: ../podcast/rb-podcast-manager.c:1030
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2865,7 +2930,7 @@ msgstr ""
 "URL „%s“ již bylo přidáno jako stanice rádia. Pokud se jedná o kanál "
 "podcastu, odstraňte prosím tuto stanici rádia."
 
-#: ../podcast/rb-podcast-manager.c:1108
+#: ../podcast/rb-podcast-manager.c:1109
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2876,11 +2941,11 @@ msgstr ""
 "adresu URL, nebo je kanál poškozen. Chcete, aby se ji Rhythmbox přesto "
 "pokusil používat?"
 
-#: ../podcast/rb-podcast-manager.c:1239
+#: ../podcast/rb-podcast-manager.c:1240
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2205
+#: ../podcast/rb-podcast-manager.c:2206
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -3074,7 +3139,7 @@ msgstr "Přidat vybrané skladby do fronty"
 
 #: ../remote/dbus/rb-client.c:111
 msgid "Empty the play queue before adding new tracks"
-msgstr "Vyprázdnit frontu před přidáním nových stop"
+msgstr "Vyprázdnit frontu před přidáním nových skladeb"
 
 #: ../remote/dbus/rb-client.c:113
 msgid "Print the title and artist of the playing song"
@@ -3152,11 +3217,11 @@ msgstr "Spustit interaktivní režim"
 
 #: ../remote/dbus/rb-client.c:161
 msgid "n - Next track"
-msgstr "n – následující stopa"
+msgstr "n – následující skladba"
 
 #: ../remote/dbus/rb-client.c:162
 msgid "p - Previous track"
-msgstr "p – předchozí stopa"
+msgstr "p – předchozí skladba"
 
 #: ../remote/dbus/rb-client.c:163
 msgid "space - Play/pause"
@@ -3164,7 +3229,7 @@ msgstr "mezerní – přehrát/pozastavit"
 
 #: ../remote/dbus/rb-client.c:164
 msgid "s - Show playing track details"
-msgstr "s – zobrazit podrobnosti o přehrávané stopě"
+msgstr "s – zobrazit podrobnosti o přehrávané skladbě"
 
 #: ../remote/dbus/rb-client.c:165
 msgid "v - Decrease volume"
@@ -3786,7 +3851,7 @@ msgstr[2] ""
 
 #: ../shell/rb-track-transfer-queue.c:484
 msgid "Unable to transfer tracks"
-msgstr "Nelze přenést stopy"
+msgstr "Nelze přenést skladby"
 
 #: ../shell/rb-track-transfer-queue.c:489
 msgid "_Cancel the transfer"
@@ -3889,7 +3954,7 @@ msgstr "Album"
 
 #: ../sources/rb-library-source.c:138
 msgid "Number - Title"
-msgstr "Stopa – Název"
+msgstr "Číslo – Název"
 
 #: ../sources/rb-library-source.c:139
 msgid "Artist - Title"
@@ -3897,15 +3962,15 @@ msgstr "Umělec – Název"
 
 #: ../sources/rb-library-source.c:140
 msgid "Artist - Number - Title"
-msgstr "Umělec – Stopa – Název"
+msgstr "Umělec – Číslo – Název"
 
 #: ../sources/rb-library-source.c:141
 msgid "Artist (Album) - Number - Title"
-msgstr "Umělec (Album) – Stopa – Název"
+msgstr "Umělec (Album) – Číslo – Název"
 
 #: ../sources/rb-library-source.c:143
 msgid "Number. Artist - Title"
-msgstr "Stopa. Umělec – Název"
+msgstr "Číslo. Umělec – Název"
 
 #: ../sources/rb-library-source.c:157
 msgid "Constant bit rate"
@@ -3941,20 +4006,20 @@ msgstr "Příklad cesty:"
 #: ../sources/rb-library-source.c:1682 ../sources/rb-library-source.c:1686
 #: ../sources/rb-transfer-target.c:189
 msgid "Error transferring track"
-msgstr "Chyba při přenosu stopy"
+msgstr "Chyba při přenosu skladby"
 
 #: ../sources/rb-library-source.c:1772
 msgid "Copying tracks to the library"
-msgstr "Kopírují se stopy do kolekce"
+msgstr "Kopírují se skladby do kolekce"
 
 #: ../sources/rb-library-source.c:1846
 msgid "Adding tracks to the library"
-msgstr "Přidávají se stopy do kolekce"
+msgstr "Přidávají se skladby do kolekce"
 
 #: ../sources/rb-media-player-source.c:614
 #, c-format
 msgid "Syncing tracks to %s"
-msgstr "Synchronizují se stopy do %s"
+msgstr "Synchronizují se skladby do %s"
 
 #: ../sources/rb-media-player-source.c:670
 msgid ""
@@ -4033,7 +4098,7 @@ msgstr "Ukládá se do vyrovnávací paměti"
 #: ../sources/rb-transfer-target.c:456
 #, c-format
 msgid "Transferring tracks to %s"
-msgstr "Přenáší se stopa do %s"
+msgstr "Přenáší se skladba do %s"
 
 #: ../sources/sync/rb-sync-settings-ui.c:228
 msgid "All Music"
@@ -4082,7 +4147,7 @@ msgstr "Bezeztrátový"
 
 #: ../widgets/rb-entry-view.c:1430
 msgid "Track"
-msgstr "Stopa"
+msgstr "Skladba"
 
 #: ../widgets/rb-entry-view.c:1461
 msgid "Composer"
@@ -4145,13 +4210,13 @@ msgid "Drop artwork here"
 msgstr "Zde upusťte grafiku"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1202
+#: ../widgets/rb-header.c:1209
 #, c-format
 msgid "-%s / %s"
 msgstr "– %s/%s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1213
+#: ../widgets/rb-header.c:1220
 #, c-format
 msgid "%s / %s"
 msgstr "%s/%s"
@@ -4175,17 +4240,17 @@ msgstr "Zobrazit %s"
 #, c-format
 msgid "Import %d selected track"
 msgid_plural "Import %d selected tracks"
-msgstr[0] "Importovat %d vybranou stopu"
-msgstr[1] "Importovat %d vybrané stopy"
-msgstr[2] "Importovat %d vybraných stop"
+msgstr[0] "Importovat %d vybranou skladbu"
+msgstr[1] "Importovat %d vybrané skladby"
+msgstr[2] "Importovat %d vybraných skladeb"
 
 #: ../widgets/rb-import-dialog.c:466
 #, c-format
 msgid "Import %d listed track"
 msgid_plural "Import %d listed tracks"
-msgstr[0] "Importovat %d vypsanou stopu"
-msgstr[1] "Importovat %d vypsané stopy"
-msgstr[2] "Importovat %d vypsaných stop"
+msgstr[0] "Importovat %d vypsanou skladbu"
+msgstr[1] "Importovat %d vypsané skladby"
+msgstr[2] "Importovat %d vypsaných skladeb"
 
 #: ../widgets/rb-property-view.c:661
 #, c-format
@@ -4290,7 +4355,7 @@ msgstr "Počet přehrání"
 #: ../widgets/rb-query-creator-properties.c:89
 msgctxt "query-criteria"
 msgid "Track Number"
-msgstr "Číslo stopy"
+msgstr "Číslo skladby"
 
 #: ../widgets/rb-query-creator-properties.c:90
 msgctxt "query-criteria"
@@ -4369,7 +4434,7 @@ msgstr "Hodnocení"
 
 #: ../widgets/rb-query-creator-properties.c:113
 msgid "W_ith more highly rated tracks first"
-msgstr "_S lépe hodnocenými stopami na začátku"
+msgstr "_S lépe hodnocenými skladbami na začátku"
 
 #: ../widgets/rb-query-creator-properties.c:114
 msgctxt "query-sort"
@@ -4378,7 +4443,7 @@ msgstr "Počet přehrání"
 
 #: ../widgets/rb-query-creator-properties.c:114
 msgid "W_ith more often played songs first"
-msgstr "_S častěji hranými stopami na začátku"
+msgstr "_S častěji hranými skladbami na začátku"
 
 #: ../widgets/rb-query-creator-properties.c:115
 msgctxt "query-sort"
@@ -4387,7 +4452,7 @@ msgstr "Rok"
 
 #: ../widgets/rb-query-creator-properties.c:115
 msgid "W_ith newer tracks first"
-msgstr "_S novějšími stopami na začátku"
+msgstr "_S novějšími skladbami na začátku"
 
 #: ../widgets/rb-query-creator-properties.c:116
 msgctxt "query-sort"
@@ -4396,12 +4461,12 @@ msgstr "Délka"
 
 #: ../widgets/rb-query-creator-properties.c:116
 msgid "W_ith longer tracks first"
-msgstr "_S delšími stopami na začátku"
+msgstr "_S delšími skladbami na začátku"
 
 #: ../widgets/rb-query-creator-properties.c:117
 msgctxt "query-sort"
 msgid "Track Number"
-msgstr "Číslo stopy"
+msgstr "Číslo skladby"
 
 #: ../widgets/rb-query-creator-properties.c:117
 msgid "_In decreasing order"
@@ -4414,7 +4479,7 @@ msgstr "Naposledy přehráno"
 
 #: ../widgets/rb-query-creator-properties.c:118
 msgid "W_ith more recently played tracks first"
-msgstr "_S nedávno hranými stopami na začátku"
+msgstr "_S nedávno hranými skladbami na začátku"
 
 #: ../widgets/rb-query-creator-properties.c:119
 msgctxt "query-sort"
@@ -4423,7 +4488,7 @@ msgstr "Datum přidání"
 
 #: ../widgets/rb-query-creator-properties.c:119
 msgid "W_ith more recently added tracks first"
-msgstr "_S nedávno přidanými stopami na začátku"
+msgstr "_S nedávno přidanými skladbami na začátku"
 
 #: ../widgets/rb-query-creator-properties.c:120
 msgctxt "query-sort"
@@ -4437,7 +4502,7 @@ msgstr "úderů za minutu"
 
 #: ../widgets/rb-query-creator-properties.c:121
 msgid "W_ith faster tempo tracks first"
-msgstr "_Se stopami s nejvyšším tempem na začátku"
+msgstr "_Se skladbami s nejvyšším tempem na začátku"
 
 #: ../widgets/rb-query-creator-properties.c:134
 msgid "contains"
