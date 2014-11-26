@@ -75,6 +75,7 @@ class SoundCloudPlugin(GObject.Object, Peas.Activatable):
 					   query_model=model,
 					   entry_type=self.entry_type,
 					   icon=icon)
+		shell.register_entry_type_for_source(self.source, self.entry_type)
 		self.source.setup()
 		group = RB.DisplayPageGroup.get_by_id ("shared")
 		shell.append_display_page(self.source, group)
@@ -498,5 +499,8 @@ class SoundCloudSource(RB.StreamingSource):
 
 	def do_get_playback_status(self, text, progress):
 		return self.get_progress()
+
+	def do_can_copy(self):
+		return False
 
 GObject.type_register(SoundCloudSource)
