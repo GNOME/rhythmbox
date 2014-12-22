@@ -28,17 +28,19 @@
       </row>
     </data>
   </object>
-  <object class="GtkVBox" id="podcast_vbox">
+  <object class="GtkBox" id="podcast_vbox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="valign">start</property>
     <property name="border_width">12</property>
     <property name="spacing">18</property>
+    <property name="orientation">vertical</property>
     <child>
-      <object class="GtkVBox" id="vbox9">
+      <object class="GtkBox" id="vbox9">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="spacing">6</property>
+        <property name="orientation">vertical</property>
         <child>
           <object class="GtkLabel" id="download_manager_label">
             <property name="visible">True</property>
@@ -56,7 +58,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkHBox" id="hbox12">
+          <object class="GtkBox" id="hbox12">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
@@ -71,7 +73,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkHBox" id="hbox13">
+              <object class="GtkBox" id="hbox13">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
@@ -147,9 +149,10 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkVBox" id="vbox11">
+                      <object class="GtkBox" id="vbox11">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkFileChooserButton" id="location_chooser">
                             <property name="visible">True</property>

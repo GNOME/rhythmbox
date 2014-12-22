@@ -2,10 +2,11 @@
 <!-- Generated with glade 3.18.3 -->
 <interface>
   <requires lib="gtk+" version="3.6"/>
-  <object class="GtkVBox" id="sync-dialog">
+  <object class="GtkBox" id="sync-dialog">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="border_width">12</property>
+    <property name="orientation">vertical</property>
     <child>
       <object class="GtkFrame" id="frame4">
         <property name="visible">True</property>
@@ -13,10 +14,11 @@
         <property name="label_xalign">0</property>
         <property name="shadow_type">none</property>
         <child>
-          <object class="GtkVBox" id="vbox4">
+          <object class="GtkBox" id="vbox4">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">12</property>
+            <property name="orientation">vertical</property>
             <child>
               <object class="GtkScrolledWindow" id="sync-settings-ui-container">
                 <property name="visible">True</property>
@@ -63,7 +65,7 @@
             <property name="can_focus">False</property>
             <property name="left_padding">12</property>
             <child>
-              <object class="GtkHBox" id="sync-state-ui-container">
+              <object class="GtkBox" id="sync-state-ui-container">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
@@ -91,7 +93,7 @@
       </packing>
     </child>
     <child>
-      <object class="GtkHBox" id="sync-dialog-message">
+      <object class="GtkBox" id="sync-dialog-message">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>

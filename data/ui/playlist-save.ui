@@ -21,9 +21,10 @@
     <property name="action">save</property>
     <property name="show_hidden">True</property>
     <child internal-child="vbox">
-      <object class="GtkVBox" id="dialog-vbox1">
+      <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">True</property>
-        <property name="spacing">24</property>
+	<property name="spacing">24</property>
+	<property name="orientation">vertical</property>
         <child>
           <object class="GtkFrame" id="frame1">
             <property name="visible">True</property>
@@ -33,7 +34,7 @@
                 <property name="visible">True</property>
                 <property name="left_padding">12</property>
                 <child>
-                  <object class="GtkHBox" id="hbox1">
+                  <object class="GtkBox" id="hbox1">
                     <property name="visible">True</property>
                     <property name="border_width">5</property>
                     <property name="spacing">12</property>
