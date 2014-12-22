@@ -49,14 +49,14 @@ typedef struct _RBDisplayPagePrivate	RBDisplayPagePrivate;
 
 struct _RBDisplayPage
 {
-	GtkHBox parent;
+	GtkBox parent;
 
 	RBDisplayPagePrivate *priv;
 };
 
 struct _RBDisplayPageClass
 {
-	GtkHBoxClass parent_class;
+	GtkBoxClass parent_class;
 
 	/* signals */
 	void	(*status_changed)	(RBDisplayPage *page);

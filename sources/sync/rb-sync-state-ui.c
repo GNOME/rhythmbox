@@ -54,7 +54,7 @@ enum {
 	PROP_SYNC_STATE
 };
 
-G_DEFINE_TYPE (RBSyncStateUI, rb_sync_state_ui, GTK_TYPE_VBOX)
+G_DEFINE_TYPE (RBSyncStateUI, rb_sync_state_ui, GTK_TYPE_BOX)
 
 
 static char *
@@ -214,6 +214,7 @@ static void
 rb_sync_state_ui_init (RBSyncStateUI *ui)
 {
 	ui->priv = G_TYPE_INSTANCE_GET_PRIVATE (ui, RB_TYPE_SYNC_STATE_UI, RBSyncStateUIPrivate);
+	gtk_orientable_set_orientation (GTK_ORIENTABLE (ui), GTK_ORIENTATION_VERTICAL);
 }
 
 static void

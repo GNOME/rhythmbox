@@ -33,7 +33,7 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 
-G_DEFINE_ABSTRACT_TYPE (RBDisplayPage, rb_display_page, GTK_TYPE_HBOX)
+G_DEFINE_ABSTRACT_TYPE (RBDisplayPage, rb_display_page, GTK_TYPE_BOX)
 
 /**
  * SECTION:rb-display-page
@@ -568,6 +568,7 @@ impl_finalize (GObject *object)
 static void
 rb_display_page_init (RBDisplayPage *page)
 {
+	gtk_orientable_set_orientation (GTK_ORIENTABLE (page), GTK_ORIENTATION_HORIZONTAL);
 	page->priv = G_TYPE_INSTANCE_GET_PRIVATE (page, RB_TYPE_DISPLAY_PAGE, RBDisplayPagePrivate);
 
 	page->priv->visible = TRUE;

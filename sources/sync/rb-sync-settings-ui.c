@@ -50,7 +50,7 @@ enum {
 	PROP_SYNC_SETTINGS
 };
 
-G_DEFINE_TYPE (RBSyncSettingsUI, rb_sync_settings_ui, GTK_TYPE_VBOX)
+G_DEFINE_TYPE (RBSyncSettingsUI, rb_sync_settings_ui, GTK_TYPE_BOX)
 
 
 static void
@@ -183,6 +183,7 @@ static void
 rb_sync_settings_ui_init (RBSyncSettingsUI *ui)
 {
 	ui->priv = G_TYPE_INSTANCE_GET_PRIVATE (ui, RB_TYPE_SYNC_SETTINGS_UI, RBSyncSettingsUIPrivate);
+	gtk_orientable_set_orientation (GTK_ORIENTABLE (ui), GTK_ORIENTATION_VERTICAL);
 }
 
 static void

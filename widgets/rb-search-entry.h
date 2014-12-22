@@ -46,14 +46,14 @@ typedef struct RBSearchEntryPrivate RBSearchEntryPrivate;
 
 struct _RBSearchEntry
 {
-	GtkHBox parent;
+	GtkBox parent;
 
 	RBSearchEntryPrivate *priv;
 };
 
 struct _RBSearchEntryClass
 {
-	GtkHBoxClass parent;
+	GtkBoxClass parent;
 
 	void (*search) (RBSearchEntry *view, const char *text);
 	void (*activate) (RBSearchEntry *entry, const char *text);

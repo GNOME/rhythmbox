@@ -68,7 +68,7 @@ typedef struct _RBLibraryBrowserRebuildData RBLibraryBrowserRebuildData;
 
 static void destroy_idle_rebuild_model (RBLibraryBrowserRebuildData *data);
 
-G_DEFINE_TYPE (RBLibraryBrowser, rb_library_browser, GTK_TYPE_HBOX)
+G_DEFINE_TYPE (RBLibraryBrowser, rb_library_browser, GTK_TYPE_BOX)
 #define RB_LIBRARY_BROWSER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LIBRARY_BROWSER, RBLibraryBrowserPrivate))
 
 /**
@@ -228,6 +228,7 @@ rb_library_browser_init (RBLibraryBrowser *widget)
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
 
 	gtk_box_set_spacing (GTK_BOX (widget), 5);
+	gtk_orientable_set_orientation (GTK_ORIENTABLE (widget), GTK_ORIENTATION_HORIZONTAL);
 
 	priv->property_views = g_hash_table_new (g_direct_hash, g_direct_equal);
 	priv->selections = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, (GDestroyNotify)rb_list_deep_free);

@@ -66,13 +66,13 @@ typedef struct _RBSyncStateUIClass RBSyncStateUIClass;
 typedef struct _RBSyncStateUIPrivate RBSyncStateUIPrivate;
 
 struct _RBSyncStateUI {
-	GtkVBox parent;
+	GtkBox parent;
 
 	RBSyncStateUIPrivate *priv;
 };
 
 struct _RBSyncStateUIClass {
-	GtkVBoxClass parent_class;
+	GtkBoxClass parent_class;
 };
 
 GType		rb_sync_state_ui_get_type (void);
