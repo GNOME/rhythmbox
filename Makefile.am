@@ -6,7 +6,8 @@ distuninstallcheck_listfiles = find . -type f -print | grep -v '^\./var/scrollke
 SUBDIRS = lib metadata rhythmdb widgets sources podcast \
 	backends shell bindings sample-plugins plugins remote data po help tests doc
 
-INCLUDES = rhythmbox.h
+# what?
+#INCLUDES = rhythmbox.h
 
 EXTRA_DIST = 			\
 	autogen.sh		\

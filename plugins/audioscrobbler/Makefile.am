@@ -33,7 +33,7 @@ libaudioscrobbler_la_LIBADD = 				\
 	$(JSON_GLIB_LIBS)				\
 	$(RHYTHMBOX_LIBS)
 
-INCLUDES = 						\
+AM_CPPFLAGS = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\

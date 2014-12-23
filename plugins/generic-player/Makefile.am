@@ -19,7 +19,7 @@ libgeneric_player_la_LDFLAGS = 				\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(PLUGIN_LIBTOOL_FLAGS)
 
-INCLUDES = 						\
+AM_CPPFLAGS = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\

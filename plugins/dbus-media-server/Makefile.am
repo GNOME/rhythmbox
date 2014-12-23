@@ -15,7 +15,7 @@ libdbus_media_server_la_LIBADD =					\
 	$(top_builddir)/shell/librhythmbox-core.la	\
 	$(NULL)
 
-INCLUDES = 						\
+AM_CPPFLAGS = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\

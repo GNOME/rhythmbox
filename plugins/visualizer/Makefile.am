@@ -22,7 +22,7 @@ libvisualizer_la_LIBADD = 			\
 	$(CLUTTER_LIBS)					\
 	$(RHYTHMBOX_LIBS)
 
-INCLUDES = 						\
+AM_CPPFLAGS = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\

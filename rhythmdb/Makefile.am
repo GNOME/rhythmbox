@@ -3,7 +3,7 @@ noinst_LTLIBRARIES = librhythmdb.la
 librhythmdb_la_LDFLAGS = -export-dynamic
 librhythmdb_la_LIBADD = -lm
 
-INCLUDES = 						\
+AM_CPPFLAGS = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"RhythmDB\"			\
 	-I$(top_srcdir) 				\

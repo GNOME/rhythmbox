@@ -15,7 +15,7 @@ libnotification_la_LIBADD = 				\
 	$(NOTIFY_LIBS)					\
 	$(NULL)
 
-INCLUDES = 						\
+AM_CPPFLAGS = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\

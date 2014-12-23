@@ -23,7 +23,7 @@ libmtpdevice_la_LIBADD = 				\
 	$(HAL_LIBS)					\
 	$(MTP_LIBS)
 
-INCLUDES = 						\
+AM_CPPFLAGS = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\

@@ -11,7 +11,7 @@ libsample_vala_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 
 libsample_vala_la_CFLAGS = $(WNOERROR_CFLAGS)
 
-INCLUDES = 						\
+AM_CPPFLAGS = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\
@@ -33,10 +33,10 @@ plugin_in_files = sample-vala.plugin.in
 
 %.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po); $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-VALAFLAGS = --vapidir=$(top_srcdir)/bindings/vala --pkg=rhythmdb --pkg=rb --pkg=gstreamer-0.10 --pkg=libpeas-1.0
+AM_VALAFLAGS = --vapidir=$(top_srcdir)/bindings/vala --pkg=rhythmdb --pkg=rb --pkg=gstreamer-0.10 --pkg=libpeas-1.0
 
 %.c %.h: %.vala
-	$(VALAC) -C $(VALAFLAGS) $^
+	$(VALAC) -C $(AM_VALAFLAGS) $^
 	
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 

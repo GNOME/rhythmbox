@@ -43,7 +43,7 @@ librb_la_SOURCES =					\
 	rb-task-progress-simple.c			\
 	rb-list-model.c
 
-INCLUDES =						\
+AM_CPPFLAGS =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-DSHARE_DIR=\"$(pkgdatadir)\"			\

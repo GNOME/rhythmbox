@@ -18,7 +18,7 @@ librbbackendsgstreamer_la_LIBADD =			\
 
 librbbackendsgstreamer_la_LDFLAGS = -export-dynamic
 
-INCLUDES = 						\
+AM_CPPFLAGS = 						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"			\
 	-I$(top_srcdir) 				\

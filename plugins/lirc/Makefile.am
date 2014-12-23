@@ -13,7 +13,7 @@ librblirc_la_LIBADD = $(top_builddir)/shell/librhythmbox-core.la
 configdir = $(plugindatadir)
 config_DATA = rhythmbox_lirc_default
 
-INCLUDES = 						\
+AM_CPPFLAGS = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\

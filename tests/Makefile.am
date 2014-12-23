@@ -47,7 +47,7 @@ test_widgets_SOURCES = \
 
 bench_rhythmdb_load_SOURCES = bench-rhythmdb-load.c
 
-INCLUDES = 							\
+AM_CPPFLAGS = 							\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"	        \
 	-DG_LOG_DOMAIN=\"Rhythmbox-tests\"			\
 	-I$(top_srcdir) 					\

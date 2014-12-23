@@ -24,7 +24,7 @@ bin_PROGRAMS = rhythmbox
 rhythmbox_SOURCES = main.c
 lib_LTLIBRARIES = librhythmbox-core.la
 
-INCLUDES = 						\
+AM_CPPFLAGS = 						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\
