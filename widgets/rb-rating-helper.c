@@ -178,23 +178,14 @@ rb_rating_render_stars (GtkWidget *widget,
 
 	for (i = 0; i < RB_RATING_MAX_SCORE; i++) {
 		GdkPixbuf *buf;
-		GtkStateType state;
 		gint star_offset;
 		int offset;
 		GdkRGBA color;
 
 		if (selected == TRUE) {
 			offset = 0;
-			if (gtk_widget_has_focus (widget))
-				state = GTK_STATE_SELECTED;
-			else
-				state = GTK_STATE_ACTIVE;
 		} else {
 			offset = 120;
-			if (gtk_widget_get_state (widget) == GTK_STATE_INSENSITIVE)
-				state = GTK_STATE_INSENSITIVE;
-			else
-				state = GTK_STATE_NORMAL;
 		}
 
 		if (i < rating)
@@ -208,7 +199,7 @@ rb_rating_render_stars (GtkWidget *widget,
 			return FALSE;
 		}
 
-		gtk_style_context_get_color (gtk_widget_get_style_context (widget), state, &color);
+		gtk_style_context_get_color (gtk_widget_get_style_context (widget), gtk_widget_get_state_flags (widget), &color);
 		buf = eel_create_colorized_pixbuf (buf,
 						   ((guint16)(color.red * G_MAXUINT16) + offset) >> 8,
 						   ((guint16)(color.green * G_MAXUINT16) + offset) >> 8,

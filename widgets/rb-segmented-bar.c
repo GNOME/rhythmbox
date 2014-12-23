@@ -693,7 +693,7 @@ static void rb_segmented_bar_render_labels (RBSegmentedBar *bar,
 		return;
 	}
 	gtk_style_context_get_color (gtk_widget_get_style_context (GTK_WIDGET (bar)),
-				     gtk_widget_get_state (GTK_WIDGET (bar)),
+				     gtk_widget_get_state_flags (GTK_WIDGET (bar)),
 				     &gdk_color);
 
 	if (gtk_widget_get_direction (GTK_WIDGET (bar)) == GTK_TEXT_DIR_RTL) {
@@ -990,7 +990,7 @@ a11y_impl_ref_child (AtkObject *obj, gint i)
 static void
 a11y_impl_get_image_position (AtkImage *image, gint *x, gint *y, AtkCoordType coord_type)
 {
-	atk_component_get_position (ATK_COMPONENT (image), x, y, coord_type);
+	atk_component_get_extents (ATK_COMPONENT (image), x, y, NULL, NULL, coord_type);
 }
 
 static const char *
