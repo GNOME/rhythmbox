@@ -30,8 +30,7 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
-	$(NOTIFY_CFLAGS)				\
-	-D_BSD_SOURCE
+	$(NOTIFY_CFLAGS)
 
 plugin_in_files = notification.plugin.in
 

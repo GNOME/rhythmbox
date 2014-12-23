@@ -30,7 +30,6 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
-	-D_BSD_SOURCE			\
 	$(NULL)
 
 plugin_in_files = mmkeys.plugin.in

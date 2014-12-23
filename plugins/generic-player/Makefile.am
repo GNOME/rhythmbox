@@ -37,8 +37,7 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(TOTEM_PLPARSER_CFLAGS)			\
-	$(RHYTHMBOX_CFLAGS)				\
-	-D_BSD_SOURCE
+	$(RHYTHMBOX_CFLAGS)
 
 gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA = generic-player-info.ui generic-player-toolbar.ui

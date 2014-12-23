@@ -52,8 +52,7 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(JSON_GLIB_CFLAGS)				\
-	$(RHYTHMBOX_CFLAGS)				\
-	-D_BSD_SOURCE
+	$(RHYTHMBOX_CFLAGS)
 
 gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA =					\

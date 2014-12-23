@@ -57,8 +57,7 @@ INCLUDES = 							\
 	-I$(top_srcdir)/widgets					\
 	-I$(top_srcdir)/rhythmdb				\
 	-I$(top_srcdir)/podcast					\
-	-I$(top_srcdir)/plugins/audioscrobbler			\
-	-D_BSD_SOURCE
+	-I$(top_srcdir)/plugins/audioscrobbler
 
 if HAVE_CHECK
 TESTS += \

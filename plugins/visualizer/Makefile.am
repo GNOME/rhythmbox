@@ -32,8 +32,7 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	-DPLUGIN_SRC_DIR=\""$(ROOT_UNINSTALLED_DIR)/plugins/visualizer"\" \
 	$(RHYTHMBOX_CFLAGS)				\
-	$(CLUTTER_CFLAGS)					\
-	-D_BSD_SOURCE
+	$(CLUTTER_CFLAGS)
 
 mxthemedir = $(plugindatadir)
 mxtheme_DATA = 						\

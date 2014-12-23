@@ -37,8 +37,7 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
-	$(IPOD_CFLAGS)					\
-	-D_BSD_SOURCE
+	$(IPOD_CFLAGS)
 
 plugin_in_files = ipod.plugin.in
 

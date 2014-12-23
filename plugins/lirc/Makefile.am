@@ -27,8 +27,7 @@ INCLUDES = 						\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
-	$(RHYTHMBOX_CFLAGS)				\
-	-D_BSD_SOURCE
+	$(RHYTHMBOX_CFLAGS)
 
 plugin_in_files = rblirc.plugin.in
 

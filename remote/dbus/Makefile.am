@@ -17,7 +17,7 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(DBUS_CFLAGS)					\
-	-D__EXTENSIONS__ -D_BSD_SOURCE
+	-D__EXTENSIONS__
 
 EXTRA_DIST = rb-client.c rb-print-playing.py rb-set-rating.py
 

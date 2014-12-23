@@ -29,8 +29,7 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
-	$(GRILO_CFLAGS)					\
-	-D_BSD_SOURCE
+	$(GRILO_CFLAGS)
 
 libgrilo_la_LIBADD += $(NULL)
 

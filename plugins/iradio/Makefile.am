@@ -36,8 +36,7 @@ INCLUDES = 						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(RHYTHMBOX_CFLAGS)				\
-	$(TOTEM_PLPARSER_CFLAGS)			\
-	-D_BSD_SOURCE
+	$(TOTEM_PLPARSER_CFLAGS)
 
 gtkbuilderdir = $(plugindatadir)
 gtkbuilder_DATA = 					\
