@@ -7,14 +7,14 @@
     <property name="can_focus">False</property>
     <property name="valign">start</property>
     <property name="border_width">12</property>
-    <property name="spacing">18</property>
     <property name="orientation">vertical</property>
+    <property name="spacing">18</property>
     <child>
       <object class="GtkBox" id="vbox14">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="spacing">6</property>
         <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
         <child>
           <object class="GtkLabel" id="browser_views_label">
             <property name="visible">True</property>
@@ -31,8 +31,7 @@
         <child>
           <object class="GtkBox" id="hbox16">
             <property name="visible">True</property>
-	    <property name="can_focus">False</property>
-	    <property name="orientation">horizontal</property>
+            <property name="can_focus">False</property>
             <child>
               <object class="GtkLabel" id="label23">
                 <property name="visible">True</property>
@@ -48,7 +47,6 @@
               <object class="GtkBox" id="hbox17">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-	        <property name="orientation">horizontal</property>
                 <child>
                   <object class="GtkLabel" id="label20">
                     <property name="visible">True</property>
@@ -66,8 +64,8 @@
                   <object class="GtkBox" id="vbox15">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="spacing">6</property>
                     <property name="orientation">vertical</property>
+                    <property name="spacing">6</property>
                     <child>
                       <object class="GtkRadioButton" id="library_browser_views_radio">
                         <property name="label" translatable="yes">_Artists and albums</property>
@@ -157,14 +155,14 @@
       <object class="GtkBox" id="vbox2">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="spacing">6</property>
         <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
         <child>
           <object class="GtkBox" id="vbox12">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="spacing">6</property>
             <property name="orientation">vertical</property>
+            <property name="spacing">6</property>
             <child>
               <object class="GtkLabel" id="visible_columns_label">
                 <property name="visible">True</property>
@@ -182,7 +180,6 @@
               <object class="GtkBox" id="hbox14">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-	        <property name="orientation">horizontal</property>
                 <child>
                   <object class="GtkLabel" id="label1">
                     <property name="visible">True</property>
@@ -198,13 +195,12 @@
                   <object class="GtkBox" id="vbox13">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="spacing">6</property>
                     <property name="orientation">vertical</property>
+                    <property name="spacing">6</property>
                     <child>
                       <object class="GtkBox" id="hbox15">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-	                <property name="orientation">horizontal</property>
                         <child>
                           <object class="GtkLabel" id="label21">
                             <property name="visible">True</property>
@@ -219,14 +215,11 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkTable" id="table1">
+                          <object class="GtkGrid" id="grid1">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="n_rows">5</property>
-                            <property name="n_columns">3</property>
-                            <property name="column_spacing">12</property>
                             <property name="row_spacing">6</property>
-                            <property name="homogeneous">True</property>
+                            <property name="column_spacing">12</property>
                             <child>
                               <object class="GtkCheckButton" id="track_check">
                                 <property name="label" translatable="yes">Track _number</property>
@@ -234,81 +227,14 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
                                 <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
+                                <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                               </object>
                               <packing>
-                                <property name="y_options"/>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="artist_check">
-                                <property name="label" translatable="yes">_Artist</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
-                                <property name="draw_indicator">True</property>
-                              </object>
-                              <packing>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                                <property name="y_options"/>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="composer_check">
-                                <property name="label" translatable="yes">_Composer</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
-                                <property name="draw_indicator">True</property>
-                              </object>
-                              <packing>
-                                <property name="top_attach">2</property>
-                                <property name="bottom_attach">3</property>
-                                <property name="y_options"/>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="album_check">
-                                <property name="label" translatable="yes">A_lbum</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
-                                <property name="draw_indicator">True</property>
-                              </object>
-                              <packing>
-                                <property name="top_attach">3</property>
-                                <property name="bottom_attach">4</property>
-                                <property name="y_options"/>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="year_check">
-                                <property name="label" translatable="yes">_Year</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
-                                <property name="draw_indicator">True</property>
-                              </object>
-                              <packing>
-                                <property name="top_attach">4</property>
-                                <property name="bottom_attach">5</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">0</property>
                               </packing>
                             </child>
                             <child>
@@ -318,173 +244,82 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
                                 <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
+                                <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
+                                <property name="top_attach">0</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkCheckButton" id="genre_check">
-                                <property name="label" translatable="yes">_Genre</property>
+                              <object class="GtkCheckButton" id="artist_check">
+                                <property name="label" translatable="yes">_Artist</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
                                 <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
+                                <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                               </object>
                               <packing>
-                                <property name="left_attach">2</property>
-                                <property name="right_attach">3</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="first_seen_check">
-                                <property name="label" translatable="yes">Da_te added</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
-                                <property name="draw_indicator">True</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">2</property>
-                                <property name="right_attach">3</property>
+                                <property name="left_attach">0</property>
                                 <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkCheckButton" id="play_count_check">
-                                <property name="label" translatable="yes">_Play count</property>
+                              <object class="GtkCheckButton" id="composer_check">
+                                <property name="label" translatable="yes">_Composer</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
                                 <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
+                                <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                               </object>
                               <packing>
-                                <property name="left_attach">2</property>
-                                <property name="right_attach">3</property>
+                                <property name="left_attach">0</property>
                                 <property name="top_attach">2</property>
-                                <property name="bottom_attach">3</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkCheckButton" id="comment_check">
-                                <property name="label" translatable="yes">C_omment</property>
+                              <object class="GtkCheckButton" id="album_check">
+                                <property name="label" translatable="yes">A_lbum</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
                                 <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
+                                <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                               </object>
                               <packing>
-                                <property name="left_attach">2</property>
-                                <property name="right_attach">3</property>
+                                <property name="left_attach">0</property>
                                 <property name="top_attach">3</property>
-                                <property name="bottom_attach">4</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkCheckButton" id="bpm_check">
-                                <property name="label" translatable="yes">_BPM</property>
+                              <object class="GtkCheckButton" id="year_check">
+                                <property name="label" translatable="yes">_Year</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
                                 <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
+                                <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                               </object>
                               <packing>
-                                <property name="left_attach">2</property>
-                                <property name="right_attach">3</property>
+                                <property name="left_attach">0</property>
                                 <property name="top_attach">4</property>
-                                <property name="bottom_attach">5</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="rating_check">
-                                <property name="label" translatable="yes">_Rating</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
-                                <property name="draw_indicator">True</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="top_attach">4</property>
-                                <property name="bottom_attach">5</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="duration_check">
-                                <property name="label" translatable="yes">Ti_me</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
-                                <property name="draw_indicator">True</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="top_attach">3</property>
-                                <property name="bottom_attach">4</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="location_check">
-                                <property name="label" translatable="yes">Lo_cation</property>
-                                <property name="use_action_appearance">False</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
-                                <property name="draw_indicator">True</property>
-                              </object>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="top_attach">2</property>
-                                <property name="bottom_attach">3</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
                               </packing>
                             </child>
                             <child>
@@ -494,17 +329,150 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
                                 <property name="use_underline">True</property>
-                                <property name="xalign">0.5</property>
+                                <property name="xalign">0</property>
                                 <property name="draw_indicator">True</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
                                 <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
-                                <property name="x_options">GTK_FILL</property>
-                                <property name="y_options"/>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="location_check">
+                                <property name="label" translatable="yes">Lo_cation</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="duration_check">
+                                <property name="label" translatable="yes">Ti_me</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="rating_check">
+                                <property name="label" translatable="yes">_Rating</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="bpm_check">
+                                <property name="label" translatable="yes">_BPM</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="top_attach">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="comment_check">
+                                <property name="label" translatable="yes">C_omment</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="top_attach">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="play_count_check">
+                                <property name="label" translatable="yes">_Play count</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="top_attach">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="first_seen_check">
+                                <property name="label" translatable="yes">Da_te added</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="top_attach">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="genre_check">
+                                <property name="label" translatable="yes">_Genre</property>
+                                <property name="use_action_appearance">False</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="hexpand">True</property>
+                                <property name="use_underline">True</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">2</property>
+                                <property name="top_attach">0</property>
                               </packing>
                             </child>
                           </object>
