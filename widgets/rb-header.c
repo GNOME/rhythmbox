@@ -475,7 +475,7 @@ rb_header_finalize (GObject *object)
 }
 
 static void
-art_cb (RBExtDBKey *key, const char *filename, GValue *data, RBHeader *header)
+art_cb (RBExtDBKey *key, RBExtDBKey *store_key, const char *filename, GValue *data, RBHeader *header)
 {
 	RhythmDBEntry *entry;
 
@@ -484,7 +484,7 @@ art_cb (RBExtDBKey *key, const char *filename, GValue *data, RBHeader *header)
 		return;
 	}
 
-	if (rhythmdb_entry_matches_ext_db_key (header->priv->db, entry, key)) {
+	if (rhythmdb_entry_matches_ext_db_key (header->priv->db, entry, store_key)) {
 		GdkPixbuf *pixbuf = NULL;
 
 		if (data != NULL && G_VALUE_HOLDS (data, GDK_TYPE_PIXBUF)) {
@@ -503,7 +503,7 @@ art_cb (RBExtDBKey *key, const char *filename, GValue *data, RBHeader *header)
 static void
 art_added_cb (RBExtDB *db, RBExtDBKey *key, const char *filename, GValue *data, RBHeader *header)
 {
-	art_cb (key, filename, data, header);
+	art_cb (key, key, filename, data, header);
 }
 
 static void

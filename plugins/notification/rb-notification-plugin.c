@@ -363,7 +363,7 @@ get_artist_album_templates (const char *artist,
 }
 
 static void
-art_cb (RBExtDBKey *key, const char *filename, GValue *data, RBNotificationPlugin *plugin)
+art_cb (RBExtDBKey *key, RBExtDBKey *store_key, const char *filename, GValue *data, RBNotificationPlugin *plugin)
 {
 	RhythmDBEntry *entry;
 
@@ -372,7 +372,7 @@ art_cb (RBExtDBKey *key, const char *filename, GValue *data, RBNotificationPlugi
 		return;
 	}
 
-	if (rhythmdb_entry_matches_ext_db_key (plugin->db, entry, key)) {
+	if (rhythmdb_entry_matches_ext_db_key (plugin->db, entry, store_key)) {
 		guint elapsed = 0;
 
 		plugin->notify_art_path = g_strdup (filename);

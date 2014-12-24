@@ -51,7 +51,7 @@ typedef enum {
 	RB_EXT_DB_SOURCE_SEARCH,	/* found by external search */
 	RB_EXT_DB_SOURCE_EMBEDDED,	/* embedded in media itself */
 	RB_EXT_DB_SOURCE_USER,		/* provided by user (eg image in same dir) */
-	RB_EXT_DB_SOURCE_USER_EXPLICIT	/* provided explicitly by user */
+	RB_EXT_DB_SOURCE_USER_EXPLICIT,	/* provided explicitly by user */
 } RBExtDBSourceType;
 
 GType		rb_ext_db_source_type_get_type (void);
@@ -87,7 +87,7 @@ struct _RBExtDBClass
 					 GValue *data);
 };
 
-typedef void (*RBExtDBRequestCallback) (RBExtDBKey *key, const char *filename, GValue *data, gpointer user_data);
+typedef void (*RBExtDBRequestCallback) (RBExtDBKey *key, RBExtDBKey *store_key, const char *filename, GValue *data, gpointer user_data);
 
 GType			rb_ext_db_get_type 		(void);
 
@@ -95,7 +95,8 @@ RBExtDB *		rb_ext_db_new			(const char *name);
 
 /* for requestors */
 char *			rb_ext_db_lookup		(RBExtDB *store,
-							 RBExtDBKey *key);
+							 RBExtDBKey *key,
+							 RBExtDBKey **store_key);
 
 gboolean		rb_ext_db_request		(RBExtDB *store,
 							 RBExtDBKey *key,
@@ -118,6 +119,9 @@ void			rb_ext_db_store_raw		(RBExtDB *store,
 							 RBExtDBKey *key,
 							 RBExtDBSourceType source_type,
 							 GValue *data);
+
+void			rb_ext_db_delete		(RBExtDB *store,
+							 RBExtDBKey *key);
 
 G_END_DECLS
 

@@ -80,7 +80,7 @@ set_blank_image (MxFrame *frame)
 }
 
 static void
-art_cb (RBExtDBKey *key, const char *filename, GValue *data, MxFrame *frame)
+art_cb (RBExtDBKey *key, RBExtDBKey *store_key, const char *filename, GValue *data, MxFrame *frame)
 {
 	ClutterActor *image;
 	GdkPixbuf *pixbuf;

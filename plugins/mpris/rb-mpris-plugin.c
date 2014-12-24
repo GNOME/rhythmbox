@@ -594,7 +594,7 @@ build_track_metadata (RBMprisPlugin *plugin,
 
 	key = rhythmdb_entry_create_ext_db_key (entry, RHYTHMDB_PROP_ALBUM);
 
-	art_filename = rb_ext_db_lookup (plugin->art_store, key);
+	art_filename = rb_ext_db_lookup (plugin->art_store, key, NULL);
 	if (art_filename != NULL) {
 		char *uri;
 		uri = g_filename_to_uri (art_filename, NULL, NULL);

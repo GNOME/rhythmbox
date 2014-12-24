@@ -1537,7 +1537,7 @@ rb_add_artwork_whole_album_cb (GtkTreeModel *query_model,
 }
 
 static void
-art_request_cb (RBExtDBKey *key, const char *filename, GValue *data, RBiPodSource *source)
+art_request_cb (RBExtDBKey *key, RBExtDBKey *store_key, const char *filename, GValue *data, RBiPodSource *source)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	Itdb_Device *device;

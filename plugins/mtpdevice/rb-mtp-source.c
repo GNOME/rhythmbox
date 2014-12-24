@@ -1095,7 +1095,7 @@ get_db_for_source (RBMtpSource *source)
 }
 
 static void
-art_request_cb (RBExtDBKey *key, const char *filename, GValue *data, RBMtpSource *source)
+art_request_cb (RBExtDBKey *key, RBExtDBKey *store_key, const char *filename, GValue *data, RBMtpSource *source)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 

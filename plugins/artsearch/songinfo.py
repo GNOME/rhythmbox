@@ -76,9 +76,9 @@ class AlbumArtPage(object):
 		print("art added?")
 		self.art_update(key, data)
 
-	def art_request_cb(self, key, filename, data):
+	def art_request_cb(self, key, skey, filename, data):
 		print("art request finished?")
-		self.art_update(key, data)
+		self.art_update(skey, data)
 
 	def get_art(self, entry, user_explicit=False):
 		self.image.start(100)
