@@ -167,7 +167,9 @@ rb_introspection_sources = \
 		widgets/rb-song-info.h \
 		widgets/rb-song-info.c \
 		widgets/rb-uri-dialog.h \
-		widgets/rb-uri-dialog.c
+		widgets/rb-uri-dialog.c \
+		widgets/rb-fading-image.h \
+		widgets/rb-fading-image.c
 
 MPID-3.0.gir: $(top_builddir)/shell/librhythmbox-core.la
 MPID_3_0_gir_INCLUDES = GObject-2.0
