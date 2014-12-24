@@ -34,6 +34,9 @@ class EmbeddedSearch(object):
 
 	def discovered_cb(self, discoverer, info, error):
 		tags = info.get_tags()
+		if tags is None:
+			return
+
 		for tagname in ('image', 'preview-image'):
 			(found, sample) = tags.get_sample(tagname)
 			if not found:
