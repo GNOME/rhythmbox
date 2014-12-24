@@ -917,18 +917,41 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 	if (file_data != NULL && file_data_size > 0) {
 		GFile *f;
 		GError *error = NULL;
+		char *subdir = NULL;
+		char *basename = NULL;
+		char *fullsubdir;
 
 		if (filename == NULL) {
-			filename = g_strdup_printf ("%8.8x", tdb_get_seqnum (store->priv->tdb_context));
-			rb_debug ("generated filename %s", filename);
+			int seq;
+
+			seq = tdb_get_seqnum (store->priv->tdb_context);
+			if (seq > 0xffffff) {
+				subdir = g_strdup_printf ("%3.3x%s%3.3x", seq >> 24, G_DIR_SEPARATOR_S, (seq >> 12) & 0xfff);
+			} else if (seq > 0xfff) {
+				subdir = g_strdup_printf ("%3.3x", seq >> 12);
+			} else {
+				subdir = g_strdup (".");
+			}
+			basename = g_strdup_printf ("%3.3x", seq & 0xfff);
+			rb_debug ("generated filename %s, subdir %s", basename, subdir ? subdir : "none");
+			filename = g_build_filename (subdir, basename, NULL);
 		} else {
-			rb_debug ("using existing filename %s", filename);
+			basename = g_path_get_basename (filename);
+			subdir = g_path_get_dirname (filename);
+			rb_debug ("using existing filename %s (basename %s, subdir %s)", filename, basename, subdir);
 		}
+
+		fullsubdir = g_build_filename (rb_user_cache_dir (), store->priv->name, subdir, NULL);
+		/* ignore errors, g_file_replace_contents will fail too, and it'll explain */
+		g_mkdir_with_parents (fullsubdir, 0770);
+		g_free (fullsubdir);
 
 		req->filename = g_build_filename (rb_user_cache_dir (),
 						  store->priv->name,
-						  filename,
+						  subdir,
+						  basename,
 						  NULL);
+
 		f = g_file_new_for_path (req->filename);
 
 		g_file_replace_contents (f,
@@ -946,6 +969,10 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 		} else {
 			req->stored = TRUE;
 		}
+
+		g_free (basename);
+		g_free (subdir);
+
 		g_object_unref (f);
 	} else if (req->source_type == RB_EXT_DB_SOURCE_NONE) {
 		req->stored = TRUE;
