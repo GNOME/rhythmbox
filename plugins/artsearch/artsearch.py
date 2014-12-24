@@ -29,6 +29,8 @@ from gi.repository import GObject, Peas, RB, GdkPixbuf
 import gettext
 gettext.install('rhythmbox', RB.locale_dir())
 
+from songinfo import AlbumArtPage
+
 import oldcache
 from lastfm import LastFMSearch
 from local import LocalSearch
@@ -67,11 +69,17 @@ class ArtSearchPlugin (GObject.GObject, Peas.Activatable):
 		self.art_store = RB.ExtDB(name="album-art")
 		self.req_id = self.art_store.connect("request", self.album_art_requested)
 
+		shell = self.object
+		self.csi_id = shell.connect("create_song_info", self.create_song_info)
+
 	def do_deactivate (self):
 		self.art_store.disconnect(self.req_id)
 		self.req_id = 0
 		self.art_store = None
-		self.object = None
+
+		shell = self.object
+		shell.disconnect(self.csi_id)
+		self.csi_id = 0
 
 	def album_art_requested(self, store, key, last_time):
 		searches = []
@@ -84,3 +92,7 @@ class ArtSearchPlugin (GObject.GObject, Peas.Activatable):
 
 		s = Search(store, key, last_time, searches)
 		return s.next_search()
+
+	def create_song_info(self, shell, song_info, is_multiple):
+		if is_multiple is False:
+			x = AlbumArtPage(shell, song_info)
