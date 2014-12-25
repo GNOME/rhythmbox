@@ -223,7 +223,7 @@ class LyricPane(object):
 		self.discard.connect('clicked', discard_callback)
 		self.clear = Gtk.Button.new_from_stock(Gtk.STOCK_CLEAR)
 		self.clear.connect('clicked', clear_callback)
-		self.hbox = Gtk.HButtonBox()
+		self.hbox = Gtk.ButtonBox(orientation=Gtk.Orientation.HORIZONTAL)
 		self.hbox.set_spacing (6)
 		self.hbox.set_layout(Gtk.ButtonBoxStyle.END)
 		self.hbox.add(self.edit)
@@ -233,8 +233,9 @@ class LyricPane(object):
 
 		(self.view, self.buffer, self.tview) = create_lyrics_view()
 
-		self.view.pack_start(self.hbox, False, False, 6)
-		self.view.set_spacing(2)
+		self.view.pack_start(self.hbox, False, False, 0)
+		self.view.set_spacing(6)
+		self.view.props.margin = 6
 	
 		self.view.show_all()
 		self.page_num = song_info.append_page(_("Lyrics"), self.view)
