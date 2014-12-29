@@ -195,41 +195,6 @@ _rb_source_search_create_simple_query (RBSourceSearch *search, RhythmDB *db, con
 }
 
 /**
- * rb_source_search_action_attach:
- * @search: #RBSourceSearch to associate with the action
- * @action: UI action to associate the search with
- *
- * Attaches a #RBSourceSearch to a UI action so that
- * the search implementation will be used when the action is active.
- */
-void
-rb_source_search_action_attach (RBSourceSearch *search, GObject *action)
-{
-	g_object_set_data_full (action,
-				RB_SOURCE_SEARCH_DATA_ITEM,
-				g_object_ref (search),
-				(GDestroyNotify) g_object_unref);
-}
-
-/**
- * rb_source_search_get_from_action:
- * @action: the action to find the #RBSourceSearch for
- *
- * Returns the #RBSourceSearch associated with the
- * specified UI action.
- *
- * Return value: (transfer none): associated #RBSourceSearch
- */
-RBSourceSearch *
-rb_source_search_get_from_action (GObject *action)
-{
-	gpointer data;
-	data = g_object_get_data (action, RB_SOURCE_SEARCH_DATA_ITEM);
-	return RB_SOURCE_SEARCH (data);
-}
-
-
-/**
  * rb_source_search_add_to_menu:
  * @menu: #GMenu instance to populate
  * @action_namespace: muxer namespace for the action ("app" or "win")

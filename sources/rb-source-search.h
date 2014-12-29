@@ -78,10 +78,6 @@ RhythmDBQuery *	rb_source_search_create_query (RBSourceSearch *search,
 
 char *		rb_source_search_get_description (RBSourceSearch *search);
 
-void		rb_source_search_action_attach (RBSourceSearch *search,
-						GObject *action);
-RBSourceSearch *rb_source_search_get_from_action (GObject *action);
-
 void		rb_source_search_add_to_menu (GMenu *menu,
 					      const char *action_namespace,
 					      GAction *action,
