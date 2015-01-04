@@ -85,6 +85,8 @@ void			rb_ext_db_key_lookups		(RBExtDBKey *key,
 
 TDB_DATA		rb_ext_db_key_to_store_key	(RBExtDBKey *key);
 
+char *			rb_ext_db_key_to_string		(RBExtDBKey *key);
+
 G_END_DECLS
 
 #endif /* RB_EXT_DB_KEY_H */

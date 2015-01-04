@@ -599,3 +599,52 @@ rb_ext_db_key_to_store_key (RBExtDBKey *key)
 	create_store_key (key, 0, &k);
 	return k;
 }
+
+static void
+append_field (GString *s, RBExtDBField *f)
+{
+	int i;
+
+	g_string_append_printf (s, " %s%s{", f->name, f->match_null ? "~" : "=");
+	for (i = 0; i < f->values->len; i++) {
+		if (i != 0)
+			g_string_append (s, "\",\"");
+		else
+			g_string_append (s, "\"");
+		g_string_append (s, g_ptr_array_index (f->values, i));
+	}
+	if (i != 0)
+		g_string_append (s, "\"}");
+	else
+		g_string_append (s, "}");
+}
+
+/**
+ * rb_ext_db_key_to_string:
+ * @key: a @RBExtDBKey
+ *
+ * Generates a readable string format from the key.
+ *
+ * Return value: (transfer full): string form of the key
+ */
+char *
+rb_ext_db_key_to_string (RBExtDBKey *key)
+{
+	GString *s;
+	GList *l;
+
+	s = g_string_sized_new (100);
+	g_string_append (s, key->lookup ? "[lookup]" : "[storage]");
+	for (l = key->fields; l != NULL; l = l->next) {
+		append_field (s, l->data);
+	}
+
+	if (key->lookup && key->info != NULL) {
+		g_string_append (s, " info: ");
+		for (l = key->info; l != NULL; l = l->next) {
+			append_field (s, l->data);
+		}
+	}
+
+	return g_string_free (s, FALSE);
+}
