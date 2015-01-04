@@ -36,8 +36,10 @@ G_BEGIN_DECLS
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 #define rb_debug(...) rb_debug_realf (__func__, __FILE__, __LINE__, TRUE, __VA_ARGS__)
+#define rb_debug_here() rb_debug_matches (__func__, __FILE__)
 #elif defined(__GNUC__) && __GNUC__ >= 3
 #define rb_debug(...) rb_debug_realf (__FUNCTION__, __FILE__, __LINE__, TRUE, __VA_ARGS__)
+#define rb_debug_here() rb_debug_matches (__FUNCTION__, __FILE__)
 #else
 #define rb_debug
 #endif
