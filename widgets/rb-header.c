@@ -138,6 +138,7 @@ struct RBHeaderPrivate
 	long duration;
 	gboolean seekable;
 	char *image_path;
+	RBExtDBKey *art_key;
 	gboolean show_album_art;
 	gboolean show_slider;
 	
@@ -470,6 +471,8 @@ rb_header_finalize (GObject *object)
 	g_return_if_fail (header->priv != NULL);
 
 	g_free (header->priv->image_path);
+	if (header->priv->art_key)
+		rb_ext_db_key_free (header->priv->art_key);
 
 	G_OBJECT_CLASS (rb_header_parent_class)->finalize (object);
 }
@@ -495,6 +498,10 @@ art_cb (RBExtDBKey *key, RBExtDBKey *store_key, const char *filename, GValue *da
 
 		g_free (header->priv->image_path);
 		header->priv->image_path = g_strdup (filename);
+
+		if (header->priv->art_key)
+			rb_ext_db_key_free (header->priv->art_key);
+		header->priv->art_key = rb_ext_db_key_copy (store_key);
 	}
 
 	rhythmdb_entry_unref (entry);
@@ -522,7 +529,6 @@ rb_header_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, 
 		g_signal_handler_disconnect (header->priv->playing_source, header->priv->status_changed_id);
 	}
 
-	rb_fading_image_start (RB_FADING_IMAGE (header->priv->image), 2000);
 
 	header->priv->entry = entry;
 	header->priv->elapsed_time = 0;
@@ -532,13 +538,19 @@ rb_header_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, 
 		header->priv->duration = rhythmdb_entry_get_ulong (header->priv->entry,
 								   RHYTHMDB_PROP_DURATION);
 
-		key = rhythmdb_entry_create_ext_db_key (entry, RHYTHMDB_PROP_ALBUM);
-		rb_ext_db_request (header->priv->art_store,
-				   key,
-				   (RBExtDBRequestCallback) art_cb,
-				   g_object_ref (header),
-				   g_object_unref);
-		rb_ext_db_key_free (key);
+		if (header->priv->art_key == NULL ||
+		    rhythmdb_entry_matches_ext_db_key (header->priv->db, entry, header->priv->art_key) == FALSE) {
+			rb_fading_image_start (RB_FADING_IMAGE (header->priv->image), 2000);
+			key = rhythmdb_entry_create_ext_db_key (entry, RHYTHMDB_PROP_ALBUM);
+			rb_ext_db_request (header->priv->art_store,
+					   key,
+					   (RBExtDBRequestCallback) art_cb,
+					   g_object_ref (header),
+					   g_object_unref);
+			rb_ext_db_key_free (key);
+		} else {
+			rb_debug ("existing art matches new entry");
+		}
 
 		header->priv->playing_source = rb_shell_player_get_playing_source (player);
 		header->priv->status_changed_id =
@@ -547,6 +559,7 @@ rb_header_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, 
 					  G_CALLBACK (playback_status_changed_cb),
 					  header);
 	} else {
+		rb_fading_image_start (RB_FADING_IMAGE (header->priv->image), 2000);
 		header->priv->duration = 0;
 	}
 
