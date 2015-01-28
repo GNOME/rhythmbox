@@ -62,6 +62,7 @@ typedef struct
 	char *current_album_and_artist;	/* from _album_ by _artist_ */
 
 	gchar *notify_art_path;
+	RBExtDBKey *notify_art_key;
 	NotifyNotification *notification;
 	NotifyNotification *misc_notification;
 	gboolean notify_supports_actions;
@@ -381,6 +382,10 @@ art_cb (RBExtDBKey *key, RBExtDBKey *store_key, const char *filename, GValue *da
 		if (elapsed < PLAYING_ENTRY_NOTIFY_TIME) {
 			notify_playing_entry (plugin, FALSE);
 		}
+
+		if (plugin->notify_art_key != NULL)
+			rb_ext_db_key_free (plugin->notify_art_key);
+		plugin->notify_art_key = rb_ext_db_key_copy (store_key);
 	}
 
 	rhythmdb_entry_unref (entry);
@@ -402,27 +407,36 @@ update_current_playing_data (RBNotificationPlugin *plugin, RhythmDBEntry *entry)
 
 	g_free (plugin->current_title);
 	g_free (plugin->current_album_and_artist);
-	g_free (plugin->notify_art_path);
 	plugin->current_title = NULL;
 	plugin->current_album_and_artist = NULL;
-	plugin->notify_art_path = NULL;
 
 	if (entry == NULL) {
 		plugin->current_title = g_strdup (_("Not Playing"));
 		plugin->current_album_and_artist = g_strdup ("");
+		g_free (plugin->notify_art_path);
+		plugin->notify_art_path = NULL;
 		return;
 	}
 
 	secondary = g_string_sized_new (100);
 
-	/* request album art */
-	key = rhythmdb_entry_create_ext_db_key (entry, RHYTHMDB_PROP_ALBUM);
-	rb_ext_db_request (plugin->art_store,
-			   key,
-			   (RBExtDBRequestCallback) art_cb,
-			   g_object_ref (plugin),
-			   g_object_unref);
-	rb_ext_db_key_free (key);
+	if (plugin->notify_art_key == NULL ||
+	    (rhythmdb_entry_matches_ext_db_key (plugin->db, entry, plugin->notify_art_key) == FALSE)) {
+		if (plugin->notify_art_key)
+			rb_ext_db_key_free (plugin->notify_art_key);
+		plugin->notify_art_key = NULL;
+		g_free (plugin->notify_art_path);
+		plugin->notify_art_path = NULL;
+
+		/* request album art */
+		key = rhythmdb_entry_create_ext_db_key (entry, RHYTHMDB_PROP_ALBUM);
+		rb_ext_db_request (plugin->art_store,
+				   key,
+				   (RBExtDBRequestCallback) art_cb,
+				   g_object_ref (plugin),
+				   g_object_unref);
+		rb_ext_db_key_free (key);
+	}
 
 	/* get artist, preferring streaming song details */
 	value = rhythmdb_entry_request_extra_metadata (plugin->db,
@@ -622,9 +636,12 @@ impl_deactivate	(PeasActivatable *bplugin)
 	plugin->art_store = NULL;
 
 	/* forget what's playing */
+	if (plugin->notify_art_key)
+		rb_ext_db_key_free (plugin->notify_art_key);
 	g_free (plugin->current_title);
 	g_free (plugin->current_album_and_artist);
 	g_free (plugin->notify_art_path);
+	plugin->notify_art_key = NULL;
 	plugin->current_title = NULL;
 	plugin->current_album_and_artist = NULL;
 	plugin->notify_art_path = NULL;
