@@ -222,8 +222,8 @@ class ContextView (GObject.GObject):
         self.webview.connect("style-set", self.style_set_cb)
 
         #---- pack everything into side pane ----#
-        self.buttons = Gtk.HBox()
-        self.vbox.pack_start (self.buttons, False, True, 0)
+        self.buttons = Gtk.HBox(spacing=3)
+        self.vbox.pack_start (self.buttons, False, True, 6)
         self.vbox.pack_start (scroll, True, True, 0)
 
         self.vbox.show_all()
