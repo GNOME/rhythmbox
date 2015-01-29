@@ -150,7 +150,7 @@ class PythonConsole(Gtk.ScrolledWindow):
 		Gtk.ScrolledWindow.__init__(self)
 
 		self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC);
-		self.set_shadow_type(Gtk.ShadowType.IN)
+		self.set_shadow_type(Gtk.ShadowType.NONE)
 		self.view = Gtk.TextView()
 		self.view.modify_font(Pango.font_description_from_string('Monospace'))
 		self.view.set_editable(True)
