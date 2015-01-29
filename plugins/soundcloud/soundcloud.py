@@ -413,7 +413,7 @@ class SoundCloudSource(RB.StreamingSource):
 		self.scrolled.set_no_show_all(True)
 		self.scrolled.hide()
 
-		self.search_entry = RB.SearchEntry()
+		self.search_entry = RB.SearchEntry(spacing=6)
 		self.search_entry.props.explicit_mode = True
 
 		action = Gio.SimpleAction.new("soundcloud-search-type", GLib.VariantType.new('s'))
@@ -460,7 +460,8 @@ class SoundCloudSource(RB.StreamingSource):
 		self.songs = RB.EntryView(db=shell.props.db,
 					  shell_player=shell.props.shell_player,
 					  is_drag_source=True,
-					  is_drag_dest=False)
+					  is_drag_dest=False,
+					  shadow_type=Gtk.ShadowType.IN)
 		self.songs.append_column(RB.EntryViewColumn.TITLE, True)
 		self.songs.append_column(RB.EntryViewColumn.ARTIST, True)
 		self.songs.append_column(RB.EntryViewColumn.DURATION, True)
