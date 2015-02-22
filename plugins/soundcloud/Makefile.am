@@ -8,9 +8,12 @@ plugin_in_files = soundcloud.plugin.in
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
 gtkbuilderdir = $(plugindatadir)
-gtkbuilder_DATA = soundcloud.ui powered-by-soundcloud.png soundcloud-symbolic.svg
+gtkbuilder_DATA = soundcloud.ui powered-by-soundcloud.png
 
-EXTRA_DIST = $(plugin_in_files) $(gtkbuilder_DATA)
+icondir = $(plugindatadir)/icons/hicolor/scalable/places
+icon_DATA = icons/hicolor/scalable/places/soundcloud-symbolic.svg
+
+EXTRA_DIST = $(plugin_in_files) $(gtkbuilder_DATA) $(icon_DATA)
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

@@ -89,6 +89,8 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 		shell = self.object
 		self.db = shell.props.db
 
+		rb.append_plugin_source_path(self, "icons")
+
 		self.entry_type = MagnatuneEntryType()
 		self.db.register_entry_type(self.entry_type)
 
@@ -110,11 +112,10 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 
 		group = RB.DisplayPageGroup.get_by_id ("stores")
 		settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
-		iconfile = Gio.File.new_for_path(rb.find_plugin_file(self, "magnatune-symbolic.svg"))
 		self.source = GObject.new(MagnatuneSource,
 					  shell=shell,
 					  entry_type=self.entry_type,
-					  icon=Gio.FileIcon.new(iconfile),
+					  icon=Gio.ThemedIcon.new("magnatune-symbolic"),
 					  plugin=self,
 					  settings=settings.get_child("source"),
 					  name=_("Magnatune"),

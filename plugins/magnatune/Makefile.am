@@ -21,9 +21,11 @@ gtkbuilder_DATA =	\
 		magnatune-prefs.ui			\
 		magnatune-toolbar.ui			\
 		magnatune_logo_color_small.png		\
-		magnatune_logo_color_tiny.png		\
-		magnatune-symbolic.svg
+		magnatune_logo_color_tiny.png
 
-EXTRA_DIST = $(plugin_in_files) $(gtkbuilder_DATA)
+icondir = $(plugindatadir)/icons/hicolor/scalable/places
+icon_DATA = icons/hicolor/scalable/places/magnatune-symbolic.svg
+
+EXTRA_DIST = $(plugin_in_files) $(gtkbuilder_DATA) $(icon_DATA)
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

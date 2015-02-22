@@ -59,13 +59,12 @@ class SoundCloudPlugin(GObject.Object, Peas.Activatable):
 	def do_activate(self):
 		shell = self.object
 
+		rb.append_plugin_source_path(self, "icons")
+
 		db = shell.props.db
 
 		self.entry_type = SoundCloudEntryType()
 		db.register_entry_type(self.entry_type)
-
-		logofile = rb.find_plugin_file(self, "soundcloud-symbolic.svg")
-		icon = Gio.FileIcon.new(Gio.File.new_for_path(logofile))
 
 		model = RB.RhythmDBQueryModel.new_empty(db)
 		self.source = GObject.new (SoundCloudSource,
@@ -74,7 +73,7 @@ class SoundCloudPlugin(GObject.Object, Peas.Activatable):
 					   plugin=self,
 					   query_model=model,
 					   entry_type=self.entry_type,
-					   icon=icon)
+					   icon=Gio.ThemedIcon.new("soundcloud-symbolic"))
 		shell.register_entry_type_for_source(self.source, self.entry_type)
 		self.source.setup()
 		group = RB.DisplayPageGroup.get_by_id ("shared")

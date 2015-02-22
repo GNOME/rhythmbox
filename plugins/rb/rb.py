@@ -31,7 +31,7 @@ import os.path
 import os
 import time
 
-from gi.repository import RB
+from gi.repository import RB, Gtk
 
 # rb classes
 from Loader import Loader
@@ -46,16 +46,24 @@ def try_load_icon(theme, icon, size, flags):
 	except:
 		return None
 
-def append_plugin_source_path(theme, iconpath):
-	# check for a Makefile.am in the dir the file was loaded from
+def append_plugin_source_path(plugin, iconpath):
+	theme = Gtk.IconTheme.get_default()
+
+	# get plugin data dir
+	datadir = plugin.plugin_info.get_data_dir()
+	icondir = os.path.join(datadir, iconpath)
+	if os.path.exists(icondir):
+		theme.append_search_path(icondir)
+
+	# where was the caller loaded from?
 	fr = sys._getframe(1)
 	co = fr.f_code
 	filename = co.co_filename
 
-	# and if found, append the icon path
-	dir = filename[:filename.rfind(os.sep)]
-	if os.path.exists(dir + "/Makefile.am"):
-		icondir = dir + iconpath
+	# if the calling plugin has an icons dir, add it to the search path
+	plugindir = filename[:filename.rfind(os.sep)]
+	icondir = os.path.join(plugindir, iconpath)
+	if os.path.exists(icondir):
 		theme.append_search_path(icondir)
 
 def entry_equal(a, b):
