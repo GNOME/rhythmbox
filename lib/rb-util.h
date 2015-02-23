@@ -56,8 +56,6 @@ char *rb_make_time_string (guint seconds);
 char *rb_make_duration_string (guint duration);
 char *rb_make_elapsed_time_string (guint elapsed, guint duration, gboolean show_remaining);
 
-GtkWidget *rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size);
-
 void rb_threads_init (void);
 gboolean rb_is_main_thread (void);
 
