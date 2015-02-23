@@ -531,7 +531,7 @@ podcast_feed_delete_action_cb (GSimpleAction *action, GVariant *parameter, gpoin
 	gtk_dialog_add_buttons (GTK_DIALOG (dialog),
 	                        _("Delete _Feed Only"),
 	                        GTK_RESPONSE_NO,
-	                        GTK_STOCK_CANCEL,
+	                        _("_Cancel"),
 	                        GTK_RESPONSE_CANCEL,
 	                        NULL);
 
@@ -1101,7 +1101,7 @@ impl_delete_selected (RBSource *asource)
 	gtk_dialog_add_buttons (GTK_DIALOG (dialog),
 	                        _("Delete _Episode Only"),
 	                        GTK_RESPONSE_NO,
-	                        GTK_STOCK_CANCEL,
+	                        _("_Cancel"),
 	                        GTK_RESPONSE_CANCEL,
 	                        NULL);
 	button = gtk_dialog_add_button (GTK_DIALOG (dialog),

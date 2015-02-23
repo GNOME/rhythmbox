@@ -135,7 +135,7 @@ rb_alert_dialog_init (RBAlertDialog *dialog)
 	dialog->details->primary_label = gtk_label_new (NULL);
 	dialog->details->secondary_label = gtk_label_new (NULL);
 	dialog->details->details_label = gtk_label_new (NULL);
-	dialog->details->image = gtk_image_new_from_stock (NULL, GTK_ICON_SIZE_DIALOG);
+	dialog->details->image = gtk_image_new_from_icon_name ("broken-image", GTK_ICON_SIZE_DIALOG);
 	gtk_misc_set_alignment (GTK_MISC (dialog->details->image), 0.5, 0.0);
 
 	gtk_label_set_line_wrap (GTK_LABEL (dialog->details->primary_label), TRUE);
@@ -188,37 +188,26 @@ static void
 setup_type (RBAlertDialog *dialog,
 	    GtkMessageType  type)
 {
-	const gchar *stock_id = NULL;
-	GtkStockItem item;
-
+	const char *icon_name = "dialog-information";
 	switch (type) {
 		case GTK_MESSAGE_INFO:
-			stock_id = GTK_STOCK_DIALOG_INFO;
+			icon_name = "dialog-information";
 			break;
 		case GTK_MESSAGE_QUESTION:
-			stock_id = GTK_STOCK_DIALOG_QUESTION;
+			icon_name = "dialog-question";
 			break;
 		case GTK_MESSAGE_WARNING:
-			stock_id = GTK_STOCK_DIALOG_WARNING;
+			icon_name = "dialog-warning";
 			break;
 		case GTK_MESSAGE_ERROR:
-			stock_id = GTK_STOCK_DIALOG_ERROR;
+			icon_name = "dialog-error";
 			break;
 		default:
 			g_warning ("Unknown GtkMessageType %d", type);
 			break;
 	}
 
-	if (stock_id == NULL) {
-		stock_id = GTK_STOCK_DIALOG_INFO;
-	}
-
-	if (gtk_stock_lookup (stock_id, &item)) {
-		gtk_image_set_from_stock (GTK_IMAGE (dialog->details->image), stock_id,
-		                          GTK_ICON_SIZE_DIALOG);
-	} else {
-		g_warning ("Stock dialog ID doesn't exist?");
-	}
+	gtk_image_set_from_icon_name (GTK_IMAGE (dialog->details->image), icon_name, GTK_ICON_SIZE_DIALOG);
 }
 
 static void
@@ -374,41 +363,41 @@ rb_alert_dialog_add_buttons (RBAlertDialog* alert_dialog,
 			break;
 		case GTK_BUTTONS_OK:
 			gtk_dialog_add_button (dialog,
-		                               GTK_STOCK_OK,
+		                               _("_OK"),
 			                       GTK_RESPONSE_OK);
 			gtk_dialog_set_default_response (dialog,
 			                                GTK_RESPONSE_OK);
 			break;
 		case GTK_BUTTONS_CLOSE:
 			gtk_dialog_add_button (dialog,
-		                               GTK_STOCK_CLOSE,
-			                      GTK_RESPONSE_CLOSE);
+		                               _("_Close"),
+					       GTK_RESPONSE_CLOSE);
 			gtk_dialog_set_default_response (dialog,
 			                                 GTK_RESPONSE_CLOSE);
 			break;
 		case GTK_BUTTONS_CANCEL:
 			gtk_dialog_add_button (dialog,
-			                       GTK_STOCK_CANCEL,
+			                       _("_Cancel"),
 			                       GTK_RESPONSE_CANCEL);
 			gtk_dialog_set_default_response (dialog,
 			                                 GTK_RESPONSE_CANCEL);
 			break;
 		case GTK_BUTTONS_YES_NO:
 			gtk_dialog_add_button (dialog,
-			                       GTK_STOCK_NO,
+			                       _("_No"),
 			                       GTK_RESPONSE_NO);
 			gtk_dialog_add_button (dialog,
-			                       GTK_STOCK_YES,
+			                       _("_Yes"),
 			                       GTK_RESPONSE_YES);
 			gtk_dialog_set_default_response (dialog,
 			                                 GTK_RESPONSE_YES);
 			break;
 		case GTK_BUTTONS_OK_CANCEL:
 			gtk_dialog_add_button (dialog,
-			                       GTK_STOCK_CANCEL,
+			                       _("_Cancel"),
 			                       GTK_RESPONSE_CANCEL);
 			gtk_dialog_add_button (dialog,
-			                       GTK_STOCK_OK,
+			                       _("_OK"),
 			                       GTK_RESPONSE_OK);
 			gtk_dialog_set_default_response (dialog,
 			                                 GTK_RESPONSE_OK);

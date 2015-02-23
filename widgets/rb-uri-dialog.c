@@ -155,10 +155,10 @@ rb_uri_dialog_init (RBURIDialog *dialog)
 	gtk_box_set_spacing (GTK_BOX (content_area), 2);
 
 	dialog->priv->cancelbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
-							    GTK_STOCK_CANCEL,
+							    _("_Cancel"),
 							    GTK_RESPONSE_CANCEL);
 	dialog->priv->okbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
-							GTK_STOCK_ADD,
+							_("_Add"),
 							GTK_RESPONSE_OK);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 

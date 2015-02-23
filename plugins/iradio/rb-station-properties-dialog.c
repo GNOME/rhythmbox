@@ -183,7 +183,7 @@ rb_station_properties_dialog_constructed (GObject *object)
 			   GTK_WIDGET (gtk_builder_get_object (builder, "stationproperties")));
 
 	dialog->priv->close_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
-							    GTK_STOCK_CLOSE,
+							    _("_Close"),
 							    GTK_RESPONSE_CLOSE);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_CLOSE);
 

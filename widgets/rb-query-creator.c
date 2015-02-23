@@ -188,14 +188,14 @@ rb_query_creator_constructed (GObject *object)
 
 	if (priv->creating) {
 		gtk_dialog_add_button (GTK_DIALOG (creator),
-				       GTK_STOCK_CANCEL,
+				       _("_Cancel"),
 				       GTK_RESPONSE_CLOSE);
 		gtk_dialog_add_button (GTK_DIALOG (creator),
-				       GTK_STOCK_NEW,
+				       _("_New"),
 				       GTK_RESPONSE_OK);
 	} else {
 		gtk_dialog_add_button (GTK_DIALOG (creator),
-				       GTK_STOCK_CLOSE,
+				       _("_Close"),
 				       GTK_RESPONSE_CLOSE);
 	}
 	gtk_dialog_set_default_response (GTK_DIALOG (creator),
@@ -799,7 +799,7 @@ append_row (RBQueryCreator *creator)
 		gtk_size_group_add_widget (priv->entry_size_group, entry);
 	gtk_box_pack_start (hbox, GTK_WIDGET (entry), TRUE, TRUE, 0);
 
-	remove_button = gtk_button_new_from_stock (GTK_STOCK_REMOVE);
+	remove_button = gtk_button_new_with_label (_("Remove"));
 	g_signal_connect_object (G_OBJECT (remove_button), "clicked", G_CALLBACK (remove_button_click_cb),
 				 creator, 0);
 	gtk_size_group_add_widget (priv->button_size_group, remove_button);

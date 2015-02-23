@@ -141,7 +141,7 @@ plugins_action_cb (GSimpleAction *action, GVariant *parameters, gpointer user_da
 		app->priv->plugins = gtk_dialog_new_with_buttons (_("Configure Plugins"),
 								  window,
 								  GTK_DIALOG_DESTROY_WITH_PARENT,
-								  GTK_STOCK_CLOSE,
+								  _("_Close"),
 								  GTK_RESPONSE_CLOSE,
 								  NULL);
 		content_area = gtk_dialog_get_content_area (GTK_DIALOG (app->priv->plugins));

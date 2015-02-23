@@ -189,10 +189,10 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 				 shell_preferences, 0);
 
 	gtk_dialog_add_button (GTK_DIALOG (shell_preferences),
-			       GTK_STOCK_CLOSE,
+			       _("_Close"),
 			       GTK_RESPONSE_CLOSE);
 	tmp = gtk_dialog_add_button (GTK_DIALOG (shell_preferences),
-			              GTK_STOCK_HELP,
+			              _("_Help"),
 			              GTK_RESPONSE_HELP);
 	g_signal_connect_object (tmp, "clicked",
 				 G_CALLBACK (help_cb), shell_preferences, 0);
