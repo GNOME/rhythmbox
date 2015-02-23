@@ -180,8 +180,8 @@
                               <object class="GtkLabel" id="label41">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="xalign">0</property>
                                 <property name="label" translatable="yes">Status:</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="x_options">GTK_FILL</property>
@@ -192,8 +192,8 @@
                               <object class="GtkLabel" id="label42">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="xalign">0</property>
                                 <property name="label" translatable="yes">Queued tracks:</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="top_attach">1</property>
@@ -206,8 +206,8 @@
                               <object class="GtkLabel" id="label43">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="xalign">0</property>
                                 <property name="label" translatable="yes">Tracks submitted:</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="top_attach">2</property>
@@ -220,8 +220,8 @@
                               <object class="GtkLabel" id="label44">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="xalign">0</property>
                                 <property name="label" translatable="yes">Last submission time:</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="top_attach">3</property>
@@ -234,8 +234,8 @@
                               <object class="GtkLabel" id="scrobbler_submit_time_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="xalign">0</property>
                                 <property name="label" translatable="yes">Never</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -250,8 +250,8 @@
                               <object class="GtkLabel" id="scrobbler_status_msg_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="xalign">0</property>
                                 <property name="label" translatable="yes">Disabled</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -264,8 +264,8 @@
                               <object class="GtkLabel" id="scrobbler_queue_count_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="xalign">0</property>
                                 <property name="label">0</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -280,8 +280,8 @@
                               <object class="GtkLabel" id="scrobbler_submit_count_label">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="xalign">0</property>
                                 <property name="label">0</property>
+                                <property name="xalign">0</property>
                               </object>
                               <packing>
                                 <property name="left_attach">1</property>
@@ -346,10 +346,12 @@
                   <object class="GtkLabel" id="radio_creator_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="xalign">0</property>
-                    <property name="xpad">10</property>
-                    <property name="ypad">10</property>
+                    <property name="margin_left">10</property>
+                    <property name="margin_right">10</property>
+                    <property name="margin_top">10</property>
+                    <property name="margin_bottom">10</property>
                     <property name="label" translatable="yes">Create a Radio Station</property>
+                    <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                     </attributes>
@@ -453,10 +455,12 @@
                   <object class="GtkLabel" id="recent_tracks_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="xalign">0</property>
-                    <property name="xpad">10</property>
-                    <property name="ypad">10</property>
+                    <property name="margin_left">10</property>
+                    <property name="margin_right">10</property>
+                    <property name="margin_top">10</property>
+                    <property name="margin_bottom">10</property>
                     <property name="label" translatable="yes">Recently Listened Tracks</property>
+                    <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                     </attributes>
@@ -494,10 +498,12 @@
                   <object class="GtkLabel" id="top_artists_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="xalign">0</property>
-                    <property name="xpad">10</property>
-                    <property name="ypad">10</property>
+                    <property name="margin_left">10</property>
+                    <property name="margin_right">10</property>
+                    <property name="margin_top">10</property>
+                    <property name="margin_bottom">10</property>
                     <property name="label" translatable="yes">Top Artists</property>
+                    <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                     </attributes>
@@ -535,10 +541,12 @@
                   <object class="GtkLabel" id="recommended_artists_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="xalign">0</property>
-                    <property name="xpad">10</property>
-                    <property name="ypad">10</property>
+                    <property name="margin_left">10</property>
+                    <property name="margin_right">10</property>
+                    <property name="margin_top">10</property>
+                    <property name="margin_bottom">10</property>
                     <property name="label" translatable="yes">Recommendations</property>
+                    <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                     </attributes>
@@ -576,10 +584,12 @@
                   <object class="GtkLabel" id="top_tracks_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="xalign">0</property>
-                    <property name="xpad">10</property>
-                    <property name="ypad">10</property>
+                    <property name="margin_left">10</property>
+                    <property name="margin_right">10</property>
+                    <property name="margin_top">10</property>
+                    <property name="margin_bottom">10</property>
                     <property name="label" translatable="yes">Top Tracks</property>
+                    <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                     </attributes>
@@ -617,10 +627,12 @@
                   <object class="GtkLabel" id="loved_tracks_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="xalign">0</property>
-                    <property name="xpad">10</property>
-                    <property name="ypad">10</property>
+                    <property name="margin_left">10</property>
+                    <property name="margin_right">10</property>
+                    <property name="margin_top">10</property>
+                    <property name="margin_bottom">10</property>
                     <property name="label" translatable="yes">Loved Tracks</property>
+                    <property name="xalign">0</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
                     </attributes>
