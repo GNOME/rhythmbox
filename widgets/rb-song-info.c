@@ -351,7 +351,7 @@ static void
 rb_song_info_construct_single (RBSongInfo *song_info, GtkBuilder *builder, gboolean editable)
 {
 	song_info->priv->backward = gtk_dialog_add_button (GTK_DIALOG (song_info),
-							   GTK_STOCK_GO_BACK,
+							   _("_Back"),
 							   GTK_RESPONSE_NONE);
 
 	g_signal_connect_object (G_OBJECT (song_info->priv->backward),
@@ -360,7 +360,7 @@ rb_song_info_construct_single (RBSongInfo *song_info, GtkBuilder *builder, gbool
 				 song_info, 0);
 
 	song_info->priv->forward = gtk_dialog_add_button (GTK_DIALOG (song_info),
-							   GTK_STOCK_GO_FORWARD,
+							   _("_Forward"),
 							   GTK_RESPONSE_NONE);
 
 	g_signal_connect_object (G_OBJECT (song_info->priv->forward),
@@ -624,7 +624,7 @@ rb_song_info_constructed (GObject *object)
 	g_object_unref (G_OBJECT (shell));
 
 	gtk_dialog_add_button (GTK_DIALOG (song_info),
-			       GTK_STOCK_CLOSE,
+			       _("_Close"),
 			       GTK_RESPONSE_CLOSE);
 
 	gtk_dialog_set_default_response (GTK_DIALOG (song_info),
