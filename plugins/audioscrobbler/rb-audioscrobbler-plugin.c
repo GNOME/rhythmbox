@@ -240,6 +240,7 @@ lastfm_settings_changed_cb (GSettings *settings,
 		                                                          lastfm);
 		g_object_unref (shell);
 		g_object_unref (lastfm);
+		g_object_ref (plugin->lastfm_page);
 	} else if (enabled == FALSE && plugin->lastfm_page != NULL) {
 		rb_display_page_delete_thyself (plugin->lastfm_page);
 		g_object_unref (plugin->lastfm_page);
@@ -269,6 +270,7 @@ librefm_settings_changed_cb (GSettings *settings,
 		                                                           librefm);
 		g_object_unref (librefm);
 		g_object_unref (shell);
+		g_object_ref (plugin->librefm_page);
 	} else if (enabled == FALSE && plugin->librefm_page != NULL) {
 		rb_display_page_delete_thyself (plugin->librefm_page);
 		g_object_unref (plugin->librefm_page);
