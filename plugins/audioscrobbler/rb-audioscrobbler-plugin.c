@@ -115,6 +115,9 @@ static void
 impl_activate (PeasActivatable *bplugin)
 {
 	RBAudioscrobblerPlugin *plugin;
+	PeasPluginInfo *plugin_info;
+	GtkIconTheme *theme;
+	char *icondir;
 
 	plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
 
@@ -129,6 +132,20 @@ impl_activate (PeasActivatable *bplugin)
 				 G_CALLBACK (librefm_settings_changed_cb),
 				 plugin, 0);
 	librefm_settings_changed_cb (plugin->librefm_settings, AUDIOSCROBBLER_SERVICE_ENABLED_KEY, plugin);
+
+	g_object_get (plugin, "plugin-info", &plugin_info, NULL);
+	theme = gtk_icon_theme_get_default ();
+
+	/* installed icon dir */
+	icondir = g_build_filename (peas_plugin_info_get_data_dir (plugin_info), "icons", NULL);
+	gtk_icon_theme_append_search_path (theme, icondir);
+	g_free (icondir);
+
+#if defined(USE_UNINSTALLED_DIRS)
+	icondir = g_build_filename (peas_plugin_info_get_module_dir (plugin_info), "icons", NULL);
+	gtk_icon_theme_append_search_path (theme, icondir);
+	g_free (icondir);
+#endif
 }
 
 static void

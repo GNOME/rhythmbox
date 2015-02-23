@@ -243,20 +243,17 @@ rb_audioscrobbler_profile_page_new (RBShell *shell, GObject *plugin, RBAudioscro
 	RBDisplayPage *page;
 	RhythmDB *db;
 	char *name;
-	gchar *icon_name;
-	gchar *icon_path;
+	char *iconnames[] = {
+		NULL,
+		"network-server-symbolic",
+	};
 	GIcon *icon;
 
 	g_object_get (shell, "db", &db, NULL);
 	g_object_get (service, "name", &name, NULL);
 
-	icon_name = g_strconcat (rb_audioscrobbler_service_get_name (service), "-symbolic.svg", NULL);
-	icon_path = rb_find_plugin_data_file (plugin, icon_name);
-	if (icon_path != NULL) {
-		icon = g_file_icon_new (g_file_new_for_path (icon_path));
-	} else {
-		icon = g_themed_icon_new ("network-server-symbolic");
-	}
+	iconnames[0] = g_strconcat (rb_audioscrobbler_service_get_name (service), "-symbolic", NULL);
+	icon = g_themed_icon_new_from_names (iconnames, 1);
 
 	page = RB_DISPLAY_PAGE (g_object_new (RB_TYPE_AUDIOSCROBBLER_PROFILE_PAGE,
 					      "shell", shell,
@@ -268,8 +265,7 @@ rb_audioscrobbler_profile_page_new (RBShell *shell, GObject *plugin, RBAudioscro
 
 	g_object_unref (db);
 	g_free (name);
-	g_free (icon_name);
-	g_free (icon_path);
+	g_free (iconnames[0]);
 	g_object_unref (icon);
 
 	return page;

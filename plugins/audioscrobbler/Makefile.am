@@ -2,6 +2,8 @@ NULL =
 
 plugindir = $(PLUGINDIR)/audioscrobbler
 plugindatadir = $(PLUGINDATADIR)/audioscrobbler
+icondir = $(plugindatadir)/icons/hicolor/scalable/places
+
 plugin_LTLIBRARIES = libaudioscrobbler.la
 
 libaudioscrobbler_la_SOURCES = \
@@ -71,14 +73,12 @@ plugin_DATA =							\
 	$(BUILT_SOURCES)					\
 	$(NULL)
 
-plugindata_DATA = 						\
-	$(top_srcdir)/plugins/audioscrobbler/Last.fm-symbolic.svg	\
-	$(NULL)
+icon_DATA = icons/hicolor/scalable/places/Last.fm-symbolic.svg
 
 EXTRA_DIST = 					\
 	$(plugin_in_files)			\
 	$(gtkbuilder_DATA)			\
-	$(top_srcdir)/plugins/audioscrobbler/Last.fm-symbolic.svg		\
+	$(icon_DATA)				\
 	$(NULL)
 
 CLEANFILES = 			\
