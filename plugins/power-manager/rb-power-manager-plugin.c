@@ -34,7 +34,7 @@
 #include <config.h>
 
 #include <glib/gi18n.h>
-#include <gdk/gdkx.h>
+#include <gdk/gdk.h>
 #include <gio/gio.h>
 
 #include "rb-plugin-macros.h"
