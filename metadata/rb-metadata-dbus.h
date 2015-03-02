@@ -46,7 +46,7 @@ G_BEGIN_DECLS
 #define RB_METADATA_DBUS_TIMEOUT	(15000)
 #define RB_METADATA_SAVE_DBUS_TIMEOUT	(120000)
 
-const char *rb_metadata_iface_xml;
+extern const char *rb_metadata_iface_xml;
 
 GVariantBuilder *rb_metadata_dbus_get_variant_builder (RBMetaData *md);
 
