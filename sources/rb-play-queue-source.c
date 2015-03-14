@@ -276,7 +276,10 @@ rb_play_queue_source_constructed (GObject *object)
 	priv->sidebar = rb_entry_view_new (db, shell_player, TRUE, TRUE);
 	g_object_unref (shell_player);
 
-	g_object_set (G_OBJECT (priv->sidebar), "vscrollbar-policy", GTK_POLICY_AUTOMATIC, NULL);
+	g_object_set (priv->sidebar,
+		      "vscrollbar-policy", GTK_POLICY_AUTOMATIC,
+		      "shadow-type", GTK_SHADOW_NONE,
+		      NULL);
 
 	priv->sidebar_column = gtk_tree_view_column_new ();
 	renderer = gtk_cell_renderer_text_new ();
