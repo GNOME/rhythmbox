@@ -308,6 +308,7 @@ static void
 handle_query_model_changed (RBShufflePlayOrder *sorder)
 {
 	GPtrArray *history;
+	RhythmDBEntry *entry;
 	RhythmDBQueryModel *model;
 	GtkTreeIter iter;
 	int i;
@@ -321,17 +322,18 @@ handle_query_model_changed (RBShufflePlayOrder *sorder)
 	/* This simulates removing every entry in the old query model
 	 * and then adding every entry in the new one. */
 	history = rb_history_dump (sorder->priv->history);
-	for (i=0; i < history->len; ++i)
-		rb_shuffle_entry_removed (RB_PLAY_ORDER (sorder), g_ptr_array_index (history, i));
+	for (i=0; i < history->len; ++i) {
+		entry = g_ptr_array_index (history, i);
+		g_hash_table_insert (sorder->priv->entries_removed, rhythmdb_entry_ref (entry), entry);
+	}
 	g_ptr_array_free (history, TRUE);
 
 	model = rb_play_order_get_query_model (RB_PLAY_ORDER (sorder));
 	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter)) {
 		do {
-			RhythmDBEntry *entry;
 			entry = rhythmdb_query_model_iter_to_entry (model, &iter);
-			rb_shuffle_entry_added (RB_PLAY_ORDER (sorder), entry);
-			rhythmdb_entry_unref (entry);
+			/* hash table takes the reference we got from the query model */
+			g_hash_table_insert (sorder->priv->entries_added, entry, entry);
 		} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (model), &iter));
 	}
 
