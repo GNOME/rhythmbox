@@ -803,8 +803,6 @@ impl_constructed (GObject *object)
 	RB_CHAIN_GOBJECT_METHOD (rb_display_page_tree_parent_class, constructed, object);
 	display_page_tree = RB_DISPLAY_PAGE_TREE (object);
 
-	gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (object)),
-				     GTK_STYLE_CLASS_SIDEBAR);
 
 	scrolled = gtk_scrolled_window_new (NULL, NULL);
 	context = gtk_widget_get_style_context (scrolled);
@@ -828,6 +826,7 @@ impl_constructed (GObject *object)
 				 display_page_tree, 0);
 
 	display_page_tree->priv->treeview = gtk_tree_view_new_with_model (GTK_TREE_MODEL (display_page_tree->priv->page_model));
+	gtk_style_context_add_class (gtk_widget_get_style_context (display_page_tree->priv->treeview), GTK_STYLE_CLASS_SIDEBAR);
 
 	g_object_set (display_page_tree->priv->treeview,
 		      "headers-visible", FALSE,
