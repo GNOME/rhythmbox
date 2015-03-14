@@ -247,9 +247,6 @@ impl_constructed (GObject *object)
 
 	bar = RB_BUTTON_BAR (object);
 
-	gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (bar)),
-				     GTK_STYLE_CLASS_TOOLBAR);
-
 	bar->priv->size_group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	bar->priv->handlers = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, g_object_unref);
@@ -362,7 +359,7 @@ rb_button_bar_new (GMenuModel *model, GObject *target)
 					 "target", target,
 					 "column-homogeneous", FALSE,
 					 "hexpand", FALSE,
-					 /* column-spacing? */
+					 "column-spacing", 3,
 					 NULL));
 }
 
