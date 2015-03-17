@@ -534,6 +534,13 @@ rb_entry_view_dispose (GObject *object)
 		view->priv->selection_changed_id = 0;
 	}
 
+	if (view->priv->selection) {
+		g_signal_handlers_disconnect_by_func (view->priv->selection,
+						      G_CALLBACK (rb_entry_view_selection_changed_cb),
+						      view);
+		g_clear_object (&view->priv->selection);
+	}
+
 	if (view->priv->playing_model != NULL) {
 		g_object_unref (view->priv->playing_model);
 		view->priv->playing_model = NULL;
@@ -1819,6 +1826,7 @@ rb_entry_view_constructed (GObject *object)
 			         G_CALLBACK (rb_entry_view_selection_changed_cb),
 			         view,
 				 0);
+	g_object_ref (view->priv->selection);
 
 	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), TRUE);
 	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view->priv->treeview), TRUE);
