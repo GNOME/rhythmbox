@@ -2484,6 +2484,7 @@ rb_shell_quit (RBShell *shell,
 	/* or maybe just _quit */
 	/* g_application_release (G_APPLICATION (shell->priv->application)); */
 
+	rb_settings_delayed_sync (shell->priv->settings, NULL, NULL, NULL);
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->window));
 
 	g_timeout_add_seconds (10, quit_timeout, NULL);
