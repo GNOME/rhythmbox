@@ -293,6 +293,8 @@ rb_source_toolbar_new (RBDisplayPage *page, GtkAccelGroup *accel_group)
 			       "column-homogeneous", TRUE,
 			       "row-spacing", 6,
 			       "row-homogeneous", TRUE,
+			       "margin-start", 6,
+			       "margin-end", 6,
 			       NULL);
 	return RB_SOURCE_TOOLBAR (object);
 }
@@ -324,7 +326,6 @@ add_search_entry (RBSourceToolbar *toolbar, gboolean menu)
 	g_assert (toolbar->priv->search_entry == NULL);
 
 	toolbar->priv->search_entry = rb_search_entry_new (menu);
-	gtk_widget_set_margin_right (GTK_WIDGET (toolbar->priv->search_entry), 6);
 	gtk_grid_attach (GTK_GRID (toolbar), GTK_WIDGET (toolbar->priv->search_entry), 2, 0, 1, 1);
 
 	g_signal_connect (toolbar->priv->search_entry, "search", G_CALLBACK (search_cb), toolbar);

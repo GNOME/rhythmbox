@@ -461,7 +461,7 @@ class SoundCloudSource(RB.StreamingSource):
 					  shell_player=shell.props.shell_player,
 					  is_drag_source=True,
 					  is_drag_dest=False,
-					  shadow_type=Gtk.ShadowType.IN)
+					  shadow_type=Gtk.ShadowType.NONE)
 		self.songs.append_column(RB.EntryViewColumn.TITLE, True)
 		self.songs.append_column(RB.EntryViewColumn.ARTIST, True)
 		self.songs.append_column(RB.EntryViewColumn.DURATION, True)

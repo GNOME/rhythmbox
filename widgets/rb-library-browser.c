@@ -227,7 +227,7 @@ rb_library_browser_init (RBLibraryBrowser *widget)
 {
 	RBLibraryBrowserPrivate *priv = RB_LIBRARY_BROWSER_GET_PRIVATE (widget);
 
-	gtk_box_set_spacing (GTK_BOX (widget), 5);
+	gtk_box_set_spacing (GTK_BOX (widget), 1);
 	gtk_orientable_set_orientation (GTK_ORIENTABLE (widget), GTK_ORIENTATION_HORIZONTAL);
 
 	priv->property_views = g_hash_table_new (g_direct_hash, g_direct_equal);

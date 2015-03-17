@@ -212,7 +212,7 @@ class ContextView (GObject.GObject):
         self.webview.connect("navigation-requested", self.navigation_request_cb)
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        scroll.set_shadow_type(Gtk.ShadowType.IN)
+        scroll.set_shadow_type(Gtk.ShadowType.NONE)
         scroll.add (self.webview)
 
         # set up webkit settings to match gtk font settings
@@ -223,6 +223,8 @@ class ContextView (GObject.GObject):
 
         #---- pack everything into side pane ----#
         self.buttons = Gtk.HBox(spacing=3)
+        self.buttons.set_margin_start(6)
+        self.buttons.set_margin_end(6)
         self.vbox.pack_start (self.buttons, False, True, 6)
         self.vbox.pack_start (scroll, True, True, 0)
 

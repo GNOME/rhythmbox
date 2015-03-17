@@ -1,10 +1,22 @@
 .sidebar-toolbar {
-	border-width: 0 0 1px 0;
+	border: 0;
 	border-radius: 0;
 }
 
-.sidebar-queue {
-	border-width: 0 0 1px 0;
+RBLibraryBrowser {
+	background-color: @borders;
+}
+
+.statusbar {
+	border-top: solid 1px @borders;
+}
+
+GtkApplicationWindow * {
+	-GtkPaned-handle-size: 1;
+}
+
+GtkApplicationWindow .pane-separator {
+	background-color: @borders;
 }
 
 .primary-toolbar {

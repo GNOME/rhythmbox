@@ -309,6 +309,7 @@ rb_statusbar_new (RhythmDB *db)
 {
         RBStatusbar *statusbar = g_object_new (RB_TYPE_STATUSBAR,
                                                "db", db,
+                                               "margin", 0,
                                                NULL);
 
         g_return_val_if_fail (statusbar->priv != NULL, NULL);
