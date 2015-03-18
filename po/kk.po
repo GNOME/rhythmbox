@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-12-15 23:26+0000\n"
-"PO-Revision-Date: 2014-12-16 09:18+0600\n"
+"POT-Creation-Date: 2015-02-24 21:00+0000\n"
+"PO-Revision-Date: 2015-03-18 11:28+0500\n"
 "Last-Translator: Baurzhan Muftakhidinov <baurthefirst@gmail.com>\n"
 "Language-Team: Kazakh <kk_KZ@googlegroups.com>\n"
 "Language: kk\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.7.4\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:512
 #, c-format
@@ -113,7 +113,7 @@ msgstr ""
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
 #: ../shell/rb-shell.c:493 ../shell/rb-shell.c:2372
 msgid "Rhythmbox"
-msgstr ""
+msgstr "Rhythmbox"
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 #: ../data/rhythmbox-device.desktop.in.in.h:2
@@ -123,7 +123,7 @@ msgstr "Музыка ойнатқышы"
 #: ../data/rhythmbox.desktop.in.in.h:3
 #: ../data/rhythmbox-device.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
-msgstr ""
+msgstr "Rhythmbox музыка плеері"
 
 #: ../data/rhythmbox.desktop.in.in.h:4
 #: ../data/rhythmbox-device.desktop.in.in.h:4
@@ -156,13 +156,13 @@ msgstr ""
 
 #: ../data/ui/app-menu.ui.h:6
 msgid "Status Bar"
-msgstr ""
+msgstr "Қалып-күй жолағы"
 
 #: ../data/ui/app-menu.ui.h:7
 msgid "Song Position Slider"
 msgstr ""
 
-#: ../data/ui/app-menu.ui.h:8
+#: ../data/ui/app-menu.ui.h:8 ../plugins/artsearch/songinfo.py:64
 msgid "Album Art"
 msgstr ""
 
@@ -182,7 +182,7 @@ msgstr ""
 msgid "_Preferences"
 msgstr "_Баптаулар"
 
-#: ../data/ui/app-menu.ui.h:13
+#: ../data/ui/app-menu.ui.h:13 ../shell/rb-shell-preferences.c:195
 msgid "_Help"
 msgstr "_Көмек"
 
@@ -336,60 +336,60 @@ msgid "Track _number"
 msgstr ""
 
 #: ../data/ui/general-prefs.ui.h:7
-msgid "_Artist"
-msgstr "Әр_тіс"
-
-#: ../data/ui/general-prefs.ui.h:8
-msgid "_Composer"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:9
-msgid "A_lbum"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:10
-msgid "_Year"
-msgstr "Ж_ыл"
-
-#: ../data/ui/general-prefs.ui.h:11
 msgid "_Last played"
 msgstr ""
 
+#: ../data/ui/general-prefs.ui.h:8
+msgid "_Artist"
+msgstr "Әр_тіс"
+
+#: ../data/ui/general-prefs.ui.h:9
+msgid "_Composer"
+msgstr ""
+
+#: ../data/ui/general-prefs.ui.h:10
+msgid "A_lbum"
+msgstr ""
+
+#: ../data/ui/general-prefs.ui.h:11
+msgid "_Year"
+msgstr "Ж_ыл"
+
 #: ../data/ui/general-prefs.ui.h:12
-msgid "_Genre"
-msgstr "_Жанры"
+msgid "_Quality"
+msgstr "_Сапасы"
 
 #: ../data/ui/general-prefs.ui.h:13
-msgid "Da_te added"
+msgid "Lo_cation"
 msgstr ""
 
 #: ../data/ui/general-prefs.ui.h:14
-msgid "_Play count"
+msgid "Ti_me"
 msgstr ""
 
 #: ../data/ui/general-prefs.ui.h:15
-msgid "C_omment"
-msgstr ""
+msgid "_Rating"
+msgstr "_Рейтинг"
 
 #: ../data/ui/general-prefs.ui.h:16
 msgid "_BPM"
 msgstr ""
 
 #: ../data/ui/general-prefs.ui.h:17
-msgid "_Rating"
-msgstr "_Рейтинг"
+msgid "C_omment"
+msgstr ""
 
 #: ../data/ui/general-prefs.ui.h:18
-msgid "Ti_me"
+msgid "_Play count"
 msgstr ""
 
 #: ../data/ui/general-prefs.ui.h:19
-msgid "Lo_cation"
+msgid "Da_te added"
 msgstr ""
 
 #: ../data/ui/general-prefs.ui.h:20
-msgid "_Quality"
-msgstr "_Сапасы"
+msgid "_Genre"
+msgstr "_Жанры"
 
 #: ../data/ui/import-dialog.ui.h:1
 msgid "Select a location containing music to add to your library:"
@@ -684,11 +684,11 @@ msgid "Podcast Downloads"
 msgstr ""
 
 #: ../data/ui/podcast-prefs.ui.h:6
-msgid "_Download location:"
+msgid "Check for _new episodes:"
 msgstr ""
 
 #: ../data/ui/podcast-prefs.ui.h:7
-msgid "Check for _new episodes:"
+msgid "_Download location:"
 msgstr ""
 
 #: ../data/ui/podcast-prefs.ui.h:8
@@ -755,7 +755,7 @@ msgstr ""
 msgid "Shuffle"
 msgstr "Араластыру"
 
-#: ../data/ui/queue-toolbar.ui.h:3
+#: ../data/ui/queue-toolbar.ui.h:3 ../plugins/artsearch/songinfo.py:52
 msgid "Clear"
 msgstr "Тазарту"
 
@@ -920,8 +920,9 @@ msgstr ""
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:669
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
+#: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:587
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:591
@@ -937,7 +938,7 @@ msgstr ""
 #: ../plugins/mtpdevice/rb-mtp-source.c:649
 #: ../plugins/mtpdevice/rb-mtp-source.c:1132
 #: ../plugins/mtpdevice/rb-mtp-source.c:1518
-#: ../plugins/notification/rb-notification-plugin.c:496
+#: ../plugins/notification/rb-notification-plugin.c:510
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1892
 #: ../podcast/rb-podcast-manager.c:1991
@@ -955,50 +956,50 @@ msgstr ""
 #: ../shell/rb-shell-player.c:2719 ../widgets/rb-entry-view.c:992
 #: ../widgets/rb-entry-view.c:1014 ../widgets/rb-entry-view.c:1505
 #: ../widgets/rb-entry-view.c:1517 ../widgets/rb-entry-view.c:1529
-#: ../widgets/rb-header.c:1269 ../widgets/rb-header.c:1295
+#: ../widgets/rb-header.c:1282 ../widgets/rb-header.c:1308
 #: ../widgets/rb-song-info.c:949 ../widgets/rb-song-info.c:961
 #: ../widgets/rb-song-info.c:1233 ../widgets/rb-song-info.c:1572
 msgid "Unknown"
 msgstr "Белгісіз"
 
-#: ../lib/rb-file-helpers.c:451
+#: ../lib/rb-file-helpers.c:447
 #, c-format
 msgid "Too many symlinks"
 msgstr ""
 
-#: ../lib/rb-file-helpers.c:1285
+#: ../lib/rb-file-helpers.c:1281
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr ""
 
-#: ../lib/rb-util.c:650 ../plugins/context/tmpl/album-tmpl.html:21
+#: ../lib/rb-util.c:566 ../plugins/context/tmpl/album-tmpl.html:21
 #: ../remote/dbus/rb-client.c:204
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:652 ../plugins/context/tmpl/album-tmpl.html:19
+#: ../lib/rb-util.c:568 ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:206
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:716
+#: ../lib/rb-util.c:632
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr ""
 
-#: ../lib/rb-util.c:720
+#: ../lib/rb-util.c:636
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr ""
 
-#: ../lib/rb-util.c:725
+#: ../lib/rb-util.c:641
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d, барлығы %d:%02d"
 
-#: ../lib/rb-util.c:729
+#: ../lib/rb-util.c:645
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d, барлығы %d:%02d:%02d"
@@ -1044,6 +1045,30 @@ msgstr ""
 #: ../plugins/artsearch/artsearch.plugin.in.h:2
 msgid "Fetch album covers from the Internet"
 msgstr ""
+
+#: ../plugins/artsearch/songinfo.py:56
+msgid "_Fetch"
+msgstr ""
+
+#: ../plugins/artsearch/songinfo.py:60
+msgid "_Browse"
+msgstr "Ш_олу"
+
+#: ../plugins/artsearch/songinfo.py:134
+msgid "Select new artwork"
+msgstr ""
+
+#: ../plugins/artsearch/songinfo.py:135 ../podcast/rb-podcast-source.c:534
+#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:188
+#: ../widgets/rb-alert-dialog.c:380 ../widgets/rb-alert-dialog.c:397
+#: ../widgets/rb-dialog.c:133 ../widgets/rb-dialog.c:141
+#: ../widgets/rb-query-creator.c:191 ../widgets/rb-uri-dialog.c:158
+msgid "_Cancel"
+msgstr "Ба_с тарту"
+
+#: ../plugins/artsearch/songinfo.py:136
+msgid "_Select"
+msgstr "_Таңдау"
 
 #: ../plugins/audiocd/album-info.ui.h:1
 msgid "A_lbum:"
@@ -1146,7 +1171,7 @@ msgstr ""
 #: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:1
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:2
 msgid "Last.fm"
-msgstr ""
+msgstr "Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:2
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
@@ -1158,7 +1183,7 @@ msgstr ""
 
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:3
 msgid "Libre.fm"
-msgstr ""
+msgstr "Libre.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:1
 msgid "Logout"
@@ -1189,7 +1214,7 @@ msgid "Last submission time:"
 msgstr ""
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:875
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:871
 msgid "Disabled"
 msgstr "Сөндірулі"
 
@@ -1257,58 +1282,58 @@ msgstr ""
 msgid "Track submission failed too many times"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:686
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:682
 msgid "Love"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:690
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:686
 msgid "Ban"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:694
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:690
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:3
 msgid "Download"
 msgstr "Жүктеп алу"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:792
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:788
 msgid "You are not currently logged in."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:793
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:811
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:818
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:789
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:807
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:814
 msgid "Log in"
 msgstr "Кіру"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:799
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:795
 msgid "Waiting for authentication..."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:800
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:796
 msgid "Cancel"
 msgstr "Бас тарту"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:810
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:806
 msgid "Authentication error. Please try logging in again."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:817
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:813
 msgid "Connection error. Please try logging in again."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1227
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1223
 msgid "My Library"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1235
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1231
 msgid "My Recommendations"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1243
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1239
 msgid "My Neighbourhood"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1410
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1406
 #, c-format
 msgid "%s plays"
 msgstr ""
@@ -1316,16 +1341,16 @@ msgstr ""
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This is the label for menu item which when activated will take the user to the
 #. * artist/track's page on the service's website.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1667
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1663
 #, c-format
 msgid "_View on %s"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1684
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1680
 msgid "Listen to _Similar Artists Radio"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1698
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1694
 msgid "Listen to _Top Fans Radio"
 msgstr ""
 
@@ -1594,8 +1619,8 @@ msgstr ""
 msgid "No artist specified."
 msgstr ""
 
-#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:240
-#: ../plugins/lyrics/lyrics.py:325
+#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:241
+#: ../plugins/lyrics/lyrics.py:326
 msgid "Lyrics"
 msgstr ""
 
@@ -1626,8 +1651,7 @@ msgstr ""
 #, c-format
 msgid "%s (%d track)"
 msgid_plural "%s (%d tracks)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%s (%d трек)"
 
 #: ../plugins/context/tmpl/album-tmpl.html:93
 msgid "Track list not available"
@@ -1755,7 +1779,7 @@ msgstr ""
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1250
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1382
 msgid "All Tracks"
-msgstr ""
+msgstr "Барлық тректер"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2398
 msgid "Artists"
@@ -1773,7 +1797,7 @@ msgstr "Ойнату тізімдері"
 #: ../plugins/fmradio/fmradio.plugin.in.h:1
 #: ../plugins/fmradio/rb-fm-radio-source.c:243
 msgid "FM Radio"
-msgstr ""
+msgstr "FM радиосы"
 
 #: ../plugins/fmradio/fmradio.plugin.in.h:2
 msgid "Support for FM radio broadcasting services"
@@ -1792,44 +1816,44 @@ msgid "Frequency of radio station"
 msgstr ""
 
 #: ../plugins/generic-player/generic-player-info.ui.h:1
-#: ../plugins/mtpdevice/mtp-info.ui.h:1
-msgid "Device _name:"
-msgstr "Құрылғы а_ты:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:2
-#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:2
-msgid "Tracks:"
-msgstr ""
-
-#: ../plugins/generic-player/generic-player-info.ui.h:3
-#: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:4
-msgid "Playlists:"
-msgstr "Ойнату тізімдері:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:4
-#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:5
+#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:1
 msgid "Model:"
 msgstr "Модель:"
 
-#: ../plugins/generic-player/generic-player-info.ui.h:5
-#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:6
+#: ../plugins/generic-player/generic-player-info.ui.h:2
+#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:2
 msgid "Serial number:"
 msgstr "Сериялық нөмірі:"
 
-#: ../plugins/generic-player/generic-player-info.ui.h:6
-#: ../plugins/mtpdevice/mtp-info.ui.h:8
+#: ../plugins/generic-player/generic-player-info.ui.h:3
+#: ../plugins/mtpdevice/mtp-info.ui.h:4
 msgid "Manufacturer:"
 msgstr "Шығарушы:"
 
-#: ../plugins/generic-player/generic-player-info.ui.h:7
-#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:9
+#: ../plugins/generic-player/generic-player-info.ui.h:4
+#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:5
 msgid "Audio formats:"
 msgstr ""
 
-#: ../plugins/generic-player/generic-player-info.ui.h:8
-#: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:10
+#: ../plugins/generic-player/generic-player-info.ui.h:5
+#: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:6
 msgid "System"
 msgstr "Жүйелік"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:6
+#: ../plugins/mtpdevice/mtp-info.ui.h:7
+msgid "Device _name:"
+msgstr "Құрылғы а_ты:"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:8
+msgid "Tracks:"
+msgstr "Тректер:"
+
+#: ../plugins/generic-player/generic-player-info.ui.h:8
+#: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:10
+msgid "Playlists:"
+msgstr "Ойнату тізімдері:"
 
 #: ../plugins/generic-player/generic-player.plugin.in.h:1
 msgid "Portable Players"
@@ -1896,7 +1920,7 @@ msgstr ""
 #: ../plugins/im-status/im-status.py:171
 #, python-format
 msgid "♫ %(artist)s - %(title)s ♫"
-msgstr ""
+msgstr "♫ %(artist)s - %(title)s ♫"
 
 #. Translators: do not translate %(artist)s or %(album)s, they are
 #. string substitution markers (like %s) for the artist and album name
@@ -1904,7 +1928,7 @@ msgstr ""
 #: ../plugins/im-status/im-status.py:176
 #, python-format
 msgid "♫ %(artist)s - %(album)s ♫"
-msgstr ""
+msgstr "♫ %(artist)s - %(album)s ♫"
 
 #. Translators: do not translate %(album)s, it is a string substitution
 #. marker (like %s) for the album name of the current playing song.
@@ -1922,15 +1946,15 @@ msgstr "♫ %(title)s ♫"
 
 #: ../plugins/im-status/im-status.py:186
 msgid "♫ Listening to music... ♫"
-msgstr ""
+msgstr "♫ Музыканы тыңдау... ♫"
 
 #: ../plugins/ipod/ipod-info.ui.h:1
 msgid "iPod _name:"
-msgstr ""
+msgstr "iPod _аты:"
 
-#: ../plugins/ipod/ipod-info.ui.h:3 ../plugins/mtpdevice/mtp-info.ui.h:3
+#: ../plugins/ipod/ipod-info.ui.h:3 ../plugins/mtpdevice/mtp-info.ui.h:9
 msgid "Podcasts:"
-msgstr ""
+msgstr "Подкасттар:"
 
 #: ../plugins/ipod/ipod-info.ui.h:5
 msgid "Device node:"
@@ -1942,15 +1966,15 @@ msgstr "Тіркеу нүктесі:"
 
 #: ../plugins/ipod/ipod-info.ui.h:7
 msgid "Database version:"
-msgstr ""
+msgstr "Дерекқор нұсқасы:"
 
-#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:3
 msgid "Firmware version:"
 msgstr ""
 
 #: ../plugins/ipod/ipod-init.ui.h:1
 msgid "iPod detected"
-msgstr ""
+msgstr "iPod анықталды"
 
 #: ../plugins/ipod/ipod-init.ui.h:2
 msgid "_Initialize"
@@ -1995,11 +2019,11 @@ msgstr ""
 
 #: ../plugins/ipod/rb-ipod-source.c:1503
 #: ../podcast/rb-podcast-main-source.c:76
-#: ../sources/sync/rb-sync-settings-ui.c:262
 #: ../sources/sync/rb-sync-settings-ui.c:263
+#: ../sources/sync/rb-sync-settings-ui.c:264
 #: ../sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
-msgstr ""
+msgstr "Подкасттар"
 
 #: ../plugins/iradio/iradio.plugin.in.h:1
 msgid "Internet Radio"
@@ -2010,7 +2034,7 @@ msgid "Support for broadcasting services transmitted via the Internet"
 msgstr ""
 
 #: ../plugins/iradio/iradio-popup.ui.h:1 ../shell/rb-shell-clipboard.c:258
-#: ../sources/rb-source.c:1216
+#: ../sources/rb-source.c:1216 ../widgets/rb-query-creator.c:802
 msgid "Remove"
 msgstr "Өшіру"
 
@@ -2044,6 +2068,14 @@ msgstr ""
 msgid "URL of internet radio station:"
 msgstr ""
 
+#: ../plugins/iradio/rb-station-properties-dialog.c:186
+#: ../podcast/rb-feed-podcast-properties-dialog.c:130
+#: ../podcast/rb-podcast-properties-dialog.c:276 ../shell/rb-application.c:144
+#: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:373
+#: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
+msgid "_Close"
+msgstr "_Жабу"
+
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
 #: ../podcast/rb-podcast-properties-dialog.c:507
@@ -2074,7 +2106,7 @@ msgstr ""
 
 #: ../plugins/lirc/rblirc.plugin.in.h:1
 msgid "LIRC"
-msgstr ""
+msgstr "LIRC"
 
 #: ../plugins/lirc/rblirc.plugin.in.h:2
 msgid "Control Rhythmbox using an infrared remote control"
@@ -2084,7 +2116,7 @@ msgstr ""
 msgid "Choose lyrics folder..."
 msgstr ""
 
-#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:348
+#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:349
 msgid "Song Lyrics"
 msgstr ""
 
@@ -2109,7 +2141,7 @@ msgstr ""
 msgid "No lyrics found"
 msgstr ""
 
-#: ../plugins/lyrics/lyrics.py:202
+#: ../plugins/lyrics/lyrics.py:202 ../widgets/rb-dialog.c:142
 msgid "_Save"
 msgstr "_Сақтау"
 
@@ -2121,30 +2153,30 @@ msgstr "Тү_зету"
 msgid "_Search again"
 msgstr ""
 
-#: ../plugins/lyrics/lyrics.py:280
+#: ../plugins/lyrics/lyrics.py:281
 msgid "Searching for lyrics..."
 msgstr ""
 
 #. { 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
 #: ../plugins/lyrics/LyricsSites.py:42
 msgid "WinampCN (www.winampcn.com)"
-msgstr ""
+msgstr "WinampCN (www.winampcn.com)"
 
 #: ../plugins/lyrics/LyricsSites.py:43
 msgid "TerraBrasil (terra.com.br)"
-msgstr ""
+msgstr "TerraBrasil (terra.com.br)"
 
 #: ../plugins/lyrics/LyricsSites.py:44
 msgid "Dark Lyrics (darklyrics.com)"
-msgstr ""
+msgstr "Dark Lyrics (darklyrics.com)"
 
 #: ../plugins/lyrics/LyricsSites.py:45
 msgid "Jlyric (j-lyric.net)"
-msgstr ""
+msgstr "Jlyric (j-lyric.net)"
 
 #: ../plugins/lyrics/LyricsSites.py:46
 msgid "Jetlyrics (jetlyrics.com)"
-msgstr ""
+msgstr "Jetlyrics (jetlyrics.com)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
 msgid "Magnatune online music store"
@@ -2208,176 +2240,176 @@ msgid ""
 msgstr ""
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
+msgid "January (01)"
+msgstr "Қаңтар (01)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:2
+msgid "February (02)"
+msgstr "Ақпан (02)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:3
+msgid "March (03)"
+msgstr "Наурыз (03)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:4
+msgid "April (04)"
+msgstr "Сәуір (04)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:5
+msgid "May (05)"
+msgstr "Мамыр (05)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:6
+msgid "June (06)"
+msgstr "Маусым (06)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:7
+msgid "July (07)"
+msgstr "Шілде (07)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:8
+msgid "August (08)"
+msgstr "Тамыз (08)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:9
+msgid "September (09)"
+msgstr "Қыркүйек (09)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:10
+msgid "October (10)"
+msgstr "Қазан (10)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:11
+msgid "November (11)"
+msgstr "Қараша (11)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:12
+msgid "December (12)"
+msgstr "Желтоқсан (12)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:13
+msgid "$5 US"
+msgstr "$5 US"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:14
+msgid "$6 US"
+msgstr "$6 US"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:15
+msgid "$7 US"
+msgstr "$7 US"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:16
+msgid "$8 US (typical)"
+msgstr "$8 US (қалыпты)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:17
+msgid "$9 US"
+msgstr "$9 US"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:18
+msgid "$10 US (better than average)"
+msgstr "$10 US (орташадан үлкен)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:19
+msgid "$11 US"
+msgstr "$11 US"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:20
+msgid "$12 US (generous)"
+msgstr "$12 US (жомарт)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:21
+msgid "$13 US"
+msgstr "$13 US"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:22
+msgid "$14 US"
+msgstr "$14 US"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:23
+msgid "$15 US (VERY generous!)"
+msgstr "$15 US (ӨТЕ жомарт!)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:24
+msgid "$16 US"
+msgstr "$16 US"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:25
+msgid "$17 US"
+msgstr "$17 US"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:26
+msgid "$18 US (We love you!)"
+msgstr "$18 US (Біз сізді жақсы көреміз!)"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:27
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:28
+msgid "FLAC"
+msgstr "FLAC"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:29
+msgid "WAV"
+msgstr "WAV"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:30
+msgid "VBR MP3"
+msgstr "VBR MP3"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:31
+msgid "128K MP3"
+msgstr "128K MP3"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:32
 msgid "Magnatune Information"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:2
+#: ../plugins/magnatune/magnatune-prefs.ui.h:33
 msgid "I don't have a Magnatune account"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:3
+#: ../plugins/magnatune/magnatune-prefs.ui.h:34
 msgid "I have a streaming account"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:4
+#: ../plugins/magnatune/magnatune-prefs.ui.h:35
 msgid "I have a download account"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:5
+#: ../plugins/magnatune/magnatune-prefs.ui.h:36
 msgid "Username:"
 msgstr "Пайдаланушы аты:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:6
+#: ../plugins/magnatune/magnatune-prefs.ui.h:37
 msgid "Password:"
 msgstr "Пароль:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:7
+#: ../plugins/magnatune/magnatune-prefs.ui.h:38
 msgid "Preferred audio _format:"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:8
+#: ../plugins/magnatune/magnatune-prefs.ui.h:39
 msgid "Get an account at "
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:9
+#: ../plugins/magnatune/magnatune-prefs.ui.h:40
 msgid "http://magnatune.com/compare_plans"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:10
+#: ../plugins/magnatune/magnatune-prefs.ui.h:41
 msgid "Find out about Magnatune at "
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:11
-msgid "http://www.magnatune.com/info/"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:12
-msgid "January (01)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:13
-msgid "February (02)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:14
-msgid "March (03)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:15
-msgid "April (04)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:16
-msgid "May (05)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:17
-msgid "June (06)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:18
-msgid "July (07)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:19
-msgid "August (08)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:20
-msgid "September (09)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:21
-msgid "October (10)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:22
-msgid "November (11)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:23
-msgid "December (12)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:24
-msgid "$5 US"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:25
-msgid "$6 US"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:26
-msgid "$7 US"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:27
-msgid "$8 US (typical)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:28
-msgid "$9 US"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:29
-msgid "$10 US (better than average)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:30
-msgid "$11 US"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:31
-msgid "$12 US (generous)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:32
-msgid "$13 US"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:33
-msgid "$14 US"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:34
-msgid "$15 US (VERY generous!)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:35
-msgid "$16 US"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:36
-msgid "$17 US"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:37
-msgid "$18 US (We love you!)"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:38
-msgid "Ogg Vorbis"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:39
-msgid "FLAC"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:40
-msgid "WAV"
-msgstr ""
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:41
-msgid "VBR MP3"
-msgstr ""
-
 #: ../plugins/magnatune/magnatune-prefs.ui.h:42
-msgid "128K MP3"
-msgstr ""
+msgid "http://www.magnatune.com/info/"
+msgstr "http://www.magnatune.com/info/"
 
-#: ../plugins/magnatune/magnatune.py:120
+#: ../plugins/magnatune/magnatune.py:121
 msgid "Magnatune"
-msgstr ""
+msgstr "Magnatune"
 
 #: ../plugins/magnatune/MagnatuneSource.py:192
 msgid "Couldn't download album"
@@ -2509,40 +2541,40 @@ msgstr "Ескерту"
 msgid "Notification popups"
 msgstr ""
 
-#: ../plugins/notification/rb-notification-plugin.c:224
+#: ../plugins/notification/rb-notification-plugin.c:225
 msgid "Previous"
 msgstr "Алдыңғы"
 
-#: ../plugins/notification/rb-notification-plugin.c:230
+#: ../plugins/notification/rb-notification-plugin.c:231
 msgid "Pause"
 msgstr "Аялдату"
 
-#: ../plugins/notification/rb-notification-plugin.c:230
+#: ../plugins/notification/rb-notification-plugin.c:231
 msgid "Play"
 msgstr "Ойнату"
 
-#: ../plugins/notification/rb-notification-plugin.c:239
+#: ../plugins/notification/rb-notification-plugin.c:240
 msgid "Next"
 msgstr "Келесі"
 
 #. Translators: by Artist
-#: ../plugins/notification/rb-notification-plugin.c:331
+#: ../plugins/notification/rb-notification-plugin.c:332
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:148
 #, c-format
 msgid "by <i>%s</i>"
 msgstr ""
 
 #. Translators: from Album
-#: ../plugins/notification/rb-notification-plugin.c:333
+#: ../plugins/notification/rb-notification-plugin.c:334
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:150
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:213
 #, c-format
 msgid "from <i>%s</i>"
 msgstr ""
 
-#: ../plugins/notification/rb-notification-plugin.c:411
+#: ../plugins/notification/rb-notification-plugin.c:414
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
-#: ../widgets/rb-header.c:363
+#: ../widgets/rb-header.c:364
 msgid "Not Playing"
 msgstr "Ойнап тұрған жоқ"
 
@@ -2571,7 +2603,7 @@ msgstr ""
 
 #: ../plugins/pythonconsole/pythonconsole.py:81
 msgid "Python Debugger"
-msgstr ""
+msgstr "Python жөндеушісі"
 
 #: ../plugins/pythonconsole/pythonconsole.py:106
 msgid "You can access the main window through the 'shell' variable :"
@@ -2588,7 +2620,7 @@ msgstr ""
 #. ex:noet:ts=8:
 #: ../plugins/rbzeitgeist/rbzeitgeist.plugin.in.h:1
 msgid "Zeitgeist"
-msgstr ""
+msgstr "Zeitgeist"
 
 #: ../plugins/rbzeitgeist/rbzeitgeist.plugin.in.h:2
 msgid "Inform Zeitgeist about your activity"
@@ -2596,7 +2628,7 @@ msgstr ""
 
 #: ../plugins/replaygain/config.py:68
 msgid "-15.0 dB"
-msgstr ""
+msgstr "-15.0 дБ"
 
 #: ../plugins/replaygain/config.py:69
 msgid "0.0 dB"
@@ -2604,7 +2636,7 @@ msgstr "0.0 дБ"
 
 #: ../plugins/replaygain/config.py:70
 msgid "15.0 dB"
-msgstr ""
+msgstr "15.0 дБ"
 
 #: ../plugins/replaygain/player.py:52
 #, python-format
@@ -2619,38 +2651,38 @@ msgstr ""
 
 #: ../plugins/replaygain/replaygain.plugin.in.h:1
 msgid "ReplayGain"
-msgstr ""
+msgstr "ReplayGain"
 
 #: ../plugins/replaygain/replaygain.plugin.in.h:2
 msgid "Use ReplayGain to provide a consistent playback volume"
 msgstr ""
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:1
-msgid "ReplayGain preferences"
-msgstr ""
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:2
-msgid "ReplayGain _mode:"
-msgstr ""
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:3
-msgid "_Pre-amp:"
-msgstr ""
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:4
-msgid "_Apply compression to prevent clipping"
-msgstr ""
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:5
-msgid "Learn more about ReplayGain at replaygain.org"
-msgstr ""
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:6
 msgid "Radio (equal loudness for all tracks)"
 msgstr ""
 
-#: ../plugins/replaygain/replaygain-prefs.ui.h:7
+#: ../plugins/replaygain/replaygain-prefs.ui.h:2
 msgid "Album (ideal loudness for all tracks)"
+msgstr ""
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:3
+msgid "ReplayGain preferences"
+msgstr ""
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:4
+msgid "ReplayGain _mode:"
+msgstr ""
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:5
+msgid "_Pre-amp:"
+msgstr ""
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:6
+msgid "_Apply compression to prevent clipping"
+msgstr ""
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:7
+msgid "Learn more about ReplayGain at replaygain.org"
 msgstr ""
 
 #: ../plugins/sendto/sendto.plugin.in.h:1
@@ -2666,7 +2698,7 @@ msgid "Send to..."
 msgstr "Қайда жіберу..."
 
 #: ../plugins/soundcloud/soundcloud.plugin.in.h:1
-#: ../plugins/soundcloud/soundcloud.py:73
+#: ../plugins/soundcloud/soundcloud.py:72
 msgid "SoundCloud"
 msgstr ""
 
@@ -2674,57 +2706,57 @@ msgstr ""
 msgid "Browse and play sounds from SoundCloud®"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:95
+#: ../plugins/soundcloud/soundcloud.py:94
 msgid "Search tracks"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:96
+#: ../plugins/soundcloud/soundcloud.py:95
 msgid "Search tracks on SoundCloud"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:102
+#: ../plugins/soundcloud/soundcloud.py:101
 msgid "Search sets"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:103
+#: ../plugins/soundcloud/soundcloud.py:102
 msgid "Search sets on SoundCloud"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:104
+#: ../plugins/soundcloud/soundcloud.py:103
 msgid "SoundCloud Sets"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:109
+#: ../plugins/soundcloud/soundcloud.py:108
 msgid "Search users"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:110
+#: ../plugins/soundcloud/soundcloud.py:109
 msgid "Search users on SoundCloud"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:111
+#: ../plugins/soundcloud/soundcloud.py:110
 msgid "SoundCloud Users"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:116
+#: ../plugins/soundcloud/soundcloud.py:115
 msgid "Search groups"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:117
+#: ../plugins/soundcloud/soundcloud.py:116
 msgid "Search groups on SoundCloud"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:118
+#: ../plugins/soundcloud/soundcloud.py:117
 msgid "SoundCloud Groups"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:375
-#: ../plugins/soundcloud/soundcloud.py:383
+#: ../plugins/soundcloud/soundcloud.py:374
+#: ../plugins/soundcloud/soundcloud.py:382
 #, python-format
 msgid "View '%(title)s' on SoundCloud"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:391
+#: ../plugins/soundcloud/soundcloud.py:390
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
 msgstr ""
@@ -2867,7 +2899,7 @@ msgstr ""
 
 #: ../podcast/rb-podcast-manager.c:1240
 msgid "Podcast"
-msgstr ""
+msgstr "Подкаст"
 
 #: ../podcast/rb-podcast-manager.c:2206
 #, c-format
@@ -2937,8 +2969,7 @@ msgstr "Күту"
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d таспа"
 
 #: ../podcast/rb-podcast-source.c:957
 msgid "Podcast Error"
@@ -2972,7 +3003,7 @@ msgstr[0] "%d эпизод"
 #: ../podcast/rb-podcast-source.c:1375 ../podcast/rb-podcast-source.c:1430
 #: ../podcast/rb-podcast-source.c:1469
 msgid "Feed"
-msgstr ""
+msgstr "Таспа"
 
 #: ../podcast/rb-podcast-source.c:1395 ../podcast/rb-podcast-source.c:1413
 msgid "Status"
@@ -3360,7 +3391,7 @@ msgstr ""
 
 #: ../shell/rb-application.c:141
 msgid "Configure Plugins"
-msgstr ""
+msgstr "Плагиндерді баптау"
 
 #: ../shell/rb-application.c:208
 msgid "translator-credits"
@@ -3407,7 +3438,7 @@ msgstr ""
 
 #: ../shell/rb-application.c:244
 msgid "Rhythmbox Website"
-msgstr ""
+msgstr "Rhythmbox вебсайты"
 
 #: ../shell/rb-application.c:272 ../shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
@@ -3642,7 +3673,7 @@ msgstr ""
 
 #: ../shell/rb-shell-preferences.c:202
 msgid "Rhythmbox Preferences"
-msgstr ""
+msgstr "Rhythmbox баптаулары"
 
 #: ../shell/rb-shell-preferences.c:248
 msgid "General"
@@ -3656,10 +3687,6 @@ msgstr "Ойнату"
 #, c-format
 msgid "The file \"%s\" already exists. Do you want to replace it?"
 msgstr ""
-
-#: ../shell/rb-track-transfer-queue.c:188
-msgid "_Cancel"
-msgstr "Ба_с тарту"
 
 #: ../shell/rb-track-transfer-queue.c:189
 msgid "_Skip"
@@ -3842,8 +3869,8 @@ msgid "Variable bit rate"
 msgstr ""
 
 #: ../sources/rb-library-source.c:447
-#: ../sources/sync/rb-sync-settings-ui.c:216
 #: ../sources/sync/rb-sync-settings-ui.c:217
+#: ../sources/sync/rb-sync-settings-ui.c:218
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "Музыка"
@@ -3925,13 +3952,13 @@ msgstr "Ойнату тізімінен өшіру"
 #: ../sources/rb-play-queue-source.c:292 ../sources/rb-play-queue-source.c:394
 #: ../sources/rb-play-queue-source.c:503
 msgid "Play Queue"
-msgstr ""
+msgstr "Ойнату кезегі"
 
-#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:906
+#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:919
 msgid "from"
 msgstr ""
 
-#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:905
+#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:918
 msgid "by"
 msgstr ""
 
@@ -3954,9 +3981,9 @@ msgstr ""
 msgid "Transferring tracks to %s"
 msgstr ""
 
-#: ../sources/sync/rb-sync-settings-ui.c:228
+#: ../sources/sync/rb-sync-settings-ui.c:229
 msgid "All Music"
-msgstr ""
+msgstr "Барлық музыка"
 
 #: ../sources/sync/rb-sync-state-ui.c:79
 msgid "Other"
@@ -3993,6 +4020,22 @@ msgstr ""
 #: ../widgets/rb-alert-dialog.c:171
 msgid "Show more _details"
 msgstr "_Көбірек ақпарат шығару"
+
+#: ../widgets/rb-alert-dialog.c:366 ../widgets/rb-alert-dialog.c:400
+msgid "_OK"
+msgstr "О_К"
+
+#: ../widgets/rb-alert-dialog.c:387
+msgid "_No"
+msgstr ""
+
+#: ../widgets/rb-alert-dialog.c:390
+msgid "_Yes"
+msgstr "_Иә"
+
+#: ../widgets/rb-dialog.c:134
+msgid "_Open"
+msgstr "_Ашу"
 
 #: ../widgets/rb-entry-view.c:1012 ../widgets/rb-entry-view.c:1530
 #: ../widgets/rb-song-info.c:1231
@@ -4059,21 +4102,21 @@ msgstr ""
 msgid "Playback Error"
 msgstr ""
 
-#: ../widgets/rb-fading-image.c:295
+#: ../widgets/rb-fading-image.c:301
 msgid "Drop artwork here"
 msgstr ""
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1209
+#: ../widgets/rb-header.c:1222
 #, c-format
 msgid "-%s / %s"
-msgstr ""
+msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1220
+#: ../widgets/rb-header.c:1233
 #, c-format
 msgid "%s / %s"
-msgstr ""
+msgstr "%s / %s"
 
 #: ../widgets/rb-import-dialog.c:339
 msgid "Examining files"
@@ -4133,6 +4176,10 @@ msgstr[1] ""
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
+
+#: ../widgets/rb-query-creator.c:194
+msgid "_New"
+msgstr "_Жаңа"
 
 #: ../widgets/rb-query-creator.c:210
 msgid "Create Automatic Playlist"
@@ -4440,31 +4487,39 @@ msgstr "күн"
 msgid "weeks"
 msgstr ""
 
-#: ../widgets/rb-rating-helper.c:304
+#: ../widgets/rb-rating-helper.c:295
 msgid "No Stars"
 msgstr ""
 
-#: ../widgets/rb-rating-helper.c:306
+#: ../widgets/rb-rating-helper.c:297
 #, c-format
 msgid "%d Star"
 msgid_plural "%d Stars"
 msgstr[0] "%d жұлдызша"
 
-#: ../widgets/rb-search-entry.c:227
+#: ../widgets/rb-search-entry.c:228
 msgid "Clear the search text"
 msgstr ""
 
-#: ../widgets/rb-search-entry.c:234
+#: ../widgets/rb-search-entry.c:235
 msgid "Select the search type"
 msgstr ""
 
-#: ../widgets/rb-search-entry.c:252
+#: ../widgets/rb-search-entry.c:253
 msgid "Search"
 msgstr "Іздеу"
 
-#: ../widgets/rb-search-entry.c:550
+#: ../widgets/rb-search-entry.c:551
 msgid "_Search:"
 msgstr "І_здеу:"
+
+#: ../widgets/rb-song-info.c:354
+msgid "_Back"
+msgstr "Ар_тқа"
+
+#: ../widgets/rb-song-info.c:363
+msgid "_Forward"
+msgstr "А_лға"
 
 #: ../widgets/rb-song-info.c:371
 msgid "Song Properties"
@@ -4485,3 +4540,7 @@ msgstr "Жұмыс үстелінде"
 #: ../widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr ""
+
+#: ../widgets/rb-uri-dialog.c:161
+msgid "_Add"
+msgstr "Қ_осу"
