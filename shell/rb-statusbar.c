@@ -38,6 +38,7 @@
 
 #include "rb-statusbar.h"
 #include "rb-debug.h"
+#include "rb-util.h"
 
 /**
  * SECTION:rb-statusbar
@@ -61,6 +62,7 @@
 
 static void rb_statusbar_class_init (RBStatusbarClass *klass);
 static void rb_statusbar_init (RBStatusbar *statusbar);
+static void rb_statusbar_constructed (GObject *object);
 static void rb_statusbar_dispose (GObject *object);
 static void rb_statusbar_finalize (GObject *object);
 static void rb_statusbar_set_property (GObject *object,
@@ -100,6 +102,7 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
 
         object_class->dispose = rb_statusbar_dispose;
         object_class->finalize = rb_statusbar_finalize;
+        object_class->constructed = rb_statusbar_constructed;
 
         object_class->set_property = rb_statusbar_set_property;
         object_class->get_property = rb_statusbar_get_property;
@@ -137,6 +140,14 @@ rb_statusbar_init (RBStatusbar *statusbar)
 	statusbar->priv = G_TYPE_INSTANCE_GET_PRIVATE (statusbar,
 						       RB_TYPE_STATUSBAR,
 						       RBStatusbarPrivate);
+}
+
+static void
+rb_statusbar_constructed (GObject *object)
+{
+	RB_CHAIN_GOBJECT_METHOD (rb_statusbar_parent_class, constructed, object);
+
+	gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (object)), "statusbar");
 }
 
 static void
