@@ -90,8 +90,6 @@ rb_error_dialog (GtkWindow *parent,
 
 	gtk_window_set_title (GTK_WINDOW (dialog), "");
 
-	gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
-
 	g_signal_connect (dialog, "response", G_CALLBACK (gtk_widget_destroy), NULL);
 
 	gtk_widget_show (dialog);
