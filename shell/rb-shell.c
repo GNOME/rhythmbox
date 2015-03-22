@@ -107,6 +107,8 @@
 
 #define PLAYING_ENTRY_NOTIFY_TIME 4
 
+#define ALBUM_ART_MIN_SIZE	32
+
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_init (RBShell *shell);
 static void rb_shell_constructed (GObject *object);
@@ -316,6 +318,19 @@ rb_shell_create_mount_op_cb (RhythmDB *db, RBShell *shell)
 	return op;
 }
 
+static gboolean
+accept_art_pixbuf (GdkPixbuf *pixbuf)
+{
+	if ((gdk_pixbuf_get_width (pixbuf) < ALBUM_ART_MIN_SIZE) ||
+	    (gdk_pixbuf_get_height (pixbuf) < ALBUM_ART_MIN_SIZE)) {
+		rb_debug ("rejecting too small (%dx%d) image",
+			  gdk_pixbuf_get_width (pixbuf),
+			  gdk_pixbuf_get_height (pixbuf));
+		return FALSE;
+	}
+	return TRUE;
+}
+
 static GValue *
 load_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
 {
@@ -360,6 +375,12 @@ load_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
 	}
 
 	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+	if (accept_art_pixbuf (pixbuf) == FALSE) {
+		g_object_unref (pixbuf);
+		g_object_unref (loader);
+		return NULL;
+	}
+
 	v = g_new0 (GValue, 1);
 	g_value_init (v, GDK_TYPE_PIXBUF);
 	g_value_set_object (v, pixbuf);
@@ -393,6 +414,9 @@ store_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
 	}
 
 	pixbuf = GDK_PIXBUF (g_value_get_object (value));
+	if (accept_art_pixbuf (pixbuf) == FALSE) {
+		return NULL;
+	}
 
 	/* switch to png if the image has an alpha channel */
 	if (gdk_pixbuf_get_has_alpha (pixbuf)) {
