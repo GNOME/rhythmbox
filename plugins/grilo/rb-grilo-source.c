@@ -361,7 +361,7 @@ rb_grilo_source_constructed (GObject *object)
 	g_signal_connect (selection, "changed", G_CALLBACK (browser_selection_changed_cb), source);
 
 	scrolled = gtk_scrolled_window_new (NULL, NULL);
-	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scrolled), GTK_SHADOW_IN);
+	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scrolled), GTK_SHADOW_NONE);
 	adjustment = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (scrolled));
 	g_signal_connect (adjustment, "changed", G_CALLBACK (scroll_adjust_changed_cb), source);
 	g_signal_connect (adjustment, "value-changed", G_CALLBACK (scroll_adjust_value_changed_cb), source);
