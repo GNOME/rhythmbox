@@ -138,7 +138,7 @@ static void init_actions (RBAudioscrobblerProfilePage *page);
 static void login_bar_response_cb (GtkInfoBar *info_bar,
                                    gint response_id,
                                    RBAudioscrobblerProfilePage *page);
-void logout_button_clicked_cb (GtkButton *button, RBAudioscrobblerProfilePage *page);
+static void logout_button_clicked_cb (GtkButton *button, RBAudioscrobblerProfilePage *page);
 static void login_status_change_cb (RBAudioscrobblerAccount *account,
                                     RBAudioscrobblerAccountLoginStatus status,
                                     RBAudioscrobblerProfilePage *page);
@@ -172,7 +172,7 @@ static void refresh_profile_action_cb (GSimpleAction *, GVariant *, gpointer);
 static void download_track_batch_complete_cb (RBTrackTransferBatch *batch, RBAudioscrobblerProfilePage *page);
 
 /* radio station creation/deletion */
-void station_creator_button_clicked_cb (GtkButton *button, RBAudioscrobblerProfilePage *page);
+static void station_creator_button_clicked_cb (GtkButton *button, RBAudioscrobblerProfilePage *page);
 static void load_radio_stations (RBAudioscrobblerProfilePage *page);
 static void save_radio_stations (RBAudioscrobblerProfilePage *page);
 static RBSource *add_radio_station (RBAudioscrobblerProfilePage *page,
@@ -529,6 +529,7 @@ init_profile_ui (RBAudioscrobblerProfilePage *page)
 	char *builder_file;
 	GtkBuilder *builder;
 	GtkWidget *combo_container;
+	GtkWidget *w;
 	int i;
 
 	g_object_get (page, "plugin", &plugin, NULL);
@@ -544,7 +545,11 @@ init_profile_ui (RBAudioscrobblerProfilePage *page)
 	page->priv->username_label = GTK_WIDGET (gtk_builder_get_object (builder, "username_label"));
 	page->priv->playcount_label = GTK_WIDGET (gtk_builder_get_object (builder, "playcount_label"));
 	page->priv->scrobbling_enabled_check = GTK_WIDGET (gtk_builder_get_object (builder, "scrobbling_enabled_check"));
+	g_signal_connect (page->priv->scrobbling_enabled_check, "toggled", G_CALLBACK (scrobbling_enabled_check_toggled_cb), page);
 	page->priv->view_profile_link = GTK_WIDGET (gtk_builder_get_object (builder, "view_profile_link"));
+
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "logout_button"));
+	g_signal_connect (w, "clicked", G_CALLBACK (logout_button_clicked_cb), page);
 
 	/* scrobbler statistics */
 	page->priv->scrobbler_status_msg_label = GTK_WIDGET (gtk_builder_get_object (builder, "scrobbler_status_msg_label"));
@@ -553,6 +558,8 @@ init_profile_ui (RBAudioscrobblerProfilePage *page)
 	page->priv->scrobbler_submit_time_label = GTK_WIDGET (gtk_builder_get_object (builder, "scrobbler_submit_time_label"));
 
 	/* station creator */
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "station_creator_button"));
+	g_signal_connect (w, "clicked", G_CALLBACK (station_creator_button_clicked_cb), page);
 	page->priv->station_creator_arg_entry = GTK_WIDGET (gtk_builder_get_object (builder, "station_creator_arg_entry"));
 	combo_container = GTK_WIDGET (gtk_builder_get_object (builder, "station_creator_combo_container"));
 	page->priv->station_creator_type_combo = gtk_combo_box_text_new ();
@@ -719,7 +726,7 @@ login_bar_response_cb (GtkInfoBar *info_bar,
 	}
 }
 
-void
+static void
 logout_button_clicked_cb (GtkButton *button,
                           RBAudioscrobblerProfilePage *page)
 {
@@ -1123,7 +1130,7 @@ refresh_profile_action_cb (GSimpleAction *action, GVariant *parameters, gpointer
 	rb_audioscrobbler_user_force_update (page->priv->user);
 }
 
-void
+static void
 station_creator_button_clicked_cb (GtkButton *button,
                                    RBAudioscrobblerProfilePage *page)
 {
