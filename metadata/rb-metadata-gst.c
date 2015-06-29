@@ -168,6 +168,7 @@ rb_metadata_load (RBMetaData *md, const char *uri, GError **error)
 	GList *l;
 	GstDiscoverer *discoverer;
 	GstCaps *caps;
+	GError *gsterror = NULL;
 
 	rb_metadata_reset (md);
 
@@ -175,7 +176,7 @@ rb_metadata_load (RBMetaData *md, const char *uri, GError **error)
 	if (*error != NULL)
 		return;
 
-	md->priv->info = gst_discoverer_discover_uri (discoverer, g_strdup (uri), error);
+	md->priv->info = gst_discoverer_discover_uri (discoverer, g_strdup (uri), &gsterror);
 	g_object_unref (discoverer);
 
 	/* figure out if we've got audio, non-audio, or video streams */
@@ -252,6 +253,15 @@ rb_metadata_load (RBMetaData *md, const char *uri, GError **error)
 		break;
 	default:
 		g_assert_not_reached ();
+	}
+
+	if (gsterror != NULL) {
+		int code = RB_METADATA_ERROR_GENERAL;
+		if (g_error_matches (gsterror, GST_STREAM_ERROR, GST_STREAM_ERROR_TYPE_NOT_FOUND)) {
+			code = RB_METADATA_ERROR_UNRECOGNIZED;
+		}
+		*error = g_error_new_literal (RB_METADATA_ERROR, code, gsterror->message);
+		g_clear_error (&gsterror);
 	}
 }
 
