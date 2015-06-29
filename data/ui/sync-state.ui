@@ -5,6 +5,7 @@
   <object class="GtkBox" id="sync-state-ui">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <property name="valign">start</property>
     <property name="border_width">6</property>
     <property name="orientation">vertical</property>
     <property name="spacing">12</property>
@@ -12,8 +13,8 @@
       <object class="GtkLabel" id="sync-before-label">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="xalign">0</property>
         <property name="label" translatable="yes">Current contents</property>
+        <property name="xalign">0</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -41,8 +42,8 @@
       <object class="GtkLabel" id="sync-after-label">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="xalign">0</property>
         <property name="label" translatable="yes">Contents after sync</property>
+        <property name="xalign">0</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -67,21 +68,32 @@
       </packing>
     </child>
     <child>
-      <object class="GtkTable" id="table1">
+      <object class="GtkGrid" id="grid1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="n_columns">4</property>
-        <property name="column_spacing">6</property>
-        <property name="row_spacing">12</property>
+        <property name="column_homogeneous">True</property>
         <child>
           <object class="GtkLabel" id="label2">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="xalign">0</property>
             <property name="label" translatable="yes">Added files:</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
-            <property name="x_options">GTK_FILL</property>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label3">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">Removed files:</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="top_attach">0</property>
           </packing>
         </child>
         <child>
@@ -92,20 +104,7 @@
           </object>
           <packing>
             <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label3">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="xalign">0</property>
-            <property name="label" translatable="yes">Removed files:</property>
-          </object>
-          <packing>
-            <property name="left_attach">2</property>
-            <property name="right_attach">3</property>
-            <property name="x_options">GTK_FILL</property>
+            <property name="top_attach">0</property>
           </packing>
         </child>
         <child>
@@ -116,7 +115,7 @@
           </object>
           <packing>
             <property name="left_attach">3</property>
-            <property name="right_attach">4</property>
+            <property name="top_attach">0</property>
           </packing>
         </child>
       </object>
