@@ -5,6 +5,7 @@ plugindatadir = $(PLUGINDATADIR)/audioscrobbler
 icondir = $(plugindatadir)/icons/hicolor/scalable/places
 
 plugin_LTLIBRARIES = libaudioscrobbler.la
+noinst_LTLIBRARIES = libaudioscrobblertest.la
 
 libaudioscrobbler_la_SOURCES = \
 	rb-audioscrobbler-plugin.c			\
@@ -26,6 +27,10 @@ libaudioscrobbler_la_SOURCES = \
 	rb-audioscrobbler-radio-track-entry-type.c	\
 	rb-audioscrobbler-play-order.c			\
 	rb-audioscrobbler-play-order.h
+
+libaudioscrobblertest_la_SOURCES = \
+	rb-audioscrobbler-entry.c			\
+	rb-audioscrobbler-radio-track-entry-type.c
 
 libaudioscrobbler_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS)
 libaudioscrobbler_la_LIBTOOLFLAGS = --tag=disable-static
