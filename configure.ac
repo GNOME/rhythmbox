@@ -9,7 +9,6 @@ AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([1.11 tar-ustar dist-xz no-dist-gzip -Wno-portability])
 
 AM_MAINTAINER_MODE([enable])
-GNOME_MAINTAINER_MODE_DEFINES
 
 # plugin API versioning
 # Increment on interface addition, reset on removal
@@ -418,12 +417,6 @@ AM_GNU_GETTEXT([external])
 
 AC_SUBST([GETTEXT_PACKAGE], [rhythmbox])
 AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], "$GETTEXT_PACKAGE", [Define to the gettext package name.])
-
-dnl Workaround for automake 1.8
-AC_SUBST(mkdir_p) if test x"$mkdir_p" = "x"; then
-  MKINSTALLDIRS="mkinstalldirs"
-fi
-AC_SUBST(MKINSTALLDIRS)
 
 dnl LIRC
 AC_ARG_ENABLE(lirc,
