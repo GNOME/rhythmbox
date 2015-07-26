@@ -73,6 +73,7 @@ struct _MPIDDevice
 	GObject parent;
 
 	char *input_path;
+	char *mpi_file;
 
 	MPIDError error;
 	MPIDSource source;
@@ -100,6 +101,7 @@ GType			mpid_device_get_type (void);
 void			mpid_enable_debug (gboolean debug);
 
 MPIDDevice *		mpid_device_new (const char *path);
+MPIDDevice *		mpid_device_new_from_mpi_file (const char *path);
 
 G_END_DECLS
 

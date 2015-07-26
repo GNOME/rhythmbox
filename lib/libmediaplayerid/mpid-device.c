@@ -47,6 +47,7 @@ enum
 {
 	PROP_0,
 	PROP_INPUT_PATH,
+	PROP_MPI_FILE,
 	PROP_ERROR,
 	PROP_SOURCE,
 	PROP_MODEL,
@@ -107,10 +108,16 @@ mpid_device_get_mount_point (MPIDDevice *device)
 	GList *mounts;
 	GList *i;
 
+	if (device->mpi_file != NULL) {
+		mpid_debug ("device descriptor file was specified, not looking for an actual device\n");
+		return NULL;
+	}
+
 	if (device->input_path == NULL) {
 		mpid_debug ("no input path specified, can't find mount point");
 		return NULL;
 	}
+	mpid_debug ("finding mount point for %s\n", device->input_path);
 
 	mount = g_unix_mount_at (device->input_path, NULL);
 	if (mount != NULL) {
@@ -148,6 +155,11 @@ mpid_device_get_device_path (MPIDDevice *device)
 	GList *mounts;
 	GList *i;
 
+	if (device->mpi_file != NULL) {
+		mpid_debug ("device descriptor file was specified, not looking for an actual device\n");
+		return NULL;
+	}
+
 	if (device->input_path == NULL) {
 		mpid_debug ("no input path specified, can't find device path\n");
 		return NULL;
@@ -183,6 +195,7 @@ mpid_device_get_device_path (MPIDDevice *device)
 
 	if (device_path == NULL) {
 		mpid_debug ("unable to find device path for mount point %s\n", device->input_path);
+		device_path = g_strdup (device->input_path);
 	}
 
 	return device_path;
@@ -199,6 +212,9 @@ mpid_device_set_property (GObject *object, guint prop_id, const GValue *value, G
 	case PROP_INPUT_PATH:
 		device->input_path = g_value_dup_string (value);
 		break;
+	case PROP_MPI_FILE:
+		device->mpi_file = g_value_dup_string (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -213,6 +229,9 @@ mpid_device_get_property (GObject *object, guint prop_id, GValue *value, GParamS
 	switch (prop_id) {
 	case PROP_INPUT_PATH:
 		g_value_set_string (value, device->input_path);
+		break;
+	case PROP_MPI_FILE:
+		g_value_set_string (value, device->mpi_file);
 		break;
 	case PROP_ERROR:
 		g_value_set_enum (value, device->error);
@@ -284,6 +303,9 @@ mpid_device_finalize (GObject *object)
 	g_free (device->playlist_path);
 	g_strfreev (device->audio_folders);
 
+	g_free (device->input_path);
+	g_free (device->mpi_file);
+
 	G_OBJECT_CLASS (mpid_device_parent_class)->finalize (object);
 }
 
@@ -304,14 +326,19 @@ mpid_device_constructed (GObject *object)
 
 	device = MPID_DEVICE (object);
 
-	mpid_device_db_lookup (device);
-	if (device->source == MPID_SOURCE_SYSTEM) {
-		mpid_device_debug (device, "system database");
-	}
+	if (device->mpi_file) {
+		mpid_read_device_file (device, device->mpi_file);
+		mpid_device_debug (device, "mpi file");
+	} else {
+		mpid_device_db_lookup (device);
+		if (device->source == MPID_SOURCE_SYSTEM) {
+			mpid_device_debug (device, "system database");
+		}
 
-	mpid_device_read_override_file (device);
-	if (device->source == MPID_SOURCE_OVERRIDE) {
-		mpid_device_debug (device, "override file");
+		mpid_device_read_override_file (device);
+		if (device->source == MPID_SOURCE_OVERRIDE) {
+			mpid_device_debug (device, "override file");
+		}
 	}
 }
 
@@ -325,7 +352,6 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 	object_class->get_property = mpid_device_get_property;
 	object_class->set_property = mpid_device_set_property;
 
-	/* install properties */
 	/**
 	 * MPIDDevice:input-path:
 	 *
@@ -336,6 +362,18 @@ mpid_device_class_init (MPIDDeviceClass *klass)
 					 g_param_spec_string ("input-path",
 							      "input path",
 							      "Input path (either a device path or a mount point)",
+							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * MPIDDevice:mpi-file:
+	 *
+	 * Path to a .mpi file describing the device
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_MPI_FILE,
+					 g_param_spec_string ("mpi-file",
+							      "mpi file",
+							      "Path to a .mpi file describing the device",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
@@ -537,4 +575,19 @@ MPIDDevice *
 mpid_device_new (const char *path)
 {
 	return g_object_new (MPID_TYPE_DEVICE, "input-path", path, NULL);
+}
+
+/**
+ * mpid_device_new_from_mpi_file:
+ * @path: path to a .mpi file describing the device
+ *
+ * Creates a new #MPIDDevice populated with information read from the specified
+ * .mpi file
+ *
+ * Return value: new #MPIDDevice instance
+ */
+MPIDDevice *
+mpid_device_new_from_mpi_file (const char *path)
+{
+	return g_object_new (MPID_TYPE_DEVICE, "mpi-file", path, NULL);
 }
