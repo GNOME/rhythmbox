@@ -130,19 +130,21 @@ rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 
 	/* find the size of the output file, assuming we can get at it with gio */
 	dest_size = 0;
-	file = g_file_new_for_uri (encoder->priv->dest_uri);
-	file_info = g_file_query_info (file, G_FILE_ATTRIBUTE_STANDARD_SIZE, G_FILE_QUERY_INFO_NONE, NULL, &error);
-	if (error != NULL) {
-		rb_debug ("couldn't get size of destination %s: %s",
-			  encoder->priv->dest_uri,
-			  error->message);
-		g_clear_error (&error);
-	} else {
-		dest_size = g_file_info_get_attribute_uint64 (file_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
-		rb_debug ("destination file size: %" G_GUINT64_FORMAT, dest_size);
-		g_object_unref (file_info);
+	if (encoder->priv->dest_uri != NULL) {
+		file = g_file_new_for_uri (encoder->priv->dest_uri);
+		file_info = g_file_query_info (file, G_FILE_ATTRIBUTE_STANDARD_SIZE, G_FILE_QUERY_INFO_NONE, NULL, &error);
+		if (error != NULL) {
+			rb_debug ("couldn't get size of destination %s: %s",
+				  encoder->priv->dest_uri,
+				  error->message);
+			g_clear_error (&error);
+		} else {
+			dest_size = g_file_info_get_attribute_uint64 (file_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+			rb_debug ("destination file size: %" G_GUINT64_FORMAT, dest_size);
+			g_object_unref (file_info);
+		}
+		g_object_unref (file);
 	}
-	g_object_unref (file);
 
 	encoder->priv->completion_emitted = TRUE;
 	_rb_encoder_emit_completed (RB_ENCODER (encoder), dest_size, encoder->priv->dest_media_type, encoder->priv->error);
