@@ -56,7 +56,6 @@ typedef struct
 
 	char *		(*get_mount_path) (RBGenericPlayerSource *source);
 	void		(*load_playlists) (RBGenericPlayerSource *source);
-	char **		(*get_audio_folders) (RBGenericPlayerSource *source);
 
 	char *		(*uri_from_playlist_uri) (RBGenericPlayerSource *source, const char *uri);
 	char *		(*uri_to_playlist_uri) (RBGenericPlayerSource *source, const char *uri, TotemPlParserType playlist_type);
@@ -65,10 +64,6 @@ typedef struct
 	char *		(*build_filename) (RBGenericPlayerSource *source, RhythmDBEntry *entry);
 } RBGenericPlayerSourceClass;
 
-RBSource *		rb_generic_player_source_new			(GObject *plugin,
-									 RBShell *shell,
-									 GMount *mount,
-									 MPIDDevice *device_info);
 GType			rb_generic_player_source_get_type		(void);
 
 char *			rb_generic_player_source_get_mount_path		(RBGenericPlayerSource *source);

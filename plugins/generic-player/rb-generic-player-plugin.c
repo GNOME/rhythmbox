@@ -50,7 +50,8 @@
 #include "rb-nokia770-source.h"
 #include "rb-psp-source.h"
 #include "rb-display-page-tree.h"
-
+#include "rb-builder-helpers.h"
+#include "rb-application.h"
 
 #define RB_TYPE_GENERIC_PLAYER_PLUGIN		(rb_generic_player_plugin_get_type ())
 #define RB_GENERIC_PLAYER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_GENERIC_PLAYER_PLUGIN, RBGenericPlayerPlugin))
@@ -94,23 +95,99 @@ static RBSource *
 create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *device_info, RBGenericPlayerPlugin *plugin)
 {
 	RBSource *source = NULL;
+	GType source_type = G_TYPE_NONE;
 	RBShell *shell;
+	RhythmDB *db;
+	RhythmDBEntryType *entry_type;
+	RhythmDBEntryType *error_type;
+	RhythmDBEntryType *ignore_type;
+	GtkBuilder *builder;
+	GMenu *toolbar;
+	GVolume *volume;
+	GSettings *settings;
+	const char *name_prefix;
+	char *name;
+	char *path;
+
+	if (rb_psp_is_mount_player (mount, device_info)) {
+		source_type = RB_TYPE_PSP_SOURCE;
+		name_prefix = "psp";
+	} else if (rb_nokia770_is_mount_player (mount, device_info)) {
+		source_type = RB_TYPE_NOKIA770_SOURCE;
+		name_prefix = "nokia770";
+	} else if (rb_generic_player_is_mount_player (mount, device_info)) {
+		source_type = RB_TYPE_GENERIC_PLAYER_SOURCE;
+		name_prefix = "generic-player";
+	} else {
+		return NULL;
+	}
+
+	volume = g_mount_get_volume (mount);
+	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 
 	g_object_get (plugin, "object", &shell, NULL);
+	g_object_get (shell, "db", &db, NULL);
 
-	if (rb_psp_is_mount_player (mount, device_info))
-		source = rb_psp_source_new (G_OBJECT (plugin), shell, mount, device_info);
-	if (source == NULL && rb_nokia770_is_mount_player (mount, device_info))
-		source = rb_nokia770_source_new (G_OBJECT (plugin), shell, mount, device_info);
-	if (source == NULL && rb_generic_player_is_mount_player (mount, device_info))
-		source = rb_generic_player_source_new (G_OBJECT (plugin), shell, mount, device_info);
+	name = g_strdup_printf ("%s: %s", name_prefix, path);
+	entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+				   "db", db,
+				   "name", name,
+				   "save-to-disk", FALSE,
+				   "category", RHYTHMDB_ENTRY_NORMAL,
+				   NULL);
+	rhythmdb_register_entry_type (db, entry_type);
+	g_free (name);
 
-	if (source) {
-		plugin->player_sources = g_list_prepend (plugin->player_sources, source);
-		g_signal_connect_object (G_OBJECT (source),
-					 "deleted", G_CALLBACK (rb_generic_player_plugin_source_deleted),
-					 plugin, 0);
-	}
+	name = g_strdup_printf ("%s (ignore): %s", name_prefix, path);
+	ignore_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+				    "db", db,
+				    "name", name,
+				    "save-to-disk", FALSE,
+				    "category", RHYTHMDB_ENTRY_VIRTUAL,
+				    NULL);
+	rhythmdb_register_entry_type (db, ignore_type);
+	g_free (name);
+
+	name = g_strdup_printf ("%s (errors): %s", name_prefix, path);
+	error_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+				   "db", db,
+				   "name", name,
+				   "save-to-disk", FALSE,
+				   "category", RHYTHMDB_ENTRY_VIRTUAL,
+				   NULL);
+	rhythmdb_register_entry_type (db, error_type);
+	g_free (name);
+
+	g_object_unref (db);
+
+	builder = rb_builder_load_plugin_file (G_OBJECT (plugin), "generic-player-toolbar.ui", NULL);
+	toolbar = G_MENU (gtk_builder_get_object (builder, "generic-player-toolbar"));
+	rb_application_link_shared_menus (RB_APPLICATION (g_application_get_default ()), toolbar);
+
+	settings = g_settings_new ("org.gnome.rhythmbox.plugins.generic-player");
+
+	source = RB_SOURCE (g_object_new (source_type,
+					  "plugin", plugin,
+					  "entry-type", entry_type,
+					  "ignore-entry-type", ignore_type,
+					  "error-entry-type", error_type,
+					  "mount", mount,
+					  "shell", shell,
+					  "device-info", device_info,
+					  "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
+					  "settings", g_settings_get_child (settings, "source"),
+					  "toolbar-menu", toolbar,
+					  NULL));
+
+	g_object_unref (settings);
+	g_object_unref (builder);
+
+	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
+
+	plugin->player_sources = g_list_prepend (plugin->player_sources, source);
+	g_signal_connect_object (G_OBJECT (source),
+				 "deleted", G_CALLBACK (rb_generic_player_plugin_source_deleted),
+				 plugin, 0);
 
 	g_object_unref (shell);
 	return source;

@@ -67,48 +67,6 @@ rb_psp_source_init (RBPspSource *source)
 {
 }
 
-RBSource *
-rb_psp_source_new (GObject *plugin, RBShell *shell, GMount *mount, MPIDDevice *device_info)
-{
-	RBPspSource *source;
-	RhythmDBEntryType *entry_type;
-	RhythmDB *db;
-	char *name;
-	char *path;
-	GVolume *volume;
-
-	g_assert (rb_psp_is_mount_player (mount, device_info));
-
-	volume = g_mount_get_volume (mount);
-
-	g_object_get (G_OBJECT (shell), "db", &db, NULL);
-	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
-	name = g_strdup_printf ("psp: %s", path);
-	entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
-				   "db", db,
-				   "name", name,
-				   "save-to-disk", FALSE,
-				   "category", RHYTHMDB_ENTRY_NORMAL,
-				   NULL);
-	rhythmdb_register_entry_type (db, entry_type);
-	g_object_unref (db);
-	g_free (name);
-	g_free (path);
-	g_object_unref (volume);
-
-	source = RB_PSP_SOURCE (g_object_new (RB_TYPE_PSP_SOURCE,
-					  "plugin", plugin,
-					  "entry-type", entry_type,
-					  "mount", mount,
-					  "shell", shell,
-					  "device-info", device_info,
-					  NULL));
-
-	rb_shell_register_entry_type_for_source (shell, RB_SOURCE (source), entry_type);
-
-	return RB_SOURCE (source);
-}
-
 static GFile *
 find_dir_no_case (GFile *root, gboolean look_for_psp)
 {

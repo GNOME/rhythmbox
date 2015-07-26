@@ -53,10 +53,6 @@ typedef struct
 	RBGenericPlayerSourceClass parent;
 } RBNokia770SourceClass;
 
-RBSource *			rb_nokia770_source_new		(GObject *plugin,
-								 RBShell *shell,
-								 GMount *mount,
-								 MPIDDevice *device_info);
 GType				rb_nokia770_source_get_type	(void);
 
 gboolean			rb_nokia770_is_mount_player	(GMount *mount, MPIDDevice *device_info);

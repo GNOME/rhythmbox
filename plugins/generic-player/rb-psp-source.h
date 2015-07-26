@@ -53,10 +53,6 @@ typedef struct
 	RBGenericPlayerSourceClass parent;
 } RBPspSourceClass;
 
-RBSource *		rb_psp_source_new		(GObject *plugin,
-							 RBShell *shell,
-							 GMount *mount,
-							 MPIDDevice *device_info);
 GType			rb_psp_source_get_type		(void);
 
 gboolean		rb_psp_is_mount_player		(GMount *mount, MPIDDevice *device_info);
