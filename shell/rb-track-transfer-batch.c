@@ -52,7 +52,6 @@ enum
 	TRACK_STARTED,
 	TRACK_PROGRESS,
 	TRACK_DONE,
-	CONFIGURE_PROFILE,
 	LAST_SIGNAL
 };
 
@@ -60,6 +59,7 @@ enum
 {
 	PROP_0,
 	PROP_ENCODING_TARGET,
+	PROP_SETTINGS,
 	PROP_SOURCE,
 	PROP_DESTINATION,
 	PROP_TOTAL_ENTRIES,
@@ -93,6 +93,7 @@ struct _RBTrackTransferBatchPrivate
 	RBTrackTransferQueue *queue;
 
 	GstEncodingTarget *target;
+	GSettings *settings;
 	GList *missing_plugin_profiles;
 
 	RBSource *source;
@@ -148,6 +149,7 @@ G_DEFINE_TYPE_EXTENDED (RBTrackTransferBatch,
  */
 RBTrackTransferBatch *
 rb_track_transfer_batch_new (GstEncodingTarget *target,
+			     GSettings *settings,
 			     GObject *source,
 			     GObject *destination)
 {
@@ -155,6 +157,7 @@ rb_track_transfer_batch_new (GstEncodingTarget *target,
 
 	obj = g_object_new (RB_TYPE_TRACK_TRANSFER_BATCH,
 			    "encoding-target", target,
+			    "settings", settings,
 			    "source", source,
 			    "destination", destination,
 			    NULL);
@@ -174,70 +177,88 @@ rb_track_transfer_batch_add (RBTrackTransferBatch *batch, RhythmDBEntry *entry)
 	batch->priv->entries = g_list_append (batch->priv->entries, rhythmdb_entry_ref (entry));
 }
 
+static int
+rank_profile (RBTrackTransferBatch *batch, GstEncodingProfile *profile, const char *source_media_type, gboolean allow_missing)
+{
+	char *profile_media_type;
+	const char *preferred_media_type;
+	gboolean transcode_lossless;
+	gboolean is_preferred;
+	gboolean is_lossless;
+	gboolean is_source;
+	gboolean is_missing;
+	int rank;
+
+	profile_media_type = rb_gst_encoding_profile_get_media_type (profile);
+	if (batch->priv->settings) {
+		preferred_media_type = g_settings_get_string (batch->priv->settings, "media-type");
+		if (rb_gst_media_type_is_lossless (preferred_media_type)) {
+			transcode_lossless = FALSE;
+		} else {
+			transcode_lossless = g_settings_get_boolean (batch->priv->settings, "transcode-lossless");
+		}
+
+		is_preferred = (rb_gst_media_type_matches_profile (profile, preferred_media_type));
+	} else {
+		preferred_media_type = NULL;
+		transcode_lossless = FALSE;
+		is_preferred = FALSE;
+	}
+
+	is_missing = (g_list_find (batch->priv->missing_plugin_profiles, profile) != NULL);
+	is_lossless = (rb_gst_media_type_is_lossless (profile_media_type));
+	if (g_str_has_prefix (source_media_type, "audio/x-raw") == FALSE) {
+		is_source = rb_gst_media_type_matches_profile (profile, source_media_type);
+	} else {
+		/* always transcode raw audio */
+		is_source = FALSE;
+	}
+
+	if (is_missing && allow_missing == FALSE && is_source == FALSE) {
+		/* this only applies if transcoding would be required */
+		rb_debug ("can't use encoding %s due to missing plugins", profile_media_type);
+		rank = 0;
+	} else if (transcode_lossless && is_lossless) {
+		/* this overrides is_source so all lossless files get transcoded */
+		rb_debug ("don't want lossless encoding %s", profile_media_type);
+		rank = 0;
+	} else if (is_source) {
+		/* this overrides is_preferred so we don't transcode unneccessarily */
+		rb_debug ("can use source encoding %s", profile_media_type);
+		rank = 100;
+	} else if (is_preferred) {
+		/* otherwise, always use the preferred encoding if available */
+		rb_debug ("can use preferred encoding %s", profile_media_type);
+		rank = 50;
+	} else if (is_lossless == FALSE) {
+		/* if we can't use the preferred encoding, we prefer lossy encodings over lossless, for space reasons */
+		rb_debug ("can use lossy encoding %s", profile_media_type);
+		rank = 25;
+	} else {
+		rb_debug ("can use lossless encoding %s", profile_media_type);
+		rank = 10;
+	}
+
+	g_free (profile_media_type);
+	return rank;
+}
+
 static gboolean
 select_profile_for_entry (RBTrackTransferBatch *batch, RhythmDBEntry *entry, GstEncodingProfile **rprofile, gboolean allow_missing)
 {
-	/* probably want a way to pass in some policy about lossless encoding
-	 * here.  possibilities:
-	 * - convert everything to lossy
-	 * - if transcoding is required, use lossy
-	 * - keep lossless encoded files lossless
-	 * - if transcoding is required, use lossless
-	 * - convert everything to lossless
-	 *
-	 * of course this only applies to targets that include lossless profiles..
-	 */
-
 	const char *media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
-	GstEncodingProfile *lossless = NULL;
-	gboolean found_lossy = FALSE;
 	const GList *p;
+	int best = 0;
 
 	for (p = gst_encoding_target_get_profiles (batch->priv->target); p != NULL; p = p->next) {
 		GstEncodingProfile *profile = GST_ENCODING_PROFILE (p->data);
-		char *profile_media_type;
-		gboolean is_missing;
-		gboolean skip;
+		int rank;
 
-		if (g_str_has_prefix (media_type, "audio/x-raw") == FALSE &&
-		    rb_gst_media_type_matches_profile (profile, media_type)) {
-			/* source file is already in a supported encoding, so just copy it */
-			*rprofile = NULL;
-			return TRUE;
-		}
-
-		skip = FALSE;
-		is_missing = (g_list_find (batch->priv->missing_plugin_profiles, profile) != NULL);
-
-		profile_media_type = rb_gst_encoding_profile_get_media_type (profile);
-		if (profile_media_type == NULL) {
-			if (g_str_has_prefix (media_type, "audio/x-raw")) {
-				skip = TRUE;
-			}
-		} else if (rb_gst_media_type_is_lossless (profile_media_type)) {
-			skip = TRUE;
-			if (allow_missing == FALSE && is_missing) {
-				/* ignore entirely */
-			} else if (lossless == NULL) {
-				/* remember the first lossless profile that works */
-				lossless = profile;
-			}
-		} else {
-			found_lossy = TRUE;
-			if (allow_missing == FALSE && is_missing) {
-				skip = TRUE;
-			}
-		}
-
-		if (skip == FALSE && *rprofile == NULL) {
+		rank = rank_profile (batch, profile, media_type, allow_missing);
+		if (rank > best) {
 			*rprofile = profile;
+			best = rank;
 		}
-		g_free (profile_media_type);
-	}
-
-	/* if we only found a lossless encoding, use it */
-	if (*rprofile == NULL && found_lossy == FALSE && lossless != NULL) {
-		*rprofile = lossless;
 	}
 
 	return (*rprofile != NULL);
@@ -654,7 +675,21 @@ start_next (RBTrackTransferBatch *batch)
 			extension = g_strdup (rb_gst_media_type_to_extension (media_type));
 
 			rb_gst_encoding_profile_set_preset (profile, NULL);
-			g_signal_emit (batch, signals[CONFIGURE_PROFILE], 0, media_type, profile);
+			if (batch->priv->settings != NULL) {
+				GVariant *preset_settings;
+				char *active_preset;
+
+				preset_settings = g_settings_get_value (batch->priv->settings,
+									"media-type-presets");
+				active_preset = NULL;
+				g_variant_lookup (preset_settings, media_type, "s", &active_preset);
+
+				rb_debug ("setting preset %s for media type %s",
+					  active_preset, media_type);
+				rb_gst_encoding_profile_set_preset (profile, active_preset);
+
+				g_free (active_preset);
+			}
 		} else {
 			media_type = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
 			extension = g_strdup (rb_gst_media_type_to_extension (media_type));
@@ -719,6 +754,9 @@ impl_set_property (GObject *object,
 	case PROP_ENCODING_TARGET:
 		batch->priv->target = GST_ENCODING_TARGET (g_value_dup_object (value));
 		break;
+	case PROP_SETTINGS:
+		batch->priv->settings = g_value_dup_object (value);
+		break;
 	case PROP_SOURCE:
 		batch->priv->source = g_value_dup_object (value);
 		break;
@@ -759,6 +797,9 @@ impl_get_property (GObject *object,
 	switch (prop_id) {
 	case PROP_ENCODING_TARGET:
 		g_value_set_object (value, batch->priv->target);
+		break;
+	case PROP_SETTINGS:
+		g_value_set_object (value, batch->priv->settings);
 		break;
 	case PROP_SOURCE:
 		g_value_set_object (value, batch->priv->source);
@@ -846,15 +887,9 @@ impl_dispose (GObject *object)
 {
 	RBTrackTransferBatch *batch = RB_TRACK_TRANSFER_BATCH (object);
 
-	if (batch->priv->source != NULL) {
-		g_object_unref (batch->priv->source);
-		batch->priv->source = NULL;
-	}
-
-	if (batch->priv->destination != NULL) {
-		g_object_unref (batch->priv->destination);
-		batch->priv->destination = NULL;
-	}
+	g_clear_object (&batch->priv->source);
+	g_clear_object (&batch->priv->destination);
+	g_clear_object (&batch->priv->settings);
 
 	if (batch->priv->target != NULL) {
 		gst_encoding_target_unref (batch->priv->target);
@@ -908,6 +943,18 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 							      "GstEncodingTarget",
 							      GST_TYPE_ENCODING_TARGET,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+	/**
+	 * RBTrackTransferBatch:settings
+	 *
+	 * GSettings instance holding profile preferences
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_SETTINGS,
+					 g_param_spec_object ("settings",
+							      "profile settings",
+							      "GSettings instance holding profile settings",
+							      G_TYPE_SETTINGS,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
 	 * RBTrackTransferBatch:source:
 	 *
@@ -1148,25 +1195,6 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 			      rb_marshal_VOID__BOXED_STRING_UINT64_STRING_POINTER,
 			      G_TYPE_NONE,
 			      5, RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING, G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_POINTER);
-
-	/**
-	 * RBTrackTransferBatch::configure-profile:
-	 * @batch: the #RBTrackTransferBatch
-	 * @mediatype: the target media type
-	 * @profile: the #GstEncodingProfile
-	 *
-	 * Emitted to allow configuration of encoding profile settings
-	 * (mostly by setting presets on sub-profiles).
-	 */
-	signals [CONFIGURE_PROFILE] =
-		g_signal_new ("configure-profile",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBTrackTransferBatchClass, configure_profile),
-			      NULL, NULL,
-			      rb_marshal_VOID__STRING_POINTER,
-			      G_TYPE_NONE,
-			      2, G_TYPE_STRING, GST_TYPE_ENCODING_PROFILE);
 
 	g_type_class_add_private (klass, sizeof (RBTrackTransferBatchPrivate));
 }

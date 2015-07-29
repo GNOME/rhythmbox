@@ -1640,25 +1640,6 @@ get_dest_uri_cb (RBTrackTransferBatch *batch,
 }
 
 static void
-configure_profile_cb (RBTrackTransferBatch *batch,
-		      const char *media_type,
-		      GstEncodingProfile *profile,
-		      RBLibrarySource *source)
-{
-	GVariant *preset_settings;
-	char *active_preset;
-
-	preset_settings = g_settings_get_value (source->priv->encoding_settings, "media-type-presets");
-	active_preset = NULL;
-	g_variant_lookup (preset_settings, media_type, "s", &active_preset);
-
-	rb_debug ("setting preset %s for media type %s", active_preset, media_type);
-	rb_gst_encoding_profile_set_preset (profile, active_preset);
-
-	g_free (active_preset);
-}
-
-static void
 track_done_cb (RBTrackTransferBatch *batch,
 	       RhythmDBEntry *entry,
 	       const char *dest,
@@ -1736,10 +1717,9 @@ impl_paste (RBSource *asource, GList *entries)
 	gst_encoding_profile_set_name (profile, "copy");
 	gst_encoding_target_add_profile (target, profile);
 
-	batch = rb_track_transfer_batch_new (target, NULL, G_OBJECT (source));
+	batch = rb_track_transfer_batch_new (target, source->priv->encoding_settings, NULL, G_OBJECT (source));
 	g_signal_connect_object (batch, "get-dest-uri", G_CALLBACK (get_dest_uri_cb), source, 0);
 	g_signal_connect_object (batch, "track-done", G_CALLBACK (track_done_cb), source, 0);
-	g_signal_connect_object (batch, "configure-profile", G_CALLBACK (configure_profile_cb), source, 0);
 
 	for (l = entries; l != NULL; l = g_list_next (l)) {
 		RhythmDBEntry *entry = (RhythmDBEntry *)l->data;

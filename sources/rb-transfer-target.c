@@ -410,7 +410,7 @@ rb_transfer_target_transfer (RBTransferTarget *target, GSettings *settings, GLis
 	batch = g_object_steal_data (G_OBJECT (target), "transfer-target-batch");
 
 	if (batch == NULL) {
-		batch = rb_track_transfer_batch_new (NULL, NULL, G_OBJECT (target));
+		batch = rb_track_transfer_batch_new (NULL, settings, NULL, G_OBJECT (target));
 
 		g_signal_connect_object (batch, "get-dest-uri", G_CALLBACK (get_dest_uri_cb), target, 0);
 		g_signal_connect_object (batch, "track-done", G_CALLBACK (track_done_cb), target, 0);
