@@ -1236,6 +1236,7 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 {
 	RhythmDB *db;
  	GList *it;
+	GSettings *settings;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 
 	db = get_db_for_source (source);
@@ -1258,7 +1259,9 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 
 	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
 
-	rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), NULL, FALSE);
+	g_object_get (source, "encoding-settings", &settings, NULL);
+	rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), settings, NULL, FALSE);
+	g_object_unref (settings);
 
 	priv->load_idle_id = 0;
 	return FALSE;
@@ -1372,10 +1375,16 @@ impl_delete_entries (RBMediaPlayerSource *source, GList *entries, RBMediaPlayerS
 static RBTrackTransferBatch *
 impl_paste (RBSource *source, GList *entries)
 {
+	RBTrackTransferBatch *batch;
+	GSettings *settings;
 	gboolean defer;
 
 	defer = (ensure_loaded (RB_IPOD_SOURCE (source)) == FALSE);
-	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries, defer);
+	g_object_get (source, "encoding-settings", &settings, NULL);
+	batch = rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), settings, entries, defer);
+	g_object_unref (settings);
+
+	return batch;
 }
 
 static void

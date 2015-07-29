@@ -517,6 +517,7 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 {
 	RBGenericPlayerSourceClass *klass = RB_GENERIC_PLAYER_SOURCE_GET_CLASS (source);
 	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
+	GSettings *settings;
 	RBShell *shell;
 
 	if (priv->ejecting) {
@@ -531,7 +532,9 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 
 		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
 
-		rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), NULL, FALSE);
+		g_object_get (source, "encoding-settings", &settings, NULL);
+		rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), settings, NULL, FALSE);
+		g_object_unref (settings);
 	}
 
 	g_object_unref (priv->import_job);
@@ -883,9 +886,14 @@ static RBTrackTransferBatch *
 impl_paste (RBSource *source, GList *entries)
 {
 	gboolean defer;
+	GSettings *settings;
+	RBTrackTransferBatch *batch;
 
 	defer = (ensure_loaded (RB_GENERIC_PLAYER_SOURCE (source)) == FALSE);
-	return rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), entries, defer);
+	g_object_get (source, "encoding-settings", &settings, NULL);
+	batch = rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), settings, entries, defer);
+	g_object_unref (settings);
+	return batch;
 }
 
 static gboolean

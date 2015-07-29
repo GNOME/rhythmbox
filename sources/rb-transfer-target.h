@@ -86,7 +86,7 @@ gboolean        rb_transfer_target_check_category	(RBTransferTarget *target,
 gboolean        rb_transfer_target_check_duplicate	(RBTransferTarget *target,
 							 RhythmDBEntry *entry);
 
-RBTrackTransferBatch *rb_transfer_target_transfer	(RBTransferTarget *target, GList *entries, gboolean defer);
+RBTrackTransferBatch *rb_transfer_target_transfer	(RBTransferTarget *target, GSettings *settings, GList *entries, gboolean defer);
 
 
 G_END_DECLS

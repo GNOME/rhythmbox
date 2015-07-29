@@ -375,6 +375,7 @@ track_done_cb (RBTrackTransferBatch *batch,
 /**
  * rb_transfer_target_transfer:
  * @target: an #RBTransferTarget
+ * @settings: #GSettings instance holding encoding settings
  * @entries: (element-type RB.RhythmDBEntry): a #GList of entries to transfer
  * @defer: if %TRUE, don't start the transfer until
  *
@@ -386,7 +387,7 @@ track_done_cb (RBTrackTransferBatch *batch,
  * Return value: (transfer full): an #RBTrackTransferBatch, or NULL
  */
 RBTrackTransferBatch *
-rb_transfer_target_transfer (RBTransferTarget *target, GList *entries, gboolean defer)
+rb_transfer_target_transfer (RBTransferTarget *target, GSettings *settings, GList *entries, gboolean defer)
 {
 	RBTrackTransferQueue *xferq;
 	RBTaskList *tasklist;
