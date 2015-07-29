@@ -18,7 +18,8 @@ widgetinclude_HEADERS =					\
 	rb-object-property-editor.h			\
 	rb-import-dialog.h				\
 	rb-button-bar.h					\
-	rb-task-list-display.h
+	rb-task-list-display.h				\
+	rb-encoding-settings.h
 
 librbwidgets_la_SOURCES =				\
 	$(widgetinclude_HEADERS)			\
@@ -54,7 +55,8 @@ librbwidgets_la_SOURCES =				\
 	rb-object-property-editor.c			\
 	rb-import-dialog.c				\
 	rb-button-bar.c					\
-	rb-task-list-display.c
+	rb-task-list-display.c				\
+	rb-encoding-settings.c
 
 AM_CPPFLAGS =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
@@ -62,12 +64,10 @@ AM_CPPFLAGS =						\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
 	-I$(top_builddir)/lib 				\
-	-I$(top_srcdir)/player				\
 	-I$(top_srcdir)/metadata			\
 	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/sources				\
 	-I$(top_srcdir)/library				\
-	-I$(top_srcdir)/iradio				\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/backends			\
 	$(NOTIFY_CFLAGS)				\
