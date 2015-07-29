@@ -176,6 +176,7 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 					  "device-info", device_info,
 					  "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 					  "settings", g_settings_get_child (settings, "source"),
+					  "encoding-settings", g_settings_get_child (settings, "encoding"),
 					  "toolbar-menu", toolbar,
 					  NULL));
 

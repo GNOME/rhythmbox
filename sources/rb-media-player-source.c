@@ -68,6 +68,7 @@ typedef struct {
 	gboolean syncing;
 
 	GstEncodingTarget *encoding_target;
+	GSettings *encoding_settings;
 } RBMediaPlayerSourcePrivate;
 
 G_DEFINE_TYPE (RBMediaPlayerSource, rb_media_player_source, RB_TYPE_BROWSER_SOURCE);
@@ -101,7 +102,8 @@ enum
 {
 	PROP_0,
 	PROP_DEVICE_SERIAL,
-	PROP_ENCODING_TARGET
+	PROP_ENCODING_TARGET,
+	PROP_ENCODING_SETTINGS
 };
 
 static void
@@ -155,6 +157,18 @@ rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass)
 							      "GstEncodingTarget",
 							      GST_TYPE_ENCODING_TARGET,
 							      G_PARAM_READWRITE));
+	/**
+	 * RBMediaPlayerSource:encoding-settings
+	 *
+	 * The #GSettings instance holding encoding settings for this device
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_ENCODING_SETTINGS,
+					 g_param_spec_object ("encoding-settings",
+							      "encoding settings",
+							      "GSettings holding encoding settings",
+							      G_TYPE_SETTINGS,
+							      G_PARAM_READWRITE));
 
 	g_type_class_add_private (klass, sizeof (RBMediaPlayerSourcePrivate));
 }
@@ -201,6 +215,12 @@ rb_media_player_source_set_property (GObject *object,
 		}
 		priv->encoding_target = GST_ENCODING_TARGET (g_value_dup_object (value));
 		break;
+	case PROP_ENCODING_SETTINGS:
+		if (priv->encoding_settings) {
+			g_object_unref (priv->encoding_settings);
+		}
+		priv->encoding_settings = g_value_dup_object (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -220,6 +240,9 @@ rb_media_player_source_get_property (GObject *object,
 		break;
 	case PROP_ENCODING_TARGET:
 		g_value_set_object (value, priv->encoding_target);
+		break;
+	case PROP_ENCODING_SETTINGS:
+		g_value_set_object (value, priv->encoding_settings);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

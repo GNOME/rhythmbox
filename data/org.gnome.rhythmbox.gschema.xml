@@ -308,10 +308,12 @@
 
   <schema id="org.gnome.rhythmbox.plugins.generic-player" path="/org/gnome/rhythmbox/plugins/generic-player/">
     <child name='source' schema='org.gnome.rhythmbox.source'/>
+    <child name="encoding" schema="org.gnome.rhythmbox.encoding-settings"/>
   </schema>
 
   <schema id="org.gnome.rhythmbox.plugins.ipod" path="/org/gnome/rhythmbox/plugins/ipod/">
     <child name="source" schema="org.gnome.rhythmbox.source"/>
+    <child name="encoding" schema="org.gnome.rhythmbox.encoding-settings"/>
   </schema>
 
   <schema id="org.gnome.rhythmbox.plugins.iradio.source" extends="org.gnome.rhythmbox.source">
@@ -375,6 +377,7 @@
 
   <schema id="org.gnome.rhythmbox.plugins.mtpdevice" path="/org/gnome/rhythmbox/plugins/mtpdevice/">
     <child name="source" schema="org.gnome.rhythmbox.source"/>
+    <child name="encoding" schema="org.gnome.rhythmbox.encoding-settings"/>
   </schema>
 
   <enum id="org.gnome.rhythmbox.plugins.replaygain.mode">

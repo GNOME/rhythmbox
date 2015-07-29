@@ -599,6 +599,7 @@ rb_mtp_source_new (RBShell *shell,
 #endif
 					      "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 					      "settings", g_settings_get_child (settings, "source"),
+					      "encoding-settings", g_settings_get_child (settings, "encoding"),
 					      "toolbar-menu", toolbar,
 					      "name", _("Media Player"),
 					      NULL));

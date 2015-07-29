@@ -636,6 +636,7 @@ rb_ipod_source_new (GObject *plugin,
 					       "device-info", device_info,
 					       "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 					       "settings", g_settings_get_child (settings, "source"),
+					       "encoding-settings", g_settings_get_child (settings, "encoding"),
 					       "toolbar-menu", toolbar,
 					       NULL));
 	g_object_unref (settings);
