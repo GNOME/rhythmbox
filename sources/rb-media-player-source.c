@@ -46,6 +46,7 @@
 #include "rb-builder-helpers.h"
 #include "rb-playlist-manager.h"
 #include "rb-util.h"
+#include "rb-encoding-settings.h"
 
 typedef struct {
 	RBSyncSettings *sync_settings;
@@ -477,6 +478,17 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	container = GTK_CONTAINER (gtk_builder_get_object (builder, "sync-state-ui-container"));
 	gtk_box_pack_start (GTK_BOX (container), rb_sync_state_ui_new (priv->sync_state), TRUE, TRUE, 0);
 	gtk_widget_show_all (GTK_WIDGET (container));
+
+	/* create encoding settings UI */
+	if (priv->encoding_settings) {
+		container = GTK_CONTAINER (gtk_builder_get_object (builder, "encoding-settings-container"));
+		gtk_container_add (container, rb_encoding_settings_new (priv->encoding_settings, priv->encoding_target, TRUE));
+		gtk_widget_show_all (GTK_WIDGET (container));
+	} else {
+		container = GTK_CONTAINER (gtk_builder_get_object (builder, "encoding-settings-frame"));
+		gtk_widget_hide (GTK_WIDGET (container));
+		gtk_widget_set_no_show_all (GTK_WIDGET (container), TRUE);
+	}
 
 	gtk_widget_show (GTK_WIDGET (priv->properties_dialog));
 

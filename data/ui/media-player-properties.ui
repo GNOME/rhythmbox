@@ -101,12 +101,13 @@
                           <object class="GtkBox" id="device-usage-container">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <placeholder/>
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">False</property>
+                            <property name="expand">True</property>
                             <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
@@ -129,6 +130,42 @@
                     <property name="fill">False</property>
                     <property name="padding">6</property>
                     <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkFrame" id="frame3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label_xalign">0</property>
+                    <property name="shadow_type">none</property>
+                    <child>
+                      <object class="GtkBox" id="encoding-settings-container">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="border_width">12</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </object>
+                    </child>
+                    <child type="label">
+                      <object class="GtkLabel" id="label2">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Preferred format</property>
+                        <property name="use_markup">True</property>
+                        <attributes>
+                          <attribute name="weight" value="bold"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">6</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
