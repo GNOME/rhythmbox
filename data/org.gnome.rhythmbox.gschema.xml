@@ -26,13 +26,18 @@
   <schema id="org.gnome.rhythmbox.encoding-settings">
     <key name="media-type" type="s">
       <default>'audio/x-vorbis'</default>
-      <summary>Preferred media type for encoding audio extracted from CD</summary>
-      <description>Preferred media type for encoding audio extracted from CD. 'audio/x-vorbis' for Ogg Vorbis, or 'audio/mpeg' for MP3, for example. This is not a MIME type.</description>
+      <summary>Preferred media type for encoding audio</summary>
+      <description>Preferred media type for encoding audio. 'audio/x-vorbis' for Ogg Vorbis, or 'audio/mpeg' for MP3, for example. This is not a MIME type.</description>
     </key>
     <key name="media-type-presets" type="a{ss}">
       <default>[]</default>
       <summary>Maps media types to audio encoder preset names.</summary>
       <description>Maps media types to audio encoder preset names. If there is no mapping for a media type, the default encoder settings will be used.</description>
+    </key>
+    <key name="transcode-lossless" type="b">
+      <default>false</default>
+      <summary>Whether to transcode files from lossless encodings to the preferred format</summary>
+      <description>When a lossless file is transferred to a target with this set to true, it will be transcoded to the preferred format even if the lossless format is supported by the target.</description>
     </key>
   </schema>
 
