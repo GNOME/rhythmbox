@@ -11,24 +11,25 @@
 # Jochen Skulj <jochen@jochenskulj.de>, 2008, 2009.
 # Mario Blättermann <mario.blaettermann@gmail.com>, 2008-2013.
 # Jakob Kramer <jakob.kramer@gmx.de>, 2010.
-# Wolfgang Stöggl <c72578@yahoo.de>, 2011, 2012, 2014.
+# Wolfgang Stöggl <c72578@yahoo.de>, 2011, 2012, 2014-2015.
 # Hendrik Knackstedt <kn.hendrik@gmail.com>, 2012.
 # Christian Kirbach <christian.kirbach@gmail.com>, 2009, 2010, 2012, 2013.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-18 16:16+0200\n"
-"PO-Revision-Date: 2015-04-18 16:29+0100\n"
-"Last-Translator: Christian Kirbach <christian.kirbach@gmail.com>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=rhythmbox&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2015-04-18 14:30+0000\n"
+"PO-Revision-Date: 2015-07-27 19:13+0200\n"
+"Last-Translator: Wolfgang Stoeggl <c72578@yahoo.de>\n"
 "Language-Team: Deutsch <gnome-de@gnome.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.7.5\n"
+"X-Generator: Poedit 1.8.3\n"
 "X-Project-Style: gnome\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:512
@@ -229,8 +230,7 @@ msgid "_Quit"
 msgstr "_Beenden"
 
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
-#: ../data/ui/podcast-popups.ui.h:9
-#: ../plugins/magnatune/magnatune-popup.ui.h:1
+#: ../data/ui/podcast-popups.ui.h:9 ../plugins/magnatune/magnatune-popup.ui.h:1
 msgid "Add to Queue"
 msgstr "In die Warteschlange aufnehmen"
 
@@ -529,8 +529,7 @@ msgstr "Alle anzeigen"
 msgid "Media Player Properties"
 msgstr "Medienwiedergabe-Eigenschaften"
 
-#: ../data/ui/media-player-properties.ui.h:2
-#: ../plugins/daap/daap-prefs.ui.h:11
+#: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
 #: ../plugins/iradio/rb-station-properties-dialog.c:186
 #: ../podcast/rb-feed-podcast-properties-dialog.c:130
 #: ../podcast/rb-podcast-properties-dialog.c:276 ../shell/rb-application.c:144
@@ -860,15 +859,14 @@ msgstr "Alben_künstler:"
 msgid "_Composer:"
 msgstr "_Komponist:"
 
-#. To translators: the context is
+#. To translators: the context is 'disc 1 of 2'
 #: ../data/ui/song-info-multiple.ui.h:9 ../data/ui/song-info.ui.h:13
 msgid "of"
-msgstr ""
+msgstr "von"
 
 #: ../data/ui/song-info-multiple.ui.h:10
-#, fuzzy
 msgid "_Track count:"
-msgstr "Wiedergaben:"
+msgstr "_Titelzähler:"
 
 #: ../data/ui/song-info-multiple.ui.h:12 ../data/ui/song-info.ui.h:16
 msgid "Albu_m sort order:"
@@ -1135,9 +1133,8 @@ msgid "_Browse"
 msgstr "_Durchsuchen"
 
 #: ../plugins/artsearch/songinfo.py:134
-#, fuzzy
 msgid "Select new artwork"
-msgstr "Suchtyp auswählen"
+msgstr "Neues Bild wählen"
 
 #: ../plugins/artsearch/songinfo.py:136
 msgid "_Select"
@@ -1994,7 +1991,7 @@ msgstr "Weitere Titel holen"
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
-msgstr[0] "Es wird nur %d Ergebniss angezeigt"
+msgstr[0] "Es wird nur %d Ergebnis angezeigt"
 msgstr[1] "Es werden nur %d Ergebnisse angezeigt"
 
 #: ../plugins/im-status/im-status.plugin.in.h:1
@@ -2122,8 +2119,7 @@ msgstr "Neue Wiedergabeliste"
 msgid "Unable to initialize new iPod"
 msgstr "Initialisierung des neuen iPods ist fehlgeschlagen"
 
-#: ../plugins/ipod/rb-ipod-source.c:1503
-#: ../podcast/rb-podcast-main-source.c:76
+#: ../plugins/ipod/rb-ipod-source.c:1503 ../podcast/rb-podcast-main-source.c:76
 #: ../sources/sync/rb-sync-settings-ui.c:263
 #: ../sources/sync/rb-sync-settings-ui.c:264
 #: ../sources/sync/rb-sync-state-ui.c:78
@@ -2831,29 +2827,27 @@ msgstr "SoundCloud"
 
 #: ../plugins/soundcloud/soundcloud.plugin.in.h:2
 msgid "Browse and play sounds from SoundCloud®"
-msgstr ""
+msgstr "Titel in SoundCloud® durchstöbern und abspielen"
 
 #: ../plugins/soundcloud/soundcloud.py:94
-#, fuzzy
 msgid "Search tracks"
-msgstr "Titel senden"
+msgstr "Titel suchen"
 
 #: ../plugins/soundcloud/soundcloud.py:95
 msgid "Search tracks on SoundCloud"
-msgstr ""
+msgstr "Titel auf SoundCloud suchen"
 
 #: ../plugins/soundcloud/soundcloud.py:101
-#, fuzzy
 msgid "Search sets"
-msgstr "Künstler durchsuchen"
+msgstr "Zusammenstellungen suchen"
 
 #: ../plugins/soundcloud/soundcloud.py:102
 msgid "Search sets on SoundCloud"
-msgstr ""
+msgstr "Such-Zusammenstellungen auf SoundCloud"
 
 #: ../plugins/soundcloud/soundcloud.py:103
 msgid "SoundCloud Sets"
-msgstr ""
+msgstr "SoundCloud-Zusammenstellungen"
 
 #: ../plugins/soundcloud/soundcloud.py:108
 msgid "Search users"
@@ -2861,11 +2855,11 @@ msgstr "Benutzer suchen"
 
 #: ../plugins/soundcloud/soundcloud.py:109
 msgid "Search users on SoundCloud"
-msgstr ""
+msgstr "Benutzer auf SoundCloud suchen"
 
 #: ../plugins/soundcloud/soundcloud.py:110
 msgid "SoundCloud Users"
-msgstr ""
+msgstr "SoundCloud-Benutzer"
 
 #: ../plugins/soundcloud/soundcloud.py:115
 msgid "Search groups"
@@ -2873,22 +2867,22 @@ msgstr "Gruppen suchen"
 
 #: ../plugins/soundcloud/soundcloud.py:116
 msgid "Search groups on SoundCloud"
-msgstr ""
+msgstr "Such-Gruppen auf SoundCloud"
 
 #: ../plugins/soundcloud/soundcloud.py:117
 msgid "SoundCloud Groups"
-msgstr ""
+msgstr "SoundCloud Such-Gruppen"
 
 #: ../plugins/soundcloud/soundcloud.py:374
 #: ../plugins/soundcloud/soundcloud.py:382
 #, python-format
 msgid "View '%(title)s' on SoundCloud"
-msgstr ""
+msgstr "»%(title)s« auf SoundCloud betrachten"
 
 #: ../plugins/soundcloud/soundcloud.py:390
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
-msgstr ""
+msgstr "»%(container)s« auf SoundCloud betrachten"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:39
 msgid "Low quality"
@@ -3054,7 +3048,7 @@ msgstr "Dateityp konnte nicht überprüft werden: %s"
 #: ../podcast/rb-podcast-parse.c:200
 #, c-format
 msgid "Unexpected file type: %s"
-msgstr "Unerwarteter Dateiyp: %s"
+msgstr "Unerwarteter Dateityp: %s"
 
 #: ../podcast/rb-podcast-parse.c:223
 #, c-format
@@ -3160,9 +3154,8 @@ msgid "Status"
 msgstr "Status"
 
 #. ensure search instances exist
-#: ../podcast/rb-podcast-source.c:1515
-#: ../sources/rb-auto-playlist-source.c:253 ../sources/rb-browser-source.c:314
-#: ../sources/rb-browser-source.c:332
+#: ../podcast/rb-podcast-source.c:1515 ../sources/rb-auto-playlist-source.c:253
+#: ../sources/rb-browser-source.c:314 ../sources/rb-browser-source.c:332
 #: ../sources/rb-static-playlist-source.c:295
 msgid "Search all fields"
 msgstr "Alle Felder durchsuchen"
@@ -3323,7 +3316,7 @@ msgstr "Leertaste - Wiedergabe/Pause"
 
 #: ../remote/dbus/rb-client.c:164
 msgid "s - Show playing track details"
-msgstr ""
+msgstr "s - Details zum laufenden Titel anzeigen"
 
 #: ../remote/dbus/rb-client.c:165
 msgid "v - Decrease volume"
@@ -3350,17 +3343,17 @@ msgstr "Keine Wiedergabe"
 #. Translators: title by artist from album
 #: ../remote/dbus/rb-client.c:728
 msgid "%tt by %ta from %at"
-msgstr ""
+msgstr "%tt nach %ta von %at"
 
 #. Translators: title by artist
 #: ../remote/dbus/rb-client.c:731
 msgid "%tt by %ta"
-msgstr ""
+msgstr "%tt nach %ta"
 
 #. Translators: title from album
 #: ../remote/dbus/rb-client.c:734
 msgid "%tt from %ta"
-msgstr ""
+msgstr "%tt von %ta"
 
 #. Translators: %te is replaced with elapsed time, %td is replaced with track duration
 #: ../remote/dbus/rb-client.c:745
@@ -3376,17 +3369,17 @@ msgstr "Angehalten"
 #: ../remote/dbus/rb-client.c:845
 #, c-format
 msgid "Seeked to %s"
-msgstr ""
+msgstr "Position %s aufgesucht"
 
 #: ../remote/dbus/rb-client.c:879
-#, fuzzy, c-format
+#, c-format
 msgid "Now playing: %s %s"
-msgstr "Keine Wiedergabe"
+msgstr "Aktuelle Wiedergabe: %s %s"
 
 #: ../remote/dbus/rb-client.c:895
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown playback state: %s"
-msgstr "Unbekannte Wiedergabeliste: %s"
+msgstr "Unbekannter Wiedergabezustand: %s"
 
 #: ../remote/dbus/rb-client.c:905
 #, c-format
@@ -3497,8 +3490,7 @@ msgstr "%s, %s"
 msgid "Scanning"
 msgstr "Einlesen läuft"
 
-#: ../rhythmdb/rhythmdb-import-job.c:668
-#: ../shell/rb-track-transfer-batch.c:819
+#: ../rhythmdb/rhythmdb-import-job.c:668 ../shell/rb-track-transfer-batch.c:819
 #, c-format
 msgid "%d of %d"
 msgstr "%d von %d"
@@ -4065,8 +4057,7 @@ msgstr "Konstante Bitrate"
 msgid "Variable bit rate"
 msgstr "Variable Bitrate"
 
-#: ../sources/rb-library-source.c:447
-#: ../sources/sync/rb-sync-settings-ui.c:217
+#: ../sources/rb-library-source.c:447 ../sources/sync/rb-sync-settings-ui.c:217
 #: ../sources/sync/rb-sync-settings-ui.c:218
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
