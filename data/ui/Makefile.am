@@ -5,6 +5,7 @@ GTK_BUILDER_FILES =					\
 	create-playlist.ui				\
 	display-page-add-menu.ui			\
 	edit-menu.ui					\
+	encoding-settings.ui				\
 	general-prefs.ui				\
 	import-dialog.ui				\
 	import-errors-popup.ui				\
