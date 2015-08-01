@@ -177,91 +177,83 @@ rb_track_transfer_batch_add (RBTrackTransferBatch *batch, RhythmDBEntry *entry)
 	batch->priv->entries = g_list_append (batch->priv->entries, rhythmdb_entry_ref (entry));
 }
 
-static int
-rank_profile (RBTrackTransferBatch *batch, GstEncodingProfile *profile, const char *source_media_type, gboolean allow_missing)
-{
-	char *profile_media_type;
-	const char *preferred_media_type;
-	gboolean transcode_lossless;
-	gboolean is_preferred;
-	gboolean is_lossless;
-	gboolean is_source;
-	gboolean is_missing;
-	int rank;
-
-	profile_media_type = rb_gst_encoding_profile_get_media_type (profile);
-	if (batch->priv->settings) {
-		preferred_media_type = g_settings_get_string (batch->priv->settings, "media-type");
-		if (rb_gst_media_type_is_lossless (preferred_media_type)) {
-			transcode_lossless = FALSE;
-		} else {
-			transcode_lossless = g_settings_get_boolean (batch->priv->settings, "transcode-lossless");
-		}
-
-		is_preferred = (rb_gst_media_type_matches_profile (profile, preferred_media_type));
-	} else {
-		preferred_media_type = NULL;
-		transcode_lossless = FALSE;
-		is_preferred = FALSE;
-	}
-
-	is_missing = (g_list_find (batch->priv->missing_plugin_profiles, profile) != NULL);
-	is_lossless = (rb_gst_media_type_is_lossless (profile_media_type));
-	if (g_str_has_prefix (source_media_type, "audio/x-raw") == FALSE) {
-		is_source = rb_gst_media_type_matches_profile (profile, source_media_type);
-	} else {
-		/* always transcode raw audio */
-		is_source = FALSE;
-	}
-
-	if (is_missing && allow_missing == FALSE && is_source == FALSE) {
-		/* this only applies if transcoding would be required */
-		rb_debug ("can't use encoding %s due to missing plugins", profile_media_type);
-		rank = 0;
-	} else if (transcode_lossless && is_lossless) {
-		/* this overrides is_source so all lossless files get transcoded */
-		rb_debug ("don't want lossless encoding %s", profile_media_type);
-		rank = 0;
-	} else if (is_source) {
-		/* this overrides is_preferred so we don't transcode unneccessarily */
-		rb_debug ("can use source encoding %s", profile_media_type);
-		rank = 100;
-	} else if (is_preferred) {
-		/* otherwise, always use the preferred encoding if available */
-		rb_debug ("can use preferred encoding %s", profile_media_type);
-		rank = 50;
-	} else if (is_lossless == FALSE) {
-		/* if we can't use the preferred encoding, we prefer lossy encodings over lossless, for space reasons */
-		rb_debug ("can use lossy encoding %s", profile_media_type);
-		rank = 25;
-	} else {
-		rb_debug ("can use lossless encoding %s", profile_media_type);
-		rank = 10;
-	}
-
-	g_free (profile_media_type);
-	return rank;
-}
-
 static gboolean
 select_profile_for_entry (RBTrackTransferBatch *batch, RhythmDBEntry *entry, GstEncodingProfile **rprofile, gboolean allow_missing)
 {
-	const char *media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
+	const char *source_media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
 	const GList *p;
 	int best = 0;
 
 	for (p = gst_encoding_target_get_profiles (batch->priv->target); p != NULL; p = p->next) {
 		GstEncodingProfile *profile = GST_ENCODING_PROFILE (p->data);
+		char *profile_media_type;
+		const char *preferred_media_type;
+		gboolean transcode_lossless;
+		gboolean is_preferred;
+		gboolean is_lossless;
+		gboolean is_source;
+		gboolean is_missing;
 		int rank;
 
-		rank = rank_profile (batch, profile, media_type, allow_missing);
+		profile_media_type = rb_gst_encoding_profile_get_media_type (profile);
+		if (batch->priv->settings) {
+			preferred_media_type = g_settings_get_string (batch->priv->settings, "media-type");
+			if (rb_gst_media_type_is_lossless (preferred_media_type)) {
+				transcode_lossless = FALSE;
+			} else {
+				transcode_lossless = g_settings_get_boolean (batch->priv->settings, "transcode-lossless");
+			}
+
+			is_preferred = (rb_gst_media_type_matches_profile (profile, preferred_media_type));
+		} else {
+			preferred_media_type = NULL;
+			transcode_lossless = FALSE;
+			is_preferred = FALSE;
+		}
+
+		is_missing = (g_list_find (batch->priv->missing_plugin_profiles, profile) != NULL);
+		is_lossless = (rb_gst_media_type_is_lossless (profile_media_type));
+		if (g_str_has_prefix (source_media_type, "audio/x-raw") == FALSE) {
+			is_source = rb_gst_media_type_matches_profile (profile, source_media_type);
+		} else {
+			/* always transcode raw audio */
+			is_source = FALSE;
+		}
+
+		if (is_missing && allow_missing == FALSE && is_source == FALSE) {
+			/* this only applies if transcoding would be required */
+			rb_debug ("can't use encoding %s due to missing plugins", profile_media_type);
+			rank = 0;
+		} else if (transcode_lossless && is_lossless) {
+			/* this overrides is_source so all lossless files get transcoded */
+			rb_debug ("don't want lossless encoding %s", profile_media_type);
+			rank = 0;
+		} else if (is_source) {
+			/* this overrides is_preferred so we don't transcode unneccessarily */
+			rb_debug ("can use source encoding %s", profile_media_type);
+			rank = 100;
+			profile = NULL;
+		} else if (is_preferred) {
+			/* otherwise, always use the preferred encoding if available */
+			rb_debug ("can use preferred encoding %s", profile_media_type);
+			rank = 50;
+		} else if (is_lossless == FALSE) {
+			/* if we can't use the preferred encoding, we prefer lossy encodings over lossless, for space reasons */
+			rb_debug ("can use lossy encoding %s", profile_media_type);
+			rank = 25;
+		} else {
+			rb_debug ("can use lossless encoding %s", profile_media_type);
+			rank = 10;
+		}
+
+		g_free (profile_media_type);
 		if (rank > best) {
 			*rprofile = profile;
 			best = rank;
 		}
 	}
 
-	return (*rprofile != NULL);
+	return (best > 0);
 }
 
 /**
