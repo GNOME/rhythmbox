@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-02-24 21:00+0000\n"
-"PO-Revision-Date: 2015-03-01 22:05+0100\n"
+"POT-Creation-Date: 2015-07-30 11:40+0000\n"
+"PO-Revision-Date: 2015-08-06 10:56+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -28,14 +28,14 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Gtranslator 2.91.6\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:512
+#: ../backends/gstreamer/rb-encoder-gst.c:514
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Nepodařilo se vytvořit cílový prvek GStreamer k zápisu do %s"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:528
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2900
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2956
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Nepodařilo se otevřít výstupní zařízení: %s"
@@ -54,45 +54,45 @@ msgstr ""
 "Nepodařilo se vytvořit prvek %s, zkontrolujte prosím svoji instalaci systému "
 "GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1112
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1126
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1140
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Nepodařilo se připojit nový proud do roury GSteameru"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1170
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1184
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Nepodařilo se spustit nový proud"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2827
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2883
 #, c-format
 msgid "Failed to open output device"
 msgstr "Nepodařilo se otevřít výstupní zařízení"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3176
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3250
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3232
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3306
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Nepodařilo se vytvořit prvek GStreameru; zkontrolujte svou instalaci"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3190
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3246
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Nepodařilo se vytvořit prvek zvukového výstupu; zkontrolujte svou instalaci"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3224
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3267
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3294
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3304
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3314
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3280
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3323
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3350
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3360
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3370
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Nepodařilo se připojit k rouře GStreameru; zkontrolujte svou instalaci"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3409
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3465
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Nepodařilo se vytvořit rouru GStreameru k přehrání %s"
@@ -131,7 +131,7 @@ msgstr ""
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
-#: ../shell/rb-shell.c:493 ../shell/rb-shell.c:2372
+#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2395
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -285,11 +285,15 @@ msgstr "Vytvořit automaticky aktualizovaný seznam skladeb, kde:"
 msgid "A_dd if any criteria are matched"
 msgstr "Při_dat, pokud vyhovuje libovolné kritérium"
 
-#: ../data/ui/create-playlist.ui.h:7
+#: ../data/ui/create-playlist.ui.h:7 ../widgets/rb-uri-dialog.c:161
+msgid "_Add"
+msgstr "Přid_at"
+
+#: ../data/ui/create-playlist.ui.h:8
 msgid "_Limit to: "
 msgstr "_Omezit na: "
 
-#: ../data/ui/create-playlist.ui.h:8
+#: ../data/ui/create-playlist.ui.h:9
 msgid "_When sorted by:"
 msgstr "_Když je seřazeno dle:"
 
@@ -332,6 +336,14 @@ msgstr "Zrušit výběr vš_eho"
 #: ../data/ui/edit-menu.ui.h:6
 msgid "Add to Play Queue"
 msgstr "Přidat do _fronty"
+
+#: ../data/ui/encoding-settings.ui.h:1
+msgid "_Install additional software required to use this format"
+msgstr "_Instalovat dodatečný software nutný pro použití tohoto formátu"
+
+#: ../data/ui/encoding-settings.ui.h:2
+msgid "Transcode lossless files into this format"
+msgstr "Překódovat bezeztrátové soubory do tohoto formátu"
 
 #: ../data/ui/general-prefs.ui.h:1
 msgid "Browser Views"
@@ -463,19 +475,11 @@ msgstr "_Název souboru:"
 
 #: ../data/ui/library-prefs.ui.h:8
 msgid "_Preferred format:"
-msgstr "_Preferovaný formát:"
+msgstr "U_přednostňovaný formát:"
 
 #: ../data/ui/library-prefs.ui.h:9
 msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
 msgstr "Umělec/Umělec – Album/Umělec (Album) – 01 – Název.ogg"
-
-#: ../data/ui/library-prefs.ui.h:10
-msgid "Format settings:"
-msgstr "Nastavení formátu:"
-
-#: ../data/ui/library-prefs.ui.h:11
-msgid "_Install additional software required to use this format"
-msgstr "_Instalovat dodatečný software nutný pro použití tohoto formátu"
 
 #: ../data/ui/library-toolbar.ui.h:1 ../data/ui/playlist-toolbar.ui.h:1
 #: ../data/ui/podcast-toolbar.ui.h:1 ../data/ui/queue-toolbar.ui.h:1
@@ -512,30 +516,44 @@ msgid "Media Player Properties"
 msgstr "Vlastnosti přehrávače médií"
 
 #: ../data/ui/media-player-properties.ui.h:2
+#: ../plugins/daap/daap-prefs.ui.h:11
+#: ../plugins/iradio/rb-station-properties-dialog.c:186
+#: ../podcast/rb-feed-podcast-properties-dialog.c:130
+#: ../podcast/rb-podcast-properties-dialog.c:276 ../shell/rb-application.c:144
+#: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:373
+#: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
+msgid "_Close"
+msgstr "_Zavřít"
+
+#: ../data/ui/media-player-properties.ui.h:3
 msgid "Information"
 msgstr "Informace"
 
 #. Translators: This refers to the usage of media space
-#: ../data/ui/media-player-properties.ui.h:4
+#: ../data/ui/media-player-properties.ui.h:5
 msgid "Volume usage"
 msgstr "Využití kapacity"
 
-#: ../data/ui/media-player-properties.ui.h:5
+#: ../data/ui/media-player-properties.ui.h:6
+msgid "Preferred format"
+msgstr "Upřednostňovaný formát"
+
+#: ../data/ui/media-player-properties.ui.h:7
 #: ../data/ui/podcast-feed-properties.ui.h:6
 #: ../data/ui/podcast-properties.ui.h:5 ../data/ui/song-info-multiple.ui.h:11
 #: ../data/ui/song-info.ui.h:15 ../plugins/iradio/station-properties.ui.h:4
 msgid "Basic"
 msgstr "Základní"
 
-#: ../data/ui/media-player-properties.ui.h:6 ../data/ui/sync-dialog.ui.h:1
+#: ../data/ui/media-player-properties.ui.h:8 ../data/ui/sync-dialog.ui.h:1
 msgid "Sync Preferences"
 msgstr "Předvolby synchronizace"
 
-#: ../data/ui/media-player-properties.ui.h:7 ../data/ui/sync-dialog.ui.h:2
+#: ../data/ui/media-player-properties.ui.h:9 ../data/ui/sync-dialog.ui.h:2
 msgid "Sync Preview"
 msgstr "Náhled synchronizace"
 
-#: ../data/ui/media-player-properties.ui.h:8
+#: ../data/ui/media-player-properties.ui.h:10
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:6
 #: ../plugins/ipod/ipod-toolbar.ui.h:6 ../plugins/mtpdevice/mtp-toolbar.ui.h:6
 msgid "Sync"
@@ -585,11 +603,26 @@ msgstr "Dle přípony"
 msgid "Save Playlist"
 msgstr "Uložit seznam skladeb"
 
-#: ../data/ui/playlist-save.ui.h:3
+# FIXME: "Continue" or something, this is too confusing
+#: ../data/ui/playlist-save.ui.h:3 ../plugins/artsearch/songinfo.py:135
+#: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:534
+#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:188
+#: ../widgets/rb-alert-dialog.c:380 ../widgets/rb-alert-dialog.c:397
+#: ../widgets/rb-dialog.c:131 ../widgets/rb-dialog.c:139
+#: ../widgets/rb-query-creator.c:191 ../widgets/rb-uri-dialog.c:158
+msgid "_Cancel"
+msgstr "_Zrušit"
+
+#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:202
+#: ../widgets/rb-dialog.c:140
+msgid "_Save"
+msgstr "_Uložit"
+
+#: ../data/ui/playlist-save.ui.h:5
 msgid "Select playlist format:"
 msgstr "Vyberte formát seznamu skladeb:"
 
-#: ../data/ui/playlist-save.ui.h:4
+#: ../data/ui/playlist-save.ui.h:6
 msgid "Playlist format"
 msgstr "Formát seznamu skladeb"
 
@@ -684,7 +717,7 @@ msgid "Cancel Download"
 msgstr "Zrušit stahování"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1227 ../sources/rb-media-player-source.c:933
+#: ../podcast/rb-podcast-source.c:1227 ../sources/rb-media-player-source.c:968
 msgid "Delete"
 msgstr "Odstranit"
 
@@ -900,8 +933,8 @@ msgstr "Odstraněné soubory:"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3661 ../widgets/rb-entry-view.c:940
-#: ../widgets/rb-entry-view.c:1564 ../widgets/rb-entry-view.c:1577
+#: ../rhythmdb/rhythmdb.c:3661 ../widgets/rb-entry-view.c:947
+#: ../widgets/rb-entry-view.c:1571 ../widgets/rb-entry-view.c:1584
 #: ../widgets/rb-song-info.c:1545
 msgid "Never"
 msgstr "Nikdy"
@@ -954,15 +987,15 @@ msgstr "%e. %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
-#: ../plugins/generic-player/rb-generic-player-source.c:1157
-#: ../plugins/ipod/rb-ipod-source.c:657
+#: ../plugins/generic-player/rb-generic-player-source.c:1086
+#: ../plugins/ipod/rb-ipod-source.c:658
 #: ../plugins/iradio/rb-iradio-source.c:539
 #: ../plugins/iradio/rb-iradio-source.c:1060
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:69 ../plugins/lyrics/lyrics.py:71
-#: ../plugins/mtpdevice/rb-mtp-source.c:649
-#: ../plugins/mtpdevice/rb-mtp-source.c:1132
-#: ../plugins/mtpdevice/rb-mtp-source.c:1518
+#: ../plugins/mtpdevice/rb-mtp-source.c:650
+#: ../plugins/mtpdevice/rb-mtp-source.c:1143
+#: ../plugins/mtpdevice/rb-mtp-source.c:1529
 #: ../plugins/notification/rb-notification-plugin.c:510
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1892
@@ -978,9 +1011,9 @@ msgstr "%e. %b %Y"
 #: ../rhythmdb/rhythmdb-tree.c:1360 ../rhythmdb/rhythmdb-tree.c:1364
 #: ../rhythmdb/rhythmdb-tree.c:1368 ../rhythmdb/rhythmdb-tree.c:1372
 #: ../shell/rb-shell-player.c:870 ../shell/rb-shell-player.c:2717
-#: ../shell/rb-shell-player.c:2719 ../widgets/rb-entry-view.c:992
-#: ../widgets/rb-entry-view.c:1014 ../widgets/rb-entry-view.c:1505
-#: ../widgets/rb-entry-view.c:1517 ../widgets/rb-entry-view.c:1529
+#: ../shell/rb-shell-player.c:2719 ../widgets/rb-entry-view.c:999
+#: ../widgets/rb-entry-view.c:1021 ../widgets/rb-entry-view.c:1512
+#: ../widgets/rb-entry-view.c:1524 ../widgets/rb-entry-view.c:1536
 #: ../widgets/rb-header.c:1282 ../widgets/rb-header.c:1308
 #: ../widgets/rb-song-info.c:949 ../widgets/rb-song-info.c:961
 #: ../widgets/rb-song-info.c:1233 ../widgets/rb-song-info.c:1572
@@ -1029,13 +1062,13 @@ msgstr "%d:%02d z %d:%02d"
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d z %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:499
+#: ../metadata/rb-metadata-gst.c:509
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
 msgstr ""
 "Do tohoto souboru není možné zapsat štítek, protože obsahuje více proudů"
 
-#: ../metadata/rb-metadata-gst.c:539
+#: ../metadata/rb-metadata-gst.c:549
 #, c-format
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
@@ -1043,12 +1076,12 @@ msgstr ""
 "Do tohoto souboru není možné zapsat štítek, protože není kódován v "
 "podporovaném formátu"
 
-#: ../metadata/rb-metadata-gst.c:671
+#: ../metadata/rb-metadata-gst.c:681
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Nepodařilo se vytvořit prvek zdroje; zkontrolujte svou instalaci"
 
-#: ../metadata/rb-metadata-gst.c:681
+#: ../metadata/rb-metadata-gst.c:691
 #, c-format
 msgid ""
 "Failed to create the 'decodebin' element; check your GStreamer installation"
@@ -1056,7 +1089,7 @@ msgstr ""
 "Nepodařilo se vytvořit prvek „decodebin“, zkontrolujte prosím svoji "
 "instalaci systému GStreamer"
 
-#: ../metadata/rb-metadata-gst.c:690
+#: ../metadata/rb-metadata-gst.c:700
 #, c-format
 msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
@@ -1065,7 +1098,7 @@ msgstr ""
 "Nepodařilo se vytvořit prvek „giostreamsink“, zkontrolujte prosím svoji "
 "instalaci systému GStreamer"
 
-#: ../metadata/rb-metadata-gst.c:773
+#: ../metadata/rb-metadata-gst.c:783
 #, c-format
 msgid "File corrupted during write"
 msgstr "Soubor byl porušen během zápisu"
@@ -1089,15 +1122,6 @@ msgstr "_Procházet"
 #: ../plugins/artsearch/songinfo.py:134
 msgid "Select new artwork"
 msgstr "Výběr nové grafiky"
-
-# FIXME: "Continue" or something, this is too confusing
-#: ../plugins/artsearch/songinfo.py:135 ../podcast/rb-podcast-source.c:534
-#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:188
-#: ../widgets/rb-alert-dialog.c:380 ../widgets/rb-alert-dialog.c:397
-#: ../widgets/rb-dialog.c:133 ../widgets/rb-dialog.c:141
-#: ../widgets/rb-query-creator.c:191 ../widgets/rb-uri-dialog.c:158
-msgid "_Cancel"
-msgstr "_Zrušit"
 
 #: ../plugins/artsearch/songinfo.py:136
 msgid "_Select"
@@ -1248,7 +1272,7 @@ msgid "Last submission time:"
 msgstr "Poslední čas odeslání:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:871
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:878
 msgid "Disabled"
 msgstr "Zakázáno"
 
@@ -1316,59 +1340,59 @@ msgstr "Tato verze aplikace Rhythmbox byla zakázána."
 msgid "Track submission failed too many times"
 msgstr "Odesílání skladeb selhalo příliš mnohokrát"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:682
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:689
 msgid "Love"
 msgstr "Oblíbená"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:686
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:693
 msgid "Ban"
 msgstr "Zakázat"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:690
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:697
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:3
 msgid "Download"
 msgstr "Stáhnout"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:788
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:795
 msgid "You are not currently logged in."
 msgstr "V tuto chvíli nejste přihlášeni."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:789
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:807
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:796
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:814
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:821
 msgid "Log in"
 msgstr "Přihlásit"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:795
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:802
 msgid "Waiting for authentication..."
 msgstr "Čeká se na ověření identity…"
 
 # FIXME: "Continue" or something, this is too confusing
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:796
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:803
 msgid "Cancel"
 msgstr "Zrušit"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:806
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:813
 msgid "Authentication error. Please try logging in again."
 msgstr "Chyba ověření identity. Zkuste se prosím přihlásit znovu."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:813
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:820
 msgid "Connection error. Please try logging in again."
 msgstr "Chyba připojení. Zkuste se prosím přihlásit znovu."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1223
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1230
 msgid "My Library"
 msgstr "Moje kolekce"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1231
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1238
 msgid "My Recommendations"
 msgstr "Moje doporučené skladby"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1239
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1246
 msgid "My Neighbourhood"
 msgstr "Moje sousední stanice"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1406
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1413
 #, c-format
 msgid "%s plays"
 msgstr "%s přehrává"
@@ -1376,16 +1400,16 @@ msgstr "%s přehrává"
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This is the label for menu item which when activated will take the user to the
 #. * artist/track's page on the service's website.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1663
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1670
 #, c-format
 msgid "_View on %s"
 msgstr "_Zobrazit na %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1680
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1687
 msgid "Listen to _Similar Artists Radio"
 msgstr "Po_slouchat rádio s podobnými umělci"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1694
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1701
 msgid "Listen to _Top Fans Radio"
 msgstr "Posloucha_t nejlepší fan rádio"
 
@@ -1622,7 +1646,7 @@ msgstr "Načítají se nejlepší alba umělce %s"
 
 #: ../plugins/context/ArtistTab.py:59
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:4
-#: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1451
+#: ../sources/rb-library-source.c:125 ../widgets/rb-entry-view.c:1458
 #: ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Umělec"
@@ -1912,18 +1936,18 @@ msgid "New Playlist on %s"
 msgstr "Nový seznam skladeb na %s"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:339
-#: ../sources/rb-library-source.c:407
+#: ../sources/rb-library-source.c:375
 msgid "Add to New Playlist"
 msgstr "Přidat do nového seznamu skladeb"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:640
+#: ../plugins/generic-player/rb-generic-player-source.c:564
 #, c-format
 msgid "Scanning %s"
 msgstr "Prochází se %s"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:1446
-#: ../plugins/ipod/rb-ipod-source.c:2070
-#: ../plugins/mtpdevice/rb-mtp-source.c:1612
+#: ../plugins/generic-player/rb-generic-player-source.c:1375
+#: ../plugins/ipod/rb-ipod-source.c:2080
+#: ../plugins/mtpdevice/rb-mtp-source.c:1623
 msgid "Advanced"
 msgstr "Pokročilé"
 
@@ -2021,19 +2045,19 @@ msgstr "Verze firmwaru:"
 msgid "iPod detected"
 msgstr "Zjištěno zařízení iPod"
 
-#: ../plugins/ipod/ipod-init.ui.h:2
+#: ../plugins/ipod/ipod-init.ui.h:3
 msgid "_Initialize"
 msgstr "_Inicializovat"
 
-#: ../plugins/ipod/ipod-init.ui.h:3
+#: ../plugins/ipod/ipod-init.ui.h:4
 msgid "_Name:"
 msgstr "_Název:"
 
-#: ../plugins/ipod/ipod-init.ui.h:4
+#: ../plugins/ipod/ipod-init.ui.h:5
 msgid "_Model:"
 msgstr "_Model:"
 
-#: ../plugins/ipod/ipod-init.ui.h:5
+#: ../plugins/ipod/ipod-init.ui.h:6
 msgid ""
 "Rhythmbox has detected a device that is probably an uninitialized or "
 "corrupted iPod. It must be initialized before Rhythmbox can use it, but this "
@@ -2048,7 +2072,7 @@ msgstr ""
 "informace uvedené níže. Pokud se nejedná o zařízení iPod nebo si nepřejete "
 "inicializaci provést, klikněte prosím na zrušit."
 
-#: ../plugins/ipod/ipod-init.ui.h:6
+#: ../plugins/ipod/ipod-init.ui.h:7
 msgid "Do you want to initialize your iPod?"
 msgstr "Chcete inicializovat své zařízení iPod?"
 
@@ -2069,7 +2093,7 @@ msgstr "Nový seznam skladeb"
 msgid "Unable to initialize new iPod"
 msgstr "Nelze inicializovat nové zařízení iPod"
 
-#: ../plugins/ipod/rb-ipod-source.c:1503
+#: ../plugins/ipod/rb-ipod-source.c:1513
 #: ../podcast/rb-podcast-main-source.c:76
 #: ../sources/sync/rb-sync-settings-ui.c:263
 #: ../sources/sync/rb-sync-settings-ui.c:264
@@ -2090,7 +2114,7 @@ msgstr "Podpora pro služby vysílání přenášené přes Internet"
 msgid "Remove"
 msgstr "Odstranit"
 
-#: ../plugins/iradio/rb-iradio-source.c:346 ../widgets/rb-entry-view.c:1481
+#: ../plugins/iradio/rb-iradio-source.c:346 ../widgets/rb-entry-view.c:1488
 #: ../widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Žánr"
@@ -2121,25 +2145,17 @@ msgstr "Nová stanice internetového rádia"
 msgid "URL of internet radio station:"
 msgstr "URL stanice internetového rádia:"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:186
-#: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:276 ../shell/rb-application.c:144
-#: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:373
-#: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
-msgid "_Close"
-msgstr "_Zavřít"
-
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
 #: ../podcast/rb-podcast-properties-dialog.c:507
-#: ../sources/rb-media-player-source.c:420 ../widgets/rb-song-info.c:1150
+#: ../sources/rb-media-player-source.c:444 ../widgets/rb-song-info.c:1150
 #, c-format
 msgid "%s Properties"
 msgstr "Vlastnosti %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:491
 #: ../podcast/rb-podcast-properties-dialog.c:620
-#: ../widgets/rb-entry-view.c:1018 ../widgets/rb-song-info.c:1235
+#: ../widgets/rb-entry-view.c:1025 ../widgets/rb-song-info.c:1235
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kb/s"
@@ -2193,10 +2209,6 @@ msgstr "Složka textů"
 #: ../plugins/lyrics/lyrics.py:168
 msgid "No lyrics found"
 msgstr "Žádné texty nenalezeny"
-
-#: ../plugins/lyrics/lyrics.py:202 ../widgets/rb-dialog.c:142
-msgid "_Save"
-msgstr "_Uložit"
 
 #: ../plugins/lyrics/lyrics.py:207 ../plugins/lyrics/lyrics.py:220
 msgid "_Edit"
@@ -2448,7 +2460,7 @@ msgstr "Heslo:"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:38
 msgid "Preferred audio _format:"
-msgstr "Preferovaný _formát zvuku:"
+msgstr "Upřednostňovaný _formát zvuku:"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:39
 msgid "Get an account at "
@@ -2508,7 +2520,7 @@ msgstr ""
 "Server Magnatune vrátil:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1625
+#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1632
 msgid "Error"
 msgstr "Chyba"
 
@@ -2559,23 +2571,23 @@ msgstr ""
 msgid "Unable to open temporary file: %s"
 msgstr "Nelze otevřít dočasný soubor: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:603
+#: ../plugins/mtpdevice/rb-mtp-source.c:604
 msgid "Media Player"
 msgstr "Multimediální přehrávač"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:883
+#: ../plugins/mtpdevice/rb-mtp-source.c:884
 msgid "Media player device error"
 msgstr "Chyba zařízení na přehrávání multimédií"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:887
+#: ../plugins/mtpdevice/rb-mtp-source.c:888
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Nelze otevřít zařízení %s %s"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:931
+#: ../plugins/mtpdevice/rb-mtp-source.c:932
 msgid "Digital Audio Player"
 msgstr "Digitální hudební přehrávač"
 
@@ -2851,7 +2863,7 @@ msgid "Fullscreen"
 msgstr "Celá obrazovka"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:89
-#: ../widgets/rb-entry-view.c:1525
+#: ../widgets/rb-entry-view.c:1532
 msgid "Quality"
 msgstr "Kvalita"
 
@@ -2883,8 +2895,8 @@ msgstr "Nelze načíst kanál. Zkontrolujte své připojení k Internetu."
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Nelze najít podcast. Zkontrolujte své připojení k internetu."
 
-#: ../podcast/rb-podcast-add-dialog.c:720 ../sources/rb-library-source.c:142
-#: ../widgets/rb-entry-view.c:1441
+#: ../podcast/rb-podcast-add-dialog.c:720 ../sources/rb-library-source.c:134
+#: ../widgets/rb-entry-view.c:1448
 msgid "Title"
 msgstr "Název"
 
@@ -3155,7 +3167,7 @@ msgstr "Pozastavit přehrávání, pokud hraje"
 msgid "Toggle play/pause mode"
 msgstr "Přepnout mezi přehráváním a pozastavením"
 
-#: ../remote/dbus/rb-client.c:107 ../shell/rb-shell.c:2273
+#: ../remote/dbus/rb-client.c:107 ../shell/rb-shell.c:2296
 msgid "Stop playback"
 msgstr "Zastavit přehrávání"
 
@@ -3441,7 +3453,7 @@ msgid "Scanning"
 msgstr "Prochází se"
 
 #: ../rhythmdb/rhythmdb-import-job.c:668
-#: ../shell/rb-track-transfer-batch.c:819
+#: ../shell/rb-track-transfer-batch.c:860
 #, c-format
 msgid "%d of %d"
 msgstr "%d z %d"
@@ -3669,45 +3681,45 @@ msgstr "Neznámý seznam skladeb: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "Seznam skladeb %s je automatický seznam skladeb"
 
-#: ../shell/rb-shell.c:2066
+#: ../shell/rb-shell.c:2089
 msgid "Error while saving song information"
 msgstr "Chyba při ukládání informací o skladbě"
 
-#: ../shell/rb-shell.c:2270
+#: ../shell/rb-shell.c:2293
 msgid "Pause playback"
 msgstr "Pozastavit přehrávání"
 
-#: ../shell/rb-shell.c:2281
+#: ../shell/rb-shell.c:2304
 msgid "Start playback"
 msgstr "Začít přehrávání"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2392
+#: ../shell/rb-shell.c:2415
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pozastaveno)"
 
-#: ../shell/rb-shell.c:2795 ../sources/rb-play-queue-source.c:659
+#: ../shell/rb-shell.c:2819 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Žádné registrované zdroje nemohou obsluhovat URI %s"
 
-#: ../shell/rb-shell.c:3124
+#: ../shell/rb-shell.c:3148
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Žádný registrovaný zdroj neodpovídá adrese URI %s"
 
-#: ../shell/rb-shell.c:3157 ../shell/rb-shell.c:3200
+#: ../shell/rb-shell.c:3181 ../shell/rb-shell.c:3224
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Neznámé URI skladby: %s"
 
-#: ../shell/rb-shell.c:3209
+#: ../shell/rb-shell.c:3233
 #, c-format
 msgid "Unknown property %s"
 msgstr "Neznámá vlastnost %s"
 
-#: ../shell/rb-shell.c:3223
+#: ../shell/rb-shell.c:3247
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Neplatný typ vlastnosti %s pro vlastnost %s"
@@ -3851,7 +3863,7 @@ msgid ""
 "Additional software is required to encode media in your preferred format:\n"
 "%s"
 msgstr ""
-"Pro kódování média do vámi preferovaného formát je zapotřebí dodatečný "
+"Pro kódování média do vámi upřednostňovaného formátu je zapotřebí dodatečný "
 "software:\n"
 "%s"
 
@@ -3964,93 +3976,81 @@ msgstr[0] "%d chyba při importu"
 msgstr[1] "%d chyby při importu"
 msgstr[2] "%d chyb při importu"
 
-#: ../sources/rb-library-source.c:129
+#: ../sources/rb-library-source.c:121
 msgid "Artist/Artist - Album"
 msgstr "Umělec/Umělec – Album"
 
-#: ../sources/rb-library-source.c:130
+#: ../sources/rb-library-source.c:122
 msgid "Artist/Album"
 msgstr "Umělec/Album"
 
-#: ../sources/rb-library-source.c:131
+#: ../sources/rb-library-source.c:123
 msgid "Artist - Album"
 msgstr "Umělec – Album"
 
-#: ../sources/rb-library-source.c:132 ../widgets/rb-entry-view.c:1471
+#: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1478
 #: ../widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Album"
 
-#: ../sources/rb-library-source.c:138
+#: ../sources/rb-library-source.c:130
 msgid "Number - Title"
 msgstr "Číslo – Název"
 
-#: ../sources/rb-library-source.c:139
+#: ../sources/rb-library-source.c:131
 msgid "Artist - Title"
 msgstr "Umělec – Název"
 
-#: ../sources/rb-library-source.c:140
+#: ../sources/rb-library-source.c:132
 msgid "Artist - Number - Title"
 msgstr "Umělec – Číslo – Název"
 
-#: ../sources/rb-library-source.c:141
+#: ../sources/rb-library-source.c:133
 msgid "Artist (Album) - Number - Title"
 msgstr "Umělec (Album) – Číslo – Název"
 
-#: ../sources/rb-library-source.c:143
+#: ../sources/rb-library-source.c:135
 msgid "Number. Artist - Title"
 msgstr "Číslo. Umělec – Název"
 
-#: ../sources/rb-library-source.c:157
-msgid "Constant bit rate"
-msgstr "Konstantní datový tok"
-
-#: ../sources/rb-library-source.c:158
-msgid "Variable bit rate"
-msgstr "Variabilní datový tok"
-
-#: ../sources/rb-library-source.c:447
+#: ../sources/rb-library-source.c:415
 #: ../sources/sync/rb-sync-settings-ui.c:217
 #: ../sources/sync/rb-sync-settings-ui.c:218
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "Hudba"
 
-#: ../sources/rb-library-source.c:500
+#: ../sources/rb-library-source.c:468
 msgid "Choose Library Location"
 msgstr "Vyberte umístění kolekce"
 
-#: ../sources/rb-library-source.c:539
+#: ../sources/rb-library-source.c:507
 msgid "Multiple locations set"
 msgstr "Nastaveno několik umístění"
 
-#: ../sources/rb-library-source.c:729
-msgid "Default settings"
-msgstr "Výchozí nastavení"
-
-#: ../sources/rb-library-source.c:1509
+#: ../sources/rb-library-source.c:1043
 msgid "Example Path:"
 msgstr "Příklad cesty:"
 
-#: ../sources/rb-library-source.c:1682 ../sources/rb-library-source.c:1686
+#: ../sources/rb-library-source.c:1197 ../sources/rb-library-source.c:1201
 #: ../sources/rb-transfer-target.c:189
 msgid "Error transferring track"
 msgstr "Chyba při přenosu skladby"
 
-#: ../sources/rb-library-source.c:1772
+#: ../sources/rb-library-source.c:1283
 msgid "Copying tracks to the library"
 msgstr "Kopírují se skladby do kolekce"
 
-#: ../sources/rb-library-source.c:1846
+#: ../sources/rb-library-source.c:1357
 msgid "Adding tracks to the library"
 msgstr "Přidávají se skladby do kolekce"
 
-#: ../sources/rb-media-player-source.c:614
+#: ../sources/rb-media-player-source.c:649
 #, c-format
 msgid "Syncing tracks to %s"
 msgstr "Synchronizují se skladby do %s"
 
-#: ../sources/rb-media-player-source.c:670
+#: ../sources/rb-media-player-source.c:705
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
@@ -4058,7 +4058,7 @@ msgstr ""
 "Nemáte vybranou žádnou hudbu, seznam k přehrání nebo podcast, které by se "
 "měly přenést do tohoto zařízení."
 
-#: ../sources/rb-media-player-source.c:675
+#: ../sources/rb-media-player-source.c:710
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
@@ -4066,16 +4066,16 @@ msgstr ""
 "Na zařízení není dostatek volného místa pro přenos vybrané hudby, seznamů "
 "skladeb a podcastů."
 
-#: ../sources/rb-media-player-source.c:727
+#: ../sources/rb-media-player-source.c:762
 #, c-format
 msgid "%s Sync Settings"
 msgstr "Nastavení synchronizace %s"
 
-#: ../sources/rb-media-player-source.c:732
+#: ../sources/rb-media-player-source.c:767
 msgid "Sync with the device"
 msgstr "Synchronizovat se zařízením"
 
-#: ../sources/rb-media-player-source.c:734
+#: ../sources/rb-media-player-source.c:769
 msgid "Don't sync"
 msgstr "Nesynchronizovat"
 
@@ -4095,16 +4095,16 @@ msgstr[2] "%d chybějících souborů"
 msgid "Remove from Playlist"
 msgstr "Odstranit ze seznamu skladeb"
 
-#: ../sources/rb-play-queue-source.c:292 ../sources/rb-play-queue-source.c:394
-#: ../sources/rb-play-queue-source.c:503
+#: ../sources/rb-play-queue-source.c:297 ../sources/rb-play-queue-source.c:399
+#: ../sources/rb-play-queue-source.c:508
 msgid "Play Queue"
 msgstr "Přehrávat frontu"
 
-#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:919
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:919
 msgid "from"
 msgstr "z"
 
-#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:918
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:918
 msgid "by"
 msgstr "od"
 
@@ -4124,7 +4124,7 @@ msgstr "Připojuje se"
 msgid "Buffering"
 msgstr "Ukládá se do vyrovnávací paměti"
 
-#: ../sources/rb-transfer-target.c:456
+#: ../sources/rb-transfer-target.c:457
 #, c-format
 msgid "Transferring tracks to %s"
 msgstr "Přenáší se skladba do %s"
@@ -4181,72 +4181,84 @@ msgstr "_Ne"
 msgid "_Yes"
 msgstr "_Ano"
 
-#: ../widgets/rb-dialog.c:134
+#: ../widgets/rb-dialog.c:132
 msgid "_Open"
 msgstr "_Otevřít"
 
-#: ../widgets/rb-entry-view.c:1012 ../widgets/rb-entry-view.c:1530
+#: ../widgets/rb-encoding-settings.c:54
+msgid "Constant bit rate"
+msgstr "Konstantní datový tok"
+
+#: ../widgets/rb-encoding-settings.c:55
+msgid "Variable bit rate"
+msgstr "Variabilní datový tok"
+
+#: ../widgets/rb-encoding-settings.c:400
+msgid "Default settings"
+msgstr "Výchozí nastavení"
+
+#: ../widgets/rb-entry-view.c:1019 ../widgets/rb-entry-view.c:1537
 #: ../widgets/rb-song-info.c:1231
 msgid "Lossless"
 msgstr "Bezeztrátový"
 
-#: ../widgets/rb-entry-view.c:1430
+#: ../widgets/rb-entry-view.c:1437
 msgid "Track"
 msgstr "Skladba"
 
-#: ../widgets/rb-entry-view.c:1461
+#: ../widgets/rb-entry-view.c:1468
 msgid "Composer"
 msgstr "Skladatel"
 
-#: ../widgets/rb-entry-view.c:1491
+#: ../widgets/rb-entry-view.c:1498
 msgid "Comment"
 msgstr "Komentář"
 
-#: ../widgets/rb-entry-view.c:1501
+#: ../widgets/rb-entry-view.c:1508
 msgid "Time"
 msgstr "Čas"
 
-#: ../widgets/rb-entry-view.c:1513
+#: ../widgets/rb-entry-view.c:1520
 msgid "Year"
 msgstr "Rok"
 
-#: ../widgets/rb-entry-view.c:1528
+#: ../widgets/rb-entry-view.c:1535
 msgid "000 kbps"
 msgstr "000 kb/s"
 
-#: ../widgets/rb-entry-view.c:1539
+#: ../widgets/rb-entry-view.c:1546
 msgid "Rating"
 msgstr "Hodnocení"
 
-#: ../widgets/rb-entry-view.c:1561
+#: ../widgets/rb-entry-view.c:1568
 msgid "Play Count"
 msgstr "Počet přehrání"
 
-#: ../widgets/rb-entry-view.c:1573
+#: ../widgets/rb-entry-view.c:1580
 msgid "Last Played"
 msgstr "Naposledy přehrané"
 
-#: ../widgets/rb-entry-view.c:1585
+#: ../widgets/rb-entry-view.c:1592
 msgid "Date Added"
 msgstr "Datum přidání"
 
-#: ../widgets/rb-entry-view.c:1596
+#: ../widgets/rb-entry-view.c:1603
 msgid "Last Seen"
 msgstr "Naposledy viděno"
 
-#: ../widgets/rb-entry-view.c:1607
+#: ../widgets/rb-entry-view.c:1614
 msgid "Location"
 msgstr "Umístění"
 
-#: ../widgets/rb-entry-view.c:1616
+#: ../widgets/rb-entry-view.c:1623
 msgid "BPM"
 msgstr "Tempo"
 
-#: ../widgets/rb-entry-view.c:1879
+#: ../widgets/rb-entry-view.c:1887
 msgid "Now Playing"
 msgstr "Právě se přehrává"
 
-#: ../widgets/rb-entry-view.c:1938
+#: ../widgets/rb-entry-view.c:1946
 msgid "Playback Error"
 msgstr "Chyba při přehrávání"
 
@@ -4699,7 +4711,3 @@ msgstr "Na ploše"
 #: ../widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Neznámé umístění"
-
-#: ../widgets/rb-uri-dialog.c:161
-msgid "_Add"
-msgstr "Přid_at"
