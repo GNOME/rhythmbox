@@ -730,7 +730,6 @@ construct_load_ui (RBShell *shell)
 	GtkWidget *menu_button;
 	GtkWidget *image;
 	GMenuModel *model;
-	gboolean rtl;
 
 	rb_debug ("shell: loading ui");
 	rb_profile_start ("loading ui");
@@ -740,21 +739,14 @@ construct_load_ui (RBShell *shell)
 
 	shell->priv->play_button = GTK_WIDGET (gtk_builder_get_object (builder, "play-button"));
 
-	rtl = (gtk_widget_get_direction (shell->priv->play_button) == GTK_TEXT_DIR_RTL);
 	image = gtk_button_get_image (GTK_BUTTON (gtk_builder_get_object (builder, "next-button")));
-	gtk_image_set_from_icon_name (GTK_IMAGE (image),
-				      rtl ? "media-skip-forward-rtl-symbolic" : "media-skip-forward-symbolic",
-				      GTK_ICON_SIZE_LARGE_TOOLBAR);
+	gtk_image_set_from_icon_name (GTK_IMAGE (image), "media-skip-forward-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
 
 	image = gtk_button_get_image (GTK_BUTTON (gtk_builder_get_object (builder, "previous-button")));
-	gtk_image_set_from_icon_name (GTK_IMAGE (image),
-				      rtl ? "media-skip-backward-rtl-symbolic" : "media-skip-backward-symbolic",
-				      GTK_ICON_SIZE_LARGE_TOOLBAR);
+	gtk_image_set_from_icon_name (GTK_IMAGE (image), "media-skip-backward-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
 
 	image = gtk_button_get_image (GTK_BUTTON (gtk_builder_get_object (builder, "play-button")));
-	gtk_image_set_from_icon_name (GTK_IMAGE (image),
-				      rtl ? "media-playback-start-rtl-symbolic" : "media-playback-start-symbolic",
-				      GTK_ICON_SIZE_LARGE_TOOLBAR);
+	gtk_image_set_from_icon_name (GTK_IMAGE (image), "media-playback-start-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
 
 	/* this seems a bit unnecessary */
 	gtk_actionable_set_action_target_value (GTK_ACTIONABLE (gtk_builder_get_object (builder, "shuffle-button")),
@@ -2296,11 +2288,7 @@ rb_shell_playing_changed_cb (RBShellPlayer *player, gboolean playing, RBShell *s
 			tooltip = _("Stop playback");
 		}
 	} else {
-		if (gtk_widget_get_direction (image) == GTK_TEXT_DIR_RTL) {
-			icon_name = "media-playback-start-rtl-symbolic";
-		} else {
-			icon_name = "media-playback-start-symbolic";
-		}
+		icon_name = "media-playback-start-symbolic";
 		tooltip = _("Start playback");
 	}
 	gtk_image_set_from_icon_name (GTK_IMAGE (image), icon_name, GTK_ICON_SIZE_LARGE_TOOLBAR);
