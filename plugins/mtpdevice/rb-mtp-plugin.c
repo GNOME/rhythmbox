@@ -261,6 +261,13 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device_obj, RBMt
 		return NULL;
 	}
 
+	/* check that it's not an android device */
+	if (g_strcmp0 (g_udev_device_get_property (device, "ID_MODEL"), "Android") == 0) {
+		rb_debug ("device %s is android based, android plugin should handle it",
+			  g_udev_device_get_name (device));
+		return NULL;
+	}
+
 	/* get device info */
 	vendor = get_property_as_int (device, "ID_VENDOR_ID", 16);
 	model = get_property_as_int (device, "ID_MODEL_ID", 16);
