@@ -965,6 +965,20 @@ rhythmdb_action_free (RhythmDB *db,
 }
 
 static void
+free_cached_metadata (GArray *metadata)
+{
+	RhythmDBEntryChange *fields = (RhythmDBEntryChange *)metadata->data;
+	int i;
+
+	for (i = 0; i < metadata->len; i++) {
+		g_value_unset (&fields[i].new);
+	}
+	g_free (fields);
+	metadata->data = NULL;
+	metadata->len = 0;
+}
+
+static void
 rhythmdb_event_free (RhythmDB *db,
 		     RhythmDBEvent *result)
 {
@@ -983,6 +997,9 @@ rhythmdb_event_free (RhythmDB *db,
 		break;
 	case RHYTHMDB_EVENT_ENTRY_SET:
 		g_value_unset (&result->change.new);
+		break;
+	case RHYTHMDB_EVENT_METADATA_CACHE:
+		free_cached_metadata(&result->cached_metadata);
 		break;
 	}
 	if (result->error)
@@ -2231,14 +2248,61 @@ rhythmdb_process_stat_event (RhythmDB *db,
 	rhythmdb_commit (db);
 }
 
-typedef struct
+static RhythmDBEntry *
+create_blank_entry (RhythmDB *db, RhythmDBEvent *event)
 {
-	RhythmDB *db;
-	char *uri;
-	char *msg;
-} RhythmDBLoadErrorData;
+	RhythmDBEntry *entry;
+	GTimeVal time;
+	GValue value = {0,};
+
+	entry = rhythmdb_entry_new (db, event->entry_type, rb_refstring_get (event->real_uri));
+	if (entry == NULL) {
+		rb_debug ("entry already exists");
+		return NULL;
+	}
+
+	/* initialize the last played date to 0=never */
+	g_value_init (&value, G_TYPE_ULONG);
+	g_value_set_ulong (&value, 0);
+	rhythmdb_entry_set (db, entry,
+			    RHYTHMDB_PROP_LAST_PLAYED, &value);
+	g_value_unset (&value);
+
+	/* initialize the rating */
+	g_value_init (&value, G_TYPE_DOUBLE);
+	g_value_set_double (&value, 0);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &value);
+	g_value_unset (&value);
+
+	/* first seen */
+	g_get_current_time (&time);
+	g_value_init (&value, G_TYPE_ULONG);
+	g_value_set_ulong (&value, time.tv_sec);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &value);
+	g_value_unset (&value);
+
+	return entry;
+}
 
 static void
+apply_mtime (RhythmDB *db, RhythmDBEntry *entry, GFileInfo *file_info)
+{
+	guint64 mtime;
+	GValue value = {0,};
+
+	if (file_info == NULL) {
+		return;
+	}
+
+	mtime = g_file_info_get_attribute_uint64 (file_info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+	g_value_init (&value, G_TYPE_ULONG);
+	g_value_set_ulong (&value, (gulong)mtime);
+	rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_MTIME, &value);
+	g_value_unset (&value);
+}
+
+
+static RhythmDBEntry *
 rhythmdb_add_import_error_entry (RhythmDB *db,
 				 RhythmDBEvent *event,
 				 RhythmDBEntryType *error_entry_type)
@@ -2248,7 +2312,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 
 	if (error_entry_type == NULL) {
 		/* we don't have an error entry type, so we can't add an import error */
-		return;
+		return NULL;
 	}
 	rb_debug ("adding import error type %s for %s: %s",
 		  rhythmdb_entry_type_get_name (error_entry_type),
@@ -2262,7 +2326,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 		    entry_type != event->ignore_type) {
 			/* FIXME we've successfully read this file before.. so what should we do? */
 			rb_debug ("%s already exists in the library.. ignoring import error?", rb_refstring_get (event->real_uri));
-			return;
+			return NULL;
 		}
 
 		if (entry_type != error_entry_type) {
@@ -2279,13 +2343,8 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 			/* no need to update the ignored file entry */
 		}
 
-		if (entry && event->file_info) {
-			/* mtime */
-			guint64 new_mtime = g_file_info_get_attribute_uint64 (event->file_info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
-			g_value_init (&value, G_TYPE_ULONG);
-			g_value_set_ulong (&value, new_mtime);		/* hmm, cast */
-			rhythmdb_entry_set(db, entry, RHYTHMDB_PROP_MTIME, &value);
-			g_value_unset (&value);
+		if (entry) {
+			apply_mtime (db, entry, event->file_info);
 		}
 
 		rhythmdb_add_timeout_commit (db, FALSE);
@@ -2295,7 +2354,7 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 		/* create a new import error or ignore entry */
 		entry = rhythmdb_entry_new (db, error_entry_type, rb_refstring_get (event->real_uri));
 		if (entry == NULL)
-			return;
+			return NULL;
 
 		/* if we have missing plugin details, store them in the
 		 * comment field so we can collect them later, and set a
@@ -2364,15 +2423,68 @@ rhythmdb_add_import_error_entry (RhythmDB *db,
 
 		rhythmdb_add_timeout_commit (db, FALSE);
 	}
+
+	return entry;
+}
+
+static gboolean
+rhythmdb_process_metadata_cache (RhythmDB *db, RhythmDBEvent *event)
+{
+	RhythmDBEntry *entry;
+	RhythmDBEntryChange *fields;
+	gboolean monitor;
+	int i;
+
+	fields = (RhythmDBEntryChange *)event->cached_metadata.data;
+	for (i = 0; i < event->cached_metadata.len; i++) {
+		if (fields[i].prop == RHYTHMDB_PROP_MEDIA_TYPE) {
+			const char *media_type;
+			media_type = g_value_get_string (&fields[i].new);
+			/* if no media type is set, it's an ignore entry */
+			if (g_strcmp0 (media_type, "application/octet-stream") == 0) {
+				rhythmdb_add_import_error_entry (db, event, event->ignore_type);
+				return TRUE;
+			}
+			break;
+		}
+	}
+
+	entry = rhythmdb_entry_lookup_by_location_refstring (db, event->real_uri);
+	if (entry == NULL) {
+		entry = create_blank_entry (db, event);
+		if (entry == NULL) {
+			return TRUE;
+		}
+	}
+
+	apply_mtime (db, entry, event->file_info);
+
+	rhythmdb_entry_apply_cached_metadata (entry, &event->cached_metadata);
+
+	rhythmdb_entry_update_availability (entry, RHYTHMDB_ENTRY_AVAIL_CHECKED);
+
+	/* Remember the mount point of the volume the song is on */
+	rhythmdb_entry_set_mount_point (db, entry, rb_refstring_get (event->real_uri));
+
+	/* monitor the file for changes */
+	/* FIXME: watch for errors */
+	monitor = g_settings_get_boolean (db->priv->settings, "monitor-library");
+	if (monitor && event->entry_type == RHYTHMDB_ENTRY_TYPE_SONG)
+		rhythmdb_monitor_uri_path (db, rb_refstring_get (entry->location), NULL);
+
+	rhythmdb_commit_internal (db, FALSE, g_thread_self ());
+
+	return TRUE;
 }
 
 static gboolean
 rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 {
 	RhythmDBEntry *entry;
-	GValue value = {0,};
 	GTimeVal time;
 	gboolean monitor;
+
+	entry = NULL;
 
 	if (event->entry_type == NULL)
 		event->entry_type = RHYTHMDB_ENTRY_TYPE_SONG;
@@ -2380,8 +2492,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	if (event->metadata != NULL) {
 		/* always ignore anything with video in it */
 		if (rb_metadata_has_video (event->metadata)) {
-			rhythmdb_add_import_error_entry (db, event, event->ignore_type);
-			return TRUE;
+			entry = rhythmdb_add_import_error_entry (db, event, event->ignore_type);
 		}
 
 		/* if we identified the media type, we can ignore anything
@@ -2389,12 +2500,16 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 		 * as well as anything that doesn't contain audio.
 		 */
 		const char *media_type = rb_metadata_get_media_type (event->metadata);
-		if (media_type != NULL && media_type[0] != '\0') {
+		if (entry == NULL && media_type != NULL && media_type[0] != '\0') {
 			if (rhythmdb_ignore_media_type (media_type) ||
 			    rb_metadata_has_audio (event->metadata) == FALSE) {
-				rhythmdb_add_import_error_entry (db, event, event->ignore_type);
-				return TRUE;
+				entry = rhythmdb_add_import_error_entry (db, event, event->ignore_type);
 			}
+		}
+
+		if (entry != NULL) {
+			rhythmdb_entry_cache_metadata (entry);
+			return TRUE;
 		}
 	}
 
@@ -2412,7 +2527,8 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 				     RB_METADATA_ERROR_EMPTY_FILE,
 				     _("Empty file"));
 		} else if (file_size < REALLY_SMALL_FILE_SIZE) {
-			rhythmdb_add_import_error_entry (db, event, event->ignore_type);
+			entry = rhythmdb_add_import_error_entry (db, event, event->ignore_type);
+			rhythmdb_entry_cache_metadata (entry);
 			return TRUE;
 		}
 	}
@@ -2438,31 +2554,11 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 	}
 
 	if (entry == NULL) {
-
-		entry = rhythmdb_entry_new (db, event->entry_type, rb_refstring_get (event->real_uri));
+		entry = create_blank_entry (db, event);
 		if (entry == NULL) {
 			rb_debug ("entry already exists");
 			return TRUE;
 		}
-
-		/* initialize the last played date to 0=never */
-		g_value_init (&value, G_TYPE_ULONG);
-		g_value_set_ulong (&value, 0);
-		rhythmdb_entry_set (db, entry,
-				    RHYTHMDB_PROP_LAST_PLAYED, &value);
-		g_value_unset (&value);
-
-		/* initialize the rating */
-		g_value_init (&value, G_TYPE_DOUBLE);
-		g_value_set_double (&value, 0);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &value);
-		g_value_unset (&value);
-
-	        /* first seen */
-		g_value_init (&value, G_TYPE_ULONG);
-		g_value_set_ulong (&value, time.tv_sec);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &value);
-		g_value_unset (&value);
 	}
 
 	if ((event->entry_type != NULL) && (entry->type != event->entry_type)) {
@@ -2470,22 +2566,14 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 		return TRUE;
 	}
 
-	/* mtime */
-	if (event->file_info) {
-		guint64 mtime;
-
-		mtime = g_file_info_get_attribute_uint64 (event->file_info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
-
-		g_value_init (&value, G_TYPE_ULONG);
-		g_value_set_ulong (&value, (gulong)mtime);
-		rhythmdb_entry_set_internal (db, entry, TRUE, RHYTHMDB_PROP_MTIME, &value);
-		g_value_unset (&value);
-	}
+	apply_mtime (db, entry, event->file_info);
 
 	if (event->entry_type != event->ignore_type &&
 	    event->entry_type != event->error_type) {
 		set_props_from_metadata (db, entry, event->file_info, event->metadata);
 	}
+
+	rhythmdb_entry_cache_metadata (entry);
 
 	rhythmdb_entry_update_availability (entry, RHYTHMDB_ENTRY_AVAIL_CHECKED);
 
@@ -2532,6 +2620,7 @@ rhythmdb_process_one_event (RhythmDBEvent *event, RhythmDB *db)
 	if (rhythmdb_get_readonly (db) &&
 	    ((event->type == RHYTHMDB_EVENT_STAT)
 	     || (event->type == RHYTHMDB_EVENT_METADATA_LOAD)
+	     || (event->type == RHYTHMDB_EVENT_METADATA_CACHE)
 	     || (event->type == RHYTHMDB_EVENT_ENTRY_SET))) {
 		rb_debug ("Database is read-only, delaying event processing");
 		g_async_queue_push (db->priv->delayed_write_queue, event);
@@ -2546,6 +2635,10 @@ rhythmdb_process_one_event (RhythmDBEvent *event, RhythmDB *db)
 	case RHYTHMDB_EVENT_METADATA_LOAD:
 		rb_debug ("processing RHYTHMDB_EVENT_METADATA_LOAD");
 		free = rhythmdb_process_metadata_load (db, event);
+		break;
+	case RHYTHMDB_EVENT_METADATA_CACHE:
+		rb_debug ("processing RHTHMDB_EVENT_METADATA_CACHE");
+		free = rhythmdb_process_metadata_cache (db, event);
 		break;
 	case RHYTHMDB_EVENT_ENTRY_SET:
 		rb_debug ("processing RHYTHMDB_EVENT_ENTRY_SET");
@@ -2714,11 +2807,54 @@ rhythmdb_execute_load (RhythmDB *db,
 			g_object_unref (event->file_info);
 			event->file_info = NULL;
 		}
-	} else if (event->type == RHYTHMDB_EVENT_METADATA_LOAD) {
-		event->metadata = rb_metadata_new ();
-		rb_metadata_load (event->metadata,
-				  rb_refstring_get (event->real_uri),
-				  &event->error);
+	} else {
+		gboolean valid;
+
+		valid = FALSE;
+		if (rhythmdb_entry_type_fetch_metadata (event->entry_type, uri, &event->cached_metadata)) {
+			RhythmDBEntryChange *fields = (RhythmDBEntryChange *)event->cached_metadata.data;
+			guint64 new_filesize;
+			guint64 new_mtime;
+			int i;
+
+			valid = TRUE;
+			new_filesize = g_file_info_get_attribute_uint64 (event->file_info,
+									 G_FILE_ATTRIBUTE_STANDARD_SIZE);
+			new_mtime = g_file_info_get_attribute_uint64 (event->file_info,
+								     G_FILE_ATTRIBUTE_TIME_MODIFIED);
+			for (i = 0; i < event->cached_metadata.len; i++) {
+				switch (fields[i].prop) {
+				case RHYTHMDB_PROP_MTIME:
+					if (new_mtime != g_value_get_ulong (&fields[i].new)) {
+						rb_debug ("mtime mismatch, ignoring cached metadata");
+						valid = FALSE;
+					}
+					break;
+				case RHYTHMDB_PROP_FILE_SIZE:
+					if (new_filesize != g_value_get_uint64 (&fields[i].new)) {
+						rb_debug ("size mismatch, ignoring cached metadata");
+						valid = FALSE;
+					}
+					break;
+				default:
+					break;
+				}
+			}
+
+			if (valid) {
+				event->type = RHYTHMDB_EVENT_METADATA_CACHE;
+				rb_debug ("got valid cached metadata");
+			} else {
+				free_cached_metadata(&event->cached_metadata);
+			}
+		}
+
+		if (valid == FALSE) {
+			event->metadata = rb_metadata_new ();
+			rb_metadata_load (event->metadata,
+					  rb_refstring_get (event->real_uri),
+					  &event->error);
+		}
 	}
 
 	rhythmdb_push_event (db, event);

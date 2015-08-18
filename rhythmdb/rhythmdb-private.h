@@ -201,6 +201,7 @@ typedef struct
 	enum {
 		RHYTHMDB_EVENT_STAT,
 		RHYTHMDB_EVENT_METADATA_LOAD,
+		RHYTHMDB_EVENT_METADATA_CACHE,
 		RHYTHMDB_EVENT_DB_LOAD,
 		RHYTHMDB_EVENT_THREAD_EXITED,
 		RHYTHMDB_EVENT_DB_SAVED,
@@ -219,6 +220,7 @@ typedef struct
 	/* STAT */
 	GFileInfo *file_info;
 	/* LOAD */
+	GArray cached_metadata;
 	RBMetaData *metadata;
 	/* QUERY_COMPLETE */
 	RhythmDBQueryResults *results;
