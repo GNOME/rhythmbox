@@ -25,7 +25,8 @@ rhythmdbinclude_HEADERS =				\
 	rhythmdb-query-results.h			\
 	rhythmdb-import-job.h				\
 	rhythmdb-entry.h				\
-	rhythmdb-entry-type.h
+	rhythmdb-entry-type.h				\
+	rhythmdb-metadata-cache.h
 
 librhythmdb_la_SOURCES =				\
 	$(rhythmdbinclude_HEADERS)			\
@@ -41,7 +42,8 @@ librhythmdb_la_SOURCES =				\
 	rhythmdb-import-job.c				\
 	rhythmdb-entry-type.c				\
 	rhythmdb-song-entry-types.c			\
-	rhythmdb-dbus.c
+	rhythmdb-dbus.c					\
+	rhythmdb-metadata-cache.c
 
 
 if USE_TREEDB
