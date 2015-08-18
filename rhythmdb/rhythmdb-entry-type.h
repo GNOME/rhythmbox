@@ -30,6 +30,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <gio/gio.h>
 
 #include <rhythmdb/rhythmdb-entry.h>
 
@@ -92,6 +93,10 @@ struct _RhythmDBEntryTypeClass {
 
 	gboolean	(*can_sync_metadata) (RhythmDBEntryType *etype, RhythmDBEntry *entry);
 	void		(*sync_metadata) (RhythmDBEntryType *etype, RhythmDBEntry *entry, GSList *changes, GError **error);
+
+	char *		(*uri_to_cache_key) (RhythmDBEntryType *etype, const char *uri);
+	char *		(*cache_key_to_uri) (RhythmDBEntryType *etype, const char *key);
+
 };
 
 GType		rhythmdb_entry_type_get_type (void);
@@ -104,6 +109,12 @@ void 		rhythmdb_entry_created (RhythmDBEntry *entry);
 void 		rhythmdb_entry_pre_destroy (RhythmDBEntry *entry);
 gboolean 	rhythmdb_entry_can_sync_metadata (RhythmDBEntry *entry);
 void 		rhythmdb_entry_sync_metadata (RhythmDBEntry *entry, GSList *changes, GError **error);
+
+gboolean	rhythmdb_entry_type_fetch_metadata (RhythmDBEntryType *etype, const char *uri, GArray *metadata);
+void		rhythmdb_entry_cache_metadata (RhythmDBEntry *entry);
+void		rhythmdb_entry_apply_cached_metadata (RhythmDBEntry *entry, GArray *metadata);
+
+void		rhythmdb_entry_type_purge_metadata_cache (RhythmDBEntryType *etype, const char *prefix, guint64 max_age);
 
 /* predefined entry types -- these mostly need to die */
 

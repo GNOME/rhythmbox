@@ -28,8 +28,16 @@
 
 #include "config.h"
 
+#include <string.h>
+
+#include <glib/gi18n.h>
+
 #include "rhythmdb-entry-type.h"
+#include "rhythmdb-metadata-cache.h"
 #include "rhythmdb-private.h"
+
+#include "rb-util.h"
+
 
 enum
 {
@@ -38,7 +46,8 @@ enum
 	PROP_NAME,
 	PROP_SAVE_TO_DISK,
 	PROP_TYPE_DATA_SIZE,
-	PROP_CATEGORY
+	PROP_CATEGORY,
+	PROP_CACHE_NAME
 };
 
 static void rhythmdb_entry_type_class_init (RhythmDBEntryTypeClass *klass);
@@ -52,7 +61,12 @@ struct _RhythmDBEntryTypePrivate
 	gboolean save_to_disk;
 	guint entry_type_data_size;
 	RhythmDBEntryCategory category;
+
+	char *cache_name;
+
+	RhythmDBMetadataCache *cache;
 };
+
 
 G_DEFINE_TYPE (RhythmDBEntryType, rhythmdb_entry_type, G_TYPE_OBJECT)
 
@@ -204,6 +218,138 @@ rhythmdb_entry_sync_metadata (RhythmDBEntry *entry, GSList *changes, GError **er
 	}
 }
 
+/**
+ * rhythmdb_entry_type_fetch_metadata:
+ * @etype: a #RhythmDBEntryType
+ * @uri: uri of the item to fetch
+ * @metadata: returns fetched metadata
+ *
+ * Fetches metadata for a URI (not an entry yet, at this point) from a cache, if possible.
+ *
+ * The @metadata array contains RhythmDBEntryChange items with just the 'new' value set.
+ *
+ * Return value: %TRUE if metadata is returned
+ */
+gboolean
+rhythmdb_entry_type_fetch_metadata (RhythmDBEntryType *etype, const char *uri, GArray *metadata)
+{
+	char *key;
+	gboolean result;
+
+	RhythmDBEntryTypeClass *klass = RHYTHMDB_ENTRY_TYPE_GET_CLASS (etype);
+	if (klass->uri_to_cache_key == NULL) {
+		return FALSE;
+	}
+
+	key = klass->uri_to_cache_key (etype, uri);
+	if (key == NULL)
+		return FALSE;
+
+	result = rhythmdb_metadata_cache_load (etype->priv->cache, key, metadata);
+	g_free (key);
+	return result;
+}
+
+/**
+ * rhythmdb_entry_cache_metadata:
+ * @entry: a #RhythmDBEntry
+ *
+ * Stores metadata for @entry in the metadata cache (if any) for its entry type.
+ */
+void
+rhythmdb_entry_cache_metadata (RhythmDBEntry *entry)
+{
+	RhythmDBEntryType *etype = rhythmdb_entry_get_entry_type (entry);
+	char *key;
+
+	RhythmDBEntryTypeClass *klass = RHYTHMDB_ENTRY_TYPE_GET_CLASS (etype);
+	if (klass->uri_to_cache_key == NULL) {
+		return;
+	}
+
+	key = klass->uri_to_cache_key (etype, rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+	if (key == NULL)
+		return;
+
+	rhythmdb_metadata_cache_store (etype->priv->cache, key, entry);
+}
+
+static RhythmDBPropType default_unknown_properties[] = {
+	RHYTHMDB_PROP_GENRE,
+	RHYTHMDB_PROP_ARTIST,
+	RHYTHMDB_PROP_ALBUM,
+	RHYTHMDB_PROP_COMPOSER
+};
+
+/**
+ * rhythmdb_entry_apply_cached_metadata:
+ * @entry: a #RhythmDBEntry
+ * @metadata: cached metadata to apply
+ *
+ * Applies a set of metadata properties to @entry.  The metadata should be in the
+ * form returned by @rhythmdb_entry_type_fetch_metadata.
+ */
+void
+rhythmdb_entry_apply_cached_metadata (RhythmDBEntry *entry, GArray *metadata)
+{
+	RhythmDBEntryType *etype = rhythmdb_entry_get_entry_type (entry);
+	RhythmDBEntryChange *fields;
+	GValue unknown = {0,};
+	int i;
+
+	g_value_init (&unknown, G_TYPE_STRING);
+	g_value_set_string (&unknown, _("Unknown"));
+	for (i = 0; i < G_N_ELEMENTS(default_unknown_properties); i++) {
+		rhythmdb_entry_set_internal (etype->priv->db, entry, TRUE, default_unknown_properties[i], &unknown);
+	}
+	g_value_unset (&unknown);
+
+	fields = (RhythmDBEntryChange *)metadata->data;
+	for (i = 0; i < metadata->len; i++) {
+		rhythmdb_entry_set_internal (etype->priv->db, entry, TRUE, fields[i].prop, &fields[i].new);
+	}
+	rhythmdb_commit (etype->priv->db);
+}
+
+static gboolean
+metadata_key_valid_cb (const char *key, RhythmDBEntryType *etype)
+{
+	RhythmDBEntryTypeClass *klass = RHYTHMDB_ENTRY_TYPE_GET_CLASS (etype);
+	char *uri;
+	gboolean result = FALSE;	/* or maybe true? */
+
+	uri = klass->cache_key_to_uri (etype, key);
+	if (uri != NULL) {
+		RhythmDBEntry *entry;
+		entry = rhythmdb_entry_lookup_by_location (etype->priv->db, uri);
+		result = (entry != NULL);
+	}
+
+	g_free (uri);
+	return result;
+}
+
+/**
+ * rhythmdb_entry_type_purge_metadata_cache:
+ * @etype: a #RhythmDBEntryType
+ * @prefix: a cache key prefix to scan
+ * @max_age: maximum age of missing entries to keep
+ */
+void
+rhythmdb_entry_type_purge_metadata_cache (RhythmDBEntryType *etype, const char *prefix, guint64 max_age)
+{
+	RhythmDBEntryTypeClass *klass = RHYTHMDB_ENTRY_TYPE_GET_CLASS (etype);
+	g_assert (klass->cache_key_to_uri != NULL);
+	g_assert (etype->priv->cache != NULL);
+
+	rhythmdb_metadata_cache_purge (etype->priv->cache,
+				       prefix,
+				       max_age,
+				       (RhythmDBMetadataCacheValidFunc) metadata_key_valid_cb,
+				       etype,
+				       NULL);
+}
+
 static void
 rhythmdb_entry_type_init (RhythmDBEntryType *etype)
 {
@@ -233,6 +379,9 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 	case PROP_CATEGORY:
 		etype->priv->category = g_value_get_enum (value);
 		break;
+	case PROP_CACHE_NAME:
+		etype->priv->cache_name = g_value_dup_string (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -260,10 +409,41 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 	case PROP_CATEGORY:
 		g_value_set_enum (value, etype->priv->category);
 		break;
+	case PROP_CACHE_NAME:
+		g_value_set_string (value, etype->priv->cache_name);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
+}
+
+static void
+impl_constructed (GObject *object)
+{
+	RhythmDBEntryType *etype;
+	RhythmDBEntryTypeClass *klass;
+
+	RB_CHAIN_GOBJECT_METHOD (rhythmdb_entry_type_parent_class, constructed, object);
+
+	etype = RHYTHMDB_ENTRY_TYPE (object);
+	klass = RHYTHMDB_ENTRY_TYPE_GET_CLASS (etype);
+
+	if (etype->priv->cache_name) {
+		g_assert (klass->uri_to_cache_key != NULL);
+
+		etype->priv->cache = rhythmdb_metadata_cache_get (etype->priv->db, etype->priv->cache_name);
+	}
+}
+
+static void
+impl_dispose (GObject *object)
+{
+	RhythmDBEntryType *etype = RHYTHMDB_ENTRY_TYPE (object);
+
+	g_clear_object (&etype->priv->cache);
+
+	G_OBJECT_CLASS (rhythmdb_entry_type_parent_class)->dispose (object);
 }
 
 static void
@@ -272,6 +452,7 @@ impl_finalize (GObject *object)
 	RhythmDBEntryType *etype = RHYTHMDB_ENTRY_TYPE (object);
 
 	g_free (etype->priv->name);
+	g_free (etype->priv->cache_name);
 
 	G_OBJECT_CLASS (rhythmdb_entry_type_parent_class)->finalize (object);
 }
@@ -283,6 +464,8 @@ rhythmdb_entry_type_class_init (RhythmDBEntryTypeClass *klass)
 
 	object_class->set_property = impl_set_property;
 	object_class->get_property = impl_get_property;
+	object_class->constructed = impl_constructed;
+	object_class->dispose = impl_dispose;
 	object_class->finalize = impl_finalize;
 
 	/**
@@ -350,6 +533,19 @@ rhythmdb_entry_type_class_init (RhythmDBEntryTypeClass *klass)
 							    RHYTHMDB_TYPE_ENTRY_CATEGORY,
 							    RHYTHMDB_ENTRY_NORMAL,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RhythmDBEntryType:cache-name:
+	 *
+	 * Metadata cache name.  For entry types created by a plugin, should match the plugin name.
+	 * If this is set, the entry type must also implement the uri_to_cache_key method.
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_CACHE_NAME,
+					 g_param_spec_string ("cache-name",
+							      "cache name",
+							      "metadata cache name",
+							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (klass, sizeof (RhythmDBEntryTypePrivate));
 }
