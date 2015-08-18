@@ -65,3 +65,7 @@ endif
 if ENABLE_GRILO
 SUBDIRS += grilo
 endif
+
+if USE_GUDEV
+SUBDIRS += android
+endif

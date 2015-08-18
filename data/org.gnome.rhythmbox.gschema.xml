@@ -306,6 +306,11 @@
     <child name='source' schema='org.gnome.rhythmbox.source'/>
   </schema>
 
+  <schema id="org.gnome.rhythmbox.plugins.android" path="/org/gnome/rhythmbox/plugins/android/">
+    <child name='source' schema='org.gnome.rhythmbox.source'/>
+    <child name="encoding" schema="org.gnome.rhythmbox.encoding-settings"/>
+  </schema>
+
   <schema id="org.gnome.rhythmbox.plugins.generic-player" path="/org/gnome/rhythmbox/plugins/generic-player/">
     <child name='source' schema='org.gnome.rhythmbox.source'/>
     <child name="encoding" schema="org.gnome.rhythmbox.encoding-settings"/>

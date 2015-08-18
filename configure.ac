@@ -767,6 +767,7 @@ data/icons/src/Makefile
 sources/Makefile
 sources/sync/Makefile
 plugins/Makefile
+plugins/android/Makefile
 plugins/audiocd/Makefile
 plugins/audioscrobbler/Makefile
 plugins/brasero-disc-recorder/Makefile
