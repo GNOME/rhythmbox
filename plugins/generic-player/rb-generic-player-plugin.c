@@ -105,7 +105,10 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 	GMenu *toolbar;
 	GVolume *volume;
 	GSettings *settings;
+	GFile *root;
 	const char *name_prefix;
+	char *device_serial;
+	char *uri_prefix;
 	char *name;
 	char *path;
 
@@ -128,27 +131,40 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell, "db", &db, NULL);
 
+	g_object_get (device_info, "serial", &device_serial, NULL);
+
+	root = g_mount_get_root (mount);
+	uri_prefix = g_file_get_uri (root);
+	g_object_unref (root);
+
 	name = g_strdup_printf ("%s: %s", name_prefix, path);
-	entry_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+	entry_type = g_object_new (RB_TYPE_MEDIA_PLAYER_ENTRY_TYPE,
 				   "db", db,
 				   "name", name,
 				   "save-to-disk", FALSE,
 				   "category", RHYTHMDB_ENTRY_NORMAL,
+				   "cache-name", "generic-player",
+				   "key-prefix", device_serial,
+				   "uri-prefix", uri_prefix,
 				   NULL);
 	rhythmdb_register_entry_type (db, entry_type);
 	g_free (name);
 
 	name = g_strdup_printf ("%s (ignore): %s", name_prefix, path);
-	ignore_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
+	ignore_type = g_object_new (RB_TYPE_MEDIA_PLAYER_ENTRY_TYPE,
 				    "db", db,
 				    "name", name,
 				    "save-to-disk", FALSE,
 				    "category", RHYTHMDB_ENTRY_VIRTUAL,
+				    "cache-name", "generic-player",
+				    "key-prefix", device_serial,
+				    "uri-prefix", uri_prefix,
 				    NULL);
 	rhythmdb_register_entry_type (db, ignore_type);
 	g_free (name);
 
 	name = g_strdup_printf ("%s (errors): %s", name_prefix, path);
+	/* errors aren't cached, so this isn't a media player entry type */
 	error_type = g_object_new (RHYTHMDB_TYPE_ENTRY_TYPE,
 				   "db", db,
 				   "name", name,
@@ -158,6 +174,7 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 	rhythmdb_register_entry_type (db, error_type);
 	g_free (name);
 
+	g_free (uri_prefix);
 	g_object_unref (db);
 
 	builder = rb_builder_load_plugin_file (G_OBJECT (plugin), "generic-player-toolbar.ui", NULL);

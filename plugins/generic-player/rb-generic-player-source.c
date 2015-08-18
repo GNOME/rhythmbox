@@ -535,6 +535,8 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBGenericPlayerSource *so
 		g_object_get (source, "encoding-settings", &settings, NULL);
 		rb_transfer_target_transfer (RB_TRANSFER_TARGET (source), settings, NULL, FALSE);
 		g_object_unref (settings);
+
+		rb_media_player_source_purge_metadata_cache (RB_MEDIA_PLAYER_SOURCE (source));
 	}
 
 	g_object_unref (priv->import_job);
