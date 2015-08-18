@@ -402,7 +402,7 @@ purge_traverse_cb (struct tdb_context *tdb, TDB_DATA tdbkey, TDB_DATA tdbdata, R
 void
 rhythmdb_metadata_cache_purge (RhythmDBMetadataCache *cache,
 			       const char *prefix,
-			       guint64 max_age,
+			       gulong max_age,
 			       RhythmDBMetadataCacheValidFunc cb,
 			       gpointer cb_data,
 			       GDestroyNotify cb_data_destroy)
