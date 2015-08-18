@@ -49,6 +49,11 @@
 #include "rb-encoding-settings.h"
 
 typedef struct {
+	char *uri_prefix;
+	char *key_prefix;
+} RBMediaPlayerEntryTypePrivate;
+
+typedef struct {
 	RBSyncSettings *sync_settings;
 
 	/* properties dialog bits */
@@ -74,7 +79,13 @@ typedef struct {
 
 G_DEFINE_TYPE (RBMediaPlayerSource, rb_media_player_source, RB_TYPE_BROWSER_SOURCE);
 
+G_DEFINE_TYPE (RBMediaPlayerEntryType, rb_media_player_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+
 #define MEDIA_PLAYER_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_MEDIA_PLAYER_SOURCE, RBMediaPlayerSourcePrivate))
+#define MEDIA_PLAYER_ENTRY_TYPE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_MEDIA_PLAYER_ENTRY_TYPE, RBMediaPlayerEntryTypePrivate))
+
+static void rb_media_player_entry_type_class_init (RBMediaPlayerEntryTypeClass *klass);
+static void rb_media_player_entry_type_init (RBMediaPlayerEntryType *etype);
 
 static void rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass);
 static void rb_media_player_source_init (RBMediaPlayerSource *source);
@@ -104,8 +115,122 @@ enum
 	PROP_0,
 	PROP_DEVICE_SERIAL,
 	PROP_ENCODING_TARGET,
-	PROP_ENCODING_SETTINGS
+	PROP_ENCODING_SETTINGS,
+	PROP_URI_PREFIX,
+	PROP_KEY_PREFIX,
 };
+
+static char *
+impl_uri_to_cache_key (RhythmDBEntryType *etype, const char *uri)
+{
+	RBMediaPlayerEntryTypePrivate *priv = MEDIA_PLAYER_ENTRY_TYPE_GET_PRIVATE (etype);
+
+	if (g_str_has_prefix (uri, priv->uri_prefix) == FALSE) {
+		return NULL;
+	}
+
+	return g_strconcat (priv->key_prefix, ":", uri + strlen (priv->uri_prefix), NULL);
+}
+
+static char *
+impl_cache_key_to_uri (RhythmDBEntryType *etype, const char *key)
+{
+	RBMediaPlayerEntryTypePrivate *priv = MEDIA_PLAYER_ENTRY_TYPE_GET_PRIVATE (etype);
+
+	if (g_str_has_prefix (key, priv->key_prefix) == FALSE) {
+		return NULL;
+	}
+
+	return g_strconcat (priv->uri_prefix, key + strlen (priv->key_prefix) + 1, NULL);
+}
+
+static void
+impl_entry_type_set_property (GObject *object,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *pspec)
+{
+	RBMediaPlayerEntryTypePrivate *priv = MEDIA_PLAYER_ENTRY_TYPE_GET_PRIVATE (object);
+	switch (prop_id) {
+	case PROP_URI_PREFIX:
+		priv->uri_prefix = g_value_dup_string (value);
+		break;
+	case PROP_KEY_PREFIX:
+		priv->key_prefix = g_value_dup_string (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+impl_entry_type_get_property (GObject *object,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *pspec)
+{
+	RBMediaPlayerEntryTypePrivate *priv = MEDIA_PLAYER_ENTRY_TYPE_GET_PRIVATE (object);
+	switch (prop_id) {
+	case PROP_URI_PREFIX:
+		g_value_set_string (value, priv->uri_prefix);
+		break;
+	case PROP_KEY_PREFIX:
+		g_value_set_string (value, priv->key_prefix);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+impl_entry_type_finalize (GObject *object)
+{
+	RBMediaPlayerEntryTypePrivate *priv = MEDIA_PLAYER_ENTRY_TYPE_GET_PRIVATE (object);
+
+	g_free (priv->uri_prefix);
+	g_free (priv->key_prefix);
+
+	G_OBJECT_CLASS (rb_media_player_entry_type_parent_class)->finalize (object);
+}
+
+static void
+rb_media_player_entry_type_class_init (RBMediaPlayerEntryTypeClass *klass)
+{
+	RhythmDBEntryTypeClass *etype_class = RHYTHMDB_ENTRY_TYPE_CLASS (klass);
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->set_property = impl_entry_type_set_property;
+	object_class->get_property = impl_entry_type_get_property;
+	object_class->finalize = impl_entry_type_finalize;
+
+	/* sync_metadata? */
+	etype_class->uri_to_cache_key = impl_uri_to_cache_key;
+	etype_class->cache_key_to_uri = impl_cache_key_to_uri;
+
+	g_object_class_install_property (object_class,
+					 PROP_KEY_PREFIX,
+					 g_param_spec_string ("key-prefix",
+							      "key prefix",
+							      "metadata cache key prefix",
+							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_URI_PREFIX,
+					 g_param_spec_string ("uri-prefix",
+							      "uri prefix",
+							      "uri prefix for entries",
+							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_type_class_add_private (klass, sizeof (RBMediaPlayerEntryTypePrivate));
+}
+
+static void
+rb_media_player_entry_type_init (RBMediaPlayerEntryType *etype)
+{
+}
 
 static void
 rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass)
@@ -862,6 +987,27 @@ _rb_media_player_source_add_to_map (GHashTable *map, RhythmDBEntry *entry)
 	g_hash_table_insert (map,
 			     rb_sync_state_make_track_uuid (entry),
 			     rhythmdb_entry_ref (entry));
+}
+
+void
+rb_media_player_source_purge_metadata_cache (RBMediaPlayerSource *source)
+{
+	RhythmDBEntryType *entry_type;
+	GSettings *settings;
+	char *prefix;
+	gulong max_age;
+
+	settings = g_settings_new ("org.gnome.rhythmbox.rhythmdb");
+	max_age = g_settings_get_int (settings, "grace-period");
+	g_object_unref (settings);
+
+	if (max_age > 0 && max_age < 20000) {
+		g_object_get (source, "entry-type", &entry_type, NULL);
+		g_object_get (entry_type, "key-prefix", &prefix, NULL);
+		rhythmdb_entry_type_purge_metadata_cache (entry_type, prefix, max_age * 60 * 60 * 24);
+		g_object_unref (entry_type);
+		g_free (prefix);
+	}
 }
 
 static void

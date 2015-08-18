@@ -43,8 +43,18 @@ G_BEGIN_DECLS
 #define RB_IS_MEDIA_PLAYER_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_MEDIA_PLAYER_SOURCE))
 #define RB_MEDIA_PLAYER_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_MEDIA_PLAYER_SOURCE, RBMediaPlayerSourceClass))
 
+#define RB_TYPE_MEDIA_PLAYER_ENTRY_TYPE         (rb_media_player_entry_type_get_type ())
+#define RB_MEDIA_PLAYER_ENTRY_TYPE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_MEDIA_PLAYER_ENTRY_TYPE, RBMediaPlayerEntryType))
+#define RB_MEDIA_PLAYER_ENTRY_TYPE_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_MEDIA_PLAYER_ENTRY_TYPE, RBMediaPlayerEntryTypeClass))
+#define RB_IS_MEDIA_PLAYER_ENTRY_TYPE(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_MEDIA_PLAYER_ENTRY_TYPE))
+#define RB_IS_MEDIA_PLAYER_ENTRY_TYPE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_MEDIA_PLAYER_ENTRY_TYPE))
+#define RB_MEDIA_PLAYER_ENTRY_TYPE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_MEDIA_PLAYER_ENTRY_TYPE, RBMediaPlayerEntryTypeClass))
+
 typedef struct _RBMediaPlayerSource RBMediaPlayerSource;
 typedef struct _RBMediaPlayerSourceClass RBMediaPlayerSourceClass;
+
+typedef struct _RhythmDBEntryType RBMediaPlayerEntryType;
+typedef struct _RhythmDBEntryTypeClass RBMediaPlayerEntryTypeClass;
 
 typedef void (*RBMediaPlayerSourceDeleteCallback) (RBMediaPlayerSource *source, gpointer data);
 
@@ -71,6 +81,8 @@ struct _RBMediaPlayerSourceClass
 	void		(*show_properties)	(RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
 };
 
+GType	rb_media_player_entry_type_get_type (void);
+
 GType	rb_media_player_source_get_type	(void);
 
 void	rb_media_player_source_load		(RBMediaPlayerSource *source);
@@ -92,6 +104,8 @@ void	rb_media_player_source_show_properties (RBMediaPlayerSource *source);
 void	rb_media_player_source_sync (RBMediaPlayerSource *source);
 
 void	_rb_media_player_source_add_to_map 	(GHashTable *device_map, RhythmDBEntry *entry);
+
+void	rb_media_player_source_purge_metadata_cache (RBMediaPlayerSource *source);
 
 G_END_DECLS
 
