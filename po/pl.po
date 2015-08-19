@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-01 19:10+0200\n"
-"PO-Revision-Date: 2015-08-01 19:15+0200\n"
+"POT-Creation-Date: 2015-08-19 11:14+0200\n"
+"PO-Revision-Date: 2015-08-19 11:15+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -492,6 +492,7 @@ msgstr "Wykonawca/Wykonawca - Album/Wykonawca (Album) - 01 - Tytuł.ogg"
 
 #: ../data/ui/library-toolbar.ui.h:1 ../data/ui/playlist-toolbar.ui.h:1
 #: ../data/ui/podcast-toolbar.ui.h:1 ../data/ui/queue-toolbar.ui.h:1
+#: ../plugins/android/android-toolbar.ui.h:1
 #: ../plugins/audiocd/audiocd-toolbar.ui.h:1
 #: ../plugins/daap/daap-toolbar.ui.h:1
 #: ../plugins/fmradio/fmradio-toolbar.ui.h:1
@@ -503,7 +504,8 @@ msgid "Edit"
 msgstr "Edycja"
 
 #: ../data/ui/library-toolbar.ui.h:2 ../data/ui/playlist-toolbar.ui.h:2
-#: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/daap/daap-toolbar.ui.h:2
+#: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/android/android-toolbar.ui.h:2
+#: ../plugins/daap/daap-toolbar.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:2
 #: ../plugins/grilo/rb-grilo-source.c:346 ../plugins/ipod/ipod-toolbar.ui.h:2
 #: ../plugins/iradio/iradio-toolbar.ui.h:2
@@ -513,7 +515,8 @@ msgid "Browse"
 msgstr "Przeglądaj"
 
 #: ../data/ui/library-toolbar.ui.h:3 ../data/ui/playlist-toolbar.ui.h:3
-#: ../data/ui/podcast-toolbar.ui.h:3 ../plugins/daap/daap-toolbar.ui.h:3
+#: ../data/ui/podcast-toolbar.ui.h:3 ../plugins/android/android-toolbar.ui.h:3
+#: ../plugins/daap/daap-toolbar.ui.h:3
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:3
 #: ../plugins/ipod/ipod-toolbar.ui.h:3 ../plugins/iradio/iradio-toolbar.ui.h:3
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:3
@@ -563,6 +566,7 @@ msgid "Sync Preview"
 msgstr "Podgląd synchronizacji"
 
 #: ../data/ui/media-player-properties.ui.h:10
+#: ../plugins/android/android-toolbar.ui.h:5
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:6
 #: ../plugins/ipod/ipod-toolbar.ui.h:6 ../plugins/mtpdevice/mtp-toolbar.ui.h:6
 msgid "Sync"
@@ -709,7 +713,8 @@ msgstr "Zaktualizuj kanał podcastu"
 msgid "Delete Podcast Feed"
 msgstr "Usuń kanał podcastu"
 
-#: ../data/ui/podcast-popups.ui.h:5 ../plugins/fmradio/fmradio-popup.ui.h:2
+#: ../data/ui/podcast-popups.ui.h:5 ../plugins/android/android-toolbar.ui.h:4
+#: ../plugins/fmradio/fmradio-popup.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:4
 #: ../plugins/ipod/ipod-toolbar.ui.h:4 ../plugins/iradio/iradio-popup.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:4
@@ -725,7 +730,8 @@ msgid "Cancel Download"
 msgstr "Anuluj pobieranie"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1227 ../sources/rb-media-player-source.c:968
+#: ../podcast/rb-podcast-source.c:1227
+#: ../sources/rb-media-player-source.c:1114
 msgid "Delete"
 msgstr "Usuń"
 
@@ -941,7 +947,7 @@ msgstr "Usunięte pliki:"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3661 ../widgets/rb-entry-view.c:947
+#: ../rhythmdb/rhythmdb.c:3797 ../widgets/rb-entry-view.c:947
 #: ../widgets/rb-entry-view.c:1571 ../widgets/rb-entry-view.c:1584
 #: ../widgets/rb-song-info.c:1545
 msgid "Never"
@@ -987,6 +993,7 @@ msgstr "%d %b %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
+#: ../plugins/android/rb-android-source.c:646
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -995,7 +1002,7 @@ msgstr "%d %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
-#: ../plugins/generic-player/rb-generic-player-source.c:1086
+#: ../plugins/generic-player/rb-generic-player-source.c:1088
 #: ../plugins/ipod/rb-ipod-source.c:658
 #: ../plugins/iradio/rb-iradio-source.c:539
 #: ../plugins/iradio/rb-iradio-source.c:1060
@@ -1011,20 +1018,22 @@ msgstr "%d %b %Y"
 #: ../podcast/rb-podcast-properties-dialog.c:622
 #: ../podcast/rb-podcast-properties-dialog.c:717
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:202
-#: ../remote/dbus/rb-client.c:715 ../rhythmdb/rhythmdb.c:2049
-#: ../rhythmdb/rhythmdb.c:2055 ../rhythmdb/rhythmdb.c:2070
-#: ../rhythmdb/rhythmdb.c:2104 ../rhythmdb/rhythmdb.c:5425
-#: ../rhythmdb/rhythmdb.c:5431 ../rhythmdb/rhythmdb.c:5436
-#: ../rhythmdb/rhythmdb.c:5447 ../rhythmdb/rhythmdb.c:5451
-#: ../rhythmdb/rhythmdb-tree.c:1360 ../rhythmdb/rhythmdb-tree.c:1364
-#: ../rhythmdb/rhythmdb-tree.c:1368 ../rhythmdb/rhythmdb-tree.c:1372
-#: ../shell/rb-shell-player.c:870 ../shell/rb-shell-player.c:2717
-#: ../shell/rb-shell-player.c:2719 ../widgets/rb-entry-view.c:999
-#: ../widgets/rb-entry-view.c:1021 ../widgets/rb-entry-view.c:1512
-#: ../widgets/rb-entry-view.c:1524 ../widgets/rb-entry-view.c:1536
-#: ../widgets/rb-header.c:1282 ../widgets/rb-header.c:1308
-#: ../widgets/rb-song-info.c:949 ../widgets/rb-song-info.c:961
-#: ../widgets/rb-song-info.c:1233 ../widgets/rb-song-info.c:1572
+#: ../remote/dbus/rb-client.c:715 ../rhythmdb/rhythmdb.c:2066
+#: ../rhythmdb/rhythmdb.c:2072 ../rhythmdb/rhythmdb.c:2087
+#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5561
+#: ../rhythmdb/rhythmdb.c:5567 ../rhythmdb/rhythmdb.c:5572
+#: ../rhythmdb/rhythmdb.c:5583 ../rhythmdb/rhythmdb.c:5587
+#: ../rhythmdb/rhythmdb-entry-type.c:301
+#: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
+#: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
+#: ../rhythmdb/rhythmdb-tree.c:1372 ../shell/rb-shell-player.c:870
+#: ../shell/rb-shell-player.c:2717 ../shell/rb-shell-player.c:2719
+#: ../widgets/rb-entry-view.c:999 ../widgets/rb-entry-view.c:1021
+#: ../widgets/rb-entry-view.c:1512 ../widgets/rb-entry-view.c:1524
+#: ../widgets/rb-entry-view.c:1536 ../widgets/rb-header.c:1282
+#: ../widgets/rb-header.c:1308 ../widgets/rb-song-info.c:949
+#: ../widgets/rb-song-info.c:961 ../widgets/rb-song-info.c:1233
+#: ../widgets/rb-song-info.c:1572
 msgid "Unknown"
 msgstr "Nieznany"
 
@@ -1112,6 +1121,68 @@ msgstr ""
 #, c-format
 msgid "File corrupted during write"
 msgstr "Plik uszkodzony podczas zapisu"
+
+#: ../plugins/android/android.plugin.in.h:1
+msgid "Android devices"
+msgstr "Urządzenia z systemem Android"
+
+#: ../plugins/android/android.plugin.in.h:2
+msgid "Support for Android 4.0+ devices (via MTP)"
+msgstr "Obsługa urządzeń z systemem Android 4.0+ (przez protokół MTP)"
+
+#: ../plugins/android/android-info.ui.h:1
+#: ../plugins/generic-player/generic-player-info.ui.h:1
+#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:1
+msgid "Model:"
+msgstr "Model:"
+
+#: ../plugins/android/android-info.ui.h:2
+#: ../plugins/generic-player/generic-player-info.ui.h:2
+#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:2
+msgid "Serial number:"
+msgstr "Numer seryjny:"
+
+#: ../plugins/android/android-info.ui.h:3
+#: ../plugins/generic-player/generic-player-info.ui.h:3
+#: ../plugins/mtpdevice/mtp-info.ui.h:4
+msgid "Manufacturer:"
+msgstr "Producent:"
+
+#: ../plugins/android/android-info.ui.h:4
+#: ../plugins/generic-player/generic-player-info.ui.h:4
+#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:5
+msgid "Audio formats:"
+msgstr "Formaty dźwięku:"
+
+#: ../plugins/android/android-info.ui.h:5
+#: ../plugins/generic-player/generic-player-info.ui.h:5
+#: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:6
+msgid "System"
+msgstr "System"
+
+#: ../plugins/android/android-info.ui.h:6
+#: ../plugins/generic-player/generic-player-info.ui.h:6
+#: ../plugins/mtpdevice/mtp-info.ui.h:7
+msgid "Device _name:"
+msgstr "_Nazwa urządzenia:"
+
+#: ../plugins/android/android-info.ui.h:7
+#: ../plugins/generic-player/generic-player-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:8
+msgid "Tracks:"
+msgstr "Ścieżki:"
+
+#: ../plugins/android/android-info.ui.h:8
+#: ../plugins/generic-player/generic-player-info.ui.h:8
+#: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:10
+msgid "Playlists:"
+msgstr "Listy odtwarzania:"
+
+#: ../plugins/android/rb-android-source.c:347
+#: ../plugins/generic-player/rb-generic-player-source.c:566
+#, c-format
+msgid "Scanning %s"
+msgstr "Skanowanie %s"
 
 #: ../plugins/artsearch/artsearch.plugin.in.h:1
 msgid "Cover art search"
@@ -1891,46 +1962,6 @@ msgstr "Nowa stacja radia FM"
 msgid "Frequency of radio station"
 msgstr "Częstotliwość stacji radiowej"
 
-#: ../plugins/generic-player/generic-player-info.ui.h:1
-#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:1
-msgid "Model:"
-msgstr "Model:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:2
-#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:2
-msgid "Serial number:"
-msgstr "Numer seryjny:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:3
-#: ../plugins/mtpdevice/mtp-info.ui.h:4
-msgid "Manufacturer:"
-msgstr "Producent:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:4
-#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:5
-msgid "Audio formats:"
-msgstr "Formaty dźwięku:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:5
-#: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:6
-msgid "System"
-msgstr "System"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:6
-#: ../plugins/mtpdevice/mtp-info.ui.h:7
-msgid "Device _name:"
-msgstr "_Nazwa urządzenia:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:7
-#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:8
-msgid "Tracks:"
-msgstr "Ścieżki:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:8
-#: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:10
-msgid "Playlists:"
-msgstr "Listy odtwarzania:"
-
 #: ../plugins/generic-player/generic-player.plugin.in.h:1
 msgid "Portable Players"
 msgstr "Odtwarzacze przenośne"
@@ -1950,12 +1981,7 @@ msgstr "Nowa lista odtwarzania na %s"
 msgid "Add to New Playlist"
 msgstr "Dodaj do nowej listy odtwarzania"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:564
-#, c-format
-msgid "Scanning %s"
-msgstr "Skanowanie %s"
-
-#: ../plugins/generic-player/rb-generic-player-source.c:1375
+#: ../plugins/generic-player/rb-generic-player-source.c:1377
 #: ../plugins/ipod/rb-ipod-source.c:2080
 #: ../plugins/mtpdevice/rb-mtp-source.c:1623
 msgid "Advanced"
@@ -2160,7 +2186,7 @@ msgstr "Adres URL internetowej stacji radiowej:"
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
 #: ../podcast/rb-podcast-properties-dialog.c:507
-#: ../sources/rb-media-player-source.c:444 ../widgets/rb-song-info.c:1150
+#: ../sources/rb-media-player-source.c:569 ../widgets/rb-song-info.c:1150
 #, c-format
 msgid "%s Properties"
 msgstr "Właściwości %s"
@@ -3383,7 +3409,7 @@ msgstr "Nie można uzyskać dostępu do %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1802
+#: ../rhythmdb/rhythmdb.c:1819
 msgid "The Beatles"
 msgstr "Cult of Luna"
 
@@ -3391,7 +3417,7 @@ msgstr "Cult of Luna"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1808
+#: ../rhythmdb/rhythmdb.c:1825
 msgid "Help!"
 msgstr "Vertikal"
 
@@ -3399,34 +3425,34 @@ msgstr "Vertikal"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1814
+#: ../rhythmdb/rhythmdb.c:1831
 msgid "Ticket To Ride"
 msgstr "Disharmonia"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2314
+#: ../rhythmdb/rhythmdb.c:2373
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 "Do odtworzenia tego pliku wymagane są dodatkowe wtyczki biblioteki "
 "GStreamer: %s"
 
-#: ../rhythmdb/rhythmdb.c:2346
+#: ../rhythmdb/rhythmdb.c:2405
 msgid "invalid unicode in error message"
 msgstr "nieprawidłowy znak unikodu w komunikacie błędu"
 
-#: ../rhythmdb/rhythmdb.c:2413
+#: ../rhythmdb/rhythmdb.c:2528
 #, c-format
 msgid "Empty file"
 msgstr "Pusty plik"
 
-#: ../rhythmdb/rhythmdb.c:3088
+#: ../rhythmdb/rhythmdb.c:3224
 msgid "Could not load the music database:"
 msgstr "Nie można wczytać bazy danych muzyki:"
 
-#: ../rhythmdb/rhythmdb.c:4515
+#: ../rhythmdb/rhythmdb.c:4651
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3434,7 +3460,7 @@ msgstr[0] "%ld minuta"
 msgstr[1] "%ld minuty"
 msgstr[2] "%ld minut"
 
-#: ../rhythmdb/rhythmdb.c:4516
+#: ../rhythmdb/rhythmdb.c:4652
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3442,7 +3468,7 @@ msgstr[0] "%ld godzina"
 msgstr[1] "%ld godziny"
 msgstr[2] "%ld godzin"
 
-#: ../rhythmdb/rhythmdb.c:4517
+#: ../rhythmdb/rhythmdb.c:4653
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3451,7 +3477,7 @@ msgstr[1] "%ld dni"
 msgstr[2] "%ld dni"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4523
+#: ../rhythmdb/rhythmdb.c:4659
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s i %s"
@@ -3459,8 +3485,8 @@ msgstr "%s, %s i %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4529 ../rhythmdb/rhythmdb.c:4537
-#: ../rhythmdb/rhythmdb.c:4548
+#: ../rhythmdb/rhythmdb.c:4665 ../rhythmdb/rhythmdb.c:4673
+#: ../rhythmdb/rhythmdb.c:4684
 #, c-format
 msgid "%s and %s"
 msgstr "%s i %s"
@@ -4068,12 +4094,12 @@ msgstr "Kopiowanie ścieżek do kolekcji"
 msgid "Adding tracks to the library"
 msgstr "Dodawanie ścieżek do kolekcji"
 
-#: ../sources/rb-media-player-source.c:649
+#: ../sources/rb-media-player-source.c:774
 #, c-format
 msgid "Syncing tracks to %s"
 msgstr "Synchronizowanie ścieżek z %s"
 
-#: ../sources/rb-media-player-source.c:705
+#: ../sources/rb-media-player-source.c:830
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
@@ -4081,7 +4107,7 @@ msgstr ""
 "Nie wybrano żadnej muzyki, list odtwarzania lub podcastów do przesłania na "
 "to urządzenie."
 
-#: ../sources/rb-media-player-source.c:710
+#: ../sources/rb-media-player-source.c:835
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
@@ -4089,16 +4115,16 @@ msgstr ""
 "Nie ma wystarczającej ilości wolnego miejsca na urządzeniu, aby przesłać "
 "wybraną muzykę, listy odtwarzania i podcasty."
 
-#: ../sources/rb-media-player-source.c:762
+#: ../sources/rb-media-player-source.c:887
 #, c-format
 msgid "%s Sync Settings"
 msgstr "Ustawienia synchronizacji urządzenia %s"
 
-#: ../sources/rb-media-player-source.c:767
+#: ../sources/rb-media-player-source.c:892
 msgid "Sync with the device"
 msgstr "Synchronizowanie z urządzeniem"
 
-#: ../sources/rb-media-player-source.c:769
+#: ../sources/rb-media-player-source.c:894
 msgid "Don't sync"
 msgstr "Bez synchronizowania"
 
