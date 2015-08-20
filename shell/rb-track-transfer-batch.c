@@ -212,12 +212,17 @@ select_profile_for_entry (RBTrackTransferBatch *batch, RhythmDBEntry *entry, Gst
 		}
 
 		is_missing = (g_list_find (batch->priv->missing_plugin_profiles, profile) != NULL);
-		is_lossless = (rb_gst_media_type_is_lossless (profile_media_type));
 		if (g_str_has_prefix (source_media_type, "audio/x-raw") == FALSE) {
 			is_source = rb_gst_media_type_matches_profile (profile, source_media_type);
 		} else {
 			/* always transcode raw audio */
 			is_source = FALSE;
+		}
+
+		if (profile_media_type != NULL) {
+			is_lossless = (rb_gst_media_type_is_lossless (profile_media_type));
+		} else {
+			is_lossless = (rb_gst_media_type_is_lossless (source_media_type));
 		}
 
 		if (is_missing && allow_missing == FALSE && is_source == FALSE) {
