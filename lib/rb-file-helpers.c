@@ -1514,18 +1514,27 @@ rb_uri_get_filesystem_type (const char *uri, char **mount_point)
 	return fstype;
 }
 
+static void
+sanitize_msdos_path (char *path)
+{
+	g_strdelimit (path, "\"", '\'');
+	g_strdelimit (path, ":|<>*?\\", '_');
+}
+
 /**
  * rb_sanitize_path_for_msdos_filesystem:
- * @path: a path to sanitize (modified in place)
+ * @path: a path segment to sanitize (modified in place)
  *
  * Modifies @path such that it represents a legal path for MS DOS
- * filesystems.
+ * filesystems.  Note that it replaces forward slash characters,
+ * so it's only appropriate for use with individual path segments
+ * rather than entire paths.
  */
 void
 rb_sanitize_path_for_msdos_filesystem (char *path)
 {
-	g_strdelimit (path, "\"", '\'');
-	g_strdelimit (path, ":|<>*?\\", '_');
+	sanitize_msdos_path (path);
+	g_strdelimit (path, "/", '-');
 }
 
 /**
@@ -1596,7 +1605,7 @@ rb_sanitize_uri_for_filesystem (const char *uri, const char *filesystem)
 		}
 
 		rb_debug ("sanitizing path %s", fat_path);
-		rb_sanitize_path_for_msdos_filesystem (fat_path);
+		sanitize_msdos_path (fat_path);
 
 		/* create a new uri from this */
 		sane_uri = g_filename_to_uri (full_path, hostname, &error);

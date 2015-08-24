@@ -1186,13 +1186,6 @@ impl_track_add_error (RBTransferTarget *target,
 }
 
 static void
-sanitize_for_mtp (char *str)
-{
-	rb_sanitize_path_for_msdos_filesystem (str);
-	g_strdelimit (str, "/", '_');
-}
-
-static void
 prepare_encoder_sink_cb (RBEncoderFactory *factory,
 			 const char *stream_uri,
 			 GObject *sink,
@@ -1263,9 +1256,9 @@ prepare_encoder_sink_cb (RBEncoderFactory *factory,
 	folder_path[1] = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
 
 	/* ensure the filename is safe for FAT filesystems and doesn't contain slashes */
-	sanitize_for_mtp (track->filename);
-	sanitize_for_mtp (folder_path[0]);
-	sanitize_for_mtp (folder_path[1]);
+	rb_sanitize_path_for_msdos_filesystem (track->filename);
+	rb_sanitize_path_for_msdos_filesystem (folder_path[0]);
+	rb_sanitize_path_for_msdos_filesystem (folder_path[1]);
 
 	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE) > 0) {
 		g_date_set_julian (&d, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE));
