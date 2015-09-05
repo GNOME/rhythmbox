@@ -262,7 +262,7 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device_obj, RBMt
 	}
 
 	/* check that it's not an android device */
-	if (g_strcmp0 (g_udev_device_get_property (device, "ID_MODEL"), "Android") == 0) {
+	if (rb_removable_media_manager_device_is_android (rmm, device_obj)) {
 		rb_debug ("device %s is android based, android plugin should handle it",
 			  g_udev_device_get_name (device));
 		return NULL;

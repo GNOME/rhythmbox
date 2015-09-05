@@ -860,3 +860,64 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 	g_list_free (list);
 #endif
 }
+
+GObject *
+rb_removable_media_manager_get_gudev_device (RBRemovableMediaManager *manager, GVolume *volume)
+{
+#if defined(HAVE_GUDEV)
+	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (manager);
+	char *devpath;
+	GUdevDevice *udevice = NULL;
+
+	devpath = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
+	if (devpath != NULL)
+		udevice = g_udev_client_query_by_device_file (priv->gudev_client, devpath);
+
+	g_free (devpath);
+	return G_OBJECT (udevice);
+#else
+	return NULL;
+#endif
+}
+
+gboolean
+rb_removable_media_manager_device_is_android (RBRemovableMediaManager *manager, GObject *dev)
+{
+#if defined(HAVE_GUDEV)
+	gboolean match;
+	const char *model;
+	const char *vendor;
+	int i;
+
+	const char *androids[] = {
+		"Android",
+		"Nexus"
+	};
+	const char *android_vendors[] = {
+		"motorola",
+		"OnePlus"
+	};
+
+	match = FALSE;
+
+	model = g_udev_device_get_property (G_UDEV_DEVICE (dev), "ID_MODEL");
+	if (model != NULL) {
+		for (i = 0; i < G_N_ELEMENTS (androids); i++) {
+			if (strstr (model, androids[i]))
+				match = TRUE;
+		}
+	}
+
+	vendor = g_udev_device_get_property (G_UDEV_DEVICE (dev), "ID_VENDOR");
+	if (vendor != NULL) {
+		for (i = 0; i < G_N_ELEMENTS (android_vendors); i++) {
+			if (strstr (vendor, android_vendors[i]))
+				match = TRUE;
+		}
+	}
+
+	return match;
+#else
+	return FALSE;
+#endif
+}

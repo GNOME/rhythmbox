@@ -91,34 +91,6 @@ source_deleted_cb (RBAndroidSource *source, RBAndroidPlugin *plugin)
 	plugin->sources = g_list_remove (plugin->sources, source);
 }
 
-static GUdevDevice *
-get_gudev_device (GMount *mount)
-{
-	GVolume *volume;
-	GUdevClient *client;
-	GUdevDevice *udevice = NULL;
-	char *devpath;
-	char *subsystems[] = { "usb", NULL };
-
-	volume = g_mount_get_volume (mount);
-	if (volume == NULL) {
-		return FALSE;
-	}
-	devpath = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
-	g_clear_object (&volume);
-
-	if (devpath == NULL) {
-		return FALSE;
-	}
-
-	client = g_udev_client_new ((const char * const *)subsystems);
-	if (client != NULL)
-		udevice = g_udev_client_query_by_device_file (client, devpath);
-
-	g_clear_object (&client);
-	return udevice;
-}
-
 static RBSource *
 create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *device_info, RBAndroidPlugin *plugin)
 {
@@ -128,31 +100,37 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 	RhythmDBEntryType *entry_type;
 	RhythmDBEntryType *error_type;
 	RhythmDBEntryType *ignore_type;
+	GObject *dev;
 	GUdevDevice *gudev_device;
 	GtkBuilder *builder;
 	GMenu *toolbar;
 	GVolume *volume;
 	GSettings *settings;
 	GFile *root;
-	const char *model;
 	const char *device_serial;
 	char *uri_prefix;
 	char *name;
 	char *path;
 
-	gudev_device = get_gudev_device (mount);
-	if (gudev_device == NULL)
+	volume = g_mount_get_volume (mount);
+	if (volume == NULL)
 		return NULL;
 
-	model = g_udev_device_get_property (gudev_device, "ID_MODEL");
-	if (g_strcmp0 (model, "Android") != 0) {
+	dev = rb_removable_media_manager_get_gudev_device (rmm, volume);
+	if (dev == NULL) {
+		g_object_unref (volume);
+		return NULL;
+	}
+	gudev_device = G_UDEV_DEVICE (dev);
+
+	if (rb_removable_media_manager_device_is_android (rmm, G_OBJECT (gudev_device)) == FALSE) {
 		g_object_unref (gudev_device);
+		g_object_unref (volume);
 		return NULL;
 	}
 
 	device_info = mpid_device_new_from_mpi_file (rb_find_plugin_data_file (G_OBJECT (plugin), "android.mpi"));
 
-	volume = g_mount_get_volume (mount);
 	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 
 	g_object_get (plugin, "object", &shell, NULL);
@@ -238,6 +216,7 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 				 plugin, 0);
 
 	g_object_unref (shell);
+	g_object_unref (volume);
 	return source;
 }
 
