@@ -121,18 +121,6 @@ impl_activate (PeasActivatable *bplugin)
 
 	plugin = RB_AUDIOSCROBBLER_PLUGIN (bplugin);
 
-	g_signal_connect_object (plugin->lastfm_settings,
-				 "changed",
-				 G_CALLBACK (lastfm_settings_changed_cb),
-				 plugin, 0);
-	lastfm_settings_changed_cb (plugin->lastfm_settings, AUDIOSCROBBLER_SERVICE_ENABLED_KEY, plugin);
-
-	g_signal_connect_object (plugin->librefm_settings,
-				 "changed",
-				 G_CALLBACK (librefm_settings_changed_cb),
-				 plugin, 0);
-	librefm_settings_changed_cb (plugin->librefm_settings, AUDIOSCROBBLER_SERVICE_ENABLED_KEY, plugin);
-
 	g_object_get (plugin, "plugin-info", &plugin_info, NULL);
 	theme = gtk_icon_theme_get_default ();
 
@@ -146,6 +134,18 @@ impl_activate (PeasActivatable *bplugin)
 	gtk_icon_theme_append_search_path (theme, icondir);
 	g_free (icondir);
 #endif
+
+	g_signal_connect_object (plugin->lastfm_settings,
+				 "changed",
+				 G_CALLBACK (lastfm_settings_changed_cb),
+				 plugin, 0);
+	lastfm_settings_changed_cb (plugin->lastfm_settings, AUDIOSCROBBLER_SERVICE_ENABLED_KEY, plugin);
+
+	g_signal_connect_object (plugin->librefm_settings,
+				 "changed",
+				 G_CALLBACK (librefm_settings_changed_cb),
+				 plugin, 0);
+	librefm_settings_changed_cb (plugin->librefm_settings, AUDIOSCROBBLER_SERVICE_ENABLED_KEY, plugin);
 }
 
 static void

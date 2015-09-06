@@ -243,17 +243,17 @@ rb_audioscrobbler_profile_page_new (RBShell *shell, GObject *plugin, RBAudioscro
 	RBDisplayPage *page;
 	RhythmDB *db;
 	char *name;
-	char *iconnames[] = {
-		NULL,
-		"network-server-symbolic",
-	};
+	gchar *icon_name;
 	GIcon *icon;
 
 	g_object_get (shell, "db", &db, NULL);
 	g_object_get (service, "name", &name, NULL);
 
-	iconnames[0] = g_strconcat (rb_audioscrobbler_service_get_name (service), "-symbolic", NULL);
-	icon = g_themed_icon_new_from_names (iconnames, 1);
+	icon_name = g_strconcat (rb_audioscrobbler_service_get_name (service), "-symbolic", NULL);
+	if (gtk_icon_theme_has_icon (gtk_icon_theme_get_default (), icon_name))
+		icon = g_themed_icon_new (icon_name);
+	else
+		icon = g_themed_icon_new ("network-server-symbolic");
 
 	page = RB_DISPLAY_PAGE (g_object_new (RB_TYPE_AUDIOSCROBBLER_PROFILE_PAGE,
 					      "shell", shell,
@@ -265,7 +265,7 @@ rb_audioscrobbler_profile_page_new (RBShell *shell, GObject *plugin, RBAudioscro
 
 	g_object_unref (db);
 	g_free (name);
-	g_free (iconnames[0]);
+	g_free (icon_name);
 	g_object_unref (icon);
 
 	return page;
