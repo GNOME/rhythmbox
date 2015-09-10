@@ -137,7 +137,7 @@ static const char* radio_names[] = {
 	N_("%s's Mix Radio"),
 	/* Translators: station is built from the tracks which have been "tagged" with %s.
 	 * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
-	 * but nationalities, record labels, decades and very random words are also commmon */
+	 * but nationalities, record labels, decades and very random words are also common */
 	N_("%s Tag Radio"),
 	/* Translators: station is built from the library of the group %s */
 	N_("%s Group Radio"),
