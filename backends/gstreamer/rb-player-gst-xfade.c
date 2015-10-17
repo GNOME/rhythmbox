@@ -2919,6 +2919,17 @@ start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 		GstState newstate;
 		GstState pending;
 
+		/*
+		 * when a second message is posted immediately after the first,
+		 * this loop finishes processing the first at roughly the time the
+		 * second is posted, so occasionally we'll hit this bug:
+		 * https://bugzilla.gnome.org/show_bug.cgi?id=750397
+		 * sleeping for 10us makes the read loop slow enough to avoid the
+		 * race with state-changed and async-done messages, but hopefully
+		 * not so much slower that we run into it in other conditions.
+		 */
+		g_usleep (10);
+
 		message = gst_bus_timed_pop (bus, GST_SECOND * 5);
 		if (message == NULL) {
 			rb_debug ("sink is taking too long to start..");
