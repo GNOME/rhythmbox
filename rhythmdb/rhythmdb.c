@@ -1434,7 +1434,7 @@ process_added_entries_cb (RhythmDBEntry *entry,
 					rhythmdb_add_to_stat_list (db,
 								   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION),
 								   entry,
-								   NULL,
+								   RHYTHMDB_ENTRY_TYPE_SONG,
 								   RHYTHMDB_ENTRY_TYPE_IGNORE,
 								   RHYTHMDB_ENTRY_TYPE_IMPORT_ERROR);
 				} else {
