@@ -146,6 +146,7 @@
 #include <gst/controller/gstdirectcontrolbinding.h>
 #include <gst/base/gstbasetransform.h>
 #include <gst/audio/streamvolume.h>
+#include <gst/audio/gstaudiodecoder.h>
 #include <gst/pbutils/pbutils.h>
 
 #include "rb-player.h"
@@ -2057,11 +2058,23 @@ add_stream_uri_tag (GstPad *pad, RBXFadeStream *stream)
 	target = gst_ghost_pad_get_target (GST_GHOST_PAD (t2));
 	probe_id = gst_pad_add_probe (target, GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM, drop_events, NULL, NULL);
 
-	/* get the decoder sink pad and push the tags through it */
+	/*
+	 * if the decoder is not a GstAudioDecoder, it may send the tag event
+	 * directly through its sink pad, which would cause deadlock.  since
+	 * there are few examples of decoders that do not use the
+	 * GstAudioDecoder base class, and the most notable one (modplug)
+	 * doesn't provide interesting tag events, not having stream uri tags
+	 * won't be a problem.
+	 */
+
 	e = GST_ELEMENT (gst_pad_get_parent (target));
-	sink = gst_element_get_static_pad (e, "sink");
-	gst_pad_send_event (sink, gst_event_new_tag (t));
-	gst_object_unref (sink);
+	if (GST_IS_AUDIO_DECODER (e)) {
+		sink = gst_element_get_static_pad (e, "sink");
+		gst_pad_send_event (sink, gst_event_new_tag (t));
+		gst_object_unref (sink);
+	} else {
+		rb_debug ("not setting stream uri tag for %s", GST_OBJECT_NAME (e));
+	}
 	gst_object_unref (e);
 
 	gst_pad_remove_probe (target, probe_id);
