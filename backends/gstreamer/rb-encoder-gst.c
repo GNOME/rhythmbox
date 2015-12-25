@@ -331,11 +331,21 @@ add_tags_from_entry (RBEncoderGst *encoder,
 
 	if (day > 0) {
 		GDate *date;
+		GstDateTime *datetime;
 
 		date = g_date_new_julian (day);
 		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
 				  GST_TAG_DATE, date,
 				  NULL);
+
+		datetime = gst_date_time_new_ymd (g_date_get_year (date),
+						  g_date_get_month (date),
+						  g_date_get_day (date));
+		gst_tag_list_add (tags, GST_TAG_MERGE_APPEND,
+				  GST_TAG_DATE_TIME, datetime,
+				  NULL);
+
+		gst_date_time_unref (datetime);
 		g_date_free (date);
 	}
 	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_MUSICBRAINZ_TRACKID, entry, RHYTHMDB_PROP_MUSICBRAINZ_TRACKID);
