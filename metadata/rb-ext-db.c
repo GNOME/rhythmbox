@@ -436,6 +436,10 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 
 	/**
 	 * RBExtDB::added:
+	 * @store: the #RBExtDB
+	 * @key: the #RBExtDBKey that was added
+	 * @filename: the filename for the item that was added
+	 * @data: the value that was stored
 	 *
 	 * Emitted when metadata is added to the store.  Metadata consumers
 	 * can use this to process metadata they did not specifically
@@ -452,6 +456,9 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 			      3, RB_TYPE_EXT_DB_KEY, G_TYPE_STRING, G_TYPE_VALUE);
 	/**
 	 * RBExtDB::request:
+	 * @store: the #RBExtDB
+	 * @key: the #RBExtDBKey that was requested
+	 * @last_time: the last time this item was requested
 	 *
 	 * Emitted when a metadata request cannot be satisfied from the local
 	 * store.  Metadata providers initiate searches in response to this
@@ -467,6 +474,8 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 			      2, RB_TYPE_EXT_DB_KEY, G_TYPE_ULONG);
 	/**
 	 * RBExtDB::store:
+	 * @store: the #RBExtDB instance
+	 * @data: the data being stored
 	 *
 	 * Emitted when a metadata item needs to be written to a local file.
 	 * This only needs to be used for metadata that needs to be encoded
@@ -485,6 +494,8 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 			      1, G_TYPE_VALUE);
 	/**
 	 * RBExtDB::load:
+	 * @store: the #RBExtDB instance
+	 * @data: the data being loaded
 	 *
 	 * Emitted when loading a metadata item from a local file or from a
 	 * URI.

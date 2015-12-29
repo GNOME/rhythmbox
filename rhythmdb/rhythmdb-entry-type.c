@@ -222,7 +222,7 @@ rhythmdb_entry_sync_metadata (RhythmDBEntry *entry, GSList *changes, GError **er
  * rhythmdb_entry_type_fetch_metadata:
  * @etype: a #RhythmDBEntryType
  * @uri: uri of the item to fetch
- * @metadata: returns fetched metadata
+ * @metadata: (element-type RhythmDBEntryChange): returns fetched metadata
  *
  * Fetches metadata for a URI (not an entry yet, at this point) from a cache, if possible.
  *
@@ -284,7 +284,7 @@ static RhythmDBPropType default_unknown_properties[] = {
 /**
  * rhythmdb_entry_apply_cached_metadata:
  * @entry: a #RhythmDBEntry
- * @metadata: cached metadata to apply
+ * @metadata: (element-type RhythmDBEntryChange): cached metadata to apply
  *
  * Applies a set of metadata properties to @entry.  The metadata should be in the
  * form returned by @rhythmdb_entry_type_fetch_metadata.

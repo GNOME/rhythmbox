@@ -91,12 +91,12 @@ guint64 rb_media_player_source_get_capacity	(RBMediaPlayerSource *source);
 guint64 rb_media_player_source_get_free_space	(RBMediaPlayerSource *source);
 void	rb_media_player_source_get_entries	(RBMediaPlayerSource *source,
 						 const char *category,	/* defined in rb-sync-settings.h */
-						 GHashTable *entries);
+						 GHashTable *map);
 
 void	rb_media_player_source_delete_entries	(RBMediaPlayerSource *source,
 						 GList *entries,
 						 RBMediaPlayerSourceDeleteCallback callback,
-						 gpointer user_data,
+						 gpointer data,
 						 GDestroyNotify destroy_data);
 
 void	rb_media_player_source_show_properties (RBMediaPlayerSource *source);

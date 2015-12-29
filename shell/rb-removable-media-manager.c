@@ -861,6 +861,15 @@ rb_removable_media_manager_scan (RBRemovableMediaManager *manager)
 #endif
 }
 
+/**
+ * rb_removable_media_manager_get_gudev_device:
+ * @manager: the #RBRemovableMediaManager
+ * @volume: the #GVolume
+ *
+ * Finds the #GUdevDevice for the volume.
+ *
+ * Return value: (transfer full): the #GUDevDevice instance, if any
+ */
 GObject *
 rb_removable_media_manager_get_gudev_device (RBRemovableMediaManager *manager, GVolume *volume)
 {
@@ -880,8 +889,17 @@ rb_removable_media_manager_get_gudev_device (RBRemovableMediaManager *manager, G
 #endif
 }
 
+/**
+ * rb_removable_media_manager_device_is_android:
+ * @manager: the #RBRemovableMediaManager
+ * @device: the #GUdevDevice to query
+ *
+ * Determines whether the specified device looks like an Android device.
+ *
+ * Return value: %TRUE if the device appears to be Android-based
+ */
 gboolean
-rb_removable_media_manager_device_is_android (RBRemovableMediaManager *manager, GObject *dev)
+rb_removable_media_manager_device_is_android (RBRemovableMediaManager *manager, GObject *device)
 {
 #if defined(HAVE_GUDEV)
 	gboolean match;
@@ -900,7 +918,7 @@ rb_removable_media_manager_device_is_android (RBRemovableMediaManager *manager, 
 
 	match = FALSE;
 
-	model = g_udev_device_get_property (G_UDEV_DEVICE (dev), "ID_MODEL");
+	model = g_udev_device_get_property (G_UDEV_DEVICE (device), "ID_MODEL");
 	if (model != NULL) {
 		for (i = 0; i < G_N_ELEMENTS (androids); i++) {
 			if (strstr (model, androids[i]))
@@ -908,7 +926,7 @@ rb_removable_media_manager_device_is_android (RBRemovableMediaManager *manager, 
 		}
 	}
 
-	vendor = g_udev_device_get_property (G_UDEV_DEVICE (dev), "ID_VENDOR");
+	vendor = g_udev_device_get_property (G_UDEV_DEVICE (device), "ID_VENDOR");
 	if (vendor != NULL) {
 		for (i = 0; i < G_N_ELEMENTS (android_vendors); i++) {
 			if (strstr (vendor, android_vendors[i]))

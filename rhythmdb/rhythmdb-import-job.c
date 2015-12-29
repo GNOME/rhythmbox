@@ -822,6 +822,7 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 	/**
 	 * RhythmDBImportJob::scan-complete:
 	 * @job: the #RhythmDBImportJob
+	 * @total: the number of items scanned.
 	 *
 	 * Emitted when the directory scan is complete.  Once
 	 * the scan is complete, the total number of files to
@@ -839,6 +840,7 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 	/**
 	 * RhythmDBImportJob::complete:
 	 * @job: the #RhythmDBImportJob
+	 * @total: the number of items imported.
 	 *
 	 * Emitted when the whole import job is complete.
 	 */

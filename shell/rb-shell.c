@@ -1367,6 +1367,7 @@ rb_shell_class_init (RBShellClass *klass)
 	/**
 	 * RBShell::notify-playing-entry:
 	 * @shell: the #RBShell
+	 * @requested: %TRUE if user requested
 	 *
 	 * Emitted when a notification should be displayed showing the current
 	 * playing entry.

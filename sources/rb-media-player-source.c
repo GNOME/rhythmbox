@@ -475,15 +475,15 @@ rb_media_player_source_get_free_space (RBMediaPlayerSource *source)
  * rb_media_player_source_get_entries:
  * @source: the #RBMediaPlayerSource
  * @category: the sync category name
- * @entries: (element-type utf8 RB.RhythmDBEntry): map to hold the entries
+ * @map: (element-type utf8 RB.RhythmDBEntry): map to hold the entries
  */
 void
 rb_media_player_source_get_entries (RBMediaPlayerSource *source,
 				    const char *category,
-				    GHashTable *entries)
+				    GHashTable *map)
 {
 	RBMediaPlayerSourceClass *klass = RB_MEDIA_PLAYER_SOURCE_GET_CLASS (source);
-	klass->get_entries (source, category, entries);
+	klass->get_entries (source, category, map);
 }
 
 /**
@@ -491,19 +491,19 @@ rb_media_player_source_get_entries (RBMediaPlayerSource *source,
  * @source: the #RBMediaPlayerSource
  * @entries: (element-type RB.RhythmDBEntry) (transfer full): list of entries to delete
  * @callback: callback to call on completion
- * @user_data: (closure) (scope notified): data for callback
+ * @data: (closure) (scope notified): data for callback
  * @destroy_data: callback to free the callback data
  */
 void
 rb_media_player_source_delete_entries	(RBMediaPlayerSource *source,
 					 GList *entries,
 					 RBMediaPlayerSourceDeleteCallback callback,
-					 gpointer user_data,
+					 gpointer data,
 					 GDestroyNotify destroy_data)
 {
 	RBMediaPlayerSourceClass *klass = RB_MEDIA_PLAYER_SOURCE_GET_CLASS (source);
 
-	klass->delete_entries (source, entries, callback, user_data, destroy_data);
+	klass->delete_entries (source, entries, callback, data, destroy_data);
 }
 
 static void
