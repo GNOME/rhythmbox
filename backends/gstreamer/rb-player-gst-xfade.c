@@ -190,6 +190,8 @@ static gboolean start_sink (RBPlayerGstXFade *player, GError **error);
 static gboolean stop_sink (RBPlayerGstXFade *player);
 static void maybe_stop_sink (RBPlayerGstXFade *player);
 
+static gboolean silencesrc_push (RBPlayerGstXFade *player);
+
 GType rb_xfade_stream_get_type (void);
 GType rb_xfade_stream_bin_get_type (void);
 
@@ -243,6 +245,7 @@ struct _RBPlayerGstXFadePrivate
 	/* probably don't need to store pointers to these either */
 	GstElement *pipeline;
 	GstElement *outputbin;
+	GstElement *silencesrc;
 	GstElement *silencebin;
 	GstElement *adder;
 	GstElement *capsfilter;
@@ -279,6 +282,9 @@ struct _RBPlayerGstXFadePrivate
 
 	guint bus_idle_id;
 	GList *idle_messages;
+
+	char silence_buffer[1024];
+	guint silence_idle_id;
 };
 
 
@@ -2859,7 +2865,7 @@ stream_volume_changed (GObject *element, GParamSpec *pspec, RBPlayerGstXFade *pl
  *
  * outputcaps = audio/x-raw,channels=2,rate=44100,format=S16LE
  * outputbin = outputcaps ! volume ! filterbin ! audioconvert ! audioresample ! tee ! queue ! audiosink
- * silencebin = audiotestsrc wave=silence ! outputcaps
+ * silencebin = appsrc ! outputcaps
  *
  * pipeline = silencebin ! adder ! outputbin
  *
@@ -2922,6 +2928,9 @@ start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 		g_propagate_error (error, generic_error);
 		return FALSE;
 	}
+
+	/* give the silence bin some data so it can preroll */
+	silencesrc_push (player);
 
 	/* now wait for everything to finish */
 	waiting = TRUE;
@@ -3185,12 +3194,50 @@ stop_sink (RBPlayerGstXFade *player)
 	return TRUE;
 }
 
+static void
+silencesrc_free_buffer(gpointer d)
+{
+}
+
+static gboolean
+silencesrc_push (RBPlayerGstXFade *player)
+{
+	GstBuffer *buffer;
+	GstFlowReturn ret;
+
+	buffer = gst_buffer_new_wrapped_full (GST_MEMORY_FLAG_READONLY,
+					      player->priv->silence_buffer,
+					      sizeof(player->priv->silence_buffer),
+					      0,
+					      sizeof(player->priv->silence_buffer),
+					      silencesrc_free_buffer,
+					      NULL);
+	g_signal_emit_by_name (player->priv->silencesrc, "push-buffer", buffer, &ret);
+	gst_buffer_unref (buffer);
+
+	return (ret == GST_FLOW_OK);
+}
+
+static void
+silencesrc_need_data_cb (GstElement *appsrc, guint size, RBPlayerGstXFade *player)
+{
+	if (player->priv->silence_idle_id == 0)
+		player->priv->silence_idle_id = g_idle_add ((GSourceFunc) silencesrc_push, player);
+}
+
+static void
+silencesrc_enough_data_cb (GstElement *appsrc, RBPlayerGstXFade *player)
+{
+	if (player->priv->silence_idle_id != 0) {
+		g_source_remove (player->priv->silence_idle_id);
+		player->priv->silence_idle_id = 0;
+	}
+}
 
 static gboolean
 create_sink (RBPlayerGstXFade *player, GError **error)
 {
 	const char *try_sinks[] = { "gsettingsaudiosink", "gconfaudiosink", "autoaudiosink" };
-	GstElement *audiotestsrc;
 	GstElement *audioconvert;
 	GstElement *audioresample;
 	GstElement *capsfilter;
@@ -3312,8 +3359,19 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 
 	/* create silence bin */
 	player->priv->silencebin = gst_bin_new ("silencebin");
-	audiotestsrc = gst_element_factory_make ("audiotestsrc", "silence");
-	g_object_set (audiotestsrc, "wave", 4, NULL);
+
+	/*
+	 * audiotestsrc is the sensible thing to use here, except that with the
+	 * silent waveform it produces buffers with the GAP flag set, which currently
+	 * cause pulsesink to screw up.
+	 *
+	 * to get around this, for now we produce silence using an appsrc instead.
+	 */
+	player->priv->silencesrc = gst_element_factory_make ("appsrc", "silencesrc");
+	g_object_set (player->priv->silencesrc, "caps", caps, "format", GST_FORMAT_TIME, NULL);
+
+	g_signal_connect (player->priv->silencesrc, "need-data", G_CALLBACK (silencesrc_need_data_cb), player);
+	g_signal_connect (player->priv->silencesrc, "enough-data", G_CALLBACK (silencesrc_enough_data_cb), player);
 
 	audioconvert = gst_element_factory_make ("audioconvert", "silenceconvert");
 
@@ -3321,7 +3379,7 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 	g_object_set (capsfilter, "caps", caps, NULL);
 	gst_caps_unref (caps);
 
-	if (audiotestsrc == NULL ||
+	if (player->priv->silencesrc == NULL ||
 	    audioconvert == NULL ||
 	    capsfilter == NULL) {
 		g_set_error (error,
@@ -3332,11 +3390,11 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 	}
 
 	gst_bin_add_many (GST_BIN (player->priv->silencebin),
-			  audiotestsrc,
+			  player->priv->silencesrc,
 			  audioconvert,
 			  capsfilter,
 			  NULL);
-	if (gst_element_link_many (audiotestsrc,
+	if (gst_element_link_many (player->priv->silencesrc,
 				   audioconvert,
 				   capsfilter,
 				   NULL) == FALSE) {
