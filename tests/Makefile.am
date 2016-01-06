@@ -41,7 +41,8 @@ test_audioscrobbler_SOURCES = \
 
 test_audioscrobbler_LDADD = \
 	$(LDADD) \
-	$(top_builddir)/plugins/audioscrobbler/libaudioscrobblertest.la
+	$(top_builddir)/plugins/audioscrobbler/libaudioscrobblertest.la \
+	$(RHYTHMBOX_LIBS)
 
 test_widgets_SOURCES = \
 	test-widgets.c						\
