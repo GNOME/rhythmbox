@@ -3221,17 +3221,7 @@ silencesrc_push (RBPlayerGstXFade *player)
 static void
 silencesrc_need_data_cb (GstElement *appsrc, guint size, RBPlayerGstXFade *player)
 {
-	if (player->priv->silence_idle_id == 0)
-		player->priv->silence_idle_id = g_idle_add ((GSourceFunc) silencesrc_push, player);
-}
-
-static void
-silencesrc_enough_data_cb (GstElement *appsrc, RBPlayerGstXFade *player)
-{
-	if (player->priv->silence_idle_id != 0) {
-		g_source_remove (player->priv->silence_idle_id);
-		player->priv->silence_idle_id = 0;
-	}
+	silencesrc_push (player);
 }
 
 static gboolean
@@ -3371,7 +3361,6 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 	g_object_set (player->priv->silencesrc, "caps", caps, "format", GST_FORMAT_TIME, NULL);
 
 	g_signal_connect (player->priv->silencesrc, "need-data", G_CALLBACK (silencesrc_need_data_cb), player);
-	g_signal_connect (player->priv->silencesrc, "enough-data", G_CALLBACK (silencesrc_enough_data_cb), player);
 
 	audioconvert = gst_element_factory_make ("audioconvert", "silenceconvert");
 
