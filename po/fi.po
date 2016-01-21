@@ -8,15 +8,15 @@
 # Timo Jyrinki <timo.jyrinki@iki.fi>, 2009.
 # Tommi Vainikainen <thv@iki.fi>, 2009.
 # Jussi Aalto <jta_l10n@dnainternet.net>, 2010.
-# Jiri Grönroos <jiri.gronroos+l10n@iki.fi>, 2010, 2012, 2013, 2014, 2015.
+# Jiri Grönroos <jiri.gronroos+l10n@iki.fi>, 2010, 2012, 2013, 2014, 2015, 2016.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-08-18 13:03+0000\n"
-"PO-Revision-Date: 2015-09-14 22:20+0300\n"
+"POT-Creation-Date: 2015-09-23 07:46+0000\n"
+"PO-Revision-Date: 2016-01-21 20:50+0200\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <gnome-fi-laatu@lists.sourceforge.net>\n"
 "Language: fi\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Gtranslator 2.91.6\n"
+"X-Generator: Gtranslator 2.91.7\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:514
 #, c-format
@@ -127,7 +127,7 @@ msgstr ""
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
-#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2395
+#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2383
 msgid "Rhythmbox"
 msgstr "Rytmilaatikko"
 
@@ -339,7 +339,7 @@ msgstr "_Asenna tämän muodon käyttämiseen tarvittavat lisäohjelmistot"
 
 #: ../data/ui/encoding-settings.ui.h:2
 msgid "Transcode lossless files into this format"
-msgstr ""
+msgstr "Muunna häviöttömät tiedostot tähän muotoon"
 
 #: ../data/ui/general-prefs.ui.h:1
 msgid "Browser Views"
@@ -534,7 +534,6 @@ msgid "Volume usage"
 msgstr "Tallennustilan käyttö"
 
 #: ../data/ui/media-player-properties.ui.h:6
-#| msgid "_Preferred format:"
 msgid "Preferred format"
 msgstr "Suosittu muoto"
 
@@ -851,7 +850,7 @@ msgstr "Albumin esittä_jä:"
 msgid "_Composer:"
 msgstr "_Säveltäjä:"
 
-#. To translators: the context is 'disc 1 of 2'
+#. To translators: the context is
 #: ../data/ui/song-info-multiple.ui.h:9 ../data/ui/song-info.ui.h:13
 msgid "of"
 msgstr "/"
@@ -935,8 +934,8 @@ msgstr "Poistetut tiedostot:"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3797 ../widgets/rb-entry-view.c:947
-#: ../widgets/rb-entry-view.c:1571 ../widgets/rb-entry-view.c:1584
+#: ../rhythmdb/rhythmdb.c:3797 ../widgets/rb-entry-view.c:943
+#: ../widgets/rb-entry-view.c:1567 ../widgets/rb-entry-view.c:1580
 #: ../widgets/rb-song-info.c:1545
 msgid "Never"
 msgstr "Ei koskaan"
@@ -998,7 +997,7 @@ msgstr "%d %Bta %Y"
 #: ../plugins/lyrics/lyrics.py:69 ../plugins/lyrics/lyrics.py:71
 #: ../plugins/mtpdevice/rb-mtp-source.c:650
 #: ../plugins/mtpdevice/rb-mtp-source.c:1143
-#: ../plugins/mtpdevice/rb-mtp-source.c:1529
+#: ../plugins/mtpdevice/rb-mtp-source.c:1522
 #: ../plugins/notification/rb-notification-plugin.c:510
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1892
@@ -1011,15 +1010,17 @@ msgstr "%d %Bta %Y"
 #: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5561
 #: ../rhythmdb/rhythmdb.c:5567 ../rhythmdb/rhythmdb.c:5572
 #: ../rhythmdb/rhythmdb.c:5583 ../rhythmdb/rhythmdb.c:5587
-#: ../rhythmdb/rhythmdb-tree.c:1360 ../rhythmdb/rhythmdb-tree.c:1364
-#: ../rhythmdb/rhythmdb-tree.c:1368 ../rhythmdb/rhythmdb-tree.c:1372
-#: ../shell/rb-shell-player.c:870 ../shell/rb-shell-player.c:2717
-#: ../shell/rb-shell-player.c:2719 ../widgets/rb-entry-view.c:999
-#: ../widgets/rb-entry-view.c:1021 ../widgets/rb-entry-view.c:1512
-#: ../widgets/rb-entry-view.c:1524 ../widgets/rb-entry-view.c:1536
-#: ../widgets/rb-header.c:1282 ../widgets/rb-header.c:1308
-#: ../widgets/rb-song-info.c:949 ../widgets/rb-song-info.c:961
-#: ../widgets/rb-song-info.c:1233 ../widgets/rb-song-info.c:1572
+#: ../rhythmdb/rhythmdb-entry-type.c:301
+#: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
+#: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
+#: ../rhythmdb/rhythmdb-tree.c:1372 ../shell/rb-shell-player.c:870
+#: ../shell/rb-shell-player.c:2717 ../shell/rb-shell-player.c:2719
+#: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
+#: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1282
+#: ../widgets/rb-header.c:1308 ../widgets/rb-song-info.c:949
+#: ../widgets/rb-song-info.c:961 ../widgets/rb-song-info.c:1233
+#: ../widgets/rb-song-info.c:1572
 msgid "Unknown"
 msgstr "Tuntematon"
 
@@ -1501,7 +1502,7 @@ msgstr "Käyttäjän kirjasto:"
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:67
 msgid "Neighbourhood of User:"
-msgstr ""
+msgstr "Käyttäjän naapurusto:"
 
 #. Translators: describes a radio stream playing tracks that a particular user has marked
 #. * as loved.  Followed by a text entry box for the user name.
@@ -1585,7 +1586,7 @@ msgstr ""
 
 #. Translators: station is built from the tracks which have been "tagged" with %s.
 #. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
-#. * but nationalities, record labels, decades and very random words are also commmon
+#. * but nationalities, record labels, decades and very random words are also common
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:141
 #, c-format
 msgid "%s Tag Radio"
@@ -1707,7 +1708,7 @@ msgstr "Ladataan esittäjän %s parhaita albumeita"
 
 #: ../plugins/context/ArtistTab.py:59
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:4
-#: ../sources/rb-library-source.c:125 ../widgets/rb-entry-view.c:1458
+#: ../sources/rb-library-source.c:125 ../widgets/rb-entry-view.c:1454
 #: ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Esittäjä"
@@ -1960,7 +1961,7 @@ msgstr "Lisää uuteen soittolistaan"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1377
 #: ../plugins/ipod/rb-ipod-source.c:2080
-#: ../plugins/mtpdevice/rb-mtp-source.c:1623
+#: ../plugins/mtpdevice/rb-mtp-source.c:1616
 msgid "Advanced"
 msgstr "Lisätiedot"
 
@@ -2124,7 +2125,7 @@ msgstr "Tuki Internetin yli levitetyille musiikkipalveluille"
 msgid "Remove"
 msgstr "Poista"
 
-#: ../plugins/iradio/rb-iradio-source.c:346 ../widgets/rb-entry-view.c:1488
+#: ../plugins/iradio/rb-iradio-source.c:346 ../widgets/rb-entry-view.c:1484
 #: ../widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Tyyli"
@@ -2164,7 +2165,7 @@ msgstr "%s ominaisuudet"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:491
 #: ../podcast/rb-podcast-properties-dialog.c:620
-#: ../widgets/rb-entry-view.c:1025 ../widgets/rb-song-info.c:1235
+#: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1235
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
@@ -2531,7 +2532,7 @@ msgstr ""
 "Magnatune-palvelimen vastaus:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1632
+#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1628
 msgid "Error"
 msgstr "Virhe"
 
@@ -2875,7 +2876,7 @@ msgid "Fullscreen"
 msgstr "Koko näyttö"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:89
-#: ../widgets/rb-entry-view.c:1532
+#: ../widgets/rb-entry-view.c:1528
 msgid "Quality"
 msgstr "Laatu"
 
@@ -2908,7 +2909,7 @@ msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Podcastien haku epäonnistui. Tarkista verkkoyhteytesi tila."
 
 #: ../podcast/rb-podcast-add-dialog.c:720 ../sources/rb-library-source.c:134
-#: ../widgets/rb-entry-view.c:1448
+#: ../widgets/rb-entry-view.c:1444
 msgid "Title"
 msgstr "Kappale"
 
@@ -3175,7 +3176,7 @@ msgstr "Pysäytä toisto, jos ollaan soittamassa"
 msgid "Toggle play/pause mode"
 msgstr "Vaihtele soiton/pysäytyksen tilaa"
 
-#: ../remote/dbus/rb-client.c:107 ../shell/rb-shell.c:2296
+#: ../remote/dbus/rb-client.c:107 ../shell/rb-shell.c:2288
 msgid "Stop playback"
 msgstr "Lopeta soitto"
 
@@ -3352,10 +3353,10 @@ msgid "Now playing: %s %s"
 msgstr "Nyt toistetaan: %s %s"
 
 #: ../remote/dbus/rb-client.c:895
-#, fuzzy, c-format
+#, c-format
 #| msgid "Unknown playlist: %s"
 msgid "Unknown playback state: %s"
-msgstr "Tuntematon soittolista: %s"
+msgstr "Tuntematon toiston tila: %s"
 
 #: ../remote/dbus/rb-client.c:905
 #, c-format
@@ -3466,7 +3467,7 @@ msgid "Scanning"
 msgstr "Selataan"
 
 #: ../rhythmdb/rhythmdb-import-job.c:668
-#: ../shell/rb-track-transfer-batch.c:852
+#: ../shell/rb-track-transfer-batch.c:857
 #, c-format
 msgid "%d of %d"
 msgstr "%d/%d"
@@ -3521,7 +3522,7 @@ msgstr "Liitännäisten määrittelyt"
 #: ../shell/rb-application.c:208
 msgid "translator-credits"
 msgstr ""
-"Jiri Grönroos, 2010-2015\n"
+"Jiri Grönroos, 2010-2016\n"
 "Ilkka Tuohela, 2002-2008\n"
 "Timo Jyrinki, 2008\n"
 "\n"
@@ -3707,45 +3708,45 @@ msgstr "Tuntematon soittolista: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "Soittolista %s on automaattinen soittolista"
 
-#: ../shell/rb-shell.c:2089
+#: ../shell/rb-shell.c:2081
 msgid "Error while saving song information"
 msgstr "Virhe tallennettaessa kappaleen tietoja"
 
-#: ../shell/rb-shell.c:2293
+#: ../shell/rb-shell.c:2285
 msgid "Pause playback"
 msgstr "Pysäytä toisto"
 
-#: ../shell/rb-shell.c:2304
+#: ../shell/rb-shell.c:2292
 msgid "Start playback"
 msgstr "Aloita soitto"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2415
+#: ../shell/rb-shell.c:2403
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pysäytetty)"
 
-#: ../shell/rb-shell.c:2819 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2807 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Yksikään rekisteröity lähde ei voi käsitellä URIa %s"
 
-#: ../shell/rb-shell.c:3148
+#: ../shell/rb-shell.c:3136
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Yksikään rekisteröity lähde ei vastaa URIa %s"
 
-#: ../shell/rb-shell.c:3181 ../shell/rb-shell.c:3224
+#: ../shell/rb-shell.c:3169 ../shell/rb-shell.c:3212
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Tuntematon kappaleen URI: %s"
 
-#: ../shell/rb-shell.c:3233
+#: ../shell/rb-shell.c:3221
 #, c-format
 msgid "Unknown property %s"
 msgstr "Tuntematon ominaisuus %s"
 
-#: ../shell/rb-shell.c:3247
+#: ../shell/rb-shell.c:3235
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Virheellinen ominaisuuden tyyppi %s ominaisuudelle %s"
@@ -4005,7 +4006,7 @@ msgstr "Esittäjä/Albumi"
 msgid "Artist - Album"
 msgstr "Esittäjä - Albumi"
 
-#: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1478
+#: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1474
 #: ../widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Albumi"
@@ -4212,68 +4213,68 @@ msgstr "Vaihteleva bittinopeus"
 msgid "Default settings"
 msgstr "Oletusasetukset"
 
-#: ../widgets/rb-entry-view.c:1019 ../widgets/rb-entry-view.c:1537
+#: ../widgets/rb-entry-view.c:1015 ../widgets/rb-entry-view.c:1533
 #: ../widgets/rb-song-info.c:1231
 msgid "Lossless"
 msgstr "Häviötön"
 
-#: ../widgets/rb-entry-view.c:1437
+#: ../widgets/rb-entry-view.c:1433
 msgid "Track"
 msgstr "Kappale"
 
-#: ../widgets/rb-entry-view.c:1468
+#: ../widgets/rb-entry-view.c:1464
 msgid "Composer"
 msgstr "Säveltäjä"
 
-#: ../widgets/rb-entry-view.c:1498
+#: ../widgets/rb-entry-view.c:1494
 msgid "Comment"
 msgstr "Kommentti"
 
-#: ../widgets/rb-entry-view.c:1508
+#: ../widgets/rb-entry-view.c:1504
 msgid "Time"
 msgstr "Aika"
 
-#: ../widgets/rb-entry-view.c:1520
+#: ../widgets/rb-entry-view.c:1516
 msgid "Year"
 msgstr "Vuosi"
 
-#: ../widgets/rb-entry-view.c:1535
+#: ../widgets/rb-entry-view.c:1531
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1546
+#: ../widgets/rb-entry-view.c:1542
 msgid "Rating"
 msgstr "Arvostelu"
 
-#: ../widgets/rb-entry-view.c:1568
+#: ../widgets/rb-entry-view.c:1564
 msgid "Play Count"
 msgstr "Soittokerrat"
 
-#: ../widgets/rb-entry-view.c:1580
+#: ../widgets/rb-entry-view.c:1576
 msgid "Last Played"
 msgstr "Soitettu viimeksi"
 
-#: ../widgets/rb-entry-view.c:1592
+#: ../widgets/rb-entry-view.c:1588
 msgid "Date Added"
 msgstr "Lisäyspäivä"
 
-#: ../widgets/rb-entry-view.c:1603
+#: ../widgets/rb-entry-view.c:1599
 msgid "Last Seen"
 msgstr "Viimeksi nähty"
 
-#: ../widgets/rb-entry-view.c:1614
+#: ../widgets/rb-entry-view.c:1610
 msgid "Location"
 msgstr "Sijainti"
 
-#: ../widgets/rb-entry-view.c:1623
+#: ../widgets/rb-entry-view.c:1619
 msgid "BPM"
 msgstr "BPM"
 
-#: ../widgets/rb-entry-view.c:1887
+#: ../widgets/rb-entry-view.c:1883
 msgid "Now Playing"
 msgstr "Soitetaan"
 
-#: ../widgets/rb-entry-view.c:1946
+#: ../widgets/rb-entry-view.c:1942
 msgid "Playback Error"
 msgstr "Virhe toistettaessa"
 
