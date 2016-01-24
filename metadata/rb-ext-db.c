@@ -997,9 +997,9 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 
 			seq = tdb_get_seqnum (store->priv->tdb_context);
 			if (seq > 0xffffff) {
-				subdir = g_strdup_printf ("%3.3x%s%3.3x", seq >> 24, G_DIR_SEPARATOR_S, (seq >> 12) & 0xfff);
+				subdir = g_strdup_printf ("d%3.3x%sd%3.3x", seq >> 24, G_DIR_SEPARATOR_S, (seq >> 12) & 0xfff);
 			} else if (seq > 0xfff) {
-				subdir = g_strdup_printf ("%3.3x", seq >> 12);
+				subdir = g_strdup_printf ("d%3.3x", seq >> 12);
 			} else {
 				subdir = g_strdup (".");
 			}
