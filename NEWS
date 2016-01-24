@@ -1,3 +1,52 @@
+Overview of changes in Rhythmbox 3.3
+====================================
+
+* New plugin supporting Android devices via gvfs-mtp
+* Encoding settings are now configurable per device type
+* Encoding settings can force lossless files to be transcoded
+
+Bugs fixed:
+
+733830 	While extracting music from CDs, information in the "Year" field is lost
+748857 	Typos in documentation
+749015 	audioscrobbler: Fix displaying icon for libre.fm
+751265 	JSON import errors
+751630 	Sync Preferences Missing
+751961 	iradio: remove Radio GFM
+752433 	[PATCH] data: Add various mod files as supported MIME types
+753359 	Don't handle RTL icons manually for GTK+ >= 3.12
+753767 	error: conflicting types for 'rhythmdb_metadata_cache_purge'
+755881 	crash when adding files found during startup scan
+756992 	hangs after handling mod/xm/it (modplug) file when crossfade is enabled
+757225	Freezing with crossfade backend and Pulseaudio with GStreamer 1.6.x
+760192 	commit 85c185d breaks compilation with -Wl,-as-needed
+761030 	Album-Art caching issue
+
+Translation updates:
+
+- cs, courtesy of Marek Černocký
+- de, courtesy of Mario Blättermann
+- de, courtesy of Wolfgang Stoeggl
+- es, courtesy of Daniel Mustieles
+- fi, courtesy of Jiri Grönroos
+- fr, courtesy of Claude Paroz
+- gl, courtesy of marcos
+- hu, courtesy of Balázs Úr
+- ko, courtesy of Seong-ho Cho
+- lt, courtesy of Aurimas Černius
+- nb, courtesy of Kjartan Maraas
+- oc, courtesy of Cédric Valmary (Tot en òc)
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Enrico Nicoletto
+- pt, courtesy of Pedro Albuquerque
+- ru, courtesy of Stas Solovey
+- sk, courtesy of Dušan Kazik
+- sr, courtesy of Мирослав Николић
+- sr@latin, courtesy of Miroslav Nikolić
+- sv, courtesy of Josef Andersson
+- vi, courtesy of Trần Ngọc Quân
+
+
 Overview of changes in Rhythmbox 3.2.1
 ======================================
 
