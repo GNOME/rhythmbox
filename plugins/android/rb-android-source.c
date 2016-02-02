@@ -154,6 +154,11 @@ update_free_space (RBAndroidSource *source)
 		return;
 	}
 
+	if (priv->storage == NULL) {
+		rb_debug ("no storage to query");
+		return;
+	}
+
 	priv->storage_free_space_next = 0;
 	priv->storage_capacity_next = 0;
 	priv->query_storage = priv->storage;
