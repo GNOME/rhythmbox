@@ -94,6 +94,9 @@ typedef struct
 	GList *query_storage;
 	guint64 storage_free_space_next;
 	guint64 storage_capacity_next;
+
+	GtkWidget *grid;
+	GtkWidget *info_bar;
 } RBAndroidSourcePrivate;
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (
@@ -170,10 +173,21 @@ static void
 music_dirs_done (RBAndroidSource *source)
 {
 	RBAndroidSourcePrivate *priv = GET_PRIVATE(source);
-	rb_debug ("finished checking for music dirs");
+
 	rhythmdb_import_job_start (priv->import_job);
 
-	update_free_space (source);
+	if (priv->storage == NULL) {
+		GtkWidget *label;
+
+		rb_debug ("no storage areas found");
+		label = gtk_label_new (_("No storage areas found on this device. You may need to unlock it and enable MTP."));
+		gtk_container_add (GTK_CONTAINER (gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->info_bar))), label);
+		gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->info_bar), GTK_MESSAGE_INFO);
+		gtk_widget_show_all (priv->info_bar);
+	} else {
+		rb_debug ("finished checking for music dirs");
+		update_free_space (source);
+	}
 }
 
 
@@ -730,6 +744,12 @@ impl_delete_thyself (RBDisplayPage *page)
 	RB_DISPLAY_PAGE_CLASS (rb_android_source_parent_class)->delete_thyself (page);
 }
 
+static void
+impl_pack_content (RBBrowserSource *source, GtkWidget *content)
+{
+	RBAndroidSourcePrivate *priv = GET_PRIVATE (source);
+	gtk_grid_attach (GTK_GRID (priv->grid), content, 0, 1, 1, 1);
+}
 
 static void
 rb_android_source_init (RBAndroidSource *source)
@@ -746,10 +766,18 @@ impl_constructed (GObject *object)
 	RBShell *shell;
 	char **output_formats;
 
-	RB_CHAIN_GOBJECT_METHOD (rb_android_source_parent_class, constructed, object);
 	source = RB_ANDROID_SOURCE (object);
-
 	priv = GET_PRIVATE (source);
+	priv->grid = gtk_grid_new ();
+
+	RB_CHAIN_GOBJECT_METHOD (rb_android_source_parent_class, constructed, object);
+
+	priv->info_bar = gtk_info_bar_new ();
+	gtk_grid_attach (GTK_GRID (priv->grid), priv->info_bar, 0, 0, 1, 1);
+
+	gtk_container_add (GTK_CONTAINER (source), priv->grid);
+	gtk_widget_show_all (priv->grid);
+	gtk_widget_hide (priv->info_bar);
 
 	rb_device_source_set_display_details (RB_DEVICE_SOURCE (source));
 
@@ -905,6 +933,7 @@ rb_android_source_class_init (RBAndroidSourceClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
+	RBBrowserSourceClass *browser_class = RB_BROWSER_SOURCE_CLASS (klass);
 	RBMediaPlayerSourceClass *mps_class = RB_MEDIA_PLAYER_SOURCE_CLASS (klass);
 
 	object_class->set_property = impl_set_property;
@@ -915,6 +944,8 @@ rb_android_source_class_init (RBAndroidSourceClass *klass)
 
 	page_class->delete_thyself = impl_delete_thyself;
 	page_class->selected = impl_selected;
+
+	browser_class->pack_content = impl_pack_content;
 
 	source_class->can_delete = impl_can_delete;
 	source_class->delete_selected = impl_delete_selected;
