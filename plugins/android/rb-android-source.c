@@ -124,7 +124,8 @@ free_space_cb (GObject *obj, GAsyncResult *res, gpointer data)
 	} else {
 		priv->storage_free_space_next += g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_FILESYSTEM_FREE);
 		priv->storage_capacity_next += g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_FILESYSTEM_SIZE);
-		rb_debug ("capacity: %lu, free space: %lu", priv->storage_capacity_next, priv->storage_free_space_next);
+		rb_debug ("capacity: %" G_GUINT64_FORMAT ", free space: %" G_GUINT64_FORMAT,
+		          priv->storage_capacity_next, priv->storage_free_space_next);
 	}
 
 	priv->query_storage = priv->query_storage->next;
