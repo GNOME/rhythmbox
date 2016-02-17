@@ -180,11 +180,15 @@ music_dirs_done (RBAndroidSource *source)
 	if (priv->storage == NULL) {
 		GtkWidget *label;
 
-		rb_debug ("no storage areas found");
-		label = gtk_label_new (_("No storage areas found on this device. You may need to unlock it and enable MTP."));
-		gtk_container_add (GTK_CONTAINER (gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->info_bar))), label);
-		gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->info_bar), GTK_MESSAGE_INFO);
-		gtk_widget_show_all (priv->info_bar);
+		if (priv->scanned == 0) {
+			rb_debug ("no storage areas found");
+			label = gtk_label_new (_("No storage areas found on this device. You may need to unlock it and enable MTP."));
+			gtk_container_add (GTK_CONTAINER (gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->info_bar))), label);
+			gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->info_bar), GTK_MESSAGE_INFO);
+			gtk_widget_show_all (priv->info_bar);
+		} else {
+			rb_debug ("no music dirs found");
+		}
 	} else {
 		rb_debug ("finished checking for music dirs");
 		update_free_space (source);
