@@ -56,6 +56,7 @@ static void rb_android_device_source_init (RBDeviceSourceInterface *interface);
 static void rb_android_transfer_target_init (RBTransferTargetInterface *interface);
 
 static void find_music_dirs (RBAndroidSource *source);
+static void rescan_music_dirs (RBAndroidSource *source);
 static void update_free_space_next (RBAndroidSource *source);
 
 enum
@@ -94,6 +95,7 @@ typedef struct
 	GList *query_storage;
 	guint64 storage_free_space_next;
 	guint64 storage_capacity_next;
+	guint rescan_id;
 
 	GtkWidget *grid;
 	GtkWidget *info_bar;
@@ -175,23 +177,32 @@ music_dirs_done (RBAndroidSource *source)
 {
 	RBAndroidSourcePrivate *priv = GET_PRIVATE(source);
 
-	rhythmdb_import_job_start (priv->import_job);
+	if (priv->scanned > 1) {
+		gtk_widget_hide (priv->info_bar);
+		rhythmdb_import_job_start (priv->import_job);
 
-	if (priv->storage == NULL) {
+		if (priv->rescan_id != 0) {
+			g_source_remove (priv->rescan_id);
+		}
+
+		if (priv->storage != NULL) {
+			rb_debug ("finished checking for music dirs");
+			update_free_space (source);
+		} else {
+			rb_debug ("no music dirs found (%d)", priv->scanned);
+		}
+	} else {
 		GtkWidget *label;
 
-		if (priv->scanned == 0) {
-			rb_debug ("no storage areas found");
+		rb_debug ("no storage areas found");
+		if (gtk_widget_get_visible (priv->info_bar) == FALSE) {
 			label = gtk_label_new (_("No storage areas found on this device. You may need to unlock it and enable MTP."));
 			gtk_container_add (GTK_CONTAINER (gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->info_bar))), label);
 			gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->info_bar), GTK_MESSAGE_INFO);
 			gtk_widget_show_all (priv->info_bar);
-		} else {
-			rb_debug ("no music dirs found");
 		}
-	} else {
-		rb_debug ("finished checking for music dirs");
-		update_free_space (source);
+		if (priv->rescan_id == 0)
+			priv->rescan_id = g_timeout_add_seconds (5, (GSourceFunc) rescan_music_dirs, source);
 	}
 }
 
@@ -302,6 +313,23 @@ find_music_dirs (RBAndroidSource *source)
 					 enum_child_cb,
 					 source);
 	g_object_unref (dir);
+}
+
+static void
+rescan_music_dirs (RBAndroidSource *source)
+{
+	RBAndroidSourcePrivate *priv = GET_PRIVATE (source);
+	GMount *mount;
+	GFile *root;
+
+	g_object_get (source, "mount", &mount, NULL);
+	root = g_mount_get_root (mount);
+	g_object_unref (mount);
+
+	priv->scanned = 0;
+	g_queue_push_tail (&priv->to_scan, root);
+
+	find_music_dirs (source);
 }
 
 static void
