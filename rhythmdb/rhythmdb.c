@@ -2528,7 +2528,9 @@ rhythmdb_process_metadata_load (RhythmDB *db, RhythmDBEvent *event)
 				     _("Empty file"));
 		} else if (file_size < REALLY_SMALL_FILE_SIZE) {
 			entry = rhythmdb_add_import_error_entry (db, event, event->ignore_type);
-			rhythmdb_entry_cache_metadata (entry);
+			if (entry != NULL) {
+				rhythmdb_entry_cache_metadata (entry);
+			}
 			return TRUE;
 		}
 	}
