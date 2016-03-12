@@ -573,27 +573,36 @@ AC_SUBST(SAMPLEPLUGINDIR)
 dnl ================================================================
 dnl Python plugins
 dnl ================================================================
-AM_PATH_PYTHON(3.2.3)
 
-
+AC_MSG_CHECKING([whether Python plugin support is requested])
 AC_ARG_ENABLE([python],
               AS_HELP_STRING([--enable-python[=@<:@no/auto/yes@:>@]],[Build with python support]),
               [enable_python=$enableval],
               [enable_python="auto"])
+AC_MSG_RESULT([$enable_python])
 
-if test "x$enable_python" = "xauto"; then
-	PKG_CHECK_EXISTS([pygobject-3.0 >= $PYGOBJECT_REQUIRED],
-	                 [enable_python=yes],[enable_python=no])
+if test "x$enable_python" != "xno"; then
+	AM_PATH_PYTHON([3.2.3], [have_python=yes], [have_python=no])
+
+	if test "x$have_python" = "xno" -a "x$enable_python" = "xyes"; then
+		AC_MSG_ERROR([Python support explicitly requested, but no suitable Python interpreter could be found])
+	fi
+
+	PKG_CHECK_MODULES(PYTHON, [pygobject-3.0 >= $PYGOBJECT_REQUIRED],
+			[have_pygobject=yes], [have_pygobject=no])
+
+	if test "x$have_pygobject" = "xno" -a "x$enable_python" = "xyes"; then
+		AC_MSG_ERROR([Python support explicitly requested, but pygobject-3.0 could not be found])
+	fi
+
+	if test "x$have_python" = "xyes" -a "x$have_pygobject" = "xyes"; then
+		pyoverridesdir=`$PYTHON -c "import gi; print(gi._overridesdir)"`
+		AC_SUBST(pyoverridesdir)
+		build_python=yes
+	fi
 fi
 
-if test "x$enable_python" = "xyes"; then
-	PKG_CHECK_MODULES(PYTHON, [pygobject-3.0 >= $PYGOBJECT_REQUIRED])
-
-	pyoverridesdir=`$PYTHON -c "import gi; print(gi._overridesdir)"`
-	AC_SUBST(pyoverridesdir)
-fi
-
-AM_CONDITIONAL(ENABLE_PYTHON, test x"$enable_python" = "xyes")
+AM_CONDITIONAL(ENABLE_PYTHON, test "x$build_python" = "xyes")
 
 dnl ================================================================
 dnl Vala plugins
@@ -868,7 +877,7 @@ elif test x"$enable_hal" = xyes; then
 else
 	AC_MSG_NOTICE([   GUdev support disabled])
 fi
-if test x"$enable_python" = xyes; then
+if test x"$build_python" = xyes; then
 	AC_MSG_NOTICE([** Python plugin support enabled])
 else
 	AC_MSG_NOTICE([   Python plugin support disabled])
