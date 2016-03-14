@@ -596,6 +596,8 @@ rb_header_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	GtkAllocation child_alloc;
 	gboolean rtl;
 
+	GTK_WIDGET_CLASS (rb_header_parent_class)->size_allocate (widget, allocation);
+
 	gtk_widget_set_allocation (widget, allocation);
 	spacing = gtk_grid_get_column_spacing (GTK_GRID (widget));
 	rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
