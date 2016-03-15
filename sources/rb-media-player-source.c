@@ -403,6 +403,12 @@ load_status_changed_cb (GObject *object, GParamSpec *pspec, gpointer whatever)
 }
 
 static void
+selected_changed_cb (GObject *object, GParamSpec *pspec, gpointer whatever)
+{
+	update_actions (RB_MEDIA_PLAYER_SOURCE (object));
+}
+
+static void
 rb_media_player_source_constructed (GObject *object)
 {
 	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (object);
@@ -423,6 +429,7 @@ rb_media_player_source_constructed (GObject *object)
 	priv->sync_action = g_action_map_lookup_action (G_ACTION_MAP (app), "media-player-sync");
 	priv->properties_action = g_action_map_lookup_action (G_ACTION_MAP (app), "media-player-properties");
 	g_signal_connect (object, "notify::load-status", G_CALLBACK (load_status_changed_cb), NULL);
+	g_signal_connect (object, "notify::selected", G_CALLBACK (selected_changed_cb), NULL);
 	update_actions (RB_MEDIA_PLAYER_SOURCE (object));
 }
 
