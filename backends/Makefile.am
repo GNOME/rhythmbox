@@ -8,8 +8,7 @@ backendinclude_HEADERS =					\
 	rb-encoder.h					\
 	rb-player.h					\
 	rb-player-gst-filter.h				\
-	rb-player-gst-tee.h				\
-	rb-player-gst-data-tee.h
+	rb-player-gst-tee.h
 
 librbbackends_la_SOURCES =				\
 	$(backend_HEADERS)				\
@@ -17,7 +16,6 @@ librbbackends_la_SOURCES =				\
 	rb-player.c					\
 	rb-player-gst-filter.c				\
 	rb-player-gst-tee.c				\
-	rb-player-gst-data-tee.c			\
 	$(NULL)
 
 librbbackends_la_LIBADD =				\
