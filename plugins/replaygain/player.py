@@ -61,7 +61,6 @@ class ReplayGainPlayer(object):
 
 		self.previous_gain = []
 		self.fallback_gain = 0.0
-		self.resetting_rgvolume = False
 
 		# we use different means to hook into the playback pipeline depending on
 		# the playback backend in use
@@ -123,45 +122,8 @@ class ReplayGainPlayer(object):
 
 	### playbin mode (rgvolume ! rglimiter as global filter)
 
-	def playbin_uri_notify_cb(self, playbin, pspec):
-		self.got_replaygain = False
-
-	def playbin_notify_cb(self, player, pspec):
-		playbin = player.props.playbin
-		playbin.connect("notify::uri", self.playbin_uri_notify_cb)
-
-
 	def playbin_target_gain_cb(self, rgvolume, pspec):
-		#if self.resetting_rgvolume is True:
-		#	return
-
-		if self.update_fallback_gain(rgvolume) == True:
-			self.got_replaygain = True
-		# do something clever probably
-
-	def rgvolume_blocked(self, pad, info, rgvolume):
-		print("bouncing rgvolume state to reset tags")
-		# somehow need to decide whether we've already got a gain value for the new track
-		#self.resetting_rgvolume = True
-		rgvolume.set_state(Gst.State.READY)
-		rgvolume.set_state(Gst.State.PLAYING)
-		#self.resetting_rgvolume = False
-		self.set_rgvolume(rgvolume)
-		return Gst.PadProbeReturn.REMOVE
-
-	def playing_entry_changed(self, player, entry):
-		if entry is None:
-			return
-		if self.first_entry:
-			self.first_entry = False
-			return
-
-		if self.got_replaygain is False:
-			print("blocking rgvolume to reset it")
-			pad = self.rgvolume.get_static_pad("sink")
-			pad.add_probe(Gst.PadProbeType.BLOCK_DOWNSTREAM, self.rgvolume_blocked, self.rgvolume)
-		else:
-			print("no need to reset rgvolume")
+		self.update_fallback_gain(rgvolume)
 
 	def setup_playbin_mode(self):
 		print("using output filter for rgvolume and rglimiter")
@@ -178,27 +140,11 @@ class ReplayGainPlayer(object):
 		self.rgfilter.add_pad(Gst.GhostPad.new("src", self.rglimiter.get_static_pad("src")))
 		self.rgvolume.link(self.rglimiter)
 
-		# on track changes, we need to reset the rgvolume state, otherwise it
-		# carries over the tags from the previous track
-		self.first_entry = True
-		self.pec_id = self.shell_player.connect('playing-song-changed', self.playing_entry_changed)
-
-		# watch playbin's uri property to see when a new track is opened
-		playbin = self.player.props.playbin
-		if playbin is None:
-			self.player.connect("notify::playbin", self.playbin_notify_cb)
-		else:
-			playbin.connect("notify::uri", self.playbin_uri_notify_cb)
-
 		self.player.add_filter(self.rgfilter)
 
 	def deactivate_playbin_mode(self):
 		self.player.remove_filter(self.rgfilter)
 		self.rgfilter = None
-
-		self.shell_player.disconnect(self.pec_id)
-		self.pec_id = None
-
 
 
 	### xfade mode (rgvolume as stream filter, rglimiter as global filter)
