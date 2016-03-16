@@ -1121,6 +1121,13 @@ impl_get_entry_view (RBSource *asource)
 	return source->priv->posts;
 }
 
+static GList *
+impl_get_property_views (RBSource *asource)
+{
+	RBPodcastSource *source = RB_PODCAST_SOURCE (asource);
+	return g_list_append (NULL, source->priv->feeds);
+}
+
 static RBSourceEOFType
 impl_handle_eos (RBSource *asource)
 {
@@ -1656,6 +1663,7 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 	source_class->can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->delete_selected = impl_delete_selected;
 	source_class->get_entry_view = impl_get_entry_view;
+	source_class->get_property_views = impl_get_property_views;
 	source_class->handle_eos = impl_handle_eos;
 	source_class->search = impl_search;
 	source_class->song_properties = impl_song_properties;
