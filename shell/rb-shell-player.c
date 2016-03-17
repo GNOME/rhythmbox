@@ -2972,11 +2972,14 @@ rb_shell_player_constructed (GObject *object)
 					 G_N_ELEMENTS (actions),
 					 player);
 
+	/* these only take effect if the focused widget doesn't handle the event */
+	rb_application_add_accelerator (app, "<Ctrl>Left", "app.play-previous", NULL);
+	rb_application_add_accelerator (app, "<Ctrl>Right", "app.play-next", NULL);
+	rb_application_add_accelerator (app, "<Ctrl>Up", "app.volume-up", NULL);
+	rb_application_add_accelerator (app, "<Ctrl>Down", "app.volume-down", NULL);
+
+	/* these take effect regardless of widget key handling */
 	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>p", "app.play", NULL);
-	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>Left", "app.play-previous", NULL);
-	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>Right", "app.play-next", NULL);
-	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>Up", "app.volume-up", NULL);
-	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>Down", "app.volume-down", NULL);
 	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>r", "app.play-repeat", g_variant_new_boolean (TRUE));
 	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>u", "app.play-shuffle", g_variant_new_boolean (TRUE));
 

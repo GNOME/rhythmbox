@@ -69,6 +69,9 @@ GMenuModel *	rb_application_get_plugin_menu (RBApplication *app, const char *men
 void		rb_application_add_plugin_menu_item (RBApplication *app, const char *menu, const char *id, GMenuItem *item);
 void		rb_application_remove_plugin_menu_item (RBApplication *app, const char *menu, const char *id);
 
+void		rb_application_add_accelerator (RBApplication *app, const char *accel, const char *action, GVariant *parameter);
+gboolean	rb_application_activate_key (RBApplication *app, GdkEventKey *event);
+
 G_END_DECLS
 
 #endif /* RB_APPLICATION_H */

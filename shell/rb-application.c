@@ -53,6 +53,14 @@
 static void rb_application_class_init (RBApplicationClass *klass);
 static void rb_application_init (RBApplication *app);
 
+typedef struct {
+	guint keyval;
+	GdkModifierType mods;
+	char *prefix;
+	char *action;
+	GVariant *parameter;
+} RBApplicationAccel;
+
 struct _RBApplicationPrivate
 {
 	RBShell *shell;
@@ -69,6 +77,8 @@ struct _RBApplicationPrivate
 	gboolean disable_plugins;
 	char *rhythmdb_file;
 	char *playlists_file;
+
+	GList *accelerators;
 };
 
 G_DEFINE_TYPE (RBApplication, rb_application, GTK_TYPE_APPLICATION);
@@ -898,4 +908,73 @@ rb_application_set_menu_accelerators (RBApplication *app, GMenuModel *menu, gboo
 		}
 		g_object_unref (iter);
 	}
+}
+
+/**
+ * rb_application_add_accelerator:
+ * @app: the #RBApplication
+ * @accel: accelerator string
+ * @action: the name of the action to activate
+ * @parameter: parameter to pass when activating the action, or NULL if
+ *   the action does not accept an activation parameter.
+ *
+ * Like #gtk_application_add_accelerator, except the accelerator only applies
+ * if the key was not handled by the focused widget.
+ */
+void
+rb_application_add_accelerator (RBApplication *app, const char *accel, const char *action, GVariant *parameter)
+{
+	RBApplicationAccel *a = g_new0 (RBApplicationAccel, 1);
+	char **bits;
+
+	gtk_accelerator_parse (accel, &a->keyval, &a->mods);
+	if (parameter != NULL)
+		a->parameter = g_variant_ref (parameter);
+
+	bits = g_strsplit (action, ".", 2);
+	a->prefix = bits[0];
+	a->action = bits[1];
+	g_free (bits);
+
+	app->priv->accelerators = g_list_append (app->priv->accelerators, a);
+}
+
+/**
+ * rb_application_activate_key:
+ * @app: the #RBApplication
+ * @event: a #GdkEventKey
+ *
+ * Attempts to activate an accelerator registered using #rb_application_add_accelerator.
+ *
+ * Return value: %TRUE if an accelerator was activated
+ */
+gboolean
+rb_application_activate_key (RBApplication *app, GdkEventKey *event)
+{
+	GList *l;
+	GtkWidget *window;
+	gboolean ret = FALSE;
+
+	g_object_get (app->priv->shell, "window", &window, NULL);
+
+	for (l = app->priv->accelerators; l != NULL; l = l->next) {
+		RBApplicationAccel *accel = l->data;
+		if (accel->keyval == event->keyval &&
+		    accel->mods == event->state) {
+			GActionGroup *group;
+
+			group = gtk_widget_get_action_group (window, accel->prefix);
+			if (group == NULL)
+				group = G_ACTION_GROUP (app);
+
+			g_action_group_activate_action (group,
+							accel->action,
+							accel->parameter);
+			ret = TRUE;
+			break;
+		}
+	}
+
+	g_object_unref (window);
+	return ret;
 }

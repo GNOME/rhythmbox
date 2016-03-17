@@ -1978,25 +1978,41 @@ rb_shell_key_press_event_cb (GtkWidget *win,
 			     GdkEventKey *event,
 			     RBShell *shell)
 {
-#ifndef HAVE_MMKEYS
-	return FALSE;
-#else
+	GtkWindow *window = GTK_WINDOW (win);
+	gboolean handled = FALSE;
 
-	gboolean retval = TRUE;
-
+#ifdef HAVE_MMKEYS
 	switch (event->keyval) {
 	case XF86XK_Back:
 		rb_shell_player_do_previous (shell->priv->player_shell, NULL);
+		handled = TRUE;
 		break;
 	case XF86XK_Forward:
 		rb_shell_player_do_next (shell->priv->player_shell, NULL);
+		handled = TRUE;
 		break;
 	default:
-		retval = FALSE;
+		break;
+	}
+#endif
+
+	if (!handled)
+		handled = gtk_window_activate_key (window, event);
+
+	if (!handled)
+		handled = gtk_window_propagate_key_event (window, event);
+
+	if (!handled)
+		handled = rb_application_activate_key (shell->priv->application, event);
+
+	if (!handled) {
+		GObjectClass *object_class;
+		object_class = G_OBJECT_GET_CLASS (win);
+		handled = GTK_WIDGET_CLASS (g_type_class_peek_parent (object_class))->key_press_event (win, event);
 	}
 
-	return retval;
-#endif /* !HAVE_MMKEYS */
+	/* we're completely replacing the default window handling, so always return TRUE */
+	return TRUE;
 }
 
 static void
