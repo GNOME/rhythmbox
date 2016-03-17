@@ -532,7 +532,8 @@ playing_changed_cb (RBShellPlayer *player,
 		    gboolean       playing,
 		    RBNotificationPlugin *plugin)
 {
-	if (playing || plugin->notification != NULL) {
+	/* only notify while not playing if there are actions in an existing notification to update */
+	if (playing || (plugin->notify_supports_icon_buttons && plugin->notification != NULL)) {
 		notify_playing_entry (plugin, FALSE);
 	}
 }
