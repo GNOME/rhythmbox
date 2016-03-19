@@ -314,7 +314,7 @@ rb_dacp_player_now_playing_artwork (DACPPlayer *player, guint width, guint heigh
 static void
 rb_dacp_player_play_pause (DACPPlayer *player)
 {
-	rb_shell_player_playpause (RB_DACP_PLAYER (player)->priv->shell_player, FALSE, NULL);
+	rb_shell_player_playpause (RB_DACP_PLAYER (player)->priv->shell_player, NULL);
 }
 
 static void

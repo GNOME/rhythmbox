@@ -2068,7 +2068,7 @@ rb_shell_activate_source (RBShell *shell, RBSource *source, guint play, GError *
 		/* fall through */
 	case RB_SHELL_ACTIVATION_ALWAYS_PLAY:
 		rb_shell_player_set_playing_source (shell->priv->player_shell, source);
-		return rb_shell_player_playpause (shell->priv->player_shell, FALSE, error);
+		return rb_shell_player_playpause (shell->priv->player_shell, error);
 
 	default:
 		return FALSE;

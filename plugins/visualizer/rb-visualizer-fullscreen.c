@@ -453,7 +453,7 @@ static void
 playpause_clicked_cb (MxButton *button, RBShellPlayer *player)
 {
 	clutter_threads_leave ();
-	rb_shell_player_playpause (player, FALSE, NULL);
+	rb_shell_player_playpause (player, NULL);
 	clutter_threads_enter ();
 }
 

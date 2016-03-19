@@ -128,11 +128,11 @@ rb_lirc_plugin_read_code (GIOChannel *source,
 			gboolean playing;
 			rb_shell_player_get_playing (plugin->shell_player, &playing, NULL);
 			if (playing == FALSE)
-				rb_shell_player_playpause (plugin->shell_player, FALSE, NULL);
+				rb_shell_player_playpause (plugin->shell_player, NULL);
 		} else if (strcmp (str, RB_IR_COMMAND_PAUSE) == 0) {
 			rb_shell_player_pause (plugin->shell_player, NULL);
 		} else if (strcmp (str, RB_IR_COMMAND_PLAYPAUSE) == 0) {
-			rb_shell_player_playpause (plugin->shell_player, FALSE, NULL);
+			rb_shell_player_playpause (plugin->shell_player, NULL);
 		} else if (strcmp (str, RB_IR_COMMAND_STOP) == 0) {
 			rb_shell_player_stop (plugin->shell_player);
 		} else if (strcmp (str, RB_IR_COMMAND_SHUFFLE) == 0) {

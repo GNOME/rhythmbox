@@ -1329,11 +1329,9 @@ rb_shell_player_play_entry (RBShellPlayer *player,
 	}
 }
 
-/* unused parameter can't be removed without breaking dbus interface compatibility */
 /**
  * rb_shell_player_playpause:
  * @player: the #RBShellPlayer
- * @unused: nothing
  * @error: returns error information
  *
  * Toggles between playing and paused state.  If there is no playing
@@ -1344,7 +1342,6 @@ rb_shell_player_play_entry (RBShellPlayer *player,
  */
 gboolean
 rb_shell_player_playpause (RBShellPlayer *player,
-			   gboolean unused,
 			   GError **error)
 {
 	gboolean ret;
@@ -2169,7 +2166,7 @@ rb_shell_player_pause (RBShellPlayer *player,
 		       GError **error)
 {
 	if (rb_player_playing (player->priv->mmplayer))
-		return rb_shell_player_playpause (player, FALSE, error);
+		return rb_shell_player_playpause (player, error);
 	else
 		return TRUE;
 }
@@ -2774,7 +2771,7 @@ play_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_data)
 	GError *error = NULL;
 
 	rb_debug ("play!");
-	if (rb_shell_player_playpause (player, FALSE, &error) == FALSE) {
+	if (rb_shell_player_playpause (player, &error) == FALSE) {
 		rb_error_dialog (NULL,
 				 _("Couldn't start playback"),
 				 "%s", (error) ? error->message : "(null)");

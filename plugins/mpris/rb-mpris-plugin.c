@@ -643,7 +643,7 @@ handle_player_method_call (GDBusConnection *connection,
 		ret = rb_shell_player_pause (plugin->player, &error);
 		handle_result (invocation, ret, error);
 	} else if (g_strcmp0 (method_name, "PlayPause") == 0) {
-		ret = rb_shell_player_playpause (plugin->player, TRUE, &error);
+		ret = rb_shell_player_playpause (plugin->player, &error);
 		handle_result (invocation, ret, error);
 	} else if (g_strcmp0 (method_name, "Stop") == 0) {
 		rb_shell_player_stop (plugin->player);

@@ -115,7 +115,7 @@ media_player_key_pressed (GDBusProxy *proxy,
 	}
 
 	if (strcmp (key, "Play") == 0) {
-		rb_shell_player_playpause (plugin->shell_player, FALSE, NULL);
+		rb_shell_player_playpause (plugin->shell_player, NULL);
 	} else if (strcmp (key, "Pause") == 0) {
 		rb_shell_player_pause (plugin->shell_player, NULL);
 	} else if (strcmp (key, "Stop") == 0) {
@@ -272,7 +272,7 @@ filter_mmkeys (GdkXEvent *xevent,
 	display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
 
 	if (XKeysymToKeycode (display, XF86XK_AudioPlay) == key->keycode) {
-		rb_shell_player_playpause (player, FALSE, NULL);
+		rb_shell_player_playpause (player, NULL);
 		return GDK_FILTER_REMOVE;
 	} else if (XKeysymToKeycode (display, XF86XK_AudioPause) == key->keycode) {
 		rb_shell_player_pause (player, NULL);

@@ -111,7 +111,7 @@ notification_playpause_cb (NotifyNotification *notification,
 			   RBNotificationPlugin *plugin)
 {
 	rb_debug ("notification action: %s", action);
-	rb_shell_player_playpause (plugin->shell_player, FALSE, NULL);
+	rb_shell_player_playpause (plugin->shell_player, NULL);
 }
 
 static void
