@@ -2059,6 +2059,13 @@ add_stream_uri_tag (GstPad *pad, RBXFadeStream *stream)
 
 	/* uridecodebin src -> decodebin src */
 	t2 = gst_ghost_pad_get_target (GST_GHOST_PAD (pad));
+	if (GST_IS_GHOST_PAD (t2) == FALSE) {
+		/* raw sources get exposed directly */
+		rb_debug ("not setting stream uri for raw stream");
+		gst_object_unref (t2);
+		gst_tag_list_unref (t);
+		return;
+	}
 
 	/* decodebin src -> actual decoder src */
 	target = gst_ghost_pad_get_target (GST_GHOST_PAD (t2));
@@ -2080,6 +2087,7 @@ add_stream_uri_tag (GstPad *pad, RBXFadeStream *stream)
 		gst_object_unref (sink);
 	} else {
 		rb_debug ("not setting stream uri tag for %s", GST_OBJECT_NAME (e));
+		gst_tag_list_unref (t);
 	}
 	gst_object_unref (e);
 
