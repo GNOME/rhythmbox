@@ -36,7 +36,7 @@
 #include <glib.h>
 
 #if defined(WITH_WEBKIT)
-#include <webkit/webkit.h>
+#include <webkit2/webkit2.h>
 #endif
 
 #include "rb-podcast-properties-dialog.h"
@@ -170,43 +170,63 @@ rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass)
 
 #if defined(WITH_WEBKIT)
 
-static WebKitNavigationResponse
-navigation_requested_cb (WebKitWebView *web_view,
-			 WebKitWebFrame *frame,
-			 WebKitNetworkRequest *request,
-			 RBPodcastPropertiesDialog *dialog)
+static gboolean
+decide_policy_cb (WebKitWebView *web_view,
+			 WebKitPolicyDecision *decision,
+			 WebKitPolicyDecisionType type,
+			 gpointer user_data)
 {
 	const char *uri;
 	GError *error = NULL;
 	int i;
+	WebKitNavigationPolicyDecision *navigation_decision;
+	WebKitURIRequest *request;
+	RBPodcastPropertiesDialog *dialog = (RBPodcastPropertiesDialog *) user_data;
 
-	uri = webkit_network_request_get_uri (request);
 
-	/* ignore some obnoxious social networking stuff */
-	for (i = 0; i < G_N_ELEMENTS (ignore_uris); i++) {
-		if (g_str_has_prefix (uri, ignore_uris[i])) {
-			rb_debug ("ignoring external URI %s", uri);
-			return WEBKIT_NAVIGATION_RESPONSE_IGNORE;
-		}
+	switch (type)
+	{
+		case WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION:
+			navigation_decision = WEBKIT_NAVIGATION_POLICY_DECISION (decision);
+			request = webkit_navigation_policy_decision_get_request (navigation_decision);
+			uri = webkit_uri_request_get_uri (request);
+
+			/* from _load_plain_text or _load_html */
+			if (g_strcmp0 (uri, "about:blank") == 0)
+			{
+				webkit_policy_decision_use (decision);
+				return TRUE;
+			}
+
+			webkit_policy_decision_ignore (decision);
+
+			/* ignore some obnoxious social networking stuff */
+			for (i = 0; i < G_N_ELEMENTS (ignore_uris); i++) {
+				if (g_str_has_prefix (uri, ignore_uris[i])) {
+					rb_debug ("ignoring external URI %s", uri);
+					return TRUE;
+				}
+			}
+
+			gtk_show_uri (gtk_widget_get_screen (GTK_WIDGET (dialog)), uri, GDK_CURRENT_TIME, &error);
+			if (error != NULL) {
+				rb_error_dialog (NULL, _("Unable to display requested URI"), "%s", error->message);
+				g_error_free (error);
+			}
+
+		default:
+			webkit_policy_decision_ignore (decision);
+			return FALSE;
 	}
-
-	gtk_show_uri (gtk_widget_get_screen (GTK_WIDGET (dialog)), uri, GDK_CURRENT_TIME, &error);
-	if (error != NULL) {
-		rb_error_dialog (NULL, _("Unable to display requested URI"), "%s", error->message);
-		g_error_free (error);
-	}
-
-	return WEBKIT_NAVIGATION_RESPONSE_IGNORE;
 }
 
 static void
 set_webkit_settings (WebKitWebView *view)
 {
-	WebKitWebSettings *settings;
+	WebKitSettings *settings;
 
-	settings = webkit_web_settings_new ();
-	g_object_set (settings,
-		      "enable-scripts", FALSE,
+	settings = webkit_settings_new_with_settings (
+		      "enable-javascript", FALSE,
 		      "enable-plugins", FALSE,
 		      NULL);
 	webkit_web_view_set_settings (view, settings);
@@ -215,7 +235,7 @@ set_webkit_settings (WebKitWebView *view)
 static void
 set_webkit_font_from_gtk_style (WebKitWebView *view)
 {
-	WebKitWebSettings *settings;
+	WebKitSettings *settings;
 	const PangoFontDescription *font_desc;
 	GtkStyleContext *style;
 	int font_size;
@@ -293,8 +313,8 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 	set_webkit_font_from_gtk_style (WEBKIT_WEB_VIEW (dialog->priv->description));
 
 	g_signal_connect_object (dialog->priv->description,
-				 "navigation-requested",
-				 G_CALLBACK (navigation_requested_cb),
+				 "decide-policy",
+				 G_CALLBACK (decide_policy_cb),
 				 dialog,
 				 0);
 #else
@@ -656,51 +676,26 @@ rb_podcast_properties_dialog_update_date (RBPodcastPropertiesDialog *dialog)
 	g_free (time);
 }
 
-#if defined(WITH_WEBKIT)
-static gboolean
-update_scrollbar_policy_cb (WebKitWebFrame *frame, RBPodcastPropertiesDialog *dialog)
-{
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (dialog->priv->description_window),
-					webkit_web_frame_get_horizontal_scrollbar_policy (frame),
-					webkit_web_frame_get_vertical_scrollbar_policy (frame));
-	return TRUE;
-}
-
-#endif
-
 static void
 rb_podcast_properties_dialog_update_description (RBPodcastPropertiesDialog *dialog)
 {
 #if defined(WITH_WEBKIT)
-	WebKitWebFrame *frame;
 	const char *str;
 	int i;
 	gboolean loaded = FALSE;
 	str = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_DESCRIPTION);
 	for (i = 0; i < G_N_ELEMENTS (html_clues); i++) {
 		if (g_strstr_len (str, -1, html_clues[i]) != NULL) {
-			webkit_web_view_load_html_string (WEBKIT_WEB_VIEW (dialog->priv->description),
+			webkit_web_view_load_html (WEBKIT_WEB_VIEW (dialog->priv->description),
 							  str,
-							  "");
+							  NULL);
 			loaded = TRUE;
 		}
 	}
 
 	if (loaded == FALSE) {
-		webkit_web_view_load_string (WEBKIT_WEB_VIEW (dialog->priv->description),
-					     str,
-					     "text/plain",
-					     "utf-8",
-					     "");
+		webkit_web_view_load_plain_text (WEBKIT_WEB_VIEW (dialog->priv->description), str);
 	}
-
-	/* ensure scrollbar policy for the frame matches the viewport */
-	frame = webkit_web_view_get_main_frame (WEBKIT_WEB_VIEW (dialog->priv->description));
-	g_signal_connect_object (frame,
-				 "scrollbars-policy-changed",
-				 G_CALLBACK (update_scrollbar_policy_cb),
-				 dialog, 0);
-	update_scrollbar_policy_cb (frame, dialog);
 #else
 	const char *str;
 	str = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_DESCRIPTION);

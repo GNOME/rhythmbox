@@ -60,7 +60,6 @@ LIBSECRET_REQS=0.18
 
 LIBNOTIFY_REQS=0.7.0
 BRASERO_MIN_REQS=2.31.5
-WEBKIT_MIN_REQS=1.3.9
 PYGOBJECT_REQUIRED=3.0.0
 
 GLIB_GSETTINGS
@@ -440,7 +439,7 @@ AC_ARG_WITH(webkit,
 			   [Use WebKit to display HTML]),,
 	    with_webkit=auto)
 if test "x$with_webkit" != xno; then
-	PKG_CHECK_MODULES(WEBKIT, [webkitgtk-3.0 >= $WEBKIT_MIN_REQS], have_webkit=yes, have_webkit=no)
+	PKG_CHECK_MODULES(WEBKIT, [webkit2gtk-4.0], have_webkit=yes, have_webkit=no)
 	if test "x$have_webkit" = "xno" -a "x$with_webkit" = "xyes"; then
 		AC_MSG_ERROR([WebKit support explicitly requested, but WebKit could not be found])
 	fi
