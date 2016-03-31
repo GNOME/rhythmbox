@@ -11,8 +11,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-01-20 14:27+0000\n"
-"PO-Revision-Date: 2016-01-21 08:52+0700\n"
+"POT-Creation-Date: 2016-03-30 13:52+0000\n"
+"PO-Revision-Date: 2016-03-31 07:12+0700\n"
 "Last-Translator: Trần Ngọc Quân <vnwildman@gmail.com>\n"
 "Language-Team: Vietnamese <gnome-vi-list@gnome.org>\n"
 "Language: vi\n"
@@ -28,19 +28,19 @@ msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Không thể tạo ống dẫn phần tử sink của GStreamer để ghi vào %s"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:528
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2989
+#: ../backends/gstreamer/rb-player-gst.c:521
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2993
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Gặp lỗi khi mở thiết bị xuất: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:676
+#: ../backends/gstreamer/rb-player-gst.c:670
 #, c-format
 msgid "Failed to create playbin element; check your GStreamer installation"
 msgstr ""
 "Gặp lỗi khi tạo phần tử playbin; hãy kiểm tra lại bản cài đặt GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst.c:717
+#: ../backends/gstreamer/rb-player-gst.c:711
 #, c-format
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr "Gặp lỗi khi tạo phần tử %s; hãy kiểm tra lại bản cài đặt GStreamer"
@@ -57,33 +57,33 @@ msgid "Failed to start new stream"
 msgstr "Gặp lỗi khi khởi tạo luồng mới"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2902
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2906
 #, c-format
 msgid "Failed to open output device"
 msgstr "Gặp lỗi khi tạo mở ngõ ra của thiết bị"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3293
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3377
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3297
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3381
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Gặp lỗi khi tạo phần tử GStreamer; hãy kiểm tra lại bản cài đặt"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3307
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3311
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Gặp lỗi khi tạo phần tử xuất tiếng; hãy kiểm tra lại bản cài đặt."
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3341
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3394
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3421
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3431
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3441
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3345
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3398
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3425
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3435
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3445
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Gặp lỗi khi tạo liên kết ống dẫn GStreamer; hãy kiểm tra lại bản cài đặt"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3536
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3540
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Gặp lỗi khi tạo ống dẫn GStreamer để chơi %s"
@@ -512,7 +512,7 @@ msgstr "Thuộc tính trình phát đa phương tiện"
 #: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
 #: ../plugins/iradio/rb-station-properties-dialog.c:186
 #: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:276 ../shell/rb-application.c:144
+#: ../podcast/rb-podcast-properties-dialog.c:296 ../shell/rb-application.c:144
 #: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:373
 #: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
 msgid "_Close"
@@ -710,7 +710,7 @@ msgid "Cancel Download"
 msgstr "Hủy việc tải về"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1227 ../sources/rb-media-player-source.c:1114
+#: ../podcast/rb-podcast-source.c:1227 ../sources/rb-media-player-source.c:1121
 msgid "Delete"
 msgstr "Xóa"
 
@@ -926,7 +926,7 @@ msgstr "Tập tin đã loại bỏ:"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3797 ../widgets/rb-entry-view.c:943
+#: ../rhythmdb/rhythmdb.c:3799 ../widgets/rb-entry-view.c:943
 #: ../widgets/rb-entry-view.c:1567 ../widgets/rb-entry-view.c:1580
 #: ../widgets/rb-song-info.c:1545
 msgid "Never"
@@ -972,7 +972,7 @@ msgstr "%b %d %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/android/rb-android-source.c:646
+#: ../plugins/android/rb-android-source.c:698
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -994,14 +994,14 @@ msgstr "%b %d %Y"
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1892
 #: ../podcast/rb-podcast-manager.c:1991
-#: ../podcast/rb-podcast-properties-dialog.c:622
-#: ../podcast/rb-podcast-properties-dialog.c:717
+#: ../podcast/rb-podcast-properties-dialog.c:642
+#: ../podcast/rb-podcast-properties-dialog.c:712
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:202
 #: ../remote/dbus/rb-client.c:715 ../rhythmdb/rhythmdb.c:2066
 #: ../rhythmdb/rhythmdb.c:2072 ../rhythmdb/rhythmdb.c:2087
-#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5561
-#: ../rhythmdb/rhythmdb.c:5567 ../rhythmdb/rhythmdb.c:5572
-#: ../rhythmdb/rhythmdb.c:5583 ../rhythmdb/rhythmdb.c:5587
+#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5563
+#: ../rhythmdb/rhythmdb.c:5569 ../rhythmdb/rhythmdb.c:5574
+#: ../rhythmdb/rhythmdb.c:5585 ../rhythmdb/rhythmdb.c:5589
 #: ../rhythmdb/rhythmdb-entry-type.c:301
 #: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
 #: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
@@ -1009,8 +1009,8 @@ msgstr "%b %d %Y"
 #: ../shell/rb-shell-player.c:2717 ../shell/rb-shell-player.c:2719
 #: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
 #: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
-#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1282
-#: ../widgets/rb-header.c:1308 ../widgets/rb-song-info.c:949
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1284
+#: ../widgets/rb-header.c:1310 ../widgets/rb-song-info.c:949
 #: ../widgets/rb-song-info.c:961 ../widgets/rb-song-info.c:1233
 #: ../widgets/rb-song-info.c:1572
 msgid "Unknown"
@@ -1151,7 +1151,14 @@ msgstr "Bản:"
 msgid "Playlists:"
 msgstr "Danh sách phát:"
 
-#: ../plugins/android/rb-android-source.c:347
+#: ../plugins/android/rb-android-source.c:199
+msgid ""
+"No storage areas found on this device. You may need to unlock it and enable "
+"MTP."
+msgstr ""
+"Trên thiết vị này không có phần lưu trữ. Bạn cần bỏ khóa nó và bật MTP."
+
+#: ../plugins/android/rb-android-source.c:399
 #: ../plugins/generic-player/rb-generic-player-source.c:566
 #, c-format
 msgid "Scanning %s"
@@ -2142,14 +2149,14 @@ msgstr "URL của đài phát Internet:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:507
-#: ../sources/rb-media-player-source.c:569 ../widgets/rb-song-info.c:1150
+#: ../podcast/rb-podcast-properties-dialog.c:527
+#: ../sources/rb-media-player-source.c:576 ../widgets/rb-song-info.c:1150
 #, c-format
 msgid "%s Properties"
 msgstr "Thuộc tính %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:491
-#: ../podcast/rb-podcast-properties-dialog.c:620
+#: ../podcast/rb-podcast-properties-dialog.c:640
 #: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1235
 #, c-format
 msgid "%lu kbps"
@@ -3010,11 +3017,11 @@ msgstr "Không thể phân tích nội dung nguồn"
 msgid "The feed does not contain any downloadable items"
 msgstr "Nguồn không chứa mục nào có thể tải về"
 
-#: ../podcast/rb-podcast-properties-dialog.c:195
+#: ../podcast/rb-podcast-properties-dialog.c:213
 msgid "Unable to display requested URI"
 msgstr "Không thể hiển thị URI theo yêu cầu"
 
-#: ../podcast/rb-podcast-properties-dialog.c:570
+#: ../podcast/rb-podcast-properties-dialog.c:590
 msgid "Not Downloaded"
 msgstr "Chưa tải về"
 
@@ -3258,7 +3265,7 @@ msgstr "p - Rãnh trước"
 
 #: ../remote/dbus/rb-client.c:163
 msgid "space - Play/pause"
-msgstr "space - Phát/Tạm dừng"
+msgstr "phím cách - Phát/Tạm dừng"
 
 #: ../remote/dbus/rb-client.c:164
 msgid "s - Show playing track details"
@@ -3390,30 +3397,30 @@ msgstr "gặp Unicode không hợp lệ trong thông điệp lỗi"
 msgid "Empty file"
 msgstr "Tập tin rỗng"
 
-#: ../rhythmdb/rhythmdb.c:3224
+#: ../rhythmdb/rhythmdb.c:3226
 msgid "Could not load the music database:"
 msgstr "Không thể tải cơ sở dữ liệu âm nhạc:"
 
-#: ../rhythmdb/rhythmdb.c:4651
+#: ../rhythmdb/rhythmdb.c:4653
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld phút"
 
-#: ../rhythmdb/rhythmdb.c:4652
+#: ../rhythmdb/rhythmdb.c:4654
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld giờ"
 
-#: ../rhythmdb/rhythmdb.c:4653
+#: ../rhythmdb/rhythmdb.c:4655
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld ngày"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4659
+#: ../rhythmdb/rhythmdb.c:4661
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s, %s"
@@ -3421,8 +3428,8 @@ msgstr "%s, %s, %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4665 ../rhythmdb/rhythmdb.c:4673
-#: ../rhythmdb/rhythmdb.c:4684
+#: ../rhythmdb/rhythmdb.c:4667 ../rhythmdb/rhythmdb.c:4675
+#: ../rhythmdb/rhythmdb.c:4686
 #, c-format
 msgid "%s and %s"
 msgstr "%s, %s"
@@ -4001,35 +4008,35 @@ msgstr "Chép các rãnh vào thư viện"
 msgid "Adding tracks to the library"
 msgstr "Thêm rãnh vào thư viện"
 
-#: ../sources/rb-media-player-source.c:774
+#: ../sources/rb-media-player-source.c:781
 #, c-format
 msgid "Syncing tracks to %s"
 msgstr "Đang đồng bộ các rãnh với %s"
 
-#: ../sources/rb-media-player-source.c:830
+#: ../sources/rb-media-player-source.c:837
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
 msgstr ""
 "Bạn chưa chọn nhạc, danh sách phát hoặc podcast để truyền sang thiết bị."
 
-#: ../sources/rb-media-player-source.c:835
+#: ../sources/rb-media-player-source.c:842
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
 msgstr ""
 "Không đủ chỗ chứa trên thiết bị để truyền nhạc, danh sách phát hoặc podcast."
 
-#: ../sources/rb-media-player-source.c:887
+#: ../sources/rb-media-player-source.c:894
 #, c-format
 msgid "%s Sync Settings"
 msgstr "Cài đặt đồng bộ %s"
 
-#: ../sources/rb-media-player-source.c:892
+#: ../sources/rb-media-player-source.c:899
 msgid "Sync with the device"
 msgstr "Đồng bộ với thiết bị"
 
-#: ../sources/rb-media-player-source.c:894
+#: ../sources/rb-media-player-source.c:901
 msgid "Don't sync"
 msgstr "Không đồng bộ"
 
@@ -4052,11 +4059,11 @@ msgstr "Loại khỏi khỏi danh sách phát"
 msgid "Play Queue"
 msgstr "Hàng đợi phát"
 
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:919
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:921
 msgid "from"
 msgstr "trong"
 
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:918
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:920
 msgid "by"
 msgstr "bởi"
 
@@ -4217,13 +4224,13 @@ msgid "Drop artwork here"
 msgstr "Thả ảnh bìa vào đây"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1222
+#: ../widgets/rb-header.c:1224
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1233
+#: ../widgets/rb-header.c:1235
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
