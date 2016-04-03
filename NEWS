@@ -1,3 +1,44 @@
+Overview of changes in Rhythmbox 3.3.1
+======================================
+
+* Better handling of locked Android devices
+* Simplified ReplayGain processing that might crash less
+* Switched to webkit2 API, except for the context plugin which is disabled
+* Notifications behave better when actions aren't available
+
+Bugs fixed:
+
+678349 	Rhythmbox segfaults when trying to access Android 4.0 MTP device already mounted by Nautilus
+744775 	Rhythmbox crashes when trying to access Android device.
+752019 	Port to WebKit2
+762087 	CD playing with cross fading on crashes rhythmbox
+762203 	Display notifications about playing song when pausing
+763206 	RhythmDB-CRITICAL **: rhythmdb_entry_get_entry_type: assertion 'entry != NULL' failed
+763435 	Gtk-WARNING **: Drawing a gadget with negative dimensions. Did you forget to allocate a size? (node grid owner RBHeader)
+763874 	Rework logic of Python support option
+
+Translation updates:
+
+- cs, courtesy of Marek Černocký
+- de, courtesy of Mario Blättermann
+- es, courtesy of Daniel Mustieles
+- fi, courtesy of Jiri Grönroos
+- hu, courtesy of Balázs Úr
+- it, courtesy of Milo Casagrande
+- lv, courtesy of Rūdolfs Mazurs
+- oc, courtesy of Cédric VALMARY
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Rafael Fontenelle
+- ro, courtesy of Daniel Șerbănescu
+- sk, courtesy of Dušan Kazik
+- sr, courtesy of Мирослав Николић
+- sr@latin, courtesy of Miroslav Nikolić
+- sv, courtesy of Anders Jonsson
+- tr, courtesy of Muhammet Kara
+- vi, courtesy of Trần Ngọc Quân
+
+
+
 Overview of changes in Rhythmbox 3.3
 ====================================
 
