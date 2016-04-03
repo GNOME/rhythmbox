@@ -24,10 +24,7 @@ SUBDIRS +=						\
 	soundcloud					\
 	rb
 
-# disabled until webkit2 happens
-#if WITH_WEBKIT
-#SUBDIRS += context
-#endif
+SUBDIRS += context
 
 endif # ENABLE_PYTHON
 

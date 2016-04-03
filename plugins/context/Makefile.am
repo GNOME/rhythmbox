@@ -14,7 +14,7 @@ plugin_PYTHON = 			\
 plugin_in_files = context.plugin.in
 %.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
+# plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
 tmpldir = $(plugindatadir)/tmpl
 tmpl_DATA = \
