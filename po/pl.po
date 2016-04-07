@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-15 17:55+0100\n"
-"PO-Revision-Date: 2016-03-15 17:57+0100\n"
+"POT-Creation-Date: 2016-04-07 20:40+0200\n"
+"PO-Revision-Date: 2016-04-07 20:41+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -35,20 +35,20 @@ msgstr ""
 "%s"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:528
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2989
+#: ../backends/gstreamer/rb-player-gst.c:521
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2993
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Otwarcie urządzenia wyjściowego się nie powiodło: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:676
+#: ../backends/gstreamer/rb-player-gst.c:670
 #, c-format
 msgid "Failed to create playbin element; check your GStreamer installation"
 msgstr ""
 "Utworzenie elementu playbin się nie powiodło; proszę sprawdzić poprawność "
 "instalacji biblioteki GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst.c:717
+#: ../backends/gstreamer/rb-player-gst.c:711
 #, c-format
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr ""
@@ -67,38 +67,38 @@ msgid "Failed to start new stream"
 msgstr "Rozpoczęcie nowego strumienia się nie powiodło"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2902
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2906
 #, c-format
 msgid "Failed to open output device"
 msgstr "Otwarcie urządzenia wyjściowego się nie powiodło"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3293
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3377
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3297
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3381
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Utworzenie elementu biblioteki GStreamer się nie powiodło; proszę sprawdzić "
 "poprawność instalacji"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3307
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3311
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Utworzenie elementu wyjścia dźwiękowego się nie powiodło; proszę sprawdzić "
 "poprawność instalacji"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3341
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3394
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3421
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3431
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3441
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3345
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3398
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3425
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3435
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3445
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Połączenie strumienia biblioteki GStreamer się nie powiodło; proszę "
 "sprawdzić poprawność instalacji"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3536
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3540
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr ""
@@ -125,7 +125,7 @@ msgid ""
 msgstr ""
 "Rhythmbox to program do zarządzania muzyką, zaprojektowany do działania w "
 "środowisku GNOME. Oprócz muzyki przechowywanej na komputerze obsługuje on "
-"także muzykę współdzieloną w sieci, podcasty, radio internetowe, przenośne "
+"także muzykę udostępnianą w sieci, podcasty, radio internetowe, przenośne "
 "odtwarzacze muzyki (w tym smartfony) oraz serwisy internetowe Last.fm i "
 "Magnatune."
 
@@ -529,7 +529,7 @@ msgstr "Właściwości odtwarzacza muzyki"
 #: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
 #: ../plugins/iradio/rb-station-properties-dialog.c:186
 #: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:276 ../shell/rb-application.c:144
+#: ../podcast/rb-podcast-properties-dialog.c:296 ../shell/rb-application.c:144
 #: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:373
 #: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
 msgid "_Close"
@@ -1012,8 +1012,8 @@ msgstr "%d %b %Y"
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1892
 #: ../podcast/rb-podcast-manager.c:1991
-#: ../podcast/rb-podcast-properties-dialog.c:622
-#: ../podcast/rb-podcast-properties-dialog.c:717
+#: ../podcast/rb-podcast-properties-dialog.c:642
+#: ../podcast/rb-podcast-properties-dialog.c:712
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:202
 #: ../remote/dbus/rb-client.c:715 ../rhythmdb/rhythmdb.c:2066
 #: ../rhythmdb/rhythmdb.c:2072 ../rhythmdb/rhythmdb.c:2087
@@ -1822,15 +1822,15 @@ msgstr "Nie można pobrać informacji o wykonawcy:"
 
 #: ../plugins/daap/daap.plugin.in.h:1
 msgid "DAAP Music Sharing"
-msgstr "Współdzielenie muzyki DAAP"
+msgstr "Udostępnianie muzyki przez DAAP"
 
 #: ../plugins/daap/daap.plugin.in.h:2
 msgid "Share music and play shared music on your local network"
-msgstr "Współdzieli muzykę i odtwarza współdzieloną muzykę w sieci lokalnej"
+msgstr "Udostępnia muzykę i odtwarza muzykę udostępnianą w sieci lokalnej"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
 msgid "Sharing"
-msgstr "Współdzielenie"
+msgstr "Udostępnianie"
 
 #: ../plugins/daap/daap-prefs.ui.h:2
 msgid "_Look for touch Remotes"
@@ -2189,14 +2189,14 @@ msgstr "Adres URL internetowej stacji radiowej:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:507
+#: ../podcast/rb-podcast-properties-dialog.c:527
 #: ../sources/rb-media-player-source.c:576 ../widgets/rb-song-info.c:1150
 #, c-format
 msgid "%s Properties"
 msgstr "Właściwości „%s”"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:491
-#: ../podcast/rb-podcast-properties-dialog.c:620
+#: ../podcast/rb-podcast-properties-dialog.c:640
 #: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1235
 #, c-format
 msgid "%lu kbps"
@@ -3065,11 +3065,11 @@ msgstr "Nie można przetworzyć zawartości kanału"
 msgid "The feed does not contain any downloadable items"
 msgstr "Kanał nie zawiera żadnych elementów do pobrania"
 
-#: ../podcast/rb-podcast-properties-dialog.c:195
+#: ../podcast/rb-podcast-properties-dialog.c:213
 msgid "Unable to display requested URI"
 msgstr "Nie można wyświetlić żądanego adresu URI"
 
-#: ../podcast/rb-podcast-properties-dialog.c:570
+#: ../podcast/rb-podcast-properties-dialog.c:590
 msgid "Not Downloaded"
 msgstr "Nie pobrano"
 
@@ -4003,7 +4003,7 @@ msgstr "Urządzenia"
 
 #: ../sources/rb-display-page-group.c:99
 msgid "Shared"
-msgstr "Współdzielone"
+msgstr "Udostępniane"
 
 #. set up info bar for triggering codec installation
 #: ../sources/rb-import-errors-source.c:235
