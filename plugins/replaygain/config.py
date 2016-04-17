@@ -53,10 +53,6 @@ class ReplayGainConfig(GObject.Object, PeasGtk.Configurable):
 
 		content = self.builder.get_object("replaygain-prefs")
 
-		label = self.builder.get_object("headerlabel")
-		label.set_markup("<b>%s</b>" % label.get_text())
-		label.set_use_markup(True)
-
 		combo = self.builder.get_object("replaygainmode")
 		combo.props.id_column = 1
 		self.settings.bind("mode", combo, "active-id", Gio.SettingsBindFlags.DEFAULT)
