@@ -398,6 +398,7 @@ rb_header_constructed (GObject *object)
 	header->priv->image = GTK_WIDGET (g_object_new (RB_TYPE_FADING_IMAGE,
 							"fallback", RB_STOCK_MISSING_ARTWORK,
 							NULL));
+	gtk_widget_set_no_show_all (header->priv->image, TRUE);
 	g_signal_connect (header->priv->image,
 			  "pixbuf-dropped",
 			  G_CALLBACK (pixbuf_dropped_cb),
