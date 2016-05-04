@@ -6,32 +6,33 @@
 # Pedro Barreira <almufadado@gmail.com>, 2011.
 # Filipe Gomes <filipefgomes@gmail.com>, 2007, 2008, 2009, 2010, 2011, 2012.
 # Pedro Albuquerque <palbuquerque73@gmail.com>, 2015.
+# Tiago Santos <tiagofsantos81@sapo.pt>, 2015, 2016.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: 2.18\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-11-01 12:39+0000\n"
-"PO-Revision-Date: 2015-11-16 11:51+0000\n"
-"Last-Translator: Pedro Albuquerque <palbuquerque73@gmail.com>\n"
-"Language-Team: Pedro Albuquerque\n"
+"POT-Creation-Date: 2016-02-02 21:42+0000\n"
+"PO-Revision-Date: 2016-05-04 20:23+0100\n"
+"Last-Translator: Tiago Santos <tiagofsantos81@sapo.pt>\n"
+"Language-Team: Duarte Loreto <happyguy_pt@hotmail.com>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Gtranslator 2.91.6\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Project-Style: gnome\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:514
+#: ../backends/gstreamer/rb-encoder-gst.c:524
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Impossível criar um elemento do GStreamer para escrever em %s"
 
 #. ?
 #: ../backends/gstreamer/rb-player-gst.c:528
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2980
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2989
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Falha ao abrir dispositivo de saída: %s"
@@ -47,45 +48,45 @@ msgstr ""
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr "Falha ao criar o elemento %s; verifique a sua instalação do GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1127
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1141
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1133
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1147
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Falha ao ligar um novo fluxo ao canal do GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1185
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1191
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Falhou ao iniciar novo fluxo"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2896
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2902
 #, c-format
 msgid "Failed to open output device"
 msgstr "Falha ao abrir dispositivo de saída"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3256
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3330
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3293
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3377
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Falha ao criar um elemento GStreamer; verifique a sua instalação"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3270
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3307
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Falha ao criar um elemento de saída de áudio; verifique a sua instalação"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3304
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3347
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3374
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3384
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3341
 #: ../backends/gstreamer/rb-player-gst-xfade.c:3394
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3421
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3431
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3441
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Falha ao ligar canal do GStreamer; verifique a sua instalação"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3489
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3536
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Falha ao ligar canal do GStreamer para reproduzir %s"
@@ -125,7 +126,7 @@ msgstr ""
 
 #: ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
-#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2383
+#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2384
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -980,7 +981,7 @@ msgstr "%d de %b de %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/android/rb-android-source.c:646
+#: ../plugins/android/rb-android-source.c:665
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -1163,7 +1164,15 @@ msgstr "Faixas:"
 msgid "Playlists:"
 msgstr "Listas de reprodução:"
 
-#: ../plugins/android/rb-android-source.c:347
+#: ../plugins/android/rb-android-source.c:183
+msgid ""
+"No storage areas found on this device. You may need to unlock it and enable "
+"MTP."
+msgstr ""
+"Nenhuma área de armazenamento encontrada neste dispositivo. Pode precisar de "
+"desbloqueá-lo e ativar o MTP."
+
+#: ../plugins/android/rb-android-source.c:366
 #: ../plugins/generic-player/rb-generic-player-source.c:566
 #, c-format
 msgid "Scanning %s"
@@ -3195,7 +3204,7 @@ msgstr "Pausar reprodução se estiver a reproduzir"
 msgid "Toggle play/pause mode"
 msgstr "Alternar o modo reprodução/pausa"
 
-#: ../remote/dbus/rb-client.c:107 ../shell/rb-shell.c:2288
+#: ../remote/dbus/rb-client.c:107 ../shell/rb-shell.c:2289
 msgid "Stop playback"
 msgstr "Parar a reprodução"
 
@@ -3536,7 +3545,8 @@ msgstr ""
 "Filipe Gomes <filipefgomes@gmail.com>\n"
 "Duarte Loreto <happyguy_pt@hotmail.com>\n"
 "Pedro Barreira <almufadado@gmail.com>\n"
-"Pedro Albuquerque <palbuquerque73@gmail.com>"
+"Pedro Albuquerque <palbuquerque73@gmail.com>\n"
+"Tiago Santos <tiagofsantos81@sapo.pt>"
 
 #: ../shell/rb-application.c:211
 msgid ""
@@ -3706,45 +3716,45 @@ msgstr "Lista de reprodução desconhecida: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "A lista de reprodução %s é uma lista automática"
 
-#: ../shell/rb-shell.c:2081
+#: ../shell/rb-shell.c:2082
 msgid "Error while saving song information"
 msgstr "Erro ao gravar informação da canção"
 
-#: ../shell/rb-shell.c:2285
+#: ../shell/rb-shell.c:2286
 msgid "Pause playback"
 msgstr "Pausar reprodução"
 
-#: ../shell/rb-shell.c:2292
+#: ../shell/rb-shell.c:2293
 msgid "Start playback"
 msgstr "Iniciar a reprodução"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2403
+#: ../shell/rb-shell.c:2404
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (pausado)"
 
-#: ../shell/rb-shell.c:2807 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2808 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Nenhuma origem registada consegue gerir o URI %s"
 
-#: ../shell/rb-shell.c:3136
+#: ../shell/rb-shell.c:3137
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Nenhuma origem registada corresponde ao URI %s"
 
-#: ../shell/rb-shell.c:3169 ../shell/rb-shell.c:3212
+#: ../shell/rb-shell.c:3170 ../shell/rb-shell.c:3213
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI da canção desconhecido: %s"
 
-#: ../shell/rb-shell.c:3221
+#: ../shell/rb-shell.c:3222
 #, c-format
 msgid "Unknown property %s"
 msgstr "Propriedade desconhecida %s"
 
-#: ../shell/rb-shell.c:3235
+#: ../shell/rb-shell.c:3236
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Tipo de propriedade inválido %s para propriedade %s"
