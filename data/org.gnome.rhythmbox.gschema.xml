@@ -436,4 +436,13 @@
   <schema id="org.gnome.rhythmbox.plugins.grilo" path="/org/gnome/rhythmbox/plugins/grilo/">
     <child name="source" schema="org.gnome.rhythmbox.source"/>
   </schema>
+
+  <schema id="org.gnome.rhythmbox.plugins.webremote" path="/org/gnome/rhythmbox/plugins/webremote/">
+    <key name="listen-port" type="q">
+      <default>0</default>
+      <summary>Listening port to use for the web remote control service</summary>
+      <description>Listening port to use for the web remote control service</description>
+    </key>
+
+  </schema>
 </schemalist>

@@ -22,6 +22,7 @@ SUBDIRS +=						\
 	replaygain					\
 	sendto						\
 	soundcloud					\
+	webremote					\
 	rb
 
 SUBDIRS += context

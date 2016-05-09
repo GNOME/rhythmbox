@@ -1,0 +1,72 @@
+body {
+	background-color: white;
+}
+div.wrapper {
+	max-width: 960px;
+	margin: 0px auto;
+}
+
+div#playerbuttons {
+	border-color: black;
+	border-style: solid;
+	border-width: 0.1rem 0 0.1rem 0;
+}
+div.playerbutton {
+	text-align: center;
+	margin: 1rem; display: block;
+}
+
+div#status, div#trackbits, div#trackposition {
+	font-family: "Cantarell";
+}
+div#connection {
+	float: right;
+}
+div#stream {
+	float: left;
+}
+
+div#trackimage {
+	height: 50%;
+	max-width: 100%;
+	margin: 10px auto;
+}
+img.albumart {
+	height: 100%;
+	width: auto;
+	margin: 10px auto;
+	display: block;
+	border: 0.1rem solid black;
+}
+img.noalbumart {
+	height: 100%;
+	width: auto;
+	margin: 10px auto;
+	display: block;
+	border: none;
+}
+
+#connectform {
+	text-align: center;
+	font-size: x-large;
+	padding: 10px;
+}
+
+#trackbits {
+	text-align: center;
+}
+#tracktitle {
+	font-size: x-large;
+}
+#trackalbum {
+	font-style: italic;
+}
+
+#seekbar {
+	margin: 0 0 1rem 0;
+}
+#seekbar-range {
+	display: block;
+	margin: 0px auto;
+	width: 100%;
+}
