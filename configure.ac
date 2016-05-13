@@ -54,7 +54,7 @@ LIBSOUP_REQS=2.34.0
 GUDEV_REQS=143
 LIBMTP_REQS=0.3.0
 LIBPEAS_REQS=0.7.3
-GRILO_REQS=0.2.0
+GRILO_REQS=0.3.0
 LIBXML2_REQS=2.7.8
 LIBSECRET_REQS=0.18
 
@@ -722,7 +722,7 @@ AC_ARG_ENABLE(grilo,
 			     [Disable Grilo support]),,
 	      enable_grilo=auto)
 if test "x$enable_grilo" != "xno"; then
-	PKG_CHECK_MODULES(GRILO, grilo-0.2 >= $GRILO_REQS, have_grilo=yes, have_grilo=no)
+	PKG_CHECK_MODULES(GRILO, grilo-0.3 >= $GRILO_REQS, have_grilo=yes, have_grilo=no)
 	if test "x$have_grilo" = "xno" -a "x$enable_grilo" = "xyes"; then
 		AC_MSG_ERROR([Grilo support explicitly requested, but grilo couldn not be found])
 	fi

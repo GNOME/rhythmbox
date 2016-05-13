@@ -213,7 +213,7 @@ impl_activate (PeasActivatable *plugin)
 	pi->registry = grl_registry_get_default ();
 	g_signal_connect (pi->registry, "source-added", G_CALLBACK (grilo_source_added_cb), pi);
 	g_signal_connect (pi->registry, "source-removed", G_CALLBACK (grilo_source_removed_cb), pi);
-	if (grl_registry_load_all_plugins (pi->registry, &error) == FALSE) {
+	if (grl_registry_load_all_plugins (pi->registry, TRUE, &error) == FALSE) {
 		g_warning ("Failed to load Grilo plugins: %s", error->message);
 		g_clear_error (&error);
 	}
