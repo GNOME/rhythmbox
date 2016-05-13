@@ -549,8 +549,14 @@ create_entry_for_media (RhythmDB *db, RhythmDBEntryType *entry_type, GrlData *da
 {
 	RhythmDBEntry *entry;
 	RBGriloEntryData *entry_data;
+	const gchar *url;
 
-	entry = rhythmdb_entry_lookup_by_location (db, grl_media_get_url (GRL_MEDIA (data)));
+	url = grl_media_get_url (GRL_MEDIA (data));
+	if (url == NULL) {
+		return NULL;
+	}
+
+	entry = rhythmdb_entry_lookup_by_location (db, url);
 	if (entry != NULL) {
 		return entry;
 	}
