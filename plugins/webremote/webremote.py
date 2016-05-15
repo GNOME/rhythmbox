@@ -42,52 +42,6 @@ import siphash
 import gettext
 gettext.install('rhythmbox', RB.locale_dir())
 
-if rb.rbconfig.libsecret_enabled:
-	gi.require_version('Secret', '1')
-	try:
-		from gi.repository import Secret
-		SECRET_SCHEMA = Secret.Schema.new("org.gnome.rhythmbox.plugins.webremote",
-						  Secret.SchemaFlags.NONE,
-						  {'id': Secret.SchemaAttributeType.STRING})
-	except ImportError as e:
-		SECRET_SCHEMA = None
-else:
-	SECRET_SCHEMA = None
-
-
-def get_access_key(id='default'):
-	if SECRET_SCHEMA is None:
-		return ''
-
-	try:
-		svc = Secret.Service.get_sync(Secret.ServiceFlags.OPEN_SESSION, None)
-		items = svc.search_sync(SECRET_SCHEMA,
-					{'id': id},
-					Secret.SearchFlags.LOAD_SECRETS,
-					None)
-		if items:
-			return items[0].get_secret().get().decode('utf-8')
-
-		return ''
-	except Exception as e:
-		sys.excepthook(*sys.exc_info())
-		return ''
-
-def store_access_key(key, id='default'):
-	if SECRET_SCHEMA is None:
-		return
-
-	try:
-		Secret.password_store_sync(SECRET_SCHEMA,
-					   {'id': id},
-					   Secret.COLLECTION_DEFAULT,
-					   "Rhythmbox web remote access key",
-					   key,
-					   None)
-	except Exception as e:
-		sys.excepthook(*sys.exc_info())
-
-
 def get_host_name():
         try:
                 p = Gio.DBusProxy.new_for_bus_sync(Gio.BusType.SYSTEM,
@@ -150,7 +104,7 @@ class ClientSession(object):
 		self.conn.send_text(message)
 
 	def disconnect(self):
-		self.conn.close()
+		self.conn.close(0, "")
 
 class TrackStreamer(object):
 	def __init__(self, server, message, track, content_type):
@@ -262,7 +216,7 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 
 	def get_sign_key(self, id):
 		# some day there will be multiple keys
-		a = get_access_key(id)
+		a = self.settings['access-key']
 
 		ea = a.encode()
 		pa = (a + 4 * '\0').encode()
@@ -550,6 +504,9 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 			if self.http_server is not None and self.listen_reset is False:
 				self.http_server.disconnect()
 				self.http_listen()
+		elif key == 'access-key':
+			for c in self.connections.values():
+				c.disconnect()
 
 	def http_listen(self):
 		print("relistening")
@@ -614,7 +571,9 @@ class WebRemoteConfig(GObject.Object, PeasGtk.Configurable):
 		if k != self.access_key:
 			print("changing access key to %s" % k)
 			self.access_key = k
-			store_access_key(k)
+			self.settings['access-key'] = k
+
+		return False
 
 	def update_port(self):
 		hostname = get_host_name()
@@ -644,7 +603,7 @@ class WebRemoteConfig(GObject.Object, PeasGtk.Configurable):
 		self.update_port()
 
 		self.key_entry = self.builder.get_object("accesskey")
-		self.access_key = get_access_key()
+		self.access_key = self.settings['access-key']
 		if self.access_key:
 			self.key_entry.set_text(self.access_key)
 		self.key_entry.connect("focus-out-event", self.accesskey_focus_out_cb)
