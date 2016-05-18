@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2014 Richard Hughes <richard@hughsie.com> -->
 <!-- Copyright 2014 Jonathan Matthew <jonathan@d14n.org> -->
-
-<application>
-  <id type="desktop">rhythmbox.desktop</id>
+<component type="desktop">
+  <id>rhythmbox.desktop</id>
   <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0+ and GFDL-1.3</project_license>
+  <_name>Rhythmbox</_name>
+  <_summary>Play and organize your music collection</_summary>
   <description>
     <_p>
       Rhythmbox is a music management application, designed to work well under the GNOME
@@ -18,10 +20,15 @@
     </_p>
   </description>
   <url type="homepage">https://wiki.gnome.org/Apps/Rhythmbox</url>
+  <url type="bugtracker">https://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox</url>
+  <url type="donation">http://www.gnome.org/friends/</url>
+  <url type="help">https://help.gnome.org/users/rhythmbox/stable/</url>
   <screenshots>
-    <screenshot type="default">https://people.gnome.org/~jmatthew/rhythmbox-appdata-screenshot.png</screenshot>
+    <screenshot type="default">
+      <image>https://people.gnome.org/~jmatthew/rhythmbox-appdata-screenshot.png</image>
+    </screenshot>
   </screenshots>
-  <updatecontact>jmatthew@gnome.org</updatecontact>
+  <update_contact>jmatthew@gnome.org</update_contact>
   <project_group>GNOME</project_group>
   <translation type="gettext">rhythmbox</translation>
-</application>
+</component>
