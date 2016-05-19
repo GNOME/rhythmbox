@@ -502,6 +502,8 @@ impl_delete_thyself (RBDisplayPage *page)
 	g_object_unref (entry_type);
 
 	rhythmdb_commit (source->priv->db);
+
+	RB_DISPLAY_PAGE_CLASS (rb_grilo_source_parent_class)->delete_thyself (page);
 }
 
 void
