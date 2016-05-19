@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-11 18:13+0200\n"
-"PO-Revision-Date: 2016-05-11 18:14+0200\n"
+"POT-Creation-Date: 2016-05-19 15:28+0200\n"
+"PO-Revision-Date: 2016-05-19 15:29+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -116,7 +116,18 @@ msgstr "Ostatnio odtwarzane"
 msgid "My Top Rated"
 msgstr "Najwyżej oceniane"
 
-#: ../data/rhythmbox.appdata.xml.in.h:1
+#: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
+#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2384
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
+#: ../data/rhythmbox-device.desktop.in.in.h:4
+msgid "Play and organize your music collection"
+msgstr "Odtwarzanie i organizowanie kolekcji muzycznej"
+
+#: ../data/rhythmbox.appdata.xml.in.h:3
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -129,7 +140,7 @@ msgstr ""
 "odtwarzacze muzyki (w tym smartfony) oraz serwisy internetowe Last.fm i "
 "Magnatune."
 
-#: ../data/rhythmbox.appdata.xml.in.h:2
+#: ../data/rhythmbox.appdata.xml.in.h:4
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
@@ -137,12 +148,6 @@ msgstr ""
 "Rhythmbox jest wolnym oprogramowaniem, opartym na bibliotekach GTK+ i "
 "GStreamer, i jest rozszerzalny dzięki mechanizmowi wtyczek napisanych w "
 "językach Python i C."
-
-#: ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
-#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2384
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 #: ../data/rhythmbox-device.desktop.in.in.h:2
@@ -153,11 +158,6 @@ msgstr "Odtwarzacz muzyki"
 #: ../data/rhythmbox-device.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
 msgstr "Odtwarzacz muzyki Rhythmbox"
-
-#: ../data/rhythmbox.desktop.in.in.h:4
-#: ../data/rhythmbox-device.desktop.in.in.h:4
-msgid "Play and organize your music collection"
-msgstr "Odtwarzanie i organizowanie kolekcji muzycznej"
 
 #: ../data/rhythmbox.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
@@ -2004,7 +2004,7 @@ msgstr "Przeglądanie różnych lokalnych i internetowych źródeł multimediów
 msgid "Fetch more tracks"
 msgstr "Pobiera więcej ścieżek"
 
-#: ../plugins/grilo/rb-grilo-source.c:891
+#: ../plugins/grilo/rb-grilo-source.c:899
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -2814,8 +2814,8 @@ msgid "_Apply compression to prevent clipping"
 msgstr "Z_astosowanie kompresji, aby uniknąć przycinania utworów"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:7
-msgid "Learn more about ReplayGain at replaygain.org"
-msgstr "Więcej o ReplayGain można dowiedzieć się na stronie replaygain.org"
+msgid "Learn more about ReplayGain"
+msgstr "Więcej informacji o ReplayGain"
 
 #: ../plugins/sendto/sendto.plugin.in.h:1
 msgid "Send tracks"
@@ -2958,7 +2958,7 @@ msgstr "Zdalna kontrola przez sieć"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Kontrola programu Rhythmbox z przeglądarki WWW"
 
-#: ../plugins/webremote/webremote.py:623
+#: ../plugins/webremote/webremote.py:582
 msgid "Launch web remote control"
 msgstr "Uruchom zdalną kontrolę przez sieć"
 
