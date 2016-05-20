@@ -1742,7 +1742,7 @@ rb_shell_constructed (GObject *object)
 							 NULL,
 							 g_variant_new_boolean (FALSE)));
 	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
-	g_signal_connect (action, "activate", G_CALLBACK (view_party_mode_changed_cb), shell);
+	g_signal_connect (action, "change-state", G_CALLBACK (view_party_mode_changed_cb), shell);
 
 	action = G_ACTION (g_simple_action_new ("library-import", NULL));
 	g_signal_connect (action, "activate", G_CALLBACK (add_music_action_cb), shell);
@@ -2415,7 +2415,8 @@ rb_shell_set_window_title (RBShell *shell,
 static void
 view_party_mode_changed_cb (GAction *action, GVariant *parameter, RBShell *shell)
 {
-	shell->priv->party_mode = (shell->priv->party_mode == FALSE);
+	shell->priv->party_mode = g_variant_get_boolean (parameter);
+	g_simple_action_set_state (G_SIMPLE_ACTION (action), parameter);
 	rb_shell_sync_party_mode (shell);
 }
 
