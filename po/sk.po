@@ -11,8 +11,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-05-09 23:00+0000\n"
-"PO-Revision-Date: 2016-05-15 13:06+0200\n"
+"POT-Creation-Date: 2016-05-18 12:21+0000\n"
+"PO-Revision-Date: 2016-05-21 09:26+0200\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: slovenčina <>\n"
 "Language: sk\n"
@@ -112,7 +112,20 @@ msgstr "Naposledy prehrávané"
 msgid "My Top Rated"
 msgstr "Moje najobľúbenejšie"
 
-#: ../data/rhythmbox.appdata.xml.in.h:1
+# desktop entry name
+#: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
+#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2384
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+# desktop entry comment
+#: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
+#: ../data/rhythmbox-device.desktop.in.in.h:4
+msgid "Play and organize your music collection"
+msgstr "Prehráva a organizuje vašu hudobnú zbierku"
+
+#: ../data/rhythmbox.appdata.xml.in.h:3
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -125,20 +138,13 @@ msgstr ""
 "hudobné zariadenia (vrátane telefónov) a internetové hudobné služby ako Last."
 "fm a Magnatune."
 
-#: ../data/rhythmbox.appdata.xml.in.h:2
+#: ../data/rhythmbox.appdata.xml.in.h:4
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
 msgstr ""
 "Rhythmbox je slobodný softvér založený na knižnici GTK+ a GStreamer a "
 "rozšíriteľný pomocou zásuvných modulov vytvorených v jazyku Python alebo C."
-
-# desktop entry name
-#: ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
-#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2384
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
 
 # desktop entry generic name
 #: ../data/rhythmbox.desktop.in.in.h:2
@@ -151,12 +157,6 @@ msgstr "Prehrávač hudby"
 #: ../data/rhythmbox-device.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
 msgstr "Rhythmbox - prehrávač hudby"
-
-# desktop entry comment
-#: ../data/rhythmbox.desktop.in.in.h:4
-#: ../data/rhythmbox-device.desktop.in.in.h:4
-msgid "Play and organize your music collection"
-msgstr "Prehráva a organizuje vašu hudobnú zbierku"
 
 #: ../data/rhythmbox.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
@@ -2272,7 +2272,7 @@ msgstr "Prehliada rôzne lokálne a internetové multimediálne zdroje"
 msgid "Fetch more tracks"
 msgstr "Získať viac stôp"
 
-#: ../plugins/grilo/rb-grilo-source.c:891
+#: ../plugins/grilo/rb-grilo-source.c:897
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -3192,8 +3192,8 @@ msgid "_Apply compression to prevent clipping"
 msgstr "P_oužiť kompresiu aby sa predišlo clippingu"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:7
-msgid "Learn more about ReplayGain at replaygain.org"
-msgstr "Zistite viac o ReplayGain na replaygain.org"
+msgid "Learn more about ReplayGain"
+msgstr "Zistite viac o ReplayGain"
 
 # plugin title
 #: ../plugins/sendto/sendto.plugin.in.h:1
@@ -3348,7 +3348,7 @@ msgstr "Webové diaľkové ovládanie"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Ovláda Rhythmbox prostredníctvom webového prehliadača"
 
-#: ../plugins/webremote/webremote.py:623
+#: ../plugins/webremote/webremote.py:582
 msgid "Launch web remote control"
 msgstr "Spustiť webové diaľkové ovládanie"
 
