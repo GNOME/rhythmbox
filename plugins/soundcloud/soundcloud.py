@@ -503,4 +503,7 @@ class SoundCloudSource(RB.StreamingSource):
 	def do_can_copy(self):
 		return False
 
+	def do_can_pause(self):
+		return True
+
 GObject.type_register(SoundCloudSource)
