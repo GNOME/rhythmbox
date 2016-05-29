@@ -87,6 +87,8 @@ class SoundCloudSource(RB.StreamingSource):
 	def __init__(self, **kwargs):
 		super(SoundCloudSource, self).__init__(kwargs)
 		self.loader = None
+		self.container_loader = None
+		self.container_marker_path = None
 
 		self.search_count = 1
 		self.search_types = {
@@ -204,6 +206,18 @@ class SoundCloudSource(RB.StreamingSource):
 		ct = self.container_types[k]
 		self.containers.append([item.get(i) for i in ct['attributes']])
 
+	def add_container_marker(self):
+		iter = self.containers.append(['...', None, None, None, None, None])
+		self.container_marker_path = self.containers.get_path(iter)
+
+	def remove_container_marker(self):
+		if self.container_marker_path is None:
+			return
+
+		iter = self.containers.get_iter(self.container_marker_path)
+		self.containers.remove(iter)
+		self.container_marker_path = None
+
 	def search_tracks_api_cb(self, data):
 		if data is None:
 			return
@@ -214,19 +228,32 @@ class SoundCloudSource(RB.StreamingSource):
 
 		data = data.decode('utf-8')
 		stuff = json.loads(data)
-		for item in stuff:
+		for item in stuff['collection']:
 			self.add_track(db, entry_type, item)
+
+		if 'next_href' in stuff:
+			self.more_tracks_url = stuff.get('next_href')
+			self.fetch_more_button.set_sensitive(True)
+
 
 	def search_containers_api_cb(self, data):
 		if data is None:
 			return
 
+		self.remove_container_marker()
+		self.container_loader = None
+
 		entry_type = self.props.entry_type
 
 		data = data.decode('utf-8')
 		stuff = json.loads(data)
-		for item in stuff:
+		for item in stuff['collection']:
 			self.add_container(item)
+
+		if 'next_href' in stuff:
+			self.add_container_marker()
+			self.more_containers_url = stuff.get('next_href')
+
 
 	def resolve_api_cb(self, data):
 		if data is None:
@@ -255,10 +282,14 @@ class SoundCloudSource(RB.StreamingSource):
 		for t in stuff['tracks']:
 			self.add_track(db, self.props.entry_type, t)
 
-	def cancel_request(self):
+	def cancel_request(self, cancel_containers=False):
 		if self.loader:
 			self.loader.cancel()
 			self.loader = None
+
+		if self.container_loader and cancel_containers:
+			self.container_loader.cancel()
+			self.container_loader = None
 
 	def search_popup_cb(self, widget):
 		self.search_popup.popup(None, None, None, None, 3, Gtk.get_current_event_time())
@@ -277,12 +308,23 @@ class SoundCloudSource(RB.StreamingSource):
 		self.search_text = term
 		self.do_search()
 
+	def show_more_cb(self, button):
+		button.set_sensitive(False)
+		if self.more_tracks_url:
+			self.cancel_request(False)
+			print("fetching more tracks")
+			self.loader = rb.Loader()
+			self.loader.get_url(self.more_tracks_url, self.search_tracks_api_cb)
+
 	def do_search(self):
 		self.cancel_request()
 
 		base = 'https://api.soundcloud.com'
 		self.new_model()
 		self.containers.clear()
+		self.more_tracks_url = None
+		self.more_containers_url = None
+		self.fetch_more_button.set_sensitive(False)
 		term = self.search_text
 
 		if term.startswith('https://soundcloud.com/') or term.startswith("http://soundcloud.com/"):
@@ -302,7 +344,7 @@ class SoundCloudSource(RB.StreamingSource):
 		st = self.search_types[self.search_type]
 		self.container_view.get_column(0).set_title(st['title'])
 
-		url = base + st['endpoint'] + '?q=' + urllib.parse.quote(term) + '&client_id=' + CLIENT_ID
+		url = base + st['endpoint'] + '?q=' + urllib.parse.quote(term) + '&linked_partitioning=1&limit=100&client_id=' + CLIENT_ID
 		self.loader = rb.Loader()
 		if st['containers']:
 			self.scrolled.show()
@@ -321,19 +363,45 @@ class SoundCloudSource(RB.StreamingSource):
 		if aiter is None:
 			return
 
+		if self.container_marker_path is not None:
+			apath = self.containers.get_path(aiter)
+			if apath.compare(self.container_marker_path) == 0:
+				print("marker row selected")
+				return
+
 		[itemtype, url] = model.get(aiter, 1, 2)
 		if itemtype not in self.container_types:
 			return
 
 		print("loading %s %s" % (itemtype, url))
 		ct = self.container_types[itemtype]
-		trackurl = url + ct['tracks-url'] + '?client_id=' + CLIENT_ID
+		trackurl = url + ct['tracks-url'] + '?linked_partitioning=1&client_id=' + CLIENT_ID
 
 		self.loader = rb.Loader()
 		if ct['tracks-type'] == 'playlist':
 			self.loader.get_url(trackurl, self.playlist_api_cb)
 		else:
 			self.loader.get_url(trackurl, self.search_tracks_api_cb)
+
+	def maybe_more_containers(self):
+		self.more_containers_idle = 0
+		if self.container_loader is not None:
+			return False
+
+		(start, end) = self.container_view.get_visible_range()
+		if self.container_marker_path.compare(end) == 1:
+			return False
+
+		self.container_loader = rb.Loader()
+		self.container_loader.get_url(self.more_containers_url, self.search_containers_api_cb)
+		return False
+
+	def scroll_adjust_changed_cb(self, adjust):
+		if self.more_containers_url is None:
+			return
+
+		if self.more_containers_idle == 0:
+			self.more_containers_idle = GLib.idle_add(self.maybe_more_containers)
 
 	def sort_order_changed_cb(self, obj, pspec):
 		obj.resort_model()
@@ -413,8 +481,16 @@ class SoundCloudSource(RB.StreamingSource):
 		self.scrolled.set_no_show_all(True)
 		self.scrolled.hide()
 
+		self.more_containers_idle = 0
+		adj = self.scrolled.get_vadjustment()
+		adj.connect("changed", self.scroll_adjust_changed_cb)
+		adj.connect("value-changed", self.scroll_adjust_changed_cb)
+
 		self.search_entry = RB.SearchEntry(spacing=6)
 		self.search_entry.props.explicit_mode = True
+
+		self.fetch_more_button = Gtk.Button.new_with_label(_("Fetch more tracks"))
+		self.fetch_more_button.connect("clicked", self.show_more_cb)
 
 		action = Gio.SimpleAction.new("soundcloud-search-type", GLib.VariantType.new('s'))
 		action.connect("activate", self.search_type_action_cb)
@@ -437,8 +513,10 @@ class SoundCloudSource(RB.StreamingSource):
 		self.search_entry.connect("activate", self.search_entry_cb)
 		self.search_entry.connect("show-popup", self.search_popup_cb)
 		self.search_entry.set_size_request(400, -1)
-		builder.get_object("search-box").pack_start(self.search_entry, False, True, 0)
 
+		searchbox = builder.get_object("search-box")
+		searchbox.pack_start(self.search_entry, False, True, 0)
+		searchbox.pack_start(self.fetch_more_button, False, True, 0)
 
 
 		self.search_popup.attach_to_widget(self.search_entry, None)

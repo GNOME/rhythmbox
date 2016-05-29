@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.18.3 -->
+<!-- Generated with glade 3.19.0 -->
 <interface>
   <requires lib="gtk+" version="3.6"/>
   <object class="GtkListStore" id="container-store">
@@ -33,7 +33,6 @@
             <property name="width_request">150</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="shadow_type">none</property>
             <child>
               <object class="GtkTreeView" id="containers">
                 <property name="visible">True</property>
@@ -69,6 +68,7 @@
             <property name="halign">center</property>
             <property name="valign">center</property>
             <property name="border_width">6</property>
+            <property name="spacing">6</property>
             <child>
               <placeholder/>
             </child>
