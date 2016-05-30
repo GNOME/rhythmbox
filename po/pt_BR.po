@@ -26,18 +26,18 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmb"
-"ox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-05-09 23:00+0000\n"
-"PO-Revision-Date: 2016-05-11 16:29-0200\n"
-"Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=rhythmbox&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2016-05-18 12:21+0000\n"
+"PO-Revision-Date: 2016-05-30 17:17-0300\n"
+"Last-Translator: Enrico Nicoletto <liverig@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Virtaal 0.7.1\n"
+"X-Generator: Poedit 1.8.7\n"
 "X-Project-Style: gnome\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:524
@@ -121,7 +121,18 @@ msgstr "Reproduzidas recentemente"
 msgid "My Top Rated"
 msgstr "Minhas preferidas"
 
-#: ../data/rhythmbox.appdata.xml.in.h:1
+#: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
+#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2384
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
+#: ../data/rhythmbox-device.desktop.in.in.h:4
+msgid "Play and organize your music collection"
+msgstr "Reproduz e organiza a sua coleção de músicas"
+
+#: ../data/rhythmbox.appdata.xml.in.h:3
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -134,19 +145,13 @@ msgstr ""
 "rádio, dispositivos de música portáteis (incluindo telefones), e serviços de "
 "músicas na Internet tal como Last.fm e Magnatune."
 
-#: ../data/rhythmbox.appdata.xml.in.h:2
+#: ../data/rhythmbox.appdata.xml.in.h:4
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
 msgstr ""
 "Rhythmbox é um software livre, baseado no GTK+ e GStreamer, e é extensível "
 "via plug-ins escritos em Python ou C."
-
-#: ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
-#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2384
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 #: ../data/rhythmbox-device.desktop.in.in.h:2
@@ -157,11 +162,6 @@ msgstr "Reprodutor de músicas"
 #: ../data/rhythmbox-device.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
 msgstr "Reprodutor de músicas Rhythmbox"
-
-#: ../data/rhythmbox.desktop.in.in.h:4
-#: ../data/rhythmbox-device.desktop.in.in.h:4
-msgid "Play and organize your music collection"
-msgstr "Reproduz e organiza a sua coleção de músicas"
 
 #: ../data/rhythmbox.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
@@ -2011,7 +2011,7 @@ msgstr "Navegue em várias fontes de mídia localmente ou na web"
 msgid "Fetch more tracks"
 msgstr "Obter mais faixas"
 
-#: ../plugins/grilo/rb-grilo-source.c:891
+#: ../plugins/grilo/rb-grilo-source.c:897
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -2822,8 +2822,8 @@ msgid "_Apply compression to prevent clipping"
 msgstr "_Aplicar compressão para prevenir cortes"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:7
-msgid "Learn more about ReplayGain at replaygain.org"
-msgstr "Saiba mais sobre o ReplayGain em replaygain.org"
+msgid "Learn more about ReplayGain"
+msgstr "Saiba mais sobre o ReplayGain"
 
 #: ../plugins/sendto/sendto.plugin.in.h:1
 msgid "Send tracks"
@@ -2963,11 +2963,10 @@ msgid "Web remote control"
 msgstr "Controle remoto web"
 
 #: ../plugins/webremote/webremote.plugin.in.h:2
-#| msgid "Control Rhythmbox using key shortcuts"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Controle o Rhythmbox usando um navegador web"
 
-#: ../plugins/webremote/webremote.py:623
+#: ../plugins/webremote/webremote.py:582
 msgid "Launch web remote control"
 msgstr "Inicie o controle remote web"
 
