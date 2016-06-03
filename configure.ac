@@ -118,7 +118,7 @@ PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_t
 if test x$have_totem_plparser != xyes; then
    AC_MSG_ERROR([totem playlist parsing library not found or too old])
 else
-   if test "x`pkg-config --variable uselibcamel totem-plparser`" = "xno" ; then
+   if test "x`$PKG_CONFIG --variable uselibcamel totem-plparser`" = "xno" ; then
        AC_MSG_ERROR([totem playlist parsing library has Podcast parsing disabled])
    fi
 fi
@@ -303,7 +303,7 @@ fi
 AM_CONDITIONAL(USE_NOTIFY, test x"$enable_libnotify" = xyes)
 if test x$enable_libnotify = xyes ; then
     # Find out the version of LIBNOTIFY we're using
-    libnotify_version=`pkg-config --modversion libnotify`
+    libnotify_version=`$PKG_CONFIG --modversion libnotify`
     LIBNOTIFY_VERSION_MAJOR=`echo $libnotify_version | awk -F. '{print $1}'`
     LIBNOTIFY_VERSION_MINOR=`echo $libnotify_version | awk -F. '{print $2}'`
     LIBNOTIFY_VERSION_MICRO=`echo $libnotify_version | awk -F. '{print $3}'`
