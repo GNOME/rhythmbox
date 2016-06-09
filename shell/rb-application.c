@@ -775,6 +775,8 @@ rb_application_link_shared_menus (RBApplication *app, GMenu *menu)
 {
 	int i;
 
+	g_return_if_fail (menu != NULL);
+
 	for (i = 0; i < g_menu_model_get_n_items (G_MENU_MODEL (menu)); i++) {
 		GMenuModel *symlink_menu;
 		GMenuLinkIter *iter;
