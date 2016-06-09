@@ -449,16 +449,6 @@ settings_changed_cb (GSettings *settings, const char *key, RBDaapPlugin *plugin)
 		} else {
 			stop_browsing (plugin);
 		}
-	} else if (g_strcmp0 (key, "enable-sharing") == 0) {
-		GtkToggleButton *password_check;
-		GtkWidget *password_entry;
-		gboolean enabled = g_settings_get_boolean (settings, key);
-
-		password_check = GTK_TOGGLE_BUTTON (gtk_builder_get_object (plugin->builder, "daap_password_check"));
-		password_entry = GTK_WIDGET (gtk_builder_get_object (plugin->builder, "daap_password_entry"));
-
-		gtk_widget_set_sensitive (password_entry, enabled && gtk_toggle_button_get_active (password_check));
-		gtk_widget_set_sensitive (GTK_WIDGET (password_check), enabled);
 	}
 }
 
@@ -679,6 +669,22 @@ share_password_entry_focus_out_event_cb (GtkEntry *entry,
 }
 
 static void
+config_settings_changed_cb (GSettings *settings, const char *key, RBDaapPlugin *plugin)
+{
+	if (g_strcmp0 (key, "enable-sharing") == 0) {
+		GtkToggleButton *password_check;
+		GtkWidget *password_entry;
+		gboolean enabled = g_settings_get_boolean (settings, key);
+
+		password_check = GTK_TOGGLE_BUTTON (gtk_builder_get_object (plugin->builder, "daap_password_check"));
+		password_entry = GTK_WIDGET (gtk_builder_get_object (plugin->builder, "daap_password_entry"));
+
+		gtk_widget_set_sensitive (password_entry, enabled && gtk_toggle_button_get_active (password_check));
+		gtk_widget_set_sensitive (GTK_WIDGET (password_check), enabled);
+	}
+}
+
+static void
 update_config_widget (RBDaapPlugin *plugin)
 {
 	GtkWidget *check;
@@ -699,6 +705,8 @@ update_config_widget (RBDaapPlugin *plugin)
 
 	g_settings_bind (plugin->settings, "enable-sharing", check, "active", G_SETTINGS_BIND_DEFAULT);
 	g_settings_bind (plugin->dacp_settings, "enable-remote", remote_check, "active", G_SETTINGS_BIND_DEFAULT);
+
+	g_signal_connect_object (plugin->settings, "changed", G_CALLBACK (config_settings_changed_cb), plugin, 0);
 
 	/*g_signal_connect (check, "toggled", G_CALLBACK (share_check_button_toggled_cb), plugin->builder);*/
 
