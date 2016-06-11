@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# GunChleoc <fios@foramnagaidhlig.net>, 2014.
+# GunChleoc <fios@foramnagaidhlig.net>, 2014, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythm"
 "box&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-09-23 07:09+0000\n"
-"PO-Revision-Date: 2014-09-23 10:44+0100\n"
+"POT-Creation-Date: 2016-05-18 12:21+0000\n"
+"PO-Revision-Date: 2016-06-11 10:02+0100\n"
 "Last-Translator: GunChleoc <fios@foramnagaidhlig.net>\n"
 "Language-Team: Fòram na Gàidhlig\n"
 "Language: gd\n"
@@ -20,7 +20,7 @@ msgstr ""
 "X-Generator: Virtaal 0.7.1\n"
 "X-Project-Style: gnome\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:512
+#: ../backends/gstreamer/rb-encoder-gst.c:524
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr ""
@@ -28,70 +28,70 @@ msgstr ""
 "ann an %s"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:524
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2892
+#: ../backends/gstreamer/rb-player-gst.c:521
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2993
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Cha b' urrainn dhuinn uidheam an às-chuir fhosgladh: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:672
+#: ../backends/gstreamer/rb-player-gst.c:670
 #, c-format
 msgid "Failed to create playbin element; check your GStreamer installation"
 msgstr ""
 "Cha b' urrainn dhuinn an eileamaid playbin a chruthachadh; thoir sùil air an "
 "stàladh de GStreamer agad"
 
-#: ../backends/gstreamer/rb-player-gst.c:713
+#: ../backends/gstreamer/rb-player-gst.c:711
 #, c-format
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr ""
 "Cha b' urrainn dhuinn an eileamaid %s a chruthachadh; thoir sùil air an "
 "stàladh de GStreamer agad"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1111
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1125
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1133
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1147
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Cha b' urrainn dhuinn an sruth ùr a cheangal ri pìob-loidhne GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1169
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1191
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Dh'fhàillig tòiseachadh an t-srutha ùir"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2819
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2906
 #, c-format
 msgid "Failed to open output device"
 msgstr "Dh'fhàillig fogladh uidheam an às-chuir"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3168
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3242
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3297
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3381
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Cha b' urrainn dhuinn an eileamaid GStreamer a chruthachadh; thoir sùil air "
 "an stàladh agad"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3182
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3311
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Cha b' urrainn dhuinn eileamaid às-chur na fuaime a chruthachadh; thoir sùil "
 "air an stàladh agad"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3216
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3259
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3286
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3296
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3306
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3345
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3398
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3425
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3435
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3445
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Cha b' urrainn dhuinn pìob-loidhne GStreamer a cheangal; thoir sùil air an "
 "stàladh agad"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3401
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3540
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr ""
@@ -109,11 +109,38 @@ msgstr "Air a chluich o chionn goirid"
 msgid "My Top Rated"
 msgstr "Na gràinnean-mullaich agamsa"
 
-#: ../data/rhythmbox.desktop.in.in.h:1
+#: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
-#: ../shell/rb-shell.c:493 ../shell/rb-shell.c:2372
+#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2384
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
+
+#: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
+#: ../data/rhythmbox-device.desktop.in.in.h:4
+msgid "Play and organize your music collection"
+msgstr "Cluich agus cum rian air a' chruinneachadh chiùil agad"
+
+#: ../data/rhythmbox.appdata.xml.in.h:3
+msgid ""
+"Rhythmbox is a music management application, designed to work well under the "
+"GNOME desktop. In addition to music stored on your computer, it supports "
+"network shares, podcasts, radio streams, portable music devices (including "
+"phones), and internet music services such as Last.fm and Magnatune."
+msgstr ""
+"Cuiridh tu rian air a' cheòl agad le Rhythmbox 's a chaidh a dhealbhadh ach "
+"an obraich e gu ma air an deasg GNOME. A bharrachd air a' cheòl a tha air a' "
+"choimpiutair agad, cuiridh e taic ri co-roinneadh lìonraidh, pod-chraoladh, "
+"sruthadh rèidio, uidheaman ciùil so-ghiùlan (a' gabhail a-steach fònaichean) "
+"agus seirbheisean ciùil air loidhne mar Last.fm agus Magnatune."
+
+#: ../data/rhythmbox.appdata.xml.in.h:4
+msgid ""
+"Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
+"via plugins written in Python or C."
+msgstr ""
+"'S e bathar-bog saor a tha sa Rhythmbox 's tha e stèidhichte air GTK+ agus "
+"GStreamer. Gabhaidh a leudachadh le plugain a ghabhas sgrìobhadh ann an "
+"Python no C."
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 #: ../data/rhythmbox-device.desktop.in.in.h:2
@@ -124,11 +151,6 @@ msgstr "Cluicheadair ciùil"
 #: ../data/rhythmbox-device.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
 msgstr "Cluicheadair ciùil Rhythmbox"
-
-#: ../data/rhythmbox.desktop.in.in.h:4
-#: ../data/rhythmbox-device.desktop.in.in.h:4
-msgid "Play and organize your music collection"
-msgstr "Cluich agus cum rian air a' chruinneachadh chiùil agad"
 
 #: ../data/rhythmbox.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
@@ -164,7 +186,7 @@ msgstr "Bàr na staide"
 msgid "Song Position Slider"
 msgstr "Sleamhnachan ionad an òrain"
 
-#: ../data/ui/app-menu.ui.h:8
+#: ../data/ui/app-menu.ui.h:8 ../plugins/artsearch/songinfo.py:64
 msgid "Album Art"
 msgstr "Obair-ealain an albaim"
 
@@ -184,7 +206,7 @@ msgstr "P_lugain"
 msgid "_Preferences"
 msgstr "_Roghainnean"
 
-#: ../data/ui/app-menu.ui.h:13
+#: ../data/ui/app-menu.ui.h:13 ../shell/rb-shell-preferences.c:195
 msgid "_Help"
 msgstr "Cob_hair"
 
@@ -197,8 +219,7 @@ msgid "_Quit"
 msgstr "_Fàg an-seo"
 
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
-#: ../data/ui/podcast-popups.ui.h:9
-#: ../plugins/magnatune/magnatune-popup.ui.h:1
+#: ../data/ui/podcast-popups.ui.h:9 ../plugins/magnatune/magnatune-popup.ui.h:1
 msgid "Add to Queue"
 msgstr "Cuir ris a' chiutha"
 
@@ -265,11 +286,15 @@ msgstr "Cruthaich liosta-chluiche a dh'ùraicheas gu fèin-obrachail ma:"
 msgid "A_dd if any criteria are matched"
 msgstr "Cuir ris ma fhreagras e ri cuspair-_deuchainn sam bith"
 
-#: ../data/ui/create-playlist.ui.h:7
+#: ../data/ui/create-playlist.ui.h:7 ../widgets/rb-uri-dialog.c:161
+msgid "_Add"
+msgstr "_Cuir ris"
+
+#: ../data/ui/create-playlist.ui.h:8
 msgid "_Limit to: "
 msgstr "Cui_ngich gu: "
 
-#: ../data/ui/create-playlist.ui.h:8
+#: ../data/ui/create-playlist.ui.h:9
 msgid "_When sorted by:"
 msgstr "_Nuair a bhios e air a sheòrsachadh a-rèir:"
 
@@ -313,6 +338,16 @@ msgstr "Dì-thagh na h-uile"
 msgid "Add to Play Queue"
 msgstr "Cuir ris a' chiutha chluiche"
 
+#: ../data/ui/encoding-settings.ui.h:1
+msgid "_Install additional software required to use this format"
+msgstr ""
+"Stàla_ich bathar-bog a bharrachd air a bheil feum mus gabh am fòrmat seo a "
+"chleachdadh"
+
+#: ../data/ui/encoding-settings.ui.h:2
+msgid "Transcode lossless files into this format"
+msgstr "Tar-còdaich faidhlichean gun chall dhan fhòrmat seo"
+
 #: ../data/ui/general-prefs.ui.h:1
 msgid "Browser Views"
 msgstr "Seallaidhean a'  bhrabhsair"
@@ -338,60 +373,60 @@ msgid "Track _number"
 msgstr "Àireamh a_n traca"
 
 #: ../data/ui/general-prefs.ui.h:7
-msgid "_Artist"
-msgstr "Ne_ach-ciùil"
-
-#: ../data/ui/general-prefs.ui.h:8
-msgid "_Composer"
-msgstr "_Ceòl-sgrìobhaiche"
-
-#: ../data/ui/general-prefs.ui.h:9
-msgid "A_lbum"
-msgstr "A_lbam"
-
-#: ../data/ui/general-prefs.ui.h:10
-msgid "_Year"
-msgstr "_Bliadhna"
-
-#: ../data/ui/general-prefs.ui.h:11
 msgid "_Last played"
 msgstr "Na chaidh a ch_luich turas mu dheireadh"
 
+#: ../data/ui/general-prefs.ui.h:8
+msgid "_Artist"
+msgstr "Ne_ach-ciùil"
+
+#: ../data/ui/general-prefs.ui.h:9
+msgid "_Composer"
+msgstr "_Ceòl-sgrìobhaiche"
+
+#: ../data/ui/general-prefs.ui.h:10
+msgid "A_lbum"
+msgstr "A_lbam"
+
+#: ../data/ui/general-prefs.ui.h:11
+msgid "_Year"
+msgstr "_Bliadhna"
+
 #: ../data/ui/general-prefs.ui.h:12
-msgid "_Genre"
-msgstr "_Gnè"
+msgid "_Quality"
+msgstr "_Càileachd"
 
 #: ../data/ui/general-prefs.ui.h:13
-msgid "Da_te added"
-msgstr "Cuin a chaidh a chur _ris"
+msgid "Lo_cation"
+msgstr "Iona_d"
 
 #: ../data/ui/general-prefs.ui.h:14
-msgid "_Play count"
-msgstr "Co _mheud turas a chaidh a chluich"
+msgid "Ti_me"
+msgstr "À_m"
 
 #: ../data/ui/general-prefs.ui.h:15
-msgid "C_omment"
-msgstr "B_eachd"
+msgid "_Rating"
+msgstr "_Rangachadh"
 
 #: ../data/ui/general-prefs.ui.h:16
 msgid "_BPM"
 msgstr "_BPM"
 
 #: ../data/ui/general-prefs.ui.h:17
-msgid "_Rating"
-msgstr "_Rangachadh"
+msgid "C_omment"
+msgstr "B_eachd"
 
 #: ../data/ui/general-prefs.ui.h:18
-msgid "Ti_me"
-msgstr "À_m"
+msgid "_Play count"
+msgstr "Co _mheud turas a chaidh a chluich"
 
 #: ../data/ui/general-prefs.ui.h:19
-msgid "Lo_cation"
-msgstr "Iona_d"
+msgid "Da_te added"
+msgstr "Cuin a chaidh a chur _ris"
 
 #: ../data/ui/general-prefs.ui.h:20
-msgid "_Quality"
-msgstr "_Càileachd"
+msgid "_Genre"
+msgstr "_Gnè"
 
 #: ../data/ui/import-dialog.ui.h:1
 msgid "Select a location containing music to add to your library:"
@@ -449,18 +484,9 @@ msgstr "Am _fòrmat as fhearr let:"
 msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
 msgstr "Neach-ciùil/Neach-ciùil - Albam/Neach-ciùil (Albam) - 01 - Tiotal.ogg"
 
-#: ../data/ui/library-prefs.ui.h:10
-msgid "Format settings:"
-msgstr "Roghainnean an fhòrmait:"
-
-#: ../data/ui/library-prefs.ui.h:11
-msgid "_Install additional software required to use this format"
-msgstr ""
-"Stàla_ich bathar-bog a bharrachd air a bheil feum mus gabh am fòrmat seo a "
-"chleachdadh"
-
 #: ../data/ui/library-toolbar.ui.h:1 ../data/ui/playlist-toolbar.ui.h:1
 #: ../data/ui/podcast-toolbar.ui.h:1 ../data/ui/queue-toolbar.ui.h:1
+#: ../plugins/android/android-toolbar.ui.h:1
 #: ../plugins/audiocd/audiocd-toolbar.ui.h:1
 #: ../plugins/daap/daap-toolbar.ui.h:1
 #: ../plugins/fmradio/fmradio-toolbar.ui.h:1
@@ -472,7 +498,8 @@ msgid "Edit"
 msgstr "Deasaich"
 
 #: ../data/ui/library-toolbar.ui.h:2 ../data/ui/playlist-toolbar.ui.h:2
-#: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/daap/daap-toolbar.ui.h:2
+#: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/android/android-toolbar.ui.h:2
+#: ../plugins/daap/daap-toolbar.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:2
 #: ../plugins/grilo/rb-grilo-source.c:346 ../plugins/ipod/ipod-toolbar.ui.h:2
 #: ../plugins/iradio/iradio-toolbar.ui.h:2
@@ -482,7 +509,8 @@ msgid "Browse"
 msgstr "Brabhsaich"
 
 #: ../data/ui/library-toolbar.ui.h:3 ../data/ui/playlist-toolbar.ui.h:3
-#: ../data/ui/podcast-toolbar.ui.h:3 ../plugins/daap/daap-toolbar.ui.h:3
+#: ../data/ui/podcast-toolbar.ui.h:3 ../plugins/android/android-toolbar.ui.h:3
+#: ../plugins/daap/daap-toolbar.ui.h:3
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:3
 #: ../plugins/ipod/ipod-toolbar.ui.h:3 ../plugins/iradio/iradio-toolbar.ui.h:3
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:3
@@ -493,31 +521,46 @@ msgstr "Seall na h-uile"
 msgid "Media Player Properties"
 msgstr "Roghainnean a' chluicheadair mheadhanan"
 
-#: ../data/ui/media-player-properties.ui.h:2
+#: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
+#: ../plugins/iradio/rb-station-properties-dialog.c:186
+#: ../podcast/rb-feed-podcast-properties-dialog.c:130
+#: ../podcast/rb-podcast-properties-dialog.c:296 ../shell/rb-application.c:144
+#: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:373
+#: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
+msgid "_Close"
+msgstr "_Dùin"
+
+#: ../data/ui/media-player-properties.ui.h:3
 msgid "Information"
 msgstr "Fiosrachadh"
 
 #. Translators: This refers to the usage of media space
-#: ../data/ui/media-player-properties.ui.h:4
+#: ../data/ui/media-player-properties.ui.h:5
 msgid "Volume usage"
 msgstr "Cleachdadh an draibh"
 
-#: ../data/ui/media-player-properties.ui.h:5
+#: ../data/ui/media-player-properties.ui.h:6
+#| msgid "_Preferred format:"
+msgid "Preferred format"
+msgstr "Am fòrmat as fhearr leat"
+
+#: ../data/ui/media-player-properties.ui.h:7
 #: ../data/ui/podcast-feed-properties.ui.h:6
-#: ../data/ui/podcast-properties.ui.h:5 ../data/ui/song-info-multiple.ui.h:9
-#: ../data/ui/song-info.ui.h:13 ../plugins/iradio/station-properties.ui.h:4
+#: ../data/ui/podcast-properties.ui.h:5 ../data/ui/song-info-multiple.ui.h:11
+#: ../data/ui/song-info.ui.h:15 ../plugins/iradio/station-properties.ui.h:4
 msgid "Basic"
 msgstr "Bunasach"
 
-#: ../data/ui/media-player-properties.ui.h:6 ../data/ui/sync-dialog.ui.h:1
+#: ../data/ui/media-player-properties.ui.h:8 ../data/ui/sync-dialog.ui.h:1
 msgid "Sync Preferences"
 msgstr "Roghainnean an t-sioncronachaidh"
 
-#: ../data/ui/media-player-properties.ui.h:7 ../data/ui/sync-dialog.ui.h:2
+#: ../data/ui/media-player-properties.ui.h:9 ../data/ui/sync-dialog.ui.h:2
 msgid "Sync Preview"
 msgstr "Ro-shealladh an t-sioncronachaidh"
 
-#: ../data/ui/media-player-properties.ui.h:8
+#: ../data/ui/media-player-properties.ui.h:10
+#: ../plugins/android/android-toolbar.ui.h:5
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:6
 #: ../plugins/ipod/ipod-toolbar.ui.h:6 ../plugins/mtpdevice/mtp-toolbar.ui.h:6
 msgid "Sync"
@@ -567,11 +610,25 @@ msgstr "A-rèir leudachain"
 msgid "Save Playlist"
 msgstr "Sàbhail an liosta-chluiche"
 
-#: ../data/ui/playlist-save.ui.h:3
+#: ../data/ui/playlist-save.ui.h:3 ../plugins/artsearch/songinfo.py:135
+#: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:534
+#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:188
+#: ../widgets/rb-alert-dialog.c:380 ../widgets/rb-alert-dialog.c:397
+#: ../widgets/rb-dialog.c:131 ../widgets/rb-dialog.c:139
+#: ../widgets/rb-query-creator.c:191 ../widgets/rb-uri-dialog.c:158
+msgid "_Cancel"
+msgstr "_Sguir dheth"
+
+#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:202
+#: ../widgets/rb-dialog.c:140
+msgid "_Save"
+msgstr "_Sàbhail"
+
+#: ../data/ui/playlist-save.ui.h:5
 msgid "Select playlist format:"
 msgstr "Tagh fòrmat na liosta-chluiche:"
 
-#: ../data/ui/playlist-save.ui.h:4
+#: ../data/ui/playlist-save.ui.h:6
 msgid "Playlist format"
 msgstr "Fòrmat na liosta-chluiche"
 
@@ -630,7 +687,7 @@ msgid "Copyright:"
 msgstr "Còir-lethbhreac:"
 
 #: ../data/ui/podcast-feed-properties.ui.h:10
-#: ../data/ui/podcast-properties.ui.h:13 ../data/ui/song-info.ui.h:28
+#: ../data/ui/podcast-properties.ui.h:13 ../data/ui/song-info.ui.h:30
 #: ../plugins/iradio/station-properties.ui.h:10
 msgid "Details"
 msgstr "Mion-fhiosrachadh"
@@ -651,7 +708,8 @@ msgstr "Ùraich inbhir a' phod-chraolaidh"
 msgid "Delete Podcast Feed"
 msgstr "Sguab às inbhir a' phod-chraolaidh"
 
-#: ../data/ui/podcast-popups.ui.h:5 ../plugins/fmradio/fmradio-popup.ui.h:2
+#: ../data/ui/podcast-popups.ui.h:5 ../plugins/android/android-toolbar.ui.h:4
+#: ../plugins/fmradio/fmradio-popup.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:4
 #: ../plugins/ipod/ipod-toolbar.ui.h:4 ../plugins/iradio/iradio-popup.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:4
@@ -667,7 +725,7 @@ msgid "Cancel Download"
 msgstr "Sgur dhen luchdadh a-nuas"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1258 ../sources/rb-media-player-source.c:933
+#: ../podcast/rb-podcast-source.c:1227 ../sources/rb-media-player-source.c:1121
 msgid "Delete"
 msgstr "Sguab às"
 
@@ -692,12 +750,12 @@ msgid "Podcast Downloads"
 msgstr "Prod-chraolaidhean a chaidh a luchdadh a-nuas"
 
 #: ../data/ui/podcast-prefs.ui.h:6
-msgid "_Download location:"
-msgstr "Iona_d nan luchdadh a-nuas:"
-
-#: ../data/ui/podcast-prefs.ui.h:7
 msgid "Check for _new episodes:"
 msgstr "Thoir sùil a bheil eapasod ùr a_nn:"
+
+#: ../data/ui/podcast-prefs.ui.h:7
+msgid "_Download location:"
+msgstr "Iona_d nan luchdadh a-nuas:"
 
 #: ../data/ui/podcast-prefs.ui.h:8
 msgid "Select Folder For Podcasts"
@@ -712,26 +770,26 @@ msgid "Date:"
 msgstr "Ceann-là:"
 
 #: ../data/ui/podcast-properties.ui.h:7 ../data/ui/song-info-multiple.ui.h:4
-#: ../data/ui/song-info.ui.h:24 ../plugins/iradio/station-properties.ui.h:9
+#: ../data/ui/song-info.ui.h:26 ../plugins/iradio/station-properties.ui.h:9
 msgid "_Rating:"
 msgstr "_Rangachadh:"
 
-#: ../data/ui/podcast-properties.ui.h:8 ../data/ui/song-info.ui.h:23
+#: ../data/ui/podcast-properties.ui.h:8 ../data/ui/song-info.ui.h:25
 #: ../plugins/iradio/station-properties.ui.h:8
 msgid "Play count:"
 msgstr "Co mheud turas a chaidh a chluich:"
 
-#: ../data/ui/podcast-properties.ui.h:9 ../data/ui/song-info.ui.h:22
+#: ../data/ui/podcast-properties.ui.h:9 ../data/ui/song-info.ui.h:24
 #: ../plugins/iradio/station-properties.ui.h:7
 msgid "Last played:"
 msgstr "Air a chluich an turas mu dheireadh:"
 
-#: ../data/ui/podcast-properties.ui.h:10 ../data/ui/song-info.ui.h:20
+#: ../data/ui/podcast-properties.ui.h:10 ../data/ui/song-info.ui.h:22
 #: ../plugins/iradio/station-properties.ui.h:6
 msgid "Bitrate:"
 msgstr "Reat bhiotaichean:"
 
-#: ../data/ui/podcast-properties.ui.h:11 ../data/ui/song-info.ui.h:25
+#: ../data/ui/podcast-properties.ui.h:11 ../data/ui/song-info.ui.h:27
 msgid "Duration:"
 msgstr "Faid:"
 
@@ -763,7 +821,7 @@ msgstr "Falamhaich an ciutha cluiche"
 msgid "Shuffle"
 msgstr "Air thuaiream"
 
-#: ../data/ui/queue-toolbar.ui.h:3
+#: ../data/ui/queue-toolbar.ui.h:3 ../plugins/artsearch/songinfo.py:52
 msgid "Clear"
 msgstr "Falamhaich"
 
@@ -799,23 +857,33 @@ msgstr "Neach-ciùi_l an albaim:"
 msgid "_Composer:"
 msgstr "_Ceòl-sgrìobhaiche:"
 
-#: ../data/ui/song-info-multiple.ui.h:10 ../data/ui/song-info.ui.h:14
+#. To translators: the context is
+#: ../data/ui/song-info-multiple.ui.h:9 ../data/ui/song-info.ui.h:13
+msgid "of"
+msgstr "à"
+
+#: ../data/ui/song-info-multiple.ui.h:10
+#| msgid "Play count:"
+msgid "_Track count:"
+msgstr "Àireamh nan _traca:"
+
+#: ../data/ui/song-info-multiple.ui.h:12 ../data/ui/song-info.ui.h:16
 msgid "Albu_m sort order:"
 msgstr "Òrdugh seòrsachaidh an albai_m:"
 
-#: ../data/ui/song-info-multiple.ui.h:11 ../data/ui/song-info.ui.h:15
+#: ../data/ui/song-info-multiple.ui.h:13 ../data/ui/song-info.ui.h:17
 msgid "_Artist sort order:"
 msgstr "Òrdugh seòrsachaidh _an neach-chiùil:"
 
-#: ../data/ui/song-info-multiple.ui.h:12 ../data/ui/song-info.ui.h:16
+#: ../data/ui/song-info-multiple.ui.h:14 ../data/ui/song-info.ui.h:18
 msgid "Album a_rtist sort order:"
 msgstr "Ò_rdugh seòrsachaidh neach-ciùil an albaim:"
 
-#: ../data/ui/song-info-multiple.ui.h:13 ../data/ui/song-info.ui.h:17
+#: ../data/ui/song-info-multiple.ui.h:15 ../data/ui/song-info.ui.h:19
 msgid "_Composer sort order:"
 msgstr "Òrdugh seòrsachaidh nan _ceòl-sgrìobhaichean:"
 
-#: ../data/ui/song-info-multiple.ui.h:14 ../data/ui/song-info.ui.h:18
+#: ../data/ui/song-info-multiple.ui.h:16 ../data/ui/song-info.ui.h:20
 msgid "Sorting"
 msgstr "Seòrsachadh"
 
@@ -828,32 +896,30 @@ msgid "Track _number:"
 msgstr "Àireamh a_n traca:"
 
 #: ../data/ui/song-info.ui.h:8
-#| msgid "BPM:"
 msgid "_BPM:"
 msgstr "_BPM:"
 
 #: ../data/ui/song-info.ui.h:9
-#| msgid "_Comment:"
 msgid "Comm_ent:"
 msgstr "B_eachd:"
 
-#: ../data/ui/song-info.ui.h:12 ../plugins/iradio/station-properties.ui.h:3
+#: ../data/ui/song-info.ui.h:14 ../plugins/iradio/station-properties.ui.h:3
 msgid "Error message"
 msgstr "Teachdaireachd na mearachd"
 
-#: ../data/ui/song-info.ui.h:19
+#: ../data/ui/song-info.ui.h:21
 msgid "File name:"
 msgstr "Ainm an fhaidhle:"
 
-#: ../data/ui/song-info.ui.h:21
+#: ../data/ui/song-info.ui.h:23
 msgid "Location:"
 msgstr "Ionad:"
 
-#: ../data/ui/song-info.ui.h:26
+#: ../data/ui/song-info.ui.h:28
 msgid "File size:"
 msgstr "Meud an fhaidhle:"
 
-#: ../data/ui/song-info.ui.h:27
+#: ../data/ui/song-info.ui.h:29
 msgid "Date added:"
 msgstr "Cuin a chaidh a chur ris:"
 
@@ -876,9 +942,9 @@ msgstr "Faidhlichean a chaidh a thoirt air falbh:"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3625 ../widgets/rb-entry-view.c:940
-#: ../widgets/rb-entry-view.c:1564 ../widgets/rb-entry-view.c:1577
-#: ../widgets/rb-song-info.c:1504
+#: ../rhythmdb/rhythmdb.c:3799 ../widgets/rb-entry-view.c:943
+#: ../widgets/rb-entry-view.c:1567 ../widgets/rb-entry-view.c:1580
+#: ../widgets/rb-song-info.c:1545
 msgid "Never"
 msgstr "Chan ann idir"
 
@@ -921,95 +987,101 @@ msgstr "%d %b %Y"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:669
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
+#: ../plugins/android/rb-android-source.c:698
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
+#: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:587
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:591
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
 #: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
-#: ../plugins/generic-player/rb-generic-player-source.c:1157
-#: ../plugins/ipod/rb-ipod-source.c:657
+#: ../plugins/generic-player/rb-generic-player-source.c:1088
+#: ../plugins/ipod/rb-ipod-source.c:658
 #: ../plugins/iradio/rb-iradio-source.c:539
 #: ../plugins/iradio/rb-iradio-source.c:1060
 #: ../plugins/iradio/rb-station-properties-dialog.c:489
 #: ../plugins/lyrics/lyrics.py:69 ../plugins/lyrics/lyrics.py:71
-#: ../plugins/mtpdevice/rb-mtp-source.c:649
-#: ../plugins/mtpdevice/rb-mtp-source.c:1132
-#: ../plugins/mtpdevice/rb-mtp-source.c:1518
-#: ../plugins/notification/rb-notification-plugin.c:496
+#: ../plugins/mtpdevice/rb-mtp-source.c:650
+#: ../plugins/mtpdevice/rb-mtp-source.c:1143
+#: ../plugins/mtpdevice/rb-mtp-source.c:1522
+#: ../plugins/notification/rb-notification-plugin.c:510
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1891
-#: ../podcast/rb-podcast-manager.c:1990
-#: ../podcast/rb-podcast-properties-dialog.c:622
-#: ../podcast/rb-podcast-properties-dialog.c:717
-#: ../podcast/rb-podcast-source.c:797 ../remote/dbus/rb-client.c:156
-#: ../rhythmdb/rhythmdb.c:2019 ../rhythmdb/rhythmdb.c:2025
-#: ../rhythmdb/rhythmdb.c:2040 ../rhythmdb/rhythmdb.c:2074
-#: ../rhythmdb/rhythmdb.c:5389 ../rhythmdb/rhythmdb.c:5394
-#: ../rhythmdb/rhythmdb-tree.c:1351 ../rhythmdb/rhythmdb-tree.c:1355
-#: ../rhythmdb/rhythmdb-tree.c:1359 ../rhythmdb/rhythmdb-tree.c:1363
-#: ../shell/rb-shell-player.c:870 ../shell/rb-shell-player.c:2717
-#: ../shell/rb-shell-player.c:2719 ../widgets/rb-entry-view.c:992
-#: ../widgets/rb-entry-view.c:1014 ../widgets/rb-entry-view.c:1505
-#: ../widgets/rb-entry-view.c:1517 ../widgets/rb-entry-view.c:1529
-#: ../widgets/rb-header.c:1262 ../widgets/rb-header.c:1288
-#: ../widgets/rb-song-info.c:933 ../widgets/rb-song-info.c:945
-#: ../widgets/rb-song-info.c:1192 ../widgets/rb-song-info.c:1531
+#: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1892
+#: ../podcast/rb-podcast-manager.c:1991
+#: ../podcast/rb-podcast-properties-dialog.c:642
+#: ../podcast/rb-podcast-properties-dialog.c:712
+#: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:202
+#: ../remote/dbus/rb-client.c:715 ../rhythmdb/rhythmdb.c:2066
+#: ../rhythmdb/rhythmdb.c:2072 ../rhythmdb/rhythmdb.c:2087
+#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5563
+#: ../rhythmdb/rhythmdb.c:5569 ../rhythmdb/rhythmdb.c:5574
+#: ../rhythmdb/rhythmdb.c:5585 ../rhythmdb/rhythmdb.c:5589
+#: ../rhythmdb/rhythmdb-entry-type.c:301
+#: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
+#: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
+#: ../rhythmdb/rhythmdb-tree.c:1372 ../shell/rb-shell-player.c:870
+#: ../shell/rb-shell-player.c:2717 ../shell/rb-shell-player.c:2719
+#: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
+#: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1285
+#: ../widgets/rb-header.c:1311 ../widgets/rb-song-info.c:949
+#: ../widgets/rb-song-info.c:961 ../widgets/rb-song-info.c:1233
+#: ../widgets/rb-song-info.c:1572
 msgid "Unknown"
 msgstr "Chan eil fhios"
 
-#: ../lib/rb-file-helpers.c:451
+#: ../lib/rb-file-helpers.c:447
 #, c-format
 msgid "Too many symlinks"
 msgstr "Cus symlinks"
 
-#: ../lib/rb-file-helpers.c:1285
+#: ../lib/rb-file-helpers.c:1281
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Chan eil àite saor aig %s ri fhaighinn: %s"
 
-#: ../lib/rb-util.c:650 ../plugins/context/tmpl/album-tmpl.html:21
-#: ../remote/dbus/rb-client.c:158
+#: ../lib/rb-util.c:566 ../plugins/context/tmpl/album-tmpl.html:21
+#: ../remote/dbus/rb-client.c:204
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:652 ../plugins/context/tmpl/album-tmpl.html:19
-#: ../remote/dbus/rb-client.c:160
+#: ../lib/rb-util.c:568 ../plugins/context/tmpl/album-tmpl.html:19
+#: ../remote/dbus/rb-client.c:206
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:716
+#: ../lib/rb-util.c:632
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d à %d:%02d air fhàgail"
 
-#: ../lib/rb-util.c:720
+#: ../lib/rb-util.c:636
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d à %d:%02d:%02d air fhàgail"
 
-#: ../lib/rb-util.c:725
+#: ../lib/rb-util.c:641
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d à %d:%02d"
 
-#: ../lib/rb-util.c:729
+#: ../lib/rb-util.c:645
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d à %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:499
+#: ../metadata/rb-metadata-gst.c:509
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
 msgstr ""
 "Chan urrainn dhuinn tagaichean a sgrìobhadh san fhaidhle seo a chionn 's gu "
 "bheil iomadh sruth ann"
 
-#: ../metadata/rb-metadata-gst.c:539
+#: ../metadata/rb-metadata-gst.c:549
 #, c-format
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
@@ -1017,14 +1089,14 @@ msgstr ""
 "Chan urrainn dhuinn tagaichean a sgrìobhadh san fhaidhle seo a chionn 's "
 "nach deach a chòdachadh ann am fòrmat ris a bheil taic"
 
-#: ../metadata/rb-metadata-gst.c:671
+#: ../metadata/rb-metadata-gst.c:681
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr ""
 "Cha b' urrainn dhuinn eileamaid a' bhun-tùis a chruthachadh; thoir sùil air "
 "an stàladh"
 
-#: ../metadata/rb-metadata-gst.c:681
+#: ../metadata/rb-metadata-gst.c:691
 #, c-format
 msgid ""
 "Failed to create the 'decodebin' element; check your GStreamer installation"
@@ -1032,7 +1104,7 @@ msgstr ""
 "Cha b' urrainn dhuinn an eileamaid \"decodebin\" a chruthachadh; thoir sùil "
 "air an stàladh de GStreamer agad"
 
-#: ../metadata/rb-metadata-gst.c:690
+#: ../metadata/rb-metadata-gst.c:700
 #, c-format
 msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
@@ -1041,10 +1113,80 @@ msgstr ""
 "Cha b' urrainn dhuinn an eileamaid \"giostreamsink\" a chruthachadh; thoir "
 "sùil air an stàladh de GStreamer agad"
 
-#: ../metadata/rb-metadata-gst.c:773
+#: ../metadata/rb-metadata-gst.c:783
 #, c-format
 msgid "File corrupted during write"
 msgstr "Dh'fhàs am faidhle coirbte fhad 's a bha sinn 'ga sgrìobhadh"
+
+#: ../plugins/android/android.plugin.in.h:1
+msgid "Android devices"
+msgstr "Uidheaman Android"
+
+#: ../plugins/android/android.plugin.in.h:2
+msgid "Support for Android 4.0+ devices (via MTP)"
+msgstr "Taic dha dh'uidheaman Android 4.0+ (le MTP)"
+
+#: ../plugins/android/android-info.ui.h:1
+#: ../plugins/generic-player/generic-player-info.ui.h:1
+#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:1
+msgid "Model:"
+msgstr "Modail:"
+
+#: ../plugins/android/android-info.ui.h:2
+#: ../plugins/generic-player/generic-player-info.ui.h:2
+#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:2
+msgid "Serial number:"
+msgstr "Àireamh shreathach:"
+
+#: ../plugins/android/android-info.ui.h:3
+#: ../plugins/generic-player/generic-player-info.ui.h:3
+#: ../plugins/mtpdevice/mtp-info.ui.h:4
+msgid "Manufacturer:"
+msgstr "Saothraiche:"
+
+#: ../plugins/android/android-info.ui.h:4
+#: ../plugins/generic-player/generic-player-info.ui.h:4
+#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:5
+msgid "Audio formats:"
+msgstr "Fòrmatan fuaime:"
+
+#: ../plugins/android/android-info.ui.h:5
+#: ../plugins/generic-player/generic-player-info.ui.h:5
+#: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:6
+msgid "System"
+msgstr "Siostam"
+
+#: ../plugins/android/android-info.ui.h:6
+#: ../plugins/generic-player/generic-player-info.ui.h:6
+#: ../plugins/mtpdevice/mtp-info.ui.h:7
+msgid "Device _name:"
+msgstr "Ai_nm an uidheim:"
+
+#: ../plugins/android/android-info.ui.h:7
+#: ../plugins/generic-player/generic-player-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:8
+msgid "Tracks:"
+msgstr "Tracaichean:"
+
+#: ../plugins/android/android-info.ui.h:8
+#: ../plugins/generic-player/generic-player-info.ui.h:8
+#: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:10
+msgid "Playlists:"
+msgstr "Liostaichean-cluiche:"
+
+#: ../plugins/android/rb-android-source.c:199
+msgid ""
+"No storage areas found on this device. You may need to unlock it and enable "
+"MTP."
+msgstr ""
+"Cha deach ionad stòrais a lorg air an uidheam seo. dh'fhaoidte gum bi agad "
+"ris a' ghlas a thoirt fo bharr agus MTP a chur an comas."
+
+#: ../plugins/android/rb-android-source.c:399
+#: ../plugins/generic-player/rb-generic-player-source.c:566
+#, c-format
+msgid "Scanning %s"
+msgstr "A' sganadh %s"
 
 #: ../plugins/artsearch/artsearch.plugin.in.h:1
 msgid "Cover art search"
@@ -1053,6 +1195,25 @@ msgstr "Lorg ealain a' chòmhdaich"
 #: ../plugins/artsearch/artsearch.plugin.in.h:2
 msgid "Fetch album covers from the Internet"
 msgstr "Faigh ealain nan còmhdaichean on eadar-lìon"
+
+#: ../plugins/artsearch/songinfo.py:56
+msgid "_Fetch"
+msgstr "_Faigh e"
+
+#: ../plugins/artsearch/songinfo.py:60
+#| msgid "Browse"
+msgid "_Browse"
+msgstr "_Brabhsaich"
+
+#: ../plugins/artsearch/songinfo.py:134
+#| msgid "Select the search type"
+msgid "Select new artwork"
+msgstr "Tagh obair-ealain ùr"
+
+#: ../plugins/artsearch/songinfo.py:136
+#| msgid "Select _All"
+msgid "_Select"
+msgstr "_Tagh"
 
 #: ../plugins/audiocd/album-info.ui.h:1
 msgid "A_lbum:"
@@ -1202,7 +1363,7 @@ msgid "Last submission time:"
 msgstr "Cuin a chaidh an rud mu dheireadh a chur:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:875
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:878
 msgid "Disabled"
 msgstr "À comas"
 
@@ -1270,58 +1431,58 @@ msgstr "Tha an tionndadh seo de Rhythmbox toirmisgte."
 msgid "Track submission failed too many times"
 msgstr "Dh'fhàillig cur nan tracaichean ro thric"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:686
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:689
 msgid "Love"
 msgstr "Gaol agam air"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:690
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:693
 msgid "Ban"
 msgstr "Toirmisg"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:694
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:697
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:3
 msgid "Download"
 msgstr "Luchdaich a-nuas"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:792
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:795
 msgid "You are not currently logged in."
 msgstr "Chan eil thu clàraichte a-staigh."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:793
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:811
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:818
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:796
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:814
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:821
 msgid "Log in"
 msgstr "Clàraich a-steach"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:799
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:802
 msgid "Waiting for authentication..."
 msgstr "A' feitheamh ri dearbhadh..."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:800
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:803
 msgid "Cancel"
 msgstr "Sguir dheth"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:810
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:813
 msgid "Authentication error. Please try logging in again."
 msgstr "Mearachd leis an dearbhadh. Feuch ri clàradh a-steach a-rithist."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:817
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:820
 msgid "Connection error. Please try logging in again."
 msgstr "Mearachd leis a' cheangal. Feuch ri clàradh a-steach a-rithist."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1227
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1230
 msgid "My Library"
 msgstr "An leabhar-lann agam"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1235
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1238
 msgid "My Recommendations"
 msgstr "Mo mholaidhean"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1243
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1246
 msgid "My Neighbourhood"
 msgstr "Mo choimhearsnachd"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1410
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1413
 #, c-format
 msgid "%s plays"
 msgstr "Air a chluich %s turais"
@@ -1329,16 +1490,16 @@ msgstr "Air a chluich %s turais"
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This is the label for menu item which when activated will take the user to the
 #. * artist/track's page on the service's website.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1667
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1670
 #, c-format
 msgid "_View on %s"
 msgstr "_Seall air %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1684
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1687
 msgid "Listen to _Similar Artists Radio"
 msgstr "Èi_st ri rèidio aig luchd-ciùil coltach riutha"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1698
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1701
 msgid "Listen to _Top Fans Radio"
 msgstr "Èis_t ri rèidio nan top fans"
 
@@ -1452,7 +1613,7 @@ msgstr "Am measgachadh rèidio aig %s"
 
 #. Translators: station is built from the tracks which have been "tagged" with %s.
 #. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
-#. * but nationalities, record labels, decades and very random words are also commmon
+#. * but nationalities, record labels, decades and very random words are also common
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:141
 #, c-format
 msgid "%s Tag Radio"
@@ -1577,7 +1738,7 @@ msgstr "A' luchdadh gràinnean-mullaich nan albaman aig %s"
 
 #: ../plugins/context/ArtistTab.py:59
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:4
-#: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1451
+#: ../sources/rb-library-source.c:125 ../widgets/rb-entry-view.c:1454
 #: ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Neach-ciùil"
@@ -1614,8 +1775,8 @@ msgstr "Ceanglaichean"
 msgid "No artist specified."
 msgstr "Cha deach neach-ciùil a shònrachadh."
 
-#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:240
-#: ../plugins/lyrics/lyrics.py:325
+#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:241
+#: ../plugins/lyrics/lyrics.py:326
 msgid "Lyrics"
 msgstr "Faclan"
 
@@ -1817,46 +1978,6 @@ msgstr "Stèisean rèidio FM ùr"
 msgid "Frequency of radio station"
 msgstr "Tricead an stèisein rèidio"
 
-#: ../plugins/generic-player/generic-player-info.ui.h:1
-#: ../plugins/mtpdevice/mtp-info.ui.h:1
-msgid "Device _name:"
-msgstr "Ai_nm an uidheim:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:2
-#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:2
-msgid "Tracks:"
-msgstr "Tracaichean:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:3
-#: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:4
-msgid "Playlists:"
-msgstr "Liostaichean-cluiche:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:4
-#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:5
-msgid "Model:"
-msgstr "Modail:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:5
-#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:6
-msgid "Serial number:"
-msgstr "Àireamh shreathach:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:6
-#: ../plugins/mtpdevice/mtp-info.ui.h:8
-msgid "Manufacturer:"
-msgstr "Saothraiche:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:7
-#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:9
-msgid "Audio formats:"
-msgstr "Fòrmatan fuaime:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:8
-#: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:10
-msgid "System"
-msgstr "Siostam"
-
 #: ../plugins/generic-player/generic-player.plugin.in.h:1
 msgid "Portable Players"
 msgstr "Cluicheadairean so-ghiùlan"
@@ -1874,18 +1995,13 @@ msgid "New Playlist on %s"
 msgstr "Liosta-chluich ùr air %s"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:339
-#: ../sources/rb-library-source.c:407
+#: ../sources/rb-library-source.c:375
 msgid "Add to New Playlist"
 msgstr "Cuir ri liosta-chluiche ùr"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:640
-#, c-format
-msgid "Scanning %s"
-msgstr "A' sganadh %s"
-
-#: ../plugins/generic-player/rb-generic-player-source.c:1446
-#: ../plugins/ipod/rb-ipod-source.c:2070
-#: ../plugins/mtpdevice/rb-mtp-source.c:1612
+#: ../plugins/generic-player/rb-generic-player-source.c:1377
+#: ../plugins/ipod/rb-ipod-source.c:2080
+#: ../plugins/mtpdevice/rb-mtp-source.c:1616
 msgid "Advanced"
 msgstr "Adhartach"
 
@@ -1902,7 +2018,7 @@ msgstr ""
 msgid "Fetch more tracks"
 msgstr "Faigh barrachd thracaichean"
 
-#: ../plugins/grilo/rb-grilo-source.c:891
+#: ../plugins/grilo/rb-grilo-source.c:897
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -1961,7 +2077,7 @@ msgstr "♫ Ag èisteachd ri ceòl... ♫"
 msgid "iPod _name:"
 msgstr "Ai_nm an iPod:"
 
-#: ../plugins/ipod/ipod-info.ui.h:3 ../plugins/mtpdevice/mtp-info.ui.h:3
+#: ../plugins/ipod/ipod-info.ui.h:3 ../plugins/mtpdevice/mtp-info.ui.h:9
 msgid "Podcasts:"
 msgstr "Pod-chraolaidhean:"
 
@@ -1977,7 +2093,7 @@ msgstr "Puing munntachaidh:"
 msgid "Database version:"
 msgstr "Tionndadh an stòir-dhàta:"
 
-#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:3
 msgid "Firmware version:"
 msgstr "Tionndadh a' bhathair-an-sàs:"
 
@@ -1985,19 +2101,19 @@ msgstr "Tionndadh a' bhathair-an-sàs:"
 msgid "iPod detected"
 msgstr "Mhothaich sinn dha iPod"
 
-#: ../plugins/ipod/ipod-init.ui.h:2
+#: ../plugins/ipod/ipod-init.ui.h:3
 msgid "_Initialize"
 msgstr "Tòis_ich"
 
-#: ../plugins/ipod/ipod-init.ui.h:3
+#: ../plugins/ipod/ipod-init.ui.h:4
 msgid "_Name:"
 msgstr "Ai_nm:"
 
-#: ../plugins/ipod/ipod-init.ui.h:4
+#: ../plugins/ipod/ipod-init.ui.h:5
 msgid "_Model:"
 msgstr "_Modail:"
 
-#: ../plugins/ipod/ipod-init.ui.h:5
+#: ../plugins/ipod/ipod-init.ui.h:6
 msgid ""
 "Rhythmbox has detected a device that is probably an uninitialized or "
 "corrupted iPod. It must be initialized before Rhythmbox can use it, but this "
@@ -2012,7 +2128,7 @@ msgstr ""
 "fiosrachadh gu h-ìosal. Mur e iPod a tha ann no mur eil thu airson a "
 "thòiseachadh, briog air \"Sguir dheth\"."
 
-#: ../plugins/ipod/ipod-init.ui.h:6
+#: ../plugins/ipod/ipod-init.ui.h:7
 msgid "Do you want to initialize your iPod?"
 msgstr "A bheil thu airson an iPod agad a thòiseachadh?"
 
@@ -2033,10 +2149,9 @@ msgstr "Liosta-chluiche ùr"
 msgid "Unable to initialize new iPod"
 msgstr "Chan urrainn dhuinn an iPod ùr tòiseachadh"
 
-#: ../plugins/ipod/rb-ipod-source.c:1503
-#: ../podcast/rb-podcast-main-source.c:76
-#: ../sources/sync/rb-sync-settings-ui.c:262
+#: ../plugins/ipod/rb-ipod-source.c:1513 ../podcast/rb-podcast-main-source.c:76
 #: ../sources/sync/rb-sync-settings-ui.c:263
+#: ../sources/sync/rb-sync-settings-ui.c:264
 #: ../sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
 msgstr "Pod-chraolaidhean"
@@ -2051,11 +2166,11 @@ msgstr ""
 "Taic airson seirbheisean craolaidh a tha 'gan craoladh slighe an eadar-lìn"
 
 #: ../plugins/iradio/iradio-popup.ui.h:1 ../shell/rb-shell-clipboard.c:258
-#: ../sources/rb-source.c:1216
+#: ../sources/rb-source.c:1216 ../widgets/rb-query-creator.c:802
 msgid "Remove"
 msgstr "Thoir air falbh"
 
-#: ../plugins/iradio/rb-iradio-source.c:346 ../widgets/rb-entry-view.c:1481
+#: ../plugins/iradio/rb-iradio-source.c:346 ../widgets/rb-entry-view.c:1484
 #: ../widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Gnè"
@@ -2089,15 +2204,15 @@ msgstr "URL an stèisein rèidio-lìn ùir:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:507
-#: ../sources/rb-media-player-source.c:420 ../widgets/rb-song-info.c:1113
+#: ../podcast/rb-podcast-properties-dialog.c:527
+#: ../sources/rb-media-player-source.c:576 ../widgets/rb-song-info.c:1150
 #, c-format
 msgid "%s Properties"
 msgstr "Roghainnean %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:491
-#: ../podcast/rb-podcast-properties-dialog.c:620
-#: ../widgets/rb-entry-view.c:1018 ../widgets/rb-song-info.c:1194
+#: ../podcast/rb-podcast-properties-dialog.c:640
+#: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1235
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
@@ -2129,7 +2244,7 @@ msgstr "Stiùirich Rhythmbox le uidheam-smachd cèin fo-dhearg"
 msgid "Choose lyrics folder..."
 msgstr "Tagh pasgan nam faclan..."
 
-#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:348
+#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:349
 msgid "Song Lyrics"
 msgstr "Faclan an òrain"
 
@@ -2154,10 +2269,6 @@ msgstr "Pasgan nam faclan"
 msgid "No lyrics found"
 msgstr "Cha deach faclan an òrain a lorg"
 
-#: ../plugins/lyrics/lyrics.py:202
-msgid "_Save"
-msgstr "_Sàbhail"
-
 #: ../plugins/lyrics/lyrics.py:207 ../plugins/lyrics/lyrics.py:220
 msgid "_Edit"
 msgstr "_Deasaich"
@@ -2166,7 +2277,7 @@ msgstr "_Deasaich"
 msgid "_Search again"
 msgstr "Lorg a-rithi_st"
 
-#: ../plugins/lyrics/lyrics.py:280
+#: ../plugins/lyrics/lyrics.py:281
 msgid "Searching for lyrics..."
 msgstr "A' lorg nam faclan"
 
@@ -2263,174 +2374,174 @@ msgstr ""
 "loidhne Magnatune"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
-msgid "Magnatune Information"
-msgstr "Fiosrachadh Magnatune"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:2
-msgid "I don't have a Magnatune account"
-msgstr "Chan eil cunntas Magnatune agam"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:3
-msgid "I have a streaming account"
-msgstr "Tha cunntas sruthaidh agam"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:4
-msgid "I have a download account"
-msgstr "Tha cunntas luchdaidh a-nuas agam"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:5
-msgid "Username:"
-msgstr "Ainm-cleachdaiche:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:6
-msgid "Password:"
-msgstr "Facal-faire:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:7
-msgid "Preferred audio _format:"
-msgstr "Am _fòrmat fuaime as fhearr let:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:8
-msgid "Get an account at "
-msgstr "Faigh cunntas aig "
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:9
-msgid "http://magnatune.com/compare_plans"
-msgstr "http://magnatune.com/compare_plans"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:10
-msgid "Find out about Magnatune at "
-msgstr "Cuir èolas air Magnatune aig "
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:11
-msgid "http://www.magnatune.com/info/"
-msgstr "http://www.magnatune.com/info/"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:12
 msgid "January (01)"
 msgstr "Am Faoilleach (01)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:13
+#: ../plugins/magnatune/magnatune-prefs.ui.h:2
 msgid "February (02)"
 msgstr "An Gearran (02)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:14
+#: ../plugins/magnatune/magnatune-prefs.ui.h:3
 msgid "March (03)"
 msgstr "Am Màrt (03)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:15
+#: ../plugins/magnatune/magnatune-prefs.ui.h:4
 msgid "April (04)"
 msgstr "An Giblean (04)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:16
+#: ../plugins/magnatune/magnatune-prefs.ui.h:5
 msgid "May (05)"
 msgstr "An Cèitean (05)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:17
+#: ../plugins/magnatune/magnatune-prefs.ui.h:6
 msgid "June (06)"
 msgstr "An t-Ògmhios(06)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:18
+#: ../plugins/magnatune/magnatune-prefs.ui.h:7
 msgid "July (07)"
 msgstr "An t-Iuchar (07)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:19
+#: ../plugins/magnatune/magnatune-prefs.ui.h:8
 msgid "August (08)"
 msgstr "An Lùnastal (08)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:20
+#: ../plugins/magnatune/magnatune-prefs.ui.h:9
 msgid "September (09)"
 msgstr "An t-Sultain (09)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:21
+#: ../plugins/magnatune/magnatune-prefs.ui.h:10
 msgid "October (10)"
 msgstr "An Dàmhair (10)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:22
+#: ../plugins/magnatune/magnatune-prefs.ui.h:11
 msgid "November (11)"
 msgstr "An t-Samhain (11)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:23
+#: ../plugins/magnatune/magnatune-prefs.ui.h:12
 msgid "December (12)"
 msgstr "An Dùbhlachd (12)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:24
+#: ../plugins/magnatune/magnatune-prefs.ui.h:13
 msgid "$5 US"
 msgstr "US$ 5"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:25
+#: ../plugins/magnatune/magnatune-prefs.ui.h:14
 msgid "$6 US"
 msgstr "US$ 6"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:26
+#: ../plugins/magnatune/magnatune-prefs.ui.h:15
 msgid "$7 US"
 msgstr "US$ 7"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:27
+#: ../plugins/magnatune/magnatune-prefs.ui.h:16
 msgid "$8 US (typical)"
 msgstr "US$ 8 (suim àbhaisteach)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:28
+#: ../plugins/magnatune/magnatune-prefs.ui.h:17
 msgid "$9 US"
 msgstr "US$ 9"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:29
+#: ../plugins/magnatune/magnatune-prefs.ui.h:18
 msgid "$10 US (better than average)"
 msgstr "US$ 10 (barrachd na bheirear mar is àbhaist)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:30
+#: ../plugins/magnatune/magnatune-prefs.ui.h:19
 msgid "$11 US"
 msgstr "US$ 11"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:31
+#: ../plugins/magnatune/magnatune-prefs.ui.h:20
 msgid "$12 US (generous)"
 msgstr "US$ 12 (fialaidh)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:32
+#: ../plugins/magnatune/magnatune-prefs.ui.h:21
 msgid "$13 US"
 msgstr "US$ 13"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:33
+#: ../plugins/magnatune/magnatune-prefs.ui.h:22
 msgid "$14 US"
 msgstr "US$ 14"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:34
+#: ../plugins/magnatune/magnatune-prefs.ui.h:23
 msgid "$15 US (VERY generous!)"
 msgstr "US$ 15 (glè fhialaidh)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:35
+#: ../plugins/magnatune/magnatune-prefs.ui.h:24
 msgid "$16 US"
 msgstr "US$ 16"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:36
+#: ../plugins/magnatune/magnatune-prefs.ui.h:25
 msgid "$17 US"
 msgstr "US$ 17"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:37
+#: ../plugins/magnatune/magnatune-prefs.ui.h:26
 msgid "$18 US (We love you!)"
 msgstr "US$ 18 (Gràdh againn ort!)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:38
+#: ../plugins/magnatune/magnatune-prefs.ui.h:27
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:39
+#: ../plugins/magnatune/magnatune-prefs.ui.h:28
 msgid "FLAC"
 msgstr "FLAC"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:40
+#: ../plugins/magnatune/magnatune-prefs.ui.h:29
 msgid "WAV"
 msgstr "WAV"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:41
+#: ../plugins/magnatune/magnatune-prefs.ui.h:30
 msgid "VBR MP3"
 msgstr "VBR MP3"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:42
+#: ../plugins/magnatune/magnatune-prefs.ui.h:31
 msgid "128K MP3"
 msgstr "128K MP3"
 
-#: ../plugins/magnatune/magnatune.py:120
+#: ../plugins/magnatune/magnatune-prefs.ui.h:32
+msgid "Magnatune Information"
+msgstr "Fiosrachadh Magnatune"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:33
+msgid "I don't have a Magnatune account"
+msgstr "Chan eil cunntas Magnatune agam"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:34
+msgid "I have a streaming account"
+msgstr "Tha cunntas sruthaidh agam"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:35
+msgid "I have a download account"
+msgstr "Tha cunntas luchdaidh a-nuas agam"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:36
+msgid "Username:"
+msgstr "Ainm-cleachdaiche:"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:37
+msgid "Password:"
+msgstr "Facal-faire:"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:38
+msgid "Preferred audio _format:"
+msgstr "Am _fòrmat fuaime as fhearr let:"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:39
+msgid "Get an account at "
+msgstr "Faigh cunntas aig "
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:40
+msgid "http://magnatune.com/compare_plans"
+msgstr "http://magnatune.com/compare_plans"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:41
+msgid "Find out about Magnatune at "
+msgstr "Cuir èolas air Magnatune aig "
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:42
+msgid "http://www.magnatune.com/info/"
+msgstr "http://www.magnatune.com/info/"
+
+#: ../plugins/magnatune/magnatune.py:121
 msgid "Magnatune"
 msgstr "Magnatune"
 
@@ -2474,7 +2585,7 @@ msgstr ""
 "Thill am frithealaiche Magnatune air ais:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1625
+#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1628
 msgid "Error"
 msgstr "Mearachd"
 
@@ -2526,23 +2637,23 @@ msgstr ""
 msgid "Unable to open temporary file: %s"
 msgstr "Chan urrainn dhuinn am faidhle sealach fhosgladh: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:603
+#: ../plugins/mtpdevice/rb-mtp-source.c:604
 msgid "Media Player"
 msgstr "Cluicheadair mheadhanan"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:883
+#: ../plugins/mtpdevice/rb-mtp-source.c:884
 msgid "Media player device error"
 msgstr "Mearachd uidheam a' chluicheadair mheadhanan"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:887
+#: ../plugins/mtpdevice/rb-mtp-source.c:888
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Chan urrainn dhuinn an t-uidheam %s %s fhosgladh"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:931
+#: ../plugins/mtpdevice/rb-mtp-source.c:932
 msgid "Digital Audio Player"
 msgstr "Cluicheadair fuaime digiteach"
 
@@ -2577,40 +2688,40 @@ msgstr "Brath"
 msgid "Notification popups"
 msgstr "Priob-uinneagan nam brathan"
 
-#: ../plugins/notification/rb-notification-plugin.c:224
+#: ../plugins/notification/rb-notification-plugin.c:225
 msgid "Previous"
 msgstr "Air ais"
 
-#: ../plugins/notification/rb-notification-plugin.c:230
+#: ../plugins/notification/rb-notification-plugin.c:231
 msgid "Pause"
 msgstr "Cuir 'na stad"
 
-#: ../plugins/notification/rb-notification-plugin.c:230
+#: ../plugins/notification/rb-notification-plugin.c:231
 msgid "Play"
 msgstr "Cluich"
 
-#: ../plugins/notification/rb-notification-plugin.c:239
+#: ../plugins/notification/rb-notification-plugin.c:240
 msgid "Next"
 msgstr "Air adhart"
 
 #. Translators: by Artist
-#: ../plugins/notification/rb-notification-plugin.c:331
+#: ../plugins/notification/rb-notification-plugin.c:332
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:148
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "le <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/notification/rb-notification-plugin.c:333
+#: ../plugins/notification/rb-notification-plugin.c:334
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:150
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:213
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "o <i>%s</i>"
 
-#: ../plugins/notification/rb-notification-plugin.c:411
+#: ../plugins/notification/rb-notification-plugin.c:414
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
-#: ../widgets/rb-header.c:363
+#: ../widgets/rb-header.c:364
 msgid "Not Playing"
 msgstr "Chan eil seo 'ga chluich"
 
@@ -2625,6 +2736,8 @@ msgstr ""
 "chluichear ceòl"
 
 #: ../plugins/power-manager/rb-power-manager-plugin.c:97
+#: ../remote/dbus/rb-client.c:801 ../remote/dbus/rb-client.c:891
+#, c-format
 msgid "Playing"
 msgstr "'Ga chluich"
 
@@ -2667,15 +2780,15 @@ msgstr "Zeitgeist"
 msgid "Inform Zeitgeist about your activity"
 msgstr "Cuir fios dha Zeitgeist mu do ghnìomhachd ann"
 
-#: ../plugins/replaygain/config.py:68
+#: ../plugins/replaygain/config.py:64
 msgid "-15.0 dB"
 msgstr "-15.0 dB"
 
-#: ../plugins/replaygain/config.py:69
+#: ../plugins/replaygain/config.py:65
 msgid "0.0 dB"
 msgstr "0.0 dB"
 
-#: ../plugins/replaygain/config.py:70
+#: ../plugins/replaygain/config.py:66
 msgid "15.0 dB"
 msgstr "15.0 dB"
 
@@ -2702,32 +2815,33 @@ msgstr ""
 "Cleachd ReplayGain airson àirde rèidh na fuaime nuair a chluicheas tu ceòl"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:1
-msgid "ReplayGain preferences"
-msgstr "Roghainnean ReplayGain"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:2
-msgid "ReplayGain _mode:"
-msgstr "_Modh ReplayGain:"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:3
-msgid "_Pre-amp:"
-msgstr "_Pre-amp:"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:4
-msgid "_Apply compression to prevent clipping"
-msgstr "_Cuir an sàs dùmhlachadh airson bearradh a sheachnadh"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:5
-msgid "Learn more about ReplayGain at replaygain.org"
-msgstr "Gheibh thu barrachd fiosrachaidh air ReplayGain air replaygain.org"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:6
 msgid "Radio (equal loudness for all tracks)"
 msgstr "Rèidio (àirde na fuaime co-ionnann airson gach traca)"
 
-#: ../plugins/replaygain/replaygain-prefs.ui.h:7
+#: ../plugins/replaygain/replaygain-prefs.ui.h:2
 msgid "Album (ideal loudness for all tracks)"
 msgstr "Albam (àirde na fuaime as fhearr airson gach traca)"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:3
+msgid "ReplayGain preferences"
+msgstr "Roghainnean ReplayGain"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:4
+msgid "ReplayGain _mode:"
+msgstr "_Modh ReplayGain:"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:5
+msgid "_Pre-amp:"
+msgstr "_Pre-amp:"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:6
+msgid "_Apply compression to prevent clipping"
+msgstr "_Cuir an sàs dùmhlachadh airson bearradh a sheachnadh"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:7
+#| msgid "Learn more about ReplayGain at replaygain.org"
+msgid "Learn more about ReplayGain"
+msgstr "Barrachd fiosrachaidh air ReplayGain"
 
 #: ../plugins/sendto/sendto.plugin.in.h:1
 msgid "Send tracks"
@@ -2741,6 +2855,74 @@ msgstr ""
 #: ../plugins/sendto/sendto.py:51
 msgid "Send to..."
 msgstr "Cuir gu..."
+
+#: ../plugins/soundcloud/soundcloud.plugin.in.h:1
+#: ../plugins/soundcloud/soundcloud.py:72
+msgid "SoundCloud"
+msgstr "SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.plugin.in.h:2
+msgid "Browse and play sounds from SoundCloud®"
+msgstr "Brabhsaich is cluich fuaimean o SoundCloud®"
+
+#: ../plugins/soundcloud/soundcloud.py:94
+#| msgid "Send tracks"
+msgid "Search tracks"
+msgstr "Lorg traca"
+
+#: ../plugins/soundcloud/soundcloud.py:95
+msgid "Search tracks on SoundCloud"
+msgstr "Lorg traca air SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:101
+#| msgid "Search artists"
+msgid "Search sets"
+msgstr "Lorg seata"
+
+#: ../plugins/soundcloud/soundcloud.py:102
+msgid "Search sets on SoundCloud"
+msgstr "Lorg seata air SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:103
+msgid "SoundCloud Sets"
+msgstr "Seataichean SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:108
+#| msgid "Search genres"
+msgid "Search users"
+msgstr "Lorg cleachdaiche"
+
+#: ../plugins/soundcloud/soundcloud.py:109
+msgid "Search users on SoundCloud"
+msgstr "Lorg cleachdaiche air SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:110
+msgid "SoundCloud Users"
+msgstr "Cleachdaichean SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:115
+#| msgid "Search genres"
+msgid "Search groups"
+msgstr "Lorg buidheann"
+
+#: ../plugins/soundcloud/soundcloud.py:116
+msgid "Search groups on SoundCloud"
+msgstr "Lorg buidheann air SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:117
+msgid "SoundCloud Groups"
+msgstr "Buidhnean SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:374
+#: ../plugins/soundcloud/soundcloud.py:382
+#, python-format
+msgid "View '%(title)s' on SoundCloud"
+msgstr "Seall \"%(title)s\" air SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:390
+#, python-format
+msgid "View '%(container)s' on SoundCloud"
+msgstr "Seall \"%(container)s\" air SoundCloud"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:39
 msgid "Low quality"
@@ -2759,7 +2941,7 @@ msgid "Fullscreen"
 msgstr "Làn-sgrìn"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:89
-#: ../widgets/rb-entry-view.c:1525
+#: ../widgets/rb-entry-view.c:1528
 msgid "Quality"
 msgstr "Càileachd"
 
@@ -2783,6 +2965,35 @@ msgstr "Fir-chlis"
 msgid "Displays visualizations"
 msgstr "Seall na fir-chlis"
 
+#: ../plugins/webremote/webremote-config.ui.h:1
+msgid "Web remote control preferences"
+msgstr "Roghainnean inneal-smachd cèin an eadar-lìn"
+
+#: ../plugins/webremote/webremote-config.ui.h:2
+msgid "Listening port:"
+msgstr "Port an èistidh:"
+
+#: ../plugins/webremote/webremote-config.ui.h:3
+msgid "Access key:"
+msgstr "Iuchair inntrigidh:"
+
+#: ../plugins/webremote/webremote-config.ui.h:4
+msgid "0"
+msgstr "0"
+
+#: ../plugins/webremote/webremote.plugin.in.h:1
+msgid "Web remote control"
+msgstr "Inneal-smachd cèin an eadar-lìn"
+
+#: ../plugins/webremote/webremote.plugin.in.h:2
+#| msgid "Control Rhythmbox using key shortcuts"
+msgid "Control Rhythmbox from a web browser"
+msgstr "Stiùir Rhythmbox o bhrabhsair-lìn"
+
+#: ../plugins/webremote/webremote.py:582
+msgid "Launch web remote control"
+msgstr "Tòisich inneal-smachd cèin an eadar-lìn"
+
 #: ../podcast/rb-podcast-add-dialog.c:286
 msgid "Unable to load the feed. Check your network connection."
 msgstr ""
@@ -2795,8 +3006,8 @@ msgstr ""
 "Chan urrainn dhuinn pod-chraolaidhean a lorg. Thoir sùil air a' cheangal ris "
 "an lìonra."
 
-#: ../podcast/rb-podcast-add-dialog.c:720 ../sources/rb-library-source.c:142
-#: ../widgets/rb-entry-view.c:1441
+#: ../podcast/rb-podcast-add-dialog.c:720 ../sources/rb-library-source.c:134
+#: ../widgets/rb-entry-view.c:1444
 msgid "Title"
 msgstr "Tiotal"
 
@@ -2810,8 +3021,8 @@ msgid "Episodes"
 msgstr "Eapasodan"
 
 #: ../podcast/rb-podcast-add-dialog.c:767
-#: ../podcast/rb-podcast-add-dialog.c:778 ../podcast/rb-podcast-source.c:1373
-#: ../podcast/rb-podcast-source.c:1384
+#: ../podcast/rb-podcast-add-dialog.c:778 ../podcast/rb-podcast-source.c:1342
+#: ../podcast/rb-podcast-source.c:1353
 msgid "Date"
 msgstr "Ceann-là"
 
@@ -2845,32 +3056,32 @@ msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr ""
 "%s. A bheil thu airson inbhir nam pod-chraolaidhean a chur ris co-dhiù?"
 
-#: ../podcast/rb-podcast-manager.c:896
+#: ../podcast/rb-podcast-manager.c:897
 msgid "Error creating podcast download directory"
 msgstr ""
 "Mearachd a' cruthachadh a'phasgain airson luchdadh a-nuas a' phod-chraolaidh"
 
-#: ../podcast/rb-podcast-manager.c:897
+#: ../podcast/rb-podcast-manager.c:898
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr ""
 "Chan urrainn dhuinn am pasgan airson luchdadh a-nuas %s a chruthachadh: %s"
 
-#: ../podcast/rb-podcast-manager.c:1016
+#: ../podcast/rb-podcast-manager.c:1017
 msgid "Invalid URL"
 msgstr "URL mì-dhligheach"
 
-#: ../podcast/rb-podcast-manager.c:1017
+#: ../podcast/rb-podcast-manager.c:1018
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "Cha eil an URL \"%s\" dligheach, thoir sùil air."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1028
+#: ../podcast/rb-podcast-manager.c:1029
 msgid "URL already added"
 msgstr "Chaidh an URL a chur ris mu thràth"
 
-#: ../podcast/rb-podcast-manager.c:1029
+#: ../podcast/rb-podcast-manager.c:1030
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2879,7 +3090,7 @@ msgstr ""
 "Chaidh an URL \"%s\" a chur ris mar stèisean rèidio mu thràth. Mas e inbhir "
 "pod-chraolaidh a tha seo, thoir air falbh an stèisean rèidio."
 
-#: ../podcast/rb-podcast-manager.c:1108
+#: ../podcast/rb-podcast-manager.c:1109
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2890,11 +3101,11 @@ msgstr ""
 "bheil an URL cearr no gu bheil an t-inbhir briste. A bheil thu airson 's gum "
 "feuch Rhythmbox ri a chleachdadh co-dhiù?"
 
-#: ../podcast/rb-podcast-manager.c:1239
+#: ../podcast/rb-podcast-manager.c:1240
 msgid "Podcast"
 msgstr "Pod-chraoladh"
 
-#: ../podcast/rb-podcast-manager.c:2205
+#: ../podcast/rb-podcast-manager.c:2206
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -2921,21 +3132,21 @@ msgstr "Chan urrainn dhuinn susbaint an inbhir a pharsadh"
 msgid "The feed does not contain any downloadable items"
 msgstr "Chan eil rud sam bith san inbhir seo a ghabhas a luchdadh a-nuas"
 
-#: ../podcast/rb-podcast-properties-dialog.c:195
+#: ../podcast/rb-podcast-properties-dialog.c:213
 msgid "Unable to display requested URI"
 msgstr "Chan urrainn dhuinn an URI a dh'iarr thu a thaisbeanadh"
 
-#: ../podcast/rb-podcast-properties-dialog.c:570
+#: ../podcast/rb-podcast-properties-dialog.c:590
 msgid "Not Downloaded"
 msgstr "Cha deach a luchdadh a-nuas"
 
-#: ../podcast/rb-podcast-source.c:524
+#: ../podcast/rb-podcast-source.c:521
 msgid "Delete the podcast feed and downloaded files?"
 msgstr ""
 "A bheil thu airson inbhir seo nam pod-chraolaidhean a sguabadh às agus na "
 "faidhlichean a chaidh a luchdadh a-nuas?"
 
-#: ../podcast/rb-podcast-source.c:527
+#: ../podcast/rb-podcast-source.c:524
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -2945,27 +3156,27 @@ msgstr ""
 "fhaigh thu cothrom orra tuilleadh idir. Thoir an aire gun urrainn dhut an t-"
 "inbhir a sguabadh às agus na faidhlichean a chumail ma thaghas tu sin."
 
-#: ../podcast/rb-podcast-source.c:535
+#: ../podcast/rb-podcast-source.c:532
 msgid "Delete _Feed Only"
 msgstr "Na sguab às ach an _t-inbhir"
 
-#: ../podcast/rb-podcast-source.c:542
+#: ../podcast/rb-podcast-source.c:539
 msgid "_Delete Feed And Files"
 msgstr "Sguab às an t-inbhir is na fai_dhlichean"
 
-#: ../podcast/rb-podcast-source.c:623 ../podcast/rb-podcast-source.c:1427
+#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1396
 msgid "Downloaded"
 msgstr "Air a luchdadh a-nuas"
 
-#: ../podcast/rb-podcast-source.c:627 ../podcast/rb-podcast-source.c:1429
+#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1398
 msgid "Failed"
 msgstr "Dh'fhàillig e"
 
-#: ../podcast/rb-podcast-source.c:631 ../podcast/rb-podcast-source.c:1428
+#: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1397
 msgid "Waiting"
 msgstr "A' feitheamh"
 
-#: ../podcast/rb-podcast-source.c:738
+#: ../podcast/rb-podcast-source.c:735
 #, c-format
 msgid "%d feed"
 msgid_plural "All %d feeds"
@@ -2974,17 +3185,17 @@ msgstr[1] "Na %d inbhir air fad"
 msgstr[2] "Na %d inbhirean air fad"
 msgstr[3] "Na %d inbhir air fad"
 
-#: ../podcast/rb-podcast-source.c:960
+#: ../podcast/rb-podcast-source.c:957
 msgid "Podcast Error"
 msgstr "Mearachd leis a' phod-chraoladh"
 
-#: ../podcast/rb-podcast-source.c:1122
+#: ../podcast/rb-podcast-source.c:1091
 msgid "Delete the podcast episode and downloaded file?"
 msgstr ""
 "A bheil thu airson eapasod a' phod-chraolaidh a sguabadh às agus am faidhle "
 "a chaidh a luchdadh a-nuas?"
 
-#: ../podcast/rb-podcast-source.c:1125
+#: ../podcast/rb-podcast-source.c:1094
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -2994,15 +3205,15 @@ msgstr ""
 "fhaigh thu cothrom orra tuilleadh idir. Thoir an aire gun urrainn dhut an t-"
 "eapasod a sguabadh às agus na faidhlichean a chumail ma thaghas tu sin."
 
-#: ../podcast/rb-podcast-source.c:1133
+#: ../podcast/rb-podcast-source.c:1102
 msgid "Delete _Episode Only"
 msgstr "Na sguab às ach an t-_eapasod"
 
-#: ../podcast/rb-podcast-source.c:1139
+#: ../podcast/rb-podcast-source.c:1108
 msgid "_Delete Episode And File"
 msgstr "Sguab às an t-eapaso_d agus am faidhle"
 
-#: ../podcast/rb-podcast-source.c:1237
+#: ../podcast/rb-podcast-source.c:1206
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -3011,196 +3222,271 @@ msgstr[1] "%d eapasod"
 msgstr[2] "%d eapasodan"
 msgstr[3] "%d eapasod"
 
-#: ../podcast/rb-podcast-source.c:1406 ../podcast/rb-podcast-source.c:1461
-#: ../podcast/rb-podcast-source.c:1500
+#: ../podcast/rb-podcast-source.c:1375 ../podcast/rb-podcast-source.c:1430
+#: ../podcast/rb-podcast-source.c:1469
 msgid "Feed"
 msgstr "Inbhir"
 
-#: ../podcast/rb-podcast-source.c:1426 ../podcast/rb-podcast-source.c:1444
+#: ../podcast/rb-podcast-source.c:1395 ../podcast/rb-podcast-source.c:1413
 msgid "Status"
 msgstr "Staid"
 
 #. ensure search instances exist
-#: ../podcast/rb-podcast-source.c:1546
-#: ../sources/rb-auto-playlist-source.c:253 ../sources/rb-browser-source.c:314
-#: ../sources/rb-browser-source.c:332
+#: ../podcast/rb-podcast-source.c:1515 ../sources/rb-auto-playlist-source.c:253
+#: ../sources/rb-browser-source.c:314 ../sources/rb-browser-source.c:332
 #: ../sources/rb-static-playlist-source.c:295
 msgid "Search all fields"
 msgstr "Lorg anns gach raon"
 
-#: ../podcast/rb-podcast-source.c:1547
+#: ../podcast/rb-podcast-source.c:1516
 msgid "Search podcast feeds"
 msgstr "Lorg ann an inbhirean nam pod-chraolaidhean"
 
-#: ../podcast/rb-podcast-source.c:1548
+#: ../podcast/rb-podcast-source.c:1517
 msgid "Search podcast episodes"
 msgstr "Lorg eapasodan pod-chraolaidhean"
 
-#: ../remote/dbus/rb-client.c:88
+#: ../remote/dbus/rb-client.c:94
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Na tòisich air ionstans ùr de Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:89
+#: ../remote/dbus/rb-client.c:95
 msgid "Quit Rhythmbox"
 msgstr "Fàg Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:90
+#: ../remote/dbus/rb-client.c:96
 msgid "Check if Rhythmbox is already running"
 msgstr "Thoir sùil a bheil Rhythmbox  a' ruith mu thràth"
 
-#: ../remote/dbus/rb-client.c:92
+#: ../remote/dbus/rb-client.c:98
 msgid "Don't present an existing Rhythmbox window"
 msgstr "Na taisbean uinneag làithrach de Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:94
+#: ../remote/dbus/rb-client.c:100
 msgid "Jump to next song"
 msgstr "Gearr leum gun ath-òran"
 
-#: ../remote/dbus/rb-client.c:95
+#: ../remote/dbus/rb-client.c:101
 msgid "Jump to previous song"
 msgstr "Gearr leum gun òran roimhe"
 
-#: ../remote/dbus/rb-client.c:96
+#: ../remote/dbus/rb-client.c:102
 msgid "Seek in current track"
 msgstr "Lorg san traca làithreach"
 
-#: ../remote/dbus/rb-client.c:98
+#: ../remote/dbus/rb-client.c:104
 msgid "Resume playback if currently paused"
 msgstr "Lean air a chluich ma tha e 'na stad an-dràsta"
 
-#: ../remote/dbus/rb-client.c:99
+#: ../remote/dbus/rb-client.c:105
 msgid "Pause playback if currently playing"
 msgstr "Cuir e 'na stad ma tha e 'ga chluich an-dràsta"
 
-#: ../remote/dbus/rb-client.c:100
+#: ../remote/dbus/rb-client.c:106
 msgid "Toggle play/pause mode"
 msgstr "Toglaich am modh cluiche/stada"
 
-#: ../remote/dbus/rb-client.c:101 ../shell/rb-shell.c:2273
+#: ../remote/dbus/rb-client.c:107 ../shell/rb-shell.c:2289
 msgid "Stop playback"
 msgstr "Sguir dhen chluich"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:109
 msgid "Play a specified URI, importing it if necessary"
 msgstr "Cluich URI a chadh a shònrachadh is ion-phortaich e ma bhios feum air"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:109
 msgid "URI to play"
 msgstr "An URI a thèid a chluich"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:110
 msgid "Add specified tracks to the play queue"
 msgstr "Cuir na tracaichean a chaidh a shònrachadh ris a' chiutha chluiche"
 
-#: ../remote/dbus/rb-client.c:105
+#: ../remote/dbus/rb-client.c:111
 msgid "Empty the play queue before adding new tracks"
 msgstr "Falamhaich an ciutha cluiche mus dèidh tracaichean ùra a chur ris"
 
-#: ../remote/dbus/rb-client.c:107
+#: ../remote/dbus/rb-client.c:113
 msgid "Print the title and artist of the playing song"
 msgstr "Clò-bhuail tiotal agus neach-ciùil an òrain a tha 'ga chluich"
 
-#: ../remote/dbus/rb-client.c:108
+#: ../remote/dbus/rb-client.c:114
 msgid "Print formatted details of the song"
 msgstr "Clò-bhuail mion-fhiosrachadh fòrmataichte an òrain"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:115
 msgid "Select the source matching the specified URI"
 msgstr "Tagh am bun-tùs a tha a' freagairt ris an URI a chaidh a shònrachadh"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:115
 msgid "Source to select"
 msgstr "A bun-tùs a tha ri thaghadh"
 
-#: ../remote/dbus/rb-client.c:110
+#: ../remote/dbus/rb-client.c:116
 msgid "Activate the source matching the specified URI"
 msgstr ""
 "Cuir an gnìomh am bun-tùs a tha a' freagairt ris an URI a chaidh a "
 "shònrachadh"
 
-#: ../remote/dbus/rb-client.c:110
+#: ../remote/dbus/rb-client.c:116
 msgid "Source to activate"
 msgstr "Am bun-tùs a thèid a chur an gnìomh"
 
-#: ../remote/dbus/rb-client.c:111
+#: ../remote/dbus/rb-client.c:117
 msgid "Play from the source matching the specified URI"
 msgstr ""
 "Cluich on bhun-tùs a tha a' freagairt ris an URI a chaidh a shònrachadh"
 
-#: ../remote/dbus/rb-client.c:111
+#: ../remote/dbus/rb-client.c:117
 msgid "Source to play from"
 msgstr "Am bun-tùs a thèid a chluich uaithe"
 
-#: ../remote/dbus/rb-client.c:113
+#: ../remote/dbus/rb-client.c:119
 msgid "Enable repeat playback order"
 msgstr "Cuir an comas òrdugh na h-ath-chluich"
 
-#: ../remote/dbus/rb-client.c:114
+#: ../remote/dbus/rb-client.c:120
 msgid "Disable repeat playback order"
 msgstr "Cuir à comas òrdugh na h-ath-chluich"
 
-#: ../remote/dbus/rb-client.c:115
+#: ../remote/dbus/rb-client.c:121
 msgid "Enable shuffle playback order"
 msgstr "Cuir an comas òrdugh na cluich air thuaiream"
 
-#: ../remote/dbus/rb-client.c:116
+#: ../remote/dbus/rb-client.c:122
 msgid "Disable shuffle playback order"
 msgstr "Cuir à comas òrdugh na cluich air thuaiream"
 
-#: ../remote/dbus/rb-client.c:118
+#: ../remote/dbus/rb-client.c:124
 msgid "Set the playback volume"
 msgstr "Suidhich àirde na fuaime"
 
-#: ../remote/dbus/rb-client.c:119
+#: ../remote/dbus/rb-client.c:125
 msgid "Increase the playback volume"
 msgstr "Cuir am meud àirde na fuaime"
 
-#: ../remote/dbus/rb-client.c:120
+#: ../remote/dbus/rb-client.c:126
 msgid "Decrease the playback volume"
 msgstr "Lughdaich àirde na fuaime"
 
-#: ../remote/dbus/rb-client.c:121
+#: ../remote/dbus/rb-client.c:127
 msgid "Print the current playback volume"
 msgstr "Clò-bhuail àirde na fuaime làithreach"
 
 #. { "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
 #. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
-#: ../remote/dbus/rb-client.c:124
+#: ../remote/dbus/rb-client.c:130
 msgid "Set the rating of the current song"
 msgstr "Rangaich an t-òran a tha 'ga chluich an-dràsta"
 
-#: ../remote/dbus/rb-client.c:471 ../remote/dbus/rb-client.c:495
+#: ../remote/dbus/rb-client.c:131
+msgid "Start interactive mode"
+msgstr "Tòisich am modh eadar-ghnìomhach"
+
+#: ../remote/dbus/rb-client.c:161
+msgid "n - Next track"
+msgstr "n - An ath-thraca"
+
+#: ../remote/dbus/rb-client.c:162
+#| msgid "Previous"
+msgid "p - Previous track"
+msgstr "p - An traca roimhe"
+
+#: ../remote/dbus/rb-client.c:163
+msgid "space - Play/pause"
+msgstr "space - Cluich/cuir 'na stad"
+
+#: ../remote/dbus/rb-client.c:164
+msgid "s - Show playing track details"
+msgstr "s - seall mion-fhiosrachaidh an traca a tha 'ga chluich"
+
+#: ../remote/dbus/rb-client.c:165
+#| msgid "_Decrease Volume"
+msgid "v - Decrease volume"
+msgstr "v - Lùghdaich àirde na fuaime"
+
+#: ../remote/dbus/rb-client.c:166
+#| msgid "_Increase Volume"
+msgid "V - Increase volume"
+msgstr "V - Meudaich àirde na fuaime"
+
+#: ../remote/dbus/rb-client.c:168
+msgid "h/? - Help"
+msgstr "h/? - Cobhair"
+
+#: ../remote/dbus/rb-client.c:169
+#| msgid "_Quit"
+msgid "q - Quit"
+msgstr "q - Fàg an-seo"
+
+#: ../remote/dbus/rb-client.c:529 ../remote/dbus/rb-client.c:555
+#: ../remote/dbus/rb-client.c:778 ../remote/dbus/rb-client.c:862
+#, c-format
 msgid "Not playing"
 msgstr "Chan eil seo 'ga chluich"
 
-#: ../remote/dbus/rb-client.c:960
+#. Translators: title by artist from album
+#: ../remote/dbus/rb-client.c:728
+msgid "%tt by %ta from %at"
+msgstr "%tt le %ta o %at"
+
+#. Translators: title by artist
+#: ../remote/dbus/rb-client.c:731
+msgid "%tt by %ta"
+msgstr "%tt le %ta"
+
+#. Translators: title from album
+#: ../remote/dbus/rb-client.c:734
+msgid "%tt from %ta"
+msgstr "%tt o %ta"
+
+#. Translators: %te is replaced with elapsed time, %td is replaced with track duration
+#: ../remote/dbus/rb-client.c:745
+#, c-format
+#| msgid "%d of %d"
+msgid "[%te of %td]"
+msgstr "[%te à %td]"
+
+#: ../remote/dbus/rb-client.c:801 ../remote/dbus/rb-client.c:893
+#, c-format
+#| msgid "Pause"
+msgid "Paused"
+msgstr "'Na stad"
+
+#: ../remote/dbus/rb-client.c:845
+#, c-format
+msgid "Seeked to %s"
+msgstr "Air a shireadh gu %s"
+
+#: ../remote/dbus/rb-client.c:879
+#, c-format
+#| msgid "Not playing"
+msgid "Now playing: %s %s"
+msgstr "'Ga chluich an-dràsta: %s %s"
+
+#: ../remote/dbus/rb-client.c:895
+#, c-format
+#| msgid "Unknown playlist: %s"
+msgid "Unknown playback state: %s"
+msgstr "Staid na chluiche nach aithne dhuinn: %s"
+
+#: ../remote/dbus/rb-client.c:905
+#, c-format
+msgid "Volume is now %.02f"
+msgstr "Tha àirde na fuaime air %.02f"
+
+#. should print this before dbus setup, really
+#: ../remote/dbus/rb-client.c:943
+#, c-format
+msgid "Press 'h' for help."
+msgstr "Brùth air 'h' airson cobharach."
+
+#: ../remote/dbus/rb-client.c:1384
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "'S e %f àirde na fuaime.\n"
 
-#: ../rhythmbox.appdata.xml.in.h:1
-msgid ""
-"Rhythmbox is a music management application, designed to work well under the "
-"GNOME desktop. In addition to music stored on your computer, it supports "
-"network shares, podcasts, radio streams, portable music devices (including "
-"phones), and internet music services such as Last.fm and Magnatune."
-msgstr ""
-"Cuiridh tu rian air a' cheòl agad le Rhythmbox 's a chaidh a dhealbhadh ach "
-"an obraich e gu ma air an deasg GNOME. A bharrachd air a' cheòl a tha air a' "
-"choimpiutair agad, cuiridh e taic ri co-roinneadh lìonraidh, pod-chraoladh, "
-"sruthadh rèidio, uidheaman ciùil so-ghiùlan (a' gabhail a-steach "
-"fònaichean) agus seirbheisean ciùil air loidhne mar Last.fm agus Magnatune."
-
-#: ../rhythmbox.appdata.xml.in.h:2
-msgid ""
-"Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
-"via plugins written in Python or C."
-msgstr ""
-"'S e bathar-bog saor a tha sa Rhythmbox 's tha e stèidhichte air GTK+ agus "
-"GStreamer. Gabhaidh a leudachadh le plugain a ghabhas sgrìobhadh ann an "
-"Python no C."
-
-#: ../rhythmdb/rhythmdb.c:781
+#: ../rhythmdb/rhythmdb.c:789
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Cha b' urrainn dhuinn cothrom fhaighinn air %s: %s"
@@ -3210,7 +3496,7 @@ msgstr "Cha b' urrainn dhuinn cothrom fhaighinn air %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1794
+#: ../rhythmdb/rhythmdb.c:1819
 msgid "The Beatles"
 msgstr "Runrig"
 
@@ -3218,7 +3504,7 @@ msgstr "Runrig"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1800
+#: ../rhythmdb/rhythmdb.c:1825
 msgid "Help!"
 msgstr "Mara"
 
@@ -3226,34 +3512,34 @@ msgstr "Mara"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1806
+#: ../rhythmdb/rhythmdb.c:1831
 msgid "Ticket To Ride"
 msgstr "Thairis air a' ghleann"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2284
+#: ../rhythmdb/rhythmdb.c:2373
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 "Tha feum air plugain Gstreamer a bharrachd mus gabh am faidhle seo a "
 "chluich: %s"
 
-#: ../rhythmdb/rhythmdb.c:2316
+#: ../rhythmdb/rhythmdb.c:2405
 msgid "invalid unicode in error message"
 msgstr "Tha Unicode mì-dhligheach ann an teachdaireachd na mearachd"
 
-#: ../rhythmdb/rhythmdb.c:2383
+#: ../rhythmdb/rhythmdb.c:2528
 #, c-format
 msgid "Empty file"
 msgstr "Faidhle falamh"
 
-#: ../rhythmdb/rhythmdb.c:3058
+#: ../rhythmdb/rhythmdb.c:3226
 msgid "Could not load the music database:"
 msgstr "Cha b' urrainn dhuinn stòr-dàta a' chiùil a luchdadh:"
 
-#: ../rhythmdb/rhythmdb.c:4479
+#: ../rhythmdb/rhythmdb.c:4653
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3262,7 +3548,7 @@ msgstr[1] "%ld mhionaid"
 msgstr[2] "%ld mionaidean"
 msgstr[3] "%ld mionaid"
 
-#: ../rhythmdb/rhythmdb.c:4480
+#: ../rhythmdb/rhythmdb.c:4654
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3271,7 +3557,7 @@ msgstr[1] "%ld uair a thìde"
 msgstr[2] "%ld uairean a thìde"
 msgstr[3] "%ld uair a thìde"
 
-#: ../rhythmdb/rhythmdb.c:4481
+#: ../rhythmdb/rhythmdb.c:4655
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3281,7 +3567,7 @@ msgstr[2] "%ld làithean"
 msgstr[3] "%ld latha"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4487
+#: ../rhythmdb/rhythmdb.c:4661
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s agus %s"
@@ -3289,8 +3575,8 @@ msgstr "%s, %s agus %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4493 ../rhythmdb/rhythmdb.c:4501
-#: ../rhythmdb/rhythmdb.c:4512
+#: ../rhythmdb/rhythmdb.c:4667 ../rhythmdb/rhythmdb.c:4675
+#: ../rhythmdb/rhythmdb.c:4686
 #, c-format
 msgid "%s and %s"
 msgstr "%s agus %s"
@@ -3299,8 +3585,7 @@ msgstr "%s agus %s"
 msgid "Scanning"
 msgstr "A' sganadh"
 
-#: ../rhythmdb/rhythmdb-import-job.c:668
-#: ../shell/rb-track-transfer-batch.c:819
+#: ../rhythmdb/rhythmdb-import-job.c:668 ../shell/rb-track-transfer-batch.c:857
 #, c-format
 msgid "%d of %d"
 msgstr "%d à %d"
@@ -3309,7 +3594,7 @@ msgstr "%d à %d"
 msgid "All"
 msgstr "Na h-uile"
 
-#: ../rhythmdb/rhythmdb-tree.c:411
+#: ../rhythmdb/rhythmdb-tree.c:414
 #, c-format
 msgid ""
 "The database was created by a later version of Rhythmbox.  This version of "
@@ -3324,7 +3609,7 @@ msgstr "Plugan sampall Python"
 
 #: ../sample-plugins/sample-python/sample-python.plugin.in.h:2
 msgid "A sample plugin in Python with no features"
-msgstr "Plugain sampaill ann am Python às aonais feart sam bith"
+msgstr "Plugain sampaill ann am Python às aonais gleus sam bith"
 
 #: ../sample-plugins/sample-python/sample-python.py:20
 msgid "Python Source"
@@ -3338,7 +3623,7 @@ msgstr "Plugan sampaill"
 
 #: ../sample-plugins/sample/sample.plugin.in.h:2
 msgid "A sample plugin in C with no features"
-msgstr "Plugain sampaill ann an C às aonais feart sam bith"
+msgstr "Plugain sampaill ann an C às aonais gleus sam bith"
 
 #: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:1
 msgid "Vala Sample Plugin"
@@ -3346,7 +3631,7 @@ msgstr "Plugan sampall Vala"
 
 #: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:2
 msgid "A sample plugin in Vala with no features"
-msgstr "Sampall plugain ann am Vala às aonais feart sam bith"
+msgstr "Sampall plugain ann am Vala às aonais gleus sam bith"
 
 #: ../shell/rb-application.c:141
 msgid "Configure Plugins"
@@ -3529,48 +3814,48 @@ msgstr "Liosta-chluiche nach aithne dhuinn: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "'S e liosta-chluiche fhèin-obrachail a tha ann an %s"
 
-#: ../shell/rb-shell.c:2066
+#: ../shell/rb-shell.c:2082
 msgid "Error while saving song information"
 msgstr "Thachair mearachd nuair a bha sinn a' sàbhaladh fiosrach an òrain"
 
-#: ../shell/rb-shell.c:2270
+#: ../shell/rb-shell.c:2286
 msgid "Pause playback"
 msgstr "Cuir a chluich 'na stad"
 
-#: ../shell/rb-shell.c:2281
+#: ../shell/rb-shell.c:2293
 msgid "Start playback"
 msgstr "Tòisich air a chluich"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2392
+#: ../shell/rb-shell.c:2404
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s ('Na stad)"
 
-#: ../shell/rb-shell.c:2795 ../sources/rb-play-queue-source.c:659
+#: ../shell/rb-shell.c:2808 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr ""
 "Chan eil bun-tùs clàraichte sam bith ann as urrainn dha an URI %s a "
 "làimhseachadh"
 
-#: ../shell/rb-shell.c:3124
+#: ../shell/rb-shell.c:3137
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr ""
 "Chan eil bun-tùs clàraichte sam bith ann a tha a' freagairt ris an URI %s"
 
-#: ../shell/rb-shell.c:3157 ../shell/rb-shell.c:3200
+#: ../shell/rb-shell.c:3170 ../shell/rb-shell.c:3213
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI òrain nach aithne dhuinn: %s"
 
-#: ../shell/rb-shell.c:3209
+#: ../shell/rb-shell.c:3222
 #, c-format
 msgid "Unknown property %s"
 msgstr "Roghainn nach aithne dhuinn: %s"
 
-#: ../shell/rb-shell.c:3223
+#: ../shell/rb-shell.c:3236
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Tha seòrsa na roghainn %s mì-dhligheach airson na roghainn %s"
@@ -3674,10 +3959,6 @@ msgid "The file \"%s\" already exists. Do you want to replace it?"
 msgstr ""
 "Tha am faidhle \"%s\" ann mu thràth. A bheil thu air am faidhle ùr a chur "
 "'na àite?"
-
-#: ../shell/rb-track-transfer-queue.c:188
-msgid "_Cancel"
-msgstr "_Sguir dheth"
 
 #: ../shell/rb-track-transfer-queue.c:189
 msgid "_Skip"
@@ -3853,93 +4134,80 @@ msgstr[1] "%d mhearachd ion-phortaidh"
 msgstr[2] "%d mhearachdan ion-phortaidh"
 msgstr[3] "%d mearachd ion-phortaidh"
 
-#: ../sources/rb-library-source.c:129
+#: ../sources/rb-library-source.c:121
 msgid "Artist/Artist - Album"
 msgstr "Neach-ciùil/Neach-ciùil - Albam"
 
-#: ../sources/rb-library-source.c:130
+#: ../sources/rb-library-source.c:122
 msgid "Artist/Album"
 msgstr "Neach-ciùil/Albam"
 
-#: ../sources/rb-library-source.c:131
+#: ../sources/rb-library-source.c:123
 msgid "Artist - Album"
 msgstr "Neach-ciùil - Albam"
 
-#: ../sources/rb-library-source.c:132 ../widgets/rb-entry-view.c:1471
+#: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1474
 #: ../widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Albam"
 
-#: ../sources/rb-library-source.c:138
+#: ../sources/rb-library-source.c:130
 msgid "Number - Title"
 msgstr "Àireamh - Tiotal"
 
-#: ../sources/rb-library-source.c:139
+#: ../sources/rb-library-source.c:131
 msgid "Artist - Title"
 msgstr "Neach-ciùil - Tiotal"
 
-#: ../sources/rb-library-source.c:140
+#: ../sources/rb-library-source.c:132
 msgid "Artist - Number - Title"
 msgstr "Neach-ciùil - Àireamh - Tiotal"
 
-#: ../sources/rb-library-source.c:141
+#: ../sources/rb-library-source.c:133
 msgid "Artist (Album) - Number - Title"
 msgstr "Neach-ciùil (Albam) - Àireamh - Tiotal"
 
-#: ../sources/rb-library-source.c:143
+#: ../sources/rb-library-source.c:135
 msgid "Number. Artist - Title"
 msgstr "Àireamh.Neach-ciùil - Tiotal"
 
-#: ../sources/rb-library-source.c:157
-msgid "Constant bit rate"
-msgstr "Bit rate cunbhalach"
-
-#: ../sources/rb-library-source.c:158
-msgid "Variable bit rate"
-msgstr "Bit rate caochlaideach"
-
-#: ../sources/rb-library-source.c:447
-#: ../sources/sync/rb-sync-settings-ui.c:216
-#: ../sources/sync/rb-sync-settings-ui.c:217
+#: ../sources/rb-library-source.c:415 ../sources/sync/rb-sync-settings-ui.c:217
+#: ../sources/sync/rb-sync-settings-ui.c:218
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "Ceòl"
 
-#: ../sources/rb-library-source.c:500
+#: ../sources/rb-library-source.c:468
 msgid "Choose Library Location"
 msgstr "Tagh ionad na leabhar-lainn"
 
-#: ../sources/rb-library-source.c:539
+#: ../sources/rb-library-source.c:507
 msgid "Multiple locations set"
 msgstr "Iomadh ionad air a shuidheachadh"
 
-#: ../sources/rb-library-source.c:729
-msgid "Default settings"
-msgstr "Roghainnean bunaiteach"
-
-#: ../sources/rb-library-source.c:1509
+#: ../sources/rb-library-source.c:1043
 msgid "Example Path:"
 msgstr "Ball-eisimpleir slighe:"
 
-#: ../sources/rb-library-source.c:1682 ../sources/rb-library-source.c:1686
+#: ../sources/rb-library-source.c:1197 ../sources/rb-library-source.c:1201
 #: ../sources/rb-transfer-target.c:189
 msgid "Error transferring track"
 msgstr "Mearachd a' gluasad an traca"
 
-#: ../sources/rb-library-source.c:1772
+#: ../sources/rb-library-source.c:1283
 msgid "Copying tracks to the library"
 msgstr "A' cur lethbhreac de thracaichean dhan leabharlann"
 
-#: ../sources/rb-library-source.c:1846
+#: ../sources/rb-library-source.c:1357
 msgid "Adding tracks to the library"
 msgstr "A' cur tracaichean ris an leabharlann"
 
-#: ../sources/rb-media-player-source.c:614
+#: ../sources/rb-media-player-source.c:781
 #, c-format
 msgid "Syncing tracks to %s"
 msgstr "A' sioncronachadh tracaichean ri %s"
 
-#: ../sources/rb-media-player-source.c:670
+#: ../sources/rb-media-player-source.c:837
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
@@ -3947,7 +4215,7 @@ msgstr ""
 "Cha do thagh thu ceòl, liosta-chluiche no pod-chraoladh sam bith gus a "
 "ghluasad gun uidheam seo."
 
-#: ../sources/rb-media-player-source.c:675
+#: ../sources/rb-media-player-source.c:842
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
@@ -3955,16 +4223,16 @@ msgstr ""
 "Chan eil àite gu leòr air an uidheam is cha ghabh an ceòl, na liostaichean-"
 "cluiche agus na pod-chraolaidhean a ghluasad ann."
 
-#: ../sources/rb-media-player-source.c:727
+#: ../sources/rb-media-player-source.c:894
 #, c-format
 msgid "%s Sync Settings"
 msgstr "Roghainnean sioncronachadh %s"
 
-#: ../sources/rb-media-player-source.c:732
+#: ../sources/rb-media-player-source.c:899
 msgid "Sync with the device"
 msgstr "Sioncronaich leis an uidheam"
 
-#: ../sources/rb-media-player-source.c:734
+#: ../sources/rb-media-player-source.c:901
 msgid "Don't sync"
 msgstr "Na sioncronaich"
 
@@ -3985,16 +4253,16 @@ msgstr[3] "%d faidhle a dhìth"
 msgid "Remove from Playlist"
 msgstr "Thoir air falbh on liosta-chluiche"
 
-#: ../sources/rb-play-queue-source.c:292 ../sources/rb-play-queue-source.c:394
-#: ../sources/rb-play-queue-source.c:503
+#: ../sources/rb-play-queue-source.c:297 ../sources/rb-play-queue-source.c:399
+#: ../sources/rb-play-queue-source.c:508
 msgid "Play Queue"
 msgstr "Cluich an ciutha"
 
-#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:906
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:922
 msgid "from"
 msgstr "o"
 
-#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:905
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:921
 msgid "by"
 msgstr "le"
 
@@ -4015,12 +4283,12 @@ msgstr "A' ceangal"
 msgid "Buffering"
 msgstr "'Ga bhufaireadh"
 
-#: ../sources/rb-transfer-target.c:456
+#: ../sources/rb-transfer-target.c:457
 #, c-format
 msgid "Transferring tracks to %s"
 msgstr "A' tar-aiseag tracaichean gu %s"
 
-#: ../sources/sync/rb-sync-settings-ui.c:228
+#: ../sources/sync/rb-sync-settings-ui.c:229
 msgid "All Music"
 msgstr "An ceòl air fad"
 
@@ -4062,90 +4330,117 @@ msgstr "Na putanan a chithear sa chòmhradh rabhaidh"
 msgid "Show more _details"
 msgstr "Seall barrach_d mion-fhiosrachadh"
 
-#: ../widgets/rb-entry-view.c:1012 ../widgets/rb-entry-view.c:1530
-#: ../widgets/rb-song-info.c:1190
+#: ../widgets/rb-alert-dialog.c:366 ../widgets/rb-alert-dialog.c:400
+#| msgid "OK"
+msgid "_OK"
+msgstr "_Ceart ma-tha"
+
+#: ../widgets/rb-alert-dialog.c:387
+msgid "_No"
+msgstr "_Chan eil"
+
+#: ../widgets/rb-alert-dialog.c:390
+msgid "_Yes"
+msgstr "_Tha"
+
+#: ../widgets/rb-dialog.c:132
+msgid "_Open"
+msgstr "F_osgail"
+
+#: ../widgets/rb-encoding-settings.c:54
+msgid "Constant bit rate"
+msgstr "Bit rate cunbhalach"
+
+#: ../widgets/rb-encoding-settings.c:55
+msgid "Variable bit rate"
+msgstr "Bit rate caochlaideach"
+
+#: ../widgets/rb-encoding-settings.c:400
+msgid "Default settings"
+msgstr "Roghainnean bunaiteach"
+
+#: ../widgets/rb-entry-view.c:1015 ../widgets/rb-entry-view.c:1533
+#: ../widgets/rb-song-info.c:1231
 msgid "Lossless"
 msgstr "Lossless"
 
-#: ../widgets/rb-entry-view.c:1430
+#: ../widgets/rb-entry-view.c:1433
 msgid "Track"
 msgstr "Traca"
 
-#: ../widgets/rb-entry-view.c:1461
+#: ../widgets/rb-entry-view.c:1464
 msgid "Composer"
 msgstr "Ceòl-sgrìobhaiche"
 
-#: ../widgets/rb-entry-view.c:1491
+#: ../widgets/rb-entry-view.c:1494
 msgid "Comment"
 msgstr "Beachd"
 
-#: ../widgets/rb-entry-view.c:1501
+#: ../widgets/rb-entry-view.c:1504
 msgid "Time"
 msgstr "Àm"
 
-#: ../widgets/rb-entry-view.c:1513
+#: ../widgets/rb-entry-view.c:1516
 msgid "Year"
 msgstr "Bliadhna"
 
-#: ../widgets/rb-entry-view.c:1528
+#: ../widgets/rb-entry-view.c:1531
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1539
+#: ../widgets/rb-entry-view.c:1542
 msgid "Rating"
 msgstr "Rangachadh"
 
-#: ../widgets/rb-entry-view.c:1561
+#: ../widgets/rb-entry-view.c:1564
 msgid "Play Count"
 msgstr "Co mheud turas a chaidh a chluich"
 
-#: ../widgets/rb-entry-view.c:1573
+#: ../widgets/rb-entry-view.c:1576
 msgid "Last Played"
 msgstr "Air a chluich turas mu dheireadh"
 
-#: ../widgets/rb-entry-view.c:1585
+#: ../widgets/rb-entry-view.c:1588
 msgid "Date Added"
 msgstr "Cuin a chaidh a chur ris"
 
-#: ../widgets/rb-entry-view.c:1596
+#: ../widgets/rb-entry-view.c:1599
 msgid "Last Seen"
 msgstr "'Ga shealltainn turas mu dheireadh"
 
-#: ../widgets/rb-entry-view.c:1607
+#: ../widgets/rb-entry-view.c:1610
 msgid "Location"
 msgstr "Ionad"
 
-#: ../widgets/rb-entry-view.c:1616
+#: ../widgets/rb-entry-view.c:1619
 msgid "BPM"
 msgstr "BPM"
 
-#: ../widgets/rb-entry-view.c:1879
+#: ../widgets/rb-entry-view.c:1883
 msgid "Now Playing"
 msgstr "'Ga chluich an-dràsta"
 
-#: ../widgets/rb-entry-view.c:1938
+#: ../widgets/rb-entry-view.c:1942
 msgid "Playback Error"
 msgstr "Mearachd leis a' chluich"
 
-#: ../widgets/rb-fading-image.c:295
+#: ../widgets/rb-fading-image.c:301
 msgid "Drop artwork here"
 msgstr "Leig às an obair-ealain an-seo"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1202
+#: ../widgets/rb-header.c:1225
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1213
+#: ../widgets/rb-header.c:1236
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
 
 #: ../widgets/rb-import-dialog.c:339
-#| msgid "%d missing file"
-#| msgid_plural "%d missing files"
 msgid "Examining files"
 msgstr "A' sgrùdadh nam faidhlichean"
 
@@ -4218,6 +4513,10 @@ msgstr[3] "Na h-uile %d (%d)"
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
+
+#: ../widgets/rb-query-creator.c:194
+msgid "_New"
+msgstr "Ù_r"
 
 #: ../widgets/rb-query-creator.c:210
 msgid "Create Automatic Playlist"
@@ -4525,11 +4824,11 @@ msgstr "là(ithean)"
 msgid "weeks"
 msgstr "seachdain(ean)"
 
-#: ../widgets/rb-rating-helper.c:304
+#: ../widgets/rb-rating-helper.c:295
 msgid "No Stars"
 msgstr "Gun rionnag"
 
-#: ../widgets/rb-rating-helper.c:306
+#: ../widgets/rb-rating-helper.c:297
 #, c-format
 msgid "%d Star"
 msgid_plural "%d Stars"
@@ -4538,41 +4837,52 @@ msgstr[1] "%d rionnag"
 msgstr[2] "%d rionnagan"
 msgstr[3] "%d rionnag"
 
-#: ../widgets/rb-search-entry.c:227
+#: ../widgets/rb-search-entry.c:228
 msgid "Clear the search text"
 msgstr "Falamhaich an teacsa luirg"
 
-#: ../widgets/rb-search-entry.c:234
+#: ../widgets/rb-search-entry.c:235
 msgid "Select the search type"
 msgstr "Tagh seòrsa an luirg"
 
-#: ../widgets/rb-search-entry.c:252
+#: ../widgets/rb-search-entry.c:253
 msgid "Search"
 msgstr "Lorg"
 
-#: ../widgets/rb-search-entry.c:550
+#: ../widgets/rb-search-entry.c:551
 msgid "_Search:"
 msgstr "_Lorg:"
 
-#: ../widgets/rb-song-info.c:369
+#: ../widgets/rb-song-info.c:354
+msgid "_Back"
+msgstr "_Air ais"
+
+#: ../widgets/rb-song-info.c:363
+msgid "_Forward"
+msgstr "Air a_dhart"
+
+#: ../widgets/rb-song-info.c:371
 msgid "Song Properties"
 msgstr "Roghainnean an òrain"
 
-#: ../widgets/rb-song-info.c:426
+#: ../widgets/rb-song-info.c:428
 msgid "Multiple Song Properties"
 msgstr "Iomadh roghainn òrain"
 
-#: ../widgets/rb-song-info.c:1253
+#: ../widgets/rb-song-info.c:1294
 msgid "Unknown file name"
 msgstr "Ainm faidhle nach aithne dhuinn"
 
-#: ../widgets/rb-song-info.c:1275
+#: ../widgets/rb-song-info.c:1316
 msgid "On the desktop"
 msgstr "Air an deasga"
 
-#: ../widgets/rb-song-info.c:1298
+#: ../widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Ionad nach aithne dhuinn"
+
+#~ msgid "Format settings:"
+#~ msgstr "Roghainnean an fhòrmait:"
 
 #~ msgid "_File"
 #~ msgstr "_Faidhle"
@@ -4600,9 +4910,6 @@ msgstr "Ionad nach aithne dhuinn"
 
 #~ msgid "_Delete"
 #~ msgstr "_Dubh às"
-
-#~ msgid "_Close"
-#~ msgstr "_Dùin"
 
 #~ msgid "Add _to Play Queue"
 #~ msgstr "Cuir ri ciudha cluiche"
@@ -4645,12 +4952,6 @@ msgstr "Ionad nach aithne dhuinn"
 
 #~ msgid "_Next"
 #~ msgstr "An _ath"
-
-#~ msgid "_Increase Volume"
-#~ msgstr "_Meudaich bholam"
-
-#~ msgid "_Decrease Volume"
-#~ msgstr "_Lùghdaich bholam"
 
 #~ msgid "Sh_uffle"
 #~ msgstr "Me_asgaich"
