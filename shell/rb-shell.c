@@ -879,11 +879,13 @@ construct_plugins (RBShell *shell)
 
 #ifdef USE_UNINSTALLED_DIRS
 	plugindir = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "..", UNINSTALLED_PLUGINS_LOCATION, NULL);
-	rb_debug ("plugin search path: %s", plugindir);
+	plugindatadir = g_build_filename (SHARE_UNINSTALLED_DIR, "..", UNINSTALLED_PLUGINS_LOCATION, NULL);
+	rb_debug ("plugin search path: %s / %s", plugindir, plugindatadir);
 	peas_engine_add_search_path (shell->priv->plugin_engine,
 				     plugindir,
-				     plugindir);
+				     plugindatadir);
 	g_free (plugindir);
+	g_free (plugindatadir);
 #endif
 
 	plugindir = g_build_filename (LIBDIR, "rhythmbox", "plugins", NULL);
