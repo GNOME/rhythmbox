@@ -94,7 +94,7 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 		self.entry_type = MagnatuneEntryType()
 		self.db.register_entry_type(self.entry_type)
 
-		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
+		self.settings = Gio.Settings.new("org.gnome.rhythmbox.plugins.magnatune")
 
 		app = Gio.Application.get_default()
 		action = Gio.SimpleAction(name="magnatune-album-download")
@@ -111,7 +111,7 @@ class Magnatune(GObject.GObject, Peas.Activatable):
 		app.link_shared_menus(toolbar)
 
 		group = RB.DisplayPageGroup.get_by_id ("stores")
-		settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
+		settings = Gio.Settings.new("org.gnome.rhythmbox.plugins.magnatune")
 		self.source = GObject.new(MagnatuneSource,
 					  shell=shell,
 					  entry_type=self.entry_type,
@@ -152,7 +152,7 @@ class MagnatuneConfig(GObject.GObject, PeasGtk.Configurable):
 
 	def __init__(self):
 		GObject.GObject.__init__(self)
-		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
+		self.settings = Gio.Settings.new("org.gnome.rhythmbox.plugins.magnatune")
 		self.account = MagnatuneAccount.instance()
 
 	def do_create_configure_widget(self):

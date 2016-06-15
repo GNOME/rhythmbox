@@ -65,7 +65,7 @@ class MagnatuneSource(RB.BrowserSource):
 		self.hate = self
 
 		self.__popup = None
-		self.__settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
+		self.__settings = Gio.Settings.new("org.gnome.rhythmbox.plugins.magnatune")
 		# source state
 		self.__activated = False
 		self.__db = None
@@ -186,7 +186,7 @@ class MagnatuneSource(RB.BrowserSource):
 
 		try:
 			# Just use the first library location
-			library = Gio.Settings("org.gnome.rhythmbox.rhythmdb")
+			library = Gio.Settings.new("org.gnome.rhythmbox.rhythmdb")
 			library_location = library['locations'][0]
 		except IndexError as e:
 			RB.error_dialog(title = _("Couldn't download album"),
@@ -452,7 +452,7 @@ class MagnatuneSource(RB.BrowserSource):
 
 		def unzip_album():
 			# just use the first library location
-			library = Gio.Settings("org.gnome.rhythmbox.rhythmdb")
+			library = Gio.Settings.new("org.gnome.rhythmbox.rhythmdb")
 			library_location = Gio.file_new_for_uri(library['locations'][0])
 
 			print("unzipping %s" % dest.get_path())

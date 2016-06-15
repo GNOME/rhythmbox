@@ -55,7 +55,7 @@ class ReplayGainPlayer(object):
 
 		self.shell_player = shell.props.shell_player
 		self.player = self.shell_player.props.player
-		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.replaygain")
+		self.settings = Gio.Settings.new("org.gnome.rhythmbox.plugins.replaygain")
 
 		self.settings.connect("changed::limiter", self.limiter_changed_cb)
 

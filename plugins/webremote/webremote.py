@@ -204,7 +204,7 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 
 	def __init__(self):
 		GObject.Object.__init__(self)
-		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.webremote")
+		self.settings = Gio.Settings.new("org.gnome.rhythmbox.plugins.webremote")
 		self.settings.connect("changed", self.settings_changed_cb)
 		self.server = None
 		self.next_connid = 0
@@ -589,7 +589,7 @@ class WebRemoteConfig(GObject.Object, PeasGtk.Configurable):
 			self.update_port()
 
 	def do_create_configure_widget(self):
-		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.webremote")
+		self.settings = Gio.Settings.new("org.gnome.rhythmbox.plugins.webremote")
 		self.settings.connect("changed", self.settings_changed_cb)
 
 		ui_file = rb.find_plugin_file(self, "webremote-config.ui")

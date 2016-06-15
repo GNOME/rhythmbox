@@ -116,7 +116,7 @@ def extract_artist_and_title(stream_song_title):
 	return (artist, title)
 	
 def build_cache_path(artist, title):
-	settings = Gio.Settings("org.gnome.rhythmbox.plugins.lyrics")
+	settings = Gio.Settings.new("org.gnome.rhythmbox.plugins.lyrics")
 	folder = settings['folder']
 	if folder is None or folder == "":
 		folder = os.path.join(RB.user_cache_dir(), "lyrics")

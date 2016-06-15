@@ -35,7 +35,7 @@ class Parser (object):
 		self.artist = artist
 
 		try:
-			settings = Gio.Settings("org.gnome.rhythmbox.plugins.lyrics")
+			settings = Gio.Settings.new("org.gnome.rhythmbox.plugins.lyrics")
 			self.sites = settings['sites']
 		except GLib.GError as e:
 			print(e)

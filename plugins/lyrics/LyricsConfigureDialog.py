@@ -41,7 +41,7 @@ class LyricsConfigureDialog (GObject.Object, PeasGtk.Configurable):
 
 	def __init__(self):
 		GObject.Object.__init__(self)
-		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.lyrics")
+		self.settings = Gio.Settings.new("org.gnome.rhythmbox.plugins.lyrics")
 
 	def do_create_configure_widget(self):
 		builder = Gtk.Builder()

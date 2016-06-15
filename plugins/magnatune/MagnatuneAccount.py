@@ -58,7 +58,7 @@ def instance():
 
 class MagnatuneAccount(object):
 	def __init__(self):
-		self.settings = Gio.Settings("org.gnome.rhythmbox.plugins.magnatune")
+		self.settings = Gio.Settings.new("org.gnome.rhythmbox.plugins.magnatune")
 		self.secret = None
 		self.keyring_attributes = {"rhythmbox-plugin": "magnatune"}
 		if Secret is None:
