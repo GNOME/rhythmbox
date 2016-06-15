@@ -207,7 +207,7 @@ append_menu (RBButtonBar *bar, GMenuModel *menu, gboolean need_separator)
 		label_text = NULL;
 		g_menu_model_get_item_attribute (menu, i, "label", "s", &label_text);
 		label = gtk_label_new (g_dgettext (NULL, label_text));
-		g_object_set (label, "margin-left", 6, "margin-right", 6, NULL);
+		g_object_set (label, "margin-start", 6, "margin-end", 6, NULL);
 		gtk_container_add (GTK_CONTAINER (button), label);
 
 		if (g_menu_model_get_item_attribute (menu, i, "accel", "s", &accel)) {
