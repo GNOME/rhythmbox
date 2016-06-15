@@ -1032,16 +1032,7 @@ slider_press_callback (GtkWidget *widget,
 	header->priv->latest_set_time = -1;
 	g_object_notify (G_OBJECT (header), "slider-dragging");
 
-#if !GTK_CHECK_VERSION(3,5,0)
-	/* HACK: we want the behaviour you get with the middle button, so we
-	 * mangle the event.  clicking with other buttons moves the slider in
-	 * step increments, clicking with the middle button moves the slider to
-	 * the location of the click.
-	 */
-	event->button = 2;
-#endif
-
-	/* more hack: pretend the trough is at least 20 pixels high */
+	/* hack: pretend the trough is at least 20 pixels high */
 	height = gtk_widget_get_allocated_height (widget);
 	if (abs (event->y - (height / 2)) < 10)
 		event->y = height / 2;
@@ -1108,11 +1099,6 @@ slider_release_callback (GtkWidget *widget,
 			 GdkEventButton *event,
 			 RBHeader *header)
 {
-#if !GTK_CHECK_VERSION(3,5,0)
-	/* HACK: see slider_press_callback */
-	event->button = 2;
-#endif
-
 	if (header->priv->slider_dragging == FALSE) {
 		rb_debug ("slider is not dragging");
 		return FALSE;
