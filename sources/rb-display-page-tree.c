@@ -907,7 +907,9 @@ impl_constructed (GObject *object)
 						 (GtkTreeCellDataFunc) pixbuf_cell_data_func,
 						 display_page_tree,
 						 NULL);
-	g_object_set (renderer, "follow-state", TRUE, NULL);
+	if (gtk_check_version (3, 16, 0) != NULL) {
+		g_object_set (renderer, "follow-state", TRUE, NULL);
+	}
 
 	/* Set up the name column */
 	renderer = gtk_cell_renderer_text_new ();
