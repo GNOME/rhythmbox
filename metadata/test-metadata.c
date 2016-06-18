@@ -147,8 +147,6 @@ int main(int argc, char **argv)
 	gboolean retval;
 	GError *error = NULL;
 
-	g_type_init ();
-
 	context = g_option_context_new (NULL);
 	g_option_context_add_main_entries (context, entries, NULL);
 	retval = g_option_context_parse (context, &argc, &argv, &error);

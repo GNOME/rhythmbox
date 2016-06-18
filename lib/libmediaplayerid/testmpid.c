@@ -22,8 +22,6 @@ main (int argc, char **argv)
 {
 	MPIDDevice *device;
 
-	g_type_init ();
-
 	mpid_enable_debug (TRUE);
 	device = mpid_device_new (argv[1]);
 

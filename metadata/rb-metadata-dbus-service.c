@@ -338,7 +338,6 @@ main (int argc, char **argv)
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 #endif
-	g_type_init ();
 	gst_init (NULL, NULL);
 	g_set_prgname ("rhythmbox-metadata");
 

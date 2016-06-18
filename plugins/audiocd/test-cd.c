@@ -216,7 +216,6 @@ main (int argc, char **argv)
 {
 	char *thing;
 
-	g_type_init ();
 	gst_init (NULL, NULL);
 
 	if (argv[1] == NULL) {

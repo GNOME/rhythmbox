@@ -1018,7 +1018,6 @@ main (int argc, char **argv)
 #endif
 	/* setup */
 	setlocale (LC_ALL, "");
-	g_type_init ();
 	g_set_prgname ("rhythmbox-client");
 
 	/* parse arguments */

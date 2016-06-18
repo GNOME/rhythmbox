@@ -59,7 +59,6 @@ main (int argc, char **argv)
 	}
 #endif
 
-	g_type_init ();
 	g_random_set_seed (time (0));
 
 #ifdef USE_UNINSTALLED_DIRS
