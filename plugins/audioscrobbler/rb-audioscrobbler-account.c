@@ -496,9 +496,9 @@ request_token (RBAudioscrobblerAccount *account)
 	/* create the soup session, if we haven't got one yet */
 	if (account->priv->soup_session == NULL) {
 		account->priv->soup_session =
-			soup_session_async_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-		                                             SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
-		                                             NULL);
+			soup_session_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
+						       SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
+						       NULL);
 	}
 
 	/* create the request */

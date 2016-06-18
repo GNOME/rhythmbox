@@ -452,11 +452,11 @@ rb_musicbrainz_lookup (const char *entity,
 					    rb_musicbrainz_lookup);
 	g_simple_async_result_set_check_cancellable (result, cancellable);
 
-	session = soup_session_async_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-						       SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
-						       SOUP_SESSION_USER_AGENT,
-						       "Rhythmbox/" VERSION " ",
-						       NULL);
+	session = soup_session_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
+						 SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
+						 SOUP_SESSION_USER_AGENT,
+						 "Rhythmbox/" VERSION " ",
+						 NULL);
 	uri_str = g_strdup_printf ("http://musicbrainz.org/ws/2/%s/%s", entity, entity_id);
 	uri = soup_uri_new (uri_str);
 	g_free (uri_str);

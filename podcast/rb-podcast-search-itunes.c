@@ -141,9 +141,9 @@ impl_start (RBPodcastSearch *bsearch, const char *text, int max_results)
 	char *limit;
 	RBPodcastSearchITunes *search = RB_PODCAST_SEARCH_ITUNES (bsearch);
 
-	search->session = soup_session_async_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-							       SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
-							       NULL);
+	search->session = soup_session_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
+							 SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
+							 NULL);
 
 	uri = soup_uri_new (ITUNES_SEARCH_URI);
 	limit = g_strdup_printf ("%d", max_results);

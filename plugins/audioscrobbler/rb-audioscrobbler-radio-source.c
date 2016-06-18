@@ -371,9 +371,9 @@ rb_audioscrobbler_radio_source_init (RBAudioscrobblerRadioSource *source)
 	source->priv = RB_AUDIOSCROBBLER_RADIO_SOURCE_GET_PRIVATE (source);
 
 	source->priv->soup_session =
-		soup_session_async_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-		                                     SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
-		                                     NULL);
+		soup_session_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
+					       SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
+					       NULL);
 }
 
 static void

@@ -801,7 +801,7 @@ rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
 	/* create soup session, if we haven't got one yet */
 	if (!audioscrobbler->priv->soup_session) {
 		audioscrobbler->priv->soup_session =
-			soup_session_async_new_with_options (
+			soup_session_new_with_options (
 					SOUP_SESSION_ADD_FEATURE_BY_TYPE,
 					SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
 					NULL);
