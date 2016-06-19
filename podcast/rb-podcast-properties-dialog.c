@@ -35,10 +35,6 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 
-#if defined(WITH_WEBKIT)
-#include <webkit2/webkit2.h>
-#endif
-
 #include "rb-podcast-properties-dialog.h"
 #include "rb-file-helpers.h"
 #include "rb-builder-helpers.h"
@@ -114,38 +110,6 @@ enum
 
 G_DEFINE_TYPE (RBPodcastPropertiesDialog, rb_podcast_properties_dialog, GTK_TYPE_DIALOG)
 
-#if defined(WITH_WEBKIT)
-/* list of HTML-ish strings that we search for to distinguish plain text from HTML podcast
- * descriptions.  we don't really have anything else to go on - regular content type
- * sniffing only works for proper HTML documents, but these are just tiny fragments, usually
- * with some simple formatting tags.  if we find any of these in a podcast description,
- * we'll display it as HTML rather than text.
- */
-static const char *html_clues[] = {
-	"<a ",
-	"<b>",
-	"<i>",
-	"<ul>",
-	"<br",
-	"<img ",
-	"&lt;",
-	"&gt;",
-	"&amp;",
-	"&quo;",
-	"&#8",
-	"&#x"
-};
-
-/* list of URI prefixes for things we ignore when handling navigation requests.
- * some podcast descriptions include facebook 'like' buttons as iframes, which otherwise
- * show up as external web browser windows.
- */
-static const char *ignore_uris[] = {
-	"http://www.facebook.com/plugins/like.php?"
-};
-
-#endif
-
 static void
 rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass)
 {
@@ -167,100 +131,6 @@ rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass)
 
 	g_type_class_add_private (klass, sizeof (RBPodcastPropertiesDialogPrivate));
 }
-
-#if defined(WITH_WEBKIT)
-
-static gboolean
-decide_policy_cb (WebKitWebView *web_view,
-			 WebKitPolicyDecision *decision,
-			 WebKitPolicyDecisionType type,
-			 gpointer user_data)
-{
-	const char *uri;
-	GError *error = NULL;
-	int i;
-	WebKitNavigationPolicyDecision *navigation_decision;
-	WebKitURIRequest *request;
-	RBPodcastPropertiesDialog *dialog = (RBPodcastPropertiesDialog *) user_data;
-
-
-	switch (type)
-	{
-		case WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION:
-			navigation_decision = WEBKIT_NAVIGATION_POLICY_DECISION (decision);
-			request = webkit_navigation_policy_decision_get_request (navigation_decision);
-			uri = webkit_uri_request_get_uri (request);
-
-			/* from _load_plain_text or _load_html */
-			if (g_strcmp0 (uri, "about:blank") == 0)
-			{
-				webkit_policy_decision_use (decision);
-				return TRUE;
-			}
-
-			webkit_policy_decision_ignore (decision);
-
-			/* ignore some obnoxious social networking stuff */
-			for (i = 0; i < G_N_ELEMENTS (ignore_uris); i++) {
-				if (g_str_has_prefix (uri, ignore_uris[i])) {
-					rb_debug ("ignoring external URI %s", uri);
-					return TRUE;
-				}
-			}
-
-			gtk_show_uri (gtk_widget_get_screen (GTK_WIDGET (dialog)), uri, GDK_CURRENT_TIME, &error);
-			if (error != NULL) {
-				rb_error_dialog (NULL, _("Unable to display requested URI"), "%s", error->message);
-				g_error_free (error);
-			}
-
-		default:
-			webkit_policy_decision_ignore (decision);
-			return FALSE;
-	}
-}
-
-static void
-set_webkit_settings (WebKitWebView *view)
-{
-	WebKitSettings *settings;
-
-	settings = webkit_settings_new_with_settings (
-		      "enable-javascript", FALSE,
-		      "enable-plugins", FALSE,
-		      NULL);
-	webkit_web_view_set_settings (view, settings);
-}
-
-static void
-set_webkit_font_from_gtk_style (WebKitWebView *view)
-{
-	WebKitSettings *settings;
-	const PangoFontDescription *font_desc;
-	GtkStyleContext *style;
-	int font_size;
-	const char *font_family;
-
-	style = gtk_widget_get_style_context (GTK_WIDGET (view));
-	settings = webkit_web_view_get_settings (view);
-
-	font_desc = gtk_style_context_get_font (style,
-						GTK_STATE_FLAG_ACTIVE);
-	font_size = pango_font_description_get_size (font_desc);
-	if (pango_font_description_get_size_is_absolute (font_desc) == FALSE)
-		font_size /= PANGO_SCALE;
-
-	font_family = pango_font_description_get_family (font_desc);
-
-	rb_debug ("setting font settings: %s / %d", font_family, font_size);
-	g_object_set (settings,
-		      "default-font-size", font_size,
-		      "default-monospace-font-size", font_size,
-		      "sans-serif-font-family", font_family,
-		      "monospace-font-family", font_family,
-		      NULL);
-}
-#endif
 
 static void
 rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
@@ -307,20 +177,9 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 	dialog->priv->playcount = GTK_WIDGET (gtk_builder_get_object (builder, "playcountLabel"));
 	dialog->priv->bitrate = GTK_WIDGET (gtk_builder_get_object (builder, "bitrateLabel"));
 	dialog->priv->date = GTK_WIDGET (gtk_builder_get_object (builder, "dateLabel"));
-#if defined(WITH_WEBKIT)
-	dialog->priv->description = webkit_web_view_new ();
-	set_webkit_settings (WEBKIT_WEB_VIEW (dialog->priv->description));
-	set_webkit_font_from_gtk_style (WEBKIT_WEB_VIEW (dialog->priv->description));
-
-	g_signal_connect_object (dialog->priv->description,
-				 "decide-policy",
-				 G_CALLBACK (decide_policy_cb),
-				 dialog,
-				 0);
-#else
 	dialog->priv->description = gtk_label_new (NULL);
 	gtk_label_set_line_wrap (GTK_LABEL (dialog->priv->description), TRUE);
-#endif
+
 	/* add relationship between the description label and the description widget */
 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "descriptionDescLabel"));
 	gtk_label_set_mnemonic_widget (GTK_LABEL (widget), dialog->priv->description);
@@ -679,28 +538,9 @@ rb_podcast_properties_dialog_update_date (RBPodcastPropertiesDialog *dialog)
 static void
 rb_podcast_properties_dialog_update_description (RBPodcastPropertiesDialog *dialog)
 {
-#if defined(WITH_WEBKIT)
-	const char *str;
-	int i;
-	gboolean loaded = FALSE;
-	str = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_DESCRIPTION);
-	for (i = 0; i < G_N_ELEMENTS (html_clues); i++) {
-		if (g_strstr_len (str, -1, html_clues[i]) != NULL) {
-			webkit_web_view_load_html (WEBKIT_WEB_VIEW (dialog->priv->description),
-							  str,
-							  NULL);
-			loaded = TRUE;
-		}
-	}
-
-	if (loaded == FALSE) {
-		webkit_web_view_load_plain_text (WEBKIT_WEB_VIEW (dialog->priv->description), str);
-	}
-#else
 	const char *str;
 	str = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_DESCRIPTION);
 	gtk_label_set_text (GTK_LABEL (dialog->priv->description), str);
-#endif
 }
 
 static char *

@@ -432,24 +432,6 @@ if test x"$enable_lirc" != xno; then
 fi
 AM_CONDITIONAL(WITH_LIRC, test x"$with_lirc" = xyes)
 
-dnl WebKit
-have_webkit=no
-AC_ARG_WITH(webkit,
-	    AC_HELP_STRING([--with-webkit],
-			   [Use WebKit to display HTML]),,
-	    with_webkit=auto)
-if test "x$with_webkit" != xno; then
-	PKG_CHECK_MODULES(WEBKIT, [webkit2gtk-4.0], have_webkit=yes, have_webkit=no)
-	if test "x$have_webkit" = "xno" -a "x$with_webkit" = "xyes"; then
-		AC_MSG_ERROR([WebKit support explicitly requested, but WebKit could not be found])
-	fi
-	if test "x$have_webkit" = "xyes"; then
-		AC_DEFINE(WITH_WEBKIT, 1, [Define if WebKit is enabled])
-	fi
-fi
-AM_CONDITIONAL(WITH_WEBKIT, test x"$have_webkit" = xyes)
-
-
 AC_ARG_ENABLE(uninstalled-build,
               AC_HELP_STRING([--enable-uninstalled-build],
 			     [Search for files in build directory as well]),
@@ -865,11 +847,6 @@ if test x"$have_libnotify" = xyes; then
 	AC_MSG_NOTICE([** libnotify support is enabled])
 else
 	AC_MSG_NOTICE([   libnotify support is disabled])
-fi
-if test x"$have_webkit" = xyes; then
-	AC_MSG_NOTICE([** WebKit support is enabled])
-else
-	AC_MSG_NOTICE([   WebKit support is disabled])
 fi
 if test x"$use_gudev" = xyes; then
 	AC_MSG_NOTICE([** GUdev support enabled])

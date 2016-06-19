@@ -46,7 +46,6 @@ AM_CPPFLAGS = 						\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(DBUS_CFLAGS)					\
 	$(GUDEV_CFLAGS)					\
-	$(WEBKIT_FLAGS)				\
 	-D__EXTENSIONS__
 
 
@@ -114,7 +113,6 @@ librhythmbox_core_la_LIBADD =				\
 	$(DBUS_LIBS)					\
 	$(TOTEM_PLPARSER_LIBS)				\
 	$(GUDEV_LIBS)					\
-	$(WEBKIT_LIBS)				\
 	$(RHYTHMBOX_LIBS)				\
 	-lgstpbutils-1.0				\
 	-lgstcontroller-1.0				\

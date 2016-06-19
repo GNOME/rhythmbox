@@ -67,7 +67,6 @@ AM_CFLAGS =						\
 	-I$(top_srcdir)/sources				\
 	-I$(top_builddir)/lib 				\
 	$(RHYTHMBOX_CFLAGS)				\
-	$(WEBKIT_CFLAGS)				\
 	$(JSON_GLIB_CFLAGS)				\
 	$(TOTEM_PLPARSER_CFLAGS)
 
