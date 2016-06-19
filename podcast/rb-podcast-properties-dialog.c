@@ -183,12 +183,28 @@ unhtml (const char *str)
 					*o++ = '&';
 				} else if (strncmp (entity, "lt", sizeof(entity)) == 0) {
 					*o++ = '<';
+				} else if (strncmp (entity, "gt", sizeof(entity)) == 0) {
+					*o++ = '>';
 				} else if (strncmp (entity, "quot", sizeof(entity)) == 0) {
 					*o++ = '"';
-				} else if (strncmp (entity, "apos", sizeof(entity)) == 0) {
-					*o++ = '\'';
 				} else if (strncmp (entity, "nbsp", sizeof(entity)) == 0) {
 					*o++ = ' ';
+				} else if (strncmp (entity, "lrm", sizeof(entity)) == 0) {
+					o += g_unichar_to_utf8 (0x200e, o);
+				} else if (strncmp (entity, "rlm", sizeof(entity)) == 0) {
+					o += g_unichar_to_utf8 (0x200f, o);
+				} else if (strncmp (entity, "ndash", sizeof(entity)) == 0) {
+					o += g_unichar_to_utf8 (0x2013, o);
+				} else if (strncmp (entity, "mdash", sizeof(entity)) == 0) {
+					o += g_unichar_to_utf8 (0x2014, o);
+				} else if (strncmp (entity, "lsquo", sizeof(entity)) == 0) {
+					o += g_unichar_to_utf8 (0x2018, o);
+				} else if (strncmp (entity, "rsquo", sizeof(entity)) == 0) {
+					o += g_unichar_to_utf8 (0x2019, o);
+				} else if (strncmp (entity, "ldquo", sizeof(entity)) == 0) {
+					o += g_unichar_to_utf8 (0x201c, o);
+				} else if (strncmp (entity, "rdquo", sizeof(entity)) == 0) {
+					o += g_unichar_to_utf8 (0x201d, o);
 				} else if (entity[0] == '#') {
 					int base = 10;
 					char *str = entity + 1;

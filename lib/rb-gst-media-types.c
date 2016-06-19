@@ -274,6 +274,11 @@ get_encoding_target_file ()
 	return target_file;
 }
 
+/**
+ * rb_gst_get_default_encoding_target:
+ *
+ * Return value: (transfer none): default encoding target
+ */
 GstEncodingTarget *
 rb_gst_get_default_encoding_target ()
 {
@@ -295,6 +300,12 @@ rb_gst_get_default_encoding_target ()
 	return default_target;
 }
 
+/**
+ * rb_gst_get_encoding_profile:
+ * @media_type: media type to get a profile for
+ *
+ * Return value: (transfer full): encoding profile
+ */
 GstEncodingProfile *
 rb_gst_get_encoding_profile (const char *media_type)
 {
@@ -458,6 +469,12 @@ rb_gst_encoding_profile_get_settings (GstEncodingProfile *profile, const char *s
 	return setting_names;
 }
 
+/**
+ * rb_gst_encoding_profile_get_encoder:
+ * @profile: a #GstEncodingProfile
+ *
+ * Return value: (transfer full): an encoder element instance
+ */
 GstElement *
 rb_gst_encoding_profile_get_encoder (GstEncodingProfile *profile)
 {
@@ -471,6 +488,12 @@ rb_gst_encoding_profile_get_encoder (GstEncodingProfile *profile)
 	return gst_element_factory_create (factory, NULL);
 }
 
+/**
+ * rb_gst_encoding_profile_get_presets:
+ * @profile: profile to return presets for
+ *
+ * Return value: (transfer full) (array zero-terminated=1) (element-type gchar *): preset names
+ */
 char **
 rb_gst_encoding_profile_get_presets (GstEncodingProfile *profile)
 {
