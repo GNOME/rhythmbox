@@ -30,6 +30,7 @@
 
 #include <string.h>
 #include <time.h>
+#include <errno.h>
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
@@ -109,6 +110,142 @@ enum
 };
 
 G_DEFINE_TYPE (RBPodcastPropertiesDialog, rb_podcast_properties_dialog, GTK_TYPE_DIALOG)
+
+/* list of HTML-ish strings that we search for to distinguish plain text from HTML podcast
+ * descriptions.  we don't really have anything else to go on - regular content type
+ * sniffing only works for proper HTML documents, but these are just tiny fragments, usually
+ * with some simple formatting tags.  if we find any of these in a podcast description,
+ * we'll strip HTML tags and attempt to decode entities.
+ */
+static const char *html_clues[] = {
+	"<p>",
+	"<a ",
+	"<b>",
+	"<i>",
+	"<ul>",
+	"<br",
+	"<img ",
+	"&lt;",
+	"&gt;",
+	"&amp;",
+	"&quot;",
+	"&apos;",
+	"&lsquo;",
+	"&rsquo;",
+	"&ldquo;",
+	"&rdquo;",
+	"&#",
+};
+
+static char *
+unhtml (const char *str)
+{
+	const char *p;
+	char *out, *o, *e;
+	enum {
+		NORMAL,
+		TAG,
+		ENTITY,
+		BAD_ENTITY
+	} state;
+	char entity[6];
+	int elen;
+
+	out = g_malloc (strlen (str) + 1);
+
+	p = str;
+	o = out;
+	state = NORMAL;
+	while (*p != '\0') {
+		switch (state) {
+		case TAG:
+			if (*p == '>') {
+				state = NORMAL;
+			}
+			break;
+
+		case BAD_ENTITY:
+			switch (*p) {
+			case ';':
+			case ' ':
+				*o++ = '?';
+				state = NORMAL;
+				break;
+			default:
+				break;
+			}
+			break;
+
+		case ENTITY:
+			if (*p == ';' || *p == ' ') {
+				*e++ = '\0';
+				if (strncmp (entity, "amp", sizeof(entity)) == 0) {
+					*o++ = '&';
+				} else if (strncmp (entity, "lt", sizeof(entity)) == 0) {
+					*o++ = '<';
+				} else if (strncmp (entity, "quot", sizeof(entity)) == 0) {
+					*o++ = '"';
+				} else if (strncmp (entity, "apos", sizeof(entity)) == 0) {
+					*o++ = '\'';
+				} else if (strncmp (entity, "nbsp", sizeof(entity)) == 0) {
+					*o++ = ' ';
+				} else if (entity[0] == '#') {
+					int base = 10;
+					char *str = entity + 1;
+					char *end = NULL;
+					gulong l;
+
+					if (str[0] == 'x') {
+						base = 16;
+						str++;
+					}
+
+					errno = 0;
+					l = strtoul (str, &end, base);
+					if (end == str || errno != 0 || *end != '\0') {
+						*o++ = '?';
+					} else {
+						o += g_unichar_to_utf8 (l, o);
+					}
+				} else if (elen == 0) {
+					/* bare ampersand */
+					*o++ = '&';
+					*o++ = *p;
+				} else {
+					/* unsupported entity */
+					*o++ = '?';
+				}
+				state = NORMAL;
+				break;
+			}
+			elen++;
+			if (elen == sizeof(entity)) {
+				state = BAD_ENTITY;
+				break;
+			}
+			*e++ = *p;
+			break;
+
+		case NORMAL:
+			switch (*p) {
+			case '<':
+				state = TAG;
+				break;
+			case '&':
+				state = ENTITY;
+				e = entity;
+				elen = 0;
+				break;
+			default:
+				*o++ = *p;
+			}
+		}
+		p++;
+	}
+
+	*o++ = '\0';
+	return out;
+}
 
 static void
 rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass)
@@ -538,9 +675,22 @@ rb_podcast_properties_dialog_update_date (RBPodcastPropertiesDialog *dialog)
 static void
 rb_podcast_properties_dialog_update_description (RBPodcastPropertiesDialog *dialog)
 {
-	const char *str;
-	str = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_DESCRIPTION);
-	gtk_label_set_text (GTK_LABEL (dialog->priv->description), str);
+	int i;
+	const char *desc;
+
+	desc = rhythmdb_entry_get_string (dialog->priv->current_entry, RHYTHMDB_PROP_DESCRIPTION);
+	for (i = 0; i < G_N_ELEMENTS (html_clues); i++) {
+		if (g_strstr_len (desc, -1, html_clues[i]) != NULL) {
+			char *text;
+
+			text = unhtml (desc);
+			gtk_label_set_text (GTK_LABEL (dialog->priv->description), text);
+			g_free (text);
+			return;
+		}
+	}
+
+	gtk_label_set_text (GTK_LABEL (dialog->priv->description), desc);
 }
 
 static char *
