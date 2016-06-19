@@ -97,7 +97,6 @@ struct RBPodcastPropertiesDialogPrivate
 	GtkWidget   *rating;
 	GtkWidget   *date;
 	GtkWidget   *description;
-	GtkWidget   *description_window;
 
 	GtkWidget   *close_button;
 };
@@ -289,8 +288,6 @@ static void
 rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 {
 	GtkWidget  *content_area;
-	GtkWidget  *bin;
-	GtkWidget  *widget;
 	GtkBuilder *builder;
 	AtkObject *lobj, *robj;
 
@@ -330,21 +327,7 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 	dialog->priv->playcount = GTK_WIDGET (gtk_builder_get_object (builder, "playcountLabel"));
 	dialog->priv->bitrate = GTK_WIDGET (gtk_builder_get_object (builder, "bitrateLabel"));
 	dialog->priv->date = GTK_WIDGET (gtk_builder_get_object (builder, "dateLabel"));
-	dialog->priv->description = gtk_label_new (NULL);
-	gtk_label_set_line_wrap (GTK_LABEL (dialog->priv->description), TRUE);
-
-	/* add relationship between the description label and the description widget */
-	widget = GTK_WIDGET (gtk_builder_get_object (builder, "descriptionDescLabel"));
-	gtk_label_set_mnemonic_widget (GTK_LABEL (widget), dialog->priv->description);
-	lobj = gtk_widget_get_accessible (widget);
-	robj = gtk_widget_get_accessible (dialog->priv->description);
-	atk_object_add_relationship (lobj, ATK_RELATION_LABEL_FOR, robj);
-	atk_object_add_relationship (robj, ATK_RELATION_LABELLED_BY, lobj);
-
-	bin = GTK_WIDGET (gtk_builder_get_object (builder, "descriptionViewport"));
-	gtk_container_add (GTK_CONTAINER (bin), dialog->priv->description);
-
-	dialog->priv->description_window = GTK_WIDGET (gtk_builder_get_object (builder, "descriptionWindow"));
+	dialog->priv->description = GTK_WIDGET (gtk_builder_get_object (builder, "descriptionLabel"));
 
 	rb_builder_boldify_label (builder, "titleDescLabel");
 	rb_builder_boldify_label (builder, "feedDescLabel");

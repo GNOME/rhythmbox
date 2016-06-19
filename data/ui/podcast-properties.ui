@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.18.3 -->
+<!-- Generated with glade 3.19.0 -->
 <interface>
   <requires lib="gtk+" version="3.6"/>
   <object class="GtkNotebook" id="podcastproperties">
@@ -19,10 +19,10 @@
           <object class="GtkLabel" id="titleDescLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="xalign">0</property>
             <property name="label" translatable="yes">Title:</property>
             <property name="use_underline">True</property>
             <property name="mnemonic_widget">titleLabel</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="x_options">GTK_FILL</property>
@@ -33,10 +33,10 @@
           <object class="GtkLabel" id="feedDescLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="xalign">0</property>
             <property name="label" translatable="yes">Feed:</property>
             <property name="use_underline">True</property>
             <property name="mnemonic_widget">feedLabel</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="top_attach">1</property>
@@ -49,10 +49,10 @@
           <object class="GtkLabel" id="dateDescLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="xalign">0</property>
             <property name="label" translatable="yes">Date:</property>
             <property name="use_underline">True</property>
             <property name="mnemonic_widget">dateLabel</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="top_attach">2</property>
@@ -65,9 +65,9 @@
           <object class="GtkLabel" id="titleLabel">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="xalign">0</property>
             <property name="label">-</property>
             <property name="selectable">True</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -79,10 +79,10 @@
           <object class="GtkLabel" id="feedLabel">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="xalign">0</property>
             <property name="label">-</property>
             <property name="selectable">True</property>
             <property name="ellipsize">middle</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -96,9 +96,9 @@
           <object class="GtkLabel" id="dateLabel">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="xalign">0</property>
             <property name="label">-</property>
             <property name="selectable">True</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -120,9 +120,9 @@
               <object class="GtkLabel" id="descriptionDescLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Description:</property>
                 <property name="xalign">0</property>
                 <property name="yalign">0</property>
-                <property name="label" translatable="yes">Description:</property>
               </object>
             </child>
           </object>
@@ -145,7 +145,13 @@
                 <property name="can_focus">False</property>
                 <property name="shadow_type">none</property>
                 <child>
-                  <placeholder/>
+                  <object class="GtkLabel" id="descriptionLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="wrap">True</property>
+                    <property name="xalign">0</property>
+                    <property name="yalign">0</property>
+                  </object>
                 </child>
               </object>
             </child>
@@ -183,10 +189,10 @@
           <object class="GtkLabel" id="locationDescLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="xalign">0</property>
             <property name="label" translatable="yes">Source:</property>
             <property name="use_underline">True</property>
             <property name="mnemonic_widget">locationLabel</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="x_options">GTK_FILL</property>
@@ -197,10 +203,10 @@
           <object class="GtkLabel" id="locationLabel">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="xalign">0</property>
             <property name="label">-</property>
             <property name="selectable">True</property>
             <property name="ellipsize">middle</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -212,9 +218,9 @@
           <object class="GtkLabel" id="ratingDescLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="xalign">0</property>
             <property name="label" translatable="yes">_Rating:</property>
             <property name="use_underline">True</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="top_attach">6</property>
@@ -227,9 +233,9 @@
           <object class="GtkLabel" id="playcountDescLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="xalign">0</property>
             <property name="label" translatable="yes">Play count:</property>
             <property name="mnemonic_widget">playcountLabel</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="top_attach">5</property>
@@ -242,10 +248,10 @@
           <object class="GtkLabel" id="lastplayedDescLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="xalign">0</property>
             <property name="label" translatable="yes">Last played:</property>
             <property name="use_underline">True</property>
             <property name="mnemonic_widget">lastplayedLabel</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="top_attach">4</property>
@@ -258,9 +264,9 @@
           <object class="GtkLabel" id="bitrateDescLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="xalign">0</property>
             <property name="label" translatable="yes">Bitrate:</property>
             <property name="mnemonic_widget">bitrateLabel</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="top_attach">3</property>
@@ -273,9 +279,9 @@
           <object class="GtkLabel" id="durationDescLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="xalign">0</property>
             <property name="label" translatable="yes">Duration:</property>
             <property name="mnemonic_widget">durationLabel</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="top_attach">2</property>
@@ -288,9 +294,9 @@
           <object class="GtkLabel" id="lastplayedLabel">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="xalign">0</property>
             <property name="label">-</property>
             <property name="selectable">True</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -305,9 +311,9 @@
           <object class="GtkLabel" id="bitrateLabel">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="xalign">0</property>
             <property name="label">-</property>
             <property name="selectable">True</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -322,8 +328,8 @@
           <object class="GtkLabel" id="durationLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="xalign">0</property>
             <property name="label">-</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -338,10 +344,10 @@
           <object class="GtkLabel" id="downloadLocationDescLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="xalign">0</property>
             <property name="label" translatable="yes">Download location:</property>
             <property name="wrap">True</property>
             <property name="mnemonic_widget">downloadLocationLabel</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="top_attach">1</property>
@@ -354,9 +360,9 @@
           <object class="GtkLabel" id="downloadLocationLabel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="xalign">0</property>
             <property name="label">-</property>
             <property name="ellipsize">middle</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -389,9 +395,9 @@
           <object class="GtkLabel" id="playcountLabel">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="xalign">0</property>
             <property name="label">-</property>
             <property name="selectable">True</property>
+            <property name="xalign">0</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
