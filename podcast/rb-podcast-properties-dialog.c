@@ -155,6 +155,8 @@ unhtml (const char *str)
 	p = str;
 	o = out;
 	state = NORMAL;
+	e = entity;
+	elen = 0;
 	while (*p != '\0') {
 		switch (state) {
 		case TAG:
