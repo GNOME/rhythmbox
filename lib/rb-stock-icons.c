@@ -37,27 +37,11 @@
 #include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
 
-/* inline pixbuf data */
-#include "rhythmbox-set-star-inline.h"
-#include "rhythmbox-unset-star-inline.h"
-#include "rhythmbox-no-star-inline.h"
-
-typedef struct {
-	const guint8 *data;
-	const char *name;
-} RBInlineIconData;
-
 const char RB_APP_ICON[] = "rhythmbox";
 const char RB_STOCK_SET_STAR[] = "rhythmbox-set-star";
 const char RB_STOCK_UNSET_STAR[] = "rhythmbox-unset-star";
 const char RB_STOCK_NO_STAR[] = "rhythmbox-no-star";
 const char RB_STOCK_MISSING_ARTWORK[] = "rhythmbox-missing-artwork";
-
-static RBInlineIconData inline_icons[] = {
-	{ rhythmbox_set_star_inline, RB_STOCK_SET_STAR },
-	{ rhythmbox_unset_star_inline, RB_STOCK_UNSET_STAR },
-	{ rhythmbox_no_star_inline, RB_STOCK_NO_STAR }
-};
 
 /**
  * rb_stock_icons_init:
@@ -69,8 +53,6 @@ void
 rb_stock_icons_init (void)
 {
 	GtkIconTheme *theme = gtk_icon_theme_get_default ();
-	int i;
-	int icon_size;
 	char *dot_icon_dir;
 
 	/* add our icon search paths */
@@ -83,21 +65,8 @@ rb_stock_icons_init (void)
 	gtk_icon_theme_append_search_path (theme, SHARE_UNINSTALLED_DIR G_DIR_SEPARATOR_S "icons");
 #endif
 
-	/* add inline icons */
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &icon_size, NULL);
-	for (i = 0; i < (int) G_N_ELEMENTS (inline_icons); i++) {
-		GdkPixbuf *pixbuf;
-
-		pixbuf = gdk_pixbuf_new_from_inline (-1,
-						     inline_icons[i].data,
-						     FALSE,
-						     NULL);
-		g_assert (pixbuf);
-
-		gtk_icon_theme_add_builtin_icon (inline_icons[i].name,
-						 icon_size,
-						 pixbuf);
-	}
+	/* add resource icons */
+	gtk_icon_theme_add_resource_path (theme, "/org/gnome/Rhythmbox/icons/hicolor");
 }
 
 /**

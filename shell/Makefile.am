@@ -87,6 +87,7 @@ librhythmbox_core_la_SOURCES =				\
 	rb-play-order-shuffle.h				\
 	rb-playlist-manager.c				\
 	rb-removable-media-manager.c			\
+	rb-resources.c					\
 	rb-shell.c					\
 	rb-shell-clipboard.c				\
 	rb-shell-clipboard.h				\
@@ -137,6 +138,17 @@ if ENABLE_PYTHON
 rhythmbox_LDADD += $(PYTHON_LIBS)
 endif
 
-BUILT_SOURCES += $(tab_files)
+rb_resource_deps = $(shell $(GLIB_COMPILE_RESOURCES) --generate-dependencies --sourcedir $(top_srcdir)/data --sourcedir $(top_builddir)/data $(srcdir)/rhythmbox.gresource.xml)
+
+rb-resources.c: $(rb_resource_deps) $(srcdir)/rhythmbox.gresource.xml
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES)		\
+		--target="$@"				\
+		--sourcedir="$(top_srcdir)/data"	\
+		--sourcedir="$(top_builddir)/data"	\
+		--generate-source "$(srcdir)/rhythmbox.gresource.xml"
+
+EXTRA_DIST += rhythmbox.gresource.xml
+
+BUILT_SOURCES += $(tab_files) rb-resources.c
 
 CLEANFILES += $(BUILT_SOURCES)

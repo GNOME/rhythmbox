@@ -62,23 +62,9 @@ rb-marshal.c: rb-marshal.list
 rb-marshal.h: rb-marshal.list
 	@GLIB_GENMARSHAL@ --prefix=rb_marshal $(srcdir)/rb-marshal.list --header > rb-marshal.h
 
-# inline icons
-rhythmbox-set-star-inline.h: $(top_srcdir)/data/icons/hicolor/16x16/status/rhythmbox-set-star.png
-	@GDK_PIXBUF_CSOURCE@ --raw --name=rhythmbox_set_star_inline $< > $@
-
-rhythmbox-unset-star-inline.h: $(top_srcdir)/data/icons/hicolor/16x16/status/rhythmbox-unset-star.png
-	@GDK_PIXBUF_CSOURCE@ --raw --name=rhythmbox_unset_star_inline $< > $@
-
-rhythmbox-no-star-inline.h: $(top_srcdir)/data/icons/hicolor/16x16/status/rhythmbox-no-star.png
-	@GDK_PIXBUF_CSOURCE@ --raw --name=rhythmbox_no_star_inline $< > $@
-
-
 BUILT_SOURCES += 				\
 	rb-marshal.c 				\
-	rb-marshal.h 				\
-	rhythmbox-set-star-inline.h		\
-	rhythmbox-unset-star-inline.h		\
-	rhythmbox-no-star-inline.h
+	rb-marshal.h
 
 librb_la_SOURCES += $(BUILT_SOURCES)
 
