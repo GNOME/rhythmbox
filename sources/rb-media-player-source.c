@@ -543,7 +543,6 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	RBMediaPlayerSourceClass *klass = RB_MEDIA_PLAYER_SOURCE_GET_CLASS (source);
 	GtkBuilder *builder;
 	GtkContainer *container;
-	const char *ui_file;
 	char *name;
 	char *text;
 
@@ -553,13 +552,7 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 	}
 
 	/* load dialog UI */
-	ui_file = rb_file ("media-player-properties.ui");
-	if (ui_file == NULL) {
-		g_warning ("Couldn't find media-player-properties.ui");
-		return;
-	}
-
-	builder = rb_builder_load (ui_file, NULL);
+	builder = rb_builder_load ("media-player-properties.ui", NULL);
 	if (builder == NULL) {
 		g_warning ("Couldn't load media-player-properties.ui");
 		return;
@@ -886,7 +879,6 @@ display_sync_settings_dialog (RBMediaPlayerSource *source)
 	GtkWidget *content;
 	GtkWidget *widget;
 	GtkBuilder *builder;
-	const char *ui_file;
 	char *name;
 	char *title;
 
@@ -917,16 +909,9 @@ display_sync_settings_dialog (RBMediaPlayerSource *source)
 	 */
 	content = gtk_dialog_get_content_area (GTK_DIALOG (priv->sync_dialog));
 
-	ui_file = rb_file ("sync-dialog.ui");
-	if (ui_file == NULL) {
-		g_warning ("Couldn't find sync-state.ui");
-		gtk_widget_show_all (priv->sync_dialog);
-		return;
-	}
-
-	builder = rb_builder_load (ui_file, NULL);
+	builder = rb_builder_load ("sync-dialog.ui", NULL);
 	if (builder == NULL) {
-		g_warning ("Couldn't load sync-state.ui");
+		g_warning ("Couldn't load sync-dialog.ui");
 		gtk_widget_show_all (priv->sync_dialog);
 		return;
 	}

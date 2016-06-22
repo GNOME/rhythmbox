@@ -31,11 +31,7 @@ GTK_BUILDER_FILES =					\
 	song-info-multiple.ui				\
 	sync-dialog.ui					\
 	sync-state.ui					\
-	uri-new.ui					\
-	style.css
+	uri-new.ui
 
-uidir = $(pkgdatadir)
-ui_DATA = $(GTK_BUILDER_FILES)
-
-EXTRA_DIST = $(GTK_BUILDER_FILES)
+EXTRA_DIST = $(GTK_BUILDER_FILES) style.css
 

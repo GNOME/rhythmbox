@@ -225,19 +225,12 @@ build_ui (RBSyncStateUI *ui)
 	GtkWidget *container;
 	guint64 capacity;
 	GtkBuilder *builder;
-	const char *ui_file;
 
 	g_object_get (ui->priv->state, "source", &source, NULL);
 	capacity = rb_media_player_source_get_capacity (source);
 	g_object_unref (source);
 
-	ui_file = rb_file ("sync-state.ui");
-	if (ui_file == NULL) {
-		g_warning ("Couldn't find sync-state.ui");
-		return;
-	}
-
-	builder = rb_builder_load (ui_file, NULL);
+	builder = rb_builder_load ("sync-state.ui", NULL);
 	if (builder == NULL) {
 		g_warning ("Couldn't load sync-state.ui");
 		return;

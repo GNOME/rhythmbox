@@ -47,9 +47,11 @@
  * @user_data: user data to pass to autoconnected signal handlers
  *
  * Locates and reads a GtkBuilder file, automatically connecting
- * signal handlers where possible.  The caller can specify a path
- * relative to the shared data directory, or its 'ui' or 'art'
- * subdirectories.
+ * signal handlers where possible.
+ *
+ * The caller can specify an absolute path to the file, or just filename,
+ * in which case the file will be loaded from GResources (in normal builds)
+ * or the source data/ui directory (in uninstalled builds).
  *
  * Return value: (transfer full): #GtkBuilder object built from the file
  */
@@ -59,24 +61,40 @@ rb_builder_load (const char *file, gpointer user_data)
 	GtkBuilder *builder;
 	const char *name;
 	GError *error = NULL;
+	char *resource;
 
 	g_return_val_if_fail (file != NULL, NULL);
 
-	/* if the first character is /, it's an absolute path, otherwise locate it */
-	if (file[0] == G_DIR_SEPARATOR)
+	if (g_path_is_absolute (file)) {
 		name = file;
-	else
+		resource = NULL;
+	} else {
+#if defined(USE_UNINSTALLED_DIRS)
 		name = rb_file (file);
+		resource = NULL;
+#else
+		resource = g_strdup_printf ("/org/gnome/Rhythmbox/ui/%s", file);
+		name = NULL;
+#endif
+	}
 
 	builder = gtk_builder_new ();
 	gtk_builder_set_translation_domain (builder, GETTEXT_PACKAGE);
-	if (gtk_builder_add_from_file (builder, name, &error) == 0) {
-		g_warning ("Error loading GtkBuilder file %s: %s", name, error->message);
-		g_error_free (error);
+	if (resource != NULL) {
+		if (gtk_builder_add_from_resource (builder, resource, &error) == 0) {
+			g_warning ("Error loading GtkBuilder resource %s; %s", resource, error->message);
+			g_error_free (error);
+		}
+	} else {
+		if (gtk_builder_add_from_file (builder, name, &error) == 0) {
+			g_warning ("Error loading GtkBuilder file %s: %s", name, error->message);
+			g_error_free (error);
+		}
 	}
 
 	gtk_builder_connect_signals (builder, user_data);
 
+	g_free (resource);
 	return builder;
 }
 

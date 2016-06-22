@@ -389,11 +389,10 @@ impl_startup (GApplication *app)
 
 	/* Use our own css provider */
 	provider = gtk_css_provider_new ();
-	if (gtk_css_provider_load_from_path (provider, rb_file ("style.css"), NULL)) {
-		gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
-		                                          GTK_STYLE_PROVIDER (provider),
-		                                          600);
-	}
+	gtk_css_provider_load_from_resource (provider, "/org/gnome/Rhythmbox/ui/style.css");
+	gtk_style_context_add_provider_for_screen (gdk_screen_get_default(),
+						  GTK_STYLE_PROVIDER (provider),
+						  600);
 
 	rb->priv->shell = RB_SHELL (g_object_new (RB_TYPE_SHELL,
 				    "application", rb,
