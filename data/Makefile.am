@@ -8,8 +8,7 @@ Multimedia_in_files = rhythmbox.desktop.in rhythmbox-device.desktop.in
 Multimedia_DATA = $(Multimedia_in_files:.desktop.in=.desktop)
 
 playlists_in_files = playlists.xml.in
-playlists_DATA = playlists.xml
-playlistsdir = $(datadir)/rhythmbox
+noinst_DATA = playlists.xml
 
 man_MANS = rhythmbox.1 rhythmbox-client.1
 

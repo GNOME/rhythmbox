@@ -354,34 +354,29 @@ append_new_playlist_source (RBPlaylistManager *mgr, RBPlaylistSource *source)
 void
 rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 {
-	char *file;
+	GBytes *data = NULL;
 	xmlDocPtr doc;
 	xmlNodePtr root;
 	xmlNodePtr child;
-	gboolean exists;
-
-	exists = FALSE;
-	file = g_strdup (mgr->priv->playlists_file);
 
 	/* block saves until the playlists have loaded */
 	g_mutex_lock (&mgr->priv->saving_mutex);
 
-	exists = g_file_test (file, G_FILE_TEST_EXISTS);
-	if (! exists) {
+	if (g_file_test (mgr->priv->playlists_file, G_FILE_TEST_EXISTS) == FALSE) {
 		rb_debug ("personal playlists not found, loading defaults");
-
-		/* try global playlists */
-		g_free (file);
-		file = g_strdup (rb_file ("playlists.xml"));
-		exists = g_file_test (file, G_FILE_TEST_EXISTS);
+		data = g_resources_lookup_data ("/org/gnome/Rhythmbox/playlists.xml",
+						G_RESOURCE_LOOKUP_FLAGS_NONE,
+						NULL);
+		if (data == NULL) {
+			rb_debug ("couldn't find default playlists resource");
+			goto out;
+		}
 	}
 
-	if (! exists) {
-		rb_debug ("default playlists file not found");
-		goto out;
-	}
-
-	doc = xmlParseFile (file);
+	if (data != NULL)
+		doc = xmlParseMemory (g_bytes_get_data (data, NULL), g_bytes_get_size (data));
+	else
+		doc = xmlParseFile (mgr->priv->playlists_file);
 	if (doc == NULL)
 		goto out;
 
@@ -402,7 +397,6 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 	xmlFreeDoc (doc);
 out:
 	g_mutex_unlock (&mgr->priv->saving_mutex);
-	g_free (file);
 }
 
 static void
