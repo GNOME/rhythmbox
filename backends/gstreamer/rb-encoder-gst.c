@@ -239,8 +239,10 @@ progress_timeout_cb (RBEncoderGst *encoder)
 	format = encoder->priv->position_format;
 
 	gst_element_get_state (encoder->priv->pipeline, &state, NULL, GST_CLOCK_TIME_NONE);
-	if (state != GST_STATE_PLAYING)
+	if (state != GST_STATE_PLAYING) {
+		encoder->priv->progress_id = 0;
 		return FALSE;
+	}
 
 	if (!gst_element_query_position (encoder->priv->pipeline, format, &position)) {
 		g_warning ("Could not get current track position");
