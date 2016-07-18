@@ -16,23 +16,15 @@
  */
 
 #include <glib.h>
+#include <gio/gio.h>
 
 #include "mediaplayerid.h"
 #include "mpid-private.h"
 
-void
-mpid_read_device_file (MPIDDevice *device, const char *device_info_path)
+static void
+mpid_read_keyfile (MPIDDevice *device, GKeyFile *keyfile)
 {
 	GError *error = NULL;
-	GKeyFile *keyfile;
-
-	keyfile = g_key_file_new ();
-	if (g_key_file_load_from_file (keyfile, device_info_path, G_KEY_FILE_NONE, &error) == FALSE) {
-		mpid_debug ("unable to read device info file %s: %s\n", device_info_path, error->message);
-		g_clear_error (&error);
-		device->error = MPID_ERROR_DEVICE_INFO_MISSING;
-		return;
-	}
 
 	mpid_override_strv_from_keyfile (&device->access_protocols, keyfile, "Device", "AccessProtocol");
 
@@ -63,6 +55,37 @@ mpid_read_device_file (MPIDDevice *device, const char *device_info_path)
 		}
 	}
 
+}
+
+void
+mpid_read_device_file (MPIDDevice *device, const char *device_info_path)
+{
+	GError *error = NULL;
+	GKeyFile *keyfile;
+	GBytes *bytes;
+	gsize len;
+	const void *data;
+
+	keyfile = g_key_file_new ();
+	bytes = g_resources_lookup_data (device_info_path, G_RESOURCE_LOOKUP_FLAGS_NONE, &error);
+	if (bytes != NULL) {
+		data = g_bytes_get_data (bytes, &len);
+
+		if (g_key_file_load_from_data (keyfile, data, len, G_KEY_FILE_NONE, &error) == FALSE) {
+			mpid_debug ("unable to read device info resource %s: %s\n", device_info_path, error->message);
+			g_clear_error (&error);
+			device->error = MPID_ERROR_DEVICE_INFO_MISSING;
+			g_bytes_unref (bytes);
+			return;
+		}
+	} else if (g_key_file_load_from_file (keyfile, device_info_path, G_KEY_FILE_NONE, &error) == FALSE) {
+		mpid_debug ("unable to read device info file %s: %s\n", device_info_path, error->message);
+		g_clear_error (&error);
+		device->error = MPID_ERROR_DEVICE_INFO_MISSING;
+		return;
+	}
+
+	mpid_read_keyfile (device, keyfile);
 	g_key_file_free (keyfile);
 }
 
@@ -93,5 +116,4 @@ mpid_find_and_read_device_file (MPIDDevice *device, const char *device_file)
 	mpid_debug ("unable to find device info file %s\n", device_file);
 	device->error = MPID_ERROR_DEVICE_INFO_MISSING;
 }
-
 
