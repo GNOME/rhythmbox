@@ -5,6 +5,7 @@ plugindatadir = $(PLUGINDATADIR)/mtpdevice
 plugin_LTLIBRARIES = libmtpdevice.la
 
 libmtpdevice_la_SOURCES = \
+	mtpdevice-resources.c \
 	rb-mtp-plugin.c	\
 	rb-mtp-gst.c \
 	rb-mtp-gst.h \
@@ -52,12 +53,21 @@ plugin_in_files = mtpdevice.plugin.in
 
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
-gtkbuilderdir = $(plugindatadir)
-gtkbuilder_DATA = 					\
+PLUGIN_RESOURCES = 					\
 	mtp-info.ui					\
 	mtp-toolbar.ui
 
-EXTRA_DIST = $(plugin_in_files) $(gtkbuilder_DATA)
+plugin_resource_deps = $(shell $(GLIB_COMPILE_RESOURCES) --generate-dependencies --sourcedir $(srcdir) $(srcdir)/mtpdevice.gresource.xml)
+mtpdevice-resources.c: $(plugin_resource_deps) $(srcdir)/mtpdevice.gresource.xml
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES)		\
+		--target="$@"				\
+		--sourcedir="$(srcdir)"			\
+		--sourcedir="$(builddir)"		\
+		--generate-source "$(srcdir)/mtpdevice.gresource.xml"
 
-CLEANFILES = $(plugin_DATA)
-DISTCLEANFILES = $(plugin_DATA)
+BUILT_SOURCES = $(plugin_DATA) mtpdevice-resources.c
+
+EXTRA_DIST = $(plugin_in_files) $(PLUGIN_RESOURCES) mtpdevice.gresource.xml
+
+CLEANFILES = $(BUILT_SOURCES)
+DISTCLEANFILES = $(BUILT_SOURCES)

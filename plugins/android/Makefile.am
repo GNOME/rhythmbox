@@ -3,6 +3,7 @@ plugindatadir = $(PLUGINDATADIR)/android
 plugin_LTLIBRARIES = libandroid.la
 
 libandroid_la_SOURCES =					\
+	android-resources.c				\
 	rb-android-plugin.c				\
 	rb-android-source.c				\
 	rb-android-source.h
@@ -33,11 +34,7 @@ AM_CPPFLAGS = 						\
 	$(GUDEV_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
-gtkbuilderdir = $(plugindatadir)
-gtkbuilder_DATA = android-info.ui android-toolbar.ui
-
-mpidir = $(plugindatadir)
-mpi_DATA = android.mpi
+PLUGIN_RESOURCES = android-info.ui android-toolbar.ui android.mpi
 
 plugin_in_files = android.plugin.in
 
@@ -45,7 +42,17 @@ plugin_in_files = android.plugin.in
 
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
-EXTRA_DIST = $(gtkbuilder_DATA) $(mpi_DATA) $(plugin_in_files)
+plugin_resource_deps = $(shell $(GLIB_COMPILE_RESOURCES) --generate-dependencies --sourcedir $(srcdir) $(srcdir)/android.gresource.xml)
+android-resources.c: $(plugin_resource_deps) $(srcdir)/android.gresource.xml
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES)		\
+		--target="$@"				\
+		--sourcedir="$(srcdir)"			\
+		--sourcedir="$(builddir)"		\
+		--generate-source "$(srcdir)/android.gresource.xml"
+
+BUILT_SOURCES = android-resources.c
+
+EXTRA_DIST = $(PLUGIN_RESOURCES) $(plugin_in_files) android.gresource.xml
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

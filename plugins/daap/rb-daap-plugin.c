@@ -746,18 +746,11 @@ update_config_widget (RBDaapPlugin *plugin)
 static GtkWidget *
 impl_create_configure_widget (PeasGtkConfigurable *bplugin)
 {
-	char *builder_file;
 	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (bplugin);
 
-	builder_file = rb_find_plugin_data_file (G_OBJECT (plugin), "daap-prefs.ui");
-	if (builder_file == NULL) {
-		return NULL;
-	}
-
-	plugin->builder = rb_builder_load (builder_file, NULL);
-	g_free (builder_file);
-
+	plugin->builder = rb_builder_load_plugin_file (G_OBJECT (plugin), "daap-prefs.ui", NULL);
 	update_config_widget (plugin);
+
 	return GTK_WIDGET (gtk_builder_get_object (plugin->builder, "daap_vbox"));
 }
 

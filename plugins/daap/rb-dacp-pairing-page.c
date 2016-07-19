@@ -242,7 +242,6 @@ static void
 impl_constructed (GObject *object)
 {
 	RBDACPPairingPage *page = RB_DACP_PAIRING_PAGE (object);
-	char *builder_filename;
 	GtkWidget *passcode_widget;
 	GtkWidget *close_pairing_button;
 	PangoFontDescription *font;
@@ -251,11 +250,7 @@ impl_constructed (GObject *object)
 
 	g_object_get (page, "plugin", &plugin, NULL);
 
-	builder_filename = rb_find_plugin_data_file (G_OBJECT (plugin), "daap-prefs.ui");
-	g_assert (builder_filename != NULL);
-
-	page->priv->builder = rb_builder_load (builder_filename, NULL);
-	g_free (builder_filename);
+	page->priv->builder = rb_builder_load_plugin_file (G_OBJECT (plugin), "daap-prefs.ui", NULL);
 
 	passcode_widget = GTK_WIDGET (gtk_builder_get_object (page->priv->builder, "passcode_widget"));
 	gtk_container_add (GTK_CONTAINER (page), passcode_widget);

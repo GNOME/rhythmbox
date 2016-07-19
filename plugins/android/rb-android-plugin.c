@@ -108,6 +108,7 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 	GSettings *settings;
 	GFile *root;
 	const char *device_serial;
+	const char *mpi_file;
 	char *uri_prefix;
 	char *name;
 	char *path;
@@ -129,7 +130,12 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 		return NULL;
 	}
 
-	device_info = mpid_device_new_from_mpi_file (rb_find_plugin_data_file (G_OBJECT (plugin), "android.mpi"));
+#if defined(USE_UNINSTALLED_DIRS)
+	mpi_file = rb_find_plugin_data_file (G_OBJECT (plugin), "android.mpi");
+#else
+	mpi_file = "/org/gnome/Rhythmbox/android/android.mpi";
+#endif
+	device_info = mpid_device_new_from_mpi_file (mpi_file);
 
 	path = g_volume_get_identifier (volume, G_VOLUME_IDENTIFIER_KIND_UNIX_DEVICE);
 

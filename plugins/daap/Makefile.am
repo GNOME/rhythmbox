@@ -5,6 +5,7 @@ plugindatadir = $(PLUGINDATADIR)/daap
 plugin_LTLIBRARIES = libdaap.la
 
 libdaap_la_SOURCES = \
+	daap-resources.c			  \
 	rb-daap-container-record.c		  \
 	rb-daap-container-record.h		  \
 	rb-daap-plugin.c			  \
@@ -67,8 +68,15 @@ libdaap_la_LIBADD += $(LIBSECRET_LIBS)
 AM_CPPFLAGS += $(LIBSECRET_CFLAGS)
 endif
 
-gtkbuilderdir = $(plugindatadir)
-gtkbuilder_DATA = daap-prefs.ui daap-toolbar.ui
+PLUGIN_RESOURCES = daap-prefs.ui daap-toolbar.ui
+
+plugin_resource_deps = $(shell $(GLIB_COMPILE_RESOURCES) --generate-dependencies --sourcedir $(srcdir) $(srcdir)/daap.gresource.xml)
+daap-resources.c: $(plugin_resource_deps) $(srcdir)/daap.gresource.xml
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES)		\
+		--target="$@"				\
+		--sourcedir="$(srcdir)"			\
+		--sourcedir="$(builddir)"		\
+		--generate-source "$(srcdir)/daap.gresource.xml"
 
 plugin_in_files = daap.plugin.in
 
@@ -76,19 +84,14 @@ plugin_in_files = daap.plugin.in
 
 plugin_files = $(plugin_in_files:.plugin.in=.plugin)
 
-BUILT_SOURCES = $(plugin_files)
+BUILT_SOURCES = daap-resources.c $(plugin_files)
 
 plugin_DATA = $(plugin_files)
 
-plugindata_DATA = 					\
-	$(top_srcdir)/plugins/daap/remote-icon.png	\
-	$(NULL)
-
 EXTRA_DIST = 						\
-	$(gtkbuilder_DATA)				\
-	$(top_srcdir)/plugins/daap/remote-icon.png	\
-	$(uixml_DATA)		\
+	$(PLUGIN_RESOURCES)				\
 	$(plugin_in_files)	\
+	daap.gresource.xml	\
 	$(NULL)
 
 CLEANFILES = 			\

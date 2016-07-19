@@ -3,6 +3,7 @@ plugindatadir = $(PLUGINDATADIR)/ipod
 plugin_LTLIBRARIES = libipod.la
 
 libipod_la_SOURCES = \
+	ipod-resources.c			\
 	rb-ipod-db.c				\
 	rb-ipod-db.h				\
 	rb-ipod-helpers.c			\
@@ -45,13 +46,22 @@ plugin_in_files = ipod.plugin.in
 
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
-gtkbuilderdir = $(plugindatadir)
-gtkbuilder_DATA = 					\
+PLUGIN_RESOURCES =					\
 	ipod-info.ui	 				\
 	ipod-init.ui					\
 	ipod-toolbar.ui
 
-EXTRA_DIST = $(uixml_DATA) $(plugin_in_files) $(gtkbuilder_DATA)
+plugin_resource_deps = $(shell $(GLIB_COMPILE_RESOURCES) --generate-dependencies --sourcedir $(srcdir) $(srcdir)/ipod.gresource.xml)
+ipod-resources.c: $(plugin_resource_deps) $(srcdir)/ipod.gresource.xml
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES)		\
+		--target="$@"				\
+		--sourcedir="$(srcdir)"			\
+		--sourcedir="$(builddir)"		\
+		--generate-source "$(srcdir)/ipod.gresource.xml"
 
-CLEANFILES = $(plugin_DATA)
-DISTCLEANFILES = $(plugin_DATA)
+BUILT_SOURCES = ipod-resources.c $(plugin_DATA)
+
+EXTRA_DIST = $(PLUGIN_RESOURCES) $(plugin_in_files) ipod.gresource.xml
+
+CLEANFILES = $(BUILT_SOURCES)
+DISTCLEANFILES = $(BUILT_SOURCES)

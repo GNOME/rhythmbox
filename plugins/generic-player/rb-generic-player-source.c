@@ -1320,7 +1320,6 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	GtkWidget *widget;
 	GString *str;
 	char *device_name;
-	char *builder_file;
 	char *vendor_name;
 	char *model_name;
 	char *serial_id;
@@ -1330,21 +1329,8 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	GList *t;
 
 	g_object_get (source, "plugin", &plugin, NULL);
-	builder_file = rb_find_plugin_data_file (plugin, "generic-player-info.ui");
+	builder = rb_builder_load_plugin_file (plugin, "generic-player-info.ui", NULL);
 	g_object_unref (plugin);
-
-	if (builder_file == NULL) {
-		g_warning ("Couldn't find generic-player-info.ui");
-		return;
-	}
-
-	builder = rb_builder_load (builder_file, NULL);
-	g_free (builder_file);
-
-	if (builder == NULL) {
-		rb_debug ("Couldn't load generic-player-info.ui");
-		return;
-	}
 
 	/* 'basic' tab stuff */
 

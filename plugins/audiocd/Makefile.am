@@ -3,6 +3,7 @@ plugindatadir = $(PLUGINDATADIR)/audiocd
 plugin_LTLIBRARIES = libaudiocd.la
 
 libaudiocd_la_SOURCES =					\
+	audiocd-resources.c				\
 	rb-audiocd-info.c				\
 	rb-audiocd-info.h				\
 	rb-audiocd-plugin.c				\
@@ -41,11 +42,17 @@ AM_CPPFLAGS = 						\
 
 libaudiocd_la_LIBADD += $(NULL)
 
+PLUGIN_RESOURCES = album-info.ui audiocd-toolbar.ui
 
-gtkbuilderdir = $(plugindatadir)
-gtkbuilder_DATA = 					\
-	album-info.ui					\
-	audiocd-toolbar.ui
+plugin_resource_deps = $(shell $(GLIB_COMPILE_RESOURCES) --generate-dependencies --sourcedir $(srcdir) $(srcdir)/audiocd.gresource.xml)
+audiocd-resources.c: $(plugin_resource_deps) $(srcdir)/audiocd.gresource.xml
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES)		\
+		--target="$@"				\
+		--sourcedir="$(srcdir)"			\
+		--sourcedir="$(builddir)"		\
+		--generate-source "$(srcdir)/audiocd.gresource.xml"
+
+BUILT_SOURCES = audiocd-resources.c
 
 noinst_PROGRAMS = test-cd
 
@@ -63,7 +70,7 @@ plugin_in_files = audiocd.plugin.in
 
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
-EXTRA_DIST = $(gtkbuilder_DATA) $(plugin_in_files)
+EXTRA_DIST = $(PLUGIN_RESOURCES) $(plugin_in_files) audiocd.gresource.xml
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

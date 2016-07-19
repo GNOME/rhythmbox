@@ -289,22 +289,8 @@ rb_iradio_source_constructed (GObject *object)
 
 	settings = g_settings_new ("org.gnome.rhythmbox.plugins.iradio");
 	if (g_settings_get_boolean (settings, "initial-stations-loaded") == FALSE) {
-		GObject *plugin;
-		char *file;
-
-		g_object_get (source, "plugin", &plugin, NULL);
-		file = rb_find_plugin_data_file (plugin, "iradio-initial.xspf");
-		if (file != NULL) {
-			char *uri = g_filename_to_uri (file, NULL, NULL);
-			if (uri != NULL) {
-				rb_iradio_source_add_from_playlist (source, uri);
-				g_free (uri);
-
-				g_settings_set_boolean (settings, "initial-stations-loaded", TRUE);
-			}
-		}
-		g_free (file);
-		g_object_unref (plugin);
+		rb_iradio_source_add_from_playlist (source, "resource:///org/gnome/Rhythmbox/iradio/iradio-initial.xspf");
+		g_settings_set_boolean (settings, "initial-stations-loaded", TRUE);
 	}
 
 	_rb_add_display_page_actions (G_ACTION_MAP (g_application_get_default ()), G_OBJECT (shell), actions, G_N_ELEMENTS (actions));

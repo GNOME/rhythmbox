@@ -3,6 +3,7 @@ plugindatadir = $(PLUGINDATADIR)/generic-player
 plugin_LTLIBRARIES = libgeneric-player.la
 
 libgeneric_player_la_SOURCES =				\
+	generic-player-resources.c			\
 	rb-generic-player-plugin.c			\
 	rb-generic-player-source.c 			\
 	rb-generic-player-source.h	 		\
@@ -39,8 +40,17 @@ AM_CPPFLAGS = 						\
 	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(RHYTHMBOX_CFLAGS)
 
-gtkbuilderdir = $(plugindatadir)
-gtkbuilder_DATA = generic-player-info.ui generic-player-toolbar.ui
+PLUGIN_RESOURCES = generic-player-info.ui generic-player-toolbar.ui
+
+plugin_resource_deps = $(shell $(GLIB_COMPILE_RESOURCES) --generate-dependencies --sourcedir $(srcdir) $(srcdir)/generic-player.gresource.xml)
+generic-player-resources.c: $(plugin_resource_deps) $(srcdir)/generic-player.gresource.xml
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES)		\
+		--target="$@"				\
+		--sourcedir="$(srcdir)"			\
+		--sourcedir="$(builddir)"		\
+		--generate-source "$(srcdir)/generic-player.gresource.xml"
+
+BUILT_SOURCES = generic-player-resources.c
 
 plugin_in_files = generic-player.plugin.in
 
@@ -48,7 +58,7 @@ plugin_in_files = generic-player.plugin.in
 
 plugin_DATA = $(plugin_in_files:.plugin.in=.plugin)
 
-EXTRA_DIST = $(gtkbuilder_DATA) $(plugin_in_files)
+EXTRA_DIST = $(PLUGIN_RESOURCES) $(plugin_in_files) generic-player.gresource.xml
 
 CLEANFILES = $(plugin_DATA)
 DISTCLEANFILES = $(plugin_DATA)

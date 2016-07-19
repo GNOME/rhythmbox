@@ -1551,7 +1551,6 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	gpointer key, value;
 	int num_podcasts;
 	char *device_name;
-	char *builder_file;
 	GObject *plugin;
 	char *text;
 	GList *output_formats;
@@ -1559,21 +1558,8 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	GString *str;
 
 	g_object_get (source, "plugin", &plugin, NULL);
-	builder_file = rb_find_plugin_data_file (G_OBJECT (plugin), "mtp-info.ui");
+	builder = rb_builder_load_plugin_file (G_OBJECT (plugin), "mtp-info.ui", NULL);
 	g_object_unref (plugin);
-
-	if (builder_file == NULL) {
-		g_warning ("Couldn't find mtp-info.ui");
-		return;
-	}
-
-	builder = rb_builder_load (builder_file, NULL);
-	g_free (builder_file);
-
-	if (builder == NULL) {
-		rb_debug ("Couldn't load mtp-info.ui");
-		return;
-	}
 
 	/* 'basic' tab stuff */
 

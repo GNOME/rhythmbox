@@ -474,7 +474,6 @@ create_init_dialog (RBiPodSource *source)
 {
 	GFile *root;
 	char *mountpoint;
-	char *builder_file;
 	GtkBuilder *builder;
 	GObject *plugin;
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
@@ -491,15 +490,8 @@ create_init_dialog (RBiPodSource *source)
 	}
 
 	g_object_get (source, "plugin", &plugin, NULL);
-	builder_file = rb_find_plugin_data_file (G_OBJECT (plugin), "ipod-init.ui");
+	builder = rb_builder_load_plugin_file (G_OBJECT (plugin), "ipod-init.ui", NULL);
 	g_object_unref (plugin);
-
-	builder = rb_builder_load (builder_file, NULL);
-	g_free (builder_file);
-	if (builder == NULL) {
-		g_free (mountpoint);
-		return FALSE;
-	}
 
 	priv->init_dialog = GTK_WIDGET (gtk_builder_get_object (builder, "ipod_init"));
 	priv->model_combo = GTK_WIDGET (gtk_builder_get_object (builder, "model_combo"));
@@ -2007,7 +1999,6 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	GtkWidget *widget;
 	char *text;
 	const gchar *mp;
-	char *builder_file;
 	Itdb_Device *ipod_dev;
 	GObject *plugin;
 	GList *output_formats;
@@ -2022,21 +2013,8 @@ impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidge
 	}
 
 	g_object_get (source, "plugin", &plugin, NULL);
-	builder_file = rb_find_plugin_data_file (plugin, "ipod-info.ui");
+	builder = rb_builder_load_plugin_file (plugin, "ipod-info.ui", NULL);
 	g_object_unref (plugin);
-
-	if (builder_file == NULL) {
-		g_warning ("Couldn't find ipod-info.ui");
-		return;
-	}
-
-	builder = rb_builder_load (builder_file, NULL);
-	g_free (builder_file);
-
- 	if (builder == NULL) {
- 		rb_debug ("Couldn't load ipod-info.ui");
- 		return;
- 	}
 
 	ipod_dev = rb_ipod_db_get_device (priv->ipod_db);
 
