@@ -49,9 +49,10 @@
  * Locates and reads a GtkBuilder file, automatically connecting
  * signal handlers where possible.
  *
- * The caller can specify an absolute path to the file, or just filename,
- * in which case the file will be loaded from GResources (in normal builds)
- * or the source data/ui directory (in uninstalled builds).
+ * The caller can specify an absolute path to the file, a resource path
+ * starting with /org/gnome/Rhythmbox/ or just a filename, in which case
+ * the file will be loaded from GResources (in normal builds) or the source
+ * data/ui directory (in uninstalled builds).
  *
  * Return value: (transfer full): #GtkBuilder object built from the file
  */
@@ -65,7 +66,10 @@ rb_builder_load (const char *file, gpointer user_data)
 
 	g_return_val_if_fail (file != NULL, NULL);
 
-	if (g_path_is_absolute (file)) {
+	if (g_str_has_prefix (file, "/org/gnome/Rhythmbox/")) {
+		resource = g_strdup (file);
+		name = NULL;
+	} else if (g_path_is_absolute (file)) {
 		name = file;
 		resource = NULL;
 	} else {
