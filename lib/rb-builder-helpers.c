@@ -116,12 +116,26 @@ rb_builder_load (const char *file, gpointer user_data)
 GtkBuilder *
 rb_builder_load_plugin_file (GObject *plugin, const char *file, gpointer user_data)
 {
-	char *path;
+	char *path = NULL;
 	GtkBuilder *builder;
 
-	path = rb_find_plugin_data_file (plugin, file);
+#if !defined(USE_UNINSTALLED_DIRS)
+	GBytes *bytes;
+
+	path = rb_find_plugin_resource (plugin, file);
+	bytes = g_resources_lookup_data (path, G_RESOURCE_LOOKUP_FLAGS_NONE, NULL);
+	if (bytes != NULL) {
+		g_bytes_unref (bytes);
+	} else {
+		g_free (path);
+		path = NULL;
+	}
+#endif
 	if (path == NULL) {
-		return NULL;
+		path = rb_find_plugin_data_file (plugin, file);
+		if (path == NULL) {
+			return NULL;
+		}
 	}
 
 	builder = rb_builder_load (path, user_data);
