@@ -291,6 +291,30 @@ rb_find_plugin_data_file (GObject *object, const char *name)
 }
 
 /**
+ * rb_find_plugin_resource:
+ * @plugin: the plugin object
+ * @name: name of the file to find
+ *
+ * Constructs a resource path for a plugin data file.
+ *
+ * Returns: allocated string containing the resource path
+ */
+char *
+rb_find_plugin_resource (GObject *object, const char *name)
+{
+	PeasPluginInfo *info;
+	const char *plugin_name;
+
+	g_object_get (object, "plugin-info", &info, NULL);
+	if (info == NULL)
+		return NULL;
+
+	plugin_name = peas_plugin_info_get_module_name (info);
+	return g_strdup_printf ("/org/gnome/Rhythmbox/%s/%s", plugin_name, name);
+}
+
+
+/**
  * rb_file_helpers_init:
  * @uninstalled: if %TRUE, search in source and build directories
  * as well as installed locations
