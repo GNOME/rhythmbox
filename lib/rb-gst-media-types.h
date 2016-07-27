@@ -80,6 +80,7 @@ void		rb_gst_encoding_profile_set_preset (GstEncodingProfile *profile, const cha
 gboolean	rb_gst_encoder_set_encoding_style (GstElement *element, const char *style);
 
 GstElement *	rb_gst_encoding_profile_get_encoder (GstEncodingProfile *profile);
+GstCaps *	rb_gst_encoding_profile_get_encoder_caps (GstEncodingProfile *profile);
 
 G_END_DECLS
 

@@ -379,7 +379,6 @@ get_audio_encoder_factory (GstEncodingProfile *profile)
 	if (fl != NULL) {
 		f = gst_object_ref (fl->data);
 	} else {
-		g_warning ("no encoder factory for profile %s", gst_encoding_profile_get_name (profile));
 		f = NULL;
 	}
 	gst_plugin_feature_list_free (l);
@@ -486,6 +485,22 @@ rb_gst_encoding_profile_get_encoder (GstEncodingProfile *profile)
 	}
 
 	return gst_element_factory_create (factory, NULL);
+}
+
+/**
+ * rb_gst_encoding_profile_get_encoder_caps:
+ * @profile: a #GstEncodingProfile
+ *
+ * Return value: (transfer full): output caps for the encoder
+ */
+GstCaps *
+rb_gst_encoding_profile_get_encoder_caps (GstEncodingProfile *profile)
+{
+	GstEncodingProfile *p = get_audio_encoding_profile (profile);
+	if (p != NULL)
+		return gst_encoding_profile_get_format (p);
+
+	return NULL;
 }
 
 /**
