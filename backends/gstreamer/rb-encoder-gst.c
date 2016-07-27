@@ -775,7 +775,10 @@ impl_get_missing_plugins (RBEncoder *encoder,
 			  char ***details,
 			  char ***descriptions)
 {
+	GList *messages = NULL;
 	GstElement *encodebin;
+	GstElement *enc;
+	GstMessage *message;
 	GstBus *bus;
 	GstPad *pad;
 	gboolean ret;
@@ -793,14 +796,10 @@ impl_get_missing_plugins (RBEncoder *encoder,
 	gst_element_set_bus (encodebin, bus);
 	gst_bus_set_flushing (bus, FALSE);		/* necessary? */
 
+	/* encodebin only checks the muxer and other required elements */
 	g_object_set (encodebin, "profile", profile, NULL);
 	pad = gst_element_get_static_pad (encodebin, "audio_0");
 	if (pad == NULL) {
-		GstMessage *message;
-		GList *messages = NULL;
-		GList *m;
-		int i;
-
 		rb_debug ("didn't get request pad, profile %s doesn't work", gst_encoding_profile_get_name (profile));
 		message = gst_bus_pop (bus);
 		while (message != NULL) {
@@ -811,39 +810,53 @@ impl_get_missing_plugins (RBEncoder *encoder,
 			}
 			message = gst_bus_pop (bus);
 		}
-
-		if (messages != NULL) {
-			if (details != NULL) {
-				*details = g_new0(char *, g_list_length (messages)+1);
-			}
-			if (descriptions != NULL) {
-				*descriptions = g_new0(char *, g_list_length (messages)+1);
-			}
-			i = 0;
-			for (m = messages; m != NULL; m = m->next) {
-				char *str;
-				if (details != NULL) {
-					str = gst_missing_plugin_message_get_installer_detail (m->data);
-					rb_debug ("missing plugin for profile %s: %s",
-						  gst_encoding_profile_get_name (profile),
-						  str);
-					(*details)[i] = str;
-				}
-				if (descriptions != NULL) {
-					str = gst_missing_plugin_message_get_description (m->data);
-					(*descriptions)[i] = str;
-				}
-				i++;
-			}
-
-			ret = TRUE;
-			rb_list_destroy_free (messages, (GDestroyNotify)gst_message_unref);
-		}
-
 	} else {
 		rb_debug ("got request pad, profile %s works", gst_encoding_profile_get_name (profile));
 		gst_element_release_request_pad (encodebin, pad);
 		gst_object_unref (pad);
+	}
+
+	/* make sure there's an encoder too */
+	enc = rb_gst_encoding_profile_get_encoder (profile);
+	if (enc == NULL) {
+		GstCaps *caps;
+		rb_debug ("couldn't find an encoder, profile %s doesn't work", gst_encoding_profile_get_name (profile));
+
+		caps = rb_gst_encoding_profile_get_encoder_caps (profile);
+		messages = g_list_append (messages, gst_missing_encoder_message_new (encodebin, caps));
+	} else {
+		rb_debug ("encoder found, profile %s works", gst_encoding_profile_get_name (profile));
+	}
+
+	if (messages != NULL) {
+		GList *m;
+		int i;
+
+		if (details != NULL) {
+			*details = g_new0(char *, g_list_length (messages)+1);
+		}
+		if (descriptions != NULL) {
+			*descriptions = g_new0(char *, g_list_length (messages)+1);
+		}
+		i = 0;
+		for (m = messages; m != NULL; m = m->next) {
+			char *str;
+			if (details != NULL) {
+				str = gst_missing_plugin_message_get_installer_detail (m->data);
+				rb_debug ("missing plugin for profile %s: %s",
+					  gst_encoding_profile_get_name (profile),
+					  str);
+				(*details)[i] = str;
+			}
+			if (descriptions != NULL) {
+				str = gst_missing_plugin_message_get_description (m->data);
+				(*descriptions)[i] = str;
+			}
+			i++;
+		}
+
+		ret = TRUE;
+		rb_list_destroy_free (messages, (GDestroyNotify)gst_message_unref);
 	}
 
 	gst_object_unref (encodebin);
