@@ -826,6 +826,7 @@ impl_get_missing_plugins (RBEncoder *encoder,
 		messages = g_list_append (messages, gst_missing_encoder_message_new (encodebin, caps));
 	} else {
 		rb_debug ("encoder found, profile %s works", gst_encoding_profile_get_name (profile));
+		gst_object_unref (enc);
 	}
 
 	if (messages != NULL) {
