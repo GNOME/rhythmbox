@@ -46,7 +46,15 @@ test_audioscrobbler_LDADD = \
 
 test_widgets_SOURCES = \
 	test-widgets.c						\
+	test-widgets-resources.c				\
 	$(test_utils)
+
+test_resource_deps = $(shell $(GLIB_COMPILE_RESOURCES) --generate-dependencies --sourcedir $(top_srcdir)/data $(srcdir)/test-widgets.gresource.xml)
+test-widgets-resources.c: $(test_resource_deps) $(srcdir)/test-widgets.gresource.xml
+	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES)			\
+		--target="$@"					\
+		--sourcedir="$(top_srcdir)/data"		\
+		--generate-source "$(srcdir)/test-widgets.gresource.xml"
 
 bench_rhythmdb_load_SOURCES = bench-rhythmdb-load.c
 
@@ -88,4 +96,7 @@ EXTRA_DIST = 							\
 	deserialization-test2.xml 				\
 	deserialization-test3.xml 				\
 	podcast-upgrade.xml					\
+	test-widgets.gresource.xml				\
 	$(OLD_TESTS)
+
+CLEANFILES = test-widgets-resources.c
