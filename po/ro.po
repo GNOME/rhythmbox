@@ -5,17 +5,16 @@
 # This file is distributed under the same license as the rhythmbox package.
 # Alex Eftimie <alexeftimie at gmail dot com> 2007.
 # Mugurel Tudor <mugurelu@go.ro>, 2003.
-# Daniel Șerbănescu <cyber19rider@gmail.com>, 2010, 2011.
 # Alexandru Florescu Marian <show_some_originality@yahoo.com>, 2011.
 # Lucian Adrian Grijincu <lucian.grijincu@gmail.com>, 2011.
-# Daniel Șerbănescu <daniel [at] serbanescu [dot] dk>, 2015.
+# Daniel Șerbănescu <daniel [at] serbanescu [dot] dk>, 2010, 2011, 2015, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: ro\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-11-14 14:13+0000\n"
-"PO-Revision-Date: 2015-11-14 18:13+0200\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=rhythmb"
+"ox&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2016-06-19 09:18+0000\n"
+"PO-Revision-Date: 2016-08-10 18:43+0200\n"
 "Last-Translator: Daniel Șerbănescu <daniel [at] serbanescu [dot] dk>\n"
 "Language-Team: Gnome Romanian Translation Team\n"
 "Language: ro\n"
@@ -28,67 +27,67 @@ msgstr ""
 "X-Launchpad-Export-Date: 2014-07-13 17:08+0000\n"
 "X-Project-Style: gnome\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:514
+#: ../backends/gstreamer/rb-encoder-gst.c:524
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Nu s-a putut crea un element sink GStreamer de scriere în %s"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:528
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2980
+#: ../backends/gstreamer/rb-player-gst.c:521
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2993
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Deschidere eșuată a dispozitivului de ieșire: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:676
+#: ../backends/gstreamer/rb-player-gst.c:670
 #, c-format
 msgid "Failed to create playbin element; check your GStreamer installation"
 msgstr ""
 "Nu s-a reușit crearea elementului playbin; verificați instalarea GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst.c:717
+#: ../backends/gstreamer/rb-player-gst.c:711
 #, c-format
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr "Nu s-a reușit crearea elementului %s; verificați instalarea GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1127
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1141
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1133
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1147
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Legarea noului flux la magistrala GStreamer a eșuat"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1185
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1191
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Eșec la crearea unui nou flux"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2896
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2906
 #, c-format
 msgid "Failed to open output device"
 msgstr "Deschidere eșuată a dispozitivului de ieșire"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3256
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3330
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3297
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3381
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Crearea elementului GStreamer a eșuat; verificați-vă instalarea"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3270
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3311
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Crearea elementului de redare audio a eșuat; verificați-vă instalarea"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3304
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3347
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3374
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3384
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3394
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3345
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3398
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3425
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3435
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3445
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Combinarea componentelor GStreamer a eșuat; verificați instalarea"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3489
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3540
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Crearea magistralei GStreamer pentru redarea fișierului %s a eșuat"
@@ -105,7 +104,18 @@ msgstr "Ascultate recent"
 msgid "My Top Rated"
 msgstr "Preferatele mele"
 
-#: ../data/rhythmbox.appdata.xml.in.h:1
+#: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
+#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2386
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
+#: ../data/rhythmbox-device.desktop.in.in.h:4
+msgid "Play and organize your music collection"
+msgstr "Redă și organizează colecția dumneavoastră de piese"
+
+#: ../data/rhythmbox.appdata.xml.in.h:3
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -118,19 +128,13 @@ msgstr ""
 "radio, dispozitive portabile de muzică (inclusiv telefoane) și servicii de "
 "muzică pe internet cum ar fi Last.fm și Magnatune."
 
-#: ../data/rhythmbox.appdata.xml.in.h:2
+#: ../data/rhythmbox.appdata.xml.in.h:4
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
 msgstr ""
 "Rhythmbox este program liber, bazat pe GTK+ și GStreamer, și este extensibil "
 "prin module scrise în Python sau C."
-
-#: ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
-#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2383
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 #: ../data/rhythmbox-device.desktop.in.in.h:2
@@ -141,11 +145,6 @@ msgstr "Player pentru muzică"
 #: ../data/rhythmbox-device.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
 msgstr "Rhythmbox - Player pentru muzică"
-
-#: ../data/rhythmbox.desktop.in.in.h:4
-#: ../data/rhythmbox-device.desktop.in.in.h:4
-msgid "Play and organize your music collection"
-msgstr "Redă și organizează colecția dumneavoastră de piese"
 
 #: ../data/rhythmbox.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
@@ -520,7 +519,7 @@ msgstr "Proprietăți player media"
 #: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
 #: ../plugins/iradio/rb-station-properties-dialog.c:186
 #: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:276 ../shell/rb-application.c:144
+#: ../podcast/rb-podcast-properties-dialog.c:319 ../shell/rb-application.c:144
 #: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:373
 #: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
 msgid "_Close"
@@ -720,7 +719,7 @@ msgid "Cancel Download"
 msgstr "Anulează descărcarea"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1227 ../sources/rb-media-player-source.c:1114
+#: ../podcast/rb-podcast-source.c:1227 ../sources/rb-media-player-source.c:1121
 msgid "Delete"
 msgstr "Șterge"
 
@@ -852,7 +851,7 @@ msgstr "A_rtistul albumului:"
 msgid "_Composer:"
 msgstr "_Compozitor:"
 
-#. To translators: the context is
+#. To translators: part of a phrase, for example, disc 1 of 2
 #: ../data/ui/song-info-multiple.ui.h:9 ../data/ui/song-info.ui.h:13
 msgid "of"
 msgstr "din"
@@ -936,7 +935,7 @@ msgstr "Fișiere eliminate:"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3797 ../widgets/rb-entry-view.c:943
+#: ../rhythmdb/rhythmdb.c:3799 ../widgets/rb-entry-view.c:943
 #: ../widgets/rb-entry-view.c:1567 ../widgets/rb-entry-view.c:1580
 #: ../widgets/rb-song-info.c:1545
 msgid "Never"
@@ -982,7 +981,7 @@ msgstr "%b %d %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/android/rb-android-source.c:646
+#: ../plugins/android/rb-android-source.c:698
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -1004,14 +1003,14 @@ msgstr "%b %d %Y"
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1892
 #: ../podcast/rb-podcast-manager.c:1991
-#: ../podcast/rb-podcast-properties-dialog.c:622
-#: ../podcast/rb-podcast-properties-dialog.c:717
+#: ../podcast/rb-podcast-properties-dialog.c:654
+#: ../podcast/rb-podcast-properties-dialog.c:718
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:202
 #: ../remote/dbus/rb-client.c:715 ../rhythmdb/rhythmdb.c:2066
 #: ../rhythmdb/rhythmdb.c:2072 ../rhythmdb/rhythmdb.c:2087
-#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5561
-#: ../rhythmdb/rhythmdb.c:5567 ../rhythmdb/rhythmdb.c:5572
-#: ../rhythmdb/rhythmdb.c:5583 ../rhythmdb/rhythmdb.c:5587
+#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5563
+#: ../rhythmdb/rhythmdb.c:5569 ../rhythmdb/rhythmdb.c:5574
+#: ../rhythmdb/rhythmdb.c:5585 ../rhythmdb/rhythmdb.c:5589
 #: ../rhythmdb/rhythmdb-entry-type.c:301
 #: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
 #: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
@@ -1019,8 +1018,8 @@ msgstr "%b %d %Y"
 #: ../shell/rb-shell-player.c:2717 ../shell/rb-shell-player.c:2719
 #: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
 #: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
-#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1282
-#: ../widgets/rb-header.c:1308 ../widgets/rb-song-info.c:949
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1271
+#: ../widgets/rb-header.c:1297 ../widgets/rb-song-info.c:949
 #: ../widgets/rb-song-info.c:961 ../widgets/rb-song-info.c:1233
 #: ../widgets/rb-song-info.c:1572
 msgid "Unknown"
@@ -1165,7 +1164,15 @@ msgstr "Piese:"
 msgid "Playlists:"
 msgstr "Liste de redare:"
 
-#: ../plugins/android/rb-android-source.c:347
+#: ../plugins/android/rb-android-source.c:199
+msgid ""
+"No storage areas found on this device. You may need to unlock it and enable "
+"MTP."
+msgstr ""
+"Nu s-au găsit zone de stocare pe acest dispozitiv. Poate că trebuie să îl "
+"deblocați și să activați MTP."
+
+#: ../plugins/android/rb-android-source.c:399
 #: ../plugins/generic-player/rb-generic-player-source.c:566
 #, c-format
 msgid "Scanning %s"
@@ -1860,11 +1867,11 @@ msgstr "Deconectare"
 msgid "Connect to DAAP share..."
 msgstr "Conectare la DAAP pentru partajare..."
 
-#: ../plugins/daap/rb-daap-plugin.c:521
+#: ../plugins/daap/rb-daap-plugin.c:511
 msgid "New DAAP share"
 msgstr "Partajare nouă DAAP"
 
-#: ../plugins/daap/rb-daap-plugin.c:521
+#: ../plugins/daap/rb-daap-plugin.c:511
 msgid "Host:port of DAAP share:"
 msgstr "Gazdă:port pentru partajarea DAAP:"
 
@@ -1985,10 +1992,11 @@ msgid "Browse various local and Internet media sources"
 msgstr "Răsfoiți diverse surse multimedia locale și de pe internet"
 
 #: ../plugins/grilo/rb-grilo-source.c:389
+#: ../plugins/soundcloud/soundcloud.py:492
 msgid "Fetch more tracks"
 msgstr "Aduceți mai multe melodii"
 
-#: ../plugins/grilo/rb-grilo-source.c:891
+#: ../plugins/grilo/rb-grilo-source.c:899
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -2172,14 +2180,14 @@ msgstr "URL-ul postului de radio:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:507
-#: ../sources/rb-media-player-source.c:569 ../widgets/rb-song-info.c:1150
+#: ../podcast/rb-podcast-properties-dialog.c:539
+#: ../sources/rb-media-player-source.c:576 ../widgets/rb-song-info.c:1150
 #, c-format
 msgid "%s Properties"
 msgstr "Proprietăți %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:491
-#: ../podcast/rb-podcast-properties-dialog.c:620
+#: ../podcast/rb-podcast-properties-dialog.c:652
 #: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1235
 #, c-format
 msgid "%lu kbps"
@@ -2741,15 +2749,15 @@ msgstr "Zeitgeist"
 msgid "Inform Zeitgeist about your activity"
 msgstr "Informează Zeitgeist despre activitatea dumneavoastră"
 
-#: ../plugins/replaygain/config.py:68
+#: ../plugins/replaygain/config.py:64
 msgid "-15.0 dB"
 msgstr "-15.0 dB"
 
-#: ../plugins/replaygain/config.py:69
+#: ../plugins/replaygain/config.py:65
 msgid "0.0 dB"
 msgstr "0.0 dB"
 
-#: ../plugins/replaygain/config.py:70
+#: ../plugins/replaygain/config.py:66
 msgid "15.0 dB"
 msgstr "15.0 dB"
 
@@ -2799,8 +2807,9 @@ msgid "_Apply compression to prevent clipping"
 msgstr "_Aplică compresia pentru a preveni tăierile"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:7
-msgid "Learn more about ReplayGain at replaygain.org"
-msgstr "Aflați mai multe despre ReplayGain la replaygain.org"
+#| msgid "Learn more about ReplayGain at replaygain.org"
+msgid "Learn more about ReplayGain"
+msgstr "Aflați mai multe despre ReplayGain"
 
 #: ../plugins/sendto/sendto.plugin.in.h:1
 msgid "Send tracks"
@@ -2823,57 +2832,57 @@ msgstr "SoundCloud"
 msgid "Browse and play sounds from SoundCloud®"
 msgstr "Navighează și redă sunete de la SoundCloud®"
 
-#: ../plugins/soundcloud/soundcloud.py:94
+#: ../plugins/soundcloud/soundcloud.py:96
 msgid "Search tracks"
 msgstr "Caută piese"
 
-#: ../plugins/soundcloud/soundcloud.py:95
+#: ../plugins/soundcloud/soundcloud.py:97
 msgid "Search tracks on SoundCloud"
 msgstr "Caută piese pe SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:101
+#: ../plugins/soundcloud/soundcloud.py:103
 msgid "Search sets"
 msgstr "Caută seturi"
 
-#: ../plugins/soundcloud/soundcloud.py:102
+#: ../plugins/soundcloud/soundcloud.py:104
 msgid "Search sets on SoundCloud"
 msgstr "Caută seturi pe SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:103
+#: ../plugins/soundcloud/soundcloud.py:105
 msgid "SoundCloud Sets"
 msgstr "Seturi SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:108
+#: ../plugins/soundcloud/soundcloud.py:110
 msgid "Search users"
 msgstr "Caută utilizatori"
 
-#: ../plugins/soundcloud/soundcloud.py:109
+#: ../plugins/soundcloud/soundcloud.py:111
 msgid "Search users on SoundCloud"
 msgstr "Caută utilizatori pe SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:110
+#: ../plugins/soundcloud/soundcloud.py:112
 msgid "SoundCloud Users"
 msgstr "Utilizatori SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:115
+#: ../plugins/soundcloud/soundcloud.py:117
 msgid "Search groups"
 msgstr "Caută grupuri"
 
-#: ../plugins/soundcloud/soundcloud.py:116
+#: ../plugins/soundcloud/soundcloud.py:118
 msgid "Search groups on SoundCloud"
 msgstr "Caută grupuri pe SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:117
+#: ../plugins/soundcloud/soundcloud.py:119
 msgid "SoundCloud Groups"
 msgstr "Grupuri SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:374
-#: ../plugins/soundcloud/soundcloud.py:382
+#: ../plugins/soundcloud/soundcloud.py:442
+#: ../plugins/soundcloud/soundcloud.py:450
 #, python-format
 msgid "View '%(title)s' on SoundCloud"
 msgstr "Vizionează „%(title)s” pe SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:390
+#: ../plugins/soundcloud/soundcloud.py:458
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
 msgstr "Vizionează '%(container)s' pe SoundCloud"
@@ -2918,6 +2927,35 @@ msgstr "Vizualizare"
 #: ../plugins/visualizer/visualizer.plugin.in.h:2
 msgid "Displays visualizations"
 msgstr "Afișează vizualizări"
+
+#: ../plugins/webremote/webremote-config.ui.h:1
+msgid "Web remote control preferences"
+msgstr "Preferințe telecomandă web"
+
+#: ../plugins/webremote/webremote-config.ui.h:2
+msgid "Listening port:"
+msgstr "Port de ascultare:"
+
+#: ../plugins/webremote/webremote-config.ui.h:3
+msgid "Access key:"
+msgstr "Cheie de acces:"
+
+#: ../plugins/webremote/webremote-config.ui.h:4
+msgid "0"
+msgstr "0"
+
+#: ../plugins/webremote/webremote.plugin.in.h:1
+msgid "Web remote control"
+msgstr "Telecomandă web"
+
+#: ../plugins/webremote/webremote.plugin.in.h:2
+#| msgid "Control Rhythmbox using key shortcuts"
+msgid "Control Rhythmbox from a web browser"
+msgstr "Controlează Rhythmbox folosind un navigator web"
+
+#: ../plugins/webremote/webremote.py:582
+msgid "Launch web remote control"
+msgstr "Lansează telecomanda web"
 
 #: ../podcast/rb-podcast-add-dialog.c:286
 msgid "Unable to load the feed. Check your network connection."
@@ -3048,11 +3086,7 @@ msgstr "Nu s-a putut interpreta conținutul fluxului"
 msgid "The feed does not contain any downloadable items"
 msgstr "Fluxul nu conține niciun element descărcabil"
 
-#: ../podcast/rb-podcast-properties-dialog.c:195
-msgid "Unable to display requested URI"
-msgstr "Nu s-a putut afișa URI-ul cerut"
-
-#: ../podcast/rb-podcast-properties-dialog.c:570
+#: ../podcast/rb-podcast-properties-dialog.c:602
 msgid "Not Downloaded"
 msgstr "Nedescărcat"
 
@@ -3196,7 +3230,7 @@ msgstr "Pune pauză dacă se redă"
 msgid "Toggle play/pause mode"
 msgstr "Comută modul redare/pauză"
 
-#: ../remote/dbus/rb-client.c:107 ../shell/rb-shell.c:2288
+#: ../remote/dbus/rb-client.c:107 ../shell/rb-shell.c:2291
 msgid "Stop playback"
 msgstr "Oprește redarea"
 
@@ -3380,7 +3414,7 @@ msgstr "Volumul este acum %.02f"
 msgid "Press 'h' for help."
 msgstr "Apăsați „h” pentru ajutor."
 
-#: ../remote/dbus/rb-client.c:1384
+#: ../remote/dbus/rb-client.c:1383
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Volumul de redare este %f.\n"
@@ -3433,11 +3467,11 @@ msgstr "unicode nevalid în mesajul de eroare"
 msgid "Empty file"
 msgstr "Fișier gol"
 
-#: ../rhythmdb/rhythmdb.c:3224
+#: ../rhythmdb/rhythmdb.c:3226
 msgid "Could not load the music database:"
 msgstr "Nu s-a putut încărca baza de date cu muzică:"
 
-#: ../rhythmdb/rhythmdb.c:4651
+#: ../rhythmdb/rhythmdb.c:4653
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3445,7 +3479,7 @@ msgstr[0] "un minut"
 msgstr[1] "%ld minute"
 msgstr[2] "%ld de minute"
 
-#: ../rhythmdb/rhythmdb.c:4652
+#: ../rhythmdb/rhythmdb.c:4654
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3453,7 +3487,7 @@ msgstr[0] "o oră"
 msgstr[1] "%ld ore"
 msgstr[2] "%ld de ore"
 
-#: ../rhythmdb/rhythmdb.c:4653
+#: ../rhythmdb/rhythmdb.c:4655
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3462,7 +3496,7 @@ msgstr[1] "%ld zile"
 msgstr[2] "%ld de zile"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4659
+#: ../rhythmdb/rhythmdb.c:4661
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s și %s"
@@ -3470,8 +3504,8 @@ msgstr "%s, %s și %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4665 ../rhythmdb/rhythmdb.c:4673
-#: ../rhythmdb/rhythmdb.c:4684
+#: ../rhythmdb/rhythmdb.c:4667 ../rhythmdb/rhythmdb.c:4675
+#: ../rhythmdb/rhythmdb.c:4686
 #, c-format
 msgid "%s and %s"
 msgstr "%s și %s"
@@ -3535,7 +3569,7 @@ msgstr "Configurează module"
 #: ../shell/rb-application.c:208
 msgid "translator-credits"
 msgstr ""
-"Daniel Șerbănescu <cyber19rider@gmail.com>, 2010, 2015\n"
+"Daniel Șerbănescu <daniel [at] serbanescu [dot] dk>, 2010, 2011, 2015, 2016\n"
 "Alexandru Florescu <show_some_originality@yahoo.com>, 2011\n"
 "Jobava <jobaval10n@gmail.com>, 2015\n"
 "Launchpad Contributions:\n"
@@ -3737,45 +3771,45 @@ msgstr "Listă necunoscută: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "Lista %s este o listă automată"
 
-#: ../shell/rb-shell.c:2081
+#: ../shell/rb-shell.c:2084
 msgid "Error while saving song information"
 msgstr "Eroare la salvarea informației despre piesă"
 
-#: ../shell/rb-shell.c:2285
+#: ../shell/rb-shell.c:2288
 msgid "Pause playback"
 msgstr "Pauză redare"
 
-#: ../shell/rb-shell.c:2292
+#: ../shell/rb-shell.c:2295
 msgid "Start playback"
 msgstr "Pornește redarea"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2403
+#: ../shell/rb-shell.c:2406
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pauză)"
 
-#: ../shell/rb-shell.c:2807 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2811 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Nicio sursă înregistrată nu poate să gestioneze URI-ul %s"
 
-#: ../shell/rb-shell.c:3136
+#: ../shell/rb-shell.c:3140
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Nicio sursă înregistrată nu se potrivește cu URI-ul %s"
 
-#: ../shell/rb-shell.c:3169 ../shell/rb-shell.c:3212
+#: ../shell/rb-shell.c:3173 ../shell/rb-shell.c:3216
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI-ul piesei este necunoscut: %s"
 
-#: ../shell/rb-shell.c:3221
+#: ../shell/rb-shell.c:3225
 #, c-format
 msgid "Unknown property %s"
 msgstr "Proprietate necunoscută %s"
 
-#: ../shell/rb-shell.c:3235
+#: ../shell/rb-shell.c:3239
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Tipul %s nu este valid pentru proprietatea %s"
@@ -4104,12 +4138,12 @@ msgstr "Copiază piese în bibliotecă"
 msgid "Adding tracks to the library"
 msgstr "Se adaugă piese în bibliotecă"
 
-#: ../sources/rb-media-player-source.c:774
+#: ../sources/rb-media-player-source.c:781
 #, c-format
 msgid "Syncing tracks to %s"
 msgstr "Se sincronizează piese în %s"
 
-#: ../sources/rb-media-player-source.c:830
+#: ../sources/rb-media-player-source.c:837
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
@@ -4117,7 +4151,7 @@ msgstr ""
 "Nu ați selectat muzică, liste de redare, sau podcasturi pentru a le "
 "transferat la acest dispozitiv."
 
-#: ../sources/rb-media-player-source.c:835
+#: ../sources/rb-media-player-source.c:842
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
@@ -4125,16 +4159,16 @@ msgstr ""
 "Nu există spațiu suficient pe dispozitiv pentru a transfera muzica "
 "selectată, listele de redare și podcasturile."
 
-#: ../sources/rb-media-player-source.c:887
+#: ../sources/rb-media-player-source.c:894
 #, c-format
 msgid "%s Sync Settings"
 msgstr "Configurări de sincronizare %s"
 
-#: ../sources/rb-media-player-source.c:892
+#: ../sources/rb-media-player-source.c:899
 msgid "Sync with the device"
 msgstr "Sincronizează cu dispozitivul"
 
-#: ../sources/rb-media-player-source.c:894
+#: ../sources/rb-media-player-source.c:901
 msgid "Don't sync"
 msgstr "Nu sincroniza"
 
@@ -4159,11 +4193,11 @@ msgstr "Elimină din lista de redare"
 msgid "Play Queue"
 msgstr "Coadă redare"
 
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:919
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:922
 msgid "from"
 msgstr "de pe"
 
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:918
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:921
 msgid "by"
 msgstr "de"
 
@@ -4314,11 +4348,11 @@ msgstr "Locație"
 msgid "BPM"
 msgstr "BPM"
 
-#: ../widgets/rb-entry-view.c:1883
+#: ../widgets/rb-entry-view.c:1884
 msgid "Now Playing"
 msgstr "Acum se redă"
 
-#: ../widgets/rb-entry-view.c:1942
+#: ../widgets/rb-entry-view.c:1943
 msgid "Playback Error"
 msgstr "Eroare la redare"
 
@@ -4327,13 +4361,13 @@ msgid "Drop artwork here"
 msgstr "Plasați grafica aici"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1222
+#: ../widgets/rb-header.c:1211
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1233
+#: ../widgets/rb-header.c:1222
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
@@ -4771,6 +4805,9 @@ msgstr "Pe desktop"
 #: ../widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Locație necunoscută"
+
+#~ msgid "Unable to display requested URI"
+#~ msgstr "Nu s-a putut afișa URI-ul cerut"
 
 #~ msgid "_File"
 #~ msgstr "_Fişier"
