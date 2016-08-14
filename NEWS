@@ -1,3 +1,49 @@
+Overview of changes in Rhythmbox 3.4
+====================================
+
+* New web remote control plugin
+* Grilo plugin now uses Grilo 0.3
+* Soundcloud plugin fetches more search results and allows pausing
+* No longer uses webkit (partly due to OpenBSD W^X enforcement)
+* Slightly better handling of keyboard shortcuts for playback
+* Core and some plugin data files compiled into binaries using GResources
+
+Bugs fixed:
+
+703910  Entering then leaving Party Mode breaks the app menu; Party Mode status incorrectly reported
+721926  TerraParser (lyric's plugin) is not fetching lyrics correctly
+759589  grilo: Port to 0.3.0
+765833  [regression] Cover art shown superposed over the song titles and artist names when cover art is disabled
+766584  Referenced website replaygain.org is not about ReplayGain
+767318  Use correct pkg-config binary
+767466  daap: Fix warnings when configuring music sharing
+767524  "To translators: the context is" doesn't continue the sentence
+768545  Cannot change MP4 encoder settings
+769404  Memory leak
+
+Translation updates:
+
+- ca, courtesy of Jordi Mas
+- cs, courtesy of Marek Černocký
+- da, courtesy of Ask Hjorth Larsen
+- de, courtesy of Mario Blättermann
+- es, courtesy of Daniel Mustieles
+- fi, courtesy of Jiri Grönroos
+- fr, courtesy of Claude Paroz
+- ga, courtesy of Seán de Búrca
+- gd, courtesy of GunChleoc
+- hr, courtesy of gogo
+- hu, courtesy of Meskó Balázs
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Enrico Nicoletto
+- pt, courtesy of Tiago Santos
+- ro, courtesy of Daniel Șerbănescu
+- sk, courtesy of Dušan Kazik
+- sv, courtesy of Anders Jonsson
+- vi, courtesy of Trần Ngọc Quân
+- zh_CN, courtesy of shijing
+
+
 Overview of changes in Rhythmbox 3.3.1
 ======================================
 
