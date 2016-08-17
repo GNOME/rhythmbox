@@ -345,7 +345,7 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 
 	def client_playpause(self, message):
 		try:
-			self.shell_player.playpause(True)
+			self.shell_player.playpause()
 			return {'result': 'ok'}
 		except Exception as e:
 			return {'result': str(e) }
