@@ -5449,7 +5449,7 @@ rhythmdb_entry_write_metadata_changes (RhythmDB *db,
 		load_action = g_slice_new0 (RhythmDBAction);
 		load_action->type = RHYTHMDB_ACTION_LOAD;
 		load_action->uri = rb_refstring_ref (entry->location);
-		/* XXX entry types? */
+		load_action->data.types.entry_type = rhythmdb_entry_get_entry_type (entry);
 		g_async_queue_push (db->priv->action_queue, load_action);
 
 		g_propagate_error (error, local_error);
