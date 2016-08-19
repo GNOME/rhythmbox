@@ -1749,9 +1749,10 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 			rb_shell_player_error (player, FALSE, error);
 			g_clear_error (&error);
 		}
+
+		rhythmdb_entry_unref (entry);
 	}
 
-	rhythmdb_entry_unref (entry);
 	g_object_unref (porder);
 }
 
