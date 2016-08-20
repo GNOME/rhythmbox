@@ -850,6 +850,22 @@ rb_property_view_get_selection (RBPropertyView *view)
 }
 
 static void
+select_all (RBPropertyView *view, GtkTreeSelection *selection, GtkTreeModel *model)
+{
+	GtkTreeIter iter;
+
+	g_signal_handlers_block_by_func (selection,
+					 G_CALLBACK (rb_property_view_selection_changed_cb),
+					 view);
+	gtk_tree_selection_unselect_all (selection);
+	if (gtk_tree_model_get_iter_first (model, &iter))
+		gtk_tree_selection_select_iter (selection, &iter);
+	g_signal_handlers_unblock_by_func (selection,
+					   G_CALLBACK (rb_property_view_selection_changed_cb),
+					   view);
+}
+
+static void
 rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 				       RBPropertyView *view)
 {
@@ -884,18 +900,10 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 		g_list_foreach (selected_rows, (GFunc) gtk_tree_path_free, NULL);
 		g_list_free (selected_rows);
 
-		if (is_all) {
-			g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
-							 G_CALLBACK (rb_property_view_selection_changed_cb),
-							 view);
-			gtk_tree_selection_unselect_all (selection);
-			if (gtk_tree_model_get_iter_first (model, &iter))
-				gtk_tree_selection_select_iter (selection, &iter);
-			g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
-							   G_CALLBACK (rb_property_view_selection_changed_cb),
-							   view);
-		}
-		g_signal_emit (G_OBJECT (view), rb_property_view_signals[PROPERTIES_SELECTED], 0,
+		if (is_all)
+			select_all (view, selection, model);
+
+		g_signal_emit (view, rb_property_view_signals[PROPERTIES_SELECTED], 0,
 			       selected_properties);
 		rb_list_deep_free (selected_properties);
 	} else {
@@ -903,8 +911,11 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 			gtk_tree_model_get (model, &iter,
 					    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &selected_prop,
 					    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, &is_all, -1);
-			g_signal_emit (G_OBJECT (view), rb_property_view_signals[PROPERTY_SELECTED], 0,
+			g_signal_emit (view, rb_property_view_signals[PROPERTY_SELECTED], 0,
 				       is_all ? NULL : selected_prop);
+		} else {
+			select_all (view, selection, model);
+			g_signal_emit (view, rb_property_view_signals[PROPERTY_SELECTED], 0, NULL);
 		}
 	}
 
