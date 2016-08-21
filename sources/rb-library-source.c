@@ -1248,7 +1248,7 @@ impl_paste (RBSource *asource, GList *entries)
 	gst_encoding_profile_set_name (profile, "copy");
 	gst_encoding_target_add_profile (target, profile);
 
-	batch = rb_track_transfer_batch_new (target, source->priv->encoding_settings, NULL, G_OBJECT (source));
+	batch = rb_track_transfer_batch_new (target, source->priv->encoding_settings, NULL, G_OBJECT (source), G_OBJECT (xferq));
 	g_signal_connect_object (batch, "get-dest-uri", G_CALLBACK (get_dest_uri_cb), source, 0);
 	g_signal_connect_object (batch, "track-done", G_CALLBACK (track_done_cb), source, 0);
 

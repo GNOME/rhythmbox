@@ -275,7 +275,7 @@ actually_start_batch (RBTrackTransferQueue *queue)
 				 "track-progress",
 				 G_CALLBACK (batch_progress),
 				 queue, 0);
-	_rb_track_transfer_batch_start (queue->priv->current, G_OBJECT (queue));
+	_rb_track_transfer_batch_start (queue->priv->current);
 }
 
 static GPtrArray *

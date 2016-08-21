@@ -60,6 +60,7 @@ enum
 	PROP_0,
 	PROP_ENCODING_TARGET,
 	PROP_SETTINGS,
+	PROP_QUEUE,
 	PROP_SOURCE,
 	PROP_DESTINATION,
 	PROP_TOTAL_ENTRIES,
@@ -137,6 +138,7 @@ G_DEFINE_TYPE_EXTENDED (RBTrackTransferBatch,
  * @target: a #GstEncodingTarget describing allowable encodings (or NULL for defaults)
  * @source: the #RBSource from which the entries are to be transferred
  * @destination: the #RBSource to which the entries are to be transferred
+ * @queue: the #RBTrackTransferQueue instance
  *
  * Creates a new transfer batch with the specified encoding target.  If no target
  * is specified, the default target will be used with the user's preferred
@@ -151,7 +153,8 @@ RBTrackTransferBatch *
 rb_track_transfer_batch_new (GstEncodingTarget *target,
 			     GSettings *settings,
 			     GObject *source,
-			     GObject *destination)
+			     GObject *destination,
+			     GObject *queue)
 {
 	GObject *obj;
 
@@ -160,6 +163,7 @@ rb_track_transfer_batch_new (GstEncodingTarget *target,
 			    "settings", settings,
 			    "source", source,
 			    "destination", destination,
+			    "queue", queue,
 			    NULL);
 	return RB_TRACK_TRANSFER_BATCH (obj);
 }
@@ -357,12 +361,11 @@ task_progress_cancel (RBTaskProgress *progress)
 /**
  * _rb_track_transfer_batch_start:
  * @batch: a #RBTrackTransferBatch
- * @queue: the #RBTrackTransferQueue
  *
  * Starts the batch transfer.  Only to be called by the #RBTrackTransferQueue.
  */
 void
-_rb_track_transfer_batch_start (RBTrackTransferBatch *batch, GObject *queue)
+_rb_track_transfer_batch_start (RBTrackTransferBatch *batch)
 {
 	gboolean total_duration_valid;
 	gboolean total_size_valid;
@@ -373,7 +376,7 @@ _rb_track_transfer_batch_start (RBTrackTransferBatch *batch, GObject *queue)
 	RBShell *shell;
 	GList *l;
 
-	g_object_get (queue, "shell", &shell, NULL);
+	g_object_get (batch->priv->queue, "shell", &shell, NULL);
 
 	/* calculate total duration and file size and figure out the
 	 * origin source if we weren't given one to start with.
@@ -421,7 +424,6 @@ _rb_track_transfer_batch_start (RBTrackTransferBatch *batch, GObject *queue)
 		batch->priv->source = origin;
 	}
 
-	batch->priv->queue = RB_TRACK_TRANSFER_QUEUE (queue);
 	batch->priv->cancelled = FALSE;
 	batch->priv->total_fraction = 0.0;
 
@@ -754,6 +756,9 @@ impl_set_property (GObject *object,
 	case PROP_SETTINGS:
 		batch->priv->settings = g_value_dup_object (value);
 		break;
+	case PROP_QUEUE:
+		batch->priv->queue = g_value_get_object (value);
+		break;
 	case PROP_SOURCE:
 		batch->priv->source = g_value_dup_object (value);
 		break;
@@ -797,6 +802,9 @@ impl_get_property (GObject *object,
 		break;
 	case PROP_SETTINGS:
 		g_value_set_object (value, batch->priv->settings);
+		break;
+	case PROP_QUEUE:
+		g_value_set_object (value, batch->priv->queue);
 		break;
 	case PROP_SOURCE:
 		g_value_set_object (value, batch->priv->source);
@@ -951,6 +959,18 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 							      "profile settings",
 							      "GSettings instance holding profile settings",
 							      G_TYPE_SETTINGS,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	/**
+	 * RBTrackTransferBatch:queue
+	 *
+	 * The #RBTrackTransferQueue instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_QUEUE,
+					 g_param_spec_object ("queue",
+							      "transfer queue",
+							      "RBTrackTransferQueue instance",
+							      RB_TYPE_TRACK_TRANSFER_QUEUE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	/**
 	 * RBTrackTransferBatch:source:
