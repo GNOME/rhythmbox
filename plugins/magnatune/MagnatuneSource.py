@@ -157,26 +157,26 @@ class MagnatuneSource(RB.BrowserSource):
 	def display_artist_info(self):
 		screen = self.props.shell.props.window.get_screen()
 		tracks = self.get_entry_view().get_selected_entries()
-		urls = set([])
+		if len(tracks) == 0:
+			return
 
-		for tr in tracks:
-			sku = self.__sku_dict[tr.get_string(RB.RhythmDBPropType.LOCATION)]
-			url = self.__home_dict[sku]
-			if url not in urls:
-				Gtk.show_uri(screen, url, Gdk.CURRENT_TIME)
-				urls.add(url)
+		tr = tracks[0]
+		sku = self.__sku_dict[tr.get_string(RB.RhythmDBPropType.LOCATION)]
+		url = self.__home_dict[sku]
+		Gtk.show_uri(screen, url, Gdk.CURRENT_TIME)
+
 
 	def download_redirect(self):
 		screen = self.props.shell.props.window.get_screen()
 		tracks = self.get_entry_view().get_selected_entries()
-		urls = set([])
+		if len(tracks) == 0:
+			return
 
-		for tr in tracks:
-			sku = self.__sku_dict[tr.get_string(RB.RhythmDBPropType.LOCATION)]
-			url = magnatune_buy_album_uri + urllib.parse.urlencode({ 'sku': sku, 'ref': magnatune_partner_id })
-			if url not in urls:
-				Gtk.show_uri(screen, url, Gdk.CURRENT_TIME)
-				urls.add(url)
+		tr = tracks[0]
+		sku = self.__sku_dict[tr.get_string(RB.RhythmDBPropType.LOCATION)]
+		url = magnatune_buy_album_uri + urllib.parse.urlencode({ 'sku': sku, 'ref': magnatune_partner_id })
+		Gtk.show_uri(screen, url, Gdk.CURRENT_TIME)
+
 
 	def download_album(self):
 		if self.__settings['account-type'] != 'download':
