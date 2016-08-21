@@ -34,6 +34,8 @@ if rbconfig.libsecret_enabled:
 	# Till libsecret completely replaces gnome-keyring, we'll fall back to not
 	# saving the password if libsecret can't be found. This code can be removed later.
 	try:
+		import gi
+		gi.require_version('Secret', '1')
 		from gi.repository import Secret
 		# We need to be able to fetch passwords stored by libgnome-keyring, so we use
 		# a schema with SECRET_SCHEMA_DONT_MATCH_NAME set.
