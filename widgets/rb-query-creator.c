@@ -965,8 +965,8 @@ setup_sort_option_menu (RBQueryCreator *creator,
 	}
 
 	gtk_combo_box_set_model (GTK_COMBO_BOX (option_menu), GTK_TREE_MODEL (store));
-	gtk_combo_box_set_active (GTK_COMBO_BOX (option_menu), 0);
 
 	g_signal_connect_object (G_OBJECT (option_menu), "changed",
 				 G_CALLBACK (sort_option_menu_changed), creator, 0);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (option_menu), 0);
 }
