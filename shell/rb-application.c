@@ -914,7 +914,7 @@ rb_application_set_menu_accelerators (RBApplication *app, GMenuModel *menu, gboo
  * @app: the #RBApplication
  * @accel: accelerator string
  * @action: the name of the action to activate
- * @parameter: parameter to pass when activating the action, or NULL if
+ * @parameter: (nullable): parameter to pass when activating the action, or NULL if
  *   the action does not accept an activation parameter.
  *
  * Like #gtk_application_add_accelerator, except the accelerator only applies
