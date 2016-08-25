@@ -69,6 +69,8 @@ typedef struct
 	RBShellPlayer *shell_player;
 	gulong emit_cover_art_id;
 	RBExtDB *art_store;
+	gulong handler_id_source_added;
+	gulong handler_id_source_removed;
 } RBGriloPlugin;
 
 typedef struct
@@ -211,8 +213,10 @@ impl_activate (PeasActivatable *plugin)
 
 	grl_init (0, NULL);
 	pi->registry = grl_registry_get_default ();
-	g_signal_connect (pi->registry, "source-added", G_CALLBACK (grilo_source_added_cb), pi);
-	g_signal_connect (pi->registry, "source-removed", G_CALLBACK (grilo_source_removed_cb), pi);
+	pi->handler_id_source_added =
+		g_signal_connect (pi->registry, "source-added", G_CALLBACK (grilo_source_added_cb), pi);
+	pi->handler_id_source_removed =
+		g_signal_connect (pi->registry, "source-removed", G_CALLBACK (grilo_source_removed_cb), pi);
 	if (grl_registry_load_all_plugins (pi->registry, TRUE, &error) == FALSE) {
 		g_warning ("Failed to load Grilo plugins: %s", error->message);
 		g_clear_error (&error);
@@ -248,6 +252,8 @@ impl_deactivate	(PeasActivatable *bplugin)
 	g_hash_table_destroy (plugin->sources);
 	plugin->sources = NULL;
 
+	g_signal_handler_disconnect (plugin->registry, plugin->handler_id_source_added);
+	g_signal_handler_disconnect (plugin->registry, plugin->handler_id_source_removed);
 	plugin->registry = NULL;
 
 	if (plugin->emit_cover_art_id != 0) {
