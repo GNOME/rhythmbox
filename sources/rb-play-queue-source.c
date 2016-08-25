@@ -95,6 +95,7 @@ static void impl_show_entry_view_popup (RBPlaylistSource *source,
 					gboolean over_entry);
 static void impl_save_contents_to_xml (RBPlaylistSource *source,
 				       xmlNodePtr node);
+static gboolean impl_can_remove (RBDisplayPage *page);
 
 static void queue_clear_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
 static void queue_shuffle_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
@@ -192,6 +193,7 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
+	RBDisplayPageClass *page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	RBPlaylistSourceClass *playlist_class = RB_PLAYLIST_SOURCE_CLASS (klass);
 
 	object_class->constructed = rb_play_queue_source_constructed;
@@ -201,6 +203,8 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 
 	source_class->can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	source_class->can_rename = (RBSourceFeatureFunc) rb_false_function;
+
+	page_class->can_remove = impl_can_remove;
 
 	playlist_class->show_entry_view_popup = impl_show_entry_view_popup;
 	playlist_class->save_contents_to_xml = impl_save_contents_to_xml;
@@ -689,4 +693,10 @@ rb_play_queue_dbus_method_call (GDBusConnection *connection,
 						       interface_name,
 						       method_name);
 	}
+}
+
+static gboolean
+impl_can_remove (RBDisplayPage *page)
+{
+	return FALSE;
 }
