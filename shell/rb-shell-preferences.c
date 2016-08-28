@@ -398,6 +398,7 @@ GtkWidget *
 rb_shell_preferences_new (GList *views)
 {
 	RBShellPreferences *shell_preferences;
+	GtkBuilder *builder;
 
 	shell_preferences = g_object_new (RB_TYPE_SHELL_PREFERENCES,
 				          NULL, NULL);
@@ -419,6 +420,13 @@ rb_shell_preferences_new (GList *views)
 						       RB_DISPLAY_PAGE (views->data));
 		g_free (name);
 	}
+
+	/* make sure this goes last */
+	builder = rb_builder_load ("plugin-prefs.ui", NULL);
+	gtk_notebook_append_page (GTK_NOTEBOOK (shell_preferences->priv->notebook),
+				  GTK_WIDGET (gtk_builder_get_object (builder, "plugins_box")),
+				  gtk_label_new (_("Plugins")));
+	g_object_unref (builder);
 
 	return GTK_WIDGET (shell_preferences);
 }

@@ -19,6 +19,7 @@ GTK_BUILDER_FILES =					\
 	playlist-popup.ui				\
 	playlist-save.ui				\
 	playlist-toolbar.ui				\
+	plugin-prefis.ui				\
 	podcast-add-dialog.ui				\
 	podcast-feed-properties.ui			\
 	podcast-popups.ui				\

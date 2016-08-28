@@ -30,9 +30,6 @@
 
 #include <glib/gi18n.h>
 
-#include <libpeas/peas.h>
-#include <libpeas-gtk/peas-gtk.h>
-
 #include <shell/rb-application.h>
 #include <shell/rb-shell.h>
 #include <lib/rb-debug.h>
@@ -127,66 +124,6 @@ quit_action_cb (GSimpleAction *action, GVariant *parameters, gpointer user_data)
 {
 	RBApplication *rb = RB_APPLICATION (user_data);
 	rb_shell_quit (RB_SHELL (rb->priv->shell), NULL);
-}
-
-static gboolean
-plugins_window_delete_cb (GtkWidget *window,
-			  GdkEventAny *event,
-			  gpointer data)
-{
-	gtk_widget_hide (window);
-	return TRUE;
-}
-
-static void
-plugins_response_cb (GtkDialog *dialog,
-		     int response_id,
-		     gpointer data)
-{
-	if (response_id == GTK_RESPONSE_CLOSE)
-		gtk_widget_hide (GTK_WIDGET (dialog));
-}
-
-static void
-plugins_action_cb (GSimpleAction *action, GVariant *parameters, gpointer user_data)
-{
-	RBApplication *app = RB_APPLICATION (user_data);
-
-	if (app->priv->plugins == NULL) {
-		GtkWidget *content_area;
-		GtkWidget *manager;
-		GtkWindow *window;
-
-		g_object_get (app->priv->shell, "window", &window, NULL);
-
-		app->priv->plugins = gtk_dialog_new_with_buttons (_("Configure Plugins"),
-								  window,
-								  GTK_DIALOG_DESTROY_WITH_PARENT,
-								  _("_Close"),
-								  GTK_RESPONSE_CLOSE,
-								  NULL);
-		content_area = gtk_dialog_get_content_area (GTK_DIALOG (app->priv->plugins));
-		gtk_container_set_border_width (GTK_CONTAINER (app->priv->plugins), 5);
-		gtk_box_set_spacing (GTK_BOX (content_area), 2);
-
-		g_signal_connect_object (G_OBJECT (app->priv->plugins),
-					 "delete_event",
-					 G_CALLBACK (plugins_window_delete_cb),
-					 NULL, 0);
-		g_signal_connect_object (G_OBJECT (app->priv->plugins),
-					 "response",
-					 G_CALLBACK (plugins_response_cb),
-					 NULL, 0);
-
-		manager = peas_gtk_plugin_manager_new (NULL);
-		gtk_widget_show_all (GTK_WIDGET (manager));
-		gtk_box_pack_start (GTK_BOX (content_area), manager, TRUE, TRUE, 0);
-		gtk_window_set_default_size (GTK_WINDOW (app->priv->plugins), 600, 400);
-
-		g_object_unref (window);
-	}
-
-	gtk_window_present (GTK_WINDOW (app->priv->plugins));
 }
 
 static void
@@ -363,7 +300,6 @@ impl_startup (GApplication *app)
 		{ "activate-source", activate_source_action_cb, "(su)" },
 
 		/* app menu actions */
-		{ "plugins", plugins_action_cb },
 		{ "preferences", preferences_action_cb },
 		{ "help", help_action_cb },
 		{ "about", about_action_cb },
