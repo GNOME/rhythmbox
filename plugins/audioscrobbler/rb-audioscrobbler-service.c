@@ -30,10 +30,10 @@
 
 /* Last.fm details */
 #define LASTFM_NAME "Last.fm"
-#define LASTFM_AUTH_URL "http://www.last.fm/api/auth/"
-#define LASTFM_SCROBBLER_URL "http://post.audioscrobbler.com/"
-#define LASTFM_API_URL "http://ws.audioscrobbler.com/2.0/"
-#define LASTFM_OLD_RADIO_API_URL "http://ws.audioscrobbler.com/"
+#define LASTFM_AUTH_URL "https://www.last.fm/api/auth/"
+#define LASTFM_SCROBBLER_URL "https://post.audioscrobbler.com/"
+#define LASTFM_API_URL "https://ws.audioscrobbler.com/2.0/"
+#define LASTFM_OLD_RADIO_API_URL "https://ws.audioscrobbler.com/"
 /* this API key belongs to Jamie Nicol <jamie@thenicols.net>
    generated May 2010 for use in the audioscrobbler plugin */
 #define LASTFM_API_KEY "0337ff3c59299b6a31d75164041860b6"
