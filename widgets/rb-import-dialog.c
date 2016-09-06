@@ -284,6 +284,8 @@ import_clicked_cb (GtkButton *button, RBImportDialog *dialog)
 	RBTrackTransferBatch *batch;
 
 	entries = get_entries (dialog);
+	if (entries == NULL)
+		return;
 
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dialog->priv->copy_check)) == FALSE) {
 		dialog->priv->add_entry_list = g_list_concat (dialog->priv->add_entry_list, entries);
