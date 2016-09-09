@@ -254,7 +254,7 @@ default_show_entry_popup (RBBrowserSource *source)
 	/* update add to playlist menu links */
 	g_object_get (source, "playlist-menu", &playlist_menu, NULL);
 	rb_menu_update_link (source->priv->popup, "rb-playlist-menu-link", playlist_menu);
-	g_object_unref (playlist_menu);
+	g_clear_object (&playlist_menu);
 
 	menu = gtk_menu_new_from_model (G_MENU_MODEL (source->priv->popup));
 	gtk_menu_attach_to_widget (GTK_MENU (menu), GTK_WIDGET (source), NULL);
