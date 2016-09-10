@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-16 10:27+0200\n"
-"PO-Revision-Date: 2016-08-16 10:28+0200\n"
+"POT-Creation-Date: 2016-09-10 18:55+0200\n"
+"PO-Revision-Date: 2016-09-10 18:57+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <community-poland@mozilla.org>\n"
 "Language: pl\n"
@@ -133,7 +133,7 @@ msgstr ""
 "Rhythmbox to program do zarządzania muzyką, zaprojektowany do działania "
 "w środowisku GNOME. Oprócz muzyki przechowywanej na komputerze obsługuje on "
 "także muzykę udostępnianą w sieci, podcasty, radio internetowe, przenośne "
-"odtwarzacze muzyki (w tym smartfony) oraz serwisy internetowe Last.fm "
+"odtwarzacze muzyki (w tym smartfony) oraz serwisy internetowe Last.fm "
 "i Magnatune."
 
 #: ../data/rhythmbox.appdata.xml.in.h:4
@@ -159,8 +159,8 @@ msgstr "Odtwarzacz muzyki Rhythmbox"
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
 "Dźwięk;Audio;Piosenka;Utwór;MP3;Ogg;Vorbis;FLAC;CD;Płyta;Podcast;Podkasty;"
-"MTP;iPod;Playlista;Lista;odtwarzania;M3U;PLS;XSPF;Last.fm;Libre.fm;Magnatune;"
-"SoundCloud;UPnP;DLNA;DAAP;MPRIS;LIRC;ReplayGain;Radio;"
+"MTP;iPod;Playlista;Lista;odtwarzania;M3U;PLS;XSPF;Last.fm;Libre.fm;Lastfm;"
+"Librefm;Magnatune;SoundCloud;UPnP;DLNA;DAAP;MPRIS;LIRC;ReplayGain;Radio;"
 
 #: ../data/ui/app-menu.ui.h:1
 msgid "_Add Music"
@@ -581,7 +581,7 @@ msgstr "_Płynne przechodzenie między ścieżkami"
 
 #: ../data/ui/playback-prefs.ui.h:3
 msgid "Crossfade Duration (Seconds)"
-msgstr "Czas trwania płynnego przechodzenia (w sekundach)"
+msgstr "Czas trwania płynnego przechodzenia (w sekundach)"
 
 #: ../data/ui/playlist-menu.ui.h:1
 msgid "_Edit..."
@@ -593,7 +593,7 @@ msgstr "Zmień _nazwę"
 
 #: ../data/ui/playlist-menu.ui.h:3
 msgid "_Queue All Tracks"
-msgstr "Za_kolejkuj wszystkie ścieżki"
+msgstr "Dodaj wszystkie ścieżki do _kolejki"
 
 #: ../data/ui/playlist-menu.ui.h:4
 msgid "_Shuffle Playlist"
@@ -817,7 +817,7 @@ msgstr "Losuj kolejność odtwarzania kolejki"
 msgid "Clear Play Queue"
 msgstr "Wyczyść kolejkę odtwarzania"
 
-#: ../data/ui/queue-toolbar.ui.h:2 ../shell/rb-shell-player.c:3279
+#: ../data/ui/queue-toolbar.ui.h:2 ../shell/rb-shell-player.c:3280
 msgid "Shuffle"
 msgstr "Odtwarzanie losowe"
 
@@ -904,7 +904,7 @@ msgstr "_Komentarz:"
 
 #: ../data/ui/song-info.ui.h:14 ../plugins/iradio/station-properties.ui.h:3
 msgid "Error message"
-msgstr "Komunikat błędu"
+msgstr "Komunikat o błędzie"
 
 #: ../data/ui/song-info.ui.h:21
 msgid "File name:"
@@ -1021,7 +1021,7 @@ msgstr "%d %b %Y"
 #: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
 #: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
 #: ../rhythmdb/rhythmdb-tree.c:1372 ../shell/rb-shell-player.c:870
-#: ../shell/rb-shell-player.c:2714 ../shell/rb-shell-player.c:2716
+#: ../shell/rb-shell-player.c:2715 ../shell/rb-shell-player.c:2717
 #: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
 #: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
 #: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1271
@@ -2016,11 +2016,11 @@ msgstr "Stan komunikatora"
 
 #: ../plugins/im-status/im-status.plugin.in.h:2
 msgid ""
-"Updates IM status according to the current song (works with Empathy, Gossip, "
-"and Pidgin)"
+"Updates IM status according to the current song (works with Empathy and "
+"Pidgin)"
 msgstr ""
 "Aktualizuje stan komunikatora według bieżącego utworu (działa z programami "
-"Empathy, Gossip i Pidgin)"
+"Empathy i Pidgin)"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
@@ -2107,7 +2107,7 @@ msgstr ""
 "Wykryto urządzenie, które jest prawdopodobnie niezainicjowanym lub "
 "uszkodzonym odtwarzaczem iPod. Musi on zostać zainicjowany przed użyciem "
 "z programem Rhythmbox, lecz to działanie usunie wszystkie metadane utworów "
-"zawarte w odtwarzaczu. Aby można było zainicjować odtwarzacz iPod należy "
+"zawarte w odtwarzaczu. Aby można było zainicjować odtwarzacz iPod, należy "
 "uzupełnić poniższe informacje. Jeśli to urządzenie nie jest odtwarzaczem "
 "iPod lub jego inicjacja nie jest obecnie wymagana, proszę nacisnąć przycisk "
 "„Anuluj”."
@@ -2483,15 +2483,15 @@ msgstr "Informacje o sklepie Magnatune"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:33
 msgid "I don't have a Magnatune account"
-msgstr "Nie posiadam konta w sklepie Magnatune"
+msgstr "Nie mam konta w sklepie Magnatune"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:34
 msgid "I have a streaming account"
-msgstr "Posiadam konto słuchania strumieniowego"
+msgstr "Mam konto słuchania strumieniowego"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:35
 msgid "I have a download account"
-msgstr "Posiadam konto pobierania"
+msgstr "Mam konto pobierania"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:36
 msgid "Username:"
@@ -2790,7 +2790,7 @@ msgstr "Używa ReplayGain do ujednolicenia głośności odtwarzania"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:1
 msgid "Radio (equal loudness for all tracks)"
-msgstr "Według radio (taka sama głośność dla wszystkich ścieżek)"
+msgstr "Według radia (taka sama głośność dla wszystkich ścieżek)"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:2
 msgid "Album (ideal loudness for all tracks)"
@@ -3467,7 +3467,7 @@ msgstr ""
 
 #: ../rhythmdb/rhythmdb.c:2405
 msgid "invalid unicode in error message"
-msgstr "nieprawidłowy znak unikodu w komunikacie błędu"
+msgstr "nieprawidłowy znak unikodu w komunikacie o błędzie"
 
 #: ../rhythmdb/rhythmdb.c:2528
 #, c-format
@@ -3521,7 +3521,7 @@ msgstr "%s i %s"
 msgid "Scanning"
 msgstr "Wyszukiwanie"
 
-#: ../rhythmdb/rhythmdb-import-job.c:668 ../shell/rb-track-transfer-batch.c:857
+#: ../rhythmdb/rhythmdb-import-job.c:668 ../shell/rb-track-transfer-batch.c:865
 #, c-format
 msgid "%d of %d"
 msgstr "%d z %d"
@@ -3769,7 +3769,7 @@ msgstr "Rozpoczyna odtwarzanie"
 msgid "%s (Paused)"
 msgstr "%s (wstrzymany)"
 
-#: ../shell/rb-shell.c:2827 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2827 ../sources/rb-play-queue-source.c:668
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Żadne zarejestrowane źródło nie obsługuje adresu URI %s"
@@ -3822,53 +3822,53 @@ msgstr "Brak poprzedniego utworu"
 msgid "No next song"
 msgstr "Brak następnego utworu"
 
-#: ../shell/rb-shell-player.c:2124
+#: ../shell/rb-shell-player.c:2125
 msgid "Couldn't stop playback"
 msgstr "Nie można zatrzymać odtwarzania"
 
-#: ../shell/rb-shell-player.c:2243
+#: ../shell/rb-shell-player.c:2244
 #, c-format
 msgid "Playback position not available"
 msgstr "Położenie odtwarzania niedostępne"
 
-#: ../shell/rb-shell-player.c:2275 ../shell/rb-shell-player.c:2309
+#: ../shell/rb-shell-player.c:2276 ../shell/rb-shell-player.c:2310
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Nie ma możliwości przewijania bieżącego utworu"
 
-#: ../shell/rb-shell-player.c:2465 ../shell/rb-shell-player.c:2776
+#: ../shell/rb-shell-player.c:2466 ../shell/rb-shell-player.c:2777
 msgid "Couldn't start playback"
 msgstr "Nie można rozpocząć odtwarzania"
 
-#: ../shell/rb-shell-player.c:3275
+#: ../shell/rb-shell-player.c:3276
 msgid "Linear"
 msgstr "Liniowo"
 
-#: ../shell/rb-shell-player.c:3277
+#: ../shell/rb-shell-player.c:3278
 msgid "Linear looping"
 msgstr "Zapętlone odtwarzanie"
 
-#: ../shell/rb-shell-player.c:3281
+#: ../shell/rb-shell-player.c:3282
 msgid "Random with equal weights"
 msgstr "Losowo z równymi wagami"
 
-#: ../shell/rb-shell-player.c:3283
+#: ../shell/rb-shell-player.c:3284
 msgid "Random by time since last play"
 msgstr "Losowo, według czasu od ostatniego odtworzenia"
 
-#: ../shell/rb-shell-player.c:3285
+#: ../shell/rb-shell-player.c:3286
 msgid "Random by rating"
 msgstr "Losowo, według oceny"
 
-#: ../shell/rb-shell-player.c:3287
+#: ../shell/rb-shell-player.c:3288
 msgid "Random by time since last play and rating"
 msgstr "Losowo, według czasu od ostatniego odtworzenia i oceny"
 
-#: ../shell/rb-shell-player.c:3289
+#: ../shell/rb-shell-player.c:3290
 msgid "Linear, removing entries once played"
 msgstr "Zapętlone, z usuwaniem wpisu po odtworzeniu"
 
-#: ../shell/rb-shell-player.c:3299
+#: ../shell/rb-shell-player.c:3300
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Utworzenie odtwarzacza się nie powiodło: %s"
@@ -4168,16 +4168,16 @@ msgstr[2] "%d brakujących plików"
 msgid "Remove from Playlist"
 msgstr "Usuń z listy odtwarzania"
 
-#: ../sources/rb-play-queue-source.c:297 ../sources/rb-play-queue-source.c:399
-#: ../sources/rb-play-queue-source.c:508
+#: ../sources/rb-play-queue-source.c:301 ../sources/rb-play-queue-source.c:403
+#: ../sources/rb-play-queue-source.c:512
 msgid "Play Queue"
 msgstr "Kolejka odtwarzania"
 
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:922
+#: ../sources/rb-play-queue-source.c:482 ../widgets/rb-header.c:922
 msgid "from"
 msgstr "z"
 
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:921
+#: ../sources/rb-play-queue-source.c:482 ../widgets/rb-header.c:921
 msgid "by"
 msgstr " "
 
@@ -4351,22 +4351,22 @@ msgstr "-%s/%s"
 msgid "%s / %s"
 msgstr "%s/%s"
 
-#: ../widgets/rb-import-dialog.c:339
+#: ../widgets/rb-import-dialog.c:341
 msgid "Examining files"
 msgstr "Sprawdzanie plików"
 
 #. this isn't a terribly helpful message.
-#: ../widgets/rb-import-dialog.c:409
+#: ../widgets/rb-import-dialog.c:411
 #, c-format
 msgid "The location you have selected is on the device %s."
 msgstr "Wybrane położenie jest na urządzeniu %s."
 
-#: ../widgets/rb-import-dialog.c:415
+#: ../widgets/rb-import-dialog.c:417
 #, c-format
 msgid "Show %s"
 msgstr "Wyświetl „%s”"
 
-#: ../widgets/rb-import-dialog.c:463
+#: ../widgets/rb-import-dialog.c:465
 #, c-format
 msgid "Import %d selected track"
 msgid_plural "Import %d selected tracks"
@@ -4374,7 +4374,7 @@ msgstr[0] "Zaimportuj %d zaznaczoną ścieżkę"
 msgstr[1] "Zaimportuj %d zaznaczone ścieżki"
 msgstr[2] "Zaimportuj %d zaznaczonych ścieżek"
 
-#: ../widgets/rb-import-dialog.c:466
+#: ../widgets/rb-import-dialog.c:468
 #, c-format
 msgid "Import %d listed track"
 msgid_plural "Import %d listed tracks"
@@ -4586,7 +4586,7 @@ msgstr "Rok"
 
 #: ../widgets/rb-query-creator-properties.c:115
 msgid "W_ith newer tracks first"
-msgstr "Z g_nowszymi ścieżkami jako pierwszymi"
+msgstr "Z _nowszymi ścieżkami jako pierwszymi"
 
 #: ../widgets/rb-query-creator-properties.c:116
 msgctxt "query-sort"
