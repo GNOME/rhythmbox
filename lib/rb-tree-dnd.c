@@ -656,11 +656,12 @@ rb_tree_dnd_motion_notify_event_cb (GtkWidget      *widget,
 		if (rb_tree_drag_source_row_draggable (RB_TREE_DRAG_SOURCE (model), path_list))
 		{
 			rb_debug ("drag begin");
-			context = gtk_drag_begin (widget,
-						  priv_data->source_target_list,
-						  priv_data->source_actions,
-						  priv_data->pressed_button,
-						  (GdkEvent*)event);
+			context = gtk_drag_begin_with_coordinates (widget,
+								   priv_data->source_target_list,
+								   priv_data->source_actions,
+								   priv_data->pressed_button,
+								   (GdkEvent*)event,
+								   -1, -1);
 	  		set_context_data (context, path_list);
 	  		gtk_drag_set_icon_default (context);
 
