@@ -1825,7 +1825,6 @@ rb_entry_view_constructed (GObject *object)
 	g_object_ref (view->priv->selection);
 
 	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), TRUE);
-	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view->priv->treeview), TRUE);
 	gtk_tree_selection_set_mode (view->priv->selection, GTK_SELECTION_MULTIPLE);
 
 	if (view->priv->is_drag_source) {

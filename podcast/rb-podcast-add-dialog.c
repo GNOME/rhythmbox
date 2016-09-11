@@ -744,8 +744,6 @@ impl_constructed (GObject *object)
 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "podcast-add-dialog"));
 	gtk_box_pack_start (GTK_BOX (dialog), widget, TRUE, TRUE, 0);
 
-	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (dialog->priv->feed_view), TRUE);
-
 	/* set up episode view */
 	g_object_get (dialog->priv->shell, "shell-player", &shell_player, NULL);
 	episodes = rb_entry_view_new (dialog->priv->db, G_OBJECT (shell_player), TRUE, FALSE);
