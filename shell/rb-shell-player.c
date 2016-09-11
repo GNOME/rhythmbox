@@ -2962,6 +2962,18 @@ rb_shell_player_constructed (GObject *object)
 		{ "volume-up", play_volume_up_action_cb },
 		{ "volume-down", play_volume_down_action_cb }
 	};
+	const char *play_accels[] = {
+		"<Ctrl>p",
+		NULL
+	};
+	const char *play_repeat_accels[] = {
+		"<Ctrl>r",
+		NULL
+	};
+	const char *play_shuffle_accels[] = {
+		"<Ctrl>u",
+		NULL
+	};
 
 	RB_CHAIN_GOBJECT_METHOD (rb_shell_player_parent_class, constructed, object);
 
@@ -2980,9 +2992,9 @@ rb_shell_player_constructed (GObject *object)
 	rb_application_add_accelerator (app, "<Ctrl>Down", "app.volume-down", NULL);
 
 	/* these take effect regardless of widget key handling */
-	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>p", "app.play", NULL);
-	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>r", "app.play-repeat", g_variant_new_boolean (TRUE));
-	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>u", "app.play-shuffle", g_variant_new_boolean (TRUE));
+	gtk_application_set_accels_for_action (GTK_APPLICATION (app), "app.play", play_accels);
+	gtk_application_set_accels_for_action (GTK_APPLICATION (app), "app.play-repeat(true)", play_repeat_accels);
+	gtk_application_set_accels_for_action (GTK_APPLICATION (app), "app.play-shuffle(true)", play_shuffle_accels);
 
 	player_settings_changed_cb (player->priv->settings, "transition-time", player);
 	player_settings_changed_cb (player->priv->settings, "play-order", player);

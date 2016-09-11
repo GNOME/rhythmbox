@@ -1683,6 +1683,10 @@ rb_shell_constructed (GObject *object)
 	GAction *action;
 	RBEntryView *view;
 	GApplication *app;
+	const char *jump_accels[] = {
+		"<Ctrl>j",
+		NULL
+	};
 
 	/* need this? */
 	gtk_init (NULL, NULL);
@@ -1754,8 +1758,7 @@ rb_shell_constructed (GObject *object)
 	g_signal_connect (action, "activate", G_CALLBACK (jump_to_playing_action_cb), shell);
 	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
 
-	gtk_application_add_accelerator (GTK_APPLICATION (app), "<Ctrl>j", "win.jump-to-playing", NULL);
-
+	gtk_application_set_accels_for_action (GTK_APPLICATION (app), "win.jump-to-playing", jump_accels);
 
 	rb_debug ("shell: syncing with settings");
 

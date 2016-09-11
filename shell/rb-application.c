@@ -855,6 +855,7 @@ set_accelerator (RBApplication *app, GMenuModel *model, int item, gboolean enabl
 	const char *key;
 	const char *accel = NULL;
 	const char *action = NULL;
+	char *detailed_action;
 
 	iter = g_menu_model_iterate_item_attributes (model, item);
 	while (g_menu_attribute_iter_get_next (iter, &key, &value)) {
@@ -870,10 +871,17 @@ set_accelerator (RBApplication *app, GMenuModel *model, int item, gboolean enabl
 	g_object_unref (iter);
 
 	if (accel && action) {
+		const char *accels[2] = {
+			NULL,
+			NULL
+		};
+
 		if (enable)
-			gtk_application_add_accelerator (GTK_APPLICATION (app), accel, action, target);
-		else
-			gtk_application_remove_accelerator (GTK_APPLICATION (app), action, target);
+			accels[0] = accel;
+
+		detailed_action = g_action_print_detailed_name (action, target);
+		gtk_application_set_accels_for_action (GTK_APPLICATION (app), detailed_action, accels);
+		g_free (detailed_action);
 	}
 
 	if (target)
