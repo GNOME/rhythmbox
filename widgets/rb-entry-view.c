@@ -1850,7 +1850,6 @@ rb_entry_view_constructed (GObject *object)
 		GtkTreeViewColumn *column;
 		GtkCellRenderer *renderer;
 		GtkWidget *image_widget;
-		gint width;
 
 		/* Playing icon column */
 		column = GTK_TREE_VIEW_COLUMN (gtk_tree_view_column_new ());
@@ -1872,8 +1871,6 @@ rb_entry_view_constructed (GObject *object)
 		gtk_widget_show_all (image_widget);
 
 		gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-		gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
-		gtk_tree_view_column_set_fixed_width (column, width + 5);
 		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), column);
 		g_signal_connect_swapped (renderer,
 					  "pixbuf-clicked",
