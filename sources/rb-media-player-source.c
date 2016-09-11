@@ -598,7 +598,7 @@ rb_media_player_source_show_properties (RBMediaPlayerSource *source)
 
 	/* create sync UI */
 	container = GTK_CONTAINER (gtk_builder_get_object (builder, "sync-settings-ui-container"));
-	gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (container), rb_sync_settings_ui_new (source, priv->sync_settings));
+	gtk_container_add (container, rb_sync_settings_ui_new (source, priv->sync_settings));
 
 	container = GTK_CONTAINER (gtk_builder_get_object (builder, "sync-state-ui-container"));
 	gtk_box_pack_start (GTK_BOX (container), rb_sync_state_ui_new (priv->sync_state), TRUE, TRUE, 0);
@@ -920,7 +920,7 @@ display_sync_settings_dialog (RBMediaPlayerSource *source)
 	priv->sync_dialog_error_box = GTK_WIDGET (gtk_builder_get_object (builder, "sync-dialog-message"));
 
 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "sync-settings-ui-container"));
-	gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (widget), rb_sync_settings_ui_new (source, priv->sync_settings));
+	gtk_container_add (GTK_CONTAINER (widget), rb_sync_settings_ui_new (source, priv->sync_settings));
 
 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "sync-state-ui-container"));
 	gtk_box_pack_start (GTK_BOX (widget), rb_sync_state_ui_new (priv->sync_state), TRUE, TRUE, 0);
