@@ -136,20 +136,24 @@ rb_alert_dialog_init (RBAlertDialog *dialog)
 	dialog->details->secondary_label = gtk_label_new (NULL);
 	dialog->details->details_label = gtk_label_new (NULL);
 	dialog->details->image = gtk_image_new_from_icon_name ("broken-image", GTK_ICON_SIZE_DIALOG);
-	gtk_misc_set_alignment (GTK_MISC (dialog->details->image), 0.5, 0.0);
+	gtk_widget_set_halign (dialog->details->image, GTK_ALIGN_CENTER);
+	gtk_widget_set_valign (dialog->details->image, GTK_ALIGN_START);
 
 	gtk_label_set_line_wrap (GTK_LABEL (dialog->details->primary_label), TRUE);
 	gtk_label_set_selectable (GTK_LABEL (dialog->details->primary_label), TRUE);
 	gtk_label_set_use_markup (GTK_LABEL (dialog->details->primary_label), TRUE);
-	gtk_misc_set_alignment (GTK_MISC (dialog->details->primary_label), 0.0, 0.5);
+	gtk_widget_set_halign (dialog->details->primary_label, GTK_ALIGN_START);
+	gtk_widget_set_valign (dialog->details->primary_label, GTK_ALIGN_CENTER);
 
 	gtk_label_set_line_wrap (GTK_LABEL (dialog->details->secondary_label), TRUE);
 	gtk_label_set_selectable (GTK_LABEL (dialog->details->secondary_label), TRUE);
-	gtk_misc_set_alignment (GTK_MISC (dialog->details->secondary_label), 0.0, 0.5);
+	gtk_widget_set_halign (dialog->details->secondary_label, GTK_ALIGN_START);
+	gtk_widget_set_valign (dialog->details->secondary_label, GTK_ALIGN_CENTER);
 
 	gtk_label_set_line_wrap (GTK_LABEL (dialog->details->details_label), TRUE);
 	gtk_label_set_selectable (GTK_LABEL (dialog->details->details_label), TRUE);
-	gtk_misc_set_alignment (GTK_MISC (dialog->details->details_label), 0.0, 0.5);
+	gtk_widget_set_halign (dialog->details->details_label, GTK_ALIGN_START);
+	gtk_widget_set_valign (dialog->details->details_label, GTK_ALIGN_CENTER);
 
 	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);

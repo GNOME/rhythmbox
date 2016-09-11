@@ -343,7 +343,8 @@ rb_header_constructed (GObject *object)
 	gtk_label_set_use_markup (GTK_LABEL (header->priv->song), TRUE);
 	gtk_label_set_selectable (GTK_LABEL (header->priv->song), TRUE);
 	gtk_label_set_ellipsize (GTK_LABEL (header->priv->song), PANGO_ELLIPSIZE_END);
-	gtk_misc_set_alignment (GTK_MISC (header->priv->song), 0.0, 0.5);
+	gtk_widget_set_halign (header->priv->song, GTK_ALIGN_START);
+	gtk_widget_set_valign (header->priv->song, GTK_ALIGN_CENTER);
 	g_signal_connect_object (header->priv->song,
 				 "button-press-event",
 				 G_CALLBACK (label_button_press_cb),
@@ -355,7 +356,8 @@ rb_header_constructed (GObject *object)
 	gtk_label_set_selectable (GTK_LABEL (header->priv->details), TRUE);
 	gtk_label_set_ellipsize (GTK_LABEL (header->priv->details), PANGO_ELLIPSIZE_END);
 	gtk_widget_set_hexpand (header->priv->details, TRUE);
-	gtk_misc_set_alignment (GTK_MISC (header->priv->details), 0.0, 0.5);
+	gtk_widget_set_halign (header->priv->details, GTK_ALIGN_START);
+	gtk_widget_set_valign (header->priv->details, GTK_ALIGN_CENTER);
 	g_signal_connect_object (header->priv->details,
 				 "button-press-event",
 				 G_CALLBACK (label_button_press_cb),
@@ -369,7 +371,8 @@ rb_header_constructed (GObject *object)
 	gtk_label_set_selectable (GTK_LABEL (header->priv->not_playing), TRUE);
 	gtk_label_set_ellipsize (GTK_LABEL (header->priv->not_playing), PANGO_ELLIPSIZE_END);
 	gtk_widget_set_hexpand (header->priv->not_playing, TRUE);
-	gtk_misc_set_alignment (GTK_MISC (header->priv->not_playing), 0.0, 0.5);
+	gtk_widget_set_halign (header->priv->not_playing, GTK_ALIGN_START);
+	gtk_widget_set_valign (header->priv->not_playing, GTK_ALIGN_CENTER);
 	gtk_container_add (GTK_CONTAINER (header->priv->songbox), header->priv->not_playing);
 	g_signal_connect_object (header->priv->not_playing,
 				 "button-press-event",
