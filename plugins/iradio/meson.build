@@ -1,0 +1,29 @@
+iradio_plugin_dir = plugindir + '/iradio'
+iradio_plugin_data_dir = plugindatadir + '/iradio'
+
+iradio_resources = gnome.compile_resources('iradio-resources',
+  'iradio.gresource.xml',
+  source_dir: meson.current_source_dir())
+
+iradio_sources = [
+  iradio_resources,
+  'rb-iradio-plugin.c',
+  'rb-iradio-source.c',
+  'rb-iradio-source-search.c',
+  'rb-station-properties-dialog.c',
+]
+
+iradio_dependencies = [rhythmbox_core_dep]
+
+shared_library('iradio',
+  iradio_sources,
+  c_args: ['-DHAVE_CONFIG_H'],
+  dependencies: iradio_dependencies,
+  install_dir: iradio_plugin_dir)
+
+iradio_plugin_descriptor = custom_target('iradio-plugin-descriptor',
+  input: 'iradio.plugin.in',
+  output: 'iradio.plugin',
+  command: [intltool_merge, '--quiet', '--desktop-style', meson.source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  install: true,
+  install_dir: iradio_plugin_dir)

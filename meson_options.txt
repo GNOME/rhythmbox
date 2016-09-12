@@ -1,0 +1,39 @@
+option('brasero', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable disc burning support using libbrasero-media')
+option('browser-plugin', type: 'boolean', value: true,
+       description: 'iTunes detection browser plugin, for Firefox')
+option('daap', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable DAAP sharing support using libdmapsharing')
+option('fm-radio', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable FM radio support')
+option('grilo', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable Grilo support')
+option('gudev', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable GUdev for hardware detection')
+option('hal', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable HAL for hardware detection')
+option('ipod', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable iPod support')
+option('libnotify', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable desktop notifications with libnotify')
+option('libsecret', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable keyring support using libsecret')
+option('lirc', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable lirc support')
+option('mmkeys', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable multimedia keys support')
+option('mtp', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable MTP support')
+option('python-plugins', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable Python plugins')
+option('vala-plugins', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Enable Vala plugins')
+
+option('database', type: 'combo', choices: ['tree'], value: 'tree',
+       description: 'Select the database to use (default tree)')
+option('more-warnings', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
+       description: 'Maximum compiler warnings')
+option('rhythmdb-debug', type: 'combo', choices: ['0', '1', '2'], value: '0',
+       description: 'Level of RhythmDB sanity checking')
+option('uninstalled-build', type: 'boolean', value: false,
+       description: 'Search for files in build directory as well in the install prefix')

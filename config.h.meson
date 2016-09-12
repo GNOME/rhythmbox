@@ -1,0 +1,138 @@
+/* config.h.in.  Generated from configure.ac by autoheader.  */
+/* Manually converted for use by Meson. */
+
+/* Define if building universal (internal helper macro) */
+#mesondefine AC_APPLE_UNIVERSAL_BUILD
+
+/* Define to the gettext package name. */
+#mesondefine GETTEXT_PACKAGE
+
+/* Define if you have GNU fwrite_unlocked */
+#mesondefine HAVE_GNU_FWRITE_UNLOCKED
+
+/* Define if Grilo support is enabled */
+#mesondefine HAVE_GRILO
+
+/* Use GUdev for hardware detection */
+#mesondefine HAVE_GUDEV
+
+/* Define if you have HAL support */
+#mesondefine HAVE_HAL
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#mesondefine HAVE_INTTYPES_H
+
+/* Indicates whether libgpod is new enough to have its itdb_start/stop_sync
+   API */
+#mesondefine HAVE_ITDB_START_STOP_SYNC
+
+/* Have libbrasero-media */
+#mesondefine HAVE_LIBBRASERO_MEDIA
+
+/* Define if libdmapsharing support is enabled */
+#mesondefine HAVE_LIBDMAPSHARING
+
+/* Define to 1 if you have the `z' library (-lz). */
+#mesondefine HAVE_LIBZ
+
+/* Define to 1 if you have the <memory.h> header file. */
+#mesondefine HAVE_MEMORY_H
+
+/* define if Multimedia Keys are enabled */
+#mesondefine HAVE_MMKEYS
+
+/* Define if libnotify support is enabled */
+#mesondefine HAVE_NOTIFY
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#mesondefine HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#mesondefine HAVE_STDLIB_H
+
+/* Define if strftime supports %E and %O modifiers. */
+#mesondefine HAVE_STRFTIME_EXTENSION
+
+/* Define to 1 if you have the <strings.h> header file. */
+#mesondefine HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#mesondefine HAVE_STRING_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#mesondefine HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#mesondefine HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#mesondefine HAVE_UNISTD_H
+
+/* defined if you have X11/XF86keysym.h */
+#mesondefine HAVE_XFREE
+
+/* path to metadata build dir */
+#mesondefine METADATA_UNINSTALLED_DIR
+
+/* Name of package */
+#mesondefine PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#mesondefine PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#mesondefine PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#mesondefine PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#mesondefine PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#mesondefine PACKAGE_URL
+
+/* Define to the version of this package. */
+#mesondefine PACKAGE_VERSION
+
+/* Define to the level of RhythmDB sanity checking */
+#mesondefine RHYTHMDB_ENABLE_SANITY_CHECK
+
+/* path to built source data dir */
+#mesondefine SHARE_UNINSTALLED_BUILDDIR
+
+/* path to source data dir */
+#mesondefine SHARE_UNINSTALLED_DIR
+
+/* The size of `long', as computed by sizeof. */
+#mesondefine SIZEOF_LONG
+
+/* Define to 1 if you have the ANSI C header files. */
+#mesondefine STDC_HEADERS
+
+/* Define to look for files in source tree locations */
+#mesondefine USE_UNINSTALLED_DIRS
+
+/* Define if libsecret support is enabled */
+#mesondefine WITH_LIBSECRET
+
+/* Define if you are using the RhythmDB tree database */
+#mesondefine WITH_RHYTHMDB_TREE
+
+/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
+   significant byte first (like Motorola and SPARC, unlike Intel). */
+#if defined AC_APPLE_UNIVERSAL_BUILD
+# if defined __BIG_ENDIAN__
+#  define WORDS_BIGENDIAN 1
+# endif
+#else
+# ifndef WORDS_BIGENDIAN
+#  undef WORDS_BIGENDIAN
+# endif
+#endif
+
+/* Define to 1 if the X Window System is missing or not being used. */
+#mesondefine X_DISPLAY_MISSING
+#
+/* Define to the version of this package. */
+#mesondefine VERSION
