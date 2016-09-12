@@ -491,11 +491,6 @@ else
 	AC_MSG_RESULT(no)
 fi
 
-dnl Set required and max glib/gdk versions
-AC_DEFINE(GLIB_VERSION_MIN_REQUIRED, GLIB_VERSION_2_38, [minimum glib version])
-AC_DEFINE(GLIB_VERSION_MAX_ALLOWED, GLIB_VERSION_2_38, [maximum glib version])
-AC_DEFINE(GDK_VERSION_MIN_REQUIRED, GDK_VERSION_3_16, [minimum gdk version])
-AC_DEFINE(GDK_VERSION_MAX_ALLOWED, GDK_VERSION_3_16, [maximum gdk version])
 
 dnl Check for -fno-strict-aliasing
 FLAGS="-fno-strict-aliasing"

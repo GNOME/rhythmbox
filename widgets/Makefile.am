@@ -69,7 +69,6 @@ AM_CPPFLAGS =						\
 	-I$(top_srcdir)/metadata			\
 	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/sources				\
-	-I$(top_srcdir)/library				\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/backends			\
 	$(NOTIFY_CFLAGS)				\
