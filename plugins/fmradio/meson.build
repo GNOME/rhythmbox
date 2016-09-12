@@ -1,0 +1,28 @@
+fmradio_plugin_dir = plugindir / 'fmradio'
+fmradio_plugin_data_dir = plugindatadir / 'fmradio'
+
+fmradio_resources = gnome.compile_resources('fmradio-resources',
+  'fmradio.gresource.xml',
+  source_dir: meson.current_source_dir())
+
+fmradio_sources = [
+  fmradio_resources,
+  'rb-fm-radio-plugin.c',
+  'rb-fm-radio-source.c',
+  'rb-fm-radio-gst-src.c',
+  'rb-radio-tuner-v4l2.c'
+]
+
+shared_module('fmradio',
+  fmradio_sources,
+  c_args: ['-DHAVE_CONFIG_H'],
+  dependencies: [rhythmbox_core_dep],
+  install: true,
+  install_dir: fmradio_plugin_dir)
+
+fmradio_plugin_descriptor = custom_target('fmradio-plugin-descriptor',
+  input: 'fmradio.plugin.in',
+  output: 'fmradio.plugin',
+  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  install: true,
+  install_dir: fmradio_plugin_dir)

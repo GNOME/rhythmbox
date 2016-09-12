@@ -1,0 +1,28 @@
+generic_player_plugin_dir = plugindir + '/generic-player'
+
+generic_player_resources = gnome.compile_resources('generic-player-resources',
+  'generic-player.gresource.xml',
+  source_dir: meson.current_source_dir())
+
+generic_player_sources = [
+  generic_player_resources,
+  'rb-generic-player-plugin.c',
+  'rb-generic-player-source.c',
+  'rb-generic-player-playlist-source.c',
+  'rb-nokia770-source.c',
+  'rb-psp-source.c',
+]
+
+shared_module('generic-player',
+  generic_player_sources,
+  c_args: ['-DHAVE_CONFIG_H'],
+  dependencies: [rhythmbox_core_dep],
+  install: true,
+  install_dir: generic_player_plugin_dir)
+
+generic_player_plugin_descriptor = custom_target('generic-player-plugin-descriptor',
+  input: 'generic-player.plugin.in',
+  output: 'generic-player.plugin',
+  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  install: true,
+  install_dir: generic_player_plugin_dir)

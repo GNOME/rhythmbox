@@ -1,0 +1,29 @@
+sample_vala_plugin_dir = sampleplugindir + '/sample-vala'
+
+sample_vala_sources = [
+  'rb-sample-vala-plugin.vala'
+]
+
+vala_deps = [
+  dependency('glib-2.0'),
+  dependency('gobject-2.0'),
+  meson.get_compiler('vala').find_library('rhythmdb', dirs: vapi_dir),
+  meson.get_compiler('vala').find_library('rb', dirs: vapi_dir),
+  dependency('gtk+-3.0'),
+  dependency('gstreamer-1.0'),
+  dependency('libpeas-1.0')
+]
+
+shared_module('sample-vala',
+  sample_vala_sources,
+  c_args: ['-DHAVE_CONFIG_H'],
+  dependencies: vala_deps,
+  install_dir: sample_vala_plugin_dir,
+  install: true)
+
+sample_vala_plugin_descriptor = custom_target('sample-vala-plugin-descriptor',
+  input: 'sample-vala.plugin.in',
+  output: 'sample-vala.plugin',
+  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  install: true,
+  install_dir: sample_vala_plugin_dir)
