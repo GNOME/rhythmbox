@@ -40,7 +40,6 @@
 #include "rhythmdb-query-model.h"
 #include "rb-debug.h"
 #include "rb-tree-dnd.h"
-#include "rb-marshal.h"
 #include "rb-util.h"
 
 struct ReverseSortData
@@ -407,7 +406,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, entry_prop_changed),
 			      NULL, NULL,
-			      rb_marshal_VOID__BOXED_INT_POINTER_POINTER,
+			      NULL,
 			      G_TYPE_NONE,
 			      4, RHYTHMDB_TYPE_ENTRY, G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER);
 	/**
@@ -425,7 +424,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, entry_removed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOXED,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, RHYTHMDB_TYPE_ENTRY);
 	/**
@@ -443,7 +442,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, non_entry_dropped),
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_INT,
+			      NULL,
 			      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_INT);
 	/**
 	 * RhythmDBQueryModel::complete:
@@ -457,7 +456,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, complete),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE, 0);
 	/**
 	 * RhythmDBQueryModel::post-entry-delete:
@@ -472,7 +471,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, post_entry_delete),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOXED,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, RHYTHMDB_TYPE_ENTRY);
 	/**
@@ -491,7 +490,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, filter_entry_drop),
 			      NULL, NULL,
-			      rb_marshal_BOOLEAN__BOXED,
+			      NULL,
 			      G_TYPE_BOOLEAN,
 			      1, RHYTHMDB_TYPE_ENTRY);
 

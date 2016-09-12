@@ -532,7 +532,7 @@ rb_fading_image_class_init (RBFadingImageClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, G_TYPE_STRING);
 
@@ -549,7 +549,7 @@ rb_fading_image_class_init (RBFadingImageClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, GDK_TYPE_PIXBUF);
 

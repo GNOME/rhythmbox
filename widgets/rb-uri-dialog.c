@@ -127,7 +127,7 @@ rb_uri_dialog_class_init (RBURIDialogClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBURIDialogClass, location_added),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);

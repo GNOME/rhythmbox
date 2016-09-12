@@ -288,7 +288,7 @@ rb_audioscrobbler_class_init (RBAudioscrobblerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBAudioscrobblerClass, authentication_error),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 

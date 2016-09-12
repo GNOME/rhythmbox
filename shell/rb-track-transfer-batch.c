@@ -36,7 +36,6 @@
 #include "rb-track-transfer-batch.h"
 #include "rb-track-transfer-queue.h"
 #include "rb-encoder.h"
-#include "rb-marshal.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-gst-media-types.h"
@@ -1067,7 +1066,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBTrackTransferBatchClass, started),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 
@@ -1084,7 +1083,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBTrackTransferBatchClass, complete),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 
@@ -1102,7 +1101,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBTrackTransferBatchClass, cancelled),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 
@@ -1124,7 +1123,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBTrackTransferBatchClass, get_dest_uri),
 			      NULL, NULL,
-			      rb_marshal_STRING__BOXED_STRING_STRING,
+			      NULL,
 			      G_TYPE_STRING,
 			      3, RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING, G_TYPE_STRING);
 
@@ -1144,7 +1143,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBTrackTransferBatchClass, overwrite_prompt),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, G_TYPE_STRING);
 
@@ -1164,7 +1163,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBTrackTransferBatchClass, track_started),
 			      NULL, NULL,
-			      rb_marshal_VOID__BOXED_STRING,
+			      NULL,
 			      G_TYPE_NONE,
 			      2, RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING);
 
@@ -1186,7 +1185,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBTrackTransferBatchClass, track_progress),
 			      NULL, NULL,
-			      rb_marshal_VOID__BOXED_STRING_INT_INT_DOUBLE,
+			      NULL,
 			      G_TYPE_NONE,
 			      5, RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT, G_TYPE_DOUBLE);
 
@@ -1208,8 +1207,7 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBTrackTransferBatchClass, track_done),
-			      NULL, NULL,
-			      rb_marshal_VOID__BOXED_STRING_UINT64_STRING_POINTER,
+			      NULL, NULL, NULL,
 			      G_TYPE_NONE,
 			      5, RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING, G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_POINTER);
 

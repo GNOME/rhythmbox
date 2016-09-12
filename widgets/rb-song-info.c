@@ -295,7 +295,7 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBSongInfoClass, pre_metadata_change),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOXED,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      RHYTHMDB_TYPE_ENTRY);
@@ -314,7 +314,7 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBSongInfoClass, post_metadata_change),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOXED,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      RHYTHMDB_TYPE_ENTRY);

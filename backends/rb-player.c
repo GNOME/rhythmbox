@@ -30,7 +30,6 @@
 #include "rb-player.h"
 #include "rb-player-gst.h"
 #include "rb-player-gst-xfade.h"
-#include "rb-marshal.h"
 #include "rb-util.h"
 
 /**
@@ -120,7 +119,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
 			      G_STRUCT_OFFSET (RBPlayerIface, eos),
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_BOOLEAN,
+			      NULL,
 			      G_TYPE_NONE,
 			      2, G_TYPE_POINTER, G_TYPE_BOOLEAN);
 
@@ -140,7 +139,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerIface, info),
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_INT_POINTER,
+			      NULL,
 			      G_TYPE_NONE,
 			      3, G_TYPE_POINTER, G_TYPE_INT, G_TYPE_VALUE);
 
@@ -159,7 +158,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
 			      G_STRUCT_OFFSET (RBPlayerIface, error),
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_POINTER,
+			      NULL,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_POINTER, G_TYPE_POINTER);
@@ -181,8 +180,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_TYPE_FROM_INTERFACE (iface),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerIface, tick),
-			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_INT64_INT64,
+			      NULL, NULL, NULL,
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_POINTER, G_TYPE_INT64, G_TYPE_INT64);
@@ -203,7 +201,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerIface, buffering),
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_UINT,
+			      NULL,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_POINTER, G_TYPE_UINT);
@@ -227,7 +225,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_DETAILED,
 			      G_STRUCT_OFFSET (RBPlayerIface, event),
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_POINTER,
+			      NULL,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_POINTER, G_TYPE_POINTER);
@@ -248,7 +246,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerIface, playing_stream),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_POINTER);
@@ -266,7 +264,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerIface, volume_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__FLOAT,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_FLOAT);
@@ -286,7 +284,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerIface, image),
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_POINTER, GDK_TYPE_PIXBUF);
@@ -305,7 +303,7 @@ rb_player_interface_init (RBPlayerIface *iface)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerIface, redirect),
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_STRING,
+			      NULL,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_POINTER, G_TYPE_STRING);

@@ -42,7 +42,6 @@
 #include "rb-display-page-tree.h"
 #include "rb-display-page-model.h"
 #include "rb-debug.h"
-#include "rb-marshal.h"
 #include "rb-cell-renderer-pixbuf.h"
 #include "gossip-cell-renderer-expander.h"
 #include "rb-tree-dnd.h"
@@ -1077,7 +1076,7 @@ rb_display_page_tree_class_init (RBDisplayPageTreeClass *class)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBDisplayPageTreeClass, selected),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_OBJECT);
@@ -1096,7 +1095,7 @@ rb_display_page_tree_class_init (RBDisplayPageTreeClass *class)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBDisplayPageTreeClass, drop_received),
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_POINTER,
+			      NULL,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_POINTER, G_TYPE_POINTER);

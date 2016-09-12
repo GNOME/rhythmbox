@@ -40,7 +40,6 @@
 #include <gst/pbutils/pbutils.h>
 
 #include "rb-debug.h"
-#include "rb-marshal.h"
 #include "rb-util.h"
 
 #include "rb-player.h"
@@ -1166,7 +1165,7 @@ rb_player_gst_class_init (RBPlayerGstClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerGstClass, prepare_source),
 			      NULL, NULL,
-			      rb_marshal_VOID__STRING_OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_STRING, GST_TYPE_ELEMENT);
@@ -1176,7 +1175,7 @@ rb_player_gst_class_init (RBPlayerGstClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerGstClass, can_reuse_stream),
 			      NULL, NULL,
-			      rb_marshal_BOOLEAN__STRING_STRING_OBJECT,
+			      NULL,
 			      G_TYPE_BOOLEAN,
 			      3,
 			      G_TYPE_STRING, G_TYPE_STRING, GST_TYPE_ELEMENT);
@@ -1186,7 +1185,7 @@ rb_player_gst_class_init (RBPlayerGstClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerGstClass, reuse_stream),
 			      NULL, NULL,
-			      rb_marshal_VOID__STRING_STRING_OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_STRING, G_TYPE_STRING, GST_TYPE_ELEMENT);
@@ -1196,7 +1195,7 @@ rb_player_gst_class_init (RBPlayerGstClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,	/* no point handling this internally */
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_POINTER_POINTER,
+			      NULL,
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_POINTER, G_TYPE_STRV, G_TYPE_STRV);

@@ -1998,7 +1998,7 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlaylistManagerClass, playlist_added),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, G_TYPE_OBJECT);
 
@@ -2015,7 +2015,7 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlaylistManagerClass, playlist_created),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, G_TYPE_OBJECT);
 
@@ -2032,7 +2032,7 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlaylistManagerClass, load_start),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0, G_TYPE_NONE);
 	/**
@@ -2048,7 +2048,7 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlaylistManagerClass, load_finish),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0, G_TYPE_NONE);
 

@@ -87,7 +87,7 @@ rb_cell_renderer_pixbuf_class_init (RBCellRendererPixbufClass *class)
 			      G_SIGNAL_RUN_FIRST,
 			      G_STRUCT_OFFSET (RBCellRendererPixbufClass, pixbuf_clicked),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);

@@ -52,22 +52,4 @@ AM_CPPFLAGS =						\
 	-I$(top_srcdir)/widgets				\
 	$(RHYTHMBOX_CFLAGS)
 
-BUILT_SOURCES=
-
-CLEAN_FILES = $(BUILT_SOURCES)
-
-rb-marshal.c: rb-marshal.list
-	@GLIB_GENMARSHAL@ --prefix=rb_marshal $(srcdir)/rb-marshal.list --header --body > rb-marshal.c
-
-rb-marshal.h: rb-marshal.list
-	@GLIB_GENMARSHAL@ --prefix=rb_marshal $(srcdir)/rb-marshal.list --header > rb-marshal.h
-
-BUILT_SOURCES += 				\
-	rb-marshal.c 				\
-	rb-marshal.h
-
-librb_la_SOURCES += $(BUILT_SOURCES)
-
 librb_la_LDFLAGS = -export-dynamic
-
-EXTRA_DIST = rb-marshal.list

@@ -129,7 +129,7 @@ rhythmdb_query_result_list_class_init (RhythmDBQueryResultListClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBQueryResultListClass, complete),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE, 0);
 
 	g_type_class_add_private (klass, sizeof (RhythmDBQueryResultListPrivate));

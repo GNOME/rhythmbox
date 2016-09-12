@@ -179,7 +179,7 @@ rb_audioscrobbler_account_class_init (RBAudioscrobblerAccountClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBAudioscrobblerAccountClass, login_status_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__ENUM,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      RB_TYPE_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS);

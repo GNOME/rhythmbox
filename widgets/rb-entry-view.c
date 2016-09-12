@@ -391,7 +391,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEntryViewClass, entry_added),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOXED,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      RHYTHMDB_TYPE_ENTRY);
@@ -408,7 +408,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEntryViewClass, entry_deleted),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOXED,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      RHYTHMDB_TYPE_ENTRY);
@@ -424,7 +424,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEntryViewClass, entries_replaced),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 	/**
@@ -441,7 +441,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEntryViewClass, entry_activated),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOXED,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      RHYTHMDB_TYPE_ENTRY);
@@ -457,7 +457,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEntryViewClass, selection_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 	/**
@@ -478,7 +478,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEntryViewClass, show_popup),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOOLEAN,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
@@ -496,7 +496,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEntryViewClass, have_selection_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOOLEAN,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);

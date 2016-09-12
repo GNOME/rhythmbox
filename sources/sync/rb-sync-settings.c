@@ -436,7 +436,7 @@ rb_sync_settings_class_init (RBSyncSettingsClass *klass)
 					 G_SIGNAL_RUN_LAST,
 					 G_STRUCT_OFFSET (RBSyncSettingsClass, updated),
 					 NULL, NULL,
-					 g_cclosure_marshal_VOID__VOID,
+					 NULL,
 					 G_TYPE_NONE,
 					 0);
 	g_type_class_add_private (object_class, sizeof (RBSyncSettingsPrivate));

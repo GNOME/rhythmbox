@@ -82,7 +82,7 @@ rb_podcast_search_class_init (RBPodcastSearchClass *klass)
 					G_SIGNAL_RUN_LAST,
 					0,
 					NULL, NULL,
-					g_cclosure_marshal_VOID__POINTER,
+					NULL,
 					G_TYPE_NONE,
 					1, G_TYPE_POINTER);
 	signals[FINISHED] = g_signal_new ("finished",
@@ -90,7 +90,7 @@ rb_podcast_search_class_init (RBPodcastSearchClass *klass)
 					  G_SIGNAL_RUN_LAST,
 					  0,
 					  NULL, NULL,
-					  g_cclosure_marshal_VOID__BOOLEAN,
+					  NULL,
 					  G_TYPE_NONE,
 					  1, G_TYPE_BOOLEAN);
 }

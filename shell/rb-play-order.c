@@ -36,7 +36,6 @@
 
 #include "rb-shell-player.h"
 #include "rb-debug.h"
-#include "rb-marshal.h"
 
 /**
  * SECTION:rb-play-order
@@ -173,7 +172,7 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayOrderClass, have_next_previous_changed),
 			      NULL, NULL,
-			      rb_marshal_VOID__BOOLEAN_BOOLEAN,
+			      NULL,
 			      G_TYPE_NONE,
 			      2, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
 

@@ -151,7 +151,7 @@ rb_dacp_player_class_init (RBDACPPlayerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBDACPPlayerClass, player_updated),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE, 0);
 
 	object_class->finalize = rb_dacp_player_finalize;

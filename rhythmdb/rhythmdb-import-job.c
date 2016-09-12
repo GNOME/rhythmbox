@@ -34,7 +34,6 @@
 #include "rhythmdb-entry-type.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
-#include "rb-marshal.h"
 #include "rb-debug.h"
 #include "rb-missing-plugins.h"
 #include "rb-task-progress.h"
@@ -799,7 +798,7 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBImportJobClass, entry_added),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOXED,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, RHYTHMDB_TYPE_ENTRY);
 	/**
@@ -816,7 +815,7 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBImportJobClass, status_changed),
 			      NULL, NULL,
-			      rb_marshal_VOID__INT_INT,
+			      NULL,
 			      G_TYPE_NONE,
 			      2, G_TYPE_INT, G_TYPE_INT);
 	/**
@@ -834,7 +833,7 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBImportJobClass, scan_complete),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__INT,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, G_TYPE_INT);
 	/**
@@ -850,7 +849,7 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBImportJobClass, complete),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__INT,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, G_TYPE_INT);
 

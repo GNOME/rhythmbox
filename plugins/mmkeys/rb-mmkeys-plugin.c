@@ -45,7 +45,6 @@
 #include "rb-debug.h"
 #include "rb-shell.h"
 #include "rb-shell-player.h"
-#include "rb-marshal.h"
 
 #ifdef HAVE_MMKEYS
 #include <X11/Xlib.h>

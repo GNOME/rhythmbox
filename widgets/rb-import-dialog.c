@@ -730,7 +730,7 @@ rb_import_dialog_class_init (RBImportDialogClass *klass)
 				       G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 				       G_STRUCT_OFFSET (RBImportDialogClass, close),
 				       NULL, NULL,
-				       g_cclosure_marshal_VOID__VOID,
+				       NULL,
 				       G_TYPE_NONE,
 				       0);
 	signals[CLOSED] = g_signal_new ("closed",
@@ -738,7 +738,7 @@ rb_import_dialog_class_init (RBImportDialogClass *klass)
 					G_SIGNAL_RUN_LAST,
 					G_STRUCT_OFFSET (RBImportDialogClass, closed),
 					NULL, NULL,
-					g_cclosure_marshal_VOID__VOID,
+					NULL,
 					G_TYPE_NONE,
 					0);
 

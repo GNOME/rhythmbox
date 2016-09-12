@@ -220,7 +220,7 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPropertyViewClass, property_activated),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
@@ -240,7 +240,7 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPropertyViewClass, property_selected),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
@@ -260,7 +260,7 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPropertyViewClass, properties_selected),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_POINTER);
@@ -278,7 +278,7 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPropertyViewClass, selection_reset),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 
@@ -296,7 +296,7 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPropertyViewClass, show_popup),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 

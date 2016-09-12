@@ -43,7 +43,6 @@
 #include "rb-podcast-search.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
-#include "rb-marshal.h"
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
 #include "rb-podcast-parse.h"
@@ -199,7 +198,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 		 		G_SIGNAL_RUN_LAST,
 				G_STRUCT_OFFSET (RBPodcastManagerClass, start_download),
 				NULL, NULL,
-				g_cclosure_marshal_VOID__BOXED,
+				NULL,
 				G_TYPE_NONE,
 				1,
 				RHYTHMDB_TYPE_ENTRY);
@@ -210,7 +209,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 		 		G_SIGNAL_RUN_LAST,
 				G_STRUCT_OFFSET (RBPodcastManagerClass, finish_download),
 				NULL, NULL,
-				g_cclosure_marshal_VOID__BOXED,
+				NULL,
 				G_TYPE_NONE,
 				1,
 				RHYTHMDB_TYPE_ENTRY);
@@ -221,7 +220,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 		 		G_SIGNAL_RUN_LAST,
 				G_STRUCT_OFFSET (RBPodcastManagerClass, feed_updates_available),
 				NULL, NULL,
-				g_cclosure_marshal_VOID__BOXED,
+				NULL,
 				G_TYPE_NONE,
 				1,
 				RHYTHMDB_TYPE_ENTRY);

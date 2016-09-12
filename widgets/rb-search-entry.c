@@ -132,7 +132,7 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBSearchEntryClass, search),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
@@ -150,7 +150,7 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBSearchEntryClass, activate),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
@@ -167,7 +167,7 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBSearchEntryClass, show_popup),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 

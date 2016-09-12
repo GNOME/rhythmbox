@@ -30,7 +30,6 @@
 
 #include "rb-track-transfer-queue.h"
 #include "rb-encoder.h"
-#include "rb-marshal.h"
 #include "rb-library-source.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -748,7 +747,7 @@ rb_track_transfer_queue_class_init (RBTrackTransferQueueClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBTrackTransferQueueClass, transfer_progress),
 			      NULL, NULL,
-			      rb_marshal_VOID__INT_INT_DOUBLE_INT,
+			      NULL,
 			      G_TYPE_NONE,
 			      4, G_TYPE_INT, G_TYPE_INT, G_TYPE_DOUBLE, G_TYPE_INT);
 	/**
@@ -768,7 +767,7 @@ rb_track_transfer_queue_class_init (RBTrackTransferQueueClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,
 			      NULL, NULL,
-			      rb_marshal_BOOLEAN__POINTER_POINTER_POINTER,
+			      NULL,
 			      G_TYPE_BOOLEAN,
 			      3,
 			      G_TYPE_STRV, G_TYPE_STRV, G_TYPE_CLOSURE);

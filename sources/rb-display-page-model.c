@@ -39,7 +39,6 @@
 #include "rb-display-page-model.h"
 #include "rb-tree-dnd.h"
 #include "rb-debug.h"
-#include "rb-marshal.h"
 #include "rb-playlist-source.h"
 #include "rb-auto-playlist-source.h"
 #include "rb-static-playlist-source.h"
@@ -911,7 +910,7 @@ rb_display_page_model_class_init (RBDisplayPageModelClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBDisplayPageModelClass, drop_received),
 			      NULL, NULL,
-			      rb_marshal_VOID__OBJECT_INT_POINTER,
+			      NULL,
 			      G_TYPE_NONE,
 			      3,
 			      RB_TYPE_DISPLAY_PAGE, G_TYPE_INT, G_TYPE_POINTER);

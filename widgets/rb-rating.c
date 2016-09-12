@@ -141,7 +141,7 @@ rb_rating_class_init (RBRatingClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBRatingClass, rated),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__DOUBLE,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_DOUBLE);
@@ -158,7 +158,7 @@ rb_rating_class_init (RBRatingClass *klass)
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 			      G_STRUCT_OFFSET (RBRatingClass, set_rating),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__DOUBLE,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_DOUBLE);
@@ -176,7 +176,7 @@ rb_rating_class_init (RBRatingClass *klass)
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 			      G_STRUCT_OFFSET (RBRatingClass, adjust_rating),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__DOUBLE,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_DOUBLE);

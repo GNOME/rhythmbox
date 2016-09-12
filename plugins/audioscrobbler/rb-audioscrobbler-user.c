@@ -277,7 +277,7 @@ rb_audioscrobbler_user_class_init (RBAudioscrobblerUserClass *klass)
 		              G_SIGNAL_RUN_LAST,
 		              0,
 		              NULL, NULL,
-		              g_cclosure_marshal_VOID__BOXED,
+		              NULL,
 		              G_TYPE_NONE,
 		              1,
 		              RB_TYPE_AUDIOSCROBBLER_USER_DATA);
@@ -288,7 +288,7 @@ rb_audioscrobbler_user_class_init (RBAudioscrobblerUserClass *klass)
 		              G_SIGNAL_RUN_LAST,
 		              0,
 		              NULL, NULL,
-		              g_cclosure_marshal_VOID__BOXED,
+		              NULL,
 		              G_TYPE_NONE,
 		              1,
 		              G_TYPE_PTR_ARRAY);
@@ -299,7 +299,7 @@ rb_audioscrobbler_user_class_init (RBAudioscrobblerUserClass *klass)
 		              G_SIGNAL_RUN_LAST,
 		              0,
 		              NULL, NULL,
-		              g_cclosure_marshal_VOID__BOXED,
+		              NULL,
 		              G_TYPE_NONE,
 		              1,
 		              G_TYPE_PTR_ARRAY);
@@ -310,7 +310,7 @@ rb_audioscrobbler_user_class_init (RBAudioscrobblerUserClass *klass)
 		              G_SIGNAL_RUN_LAST,
 		              0,
 		              NULL, NULL,
-		              g_cclosure_marshal_VOID__BOXED,
+		              NULL,
 		              G_TYPE_NONE,
 		              1,
 		              G_TYPE_PTR_ARRAY);
@@ -321,7 +321,7 @@ rb_audioscrobbler_user_class_init (RBAudioscrobblerUserClass *klass)
 		              G_SIGNAL_RUN_LAST,
 		              0,
 		              NULL, NULL,
-		              g_cclosure_marshal_VOID__BOXED,
+		              NULL,
 		              G_TYPE_NONE,
 		              1,
 		              G_TYPE_PTR_ARRAY);
@@ -332,7 +332,7 @@ rb_audioscrobbler_user_class_init (RBAudioscrobblerUserClass *klass)
 		              G_SIGNAL_RUN_LAST,
 		              0,
 		              NULL, NULL,
-		              g_cclosure_marshal_VOID__BOXED,
+		              NULL,
 		              G_TYPE_NONE,
 		              1,
 		              G_TYPE_PTR_ARRAY);

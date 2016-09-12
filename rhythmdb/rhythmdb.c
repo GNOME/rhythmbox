@@ -56,7 +56,6 @@
 #include <gdk/gdk.h>
 
 
-#include "rb-marshal.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
 #include "rb-util.h"
@@ -383,7 +382,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_added),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOXED,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, RHYTHMDB_TYPE_ENTRY);
 
@@ -400,7 +399,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_deleted),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOXED,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, RHYTHMDB_TYPE_ENTRY);
 
@@ -419,7 +418,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_changed),
 			      NULL, NULL,
-			      rb_marshal_VOID__BOXED_BOXED,
+			      NULL,
 			      G_TYPE_NONE, 2,
 			      RHYTHMDB_TYPE_ENTRY, G_TYPE_PTR_ARRAY);
 
@@ -437,7 +436,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_added),
 			      NULL, NULL,
-			      rb_marshal_VOID__BOXED_BOXED,
+			      NULL,
 			      G_TYPE_NONE,
 			      2, RHYTHMDB_TYPE_ENTRY, RB_TYPE_REFSTRING);
 
@@ -455,7 +454,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_deleted),
 			      NULL, NULL,
-			      rb_marshal_VOID__BOXED_BOXED,
+			      NULL,
 			      G_TYPE_NONE,
 			      2, RHYTHMDB_TYPE_ENTRY, RB_TYPE_REFSTRING);
 
@@ -479,7 +478,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_DETAILED,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_extra_metadata_request),
 			      rhythmdb_entry_extra_metadata_accumulator, NULL,
-			      rb_marshal_BOXED__BOXED,
+			      NULL,
 			      G_TYPE_VALUE, 1,
 			      RHYTHMDB_TYPE_ENTRY);
 
@@ -499,7 +498,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_DETAILED,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_extra_metadata_notify),
 			      NULL, NULL,
-			      rb_marshal_VOID__BOXED_STRING_BOXED,
+			      NULL,
 			      G_TYPE_NONE, 3,
 			      RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING, G_TYPE_VALUE);
 
@@ -522,7 +521,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_extra_metadata_gather),
 			      NULL, NULL,
-			      rb_marshal_VOID__BOXED_OBJECT,
+			      NULL,
 			      G_TYPE_NONE, 2,
 			      RHYTHMDB_TYPE_ENTRY, RB_TYPE_STRING_VALUE_MAP);
 
@@ -538,7 +537,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, load_complete),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 
@@ -554,7 +553,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, save_complete),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 
@@ -572,7 +571,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, save_error),
 			      NULL, NULL,
-			      rb_marshal_VOID__STRING_POINTER,
+			      NULL,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_STRING,
@@ -592,7 +591,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, read_only),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOOLEAN,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
@@ -611,7 +610,7 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,		/* no need for an internal handler */
 			      rb_signal_accumulator_object_handled, NULL,
-			      rb_marshal_OBJECT__VOID,
+			      NULL,
 			      G_TYPE_MOUNT_OPERATION,
 			      0);
 

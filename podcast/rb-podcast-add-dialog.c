@@ -901,7 +901,7 @@ rb_podcast_add_dialog_class_init (RBPodcastAddDialogClass *klass)
 				       G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 				       G_STRUCT_OFFSET (RBPodcastAddDialogClass, close),
 				       NULL, NULL,
-				       g_cclosure_marshal_VOID__VOID,
+				       NULL,
 				       G_TYPE_NONE,
 				       0);
 	signals[CLOSED] = g_signal_new ("closed",
@@ -909,7 +909,7 @@ rb_podcast_add_dialog_class_init (RBPodcastAddDialogClass *klass)
 					G_SIGNAL_RUN_LAST,
 					G_STRUCT_OFFSET (RBPodcastAddDialogClass, closed),
 					NULL, NULL,
-					g_cclosure_marshal_VOID__VOID,
+					NULL,
 					G_TYPE_NONE,
 					0);
 

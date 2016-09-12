@@ -420,7 +420,7 @@ rb_visualizer_page_class_init (RBVisualizerPageClass *klass)
 				       G_SIGNAL_RUN_LAST,
 				       0,
 				       NULL, NULL,
-				       g_cclosure_marshal_VOID__VOID,
+				       NULL,
 				       G_TYPE_NONE,
 				       0);
 	signals[STOP] = g_signal_new ("stop",
@@ -428,7 +428,7 @@ rb_visualizer_page_class_init (RBVisualizerPageClass *klass)
 				      G_SIGNAL_RUN_LAST,
 				      0,
 				      NULL, NULL,
-				      g_cclosure_marshal_VOID__VOID,
+				      NULL,
 				      G_TYPE_NONE,
 				      0);
 	signals[FULLSCREEN] = g_signal_new_class_handler ("toggle-fullscreen",
@@ -436,7 +436,7 @@ rb_visualizer_page_class_init (RBVisualizerPageClass *klass)
 							  G_SIGNAL_RUN_LAST,
 							  G_CALLBACK (toggle_fullscreen),
 							  NULL, NULL,
-							  g_cclosure_marshal_VOID__VOID,
+							  NULL,
 							  G_TYPE_NONE,
 							  0);
 }

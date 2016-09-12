@@ -30,7 +30,6 @@
 
 #include "rb-encoder.h"
 #include "rb-encoder-gst.h"
-#include "rb-marshal.h"
 
 /**
  * SECTION:rb-encoder
@@ -89,7 +88,7 @@ rb_encoder_factory_class_init (RBEncoderFactoryClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEncoderFactoryClass, prepare_source),
 			      NULL, NULL,
-			      rb_marshal_VOID__STRING_OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      2, G_TYPE_STRING, G_TYPE_OBJECT);
 	/**
@@ -109,7 +108,7 @@ rb_encoder_factory_class_init (RBEncoderFactoryClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEncoderFactoryClass, prepare_sink),
 			      NULL, NULL,
-			      rb_marshal_VOID__STRING_OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      2, G_TYPE_STRING, G_TYPE_OBJECT);
 }
@@ -130,7 +129,7 @@ rb_encoder_interface_init (RBEncoderIface *iface)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEncoderIface, progress),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__DOUBLE,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, G_TYPE_DOUBLE);
 	/**
@@ -149,8 +148,7 @@ rb_encoder_interface_init (RBEncoderIface *iface)
 			      G_TYPE_FROM_INTERFACE (iface),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEncoderIface, completed),
-			      NULL, NULL,
-			      rb_marshal_VOID__UINT64_STRING_POINTER,
+			      NULL, NULL, NULL,
 			      G_TYPE_NONE,
 			      3, G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_POINTER);
 }

@@ -230,7 +230,7 @@ rb_ipod_db_class_init (RbIpodDbClass *klass)
 			      G_SIGNAL_RUN_FIRST,
 			      0,
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 

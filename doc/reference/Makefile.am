@@ -37,7 +37,6 @@ IGNORE_HFILES= \
 	eggwrapbox-enums.h \
 	md5.h \
 	rb-cut-and-paste-code.h \
-	rb-marshal.h \
 	rb-thread.h \
 	rhythmdb-private.h \
 	rhythmdb-tree.h \

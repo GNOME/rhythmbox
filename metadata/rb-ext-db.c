@@ -38,7 +38,6 @@
 #include <lib/rb-file-helpers.h>
 #include <lib/rb-debug.h>
 #include <lib/rb-util.h>
-#include <lib/rb-marshal.h>
 
 /**
  * SECTION:rb-ext-db
@@ -489,7 +488,7 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBExtDBClass, store),
 			      g_signal_accumulator_first_wins, NULL,
-			      rb_marshal_POINTER__BOXED,
+			      NULL,
 			      G_TYPE_POINTER,
 			      1, G_TYPE_VALUE);
 	/**
@@ -508,7 +507,7 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBExtDBClass, load),
 			      g_signal_accumulator_first_wins, NULL,
-			      rb_marshal_POINTER__BOXED,
+			      NULL,
 			      G_TYPE_POINTER,
 			      1, G_TYPE_VALUE);
 

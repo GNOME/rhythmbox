@@ -154,7 +154,6 @@
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
 #include "rb-util.h"
-#include "rb-marshal.h"
 #include "rb-player-gst-tee.h"
 #include "rb-player-gst-filter.h"
 #include "rb-player-gst-helper.h"
@@ -688,7 +687,7 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerGstXFadeClass, prepare_source),
 			      NULL, NULL,
-			      rb_marshal_VOID__STRING_OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_STRING, GST_TYPE_ELEMENT);
@@ -698,7 +697,7 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerGstXFadeClass, can_reuse_stream),
 			      NULL, NULL,
-			      rb_marshal_BOOLEAN__STRING_STRING_OBJECT,
+			      NULL,
 			      G_TYPE_BOOLEAN,
 			      3,
 			      G_TYPE_STRING, G_TYPE_STRING, GST_TYPE_ELEMENT);
@@ -708,7 +707,7 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerGstXFadeClass, reuse_stream),
 			      NULL, NULL,
-			      rb_marshal_VOID__STRING_STRING_OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_STRING, G_TYPE_STRING, GST_TYPE_ELEMENT);
@@ -718,7 +717,7 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,	/* no point handling this internally */
 			      NULL, NULL,
-			      rb_marshal_VOID__POINTER_POINTER_POINTER,
+			      NULL,
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_POINTER, G_TYPE_STRV, G_TYPE_STRV);
@@ -728,7 +727,7 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,
 			      rb_signal_accumulator_value_array, NULL,
-			      rb_marshal_BOXED__STRING,
+			      NULL,
 			      G_TYPE_ARRAY,
 			      1,
 			      G_TYPE_STRING);

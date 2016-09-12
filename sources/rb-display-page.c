@@ -685,7 +685,7 @@ rb_display_page_class_init (RBDisplayPageClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBDisplayPageClass, deleted),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 	/**
@@ -700,7 +700,7 @@ rb_display_page_class_init (RBDisplayPageClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBDisplayPageClass, status_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      NULL,
 			      G_TYPE_NONE,
 			      0);
 

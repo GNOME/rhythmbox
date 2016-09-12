@@ -28,7 +28,6 @@
 #include <config.h>
 
 #include "rb-player-gst-filter.h"
-#include "rb-marshal.h"
 
 /**
  * SECTION:rb-player-gst-filter
@@ -64,7 +63,7 @@ rb_player_gst_filter_interface_init (RBPlayerGstFilterIface *iface)
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
 			      G_STRUCT_OFFSET (RBPlayerGstFilterIface, filter_inserted),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, G_TYPE_OBJECT);
 
@@ -82,7 +81,7 @@ rb_player_gst_filter_interface_init (RBPlayerGstFilterIface *iface)
 			      G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE,
 			      G_STRUCT_OFFSET (RBPlayerGstFilterIface, filter_pre_remove),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, G_TYPE_OBJECT);
 

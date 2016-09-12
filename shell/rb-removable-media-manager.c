@@ -56,7 +56,6 @@
 #include "rb-dialog.h"
 #include "rb-stock-icons.h"
 #include "rhythmdb.h"
-#include "rb-marshal.h"
 #include "rb-util.h"
 
 static void rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass);
@@ -190,7 +189,7 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBRemovableMediaManagerClass, medium_added),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      1, G_TYPE_OBJECT);
 
@@ -213,7 +212,7 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBRemovableMediaManagerClass, create_source_device),
 			      rb_signal_accumulator_object_handled, NULL,
-			      rb_marshal_OBJECT__OBJECT,
+			      NULL,
 			      RB_TYPE_SOURCE,
 			      1, G_TYPE_OBJECT);
 	/**
@@ -235,7 +234,7 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBRemovableMediaManagerClass, create_source_volume),
 			      rb_signal_accumulator_object_handled, NULL,
-			      rb_marshal_OBJECT__OBJECT,
+			      NULL,
 			      RB_TYPE_SOURCE,
 			      1, G_TYPE_VOLUME);
 
@@ -258,7 +257,7 @@ rb_removable_media_manager_class_init (RBRemovableMediaManagerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBRemovableMediaManagerClass, create_source_mount),
 			      rb_signal_accumulator_object_handled, NULL,
-			      rb_marshal_OBJECT__OBJECT_OBJECT,
+			      NULL,
 			      RB_TYPE_SOURCE,
 			      2, G_TYPE_MOUNT, MPID_TYPE_DEVICE);
 

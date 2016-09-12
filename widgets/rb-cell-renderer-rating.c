@@ -30,7 +30,6 @@
 #include <gtk/gtk.h>
 
 #include "rb-cell-renderer-rating.h"
-#include "rb-marshal.h"
 #include "rb-rating-helper.h"
 
 static void rb_cell_renderer_rating_get_property (GObject *object,
@@ -158,7 +157,7 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBCellRendererRatingClass, rated),
 			      NULL, NULL,
-			      rb_marshal_VOID__STRING_DOUBLE,
+			      NULL,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_STRING,

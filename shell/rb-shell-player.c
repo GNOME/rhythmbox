@@ -81,7 +81,6 @@
 #include "rb-play-queue-source.h"
 #include "rhythmdb.h"
 #include "rb-podcast-manager.h"
-#include "rb-marshal.h"
 #include "rb-missing-plugins.h"
 #include "rb-ext-db.h"
 
@@ -3628,7 +3627,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellPlayerClass, window_title_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
@@ -3646,7 +3645,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellPlayerClass, elapsed_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__UINT,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_UINT);
@@ -3664,7 +3663,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_source_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      RB_TYPE_SOURCE);
@@ -3682,7 +3681,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOOLEAN,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
@@ -3700,7 +3699,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_song_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOXED,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      RHYTHMDB_TYPE_ENTRY);
@@ -3719,7 +3718,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_uri_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
@@ -3740,7 +3739,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_song_property_changed),
 			      NULL, NULL,
-			      rb_marshal_VOID__STRING_STRING_POINTER_POINTER,
+			      NULL,
 			      G_TYPE_NONE,
 			      4,
 			      G_TYPE_STRING, G_TYPE_STRING,
@@ -3760,8 +3759,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellPlayerClass, elapsed_nano_changed),
-			      NULL, NULL,
-			      rb_marshal_VOID__INT64,
+			      NULL, NULL, NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_INT64);

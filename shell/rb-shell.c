@@ -89,7 +89,6 @@
 #include "rb-util.h"
 #include "rb-display-page-model.h"
 #include "rb-song-info.h"
-#include "rb-marshal.h"
 #include "rb-missing-plugins.h"
 #include "rb-header.h"
 #include "rb-podcast-manager.h"
@@ -1320,7 +1319,7 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellClass, visibility_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOOLEAN,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
@@ -1340,7 +1339,7 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellClass, visibility_changing),
 			      NULL, NULL,
-			      rb_marshal_BOOLEAN__BOOLEAN_BOOLEAN,
+			      NULL,
 			      G_TYPE_BOOLEAN,
 			      2,
 			      G_TYPE_BOOLEAN,
@@ -1362,7 +1361,7 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellClass, create_song_info),
 			      NULL, NULL,
-			      rb_marshal_VOID__OBJECT_BOOLEAN,
+			      NULL,
 			      G_TYPE_NONE,
 			      2,
 			      RB_TYPE_SONG_INFO, G_TYPE_BOOLEAN);
@@ -1380,7 +1379,7 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOOLEAN,
+			      NULL,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
@@ -1401,7 +1400,7 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      0,
 			      NULL, NULL,
-			      rb_marshal_VOID__UINT_STRING_STRING_STRING_BOOLEAN,
+			      NULL,
 			      G_TYPE_NONE,
 			      5,
 			      G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
