@@ -88,8 +88,11 @@ static gchar **other_stuff = NULL;
 
 static GMainLoop *mainloop = NULL;
 
+G_GNUC_NORETURN static gboolean show_version_cb (const gchar *option_name, const gchar *value, gpointer data, GError **error);
+
 static GOptionEntry args[] = {
 	{ "debug", 0, 0, G_OPTION_ARG_NONE, &debug, NULL, NULL },
+	{ "version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, show_version_cb, N_("Show the version of the program"), NULL },
 
 	{ "no-start", 0, 0, G_OPTION_ARG_NONE, &no_start, N_("Don't start a new instance of Rhythmbox"), NULL },
 	{ "quit", 0, 0, G_OPTION_ARG_NONE, &quit, N_("Quit Rhythmbox"), NULL },
@@ -186,6 +189,16 @@ annoy (GError **error)
 	return FALSE;
 }
 
+G_GNUC_NORETURN static gboolean
+show_version_cb (const gchar *option_name,
+		 const gchar *value,
+		 gpointer     data,
+		 GError     **error)
+{
+	g_print ("%s %s\n", PACKAGE, VERSION);
+
+	exit (0);
+}
 
 static char *
 rb_make_duration_string (gint64 duration, gboolean show_zero)

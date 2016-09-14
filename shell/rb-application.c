@@ -88,6 +88,17 @@ enum {
 	PROP_SHELL
 };
 
+G_GNUC_NORETURN static gboolean
+show_version_cb (const gchar *option_name,
+		 const gchar *value,
+		 gpointer     data,
+		 GError     **error)
+{
+	g_print ("%s %s\n", PACKAGE, VERSION);
+
+	exit (0);
+}
+
 static void
 load_uri_action_cb (GSimpleAction *action, GVariant *parameters, gpointer user_data)
 {
@@ -626,6 +637,7 @@ rb_application_run (RBApplication *app, int argc, char **argv)
 		{ "disable-plugins",   0, 0, G_OPTION_ARG_NONE,		&app->priv->disable_plugins, N_("Disable loading of plugins"), NULL },
 		{ "rhythmdb-file",     0, 0, G_OPTION_ARG_STRING,       &app->priv->rhythmdb_file,   N_("Path for database file to use"), NULL },
 		{ "playlists-file",    0, 0, G_OPTION_ARG_STRING,       &app->priv->playlists_file,   N_("Path for playlists file to use"), NULL },
+		{ "version",           0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, show_version_cb, N_("Show the version of the program"), NULL },
 		{ NULL }
 	};
 
