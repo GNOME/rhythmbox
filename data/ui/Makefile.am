@@ -31,6 +31,7 @@ GTK_BUILDER_FILES =					\
 	song-info-multiple.ui				\
 	sync-dialog.ui					\
 	sync-state.ui					\
+	task-list-entry.ui				\
 	uri-new.ui
 
 EXTRA_DIST = $(GTK_BUILDER_FILES) style.css

@@ -31,6 +31,7 @@
 #include <widgets/rb-task-list-display.h>
 #include <lib/rb-task-progress.h>
 #include <lib/rb-list-model.h>
+#include <lib/rb-builder-helpers.h>
 #include <lib/rb-util.h>
 
 #define TASK_REMOVE_DELAY	15
@@ -94,56 +95,46 @@ task_list_changed_cb (RBListModel *model, int position, int removed, int added, 
 	}
 
 	for (i = 0; i < added; i++) {
-		GtkWidget *tw, *w;
-		RBTaskProgress *task;
+		GtkBuilder *b;
+		GtkWidget *entry;
+		GtkWidget *widget;
 		gboolean cancellable;
+		RBTaskProgress *task;
 
 		task = RB_TASK_PROGRESS (rb_list_model_get (model, position + i));
-		tw = gtk_grid_new ();
-		g_object_set (tw,
-			      "column-spacing", 12,
-			      "margin", 6,
-			      NULL);
 
-		w = gtk_label_new (NULL);
-		g_object_bind_property (task, "task-label", w, "label", G_BINDING_SYNC_CREATE);
-		g_object_set (w, "hexpand", TRUE, "halign", GTK_ALIGN_START, NULL);
-		gtk_grid_attach (GTK_GRID (tw), w, 0, 0, 1, 1);
+		b = rb_builder_load ("task-list-entry.ui", NULL);
 
-		w = gtk_label_new (NULL);
-		gtk_style_context_add_class (gtk_widget_get_style_context (w), GTK_STYLE_CLASS_DIM_LABEL);
-		g_object_bind_property (task, "task-detail", w, "label", G_BINDING_SYNC_CREATE);
-		g_object_set (w, "hexpand", TRUE, "halign", GTK_ALIGN_START, NULL);
-		gtk_grid_attach (GTK_GRID (tw), w, 1, 0, 1, 1);
+		entry = GTK_WIDGET (gtk_builder_get_object (b, "task-list-entry"));
 
-		w = gtk_progress_bar_new ();
-		g_object_bind_property (task, "task-progress", w, "fraction", G_BINDING_SYNC_CREATE);
-		g_object_set (w, "hexpand", TRUE, "valign", GTK_ALIGN_CENTER, NULL);
-		gtk_grid_attach (GTK_GRID (tw), w, 2, 0, 1, 1);
+		widget = GTK_WIDGET (gtk_builder_get_object (b, "task-label"));
+		g_object_bind_property (task, "task-label", widget, "label", G_BINDING_SYNC_CREATE);
 
-		/* pause/resume button? */
+		widget = GTK_WIDGET (gtk_builder_get_object (b, "task-detail"));
+		g_object_bind_property (task, "task-detail", widget, "label", G_BINDING_SYNC_CREATE);
 
+		widget = GTK_WIDGET (gtk_builder_get_object (b, "task-progress"));
+		g_object_bind_property (task, "task-progress", widget, "fraction", G_BINDING_SYNC_CREATE);
+
+		widget = GTK_WIDGET (gtk_builder_get_object (b, "task-cancel"));
 		g_object_get (task, "task-cancellable", &cancellable, NULL);
-		w = gtk_button_new ();
-		gtk_container_add (GTK_CONTAINER (w), gtk_image_new_from_icon_name ("process-stop-symbolic", GTK_ICON_SIZE_MENU));
 		if (cancellable) {
 			g_object_bind_property_full (task, "task-outcome",
-						     w, "sensitive",
+						     widget, "sensitive",
 						     G_BINDING_SYNC_CREATE,
 						     transform_outcome,
 						     NULL,
 						     NULL,
 						     NULL);
 		} else {
-			g_object_set (w, "sensitive", FALSE, NULL);
+			g_object_set (widget, "sensitive", FALSE, NULL);
 		}
-		g_signal_connect_object (w, "clicked", G_CALLBACK (stop_clicked_cb), task, 0);
-		gtk_grid_attach (GTK_GRID (tw), w, 3, 0, 1, 1);
+		g_signal_connect_object (widget, "clicked", G_CALLBACK (stop_clicked_cb), task, 0);
 
 		gtk_grid_insert_column (GTK_GRID (list), position + i);
-		gtk_grid_attach (GTK_GRID (list), tw, 0, position + i, 1, 1);
-		gtk_widget_show_all (tw);
-		g_array_insert_val (list->priv->widgets, position + i, tw);
+		gtk_grid_attach (GTK_GRID (list), entry, 0, position + i, 1, 1);
+		gtk_widget_show_all (entry);
+		g_array_insert_val (list->priv->widgets, position + i, entry);
 	}
 }
 
