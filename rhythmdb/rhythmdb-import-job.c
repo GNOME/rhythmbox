@@ -662,7 +662,7 @@ impl_get_property (GObject *object,
 	case PROP_TASK_DETAIL:
 		if (job->priv->scan_complete == FALSE) {
 			g_value_set_string (value, _("Scanning"));
-		} else {
+		} else if (job->priv->total > 0) {
 			g_value_take_string (value,
 					     g_strdup_printf (_("%d of %d"),
 							      job->priv->processed,
