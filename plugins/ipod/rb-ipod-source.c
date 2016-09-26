@@ -93,7 +93,7 @@ static gchar* ipod_path_from_unix_path (const gchar *mount_point,
 static guint64 impl_get_capacity (RBMediaPlayerSource *source);
 static guint64 impl_get_free_space (RBMediaPlayerSource *source);
 static void impl_get_entries (RBMediaPlayerSource *source, const char *category, GHashTable *map);
-static void impl_delete_entries (RBMediaPlayerSource *source, GList *entries, RBMediaPlayerSourceDeleteCallback callback, gpointer callback_data, GDestroyNotify destroy_data);
+static void impl_delete_entries (RBMediaPlayerSource *source, GList *entries, GAsyncReadyCallback callback, gpointer callback_data);
 static void impl_add_playlist (RBMediaPlayerSource *source, gchar *name, GList *entries);
 static void impl_remove_playlists (RBMediaPlayerSource *source);
 static void impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
@@ -1284,49 +1284,39 @@ rb_ipod_load_songs (RBiPodSource *source)
 	}
 }
 
-typedef struct {
-	RBMediaPlayerSource *source;
-	RBMediaPlayerSourceDeleteCallback callback;
-	gpointer callback_data;
-	GDestroyNotify destroy_data;
-	GList *files;
-} DeleteFileData;
-
-static gboolean
-delete_done_cb (DeleteFileData *data)
+static void
+delete_destroy_data (gpointer data)
 {
-	if (data->callback) {
-		data->callback (data->source, data->callback_data);
-	}
-	if (data->destroy_data) {
-		data->destroy_data (data->callback_data);
-	}
-	g_object_unref (data->source);
-	rb_list_deep_free (data->files);
-	return FALSE;
-}
-
-static gpointer
-delete_thread (DeleteFileData *data)
-{
-	GList *i;
-	rb_debug ("deleting %d files", g_list_length (data->files));
-	for (i = data->files; i != NULL; i = i->next) {
-		g_unlink ((const char *)i->data);
-	}
-	rb_debug ("done deleting %d files", g_list_length (data->files));
-	g_idle_add ((GSourceFunc) delete_done_cb, data);
-	return NULL;
+	g_list_free_full (data, (GDestroyNotify) g_free);
 }
 
 static void
-impl_delete_entries (RBMediaPlayerSource *source, GList *entries, RBMediaPlayerSourceDeleteCallback callback, gpointer cb_data, GDestroyNotify destroy_data)
+delete_task (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable)
+{
+	GList *filenames;
+	GList *i;
+
+	filenames = task_data;
+	rb_debug ("deleting %d files", g_list_length (filenames));
+	for (i = filenames; i != NULL; i = i->next) {
+		g_unlink ((const char *)i->data);
+	}
+	rb_debug ("done deleting %d files", g_list_length (filenames));
+	g_task_return_boolean (task, TRUE);
+	g_object_unref (task);
+}
+
+static void
+impl_delete_entries (RBMediaPlayerSource *source,
+		     GList *entries,
+		     GAsyncReadyCallback callback,
+		     gpointer data)
 {
 	RBiPodSourcePrivate *priv = IPOD_SOURCE_GET_PRIVATE (source);
 	RhythmDB *db = get_db_for_source ((RBiPodSource *)source);
 	GList *i;
 	GList *filenames = NULL;
-	DeleteFileData *data = g_new0 (DeleteFileData, 1);
+	GTask *task;
 
 	for (i = entries; i != NULL; i = i->next) {
 		const char *uri;
@@ -1355,13 +1345,9 @@ impl_delete_entries (RBMediaPlayerSource *source, GList *entries, RBMediaPlayerS
 	rhythmdb_commit (db);
 	g_object_unref (db);
 
-	data->source = g_object_ref (source);
-	data->callback = callback;
-	data->callback_data = cb_data;
-	data->destroy_data = destroy_data;
-	data->files = filenames;
-
-	g_thread_new ("ipod-delete", (GThreadFunc) delete_thread, data);
+	task = g_task_new (source, NULL, callback, data);
+	g_task_set_task_data (task, filenames, (GDestroyNotify) delete_destroy_data);
+	g_task_run_in_thread (task, delete_task);
 }
 
 static RBTrackTransferBatch *
@@ -1387,7 +1373,7 @@ impl_delete_selected (RBSource *source)
 
 	songs = rb_source_get_entry_view (source);
 	sel = rb_entry_view_get_selected_entries (songs);
-	impl_delete_entries (RB_MEDIA_PLAYER_SOURCE (source), sel, NULL, NULL, NULL);
+	impl_delete_entries (RB_MEDIA_PLAYER_SOURCE (source), sel, NULL, NULL);
 	rb_list_destroy_free (sel, (GDestroyNotify) rhythmdb_entry_unref);
 }
 

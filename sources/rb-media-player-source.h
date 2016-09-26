@@ -56,8 +56,6 @@ typedef struct _RBMediaPlayerSourceClass RBMediaPlayerSourceClass;
 typedef struct _RhythmDBEntryType RBMediaPlayerEntryType;
 typedef struct _RhythmDBEntryTypeClass RBMediaPlayerEntryTypeClass;
 
-typedef void (*RBMediaPlayerSourceDeleteCallback) (RBMediaPlayerSource *source, gpointer data);
-
 struct _RBMediaPlayerSource
 {
 	RBBrowserSource parent_instance;
@@ -73,9 +71,8 @@ struct _RBMediaPlayerSourceClass
 	guint64		(*get_free_space)	(RBMediaPlayerSource *source);
 	void		(*delete_entries)	(RBMediaPlayerSource *source,
 						 GList *entries,
-						 RBMediaPlayerSourceDeleteCallback callback,
-						 gpointer data,
-						 GDestroyNotify destroy_data);
+						 GAsyncReadyCallback callback,
+						 gpointer data);
 	void		(*add_playlist)	(RBMediaPlayerSource *source, gchar *name, GList *entries);
 	void		(*remove_playlists) (RBMediaPlayerSource *source);
 	void		(*show_properties)	(RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
@@ -95,9 +92,8 @@ void	rb_media_player_source_get_entries	(RBMediaPlayerSource *source,
 
 void	rb_media_player_source_delete_entries	(RBMediaPlayerSource *source,
 						 GList *entries,
-						 RBMediaPlayerSourceDeleteCallback callback,
-						 gpointer data,
-						 GDestroyNotify destroy_data);
+						 GAsyncReadyCallback callback,
+						 gpointer data);
 
 void	rb_media_player_source_show_properties (RBMediaPlayerSource *source);
 

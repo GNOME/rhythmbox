@@ -409,6 +409,12 @@ ensure_loaded (RBAndroidSource *source)
 	return FALSE;
 }
 
+static void
+delete_data_destroy (gpointer data)
+{
+	g_list_free_full (data, (GDestroyNotify) rhythmdb_entry_unref);
+}
+
 
 static gboolean
 can_delete_directory (RBAndroidSource *source, GFile *dir)
@@ -438,18 +444,19 @@ can_delete_directory (RBAndroidSource *source, GFile *dir)
 }
 
 static void
-delete_entries (RBAndroidSource *source, GList *entries)
+delete_entries_task (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable)
 {
+	RBAndroidSource *source = RB_ANDROID_SOURCE (source_object);
 	RBAndroidSourcePrivate *priv = GET_PRIVATE (source);
-	GList *tem;
+	GList *l;
 
-	for (tem = entries; tem != NULL; tem = tem->next) {
+	for (l = task_data; l != NULL; l = l->next) {
 		RhythmDBEntry *entry;
 		const char *uri;
 		GFile *file;
 		GFile *dir;
 
-		entry = tem->data;
+		entry = l->data;
 		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		file = g_file_new_for_uri (uri);
 		g_file_delete (file, NULL, NULL);
@@ -480,6 +487,21 @@ delete_entries (RBAndroidSource *source, GList *entries)
 	}
 
 	rhythmdb_commit (priv->db);
+
+	g_task_return_boolean (task, TRUE);
+	g_object_unref (task);
+}
+
+static void
+impl_delete_entries (RBMediaPlayerSource *source, GList *entries, GAsyncReadyCallback callback, gpointer data)
+{
+	GTask *task;
+	GList *task_entries;
+
+	task = g_task_new (source, NULL, callback, data);
+	task_entries = g_list_copy_deep (entries, (GCopyFunc) rhythmdb_entry_ref, NULL);
+	g_task_set_task_data (task, task_entries, delete_data_destroy);
+	g_task_run_in_thread (task, delete_entries_task);
 }
 
 static void
@@ -543,24 +565,6 @@ impl_get_entries (RBMediaPlayerSource *source,
 	g_object_unref (model);
 }
 
-static void
-impl_delete_entries (RBMediaPlayerSource *source,
-		     GList *entries,
-		     RBMediaPlayerSourceDeleteCallback callback,
-		     gpointer callback_data,
-		     GDestroyNotify destroy_data)
-{
-	delete_entries (RB_ANDROID_SOURCE (source), entries);
-
-	if (callback) {
-		callback (source, callback_data);
-	}
-	if (destroy_data) {
-		destroy_data (callback_data);
-	}
-}
-
-
 static guint64
 impl_get_capacity (RBMediaPlayerSource *source)
 {
@@ -610,9 +614,8 @@ impl_delete_selected (RBSource *source)
 	view = rb_source_get_entry_view (source);
 	sel = rb_entry_view_get_selected_entries (view);
 
-	delete_entries (RB_ANDROID_SOURCE (source), sel);
-	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
-	g_list_free (sel);
+	impl_delete_entries (RB_MEDIA_PLAYER_SOURCE (source), sel, NULL, NULL);
+	g_list_free_full (sel, (GDestroyNotify) rhythmdb_entry_unref);
 }
 
 

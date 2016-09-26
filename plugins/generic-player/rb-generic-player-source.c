@@ -94,9 +94,8 @@ static guint64 impl_get_free_space (RBMediaPlayerSource *source);
 static void impl_get_entries (RBMediaPlayerSource *source, const char *category, GHashTable *map);
 static void impl_delete_entries (RBMediaPlayerSource *source,
 				 GList *entries,
-				 RBMediaPlayerSourceDeleteCallback callback,
-				 gpointer data,
-				 GDestroyNotify destroy_data);
+				 GAsyncReadyCallback callback,
+				 gpointer data);
 static void impl_show_properties (RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
 static void impl_add_playlist (RBMediaPlayerSource *source, char *name, GList *entries);
 static void impl_remove_playlists (RBMediaPlayerSource *source);
@@ -949,59 +948,6 @@ can_delete_directory (RBGenericPlayerSource *source, GFile *dir)
 	return result;
 }
 
-void
-rb_generic_player_source_delete_entries (RBGenericPlayerSource *source, GList *entries)
-{
-	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
-	GList *tem;
-
-	if (priv->read_only != FALSE)
-		return;
-
-	for (tem = entries; tem != NULL; tem = tem->next) {
-		RhythmDBEntry *entry;
-		const char *uri;
-		GFile *file;
-		GFile *dir;
-
-		entry = tem->data;
-		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
-		file = g_file_new_for_uri (uri);
-		g_file_delete (file, NULL, NULL);
-
-		/* now walk up the directory structure and delete empty dirs
-		 * until we reach the root or one of the device's audio folders.
-		 */
-		dir = g_file_get_parent (file);
-		while (can_delete_directory (source, dir)) {
-			GFile *parent;
-			char *path;
-
-			path = g_file_get_path (dir);
-			rb_debug ("trying to delete %s", path);
-			g_free (path);
-
-			if (g_file_delete (dir, NULL, NULL) == FALSE) {
-				break;
-			}
-
-			parent = g_file_get_parent (dir);
-			if (parent == NULL) {
-				break;
-			}
-			g_object_unref (dir);
-			dir = parent;
-		}
-
-		g_object_unref (dir);
-		g_object_unref (file);
-
-		rhythmdb_entry_delete (priv->db, entry);
-	}
-
-	rhythmdb_commit (priv->db);
-}
-
 static void
 impl_delete_selected (RBSource *source)
 {
@@ -1011,9 +957,8 @@ impl_delete_selected (RBSource *source)
 	view = rb_source_get_entry_view (source);
 	sel = rb_entry_view_get_selected_entries (view);
 
-	rb_generic_player_source_delete_entries (RB_GENERIC_PLAYER_SOURCE (source), sel);
-	g_list_foreach (sel, (GFunc)rhythmdb_entry_unref, NULL);
-	g_list_free (sel);
+	impl_delete_entries (RB_MEDIA_PLAYER_SOURCE (source), sel, NULL, NULL);
+	g_list_free_full (sel, (GDestroyNotify) rhythmdb_entry_unref);
 }
 
 
@@ -1294,20 +1239,82 @@ impl_get_entries (RBMediaPlayerSource *source,
 }
 
 static void
+delete_data_destroy (gpointer data)
+{
+	g_list_free_full (data, (GDestroyNotify) rhythmdb_entry_unref);
+}
+
+static void
+delete_entries_task (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable)
+{
+	RBGenericPlayerSource *source = RB_GENERIC_PLAYER_SOURCE (source_object);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
+	GList *l;
+
+	for (l = task_data; l != NULL; l = l->next) {
+		RhythmDBEntry *entry;
+		const char *uri;
+		GFile *file;
+		GFile *dir;
+
+		entry = l->data;
+		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		file = g_file_new_for_uri (uri);
+		g_file_delete (file, NULL, NULL);
+
+		/* now walk up the directory structure and delete empty dirs
+		 * until we reach the root or one of the device's audio folders.
+		 */
+		dir = g_file_get_parent (file);
+		while (can_delete_directory (source, dir)) {
+			GFile *parent;
+			char *path;
+
+			path = g_file_get_path (dir);
+			rb_debug ("trying to delete %s", path);
+			g_free (path);
+
+			if (g_file_delete (dir, NULL, NULL) == FALSE) {
+				break;
+			}
+
+			parent = g_file_get_parent (dir);
+			if (parent == NULL) {
+				break;
+			}
+			g_object_unref (dir);
+			dir = parent;
+		}
+
+		g_object_unref (dir);
+		g_object_unref (file);
+
+		rhythmdb_entry_delete (priv->db, entry);
+	}
+
+	rhythmdb_commit (priv->db);
+
+	g_task_return_boolean (task, TRUE);
+	g_object_unref (task);
+}
+
+static void
 impl_delete_entries (RBMediaPlayerSource *source,
 		     GList *entries,
-		     RBMediaPlayerSourceDeleteCallback callback,
-		     gpointer callback_data,
-		     GDestroyNotify destroy_data)
+		     GAsyncReadyCallback callback,
+		     gpointer data)
 {
-	rb_generic_player_source_delete_entries (RB_GENERIC_PLAYER_SOURCE (source), entries);
+	RBGenericPlayerSourcePrivate *priv = GET_PRIVATE (source);
+	GTask *task;
+	GList *task_entries;
 
-	if (callback) {
-		callback (source, callback_data);
-	}
-	if (destroy_data) {
-		destroy_data (callback_data);
-	}
+	if (priv->read_only != FALSE)
+		return;
+
+	task = g_task_new (source, NULL, callback, data);
+	task_entries = g_list_copy_deep (entries, (GCopyFunc) rhythmdb_entry_ref, NULL);
+	g_task_set_task_data (task, task_entries, delete_data_destroy);
+	g_task_run_in_thread (task, delete_entries_task);
 }
 
 

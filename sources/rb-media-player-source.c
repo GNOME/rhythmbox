@@ -498,19 +498,17 @@ rb_media_player_source_get_entries (RBMediaPlayerSource *source,
  * @source: the #RBMediaPlayerSource
  * @entries: (element-type RB.RhythmDBEntry) (transfer full): list of entries to delete
  * @callback: callback to call on completion
- * @data: (closure) (scope notified): data for callback
- * @destroy_data: callback to free the callback data
+ * @data: data for callback
  */
 void
 rb_media_player_source_delete_entries	(RBMediaPlayerSource *source,
 					 GList *entries,
-					 RBMediaPlayerSourceDeleteCallback callback,
-					 gpointer data,
-					 GDestroyNotify destroy_data)
+					 GAsyncReadyCallback callback,
+					 gpointer data)
 {
 	RBMediaPlayerSourceClass *klass = RB_MEDIA_PLAYER_SOURCE_GET_CLASS (source);
 
-	klass->delete_entries (source, entries, callback, data, destroy_data);
+	klass->delete_entries (source, entries, callback, data);
 }
 
 static void
@@ -755,8 +753,9 @@ transfer_batch_cancelled_cb (RBTrackTransferBatch *batch, RBMediaPlayerSource *s
 
 
 static void
-sync_delete_done_cb (RBMediaPlayerSource *source, gpointer dontcare)
+sync_delete_done_cb (GObject *source_object, GAsyncResult *result, gpointer data)
 {
+	RBMediaPlayerSource *source = RB_MEDIA_PLAYER_SOURCE (source_object);
 	RBMediaPlayerSourcePrivate *priv = MEDIA_PLAYER_SOURCE_GET_PRIVATE (source);
 	rb_debug ("finished deleting %d files from media player", priv->sync_state->sync_remove_count);
 
@@ -955,8 +954,7 @@ sync_idle_delete_entries (RBMediaPlayerSource *source)
 	rb_debug ("deleting %d files from media player", priv->sync_state->sync_remove_count);
 	rb_media_player_source_delete_entries (source,
 					       priv->sync_state->sync_to_remove,
-					       (RBMediaPlayerSourceDeleteCallback) sync_delete_done_cb,
-					       NULL,
+					       sync_delete_done_cb,
 					       NULL);
 	return FALSE;
 }

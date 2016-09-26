@@ -106,9 +106,8 @@ static guint64		impl_get_capacity	(RBMediaPlayerSource *source);
 static guint64		impl_get_free_space	(RBMediaPlayerSource *source);
 static void		impl_delete_entries	(RBMediaPlayerSource *source,
 						 GList *entries,
-						 RBMediaPlayerSourceDeleteCallback callback,
-						 gpointer callback_data,
-						 GDestroyNotify destroy_data);
+						 GAsyncReadyCallback callback,
+						 gpointer callback_data);
 static void		impl_show_properties	(RBMediaPlayerSource *source, GtkWidget *info_box, GtkWidget *notebook);
 
 static void prepare_player_source_cb (RBPlayer *player,
@@ -1056,8 +1055,8 @@ impl_delete_selected (RBSource *source)
 
 	songs = rb_source_get_entry_view (source);
 	sel = rb_entry_view_get_selected_entries (songs);
-	impl_delete_entries (RB_MEDIA_PLAYER_SOURCE (source), sel, NULL, NULL, NULL);
-	rb_list_destroy_free (sel, (GDestroyNotify) rhythmdb_entry_unref);
+	impl_delete_entries (RB_MEDIA_PLAYER_SOURCE (source), sel, NULL, NULL);
+	g_list_free_full (sel, (GDestroyNotify) rhythmdb_entry_unref);
 }
 
 static gboolean
@@ -1362,50 +1361,22 @@ impl_get_free_space	(RBMediaPlayerSource *source)
 	return priv->free_space;
 }
 
-typedef struct {
-	gboolean actually_free;
-	GHashTable *check_folders;
-	RBMediaPlayerSource *source;
-	RBMediaPlayerSourceDeleteCallback callback;
-	gpointer callback_data;
-	GDestroyNotify destroy_data;
-} TracksDeletedCallbackData;
-
 static void
-free_delete_data (TracksDeletedCallbackData *data)
+delete_destroy_data (gpointer data)
 {
-	if (data->actually_free == FALSE) {
-		return;
-	}
-
-	g_hash_table_destroy (data->check_folders);
-	g_object_unref (data->source);
-	if (data->destroy_data) {
-		data->destroy_data (data->callback_data);
-	}
-	g_free (data);
-}
-
-static gboolean
-delete_done_idle_cb (TracksDeletedCallbackData *data)
-{
-	if (data->callback) {
-		data->callback (data->source, data->callback_data);
-	}
-
-	data->actually_free = TRUE;
-	free_delete_data (data);
-	return FALSE;
+	GTask *task = data;
+	g_task_return_boolean (task, FALSE);
+	g_object_unref (task);
 }
 
 static void
-delete_done_cb (LIBMTP_mtpdevice_t *device, TracksDeletedCallbackData *data)
+delete_done_cb (LIBMTP_mtpdevice_t *device, GTask *task)
 {
+	GHashTable *check_folders = g_task_get_task_data (task);
 	LIBMTP_folder_t *folders;
 	LIBMTP_file_t *files;
 
-	data->actually_free = FALSE;
-	update_free_space_cb (device, RB_MTP_SOURCE (data->source));
+	update_free_space_cb (device, RB_MTP_SOURCE (g_task_get_source_object (task)));
 
 	/* if any of the folders we just deleted from are now empty, delete them */
 	folders = LIBMTP_Get_Folder_List (device);
@@ -1413,7 +1384,7 @@ delete_done_cb (LIBMTP_mtpdevice_t *device, TracksDeletedCallbackData *data)
 	if (folders != NULL) {
 		GHashTableIter iter;
 		gpointer key;
-		g_hash_table_iter_init (&iter, data->check_folders);
+		g_hash_table_iter_init (&iter, check_folders);
 		while (g_hash_table_iter_next (&iter, &key, NULL)) {
 			LIBMTP_folder_t *f;
 			LIBMTP_folder_t *c;
@@ -1430,7 +1401,7 @@ delete_done_cb (LIBMTP_mtpdevice_t *device, TracksDeletedCallbackData *data)
 
 				/* don't delete folders with children that we didn't just delete */
 				for (c = f->child; c != NULL; c = c->sibling) {
-					if (g_hash_table_lookup (data->check_folders,
+					if (g_hash_table_lookup (check_folders,
 								 GUINT_TO_POINTER (c->folder_id)) == NULL) {
 						break;
 					}
@@ -1481,27 +1452,25 @@ delete_done_cb (LIBMTP_mtpdevice_t *device, TracksDeletedCallbackData *data)
 		files = n;
 	}
 
-	g_idle_add ((GSourceFunc) delete_done_idle_cb, data);
+	g_task_return_boolean (task, TRUE);
+	g_object_unref (task);
 }
 
 static void
 impl_delete_entries	(RBMediaPlayerSource *source,
 			 GList *entries,
-			 RBMediaPlayerSourceDeleteCallback callback,
-			 gpointer user_data,
-			 GDestroyNotify destroy_data)
+			 GAsyncReadyCallback callback,
+			 gpointer user_data)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 	RhythmDB *db;
 	GList *i;
-	TracksDeletedCallbackData *cb_data;
+	GHashTable *check_folders;
+	GTask *task;
 
-	cb_data = g_new0 (TracksDeletedCallbackData, 1);
-	cb_data->source = g_object_ref (source);
-	cb_data->callback_data = user_data;
-	cb_data->callback = callback;
-	cb_data->destroy_data = destroy_data;
-	cb_data->check_folders = g_hash_table_new (g_direct_hash, g_direct_equal);
+	task = g_task_new (source, NULL, callback, user_data);
+	check_folders = g_hash_table_new (g_direct_hash, g_direct_equal);
+	g_task_set_task_data (task, check_folders, (GDestroyNotify) g_hash_table_destroy);
 
 	db = get_db_for_source (RB_MTP_SOURCE (source));
 	for (i = entries; i != NULL; i = i->next) {
@@ -1524,7 +1493,7 @@ impl_delete_entries	(RBMediaPlayerSource *source,
 		}
 		rb_mtp_thread_delete_track (priv->device_thread, track);
 
-		g_hash_table_insert (cb_data->check_folders,
+		g_hash_table_insert (check_folders,
 				     GUINT_TO_POINTER (track->parent_id),
 				     GINT_TO_POINTER (1));
 
@@ -1535,8 +1504,8 @@ impl_delete_entries	(RBMediaPlayerSource *source,
 	/* callback when all tracks have been deleted */
 	rb_mtp_thread_queue_callback (priv->device_thread,
 				      (RBMtpThreadCallback) delete_done_cb,
-				      cb_data,
-				      (GDestroyNotify) free_delete_data);
+				      task,
+				      delete_destroy_data);
 
 	rhythmdb_commit (db);
 }
