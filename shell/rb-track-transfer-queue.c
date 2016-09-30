@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  *  Copyright (C) 2010 Jonathan Matthew  <jonathan@d14n.org>
  *
@@ -171,7 +171,7 @@ overwrite_prompt (RBTrackTransferBatch *batch, const char *uri, RBTrackTransferQ
 		}
 
 		g_object_get (queue->priv->shell, "window", &window, NULL);
-		text = g_strdup_printf (_("The file \"%s\" already exists. Do you want to replace it?"),
+		text = g_strdup_printf (_("The file “%s” already exists. Do you want to replace it?"),
 					display_name);
 		dialog = rb_alert_dialog_new (window,
 					      0,

@@ -124,17 +124,17 @@ static const char* radio_names[] = {
 	/* Translators: station is built from the artist %s's top fans */
 	N_("%s Fan Radio"),
 	/* Translators: station is built from the library of the user %s */
-	N_("%s's Library"),
+	N_("%s’s Library"),
 	/* Translators: station is built from the "neighbourhood" of the user %s.
 	 * Last.fm uses "neighbourhood" to mean other users with similar music tastes */
-	N_("%s's Neighbourhood"),
+	N_("%s’s Neighbourhood"),
 	/* Translators: station is built from the tracks which have been "loved" by the user %s */
-	N_("%s's Loved Tracks"),
+	N_("%s’s Loved Tracks"),
 	/* Translators: station is built from the tracks which are recommended to the user %s */
-	N_("%s's Recommended Radio"),
+	N_("%s’s Recommended Radio"),
 	/* Translators: station is the "Mix Radio" for the user %s.
 	 * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for description. */
-	N_("%s's Mix Radio"),
+	N_("%s’s Mix Radio"),
 	/* Translators: station is built from the tracks which have been "tagged" with %s.
 	 * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
 	 * but nationalities, record labels, decades and very random words are also common */
@@ -741,7 +741,7 @@ tune_response_cb (SoupSession *session,
 								 rb_audioscrobbler_service_get_name (source->priv->service));
 			} else {
 				/* Other error */
-				error_message = g_strdup_printf (_("Error tuning station: %i - %s"), code, message);
+				error_message = g_strdup_printf (_("Error tuning station: %i — %s"), code, message);
 			}
 
 			display_error_info_bar (source, error_message);

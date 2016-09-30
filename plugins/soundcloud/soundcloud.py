@@ -439,7 +439,7 @@ class SoundCloudSource(RB.StreamingSource):
 		entry = player.get_playing_entry()
 		if entry is not None and entry.get_entry_type() == self.props.entry_type:
 			url = entry.get_string(RB.RhythmDBPropType.LOCATION)
-			menu[url] = _("View '%(title)s' on SoundCloud") % {'title': entry.get_string(RB.RhythmDBPropType.TITLE) }
+			menu[url] = _("View “%(title)s” on SoundCloud") % {'title': entry.get_string(RB.RhythmDBPropType.TITLE) }
 			# artist too?
 
 
@@ -447,7 +447,7 @@ class SoundCloudSource(RB.StreamingSource):
 		if self.songs.have_selection():
 			entry = self.songs.get_selected_entries()[0]
 			url = entry.get_string(RB.RhythmDBPropType.LOCATION)
-			menu[url] = _("View '%(title)s' on SoundCloud") % {'title': entry.get_string(RB.RhythmDBPropType.TITLE) }
+			menu[url] = _("View “%(title)s” on SoundCloud") % {'title': entry.get_string(RB.RhythmDBPropType.TITLE) }
 			# artist too?
 
 		# selected container
@@ -455,7 +455,7 @@ class SoundCloudSource(RB.StreamingSource):
 		(model, aiter) = selection.get_selected()
 		if aiter is not None:
 			[name, url] = model.get(aiter, 0, 3)
-			menu[url] = _("View '%(container)s' on SoundCloud") % {'container': name}
+			menu[url] = _("View “%(container)s” on SoundCloud") % {'container': name}
 
 		if len(menu) == 0:
 			self.sc_button.set_menu_model(None)

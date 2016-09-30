@@ -168,12 +168,12 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
         # Translators: do not translate %(artist)s or %(title)s, they are
         # string substitution markers (like %s) for the artist and title of
         # the current playing song.  They can be reordered if necessary.
-        new_status = _(u"♫ %(artist)s - %(title)s ♫") % subs
+        new_status = _(u"♫ %(artist)s — %(title)s ♫") % subs
       elif self.current_album:
         # Translators: do not translate %(artist)s or %(album)s, they are
         # string substitution markers (like %s) for the artist and album name
         # of the current playing song.  They can be reordered if necessary.
-        new_status = _(u"♫ %(artist)s - %(album)s ♫") % subs
+        new_status = _(u"♫ %(artist)s — %(album)s ♫") % subs
     elif self.current_album:
       # Translators: do not translate %(album)s, it is a string substitution
       # marker (like %s) for the album name of the current playing song.
@@ -183,7 +183,7 @@ class IMStatusPlugin (GObject.Object, Peas.Activatable):
       # marker (like %s) for the title of the current playing song.
       new_status = _(u"♫ %(title)s ♫") % subs
     else:
-      new_status = _(u"♫ Listening to music... ♫")
+      new_status = _(u"♫ Listening to music… ♫")
 
     self.set_mc5_status (new_status)
     self.set_purple_status (new_status)
