@@ -799,7 +799,7 @@ login_status_change_cb (RBAudioscrobblerAccount *account,
 	case RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN:
 		show_login_bar = TRUE;
 		show_profile = FALSE;
-		label_text = g_strdup (_("Waiting for authentication..."));
+		label_text = g_strdup (_("Waiting for authentication…"));
 		button_text = g_strdup (_("Cancel"));
 		gtk_info_bar_set_message_type (GTK_INFO_BAR (page->priv->login_bar), GTK_MESSAGE_INFO);
 		break;
