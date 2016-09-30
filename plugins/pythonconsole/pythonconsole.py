@@ -105,7 +105,7 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 			console.set_size_request(600, 400)
 			console.eval('print("' + \
 			             _("You can access the main window " \
-			             "through the \'shell\' variable :") +
+			             "through the “shell” variable:") +
 			             '\\n%s" % shell)', False)
 
 			self.window = Gtk.Window()
@@ -119,7 +119,7 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 
 	def enable_debugging(self, action, parameter, shell):
 		pwd_path = os.path.join(RB.user_data_dir(), "rpdb2_password")
-		msg = _("After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in the file %s, it will use the default password ('rhythmbox').") % pwd_path
+		msg = _("After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in the file %s, it will use the default password (“rhythmbox”).") % pwd_path
 		dialog = Gtk.MessageDialog(None, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK_CANCEL, msg)
 		if dialog.run() == Gtk.ResponseType.OK:
 			password = "rhythmbox"
@@ -211,7 +211,7 @@ class PythonConsole(Gtk.ScrolledWindow):
 
 			# Prepare the new line
 			cur = self.get_end_iter()
-			buffer.insert(cur, "\n... ")
+			buffer.insert(cur, "\n… ")
 			cur = self.get_end_iter()
 			buffer.move_mark(inp_mark, cur)
 			
@@ -249,9 +249,9 @@ class PythonConsole(Gtk.ScrolledWindow):
 			or (self.current_command[-2:] != "\n\n" and self.block_command):
 				# Unfinished block command
 				self.block_command = True
-				com_mark = "... "
+				com_mark = "… "
 			elif cur_strip.endswith("\\"):
-				com_mark = "... "
+				com_mark = "… "
 			else:
 				# Eval the command
 				self.__run(self.current_command)

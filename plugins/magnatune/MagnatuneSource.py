@@ -187,7 +187,7 @@ class MagnatuneSource(RB.BrowserSource):
 			library = Gio.Settings.new("org.gnome.rhythmbox.rhythmdb")
 			library_location = library['locations'][0]
 		except IndexError as e:
-			RB.error_dialog(title = _("Couldn't download album"),
+			RB.error_dialog(title = _("Couldn’t download album"),
 				        message = _("You must have a library location set to download an album."))
 			return
 

@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Implmentation of DAAP (iTunes Music Sharing) sharing
  *
@@ -58,7 +58,7 @@ rb_daap_sharing_default_share_name ()
 		real_name = g_get_user_name ();
 	}
 
-	return g_strdup_printf (_("%s's Music"), real_name);
+	return g_strdup_printf (_("%s’s Music"), real_name);
 }
 
 static gboolean

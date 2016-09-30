@@ -1,4 +1,5 @@
-/*
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ *
  * rb-daap-plugin.c
  *
  * Copyright (C) 2006 James Livingston <doclivingston@gmail.com>
@@ -190,7 +191,7 @@ impl_activate (PeasActivatable *bplugin)
 	rb_application_add_plugin_menu_item (RB_APPLICATION (app),
 					     "display-page-add",
 					     "daap-new-share",
-					     g_menu_item_new (_("Connect to DAAP share..."), "app.daap-new-share"));
+					     g_menu_item_new (_("Connect to DAAP share…"), "app.daap-new-share"));
 
 	/*
 	 * Don't use daap when the no-registration flag is set.

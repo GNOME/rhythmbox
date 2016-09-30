@@ -767,7 +767,7 @@ grilo_browse_cb (GrlSource *grilo_source, guint operation_id, GrlMedia *media, g
 						   &new_row,
 						   -1,
 						   0, NULL,
-						   1, "...",	/* needs to be translatable? */
+						   1, "…",	/* needs to be translatable? */
 						   2, CONTAINER_MARKER,
 						   3, 0,
 						   -1);
