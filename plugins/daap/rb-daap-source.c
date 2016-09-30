@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Implementation of DAAP (iTunes Music Sharing) source object
  *
@@ -473,7 +473,7 @@ ask_password (RBDAAPSource *source,
 #ifdef WITH_LIBSECRET
 	flags |= G_ASK_PASSWORD_SAVING_SUPPORTED;
 #endif
-	message = g_strdup_printf (_("The music share '%s' requires a password to connect"), name);
+	message = g_strdup_printf (_("The music share “%s” requires a password to connect"), name);
 	g_signal_emit_by_name (mount_op, "ask-password", message, NULL, "DAAP", flags);
 	g_free (message);
 }

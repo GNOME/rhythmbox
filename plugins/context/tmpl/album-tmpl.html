@@ -16,9 +16,9 @@
         mn = time / 60
         sec = time % 60
         if hr > 0:
-            return _("%d:%02d:%02d") % (hr,mn,sec)
+            return _("%d∶%02d∶%02d") % (hr,mn,sec)
         else:
-            return _("%d:%02d") %(mn,sec)
+            return _("%d∶%02d") %(mn,sec)
 
     def format_year(date):
         try:

@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Implementation of DACP (iTunes Remote) pairing page object
  *
@@ -389,7 +389,7 @@ rb_dacp_pairing_page_connecting (RBDACPPairingPage *page, gboolean connecting) {
 
 	if (connecting) {
 		gtk_widget_show (page->priv->pairing_status_widget);
-		gtk_label_set_markup (GTK_LABEL (page->priv->pairing_status_widget), _("Connecting..."));
+		gtk_label_set_markup (GTK_LABEL (page->priv->pairing_status_widget), _("Connecting…"));
 	} else {
 		gtk_label_set_markup (GTK_LABEL (page->priv->pairing_status_widget), _("Could not pair with this Remote."));
 	}

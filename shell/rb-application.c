@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Copyright (C) 2012 Jonathan Matthew <jonathan@d14n.org>
  *
@@ -227,7 +227,7 @@ help_action_cb (GSimpleAction *action, GVariant *parameters, gpointer user_data)
 		      &error);
 
 	if (error != NULL) {
-		rb_error_dialog (NULL, _("Couldn't display help"),
+		rb_error_dialog (NULL, _("Couldn’t display help"),
 				 "%s", error->message);
 		g_error_free (error);
 	}
@@ -556,7 +556,7 @@ rb_application_run (RBApplication *app, int argc, char **argv)
 		{ "debug-match",     'D', 0, G_OPTION_ARG_STRING,       &debug_match,     N_("Enable debug output matching a specified string"), NULL },
 		{ "no-update",	       0, 0, G_OPTION_ARG_NONE,         &app->priv->no_update, N_("Do not update the library with file changes"), NULL },
 		{ "no-registration", 'n', 0, G_OPTION_ARG_NONE,         &app->priv->no_registration, N_("Do not register the shell"), NULL },
-		{ "dry-run",	       0, 0, G_OPTION_ARG_NONE,         &app->priv->dry_run,         N_("Don't save any data permanently (implies --no-registration)"), NULL },
+		{ "dry-run",	       0, 0, G_OPTION_ARG_NONE,         &app->priv->dry_run,         N_("Don’t save any data permanently (implies --no-registration)"), NULL },
 		{ "disable-plugins",   0, 0, G_OPTION_ARG_NONE,		&app->priv->disable_plugins, N_("Disable loading of plugins"), NULL },
 		{ "rhythmdb-file",     0, 0, G_OPTION_ARG_STRING,       &app->priv->rhythmdb_file,   N_("Path for database file to use"), NULL },
 		{ "playlists-file",    0, 0, G_OPTION_ARG_STRING,       &app->priv->playlists_file,   N_("Path for playlists file to use"), NULL },
@@ -572,7 +572,7 @@ rb_application_run (RBApplication *app, int argc, char **argv)
 	nargc = argc;
 	nargv = argv;
 	if (g_option_context_parse (context, &nargc, &nargv, &error) == FALSE) {
-		g_print (_("%s\nRun '%s --help' to see a full list of available command line options.\n"),
+		g_print (_("%s\nRun “%s --help” to see a full list of available command line options.\n"),
 			 error->message, argv[0]);
 		g_error_free (error);
 		g_option_context_free (context);

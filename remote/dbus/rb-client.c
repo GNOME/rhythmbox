@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Copyright (C) 2006 Jonathan Matthew
  *
@@ -94,11 +94,11 @@ static GOptionEntry args[] = {
 	{ "debug", 0, 0, G_OPTION_ARG_NONE, &debug, NULL, NULL },
 	{ "version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, show_version_cb, N_("Show the version of the program"), NULL },
 
-	{ "no-start", 0, 0, G_OPTION_ARG_NONE, &no_start, N_("Don't start a new instance of Rhythmbox"), NULL },
+	{ "no-start", 0, 0, G_OPTION_ARG_NONE, &no_start, N_("Don’t start a new instance of Rhythmbox"), NULL },
 	{ "quit", 0, 0, G_OPTION_ARG_NONE, &quit, N_("Quit Rhythmbox"), NULL },
 	{ "check-running", 0, 0, G_OPTION_ARG_NONE, &check_running, N_("Check if Rhythmbox is already running"), NULL },
 
-	{ "no-present", 0, 0, G_OPTION_ARG_NONE, &no_present, N_("Don't present an existing Rhythmbox window"), NULL },
+	{ "no-present", 0, 0, G_OPTION_ARG_NONE, &no_present, N_("Don’t present an existing Rhythmbox window"), NULL },
 
 	{ "next", 0, 0, G_OPTION_ARG_NONE, &next, N_("Jump to next song"), NULL },
 	{ "previous", 0, 0, G_OPTION_ARG_NONE, &previous, N_("Jump to previous song"), NULL },
@@ -161,15 +161,15 @@ struct {
 	void (*handler)(InteractData *, int);
 	const char *help;
 } interact_keys[] = {
-	{ 'n', 	interact_next,		N_("n - Next track") },
-	{ 'p', 	interact_prev,		N_("p - Previous track") },
-	{ ' ', 	interact_playpause,	N_("space - Play/pause") },
-	{ 's', 	interact_print_state,	N_("s - Show playing track details") },
-	{ 'v', 	interact_volume,	N_("v - Decrease volume") },
-	{ 'V', 	interact_volume,	N_("V - Increase volume") },
+	{ 'n', 	interact_next,		N_("n — Next track") },
+	{ 'p', 	interact_prev,		N_("p — Previous track") },
+	{ ' ', 	interact_playpause,	N_("space — Play/pause") },
+	{ 's', 	interact_print_state,	N_("s — Show playing track details") },
+	{ 'v', 	interact_volume,	N_("v — Decrease volume") },
+	{ 'V', 	interact_volume,	N_("V — Increase volume") },
 	{ '?', 	interact_help,		NULL },
-	{ 'h', 	interact_help,		N_("h/? - Help") },
-	{ 'q', 	interact_quit,		N_("q - Quit") },
+	{ 'h', 	interact_help,		N_("h/? — Help") },
+	{ 'q', 	interact_quit,		N_("q — Quit") },
 	{ 3, 	interact_quit, 		NULL },	/* ctrl-c */
 	{ 4, 	interact_quit, 		NULL }, /* ctrl-d */
 	/* seeking? */
@@ -214,9 +214,9 @@ rb_make_duration_string (gint64 duration, gboolean show_zero)
 	if (hours == 0 && minutes == 0 && seconds == 0 && show_zero)
 		str = g_strdup (_("Unknown"));
 	else if (hours == 0)
-		str = g_strdup_printf (_("%d:%02d"), minutes, seconds);
+		str = g_strdup_printf (_("%d∶%02d"), minutes, seconds);
 	else
-		str = g_strdup_printf (_("%d:%02d:%02d"), hours, minutes, seconds);
+		str = g_strdup_printf (_("%d∶%02d∶%02d"), hours, minutes, seconds);
 
 	return str;
 }
@@ -957,7 +957,7 @@ interact (InteractData *data)
 	g_source_set_callback (insrc, (GSourceFunc) interact_input, data, NULL);
 
 	/* should print this before dbus setup, really */
-	g_print (_("Press 'h' for help."));
+	g_print (_("Press “h” for help."));
 	g_print ("\r\n\r\n");
 	g_source_attach (insrc, g_main_loop_get_context (mainloop));
 
