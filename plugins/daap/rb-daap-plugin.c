@@ -193,7 +193,7 @@ impl_activate (PeasActivatable *bplugin)
 	rb_application_add_plugin_menu_item (RB_APPLICATION (app),
 					     "display-page-add",
 					     "daap-new-share",
-					     g_menu_item_new (_("Connect to DAAP share..."), "app.daap-new-share"));
+					     g_menu_item_new (_("Connect to DAAP share…"), "app.daap-new-share"));
 
 	/*
 	 * Don't use daap when the no-registration flag is set.

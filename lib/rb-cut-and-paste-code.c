@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Copyright (C) 2000 Eazel, Inc.
  *  Copyright (C) 2002 Jorn Baayen
@@ -102,7 +102,7 @@ rb_utf_friendly_time (time_t date)
 
 	if (y == ny && m == nm && d == nd) {
 		/* Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am" */
-		format = _("Today %I:%M %p");
+		format = _("Today %I∶%M %p");
 	}
 
 	if (format == NULL) {
@@ -113,7 +113,7 @@ rb_utf_friendly_time (time_t date)
 			/* Translators: "friendly time" string for the previous day,
 			 * strftime format. e.g. "Yesterday 12:34 am"
 			 */
-			format = _("Yesterday %I:%M %p");
+			format = _("Yesterday %I∶%M %p");
 		}
 		g_date_time_unref (yesterday);
 	}
@@ -127,7 +127,7 @@ rb_utf_friendly_time (time_t date)
 				/* Translators: "friendly time" string for a day in the current week,
 				 * strftime format. e.g. "Wed 12:34 am"
 				 */
-				format = _("%a %I:%M %p");
+				format = _("%a %I∶%M %p");
 				g_date_time_unref (yesterday);
 				break;
 			}
@@ -140,7 +140,7 @@ rb_utf_friendly_time (time_t date)
 			/* Translators: "friendly time" string for a day in the current year,
 			 * strftime format. e.g. "Feb 12 12:34 am"
 			 */
-			format = _("%b %d %I:%M %p");
+			format = _("%b %d %I∶%M %p");
 		} else {
 			/* Translators: "friendly time" string for a day in a different year,
 			 * strftime format. e.g. "Feb 12 1997"
