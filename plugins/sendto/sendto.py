@@ -48,7 +48,7 @@ class SendToPlugin (GObject.Object, Peas.Activatable):
 		app.add_action(self.__action)
 
 		item = Gio.MenuItem()
-		item.set_label(_("Send to..."))
+		item.set_label(_("Send to…"))
 		item.set_detailed_action('app.sendto')
 		app.add_plugin_menu_item('edit', 'sendto', item)
 		app.add_plugin_menu_item('browser-popup', 'sendto', item)
