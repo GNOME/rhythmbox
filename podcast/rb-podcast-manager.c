@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Copyright (C) 2005 Renato Araujo Oliveira Filho - INdT <renato.filho@indt.org.br>
  *
@@ -1043,7 +1043,7 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 #if 0
 	if (valid_url == NULL) {
 		rb_error_dialog (NULL, _("Invalid URL"),
-				 _("The URL \"%s\" is not valid, please check it."), url);
+				 _("The URL “%s” is not valid, please check it."), url);
 		return FALSE;
 	}
 #endif
@@ -1055,7 +1055,7 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 		if (rhythmdb_entry_get_entry_type (entry) != RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
 			/* added as something else, probably iradio */
 			rb_error_dialog (NULL, _("URL already added"),
-					 _("The URL \"%s\" has already been added as a radio station. "
+					 _("The URL “%s” has already been added as a radio station. "
 					 "If this is a podcast feed, please remove the radio station."), url);
 			return FALSE;
 		}
@@ -1155,7 +1155,7 @@ confirm_bad_mime_type (RBPodcastThreadInfo *info)
 	dialog = gtk_message_dialog_new (NULL, 0,
 					 GTK_MESSAGE_QUESTION,
 					 GTK_BUTTONS_YES_NO,
-					 _("The URL '%s' does not appear to be a podcast feed. "
+					 _("The URL “%s” does not appear to be a podcast feed. "
 					 "It may be the wrong URL, or the feed may be broken. "
 					 "Would you like Rhythmbox to attempt to use it anyway?"),
 					 info->url);

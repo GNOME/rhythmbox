@@ -100,7 +100,7 @@ class LyricsConfigureDialog (GObject.Object, PeasGtk.Configurable):
 
 		buttons = (Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE,
 				Gtk.STOCK_OK, Gtk.ResponseType.OK)
-		self.chooser = Gtk.FileChooserDialog(title=_("Choose lyrics folder..."),
+		self.chooser = Gtk.FileChooserDialog(title=_("Choose lyrics folder…"),
 					parent=None,
 					action=Gtk.FileChooserAction.SELECT_FOLDER,
 					buttons=buttons)
