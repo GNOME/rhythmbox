@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@gnome.org>
@@ -705,7 +705,7 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source,
 	g_object_unref (pl);
 	g_free (name);
 	if (error != NULL) {
-		rb_error_dialog (NULL, _("Couldn't save playlist"),
+		rb_error_dialog (NULL, _("Couldn’t save playlist"),
 				 "%s", error->message);
 		g_error_free (error);
 	}

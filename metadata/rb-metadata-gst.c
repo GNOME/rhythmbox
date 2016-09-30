@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Copyright (C) 2010 Jonathan Matthew  <jonathan@d14n.org>
  *
@@ -688,7 +688,7 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 		g_set_error (error,
 			     RB_METADATA_ERROR,
 			     RB_METADATA_ERROR_MISSING_PLUGIN,
-			     _("Failed to create the 'decodebin' element; check your GStreamer installation"));
+			     _("Failed to create the “decodebin” element; check your GStreamer installation"));
 		goto out;
 	}
 
@@ -697,7 +697,7 @@ rb_metadata_save (RBMetaData *md, const char *uri, GError **error)
 		g_set_error (error,
 			     RB_METADATA_ERROR,
 			     RB_METADATA_ERROR_MISSING_PLUGIN,
-			     _("Failed to create the 'giostreamsink' element; check your GStreamer installation"));
+			     _("Failed to create the “giostreamsink” element; check your GStreamer installation"));
 		goto out;
 	}
 	g_object_set (md->priv->sink, "stream", stream, NULL);

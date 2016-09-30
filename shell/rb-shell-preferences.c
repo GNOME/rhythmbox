@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@debian.org>
@@ -160,7 +160,7 @@ help_cb (GtkWidget *widget,
 
 	if (error != NULL) {
 		rb_error_dialog (NULL,
-				 _("Couldn't display help"),
+				 _("Couldn’t display help"),
 				 "%s", error->message);
 
 		g_error_free (error);

@@ -104,7 +104,7 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 			console.set_size_request(600, 400)
 			console.eval('print("' + \
 			             _("You can access the main window " \
-			             "through the \'shell\' variable :") +
+			             "through the “shell” variable:") +
 			             '\\n%s" % shell)', False)
 
 			self.window = Gtk.Window()
@@ -118,7 +118,7 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 
 	def enable_debugging(self, action, parameter, shell):
 		pwd_path = os.path.join(rb.user_data_dir(), "rpdb2_password")
-		msg = _("After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in the file %s, it will use the default password ('rhythmbox').") % pwd_path
+		msg = _("After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in the file %s, it will use the default password (“rhythmbox”).") % pwd_path
 		dialog = Gtk.MessageDialog(None, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK_CANCEL, msg)
 		if dialog.run() == Gtk.RESPONSE_OK:
 			password = "rhythmbox"

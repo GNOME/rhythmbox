@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Copyright (C) 2003,2004 Colin Walters <walters@gnome.org>
  *
@@ -1052,7 +1052,7 @@ load_playlist_response_cb (GtkDialog *dialog,
 		return;
 
 	if (!rb_playlist_manager_parse_file (mgr, escaped_file, &error)) {
-		rb_error_dialog (NULL, _("Couldn't read playlist"),
+		rb_error_dialog (NULL, _("Couldn’t read playlist"),
 				 "%s", error->message);
 		g_error_free (error);
 	}
@@ -1139,7 +1139,7 @@ save_playlist_response_cb (GtkDialog *dialog,
 	}
 
 	if (export_type == RB_PLAYLIST_EXPORT_TYPE_UNKNOWN) {
-		rb_error_dialog (NULL, _("Couldn't save playlist"), _("Unsupported file extension given."));
+		rb_error_dialog (NULL, _("Couldn’t save playlist"), _("Unsupported file extension given."));
 	} else {
 		rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (source), file, export_type);
 		gtk_widget_destroy (GTK_WIDGET (dialog));

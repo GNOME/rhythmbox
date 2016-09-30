@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Copyright (C) 2006 William Jon McCann <mccann@jhu.edu>
  *  Copyright (C) 2008 Rouquier Philippe <bonfire-app@wanadoo.fr>
@@ -651,13 +651,13 @@ impl_activate (PeasActivatable *plugin)
 	pi->burn_action = g_action_map_lookup_action (G_ACTION_MAP (app), "burn-playlist");
 	pi->copy_action = g_action_map_lookup_action (G_ACTION_MAP (app), "burn-duplicate-cd");
 
-	item = g_menu_item_new (_("Create Audio CD..."), "app.burn-playlist");
+	item = g_menu_item_new (_("Create Audio CD…"), "app.burn-playlist");
 	rb_application_add_plugin_menu_item (RB_APPLICATION (g_application_get_default ()),
 					     "playlist-menu",
 					     "burn-playlist",
 					     item);
 
-	item = g_menu_item_new (_("Duplicate Audio CD..."), "app.burn-duplicate-cd");
+	item = g_menu_item_new (_("Duplicate Audio CD…"), "app.burn-duplicate-cd");
 	rb_application_add_plugin_menu_item (RB_APPLICATION (g_application_get_default ()),
 					     "audiocd-toolbar",
 					     "burn-duplicate-cd",

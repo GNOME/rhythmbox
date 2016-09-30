@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Copyright (C) 2002, 2003 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2002,2003 Colin Walters <walters@debian.org>
@@ -2121,7 +2121,7 @@ rb_shell_player_stop (RBShellPlayer *player)
 		rb_player_close (player->priv->mmplayer, NULL, &error);
 	if (error) {
 		rb_error_dialog (NULL,
-				 _("Couldn't stop playback"),
+				 _("Couldn’t stop playback"),
 				 "%s", error->message);
 		g_error_free (error);
 	}
@@ -2462,7 +2462,7 @@ rb_shell_player_error (RBShellPlayer *player,
 		 * unless we've got more URLs to try */
 		if (g_queue_is_empty (player->priv->playlist_urls)) {
 			rb_error_dialog (NULL,
-					 _("Couldn't start playback"),
+					 _("Couldn’t start playback"),
 					 "%s", (err) ? err->message : "(null)");
 			rb_shell_player_stop (player);
 			do_next = FALSE;
@@ -2773,7 +2773,7 @@ play_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_data)
 	rb_debug ("play!");
 	if (rb_shell_player_playpause (player, &error) == FALSE) {
 		rb_error_dialog (NULL,
-				 _("Couldn't start playback"),
+				 _("Couldn’t start playback"),
 				 "%s", (error) ? error->message : "(null)");
 	}
 	g_clear_error (&error);
