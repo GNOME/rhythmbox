@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Copyright (C) 2003,2004 Colin Walters <walters@gnome.org>
  *
@@ -786,7 +786,7 @@ make_access_failed_error (const char *uri, GError *access_error)
 
 	error = g_error_new (RHYTHMDB_ERROR,
 			     RHYTHMDB_ERROR_ACCESS_FAILED,
-			     _("Couldn't access %s: %s"),
+			     _("Couldn’t access %s: %s"),
 			     utf8ised,
 			     access_error->message);
 	rb_debug ("got error on %s: %s", uri, error->message);

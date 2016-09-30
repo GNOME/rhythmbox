@@ -343,7 +343,7 @@ class LyricPane(object):
 		if self.entry is None:
 			return
 
-		self.buffer.set_text(_("Searching for lyrics..."), -1);
+		self.buffer.set_text(_("Searching for lyrics…"), -1);
 		lyrics_grabber = LyricGrabber(self.db, self.entry)
 		lyrics_grabber.search_lyrics(self.__got_lyrics)
 

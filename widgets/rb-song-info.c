@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Copyright (C) 2002 Olivier Martin <olive.martin@gmail.com>
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
@@ -1250,7 +1250,7 @@ rb_song_info_update_duration (RBSongInfo *song_info)
 	duration = rhythmdb_entry_get_ulong (song_info->priv->current_entry, RHYTHMDB_PROP_DURATION);
 	minutes = duration / 60;
 	seconds = duration % 60;
-	text = g_strdup_printf ("%d:%02d", minutes, seconds);
+	text = g_strdup_printf ("%d∶%02d", minutes, seconds);
 	gtk_label_set_text (GTK_LABEL (song_info->priv->duration), text);
 	g_free (text);
 }
