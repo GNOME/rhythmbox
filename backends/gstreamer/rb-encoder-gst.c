@@ -693,32 +693,6 @@ impl_encode (RBEncoder *bencoder,
 	g_free (encoder->priv->dest_uri);
 	encoder->priv->dest_uri = NULL;
 
-	if (rb_uri_create_parent_dirs (dest, &error) == FALSE) {
-
-		/* this might be an msdos filesystem in disguise */
-		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_INVALID_FILENAME)) {
-			freedest = rb_sanitize_uri_for_filesystem (dest, "msdos");
-			dest = freedest;
-
-			g_clear_error (&error);
-			rb_uri_create_parent_dirs (dest, &error);
-		}
-
-		if (error != NULL) {
-			GError *nerror;
-			nerror = g_error_new_literal (RB_ENCODER_ERROR,
-						      RB_ENCODER_ERROR_FILE_ACCESS,
-						      error->message);		/* I guess */
-
-			set_error (encoder, nerror);
-			g_error_free (error);
-			g_error_free (nerror);
-			g_idle_add ((GSourceFunc) cancel_idle, g_object_ref (encoder));
-			g_free (freedest);
-			return;
-		}
-	}
-
 	/* keep ourselves alive in case we get cancelled by a signal handler */
 	g_object_ref (encoder);
 

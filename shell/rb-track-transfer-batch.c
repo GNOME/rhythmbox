@@ -40,6 +40,7 @@
 #include "rb-util.h"
 #include "rb-gst-media-types.h"
 #include "rb-task-progress.h"
+#include "rb-file-helpers.h"
 
 enum
 {
@@ -109,6 +110,7 @@ struct _RBTrackTransferBatchPrivate
 	RhythmDBEntry *current;
 	double current_entry_fraction;
 	char *current_dest_uri;
+	gboolean current_dest_uri_sanitized;
 	double current_fraction;
 	RBEncoder *current_encoder;
 	GstEncodingProfile *current_profile;
@@ -608,6 +610,59 @@ start_encoding (RBTrackTransferBatch *batch, gboolean overwrite)
 			   batch->priv->current_profile);
 }
 
+static void
+create_parent_dirs_task (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable)
+{
+	RBTrackTransferBatch *batch;
+	GError *error = NULL;
+
+	batch = RB_TRACK_TRANSFER_BATCH (source_object);
+	rb_debug ("creating parent dirs for %s", batch->priv->current_dest_uri);
+	if (rb_uri_create_parent_dirs (batch->priv->current_dest_uri, &error) == FALSE) {
+		g_task_return_error (task, error);
+	} else {
+		g_task_return_boolean (task, TRUE);
+	}
+	g_object_unref (task);
+}
+
+static void
+create_parent_dirs_cb (GObject *source_object, GAsyncResult *result, gpointer data)
+{
+	RBTrackTransferBatch *batch;
+	GError *error = NULL;
+
+	batch = RB_TRACK_TRANSFER_BATCH (source_object);
+	if (g_task_propagate_boolean (G_TASK (result), &error) == FALSE) {
+
+		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_INVALID_FILENAME) &&
+		    (batch->priv->current_dest_uri_sanitized == FALSE)) {
+			GTask *task;
+			char *dest;
+
+			g_clear_error (&error);
+			dest = rb_sanitize_uri_for_filesystem (batch->priv->current_dest_uri, "msdos");
+			g_free (batch->priv->current_dest_uri);
+			batch->priv->current_dest_uri = dest;
+			batch->priv->current_dest_uri_sanitized = TRUE;
+
+			rb_debug ("retrying parent dir creation with sanitized uri: %s", dest);
+			task = g_task_new (batch, NULL, create_parent_dirs_cb, NULL);
+			g_task_run_in_thread (task, create_parent_dirs_task);
+		} else {
+			rb_debug ("failed to create parent directories for %s", batch->priv->current_dest_uri);
+			track_transfer_completed (batch, 0, NULL, FALSE, error);
+		}
+	} else {
+		rb_debug ("parent directories for %s created", batch->priv->current_dest_uri);
+		g_signal_emit (batch, signals[TRACK_STARTED], 0,
+			       batch->priv->current,
+			       batch->priv->current_dest_uri);
+		start_encoding (batch, FALSE);
+		g_object_notify (G_OBJECT (batch), "task-detail");
+	}
+}
+
 static gboolean
 start_next (RBTrackTransferBatch *batch)
 {
@@ -617,16 +672,8 @@ start_next (RBTrackTransferBatch *batch)
 		return FALSE;
 	}
 
-	if (batch->priv->entries == NULL) {
-		/* guess we must be done.. */
-		g_signal_emit (batch, signals[COMPLETE], 0);
-		g_object_notify (G_OBJECT (batch), "task-outcome");
-		return FALSE;
-	}
-
-	batch->priv->current_fraction = 0.0;
-
 	rb_debug ("%d entries remain in the batch", g_list_length (batch->priv->entries));
+	batch->priv->current_fraction = 0.0;
 
 	while ((batch->priv->entries != NULL) && (batch->priv->cancelled == FALSE)) {
 		RhythmDBEntry *entry;
@@ -698,6 +745,7 @@ start_next (RBTrackTransferBatch *batch)
 
 		g_free (batch->priv->current_dest_uri);
 		batch->priv->current_dest_uri = NULL;
+		batch->priv->current_dest_uri_sanitized = FALSE;
 		g_signal_emit (batch, signals[GET_DEST_URI], 0,
 			       entry,
 			       media_type,
@@ -721,11 +769,14 @@ start_next (RBTrackTransferBatch *batch)
 	}
 
 	if (batch->priv->current != NULL) {
-		g_signal_emit (batch, signals[TRACK_STARTED], 0,
-			       batch->priv->current,
-			       batch->priv->current_dest_uri);
-		start_encoding (batch, FALSE);
-		g_object_notify (G_OBJECT (batch), "task-detail");
+		GTask *task;
+
+		task = g_task_new (batch, NULL, create_parent_dirs_cb, NULL);
+		g_task_run_in_thread (task, create_parent_dirs_task);
+	} else {
+		g_signal_emit (batch, signals[COMPLETE], 0);
+		g_object_notify (G_OBJECT (batch), "task-outcome");
+		return FALSE;
 	}
 
 	return TRUE;
