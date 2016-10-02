@@ -90,13 +90,6 @@ rb_transfer_target_build_dest_uri (RBTransferTarget *target,
 
 	uri = iface->build_dest_uri (target, entry, media_type, extension);
 	if (uri != NULL) {
-		char *sane_uri;
-
-		sane_uri = rb_sanitize_uri_for_filesystem (uri, NULL);
-		g_return_val_if_fail (sane_uri != NULL, NULL);
-		g_free (uri);
-		uri = sane_uri;
-
 		rb_debug ("built dest uri for media type '%s', extension '%s': %s",
 			  media_type, extension, uri);
 	} else {
