@@ -11,7 +11,7 @@ The official web site is:
   https://wiki.gnome.org/Apps/Rhythmbox
 
 Information about mailing lists can be found at:
-  http://lists.gnome.org/mailman/listinfo/rhythmbox-devel
+  https://mail.gnome.org/mailman/listinfo/rhythmbox-devel
 
 Our IRC channel is #rhythmbox on GIMPnet (irc.gimp.org).
 
@@ -24,46 +24,14 @@ How to report bugs
 ==================
 
 Bugs should be reported to the GNOME bug tracking system.
-(http://bugzilla.gnome.org, product rhythmbox.) You will need to create an
+(https://bugzilla.gnome.org, product rhythmbox.) You will need to create an
 account for yourself.
 
-In the bug report please include:
-
-* Information about your system. For instance:
-
-   - GStreamer version
-   - Available GStreamer plugins (run gst-inspect with no arguments)
-   
-  And anything else you think is relevant.
-
-* If rhythmbox crashes when you try to import a folder full of music files
-  to your library, you can pinpoint the exact file causing the crash
-  by running "rhythmbox -d" from a console. It will output lots of debugging
-  information, the last file mentioned in the console output will quite likely
-  correspond to the file causing the crash. If you want to save the debug log
-  to a file, use "rhythmbox -d 2> debug.log".
-
-* Before you report a bug, it will be useful to know if GStreamer works.
-  If you have playback issues, try running this command:
-
-  $ gst-launch-0.10 playbin2 uri="file:///path/to/my/musicfile.ogg"
-
-  If you have troubles importing a specific file to your library, try running:
-
-  $ gst-launch-0.10 -t uridecodebin uri=file:///path/to/my/musicfile.ogg  ! fakesink
- 
-  Just replace /path/to/my/musicfile.ogg with some sound file in the 2 commands
-  above.
-
-* How to reproduce the bug.
-
-* If the bug was a crash, the exact text that was printed out when the
-  crash occured, and a trace (which can be obtained by using gdb or bug-buddy).
-  See https://wiki.gnome.org/Community/GettingInTouch/Bugzilla/GettingTraces
-  for more information on getting stack traces.
+Please read the GNOME bug reporting guidelines, documented here:
+https://wiki.gnome.org/Community/GettingInTouch/Bugzilla/Guidelines
 
 Development
-=======
+===========
 
 See the HACKING file.
 
