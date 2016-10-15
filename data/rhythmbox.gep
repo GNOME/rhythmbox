@@ -62,6 +62,20 @@ type = audio
 format = audio/mpeg, mpegversion=4, stream-format=raw
 presence = 1
 
+[profile-alac]
+name = alac
+description = ALAC
+format = video/quicktime, variant=iso
+type = container
+
+[streamprofile-alac-1]
+parent = alac
+type = audio
+format = audio/x-alac
+presence = 1
+
+
+
 [rhythmbox-encoder-settings]
 # maps encoder elements and encoding types to lists of settings to expose
 lamemp3enc-vbr = quality

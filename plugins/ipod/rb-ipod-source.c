@@ -392,6 +392,7 @@ finish_construction (RBiPodSource *source)
 	target = gst_encoding_target_new ("ipod", "device", "ipod", NULL);
 	gst_encoding_target_add_profile (target, rb_gst_get_encoding_profile ("audio/mpeg"));
 	gst_encoding_target_add_profile (target, rb_gst_get_encoding_profile ("audio/x-aac"));
+	gst_encoding_target_add_profile (target, rb_gst_get_encoding_profile ("audio/x-alac"));
 	g_object_set (source, "encoding-target", target, NULL);
 
 	priv->new_playlist_action_name = g_strdup_printf ("ipod-%p-playlist-new", source);
