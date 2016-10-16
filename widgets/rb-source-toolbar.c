@@ -382,4 +382,6 @@ rb_source_toolbar_clear_search_entry (RBSourceToolbar *toolbar)
 {
 	g_assert (toolbar->priv->search_entry != NULL);
 	rb_search_entry_clear (toolbar->priv->search_entry);
+	g_free (toolbar->priv->search_text);
+	toolbar->priv->search_text = NULL;
 }
