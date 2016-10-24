@@ -812,6 +812,8 @@ disconnect_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
 	RBDAAPSource *source = RB_DAAP_SOURCE (data);
 	rb_daap_source_disconnect (source);
+
+	g_signal_emit_by_name (source, "reset-filters");
 }
 
 SoupMessageHeaders *
