@@ -68,7 +68,15 @@ foreach_adapter (RhythmDBEntry *entry, gpointer data)
 	gulong id;
 	DMAPRecord *record;
 	ForeachAdapterData *foreach_adapter_data;
-	
+	char *playback_uri;
+
+	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
+		return;
+
+	playback_uri = rhythmdb_entry_get_playback_uri (entry);
+	if (playback_uri == NULL)
+		return;
+
 	id = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID);
 	foreach_adapter_data = data;
 	record = DMAP_RECORD (rb_daap_record_new (entry));
@@ -77,6 +85,7 @@ foreach_adapter (RhythmDBEntry *entry, gpointer data)
 				    record,
 				    foreach_adapter_data->data);
 
+	g_free (playback_uri);
 	g_object_unref (record);
 }
 
