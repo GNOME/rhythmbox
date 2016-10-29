@@ -690,19 +690,9 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 	g_object_notify (G_OBJECT (mp), "playbin");
 	g_object_notify (G_OBJECT (mp), "bus");
 
-	/* Use gsettingsaudiosink for audio if there's no audio sink yet */
 	g_object_get (mp->priv->playbin, "audio-sink", &mp->priv->audio_sink, NULL);
 	if (mp->priv->audio_sink == NULL) {
-		const char *try_sinks[] = { "gsettingsaudiosink", "gconfaudiosink", "autoaudiosink" };
-		int i;
-
-		for (i = 0; i < G_N_ELEMENTS (try_sinks); i++) {
-			mp->priv->audio_sink = rb_player_gst_try_audio_sink (try_sinks[i], NULL);
-			if (mp->priv->audio_sink != NULL) {
-				g_object_set (mp->priv->playbin, "audio-sink", mp->priv->audio_sink, NULL);
-				break;
-			}
-		}
+		mp->priv->audio_sink = rb_player_gst_try_audio_sink ("autoaudiosink", NULL);
 		if (mp->priv->audio_sink == NULL) {
 			g_set_error (error,
 				     RB_PLAYER_ERROR,
@@ -711,6 +701,7 @@ construct_pipeline (RBPlayerGst *mp, GError **error)
 				     "autoaudiosink");
 			return FALSE;
 		}
+		g_object_set (mp->priv->playbin, "audio-sink", mp->priv->audio_sink, NULL);
 	} else {
 		rb_debug ("existing audio sink found");
 		g_object_unref (mp->priv->audio_sink);

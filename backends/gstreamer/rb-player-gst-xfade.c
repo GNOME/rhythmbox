@@ -3230,7 +3230,6 @@ silencesrc_need_data_cb (GstElement *appsrc, guint size, RBPlayerGstXFade *playe
 static gboolean
 create_sink (RBPlayerGstXFade *player, GError **error)
 {
-	const char *try_sinks[] = { "gsettingsaudiosink", "gconfaudiosink", "autoaudiosink" };
 	GstElement *audioconvert;
 	GstElement *audioresample;
 	GstElement *capsfilter;
@@ -3243,7 +3242,6 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 	GstPad *addersrcpad;
 	GstPadLinkReturn plr;
 	GList *l;
-	int i;
 
 	if (player->priv->sink_state != SINK_NULL)
 		return TRUE;
@@ -3297,12 +3295,7 @@ create_sink (RBPlayerGstXFade *player, GError **error)
 		return FALSE;
 	}
 
-	for (i = 0; i < G_N_ELEMENTS (try_sinks); i++) {
-		player->priv->sink = rb_player_gst_try_audio_sink (try_sinks[i], NULL);
-		if (player->priv->sink != NULL) {
-			break;
-		}
-	}
+	player->priv->sink = rb_player_gst_try_audio_sink ("autoaudiosink", NULL);
 	if (player->priv->sink == NULL) {
 		g_set_error (error,
 			     RB_PLAYER_ERROR,
