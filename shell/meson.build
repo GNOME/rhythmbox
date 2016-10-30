@@ -100,7 +100,7 @@ librhythmbox_core = shared_library('rhythmbox_core',
   include_directories: rhythmbox_core_include_directories,
   dependencies: rhythmbox_core_dependencies,
   install: 'true',
-  link_args: ['-export-dynamic', '-Wno-undef'],
+  link_args: ['-export-dynamic'],
   version: '@0@.@1@.@2@'.format(RHYTHMBOX_CORE_CURRENT, RHYTHMBOX_CORE_REVISION, RHYTHMBOX_CORE_AGE)
 )
 
