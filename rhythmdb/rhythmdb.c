@@ -291,6 +291,7 @@ static void rhythmdb_add_to_stat_list (RhythmDB *db,
 				       RhythmDBEntryType *ignore_type,
 				       RhythmDBEntryType *error_type);
 static void free_entry_changes (GSList *entry_changes);
+static RhythmDBEntry *rhythmdb_add_import_error_entry (RhythmDB *db, RhythmDBEvent *event, RhythmDBEntryType *error_entry_type);
 
 static void perform_next_mount (RhythmDB *db);
 
@@ -2241,6 +2242,7 @@ rhythmdb_process_stat_event (RhythmDB *db,
 	case G_FILE_TYPE_SPECIAL:
 	case G_FILE_TYPE_MOUNTABLE:		/* hmm. */
 		rb_debug ("ignoring stat results for %s: is special", rb_refstring_get (event->real_uri));
+		rhythmdb_add_import_error_entry (db, event, event->ignore_type);
 		break;
 	}
 
