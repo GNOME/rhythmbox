@@ -1295,6 +1295,7 @@ impl_constructed (GObject *object)
 	GtkAccelGroup *accel_group;
 	GtkBuilder *builder;
 	GMenu *section;
+	GApplication *app;
 	GActionEntry actions[] = {
 		{ "podcast-add", podcast_add_action_cb },
 		{ "podcast-download", podcast_download_action_cb },
@@ -1305,6 +1306,7 @@ impl_constructed (GObject *object)
 		{ "podcast-feed-delete", podcast_feed_delete_action_cb }
 	};
 
+	app = g_application_get_default ();
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_source_parent_class, constructed, object);
 	source = RB_PODCAST_SOURCE (object);
 
@@ -1315,11 +1317,14 @@ impl_constructed (GObject *object)
 		      "accel-group", &accel_group,
 		      NULL);
 
-	_rb_add_display_page_actions (G_ACTION_MAP (g_application_get_default ()), G_OBJECT (shell), actions, G_N_ELEMENTS (actions));
+	_rb_add_display_page_actions (G_ACTION_MAP (app), G_OBJECT (shell), actions, G_N_ELEMENTS (actions));
 
 	builder = rb_builder_load ("podcast-popups.ui", NULL);
 	source->priv->feed_popup = G_MENU_MODEL (gtk_builder_get_object (builder, "podcast-feed-popup"));
 	source->priv->episode_popup = G_MENU_MODEL (gtk_builder_get_object (builder, "podcast-episode-popup"));
+	rb_application_link_shared_menus (RB_APPLICATION (app), G_MENU (source->priv->feed_popup));
+	rb_application_link_shared_menus (RB_APPLICATION (app), G_MENU (source->priv->episode_popup));
+
 	g_object_ref (source->priv->feed_popup);
 	g_object_ref (source->priv->episode_popup);
 	g_object_unref (builder);
