@@ -55,4 +55,7 @@ executable('rhythmbox-metadata', metadata_dbus_service_sources,
   link_with: librbmetadatasvc,
   dependencies: [glib, gobject, gstreamer, gstreamer_pbutils, gtk],
   include_directories: [configinc, libinc],
-  install: true)
+  install: true,
+  install_dir: get_option('libexecdir'),
+  install_rpath: rpath
+)

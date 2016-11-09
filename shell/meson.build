@@ -130,5 +130,7 @@ executable('rhythmbox', 'main.c',
     podcastinc, pluginsinc, rhythmdbinc, shellinc, sourcesinc
   ],
   link_args: ['-export-dynamic', '-Wno-undef'],
-  link_with: librhythmbox_core
+  link_with: librhythmbox_core,
+  install: true,
+  install_rpath: rpath
 )
