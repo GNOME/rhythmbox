@@ -465,6 +465,7 @@ subdir('sources')
 subdir('widgets')
 subdir('shell')
 subdir('plugins')
+subdir('remote')
 
 subdir('tests')
 
