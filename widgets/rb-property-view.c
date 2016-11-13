@@ -678,6 +678,7 @@ rb_property_view_cell_data_func (GtkTreeViewColumn *column,
 
 	g_object_set (G_OBJECT (renderer), "text", str,
 		      "weight", G_UNLIKELY (is_all) ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL,
+		      "ellipsize", PANGO_ELLIPSIZE_MIDDLE,
 		      NULL);
 	g_free (str);
 	g_free (title);
