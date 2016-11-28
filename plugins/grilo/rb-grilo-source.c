@@ -1155,7 +1155,9 @@ impl_selected (RBDisplayPage *page)
 		start_browse (source, NULL, NULL, 0);
 	}
 
-	rb_search_entry_set_mnemonic (source->priv->search_entry, TRUE);
+	if (source->priv->search_entry != NULL) {
+		rb_search_entry_set_mnemonic (source->priv->search_entry, TRUE);
+	}
 }
 
 static void
@@ -1165,7 +1167,9 @@ impl_deselected (RBDisplayPage *page)
 
 	RB_DISPLAY_PAGE_CLASS (rb_grilo_source_parent_class)->deselected (page);
 
-	rb_search_entry_set_mnemonic (source->priv->search_entry, FALSE);
+	if (source->priv->search_entry != NULL) {
+		rb_search_entry_set_mnemonic (source->priv->search_entry, FALSE);
+	}
 }
 
 static RBEntryView *
