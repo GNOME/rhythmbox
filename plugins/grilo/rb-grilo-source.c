@@ -270,6 +270,7 @@ rb_grilo_source_constructed (GObject *object)
 	GtkWidget *vbox;
 	GtkWidget *mainbox;
 	GtkAdjustment *adjustment;
+	gboolean want_quality_column = FALSE;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_grilo_source_parent_class, constructed, object);
 	source = RB_GRILO_SOURCE (object);
@@ -330,6 +331,19 @@ rb_grilo_source_constructed (GObject *object)
 		rb_entry_view_append_column (source->priv->entry_view, RB_ENTRY_VIEW_COL_DURATION, FALSE);
 		source->priv->grilo_keys = g_list_prepend (source->priv->grilo_keys,
 							   GUINT_TO_POINTER(GRL_METADATA_KEY_DURATION));
+	}
+	if (g_list_find ((GList *)source_keys, GUINT_TO_POINTER(GRL_METADATA_KEY_BITRATE))) {
+		want_quality_column = TRUE;
+		source->priv->grilo_keys = g_list_prepend (source->priv->grilo_keys,
+							   GUINT_TO_POINTER(GRL_METADATA_KEY_BITRATE));
+	}
+	if (g_list_find ((GList *)source_keys, GUINT_TO_POINTER(GRL_METADATA_KEY_MIME))) {
+		want_quality_column = TRUE;
+		source->priv->grilo_keys = g_list_prepend (source->priv->grilo_keys,
+							   GUINT_TO_POINTER(GRL_METADATA_KEY_MIME));
+	}
+	if (want_quality_column) {
+		rb_entry_view_append_column (source->priv->entry_view, RB_ENTRY_VIEW_COL_QUALITY, FALSE);
 	}
 
 	source->priv->grilo_keys = g_list_prepend (source->priv->grilo_keys, GUINT_TO_POINTER(GRL_METADATA_KEY_CHILDCOUNT));
@@ -551,6 +565,7 @@ create_entry_for_media (RhythmDB *db, RhythmDBEntryType *entry_type, GrlData *da
 {
 	RhythmDBEntry *entry;
 	RBGriloEntryData *entry_data;
+	gulong bitrate = 0;
 	const gchar *url;
 
 	url = grl_media_get_url (GRL_MEDIA (data));
@@ -582,11 +597,7 @@ create_entry_for_media (RhythmDB *db, RhythmDBEntryType *entry_type, GrlData *da
 	}
 
 	if (grl_data_has_key (data, GRL_METADATA_KEY_BITRATE)) {
-		GValue v = {0,};
-		g_value_init (&v, G_TYPE_ULONG);
-		g_value_set_ulong (&v, grl_data_get_int (data, GRL_METADATA_KEY_BITRATE));
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_BITRATE, &v);
-		g_value_unset (&v);
+		bitrate = grl_data_get_int (data, GRL_METADATA_KEY_BITRATE);
 	}
 
 	if (grl_data_has_key (data, GRL_METADATA_KEY_DURATION)) {
@@ -602,12 +613,28 @@ create_entry_for_media (RhythmDB *db, RhythmDBEntryType *entry_type, GrlData *da
 		const char *media_type;
 		media_type = rb_gst_mime_type_to_media_type (grl_data_get_string (data, GRL_METADATA_KEY_MIME));
 		if (media_type) {
+			if (rb_gst_media_type_is_lossless (media_type)) {
+				/* For lossless, rhythmdb_entry_is_lossless expects
+				 * bitrate == 0/unset, but DLNA server may report
+				 * actual bitrate. Unset bitrate to keep
+				 * rhythmdb_entry_is_lossless happy. */
+				bitrate = 0;
+			}
 			GValue v = {0,};
 			g_value_init (&v, G_TYPE_STRING);
 			g_value_set_string (&v, media_type);
 			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MEDIA_TYPE, &v);
 			g_value_unset (&v);
 		}
+	}
+
+	if (bitrate != 0) {
+		GValue v = {0,};
+		g_value_init (&v, G_TYPE_ULONG);
+		/* Grilo uses kbps and so do we. */
+		g_value_set_ulong (&v, bitrate);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_BITRATE, &v);
+		g_value_unset (&v);
 	}
 
 	if (grl_data_has_key (data, GRL_METADATA_KEY_TRACK_NUMBER)) {
