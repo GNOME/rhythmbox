@@ -92,16 +92,6 @@ rb_grilo_plugin_init (RBGriloPlugin *plugin)
 }
 
 static void
-rb_grilo_plugin_source_deleted (RBGriloSource *source, RBGriloPlugin *plugin)
-{
-	GrlSource *grilo_source;
-
-	g_object_get (source, "media-source", &grilo_source, NULL);
-	g_hash_table_remove (plugin->sources, grilo_source);
-	g_object_unref (grilo_source);
-}
-
-static void
 grilo_source_added_cb (GrlRegistry *registry, GrlSource *grilo_source, RBGriloPlugin *plugin)
 {
 	GrlPlugin *grilo_plugin;
@@ -232,28 +222,22 @@ impl_activate (PeasActivatable *plugin)
 }
 
 static void
-_delete_cb (GrlSource *grilo_source,
-	    RBSource *source,
-	    RBGriloPlugin *plugin)
-{
-	/* block the source deleted handler so we don't modify the hash table
-	 * while iterating it.
-	 */
-	g_signal_handlers_block_by_func (source, rb_grilo_plugin_source_deleted, plugin);
-	rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
-}
-
-static void
 impl_deactivate	(PeasActivatable *bplugin)
 {
-	RBGriloPlugin         *plugin = RB_GRILO_PLUGIN (bplugin);
-
-	g_hash_table_foreach (plugin->sources, (GHFunc)_delete_cb, plugin);
-	g_hash_table_destroy (plugin->sources);
-	plugin->sources = NULL;
+	RBGriloPlugin *plugin = RB_GRILO_PLUGIN (bplugin);
+	GHashTableIter iter;
+	gpointer key, value;
 
 	g_signal_handler_disconnect (plugin->registry, plugin->handler_id_source_added);
 	g_signal_handler_disconnect (plugin->registry, plugin->handler_id_source_removed);
+
+	g_hash_table_iter_init (&iter, plugin->sources);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		grl_registry_unregister_source (plugin->registry, GRL_SOURCE (key), NULL);
+		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (value));
+	}
+	g_hash_table_destroy (plugin->sources);
+	plugin->sources = NULL;
 	plugin->registry = NULL;
 
 	if (plugin->emit_cover_art_id != 0) {
