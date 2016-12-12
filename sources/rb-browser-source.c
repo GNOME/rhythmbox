@@ -207,8 +207,8 @@ rb_browser_source_dispose (GObject *object)
 	RBBrowserSource *source;
 	source = RB_BROWSER_SOURCE (object);
 
+	g_clear_pointer (&source->priv->search_query, rhythmdb_query_free);
 	g_clear_object (&source->priv->db);
-	g_clear_object (&source->priv->search_query);
 	g_clear_object (&source->priv->cached_all_query);
 	g_clear_object (&source->priv->default_search);
 	g_clear_object (&source->priv->popup);

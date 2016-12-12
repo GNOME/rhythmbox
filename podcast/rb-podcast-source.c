@@ -1590,8 +1590,8 @@ impl_dispose (GObject *object)
 
 	source = RB_PODCAST_SOURCE (object);
 
+	g_clear_pointer (&source->priv->search_query, rhythmdb_query_free);
 	g_clear_object (&source->priv->db);
-	g_clear_object (&source->priv->search_query);
 	g_clear_object (&source->priv->podcast_mgr);
 	g_clear_object (&source->priv->error_pixbuf);
 	g_clear_object (&source->priv->refresh_pixbuf);
