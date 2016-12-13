@@ -2518,6 +2518,9 @@ rb_shell_quit (RBShell *shell,
 	/* or maybe just _quit */
 	/* g_application_release (G_APPLICATION (shell->priv->application)); */
 
+	/* deselect the current page so it drops mnemonics etc. */
+	rb_display_page_deselected (shell->priv->selected_page);
+
 	rb_settings_delayed_sync (shell->priv->settings, NULL, NULL, NULL);
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->window));
 
