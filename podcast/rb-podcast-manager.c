@@ -257,6 +257,7 @@ rb_podcast_manager_constructed (GObject *object)
 	RBPodcastManager *pd = RB_PODCAST_MANAGER (object);
 	GFileOutputStream *st;
 	char *ts_file_path;
+	GError *error = NULL;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_manager_parent_class, constructed, object);
 
@@ -276,10 +277,18 @@ rb_podcast_manager_constructed (GObject *object)
 	g_free (ts_file_path);
 
 	/* create it if it doesn't exist */
-	st = g_file_create (pd->priv->timestamp_file, G_FILE_CREATE_NONE, NULL, NULL);
+	st = g_file_create (pd->priv->timestamp_file, G_FILE_CREATE_NONE, NULL, &error);
 	if (st != NULL) {
+		rb_debug ("podcast update file created");
 		g_output_stream_close (G_OUTPUT_STREAM (st), NULL, NULL);
 		g_object_unref (st);
+	} else {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_EXISTS)) {
+			rb_debug ("unable to create podcast timestamp file");
+			g_clear_object (&pd->priv->timestamp_file);
+		} else {
+			rb_debug ("podcast timestamp file already exists");
+		}
 	}
 
 	pd->priv->art_store = rb_ext_db_new ("album-art");
@@ -549,6 +558,11 @@ rb_podcast_manager_start_update_timer (RBPodcastManager *pd)
 		pd->priv->source_sync = 0;
 	}
 
+	if (pd->priv->timestamp_file == NULL) {
+		rb_debug ("unable to record podcast update time, so periodic updates are disabled");
+		return;
+	}
+
 	interval = g_settings_get_enum (pd->priv->settings,
 					PODCAST_DOWNLOAD_INTERVAL);
 	if (interval == PODCAST_INTERVAL_MANUAL) {
@@ -564,6 +578,7 @@ rb_podcast_manager_start_update_timer (RBPodcastManager *pd)
 				NULL);
 	if (fi != NULL) {
 		last_time = g_file_info_get_attribute_uint64 (fi, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+		g_object_unref (fi);
 	} else {
 		last_time = 0;
 	}
@@ -651,15 +666,17 @@ rb_podcast_manager_update_feeds_cb (gpointer data)
 
 	pd->priv->source_sync = 0;
 
-	g_file_set_attribute_uint64 (pd->priv->timestamp_file,
-				     G_FILE_ATTRIBUTE_TIME_MODIFIED,
-				     (guint64) time (NULL),
-				     G_FILE_QUERY_INFO_NONE,
-				     NULL,
-				     NULL);
-
-	rb_podcast_manager_update_feeds (pd);
-	rb_podcast_manager_start_update_timer (pd);
+	if (g_file_set_attribute_uint64 (pd->priv->timestamp_file,
+					 G_FILE_ATTRIBUTE_TIME_MODIFIED,
+					 (guint64) time (NULL),
+					 G_FILE_QUERY_INFO_NONE,
+					 NULL,
+					 NULL)) {
+		rb_podcast_manager_update_feeds (pd);
+		rb_podcast_manager_start_update_timer (pd);
+	} else {
+		rb_debug ("unable to update podcast timestamp");
+	}
 	return FALSE;
 }
 
