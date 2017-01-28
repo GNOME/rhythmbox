@@ -513,10 +513,10 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGst *mp)
 		if (emit) {
 			if (message_from_sink (mp->priv->audio_sink, message)) {
 				rb_debug ("got error from sink: %s (%s)", error->message, debug);
-				/* Translators: the parameter here is an error message */
 				g_set_error (&sig_error,
 					     RB_PLAYER_ERROR,
 					     code,
+					     /* Translators: the parameter here is an error message */
 					     _("Failed to open output device: %s"),
 					     error->message);
 			} else {

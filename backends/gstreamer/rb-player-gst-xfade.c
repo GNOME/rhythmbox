@@ -2985,10 +2985,10 @@ start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 					g_free (debug);
 
 					if (error != NULL && *error == NULL) {
-						/* Translators: the parameter here is an error message */
 						g_set_error (error,
 							     RB_PLAYER_ERROR,
 							     RB_PLAYER_ERROR_INTERNAL,		/* ? */
+							     /* Translators: the parameter here is an error message */
 							     _("Failed to open output device: %s"),
 							     gst_error->message);
 					}

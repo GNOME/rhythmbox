@@ -114,11 +114,11 @@ rb_audioscrobbler_radio_type_get_url (RBAudioscrobblerRadioType type)
 	return radio_urls[type];
 }
 
-/* Translators: I have chosen these names for the radio stations based upon
- * what last.fm's website uses or what I thought to be sensible.
- */
 static const char* radio_names[] = {
 
+	/* Translators: I have chosen these names for the radio stations based upon
+	 * what last.fm's website uses or what I thought to be sensible.
+	 */
 	/* Translators: station is built from artists similar to the artist %s */
 	N_("%s Radio"),
 	/* Translators: station is built from the artist %s's top fans */
