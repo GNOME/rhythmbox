@@ -293,7 +293,8 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 		if filename.startswith(self.artcache) is False:
 			return None
 
-		return os.path.normpath(filename)
+		rfn = filename[len(self.artcache):].lstrip('/')
+		return os.path.normpath(rfn)
 
 
 	def entry_details(self, entry):
@@ -436,7 +437,7 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 			msg.set_status(404)
 			return
 
-		if re.match("/art/[a-zA-Z0-9/]+", path) is None:
+		if re.match("/art/[^/][a-zA-Z0-9/]+", path) is None:
 			msg.set_status(404)
 			return
 
