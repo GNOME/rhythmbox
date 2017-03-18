@@ -211,8 +211,7 @@ G_DEFINE_TYPE_WITH_CODE(RBPlayerGstXFade, rb_player_gst_xfade, G_TYPE_OBJECT,
 #define FADE_OUT_DONE_MESSAGE	"rb-fade-out-done"
 #define FADE_IN_DONE_MESSAGE	"rb-fade-in-done"
 #define STREAM_EOS_MESSAGE	"rb-stream-eos"
-
-#define STREAM_URI_TAG		"rb-stream-uri"
+#define STREAM_TAGS_MESSAGE	"rb-stream-tags"
 
 #define PAUSE_FADE_LENGTH	(GST_SECOND / 2)
 
@@ -594,35 +593,13 @@ static RBXFadeStream *
 find_stream_for_message (RBPlayerGstXFade *player, GstMessage *message)
 {
 	GstObject *message_src;
-	RBXFadeStream *stream;
 
 	/* first see if the message comes from an element in the stream bin */
 	message_src = GST_MESSAGE_SRC (message);
 	if (GST_IS_PAD (message_src)) {
 		message_src = GST_OBJECT_PARENT (message_src);
 	}
-	stream = find_stream_by_element (player, GST_ELEMENT (message_src));
-	if (stream != NULL)
-		return stream;
-
-	/* tag messages are emitted by the sink, so we can't find the message
-	 * source in a stream bin.  instead, we add a tag to the stream containing
-	 * the stream uri and use that to locate the stream.
-	 */
-	if (GST_MESSAGE_TYPE (message) == GST_MESSAGE_TAG) {
-		GstTagList *tags;
-		char *loc;
-		gst_message_parse_tag (message, &tags);
-
-		if (gst_tag_list_get_string (tags, STREAM_URI_TAG, &loc)) {
-			stream = find_stream_by_uri (player, loc);
-			g_free (loc);
-			if (stream)
-				return stream;
-		}
-	}
-
-	return NULL;
+	return find_stream_by_element (player, GST_ELEMENT (message_src));
 }
 
 static void
@@ -733,8 +710,6 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 			      G_TYPE_STRING);
 
 	g_type_class_add_private (klass, sizeof (RBPlayerGstXFadePrivate));
-
-	gst_tag_register_static (STREAM_URI_TAG, GST_TAG_FLAG_META, G_TYPE_STRING, "rb stream uri", "rb stream uri", gst_tag_merge_use_first);
 }
 
 static void
@@ -1752,24 +1727,6 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 		g_free (debug);
 		break;
 	}
-	case GST_MESSAGE_TAG:
-		if (stream == NULL) {
-			rb_debug ("got tag message for unknown stream");
-		} else {
-			GstTagList *tags;
-			gst_message_parse_tag (message, &tags);
-
-			g_mutex_lock (&stream->lock);
-			if (stream->emitted_playing) {
-				gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, stream);
-				gst_tag_list_free (tags);
-			} else {
-				stream->tags = g_list_append (stream->tags, tags);
-			}
-			g_mutex_unlock (&stream->lock);
-		}
-		break;
-
 	case GST_MESSAGE_DURATION:
 		if (stream == NULL) {
 			rb_debug ("got duration message for unknown stream");
@@ -1877,6 +1834,23 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				rb_debug ("got EOS message for stream %s in REUSING state", stream->uri);
 
 				unlink_reuse_relink (player, stream);
+			}
+		} else if (strcmp (name, STREAM_TAGS_MESSAGE) == 0) {
+			GstTagList *tags;
+			const GValue *value;
+
+			if (stream != NULL) {
+				value = gst_structure_get_value (structure, "tags");
+				tags = GST_TAG_LIST (g_value_get_boxed (value));
+
+				g_mutex_lock (&stream->lock);
+				if (stream->emitted_playing) {
+					gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, stream);
+					gst_tag_list_free (tags);
+				} else {
+					stream->tags = g_list_append (stream->tags, tags);
+				}
+				g_mutex_unlock (&stream->lock);
 			}
 
 		} else {
@@ -2037,65 +2011,6 @@ stream_source_setup_cb (GstElement *decoder, GstElement *source, RBXFadeStream *
 	g_signal_emit (stream->player, signals[PREPARE_SOURCE], 0, stream->uri, source);
 }
 
-static GstPadProbeReturn
-drop_events (GstPad *pad, GstPadProbeInfo *info, gpointer data)
-{
-	return GST_PAD_PROBE_DROP;
-}
-
-static void
-add_stream_uri_tag (GstPad *pad, RBXFadeStream *stream)
-{
-	GstTagList *t;
-	GstElement *e;
-	GstPad *target;
-	GstPad *t2;
-	GstPad *sink;
-	gulong probe_id;
-
-	t = gst_tag_list_new (STREAM_URI_TAG, stream->uri, NULL);
-	gst_tag_list_set_scope (t, GST_TAG_SCOPE_STREAM);
-
-	/* uridecodebin src -> decodebin src */
-	t2 = gst_ghost_pad_get_target (GST_GHOST_PAD (pad));
-	if (GST_IS_GHOST_PAD (t2) == FALSE) {
-		/* raw sources get exposed directly */
-		rb_debug ("not setting stream uri for raw stream");
-		gst_object_unref (t2);
-		gst_tag_list_unref (t);
-		return;
-	}
-
-	/* decodebin src -> actual decoder src */
-	target = gst_ghost_pad_get_target (GST_GHOST_PAD (t2));
-	probe_id = gst_pad_add_probe (target, GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM, drop_events, NULL, NULL);
-
-	/*
-	 * if the decoder is not a GstAudioDecoder, it may send the tag event
-	 * directly through its sink pad, which would cause deadlock.  since
-	 * there are few examples of decoders that do not use the
-	 * GstAudioDecoder base class, and the most notable one (modplug)
-	 * doesn't provide interesting tag events, not having stream uri tags
-	 * won't be a problem.
-	 */
-
-	e = GST_ELEMENT (gst_pad_get_parent (target));
-	if (GST_IS_AUDIO_DECODER (e)) {
-		sink = gst_element_get_static_pad (e, "sink");
-		gst_pad_send_event (sink, gst_event_new_tag (t));
-		gst_object_unref (sink);
-	} else {
-		rb_debug ("not setting stream uri tag for %s", GST_OBJECT_NAME (e));
-		gst_tag_list_unref (t);
-	}
-	gst_object_unref (e);
-
-	gst_pad_remove_probe (target, probe_id);
-
-	gst_object_unref (target);
-	gst_object_unref (t2);
-}
-
 /* links uridecodebin src pads to the rest of the output pipeline */
 static void
 stream_pad_added_cb (GstElement *decoder, GstPad *pad, RBXFadeStream *stream)
@@ -2125,9 +2040,6 @@ stream_pad_added_cb (GstElement *decoder, GstPad *pad, RBXFadeStream *stream)
 		/* probably should never happen */
 		rb_debug ("hmm, decoder is already linked");
 	} else {
-		/* push a location tag through the decoder so we can use it to identify the stream later */
-		add_stream_uri_tag (pad, stream);
-
 		rb_debug ("got decoded audio pad for stream %s", stream->uri);
 		vpad = gst_element_get_static_pad (stream->identity, "sink");
 		gst_pad_link (pad, vpad);
@@ -2171,6 +2083,8 @@ stream_src_event_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 	GstMessage *msg;
 	GstEvent *event;
 	GstStructure *s;
+	GstTagList *tags;
+	GValue v = {0,};
 
 	event = GST_EVENT (info->data);
 
@@ -2198,6 +2112,19 @@ stream_src_event_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 	case GST_EVENT_FLUSH_START:
 		rb_debug ("dropping %s event for stream %s", GST_EVENT_TYPE_NAME (event), stream->uri);
 		return GST_PAD_PROBE_DROP;
+
+	case GST_EVENT_TAG:
+		rb_debug ("got tags from stream %s", stream->uri);
+		gst_event_parse_tag (event, &tags);
+
+		s = gst_structure_new_empty (STREAM_TAGS_MESSAGE);
+		g_value_init (&v, GST_TYPE_TAG_LIST);
+		g_value_set_boxed (&v, gst_tag_list_ref (tags));
+		gst_structure_take_value (s, "tags", &v);
+
+		msg = gst_message_new_application (GST_OBJECT (stream), s);
+		gst_element_post_message (GST_ELEMENT (stream), msg);
+		break;
 
 	default:
 		rb_debug ("got %s event for stream %s", GST_EVENT_TYPE_NAME (event), stream->uri);
@@ -2365,7 +2292,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 			       stream->volume,
 			       NULL);
 
-	if (rb_debug_matches ("check-imperfect", __FILE__)) {
+	if (rb_debug_matches ("check-imperfect", "check-imperfect")) {
 
 		if (rb_debug_matches ("check-imperfect-timestamp", __FILE__)) {
 			g_object_set (stream->identity, "check-imperfect-timestamp", TRUE, NULL);
