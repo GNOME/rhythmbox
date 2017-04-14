@@ -7,11 +7,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-10-07 12:25+0000\n"
-"PO-Revision-Date: 2014-10-10 13:34+0700\n"
-"Last-Translator: Andika Triwidada <andika@gmail.com>\n"
+"POT-Creation-Date: 2017-02-26 08:46+0000\n"
+"PO-Revision-Date: 2017-04-09 08:06+0700\n"
+"Last-Translator: Kukuh Syafaat <syafaatkukuh@gmail.com>\n"
 "Language-Team: Indonesian <gnome@i15n.org>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
@@ -19,68 +19,70 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.7\n"
+"X-Generator: Poedit 1.8.11\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:512
+#: ../backends/gstreamer/rb-encoder-gst.c:659
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Tak bisa membuat elemen muara GStreamer untuk ditulisi %s"
 
+#. Translators: the parameter here is an error message
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:528
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2900
+#. Translators: the parameter here is an error message
+#: ../backends/gstreamer/rb-player-gst.c:520
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2992
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Gagal membuka perangkat keluaran: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:676
+#: ../backends/gstreamer/rb-player-gst.c:669
 #, c-format
 msgid "Failed to create playbin element; check your GStreamer installation"
 msgstr "Gagal membuat elemen playbin; periksa instalasi GStreamer Anda"
 
-#: ../backends/gstreamer/rb-player-gst.c:717
+#: ../backends/gstreamer/rb-player-gst.c:700
 #, c-format
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr "Gagal membuat elemen %s; periksa instalasi GStreamer Anda"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1112
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1126
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1132
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1146
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Gagal menaut stream baru ke dalam jalur pipa GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1170
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1190
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Gagal memulai stream baru"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2827
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2905
 #, c-format
 msgid "Failed to open output device"
 msgstr "Gagal membuka perangkat keluaran"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3176
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3250
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3294
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3373
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Gagal membuat elemen GStreamer; periksa instalasi Anda"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3190
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3303
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Gagal membuat elemen keluaran audio; periksa instalasi Anda"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3224
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3267
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3294
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3304
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3314
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3337
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3390
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3417
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3427
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3437
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Gagal menaut jalur pipa GStreamer; periksa instalasi Anda"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3409
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3532
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Gagal membuat jalur pipa GStreamer untuk memutar %s"
@@ -97,7 +99,18 @@ msgstr "Baru Saja Diputar"
 msgid "My Top Rated"
 msgstr "Pilihanku"
 
-#: ../data/rhythmbox.appdata.xml.in.h:1
+#: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
+#: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2404
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
+#: ../data/rhythmbox-device.desktop.in.in.h:4
+msgid "Play and organize your music collection"
+msgstr "Putar dan atur koleksi musik"
+
+#: ../data/rhythmbox.appdata.xml.in.h:3
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -110,19 +123,13 @@ msgstr ""
 "portabel (termasuk telepon), dan layanan musik internet seperti Last.fm dan "
 "Magnatune."
 
-#: ../data/rhythmbox.appdata.xml.in.h:2
+#: ../data/rhythmbox.appdata.xml.in.h:4
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
 msgstr ""
 "Rhythmbox adalah Perangkat lunak bebas, berbasis pada GTK+ dan GStreamer, "
 "dan dapat dikembangkan melalui pengaya yang ditulis dalam Python atau C."
-
-#: ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
-#: ../shell/rb-shell.c:493 ../shell/rb-shell.c:2372
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 #: ../data/rhythmbox-device.desktop.in.in.h:2
@@ -133,11 +140,6 @@ msgstr "Pemutar Musik"
 #: ../data/rhythmbox-device.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
 msgstr "Rhythmbox Pemutar Musik"
-
-#: ../data/rhythmbox.desktop.in.in.h:4
-#: ../data/rhythmbox-device.desktop.in.in.h:4
-msgid "Play and organize your music collection"
-msgstr "Putar dan atur koleksi musik"
 
 #: ../data/rhythmbox.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
@@ -172,7 +174,7 @@ msgstr "Bilah Status"
 msgid "Song Position Slider"
 msgstr "Penggeser Posisi Lagu"
 
-#: ../data/ui/app-menu.ui.h:8
+#: ../data/ui/app-menu.ui.h:8 ../plugins/artsearch/songinfo.py:64
 msgid "Album Art"
 msgstr "Seni Album"
 
@@ -192,7 +194,7 @@ msgstr "P_lugin"
 msgid "_Preferences"
 msgstr "_Preferensi"
 
-#: ../data/ui/app-menu.ui.h:13
+#: ../data/ui/app-menu.ui.h:13 ../shell/rb-shell-preferences.c:195
 msgid "_Help"
 msgstr "_Bantuan"
 
@@ -205,8 +207,7 @@ msgid "_Quit"
 msgstr "_Keluar"
 
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
-#: ../data/ui/podcast-popups.ui.h:9
-#: ../plugins/magnatune/magnatune-popup.ui.h:1
+#: ../data/ui/podcast-popups.ui.h:9 ../plugins/magnatune/magnatune-popup.ui.h:1
 msgid "Add to Queue"
 msgstr "Tambah ke Antrian"
 
@@ -273,11 +274,15 @@ msgstr "Buat daftar putar yang otomatis dimutakhirkan dimana:"
 msgid "A_dd if any criteria are matched"
 msgstr "Tambahkan bila a_da kriteria yang cocok"
 
-#: ../data/ui/create-playlist.ui.h:7
+#: ../data/ui/create-playlist.ui.h:7 ../widgets/rb-uri-dialog.c:161
+msgid "_Add"
+msgstr "T_ambah"
+
+#: ../data/ui/create-playlist.ui.h:8
 msgid "_Limit to: "
 msgstr "_Batasi hingga: "
 
-#: ../data/ui/create-playlist.ui.h:8
+#: ../data/ui/create-playlist.ui.h:9
 msgid "_When sorted by:"
 msgstr "_Saat diurutkan menurut:"
 
@@ -321,6 +326,14 @@ msgstr "_Jangan dipilih semuanya"
 msgid "Add to Play Queue"
 msgstr "Tambah ke Antrian Putar"
 
+#: ../data/ui/encoding-settings.ui.h:1
+msgid "_Install additional software required to use this format"
+msgstr "Pasang perangkat lunak tambahan untuk memakai format _ini"
+
+#: ../data/ui/encoding-settings.ui.h:2
+msgid "Transcode lossless files into this format"
+msgstr "Transkode berkas lossless dalam format ini"
+
 #: ../data/ui/general-prefs.ui.h:1
 msgid "Browser Views"
 msgstr "Yang ditampilkan pada Pemilih Lagu"
@@ -346,60 +359,60 @@ msgid "Track _number"
 msgstr "_Nomor trek"
 
 #: ../data/ui/general-prefs.ui.h:7
-msgid "_Artist"
-msgstr "_Artis"
-
-#: ../data/ui/general-prefs.ui.h:8
-msgid "_Composer"
-msgstr "_Komponis"
-
-#: ../data/ui/general-prefs.ui.h:9
-msgid "A_lbum"
-msgstr "A_lbum"
-
-#: ../data/ui/general-prefs.ui.h:10
-msgid "_Year"
-msgstr "_Tahun"
-
-#: ../data/ui/general-prefs.ui.h:11
 msgid "_Last played"
 msgstr "Terakhir diputa_r"
 
+#: ../data/ui/general-prefs.ui.h:8
+msgid "_Artist"
+msgstr "_Artis"
+
+#: ../data/ui/general-prefs.ui.h:9
+msgid "_Composer"
+msgstr "_Komponis"
+
+#: ../data/ui/general-prefs.ui.h:10
+msgid "A_lbum"
+msgstr "A_lbum"
+
+#: ../data/ui/general-prefs.ui.h:11
+msgid "_Year"
+msgstr "_Tahun"
+
 #: ../data/ui/general-prefs.ui.h:12
-msgid "_Genre"
-msgstr "Jenis _musik"
+msgid "_Quality"
+msgstr "_Kualitas"
 
 #: ../data/ui/general-prefs.ui.h:13
-msgid "Da_te added"
-msgstr "_Tanggal ditambahkan"
+msgid "Lo_cation"
+msgstr "Lo_kasi"
 
 #: ../data/ui/general-prefs.ui.h:14
-msgid "_Play count"
-msgstr "Sudah di_putar sebanyak"
+msgid "Ti_me"
+msgstr "_Durasi"
 
 #: ../data/ui/general-prefs.ui.h:15
-msgid "C_omment"
-msgstr "K_omentar"
+msgid "_Rating"
+msgstr "_Rating"
 
 #: ../data/ui/general-prefs.ui.h:16
 msgid "_BPM"
 msgstr "_BPM"
 
 #: ../data/ui/general-prefs.ui.h:17
-msgid "_Rating"
-msgstr "_Rating"
+msgid "C_omment"
+msgstr "K_omentar"
 
 #: ../data/ui/general-prefs.ui.h:18
-msgid "Ti_me"
-msgstr "_Durasi"
+msgid "_Play count"
+msgstr "Sudah di_putar sebanyak"
 
 #: ../data/ui/general-prefs.ui.h:19
-msgid "Lo_cation"
-msgstr "Lo_kasi"
+msgid "Da_te added"
+msgstr "_Tanggal ditambahkan"
 
 #: ../data/ui/general-prefs.ui.h:20
-msgid "_Quality"
-msgstr "_Kualitas"
+msgid "_Genre"
+msgstr "Jenis _musik"
 
 #: ../data/ui/import-dialog.ui.h:1
 msgid "Select a location containing music to add to your library:"
@@ -431,7 +444,7 @@ msgstr "Berkas _musik ditempatkan di:"
 
 #: ../data/ui/library-prefs.ui.h:3
 msgid "_Browse..."
-msgstr "_Cari..."
+msgstr "Ram_ban..."
 
 #: ../data/ui/library-prefs.ui.h:4
 msgid "_Watch my library for new files"
@@ -457,16 +470,9 @@ msgstr "Format yang disukai:"
 msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
 msgstr "Artis/Artis - Album/Artis (Album) - 01 - Judul.ogg"
 
-#: ../data/ui/library-prefs.ui.h:10
-msgid "Format settings:"
-msgstr "Pengaturan format:"
-
-#: ../data/ui/library-prefs.ui.h:11
-msgid "_Install additional software required to use this format"
-msgstr "Pasang perangkat lunak tambahan untuk memakai format _ini"
-
 #: ../data/ui/library-toolbar.ui.h:1 ../data/ui/playlist-toolbar.ui.h:1
 #: ../data/ui/podcast-toolbar.ui.h:1 ../data/ui/queue-toolbar.ui.h:1
+#: ../plugins/android/android-toolbar.ui.h:1
 #: ../plugins/audiocd/audiocd-toolbar.ui.h:1
 #: ../plugins/daap/daap-toolbar.ui.h:1
 #: ../plugins/fmradio/fmradio-toolbar.ui.h:1
@@ -478,7 +484,8 @@ msgid "Edit"
 msgstr "Sunting"
 
 #: ../data/ui/library-toolbar.ui.h:2 ../data/ui/playlist-toolbar.ui.h:2
-#: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/daap/daap-toolbar.ui.h:2
+#: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/android/android-toolbar.ui.h:2
+#: ../plugins/daap/daap-toolbar.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:2
 #: ../plugins/grilo/rb-grilo-source.c:346 ../plugins/ipod/ipod-toolbar.ui.h:2
 #: ../plugins/iradio/iradio-toolbar.ui.h:2
@@ -488,7 +495,8 @@ msgid "Browse"
 msgstr "Ramban"
 
 #: ../data/ui/library-toolbar.ui.h:3 ../data/ui/playlist-toolbar.ui.h:3
-#: ../data/ui/podcast-toolbar.ui.h:3 ../plugins/daap/daap-toolbar.ui.h:3
+#: ../data/ui/podcast-toolbar.ui.h:3 ../plugins/android/android-toolbar.ui.h:3
+#: ../plugins/daap/daap-toolbar.ui.h:3
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:3
 #: ../plugins/ipod/ipod-toolbar.ui.h:3 ../plugins/iradio/iradio-toolbar.ui.h:3
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:3
@@ -499,31 +507,45 @@ msgstr "Tampilkan Semua"
 msgid "Media Player Properties"
 msgstr "Properti Pemutar Musik"
 
-#: ../data/ui/media-player-properties.ui.h:2
+#: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
+#: ../plugins/iradio/rb-station-properties-dialog.c:182
+#: ../podcast/rb-feed-podcast-properties-dialog.c:130
+#: ../podcast/rb-podcast-properties-dialog.c:318 ../shell/rb-application.c:165
+#: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:377
+#: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
+msgid "_Close"
+msgstr "_Tutup"
+
+#: ../data/ui/media-player-properties.ui.h:3
 msgid "Information"
 msgstr "Informasi"
 
 #. Translators: This refers to the usage of media space
-#: ../data/ui/media-player-properties.ui.h:4
+#: ../data/ui/media-player-properties.ui.h:5
 msgid "Volume usage"
 msgstr "Pemakaian ruang"
 
-#: ../data/ui/media-player-properties.ui.h:5
+#: ../data/ui/media-player-properties.ui.h:6
+msgid "Preferred format"
+msgstr "Format yang disukai"
+
+#: ../data/ui/media-player-properties.ui.h:7
 #: ../data/ui/podcast-feed-properties.ui.h:6
 #: ../data/ui/podcast-properties.ui.h:5 ../data/ui/song-info-multiple.ui.h:11
 #: ../data/ui/song-info.ui.h:15 ../plugins/iradio/station-properties.ui.h:4
 msgid "Basic"
 msgstr "Ringkas"
 
-#: ../data/ui/media-player-properties.ui.h:6 ../data/ui/sync-dialog.ui.h:1
+#: ../data/ui/media-player-properties.ui.h:8 ../data/ui/sync-dialog.ui.h:1
 msgid "Sync Preferences"
 msgstr "Preferensi Penyelarasan"
 
-#: ../data/ui/media-player-properties.ui.h:7 ../data/ui/sync-dialog.ui.h:2
+#: ../data/ui/media-player-properties.ui.h:9 ../data/ui/sync-dialog.ui.h:2
 msgid "Sync Preview"
 msgstr "Pratinjau Penyelarasan"
 
-#: ../data/ui/media-player-properties.ui.h:8
+#: ../data/ui/media-player-properties.ui.h:10
+#: ../plugins/android/android-toolbar.ui.h:5
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:6
 #: ../plugins/ipod/ipod-toolbar.ui.h:6 ../plugins/mtpdevice/mtp-toolbar.ui.h:6
 msgid "Sync"
@@ -573,11 +595,25 @@ msgstr "Menurut ekstensi"
 msgid "Save Playlist"
 msgstr "Simpan Daftar Putar"
 
-#: ../data/ui/playlist-save.ui.h:3
+#: ../data/ui/playlist-save.ui.h:3 ../plugins/artsearch/songinfo.py:135
+#: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:534
+#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:187
+#: ../widgets/rb-alert-dialog.c:384 ../widgets/rb-alert-dialog.c:401
+#: ../widgets/rb-dialog.c:131 ../widgets/rb-dialog.c:139
+#: ../widgets/rb-query-creator.c:191 ../widgets/rb-uri-dialog.c:158
+msgid "_Cancel"
+msgstr "_Batal"
+
+#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:202
+#: ../widgets/rb-dialog.c:140
+msgid "_Save"
+msgstr "_Simpan"
+
+#: ../data/ui/playlist-save.ui.h:5
 msgid "Select playlist format:"
 msgstr "Pilih format daftar putar:"
 
-#: ../data/ui/playlist-save.ui.h:4
+#: ../data/ui/playlist-save.ui.h:6
 msgid "Playlist format"
 msgstr "Format daftar putar"
 
@@ -657,7 +693,8 @@ msgstr "Mutakhirkan Asupan Podcast Baru"
 msgid "Delete Podcast Feed"
 msgstr "Hapus Asupan Podcast"
 
-#: ../data/ui/podcast-popups.ui.h:5 ../plugins/fmradio/fmradio-popup.ui.h:2
+#: ../data/ui/podcast-popups.ui.h:5 ../plugins/android/android-toolbar.ui.h:4
+#: ../plugins/fmradio/fmradio-popup.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:4
 #: ../plugins/ipod/ipod-toolbar.ui.h:4 ../plugins/iradio/iradio-popup.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:4
@@ -673,7 +710,7 @@ msgid "Cancel Download"
 msgstr "Batalkan Unduhan"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1255 ../sources/rb-media-player-source.c:933
+#: ../podcast/rb-podcast-source.c:1234 ../sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Hapus"
 
@@ -698,12 +735,12 @@ msgid "Podcast Downloads"
 msgstr "Unduhan Podcast"
 
 #: ../data/ui/podcast-prefs.ui.h:6
-msgid "_Download location:"
-msgstr "Lokasi un_duh:"
-
-#: ../data/ui/podcast-prefs.ui.h:7
 msgid "Check for _new episodes:"
 msgstr "_Periksa episode baru:"
+
+#: ../data/ui/podcast-prefs.ui.h:7
+msgid "_Download location:"
+msgstr "Lokasi un_duh:"
 
 #: ../data/ui/podcast-prefs.ui.h:8
 msgid "Select Folder For Podcasts"
@@ -765,11 +802,11 @@ msgstr "Acak Antrian Putar"
 msgid "Clear Play Queue"
 msgstr "Bersihkan Antrian Putar"
 
-#: ../data/ui/queue-toolbar.ui.h:2 ../shell/rb-shell-player.c:3279
+#: ../data/ui/queue-toolbar.ui.h:2 ../shell/rb-shell-player.c:3291
 msgid "Shuffle"
 msgstr "Acak"
 
-#: ../data/ui/queue-toolbar.ui.h:3
+#: ../data/ui/queue-toolbar.ui.h:3 ../plugins/artsearch/songinfo.py:52
 msgid "Clear"
 msgstr "Bersihkan"
 
@@ -805,7 +842,7 @@ msgstr "Album a_rtis:"
 msgid "_Composer:"
 msgstr "_Komponis:"
 
-#. To translators: the context is 'disc 1 of 2'
+#. To translators: part of a phrase, for example, disc 1 of 2
 #: ../data/ui/song-info-multiple.ui.h:9 ../data/ui/song-info.ui.h:13
 msgid "of"
 msgstr "dari"
@@ -888,9 +925,9 @@ msgstr "Berkas yang dihapus:"
 
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
-#: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3661 ../widgets/rb-entry-view.c:940
-#: ../widgets/rb-entry-view.c:1564 ../widgets/rb-entry-view.c:1577
+#: ../plugins/iradio/rb-station-properties-dialog.c:496
+#: ../rhythmdb/rhythmdb.c:3800 ../widgets/rb-entry-view.c:943
+#: ../widgets/rb-entry-view.c:1567 ../widgets/rb-entry-view.c:1580
 #: ../widgets/rb-song-info.c:1545
 msgid "Never"
 msgstr "Tak pernah"
@@ -934,94 +971,99 @@ msgstr "%d %b %Y"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:669
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
+#: ../plugins/android/rb-android-source.c:687
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
+#: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:587
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:591
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
-#: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
-#: ../plugins/generic-player/rb-generic-player-source.c:1157
-#: ../plugins/ipod/rb-ipod-source.c:657
-#: ../plugins/iradio/rb-iradio-source.c:539
-#: ../plugins/iradio/rb-iradio-source.c:1060
-#: ../plugins/iradio/rb-station-properties-dialog.c:489
+#: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:132
+#: ../plugins/generic-player/rb-generic-player-source.c:1033
+#: ../plugins/ipod/rb-ipod-source.c:651
+#: ../plugins/iradio/rb-iradio-source.c:525
+#: ../plugins/iradio/rb-iradio-source.c:1046
+#: ../plugins/iradio/rb-station-properties-dialog.c:485
 #: ../plugins/lyrics/lyrics.py:69 ../plugins/lyrics/lyrics.py:71
 #: ../plugins/mtpdevice/rb-mtp-source.c:649
-#: ../plugins/mtpdevice/rb-mtp-source.c:1132
-#: ../plugins/mtpdevice/rb-mtp-source.c:1518
-#: ../plugins/notification/rb-notification-plugin.c:496
+#: ../plugins/mtpdevice/rb-mtp-source.c:1142
+#: ../plugins/mtpdevice/rb-mtp-source.c:1491
+#: ../plugins/notification/rb-notification-plugin.c:510
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1891
-#: ../podcast/rb-podcast-manager.c:1990
-#: ../podcast/rb-podcast-properties-dialog.c:622
-#: ../podcast/rb-podcast-properties-dialog.c:717
-#: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:202
-#: ../remote/dbus/rb-client.c:715 ../rhythmdb/rhythmdb.c:2049
-#: ../rhythmdb/rhythmdb.c:2055 ../rhythmdb/rhythmdb.c:2070
-#: ../rhythmdb/rhythmdb.c:2104 ../rhythmdb/rhythmdb.c:5429
-#: ../rhythmdb/rhythmdb.c:5434 ../rhythmdb/rhythmdb-tree.c:1360
+#: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1908
+#: ../podcast/rb-podcast-manager.c:2007
+#: ../podcast/rb-podcast-properties-dialog.c:639
+#: ../podcast/rb-podcast-properties-dialog.c:703
+#: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
+#: ../remote/dbus/rb-client.c:728 ../rhythmdb/rhythmdb.c:2066
+#: ../rhythmdb/rhythmdb.c:2072 ../rhythmdb/rhythmdb.c:2087
+#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5564
+#: ../rhythmdb/rhythmdb.c:5570 ../rhythmdb/rhythmdb.c:5575
+#: ../rhythmdb/rhythmdb.c:5586 ../rhythmdb/rhythmdb.c:5590
+#: ../rhythmdb/rhythmdb-entry-type.c:301
+#: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
 #: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
-#: ../rhythmdb/rhythmdb-tree.c:1372 ../shell/rb-shell-player.c:870
-#: ../shell/rb-shell-player.c:2717 ../shell/rb-shell-player.c:2719
-#: ../widgets/rb-entry-view.c:992 ../widgets/rb-entry-view.c:1014
-#: ../widgets/rb-entry-view.c:1505 ../widgets/rb-entry-view.c:1517
-#: ../widgets/rb-entry-view.c:1529 ../widgets/rb-header.c:1262
-#: ../widgets/rb-header.c:1288 ../widgets/rb-song-info.c:949
+#: ../rhythmdb/rhythmdb-tree.c:1372 ../shell/rb-shell-player.c:869
+#: ../shell/rb-shell-player.c:2714 ../shell/rb-shell-player.c:2716
+#: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
+#: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1274
+#: ../widgets/rb-header.c:1300 ../widgets/rb-song-info.c:949
 #: ../widgets/rb-song-info.c:961 ../widgets/rb-song-info.c:1233
 #: ../widgets/rb-song-info.c:1572
 msgid "Unknown"
 msgstr "Tidak diketahui"
 
-#: ../lib/rb-file-helpers.c:451
+#: ../lib/rb-file-helpers.c:471
 #, c-format
 msgid "Too many symlinks"
 msgstr "Terlalu banyak symlink"
 
-#: ../lib/rb-file-helpers.c:1285
+#: ../lib/rb-file-helpers.c:1305
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Tak bisa mendapat ruang bebas pada %s: %s"
 
-#: ../lib/rb-util.c:650 ../plugins/context/tmpl/album-tmpl.html:21
-#: ../remote/dbus/rb-client.c:204
+#: ../lib/rb-util.c:566 ../plugins/context/tmpl/album-tmpl.html:21
+#: ../remote/dbus/rb-client.c:217
 #, c-format
 msgid "%d:%02d"
 msgstr "%d: %02d"
 
-#: ../lib/rb-util.c:652 ../plugins/context/tmpl/album-tmpl.html:19
-#: ../remote/dbus/rb-client.c:206
+#: ../lib/rb-util.c:568 ../plugins/context/tmpl/album-tmpl.html:19
+#: ../remote/dbus/rb-client.c:219
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:716
+#: ../lib/rb-util.c:632
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d dari %d:%02d"
 
-#: ../lib/rb-util.c:720
+#: ../lib/rb-util.c:636
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d dari %d:%02d:%02d tersisa"
 
-#: ../lib/rb-util.c:725
+#: ../lib/rb-util.c:641
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d dari %d:%02d"
 
-#: ../lib/rb-util.c:729
+#: ../lib/rb-util.c:645
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d dari %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:499
+#: ../metadata/rb-metadata-gst.c:509
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
 msgstr "Tak bisa menulis tag ke berkas ini karena memuat beberapa stream"
 
-#: ../metadata/rb-metadata-gst.c:539
+#: ../metadata/rb-metadata-gst.c:549
 #, c-format
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
@@ -1029,28 +1071,98 @@ msgstr ""
 "Tak bisa menulis tag ke berkas ini karena tak dienkode dalam format yang "
 "didukung"
 
-#: ../metadata/rb-metadata-gst.c:671
+#: ../metadata/rb-metadata-gst.c:681
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "Gagal membuat elemen sumber; periksa instalasi Anda"
 
-#: ../metadata/rb-metadata-gst.c:681
+#: ../metadata/rb-metadata-gst.c:691
 #, c-format
 msgid ""
 "Failed to create the 'decodebin' element; check your GStreamer installation"
 msgstr "Gagal membuat elemen 'decodebin'; periksa instalasi GStreamer Anda"
 
-#: ../metadata/rb-metadata-gst.c:690
+#: ../metadata/rb-metadata-gst.c:700
 #, c-format
 msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
 "installation"
 msgstr "Gagal membuat elemen 'giostreamsink'; periksa instalasi GStreamer Anda"
 
-#: ../metadata/rb-metadata-gst.c:773
+#: ../metadata/rb-metadata-gst.c:783
 #, c-format
 msgid "File corrupted during write"
 msgstr "Berkas terkorupsi saat ditulisi"
+
+#: ../plugins/android/android.plugin.in.h:1
+msgid "Android devices"
+msgstr "Perangkat Android"
+
+#: ../plugins/android/android.plugin.in.h:2
+msgid "Support for Android 4.0+ devices (via MTP)"
+msgstr "Dukungan untuk perangkat Android 4.0+ (via MTP)"
+
+#: ../plugins/android/android-info.ui.h:1
+#: ../plugins/generic-player/generic-player-info.ui.h:1
+#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:1
+msgid "Model:"
+msgstr "Model:"
+
+#: ../plugins/android/android-info.ui.h:2
+#: ../plugins/generic-player/generic-player-info.ui.h:2
+#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:2
+msgid "Serial number:"
+msgstr "Nomor seri:"
+
+#: ../plugins/android/android-info.ui.h:3
+#: ../plugins/generic-player/generic-player-info.ui.h:3
+#: ../plugins/mtpdevice/mtp-info.ui.h:4
+msgid "Manufacturer:"
+msgstr "Pembuat:"
+
+#: ../plugins/android/android-info.ui.h:4
+#: ../plugins/generic-player/generic-player-info.ui.h:4
+#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:5
+msgid "Audio formats:"
+msgstr "Format audio:"
+
+#: ../plugins/android/android-info.ui.h:5
+#: ../plugins/generic-player/generic-player-info.ui.h:5
+#: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:6
+msgid "System"
+msgstr "Sistem"
+
+#: ../plugins/android/android-info.ui.h:6
+#: ../plugins/generic-player/generic-player-info.ui.h:6
+#: ../plugins/mtpdevice/mtp-info.ui.h:7
+msgid "Device _name:"
+msgstr "_Nama perangkat:"
+
+#: ../plugins/android/android-info.ui.h:7
+#: ../plugins/generic-player/generic-player-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:8
+msgid "Tracks:"
+msgstr "Trek:"
+
+#: ../plugins/android/android-info.ui.h:8
+#: ../plugins/generic-player/generic-player-info.ui.h:8
+#: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:10
+msgid "Playlists:"
+msgstr "Daftar putar:"
+
+#: ../plugins/android/rb-android-source.c:199
+msgid ""
+"No storage areas found on this device. You may need to unlock it and enable "
+"MTP."
+msgstr ""
+"Tidak ada tempat penyimpanan yang ditemukan di perangkat ini. Anda mungkin "
+"perlu untuk membuka dan mengaktifkan MTP."
+
+#: ../plugins/android/rb-android-source.c:399
+#: ../plugins/generic-player/rb-generic-player-source.c:565
+#, c-format
+msgid "Scanning %s"
+msgstr "Memindai %s"
 
 #: ../plugins/artsearch/artsearch.plugin.in.h:1
 msgid "Cover art search"
@@ -1059,6 +1171,22 @@ msgstr "Pencarian gambar sampul"
 #: ../plugins/artsearch/artsearch.plugin.in.h:2
 msgid "Fetch album covers from the Internet"
 msgstr "Ambil sampul album dari Internet"
+
+#: ../plugins/artsearch/songinfo.py:56
+msgid "_Fetch"
+msgstr "A_mbil"
+
+#: ../plugins/artsearch/songinfo.py:60
+msgid "_Browse"
+msgstr "_Ramban"
+
+#: ../plugins/artsearch/songinfo.py:134
+msgid "Select new artwork"
+msgstr "Pilih karya seni baru"
+
+#: ../plugins/artsearch/songinfo.py:136
+msgid "_Select"
+msgstr "_Pilih"
 
 #: ../plugins/audiocd/album-info.ui.h:1
 msgid "A_lbum:"
@@ -1205,7 +1333,7 @@ msgid "Last submission time:"
 msgstr "Waktu pengiriman terakhir:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:875
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:878
 msgid "Disabled"
 msgstr "Dinonaktifkan"
 
@@ -1273,58 +1401,58 @@ msgstr "Versi Rhythmbox ini telah dilarang."
 msgid "Track submission failed too many times"
 msgstr "Pengiriman trek gagal terlalu banyak kali"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:686
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:689
 msgid "Love"
 msgstr "Cintai"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:690
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:693
 msgid "Ban"
 msgstr "Larang"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:694
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:697
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:3
 msgid "Download"
 msgstr "Unduh"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:792
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:795
 msgid "You are not currently logged in."
 msgstr "Anda kini tak sedang log masuk."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:793
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:811
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:818
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:796
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:814
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:821
 msgid "Log in"
 msgstr "Log masuk"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:799
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:802
 msgid "Waiting for authentication..."
 msgstr "Menunggu otentikasi..."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:800
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:803
 msgid "Cancel"
 msgstr "Batal"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:810
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:813
 msgid "Authentication error. Please try logging in again."
 msgstr "Galat otentikasi. Silakan coba log masuk lagi."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:817
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:820
 msgid "Connection error. Please try logging in again."
 msgstr "Galat koneksi. Silakan coba log masuk lagi."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1227
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1230
 msgid "My Library"
 msgstr "Pustakaku"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1235
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1238
 msgid "My Recommendations"
 msgstr "Rekomendasiku"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1243
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1246
 msgid "My Neighbourhood"
 msgstr "Tetanggaku"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1410
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1413
 #, c-format
 msgid "%s plays"
 msgstr "diputar %s"
@@ -1332,16 +1460,16 @@ msgstr "diputar %s"
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This is the label for menu item which when activated will take the user to the
 #. * artist/track's page on the service's website.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1667
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1670
 #, c-format
 msgid "_View on %s"
 msgstr "_Tilik pada %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1684
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1687
 msgid "Listen to _Similar Artists Radio"
 msgstr "Dengarkan Artis Radio yang _Serupa"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1698
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1701
 msgid "Listen to _Top Fans Radio"
 msgstr "Dengarkan Fans Radio yang _Top"
 
@@ -1409,6 +1537,9 @@ msgstr "Trek yang Ditandai dengan:"
 msgid "Listened by Group:"
 msgstr "Didengarkan oleh Grup:"
 
+#. Translators: I have chosen these names for the radio stations based upon
+#. * what last.fm's website uses or what I thought to be sensible.
+#.
 #. Translators: station is built from artists similar to the artist %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:123
 #, c-format
@@ -1455,7 +1586,7 @@ msgstr "Mix Radio %s"
 
 #. Translators: station is built from the tracks which have been "tagged" with %s.
 #. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
-#. * but nationalities, record labels, decades and very random words are also commmon
+#. * but nationalities, record labels, decades and very random words are also common
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:141
 #, c-format
 msgid "%s Tag Radio"
@@ -1577,7 +1708,7 @@ msgstr "Memuat album top bagi %s"
 
 #: ../plugins/context/ArtistTab.py:59
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:4
-#: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1451
+#: ../sources/rb-library-source.c:125 ../widgets/rb-entry-view.c:1454
 #: ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Artis"
@@ -1612,8 +1743,8 @@ msgstr "Taut"
 msgid "No artist specified."
 msgstr "Tak ada artis yang dinyatakan."
 
-#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:240
-#: ../plugins/lyrics/lyrics.py:325
+#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:241
+#: ../plugins/lyrics/lyrics.py:326
 msgid "Lyrics"
 msgstr "Lirik"
 
@@ -1719,11 +1850,11 @@ msgstr "Putuskan"
 msgid "Connect to DAAP share..."
 msgstr "Menyambung ke share DAAP…"
 
-#: ../plugins/daap/rb-daap-plugin.c:521
+#: ../plugins/daap/rb-daap-plugin.c:511
 msgid "New DAAP share"
 msgstr "Share DAAP baru"
 
-#: ../plugins/daap/rb-daap-plugin.c:521
+#: ../plugins/daap/rb-daap-plugin.c:511
 msgid "Host:port of DAAP share:"
 msgstr "Host:port dari share DAAP:"
 
@@ -1749,15 +1880,15 @@ msgstr "Tak bisa menyambung ke musik yang di-share"
 msgid "Connecting to music share"
 msgstr "Menyambung ke share musik"
 
-#: ../plugins/daap/rb-dacp-pairing-page.c:397
+#: ../plugins/daap/rb-dacp-pairing-page.c:392
 msgid "Connecting..."
 msgstr "Menyambung..."
 
-#: ../plugins/daap/rb-dacp-pairing-page.c:399
+#: ../plugins/daap/rb-dacp-pairing-page.c:394
 msgid "Could not pair with this Remote."
 msgstr "Tak bisa memperpasangkan dengan Remote ini."
 
-#: ../plugins/daap/rb-dacp-pairing-page.c:617
+#: ../plugins/daap/rb-dacp-pairing-page.c:612
 msgid "Remotes"
 msgstr "Remote"
 
@@ -1784,7 +1915,7 @@ msgid "Genres"
 msgstr "Genre"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2409
-#: ../shell/rb-playlist-manager.c:1081 ../sources/rb-display-page-group.c:92
+#: ../shell/rb-playlist-manager.c:1075 ../sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "Daftar putar"
 
@@ -1809,46 +1940,6 @@ msgstr "Stasiun Radio FM Baru"
 msgid "Frequency of radio station"
 msgstr "Frekuensi dari stasiun radio"
 
-#: ../plugins/generic-player/generic-player-info.ui.h:1
-#: ../plugins/mtpdevice/mtp-info.ui.h:1
-msgid "Device _name:"
-msgstr "_Nama perangkat:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:2
-#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:2
-msgid "Tracks:"
-msgstr "Trek:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:3
-#: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:4
-msgid "Playlists:"
-msgstr "Daftar putar:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:4
-#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:5
-msgid "Model:"
-msgstr "Model:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:5
-#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:6
-msgid "Serial number:"
-msgstr "Nomor seri:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:6
-#: ../plugins/mtpdevice/mtp-info.ui.h:8
-msgid "Manufacturer:"
-msgstr "Pembuat:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:7
-#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:9
-msgid "Audio formats:"
-msgstr "Format audio:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:8
-#: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:10
-msgid "System"
-msgstr "Sistem"
-
 #: ../plugins/generic-player/generic-player.plugin.in.h:1
 msgid "Portable Players"
 msgstr "Pemutar Portabel"
@@ -1858,25 +1949,20 @@ msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr ""
 "Dukungan bagi perangkat pemutar audio generik (tambah PSP dan Nokia 770)"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:295
+#: ../plugins/generic-player/rb-generic-player-source.c:294
 #: ../plugins/ipod/rb-ipod-source.c:333
 #, c-format
 msgid "New Playlist on %s"
 msgstr "Daftar Putar Baru pada %s"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:339
-#: ../sources/rb-library-source.c:407
+#: ../plugins/generic-player/rb-generic-player-source.c:338
+#: ../sources/rb-library-source.c:375
 msgid "Add to New Playlist"
 msgstr "Tambahkan ke Daftar Putar Baru"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:640
-#, c-format
-msgid "Scanning %s"
-msgstr "Memindai %s"
-
-#: ../plugins/generic-player/rb-generic-player-source.c:1446
-#: ../plugins/ipod/rb-ipod-source.c:2070
-#: ../plugins/mtpdevice/rb-mtp-source.c:1612
+#: ../plugins/generic-player/rb-generic-player-source.c:1370
+#: ../plugins/ipod/rb-ipod-source.c:2045
+#: ../plugins/mtpdevice/rb-mtp-source.c:1571
 msgid "Advanced"
 msgstr "Tingkat Lanjut"
 
@@ -1889,10 +1975,11 @@ msgid "Browse various local and Internet media sources"
 msgstr "Ramban berbagai sumber media lokal dan Internet"
 
 #: ../plugins/grilo/rb-grilo-source.c:389
+#: ../plugins/soundcloud/soundcloud.py:492
 msgid "Fetch more tracks"
 msgstr "Ambil lebih banyak trek"
 
-#: ../plugins/grilo/rb-grilo-source.c:891
+#: ../plugins/grilo/rb-grilo-source.c:899
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -1904,11 +1991,11 @@ msgstr "Status IM"
 
 #: ../plugins/im-status/im-status.plugin.in.h:2
 msgid ""
-"Updates IM status according to the current song (works with Empathy, Gossip, "
-"and Pidgin)"
+"Updates IM status according to the current song (works with Empathy and "
+"Pidgin)"
 msgstr ""
-"Mutakhirkan status IM menurut lagu saat ini (bekerja dengan Empathy, Gossip, "
-"dan Pidgin)"
+"Mutakhirkan status IM menurut lagu saat ini (bekerja dengan Empathy dan "
+"Pidgin)"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
@@ -1948,7 +2035,7 @@ msgstr "♫ Mendengarkan musik... ♫"
 msgid "iPod _name:"
 msgstr "_Nama iPod:"
 
-#: ../plugins/ipod/ipod-info.ui.h:3 ../plugins/mtpdevice/mtp-info.ui.h:3
+#: ../plugins/ipod/ipod-info.ui.h:3 ../plugins/mtpdevice/mtp-info.ui.h:9
 msgid "Podcasts:"
 msgstr "Podcast:"
 
@@ -1964,7 +2051,7 @@ msgstr "Titik kait:"
 msgid "Database version:"
 msgstr "Versi basis data:"
 
-#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:3
 msgid "Firmware version:"
 msgstr "Versi firmware"
 
@@ -1972,19 +2059,19 @@ msgstr "Versi firmware"
 msgid "iPod detected"
 msgstr "iPod derdeteksi"
 
-#: ../plugins/ipod/ipod-init.ui.h:2
+#: ../plugins/ipod/ipod-init.ui.h:3
 msgid "_Initialize"
 msgstr "_Inisialisasikan"
 
-#: ../plugins/ipod/ipod-init.ui.h:3
+#: ../plugins/ipod/ipod-init.ui.h:4
 msgid "_Name:"
 msgstr "_Nama:"
 
-#: ../plugins/ipod/ipod-init.ui.h:4
+#: ../plugins/ipod/ipod-init.ui.h:5
 msgid "_Model:"
 msgstr "_Model:"
 
-#: ../plugins/ipod/ipod-init.ui.h:5
+#: ../plugins/ipod/ipod-init.ui.h:6
 msgid ""
 "Rhythmbox has detected a device that is probably an uninitialized or "
 "corrupted iPod. It must be initialized before Rhythmbox can use it, but this "
@@ -1999,7 +2086,7 @@ msgstr ""
 "informasi di bawah. Bila perangkat bukan iPod atau Anda tidak ingin "
 "menginisialisasinya, harap klik batal."
 
-#: ../plugins/ipod/ipod-init.ui.h:6
+#: ../plugins/ipod/ipod-init.ui.h:7
 msgid "Do you want to initialize your iPod?"
 msgstr "Apakah Anda ingin menginisialisasi iPod Anda?"
 
@@ -2016,14 +2103,13 @@ msgstr ""
 msgid "New playlist"
 msgstr "Daftar putar baru"
 
-#: ../plugins/ipod/rb-ipod-source.c:460
+#: ../plugins/ipod/rb-ipod-source.c:461
 msgid "Unable to initialize new iPod"
 msgstr "Tak bisa menginisialisasi iPod baru"
 
-#: ../plugins/ipod/rb-ipod-source.c:1503
-#: ../podcast/rb-podcast-main-source.c:76
-#: ../sources/sync/rb-sync-settings-ui.c:262
+#: ../plugins/ipod/rb-ipod-source.c:1492 ../podcast/rb-podcast-main-source.c:76
 #: ../sources/sync/rb-sync-settings-ui.c:263
+#: ../sources/sync/rb-sync-settings-ui.c:264
 #: ../sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
 msgstr "Podcast"
@@ -2037,59 +2123,59 @@ msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "Dukungan untuk layanan siaran yang dipancarkan melalui internet"
 
 #: ../plugins/iradio/iradio-popup.ui.h:1 ../shell/rb-shell-clipboard.c:258
-#: ../sources/rb-source.c:1216
+#: ../sources/rb-source.c:1216 ../widgets/rb-query-creator.c:802
 msgid "Remove"
 msgstr "Hapus"
 
-#: ../plugins/iradio/rb-iradio-source.c:346 ../widgets/rb-entry-view.c:1481
+#: ../plugins/iradio/rb-iradio-source.c:332 ../widgets/rb-entry-view.c:1484
 #: ../widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Jenis Musik"
 
-#: ../plugins/iradio/rb-iradio-source.c:366
+#: ../plugins/iradio/rb-iradio-source.c:352
 msgid "Search your internet radio stations"
 msgstr "Cari stasiun radio internet Anda"
 
-#: ../plugins/iradio/rb-iradio-source.c:462
+#: ../plugins/iradio/rb-iradio-source.c:448
 msgid "Radio"
 msgstr "Radio"
 
-#: ../plugins/iradio/rb-iradio-source.c:603
+#: ../plugins/iradio/rb-iradio-source.c:589
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d stasiun"
 
 #. should prevent multiple dialogs?  going to kill this nonsense anyway soon..
-#: ../plugins/iradio/rb-iradio-source.c:974
-#: ../plugins/iradio/rb-station-properties-dialog.c:403
+#: ../plugins/iradio/rb-iradio-source.c:960
+#: ../plugins/iradio/rb-station-properties-dialog.c:399
 msgid "New Internet Radio Station"
 msgstr "Tambah Stasiun Radio Internet"
 
-#: ../plugins/iradio/rb-iradio-source.c:974
+#: ../plugins/iradio/rb-iradio-source.c:960
 msgid "URL of internet radio station:"
 msgstr "URL stasiun radio internet:"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:399
+#: ../plugins/iradio/rb-station-properties-dialog.c:395
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:507
-#: ../sources/rb-media-player-source.c:420 ../widgets/rb-song-info.c:1150
+#: ../podcast/rb-podcast-properties-dialog.c:524
+#: ../sources/rb-media-player-source.c:567 ../widgets/rb-song-info.c:1150
 #, c-format
 msgid "%s Properties"
 msgstr "Informasi %s"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:491
-#: ../podcast/rb-podcast-properties-dialog.c:620
-#: ../widgets/rb-entry-view.c:1018 ../widgets/rb-song-info.c:1235
+#: ../plugins/iradio/rb-station-properties-dialog.c:487
+#: ../podcast/rb-podcast-properties-dialog.c:637
+#: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1235
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:582
+#: ../plugins/iradio/rb-station-properties-dialog.c:578
 msgid "Unable to change station property"
 msgstr "Tak bisa mengubah properti stasiun"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:582
+#: ../plugins/iradio/rb-station-properties-dialog.c:578
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
 msgstr "Tak bisa mengubah URI stasiun ke %s, karena stasiun tersebut telah ada"
@@ -2110,7 +2196,7 @@ msgstr "Kendalikan Rhythmbox memakai pengendali jarak jauh infra merah"
 msgid "Choose lyrics folder..."
 msgstr "Pilih folder lirik lagu..."
 
-#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:348
+#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:349
 msgid "Song Lyrics"
 msgstr "Lirik Lagu"
 
@@ -2135,10 +2221,6 @@ msgstr "Folder Lirik Lagu"
 msgid "No lyrics found"
 msgstr "Tak ada lirik yang ditemukan"
 
-#: ../plugins/lyrics/lyrics.py:202
-msgid "_Save"
-msgstr "_Simpan"
-
 #: ../plugins/lyrics/lyrics.py:207 ../plugins/lyrics/lyrics.py:220
 msgid "_Edit"
 msgstr "_Edit"
@@ -2147,7 +2229,7 @@ msgstr "_Edit"
 msgid "_Search again"
 msgstr "_Cari lagi"
 
-#: ../plugins/lyrics/lyrics.py:280
+#: ../plugins/lyrics/lyrics.py:281
 msgid "Searching for lyrics..."
 msgstr "Mencari lirik lagu..."
 
@@ -2242,174 +2324,174 @@ msgstr ""
 "daring Magnatune"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
-msgid "Magnatune Information"
-msgstr "Informasi Magnatune"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:2
-msgid "I don't have a Magnatune account"
-msgstr "Saya tak punya akun Magnatune"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:3
-msgid "I have a streaming account"
-msgstr "Saya punya akun streaming"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:4
-msgid "I have a download account"
-msgstr "Saya punya akun unduh"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:5
-msgid "Username:"
-msgstr "Nama pengguna:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:6
-msgid "Password:"
-msgstr "Sandi:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:7
-msgid "Preferred audio _format:"
-msgstr "_Format audio yang disukai:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:8
-msgid "Get an account at "
-msgstr "Dapatkan akun di "
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:9
-msgid "http://magnatune.com/compare_plans"
-msgstr "http://magnatune.com/compare_plans"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:10
-msgid "Find out about Magnatune at "
-msgstr "Cari tahu tentang Magnatune di "
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:11
-msgid "http://www.magnatune.com/info/"
-msgstr "http://www.magnatune.com/info/"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:12
 msgid "January (01)"
 msgstr "Januari (01)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:13
+#: ../plugins/magnatune/magnatune-prefs.ui.h:2
 msgid "February (02)"
 msgstr "Februari (02)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:14
+#: ../plugins/magnatune/magnatune-prefs.ui.h:3
 msgid "March (03)"
 msgstr "Maret (03)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:15
+#: ../plugins/magnatune/magnatune-prefs.ui.h:4
 msgid "April (04)"
 msgstr "April (04)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:16
+#: ../plugins/magnatune/magnatune-prefs.ui.h:5
 msgid "May (05)"
 msgstr "Mei (05)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:17
+#: ../plugins/magnatune/magnatune-prefs.ui.h:6
 msgid "June (06)"
 msgstr "Juni (06)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:18
+#: ../plugins/magnatune/magnatune-prefs.ui.h:7
 msgid "July (07)"
 msgstr "Juli (07)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:19
+#: ../plugins/magnatune/magnatune-prefs.ui.h:8
 msgid "August (08)"
 msgstr "Augustus (08)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:20
+#: ../plugins/magnatune/magnatune-prefs.ui.h:9
 msgid "September (09)"
 msgstr "September (09)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:21
+#: ../plugins/magnatune/magnatune-prefs.ui.h:10
 msgid "October (10)"
 msgstr "Oktober (10)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:22
+#: ../plugins/magnatune/magnatune-prefs.ui.h:11
 msgid "November (11)"
 msgstr "November (11)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:23
+#: ../plugins/magnatune/magnatune-prefs.ui.h:12
 msgid "December (12)"
 msgstr "Desember (12)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:24
+#: ../plugins/magnatune/magnatune-prefs.ui.h:13
 msgid "$5 US"
 msgstr "$5 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:25
+#: ../plugins/magnatune/magnatune-prefs.ui.h:14
 msgid "$6 US"
 msgstr "$6 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:26
+#: ../plugins/magnatune/magnatune-prefs.ui.h:15
 msgid "$7 US"
 msgstr "$7 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:27
+#: ../plugins/magnatune/magnatune-prefs.ui.h:16
 msgid "$8 US (typical)"
 msgstr "$8 US (umum)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:28
+#: ../plugins/magnatune/magnatune-prefs.ui.h:17
 msgid "$9 US"
 msgstr "$9 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:29
+#: ../plugins/magnatune/magnatune-prefs.ui.h:18
 msgid "$10 US (better than average)"
 msgstr "$10 US (lebih baik dari rata-rata)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:30
+#: ../plugins/magnatune/magnatune-prefs.ui.h:19
 msgid "$11 US"
 msgstr "$11 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:31
+#: ../plugins/magnatune/magnatune-prefs.ui.h:20
 msgid "$12 US (generous)"
 msgstr "$12 US (pemurah)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:32
+#: ../plugins/magnatune/magnatune-prefs.ui.h:21
 msgid "$13 US"
 msgstr "$13 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:33
+#: ../plugins/magnatune/magnatune-prefs.ui.h:22
 msgid "$14 US"
 msgstr "$14 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:34
+#: ../plugins/magnatune/magnatune-prefs.ui.h:23
 msgid "$15 US (VERY generous!)"
 msgstr "$15 US (SANGAT pemurah!)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:35
+#: ../plugins/magnatune/magnatune-prefs.ui.h:24
 msgid "$16 US"
 msgstr "$16 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:36
+#: ../plugins/magnatune/magnatune-prefs.ui.h:25
 msgid "$17 US"
 msgstr "$17 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:37
+#: ../plugins/magnatune/magnatune-prefs.ui.h:26
 msgid "$18 US (We love you!)"
 msgstr "$18 US (Kami sayang Anda!)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:38
+#: ../plugins/magnatune/magnatune-prefs.ui.h:27
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:39
+#: ../plugins/magnatune/magnatune-prefs.ui.h:28
 msgid "FLAC"
 msgstr "FLAC"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:40
+#: ../plugins/magnatune/magnatune-prefs.ui.h:29
 msgid "WAV"
 msgstr "WAV"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:41
+#: ../plugins/magnatune/magnatune-prefs.ui.h:30
 msgid "VBR MP3"
 msgstr "VBR MP3"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:42
+#: ../plugins/magnatune/magnatune-prefs.ui.h:31
 msgid "128K MP3"
 msgstr "128K MP3"
 
-#: ../plugins/magnatune/magnatune.py:120
+#: ../plugins/magnatune/magnatune-prefs.ui.h:32
+msgid "Magnatune Information"
+msgstr "Informasi Magnatune"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:33
+msgid "I don't have a Magnatune account"
+msgstr "Saya tak punya akun Magnatune"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:34
+msgid "I have a streaming account"
+msgstr "Saya punya akun streaming"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:35
+msgid "I have a download account"
+msgstr "Saya punya akun unduh"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:36
+msgid "Username:"
+msgstr "Nama pengguna:"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:37
+msgid "Password:"
+msgstr "Sandi:"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:38
+msgid "Preferred audio _format:"
+msgstr "_Format audio yang disukai:"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:39
+msgid "Get an account at "
+msgstr "Dapatkan akun di "
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:40
+msgid "http://magnatune.com/compare_plans"
+msgstr "http://magnatune.com/compare_plans"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:41
+msgid "Find out about Magnatune at "
+msgstr "Cari tahu tentang Magnatune di "
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:42
+msgid "http://www.magnatune.com/info/"
+msgstr "http://www.magnatune.com/info/"
+
+#: ../plugins/magnatune/magnatune.py:121
 msgid "Magnatune"
 msgstr "Magnatune"
 
@@ -2450,7 +2532,7 @@ msgstr ""
 "Server Magnatune mengembalikan:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1625
+#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1628
 msgid "Error"
 msgstr "Galat"
 
@@ -2550,40 +2632,40 @@ msgstr "Pemberitahuan"
 msgid "Notification popups"
 msgstr "Pop-up pemberitahuan"
 
-#: ../plugins/notification/rb-notification-plugin.c:224
+#: ../plugins/notification/rb-notification-plugin.c:225
 msgid "Previous"
 msgstr "Sebelumnya"
 
-#: ../plugins/notification/rb-notification-plugin.c:230
+#: ../plugins/notification/rb-notification-plugin.c:231
 msgid "Pause"
 msgstr "Jeda"
 
-#: ../plugins/notification/rb-notification-plugin.c:230
+#: ../plugins/notification/rb-notification-plugin.c:231
 msgid "Play"
 msgstr "Putar"
 
-#: ../plugins/notification/rb-notification-plugin.c:239
+#: ../plugins/notification/rb-notification-plugin.c:240
 msgid "Next"
 msgstr "Selanjutnya"
 
 #. Translators: by Artist
-#: ../plugins/notification/rb-notification-plugin.c:331
+#: ../plugins/notification/rb-notification-plugin.c:332
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:148
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "oleh <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/notification/rb-notification-plugin.c:333
+#: ../plugins/notification/rb-notification-plugin.c:334
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:150
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:213
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "dari <i>%s</i>"
 
-#: ../plugins/notification/rb-notification-plugin.c:411
+#: ../plugins/notification/rb-notification-plugin.c:414
 #: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
-#: ../widgets/rb-header.c:363
+#: ../widgets/rb-header.c:366
 msgid "Not Playing"
 msgstr "Tak Sedang Memutar"
 
@@ -2596,7 +2678,7 @@ msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr "Cegah Manajer Daya mensuspensi ketika mesin masih memutar"
 
 #: ../plugins/power-manager/rb-power-manager-plugin.c:97
-#: ../remote/dbus/rb-client.c:801 ../remote/dbus/rb-client.c:891
+#: ../remote/dbus/rb-client.c:814 ../remote/dbus/rb-client.c:904
 #, c-format
 msgid "Playing"
 msgstr "Sedang Memutar"
@@ -2638,15 +2720,15 @@ msgstr "Zeitgeist"
 msgid "Inform Zeitgeist about your activity"
 msgstr "Beritahu Zeitgeist tentang aktivitas Anda"
 
-#: ../plugins/replaygain/config.py:68
+#: ../plugins/replaygain/config.py:64
 msgid "-15.0 dB"
 msgstr "-15.0 dB"
 
-#: ../plugins/replaygain/config.py:69
+#: ../plugins/replaygain/config.py:65
 msgid "0.0 dB"
 msgstr "0.0 dB"
 
-#: ../plugins/replaygain/config.py:70
+#: ../plugins/replaygain/config.py:66
 msgid "15.0 dB"
 msgstr "15.0 dB"
 
@@ -2672,32 +2754,32 @@ msgid "Use ReplayGain to provide a consistent playback volume"
 msgstr "Pakai ReplayGain untuk menyediakan volume putar yang konsisten"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:1
-msgid "ReplayGain preferences"
-msgstr "Preferensi ReplayGain"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:2
-msgid "ReplayGain _mode:"
-msgstr "_Mode ReplayGain:"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:3
-msgid "_Pre-amp:"
-msgstr "_Pre-amp:"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:4
-msgid "_Apply compression to prevent clipping"
-msgstr "Ter_apkan kompresi untuk mencegah 'clipping'"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:5
-msgid "Learn more about ReplayGain at replaygain.org"
-msgstr "Pelajari lebih lanjut tentang ReplayGain di replaygain.org"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:6
 msgid "Radio (equal loudness for all tracks)"
 msgstr "Radio (loudness yang sama bagi semua trek)"
 
-#: ../plugins/replaygain/replaygain-prefs.ui.h:7
+#: ../plugins/replaygain/replaygain-prefs.ui.h:2
 msgid "Album (ideal loudness for all tracks)"
 msgstr "Album (loudness ideal bagi semua trek)"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:3
+msgid "ReplayGain preferences"
+msgstr "Preferensi ReplayGain"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:4
+msgid "ReplayGain _mode:"
+msgstr "_Mode ReplayGain:"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:5
+msgid "_Pre-amp:"
+msgstr "_Pre-amp:"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:6
+msgid "_Apply compression to prevent clipping"
+msgstr "Ter_apkan kompresi untuk mencegah 'clipping'"
+
+#: ../plugins/replaygain/replaygain-prefs.ui.h:7
+msgid "Learn more about ReplayGain"
+msgstr "Pelajari lebih lanjut tentang ReplayGain"
 
 #: ../plugins/sendto/sendto.plugin.in.h:1
 msgid "Send tracks"
@@ -2710,6 +2792,70 @@ msgstr "Kirim trek yang dipilih melalui surel atau pesan instan"
 #: ../plugins/sendto/sendto.py:51
 msgid "Send to..."
 msgstr "Kirim ke..."
+
+#: ../plugins/soundcloud/soundcloud.plugin.in.h:1
+#: ../plugins/soundcloud/soundcloud.py:72
+msgid "SoundCloud"
+msgstr "SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.plugin.in.h:2
+msgid "Browse and play sounds from SoundCloud®"
+msgstr "Ramban dan putar suara dari SoundCloud®"
+
+#: ../plugins/soundcloud/soundcloud.py:96
+msgid "Search tracks"
+msgstr "Cari trek"
+
+#: ../plugins/soundcloud/soundcloud.py:97
+msgid "Search tracks on SoundCloud"
+msgstr "Cari trek di SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:103
+msgid "Search sets"
+msgstr "Cari set"
+
+#: ../plugins/soundcloud/soundcloud.py:104
+msgid "Search sets on SoundCloud"
+msgstr "Cari set di SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:105
+msgid "SoundCloud Sets"
+msgstr "Set SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:110
+msgid "Search users"
+msgstr "Cari pengguna"
+
+#: ../plugins/soundcloud/soundcloud.py:111
+msgid "Search users on SoundCloud"
+msgstr "Cari pengguna di SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:112
+msgid "SoundCloud Users"
+msgstr "Pengguna SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:117
+msgid "Search groups"
+msgstr "Cari grup"
+
+#: ../plugins/soundcloud/soundcloud.py:118
+msgid "Search groups on SoundCloud"
+msgstr "Cari grup di SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:119
+msgid "SoundCloud Groups"
+msgstr "Grup SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:442
+#: ../plugins/soundcloud/soundcloud.py:450
+#, python-format
+msgid "View '%(title)s' on SoundCloud"
+msgstr "Lihat '%(title)s' di SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:458
+#, python-format
+msgid "View '%(container)s' on SoundCloud"
+msgstr "Lihat '%(container)s' di SoundCloud"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:39
 msgid "Low quality"
@@ -2728,7 +2874,7 @@ msgid "Fullscreen"
 msgstr "Layar Penuh"
 
 #: ../plugins/visualizer/rb-visualizer-menu.c:89
-#: ../widgets/rb-entry-view.c:1525
+#: ../widgets/rb-entry-view.c:1528
 msgid "Quality"
 msgstr "Kualitas"
 
@@ -2752,6 +2898,34 @@ msgstr "Visualisasi"
 msgid "Displays visualizations"
 msgstr "Visualisasi tampilan"
 
+#: ../plugins/webremote/webremote-config.ui.h:1
+msgid "Web remote control preferences"
+msgstr "Preferensi kontrol jarak jauh web"
+
+#: ../plugins/webremote/webremote-config.ui.h:2
+msgid "Listening port:"
+msgstr "Port mendengarkan:"
+
+#: ../plugins/webremote/webremote-config.ui.h:3
+msgid "Access key:"
+msgstr "Tombol akses:"
+
+#: ../plugins/webremote/webremote-config.ui.h:4
+msgid "0"
+msgstr "0"
+
+#: ../plugins/webremote/webremote.plugin.in.h:1
+msgid "Web remote control"
+msgstr "Kontrol jarak jauh web"
+
+#: ../plugins/webremote/webremote.plugin.in.h:2
+msgid "Control Rhythmbox from a web browser"
+msgstr "Kendalikan Ryhthmbox dari peramban web"
+
+#: ../plugins/webremote/webremote.py:582
+msgid "Launch web remote control"
+msgstr "Luncurkan kontrol jarak jauh web"
+
 #: ../podcast/rb-podcast-add-dialog.c:286
 msgid "Unable to load the feed. Check your network connection."
 msgstr "Tak bisa memuat asupan. Periksalah koneksi jaringan Anda."
@@ -2760,8 +2934,8 @@ msgstr "Tak bisa memuat asupan. Periksalah koneksi jaringan Anda."
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Tak bisa mencari podcast. Periksalah koneksi jaringan Anda."
 
-#: ../podcast/rb-podcast-add-dialog.c:720 ../sources/rb-library-source.c:142
-#: ../widgets/rb-entry-view.c:1441
+#: ../podcast/rb-podcast-add-dialog.c:720 ../sources/rb-library-source.c:134
+#: ../widgets/rb-entry-view.c:1444
 msgid "Title"
 msgstr "Judul"
 
@@ -2774,9 +2948,9 @@ msgstr "Pengarang"
 msgid "Episodes"
 msgstr "Episode"
 
-#: ../podcast/rb-podcast-add-dialog.c:767
-#: ../podcast/rb-podcast-add-dialog.c:778 ../podcast/rb-podcast-source.c:1370
-#: ../podcast/rb-podcast-source.c:1381
+#: ../podcast/rb-podcast-add-dialog.c:765
+#: ../podcast/rb-podcast-add-dialog.c:776 ../podcast/rb-podcast-source.c:1354
+#: ../podcast/rb-podcast-source.c:1365
 msgid "Date"
 msgstr "Tanggal"
 
@@ -2809,30 +2983,30 @@ msgstr "Galat dalam podcast"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Apakah Anda tetap ingin menambah asupan podcast?"
 
-#: ../podcast/rb-podcast-manager.c:896
+#: ../podcast/rb-podcast-manager.c:913
 msgid "Error creating podcast download directory"
 msgstr "Galat saat membuat direktori unduh podcast"
 
-#: ../podcast/rb-podcast-manager.c:897
+#: ../podcast/rb-podcast-manager.c:914
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Tak bisa membuat direktori unduh bagi %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:1016
+#: ../podcast/rb-podcast-manager.c:1033
 msgid "Invalid URL"
 msgstr "URL tak valid"
 
-#: ../podcast/rb-podcast-manager.c:1017
+#: ../podcast/rb-podcast-manager.c:1034
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL \"%s\" tak valid, harap periksa."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1028
+#: ../podcast/rb-podcast-manager.c:1045
 msgid "URL already added"
 msgstr "URL sudah pernah ditambahkan"
 
-#: ../podcast/rb-podcast-manager.c:1029
+#: ../podcast/rb-podcast-manager.c:1046
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2841,7 +3015,7 @@ msgstr ""
 "URL \"%s\" telah pernah ditambahkan sebagai stasiun radio. Bila ini adalah "
 "asupan podcast, harap hapus stasiun radio tersebut."
 
-#: ../podcast/rb-podcast-manager.c:1108
+#: ../podcast/rb-podcast-manager.c:1125
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2851,11 +3025,11 @@ msgstr ""
 "URL '%s' nampaknya bukan asupan podcast. Mungkin itu URL yang salah, atau "
 "asupannya rusak. Apakah Anda ingin agar Rhythmbox tetap mencoba memakainya?"
 
-#: ../podcast/rb-podcast-manager.c:1239
+#: ../podcast/rb-podcast-manager.c:1256
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2205
+#: ../podcast/rb-podcast-manager.c:2222
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Ada masalah ketika menambahkan podcast ini: %s. Harap periksa URL: %s"
@@ -2880,11 +3054,7 @@ msgstr "Tak bisa mengurai isi asupan"
 msgid "The feed does not contain any downloadable items"
 msgstr "Asupan tak memuat sebarang butir yang dapat diunduh"
 
-#: ../podcast/rb-podcast-properties-dialog.c:195
-msgid "Unable to display requested URI"
-msgstr "Tak bisa menampilkan URI yang diminta"
-
-#: ../podcast/rb-podcast-properties-dialog.c:570
+#: ../podcast/rb-podcast-properties-dialog.c:587
 msgid "Not Downloaded"
 msgstr "Tak Diunduh"
 
@@ -2910,15 +3080,15 @@ msgstr "Hapus _Asupan Saja"
 msgid "_Delete Feed And Files"
 msgstr "Hapus Asupan _Dan Berkas"
 
-#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1424
+#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1408
 msgid "Downloaded"
 msgstr "Diunduh"
 
-#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1426
+#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1410
 msgid "Failed"
 msgstr "Gagal"
 
-#: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1425
+#: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1409
 msgid "Waiting"
 msgstr "Menunggu"
 
@@ -2932,11 +3102,11 @@ msgstr[0] "Semua %d asupan"
 msgid "Podcast Error"
 msgstr "Galat Podcast"
 
-#: ../podcast/rb-podcast-source.c:1119
+#: ../podcast/rb-podcast-source.c:1091
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Hapus episoda podcast dan berkas yang terunduh?"
 
-#: ../podcast/rb-podcast-source.c:1122
+#: ../podcast/rb-podcast-source.c:1094
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -2947,278 +3117,273 @@ msgstr ""
 "mempertahankan berkas yang telah diunduh dengan memilih untuk hanya "
 "menghapus episoda."
 
-#: ../podcast/rb-podcast-source.c:1130
+#: ../podcast/rb-podcast-source.c:1102
 msgid "Delete _Episode Only"
 msgstr "Hapus _Episoda Saja"
 
-#: ../podcast/rb-podcast-source.c:1136
+#: ../podcast/rb-podcast-source.c:1108
 msgid "_Delete Episode And File"
 msgstr "Hapus Episoda _Dan Berkas"
 
-#: ../podcast/rb-podcast-source.c:1234
+#: ../podcast/rb-podcast-source.c:1213
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d episode"
 
-#: ../podcast/rb-podcast-source.c:1403 ../podcast/rb-podcast-source.c:1458
-#: ../podcast/rb-podcast-source.c:1497
+#: ../podcast/rb-podcast-source.c:1387 ../podcast/rb-podcast-source.c:1442
+#: ../podcast/rb-podcast-source.c:1481
 msgid "Feed"
 msgstr "Asupan"
 
-#: ../podcast/rb-podcast-source.c:1423 ../podcast/rb-podcast-source.c:1441
+#: ../podcast/rb-podcast-source.c:1407 ../podcast/rb-podcast-source.c:1425
 msgid "Status"
 msgstr "Status"
 
 #. ensure search instances exist
-#: ../podcast/rb-podcast-source.c:1543
-#: ../sources/rb-auto-playlist-source.c:253 ../sources/rb-browser-source.c:314
-#: ../sources/rb-browser-source.c:332
+#: ../podcast/rb-podcast-source.c:1527 ../sources/rb-auto-playlist-source.c:253
+#: ../sources/rb-browser-source.c:314 ../sources/rb-browser-source.c:332
 #: ../sources/rb-static-playlist-source.c:295
 msgid "Search all fields"
 msgstr "Carian semua ruas"
 
-#: ../podcast/rb-podcast-source.c:1544
+#: ../podcast/rb-podcast-source.c:1528
 msgid "Search podcast feeds"
 msgstr "Cari asupan podcast"
 
-#: ../podcast/rb-podcast-source.c:1545
+#: ../podcast/rb-podcast-source.c:1529
 msgid "Search podcast episodes"
 msgstr "Cari episoda podcast"
 
-#: ../remote/dbus/rb-client.c:94
+#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:640
+msgid "Show the version of the program"
+msgstr "Menampilkan versi program."
+
+#: ../remote/dbus/rb-client.c:97
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Jangan memulai instansi baru Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:95
+#: ../remote/dbus/rb-client.c:98
 msgid "Quit Rhythmbox"
 msgstr "Keluar dari Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:96
+#: ../remote/dbus/rb-client.c:99
 msgid "Check if Rhythmbox is already running"
 msgstr "Periksa apakah Rhythmbox telah berjalan"
 
-#: ../remote/dbus/rb-client.c:98
+#: ../remote/dbus/rb-client.c:101
 msgid "Don't present an existing Rhythmbox window"
 msgstr "Jangan sajikan jendela Rhythmbox yang telah ada"
 
-#: ../remote/dbus/rb-client.c:100
+#: ../remote/dbus/rb-client.c:103
 msgid "Jump to next song"
 msgstr "Lompat ke lagu selanjutnya"
 
-#: ../remote/dbus/rb-client.c:101
+#: ../remote/dbus/rb-client.c:104
 msgid "Jump to previous song"
 msgstr "Lompat ke lagu sebelumnya"
 
-#: ../remote/dbus/rb-client.c:102
+#: ../remote/dbus/rb-client.c:105
 msgid "Seek in current track"
 msgstr "Seek dalam trek saat ini"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:107
 msgid "Resume playback if currently paused"
 msgstr "Lanjutkan memutar bila kini sedang jeda"
 
-#: ../remote/dbus/rb-client.c:105
+#: ../remote/dbus/rb-client.c:108
 msgid "Pause playback if currently playing"
 msgstr "Istirahatkan memutar bila kini sedang diputar"
 
-#: ../remote/dbus/rb-client.c:106
+#: ../remote/dbus/rb-client.c:109
 msgid "Toggle play/pause mode"
 msgstr "Ubah mode main/istirahat"
 
-#: ../remote/dbus/rb-client.c:107 ../shell/rb-shell.c:2273
+#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2309
 msgid "Stop playback"
 msgstr "Stop"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:112
 msgid "Play a specified URI, importing it if necessary"
 msgstr "Mainkan URI yang dinyatakan, mengimpornya bila perlu"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:112
 msgid "URI to play"
 msgstr "URI untuk dimainkan"
 
-#: ../remote/dbus/rb-client.c:110
+#: ../remote/dbus/rb-client.c:113
 msgid "Add specified tracks to the play queue"
 msgstr "Tambahkan trek yang dinyatakan ke antrian main"
 
-#: ../remote/dbus/rb-client.c:111
+#: ../remote/dbus/rb-client.c:114
 msgid "Empty the play queue before adding new tracks"
 msgstr "Kosongkan antrian main sebelum menambah trek baru"
 
-#: ../remote/dbus/rb-client.c:113
+#: ../remote/dbus/rb-client.c:116
 msgid "Print the title and artist of the playing song"
 msgstr "Cetak judul dan artis dari lagu yang sedang diputar"
 
-#: ../remote/dbus/rb-client.c:114
+#: ../remote/dbus/rb-client.c:117
 msgid "Print formatted details of the song"
 msgstr "Cetak rincian terformat dari lagu"
 
-#: ../remote/dbus/rb-client.c:115
+#: ../remote/dbus/rb-client.c:118
 msgid "Select the source matching the specified URI"
 msgstr "Pilih sumber yang cocok dengan URI yang dinyatakan"
 
-#: ../remote/dbus/rb-client.c:115
+#: ../remote/dbus/rb-client.c:118
 msgid "Source to select"
 msgstr "Sumber untuk dipilih"
 
-#: ../remote/dbus/rb-client.c:116
+#: ../remote/dbus/rb-client.c:119
 msgid "Activate the source matching the specified URI"
 msgstr "Aktifkan pencocokan sumber dari URI yang dinyatakan"
 
-#: ../remote/dbus/rb-client.c:116
+#: ../remote/dbus/rb-client.c:119
 msgid "Source to activate"
 msgstr "Sumber untuk diaktivasi"
 
-#: ../remote/dbus/rb-client.c:117
+#: ../remote/dbus/rb-client.c:120
 msgid "Play from the source matching the specified URI"
 msgstr "Putar dari sumber yang cocok dengan URI yang dinyatakan"
 
-#: ../remote/dbus/rb-client.c:117
+#: ../remote/dbus/rb-client.c:120
 msgid "Source to play from"
 msgstr "Sumber untuk diputar"
 
-#: ../remote/dbus/rb-client.c:119
+#: ../remote/dbus/rb-client.c:122
 msgid "Enable repeat playback order"
 msgstr "Fungsikan pengulangan urutan main"
 
-#: ../remote/dbus/rb-client.c:120
+#: ../remote/dbus/rb-client.c:123
 msgid "Disable repeat playback order"
 msgstr "Matikan pengulangan urutan main"
 
-#: ../remote/dbus/rb-client.c:121
+#: ../remote/dbus/rb-client.c:124
 msgid "Enable shuffle playback order"
 msgstr "Fungsikan pengacakan urutan main"
 
-#: ../remote/dbus/rb-client.c:122
+#: ../remote/dbus/rb-client.c:125
 msgid "Disable shuffle playback order"
 msgstr "Matikan pengacakan urutan main"
 
-#: ../remote/dbus/rb-client.c:124
+#: ../remote/dbus/rb-client.c:127
 msgid "Set the playback volume"
 msgstr "Atur volume putar"
 
-#: ../remote/dbus/rb-client.c:125
+#: ../remote/dbus/rb-client.c:128
 msgid "Increase the playback volume"
 msgstr "Naikkan volume putar"
 
-#: ../remote/dbus/rb-client.c:126
+#: ../remote/dbus/rb-client.c:129
 msgid "Decrease the playback volume"
 msgstr "Turunkan volume putar"
 
-#: ../remote/dbus/rb-client.c:127
+#: ../remote/dbus/rb-client.c:130
 msgid "Print the current playback volume"
 msgstr "Cetak volume putar saat ini"
 
 #. { "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
 #. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
-#: ../remote/dbus/rb-client.c:130
+#: ../remote/dbus/rb-client.c:133
 msgid "Set the rating of the current song"
 msgstr "Atur nilai dari lagu yang sedang diputar"
 
-#: ../remote/dbus/rb-client.c:131
+#: ../remote/dbus/rb-client.c:134
 msgid "Start interactive mode"
 msgstr "Mulai mode interaktif"
 
-#: ../remote/dbus/rb-client.c:161
+#: ../remote/dbus/rb-client.c:164
 msgid "n - Next track"
 msgstr "n - Trek selanjutnya"
 
-#: ../remote/dbus/rb-client.c:162
-#| msgid "Previous"
+#: ../remote/dbus/rb-client.c:165
 msgid "p - Previous track"
 msgstr "p - Trek sebelumnya"
 
-#: ../remote/dbus/rb-client.c:163
+#: ../remote/dbus/rb-client.c:166
 msgid "space - Play/pause"
 msgstr "spasi - Putar/jeda"
 
-#: ../remote/dbus/rb-client.c:164
+#: ../remote/dbus/rb-client.c:167
 msgid "s - Show playing track details"
 msgstr "s - Tampilkan rincian trek yang sedang diputar"
 
-#: ../remote/dbus/rb-client.c:165
-#| msgid "Decrease the playback volume"
+#: ../remote/dbus/rb-client.c:168
 msgid "v - Decrease volume"
 msgstr "v - Pelankan volume"
 
-#: ../remote/dbus/rb-client.c:166
-#| msgid "Increase the playback volume"
+#: ../remote/dbus/rb-client.c:169
 msgid "V - Increase volume"
 msgstr "V - Keraskan volume"
 
-#: ../remote/dbus/rb-client.c:168
+#: ../remote/dbus/rb-client.c:171
 msgid "h/? - Help"
 msgstr "h/? - Bantuan"
 
-#: ../remote/dbus/rb-client.c:169
-#| msgid "_Quit"
+#: ../remote/dbus/rb-client.c:172
 msgid "q - Quit"
 msgstr "q - Keluar"
 
-#: ../remote/dbus/rb-client.c:529 ../remote/dbus/rb-client.c:555
-#: ../remote/dbus/rb-client.c:778 ../remote/dbus/rb-client.c:862
+#: ../remote/dbus/rb-client.c:542 ../remote/dbus/rb-client.c:568
+#: ../remote/dbus/rb-client.c:791 ../remote/dbus/rb-client.c:875
 #, c-format
 msgid "Not playing"
 msgstr "Sedang berhenti"
 
 #. Translators: title by artist from album
-#: ../remote/dbus/rb-client.c:728
+#: ../remote/dbus/rb-client.c:741
 msgid "%tt by %ta from %at"
 msgstr "%tt oleh %ta dari %at"
 
 #. Translators: title by artist
-#: ../remote/dbus/rb-client.c:731
+#: ../remote/dbus/rb-client.c:744
 msgid "%tt by %ta"
 msgstr "%tt oleh %ta"
 
 #. Translators: title from album
-#: ../remote/dbus/rb-client.c:734
+#: ../remote/dbus/rb-client.c:747
 msgid "%tt from %ta"
 msgstr "%tt dari %ta"
 
 #. Translators: %te is replaced with elapsed time, %td is replaced with track duration
-#: ../remote/dbus/rb-client.c:745
+#: ../remote/dbus/rb-client.c:758
 #, c-format
-#| msgid "%d of %d"
 msgid "[%te of %td]"
 msgstr "[%te dari %td]"
 
-#: ../remote/dbus/rb-client.c:801 ../remote/dbus/rb-client.c:893
+#: ../remote/dbus/rb-client.c:814 ../remote/dbus/rb-client.c:906
 #, c-format
-#| msgid "Pause"
 msgid "Paused"
 msgstr "Jeda"
 
-#: ../remote/dbus/rb-client.c:845
+#: ../remote/dbus/rb-client.c:858
 #, c-format
 msgid "Seeked to %s"
 msgstr "Melompat ke %s"
 
-#: ../remote/dbus/rb-client.c:879
+#: ../remote/dbus/rb-client.c:892
 #, c-format
-#| msgid "Not playing"
 msgid "Now playing: %s %s"
 msgstr "Sedang diputar: %s %s"
 
-#: ../remote/dbus/rb-client.c:895
+#: ../remote/dbus/rb-client.c:908
 #, c-format
-#| msgid "Unknown playlist: %s"
 msgid "Unknown playback state: %s"
 msgstr "Keadaan putar tak dikenal: %s"
 
-#: ../remote/dbus/rb-client.c:905
+#: ../remote/dbus/rb-client.c:918
 #, c-format
 msgid "Volume is now %.02f"
 msgstr "Volume kini %.02f"
 
 #. should print this before dbus setup, really
-#: ../remote/dbus/rb-client.c:943
+#: ../remote/dbus/rb-client.c:956
 #, c-format
 msgid "Press 'h' for help."
 msgstr "Tekan 'h' untuk bantuan."
 
-#: ../remote/dbus/rb-client.c:1384
+#: ../remote/dbus/rb-client.c:1396
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Volume putar adalah %f.\n"
@@ -3233,7 +3398,7 @@ msgstr "Tak bisa mengakses %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1802
+#: ../rhythmdb/rhythmdb.c:1819
 msgid "The Beatles"
 msgstr "The Beatles"
 
@@ -3241,7 +3406,7 @@ msgstr "The Beatles"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1808
+#: ../rhythmdb/rhythmdb.c:1825
 msgid "Help!"
 msgstr "Help!"
 
@@ -3249,51 +3414,51 @@ msgstr "Help!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1814
+#: ../rhythmdb/rhythmdb.c:1831
 msgid "Ticket To Ride"
 msgstr "Ticket To Ride"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2314
+#: ../rhythmdb/rhythmdb.c:2374
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "Pengaya GStreamer tambahan diperlukan untuk memutar berkas ini: %s"
 
-#: ../rhythmdb/rhythmdb.c:2346
+#: ../rhythmdb/rhythmdb.c:2406
 msgid "invalid unicode in error message"
 msgstr "Unicode yang tak valid dalam pesan galat"
 
-#: ../rhythmdb/rhythmdb.c:2413
+#: ../rhythmdb/rhythmdb.c:2529
 #, c-format
 msgid "Empty file"
 msgstr "Berkas kosong"
 
-#: ../rhythmdb/rhythmdb.c:3088
+#: ../rhythmdb/rhythmdb.c:3227
 msgid "Could not load the music database:"
 msgstr "Tak bisa memuat basis data musik:"
 
-#: ../rhythmdb/rhythmdb.c:4515
+#: ../rhythmdb/rhythmdb.c:4654
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld menit"
 
-#: ../rhythmdb/rhythmdb.c:4516
+#: ../rhythmdb/rhythmdb.c:4655
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld jam"
 
-#: ../rhythmdb/rhythmdb.c:4517
+#: ../rhythmdb/rhythmdb.c:4656
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld hari"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4523
+#: ../rhythmdb/rhythmdb.c:4662
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s dan %s"
@@ -3301,18 +3466,17 @@ msgstr "%s, %s dan %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4529 ../rhythmdb/rhythmdb.c:4537
-#: ../rhythmdb/rhythmdb.c:4548
+#: ../rhythmdb/rhythmdb.c:4668 ../rhythmdb/rhythmdb.c:4676
+#: ../rhythmdb/rhythmdb.c:4687
 #, c-format
 msgid "%s and %s"
 msgstr "%s dan %s"
 
-#: ../rhythmdb/rhythmdb-import-job.c:665
+#: ../rhythmdb/rhythmdb-import-job.c:664
 msgid "Scanning"
 msgstr "Memindai"
 
-#: ../rhythmdb/rhythmdb-import-job.c:668
-#: ../shell/rb-track-transfer-batch.c:819
+#: ../rhythmdb/rhythmdb-import-job.c:667 ../shell/rb-track-transfer-batch.c:915
 #, c-format
 msgid "%d of %d"
 msgstr "%d dari %d"
@@ -3360,17 +3524,18 @@ msgstr "Pengaya Contoh Vala"
 msgid "A sample plugin in Vala with no features"
 msgstr "Pengaya contoh dalam Vala tanpa fitur"
 
-#: ../shell/rb-application.c:141
+#: ../shell/rb-application.c:162
 msgid "Configure Plugins"
 msgstr "Mengatur Pengaya"
 
-#: ../shell/rb-application.c:208
+#: ../shell/rb-application.c:229
 msgid "translator-credits"
 msgstr ""
 "Mohammad DAMT <mdamt@bisnisweb.com>, 2003, 2004.\n"
-"Andika Triwidada <andika@gmail.com>, 2012, 2013, 2014."
+"Andika Triwidada <andika@gmail.com>, 2012, 2013, 2014.\n"
+"Kukuh Syafaat <syafaatkukuh@gmail.com>, 2017."
 
-#: ../shell/rb-application.c:211
+#: ../shell/rb-application.c:232
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3382,7 +3547,7 @@ msgstr ""
 "sebagaimana dipublikasikan oleh Free Software Foundation; baik versi 2\n"
 "dari Lisensi, atau (terserah pilihan Anda) versi setelahnya.\n"
 
-#: ../shell/rb-application.c:215
+#: ../shell/rb-application.c:236
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3394,7 +3559,7 @@ msgstr ""
 "KETERDAGANGAN atau KECOCOKAN UNTUK SEBUAH TUJUAN KHUSUS. Lihat\n"
 "GNU General Public License untuk detil lebih lanjut.\n"
 
-#: ../shell/rb-application.c:219
+#: ../shell/rb-application.c:240
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3405,63 +3570,63 @@ msgstr ""
 "Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.\n"
 
-#: ../shell/rb-application.c:226
+#: ../shell/rb-application.c:247
 msgid "Maintainers:"
 msgstr "Pengelola:"
 
-#: ../shell/rb-application.c:229
+#: ../shell/rb-application.c:250
 msgid "Former Maintainers:"
 msgstr "Pengelola Terdahulu:"
 
-#: ../shell/rb-application.c:232
+#: ../shell/rb-application.c:253
 msgid "Contributors:"
 msgstr "Kontributor:"
 
-#: ../shell/rb-application.c:234
+#: ../shell/rb-application.c:255
 msgid "Music management and playback software for GNOME."
 msgstr "Pengatur musik dan pemutar lagu pada GNOME."
 
-#: ../shell/rb-application.c:244
+#: ../shell/rb-application.c:265
 msgid "Rhythmbox Website"
 msgstr "Situs Web Rhythmbox"
 
-#: ../shell/rb-application.c:272 ../shell/rb-shell-preferences.c:163
+#: ../shell/rb-application.c:293 ../shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "Tidak dapat menampilkan bantuan"
 
-#: ../shell/rb-application.c:612
+#: ../shell/rb-application.c:632
 msgid "Enable debug output"
 msgstr "Aktifkan keluaran awakutu"
 
-#: ../shell/rb-application.c:613
+#: ../shell/rb-application.c:633
 msgid "Enable debug output matching a specified string"
 msgstr "Fungsikan keluaran awakutu yang cocok dengan string yang dinyatakan"
 
-#: ../shell/rb-application.c:614
+#: ../shell/rb-application.c:634
 msgid "Do not update the library with file changes"
 msgstr "Jangan mutakhirkan pustaka dengan perubahan berkas"
 
-#: ../shell/rb-application.c:615
+#: ../shell/rb-application.c:635
 msgid "Do not register the shell"
 msgstr "Jangan daftarkan shellnya"
 
-#: ../shell/rb-application.c:616
+#: ../shell/rb-application.c:636
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Jangan simpan data secara permanen (berarti --no-registration)"
 
-#: ../shell/rb-application.c:617
+#: ../shell/rb-application.c:637
 msgid "Disable loading of plugins"
 msgstr "Nonaktifkan pemuatan pengaya"
 
-#: ../shell/rb-application.c:618
+#: ../shell/rb-application.c:638
 msgid "Path for database file to use"
 msgstr "Path berkas basis data yang akan dipakai"
 
-#: ../shell/rb-application.c:619
+#: ../shell/rb-application.c:639
 msgid "Path for playlists file to use"
 msgstr "Path daftar putar yang akan dipakai"
 
-#: ../shell/rb-application.c:631
+#: ../shell/rb-application.c:652
 #, c-format
 msgid ""
 "%s\n"
@@ -3492,168 +3657,168 @@ msgid "The playlist file may be in an unknown format or corrupted."
 msgstr ""
 "Berkas daftar putar mungkin dalam format yang tak dikenal atau terkorupsi."
 
-#: ../shell/rb-playlist-manager.c:773
+#: ../shell/rb-playlist-manager.c:767
 msgid "Untitled Playlist"
 msgstr "Daftar Putar Tanpa Nama"
 
-#: ../shell/rb-playlist-manager.c:817 ../shell/rb-playlist-manager.c:860
+#: ../shell/rb-playlist-manager.c:811 ../shell/rb-playlist-manager.c:854
 msgid "New Playlist"
 msgstr "Daftar Putar Baru"
 
-#: ../shell/rb-playlist-manager.c:1061
+#: ../shell/rb-playlist-manager.c:1055
 msgid "Couldn't read playlist"
 msgstr "Tidak dapat membaca daftar putar"
 
-#: ../shell/rb-playlist-manager.c:1087
+#: ../shell/rb-playlist-manager.c:1081
 msgid "All Files"
 msgstr "Semua Berkas"
 
-#: ../shell/rb-playlist-manager.c:1092
+#: ../shell/rb-playlist-manager.c:1086
 msgid "Load Playlist"
 msgstr "Muat Daftar Putar"
 
-#: ../shell/rb-playlist-manager.c:1148 ../sources/rb-playlist-source.c:708
+#: ../shell/rb-playlist-manager.c:1142 ../sources/rb-playlist-source.c:708
 msgid "Couldn't save playlist"
 msgstr "Tak bisa menyimpan daftar putar"
 
-#: ../shell/rb-playlist-manager.c:1148
+#: ../shell/rb-playlist-manager.c:1142
 msgid "Unsupported file extension given."
 msgstr "Ekstensi berkas yang tak didukung diberikan."
 
-#: ../shell/rb-playlist-manager.c:1481
+#: ../shell/rb-playlist-manager.c:1475
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "Daftar putar %s sudah ada"
 
-#: ../shell/rb-playlist-manager.c:1511 ../shell/rb-playlist-manager.c:1544
-#: ../shell/rb-playlist-manager.c:1584 ../shell/rb-playlist-manager.c:1627
+#: ../shell/rb-playlist-manager.c:1505 ../shell/rb-playlist-manager.c:1538
+#: ../shell/rb-playlist-manager.c:1578 ../shell/rb-playlist-manager.c:1621
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "Daftar putar tak dikenal: %s"
 
-#: ../shell/rb-playlist-manager.c:1552 ../shell/rb-playlist-manager.c:1592
+#: ../shell/rb-playlist-manager.c:1546 ../shell/rb-playlist-manager.c:1586
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "Daftar putar %s adalah daftar putar otomatis"
 
-#: ../shell/rb-shell.c:2066
+#: ../shell/rb-shell.c:2102
 msgid "Error while saving song information"
 msgstr "Galat saat menyimpan informasi lagu"
 
-#: ../shell/rb-shell.c:2270
+#: ../shell/rb-shell.c:2306
 msgid "Pause playback"
 msgstr "Pause"
 
-#: ../shell/rb-shell.c:2281
+#: ../shell/rb-shell.c:2313
 msgid "Start playback"
 msgstr "Mulai memutar"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2392
+#: ../shell/rb-shell.c:2424
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (berhenti)"
 
-#: ../shell/rb-shell.c:2795 ../sources/rb-play-queue-source.c:659
+#: ../shell/rb-shell.c:2832 ../sources/rb-play-queue-source.c:668
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Tak ada sumber terdaftar yang dapat menangani URI %s"
 
-#: ../shell/rb-shell.c:3124
+#: ../shell/rb-shell.c:3161
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Tak ada sumber terdaftar yang cocok dengan URI %s"
 
-#: ../shell/rb-shell.c:3157 ../shell/rb-shell.c:3200
+#: ../shell/rb-shell.c:3194 ../shell/rb-shell.c:3237
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI lagu yang tak dikenal: %s"
 
-#: ../shell/rb-shell.c:3209
+#: ../shell/rb-shell.c:3246
 #, c-format
 msgid "Unknown property %s"
 msgstr "Properti tak dikenal %s"
 
-#: ../shell/rb-shell.c:3223
+#: ../shell/rb-shell.c:3260
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Tipe properti %s yang tak valid bagi properti %s"
 
-#: ../shell/rb-shell-player.c:390
+#: ../shell/rb-shell-player.c:389
 msgid "Stream error"
 msgstr "Galat stream"
 
-#: ../shell/rb-shell-player.c:391
+#: ../shell/rb-shell-player.c:390
 msgid "Unexpected end of stream!"
 msgstr "Akhir stream dijumpai prematur!"
 
-#: ../shell/rb-shell-player.c:677
+#: ../shell/rb-shell-player.c:676
 #, c-format
 msgid "Playlist was empty"
 msgstr "Daftar putar kosong"
 
-#: ../shell/rb-shell-player.c:1110
+#: ../shell/rb-shell-player.c:1109
 #, c-format
 msgid "Not currently playing"
 msgstr "Tidak sedang memutar"
 
-#: ../shell/rb-shell-player.c:1167
+#: ../shell/rb-shell-player.c:1166
 #, c-format
 msgid "No previous song"
 msgstr "Tak ada lagu sebelumnya"
 
-#: ../shell/rb-shell-player.c:1266
+#: ../shell/rb-shell-player.c:1265
 #, c-format
 msgid "No next song"
 msgstr "Tak ada lagu selanjutnya"
 
-#: ../shell/rb-shell-player.c:2127
+#: ../shell/rb-shell-player.c:2124
 msgid "Couldn't stop playback"
 msgstr "Tak bisa berhenti memutar"
 
-#: ../shell/rb-shell-player.c:2246
+#: ../shell/rb-shell-player.c:2243
 #, c-format
 msgid "Playback position not available"
 msgstr "Posisi putar tak tersedia"
 
-#: ../shell/rb-shell-player.c:2278 ../shell/rb-shell-player.c:2312
+#: ../shell/rb-shell-player.c:2275 ../shell/rb-shell-player.c:2309
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Lagu saat ini tak dapat di-seek"
 
-#: ../shell/rb-shell-player.c:2468 ../shell/rb-shell-player.c:2779
+#: ../shell/rb-shell-player.c:2465 ../shell/rb-shell-player.c:2776
 msgid "Couldn't start playback"
 msgstr "Tak bisa mulai memutar"
 
-#: ../shell/rb-shell-player.c:3275
+#: ../shell/rb-shell-player.c:3287
 msgid "Linear"
 msgstr "Linear"
 
-#: ../shell/rb-shell-player.c:3277
+#: ../shell/rb-shell-player.c:3289
 msgid "Linear looping"
 msgstr "Loop linear"
 
-#: ../shell/rb-shell-player.c:3281
+#: ../shell/rb-shell-player.c:3293
 msgid "Random with equal weights"
 msgstr "Acak dengan bobot seragam"
 
-#: ../shell/rb-shell-player.c:3283
+#: ../shell/rb-shell-player.c:3295
 msgid "Random by time since last play"
 msgstr "Acak menurut waktu sejak terakhir diputar"
 
-#: ../shell/rb-shell-player.c:3285
+#: ../shell/rb-shell-player.c:3297
 msgid "Random by rating"
 msgstr "Acak menurut rating"
 
-#: ../shell/rb-shell-player.c:3287
+#: ../shell/rb-shell-player.c:3299
 msgid "Random by time since last play and rating"
 msgstr "Acak menurut waktu sejak terakhir diputar dan ratingnya"
 
-#: ../shell/rb-shell-player.c:3289
+#: ../shell/rb-shell-player.c:3301
 msgid "Linear, removing entries once played"
 msgstr "Linier, menghapus entri setelah dimainkan"
 
-#: ../shell/rb-shell-player.c:3299
+#: ../shell/rb-shell-player.c:3311
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Gagal menjalankan pemutar lagu: %s"
@@ -3670,32 +3835,28 @@ msgstr "Umum"
 msgid "Playback"
 msgstr "Putar"
 
-#: ../shell/rb-track-transfer-queue.c:175
+#: ../shell/rb-track-transfer-queue.c:174
 #, c-format
 msgid "The file \"%s\" already exists. Do you want to replace it?"
 msgstr "Berkas \"%s\" sudah ada. Apakah Anda ingin menimpanya?"
 
 #: ../shell/rb-track-transfer-queue.c:188
-msgid "_Cancel"
-msgstr "_Batal"
-
-#: ../shell/rb-track-transfer-queue.c:189
 msgid "_Skip"
 msgstr "_Lewati"
 
-#: ../shell/rb-track-transfer-queue.c:190
+#: ../shell/rb-track-transfer-queue.c:189
 msgid "_Replace"
 msgstr "_Timpa"
 
-#: ../shell/rb-track-transfer-queue.c:191
+#: ../shell/rb-track-transfer-queue.c:190
 msgid "S_kip All"
 msgstr "L_ewati Semua"
 
-#: ../shell/rb-track-transfer-queue.c:192
+#: ../shell/rb-track-transfer-queue.c:191
 msgid "Replace _All"
 msgstr "Timp_a Semua"
 
-#: ../shell/rb-track-transfer-queue.c:439
+#: ../shell/rb-track-transfer-queue.c:438
 #, c-format
 msgid ""
 "%d file cannot be transferred as it must be converted into a format "
@@ -3710,7 +3871,7 @@ msgstr[0] ""
 "didukung oleh perangkat target tapi tak tersedia profil pengkodean yang cocok"
 
 #. XXX should provide the option of picking a different format?
-#: ../shell/rb-track-transfer-queue.c:463
+#: ../shell/rb-track-transfer-queue.c:462
 #, c-format
 msgid ""
 "Additional software is required to encode media in your preferred format:\n"
@@ -3720,7 +3881,7 @@ msgstr ""
 "Anda sukai:\n"
 "%s"
 
-#: ../shell/rb-track-transfer-queue.c:467
+#: ../shell/rb-track-transfer-queue.c:466
 #, c-format
 msgid ""
 "Additional software is required to convert %d file into a format supported "
@@ -3735,19 +3896,19 @@ msgstr[0] ""
 "format yang didukung oleh perangkat target:\n"
 "%s"
 
-#: ../shell/rb-track-transfer-queue.c:484
+#: ../shell/rb-track-transfer-queue.c:483
 msgid "Unable to transfer tracks"
 msgstr "Tak bisa mentransfer trek"
 
-#: ../shell/rb-track-transfer-queue.c:489
+#: ../shell/rb-track-transfer-queue.c:488
 msgid "_Cancel the transfer"
 msgstr "_Batalkan transfer"
 
-#: ../shell/rb-track-transfer-queue.c:491
+#: ../shell/rb-track-transfer-queue.c:490
 msgid "_Skip these files"
 msgstr "L_ewati berkas-berkas ini"
 
-#: ../shell/rb-track-transfer-queue.c:494
+#: ../shell/rb-track-transfer-queue.c:493
 msgid "_Install"
 msgstr "_Pasang"
 
@@ -3820,93 +3981,80 @@ msgid "%d import error"
 msgid_plural "%d import errors"
 msgstr[0] "%d galat impor"
 
-#: ../sources/rb-library-source.c:129
+#: ../sources/rb-library-source.c:121
 msgid "Artist/Artist - Album"
 msgstr "Artis/Artis - Album"
 
-#: ../sources/rb-library-source.c:130
+#: ../sources/rb-library-source.c:122
 msgid "Artist/Album"
 msgstr "Artis/Album"
 
-#: ../sources/rb-library-source.c:131
+#: ../sources/rb-library-source.c:123
 msgid "Artist - Album"
 msgstr "Artis - Album"
 
-#: ../sources/rb-library-source.c:132 ../widgets/rb-entry-view.c:1471
+#: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1474
 #: ../widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Album"
 
-#: ../sources/rb-library-source.c:138
+#: ../sources/rb-library-source.c:130
 msgid "Number - Title"
 msgstr "Nomor - Judul"
 
-#: ../sources/rb-library-source.c:139
+#: ../sources/rb-library-source.c:131
 msgid "Artist - Title"
 msgstr "Artis - Judul"
 
-#: ../sources/rb-library-source.c:140
+#: ../sources/rb-library-source.c:132
 msgid "Artist - Number - Title"
 msgstr "Artis - Nomor - Judul"
 
-#: ../sources/rb-library-source.c:141
+#: ../sources/rb-library-source.c:133
 msgid "Artist (Album) - Number - Title"
 msgstr "Artis (Album) - Nomor - Judul"
 
-#: ../sources/rb-library-source.c:143
+#: ../sources/rb-library-source.c:135
 msgid "Number. Artist - Title"
 msgstr "Nomor. Artis - Judul"
 
-#: ../sources/rb-library-source.c:157
-msgid "Constant bit rate"
-msgstr "Laju bit konstan"
-
-#: ../sources/rb-library-source.c:158
-msgid "Variable bit rate"
-msgstr "Laju bit variabel"
-
-#: ../sources/rb-library-source.c:447
-#: ../sources/sync/rb-sync-settings-ui.c:216
-#: ../sources/sync/rb-sync-settings-ui.c:217
+#: ../sources/rb-library-source.c:415 ../sources/sync/rb-sync-settings-ui.c:217
+#: ../sources/sync/rb-sync-settings-ui.c:218
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "Musik"
 
-#: ../sources/rb-library-source.c:500
+#: ../sources/rb-library-source.c:468
 msgid "Choose Library Location"
 msgstr "Pilih Lokasi Pustaka"
 
-#: ../sources/rb-library-source.c:539
+#: ../sources/rb-library-source.c:507
 msgid "Multiple locations set"
 msgstr "Lokasi berganda telah ditata"
 
-#: ../sources/rb-library-source.c:729
-msgid "Default settings"
-msgstr "Pengaturan baku"
-
-#: ../sources/rb-library-source.c:1509
+#: ../sources/rb-library-source.c:1043
 msgid "Example Path:"
 msgstr "Path Contoh:"
 
-#: ../sources/rb-library-source.c:1682 ../sources/rb-library-source.c:1686
-#: ../sources/rb-transfer-target.c:189
+#: ../sources/rb-library-source.c:1197 ../sources/rb-library-source.c:1201
+#: ../sources/rb-transfer-target.c:182
 msgid "Error transferring track"
 msgstr "Galat saat mentransfer trek"
 
-#: ../sources/rb-library-source.c:1772
+#: ../sources/rb-library-source.c:1283
 msgid "Copying tracks to the library"
 msgstr "Menyalin trek ke pustaka"
 
-#: ../sources/rb-library-source.c:1846
+#: ../sources/rb-library-source.c:1357
 msgid "Adding tracks to the library"
 msgstr "Menambahkan trek ke pustaka"
 
-#: ../sources/rb-media-player-source.c:614
+#: ../sources/rb-media-player-source.c:773
 #, c-format
 msgid "Syncing tracks to %s"
 msgstr "Menyelaraskan trek ke %s"
 
-#: ../sources/rb-media-player-source.c:670
+#: ../sources/rb-media-player-source.c:829
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
@@ -3914,7 +4062,7 @@ msgstr ""
 "Anda belum memilih musik, daftar putar, atau podcast apapun untuk ditransfer "
 "ke perangkat ini."
 
-#: ../sources/rb-media-player-source.c:675
+#: ../sources/rb-media-player-source.c:834
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
@@ -3922,16 +4070,16 @@ msgstr ""
 "Tak cukup ruang pada perangkat untuk mentransfer musik, daftar putar, dan "
 "podcast yang dipilih."
 
-#: ../sources/rb-media-player-source.c:727
+#: ../sources/rb-media-player-source.c:885
 #, c-format
 msgid "%s Sync Settings"
 msgstr "Pengaturan Sync %s"
 
-#: ../sources/rb-media-player-source.c:732
+#: ../sources/rb-media-player-source.c:890
 msgid "Sync with the device"
 msgstr "Selaraskan dengan perangkat"
 
-#: ../sources/rb-media-player-source.c:734
+#: ../sources/rb-media-player-source.c:892
 msgid "Don't sync"
 msgstr "Jangan selaraskan"
 
@@ -3949,18 +4097,19 @@ msgstr[0] "%d berkas hilang"
 msgid "Remove from Playlist"
 msgstr "Hapus dari Daftar Putar"
 
-#: ../sources/rb-play-queue-source.c:292 ../sources/rb-play-queue-source.c:394
-#: ../sources/rb-play-queue-source.c:503
+#: ../sources/rb-play-queue-source.c:301 ../sources/rb-play-queue-source.c:403
+#: ../sources/rb-play-queue-source.c:512
 msgid "Play Queue"
 msgstr "Mainkan Antrian"
 
-#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:906
-msgid "from"
-msgstr "dari album"
-
-#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:905
+#. Translators: format is "<title> by <artist> from <album>"
+#: ../sources/rb-play-queue-source.c:482 ../widgets/rb-header.c:924
 msgid "by"
 msgstr "oleh"
+
+#: ../sources/rb-play-queue-source.c:482 ../widgets/rb-header.c:925
+msgid "from"
+msgstr "dari album"
 
 #: ../sources/rb-source.c:595
 #, c-format
@@ -3976,12 +4125,12 @@ msgstr "Menyambung"
 msgid "Buffering"
 msgstr "Menyangga"
 
-#: ../sources/rb-transfer-target.c:456
+#: ../sources/rb-transfer-target.c:450
 #, c-format
 msgid "Transferring tracks to %s"
 msgstr "Mentransfer trek ke %s"
 
-#: ../sources/sync/rb-sync-settings-ui.c:228
+#: ../sources/sync/rb-sync-settings-ui.c:229
 msgid "All Music"
 msgstr "Semua Musik"
 
@@ -4017,113 +4166,141 @@ msgstr "Tombol Peringatan"
 msgid "The buttons shown in the alert dialog"
 msgstr "Tombol yang ditampilkan dalam dialog peringatan"
 
-#: ../widgets/rb-alert-dialog.c:171
+#: ../widgets/rb-alert-dialog.c:175
 msgid "Show more _details"
 msgstr "Tampilkan le_bih banyak rincian"
 
-#: ../widgets/rb-entry-view.c:1012 ../widgets/rb-entry-view.c:1530
+#: ../widgets/rb-alert-dialog.c:370 ../widgets/rb-alert-dialog.c:404
+msgid "_OK"
+msgstr "_OK"
+
+#: ../widgets/rb-alert-dialog.c:391
+msgid "_No"
+msgstr "Ti_dak"
+
+#: ../widgets/rb-alert-dialog.c:394
+msgid "_Yes"
+msgstr "_Ya"
+
+#: ../widgets/rb-dialog.c:132
+msgid "_Open"
+msgstr "_Buka"
+
+#: ../widgets/rb-encoding-settings.c:54
+msgid "Constant bit rate"
+msgstr "Laju bit konstan"
+
+#: ../widgets/rb-encoding-settings.c:55
+msgid "Variable bit rate"
+msgstr "Laju bit variabel"
+
+#: ../widgets/rb-encoding-settings.c:400
+msgid "Default settings"
+msgstr "Pengaturan baku"
+
+#: ../widgets/rb-entry-view.c:1015 ../widgets/rb-entry-view.c:1533
 #: ../widgets/rb-song-info.c:1231
 msgid "Lossless"
 msgstr "Nirhilang"
 
-#: ../widgets/rb-entry-view.c:1430
+#: ../widgets/rb-entry-view.c:1433
 msgid "Track"
 msgstr "Trek"
 
-#: ../widgets/rb-entry-view.c:1461
+#: ../widgets/rb-entry-view.c:1464
 msgid "Composer"
 msgstr "Komponis"
 
-#: ../widgets/rb-entry-view.c:1491
+#: ../widgets/rb-entry-view.c:1494
 msgid "Comment"
 msgstr "Komentar"
 
-#: ../widgets/rb-entry-view.c:1501
+#: ../widgets/rb-entry-view.c:1504
 msgid "Time"
 msgstr "Waktu"
 
-#: ../widgets/rb-entry-view.c:1513
+#: ../widgets/rb-entry-view.c:1516
 msgid "Year"
 msgstr "Tahun"
 
-#: ../widgets/rb-entry-view.c:1528
+#: ../widgets/rb-entry-view.c:1531
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1539
+#: ../widgets/rb-entry-view.c:1542
 msgid "Rating"
 msgstr "Rating"
 
-#: ../widgets/rb-entry-view.c:1561
+#: ../widgets/rb-entry-view.c:1564
 msgid "Play Count"
 msgstr "Cacah Diputar"
 
-#: ../widgets/rb-entry-view.c:1573
+#: ../widgets/rb-entry-view.c:1576
 msgid "Last Played"
 msgstr "Terakhir Diputar"
 
-#: ../widgets/rb-entry-view.c:1585
+#: ../widgets/rb-entry-view.c:1588
 msgid "Date Added"
 msgstr "Tanggal Ditambahkan"
 
-#: ../widgets/rb-entry-view.c:1596
+#: ../widgets/rb-entry-view.c:1599
 msgid "Last Seen"
 msgstr "Terakhir Dilihat"
 
-#: ../widgets/rb-entry-view.c:1607
+#: ../widgets/rb-entry-view.c:1610
 msgid "Location"
 msgstr "Lokasi"
 
-#: ../widgets/rb-entry-view.c:1616
+#: ../widgets/rb-entry-view.c:1619
 msgid "BPM"
 msgstr "BPM"
 
-#: ../widgets/rb-entry-view.c:1879
+#: ../widgets/rb-entry-view.c:1880
 msgid "Now Playing"
 msgstr "Sedang Diputar"
 
-#: ../widgets/rb-entry-view.c:1938
+#: ../widgets/rb-entry-view.c:1939
 msgid "Playback Error"
 msgstr "Galat Memutar"
 
-#: ../widgets/rb-fading-image.c:295
+#: ../widgets/rb-fading-image.c:301
 msgid "Drop artwork here"
 msgstr "Jatuhkan gambar di sini"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1202
+#: ../widgets/rb-header.c:1214
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1213
+#: ../widgets/rb-header.c:1225
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
 
-#: ../widgets/rb-import-dialog.c:339
+#: ../widgets/rb-import-dialog.c:341
 msgid "Examining files"
 msgstr "Sedang memeriksa berkas"
 
 #. this isn't a terribly helpful message.
-#: ../widgets/rb-import-dialog.c:409
+#: ../widgets/rb-import-dialog.c:411
 #, c-format
 msgid "The location you have selected is on the device %s."
 msgstr "Lokasi yang telah Anda pilih ada pada perangkat %s."
 
-#: ../widgets/rb-import-dialog.c:415
+#: ../widgets/rb-import-dialog.c:417
 #, c-format
 msgid "Show %s"
 msgstr "Tampilkan %s"
 
-#: ../widgets/rb-import-dialog.c:463
+#: ../widgets/rb-import-dialog.c:465
 #, c-format
 msgid "Import %d selected track"
 msgid_plural "Import %d selected tracks"
 msgstr[0] "Mengimpor %d trek yang dipilih"
 
-#: ../widgets/rb-import-dialog.c:466
+#: ../widgets/rb-import-dialog.c:468
 #, c-format
 msgid "Import %d listed track"
 msgid_plural "Import %d listed tracks"
@@ -4157,6 +4334,10 @@ msgstr[0] "Semua %d (%d)"
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
+
+#: ../widgets/rb-query-creator.c:194
+msgid "_New"
+msgstr "Bar_u"
 
 #: ../widgets/rb-query-creator.c:210
 msgid "Create Automatic Playlist"
@@ -4466,31 +4647,39 @@ msgstr "hari"
 msgid "weeks"
 msgstr "minggu"
 
-#: ../widgets/rb-rating-helper.c:304
+#: ../widgets/rb-rating-helper.c:295
 msgid "No Stars"
 msgstr "Tanpa Bintang"
 
-#: ../widgets/rb-rating-helper.c:306
+#: ../widgets/rb-rating-helper.c:297
 #, c-format
 msgid "%d Star"
 msgid_plural "%d Stars"
 msgstr[0] "%d Bintang"
 
-#: ../widgets/rb-search-entry.c:227
+#: ../widgets/rb-search-entry.c:228
 msgid "Clear the search text"
 msgstr "Bersihkan teks pencarian"
 
-#: ../widgets/rb-search-entry.c:234
+#: ../widgets/rb-search-entry.c:235
 msgid "Select the search type"
 msgstr "Pilih tipe pencarian"
 
-#: ../widgets/rb-search-entry.c:252
+#: ../widgets/rb-search-entry.c:253
 msgid "Search"
 msgstr "Cari"
 
-#: ../widgets/rb-search-entry.c:550
+#: ../widgets/rb-search-entry.c:551
 msgid "_Search:"
 msgstr "_Cari:"
+
+#: ../widgets/rb-song-info.c:354
+msgid "_Back"
+msgstr "Kem_bali"
+
+#: ../widgets/rb-song-info.c:363
+msgid "_Forward"
+msgstr "Ma_ju"
 
 #: ../widgets/rb-song-info.c:371
 msgid "Song Properties"
@@ -4511,3 +4700,9 @@ msgstr "Pada desktop"
 #: ../widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Lokasi tak diketahui"
+
+#~ msgid "Format settings:"
+#~ msgstr "Pengaturan format:"
+
+#~ msgid "Unable to display requested URI"
+#~ msgstr "Tak bisa menampilkan URI yang diminta"
