@@ -385,7 +385,7 @@ impl_activate (PeasActivatable *pplugin)
 		plugin->proxy = g_dbus_proxy_new_sync (bus,
 						       G_DBUS_PROXY_FLAGS_NONE,
 						       NULL,
-						       "org.gnome.SettingsDaemon",
+						       "org.gnome.SettingsDaemon.MediaKeys",
 						       "/org/gnome/SettingsDaemon/MediaKeys",
 						       "org.gnome.SettingsDaemon.MediaKeys",
 						       NULL,
