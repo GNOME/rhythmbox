@@ -1898,6 +1898,15 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				break;
 
 			default:
+				/* make sure we're not going to remove it */
+				g_mutex_lock (&stream->lock);
+				if (stream->block_probe_id != 0) {
+					gst_pad_remove_probe (stream->src_pad, stream->block_probe_id);
+					stream->block_probe_id = 0;
+					stream->needs_unlink = FALSE;
+				}
+				g_mutex_unlock (&stream->lock);
+
 				rb_debug ("stream %s is buffered, resuming", stream->uri);
 				link_and_unblock_stream (stream, &error);
 				if (error) {
