@@ -1131,8 +1131,10 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 	if (stream->src_blocked) {
 		GstStateChangeReturn state_ret;
 
-		gst_pad_remove_probe (stream->src_pad, stream->block_probe_id);
-		stream->block_probe_id = 0;
+		if (stream->block_probe_id != 0) {
+			gst_pad_remove_probe (stream->src_pad, stream->block_probe_id);
+			stream->block_probe_id = 0;
+		}
 
 		rb_debug ("stream %s is unblocked -> FADING_IN | PLAYING", stream->uri);
 		stream->src_blocked = FALSE;
