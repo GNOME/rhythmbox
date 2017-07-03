@@ -515,8 +515,6 @@ AC_DEFINE(GLIB_VERSION_MIN_REQUIRED, GLIB_VERSION_2_38, [minimum glib version])
 AC_DEFINE(GLIB_VERSION_MAX_ALLOWED, GLIB_VERSION_2_38, [maximum glib version])
 AC_DEFINE(GDK_VERSION_MIN_REQUIRED, GDK_VERSION_3_16, [minimum gdk version])
 AC_DEFINE(GDK_VERSION_MAX_ALLOWED, GDK_VERSION_3_16, [maximum gdk version])
-AC_DEFINE(CLUTTER_VERSION_MIN_REQUIRED, CLUTTER_VERSION_1_8, [minimum clutter version])
-AC_DEFINE(CLUTTER_VERSION_MAX_ALLOWED, CLUTTER_VERSION_1_8, [maximum clutter version])
 
 dnl Check for -fno-strict-aliasing
 FLAGS="-fno-strict-aliasing"
@@ -670,32 +668,6 @@ AC_SUBST(DMAPSHARING_CFLAGS)
 AC_SUBST(DMAPSHARING_LIBS)
 
 dnl ================================================================
-dnl clutter for visualizer plugin
-dnl ================================================================
-AC_ARG_ENABLE(visualizer,
-              AC_HELP_STRING([--disable-visualizer],
-                             [Disable visualizer plugin support]),,
-              enable_visualizer=auto)
-if test "x$enable_visualizer" != "xno"; then
-	PKG_CHECK_MODULES(CLUTTER,
-			  clutter-1.0 >= 1.8			\
-			  clutter-x11-1.0 >= 1.8		\
-			  clutter-gst-2.0				\
-			  clutter-gtk-1.0 >= 1.0		\
-			  mx-1.0 >= 1.0.1,
-			  have_clutter=yes,
-			  have_clutter=no)
-	if test "x$have_clutter" = "xno" -a "x$enable_visualizer" = "xyes"; then
-		AC_MSG_ERROR([Visualizer support explicitly requested, but clutter couldn't be found])
-	fi
-fi
-
-AM_CONDITIONAL(USE_CLUTTER, test x"$have_clutter" = "xyes")
-
-AC_SUBST(CLUTTER_CFLAGS)
-AC_SUBST(CLUTTER_LIBS)
-
-dnl ================================================================
 dnl grilo plugin
 dnl ================================================================
 AC_ARG_ENABLE(grilo,
@@ -783,7 +755,6 @@ plugins/mpris/Makefile
 plugins/dbus-media-server/Makefile
 plugins/rbzeitgeist/Makefile
 plugins/notification/Makefile
-plugins/visualizer/Makefile
 plugins/grilo/Makefile
 plugins/soundcloud/Makefile
 plugins/webremote/Makefile
@@ -879,12 +850,6 @@ if test "x$enable_browser_plugin" != xno; then
 	AC_MSG_NOTICE([** iTunes detection browser plugin (for podcasts) enabled])
 else
 	AC_MSG_NOTICE([   iTunes detection browser plugin (for podcasts) disabled])
-fi
-
-if test "x$have_clutter" = xyes; then
-	AC_MSG_NOTICE([** Visualizer plugin enabled])
-else
-	AC_MSG_NOTICE([   Visualizer plugin disabled])
 fi
 
 AC_MSG_NOTICE([End options])

@@ -415,24 +415,6 @@
     </key>
   </schema>
 
-  <enum id="org.gnome.rhythmbox.plugins.visualizer.quality">
-    <value nick="low" value="0"/>
-    <value nick="medium" value="1"/>
-    <value nick="high" value="2"/>
-  </enum>
-  <schema id="org.gnome.rhythmbox.plugins.visualizer" path="/org/gnome/rhythmbox/plugins/visualizer/">
-    <key name="vis-plugin" type="s">
-      <default>'goom'</default>
-      <summary>GStreamer element to use for visual effects</summary>
-      <description>The name of the GStreamer element to use for visual effects.</description>
-    </key>
-    <key name="vis-quality" enum="org.gnome.rhythmbox.plugins.visualizer.quality">
-      <default>'medium'</default>
-      <summary>The frame rate and size to use for visual effects</summary>
-      <description>The frame rate and size to use for visual effects</description>
-    </key>
-  </schema>
-
   <schema id="org.gnome.rhythmbox.plugins.grilo" path="/org/gnome/rhythmbox/plugins/grilo/">
     <child name="source" schema="org.gnome.rhythmbox.source"/>
   </schema>

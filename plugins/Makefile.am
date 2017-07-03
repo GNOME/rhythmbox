@@ -53,10 +53,6 @@ if ENABLE_FM_RADIO
 SUBDIRS += fmradio
 endif
 
-if USE_CLUTTER
-SUBDIRS += visualizer
-endif
-
 if USE_NOTIFY
 SUBDIRS += notification
 endif

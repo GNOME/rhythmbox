@@ -138,9 +138,6 @@ IGNORE_HFILES= \
 	rb-rhythmdb-dmap-db-adapter.h \
 	rb-rhythmdb-query-model-dmap-db-adapter.h \
 	rb-station-properties-dialog.h \
-	rb-visualizer-fullscreen.h \
-	rb-visualizer-menu.h \
-	rb-visualizer-page.h \
 	sj-metadata-marshal.h \
 	\
 	test-utils.h
