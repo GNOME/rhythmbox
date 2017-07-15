@@ -32,6 +32,7 @@ import urllib.request
 import rb
 from gi.repository import Gtk, Gio, GObject, Peas
 from gi.repository import RB
+from gi.repository import Gst, GstPbutils
 
 import LyricsParse
 from LyricsConfigureDialog import LyricsConfigureDialog
@@ -132,22 +133,33 @@ def build_cache_path(artist, title):
 	return os.path.join(artist_folder, title[:128] + '.lyric')
 
 class LyricGrabber(object):
+	"""
+	Fetch lyrics from several sources.
+
+	1. Local cache file
+	2. Lyric tags in file meta data
+	3. Online services
+	"""
 	def __init__(self, db, entry):
 		self.db = db
 		self.entry = entry
-		
+
 		(self.artist, self.title) = parse_song_data(self.db, self.entry)
 
 		self.cache_path = build_cache_path(self.artist, self.title)
 
 	def verify_lyric(self):
 		return os.path.exists(self.cache_path)
-	  
+
 	def search_lyrics(self, callback, cache_only=False):
+		"""
+		Fetch lyrics from cache.
+
+		If no cache file exist, tag extraction is tried next.
+		"""
 		self.callback = callback
-		
+
 		status = self.verify_lyric()
-		
 		if status:
 			f = open(self.cache_path, 'rt')
 			text = f.read()
@@ -155,20 +167,73 @@ class LyricGrabber(object):
 			self.callback(text)
 		elif cache_only:
 			self.callback(_("No lyrics found"))
-		elif self.artist == "" and self.title == "":
+		else:
+			self.search_tags()
+
+	def search_tags(self):
+		"""
+		Initiate fetching meta tags.
+
+		Result will be handled in search_tags_result
+		"""
+		location = self.entry.get_playback_uri()
+		self.discoverer = GstPbutils.Discoverer(timeout=Gst.SECOND*3)
+		self.discoverer.connect('discovered', self.search_tags_result)
+		self.discoverer.start()
+		self.discoverer.discover_uri_async(location)
+
+	def search_tags_result(self, discoverer, info, error):
+		"""
+		Extract lyrics from the file meta data (tags).
+
+		If no lyrics tags are found, online services are tried next.
+
+		Supported file formats and lyrics tags:
+		- ogg/vorbis files with "LYRICS" and "SYNCLYRICS" tag
+		"""
+		tags = info.get_tags()
+		if tags is None:
+			self.search_online()
+			return
+
+		for i in range(tags.get_tag_size("extended-comment")):
+			(exists, value) = tags.get_string_index("extended-comment", i)
+			#ogg/vorbis unsynchronized lyrics
+			if exists and value.startswith("LYRICS"):
+				text = value.replace("LYRICS=", "")
+				self.lyrics_found(text)
+				return
+			#ogg/vorbis synchronized lyrics
+			elif exists and value.startswith("SYNCLYRICS"):
+				text = value.replace("SYNCLYRICS=", "")
+				self.lyrics_found(text)
+				return
+
+		self.search_online()
+
+	def search_online(self):
+		"""Initiate searching the online lyrics services"""
+		if self.artist == "" and self.title == "":
 			self.callback(_("No lyrics found"))
 		else:
-			def lyric_callback (text):
-				if text is not None:
-					f = open(self.cache_path, 'wt')
-					f.write (text)
-					f.close ()
-					self.callback(text)
-				else:
-					self.callback(_("No lyrics found"))
-
 			parser = LyricsParse.Parser(self.artist, self.title)
-			parser.get_lyrics(lyric_callback)
+			parser.get_lyrics(self.search_online_result)
+
+	def search_online_result(self, text):
+		"""Handle the result of searching online lyrics services"""
+		if text is not None:
+			self.lyrics_found(text)
+		else:
+			self.callback(_("No lyrics found"))
+
+
+	def lyrics_found(self, text):
+		f = open(self.cache_path, 'wt')
+		f.write(text)
+		f.close()
+
+		self.callback(text)
+
 
 class LyricPane(object):
 	def __init__(self, db, song_info):
