@@ -163,7 +163,7 @@ enum
 #define STREAM_FORMAT "%s"
 
 /* unicode graphic characters, encoded in UTF-8 */
-static const char const *UNICODE_MIDDLE_DOT = "\xC2\xB7";
+static const char *const UNICODE_MIDDLE_DOT = "\xC2\xB7";
 
 #define SCROLL_UP_SEEK_OFFSET	5
 #define SCROLL_DOWN_SEEK_OFFSET -5

@@ -49,11 +49,11 @@
  *
  * the following constants are in UTF-8 encoding
  */
-static const char const *UNICODE_LRM = "\xE2\x80\x8E";
-static const char const *UNICODE_RLM = "\xE2\x80\x8F";
-static const char const *UNICODE_LRE = "\xE2\x80\xAA";
-static const char const *UNICODE_RLE = "\xE2\x80\xAB";
-static const char const *UNICODE_PDF = "\xE2\x80\xAC";
+static const char *const UNICODE_LRM = "\xE2\x80\x8E";
+static const char *const UNICODE_RLM = "\xE2\x80\x8F";
+static const char *const UNICODE_LRE = "\xE2\x80\xAA";
+static const char *const UNICODE_RLE = "\xE2\x80\xAB";
+static const char *const UNICODE_PDF = "\xE2\x80\xAC";
 
 static void
 append_and_free (GString *str, char *text)
