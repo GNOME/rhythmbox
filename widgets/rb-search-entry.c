@@ -216,7 +216,6 @@ rb_search_entry_constructed (GObject *object)
 
 	entry = RB_SEARCH_ENTRY (object);
 
-	gtk_widget_set_can_focus (GTK_WIDGET (entry), TRUE);
 	entry->priv->entry = gtk_entry_new ();
 	g_signal_connect_object (GTK_ENTRY (entry->priv->entry),
 				 "icon-press",
