@@ -51,10 +51,6 @@ if enable_fm_radio
   subdir('fmradio')
 endif
 
-if use_clutter
-  subdir('visualizer')
-endif
-
 if use_notify
   subdir('notification')
 endif

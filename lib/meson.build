@@ -45,7 +45,7 @@ lib_dependencies = [
    libpeas_gtk, libxml
 ]
 
-librb = library('rb', lib_sources,
+librb = static_library('rb', lib_sources,
   c_args: lib_c_args + ['-DG_LOG_DOMAIN="Rhythmbox"'],
   include_directories: [configinc],
   dependencies: lib_dependencies,
@@ -54,6 +54,7 @@ librb = library('rb', lib_sources,
 )
 
 lib_dep = declare_dependency(
+  link_whole: librb,
   link_with: librb,
   dependencies: lib_dependencies,
   include_directories: [configinc, libinc],

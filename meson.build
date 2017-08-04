@@ -224,7 +224,7 @@ if set_more_warnings == true and cc.get_id() == 'gcc'
     '-Wreturn-type', '-Wswitch', '-Wtrigraphs', '-Wunused-function',
     '-Wunused-label', '-Wunused-value', '-Wchar-subscripts',
     '-Wmissing-declarations', '-Wmissing-prototypes', '-Wnested-externs',
-    '-Wpointer-arith', '-Wcast-align', '-Wformat-security', '-Wall', '-Werror',
+    '-Wpointer-arith', '-Wcast-align', '-Wformat-security', '-Wall',
     '-Wno-deprecated-declarations', '-std=gnu89']
 
   # in configure.ac this option is only added if '-O0' is not present in the CFLAGS
@@ -314,21 +314,6 @@ if get_option('daap') != 'no'
     have_libdmapsharing = true
   elif get_option('brasero') == 'yes'
     error('DAAP support explicitly requested, but libdmapsharing couldn\'t be found')
-  endif
-endif
-
-use_clutter = false
-if get_option('visualizer') != 'no'
-  clutter = dependency('clutter-1.0', version: '>= 1.8', required: false)
-  clutter_x11 = dependency('clutter-x11-1.0', version: '>= 1.8', required: false)
-  clutter_gst = dependency('clutter-gst-2.0', version: '>= 2.0', required: false)
-  clutter_gtk = dependency('clutter-gtk-1.0', version: '>= 1.8', required: false)
-  mx = dependency('mx-1.0', version: '>= 1.0.1', required: false)
-
-  if clutter.found() and clutter_x11.found() and clutter_gst.found() and clutter_gtk.found() and mx.found()
-    use_clutter = true
-  elif get_option('visualizer') == 'yes'
-    error('Visualizer support explicitly requested, but clutter couldn\'t be found')
   endif
 endif
 
@@ -428,12 +413,6 @@ if enable_browser_plugin
   message('** iTunes detection browser plugin (for podcasts) enabled')
 else
   message('   iTunes detection browser plugin (for podcasts) disabled')
-endif
-
-if use_clutter
-  message('** Visualizer plugin enabled')
-else
-  message('   Visualizer plugin disabled')
 endif
 
 message('End options')

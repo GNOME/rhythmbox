@@ -28,8 +28,6 @@ option('python-plugins', type: 'combo', choices: ['yes', 'no', 'auto'], value: '
        description: 'Enable Python plugins')
 option('vala-plugins', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
        description: 'Enable Vala plugins')
-option('visualizer', type: 'combo', choices: ['yes', 'no', 'auto'], value: 'auto',
-       description: 'Enable visualizer plugin support')
 
 option('database', type: 'combo', choices: ['tree'], value: 'tree',
        description: 'Select the database to use (default tree)')
