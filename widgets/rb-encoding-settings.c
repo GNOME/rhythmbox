@@ -159,24 +159,26 @@ update_property_editor_for_preset (RBEncodingSettings *settings, const char *med
 		profile_settings =
 			rb_gst_encoding_profile_get_settings (profile,
 							      encoding_styles[style].style);
-		settings->priv->encoder_property_editor =
-			rb_object_property_editor_new (G_OBJECT (settings->priv->encoder_element),
-						       profile_settings);
-		g_strfreev (profile_settings);
-		gst_encoding_profile_unref (profile);
+		if (profile_settings != NULL) {
+			settings->priv->encoder_property_editor =
+				rb_object_property_editor_new (G_OBJECT (settings->priv->encoder_element),
+							       profile_settings);
+			g_strfreev (profile_settings);
+			gst_encoding_profile_unref (profile);
 
-		settings->priv->profile_changed_id =
-			g_signal_connect (settings->priv->encoder_property_editor,
-					  "changed",
-					  G_CALLBACK (profile_changed_cb),
-					  settings);
+			settings->priv->profile_changed_id =
+				g_signal_connect (settings->priv->encoder_property_editor,
+						  "changed",
+						  G_CALLBACK (profile_changed_cb),
+						  settings);
 
-		gtk_grid_attach (GTK_GRID (settings->priv->encoder_property_holder),
-				 settings->priv->encoder_property_editor,
-				 0, 0, 1, 1);
-		gtk_widget_show_all (settings->priv->encoder_property_editor);
+			gtk_grid_attach (GTK_GRID (settings->priv->encoder_property_holder),
+					 settings->priv->encoder_property_editor,
+					 0, 0, 1, 1);
+			gtk_widget_show_all (settings->priv->encoder_property_editor);
 
-		settings->priv->preset_name = g_strdup (preset);
+			settings->priv->preset_name = g_strdup (preset);
+		}
 	}
 }
 
