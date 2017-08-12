@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-25 22:12+0100\n"
-"PO-Revision-Date: 2017-03-25 22:13+0100\n"
+"POT-Creation-Date: 2017-08-12 02:30+0200\n"
+"PO-Revision-Date: 2017-08-12 02:32+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <community-poland@mozilla.org>\n"
 "Language: pl\n"
@@ -34,7 +34,7 @@ msgstr ""
 #. ?
 #. Translators: the parameter here is an error message
 #: ../backends/gstreamer/rb-player-gst.c:520
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2919
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2930
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Otwarcie urządzenia wyjściowego się nie powiodło: %s"
@@ -59,44 +59,44 @@ msgstr ""
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Połączenie strumienia w potok biblioteki GStreamer się nie powiodło"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1165
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1167
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Rozpoczęcie nowego strumienia się nie powiodło"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2832
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2843
 #, c-format
 msgid "Failed to open output device"
 msgstr "Otwarcie urządzenia wyjściowego się nie powiodło"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3221
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3300
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3232
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3311
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Utworzenie elementu biblioteki GStreamer się nie powiodło; proszę sprawdzić "
 "poprawność instalacji"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3230
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3241
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Utworzenie elementu wyjścia dźwiękowego się nie powiodło; proszę sprawdzić "
 "poprawność instalacji"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3264
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3317
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3344
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3354
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3364
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3275
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3328
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3355
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3365
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3375
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Połączenie strumienia biblioteki GStreamer się nie powiodło; proszę "
 "sprawdzić poprawność instalacji"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3459
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3470
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr ""
@@ -505,7 +505,7 @@ msgstr "Edycja"
 #: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/android/android-toolbar.ui.h:2
 #: ../plugins/daap/daap-toolbar.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:2
-#: ../plugins/grilo/rb-grilo-source.c:346 ../plugins/ipod/ipod-toolbar.ui.h:2
+#: ../plugins/grilo/rb-grilo-source.c:360 ../plugins/ipod/ipod-toolbar.ui.h:2
 #: ../plugins/iradio/iradio-toolbar.ui.h:2
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:2
@@ -622,7 +622,7 @@ msgstr "Zapis listy odtwarzania"
 msgid "_Cancel"
 msgstr "_Anuluj"
 
-#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:202
+#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:267
 #: ../widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "_Zapisz"
@@ -1003,7 +1003,7 @@ msgstr "%d %b %Y"
 #: ../plugins/iradio/rb-iradio-source.c:525
 #: ../plugins/iradio/rb-iradio-source.c:1046
 #: ../plugins/iradio/rb-station-properties-dialog.c:485
-#: ../plugins/lyrics/lyrics.py:69 ../plugins/lyrics/lyrics.py:71
+#: ../plugins/lyrics/lyrics.py:70 ../plugins/lyrics/lyrics.py:72
 #: ../plugins/mtpdevice/rb-mtp-source.c:649
 #: ../plugins/mtpdevice/rb-mtp-source.c:1142
 #: ../plugins/mtpdevice/rb-mtp-source.c:1491
@@ -1770,8 +1770,8 @@ msgstr "Odnośniki"
 msgid "No artist specified."
 msgstr "Nie podano wykonawcy."
 
-#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:241
-#: ../plugins/lyrics/lyrics.py:326
+#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:306
+#: ../plugins/lyrics/lyrics.py:391
 msgid "Lyrics"
 msgstr "Tekst utworu"
 
@@ -1836,7 +1836,7 @@ msgstr "Udostępnianie"
 
 #: ../plugins/daap/daap-prefs.ui.h:2
 msgid "_Look for touch Remotes"
-msgstr "_Wyszukaj piloty dotykowe"
+msgstr "_Wyszukiwanie pilotów dotykowych"
 
 #: ../plugins/daap/daap-prefs.ui.h:3
 msgid "_Share my music"
@@ -2002,12 +2002,12 @@ msgstr "Przeglądarka multimediów Grilo"
 msgid "Browse various local and Internet media sources"
 msgstr "Przeglądanie różnych lokalnych i internetowych źródeł multimediów"
 
-#: ../plugins/grilo/rb-grilo-source.c:389
+#: ../plugins/grilo/rb-grilo-source.c:403
 #: ../plugins/soundcloud/soundcloud.py:492
 msgid "Fetch more tracks"
 msgstr "Pobierz więcej ścieżek"
 
-#: ../plugins/grilo/rb-grilo-source.c:899
+#: ../plugins/grilo/rb-grilo-source.c:926
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -2231,7 +2231,7 @@ msgstr "Obsługa programu Rhythmbox za pomocą pilota na podczerwień"
 msgid "Choose lyrics folder..."
 msgstr "Wybór katalogu tekstów…"
 
-#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:349
+#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:414
 msgid "Song Lyrics"
 msgstr "Teksty utworów"
 
@@ -2251,20 +2251,20 @@ msgstr "Przeglądaj…"
 msgid "Lyrics Folder"
 msgstr "Katalog tekstów utworów"
 
-#: ../plugins/lyrics/lyrics.py:157 ../plugins/lyrics/lyrics.py:159
-#: ../plugins/lyrics/lyrics.py:168
+#: ../plugins/lyrics/lyrics.py:169 ../plugins/lyrics/lyrics.py:217
+#: ../plugins/lyrics/lyrics.py:227
 msgid "No lyrics found"
 msgstr "Nie odnaleziono tekstu utworu"
 
-#: ../plugins/lyrics/lyrics.py:207 ../plugins/lyrics/lyrics.py:220
+#: ../plugins/lyrics/lyrics.py:272 ../plugins/lyrics/lyrics.py:285
 msgid "_Edit"
 msgstr "_Modyfikuj"
 
-#: ../plugins/lyrics/lyrics.py:222
+#: ../plugins/lyrics/lyrics.py:287
 msgid "_Search again"
 msgstr "Wy_szukaj ponownie"
 
-#: ../plugins/lyrics/lyrics.py:281
+#: ../plugins/lyrics/lyrics.py:346
 msgid "Searching for lyrics..."
 msgstr "Wyszukiwanie tekstu utworu…"
 
@@ -2299,7 +2299,7 @@ msgstr "Magnatune to internetowa wytwórnia płytowa, która nie jest „zła”
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:4
 msgid "    * Free listening of all songs"
-msgstr "    • Darmowe słuchanie wszystkich utworów"
+msgstr "    • Bezpłatne słuchanie wszystkich utworów"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:5
 msgid ""
@@ -2688,21 +2688,17 @@ msgstr "Następny"
 
 #. Translators: by Artist
 #: ../plugins/notification/rb-notification-plugin.c:332
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:148
 #, c-format
 msgid "by <i>%s</i>"
 msgstr " <i>%s</i>"
 
 #. Translators: from Album
 #: ../plugins/notification/rb-notification-plugin.c:334
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:150
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:213
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "z <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:414
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
 #: ../widgets/rb-header.c:366
 msgid "Not Playing"
 msgstr "Bezczynny"
@@ -2896,47 +2892,6 @@ msgstr "Wyświetl „%(title)s” w serwisie SoundCloud"
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
 msgstr "Wyświetl „%(container)s” w serwisie SoundCloud"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:39
-msgid "Low quality"
-msgstr "Niska jakość"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:40
-msgid "Normal quality"
-msgstr "Zwykła jakość"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:41
-msgid "High quality"
-msgstr "Wysoka jakość"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:78
-msgid "Fullscreen"
-msgstr "Pełny ekran"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:89
-#: ../widgets/rb-entry-view.c:1528
-msgid "Quality"
-msgstr "Jakość"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:114
-msgid "Visual Effect"
-msgstr "Efekty wizualne"
-
-#: ../plugins/visualizer/rb-visualizer-page.c:69
-msgid "Visual Effects"
-msgstr "Efekty wizualne"
-
-#: ../plugins/visualizer/rb-visualizer-plugin.c:392
-msgid "Display"
-msgstr "Wyświetlanie"
-
-#: ../plugins/visualizer/visualizer.plugin.in.h:1
-msgid "Visualization"
-msgstr "Wizualizacja"
-
-#: ../plugins/visualizer/visualizer.plugin.in.h:2
-msgid "Displays visualizations"
-msgstr "Wyświetla wizualizacje"
 
 #: ../plugins/webremote/webremote-config.ui.h:1
 msgid "Web remote control preferences"
@@ -3446,7 +3401,7 @@ msgstr "Nie można uzyskać dostępu do %s: %s"
 #.
 #: ../rhythmdb/rhythmdb.c:1819
 msgid "The Beatles"
-msgstr "Locrian"
+msgstr "Keiichi Okabe"
 
 #. Translators: this is an example album name.  If the
 #. * example artist name is localised, this should be replaced
@@ -3454,7 +3409,7 @@ msgstr "Locrian"
 #.
 #: ../rhythmdb/rhythmdb.c:1825
 msgid "Help!"
-msgstr "Infinite Dissolution"
+msgstr "NieR: Automata"
 
 #. Translators: this is an example song title.  If the example
 #. * artist and album names are localised, this should be replaced
@@ -3462,7 +3417,7 @@ msgstr "Infinite Dissolution"
 #.
 #: ../rhythmdb/rhythmdb.c:1831
 msgid "Ticket To Ride"
-msgstr "The Great Dying"
+msgstr "Amusement Park"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
@@ -4276,7 +4231,7 @@ msgstr "Stała przepływność"
 msgid "Variable bit rate"
 msgstr "Zmienna przepływność"
 
-#: ../widgets/rb-encoding-settings.c:400
+#: ../widgets/rb-encoding-settings.c:402
 msgid "Default settings"
 msgstr "Domyślne ustawienia"
 
@@ -4304,6 +4259,10 @@ msgstr "Długość"
 #: ../widgets/rb-entry-view.c:1516
 msgid "Year"
 msgstr "Rok"
+
+#: ../widgets/rb-entry-view.c:1528
+msgid "Quality"
+msgstr "Jakość"
 
 #: ../widgets/rb-entry-view.c:1531
 msgid "000 kbps"
@@ -4751,19 +4710,19 @@ msgstr[0] "%d gwiazdka"
 msgstr[1] "%d gwiazdki"
 msgstr[2] "%d gwiazdek"
 
-#: ../widgets/rb-search-entry.c:228
+#: ../widgets/rb-search-entry.c:227
 msgid "Clear the search text"
 msgstr "Czyści pole wyszukiwania"
 
-#: ../widgets/rb-search-entry.c:235
+#: ../widgets/rb-search-entry.c:234
 msgid "Select the search type"
 msgstr "Wybiera typ wyszukiwania"
 
-#: ../widgets/rb-search-entry.c:253
+#: ../widgets/rb-search-entry.c:252
 msgid "Search"
 msgstr "Wyszukaj"
 
-#: ../widgets/rb-search-entry.c:551
+#: ../widgets/rb-search-entry.c:550
 msgid "_Search:"
 msgstr "Wy_szukiwanie:"
 
