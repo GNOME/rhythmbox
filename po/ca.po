@@ -6,12 +6,13 @@
 # Joan Duran <jodufi@gmail.com>, 2008-2012.
 # Gil Forcada <gilforcada@guifi.net>, 2012.
 # xavier <catala.xavier@gmail.com>, 2013.
+# Jordi Serratosa <jordis@softcatala.cat>, 2017.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2017-02-26 08:46+0000\n"
+"POT-Creation-Date: 2017-09-08 12:23+0000\n"
 "PO-Revision-Date: 2016-08-13 07:42+0200\n"
 "Last-Translator: Jordi Mas <jmas@softcatala.org>\n"
 "Language-Team: softcatala\n"
@@ -32,7 +33,7 @@ msgstr ""
 #. ?
 #. Translators: the parameter here is an error message
 #: ../backends/gstreamer/rb-player-gst.c:520
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2992
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2930
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "No s'ha pogut obrir el dispositiu de sortida: %s"
@@ -50,46 +51,46 @@ msgid "Failed to create %s element; check your GStreamer installation"
 msgstr ""
 "No s'ha pogut crear l'element %s, comproveu la instal·lació del GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1132
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1146
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1107
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1121
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "No s'ha pogut enllaçar el flux nou al conducte del GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1190
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1167
 #, c-format
 msgid "Failed to start new stream"
 msgstr "No s'ha pogut iniciar el flux nou"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2905
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2843
 #, c-format
 msgid "Failed to open output device"
 msgstr "No s'ha pogut obrir el dispositiu de sortida"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3294
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3373
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3232
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3311
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "No s'ha pogut crear l'element del GStreamer, comproveu la instal·lació"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3303
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3241
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "No s'ha pogut crear un element de sortida d'àudio, comproveu la instal·lació"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3337
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3390
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3417
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3427
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3437
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3275
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3328
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3355
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3365
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3375
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "No s'ha pogut enllaçar el conducte del GStreamer, comproveu la instal·lació"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3532
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3470
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "No s'ha pogut crear el conducte del GStreamer per reproduir %s"
@@ -496,7 +497,7 @@ msgstr "Edita"
 #: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/android/android-toolbar.ui.h:2
 #: ../plugins/daap/daap-toolbar.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:2
-#: ../plugins/grilo/rb-grilo-source.c:346 ../plugins/ipod/ipod-toolbar.ui.h:2
+#: ../plugins/grilo/rb-grilo-source.c:360 ../plugins/ipod/ipod-toolbar.ui.h:2
 #: ../plugins/iradio/iradio-toolbar.ui.h:2
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:2
@@ -613,7 +614,7 @@ msgstr "Desa la llista de reproducció"
 msgid "_Cancel"
 msgstr "_Cancel·la"
 
-#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:202
+#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:267
 #: ../widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "_Desa"
@@ -873,7 +874,7 @@ msgstr "Ordre dels a_rtistes de l'àlbum:"
 
 #: ../data/ui/song-info-multiple.ui.h:15 ../data/ui/song-info.ui.h:19
 msgid "_Composer sort order:"
-msgstr "Order dels _compositors:"
+msgstr "Ordre dels _compositors:"
 
 #: ../data/ui/song-info-multiple.ui.h:16 ../data/ui/song-info.ui.h:20
 msgid "Sorting"
@@ -995,7 +996,7 @@ msgstr "%d de %b de %Y"
 #: ../plugins/iradio/rb-iradio-source.c:525
 #: ../plugins/iradio/rb-iradio-source.c:1046
 #: ../plugins/iradio/rb-station-properties-dialog.c:485
-#: ../plugins/lyrics/lyrics.py:69 ../plugins/lyrics/lyrics.py:71
+#: ../plugins/lyrics/lyrics.py:70 ../plugins/lyrics/lyrics.py:72
 #: ../plugins/mtpdevice/rb-mtp-source.c:649
 #: ../plugins/mtpdevice/rb-mtp-source.c:1142
 #: ../plugins/mtpdevice/rb-mtp-source.c:1491
@@ -1766,8 +1767,8 @@ msgstr "Enllaços"
 msgid "No artist specified."
 msgstr "No s'ha especificat cap artista."
 
-#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:241
-#: ../plugins/lyrics/lyrics.py:326
+#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:306
+#: ../plugins/lyrics/lyrics.py:391
 msgid "Lyrics"
 msgstr "Lletres"
 
@@ -2001,12 +2002,12 @@ msgstr "Explorador multimèdia Grilo"
 msgid "Browse various local and Internet media sources"
 msgstr "Navegueu per fonts multimèdia locals o d'Internet"
 
-#: ../plugins/grilo/rb-grilo-source.c:389
+#: ../plugins/grilo/rb-grilo-source.c:403
 #: ../plugins/soundcloud/soundcloud.py:492
 msgid "Fetch more tracks"
 msgstr "Aconsegueix més peces"
 
-#: ../plugins/grilo/rb-grilo-source.c:899
+#: ../plugins/grilo/rb-grilo-source.c:926
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -2227,7 +2228,7 @@ msgstr "Controla el Rhythmbox utilitzant un comandament per infraroigs"
 msgid "Choose lyrics folder..."
 msgstr "Seleccioneu una carpeta de lletres..."
 
-#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:349
+#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:414
 msgid "Song Lyrics"
 msgstr "Lletra de la cançó"
 
@@ -2247,20 +2248,20 @@ msgstr "Navega..."
 msgid "Lyrics Folder"
 msgstr "Carpeta de lletres"
 
-#: ../plugins/lyrics/lyrics.py:157 ../plugins/lyrics/lyrics.py:159
-#: ../plugins/lyrics/lyrics.py:168
+#: ../plugins/lyrics/lyrics.py:169 ../plugins/lyrics/lyrics.py:217
+#: ../plugins/lyrics/lyrics.py:227
 msgid "No lyrics found"
 msgstr "No s'ha trobat la lletra"
 
-#: ../plugins/lyrics/lyrics.py:207 ../plugins/lyrics/lyrics.py:220
+#: ../plugins/lyrics/lyrics.py:272 ../plugins/lyrics/lyrics.py:285
 msgid "_Edit"
 msgstr "_Edita"
 
-#: ../plugins/lyrics/lyrics.py:222
+#: ../plugins/lyrics/lyrics.py:287
 msgid "_Search again"
 msgstr "_Cerca de nou"
 
-#: ../plugins/lyrics/lyrics.py:281
+#: ../plugins/lyrics/lyrics.py:346
 msgid "Searching for lyrics..."
 msgstr "S'estan cercant les lletres..."
 
@@ -2685,21 +2686,17 @@ msgstr "Següent"
 
 #. Translators: by Artist
 #: ../plugins/notification/rb-notification-plugin.c:332
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:148
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "per <i>%s</i>"
 
 #. Translators: from Album
 #: ../plugins/notification/rb-notification-plugin.c:334
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:150
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:213
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:414
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
 #: ../widgets/rb-header.c:366
 msgid "Not Playing"
 msgstr "No s'està reproduint"
@@ -2896,47 +2893,6 @@ msgstr "Mostra «%(title)s» al SoundCloud"
 msgid "View '%(container)s' on SoundCloud"
 msgstr "Mostra «%(container)s» al SoundCloud"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:39
-msgid "Low quality"
-msgstr "Qualitat baixa"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:40
-msgid "Normal quality"
-msgstr "Qualitat normal"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:41
-msgid "High quality"
-msgstr "Qualitat alta"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:78
-msgid "Fullscreen"
-msgstr "Pantalla completa"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:89
-#: ../widgets/rb-entry-view.c:1528
-msgid "Quality"
-msgstr "Qualitat"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:114
-msgid "Visual Effect"
-msgstr "Efectes visuals"
-
-#: ../plugins/visualizer/rb-visualizer-page.c:69
-msgid "Visual Effects"
-msgstr "Efectes visuals"
-
-#: ../plugins/visualizer/rb-visualizer-plugin.c:392
-msgid "Display"
-msgstr "Visualització"
-
-#: ../plugins/visualizer/visualizer.plugin.in.h:1
-msgid "Visualization"
-msgstr "Visualització"
-
-#: ../plugins/visualizer/visualizer.plugin.in.h:2
-msgid "Displays visualizations"
-msgstr "Mostra visualitzacions"
-
 #: ../plugins/webremote/webremote-config.ui.h:1
 msgid "Web remote control preferences"
 msgstr "Preferències del control remot web"
@@ -2961,7 +2917,7 @@ msgstr "Control remot web"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Controla el Rhythmbox des d'un navegador web"
 
-#: ../plugins/webremote/webremote.py:582
+#: ../plugins/webremote/webremote.py:583
 msgid "Launch web remote control"
 msgstr "Inicia el control remot web"
 
@@ -4259,7 +4215,7 @@ msgstr "Taxa de bits constant"
 msgid "Variable bit rate"
 msgstr "Taxa de bits variable"
 
-#: ../widgets/rb-encoding-settings.c:400
+#: ../widgets/rb-encoding-settings.c:402
 msgid "Default settings"
 msgstr "Paràmetres per defecte"
 
@@ -4287,6 +4243,10 @@ msgstr "Temps"
 #: ../widgets/rb-entry-view.c:1516
 msgid "Year"
 msgstr "Any"
+
+#: ../widgets/rb-entry-view.c:1528
+msgid "Quality"
+msgstr "Qualitat"
 
 #: ../widgets/rb-entry-view.c:1531
 msgid "000 kbps"
@@ -4727,19 +4687,19 @@ msgid_plural "%d Stars"
 msgstr[0] "%d estrella"
 msgstr[1] "%d estrelles"
 
-#: ../widgets/rb-search-entry.c:228
+#: ../widgets/rb-search-entry.c:227
 msgid "Clear the search text"
 msgstr "Neteja el text de cerca"
 
-#: ../widgets/rb-search-entry.c:235
+#: ../widgets/rb-search-entry.c:234
 msgid "Select the search type"
 msgstr "Seleccioneu el tipus de cerca"
 
-#: ../widgets/rb-search-entry.c:253
+#: ../widgets/rb-search-entry.c:252
 msgid "Search"
 msgstr "Cerca"
 
-#: ../widgets/rb-search-entry.c:551
+#: ../widgets/rb-search-entry.c:550
 msgid "_Search:"
 msgstr "_Cerca:"
 
@@ -4770,6 +4730,33 @@ msgstr "A l'escriptori"
 #: ../widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "La ubicació és desconeguda"
+
+#~ msgid "Low quality"
+#~ msgstr "Qualitat baixa"
+
+#~ msgid "Normal quality"
+#~ msgstr "Qualitat normal"
+
+#~ msgid "High quality"
+#~ msgstr "Qualitat alta"
+
+#~ msgid "Fullscreen"
+#~ msgstr "Pantalla completa"
+
+#~ msgid "Visual Effect"
+#~ msgstr "Efectes visuals"
+
+#~ msgid "Visual Effects"
+#~ msgstr "Efectes visuals"
+
+#~ msgid "Display"
+#~ msgstr "Visualització"
+
+#~ msgid "Visualization"
+#~ msgstr "Visualització"
+
+#~ msgid "Displays visualizations"
+#~ msgstr "Mostra visualitzacions"
 
 #~ msgid "Format settings:"
 #~ msgstr "Paràmetres del format:"
