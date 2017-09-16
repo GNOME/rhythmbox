@@ -765,6 +765,8 @@ page_changed_cb (RBShell *shell, GParamSpec *pspec, RBRemovableMediaManager *mgr
 	app = g_application_get_default ();
 	action = g_action_map_lookup_action (G_ACTION_MAP (app), "removable-media-eject");
 	g_object_set (action, "enabled", can_eject, NULL);
+
+	g_object_unref (page);
 }
 
 static void
