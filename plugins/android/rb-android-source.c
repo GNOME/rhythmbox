@@ -917,6 +917,9 @@ impl_dispose (GObject *object)
 		rhythmdb_import_job_cancel (priv->import_job);
 		g_clear_object (&priv->import_job);
 	}
+	if (priv->rescan_id != 0) {
+		g_source_remove (priv->rescan_id);
+	}
 
 	g_clear_object (&priv->device_info);
 	g_clear_object (&priv->mount);
