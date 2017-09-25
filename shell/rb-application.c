@@ -434,9 +434,8 @@ impl_local_command_line (GApplication *app, gchar ***args, int *exit_status)
 	if (rb->priv->no_registration) {
 		if (n_files > 0) {
 			g_warning ("Unable to open files on the commandline with --no-registration");
+			n_files = 0;
 		}
-		impl_startup (app);
-		return TRUE;
 	}
 
 	if (!g_application_register (app, NULL, &error)) {
@@ -662,7 +661,12 @@ rb_application_run (RBApplication *app, int argc, char **argv)
 	else
 		rb_debug_init (debug);
 
-	g_object_set (app, "register-session", !app->priv->no_registration, NULL);
+	if (app->priv->no_registration) {
+		GApplicationFlags flags;
+		g_object_get (app, "flags", &flags, NULL);
+		flags |= G_APPLICATION_NON_UNIQUE;
+		g_object_set (app, "flags", flags, NULL);
+	}
 
 	return g_application_run (G_APPLICATION (app), nargc, nargv);
 }
