@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2017-02-26 08:46+0000\n"
-"PO-Revision-Date: 2017-04-09 08:06+0700\n"
+"POT-Creation-Date: 2017-09-12 10:23+0000\n"
+"PO-Revision-Date: 2017-10-04 16:43+0700\n"
 "Last-Translator: Kukuh Syafaat <syafaatkukuh@gmail.com>\n"
 "Language-Team: Indonesian <gnome@i15n.org>\n"
 "Language: id\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 2.0.3\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:659
 #, c-format
@@ -30,7 +30,7 @@ msgstr "Tak bisa membuat elemen muara GStreamer untuk ditulisi %s"
 #. ?
 #. Translators: the parameter here is an error message
 #: ../backends/gstreamer/rb-player-gst.c:520
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2992
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2930
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Gagal membuka perangkat keluaran: %s"
@@ -45,44 +45,44 @@ msgstr "Gagal membuat elemen playbin; periksa instalasi GStreamer Anda"
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr "Gagal membuat elemen %s; periksa instalasi GStreamer Anda"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1132
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1146
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1107
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1121
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Gagal menaut stream baru ke dalam jalur pipa GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1190
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1167
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Gagal memulai stream baru"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2905
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2843
 #, c-format
 msgid "Failed to open output device"
 msgstr "Gagal membuka perangkat keluaran"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3294
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3373
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3232
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3311
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Gagal membuat elemen GStreamer; periksa instalasi Anda"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3303
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3241
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Gagal membuat elemen keluaran audio; periksa instalasi Anda"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3337
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3390
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3417
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3427
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3437
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3275
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3328
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3355
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3365
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3375
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Gagal menaut jalur pipa GStreamer; periksa instalasi Anda"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3532
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3470
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Gagal membuat jalur pipa GStreamer untuk memutar %s"
@@ -487,7 +487,7 @@ msgstr "Sunting"
 #: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/android/android-toolbar.ui.h:2
 #: ../plugins/daap/daap-toolbar.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:2
-#: ../plugins/grilo/rb-grilo-source.c:346 ../plugins/ipod/ipod-toolbar.ui.h:2
+#: ../plugins/grilo/rb-grilo-source.c:360 ../plugins/ipod/ipod-toolbar.ui.h:2
 #: ../plugins/iradio/iradio-toolbar.ui.h:2
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:2
@@ -604,7 +604,7 @@ msgstr "Simpan Daftar Putar"
 msgid "_Cancel"
 msgstr "_Batal"
 
-#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:202
+#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:267
 #: ../widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "_Simpan"
@@ -986,7 +986,7 @@ msgstr "%d %b %Y"
 #: ../plugins/iradio/rb-iradio-source.c:525
 #: ../plugins/iradio/rb-iradio-source.c:1046
 #: ../plugins/iradio/rb-station-properties-dialog.c:485
-#: ../plugins/lyrics/lyrics.py:69 ../plugins/lyrics/lyrics.py:71
+#: ../plugins/lyrics/lyrics.py:70 ../plugins/lyrics/lyrics.py:72
 #: ../plugins/mtpdevice/rb-mtp-source.c:649
 #: ../plugins/mtpdevice/rb-mtp-source.c:1142
 #: ../plugins/mtpdevice/rb-mtp-source.c:1491
@@ -1743,8 +1743,8 @@ msgstr "Taut"
 msgid "No artist specified."
 msgstr "Tak ada artis yang dinyatakan."
 
-#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:241
-#: ../plugins/lyrics/lyrics.py:326
+#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:306
+#: ../plugins/lyrics/lyrics.py:391
 msgid "Lyrics"
 msgstr "Lirik"
 
@@ -1974,12 +1974,12 @@ msgstr "Peramban media Grilo"
 msgid "Browse various local and Internet media sources"
 msgstr "Ramban berbagai sumber media lokal dan Internet"
 
-#: ../plugins/grilo/rb-grilo-source.c:389
+#: ../plugins/grilo/rb-grilo-source.c:403
 #: ../plugins/soundcloud/soundcloud.py:492
 msgid "Fetch more tracks"
 msgstr "Ambil lebih banyak trek"
 
-#: ../plugins/grilo/rb-grilo-source.c:899
+#: ../plugins/grilo/rb-grilo-source.c:926
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -2196,7 +2196,7 @@ msgstr "Kendalikan Rhythmbox memakai pengendali jarak jauh infra merah"
 msgid "Choose lyrics folder..."
 msgstr "Pilih folder lirik lagu..."
 
-#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:349
+#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:414
 msgid "Song Lyrics"
 msgstr "Lirik Lagu"
 
@@ -2216,20 +2216,20 @@ msgstr "Ramban..."
 msgid "Lyrics Folder"
 msgstr "Folder Lirik Lagu"
 
-#: ../plugins/lyrics/lyrics.py:157 ../plugins/lyrics/lyrics.py:159
-#: ../plugins/lyrics/lyrics.py:168
+#: ../plugins/lyrics/lyrics.py:169 ../plugins/lyrics/lyrics.py:217
+#: ../plugins/lyrics/lyrics.py:227
 msgid "No lyrics found"
 msgstr "Tak ada lirik yang ditemukan"
 
-#: ../plugins/lyrics/lyrics.py:207 ../plugins/lyrics/lyrics.py:220
+#: ../plugins/lyrics/lyrics.py:272 ../plugins/lyrics/lyrics.py:285
 msgid "_Edit"
 msgstr "_Edit"
 
-#: ../plugins/lyrics/lyrics.py:222
+#: ../plugins/lyrics/lyrics.py:287
 msgid "_Search again"
 msgstr "_Cari lagi"
 
-#: ../plugins/lyrics/lyrics.py:281
+#: ../plugins/lyrics/lyrics.py:346
 msgid "Searching for lyrics..."
 msgstr "Mencari lirik lagu..."
 
@@ -2650,21 +2650,17 @@ msgstr "Selanjutnya"
 
 #. Translators: by Artist
 #: ../plugins/notification/rb-notification-plugin.c:332
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:148
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "oleh <i>%s</i>"
 
 #. Translators: from Album
 #: ../plugins/notification/rb-notification-plugin.c:334
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:150
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:213
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "dari <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:414
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
 #: ../widgets/rb-header.c:366
 msgid "Not Playing"
 msgstr "Tak Sedang Memutar"
@@ -2786,8 +2782,8 @@ msgid "Send tracks"
 msgstr "Kirim trek"
 
 #: ../plugins/sendto/sendto.plugin.in.h:2
-msgid "Send selected tracks by email or instant message"
-msgstr "Kirim trek yang dipilih melalui surel atau pesan instan"
+msgid "Send selected tracks by email"
+msgstr "Kirim trek yang dipilih melalui surel"
 
 #: ../plugins/sendto/sendto.py:51
 msgid "Send to..."
@@ -2857,47 +2853,6 @@ msgstr "Lihat '%(title)s' di SoundCloud"
 msgid "View '%(container)s' on SoundCloud"
 msgstr "Lihat '%(container)s' di SoundCloud"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:39
-msgid "Low quality"
-msgstr "Kualitas rendah"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:40
-msgid "Normal quality"
-msgstr "Kualitas normal"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:41
-msgid "High quality"
-msgstr "Kualitas tinggi"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:78
-msgid "Fullscreen"
-msgstr "Layar Penuh"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:89
-#: ../widgets/rb-entry-view.c:1528
-msgid "Quality"
-msgstr "Kualitas"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:114
-msgid "Visual Effect"
-msgstr "Efek Visual"
-
-#: ../plugins/visualizer/rb-visualizer-page.c:69
-msgid "Visual Effects"
-msgstr "Efek Visual"
-
-#: ../plugins/visualizer/rb-visualizer-plugin.c:392
-msgid "Display"
-msgstr "Tampilan"
-
-#: ../plugins/visualizer/visualizer.plugin.in.h:1
-msgid "Visualization"
-msgstr "Visualisasi"
-
-#: ../plugins/visualizer/visualizer.plugin.in.h:2
-msgid "Displays visualizations"
-msgstr "Visualisasi tampilan"
-
 #: ../plugins/webremote/webremote-config.ui.h:1
 msgid "Web remote control preferences"
 msgstr "Preferensi kontrol jarak jauh web"
@@ -2922,7 +2877,7 @@ msgstr "Kontrol jarak jauh web"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Kendalikan Ryhthmbox dari peramban web"
 
-#: ../plugins/webremote/webremote.py:582
+#: ../plugins/webremote/webremote.py:583
 msgid "Launch web remote control"
 msgstr "Luncurkan kontrol jarak jauh web"
 
@@ -4194,7 +4149,7 @@ msgstr "Laju bit konstan"
 msgid "Variable bit rate"
 msgstr "Laju bit variabel"
 
-#: ../widgets/rb-encoding-settings.c:400
+#: ../widgets/rb-encoding-settings.c:402
 msgid "Default settings"
 msgstr "Pengaturan baku"
 
@@ -4222,6 +4177,10 @@ msgstr "Waktu"
 #: ../widgets/rb-entry-view.c:1516
 msgid "Year"
 msgstr "Tahun"
+
+#: ../widgets/rb-entry-view.c:1528
+msgid "Quality"
+msgstr "Kualitas"
 
 #: ../widgets/rb-entry-view.c:1531
 msgid "000 kbps"
@@ -4657,19 +4616,19 @@ msgid "%d Star"
 msgid_plural "%d Stars"
 msgstr[0] "%d Bintang"
 
-#: ../widgets/rb-search-entry.c:228
+#: ../widgets/rb-search-entry.c:227
 msgid "Clear the search text"
 msgstr "Bersihkan teks pencarian"
 
-#: ../widgets/rb-search-entry.c:235
+#: ../widgets/rb-search-entry.c:234
 msgid "Select the search type"
 msgstr "Pilih tipe pencarian"
 
-#: ../widgets/rb-search-entry.c:253
+#: ../widgets/rb-search-entry.c:252
 msgid "Search"
 msgstr "Cari"
 
-#: ../widgets/rb-search-entry.c:551
+#: ../widgets/rb-search-entry.c:550
 msgid "_Search:"
 msgstr "_Cari:"
 
@@ -4700,6 +4659,33 @@ msgstr "Pada desktop"
 #: ../widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Lokasi tak diketahui"
+
+#~ msgid "Low quality"
+#~ msgstr "Kualitas rendah"
+
+#~ msgid "Normal quality"
+#~ msgstr "Kualitas normal"
+
+#~ msgid "High quality"
+#~ msgstr "Kualitas tinggi"
+
+#~ msgid "Fullscreen"
+#~ msgstr "Layar Penuh"
+
+#~ msgid "Visual Effect"
+#~ msgstr "Efek Visual"
+
+#~ msgid "Visual Effects"
+#~ msgstr "Efek Visual"
+
+#~ msgid "Display"
+#~ msgstr "Tampilan"
+
+#~ msgid "Visualization"
+#~ msgstr "Visualisasi"
+
+#~ msgid "Displays visualizations"
+#~ msgstr "Visualisasi tampilan"
 
 #~ msgid "Format settings:"
 #~ msgstr "Pengaturan format:"
