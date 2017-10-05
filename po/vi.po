@@ -9,10 +9,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2017-01-28 00:48+0000\n"
-"PO-Revision-Date: 2017-02-06 15:11+0700\n"
+"POT-Creation-Date: 2017-10-04 12:42+0000\n"
+"PO-Revision-Date: 2017-10-05 07:43+0700\n"
 "Last-Translator: Trần Ngọc Quân <vnwildman@gmail.com>\n"
 "Language-Team: Vietnamese <gnome-vi-list@gnome.org>\n"
 "Language: vi\n"
@@ -31,7 +31,7 @@ msgstr "Không thể tạo ống dẫn phần tử sink của GStreamer để gh
 #. ?
 #. Translators: the parameter here is an error message
 #: ../backends/gstreamer/rb-player-gst.c:520
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2992
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2930
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Gặp lỗi khi mở thiết bị xuất: %s"
@@ -47,45 +47,45 @@ msgstr ""
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr "Gặp lỗi khi tạo phần tử %s; hãy kiểm tra lại bản cài đặt GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1132
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1146
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1107
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1121
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Gặp lỗi khi liên kết luồng mới vào ống dẫn GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1190
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1167
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Gặp lỗi khi khởi tạo luồng mới"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2905
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2843
 #, c-format
 msgid "Failed to open output device"
 msgstr "Gặp lỗi khi tạo mở ngõ ra của thiết bị"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3294
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3373
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3232
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3311
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Gặp lỗi khi tạo phần tử GStreamer; hãy kiểm tra lại bản cài đặt"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3303
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3241
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Gặp lỗi khi tạo phần tử xuất tiếng; hãy kiểm tra lại bản cài đặt."
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3337
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3390
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3417
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3427
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3437
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3275
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3328
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3355
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3365
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3375
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Gặp lỗi khi tạo liên kết ống dẫn GStreamer; hãy kiểm tra lại bản cài đặt"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3532
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3470
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Gặp lỗi khi tạo ống dẫn GStreamer để chơi %s"
@@ -352,7 +352,7 @@ msgstr "T_hể loại và nghệ sĩ"
 
 #: ../data/ui/general-prefs.ui.h:4
 msgid "G_enres, artists and albums"
-msgstr "_Thể loại, nghệ sĩ và tập nhạc"
+msgstr "T_hể loại, nghệ sĩ và tập nhạc"
 
 #: ../data/ui/general-prefs.ui.h:5
 msgid "Visible Columns"
@@ -360,7 +360,7 @@ msgstr "Cột hiển thị"
 
 #: ../data/ui/general-prefs.ui.h:6
 msgid "Track _number"
-msgstr "Số rã_nh"
+msgstr "Số _rãnh"
 
 #: ../data/ui/general-prefs.ui.h:7
 msgid "_Last played"
@@ -372,11 +372,11 @@ msgstr "Nghệ _sĩ"
 
 #: ../data/ui/general-prefs.ui.h:9
 msgid "_Composer"
-msgstr "Nhà soạn nhạ_c"
+msgstr "Nhà s_oạn nhạc"
 
 #: ../data/ui/general-prefs.ui.h:10
 msgid "A_lbum"
-msgstr "_Tập nhạc"
+msgstr "Tuyển tậ_p"
 
 #: ../data/ui/general-prefs.ui.h:11
 msgid "_Year"
@@ -384,11 +384,11 @@ msgstr "_Năm"
 
 #: ../data/ui/general-prefs.ui.h:12
 msgid "_Quality"
-msgstr "_Chất lượng"
+msgstr "Chất _lượng"
 
 #: ../data/ui/general-prefs.ui.h:13
 msgid "Lo_cation"
-msgstr "Đị_a điểm"
+msgstr "_Vị trí"
 
 #: ../data/ui/general-prefs.ui.h:14
 msgid "Ti_me"
@@ -408,7 +408,7 @@ msgstr "_Ghi chú"
 
 #: ../data/ui/general-prefs.ui.h:18
 msgid "_Play count"
-msgstr "Số _lần nghe"
+msgstr "Số lần ngh_e"
 
 #: ../data/ui/general-prefs.ui.h:19
 msgid "Da_te added"
@@ -491,7 +491,7 @@ msgstr "Sửa"
 #: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/android/android-toolbar.ui.h:2
 #: ../plugins/daap/daap-toolbar.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:2
-#: ../plugins/grilo/rb-grilo-source.c:346 ../plugins/ipod/ipod-toolbar.ui.h:2
+#: ../plugins/grilo/rb-grilo-source.c:360 ../plugins/ipod/ipod-toolbar.ui.h:2
 #: ../plugins/iradio/iradio-toolbar.ui.h:2
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:2
@@ -608,7 +608,7 @@ msgstr "Lưu danh sách phát"
 msgid "_Cancel"
 msgstr "Thô_i"
 
-#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:202
+#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:267
 #: ../widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "_Lưu"
@@ -988,7 +988,7 @@ msgstr "%d %b %Y"
 #: ../plugins/iradio/rb-iradio-source.c:525
 #: ../plugins/iradio/rb-iradio-source.c:1046
 #: ../plugins/iradio/rb-station-properties-dialog.c:485
-#: ../plugins/lyrics/lyrics.py:69 ../plugins/lyrics/lyrics.py:71
+#: ../plugins/lyrics/lyrics.py:70 ../plugins/lyrics/lyrics.py:72
 #: ../plugins/mtpdevice/rb-mtp-source.c:649
 #: ../plugins/mtpdevice/rb-mtp-source.c:1142
 #: ../plugins/mtpdevice/rb-mtp-source.c:1491
@@ -1744,8 +1744,8 @@ msgstr "Liên kết"
 msgid "No artist specified."
 msgstr "Chưa chỉ định nghệ sĩ."
 
-#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:241
-#: ../plugins/lyrics/lyrics.py:326
+#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:306
+#: ../plugins/lyrics/lyrics.py:391
 msgid "Lyrics"
 msgstr "Lời bài hát"
 
@@ -1973,12 +1973,12 @@ msgstr "Trình duyệt phương tiện Grilo"
 msgid "Browse various local and Internet media sources"
 msgstr "Duyệt các nguồn phương tiện Internet và cục bộ khác nhau"
 
-#: ../plugins/grilo/rb-grilo-source.c:389
+#: ../plugins/grilo/rb-grilo-source.c:403
 #: ../plugins/soundcloud/soundcloud.py:492
 msgid "Fetch more tracks"
 msgstr "Lấy thêm bài"
 
-#: ../plugins/grilo/rb-grilo-source.c:899
+#: ../plugins/grilo/rb-grilo-source.c:926
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -2193,7 +2193,7 @@ msgstr "Điều khiển Rhythmbox bằng bộ điều khiển từ xa hồng ngo
 msgid "Choose lyrics folder..."
 msgstr "Chọn thư mục lời nhạc…"
 
-#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:349
+#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:414
 msgid "Song Lyrics"
 msgstr "Lời nhạc"
 
@@ -2213,20 +2213,20 @@ msgstr "Duyệt…"
 msgid "Lyrics Folder"
 msgstr "Thư mục lời nhạc"
 
-#: ../plugins/lyrics/lyrics.py:157 ../plugins/lyrics/lyrics.py:159
-#: ../plugins/lyrics/lyrics.py:168
+#: ../plugins/lyrics/lyrics.py:169 ../plugins/lyrics/lyrics.py:217
+#: ../plugins/lyrics/lyrics.py:227
 msgid "No lyrics found"
 msgstr "Không có lời nhạc"
 
-#: ../plugins/lyrics/lyrics.py:207 ../plugins/lyrics/lyrics.py:220
+#: ../plugins/lyrics/lyrics.py:272 ../plugins/lyrics/lyrics.py:285
 msgid "_Edit"
 msgstr "_Hiệu chỉnh"
 
-#: ../plugins/lyrics/lyrics.py:222
+#: ../plugins/lyrics/lyrics.py:287
 msgid "_Search again"
 msgstr "_Tìm tiếp"
 
-#: ../plugins/lyrics/lyrics.py:281
+#: ../plugins/lyrics/lyrics.py:346
 msgid "Searching for lyrics..."
 msgstr "Đang tìm lời nhạc…"
 
@@ -2646,21 +2646,17 @@ msgstr "Tiếp theo"
 
 #. Translators: by Artist
 #: ../plugins/notification/rb-notification-plugin.c:332
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:148
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "bởi <i>%s</i>"
 
 #. Translators: from Album
 #: ../plugins/notification/rb-notification-plugin.c:334
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:150
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:213
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "trong <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:414
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
 #: ../widgets/rb-header.c:366
 msgid "Not Playing"
 msgstr "Không phát"
@@ -2782,8 +2778,8 @@ msgid "Send tracks"
 msgstr "Gửi bản nhạc"
 
 #: ../plugins/sendto/sendto.plugin.in.h:2
-msgid "Send selected tracks by email or instant message"
-msgstr "Gửi bản nhạc đã chọn bằng thư điện tử hay nhắn tin nhanh"
+msgid "Send selected tracks by email"
+msgstr "Gửi bản nhạc đã chọn bằng thư điện tử"
 
 #: ../plugins/sendto/sendto.py:51
 msgid "Send to..."
@@ -2853,47 +2849,6 @@ msgstr "Xem “%(title)s” trên SoundCloud"
 msgid "View '%(container)s' on SoundCloud"
 msgstr "Xem “%(container)s” trên SoundCloud"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:39
-msgid "Low quality"
-msgstr "Chất lượng thấp"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:40
-msgid "Normal quality"
-msgstr "Chất lượng bình thường"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:41
-msgid "High quality"
-msgstr "Chất lượng cao"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:78
-msgid "Fullscreen"
-msgstr "Toàn màn hình"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:89
-#: ../widgets/rb-entry-view.c:1528
-msgid "Quality"
-msgstr "Chất lượng"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:114
-msgid "Visual Effect"
-msgstr "Hiệu ứng trực quan"
-
-#: ../plugins/visualizer/rb-visualizer-page.c:69
-msgid "Visual Effects"
-msgstr "Các hiệu ứng trực quan"
-
-#: ../plugins/visualizer/rb-visualizer-plugin.c:392
-msgid "Display"
-msgstr "Trình bày"
-
-#: ../plugins/visualizer/visualizer.plugin.in.h:1
-msgid "Visualization"
-msgstr "Hiệu ứng thị giác"
-
-#: ../plugins/visualizer/visualizer.plugin.in.h:2
-msgid "Displays visualizations"
-msgstr "Hiển thị hiệu ứng thị giác"
-
 #: ../plugins/webremote/webremote-config.ui.h:1
 msgid "Web remote control preferences"
 msgstr "Tùy thích điều khiển từ xa trên trình duyệt"
@@ -2918,7 +2873,7 @@ msgstr "Điều khiển từ xa bằng trình duyệt"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Điều khiển Rhythmbox từ xa bằng trình duyệt"
 
-#: ../plugins/webremote/webremote.py:582
+#: ../plugins/webremote/webremote.py:583
 msgid "Launch web remote control"
 msgstr "Khởi chạy bộ từ xa bằng trình duyệt"
 
@@ -3151,7 +3106,7 @@ msgstr "Tìm kiếm nguồn podcast"
 msgid "Search podcast episodes"
 msgstr "Tìm kiếm phần podcast"
 
-#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:640
+#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:639
 msgid "Show the version of the program"
 msgstr "Hiển thị phiên bản của chương trình"
 
@@ -3580,50 +3535,50 @@ msgstr "Cộng tác viên:"
 
 #: ../shell/rb-application.c:255
 msgid "Music management and playback software for GNOME."
-msgstr "Phần mềm quản lý và phát nhạc cho GNOME."
+msgstr "Phần mềm quản lý và chơi nhạc dành cho GNOME."
 
 #: ../shell/rb-application.c:265
 msgid "Rhythmbox Website"
-msgstr "Trang Web của Rhythmbox"
+msgstr "Trang thông tin điện tử của Rhythmbox"
 
 #: ../shell/rb-application.c:293 ../shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "Không thể hiển thị trợ giúp"
 
-#: ../shell/rb-application.c:632
+#: ../shell/rb-application.c:631
 msgid "Enable debug output"
 msgstr "Bật kết xuất gỡ lỗi"
 
-#: ../shell/rb-application.c:633
+#: ../shell/rb-application.c:632
 msgid "Enable debug output matching a specified string"
 msgstr "Bật kết xuất gỡ lỗi khớp với chuỗi đã chỉ định"
 
-#: ../shell/rb-application.c:634
+#: ../shell/rb-application.c:633
 msgid "Do not update the library with file changes"
 msgstr "Không cập nhật thư viện theo thay đổi trong tập tin"
 
-#: ../shell/rb-application.c:635
+#: ../shell/rb-application.c:634
 msgid "Do not register the shell"
 msgstr "Không đăng kí hệ vỏ"
 
-#: ../shell/rb-application.c:636
+#: ../shell/rb-application.c:635
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr ""
 "Không lưu vĩnh viễn dữ liệu (ngầm định --no-registration [không đăng kí])"
 
-#: ../shell/rb-application.c:637
+#: ../shell/rb-application.c:636
 msgid "Disable loading of plugins"
 msgstr "Tắt tải phần bổ sung"
 
-#: ../shell/rb-application.c:638
+#: ../shell/rb-application.c:637
 msgid "Path for database file to use"
 msgstr "Đường dẫn mà tập tin cơ sở dữ liệu cần dùng"
 
-#: ../shell/rb-application.c:639
+#: ../shell/rb-application.c:638
 msgid "Path for playlists file to use"
 msgstr "Đường dẫn tập tin danh sách phát muốn dùng"
 
-#: ../shell/rb-application.c:652
+#: ../shell/rb-application.c:651
 #, c-format
 msgid ""
 "%s\n"
@@ -4185,7 +4140,7 @@ msgstr "Tốc độ bít cố định"
 msgid "Variable bit rate"
 msgstr "Tốc độ bít biến đổi"
 
-#: ../widgets/rb-encoding-settings.c:400
+#: ../widgets/rb-encoding-settings.c:402
 msgid "Default settings"
 msgstr "Cài đặt mặc định"
 
@@ -4213,6 +4168,10 @@ msgstr "Thời lượng"
 #: ../widgets/rb-entry-view.c:1516
 msgid "Year"
 msgstr "Năm"
+
+#: ../widgets/rb-entry-view.c:1528
+msgid "Quality"
+msgstr "Chất lượng"
 
 #: ../widgets/rb-entry-view.c:1531
 msgid "000 kbps"
@@ -4647,19 +4606,19 @@ msgid "%d Star"
 msgid_plural "%d Stars"
 msgstr[0] "%d sao"
 
-#: ../widgets/rb-search-entry.c:228
+#: ../widgets/rb-search-entry.c:227
 msgid "Clear the search text"
 msgstr "Xóa từ khóa tìm kiếm"
 
-#: ../widgets/rb-search-entry.c:235
+#: ../widgets/rb-search-entry.c:234
 msgid "Select the search type"
 msgstr "Chọn kiểu tìm kiếm"
 
-#: ../widgets/rb-search-entry.c:253
+#: ../widgets/rb-search-entry.c:252
 msgid "Search"
 msgstr "Tìm kiếm"
 
-#: ../widgets/rb-search-entry.c:551
+#: ../widgets/rb-search-entry.c:550
 msgid "_Search:"
 msgstr "Tìm _kiếm:"
 
@@ -4690,6 +4649,33 @@ msgstr "Trên màn hình nền"
 #: ../widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Vị trí không biết"
+
+#~ msgid "Low quality"
+#~ msgstr "Chất lượng thấp"
+
+#~ msgid "Normal quality"
+#~ msgstr "Chất lượng bình thường"
+
+#~ msgid "High quality"
+#~ msgstr "Chất lượng cao"
+
+#~ msgid "Fullscreen"
+#~ msgstr "Toàn màn hình"
+
+#~ msgid "Visual Effect"
+#~ msgstr "Hiệu ứng trực quan"
+
+#~ msgid "Visual Effects"
+#~ msgstr "Các hiệu ứng trực quan"
+
+#~ msgid "Display"
+#~ msgstr "Trình bày"
+
+#~ msgid "Visualization"
+#~ msgstr "Hiệu ứng thị giác"
+
+#~ msgid "Displays visualizations"
+#~ msgstr "Hiển thị hiệu ứng thị giác"
 
 #~ msgid "Unable to display requested URI"
 #~ msgstr "Không thể hiển thị URI theo yêu cầu"
