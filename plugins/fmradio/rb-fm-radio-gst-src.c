@@ -178,7 +178,7 @@ plugin_init (GstPlugin *plugin)
 
 GST_PLUGIN_DEFINE (GST_VERSION_MAJOR,
 		   GST_VERSION_MINOR,
-		   "rbsilencesrc",
+		   rbsilencesrc,
 		   "element to output silence",
 		   plugin_init,
 		   VERSION,
