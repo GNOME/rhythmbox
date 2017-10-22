@@ -157,8 +157,6 @@ static void
 rb_import_errors_source_init (RBImportErrorsSource *source)
 {
 	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source, RB_TYPE_IMPORT_ERRORS_SOURCE, RBImportErrorsSourcePrivate);
-
-	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "dialog-error-symbolic");
 }
 
 static void
@@ -262,6 +260,8 @@ rb_import_errors_source_constructed (GObject *object)
 				 "row-deleted",
 				 G_CALLBACK (missing_plugin_row_deleted_cb),
 				 source, 0);
+
+	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "dialog-error-symbolic");
 }
 
 static void
