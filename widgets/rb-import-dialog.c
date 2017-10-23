@@ -471,6 +471,14 @@ update_status_idle (RBImportDialog *dialog)
 	gtk_button_set_label (GTK_BUTTON (dialog->priv->import_button), text);
 	g_free (text);
 
+	/* hack to get these strings marked for translation */
+	if (0) {
+		ngettext ("%d song", "%d songs", 0);
+	}
+	text = rhythmdb_query_model_compute_status_normal (dialog->priv->query_model, "%d song", "%d songs");
+	rb_entry_view_set_status (dialog->priv->entry_view, text, FALSE);
+	g_free (text);
+
 	dialog->priv->update_status_id = 0;
 	return FALSE;
 }
