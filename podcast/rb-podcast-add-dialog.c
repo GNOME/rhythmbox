@@ -41,6 +41,7 @@
 #include "rb-util.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-search-entry.h"
+#include "nautilus-floating-bar.h"
 
 static void rb_podcast_add_dialog_class_init (RBPodcastAddDialogClass *klass);
 static void rb_podcast_add_dialog_init (RBPodcastAddDialog *dialog);
@@ -75,6 +76,7 @@ struct RBPodcastAddDialogPrivate
 
 	GtkWidget *feed_view;
 	GtkListStore *feed_model;
+	GtkWidget *feed_status;
 
 	GtkWidget *episode_view;
 
@@ -141,6 +143,7 @@ remove_all_feeds (RBPodcastAddDialog *dialog)
 
 	dialog->priv->have_selection = FALSE;
 	gtk_widget_set_sensitive (dialog->priv->subscribe_button, FALSE);
+	gtk_widget_hide (dialog->priv->feed_status);
 }
 
 static void
@@ -258,6 +261,23 @@ insert_search_result (RBPodcastAddDialog *dialog, RBPodcastChannel *channel, gbo
 	}
 }
 
+static void
+update_feed_status (RBPodcastAddDialog *dialog)
+{
+	int feeds;
+	char *text;
+
+	feeds = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (dialog->priv->feed_model), NULL);
+	text = g_strdup_printf (ngettext ("%d feed", "%d feeds", feeds), feeds);
+	nautilus_floating_bar_set_primary_label (NAUTILUS_FLOATING_BAR (dialog->priv->feed_status), text);
+	g_free (text);
+
+	nautilus_floating_bar_set_show_spinner (NAUTILUS_FLOATING_BAR (dialog->priv->feed_status),
+						dialog->priv->running_searches > 0);
+	gtk_widget_show (dialog->priv->feed_status);
+}
+
+
 typedef struct {
 	RBPodcastAddDialog *dialog;
 	char *url;
@@ -303,6 +323,7 @@ parse_finished (ParseThreadData *data)
 			/* none of the other fields get populated anyway */
 			insert_search_result (data->dialog, channel, FALSE);
 		}
+		update_feed_status (data->dialog);
 		rb_podcast_parse_channel_free (data->channel);
 	} else if (data->existing) {
 		/* find the row for the feed, replace the channel */
@@ -346,6 +367,7 @@ parse_finished (ParseThreadData *data)
 	} else {
 		/* model owns data->channel now */
 		insert_search_result (data->dialog, data->channel, data->single);
+		update_feed_status (data->dialog);
 	}
 
 	g_object_unref (data->dialog);
@@ -400,13 +422,15 @@ podcast_search_finished_cb (RBPodcastSearch *search, gboolean successful, RBPodc
 	g_object_unref (search);
 
 	dialog->priv->search_successful |= successful;
-
 	dialog->priv->running_searches--;
+	update_feed_status (dialog);
+
 	if (dialog->priv->running_searches == 0) {
 		if (dialog->priv->search_successful == FALSE) {
 			gtk_label_set_label (GTK_LABEL (dialog->priv->info_bar_message),
 					     _("Unable to search for podcasts. Check your network connection."));
 			gtk_widget_show (dialog->priv->info_bar);
+			gtk_widget_hide (dialog->priv->feed_status);
 		}
 	}
 }
@@ -658,6 +682,7 @@ impl_constructed (GObject *object)
 	GtkBuilder *builder;
 	GtkWidget *widget;
 	GtkWidget *paned;
+	GtkWidget *overlay;
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer;
 	RBEntryView *episodes;
@@ -692,7 +717,6 @@ impl_constructed (GObject *object)
 			  "changed",
 			  G_CALLBACK (feed_selection_changed_cb),
 			  dialog);
-
 
 	dialog->priv->search_entry = rb_search_entry_new (FALSE);
 	gtk_widget_set_size_request (GTK_WIDGET (dialog->priv->search_entry), 400, -1);
@@ -740,6 +764,14 @@ impl_constructed (GObject *object)
 	episode_strings[2] = NULL;
 	rb_set_tree_view_column_fixed_width (dialog->priv->feed_view, column, renderer, episode_strings, 6);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (dialog->priv->feed_view), column);
+
+	overlay = GTK_WIDGET (gtk_builder_get_object (builder, "overlay"));
+	gtk_widget_add_events (overlay, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK);
+	dialog->priv->feed_status = nautilus_floating_bar_new (NULL, NULL, FALSE);
+	gtk_widget_set_no_show_all (dialog->priv->feed_status, TRUE);
+	gtk_widget_set_halign (dialog->priv->feed_status, GTK_ALIGN_END);
+	gtk_widget_set_valign (dialog->priv->feed_status, GTK_ALIGN_END);
+	gtk_overlay_add_overlay (GTK_OVERLAY (overlay), dialog->priv->feed_status);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "podcast-add-dialog"));
 	gtk_box_pack_start (GTK_BOX (dialog), widget, TRUE, TRUE, 0);
