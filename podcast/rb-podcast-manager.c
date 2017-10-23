@@ -55,7 +55,8 @@
 enum
 {
 	PROP_0,
-	PROP_DB
+	PROP_DB,
+	PROP_UPDATING
 };
 
 enum
@@ -111,6 +112,7 @@ struct RBPodcastManagerPrivate
 	RBPodcastManagerInfo *active_download;
 	guint source_sync;
 	guint next_file_id;
+	int updating;
 	gboolean shutdown;
 	RBExtDB *art_store;
 
@@ -191,6 +193,13 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 							      "database",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_UPDATING,
+					 g_param_spec_boolean ("updating",
+							       "updating",
+							       "updating",
+							       FALSE,
+							       G_PARAM_READABLE));
 
 	rb_podcast_manager_signals[START_DOWNLOAD] =
 	       g_signal_new ("start_download",
@@ -401,6 +410,9 @@ rb_podcast_manager_get_property (GObject *object,
 	switch (prop_id) {
 	case PROP_DB:
 		g_value_set_object (value, pd->priv->db);
+		break;
+	case PROP_UPDATING:
+		g_value_set_boolean (value, (pd->priv->updating > 0));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1063,6 +1075,10 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 	info->url = feed_url;
 	info->automatic = automatic;
 	info->existing_feed = existing_feed;
+	pd->priv->updating++;
+	if (pd->priv->updating == 1) {
+		g_object_notify (G_OBJECT (pd), "updating");
+	}
 
 	g_thread_new ("podcast-parse",
 		      (GThreadFunc) rb_podcast_manager_thread_parse_feed,
@@ -1092,9 +1108,23 @@ rb_podcast_manager_parse_complete_cb (RBPodcastManagerParseResult *result)
 						      (char *)result->channel->url,
 						      result->error,
 						      (result->automatic == FALSE));
+	} else if (result->channel->is_opml) {
+		GList *l;
+
+		rb_debug ("Loading OPML feeds from %s", result->channel->url);
+
+		for (l = result->channel->posts; l != NULL; l = l->next) {
+			RBPodcastItem *item = l->data;
+			/* assume the feeds don't already exist */
+			rb_podcast_manager_subscribe_feed (result->pd, item->url, FALSE);
+		}
 	} else {
 		rb_podcast_manager_add_parsed_feed (result->pd, result->channel);
 	}
+	if (--result->pd->priv->updating == 0) {
+		g_object_notify (G_OBJECT (result->pd), "updating");
+	}
+
 	return FALSE;
 }
 
@@ -1110,6 +1140,9 @@ confirm_bad_mime_type_response_cb (GtkDialog *dialog, int response, RBPodcastThr
 	} else {
 		g_free (info->url);
 		g_free (info);
+		if (--info->pd->priv->updating == 0) {
+			g_object_notify (G_OBJECT (info->pd), "updating");
+		}
 	}
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -1154,25 +1187,10 @@ rb_podcast_manager_thread_parse_feed (RBPodcastThreadInfo *info)
 		}
 	}
 
-	if (feed->is_opml) {
-		GList *l;
-
-		rb_debug ("Loading OPML feeds from %s", info->url);
-
-		for (l = feed->posts; l != NULL; l = l->next) {
-			RBPodcastItem *item = l->data;
-			/* assume the feeds don't already exist */
-			rb_podcast_manager_subscribe_feed (info->pd, item->url, FALSE);
-		}
-
-		rb_podcast_manager_free_parse_result (result);
-	} else {
-		g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
-				 (GSourceFunc) rb_podcast_manager_parse_complete_cb,
-				 result,
-				 (GDestroyNotify) rb_podcast_manager_free_parse_result);
-	}
-
+	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
+			 (GSourceFunc) rb_podcast_manager_parse_complete_cb,
+			 result,
+			 (GDestroyNotify) rb_podcast_manager_free_parse_result);
 	g_free (info->url);
 	g_free (info);
 	return NULL;

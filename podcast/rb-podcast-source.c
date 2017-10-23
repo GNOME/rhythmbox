@@ -1206,6 +1206,7 @@ impl_song_properties (RBSource *asource)
 static void
 impl_get_status (RBDisplayPage *page, char **text, gboolean *busy)
 {
+	RBPodcastSource *source = RB_PODCAST_SOURCE (page);
 	RhythmDBQueryModel *query_model;
 
 	/* hack to get these strings marked for translation */
@@ -1220,8 +1221,15 @@ impl_get_status (RBDisplayPage *page, char **text, gboolean *busy)
 								    "%d episodes");
 		g_object_unref (query_model);
 	}
+
+	g_object_get (source->priv->podcast_mgr, "updating", busy, NULL);
 }
 
+static void
+podcast_manager_updating_cb (GObject *obj, GParamSpec *pspec, gpointer data)
+{
+	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (data));
+}
 
 static char *
 impl_get_delete_label (RBSource *source)
@@ -1574,6 +1582,8 @@ impl_constructed (GObject *object)
 	g_object_unref (settings);
 	g_object_unref (accel_group);
 	g_object_unref (shell);
+
+	g_signal_connect (source->priv->podcast_mgr, "notify::updating", G_CALLBACK (podcast_manager_updating_cb), source);
 
 	rb_podcast_source_do_query (source, TRUE);
 }
