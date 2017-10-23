@@ -86,7 +86,7 @@ static void rb_iradio_entry_type_init (RBIRadioEntryType *etype);
 GType rb_iradio_entry_type_get_type (void);
 
 /* page methods */
-static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
+static void impl_get_status (RBDisplayPage *page, char **text, gboolean *busy);
 
 /* source methods */
 static RBEntryView *impl_get_entry_view (RBSource *source);
@@ -575,8 +575,7 @@ impl_get_entry_view (RBSource *asource)
 static void
 impl_get_status (RBDisplayPage *page,
 		 char **text,
-		 char **progress_text,
-		 float *progress)
+		 gboolean *busy)
 {
 	RhythmDBQueryModel *model;
 	guint num_entries;
@@ -588,7 +587,6 @@ impl_get_status (RBDisplayPage *page,
 
 	*text = g_strdup_printf (ngettext ("%d station", "%d stations", num_entries),
 				 num_entries);
-
 }
 
 static void

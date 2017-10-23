@@ -70,7 +70,7 @@ struct _RBDisplayPageClass
 
 	GtkWidget *(*get_config_widget)	(RBDisplayPage *page, RBShellPreferences *prefs);
 
-	void	(*get_status)		(RBDisplayPage *page, char **text, char **progress_text, float *progress);
+	void	(*get_status)		(RBDisplayPage *page, char **text, gboolean *busy);
 	gboolean (*receive_drag)	(RBDisplayPage *page, GtkSelectionData *data);
 	void	(*delete_thyself)	(RBDisplayPage *page);
 
@@ -88,7 +88,7 @@ void		rb_display_page_deselected		(RBDisplayPage *page);
 void		rb_display_page_activate		(RBDisplayPage *page);
 
 GtkWidget *	rb_display_page_get_config_widget	(RBDisplayPage *page, RBShellPreferences *prefs);
-void		rb_display_page_get_status		(RBDisplayPage *page, char **text, char **progress_text, float *progress);
+void		rb_display_page_get_status		(RBDisplayPage *page, char **text, gboolean *busy);
 
 void		rb_display_page_delete_thyself		(RBDisplayPage *page);
 

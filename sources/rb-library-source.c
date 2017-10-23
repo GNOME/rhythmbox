@@ -279,7 +279,10 @@ db_load_complete_cb (RhythmDB *db, RBLibrarySource *source)
 	RhythmDBImportJob *job;
 
 	/* once the database is loaded, we can run the query to populate the library source */
-	g_object_set (source, "populate", TRUE, NULL);
+	g_object_set (source,
+		      "populate", TRUE,
+		      "load-status", RB_SOURCE_LOAD_STATUS_LOADED,
+		      NULL);
 
 	if (source->priv->do_initial_import) {
 		const char *music_dir;
@@ -415,6 +418,7 @@ rb_library_source_new (RBShell *shell)
 					  "name", _("Music"),
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
 					  "shell", shell,
+					  "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
 					  "populate", FALSE,		/* wait until the database is loaded */
 					  "toolbar-menu", toolbar,
 					  "settings", g_settings_get_child (settings, "source"),

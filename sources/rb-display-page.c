@@ -283,24 +283,19 @@ rb_display_page_get_config_widget (RBDisplayPage *page,
  * rb_display_page_get_status:
  * @page: a #RBDisplayPage
  * @text: (inout) (allow-none) (transfer full): holds the returned status text
- * @progress_text: (inout) (allow-none) (transfer full): holds the returned text for the progress bar
- * @progress: (inout) (allow-none): holds the progress value
+ * @busy: (inout) (allow-none): holds the busy status
  *
- * Retrieves the details to display in the status bar for the page.
- * If the progress value returned is less than zero, the progress bar
- * will pulse.  If the progress value is greater than or equal to 1,
- * the progress bar will be hidden.
+ * Retrieves status details for the page.
  **/
 void
 rb_display_page_get_status (RBDisplayPage *page,
 			    char **text,
-			    char **progress_text,
-			    float *progress)
+			    gboolean *busy)
 {
 	RBDisplayPageClass *klass = RB_DISPLAY_PAGE_GET_CLASS (page);
 
 	if (klass->get_status)
-		klass->get_status (page, text, progress_text, progress);
+		klass->get_status (page, text, busy);
 }
 
 /**

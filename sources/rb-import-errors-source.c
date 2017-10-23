@@ -47,7 +47,7 @@ static void impl_set_property (GObject *object, guint prop_id, const GValue *val
 
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_delete_selected (RBSource *source);
-static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
+static void impl_get_status (RBDisplayPage *page, char **text, gboolean *busy);
 
 static void rb_import_errors_source_songs_show_popup_cb (RBEntryView *view,
 							 gboolean over_entry,
@@ -371,7 +371,7 @@ impl_delete_selected (RBSource *asource)
 }
 
 static void
-impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress)
+impl_get_status (RBDisplayPage *page, char **text, gboolean *busy)
 {
 	RhythmDBQueryModel *model;
 	gint count;

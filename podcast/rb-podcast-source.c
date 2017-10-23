@@ -1204,7 +1204,7 @@ impl_song_properties (RBSource *asource)
 }
 
 static void
-impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress)
+impl_get_status (RBDisplayPage *page, char **text, gboolean *busy)
 {
 	RhythmDBQueryModel *query_model;
 
@@ -1218,12 +1218,7 @@ impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *
 		*text = rhythmdb_query_model_compute_status_normal (query_model,
 								    "%d episode",
 								    "%d episodes");
-		if (rhythmdb_query_model_has_pending_changes (query_model))
-			*progress = -1.0f;
-
 		g_object_unref (query_model);
-	} else {
-		*text = g_strdup ("");
 	}
 }
 

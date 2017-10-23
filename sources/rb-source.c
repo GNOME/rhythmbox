@@ -58,7 +58,7 @@ static void rb_source_get_property (GObject *object,
 					GValue *value,
 					GParamSpec *pspec);
 
-static void default_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
+static void default_get_status (RBDisplayPage *page, char **text, gboolean *busy);
 static void default_activate (RBDisplayPage *page);
 static GList *default_get_property_views (RBSource *source);
 static gboolean default_can_rename (RBSource *source);
@@ -513,6 +513,7 @@ rb_source_set_property (GObject *object,
 		break;
 	case PROP_LOAD_STATUS:
 		source->priv->load_status = g_value_get_enum (value);
+		rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (source));
 		break;
 	case PROP_TOOLBAR_MENU:
 		source->priv->toolbar_menu = g_value_dup_object (value);
@@ -586,10 +587,11 @@ default_activate (RBDisplayPage *page)
 static void
 default_get_status (RBDisplayPage *page,
 		    char **text,
-		    char **progress_text,
-		    float *progress)
+		    gboolean *busy)
 {
 	RBSource *source = RB_SOURCE (page);
+	RBSourceLoadStatus status;
+
 	/* hack to get these strings marked for translation */
 	if (0) {
 		ngettext ("%d song", "%d songs", 0);
@@ -599,11 +601,16 @@ default_get_status (RBDisplayPage *page,
 		*text = rhythmdb_query_model_compute_status_normal (source->priv->query_model,
 								    "%d song",
 								    "%d songs");
-		if (rhythmdb_query_model_has_pending_changes (source->priv->query_model)) {
-			*progress = -1.0f;
-		}
-	} else {
-		*text = g_strdup ("");
+	}
+
+	g_object_get (source, "load-status", &status, NULL);
+	switch (status) {
+	case RB_SOURCE_LOAD_STATUS_WAITING:
+	case RB_SOURCE_LOAD_STATUS_LOADING:
+		*busy = TRUE;
+		break;
+	default:
+		break;
 	}
 }
 

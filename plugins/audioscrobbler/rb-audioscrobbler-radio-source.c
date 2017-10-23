@@ -216,7 +216,6 @@ static void display_error_info_bar (RBAudioscrobblerRadioSource *source,
 
 /* RBDisplayPage implementations */
 static void impl_selected (RBDisplayPage *page);
-static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
 static void impl_delete_thyself (RBDisplayPage *page);
 static gboolean impl_can_remove (RBDisplayPage *page);
 static void impl_remove (RBDisplayPage *page);
@@ -298,7 +297,6 @@ rb_audioscrobbler_radio_source_class_init (RBAudioscrobblerRadioSourceClass *kla
 
 	page_class = RB_DISPLAY_PAGE_CLASS (klass);
 	page_class->selected = impl_selected;
-	page_class->get_status = impl_get_status;
 	page_class->delete_thyself = impl_delete_thyself;
 	page_class->can_remove = impl_can_remove;
 	page_class->remove = impl_remove;
@@ -1011,19 +1009,6 @@ impl_get_entry_view (RBSource *asource)
 	RBAudioscrobblerRadioSource *source = RB_AUDIOSCROBBLER_RADIO_SOURCE (asource);
 
 	return source->priv->track_view;
-}
-
-static void
-impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress)
-{
-	RBAudioscrobblerRadioSource *source = RB_AUDIOSCROBBLER_RADIO_SOURCE (page);
-	if (source->priv->is_busy) {
-		/* We could be calling either radio.tune or radio.getPlaylist methods.
-		 * "Tuning station" seems like a user friendly message to display for both cases.
-		 */
-		*progress_text = g_strdup (_("Tuning station"));
-		*progress = -1.0f;
-	}
 }
 
 static void

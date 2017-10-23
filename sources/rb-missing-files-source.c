@@ -68,7 +68,7 @@ static void rb_missing_files_source_get_property (GObject *object,
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static void impl_delete_selected (RBSource *source);
-static void impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress);
+static void impl_get_status (RBDisplayPage *page, char **text, gboolean *busy);
 
 static void rb_missing_files_source_songs_show_popup_cb (RBEntryView *view,
 							 gboolean over_entry,
@@ -350,7 +350,7 @@ rb_missing_files_source_songs_sort_order_changed_cb (GObject *object,
 }
 
 static void
-impl_get_status (RBDisplayPage *page, char **text, char **progress_text, float *progress)
+impl_get_status (RBDisplayPage *page, char **text, gboolean *busy)
 {
 	RhythmDBQueryModel *model;
 	gint count;
