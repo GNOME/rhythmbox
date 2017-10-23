@@ -19,7 +19,8 @@ widgetinclude_HEADERS =					\
 	rb-import-dialog.h				\
 	rb-button-bar.h					\
 	rb-task-list-display.h				\
-	rb-encoding-settings.h
+	rb-encoding-settings.h				\
+	nautilus-floating-bar.h
 
 librbwidgets_la_SOURCES =				\
 	$(widgetinclude_HEADERS)			\
@@ -56,7 +57,8 @@ librbwidgets_la_SOURCES =				\
 	rb-import-dialog.c				\
 	rb-button-bar.c					\
 	rb-task-list-display.c				\
-	rb-encoding-settings.c
+	rb-encoding-settings.c				\
+	nautilus-floating-bar.c
 
 AM_CPPFLAGS =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
