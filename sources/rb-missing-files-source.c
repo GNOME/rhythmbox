@@ -123,8 +123,6 @@ static void
 rb_missing_files_source_init (RBMissingFilesSource *source)
 {
 	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source, RB_TYPE_MISSING_FILES_SOURCE, RBMissingFilesSourcePrivate);
-
-	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "dialog-warning-symbolic");
 }
 
 static void
@@ -195,6 +193,8 @@ rb_missing_files_source_constructed (GObject *object)
 
 	g_object_set (source, "query-model", model, NULL);
 	g_object_unref (model);
+
+	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "dialog-warning-symbolic");
 }
 
 static void
