@@ -83,7 +83,7 @@ typedef struct RBEntryViewPrivate RBEntryViewPrivate;
 
 struct _RBEntryView
 {
-	GtkScrolledWindow parent;
+	GtkBox parent;
 
 	RBEntryViewPrivate *priv;
 };
@@ -189,6 +189,8 @@ const char *	rb_entry_view_get_time_date_column_sample (void);
 
 /* resort the model with the current sorting order*/
 void		rb_entry_view_resort_model		(RBEntryView *view);
+
+void		rb_entry_view_set_status		(RBEntryView *view, const char *status, gboolean busy);
 
 G_END_DECLS
 

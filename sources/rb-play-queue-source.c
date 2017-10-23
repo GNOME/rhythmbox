@@ -280,10 +280,6 @@ rb_play_queue_source_constructed (GObject *object)
 	priv->sidebar = rb_entry_view_new (db, shell_player, TRUE, TRUE);
 	g_object_unref (shell_player);
 
-	g_object_set (priv->sidebar,
-		      "vscrollbar-policy", GTK_POLICY_AUTOMATIC,
-		      "shadow-type", GTK_SHADOW_NONE,
-		      NULL);
 	gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (priv->sidebar)),
 				     "sidebar-queue");
 

@@ -94,6 +94,7 @@
 #include "rb-cell-renderer-rating.h"
 #include "rb-shell-player.h"
 #include "rb-cut-and-paste-code.h"
+#include "nautilus-floating-bar.h"
 
 static const GtkTargetEntry rb_entry_view_drag_types[] = {
 	{ "application/x-rhythmbox-entry", 0, 0 },
@@ -178,6 +179,9 @@ struct RBEntryViewPrivate
 
 	RhythmDBQueryModel *model;
 
+	GtkWidget *overlay;
+	GtkWidget *scrolled_window;
+	GtkWidget *status;
 	GtkWidget *treeview;
 	GtkTreeSelection *selection;
 
@@ -231,7 +235,7 @@ enum
 	PROP_VISIBLE_COLUMNS
 };
 
-G_DEFINE_TYPE (RBEntryView, rb_entry_view, GTK_TYPE_SCROLLED_WINDOW)
+G_DEFINE_TYPE (RBEntryView, rb_entry_view, GTK_TYPE_BOX)
 
 static guint rb_entry_view_signals[LAST_SIGNAL] = { 0 };
 
@@ -780,13 +784,9 @@ rb_entry_view_new (RhythmDB *db,
 	RBEntryView *view;
 
 	view = RB_ENTRY_VIEW (g_object_new (RB_TYPE_ENTRY_VIEW,
-					   "hadjustment", NULL,
-					   "vadjustment", NULL,
-					   "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
-					   "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
+					   "orientation", GTK_ORIENTATION_VERTICAL,
 					   "hexpand", TRUE,
 					   "vexpand", TRUE,
-					   "shadow_type", GTK_SHADOW_NONE,
 					   "db", db,
 					   "shell-player", RB_SHELL_PLAYER (shell_player),
 					   "is-drag-source", is_drag_source,
@@ -1794,7 +1794,23 @@ rb_entry_view_constructed (GObject *object)
 
 	view = RB_ENTRY_VIEW (object);
 
-	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new ());
+	view->priv->overlay = gtk_overlay_new ();
+	gtk_widget_set_vexpand (view->priv->overlay, TRUE);
+	gtk_widget_set_hexpand (view->priv->overlay, TRUE);
+	gtk_container_add (GTK_CONTAINER (view), view->priv->overlay);
+	gtk_widget_show (view->priv->overlay);
+
+	/* NautilusFloatingBar needs enter and leavy notify events */
+	gtk_widget_add_events (view->priv->overlay, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK);
+
+	view->priv->scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (view->priv->scrolled_window),
+					GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (view->priv->scrolled_window), GTK_SHADOW_NONE);
+	gtk_widget_show (view->priv->scrolled_window);
+	gtk_container_add (GTK_CONTAINER (view->priv->overlay), view->priv->scrolled_window);
+
+	view->priv->treeview = gtk_tree_view_new ();
 	gtk_tree_view_set_fixed_height_mode (GTK_TREE_VIEW (view->priv->treeview), TRUE);
 
 	gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (view->priv->treeview),
@@ -1843,7 +1859,7 @@ rb_entry_view_constructed (GObject *object)
 						   GDK_ACTION_COPY | GDK_ACTION_MOVE);
 	}
 
-	gtk_container_add (GTK_CONTAINER (view), view->priv->treeview);
+	gtk_container_add (GTK_CONTAINER (view->priv->scrolled_window), view->priv->treeview);
 
 	{
 		GtkTreeViewColumn *column;
@@ -1889,6 +1905,12 @@ rb_entry_view_constructed (GObject *object)
 	query_model = rhythmdb_query_model_new_empty (view->priv->db);
 	rb_entry_view_set_model (view, RHYTHMDB_QUERY_MODEL (query_model));
 	g_object_unref (query_model);
+
+	view->priv->status = nautilus_floating_bar_new (NULL, NULL, FALSE);
+	gtk_widget_set_no_show_all (view->priv->status, TRUE);
+	gtk_widget_set_halign (view->priv->status, GTK_ALIGN_END);
+	gtk_widget_set_valign (view->priv->status, GTK_ALIGN_END);
+	gtk_overlay_add_overlay (GTK_OVERLAY (view->priv->overlay), view->priv->status);
 }
 
 static void
@@ -2603,6 +2625,27 @@ rb_entry_view_set_column_editable (RBEntryView *view,
 	renderers = gtk_cell_layout_get_cells (GTK_CELL_LAYOUT (column));
 	g_object_set (renderers->data, "editable", editable, NULL);
 	g_list_free (renderers);
+}
+
+/**
+ * rb_entry_view_set_status:
+ * @view: a #RBEntryView
+ * @status: status text to display, or NULL
+ * @busy: whether the source is busy
+ *
+ * Sets the status text to be displayed inside the entry view, and
+ * shows the spinner if busy.
+ */
+void
+rb_entry_view_set_status (RBEntryView *view, const char *status, gboolean busy)
+{
+	if (status == NULL) {
+		gtk_widget_hide (view->priv->status);
+	} else {
+		nautilus_floating_bar_set_primary_label (NAUTILUS_FLOATING_BAR (view->priv->status), status);
+		nautilus_floating_bar_set_show_spinner (NAUTILUS_FLOATING_BAR (view->priv->status), busy);
+		gtk_widget_show (view->priv->status);
+	}
 }
 
 /* This should really be standard. */
