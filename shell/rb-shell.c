@@ -75,7 +75,6 @@
 #include "rb-track-transfer-queue.h"
 #include "rb-shell-clipboard.h"
 #include "rb-shell-player.h"
-#include "rb-statusbar.h"
 #include "rb-shell-preferences.h"
 #include "rb-library-source.h"
 #include "rb-podcast-source.h"
@@ -275,7 +274,6 @@ struct _RBShellPrivate
 	RBShellPlayer *player_shell;
 	RBShellClipboard *clipboard_shell;
 	RBHeader *header;
-	RBStatusbar *statusbar;
 	RBPlaylistManager *playlist_manager;
 	RBRemovableMediaManager *removable_media_manager;
 	RBTrackTransferQueue *track_transfer_queue;
@@ -580,9 +578,6 @@ construct_widgets (RBShell *shell)
 	gtk_widget_show (GTK_WIDGET (shell->priv->header));
 	g_settings_bind (shell->priv->settings, "time-display", shell->priv->header, "show-remaining", G_SETTINGS_BIND_DEFAULT);
 
-	shell->priv->statusbar = rb_statusbar_new (shell->priv->db);
-	gtk_widget_show (GTK_WIDGET (shell->priv->statusbar));
-
 	g_signal_connect_object (shell->priv->display_page_tree, "selected",
 				 G_CALLBACK (display_page_selected_cb), shell, 0);
 
@@ -676,7 +671,6 @@ construct_widgets (RBShell *shell)
 
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->top_container), FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), shell->priv->paned, TRUE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), GTK_WIDGET (shell->priv->statusbar), FALSE, TRUE, 0);
 	gtk_widget_show_all (shell->priv->main_vbox);
 
 	gtk_container_add (GTK_CONTAINER (win), shell->priv->main_vbox);
@@ -1733,12 +1727,6 @@ rb_shell_constructed (GObject *object)
 			 shell->priv->queue_source, "visibility",
 			 G_SETTINGS_BIND_INVERT_BOOLEAN);
 
-	action = g_settings_create_action (shell->priv->settings, "statusbar-visible");
-	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
-	g_settings_bind (shell->priv->settings, "statusbar-visible",
-			 shell->priv->statusbar, "visible",
-			 G_SETTINGS_BIND_DEFAULT);
-
 	action = g_settings_create_action (shell->priv->settings, "follow-playing");
 	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
 	g_signal_connect (shell->priv->settings, "changed", G_CALLBACK (rb_shell_settings_changed_cb), shell);
@@ -2377,7 +2365,6 @@ rb_shell_select_page (RBShell *shell, RBDisplayPage *page)
 
 		/* clear playlist-manager:source? */
 	}
-	rb_statusbar_set_page (shell->priv->statusbar, page);
 
 	g_object_notify (G_OBJECT (shell), "selected-page");
 }

@@ -94,8 +94,6 @@ librhythmbox_core_la_SOURCES =				\
 	rb-shell-player.c				\
 	rb-shell-preferences.c				\
 	rb-shell-preferences.h				\
-	rb-statusbar.c					\
-	rb-statusbar.h					\
 	rb-task-list.c					\
 	rb-task-list.h					\
 	rb-track-transfer-batch.c			\
