@@ -741,6 +741,7 @@ rb_property_view_constructed (GObject *object)
 	gtk_tree_view_column_set_sizing (view->priv->column, GTK_TREE_VIEW_COLUMN_FIXED);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview),
 				     view->priv->column);
+	g_object_set (renderer, "single-paragraph-mode", TRUE, NULL);
 }
 
 static void
