@@ -71,6 +71,7 @@ static void default_add_to_queue (RBSource *source, RBSource *queue);
 static void default_move_to_trash (RBSource *source);
 static char *default_get_delete_label (RBSource *source);
 
+static void rb_source_status_changed_cb (RBDisplayPage *page);
 static void rb_source_post_entry_deleted_cb (GtkTreeModel *model,
 					     RhythmDBEntry *entry,
 					     RBSource *source);
@@ -107,6 +108,7 @@ struct _RBSourcePrivate
 	guint hidden_when_empty : 1;
 	guint update_visibility_id;
 	guint update_status_id;
+	guint status_changed_idle_id;
 	RhythmDBEntryType *entry_type;
 	RBSourceLoadStatus load_status;
 
@@ -154,6 +156,7 @@ rb_source_class_init (RBSourceClass *klass)
 
 	page_class->activate = default_activate;
 	page_class->get_status = default_get_status;
+	page_class->status_changed = rb_source_status_changed_cb;
 
 	klass->reset_filters = default_reset_filters;
 	klass->get_property_views = default_get_property_views;
@@ -385,6 +388,10 @@ rb_source_dispose (GObject *object)
 	if (source->priv->update_status_id != 0) {
 		g_source_remove (source->priv->update_status_id);
 		source->priv->update_status_id = 0;
+	}
+	if (source->priv->status_changed_idle_id != 0) {
+		g_source_remove (source->priv->status_changed_idle_id);
+		source->priv->status_changed_idle_id = 0;
 	}
 
 	g_clear_object (&source->priv->settings);
@@ -1493,6 +1500,33 @@ rb_source_get_playback_status (RBSource *source, char **text, float *progress)
 		klass->get_playback_status (source, text, progress);
 }
 
+static gboolean
+status_changed_idle_cb (RBSource *source)
+{
+	RBEntryView *entry_view;
+	char *status = NULL;
+	gboolean busy = FALSE;
+
+	rb_display_page_get_status (RB_DISPLAY_PAGE (source), &status, &busy);
+
+	entry_view = rb_source_get_entry_view (source);
+	if (entry_view != NULL)
+		rb_entry_view_set_status (entry_view, status, busy);
+
+	g_free (status);
+	source->priv->status_changed_idle_id = 0;
+	return FALSE;
+}
+
+static void
+rb_source_status_changed_cb (RBDisplayPage *page)
+{
+	RBSource *source = RB_SOURCE (page);
+	if (source->priv->status_changed_idle_id == 0) {
+		source->priv->status_changed_idle_id =
+			g_idle_add ((GSourceFunc) status_changed_idle_cb, source);
+	}
+}
 
 /* This should really be standard. */
 #define ENUM_ENTRY(NAME, DESC) { NAME, "" #NAME "", DESC }
