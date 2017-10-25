@@ -984,7 +984,9 @@ rb_podcast_source_new (RBShell *shell,
 	GSettings *settings;
 	GtkBuilder *builder;
 	GMenu *toolbar;
+	GIcon *icon;
 
+	icon = g_themed_icon_new (icon_name);
 	settings = g_settings_new (PODCAST_SETTINGS_SCHEMA);
 
 	builder = rb_builder_load ("podcast-toolbar.ui", NULL);
@@ -994,15 +996,16 @@ rb_podcast_source_new (RBShell *shell,
 	source = RB_SOURCE (g_object_new (RB_TYPE_PODCAST_SOURCE,
 					  "name", name,
 					  "shell", shell,
+					  "icon", icon,
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
 					  "podcast-manager", podcast_manager,
 					  "base-query", base_query,
 					  "settings", g_settings_get_child (settings, "source"),
 					  "toolbar-menu", toolbar,
 					  NULL));
-	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), icon_name);
 	g_object_unref (settings);
 	g_object_unref (builder);
+	g_object_unref (icon);
 
 	return source;
 }
