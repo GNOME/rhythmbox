@@ -558,7 +558,7 @@ update_source (RBDiscRecorderPlugin *pi,
 	RBDisplayPage *selected_page;
 	const char *page_type;
 
-	if (pi->selected_page != NULL && RB_IS_SOURCE (pi->selected_page)) {
+	if (pi->selected_page != NULL && RB_IS_PLAYLIST_SOURCE (pi->selected_page)) {
 		RhythmDBQueryModel *model;
 
 		g_object_get (pi->selected_page, "query-model", &model, NULL);
