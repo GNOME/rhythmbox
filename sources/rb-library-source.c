@@ -388,6 +388,7 @@ rb_library_source_constructed (GObject *object)
 	g_object_set (source, "playlist-menu", playlist_add_menu, NULL);
 	g_object_unref (model);
 
+	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "folder-music-symbolic");
 	rb_library_source_sync_child_sources (source);
 
 	g_object_unref (shell);
@@ -423,7 +424,6 @@ rb_library_source_new (RBShell *shell)
 					  "toolbar-menu", toolbar,
 					  "settings", g_settings_get_child (settings, "source"),
 					  NULL));
-	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "folder-music-symbolic");
 	g_object_unref (settings);
 	g_object_unref (builder);
 
