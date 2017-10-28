@@ -149,7 +149,7 @@ var connect = function() {
 			}
 		}
 		if ("hostname" in m) {
-			document.getElementById("connection-hostname").textContent = m['hostname'];
+			document.getElementById("connectionhostname").textContent = m['hostname'];
 		}
 		if ("id" in m) {
 			lastposition = 0;
