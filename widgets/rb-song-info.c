@@ -733,6 +733,7 @@ rb_song_info_set_source_internal (RBSongInfo *song_info,
 
 	g_object_get (G_OBJECT (song_info->priv->query_model), "db", &song_info->priv->db, NULL);
 
+	rb_song_info_query_model_changed_cb (G_OBJECT (song_info->priv->source), NULL, song_info);
 	rb_song_info_base_query_model_changed_cb (G_OBJECT (song_info->priv->source), NULL, song_info);
 }
 
@@ -1514,7 +1515,7 @@ rb_song_info_query_model_changed_cb (GObject *source,
 				 "row-changed", G_CALLBACK (rb_song_info_query_model_inserted_cb),
 				 song_info, 0);
 	g_signal_connect_object (G_OBJECT (song_info->priv->query_model),
-				 "entry-deleted", G_CALLBACK (rb_song_info_query_model_deleted_cb),
+				 "post-entry-delete", G_CALLBACK (rb_song_info_query_model_deleted_cb),
 				 song_info, 0);
 	g_signal_connect_object (G_OBJECT (song_info->priv->query_model),
 				 "rows-reordered", G_CALLBACK (rb_song_info_query_model_reordered_cb),
