@@ -373,7 +373,6 @@ load_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
 
 	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
 	if (accept_art_pixbuf (pixbuf) == FALSE) {
-		g_object_unref (pixbuf);
 		g_object_unref (loader);
 		return NULL;
 	}
