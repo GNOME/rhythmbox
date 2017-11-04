@@ -3,22 +3,6 @@
 	border-radius: 0;
 }
 
-RBLibraryBrowser {
-	background-color: @borders;
-}
-
-.statusbar {
-	border-top: solid 1px @borders;
-}
-
-GtkApplicationWindow * {
-	-GtkPaned-handle-size: 1;
-}
-
-GtkApplicationWindow .pane-separator {
-	background-color: @borders;
-}
-
 .primary-toolbar {
 	border-bottom: solid 1px @borders;
 }
