@@ -161,7 +161,7 @@ create_enum_editor (RBObjectPropertyEditor *editor, const char *property, GParam
 }
 
 static GtkWidget *
-create_int_editor (RBObjectPropertyEditor *editor, const char *property, GParamSpec *pspec)
+create_int_editor (RBObjectPropertyEditor *editor, const char *property, GParamSpec *pspec, gboolean inverted)
 {
 	GParamSpecInt *pint;
 	GtkWidget *control;
@@ -177,6 +177,7 @@ create_int_editor (RBObjectPropertyEditor *editor, const char *property, GParamS
 
 	control = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, adjustment);
 	gtk_scale_set_digits (GTK_SCALE (control), 0);
+	gtk_range_set_inverted (GTK_RANGE (control), inverted);
 
 	g_object_bind_property (editor->priv->object, property,
 				adjustment, "value",
@@ -186,7 +187,7 @@ create_int_editor (RBObjectPropertyEditor *editor, const char *property, GParamS
 }
 
 static GtkWidget *
-create_float_editor (RBObjectPropertyEditor *editor, const char *property, GParamSpec *pspec)
+create_float_editor (RBObjectPropertyEditor *editor, const char *property, GParamSpec *pspec, gboolean inverted)
 {
 	GParamSpecFloat *pfloat;
 	GtkWidget *control;
@@ -201,6 +202,7 @@ create_float_editor (RBObjectPropertyEditor *editor, const char *property, GPara
 					 0.1, 0.1);
 
 	control = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, adjustment);
+	gtk_range_set_inverted (GTK_RANGE (control), inverted);
 
 	g_object_bind_property (editor->priv->object, property,
 				adjustment, "value",
@@ -210,7 +212,7 @@ create_float_editor (RBObjectPropertyEditor *editor, const char *property, GPara
 }
 
 static GtkWidget *
-create_double_editor (RBObjectPropertyEditor *editor, const char *property, GParamSpec *pspec)
+create_double_editor (RBObjectPropertyEditor *editor, const char *property, GParamSpec *pspec, gboolean inverted)
 {
 	GParamSpecDouble *pdouble;
 	GtkWidget *control;
@@ -225,6 +227,7 @@ create_double_editor (RBObjectPropertyEditor *editor, const char *property, GPar
 					 0.1, 0.1);
 
 	control = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, adjustment);
+	gtk_range_set_inverted (GTK_RANGE (control), inverted);
 
 	g_object_bind_property (editor->priv->object, property,
 				adjustment, "value",
@@ -254,29 +257,41 @@ impl_constructed (GObject *object)
 		GtkWidget *label;
 		GtkWidget *control;
 		GType prop_type;
+		gboolean inverted = FALSE;
+		char **bits;
 
-		pspec = g_object_class_find_property (klass, editor->priv->properties[i]);
+		bits = g_strsplit (editor->priv->properties[i], ":", 2);
+		if (g_strcmp0 (bits[1], "inverted") == 0) {
+			inverted = TRUE;
+		} else if (bits[1] != NULL) {
+			g_warning ("unknown property modifier '%s' specified", bits[1]);
+			g_strfreev (bits);
+			continue;
+		}
+
+		pspec = g_object_class_find_property (klass, bits[0]);
 		if (pspec == NULL) {
 			g_warning ("couldn't find property %s on object %s",
-				   editor->priv->properties[i],
-				   G_OBJECT_CLASS_NAME (klass));
+				   bits[0], G_OBJECT_CLASS_NAME (klass));
+			g_strfreev (bits);
 			continue;
 		}
 
 		prop_type = G_PARAM_SPEC_TYPE (pspec);
 		if (prop_type == G_TYPE_PARAM_BOOLEAN) {
-			control = create_boolean_editor (editor, editor->priv->properties[i], pspec);
+			control = create_boolean_editor (editor, bits[0], pspec);
 		} else if (prop_type == G_TYPE_PARAM_ENUM) {
-			control = create_enum_editor (editor, editor->priv->properties[i], pspec);
+			control = create_enum_editor (editor, bits[0], pspec);
 		} else if (prop_type == G_TYPE_PARAM_INT) {
-			control = create_int_editor (editor, editor->priv->properties[i], pspec);
+			control = create_int_editor (editor, bits[0], pspec, inverted);
 		} else if (prop_type == G_TYPE_PARAM_FLOAT) {
-			control = create_float_editor (editor, editor->priv->properties[i], pspec);
+			control = create_float_editor (editor, bits[0], pspec, inverted);
 		} else if (prop_type == G_TYPE_PARAM_DOUBLE) {
-			control = create_double_editor (editor, editor->priv->properties[i], pspec);
+			control = create_double_editor (editor, bits[0], pspec, inverted);
 		} else {
 			/* can't do this */
 			g_warning ("don't know how to edit %s", g_type_name (prop_type));
+			g_strfreev (bits);
 			continue;
 		}
 		g_signal_connect (control, "focus-out-event", G_CALLBACK (focus_out_cb), editor);
@@ -293,6 +308,7 @@ impl_constructed (GObject *object)
 				 1, row, 1, 1);
 
 		row++;
+		g_strfreev (bits);
 	}
 }
 
