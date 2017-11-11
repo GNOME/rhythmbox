@@ -426,9 +426,13 @@ class MagnatuneSource(RB.BrowserSource):
 
 	def __download_album(self, audio_dl_uri, sku):
 		def update_progress(self):
-			complete, total = map(sum, zip(*self.__downloads.values()))
-			if total > 0:
-				self.__download_progress.props.task_progress = min(float(complete) / total, 1.0)
+			if len(self.__downloads) == 0:
+				self.__download_progress.props.task_outcome = RB.TaskOutcome.COMPLETE
+				self.__download_progress = None
+			else:
+				complete, total = map(sum, zip(*self.__downloads.values()))
+				if total > 0:
+					self.__download_progress.props.task_progress = min(float(complete) / total, 1.0)
 
 		def download_progress(copy, complete, total, self):
 			self.__downloads[audio_dl_uri] = (complete, total)
@@ -437,7 +441,6 @@ class MagnatuneSource(RB.BrowserSource):
 		def download_finished(copy, success, self):
 			del self.__downloads[audio_dl_uri]
 			del self.__copies[audio_dl_uri]
-			update_progress(self)
 
 			print("download of %s finished: %s" % (audio_dl_uri, success))
 			if success:
@@ -445,9 +448,7 @@ class MagnatuneSource(RB.BrowserSource):
 			else:
 				remove_download_files()
 
-			if len(self.__downloads) == 0:
-				self.__download_progress.props.task_outcome = RB.TaskOutcome.COMPLETE
-				self.__download_progress = None
+			update_progress(self)
 
 
 		def unzip_album():
@@ -497,7 +498,8 @@ class MagnatuneSource(RB.BrowserSource):
 		if self.__download_progress is None:
 			self.__download_progress = RB.TaskProgressSimple.new()
 			self.__download_progress.props.task_label = _("Downloading from Magnatune")
-			self.__download_progress.connect('cancel', self.cancel_downloads)
+			self.__download_progress.connect('cancel-task', self.cancel_downloads)
+			self.props.shell.props.task_list.add_task(self.__download_progress)
 
 		dl = RB.AsyncCopy()
 		dl.set_progress(download_progress, self)
