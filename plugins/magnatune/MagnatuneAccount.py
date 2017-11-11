@@ -76,7 +76,7 @@ class MagnatuneAccount(object):
 			# The Python API doesn't seem to have a way to differentiate between errors and no results.
 			print ("Couldn't find an existing keyring entry")
 			return
-		self.secret = items[0].get_secret().get()
+		self.secret = items[0].get_secret().get().decode("utf-8")
 
 	def get(self):
 		if self.secret is None:
@@ -84,7 +84,7 @@ class MagnatuneAccount(object):
 
 		account_type = self.settings['account-type']
 		try:
-			(username, password) = self.secret.decode("utf-8").split("\n")
+			(username, password) = self.secret.split("\n")
 			return (account_type, username, password)
 		except ValueError:
 			return ('none', None, None)
