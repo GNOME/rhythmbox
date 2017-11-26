@@ -3495,11 +3495,15 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 	rhythmdb_entry_get (db, entry, propid, &old_value);
 	switch (G_VALUE_TYPE (value)) {
 	case G_TYPE_STRING:
-#ifndef G_DISABLE_ASSERT
-		/* the playback error is allowed to be NULL */
-		if (propid != RHYTHMDB_PROP_PLAYBACK_ERROR || g_value_get_string (value))
+		/* some properties are allowed to be NULL */
+		switch (propid) {
+		case RHYTHMDB_PROP_PLAYBACK_ERROR:
+		case RHYTHMDB_PROP_MOUNTPOINT:
+			break;
+		default:
 			g_assert (g_utf8_validate (g_value_get_string (value), -1, NULL));
-#endif
+			break;
+		}
 		if (g_value_get_string (value) && g_value_get_string (&old_value)) {
 			nop = (strcmp (g_value_get_string (value), g_value_get_string (&old_value)) == 0);
 		} else {
@@ -3635,8 +3639,11 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 		case RHYTHMDB_PROP_MOUNTPOINT:
 			if (entry->mountpoint != NULL) {
 				rb_refstring_unref (entry->mountpoint);
+				entry->mountpoint = NULL;
 			}
-			entry->mountpoint = rb_refstring_new (g_value_get_string (value));
+			if (g_value_get_string (value) != NULL) {
+				entry->mountpoint = rb_refstring_new (g_value_get_string (value));
+			}
 			break;
 		case RHYTHMDB_PROP_FILE_SIZE:
 			entry->file_size = g_value_get_uint64 (value);
