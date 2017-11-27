@@ -32,7 +32,7 @@ servicedir = $(datadir)/dbus-1/services
 service_in_files = org.gnome.Rhythmbox3.service.in
 service_DATA = $(service_in_files:.service.in=.service)
 
-appdatadir = $(datadir)/appdata
+appdatadir = $(datadir)/metainfo
 appdata_DATA = $(appdata_in_files:.xml.in=.xml)
 appdata_in_files = rhythmbox.appdata.xml.in
 
