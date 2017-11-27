@@ -954,7 +954,11 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 		 */
 		g_signal_emit (store, signals[STORE], 0, req->value, &req->data);
 
-		rb_debug ("stored value into encoded data of type %s", G_VALUE_TYPE_NAME (req->data));
+		if (req->data != NULL) {
+			rb_debug ("stored value into encoded data of type %s", G_VALUE_TYPE_NAME (req->data));
+		} else {
+			rb_debug ("failed to store value");
+		}
 	} else {
 		/* indicates we actually didn't get anything, as opposed to communication errors etc.
 		 * providers just shouldn't call rb_ext_db_store_* in that case.
