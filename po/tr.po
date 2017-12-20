@@ -7,84 +7,87 @@
 # Launchpad Contributors, 2013.
 # Simge Sezgin <simgesezgin88@gmail.com>, 2015.
 # Muhammet Kara <muhammetk@gmail.com>, 2011, 2012, 2013, 2014, 2016.
+# Emin Tufan Çetin <etcetin@gmail.com>, 2017.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?"
 "product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-03-16 07:00+0000\n"
-"PO-Revision-Date: 2016-03-19 15:00+0200\n"
-"Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
-"Language-Team: Turkish <gnome-turk@gnome.org>\n"
+"POT-Creation-Date: 2017-10-23 10:42+0000\n"
+"PO-Revision-Date: 2017-12-19 16:32+0300\n"
+"Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>\n"
+"Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Gtranslator 2.91.6\n"
+"X-Generator: Gtranslator 2.91.7\n"
 "X-POOTLE-MTIME: 1425298884.000000\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:524
+#: ../backends/gstreamer/rb-encoder-gst.c:659
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
-msgstr "%s üzerine yazmak için bir GStreamer alıcı öğesi oluşturulamadı"
+msgstr "%s üzerine yazmak için bir GStreamer alıcı ögesi oluşturulamadı"
 
+#. Translators: the parameter here is an error message
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:521
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2985
+#. Translators: the parameter here is an error message
+#: ../backends/gstreamer/rb-player-gst.c:520
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2930
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Çıkış aygıtı açılamadı: %s"
 
-#: ../backends/gstreamer/rb-player-gst.c:670
+#: ../backends/gstreamer/rb-player-gst.c:669
 #, c-format
 msgid "Failed to create playbin element; check your GStreamer installation"
-msgstr "Playbin ögesi oluşturulamadı; GStreamer kurulumunuzu kontrol edin"
+msgstr "Playbin ögesi oluşturulamadı; GStreamer kurulumunuzu denetleyin"
 
-#: ../backends/gstreamer/rb-player-gst.c:711
+#: ../backends/gstreamer/rb-player-gst.c:700
 #, c-format
 msgid "Failed to create %s element; check your GStreamer installation"
-msgstr "%s ögesi oluşturulamadı; GStreamer kurulumunuzu kontrol edin"
+msgstr "%s ögesi oluşturulamadı; GStreamer kurulumunuzu denetleyin"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1133
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1147
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1107
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1121
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "GStreamer iletişim hattına yeni akış bağlantısı yapılamadı"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1191
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1167
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Yeni akış başlatma başarısız oldu"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2898
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2843
 #, c-format
 msgid "Failed to open output device"
 msgstr "Çıkış aygıtı açılamadı"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3289
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3373
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3232
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3311
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
-msgstr "GStreamer öğesi oluşturulamadı; kurulumunuzu denetleyin"
+msgstr "GStreamer ögesi oluşturulamadı; kurulumunuzu denetleyin"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3303
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3241
 #, c-format
 msgid "Failed to create audio output element; check your installation"
-msgstr "Ses çıkış öğesi oluşturulamadı; kurulumunuzu denetleyin"
+msgstr "Ses çıkış ögesi oluşturulamadı; kurulumunuzu denetleyin"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3337
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3390
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3417
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3427
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3437
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3275
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3328
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3355
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3365
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3375
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "GStreamer iletişim hattına bağlanılamadı; kurulumunuzu denetleyin"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3532
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3470
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "%s çalmak için GStreamer iletişim hattı oluşturulamadı"
@@ -101,7 +104,18 @@ msgstr "Son Çalınanlar"
 msgid "My Top Rated"
 msgstr "En İyiler"
 
-#: ../data/rhythmbox.appdata.xml.in.h:1
+#: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
+#: ../shell/rb-shell.c:513 ../shell/rb-shell.c:2391
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
+#: ../data/rhythmbox-device.desktop.in.in.h:4
+msgid "Play and organize your music collection"
+msgstr "Müzik koleksiyonunuzu çalın ve yönetin"
+
+#: ../data/rhythmbox.appdata.xml.in.h:3
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -110,23 +124,17 @@ msgid ""
 msgstr ""
 "Rhythmbox GNOME masaüstünde iyi çalışmak üzere tasarlanmış bir müzik yönetim "
 "uygulamasıdır. Bilgisayarınzda kayıtlı müziğe ek olarak, ağ paylaşımlarını, "
-"podcast'ları, radyo akışlarını, taşınabilir müzik aygıtlarını (telefonlar "
+"podcast’ları, radyo akışlarını, taşınabilir müzik aygıtlarını (telefonlar "
 "dahil), ve Last.fm ve Magnatune gibi internet müzik servislerini de "
 "destekler."
 
-#: ../data/rhythmbox.appdata.xml.in.h:2
+#: ../data/rhythmbox.appdata.xml.in.h:4
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
 msgstr ""
 "Rhythmbox GTK+ ve GStreamer temelli bir Özgür yazılımdır, ve Python veya C "
 "ile yazılan eklentilerle geliştirilebilir."
-
-#: ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
-#: ../shell/rb-shell.c:516 ../shell/rb-shell.c:2384
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 #: ../data/rhythmbox-device.desktop.in.in.h:2
@@ -137,11 +145,6 @@ msgstr "Müzik Çalıcı"
 #: ../data/rhythmbox-device.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
 msgstr "Rhythmbox Müzik Çalar"
-
-#: ../data/rhythmbox.desktop.in.in.h:4
-#: ../data/rhythmbox-device.desktop.in.in.h:4
-msgid "Play and organize your music collection"
-msgstr "Müzik koleksiyonunuzu çalın ve yönetin"
 
 #: ../data/rhythmbox.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
@@ -170,48 +173,43 @@ msgid "Play Queue in Side Pane"
 msgstr "Kuyruğu Yan Bölmede Çal"
 
 #: ../data/ui/app-menu.ui.h:6
-msgid "Status Bar"
-msgstr "Durum Çubuğu"
-
-#: ../data/ui/app-menu.ui.h:7
 msgid "Song Position Slider"
 msgstr "Parça Konum Kaydırıcısı"
 
-#: ../data/ui/app-menu.ui.h:8 ../plugins/artsearch/songinfo.py:64
+#: ../data/ui/app-menu.ui.h:7 ../plugins/artsearch/songinfo.py:64
 msgid "Album Art"
 msgstr "Albüm Kapağı"
 
-#: ../data/ui/app-menu.ui.h:9
+#: ../data/ui/app-menu.ui.h:8
 msgid "Follow Playing Track"
 msgstr "Çalınan Parçayı Takip Et"
 
-#: ../data/ui/app-menu.ui.h:10
+#: ../data/ui/app-menu.ui.h:9
 msgid "_Tools"
 msgstr "_Araçlar"
 
-#: ../data/ui/app-menu.ui.h:11
+#: ../data/ui/app-menu.ui.h:10
 msgid "P_lugins"
 msgstr "Ek_lentiler"
 
-#: ../data/ui/app-menu.ui.h:12
+#: ../data/ui/app-menu.ui.h:11
 msgid "_Preferences"
 msgstr "_Tercihler"
 
-#: ../data/ui/app-menu.ui.h:13 ../shell/rb-shell-preferences.c:195
+#: ../data/ui/app-menu.ui.h:12 ../shell/rb-shell-preferences.c:195
 msgid "_Help"
 msgstr "_Yardım"
 
-#: ../data/ui/app-menu.ui.h:14
+#: ../data/ui/app-menu.ui.h:13
 msgid "_About"
 msgstr "_Hakkında"
 
-#: ../data/ui/app-menu.ui.h:15
+#: ../data/ui/app-menu.ui.h:14
 msgid "_Quit"
 msgstr "_Çık"
 
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
-#: ../data/ui/podcast-popups.ui.h:9
-#: ../plugins/magnatune/magnatune-popup.ui.h:1
+#: ../data/ui/podcast-popups.ui.h:9 ../plugins/magnatune/magnatune-popup.ui.h:1
 msgid "Add to Queue"
 msgstr "Kuyruğa Ekle"
 
@@ -280,7 +278,7 @@ msgstr "Herhangi bir ölçüt eşleşirse _ekle"
 
 #: ../data/ui/create-playlist.ui.h:7 ../widgets/rb-uri-dialog.c:161
 msgid "_Add"
-msgstr ""
+msgstr "_Ekle"
 
 #: ../data/ui/create-playlist.ui.h:8
 msgid "_Limit to: "
@@ -336,7 +334,7 @@ msgstr "Bu biçimi kullanmak için gereken ek yazılımı _kur"
 
 #: ../data/ui/encoding-settings.ui.h:2
 msgid "Transcode lossless files into this format"
-msgstr ""
+msgstr "Kayıpsız dosyaları bu biçime yeniden kodla"
 
 #: ../data/ui/general-prefs.ui.h:1
 msgid "Browser Views"
@@ -491,12 +489,12 @@ msgstr "Düzenle"
 #: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/android/android-toolbar.ui.h:2
 #: ../plugins/daap/daap-toolbar.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:2
-#: ../plugins/grilo/rb-grilo-source.c:346 ../plugins/ipod/ipod-toolbar.ui.h:2
+#: ../plugins/grilo/rb-grilo-source.c:360 ../plugins/ipod/ipod-toolbar.ui.h:2
 #: ../plugins/iradio/iradio-toolbar.ui.h:2
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:2
 msgid "Browse"
-msgstr "Göz at"
+msgstr "Göz At"
 
 #: ../data/ui/library-toolbar.ui.h:3 ../data/ui/playlist-toolbar.ui.h:3
 #: ../data/ui/podcast-toolbar.ui.h:3 ../plugins/android/android-toolbar.ui.h:3
@@ -511,17 +509,15 @@ msgstr "Tümünü Görüntüle"
 msgid "Media Player Properties"
 msgstr "Ortam Oynatıcı Özellikleri"
 
-#: ../data/ui/media-player-properties.ui.h:2
-#: ../plugins/daap/daap-prefs.ui.h:11
-#: ../plugins/iradio/rb-station-properties-dialog.c:186
+#: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
+#: ../plugins/iradio/rb-station-properties-dialog.c:182
 #: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:276 ../shell/rb-application.c:144
-#: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:373
+#: ../podcast/rb-podcast-properties-dialog.c:318 ../shell/rb-application.c:165
+#: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:377
 #: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
-#, fuzzy
 #| msgid "Close"
 msgid "_Close"
-msgstr "Kapat"
+msgstr "_Kapat"
 
 #: ../data/ui/media-player-properties.ui.h:3
 msgid "Information"
@@ -533,10 +529,9 @@ msgid "Volume usage"
 msgstr "Birim kullanımı"
 
 #: ../data/ui/media-player-properties.ui.h:6
-#, fuzzy
 #| msgid "_Preferred format:"
 msgid "Preferred format"
-msgstr "_Tercih edilen biçim:"
+msgstr "Yeğlenen biçim"
 
 #: ../data/ui/media-player-properties.ui.h:7
 #: ../data/ui/podcast-feed-properties.ui.h:6
@@ -606,14 +601,14 @@ msgstr "Çalma Listesini Kaydet"
 
 #: ../data/ui/playlist-save.ui.h:3 ../plugins/artsearch/songinfo.py:135
 #: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:534
-#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:188
-#: ../widgets/rb-alert-dialog.c:380 ../widgets/rb-alert-dialog.c:397
+#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:187
+#: ../widgets/rb-alert-dialog.c:384 ../widgets/rb-alert-dialog.c:401
 #: ../widgets/rb-dialog.c:131 ../widgets/rb-dialog.c:139
 #: ../widgets/rb-query-creator.c:191 ../widgets/rb-uri-dialog.c:158
 msgid "_Cancel"
 msgstr "_İptal"
 
-#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:202
+#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:267
 #: ../widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "_Kaydet"
@@ -636,7 +631,7 @@ msgid ""
 "podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
-"iTunes Mağazası ve Miroguide.com'da ortam akışı arayın ya da ortam akışı "
+"iTunes Mağazası ve Miroguide.com’da ortam akışı arayın ya da ortam akışı "
 "besleme adresi girin.\n"
 "Yayınlandıkça yeni bölümleri indirmek için ortam akışlarına abone olun."
 
@@ -683,7 +678,7 @@ msgstr "Telif Hakkı:"
 #: ../data/ui/podcast-properties.ui.h:13 ../data/ui/song-info.ui.h:30
 #: ../plugins/iradio/station-properties.ui.h:10
 msgid "Details"
-msgstr "Detaylar"
+msgstr "Ayrıntılar"
 
 #: ../data/ui/podcast-popups.ui.h:1
 msgid "New Podcast Feed..."
@@ -718,8 +713,7 @@ msgid "Cancel Download"
 msgstr "İndirmeyi İptal Et"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1227
-#: ../sources/rb-media-player-source.c:1121
+#: ../podcast/rb-podcast-source.c:1237 ../sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Sil"
 
@@ -811,7 +805,7 @@ msgstr "Çalma Kuyruğunu Karıştır"
 msgid "Clear Play Queue"
 msgstr "Çalma Kuyruğunu Temizle"
 
-#: ../data/ui/queue-toolbar.ui.h:2 ../shell/rb-shell-player.c:3279
+#: ../data/ui/queue-toolbar.ui.h:2 ../shell/rb-shell-player.c:3291
 msgid "Shuffle"
 msgstr "Karışık"
 
@@ -851,7 +845,7 @@ msgstr "Albüm s_anatçısı:"
 msgid "_Composer:"
 msgstr "_Besteci:"
 
-#. To translators: the context is
+#. To translators: part of a phrase, for example, disc 1 of 2
 #: ../data/ui/song-info-multiple.ui.h:9 ../data/ui/song-info.ui.h:13
 msgid "of"
 msgstr "/"
@@ -934,8 +928,8 @@ msgstr "Silinen dosyalar:"
 
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
-#: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3799 ../widgets/rb-entry-view.c:943
+#: ../plugins/iradio/rb-station-properties-dialog.c:496
+#: ../rhythmdb/rhythmdb.c:3800 ../widgets/rb-entry-view.c:943
 #: ../widgets/rb-entry-view.c:1567 ../widgets/rb-entry-view.c:1580
 #: ../widgets/rb-song-info.c:1545
 msgid "Never"
@@ -981,7 +975,7 @@ msgstr "%d %b %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/android/rb-android-source.c:698
+#: ../plugins/android/rb-android-source.c:687
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -989,60 +983,60 @@ msgstr "%d %b %Y"
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:591
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
-#: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
-#: ../plugins/generic-player/rb-generic-player-source.c:1088
-#: ../plugins/ipod/rb-ipod-source.c:658
-#: ../plugins/iradio/rb-iradio-source.c:539
-#: ../plugins/iradio/rb-iradio-source.c:1060
-#: ../plugins/iradio/rb-station-properties-dialog.c:489
-#: ../plugins/lyrics/lyrics.py:69 ../plugins/lyrics/lyrics.py:71
-#: ../plugins/mtpdevice/rb-mtp-source.c:650
-#: ../plugins/mtpdevice/rb-mtp-source.c:1143
-#: ../plugins/mtpdevice/rb-mtp-source.c:1522
+#: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:132
+#: ../plugins/generic-player/rb-generic-player-source.c:1033
+#: ../plugins/ipod/rb-ipod-source.c:651
+#: ../plugins/iradio/rb-iradio-source.c:525
+#: ../plugins/iradio/rb-iradio-source.c:1044
+#: ../plugins/iradio/rb-station-properties-dialog.c:485
+#: ../plugins/lyrics/lyrics.py:70 ../plugins/lyrics/lyrics.py:72
+#: ../plugins/mtpdevice/rb-mtp-source.c:649
+#: ../plugins/mtpdevice/rb-mtp-source.c:1142
+#: ../plugins/mtpdevice/rb-mtp-source.c:1491
 #: ../plugins/notification/rb-notification-plugin.c:510
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1892
-#: ../podcast/rb-podcast-manager.c:1991
-#: ../podcast/rb-podcast-properties-dialog.c:622
-#: ../podcast/rb-podcast-properties-dialog.c:717
-#: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:202
-#: ../remote/dbus/rb-client.c:715 ../rhythmdb/rhythmdb.c:2066
+#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1926
+#: ../podcast/rb-podcast-manager.c:2025
+#: ../podcast/rb-podcast-properties-dialog.c:639
+#: ../podcast/rb-podcast-properties-dialog.c:703
+#: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
+#: ../remote/dbus/rb-client.c:728 ../rhythmdb/rhythmdb.c:2066
 #: ../rhythmdb/rhythmdb.c:2072 ../rhythmdb/rhythmdb.c:2087
-#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5563
-#: ../rhythmdb/rhythmdb.c:5569 ../rhythmdb/rhythmdb.c:5574
-#: ../rhythmdb/rhythmdb.c:5585 ../rhythmdb/rhythmdb.c:5589
+#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5564
+#: ../rhythmdb/rhythmdb.c:5570 ../rhythmdb/rhythmdb.c:5575
+#: ../rhythmdb/rhythmdb.c:5586 ../rhythmdb/rhythmdb.c:5590
 #: ../rhythmdb/rhythmdb-entry-type.c:301
 #: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
 #: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
-#: ../rhythmdb/rhythmdb-tree.c:1372 ../shell/rb-shell-player.c:870
-#: ../shell/rb-shell-player.c:2717 ../shell/rb-shell-player.c:2719
+#: ../rhythmdb/rhythmdb-tree.c:1372 ../shell/rb-shell-player.c:869
+#: ../shell/rb-shell-player.c:2714 ../shell/rb-shell-player.c:2716
 #: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
 #: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
-#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1284
-#: ../widgets/rb-header.c:1310 ../widgets/rb-song-info.c:949
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1274
+#: ../widgets/rb-header.c:1300 ../widgets/rb-song-info.c:949
 #: ../widgets/rb-song-info.c:961 ../widgets/rb-song-info.c:1233
 #: ../widgets/rb-song-info.c:1572
 msgid "Unknown"
 msgstr "Bilinmeyen"
 
-#: ../lib/rb-file-helpers.c:447
+#: ../lib/rb-file-helpers.c:471
 #, c-format
 msgid "Too many symlinks"
-msgstr "Çok fazla sembolik bağ"
+msgstr "Çok fazla simgesel bağ"
 
-#: ../lib/rb-file-helpers.c:1281
+#: ../lib/rb-file-helpers.c:1305
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "%s içindeki boş alan bulunamıyor: %s"
 
 #: ../lib/rb-util.c:566 ../plugins/context/tmpl/album-tmpl.html:21
-#: ../remote/dbus/rb-client.c:204
+#: ../remote/dbus/rb-client.c:217
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
 #: ../lib/rb-util.c:568 ../plugins/context/tmpl/album-tmpl.html:19
-#: ../remote/dbus/rb-client.c:206
+#: ../remote/dbus/rb-client.c:219
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
@@ -1082,13 +1076,13 @@ msgstr ""
 #: ../metadata/rb-metadata-gst.c:681
 #, c-format
 msgid "Failed to create a source element; check your installation"
-msgstr "Bir kaynak öğesi oluşturulamadı; kurulumunuzu denetleyin"
+msgstr "Bir kaynak ögesi oluşturulamadı; kurulumunuzu denetleyin"
 
 #: ../metadata/rb-metadata-gst.c:691
 #, c-format
 msgid ""
 "Failed to create the 'decodebin' element; check your GStreamer installation"
-msgstr "'decodebin' ögesi oluşturulamadı; GStreamer kurulumunuzu kontrol edin"
+msgstr "'decodebin' ögesi oluşturulamadı; GStreamer kurulumunuzu denetleyin"
 
 #: ../metadata/rb-metadata-gst.c:700
 #, c-format
@@ -1096,7 +1090,7 @@ msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
 "installation"
 msgstr ""
-"'giostreamsink' öğesi oluşturulamadı; GStreamer kurulumunuzu denetleyin"
+"'giostreamsink' ögesi oluşturulamadı; GStreamer kurulumunuzu denetleyin"
 
 #: ../metadata/rb-metadata-gst.c:783
 #, c-format
@@ -1105,11 +1099,11 @@ msgstr "Yazma sırasında dosya bozuldu"
 
 #: ../plugins/android/android.plugin.in.h:1
 msgid "Android devices"
-msgstr ""
+msgstr "Android aygıtları"
 
 #: ../plugins/android/android.plugin.in.h:2
 msgid "Support for Android 4.0+ devices (via MTP)"
-msgstr ""
+msgstr "Android 4.0+ aygıtları için destek (MTP aracılığıyla)"
 
 #: ../plugins/android/android-info.ui.h:1
 #: ../plugins/generic-player/generic-player-info.ui.h:1
@@ -1164,9 +1158,11 @@ msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
 msgstr ""
+"Bu aygıtta depolama alanı bulunamadı. Kilidini açmanız ve MTP’yi "
+"etkinleştirmeniz gerekebilir."
 
 #: ../plugins/android/rb-android-source.c:399
-#: ../plugins/generic-player/rb-generic-player-source.c:566
+#: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "%s Taranıyor"
@@ -1177,27 +1173,25 @@ msgstr "Albüm kapağı araması"
 
 #: ../plugins/artsearch/artsearch.plugin.in.h:2
 msgid "Fetch album covers from the Internet"
-msgstr "Albüm kapaklarını internetten al"
+msgstr "Albüm kapaklarını internetten getir"
 
 #: ../plugins/artsearch/songinfo.py:56
 msgid "_Fetch"
-msgstr ""
+msgstr "_Getir"
 
 #: ../plugins/artsearch/songinfo.py:60
 msgid "_Browse"
 msgstr "_Gözat"
 
 #: ../plugins/artsearch/songinfo.py:134
-#, fuzzy
 #| msgid "Select the search type"
 msgid "Select new artwork"
-msgstr "Arama türünü seç"
+msgstr "Yeni çizim seç"
 
 #: ../plugins/artsearch/songinfo.py:136
-#, fuzzy
 #| msgid "Select _All"
 msgid "_Select"
-msgstr "_Tümünü Seç"
+msgstr "_Seç"
 
 #: ../plugins/audiocd/album-info.ui.h:1
 msgid "A_lbum:"
@@ -1213,11 +1207,11 @@ msgstr "_Disk:"
 
 #: ../plugins/audiocd/audiocd.plugin.in.h:1
 msgid "Audio CD Player"
-msgstr "Ses CD'si Oynatıcı"
+msgstr "Ses CD’si Oynatıcı"
 
 #: ../plugins/audiocd/audiocd.plugin.in.h:2
 msgid "Support for playing of audio CDs as music source"
-msgstr "Ses CD'lerini müzik kaynağı olarak çalma desteği"
+msgstr "Ses CD’lerini müzik kaynağı olarak çalma desteği"
 
 #: ../plugins/audiocd/audiocd-toolbar.ui.h:2
 msgid "Extract"
@@ -1257,20 +1251,20 @@ msgstr "G_izle"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:599
 msgid "Could not find this album on MusicBrainz."
-msgstr "Bu albüm MusicBrainz'de bulunamadı."
+msgstr "Bu albüm MusicBrainz’de bulunamadı."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:600
 msgid "You can improve the MusicBrainz database by adding this album."
-msgstr "Bu albümü ekleyerek MusicBrainz veritabanını geliştirebilirsiniz."
+msgstr "Bu albümü ekleyerek MusicBrainz veri tabanını geliştirebilirsiniz."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:633
 #: ../plugins/audiocd/rb-audiocd-source.c:671
 msgid "_Retry"
-msgstr "_Tekrar Dene"
+msgstr "_Yeniden Dene"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:637
 msgid "Could not search MusicBrainz for album details."
-msgstr "Albüm ayrıntıları için MusicBrainz'de arama yapılamadı."
+msgstr "Albüm ayrıntıları için MusicBrainz’de arama yapılamadı."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:675
 msgid "Could not read the CD device."
@@ -1278,7 +1272,7 @@ msgstr "CD aygıtı okunamadı."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:879
 msgid "This disc matches multiple albums. Select the correct album."
-msgstr "Bu disk birden fazla albümle eşleşiyor. Lütfen doğru albümü seçin."
+msgstr "Bu disk birden çok albümle eşleşiyor. Lütfen doğru albümü seçin."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:1087
 #, c-format
@@ -1304,7 +1298,7 @@ msgstr "Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:2
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
-msgstr "Parça bilgisini Last.fm'e gönderir ve Last.fm radyo akışlarını çalar"
+msgstr "Parça bilgisini Last.fm’e gönderir ve Last.fm radyo akışlarını çalar"
 
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:1
 msgid "Which Audioscrobbler services do you wish to use?"
@@ -1405,7 +1399,7 @@ msgstr "Saat doğru ayarlanmamış"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:511
 msgid "This version of Rhythmbox has been banned."
-msgstr "Rhythmbox'ın bu sürümü yasaklandı."
+msgstr "Rhythmbox’ın bu sürümü yasaklandı."
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
 msgid "Track submission failed too many times"
@@ -1444,11 +1438,11 @@ msgstr "İptal"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:813
 msgid "Authentication error. Please try logging in again."
-msgstr "Kimlik doğrulama hatası. Lütfen tekrar giriş yapmayı deneyin."
+msgstr "Kimlik doğrulama hatası. Lütfen yeniden giriş yapmayı deneyin."
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:820
 msgid "Connection error. Please try logging in again."
-msgstr "Bağlantı hatası. Lütfen tekrar giriş yapmayı deneyin."
+msgstr "Bağlantı hatası. Lütfen yeniden giriş yapmayı deneyin."
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1230
 msgid "My Library"
@@ -1473,7 +1467,7 @@ msgstr "%s çalıyor"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1670
 #, c-format
 msgid "_View on %s"
-msgstr "%s'de _görüntüle"
+msgstr "%s’de _görüntüle"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1687
 msgid "Listen to _Similar Artists Radio"
@@ -1523,7 +1517,7 @@ msgstr "Kullanıcının Sevdiği Parçalar:"
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:75
 msgid "Recommendations for User:"
-msgstr "Kullanıcı için Tavsiyeler:"
+msgstr "Kullanıcı İçin Öneriler:"
 
 #. Translators: a type of station named "Mix Radio" by Last.fm.
 #. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for a description of it.
@@ -1547,6 +1541,9 @@ msgstr "Şöyle Etiketlenen Parçalar:"
 msgid "Listened by Group:"
 msgstr "Şu Grup tarafından Dinlenenler:"
 
+#. Translators: I have chosen these names for the radio stations based upon
+#. * what last.fm's website uses or what I thought to be sensible.
+#.
 #. Translators: station is built from artists similar to the artist %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:123
 #, c-format
@@ -1563,33 +1560,33 @@ msgstr "%s Hayran Radyosu"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:127
 #, c-format
 msgid "%s's Library"
-msgstr "%s'in Kütüphanesi"
+msgstr "%s’in Kütüphanesi"
 
 #. Translators: station is built from the "neighbourhood" of the user %s.
 #. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:130
 #, c-format
 msgid "%s's Neighbourhood"
-msgstr "%s'in Komşuları"
+msgstr "%s’in Komşuları"
 
 #. Translators: station is built from the tracks which have been "loved" by the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:132
 #, c-format
 msgid "%s's Loved Tracks"
-msgstr "%s'in Sevdiği Parçalar"
+msgstr "%s’in Sevdiği Parçalar"
 
 #. Translators: station is built from the tracks which are recommended to the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:134
 #, c-format
 msgid "%s's Recommended Radio"
-msgstr "%s'e Önerilenler Radyosu"
+msgstr "%s’e Önerilenler Radyosu"
 
 #. Translators: station is the "Mix Radio" for the user %s.
 #. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for description.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:137
 #, c-format
 msgid "%s's Mix Radio"
-msgstr "%s'in Karışık Radyosu"
+msgstr "%s’in Karışık Radyosu"
 
 #. Translators: station is built from the tracks which have been "tagged" with %s.
 #. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
@@ -1605,65 +1602,58 @@ msgstr "%s Etiketi Radyosu"
 msgid "%s Group Radio"
 msgstr "%s Grup Radyosu"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:695
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:693
 msgid "Error tuning station: no response"
 msgstr "İstasyon ayarlanırken hata oluştu: yanıt yok"
 
 #. Invalid station url
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:727
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:725
 msgid "Invalid station URL"
-msgstr "Geçersiz istasyon URL'si"
+msgstr "Geçersiz istasyon URL’si"
 
 #. Subscriber only station
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This message indicates that to listen to this radio station the user needs to be
 #. * a paying subscriber to the service.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:733
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:731
 #, c-format
 msgid "This station is only available to %s subscribers"
-msgstr "Bu istasyon sadece %s abonelerine açıktır"
+msgstr "Bu istasyon yalnızca %s abonelerine açıktır"
 
 #. Not enough content
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:737
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:735
 msgid "Not enough content to play station"
 msgstr "İstasyonu çalmak için yeterli içerik yok"
 
 #. Deprecated station
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This message indicates that the service has deprecated this type of station.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:742
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:740
 #, c-format
 msgid "%s no longer supports this type of station"
 msgstr "%s artık bu tür istasyonları desteklemiyor"
 
 #. Other error
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:746
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:744
 #, c-format
 msgid "Error tuning station: %i - %s"
 msgstr "İstasyon ayarlanırken hata oluştu: %i - %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:756
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:754
 msgid "Error tuning station: unexpected response"
 msgstr "İstasyon ayarlanırken hata oluştu: beklenmeyen yanıt"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:761
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:759
 msgid "Error tuning station: invalid response"
 msgstr "İstasyon ayarlanırken hata oluştu: geçersiz yanıt"
 
-#. We could be calling either radio.tune or radio.getPlaylist methods.
-#. * "Tuning station" seems like a user friendly message to display for both cases.
-#.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1024
-msgid "Tuning station"
-msgstr "İstasyon ayarlanıyor"
-
 #: ../plugins/brasero-disc-recorder/cd-recorder.plugin.in.h:1
 msgid "Audio CD Recorder"
-msgstr "Ses CD'si Kaydedici"
+msgstr "Ses CD’si Kaydedici"
 
 #: ../plugins/brasero-disc-recorder/cd-recorder.plugin.in.h:2
 msgid "Record audio CDs from playlists and duplicate audio CDs"
-msgstr "Çalma listelerinden ses CD'leri oluşturun ve ses CD'lerini çoğaltın"
+msgstr "Çalma listelerinden ses CD’leri oluşturun ve ses CD’lerini çoğaltın"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:165
 msgid "Rhythmbox could not duplicate the disc"
@@ -1692,15 +1682,15 @@ msgstr "Ses projesi yazılamadı"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:451
 msgid "Unable to create audio CD project"
-msgstr "Ses CD'si projesi oluşturulamadı"
+msgstr "Ses CD’si projesi oluşturulamadı"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:654
 msgid "Create Audio CD..."
-msgstr "Ses CD'si Oluştur..."
+msgstr "Ses CD’si Oluştur..."
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:660
 msgid "Duplicate Audio CD..."
-msgstr "Ses CD'sini Çoğalt..."
+msgstr "Ses CD’sini Çoğalt..."
 
 #: ../plugins/context/AlbumTab.py:57
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2399
@@ -1711,7 +1701,7 @@ msgstr "Albümler"
 #: ../plugins/context/AlbumTab.py:120
 #, python-format
 msgid "Loading top albums for %s"
-msgstr "%s'in en gözde albümleri yükleniyor"
+msgstr "%s’in en gözde albümleri yükleniyor"
 
 #: ../plugins/context/ArtistTab.py:59
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:4
@@ -1723,7 +1713,7 @@ msgstr "Sanatçı"
 #: ../plugins/context/ArtistTab.py:119
 #, python-format
 msgid "Loading biography for %s"
-msgstr "%s'in özgeçmişi yükleniyor"
+msgstr "%s’in özgeçmişi yükleniyor"
 
 #: ../plugins/context/context.plugin.in.h:1
 #: ../plugins/context/ContextView.py:90
@@ -1739,8 +1729,8 @@ msgid ""
 "This information is only available to Last.fm users. Ensure the Last.fm "
 "plugin is enabled, select Last.fm in the side pane, and log in."
 msgstr ""
-"Bu bilgi sadece Last.fm kullanıcılarına açıktır. Last.fm eklentisinin "
-"etkinleştirilmiş olduğundan emin olun, yan panelden Last.fm'i seçin ve giriş "
+"Bu bilgi yalnızca Last.fm kullanıcılarına açıktır. Last.fm eklentisinin "
+"etkinleştirilmiş olduğundan emin olun, yan panelden Last.fm’i seçin ve giriş "
 "yapın."
 
 #: ../plugins/context/LinksTab.py:55
@@ -1751,8 +1741,8 @@ msgstr "Bağlantılar"
 msgid "No artist specified."
 msgstr "Sanatçı belirtilmedi."
 
-#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:241
-#: ../plugins/lyrics/lyrics.py:326
+#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:306
+#: ../plugins/lyrics/lyrics.py:391
 msgid "Lyrics"
 msgstr "Şarkı Sözleri"
 
@@ -1777,7 +1767,7 @@ msgstr "Tüm parçaları göster"
 #: ../plugins/context/tmpl/album-tmpl.html:57
 #, c-format
 msgid "Top albums by %s"
-msgstr "%s'in gözde albümleri"
+msgstr "%s’in gözde albümleri"
 
 #: ../plugins/context/tmpl/album-tmpl.html:74
 #, c-format
@@ -1839,7 +1829,7 @@ msgstr "Uzaktan Kumanda Ekle"
 
 #: ../plugins/daap/daap-prefs.ui.h:8
 msgid "Please enter the passcode displayed on your device."
-msgstr "Lütfen cihazınızda görülen geçiş kodunu giriniz."
+msgstr "Lütfen aygıtınızda görülen geçiş kodunu giriniz."
 
 #: ../plugins/daap/daap-prefs.ui.h:9
 msgid "Could not pair with this Remote"
@@ -1847,7 +1837,7 @@ msgstr "Bu Uzaktan Kumanda ile eşleşilemedi"
 
 #: ../plugins/daap/daap-prefs.ui.h:10
 msgid "You can now control Rhythmbox through your Remote"
-msgstr "Artık Rhythmbox'ı uzaktan kumandanız ile kontrol edebilirsiniz"
+msgstr "Artık Rhythmbox’ı uzaktan kumandanız ile denetleyebilirsiniz"
 
 #: ../plugins/daap/daap-toolbar.ui.h:4
 msgid "Disconnect"
@@ -1857,18 +1847,18 @@ msgstr "Bağlantıyı Kes"
 msgid "Connect to DAAP share..."
 msgstr "DAAP paylaşımına bağlan..."
 
-#: ../plugins/daap/rb-daap-plugin.c:521
+#: ../plugins/daap/rb-daap-plugin.c:511
 msgid "New DAAP share"
 msgstr "Yeni DAAP paylaşımı"
 
-#: ../plugins/daap/rb-daap-plugin.c:521
+#: ../plugins/daap/rb-daap-plugin.c:511
 msgid "Host:port of DAAP share:"
 msgstr "DAAP paylaşımının makine-adı:port bilgisi:"
 
 #: ../plugins/daap/rb-daap-sharing.c:61
 #, c-format
 msgid "%s's Music"
-msgstr "%s'in Müziği"
+msgstr "%s’in Müziği"
 
 #: ../plugins/daap/rb-daap-source.c:476
 #, c-format
@@ -1887,15 +1877,15 @@ msgstr "Paylaşılan müziğe bağlanılamadı"
 msgid "Connecting to music share"
 msgstr "Müzik paylaşımına bağlanılıyor"
 
-#: ../plugins/daap/rb-dacp-pairing-page.c:397
+#: ../plugins/daap/rb-dacp-pairing-page.c:392
 msgid "Connecting..."
 msgstr "Bağlanıyor..."
 
-#: ../plugins/daap/rb-dacp-pairing-page.c:399
+#: ../plugins/daap/rb-dacp-pairing-page.c:394
 msgid "Could not pair with this Remote."
 msgstr "Bu Uzaktan Kumanda ile eşleşilemedi."
 
-#: ../plugins/daap/rb-dacp-pairing-page.c:617
+#: ../plugins/daap/rb-dacp-pairing-page.c:612
 msgid "Remotes"
 msgstr "Uzaktan Kumandalar"
 
@@ -1922,7 +1912,7 @@ msgid "Genres"
 msgstr "Türler"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2409
-#: ../shell/rb-playlist-manager.c:1081 ../sources/rb-display-page-group.c:92
+#: ../shell/rb-playlist-manager.c:1075 ../sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "Çalma Listeleri"
 
@@ -1953,22 +1943,22 @@ msgstr "Taşınabilir Oynatıcılar"
 
 #: ../plugins/generic-player/generic-player.plugin.in.h:2
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
-msgstr "Genel ses çalıcı cihaz desteği (PSP ve Nokia 770 dahil)"
+msgstr "Genel ses çalıcı aygıt desteği (PSP ve Nokia 770 dahil)"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:295
+#: ../plugins/generic-player/rb-generic-player-source.c:294
 #: ../plugins/ipod/rb-ipod-source.c:333
 #, c-format
 msgid "New Playlist on %s"
 msgstr "%s Üzerinde Yeni Çalma Listesi"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:339
-#: ../sources/rb-library-source.c:375
+#: ../plugins/generic-player/rb-generic-player-source.c:338
+#: ../sources/rb-library-source.c:378
 msgid "Add to New Playlist"
 msgstr "Yeni Çalma Listesine Ekle"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:1377
-#: ../plugins/ipod/rb-ipod-source.c:2080
-#: ../plugins/mtpdevice/rb-mtp-source.c:1616
+#: ../plugins/generic-player/rb-generic-player-source.c:1370
+#: ../plugins/ipod/rb-ipod-source.c:2045
+#: ../plugins/mtpdevice/rb-mtp-source.c:1571
 msgid "Advanced"
 msgstr "Gelişmiş"
 
@@ -1980,27 +1970,31 @@ msgstr "Grilo ortam tarayıcısı"
 msgid "Browse various local and Internet media sources"
 msgstr "Çeşitli yerel ve internet ortam kaynaklarına göz atın"
 
-#: ../plugins/grilo/rb-grilo-source.c:389
+#: ../plugins/grilo/rb-grilo-source.c:403
+#: ../plugins/soundcloud/soundcloud.py:492
 msgid "Fetch more tracks"
-msgstr "Daha fazla parça al"
+msgstr "Daha çok parça getir"
 
-#: ../plugins/grilo/rb-grilo-source.c:891
+#: ../plugins/grilo/rb-grilo-source.c:926
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
-msgstr[0] "Sadece %d sonuç gösteriliyor"
+msgstr[0] "Yalnızca %d sonuç gösteriliyor"
 
 #: ../plugins/im-status/im-status.plugin.in.h:1
 msgid "IM Status"
 msgstr "Anlık İleti Durumu"
 
 #: ../plugins/im-status/im-status.plugin.in.h:2
+#| msgid ""
+#| "Updates IM status according to the current song (works with Empathy, "
+#| "Gossip, and Pidgin)"
 msgid ""
-"Updates IM status according to the current song (works with Empathy, Gossip, "
-"and Pidgin)"
+"Updates IM status according to the current song (works with Empathy and "
+"Pidgin)"
 msgstr ""
-"Şimdiki şarkıya uygun olarak IM durumunu günceller (Empathy, Gossip ve "
-"Pidgin ile çalışır)"
+"Şimdiki şarkıya uygun olarak IM durumunu günceller (Empathy ve Pidgin ile "
+"çalışır)"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
@@ -2070,7 +2064,7 @@ msgstr "_İlklendir"
 
 #: ../plugins/ipod/ipod-init.ui.h:4
 msgid "_Name:"
-msgstr "_İsim:"
+msgstr "_Ad:"
 
 #: ../plugins/ipod/ipod-init.ui.h:5
 msgid "_Model:"
@@ -2086,14 +2080,14 @@ msgid ""
 msgstr ""
 "Rhytmbox ilklendirilmemiş veya hatalı iPod olabilecek bir aygıt tespit etti. "
 "Rhytmbox aygıtı kullanmadan önce bu aygıt ilklendirilmelidir; ancak bu işlem "
-"var olan bir şarkıya ya da meta bilgisine zarar verebilir. Eğer Rhytmbox'ın "
-"bu iPod'u ilklendirmesini istiyorsanız, aşağıdaki bilgileri doldurun. Eğer "
+"var olan bir şarkıya ya da meta bilgisine zarar verebilir. Eğer Rhytmbox’ın "
+"bu iPod’u ilklendirmesini istiyorsanız, aşağıdaki bilgileri doldurun. Eğer "
 "bu aygıt bir iPod değilse ya da bu aygıtı ilklendirmek istemiyorsanız, "
-"lütfen iptal'e tıklayın."
+"lütfen iptal’e tıklayın."
 
 #: ../plugins/ipod/ipod-init.ui.h:7
 msgid "Do you want to initialize your iPod?"
-msgstr "iPod'unuzu ilklendirmek ister misiniz?"
+msgstr "iPod’unuzu ilklendirmek ister misiniz?"
 
 #: ../plugins/ipod/ipod.plugin.in.h:1
 msgid "Portable Players - iPod"
@@ -2107,12 +2101,11 @@ msgstr "Apple iPod aygıtları desteği (içerik gösterme, aygıttan çalma)"
 msgid "New playlist"
 msgstr "Yeni çalma listesi"
 
-#: ../plugins/ipod/rb-ipod-source.c:460
+#: ../plugins/ipod/rb-ipod-source.c:461
 msgid "Unable to initialize new iPod"
 msgstr "Yeni iPod ilklendirilemedi"
 
-#: ../plugins/ipod/rb-ipod-source.c:1513
-#: ../podcast/rb-podcast-main-source.c:76
+#: ../plugins/ipod/rb-ipod-source.c:1492 ../podcast/rb-podcast-main-source.c:76
 #: ../sources/sync/rb-sync-settings-ui.c:263
 #: ../sources/sync/rb-sync-settings-ui.c:264
 #: ../sources/sync/rb-sync-state-ui.c:78
@@ -2128,59 +2121,59 @@ msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "İnternet üzerinden aktarılan yayın hizmetleri desteği"
 
 #: ../plugins/iradio/iradio-popup.ui.h:1 ../shell/rb-shell-clipboard.c:258
-#: ../sources/rb-source.c:1216 ../widgets/rb-query-creator.c:802
+#: ../sources/rb-source.c:1230 ../widgets/rb-query-creator.c:802
 msgid "Remove"
 msgstr "Kaldır"
 
-#: ../plugins/iradio/rb-iradio-source.c:346 ../widgets/rb-entry-view.c:1484
+#: ../plugins/iradio/rb-iradio-source.c:332 ../widgets/rb-entry-view.c:1484
 #: ../widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Tür"
 
-#: ../plugins/iradio/rb-iradio-source.c:366
+#: ../plugins/iradio/rb-iradio-source.c:352
 msgid "Search your internet radio stations"
 msgstr "İnternet radyo istasyonlarınızda arama yapın"
 
-#: ../plugins/iradio/rb-iradio-source.c:462
+#: ../plugins/iradio/rb-iradio-source.c:448
 msgid "Radio"
 msgstr "Radyo"
 
-#: ../plugins/iradio/rb-iradio-source.c:603
+#: ../plugins/iradio/rb-iradio-source.c:588
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d istasyon"
 
 #. should prevent multiple dialogs?  going to kill this nonsense anyway soon..
-#: ../plugins/iradio/rb-iradio-source.c:974
-#: ../plugins/iradio/rb-station-properties-dialog.c:403
+#: ../plugins/iradio/rb-iradio-source.c:958
+#: ../plugins/iradio/rb-station-properties-dialog.c:399
 msgid "New Internet Radio Station"
 msgstr "Yeni İnternet Radyo İstasyonu"
 
-#: ../plugins/iradio/rb-iradio-source.c:974
+#: ../plugins/iradio/rb-iradio-source.c:958
 msgid "URL of internet radio station:"
 msgstr "İnternet radyo istasyonu adresi:"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:399
+#: ../plugins/iradio/rb-station-properties-dialog.c:395
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:507
-#: ../sources/rb-media-player-source.c:576 ../widgets/rb-song-info.c:1150
+#: ../podcast/rb-podcast-properties-dialog.c:524
+#: ../sources/rb-media-player-source.c:567 ../widgets/rb-song-info.c:1150
 #, c-format
 msgid "%s Properties"
 msgstr "%s Özellikleri"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:491
-#: ../podcast/rb-podcast-properties-dialog.c:620
+#: ../plugins/iradio/rb-station-properties-dialog.c:487
+#: ../podcast/rb-podcast-properties-dialog.c:637
 #: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1235
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:582
+#: ../plugins/iradio/rb-station-properties-dialog.c:578
 msgid "Unable to change station property"
 msgstr "İstanyon özelliği değiştirilemedi"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:582
+#: ../plugins/iradio/rb-station-properties-dialog.c:578
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
 msgstr ""
@@ -2197,19 +2190,19 @@ msgstr "LIRC"
 
 #: ../plugins/lirc/rblirc.plugin.in.h:2
 msgid "Control Rhythmbox using an infrared remote control"
-msgstr "Rhythmbox'ı kızılötesi uzaktan kumanda kullanarak kontrol edin"
+msgstr "Rhythmbox’ı kızılötesi uzaktan kumanda kullanarak denetleyin"
 
 #: ../plugins/lyrics/LyricsConfigureDialog.py:103
 msgid "Choose lyrics folder..."
 msgstr "Şarkı sözü klasörünü seç..."
 
-#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:349
+#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:414
 msgid "Song Lyrics"
 msgstr "Şarkı Sözleri"
 
 #: ../plugins/lyrics/lyrics.plugin.in.h:2
 msgid "Fetch song lyrics from the Internet"
-msgstr "Şarkı sözlerini internetten indir"
+msgstr "Şarkı sözlerini internetten getir"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:1
 msgid "Search engines"
@@ -2217,26 +2210,26 @@ msgstr "Arama motorları"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:2
 msgid "Browse..."
-msgstr "Gözat..."
+msgstr "Göz at..."
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:3
 msgid "Lyrics Folder"
 msgstr "Şarkı Sözleri Klasörü"
 
-#: ../plugins/lyrics/lyrics.py:157 ../plugins/lyrics/lyrics.py:159
-#: ../plugins/lyrics/lyrics.py:168
+#: ../plugins/lyrics/lyrics.py:169 ../plugins/lyrics/lyrics.py:217
+#: ../plugins/lyrics/lyrics.py:227
 msgid "No lyrics found"
 msgstr "Şarkı sözü bulunamadı"
 
-#: ../plugins/lyrics/lyrics.py:207 ../plugins/lyrics/lyrics.py:220
+#: ../plugins/lyrics/lyrics.py:272 ../plugins/lyrics/lyrics.py:285
 msgid "_Edit"
 msgstr "_Düzenle"
 
-#: ../plugins/lyrics/lyrics.py:222
+#: ../plugins/lyrics/lyrics.py:287
 msgid "_Search again"
-msgstr "_Tekrar ara"
+msgstr "_Yeniden ara"
 
-#: ../plugins/lyrics/lyrics.py:281
+#: ../plugins/lyrics/lyrics.py:346
 msgid "Searching for lyrics..."
 msgstr "Şarkı sözleri aranıyor..."
 
@@ -2287,7 +2280,7 @@ msgid ""
 "    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's "
 "worth joining"
 msgstr ""
-"    * Magnatune'a üyelik bedelinizin %10'u Rhythmbox/GNOME'a gider - "
+"    * Magnatune’a üyelik bedelinizin %10'u Rhythmbox/GNOME’a gider - "
 "katılmaya değer"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:8
@@ -2295,7 +2288,7 @@ msgid ""
 "    * Open-Source friendly file formats: MP3s and WAVs, but also OGG and "
 "FLAC files."
 msgstr ""
-"    * Açık-Kaynak dostu dosya biçimleri: MP3, WAV ayrıca OGG ve FLAC "
+"    * Açık kaynak dostu dosya biçimleri: MP3, WAV ayrıca OGG ve FLAC "
 "dosyaları."
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:9
@@ -2304,7 +2297,7 @@ msgstr "    * Tüm albümler ve sanatçılar özenle seçildi"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:10
 msgid "You can find more information at "
-msgstr "Şurada daha fazla bilgi bulabilirsiniz:"
+msgstr "Şurada daha çok bilgi bulabilirsiniz:"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:11
 msgid "http://www.magnatune.com/"
@@ -2327,7 +2320,7 @@ msgid ""
 "Adds support to Rhythmbox for playing and purchasing from the Magnatune "
 "online music store"
 msgstr ""
-"Rhythmbox'a, Magnatune çevrimiçi mağazasından dinlemek ya da satın almak "
+"Rhythmbox’a, Magnatune çevrimiçi mağazasından dinlemek ya da satın almak "
 "için destek ekler"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
@@ -2557,7 +2550,7 @@ msgstr ""
 
 #: ../plugins/magnatune/MagnatuneSource.py:499
 msgid "Downloading from Magnatune"
-msgstr "Magnatune'dan İndiriliyor"
+msgstr "Magnatune’dan İndiriliyor"
 
 #: ../plugins/mmkeys/mmkeys.plugin.in.h:1
 msgid "Media Player Keys"
@@ -2565,7 +2558,7 @@ msgstr "Ortam Oynatıcı Tuşları"
 
 #: ../plugins/mmkeys/mmkeys.plugin.in.h:2
 msgid "Control Rhythmbox using key shortcuts"
-msgstr "Rhythmbox'ı tuş kısayollarını kullanarak denetle"
+msgstr "Rhythmbox’ı tuş kısayollarını kullanarak denetle"
 
 #: ../plugins/mpris/mpris.plugin.in.h:1
 msgid "MPRIS D-Bus interface"
@@ -2590,23 +2583,23 @@ msgstr ""
 msgid "Unable to open temporary file: %s"
 msgstr "Geçici dosya açılamadı: %s"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:604
+#: ../plugins/mtpdevice/rb-mtp-source.c:603
 msgid "Media Player"
 msgstr "Ortam Oynatıcısı"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:884
+#: ../plugins/mtpdevice/rb-mtp-source.c:883
 msgid "Media player device error"
 msgstr "Ortam oynatıcı aygıt hatası"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:888
+#: ../plugins/mtpdevice/rb-mtp-source.c:887
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "%s %s aygıtı açılamadı"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:932
+#: ../plugins/mtpdevice/rb-mtp-source.c:931
 msgid "Digital Audio Player"
 msgstr "Sayısal Ses Çalar"
 
@@ -2620,7 +2613,7 @@ msgstr "MTP aygıtından dosya kopyalanamadı: %s"
 #: ../plugins/mtpdevice/rb-mtp-thread.c:464
 #, c-format
 msgid "Not enough space in %s"
-msgstr "%s'de yeterli alan yok"
+msgstr "%s’de yeterli alan yok"
 
 #: ../plugins/mtpdevice/rb-mtp-thread.c:545
 #, c-format
@@ -2658,22 +2651,18 @@ msgstr "Sonraki"
 
 #. Translators: by Artist
 #: ../plugins/notification/rb-notification-plugin.c:332
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:148
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "<i>%s</i>,"
 
 #. Translators: from Album
 #: ../plugins/notification/rb-notification-plugin.c:334
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:150
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:213
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "<i>%s</i> albümünden söylüyor."
 
 #: ../plugins/notification/rb-notification-plugin.c:414
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
-#: ../widgets/rb-header.c:364
+#: ../widgets/rb-header.c:366
 msgid "Not Playing"
 msgstr "Çalmıyor"
 
@@ -2686,7 +2675,7 @@ msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr "Çalarken, Güç Yöneticisinin bilgisayarı beklemeye almasına engel ol"
 
 #: ../plugins/power-manager/rb-power-manager-plugin.c:97
-#: ../remote/dbus/rb-client.c:801 ../remote/dbus/rb-client.c:891
+#: ../remote/dbus/rb-client.c:814 ../remote/dbus/rb-client.c:904
 #, c-format
 msgid "Playing"
 msgstr "Çalıyor"
@@ -2715,7 +2704,7 @@ msgid ""
 "or rpdb2. If you have not set a debugger password in the file %s, it will "
 "use the default password ('rhythmbox')."
 msgstr ""
-"Tamam'a bastıktan sonra Rhythmbox, winpdb ya da rpdb2 ile bağlanmanızı "
+"Tamam’a bastıktan sonra Rhythmbox, winpdb ya da rpdb2 ile bağlanmanızı "
 "bekleyecek. Eğer %s dosyasında bir hata ayıklayıcı parolası atamadıysanız, "
 "öntanımlı ('rhythmbox') parolasını kullanacaktır."
 
@@ -2726,17 +2715,17 @@ msgstr "Zeitgeist"
 
 #: ../plugins/rbzeitgeist/rbzeitgeist.plugin.in.h:2
 msgid "Inform Zeitgeist about your activity"
-msgstr "Etkinliğiniz hakkında Zeitgeist'i bilgilendirin"
+msgstr "Etkinliğiniz hakkında Zeitgeist’i bilgilendirin"
 
-#: ../plugins/replaygain/config.py:68
+#: ../plugins/replaygain/config.py:64
 msgid "-15.0 dB"
 msgstr "-15.0 dB"
 
-#: ../plugins/replaygain/config.py:69
+#: ../plugins/replaygain/config.py:65
 msgid "0.0 dB"
 msgstr "0.0 dB"
 
-#: ../plugins/replaygain/config.py:70
+#: ../plugins/replaygain/config.py:66
 msgid "15.0 dB"
 msgstr "15.0 dB"
 
@@ -2746,12 +2735,12 @@ msgid ""
 "The GStreamer elements required for ReplayGain processing are not available. "
 "The missing elements are: %s"
 msgstr ""
-"ReplayGain işlemesi için gereken GStreamer bileşenleri mevcut değil. Eksik "
+"ReplayGain işlemesi için gereken GStreamer bileşenleri yok. Eksik "
 "bileşenler: %s"
 
 #: ../plugins/replaygain/player.py:53
 msgid "ReplayGain GStreamer plugins not available"
-msgstr "ReplayGain GStreamer eklentileri mevcut değil"
+msgstr "ReplayGain GStreamer eklentileri yok"
 
 #: ../plugins/replaygain/replaygain.plugin.in.h:1
 msgid "ReplayGain"
@@ -2759,7 +2748,7 @@ msgstr "ReplayGain"
 
 #: ../plugins/replaygain/replaygain.plugin.in.h:2
 msgid "Use ReplayGain to provide a consistent playback volume"
-msgstr "Tutarlı bir çalma sesi düzeyi sağlamak için ReplayGain'i kullan"
+msgstr "Tutarlı bir çalma sesi düzeyi sağlamak için ReplayGain’i kullan"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:1
 msgid "Radio (equal loudness for all tracks)"
@@ -2786,16 +2775,18 @@ msgid "_Apply compression to prevent clipping"
 msgstr "Kırpmayı önlemek için sıkıştırm_a uygula"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:7
-msgid "Learn more about ReplayGain at replaygain.org"
-msgstr "replaygain.org adresinden, ReplayGain hakkında daha fazlasını öğrenin"
+#| msgid "Learn more about ReplayGain at replaygain.org"
+msgid "Learn more about ReplayGain"
+msgstr "ReplayGain hakkında daha çoğunu öğren"
 
 #: ../plugins/sendto/sendto.plugin.in.h:1
 msgid "Send tracks"
 msgstr "Parçaları gönder"
 
 #: ../plugins/sendto/sendto.plugin.in.h:2
-msgid "Send selected tracks by email or instant message"
-msgstr "Seçili parçaları e-posta ya da anlık ileti yoluyla gönder"
+#| msgid "Send selected tracks by email or instant message"
+msgid "Send selected tracks by email"
+msgstr "Seçili parçaları e-posta yoluyla gönder"
 
 #: ../plugins/sendto/sendto.py:51
 msgid "Send to..."
@@ -2808,129 +2799,125 @@ msgstr "SoundCloud"
 
 #: ../plugins/soundcloud/soundcloud.plugin.in.h:2
 msgid "Browse and play sounds from SoundCloud®"
-msgstr "SoundCloud®'dan ses tara ve oynat"
+msgstr "SoundCloud®’dan ses tara ve oynat"
 
-#: ../plugins/soundcloud/soundcloud.py:94
+#: ../plugins/soundcloud/soundcloud.py:96
 msgid "Search tracks"
 msgstr "Parçaları ara"
 
-#: ../plugins/soundcloud/soundcloud.py:95
+#: ../plugins/soundcloud/soundcloud.py:97
 msgid "Search tracks on SoundCloud"
 msgstr "SoundCloud üzerinde kayıt ara"
 
-#: ../plugins/soundcloud/soundcloud.py:101
+#: ../plugins/soundcloud/soundcloud.py:103
 msgid "Search sets"
 msgstr "Takım ara"
 
-#: ../plugins/soundcloud/soundcloud.py:102
+#: ../plugins/soundcloud/soundcloud.py:104
 msgid "Search sets on SoundCloud"
-msgstr "SoundClound'da takım ara"
+msgstr "SoundClound’da takım ara"
 
-#: ../plugins/soundcloud/soundcloud.py:103
+#: ../plugins/soundcloud/soundcloud.py:105
 msgid "SoundCloud Sets"
 msgstr "SoundCloud Takımları"
 
-#: ../plugins/soundcloud/soundcloud.py:108
+#: ../plugins/soundcloud/soundcloud.py:110
 msgid "Search users"
 msgstr "Kullanıcılarda ara"
 
-#: ../plugins/soundcloud/soundcloud.py:109
+#: ../plugins/soundcloud/soundcloud.py:111
 msgid "Search users on SoundCloud"
-msgstr "SoundCloud'da kullanıcı ara"
+msgstr "SoundCloud’da kullanıcı ara"
 
-#: ../plugins/soundcloud/soundcloud.py:110
+#: ../plugins/soundcloud/soundcloud.py:112
 msgid "SoundCloud Users"
 msgstr "SoundCloud Kullanıcıları"
 
-#: ../plugins/soundcloud/soundcloud.py:115
+#: ../plugins/soundcloud/soundcloud.py:117
 msgid "Search groups"
 msgstr "Gruplarda ara"
 
-#: ../plugins/soundcloud/soundcloud.py:116
+#: ../plugins/soundcloud/soundcloud.py:118
 msgid "Search groups on SoundCloud"
-msgstr "SoundCloud'da grup ara"
+msgstr "SoundCloud’da grup ara"
 
-#: ../plugins/soundcloud/soundcloud.py:117
+#: ../plugins/soundcloud/soundcloud.py:119
 msgid "SoundCloud Groups"
 msgstr "SoundCloud Grupları"
 
-#: ../plugins/soundcloud/soundcloud.py:374
-#: ../plugins/soundcloud/soundcloud.py:382
+#: ../plugins/soundcloud/soundcloud.py:442
+#: ../plugins/soundcloud/soundcloud.py:450
 #, python-format
 msgid "View '%(title)s' on SoundCloud"
-msgstr " '%(title)s' başlıkları SoundCloud'da Görüntüle"
+msgstr "'%(title)s' başlıkları SoundCloud'da Görüntüle"
 
-#: ../plugins/soundcloud/soundcloud.py:390
+#: ../plugins/soundcloud/soundcloud.py:458
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
-msgstr " '%(container)s' SoundCloud'da Görüntüle"
+msgstr "'%(container)s' SoundCloud'da Görüntüle"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:39
-msgid "Low quality"
-msgstr "Düşük kalite"
+#: ../plugins/webremote/webremote-config.ui.h:1
+msgid "Web remote control preferences"
+msgstr "Web uzaktan denetim tercihleri"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:40
-msgid "Normal quality"
-msgstr "Normal kalite"
+#: ../plugins/webremote/webremote-config.ui.h:2
+msgid "Listening port:"
+msgstr "Dinlenen bağlantı noktası:"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:41
-msgid "High quality"
-msgstr "Yüksek kalite"
+#: ../plugins/webremote/webremote-config.ui.h:3
+msgid "Access key:"
+msgstr "Erişim anahtarı:"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:78
-msgid "Fullscreen"
-msgstr "Tam Ekran"
+#: ../plugins/webremote/webremote-config.ui.h:4
+msgid "0"
+msgstr "0"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:89
-#: ../widgets/rb-entry-view.c:1528
-msgid "Quality"
-msgstr "Kalite"
+#: ../plugins/webremote/webremote.plugin.in.h:1
+msgid "Web remote control"
+msgstr "Web uzaktan denetim"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:114
-msgid "Visual Effect"
-msgstr "Görsel Efekt"
+#: ../plugins/webremote/webremote.plugin.in.h:2
+#| msgid "Control Rhythmbox using key shortcuts"
+msgid "Control Rhythmbox from a web browser"
+msgstr "Rhythmbox’ı web tarayıcısından denetle"
 
-#: ../plugins/visualizer/rb-visualizer-page.c:69
-msgid "Visual Effects"
-msgstr "Görsel Efektler"
+#: ../plugins/webremote/webremote.py:583
+msgid "Launch web remote control"
+msgstr "Web uzaktan denetimi başlat"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:392
-msgid "Display"
-msgstr "Görünüm"
+#: ../podcast/rb-podcast-add-dialog.c:271 ../podcast/rb-podcast-source.c:735
+#, c-format
+#| msgid "%d feed"
+#| msgid_plural "All %d feeds"
+msgid "%d feed"
+msgid_plural "%d feeds"
+msgstr[0] "%d besleme"
 
-#: ../plugins/visualizer/visualizer.plugin.in.h:1
-msgid "Visualization"
-msgstr "Görselleştirme"
-
-#: ../plugins/visualizer/visualizer.plugin.in.h:2
-msgid "Displays visualizations"
-msgstr "Görselleştirmeleri gösterir"
-
-#: ../podcast/rb-podcast-add-dialog.c:286
+#: ../podcast/rb-podcast-add-dialog.c:306
 msgid "Unable to load the feed. Check your network connection."
-msgstr "Besleme yüklenemiyor. Ağ bağlantınızı kontrol edin."
+msgstr "Besleme yüklenemiyor. Ağ bağlantınızı denetleyin."
 
-#: ../podcast/rb-podcast-add-dialog.c:408
+#: ../podcast/rb-podcast-add-dialog.c:431
 msgid "Unable to search for podcasts. Check your network connection."
-msgstr "Ortam akışları aranamadı. Ağ bağlantınızı kontrol edin."
+msgstr "Ortam akışları aranamadı. Ağ bağlantınızı denetleyin."
 
-#: ../podcast/rb-podcast-add-dialog.c:720 ../sources/rb-library-source.c:134
+#: ../podcast/rb-podcast-add-dialog.c:744 ../sources/rb-library-source.c:134
 #: ../widgets/rb-entry-view.c:1444
 msgid "Title"
 msgstr "Başlık"
 
-#: ../podcast/rb-podcast-add-dialog.c:731
+#: ../podcast/rb-podcast-add-dialog.c:755
 msgid "Author"
 msgstr "Yazar"
 
-#: ../podcast/rb-podcast-add-dialog.c:736
-#: ../podcast/rb-podcast-add-dialog.c:739
+#: ../podcast/rb-podcast-add-dialog.c:760
+#: ../podcast/rb-podcast-add-dialog.c:763
 msgid "Episodes"
 msgstr "Bölümler"
 
-#: ../podcast/rb-podcast-add-dialog.c:767
-#: ../podcast/rb-podcast-add-dialog.c:778 ../podcast/rb-podcast-source.c:1342
-#: ../podcast/rb-podcast-source.c:1353
+#: ../podcast/rb-podcast-add-dialog.c:797
+#: ../podcast/rb-podcast-add-dialog.c:808 ../podcast/rb-podcast-source.c:1357
+#: ../podcast/rb-podcast-source.c:1368
 msgid "Date"
 msgstr "Tarih"
 
@@ -2963,30 +2950,30 @@ msgstr "Ortam akışında hata"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Ortam akışı kaynağını yine de eklemek istiyor musunuz?"
 
-#: ../podcast/rb-podcast-manager.c:897
+#: ../podcast/rb-podcast-manager.c:925
 msgid "Error creating podcast download directory"
 msgstr "Ortam akışı indirme dizini oluşturulurken hata"
 
-#: ../podcast/rb-podcast-manager.c:898
+#: ../podcast/rb-podcast-manager.c:926
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "%s için indirme dizini oluşturulamadı: %s"
 
-#: ../podcast/rb-podcast-manager.c:1017
+#: ../podcast/rb-podcast-manager.c:1045
 msgid "Invalid URL"
 msgstr "Geçersiz URL"
 
-#: ../podcast/rb-podcast-manager.c:1018
+#: ../podcast/rb-podcast-manager.c:1046
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
-msgstr "\"%s\" adresi geçersiz, lütfen kontrol edin."
+msgstr "\"%s\" adresi geçersiz, lütfen denetleyin."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1029
+#: ../podcast/rb-podcast-manager.c:1057
 msgid "URL already added"
 msgstr "URL zaten eklenmiş"
 
-#: ../podcast/rb-podcast-manager.c:1030
+#: ../podcast/rb-podcast-manager.c:1058
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2995,7 +2982,7 @@ msgstr ""
 "\"%s\" adresi zaten bir radyo istasyonu olarak eklenmiş. Eğer bu bir ortam "
 "akışı ise lütfen radyo istasyonunu kaldırın."
 
-#: ../podcast/rb-podcast-manager.c:1109
+#: ../podcast/rb-podcast-manager.c:1158
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3006,15 +2993,15 @@ msgstr ""
 "bozuk olabilir. Rhythmbox uygulamasının yine de bunu kullanmayı denemesini "
 "ister misiniz?"
 
-#: ../podcast/rb-podcast-manager.c:1240
+#: ../podcast/rb-podcast-manager.c:1274
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2206
+#: ../podcast/rb-podcast-manager.c:2240
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
-"Bu podcast'ın eklenmesinde sorun oluştu: %s.  Lütfen URL'yi doğrulayın: %s"
+"Bu podcast’in eklenmesinde sorun oluştu: %s.  Lütfen URL’yi doğrulayın: %s"
 
 #: ../podcast/rb-podcast-parse.c:181
 #, c-format
@@ -3036,11 +3023,7 @@ msgstr "Besleme içeriği ayrıştırılamıyor"
 msgid "The feed does not contain any downloadable items"
 msgstr "Bu besleme, indirilebilir herhangi bir öge içermiyor"
 
-#: ../podcast/rb-podcast-properties-dialog.c:195
-msgid "Unable to display requested URI"
-msgstr "İstenen URI gösterilemiyor"
-
-#: ../podcast/rb-podcast-properties-dialog.c:570
+#: ../podcast/rb-podcast-properties-dialog.c:587
 msgid "Not Downloaded"
 msgstr "İndirilmedi"
 
@@ -3055,34 +3038,28 @@ msgid ""
 "choosing to delete the feed only."
 msgstr ""
 "Eğer besleme ve dosyaları silmeyi seçerseniz, kalıcı olarak silinecektir.  "
-"Sadece beslemeyi silmeyi seçerek, beslemeyi silip indirilen dosyaları "
+"Yalnızca beslemeyi silmeyi seçerek, beslemeyi silip indirilen dosyaları "
 "saklayabileceğinizi unutmayınız."
 
 #: ../podcast/rb-podcast-source.c:532
 msgid "Delete _Feed Only"
-msgstr "Sadece _Beslemeyi Sil"
+msgstr "Yalnızca _Beslemeyi Sil"
 
 #: ../podcast/rb-podcast-source.c:539
 msgid "_Delete Feed And Files"
 msgstr "Beslemeyi ve Dosyaları _Sil"
 
-#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1396
+#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1411
 msgid "Downloaded"
 msgstr "İndirildi"
 
-#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1398
+#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1413
 msgid "Failed"
 msgstr "Başarısız oldu"
 
-#: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1397
+#: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1412
 msgid "Waiting"
 msgstr "Bekliyor"
-
-#: ../podcast/rb-podcast-source.c:735
-#, c-format
-msgid "%d feed"
-msgid_plural "All %d feeds"
-msgstr[0] "%d kaynak"
 
 #: ../podcast/rb-podcast-source.c:957
 msgid "Podcast Error"
@@ -3099,7 +3076,7 @@ msgid ""
 "file by choosing to delete the episode only."
 msgstr ""
 "Eğer bölümü ve dosyaları silmeyi seçerseniz, kalıcı olarak silinecektir.  "
-"Sadece bölümü silmeyi seçerek, bölümü silip indirilen dosyaları "
+"Yalnızca bölümü silmeyi seçerek, bölümü silip indirilen dosyaları "
 "saklayabileceğinizi unutmayınız."
 
 #: ../podcast/rb-podcast-source.c:1102
@@ -3110,262 +3087,266 @@ msgstr "Y_alnızca Bölümü Sil"
 msgid "_Delete Episode And File"
 msgstr "Bölümü ve _Dosyayı Sil"
 
-#: ../podcast/rb-podcast-source.c:1206
+#: ../podcast/rb-podcast-source.c:1214
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d bölüm"
 
-#: ../podcast/rb-podcast-source.c:1375 ../podcast/rb-podcast-source.c:1430
-#: ../podcast/rb-podcast-source.c:1469
+#: ../podcast/rb-podcast-source.c:1390 ../podcast/rb-podcast-source.c:1445
+#: ../podcast/rb-podcast-source.c:1484
 msgid "Feed"
 msgstr "Besleme"
 
-#: ../podcast/rb-podcast-source.c:1395 ../podcast/rb-podcast-source.c:1413
+#: ../podcast/rb-podcast-source.c:1410 ../podcast/rb-podcast-source.c:1428
 msgid "Status"
 msgstr "Durum"
 
 #. ensure search instances exist
-#: ../podcast/rb-podcast-source.c:1515
-#: ../sources/rb-auto-playlist-source.c:253 ../sources/rb-browser-source.c:314
-#: ../sources/rb-browser-source.c:332
+#: ../podcast/rb-podcast-source.c:1530 ../sources/rb-auto-playlist-source.c:253
+#: ../sources/rb-browser-source.c:314 ../sources/rb-browser-source.c:332
 #: ../sources/rb-static-playlist-source.c:295
 msgid "Search all fields"
 msgstr "Tüm alanlarda ara"
 
-#: ../podcast/rb-podcast-source.c:1516
+#: ../podcast/rb-podcast-source.c:1531
 msgid "Search podcast feeds"
 msgstr "Podcast beslemeleri ara"
 
-#: ../podcast/rb-podcast-source.c:1517
+#: ../podcast/rb-podcast-source.c:1532
 msgid "Search podcast episodes"
 msgstr "Podcast bölümleri ara"
 
-#: ../remote/dbus/rb-client.c:94
+#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:639
+#| msgid "Set the rating of the current song"
+msgid "Show the version of the program"
+msgstr "Programın sürümünü göster"
+
+#: ../remote/dbus/rb-client.c:97
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "Yeni bir Rhythmbox penceresi başlatma"
 
-#: ../remote/dbus/rb-client.c:95
-msgid "Quit Rhythmbox"
-msgstr "Rhythmbox'dan Çık"
-
-#: ../remote/dbus/rb-client.c:96
-msgid "Check if Rhythmbox is already running"
-msgstr "Rhythmbox'ın zaten çalışıyor olup olmadığına bak"
-
 #: ../remote/dbus/rb-client.c:98
+msgid "Quit Rhythmbox"
+msgstr "Rhythmbox’dan Çık"
+
+#: ../remote/dbus/rb-client.c:99
+msgid "Check if Rhythmbox is already running"
+msgstr "Rhythmbox’ın zaten çalışıyor olup olmadığına bak"
+
+#: ../remote/dbus/rb-client.c:101
 msgid "Don't present an existing Rhythmbox window"
 msgstr "Var olan Rhythmbox penceresi sunma"
 
-#: ../remote/dbus/rb-client.c:100
+#: ../remote/dbus/rb-client.c:103
 msgid "Jump to next song"
 msgstr "Sonraki şarkıya sıçra"
 
-#: ../remote/dbus/rb-client.c:101
+#: ../remote/dbus/rb-client.c:104
 msgid "Jump to previous song"
 msgstr "Önceki şarkıya sıçra"
 
-#: ../remote/dbus/rb-client.c:102
+#: ../remote/dbus/rb-client.c:105
 msgid "Seek in current track"
-msgstr "Mevcut kayıtta ara"
+msgstr "Geçerli kayıtta ara"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:107
 msgid "Resume playback if currently paused"
 msgstr "Duraklatılmışsa oynatmaya devam et"
 
-#: ../remote/dbus/rb-client.c:105
+#: ../remote/dbus/rb-client.c:108
 msgid "Pause playback if currently playing"
 msgstr "Oynatılıyorsa oynatmayı duraklat"
 
-#: ../remote/dbus/rb-client.c:106
+#: ../remote/dbus/rb-client.c:109
 msgid "Toggle play/pause mode"
 msgstr "Çalma/bekleme durumları arasında geçiş yap"
 
-#: ../remote/dbus/rb-client.c:107 ../shell/rb-shell.c:2289
+#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2297
 msgid "Stop playback"
 msgstr "Çalmayı durdur"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:112
 msgid "Play a specified URI, importing it if necessary"
-msgstr "Belirtilen URI'yi oynat, gerekirse içe aktararak"
+msgstr "Belirtilen URI’yi oynat, gerekirse içe aktararak"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:112
 msgid "URI to play"
 msgstr "Oynatılacak URI"
 
-#: ../remote/dbus/rb-client.c:110
+#: ../remote/dbus/rb-client.c:113
 msgid "Add specified tracks to the play queue"
 msgstr "Belirtilen kayıtları oynatma kuyruğuna ekle"
 
-#: ../remote/dbus/rb-client.c:111
+#: ../remote/dbus/rb-client.c:114
 msgid "Empty the play queue before adding new tracks"
 msgstr "Yeni kayıtlar eklemeden önce oynatma kuyruğunu boşalt"
 
-#: ../remote/dbus/rb-client.c:113
+#: ../remote/dbus/rb-client.c:116
 msgid "Print the title and artist of the playing song"
 msgstr "Çalan parçanın adını ve sanatçısını yazdır"
 
-#: ../remote/dbus/rb-client.c:114
+#: ../remote/dbus/rb-client.c:117
 msgid "Print formatted details of the song"
-msgstr "Şarkının biçimlenmiş detaylarını yazdır"
+msgstr "Şarkının biçimlenmiş ayrıntılarını yazdır"
 
-#: ../remote/dbus/rb-client.c:115
+#: ../remote/dbus/rb-client.c:118
 msgid "Select the source matching the specified URI"
 msgstr "Belirtilen URI ile eşleşen kaynağı seç"
 
-#: ../remote/dbus/rb-client.c:115
+#: ../remote/dbus/rb-client.c:118
 msgid "Source to select"
 msgstr "Seçilecek kaynak"
 
-#: ../remote/dbus/rb-client.c:116
+#: ../remote/dbus/rb-client.c:119
 msgid "Activate the source matching the specified URI"
 msgstr "Belirtilen URI ile eşleşen kaynağı etkinleştir"
 
-#: ../remote/dbus/rb-client.c:116
+#: ../remote/dbus/rb-client.c:119
 msgid "Source to activate"
 msgstr "Etkinleştirilecek kaynak"
 
-#: ../remote/dbus/rb-client.c:117
+#: ../remote/dbus/rb-client.c:120
 msgid "Play from the source matching the specified URI"
 msgstr "Belirtilen URI ile eşleşen kaynaktan oynat"
 
-#: ../remote/dbus/rb-client.c:117
+#: ../remote/dbus/rb-client.c:120
 msgid "Source to play from"
 msgstr "Çalınacak kaynak"
 
-#: ../remote/dbus/rb-client.c:119
+#: ../remote/dbus/rb-client.c:122
 msgid "Enable repeat playback order"
 msgstr "Yinelemeli çalma düzenini etkinleştir"
 
-#: ../remote/dbus/rb-client.c:120
+#: ../remote/dbus/rb-client.c:123
 msgid "Disable repeat playback order"
 msgstr "Yinelemeli çalma düzenini devre dışı bırak"
 
-#: ../remote/dbus/rb-client.c:121
+#: ../remote/dbus/rb-client.c:124
 msgid "Enable shuffle playback order"
 msgstr "Karışık çalma düzenini etkinleştir"
 
-#: ../remote/dbus/rb-client.c:122
+#: ../remote/dbus/rb-client.c:125
 msgid "Disable shuffle playback order"
 msgstr "Karışık çalma düzenini devre dışı bırak"
 
-#: ../remote/dbus/rb-client.c:124
+#: ../remote/dbus/rb-client.c:127
 msgid "Set the playback volume"
 msgstr "Çalma ses seviyesini ayarla"
 
-#: ../remote/dbus/rb-client.c:125
+#: ../remote/dbus/rb-client.c:128
 msgid "Increase the playback volume"
 msgstr "Çalma ses seviyesini arttır"
 
-#: ../remote/dbus/rb-client.c:126
+#: ../remote/dbus/rb-client.c:129
 msgid "Decrease the playback volume"
 msgstr "Çalma ses seviyesini azalt"
 
-#: ../remote/dbus/rb-client.c:127
+#: ../remote/dbus/rb-client.c:130
 msgid "Print the current playback volume"
 msgstr "Şimdiki çalma ses seviyesini yazdır"
 
 #. { "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
 #. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
-#: ../remote/dbus/rb-client.c:130
+#: ../remote/dbus/rb-client.c:133
 msgid "Set the rating of the current song"
 msgstr "Geçerli şarkının derecelendirmesini ayarla"
 
-#: ../remote/dbus/rb-client.c:131
+#: ../remote/dbus/rb-client.c:134
 msgid "Start interactive mode"
 msgstr "Etkileşim kipini başlat"
 
-#: ../remote/dbus/rb-client.c:161
+#: ../remote/dbus/rb-client.c:164
 msgid "n - Next track"
 msgstr "n - Sonraki parça"
 
-#: ../remote/dbus/rb-client.c:162
+#: ../remote/dbus/rb-client.c:165
 msgid "p - Previous track"
 msgstr "ö - Önceki parça"
 
-#: ../remote/dbus/rb-client.c:163
+#: ../remote/dbus/rb-client.c:166
 msgid "space - Play/pause"
 msgstr "boşluk - Oynat/duraklat"
 
-#: ../remote/dbus/rb-client.c:164
+#: ../remote/dbus/rb-client.c:167
 msgid "s - Show playing track details"
-msgstr "s - Oynayan kaydın detaylarını göster"
+msgstr "s - Oynayan kaydın ayrıntılarını göster"
 
-#: ../remote/dbus/rb-client.c:165
+#: ../remote/dbus/rb-client.c:168
 msgid "v - Decrease volume"
 msgstr "t - Sesi Azalt"
 
-#: ../remote/dbus/rb-client.c:166
+#: ../remote/dbus/rb-client.c:169
 msgid "V - Increase volume"
 msgstr "A - Sesi Arttır"
 
-#: ../remote/dbus/rb-client.c:168
+#: ../remote/dbus/rb-client.c:171
 msgid "h/? - Help"
 msgstr "h/? - Yardım"
 
-#: ../remote/dbus/rb-client.c:169
+#: ../remote/dbus/rb-client.c:172
 msgid "q - Quit"
 msgstr "Ç - Çık"
 
-#: ../remote/dbus/rb-client.c:529 ../remote/dbus/rb-client.c:555
-#: ../remote/dbus/rb-client.c:778 ../remote/dbus/rb-client.c:862
+#: ../remote/dbus/rb-client.c:542 ../remote/dbus/rb-client.c:568
+#: ../remote/dbus/rb-client.c:791 ../remote/dbus/rb-client.c:875
 #, c-format
 msgid "Not playing"
 msgstr "Çalmıyor"
 
 #. Translators: title by artist from album
-#: ../remote/dbus/rb-client.c:728
+#: ../remote/dbus/rb-client.c:741
 msgid "%tt by %ta from %at"
-msgstr "%ta'nın %at albümünden %tt"
+msgstr "%ta’nın %at albümünden %tt"
 
 #. Translators: title by artist
-#: ../remote/dbus/rb-client.c:731
+#: ../remote/dbus/rb-client.c:744
 msgid "%tt by %ta"
-msgstr "%ta'dan %tt"
+msgstr "%ta’dan %tt"
 
 #. Translators: title from album
-#: ../remote/dbus/rb-client.c:734
+#: ../remote/dbus/rb-client.c:747
 msgid "%tt from %ta"
 msgstr "%ta albümünden %tt"
 
 #. Translators: %te is replaced with elapsed time, %td is replaced with track duration
-#: ../remote/dbus/rb-client.c:745
+#: ../remote/dbus/rb-client.c:758
 #, c-format
 msgid "[%te of %td]"
 msgstr "[%te / %td]"
 
-#: ../remote/dbus/rb-client.c:801 ../remote/dbus/rb-client.c:893
+#: ../remote/dbus/rb-client.c:814 ../remote/dbus/rb-client.c:906
 #, c-format
 msgid "Paused"
 msgstr "Duraklatıldı"
 
-#: ../remote/dbus/rb-client.c:845
+#: ../remote/dbus/rb-client.c:858
 #, c-format
 msgid "Seeked to %s"
-msgstr "%s'e geçildi"
+msgstr "%s’e geçildi"
 
-#: ../remote/dbus/rb-client.c:879
+#: ../remote/dbus/rb-client.c:892
 #, c-format
 msgid "Now playing: %s %s"
 msgstr "Şu anda çalınıyor: %s %s"
 
-#: ../remote/dbus/rb-client.c:895
+#: ../remote/dbus/rb-client.c:908
 #, c-format
 msgid "Unknown playback state: %s"
 msgstr "Bilinmeyen çalma durumu: %s"
 
-#: ../remote/dbus/rb-client.c:905
+#: ../remote/dbus/rb-client.c:918
 #, c-format
 msgid "Volume is now %.02f"
 msgstr "Ses düzeyi şu an %.02f"
 
 #. should print this before dbus setup, really
-#: ../remote/dbus/rb-client.c:943
+#: ../remote/dbus/rb-client.c:956
 #, c-format
 msgid "Press 'h' for help."
 msgstr "Yardım için 'h' tuşuna basın."
 
-#: ../remote/dbus/rb-client.c:1384
+#: ../remote/dbus/rb-client.c:1396
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Çalma ses seviyesi: %f.\n"
@@ -3373,7 +3354,7 @@ msgstr "Çalma ses seviyesi: %f.\n"
 #: ../rhythmdb/rhythmdb.c:789
 #, c-format
 msgid "Couldn't access %s: %s"
-msgstr "%s'e erişilemedi: %s"
+msgstr "%s’e erişilemedi: %s"
 
 #. Translators: this is an example artist name.  It should
 #. * not be translated literally, but could be replaced with
@@ -3403,44 +3384,44 @@ msgstr "Kol Düğmeleri"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2373
+#: ../rhythmdb/rhythmdb.c:2374
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "Bu dosyayı çalmak için ek GStreamer eklentileri gereklidir: %s"
 
-#: ../rhythmdb/rhythmdb.c:2405
+#: ../rhythmdb/rhythmdb.c:2406
 msgid "invalid unicode in error message"
 msgstr "hata iletisinde geçersiz unikod"
 
-#: ../rhythmdb/rhythmdb.c:2528
+#: ../rhythmdb/rhythmdb.c:2529
 #, c-format
 msgid "Empty file"
 msgstr "Boş dosya"
 
-#: ../rhythmdb/rhythmdb.c:3226
+#: ../rhythmdb/rhythmdb.c:3227
 msgid "Could not load the music database:"
-msgstr "Müzik veritabanı yüklenemedi:"
+msgstr "Müzik veri tabanı yüklenemedi:"
 
-#: ../rhythmdb/rhythmdb.c:4653
+#: ../rhythmdb/rhythmdb.c:4654
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld dakika"
 
-#: ../rhythmdb/rhythmdb.c:4654
+#: ../rhythmdb/rhythmdb.c:4655
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld saat"
 
-#: ../rhythmdb/rhythmdb.c:4655
+#: ../rhythmdb/rhythmdb.c:4656
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld gün"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4661
+#: ../rhythmdb/rhythmdb.c:4662
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s ve %s"
@@ -3448,25 +3429,24 @@ msgstr "%s, %s ve %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4667 ../rhythmdb/rhythmdb.c:4675
-#: ../rhythmdb/rhythmdb.c:4686
+#: ../rhythmdb/rhythmdb.c:4668 ../rhythmdb/rhythmdb.c:4676
+#: ../rhythmdb/rhythmdb.c:4687
 #, c-format
 msgid "%s and %s"
 msgstr "%s ve %s"
 
-#: ../rhythmdb/rhythmdb-import-job.c:665
+#: ../rhythmdb/rhythmdb-import-job.c:664
 msgid "Scanning"
 msgstr "Taranıyor"
 
-#: ../rhythmdb/rhythmdb-import-job.c:668
-#: ../shell/rb-track-transfer-batch.c:857
+#: ../rhythmdb/rhythmdb-import-job.c:667 ../shell/rb-track-transfer-batch.c:915
 #, c-format
 msgid "%d of %d"
 msgstr "%d / %d"
 
 #: ../rhythmdb/rhythmdb-property-model.c:511
 msgid "All"
-msgstr "Hepsi"
+msgstr "Tümü"
 
 #: ../rhythmdb/rhythmdb-tree.c:414
 #, c-format
@@ -3474,7 +3454,7 @@ msgid ""
 "The database was created by a later version of Rhythmbox.  This version of "
 "Rhythmbox cannot read the database."
 msgstr ""
-"Veri tabanı Rhythmbox'un ileri bir sürümü ile oluşturulmuş.  Rhythmbox'un bu "
+"Veri tabanı Rhythmbox’un ileri bir sürümü ile oluşturulmuş.  Rhythmbox’un bu "
 "sürümü veri tabanını okuyamıyor."
 
 #: ../sample-plugins/sample-python/sample-python.plugin.in.h:1
@@ -3507,17 +3487,17 @@ msgstr "Vala Örnek Eklentisi"
 msgid "A sample plugin in Vala with no features"
 msgstr "Vala ile yazılmış özelliksiz bir örnek eklenti"
 
-#: ../shell/rb-application.c:141
+#: ../shell/rb-application.c:162
 msgid "Configure Plugins"
 msgstr "Eklentileri Yapılandır"
 
-#: ../shell/rb-application.c:208
+#: ../shell/rb-application.c:229
 msgid "translator-credits"
 msgstr ""
 "Enver ALTIN <enver.altin@frontsite.com.tr>\n"
 "Muhammet Kara <muhammetk@gmail.com>"
 
-#: ../shell/rb-application.c:211
+#: ../shell/rb-application.c:232
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3529,7 +3509,7 @@ msgstr ""
 "lisansın 2. sürümü ya da (tercihinize göre) daha sonraki sürümlerine göre,\n"
 "kendiniz dağıtabilir ve/veya değiştirebilirsiniz.\n"
 
-#: ../shell/rb-application.c:215
+#: ../shell/rb-application.c:236
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3538,84 +3518,84 @@ msgid ""
 msgstr ""
 "Rhythmbox faydalı olacağı ümidi ile, fakat herhangi bir\n"
 "GARANTİ OLMADAN; ALIP-VERİLEBİLİRLİK veya BELİRLİ BİR AMACA\n"
-"UYGUNLUK garantisi bile olmadan dağıtılır.  Detaylar için\n"
+"UYGUNLUK garantisi bile olmadan dağıtılır.  Ayrıntılar için\n"
 "GNU Genel Kamu Lisansına göz atın.\n"
 
-#: ../shell/rb-application.c:219
+#: ../shell/rb-application.c:240
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 msgstr ""
 "GNU Genel Kamu Lisansının bir kopyasını Rhythmbox ile almış\n"
-"olmalısınız; almadıysanız, Özgür Yazılım Vakfı, Inc. 'e yazın,\n"
+"olmalısınız; almadıysanız, Özgür Yazılım Vakfı, Inc. ’e yazın,\n"
 "51 Franklin Cd., Beşinci Kat, Boston, MA 02110-1301 USA\n"
 
-#: ../shell/rb-application.c:226
+#: ../shell/rb-application.c:247
 msgid "Maintainers:"
 msgstr "Yöneticiler:"
 
-#: ../shell/rb-application.c:229
+#: ../shell/rb-application.c:250
 msgid "Former Maintainers:"
 msgstr "Eski Yöneticiler:"
 
-#: ../shell/rb-application.c:232
+#: ../shell/rb-application.c:253
 msgid "Contributors:"
 msgstr "Katkıda bulunanlar:"
 
-#: ../shell/rb-application.c:234
+#: ../shell/rb-application.c:255
 msgid "Music management and playback software for GNOME."
 msgstr "GNOME için müzik çalıcı ve yönetim yazılımı."
 
-#: ../shell/rb-application.c:244
+#: ../shell/rb-application.c:265
 msgid "Rhythmbox Website"
 msgstr "Rhythmbox Web Sitesi"
 
-#: ../shell/rb-application.c:272 ../shell/rb-shell-preferences.c:163
+#: ../shell/rb-application.c:293 ../shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "Yardım görüntülenemedi"
 
-#: ../shell/rb-application.c:612
+#: ../shell/rb-application.c:631
 msgid "Enable debug output"
 msgstr "Hata ayıklama çıktısını etkinleştir"
 
-#: ../shell/rb-application.c:613
+#: ../shell/rb-application.c:632
 msgid "Enable debug output matching a specified string"
 msgstr "Belirli bir dizgeyle eşleşen hata ayıklama çıktısını etkinleştir"
 
-#: ../shell/rb-application.c:614
+#: ../shell/rb-application.c:633
 msgid "Do not update the library with file changes"
 msgstr "Kütüphaneyi, dosya değişiklikleriyle sakın güncelleştirme"
 
-#: ../shell/rb-application.c:615
+#: ../shell/rb-application.c:634
 msgid "Do not register the shell"
 msgstr "Kabuğu kaydetme"
 
-#: ../shell/rb-application.c:616
+#: ../shell/rb-application.c:635
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Hiçbir veriyi kalıcı olarak kaydetme (--no-registration uygular)"
 
-#: ../shell/rb-application.c:617
+#: ../shell/rb-application.c:636
 msgid "Disable loading of plugins"
 msgstr "Eklenti yüklenmesini devre dışı bırak"
 
-#: ../shell/rb-application.c:618
+#: ../shell/rb-application.c:637
 msgid "Path for database file to use"
-msgstr "Kullanılacak veritabanı dosyasının yolu"
+msgstr "Kullanılacak veri tabanı dosyasının yolu"
 
-#: ../shell/rb-application.c:619
+#: ../shell/rb-application.c:638
 msgid "Path for playlists file to use"
 msgstr "Kullanılacak çalma listeleri dosyasının yolu"
 
-#: ../shell/rb-application.c:631
+#: ../shell/rb-application.c:651
 #, c-format
 msgid ""
 "%s\n"
 "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
 "%s\n"
-"Mevcut komut satırı seçeneklerinin tam listesini görmek için '%s --help' "
-"komutunu çalıştırın.\n"
+"Kullanılabilir komut satırı seçeneklerinin tam listesini görmek için '%s --"
+"help' komutunu çalıştırın.\n"
 
 #: ../shell/rb-playlist-manager.c:166
 msgid "MPEG Version 3.0 URL"
@@ -3637,168 +3617,168 @@ msgstr "Adsız çalma listesi"
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr "Oynatma listesi dosyası bilinmeyen biçimde veya bozuk olabilir."
 
-#: ../shell/rb-playlist-manager.c:773
+#: ../shell/rb-playlist-manager.c:767
 msgid "Untitled Playlist"
 msgstr "Başlıksız Çalma Listesi"
 
-#: ../shell/rb-playlist-manager.c:817 ../shell/rb-playlist-manager.c:860
+#: ../shell/rb-playlist-manager.c:811 ../shell/rb-playlist-manager.c:854
 msgid "New Playlist"
 msgstr "Yeni Çalma Listesi"
 
-#: ../shell/rb-playlist-manager.c:1061
+#: ../shell/rb-playlist-manager.c:1055
 msgid "Couldn't read playlist"
 msgstr "Çalma listesi okunamadı"
 
-#: ../shell/rb-playlist-manager.c:1087
+#: ../shell/rb-playlist-manager.c:1081
 msgid "All Files"
 msgstr "Tüm Dosyalar"
 
-#: ../shell/rb-playlist-manager.c:1092
+#: ../shell/rb-playlist-manager.c:1086
 msgid "Load Playlist"
 msgstr "Çalma Listesi Yükle"
 
-#: ../shell/rb-playlist-manager.c:1148 ../sources/rb-playlist-source.c:708
+#: ../shell/rb-playlist-manager.c:1142 ../sources/rb-playlist-source.c:708
 msgid "Couldn't save playlist"
 msgstr "Çalma listesi kaydedilemedi"
 
-#: ../shell/rb-playlist-manager.c:1148
+#: ../shell/rb-playlist-manager.c:1142
 msgid "Unsupported file extension given."
 msgstr "Desteklenmeyen dosya uzantısı verildi."
 
-#: ../shell/rb-playlist-manager.c:1481
+#: ../shell/rb-playlist-manager.c:1475
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "%s çalma listesi zaten var"
 
-#: ../shell/rb-playlist-manager.c:1511 ../shell/rb-playlist-manager.c:1544
-#: ../shell/rb-playlist-manager.c:1584 ../shell/rb-playlist-manager.c:1627
+#: ../shell/rb-playlist-manager.c:1505 ../shell/rb-playlist-manager.c:1538
+#: ../shell/rb-playlist-manager.c:1578 ../shell/rb-playlist-manager.c:1621
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "Bilinmeyen çalma listesi: %s"
 
-#: ../shell/rb-playlist-manager.c:1552 ../shell/rb-playlist-manager.c:1592
+#: ../shell/rb-playlist-manager.c:1546 ../shell/rb-playlist-manager.c:1586
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "%s, bir otomatik çalma listesidir"
 
-#: ../shell/rb-shell.c:2082
+#: ../shell/rb-shell.c:2090
 msgid "Error while saving song information"
 msgstr "Parça bilgisi kaydedilirken hata oluştu"
 
-#: ../shell/rb-shell.c:2286
+#: ../shell/rb-shell.c:2294
 msgid "Pause playback"
 msgstr "Çalmayı duraklat"
 
-#: ../shell/rb-shell.c:2293
+#: ../shell/rb-shell.c:2301
 msgid "Start playback"
 msgstr "Çalmayı başlat"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2404
+#: ../shell/rb-shell.c:2411
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Duraklatıldı)"
 
-#: ../shell/rb-shell.c:2808 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2819 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
-msgstr "Kayıtlı hiçbir kaynak %s URI'sini işleyemez"
+msgstr "Kayıtlı hiçbir kaynak %s URI’sini işleyemez"
 
-#: ../shell/rb-shell.c:3137
+#: ../shell/rb-shell.c:3148
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Kayıtlı hiçbir kaynak URI %s ile eşleşmiyor"
 
-#: ../shell/rb-shell.c:3170 ../shell/rb-shell.c:3213
+#: ../shell/rb-shell.c:3181 ../shell/rb-shell.c:3224
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Bilinmeyen parça adresi: %s"
 
-#: ../shell/rb-shell.c:3222
+#: ../shell/rb-shell.c:3233
 #, c-format
 msgid "Unknown property %s"
 msgstr "Bilinmeyen özellik %s"
 
-#: ../shell/rb-shell.c:3236
+#: ../shell/rb-shell.c:3247
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "%s özellik türü %s özelliği için geçersiz"
 
-#: ../shell/rb-shell-player.c:390
+#: ../shell/rb-shell-player.c:389
 msgid "Stream error"
 msgstr "Akış hatası"
 
-#: ../shell/rb-shell-player.c:391
+#: ../shell/rb-shell-player.c:390
 msgid "Unexpected end of stream!"
 msgstr "Beklenmeyen akan-veri sonu!"
 
-#: ../shell/rb-shell-player.c:677
+#: ../shell/rb-shell-player.c:676
 #, c-format
 msgid "Playlist was empty"
 msgstr "Çalma listesi boş"
 
-#: ../shell/rb-shell-player.c:1110
+#: ../shell/rb-shell-player.c:1109
 #, c-format
 msgid "Not currently playing"
 msgstr "Şu anda çalınmıyor"
 
-#: ../shell/rb-shell-player.c:1167
+#: ../shell/rb-shell-player.c:1166
 #, c-format
 msgid "No previous song"
 msgstr "Önceki parça yok"
 
-#: ../shell/rb-shell-player.c:1266
+#: ../shell/rb-shell-player.c:1265
 #, c-format
 msgid "No next song"
 msgstr "Sonraki parça yok"
 
-#: ../shell/rb-shell-player.c:2127
+#: ../shell/rb-shell-player.c:2124
 msgid "Couldn't stop playback"
 msgstr "Çalma durdurulamadı"
 
-#: ../shell/rb-shell-player.c:2246
+#: ../shell/rb-shell-player.c:2243
 #, c-format
 msgid "Playback position not available"
 msgstr "Çalma konumu kullanılamaz"
 
-#: ../shell/rb-shell-player.c:2278 ../shell/rb-shell-player.c:2312
+#: ../shell/rb-shell-player.c:2275 ../shell/rb-shell-player.c:2309
 #, c-format
 msgid "Current song is not seekable"
-msgstr "Mevcut şarkı sarılabilir değil"
+msgstr "Geçerli şarkı sarılabilir değil"
 
-#: ../shell/rb-shell-player.c:2468 ../shell/rb-shell-player.c:2779
+#: ../shell/rb-shell-player.c:2465 ../shell/rb-shell-player.c:2776
 msgid "Couldn't start playback"
 msgstr "Çalma başlatılamadı"
 
-#: ../shell/rb-shell-player.c:3275
+#: ../shell/rb-shell-player.c:3287
 msgid "Linear"
 msgstr "Düzgün"
 
-#: ../shell/rb-shell-player.c:3277
+#: ../shell/rb-shell-player.c:3289
 msgid "Linear looping"
 msgstr "Doğrusal döngü"
 
-#: ../shell/rb-shell-player.c:3281
+#: ../shell/rb-shell-player.c:3293
 msgid "Random with equal weights"
 msgstr "Eşit ağırlıkta rastgele"
 
-#: ../shell/rb-shell-player.c:3283
+#: ../shell/rb-shell-player.c:3295
 msgid "Random by time since last play"
 msgstr "Son çalmadan sonra geçen süreye göre rastgele"
 
-#: ../shell/rb-shell-player.c:3285
+#: ../shell/rb-shell-player.c:3297
 msgid "Random by rating"
 msgstr "Popülerliğe göre rastgele"
 
-#: ../shell/rb-shell-player.c:3287
+#: ../shell/rb-shell-player.c:3299
 msgid "Random by time since last play and rating"
 msgstr "Son çalmadan sonra geçen süreye ve popülerliğe göre rastgele"
 
-#: ../shell/rb-shell-player.c:3289
+#: ../shell/rb-shell-player.c:3301
 msgid "Linear, removing entries once played"
 msgstr "Doğrusal, bir kez çalınan girdiler çıkarılır"
 
-#: ../shell/rb-shell-player.c:3299
+#: ../shell/rb-shell-player.c:3311
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Çalıcı oluşturuluken hata: %s"
@@ -3815,29 +3795,29 @@ msgstr "Genel"
 msgid "Playback"
 msgstr "Çal"
 
-#: ../shell/rb-track-transfer-queue.c:175
+#: ../shell/rb-track-transfer-queue.c:174
 #, c-format
 msgid "The file \"%s\" already exists. Do you want to replace it?"
 msgstr ""
-"\"%s\" dosyası zaten mevcut. Varolan dosyanın yerine koymak ister misiniz?"
+"\"%s\" dosyası zaten var. Var olan dosyanın yerine koymak ister misiniz?"
 
-#: ../shell/rb-track-transfer-queue.c:189
+#: ../shell/rb-track-transfer-queue.c:188
 msgid "_Skip"
 msgstr "_Atla"
 
-#: ../shell/rb-track-transfer-queue.c:190
+#: ../shell/rb-track-transfer-queue.c:189
 msgid "_Replace"
 msgstr "_Değiştir"
 
-#: ../shell/rb-track-transfer-queue.c:191
+#: ../shell/rb-track-transfer-queue.c:190
 msgid "S_kip All"
 msgstr "T_ümünü Atla"
 
-#: ../shell/rb-track-transfer-queue.c:192
+#: ../shell/rb-track-transfer-queue.c:191
 msgid "Replace _All"
 msgstr "Tümünü _Değiştir"
 
-#: ../shell/rb-track-transfer-queue.c:439
+#: ../shell/rb-track-transfer-queue.c:438
 #, c-format
 msgid ""
 "%d file cannot be transferred as it must be converted into a format "
@@ -3852,7 +3832,7 @@ msgstr[0] ""
 "uygun kodlama profilleri kullanılabilir olmadığundan aktarılamaz"
 
 #. XXX should provide the option of picking a different format?
-#: ../shell/rb-track-transfer-queue.c:463
+#: ../shell/rb-track-transfer-queue.c:462
 #, c-format
 msgid ""
 "Additional software is required to encode media in your preferred format:\n"
@@ -3861,7 +3841,7 @@ msgstr ""
 "Ortamın tercih ettiğiniz biçimde kodlanması için ek yazılım gerekiyor:\n"
 "%s"
 
-#: ../shell/rb-track-transfer-queue.c:467
+#: ../shell/rb-track-transfer-queue.c:466
 #, c-format
 msgid ""
 "Additional software is required to convert %d file into a format supported "
@@ -3876,19 +3856,19 @@ msgstr[0] ""
 "gerekiyor:\n"
 "%s"
 
-#: ../shell/rb-track-transfer-queue.c:484
+#: ../shell/rb-track-transfer-queue.c:483
 msgid "Unable to transfer tracks"
 msgstr "Parçalar aktarılamadı"
 
-#: ../shell/rb-track-transfer-queue.c:489
+#: ../shell/rb-track-transfer-queue.c:488
 msgid "_Cancel the transfer"
 msgstr "Aktarımı _iptal et"
 
-#: ../shell/rb-track-transfer-queue.c:491
+#: ../shell/rb-track-transfer-queue.c:490
 msgid "_Skip these files"
 msgstr "_Bu dosyaları atla"
 
-#: ../shell/rb-track-transfer-queue.c:494
+#: ../shell/rb-track-transfer-queue.c:493
 msgid "_Install"
 msgstr "_Kur"
 
@@ -3942,11 +3922,11 @@ msgid "Shared"
 msgstr "Paylaşılan"
 
 #. set up info bar for triggering codec installation
-#: ../sources/rb-import-errors-source.c:235
+#: ../sources/rb-import-errors-source.c:233
 msgid "Install Additional Software"
 msgstr "Ek Yazılım Kur"
 
-#: ../sources/rb-import-errors-source.c:241
+#: ../sources/rb-import-errors-source.c:239
 msgid "Additional software is required to play some of these files."
 msgstr "Bu dosyalardan bazılarını oynatmak için ek yazılım gerekiyor."
 
@@ -3997,44 +3977,43 @@ msgstr "Sanatçı (Albüm) - Numara - Başlık"
 msgid "Number. Artist - Title"
 msgstr "Numara. Sanatçı - Başlık"
 
-#: ../sources/rb-library-source.c:415
-#: ../sources/sync/rb-sync-settings-ui.c:217
+#: ../sources/rb-library-source.c:418 ../sources/sync/rb-sync-settings-ui.c:217
 #: ../sources/sync/rb-sync-settings-ui.c:218
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "Müzik"
 
-#: ../sources/rb-library-source.c:468
+#: ../sources/rb-library-source.c:472
 msgid "Choose Library Location"
 msgstr "Kütüphane Konumunu Seç"
 
-#: ../sources/rb-library-source.c:507
+#: ../sources/rb-library-source.c:511
 msgid "Multiple locations set"
-msgstr "Birden fazla konum ayarlandı"
+msgstr "Birden çok konum ayarlandı"
 
-#: ../sources/rb-library-source.c:1043
+#: ../sources/rb-library-source.c:1047
 msgid "Example Path:"
 msgstr "Örnek Yol:"
 
-#: ../sources/rb-library-source.c:1197 ../sources/rb-library-source.c:1201
-#: ../sources/rb-transfer-target.c:189
+#: ../sources/rb-library-source.c:1201 ../sources/rb-library-source.c:1205
+#: ../sources/rb-transfer-target.c:182
 msgid "Error transferring track"
 msgstr "Parça aktarılırken hata oluştu"
 
-#: ../sources/rb-library-source.c:1283
+#: ../sources/rb-library-source.c:1287
 msgid "Copying tracks to the library"
 msgstr "Parçalar kütüphaneye kopyalanıyor"
 
-#: ../sources/rb-library-source.c:1357
+#: ../sources/rb-library-source.c:1361
 msgid "Adding tracks to the library"
 msgstr "Parçalar kütüphaneye ekleniyor"
 
-#: ../sources/rb-media-player-source.c:781
+#: ../sources/rb-media-player-source.c:773
 #, c-format
 msgid "Syncing tracks to %s"
-msgstr "Kayıtlar %s'e eşleniyor"
+msgstr "Kayıtlar %s’e eşleniyor"
 
-#: ../sources/rb-media-player-source.c:837
+#: ../sources/rb-media-player-source.c:829
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
@@ -4042,23 +4021,23 @@ msgstr ""
 "Bu aygıta aktarılacak herhangi bir müzik, oynatma listesi, veya podcast "
 "seçmediniz."
 
-#: ../sources/rb-media-player-source.c:842
+#: ../sources/rb-media-player-source.c:834
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
 msgstr ""
 "Aygıtta seçili müzik, oynatma listesi ve podcast için yeterli alan yok."
 
-#: ../sources/rb-media-player-source.c:894
+#: ../sources/rb-media-player-source.c:885
 #, c-format
 msgid "%s Sync Settings"
 msgstr "%s Eşzaman Ayarları"
 
-#: ../sources/rb-media-player-source.c:899
+#: ../sources/rb-media-player-source.c:890
 msgid "Sync with the device"
 msgstr "Aygıtla eşzamanla"
 
-#: ../sources/rb-media-player-source.c:901
+#: ../sources/rb-media-player-source.c:892
 msgid "Don't sync"
 msgstr "Eşzamanlama"
 
@@ -4081,15 +4060,16 @@ msgstr "Çalma Listesinden Çıkar"
 msgid "Play Queue"
 msgstr "Çalma Kuyruğu"
 
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:921
-msgid "from"
-msgstr "kimden"
-
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:920
+#. Translators: format is "<title> by <artist> from <album>"
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:924
 msgid "by"
 msgstr "tarafından"
 
-#: ../sources/rb-source.c:595
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
+msgid "from"
+msgstr "kimden"
+
+#: ../sources/rb-source.c:604 ../widgets/rb-import-dialog.c:476
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
@@ -4103,10 +4083,10 @@ msgstr "Bağlanılıyor"
 msgid "Buffering"
 msgstr "Ara belleğe alınıyor"
 
-#: ../sources/rb-transfer-target.c:457
+#: ../sources/rb-transfer-target.c:450
 #, c-format
 msgid "Transferring tracks to %s"
-msgstr "Parçalar %s'e aktarılıyor"
+msgstr "Parçalar %s’e aktarılıyor"
 
 #: ../sources/sync/rb-sync-settings-ui.c:229
 msgid "All Music"
@@ -4146,27 +4126,26 @@ msgstr "Uyarı Düğmeleri"
 msgid "The buttons shown in the alert dialog"
 msgstr "Uyarı penceresinde gösterilen düğmeler"
 
-#: ../widgets/rb-alert-dialog.c:171
+#: ../widgets/rb-alert-dialog.c:175
 msgid "Show more _details"
-msgstr "Daha fazla _ayrıntı göster"
+msgstr "Daha çok _ayrıntı göster"
 
-#: ../widgets/rb-alert-dialog.c:366 ../widgets/rb-alert-dialog.c:400
-#, fuzzy
+#: ../widgets/rb-alert-dialog.c:370 ../widgets/rb-alert-dialog.c:404
 #| msgid "OK"
 msgid "_OK"
-msgstr "TAMAM"
+msgstr "_TAMAM"
 
-#: ../widgets/rb-alert-dialog.c:387
+#: ../widgets/rb-alert-dialog.c:391
 msgid "_No"
-msgstr ""
+msgstr "_Hayır"
 
-#: ../widgets/rb-alert-dialog.c:390
+#: ../widgets/rb-alert-dialog.c:394
 msgid "_Yes"
-msgstr ""
+msgstr "_Evet"
 
 #: ../widgets/rb-dialog.c:132
 msgid "_Open"
-msgstr ""
+msgstr "_Aç"
 
 #: ../widgets/rb-encoding-settings.c:54
 msgid "Constant bit rate"
@@ -4176,7 +4155,7 @@ msgstr "Sabit bit oranı"
 msgid "Variable bit rate"
 msgstr "Değişken bit oranı"
 
-#: ../widgets/rb-encoding-settings.c:400
+#: ../widgets/rb-encoding-settings.c:402
 msgid "Default settings"
 msgstr "Öntanımlı ayarlar"
 
@@ -4204,6 +4183,10 @@ msgstr "Süre"
 #: ../widgets/rb-entry-view.c:1516
 msgid "Year"
 msgstr "Yıl"
+
+#: ../widgets/rb-entry-view.c:1528
+msgid "Quality"
+msgstr "Kalite"
 
 #: ../widgets/rb-entry-view.c:1531
 msgid "000 kbps"
@@ -4237,52 +4220,52 @@ msgstr "Konum"
 msgid "BPM"
 msgstr "BPM"
 
-#: ../widgets/rb-entry-view.c:1883
+#: ../widgets/rb-entry-view.c:1896
 msgid "Now Playing"
 msgstr "Çalınıyor"
 
-#: ../widgets/rb-entry-view.c:1942
+#: ../widgets/rb-entry-view.c:1961
 msgid "Playback Error"
 msgstr "Çalma Hatası"
 
 #: ../widgets/rb-fading-image.c:301
 msgid "Drop artwork here"
-msgstr "Çiziminizi buraya bırakın"
+msgstr "Çizimi buraya sürükleyin"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1224
+#: ../widgets/rb-header.c:1214
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1235
+#: ../widgets/rb-header.c:1225
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
 
-#: ../widgets/rb-import-dialog.c:339
+#: ../widgets/rb-import-dialog.c:341
 msgid "Examining files"
 msgstr "Dosyalar inceleniyor"
 
 #. this isn't a terribly helpful message.
-#: ../widgets/rb-import-dialog.c:409
+#: ../widgets/rb-import-dialog.c:411
 #, c-format
 msgid "The location you have selected is on the device %s."
 msgstr "Seçtiğiniz konum %s aygıtı üzerindedir."
 
-#: ../widgets/rb-import-dialog.c:415
+#: ../widgets/rb-import-dialog.c:417
 #, c-format
 msgid "Show %s"
-msgstr "%s'i Göster"
+msgstr "%s’i Göster"
 
-#: ../widgets/rb-import-dialog.c:463
+#: ../widgets/rb-import-dialog.c:465
 #, c-format
 msgid "Import %d selected track"
 msgid_plural "Import %d selected tracks"
 msgstr[0] "Seçilen %d parçayı içe aktar"
 
-#: ../widgets/rb-import-dialog.c:466
+#: ../widgets/rb-import-dialog.c:468
 #, c-format
 msgid "Import %d listed track"
 msgid_plural "Import %d listed tracks"
@@ -4569,7 +4552,7 @@ msgstr "en az"
 #. matches if A >= B
 #: ../widgets/rb-query-creator-properties.c:169
 msgid "at most"
-msgstr "en fazla"
+msgstr "en çok"
 
 #. Translators: this matches songs within 1-Jan-YEAR to 31-Dec-YEAR
 #: ../widgets/rb-query-creator-properties.c:179
@@ -4637,19 +4620,19 @@ msgid "%d Star"
 msgid_plural "%d Stars"
 msgstr[0] "%d Yıldız"
 
-#: ../widgets/rb-search-entry.c:228
+#: ../widgets/rb-search-entry.c:227
 msgid "Clear the search text"
 msgstr "Arama metnini temizle"
 
-#: ../widgets/rb-search-entry.c:235
+#: ../widgets/rb-search-entry.c:234
 msgid "Select the search type"
 msgstr "Arama türünü seç"
 
-#: ../widgets/rb-search-entry.c:253
+#: ../widgets/rb-search-entry.c:252
 msgid "Search"
 msgstr "Ara"
 
-#: ../widgets/rb-search-entry.c:551
+#: ../widgets/rb-search-entry.c:550
 msgid "_Search:"
 msgstr "_Ara:"
 
@@ -4680,6 +4663,42 @@ msgstr "Masaüstünde"
 #: ../widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Bilinmeyen konum"
+
+#~ msgid "Status Bar"
+#~ msgstr "Durum Çubuğu"
+
+#~ msgid "Tuning station"
+#~ msgstr "İstasyon ayarlanıyor"
+
+#~ msgid "Low quality"
+#~ msgstr "Düşük kalite"
+
+#~ msgid "Normal quality"
+#~ msgstr "Normal kalite"
+
+#~ msgid "High quality"
+#~ msgstr "Yüksek kalite"
+
+#~ msgid "Fullscreen"
+#~ msgstr "Tam Ekran"
+
+#~ msgid "Visual Effect"
+#~ msgstr "Görsel Efekt"
+
+#~ msgid "Visual Effects"
+#~ msgstr "Görsel Efektler"
+
+#~ msgid "Display"
+#~ msgstr "Görünüm"
+
+#~ msgid "Visualization"
+#~ msgstr "Görselleştirme"
+
+#~ msgid "Displays visualizations"
+#~ msgstr "Görselleştirmeleri gösterir"
+
+#~ msgid "Unable to display requested URI"
+#~ msgstr "İstenen URI gösterilemiyor"
 
 #~ msgid "Format settings:"
 #~ msgstr "Biçim ayarları:"
