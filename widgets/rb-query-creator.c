@@ -469,7 +469,7 @@ rb_query_creator_set_sorting (RBQueryCreator *creator,
 			break;
 
 	/* check that it is a valid sort option */
-	g_return_val_if_fail (i < num_property_options, FALSE);
+	g_return_val_if_fail (i < num_sort_options, FALSE);
 
 	gtk_combo_box_set_active (GTK_COMBO_BOX (priv->sort_menu), i);
 	sort_option_menu_changed (GTK_COMBO_BOX (priv->sort_menu), creator); /* force the checkbox to change label */
