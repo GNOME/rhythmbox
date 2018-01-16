@@ -4,8 +4,6 @@ HELP_ID = rhythmbox
 HELP_FILES = fdl-appendix.xml index.docbook legal.xml
 HELP_MEDIA = \
 	figures/rb-iradio-main.png		\
-	figures/rb-notification-area-menu.png	\
-	figures/rb-notification-window.png	\
 	figures/rb-notification-zone.png	\
 	figures/rb-podcast-main.png		\
 	figures/rb-toolbar-prevplaynext.png	\

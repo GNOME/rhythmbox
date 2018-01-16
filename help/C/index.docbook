@@ -1160,9 +1160,8 @@
     <title>Notification Area</title>
     <sect2 id="notification-overview">
       <title>Overview</title>
-      <para>The Notification Area is a GNOME feature that adds a small icon to 
-      the panel while the program is running; this allows you to control 
-      <application>&app;</application> from your tray, and receive information 
+      <para>The Notification Area allows you to control 
+      <application>&app;</application> and receive information 
       when the <application>&app;</application> interface is not visible.
 		</para>
       <figure id="fig-notification-zone">
@@ -1176,52 +1175,11 @@
         </screenshot>
       </figure>
     </sect2>
-    <sect2 id="notification-info-receive">
-      <title>Get information</title>
-      <sect3 id="notification-info-tooltip">
-        <title>Tooltip information</title>
-        <para>When you move the mouse cursor over the 
-        <application>&app;</application> icon, you can see the track artist, 
-        the track name and the time position.</para>
-      </sect3>
-      <sect3 id="notification-info-window">
-        <title>Notification window</title>
-        <para>Each time the track has changed or a podcast episode was downloaded, 
-        the <application>&app;</application> can inform you; it displays a 
-        notification window on the desktop, containing the information.</para>
-        <figure id="fig-notification-window">
-          <title>The notification window of <application>&app;</application></title>
-          <screenshot>
-            <mediaobject>
-              <imageobject>
-                <imagedata format="PNG" fileref="figures/rb-notification-window.png"/>
-	      </imageobject>
-	    </mediaobject>
-          </screenshot>
-        </figure>
-        <tip>
-          <para>The notification window can be disabled by deselecting the 
-          <guilabel>Show Notifications</guilabel> option from the context menu of 
-          the icon in the notification area.
-	  </para>
-        </tip>
-      </sect3>
-    </sect2>
     <sect2 id="notification-control">
       <title>Control Rhythmbox</title>
       <para>Using the <application>&app;</application> icon in the notification 
       area, the following commands can be sent to the application: 
 		</para>
-      <figure id="fig-notification-menu">
-        <title>Notification Area (showing menu)</title>
-        <screenshot>
-          <mediaobject>
-            <imageobject>
-              <imagedata format="PNG" fileref="figures/rb-notification-area-menu.png"/>
-            </imageobject>
-           </mediaobject>
-        </screenshot>
-      </figure>
       <para>
         <itemizedlist>
           <listitem>
@@ -1236,28 +1194,7 @@
             <para><guibutton>Next</guibutton> &mdash; Skip to next song in the 
             selected source.</para>
           </listitem>
-          <listitem>
-            <para><guibutton>Show Window Player</guibutton> &mdash; Choose whether 
-            or not the <application>&app;</application>	window is visible or not 
-            on the desktop.</para>
-          </listitem>
-          <listitem>
-            <para><guibutton>Show Notifications</guibutton> &mdash; Choose whether
-            or not the <application>&app;</application> will notify you about 
-            track changes and various information.</para>
-          </listitem>
-          <listitem>
-            <para><guibutton>Quit</guibutton> &mdash; Quit the 
-            <application>&app;</application>.</para>
-          </listitem>
         </itemizedlist>
-        <tip>
-        	<para>If you are using a mouse with a scroll wheel, you can adjust 
-        	the volume by scrolling up or down while the mouse pointer is over 
-        	the panel applet.
-			</para>
-          <para>You can quickly toggle Play/Pause by pressing the middle mouse button.</para>
-        </tip>
       </para>
     </sect2>
   </sect1>
