@@ -674,8 +674,8 @@
     <sect2 id="iradio-adding">
       	<title>Adding a station</title>
       	<para>
-			To add a new station to the Internet Radio tuner, choose <menuchoice><guimenu>Music</guimenu>
-			<guimenuitem>New Internet Radio Station</guimenuitem></menuchoice>, then enter the URL of
+			To add a new station to the Internet Radio tuner, select
+			<guimenuitem>Add</guimenuitem> in the tool bar. Then enter the URL of
 			the Internet radio, then press the button <guibutton>Add</guibutton>.
 		</para>
     </sect2>
@@ -735,16 +735,10 @@
       <sect3 id="podcast-feed-add">
         <title>Add a podcast</title>
         <para>
-			To register to a podcast, choose 
-			<menuchoice><guimenu>Music</guimenu><guimenuitem>New Podcast
-			Feed</guimenuitem></menuchoice>, then in the new window, enter the URL of
+			To register to a podcast, select <guimenuitem>Add</guimenuitem>
+			in the tool bar. Then in the new window, enter the URL of
 			the podcast feed. Rhythmbox will retrieve the list of episodes and the 
 			latest episode will be downloaded on your hard disk.
-			</para>
-        <para>
-			To add a new podcast feed, you can also right-click over the
-			<guimenuitem>Podcasts</guimenuitem>
-			source, and select <guimenuitem>New Podcast Feed</guimenuitem>.
 			</para>
       </sect3>
       <sect3 id="podcast-feed-del">
@@ -755,7 +749,7 @@
 			Feed</guimenuitem></menuchoice>, then choose
 			<menuchoice><guimenuitem>Delete Feed Only</guimenuitem></menuchoice> if you want to keep the
 			podcast's episodes, or choose <menuchoice><guimenuitem>Delete Feed And
-			Item</guimenuitem></menuchoice> if you want to delete the feed and all its
+			Files</guimenuitem></menuchoice> if you want to delete the feed and all its
 			related episodes.
 			</para>
       </sect3>
@@ -946,9 +940,9 @@
       <sect3 id="playlist-static-new">
         <title>Create a static playlist</title>
         <para>
-			To create a new playlist, choose
-			<menuchoice><guimenu>Music</guimenu><guisubmenu>Playlist</guisubmenu><guimenuitem>New
-			Playlist</guimenuitem></menuchoice>. An empty playlist without name 
+			To create a new playlist, right-click on an item in the library. Select
+			<menuchoice><guimenu>Add to Playlist</guimenu><guimenuitem>Add to New Playlist
+			</guimenuitem></menuchoice>. An empty playlist without name 
 			appears in the side pane. Enter a name for the playlist and press
 			<keycombo><keycap>Enter</keycap></keycombo>.
 		</para>
@@ -1095,18 +1089,8 @@
       <title>Importing Audio CD</title>
       <para>If you wish to keep the tracks of your Audio CDs on your computer,
 			you can import them.</para>
-      <para>To import Audio CD tracks, choose <menuchoice><guimenu>Music</guimenu>
-	  <guimenuitem>Import Audio CD</guimenuitem></menuchoice>, it will start <application>Sound-Juicer</application>,
-			an application dedicated to importing Audio CDs. To know more about <application>Sound-Juicer</application>,
-			you can read the <ulink url="ghelp:sound-juicer">Sound-Juicer manual</ulink>.</para>
-      <tip>
-        <para>To get imported tracks from Sound-Juicer automatically added to you Rhythmbox Library,
-		you will have to configure Sound-Juicer to extract tracks into your Rhythmbox Library location
-		and the Rhythmbox watch library feature has to be activated; refer to 
-		<ulink url="ghelp:sound-juicer#preferences">Sound-Juicer preferences</ulink> and 
-		<link linkend="prefs-library">Rhythmbox Library preferences</link>.
-		</para>
-      </tip>
+      <para>To import Audio CD tracks, choose <guibutton>Extract</guibutton>
+	  in the tool bar.</para>
     </sect2>
     <sect2 id="cd-burning">
       <title>Creating Audio CD</title>
@@ -1114,7 +1098,8 @@
       <para>To create an Audio CD: 
 				<orderedlist><listitem><para>Create a playlist, static or smart
 				(see <xref linkend="playlist"/>) and add tracks.</para></listitem>
-                <listitem><para>Choose <menuchoice><guimenu>Music</guimenu><guisubmenu>Playlist</guisubmenu><guimenuitem>Create Audio CD</guimenuitem></menuchoice></para></listitem>
+                <listitem><para>Choose <guibutton>Playlist</guibutton> in the tool bar.</para></listitem>
+                <listitem><para>Select <guimenuitem>Create Audio CD</guimenuitem>.</para></listitem>
                 <listitem><para>Insert a blank CD.</para></listitem>
                 <listitem><para>Click the button <guibutton>Create</guibutton>, the burning process starts.</para></listitem>
                 </orderedlist>
