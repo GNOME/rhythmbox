@@ -8,8 +8,6 @@ HELP_MEDIA = \
 	figures/rb-notification-window.png	\
 	figures/rb-notification-zone.png	\
 	figures/rb-podcast-main.png		\
-	figures/rb-statusbar.png		\
-	figures/rb-toolbar.png			\
 	figures/rb-toolbar-prevplaynext.png	\
 	figures/rb-toolbar-repeat.png		\
 	figures/rb-toolbar-shuffle.png		\

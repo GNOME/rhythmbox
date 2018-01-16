@@ -303,7 +303,7 @@
             <textobject>
               <phrase>Show the <application>&app;</application> window showing 
                 the different parts on the <application>&app;</application> interface.
-                Callouts: Menubar, Player area, Browser, Side pane, Statusbar.
+                Callouts: Player area, Browser, Side pane, Statusbar.
               </phrase>
             </textobject>
           </mediaobject>
@@ -325,32 +325,29 @@
           </thead>
           <tbody>
             <row>
-              <entry valign="top">1</entry>
-              <entry valign="top">Menubar</entry>
+              <entry valign="top">0</entry>
+              <entry valign="top">Application menu on the top bar</entry>
               <entry valign="top">Contains menus that you use to perform
-							tasks in <application>&app;</application> window.</entry>
+							tasks in <application>&app;</application> window.
+							(Not included in the image above.)</entry>
+            </row>
+            <row>
+              <entry valign="top">1</entry>
+              <entry valign="top">Toolbar</entry>
+              <entry valign="top">Provides access to player
+							functions and details about the	currently playing track.
+							Includes the time slider which displays the position of the read
+							of a track; it enables to jump to another part of a track.</entry>
             </row>
             <row>
               <entry valign="top">2</entry>
-              <entry valign="top">Toolbar</entry>
-              <entry valign="top">Provides access to player
-							functions and details about the	currently playing track.</entry>
-            </row>
-            <row>
-              <entry valign="top">3</entry>
-              <entry valign="top">Time Slider</entry>
-              <entry valign="top">Displays the position of the read of a track; 
-							it enables to jump to another part of a track.</entry>
-            </row>
-            <row>
-              <entry valign="top">4</entry>
               <entry valign="top">Side Pane</entry>
               <entry valign="top">Displays a list of available
-							sources.</entry>
+							sources. Can also display the play queue.</entry>
 
             </row>
             <row>
-              <entry valign="top">5</entry>
+              <entry valign="top">3</entry>
               <entry valign="top">Browser</entry>
               <entry valign="top">Allows to browse and filter the
 							Library tracks by Genre, Artist or Album name. The
@@ -358,15 +355,15 @@
 							tracks that match your criteria.</entry>
             </row>
             <row>
-              <entry valign="top">6</entry>
+              <entry valign="top">4</entry>
               <entry valign="top">Tracks list</entry>
               <entry valign="top">Lists the tracks that belong to
 							the selected source.</entry>
             </row>
             <row>
-              <entry valign="top">7</entry>
+              <entry valign="top">5</entry>
               <entry valign="top">Statusbar</entry>
-              <entry valign="top">Displays informations about the
+              <entry valign="top">Displays information about the
 							source selected in the side pane.</entry>
             </row>
           </tbody>
@@ -376,7 +373,7 @@
     <sect2 id="intro-sourcelist">
       <title>The Side Pane</title>
       <para>The side pane is where you can access your music library,
-			internet radio,	your playlists and audio CDs. The side pane can contain
+			internet radio,	your playlists audio CDs, and the play queue. The side pane can contain
 			the following sources:
 				<itemizedlist>
 				  <listitem><para>The <application>&app;</application> library, where 
@@ -395,10 +392,13 @@
 				  </para></listitem>
 				</itemizedlist>
 		</para>
-      	<para>
+	<para>It can also contain the play queue if <menuchoice><guimenu>View</guimenu><guimenuitem>Play Queue in Side
+				Pane</guimenuitem></menuchoice> in the application menu on the top bar is toggled on.
+		</para>
+	<para>
 				The display of the side pane can be toggled on or off by selecting
 				<menuchoice><guimenu>View</guimenu><guimenuitem>Side Pane</guimenuitem>
-				</menuchoice>.
+				</menuchoice> in the application menu on the top bar.
 			</para>
     </sect2>
     <sect2 id="player-toolbar">
@@ -410,25 +410,15 @@
 				is displayed, and underneath, the artist and the album names.
 			</para>
       <para>
-				A tracker is also displayed, showing the progress of the
-				playing track. When the tracker has focus, the arrow keys can be used to
+				A tracker which shows the progress of the playing track and a time slider
+				are also displayed. When the time slider has focus, the arrow keys can be used to
 				Fast-Forward or Rewind the playing track.
 			</para>
-      <screenshot>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figures/rb-toolbar.png" format="PNG"/>
-          </imageobject>
-          <textobject>
-            <phrase>Shows player area</phrase>
-          </textobject>
-        </mediaobject>
-      </screenshot>
       <tip>
         <para>
 					If you are using a mouse with a scroll wheel, you can 
 					adjust the volume by scrolling up or down while the mouse pointer 
-					is over the volume button.
+					is over the volume button in the right corner.
 				</para>
       </tip>
     </sect2>
@@ -438,18 +428,9 @@
 				The statusbar contains additional information about the number
 				of songs and the duration of the source selected. The display of the 
 				statusbar can be toggled on or off by selecting <menuchoice>
-				<guimenu>View</guimenu><guimenuitem>Statusbar</guimenuitem></menuchoice>.
+				<guimenu>View</guimenu><guimenuitem>Status Bar</guimenuitem></menuchoice>
+				in the application menu on the top bar.
 			</para>
-      <screenshot>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="figures/rb-statusbar.png" format="PNG"/>
-          </imageobject>
-          <textobject>
-            <phrase>Shows statusbar</phrase>
-          </textobject>
-        </mediaobject>
-      </screenshot>
     </sect2>
     <sect2 id="rb-window-small">
       <title><application>&app;</application> Minimized Window</title>
