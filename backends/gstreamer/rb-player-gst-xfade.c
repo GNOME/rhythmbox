@@ -1831,6 +1831,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				 * message on the stream thread and now.
 				 */
 				start_waiting_eos_streams (player);
+				schedule_stream_reap (player);
 			} else {
 				/* no need to emit EOS here, we already know what to do next */
 				rb_debug ("got EOS message for stream %s in REUSING state", stream->uri);
