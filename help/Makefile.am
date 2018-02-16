@@ -1,7 +1,7 @@
 @YELP_HELP_RULES@
 
 HELP_ID = rhythmbox
-HELP_FILES = fdl-appendix.xml index.docbook legal.xml
+HELP_FILES = index.docbook legal.xml
 HELP_MEDIA = \
 	figures/rb-iradio-main.png		\
 	figures/rb-notification-zone.png	\
