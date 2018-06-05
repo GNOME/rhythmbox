@@ -29,10 +29,6 @@ SUBDIRS += context
 
 endif # ENABLE_PYTHON
 
-if WITH_LIRC
-SUBDIRS += lirc
-endif
-
 if USE_IPOD
 SUBDIRS += ipod
 endif
