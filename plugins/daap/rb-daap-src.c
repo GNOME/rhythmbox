@@ -283,7 +283,7 @@ rb_daap_src_change_state (GstElement *element, GstStateChange transition)
 
 			/* Set daap://... URI as http:// on souphttpsrc to ready connection. */
 			httpuri = g_strdup (src->daap_uri);
-			strncpy (httpuri, http, 4);
+			memcpy (httpuri, http, 4);
 
 			g_object_set (src->souphttpsrc, "location", httpuri, NULL);
 			g_free (httpuri);
