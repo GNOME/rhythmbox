@@ -186,7 +186,6 @@ GTKDOC_LIBS=\
 	$(top_builddir)/shell/librhythmbox-core.la        \
 	$(BINDING_LIBS)					\
 	$(TOTEM_PLPARSER_LIBS)				\
-	$(HAL_LIBS)					\
 	$(DBUS_LIBS)					\
 	$(RHYTHMBOX_LIBS)				\
 	$(MORE_GTKDOC_LIBS)
