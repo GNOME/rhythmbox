@@ -56,7 +56,7 @@ class EmbeddedSearch(object):
 			return
 
 
-	def search (self, key, last_time, store, callback, args):
+	def search (self, key, last_time, store, callback, *args):
 		location = key.get_info("location")
 		if location is None:
 			print("not searching, we don't have a location")

@@ -136,7 +136,7 @@ class LocalSearch:
 			self.callback(self.callback_args)
 
 
-	def search (self, key, last_time, store, callback, args):
+	def search (self, key, last_time, store, callback, *args):
 		# ignore last_time
 
 		location = key.get_info("location")
