@@ -872,7 +872,7 @@ construct_plugins (RBShell *shell)
 #ifdef USE_UNINSTALLED_DIRS
 	plugindir = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "..", UNINSTALLED_PLUGINS_LOCATION, NULL);
 	plugindatadir = g_build_filename (SHARE_UNINSTALLED_DIR, "..", UNINSTALLED_PLUGINS_LOCATION, NULL);
-	rb_debug ("plugin search path: %s / %s", plugindir, plugindatadir);
+	rb_debug ("uninstalled plugin search path: %s / %s", plugindir, plugindatadir);
 	peas_engine_add_search_path (shell->priv->plugin_engine,
 				     plugindir,
 				     plugindatadir);
