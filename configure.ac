@@ -852,4 +852,10 @@ else
 	AC_MSG_NOTICE([   iTunes detection browser plugin (for podcasts) disabled])
 fi
 
+if test "x$enable_uninstalled" = xyes; then
+	AC_MSG_NOTICE([** Uninstalled build enabled])
+else
+	AC_MSG_NOTICE([   Uninstalled build disabled])
+fi
+
 AC_MSG_NOTICE([End options])
