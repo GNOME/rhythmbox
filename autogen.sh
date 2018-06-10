@@ -6,6 +6,12 @@ test -n "$srcdir" || srcdir=.
 
 olddir=`pwd`
 cd "$srcdir"
+newdir=`pwd`
+
+# Disable uninstalled build for srcdir != builddir
+if [ "x$olddir" = "x$newdir" ] ; then
+	ENABLE_UNINSTALLED_BUILD="--enable-uninstalled-build"
+fi
 
 INTLTOOLIZE=`which intltoolize`
 if test -z $INTLTOOLIZE; then
@@ -45,5 +51,5 @@ autopoint --force
 AUTOPOINT='intltoolize --automake --copy' autoreconf --force --install --verbose
 
 cd "$olddir"
-test -n "$NOCONFIGURE" || "$srcdir/configure" --enable-uninstalled-build "$@"
+test -n "$NOCONFIGURE" || "$srcdir/configure" $ENABLE_UNINSTALLED_BUILD "$@"
 

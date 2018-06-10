@@ -145,7 +145,7 @@ class LastFMSearch (object):
 		l.get_url(url, self.album_info_cb)
 
 
-	def search(self, key, last_time, store, callback, args):
+	def search(self, key, last_time, store, callback, *args):
 		if last_time > (time.time() - REPEAT_SEARCH_PERIOD):
 			print("we already tried this one")
 			callback (args)

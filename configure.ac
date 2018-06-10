@@ -450,7 +450,7 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 	-Wunused-label -Wunused-value \
 	-Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes \
 	-Wnested-externs -Wpointer-arith \
-	-Wcast-align -Wformat-security -Wall \
+	-Wformat-security -Wall \
 	-Werror -Wno-deprecated-declarations -std=gnu89"
 
 	if echo "$CFLAGS" | grep -q -- '-O' && echo "$CFLAGS" | grep -q -v -- '-O0'; then
@@ -829,6 +829,12 @@ if test "x$enable_browser_plugin" != xno; then
 	AC_MSG_NOTICE([** iTunes detection browser plugin (for podcasts) enabled])
 else
 	AC_MSG_NOTICE([   iTunes detection browser plugin (for podcasts) disabled])
+fi
+
+if test "x$enable_uninstalled" = xyes; then
+	AC_MSG_NOTICE([** Uninstalled build enabled])
+else
+	AC_MSG_NOTICE([   Uninstalled build disabled])
 fi
 
 AC_MSG_NOTICE([End options])
