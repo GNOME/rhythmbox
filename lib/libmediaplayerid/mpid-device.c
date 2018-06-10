@@ -30,7 +30,7 @@
  *
  * MPID provides access to device information, such as device and vendor names,
  * supported formats, and audio folder locations, for USB mass storage media
- * player devices.  It queries the operating system (udev or HAL) and reads
+ * player devices.  It queries the operating system (udev) and reads
  * override files from the device filesystem and provides a simple set of
  * properties.
  */

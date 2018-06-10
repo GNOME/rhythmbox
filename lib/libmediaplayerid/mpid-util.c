@@ -31,7 +31,7 @@ static gboolean debug_enabled = FALSE;
  * MPIDError:
  * @MPID_ERROR_NONE: Indicates no error has occurred
  * @MPID_ERROR_NO_DEVICE_PATH: Unable to find the device path
- * @MPID_ERROR_MECHANISM_FAILED: The device detection mechanism (e.g. udev or HAL) failed
+ * @MPID_ERROR_MECHANISM_FAILED: The device detection mechanism (e.g. udev) failed
  * @MPID_ERROR_NOT_MEDIA_PLAYER: The device is not a media player
  * @MPID_ERROR_DEVICE_INFO_MISSING: The device detection mechanism identified the device
  *   but was unable to locate its device information
@@ -61,7 +61,7 @@ mpid_error_get_type (void)
 /**
  * MPIDSource:
  * @MPID_SOURCE_NONE: No device information is available
- * @MPID_SOURCE_SYSTEM: Device information provided by the operating system (e.g. udev or HAL)
+ * @MPID_SOURCE_SYSTEM: Device information provided by the operating system (e.g. udev)
  * @MPID_SOURCE_OVERRIDE: Device information provided by an override file on the device itself.
  */
 

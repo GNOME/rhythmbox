@@ -16,8 +16,7 @@ AM_CPPFLAGS =				\
 	-I$(top_srcdir)			\
 	$(RHYTHMBOX_CFLAGS)
 
-# use the GUdev/media-player-id implementation if possible,
-# otherwise HAL.
+# use the GUdev/media-player-id implementation if possible.
 
 if USE_GUDEV
 
@@ -29,20 +28,8 @@ libmediaplayerid_la_LIBADD = $(GUDEV_LIBS)
 
 else
 
-if HAVE_HAL
-
-libmediaplayerid_la_SOURCES += mpid-hal.c
-EXTRA_DIST = mpid-udev.c mpid-dummy.c
-
-AM_CPPFLAGS += $(HAL_CFLAGS)
-libmediaplayerid_la_LIBADD = $(HAL_LIBS)
-
-else
-
 libmediaplayerid_la_SOURCES += mpid-dummy.c
 EXTRA_DIST = mpid-udev.c mpid-hal.c
-
-endif #  HAVE_HAL
 
 endif #  HAVE_GUDEV
 

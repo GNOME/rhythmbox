@@ -147,25 +147,6 @@ else
 fi
 AM_CONDITIONAL(USE_GUDEV, test x"$use_gudev" = xyes)
 
-dnl hal remnants
-AC_ARG_WITH(hal,
-	      AC_HELP_STRING([--without-hal],
-			     [Disable HAL support]))
-if test "x$with_hal" != "xno"; then
-  PKG_CHECK_MODULES(HAL, hal >= 0.5 hal < 0.6 dbus-glib-1, enable_hal=yes, enable_hal=no)
-  if test "x$enable_hal" != "xyes" -a "x$with_hal" = "xyes"; then
-      AC_MSG_ERROR([HAL support explicitly requested but HAL couldn't be found])
-  fi
-
-  if test "x$enable_hal" = "xyes"; then
-    AC_DEFINE(HAVE_HAL, 1, [Define if you have HAL support])
-    AC_SUBST(HAL_CFLAGS)
-    AC_SUBST(HAL_LIBS)
-  fi	
-fi
-AM_CONDITIONAL(HAVE_HAL, test x"$enable_hal" = xyes)
-
-
 dnl iPod support
 AC_ARG_WITH(ipod,
             AC_HELP_STRING([--with-ipod],
@@ -197,7 +178,7 @@ AC_ARG_WITH(mtp,
 	      with_mtp=auto)
 if test "x$with_mtp" != "xno"; then
 	can_use_mtp=no
-	if test x"$use_gudev" = "xyes" -o x"$enable_hal" = "xyes"; then
+	if test x"$use_gudev" = "xyes"; then
 	  can_use_mtp=yes
 	fi
 
@@ -207,7 +188,7 @@ if test "x$with_mtp" != "xno"; then
 	    AC_MSG_ERROR([MTP explicitly requested but libmtp is not available])
 	  fi
 	  if test x"$can_use_mtp" = "xno"; then
-	    AC_MSG_ERROR([MTP explicitly requested but GUdev and HAL are not available])
+	    AC_MSG_ERROR([MTP explicitly requested but GUdev is not available])
 	  fi
 	fi
 	if test "x$have_libmtp" = "xyes" -a "x$can_use_mtp" = "xyes"; then
@@ -820,8 +801,6 @@ else
 fi
 if test x"$use_gudev" = xyes; then
 	AC_MSG_NOTICE([** GUdev support enabled])
-elif test x"$enable_hal" = xyes; then
-	AC_MSG_NOTICE([** HAL support enabled])
 else
 	AC_MSG_NOTICE([   GUdev support disabled])
 fi
