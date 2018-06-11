@@ -15,6 +15,7 @@ if ENABLE_PYTHON
 SUBDIRS +=						\
 	artsearch					\
 	im-status					\
+	listenbrainz					\
 	lyrics						\
 	magnatune					\
 	pythonconsole					\
