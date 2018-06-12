@@ -298,10 +298,11 @@ db_load_complete_cb (RhythmDB *db, RBLibrarySource *source)
 
 		/* import anything that's already in there */
 		job = maybe_create_import_job (source);
-		rhythmdb_import_job_add_uri (job, music_dir_uri);
 
 		/* if this doesn't import anything, show the import dialog */
 		g_signal_connect (job, "complete", G_CALLBACK (initial_import_job_complete_cb), source);
+
+		rhythmdb_import_job_add_uri (job, music_dir_uri);
 
 		g_free (music_dir_uri);
 	}
@@ -1418,9 +1419,6 @@ impl_add_uri (RBSource *asource,
 
 	job = maybe_create_import_job (source);
 
-	rb_debug ("adding uri %s to library", uri);
-	rhythmdb_import_job_add_uri (job, uri);
-
 	if (callback != NULL) {
 		struct ImportJobCallbackData *cbdata;
 
@@ -1432,6 +1430,9 @@ impl_add_uri (RBSource *asource,
 		cbdata->destroy_data = destroy_data;
 		g_signal_connect_data (job, "complete", G_CALLBACK (import_job_callback_cb), cbdata, (GClosureNotify) import_job_callback_destroy, 0);
 	}
+
+	rb_debug ("adding uri %s to library", uri);
+	rhythmdb_import_job_add_uri (job, uri);
 }
 
 static void
