@@ -287,6 +287,10 @@ db_load_complete_cb (RhythmDB *db, RBLibrarySource *source)
 	if (source->priv->do_initial_import) {
 		const char *music_dir;
 		char *music_dir_uri;
+		const char *set_locations[2];
+
+		g_signal_handlers_block_by_func (source->priv->db_settings,
+						 G_CALLBACK (db_settings_changed_cb), source);
 		
 		music_dir = rb_music_dir ();
 		music_dir_uri = g_filename_to_uri (music_dir, NULL, NULL);
@@ -295,6 +299,13 @@ db_load_complete_cb (RhythmDB *db, RBLibrarySource *source)
 		if (g_file_test (music_dir, G_FILE_TEST_EXISTS) == FALSE) {
 			g_mkdir_with_parents (music_dir, 0700);
 		}
+
+		set_locations[0] = music_dir_uri;
+		set_locations[1] = NULL;
+		g_settings_set_strv (source->priv->db_settings, "locations", set_locations);
+
+		g_signal_handlers_unblock_by_func (source->priv->db_settings,
+						   G_CALLBACK (db_settings_changed_cb), source);
 
 		/* import anything that's already in there */
 		job = maybe_create_import_job (source);
@@ -347,22 +358,8 @@ rb_library_source_constructed (GObject *object)
 
 	/* Set up the default library location if there's no library location set */
 	locations = g_settings_get_strv (source->priv->db_settings, "locations");
-	if (g_strv_length (locations) == 0) {
-		char *music_dir_uri;
-
-		music_dir_uri = g_filename_to_uri (rb_music_dir (), NULL, NULL);
-		if (music_dir_uri != NULL) {
-			const char *set_locations[2];
-
-			set_locations[0] = music_dir_uri;
-			set_locations[1] = NULL;
-			g_settings_set_strv (source->priv->db_settings, "locations", set_locations);
-
-			source->priv->do_initial_import = TRUE;
-
-			g_free (music_dir_uri);
-		}
-	}
+	if (g_strv_length (locations) == 0)
+		source->priv->do_initial_import = TRUE;
 	g_strfreev (locations);
 
 	songs = rb_source_get_entry_view (RB_SOURCE (source));
