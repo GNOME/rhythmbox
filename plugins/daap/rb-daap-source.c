@@ -377,7 +377,7 @@ rb_daap_source_new (RBShell *shell,
 
 typedef struct {
 	RBDAAPSource *source;
-	DMAPConnection *connection;
+	DmapConnection *connection;
 	SoupSession *session;
 	SoupMessage *message;
 	SoupAuth *auth;
@@ -479,7 +479,7 @@ ask_password (RBDAAPSource *source,
 }
 
 static void
-connection_auth_cb (DMAPConnection *connection,
+connection_auth_cb (DmapConnection *connection,
                     const char     *name,
                     SoupSession    *session,
                     SoupMessage    *msg,
@@ -517,8 +517,8 @@ connection_auth_cb (DMAPConnection *connection,
 }
 
 static void
-connection_connecting_cb (DMAPConnection       *connection,
-			  DMAPConnectionState   state,
+connection_connecting_cb (DmapConnection       *connection,
+			  DmapConnectionState   state,
 			  float		        progress,
 			  RBDAAPSource         *source)
 {
@@ -535,7 +535,7 @@ connection_connecting_cb (DMAPConnection       *connection,
 	case DMAP_GET_REVISION_NUMBER:
 		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADING, NULL);
 	case DMAP_GET_DB_INFO:
-	case DMAP_GET_SONGS:
+	case DMAP_GET_MEDIA:
 	case DMAP_GET_PLAYLISTS:
 	case DMAP_GET_PLAYLIST_ENTRIES:
 		g_object_set (source->priv->connection_status,
@@ -566,7 +566,7 @@ connection_connecting_cb (DMAPConnection       *connection,
 }
 
 static void
-connection_disconnected_cb (DMAPConnection   *connection,
+connection_disconnected_cb (DmapConnection   *connection,
 			    RBDAAPSource     *source)
 {
 	GIcon *icon;
@@ -605,7 +605,7 @@ _add_location_to_playlist (const char *uri, RBStaticPlaylistSource *source)
 }
 
 static void
-rb_daap_source_connection_cb (DMAPConnection   *connection,
+rb_daap_source_connection_cb (DmapConnection   *connection,
 			      gboolean          result,
 			      const char       *reason,
 			      RBSource         *source)
@@ -640,7 +640,7 @@ rb_daap_source_connection_cb (DMAPConnection   *connection,
 		      NULL);
 	playlists = dmap_connection_get_playlists (DMAP_CONNECTION (daap_source->priv->connection));
 	for (l = playlists; l != NULL; l = g_slist_next (l)) {
-		DMAPPlaylist *playlist = l->data;
+		DmapPlaylist *playlist = l->data;
 		RBSource *playlist_source;
 
 		playlist_source = rb_static_playlist_source_new (shell, playlist->name, settings, FALSE, entry_type);
@@ -661,9 +661,9 @@ rb_daap_source_selected (RBDisplayPage *page)
 {
 	RBDAAPSource *daap_source = RB_DAAP_SOURCE (page);
 	RBShell *shell = NULL;
-	DMAPRecordFactory *factory;
+	DmapRecordFactory *factory;
 	RhythmDB *rdb = NULL;
-	DMAPDb *db = NULL;
+	DmapDb *db = NULL;
 	char *name = NULL;
 	RhythmDBEntryType *entry_type;
 	RBTaskList *tasklist;
@@ -695,11 +695,11 @@ rb_daap_source_selected (RBDisplayPage *page)
 	rb_task_list_add_task (tasklist, RB_TASK_PROGRESS (daap_source->priv->connection_status));
 	g_object_unref (tasklist);
 
-	daap_source->priv->connection = daap_connection_new (name,
-							     daap_source->priv->host,
-							     daap_source->priv->port,
-							     db,
-							     factory);
+	daap_source->priv->connection = dmap_av_connection_new (name,
+	                                                        daap_source->priv->host,
+	                                                        daap_source->priv->port,
+	                                                        db,
+	                                                        factory);
 	g_object_unref (entry_type);
 	g_object_add_weak_pointer (G_OBJECT (daap_source->priv->connection), (gpointer *)&daap_source->priv->connection);
 
@@ -718,16 +718,16 @@ rb_daap_source_selected (RBDisplayPage *page)
                           G_CALLBACK (connection_disconnected_cb),
 			  page);
 
-	dmap_connection_connect (DMAP_CONNECTION (daap_source->priv->connection),
-				 (DMAPConnectionCallback) rb_daap_source_connection_cb,
-				 page);
+	dmap_connection_start (DMAP_CONNECTION (daap_source->priv->connection),
+	                      (DmapConnectionFunc) rb_daap_source_connection_cb,
+	                       page);
 
 	g_object_unref (rdb);
 	g_object_unref (shell);
 }
 
 static void
-rb_daap_source_disconnect_cb (DMAPConnection   *connection,
+rb_daap_source_disconnect_cb (DmapConnection   *connection,
 			      gboolean          result,
 			      const char       *reason,
 			      RBSource         *source)
@@ -792,9 +792,9 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 
 	/* keep the source alive until the disconnect completes */
 	g_object_ref (daap_source);
-	dmap_connection_disconnect (daap_source->priv->connection,
-				       (DMAPConnectionCallback) rb_daap_source_disconnect_cb,
-				       daap_source);
+	dmap_connection_stop (daap_source->priv->connection,
+	                     (DmapConnectionFunc) rb_daap_source_disconnect_cb,
+	                      daap_source);
 
 	/* wait until disconnected */
 	rb_debug ("Waiting for DAAP connection to finish");

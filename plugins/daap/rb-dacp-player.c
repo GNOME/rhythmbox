@@ -58,15 +58,15 @@ static void rb_dacp_player_set_property (GObject *object, guint prop_id,
 static void playing_song_changed (RBShellPlayer *shell_player, RhythmDBEntry *entry, RBDACPPlayer *player);
 static void elapsed_changed (RBShellPlayer *shell_player, guint elapsed, RBDACPPlayer *player);
 
-static DAAPRecord *rb_dacp_player_now_playing_record  (DACPPlayer *player);
-static guchar *rb_dacp_player_now_playing_artwork (DACPPlayer *player, guint width, guint height);
-static void rb_dacp_player_play_pause          (DACPPlayer *player);
-static void rb_dacp_player_pause               (DACPPlayer *player);
-static void rb_dacp_player_next_item           (DACPPlayer *player);
-static void rb_dacp_player_prev_item           (DACPPlayer *player);
+static DmapAvRecord *rb_dacp_player_now_playing_record  (DmapControlPlayer *player);
+static gchar *rb_dacp_player_now_playing_artwork (DmapControlPlayer *player, guint width, guint height);
+static void rb_dacp_player_play_pause          (DmapControlPlayer *player);
+static void rb_dacp_player_pause               (DmapControlPlayer *player);
+static void rb_dacp_player_next_item           (DmapControlPlayer *player);
+static void rb_dacp_player_prev_item           (DmapControlPlayer *player);
 
-static void rb_dacp_player_cue_clear           (DACPPlayer *player);
-static void rb_dacp_player_cue_play            (DACPPlayer *player, GList *records, guint index);
+static void rb_dacp_player_cue_clear           (DmapControlPlayer *player);
+static void rb_dacp_player_cue_play            (DmapControlPlayer *player, GList *records, guint index);
 
 enum {
 	PROP_0,
@@ -87,9 +87,9 @@ static guint signals[LAST_SIGNAL] = { 0 };
 static void
 rb_dacp_player_iface_init (gpointer iface, gpointer data)
 {
-	DACPPlayerIface *dacp_player = iface;
+	DmapControlPlayerInterface *dacp_player = iface;
 
-	g_assert (G_TYPE_FROM_INTERFACE (dacp_player) == DACP_TYPE_PLAYER);
+	g_assert (G_TYPE_FROM_INTERFACE (dacp_player) == DMAP_TYPE_CONTROL_PLAYER);
 
 	dacp_player->now_playing_record  = rb_dacp_player_now_playing_record;
 	dacp_player->now_playing_artwork = rb_dacp_player_now_playing_artwork;
@@ -106,7 +106,7 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDACPPlayer,
 				rb_dacp_player,
 				G_TYPE_OBJECT,
 				0,
-				G_IMPLEMENT_INTERFACE_DYNAMIC (DACP_TYPE_PLAYER,
+				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_CONTROL_PLAYER,
 							       rb_dacp_player_iface_init))
 
 static void
@@ -188,16 +188,16 @@ rb_dacp_player_get_property (GObject *object,
 			break;
 		case PROP_REPEAT_STATE:
 			rb_shell_player_get_playback_state (player->priv->shell_player, &shuffle, &repeat);
-			g_value_set_enum (value, repeat ? DACP_REPEAT_ALL : DACP_REPEAT_NONE);
+			g_value_set_enum (value, repeat ? DMAP_CONTROL_REPEAT_ALL : DMAP_CONTROL_REPEAT_NONE);
 			break;
 		case PROP_PLAY_STATE:
 			entry = rb_shell_player_get_playing_entry (player->priv->shell_player);
 			if (entry) {
 				g_object_get (player->priv->shell_player, "playing", &playing, NULL);
-				g_value_set_enum (value, playing ? DACP_PLAY_PLAYING : DACP_PLAY_PAUSED);
+				g_value_set_enum (value, playing ? DMAP_CONTROL_PLAY_PLAYING : DMAP_CONTROL_PLAY_PAUSED);
 				rhythmdb_entry_unref (entry);
 			} else {
-				g_value_set_enum (value, DACP_PLAY_STOPPED);
+				g_value_set_enum (value, DMAP_CONTROL_PLAY_STOPPED);
 			}
 			break;
 		case PROP_VOLUME:
@@ -234,7 +234,7 @@ rb_dacp_player_set_property (GObject *object,
 			break;
 		case PROP_REPEAT_STATE:
 			rb_shell_player_get_playback_state (player->priv->shell_player, &shuffle, &repeat);
-			rb_shell_player_set_playback_state (player->priv->shell_player, shuffle, g_value_get_enum (value) != DACP_REPEAT_NONE);
+			rb_shell_player_set_playback_state (player->priv->shell_player, shuffle, g_value_get_enum (value) != DMAP_CONTROL_REPEAT_NONE);
 			break;
 		case PROP_VOLUME:
 			volume = ((double) g_value_get_ulong (value))  / 100.0;
@@ -289,54 +289,54 @@ rb_dacp_player_new (RBShell *shell)
 	return player;
 }
 
-static DAAPRecord *
-rb_dacp_player_now_playing_record (DACPPlayer *player)
+static DmapAvRecord *
+rb_dacp_player_now_playing_record (DmapControlPlayer *player)
 {
 	RhythmDBEntry *entry;
-	DAAPRecord *record;
+	DmapAvRecord *record;
 
 	entry = rb_shell_player_get_playing_entry (RB_DACP_PLAYER (player)->priv->shell_player);
 	if (entry == NULL) {
 		return NULL;
 	} else {
-		record = DAAP_RECORD (rb_daap_record_new (entry));
+		record = DMAP_AV_RECORD (rb_daap_record_new (entry));
 		rhythmdb_entry_unref (entry);
 		return record;
 	}
 }
 
-static guchar *
-rb_dacp_player_now_playing_artwork (DACPPlayer *player, guint width, guint height)
+static gchar *
+rb_dacp_player_now_playing_artwork (DmapControlPlayer *player, guint width, guint height)
 {
 	return NULL;
 }
 
 static void
-rb_dacp_player_play_pause (DACPPlayer *player)
+rb_dacp_player_play_pause (DmapControlPlayer *player)
 {
 	rb_shell_player_playpause (RB_DACP_PLAYER (player)->priv->shell_player, NULL);
 }
 
 static void
-rb_dacp_player_pause (DACPPlayer *player)
+rb_dacp_player_pause (DmapControlPlayer *player)
 {
 	rb_shell_player_pause (RB_DACP_PLAYER (player)->priv->shell_player, NULL);
 }
 
 static void
-rb_dacp_player_next_item (DACPPlayer *player)
+rb_dacp_player_next_item (DmapControlPlayer *player)
 {
 	rb_shell_player_do_next (RB_DACP_PLAYER (player)->priv->shell_player, NULL);
 }
 
 static void
-rb_dacp_player_prev_item (DACPPlayer *player)
+rb_dacp_player_prev_item (DmapControlPlayer *player)
 {
 	rb_shell_player_do_previous (RB_DACP_PLAYER (player)->priv->shell_player, NULL);
 }
 
 static void
-rb_dacp_player_cue_clear (DACPPlayer *player)
+rb_dacp_player_cue_clear (DmapControlPlayer *player)
 {
 	RBDACPPlayer *rbplayer;
 	rbplayer = RB_DACP_PLAYER (player);
@@ -344,7 +344,7 @@ rb_dacp_player_cue_clear (DACPPlayer *player)
 }
 
 static void
-rb_dacp_player_cue_play (DACPPlayer *player, GList *records, guint index)
+rb_dacp_player_cue_play (DmapControlPlayer *player, GList *records, guint index)
 {
 	GList *record;
 	gint current = 0;

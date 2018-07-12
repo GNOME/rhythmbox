@@ -42,7 +42,7 @@ struct RBDMAPContainerDbAdapterPrivate {
 
 typedef struct ForeachAdapterData {
 	gpointer data;
-	GHFunc func;
+	DmapIdContainerRecordFunc func;
 } ForeachAdapterData;
 
 static guint find_by_id (gconstpointer a, gconstpointer b)
@@ -50,12 +50,12 @@ static guint find_by_id (gconstpointer a, gconstpointer b)
 	return GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (a), "daap_id")) != GPOINTER_TO_UINT (b);
 }
 
-static DMAPContainerRecord *
-rb_dmap_container_db_adapter_lookup_by_id (DMAPContainerDb *db, guint id)
+static DmapContainerRecord *
+rb_dmap_container_db_adapter_lookup_by_id (DmapContainerDb *db, guint id)
 {
 	gchar *name;
 	GList *playlists;
-	DMAPContainerRecord *fnval = NULL;
+	DmapContainerRecord *fnval = NULL;
 
 	playlists = rb_playlist_manager_get_playlists (RB_DMAP_CONTAINER_DB_ADAPTER (db)->priv->playlist_manager);
 
@@ -78,15 +78,17 @@ rb_dmap_container_db_adapter_lookup_by_id (DMAPContainerDb *db, guint id)
 static void
 foreach_adapter (RBPlaylistSource *entry, gpointer data)
 {
+	guint id;
 	gchar *name;
-	DMAPContainerRecord *record;
+	DmapContainerRecord *record;
 	ForeachAdapterData *foreach_adapter_data;
 
 	foreach_adapter_data = data;
 	g_object_get (entry, "name", &name, NULL);
 	record = DMAP_CONTAINER_RECORD (rb_daap_container_record_new (name, entry));
+	id = rb_daap_container_record_get_id (record);
 
-	foreach_adapter_data->func (GINT_TO_POINTER (rb_daap_container_record_get_id (record)),
+	foreach_adapter_data->func (GUINT_TO_POINTER(id),
 				    record,
 				    foreach_adapter_data->data);
 
@@ -94,8 +96,8 @@ foreach_adapter (RBPlaylistSource *entry, gpointer data)
 }
 
 static void
-rb_dmap_container_db_adapter_foreach	(DMAPContainerDb *db,
-					 GHFunc func,
+rb_dmap_container_db_adapter_foreach	(DmapContainerDb *db,
+					 DmapIdContainerRecordFunc func,
 				         gpointer data)
 {
 	ForeachAdapterData *foreach_adapter_data;
@@ -113,7 +115,7 @@ rb_dmap_container_db_adapter_foreach	(DMAPContainerDb *db,
 }
 
 static gint64
-rb_dmap_container_db_adapter_count (DMAPContainerDb *db)
+rb_dmap_container_db_adapter_count (DmapContainerDb *db)
 {
 	gint64 count = 0;
 	GList *playlists = rb_playlist_manager_get_playlists (
@@ -143,7 +145,7 @@ rb_dmap_container_db_adapter_class_finalize (RBDMAPContainerDbAdapterClass *klas
 static void
 rb_dmap_container_db_adapter_interface_init (gpointer iface, gpointer data)
 {
-	DMAPContainerDbIface *dmap_db = iface;
+	DmapContainerDbInterface *dmap_db = iface;
 
 	g_assert (G_TYPE_FROM_INTERFACE (dmap_db) == DMAP_TYPE_CONTAINER_DB);
 
