@@ -60,14 +60,14 @@ GType 		rb_dacp_pairing_page_get_type 	(void);
 
 RBDACPPairingPage *rb_dacp_pairing_page_new 	(GObject *plugin,
 						 RBShell *shell,
-						 DACPShare *dacp_share,
+						 DmapControlShare *dacp_share,
 						 const char *display_name,
 						 const char *service_name);
 
 void           rb_dacp_pairing_page_remote_found (RBDACPPairingPage *page);
 void           rb_dacp_pairing_page_remote_lost (RBDACPPairingPage *page);
 
-DACPShare     *rb_daap_create_dacp_share       (GObject *plugin);
+DmapControlShare *rb_daap_create_dacp_share       (GObject *plugin);
 
 void           _rb_dacp_pairing_page_register_type (GTypeModule *module);
 

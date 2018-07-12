@@ -73,16 +73,16 @@ static void impl_get_property  (GObject *object,
 static void rb_dacp_pairing_page_connecting (RBDACPPairingPage *page, gboolean connecting);
 static gboolean entry_insert_text_cb (GtkWidget *entry, gchar *text, gint len, gint *position, RBDACPPairingPage *page);
 static gboolean entry_backspace_cb (GtkWidget *entry, RBDACPPairingPage *page);
-static void remote_paired_cb (DACPShare *share, gchar *service_name, gboolean connected, RBDACPPairingPage *page);
+static void remote_paired_cb (DmapControlShare *share, gchar *service_name, gboolean connected, RBDACPPairingPage *page);
 
-static void dacp_remote_added (DACPShare *share, gchar *service_name, gchar *display_name, RBDaapPlugin *plugin);
-static void dacp_remote_removed (DACPShare *share, gchar *service_name, RBDaapPlugin *plugin);
+static void dacp_remote_added (DmapControlShare *share, gchar *service_name, gchar *display_name, RBDaapPlugin *plugin);
+static void dacp_remote_removed (DmapControlShare *share, gchar *service_name, RBDaapPlugin *plugin);
 
-/* DACPShare signals */
-static gboolean dacp_lookup_guid (DACPShare *share, gchar *guid, GSettings *settings);
-static void     dacp_add_guid    (DACPShare *share, gchar *guid, GSettings *settings);
+/* DmapControlShare signals */
+static gboolean dacp_lookup_guid (DmapControlShare *share, gchar *guid, GSettings *settings);
+static void     dacp_add_guid    (DmapControlShare *share, gchar *guid, GSettings *settings);
 
-static void dacp_player_updated (RBDACPPlayer *player, DACPShare *share);
+static void dacp_player_updated (RBDACPPlayer *player, DmapControlShare *share);
 
 struct RBDACPPairingPagePrivate
 {
@@ -90,7 +90,7 @@ struct RBDACPPairingPagePrivate
 
 	gboolean done_pairing;
 
-	DACPShare *dacp_share;
+	DmapControlShare *dacp_share;
 
 	GtkBuilder *builder;
 	GtkWidget *entries[4];
@@ -138,10 +138,10 @@ entry_insert_text_cb (GtkWidget *entry, gchar *text, gint len, gint *position, R
 		/* The last character is still not in the entry */
 		passcode[3] = new_char;
 		rb_dacp_pairing_page_connecting (page, TRUE);
-		/* Let DACPShare do the heavy-lifting */
-		dacp_share_pair (page->priv->dacp_share,
-		                 page->priv->service_name,
-		                 passcode);
+		/* Let DmapControlShare do the heavy-lifting */
+		dmap_control_share_pair (page->priv->dacp_share,
+		                         page->priv->service_name,
+		                         passcode);
 	}
 	/* let the default handler display the number */
 	return FALSE;
@@ -329,7 +329,7 @@ impl_get_property (GObject *object,
 RBDACPPairingPage *
 rb_dacp_pairing_page_new (GObject *plugin,
 			  RBShell *shell,
-			  DACPShare *dacp_share,
+			  DmapControlShare *dacp_share,
 			  const char *display_name,
 			  const char *service_name)
 {
@@ -400,7 +400,7 @@ rb_dacp_pairing_page_connecting (RBDACPPairingPage *page, gboolean connecting) {
 }
 
 static void
-remote_paired_cb (DACPShare *share, gchar *service_name, gboolean connected, RBDACPPairingPage *page)
+remote_paired_cb (DmapControlShare *share, gchar *service_name, gboolean connected, RBDACPPairingPage *page)
 {
 	/* Check if this remote is the remote paired */
 	if (g_strcmp0 (service_name, page->priv->service_name) != 0)
@@ -417,14 +417,14 @@ remote_paired_cb (DACPShare *share, gchar *service_name, gboolean connected, RBD
 	}
 }
 
-DACPShare *
+DmapControlShare *
 rb_daap_create_dacp_share (GObject *plugin)
 {
-	DACPShare *share;
-	DACPPlayer *player;
+	DmapControlShare *share;
+	DmapControlPlayer *player;
 	RhythmDB *rdb;
-	DMAPDb *db;
-	DMAPContainerDb *container_db;
+	DmapDb *db;
+	DmapContainerDb *container_db;
 	RBPlaylistManager *playlist_manager;
 	RBShell *shell;
 	GSettings *share_settings;
@@ -441,7 +441,7 @@ rb_daap_create_dacp_share (GObject *plugin)
 	db = DMAP_DB (rb_rhythmdb_dmap_db_adapter_new (rdb, RHYTHMDB_ENTRY_TYPE_SONG));
 	container_db = DMAP_CONTAINER_DB (rb_dmap_container_db_adapter_new (playlist_manager));
 
-	player = DACP_PLAYER (rb_dacp_player_new (shell));
+	player = DMAP_CONTROL_PLAYER (rb_dacp_player_new (shell));
 
 	share_settings = g_settings_new ("org.gnome.rhythmbox.sharing");
 	name = g_settings_get_string (share_settings, "share-name");
@@ -451,7 +451,7 @@ rb_daap_create_dacp_share (GObject *plugin)
 	}
 	g_object_unref (share_settings);
 
-	share = dacp_share_new (name, player, db, container_db);
+	share = dmap_control_share_new (name, player, db, container_db);
 
 	daap_settings = g_settings_new ("org.gnome.rhythmbox.plugins.daap");
 	settings = g_settings_get_child (daap_settings, "dacp");
@@ -497,13 +497,13 @@ rb_daap_create_dacp_share (GObject *plugin)
 
 static void
 dacp_player_updated (RBDACPPlayer *player,
-                     DACPShare *share)
+                     DmapControlShare *share)
 {
-	dacp_share_player_updated (share);
+	dmap_control_share_player_updated (share);
 }
 
 static void
-dacp_add_guid (DACPShare *share,
+dacp_add_guid (DmapControlShare *share,
                gchar *guid,
 	       GSettings *settings)
 {
@@ -528,7 +528,7 @@ dacp_add_guid (DACPShare *share,
 }
 
 static gboolean
-dacp_lookup_guid (DACPShare *share,
+dacp_lookup_guid (DmapControlShare *share,
                   gchar *guid,
 		  GSettings *settings)
 {
@@ -589,10 +589,10 @@ find_dacp_page (RBShell *shell, const gchar *service_name)
 }
 
 static void
-dacp_remote_added (DACPShare    *share,
-                   gchar        *service_name,
-                   gchar        *display_name,
-                   RBDaapPlugin *plugin)
+dacp_remote_added (DmapControlShare *share,
+                   gchar            *service_name,
+                   gchar            *display_name,
+                   RBDaapPlugin     *plugin)
 {
 	RBDACPPairingPage *page;
 	RBShell *shell;
@@ -625,9 +625,9 @@ dacp_remote_added (DACPShare    *share,
 }
 
 static void
-dacp_remote_removed (DACPShare       *share,
-                     gchar           *service_name,
-                     RBDaapPlugin    *plugin)
+dacp_remote_removed (DmapControlShare *share,
+                     gchar            *service_name,
+                     RBDaapPlugin     *plugin)
 {
 	RBDACPPairingPage *page;
 	RBShell *shell;

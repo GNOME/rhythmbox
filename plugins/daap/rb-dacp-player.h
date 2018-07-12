@@ -52,7 +52,7 @@ struct _RBDACPPlayerClass
 {
 	GObjectClass parent_class;
 
-	void (*player_updated) (DACPPlayer *player);
+	void (*player_updated) (DmapControlPlayer *player);
 };
 
 struct _RBDACPPlayer

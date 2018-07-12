@@ -45,7 +45,7 @@
 
 #include <libdmapsharing/dmap.h>
 
-static DAAPShare *share = NULL;
+static DmapAvShare *share = NULL;
 static GSettings *settings = NULL;
 
 char *
@@ -79,8 +79,8 @@ static void
 create_share (RBShell *shell)
 {
 	RhythmDB *rdb;
-	DMAPDb *db;
-	DMAPContainerDb *container_db;
+	DmapDb *db;
+	DmapContainerDb *container_db;
 	RBPlaylistManager *playlist_manager;
 	char *name;
 	char *password;
@@ -108,7 +108,7 @@ create_share (RBShell *shell)
 		password = NULL;
 	}
 
-	share = daap_share_new (name, password, db, container_db, NULL);
+	share = dmap_av_share_new (name, password, db, container_db, NULL);
 
 	g_settings_bind_with_mapping (settings, "share-name",
 				      share, "name",

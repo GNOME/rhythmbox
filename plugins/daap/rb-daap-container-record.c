@@ -87,20 +87,20 @@ rb_daap_container_record_get_property (GObject *object,
 }
 
 guint
-rb_daap_container_record_get_id (DMAPContainerRecord *record)
+rb_daap_container_record_get_id (DmapContainerRecord *record)
 {
 	return GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (RB_DAAP_CONTAINER_RECORD (record)->priv->source), "daap_id"));
 }
 
 void
-rb_daap_container_record_add_entry (DMAPContainerRecord *container_record,
-                                       DMAPRecord *record, gint id)
+rb_daap_container_record_add_entry (DmapContainerRecord *container_record,
+                                    DmapRecord *record, gint id, GError **error)
 {
 	g_error ("Unimplemented");
 }
 
 guint64
-rb_daap_container_record_get_entry_count (DMAPContainerRecord *record)
+rb_daap_container_record_get_entry_count (DmapContainerRecord *record)
 {
 	RhythmDBQueryModel *model;
 	guint64 count;
@@ -113,8 +113,8 @@ rb_daap_container_record_get_entry_count (DMAPContainerRecord *record)
 	return count;
 }
 
-DMAPDb *
-rb_daap_container_record_get_entries (DMAPContainerRecord *record)
+DmapDb *
+rb_daap_container_record_get_entries (DmapContainerRecord *record)
 {
 	RhythmDBQueryModel *model;
 	g_object_get (RB_DAAP_CONTAINER_RECORD (record)->priv->source,
@@ -152,7 +152,7 @@ rb_daap_container_record_class_finalize (RBDAAPContainerRecordClass *klass)
 static void
 rb_daap_container_record_daap_iface_init (gpointer iface, gpointer data)
 {
-	DMAPContainerRecordIface *dmap_container_record = iface;
+	DmapContainerRecordInterface *dmap_container_record = iface;
 
 	g_assert (G_TYPE_FROM_INTERFACE (dmap_container_record) == DMAP_TYPE_CONTAINER_RECORD);
 

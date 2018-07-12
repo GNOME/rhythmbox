@@ -57,15 +57,15 @@ GType rb_daap_record_get_type (void);
 
 RBDAAPRecord *rb_daap_record_new (RhythmDBEntry *entry);
 
-gint          rb_daap_record_get_id          (DAAPRecord *record);
+gint          rb_daap_record_get_id          (DmapAvRecord *record);
 
-gboolean      rb_daap_record_itunes_compat   (DAAPRecord *record);
+gboolean      rb_daap_record_itunes_compat   (DmapAvRecord *record);
 
-void          rb_daap_record_set_transcode_format (DAAPRecord *record,
-						      const gint format);
+void          rb_daap_record_set_transcode_format (DmapAvRecord *record,
+                                                   const gint format);
 
-GInputStream *rb_daap_record_read            (DAAPRecord *record,
-						 GError **err);
+GInputStream *rb_daap_record_read            (DmapAvRecord *record,
+                                              GError **err);
 
 void          _rb_daap_record_register_type  (GTypeModule *module);
 

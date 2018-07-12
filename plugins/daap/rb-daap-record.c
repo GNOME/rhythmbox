@@ -252,7 +252,7 @@ rb_daap_record_get_property (GObject *object,
 }
 
 gboolean
-rb_daap_record_itunes_compat (DAAPRecord *record)
+rb_daap_record_itunes_compat (DmapAvRecord *record)
 {
 	const gchar *format = RB_DAAP_RECORD (record)->priv->real_format;
 
@@ -263,7 +263,7 @@ rb_daap_record_itunes_compat (DAAPRecord *record)
 }
 
 GInputStream *
-rb_daap_record_read (DAAPRecord *record, GError **error)
+rb_daap_record_read (DmapAvRecord *record, GError **error)
 {
 	GFile *file;
 	GInputStream *fnval = NULL;
@@ -351,9 +351,9 @@ rb_daap_record_class_finalize (RBDAAPRecordClass *klass)
 static void
 rb_daap_record_daap_iface_init (gpointer iface, gpointer data)
 {
-	DAAPRecordIface *daap_record = iface;
+	DmapAvRecordInterface *daap_record = iface;
 
-	g_assert (G_TYPE_FROM_INTERFACE (daap_record) == DAAP_TYPE_RECORD);
+	g_assert (G_TYPE_FROM_INTERFACE (daap_record) == DMAP_TYPE_AV_RECORD);
 
 	daap_record->itunes_compat = rb_daap_record_itunes_compat;
 	daap_record->read = rb_daap_record_read;
@@ -362,7 +362,7 @@ rb_daap_record_daap_iface_init (gpointer iface, gpointer data)
 static void
 rb_daap_record_dmap_iface_init (gpointer iface, gpointer data)
 {
-	DMAPRecordIface *dmap_record = iface;
+	DmapRecordInterface *dmap_record = iface;
 
 	g_assert (G_TYPE_FROM_INTERFACE (dmap_record) == DMAP_TYPE_RECORD);
 }
@@ -371,7 +371,7 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDAAPRecord,
 				rb_daap_record,
 				G_TYPE_OBJECT,
 				0,
-				G_IMPLEMENT_INTERFACE_DYNAMIC (DAAP_TYPE_RECORD, rb_daap_record_daap_iface_init)
+				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_AV_RECORD, rb_daap_record_daap_iface_init)
 				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_RECORD, rb_daap_record_dmap_iface_init))
 
 static void

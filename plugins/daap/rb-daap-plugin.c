@@ -94,9 +94,9 @@ struct _RBDaapPlugin
 
 	GSimpleAction *new_share_action;
 
-	DMAPMdnsBrowser *mdns_browser;
+	DmapMdnsBrowser *mdns_browser;
 
-	DACPShare *dacp_share;
+	DmapControlShare *dacp_share;
 
 	GHashTable *source_lookup;
 
@@ -207,7 +207,8 @@ impl_activate (PeasActivatable *bplugin)
 
 	plugin->dacp_share = rb_daap_create_dacp_share (G_OBJECT (plugin));
 	if (g_settings_get_boolean (plugin->dacp_settings, "enable-remote")) {
-		dacp_share_start_lookup (plugin->dacp_share);
+		GError *error = NULL;
+		dmap_control_share_start_lookup (plugin->dacp_share, &error);
 	}
 
 	register_daap_dbus_iface (plugin);
@@ -291,33 +292,45 @@ find_source_by_service_name (RBDaapPlugin *plugin,
 }
 
 static void
-mdns_service_added (DMAPMdnsBrowser *browser,
-		    DMAPMdnsBrowserService *service,
+mdns_service_added (DmapMdnsBrowser *browser,
+		    DmapMdnsService *service,
 		    RBDaapPlugin *plugin)
 {
 	RBSource *source;
 	RBShell *shell;
+	gchar *service_name = NULL;
+        gchar *name         = NULL;
+        gchar *host         = NULL;
+        guint port;
+        gboolean password_protected;
+
+	g_object_get(service, "service-name", &service_name,
+	                      "name", &name,
+	                      "host", &host,
+	                      "port", &port,
+	                      "password-protected", &password_protected,
+	                       NULL);
 
 	rb_debug ("New service: %s name=%s host=%s port=%u password=%d",
-		   service->service_name,
-		   service->name,
-		   service->host,
-		   service->port,
-		   service->password_protected);
+		   service_name,
+		   name,
+		   host,
+		   port,
+		   password_protected);
 
-	source = find_source_by_service_name (plugin, service->service_name);
+	source = find_source_by_service_name (plugin, service_name);
 
 	if (source == NULL) {
 		g_object_get (plugin, "object", &shell, NULL);
 
 		source = rb_daap_source_new (shell,
 					     G_OBJECT (plugin),
-					     service->service_name,
-					     service->name,
-					     service->host,
-					     service->port,
-					     service->password_protected);
-		g_hash_table_insert (plugin->source_lookup, g_strdup (service->service_name), source);
+					     service_name,
+					     name,
+					     host,
+					     port,
+					     password_protected);
+		g_hash_table_insert (plugin->source_lookup, g_strdup(service_name), source);
 		rb_shell_append_display_page (shell,
 					      RB_DISPLAY_PAGE (source),
 					      RB_DISPLAY_PAGE_GROUP_SHARED);
@@ -325,16 +338,20 @@ mdns_service_added (DMAPMdnsBrowser *browser,
 		g_object_unref (shell);
 	} else {
 		g_object_set (source,
-			      "name", service->name,
-			      "host", service->host,
-			      "port", service->port,
-			      "password-protected", service->password_protected,
+			      "name", name,
+			      "host", host,
+			      "port", port,
+			      "password-protected", password_protected,
 			      NULL);
 	}
+
+	g_free (service_name);
+	g_free (name);
+	g_free (host);
 }
 
 static void
-mdns_service_removed (DMAPMdnsBrowser *browser,
+mdns_service_removed (DmapMdnsBrowser *browser,
 		      const char        *service_name,
 		      RBDaapPlugin	*plugin)
 {
@@ -370,7 +387,7 @@ start_browsing (RBDaapPlugin *plugin)
 		return;
 	}
 
-	plugin->mdns_browser = dmap_mdns_browser_new (DMAP_MDNS_BROWSER_SERVICE_TYPE_DAAP);
+	plugin->mdns_browser = dmap_mdns_browser_new (DMAP_MDNS_SERVICE_TYPE_DAAP);
 	if (plugin->mdns_browser == NULL) {
 		g_warning ("Unable to start mDNS browsing");
 		return;
@@ -432,10 +449,11 @@ static void
 dacp_settings_changed_cb (GSettings *settings, const char *key, RBDaapPlugin *plugin)
 {
 	if (g_strcmp0 (key, "enable-remote") == 0) {
+		GError *error = NULL;
 		if (g_settings_get_boolean (settings, key)) {
-			dacp_share_start_lookup (plugin->dacp_share);
+			dmap_control_share_start_lookup (plugin->dacp_share, &error);
 		} else {
-			dacp_share_stop_lookup (plugin->dacp_share);
+			dmap_control_share_stop_lookup (plugin->dacp_share, &error);
 		}
 	}
 }
@@ -473,7 +491,7 @@ new_daap_share_location_added_cb (RBURIDialog *dialog,
 	char *host;
 	char *p;
 	int port = 3689;
-	DMAPMdnsBrowserService service;
+	DmapMdnsService *service;
 
 	host = g_strdup (location);
 	p = strrchr (host, ':');
@@ -483,17 +501,20 @@ new_daap_share_location_added_cb (RBURIDialog *dialog,
 	}
 
 	rb_debug ("adding manually specified DAAP share at %s", location);
-	service.name = (char *) location;
-	service.host = (char *) host;
-	service.service_name = service.name;
-	service.port = port;
-	service.password_protected = FALSE;
+	service = g_object_new (DMAP_TYPE_MDNS_SERVICE,
+	                       "service-name", location,
+	                       "name", location,
+	                       "host", host,
+	                       "port", port,
+	                       "password-protected", false,
+	                        NULL);
+
 	mdns_service_added (NULL,
-			    &service,
+			    service,
 			    plugin);
 
 	g_free (host);
-
+	g_object_unref(service);
 }
 
 static void
@@ -778,16 +799,29 @@ daap_dbus_method_call (GDBusConnection *connection,
 	}
 
 	if (g_strcmp0 (method_name, "AddDAAPSource") == 0) {
-		DMAPMdnsBrowserService service = {0,};
-		g_variant_get (parameters, "(&s&su)", &service.name, &service.host, &service.port);
-		service.password_protected = FALSE;
-		service.service_name = service.name;
+		DmapMdnsService *service;
+		gchar *name = NULL;
+		gchar *host = NULL;
+		guint port;
 
-		rb_debug ("adding DAAP source %s (%s:%d)", service.name, service.host, service.port);
-		mdns_service_added (NULL, &service, plugin);
+		g_variant_get (parameters, "(&s&su)", &name, &host, &port);
+
+		service = g_object_new (DMAP_TYPE_MDNS_SERVICE,
+				       "service-name", name,
+				       "name", name,
+				       "host", host,
+				       "port", port,
+				       "password-protected", FALSE,
+					NULL);
+
+		rb_debug ("adding DAAP source %s (%s:%d)", name, host, port);
+		mdns_service_added (NULL, service, plugin);
 
 		g_dbus_method_invocation_return_value (invocation, NULL);
 
+		g_free(name);
+		g_free(host);
+		g_object_unref(service);
 	} else if (g_strcmp0 (method_name, "RemoveDAAPSource") == 0) {
 		const char *service_name;
 
