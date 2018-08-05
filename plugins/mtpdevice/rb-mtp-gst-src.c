@@ -212,6 +212,11 @@ rb_mtp_src_start (GstBaseSrc *basesrc)
 {
 	RBMTPSrc *src = RB_MTP_SRC (basesrc);
 
+	if (src->device_thread == NULL) {
+		rb_debug ("no thread yet");
+		return FALSE;
+	}
+
 	/* download the file, if we haven't already */
 	if (src->tempfile == NULL) {
 		g_mutex_lock (&src->download_mutex);
