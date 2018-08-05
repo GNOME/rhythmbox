@@ -59,6 +59,8 @@ typedef enum
 	RB_ENCODER_ERROR_DEST_EXISTS
 } RBEncoderError;
 
+#define RB_ENCODER_DEST_TEMPFILE	"x-rb-tmp://"
+
 GType rb_encoder_error_get_type (void);
 #define RB_TYPE_ENCODER_ERROR	(rb_encoder_error_get_type())
 #define RB_ENCODER_ERROR rb_encoder_error_quark ()

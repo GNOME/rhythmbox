@@ -75,6 +75,7 @@ struct _RBEncoderGstPrivate {
 	GCancellable *open_cancel;
 	GTask *open_task;
 
+	int tmpfile_fd;
 
 	GError *error;
 };
@@ -198,6 +199,12 @@ bus_watch_cb (GstBus *bus, GstMessage *message, gpointer data)
 						     NULL,
 						     (GAsyncReadyCallback) output_close_cb,
 						     g_object_ref (encoder));
+		} else if (encoder->priv->tmpfile_fd) {
+			rb_debug ("received EOS, closing temp file");
+			close (encoder->priv->tmpfile_fd);
+			encoder->priv->tmpfile_fd = 0;
+
+			rb_encoder_gst_emit_completed (encoder);
 		} else {
 			rb_debug ("received EOS, but there's no output stream");
 			rb_encoder_gst_emit_completed (encoder);
@@ -629,6 +636,36 @@ sink_open (GTask *task, gpointer source_object, gpointer task_data, GCancellable
 {
 	RBEncoderGst *encoder = RB_ENCODER_GST (source_object);
 	GError *error = NULL;
+
+	if (g_str_equal (encoder->priv->dest_uri, RB_ENCODER_DEST_TEMPFILE)) {
+		GFile *tmpfile;
+		char *tmpfile_name;
+
+		encoder->priv->tmpfile_fd = g_file_open_tmp ("rb-encoder-XXXXXX",
+							     &tmpfile_name,
+							     &error);
+		if (error != NULL) {
+			g_set_error (&error, RB_ENCODER_ERROR, RB_ENCODER_ERROR_FILE_ACCESS,
+				     _("Could not create a temporary file to write to: %s"),
+				    error->message);
+			g_task_return_error (task, error);
+			g_object_unref (task);
+			return;
+		}
+
+		rb_debug ("opened temporary file %s", tmpfile_name);
+		encoder->priv->sink = gst_element_factory_make ("fdsink", NULL);
+		g_object_set (encoder->priv->sink, "fd", encoder->priv->tmpfile_fd, NULL);
+
+		tmpfile = g_file_new_for_commandline_arg (tmpfile_name);
+		g_free (encoder->priv->dest_uri);
+		encoder->priv->dest_uri = g_file_get_uri (tmpfile);
+		g_object_unref (tmpfile);
+		g_free (tmpfile_name);
+
+		g_task_return_boolean (task, TRUE);
+		return;
+	}
 
 	encoder->priv->sink = gst_element_factory_make ("giostreamsink", NULL);
 	if (encoder->priv->sink != NULL) {
