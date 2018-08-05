@@ -10,7 +10,6 @@ libmtpdevice_la_SOURCES = \
 	rb-mtp-gst.c \
 	rb-mtp-gst.h \
 	rb-mtp-gst-src.c \
-	rb-mtp-gst-sink.c \
 	rb-mtp-source.c	\
 	rb-mtp-source.h \
 	rb-mtp-thread.c \

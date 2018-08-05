@@ -37,8 +37,6 @@ plugin_init (GstPlugin *plugin)
 {
 	if (gst_element_register (plugin, "rbmtpsrc", GST_RANK_PRIMARY, RB_TYPE_MTP_SRC) == FALSE)
 		return FALSE;
-	if (gst_element_register (plugin, "rbmtpsink", GST_RANK_PRIMARY, RB_TYPE_MTP_SINK) == FALSE)
-		return FALSE;
 	return TRUE;
 }
 

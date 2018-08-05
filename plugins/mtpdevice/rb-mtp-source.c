@@ -30,6 +30,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
 #include <gst/gst.h>
 
 #if defined(HAVE_GUDEV)
@@ -118,13 +119,16 @@ static void prepare_encoder_source_cb (RBEncoderFactory *factory,
 				       const char *stream_uri,
 				       GObject *src,
 				       RBMtpSource *source);
-static void prepare_encoder_sink_cb (RBEncoderFactory *factory,
-				     const char *stream_uri,
-				     GObject *sink,
-				     RBMtpSource *source);
 #if defined(HAVE_GUDEV)
 static GMount *find_mount_for_device (GUdevDevice *device);
 #endif
+
+typedef struct
+{
+	RBMtpSource *source;
+	LIBMTP_track_t *track;
+	char *tempfile;
+} RBMtpSourceTrackUpload;
 
 typedef struct
 {
@@ -132,7 +136,6 @@ typedef struct
 	RBMtpThread *device_thread;
 	LIBMTP_raw_device_t raw_device;
 	GHashTable *entry_map;
-	GHashTable *track_transfer_map;
 #if defined(HAVE_GUDEV)
 	GUdevDevice *udev_device;
 	GVolume *remount_volume;
@@ -273,8 +276,6 @@ rb_mtp_source_init (RBMtpSource *source)
 						 g_direct_equal,
 						 NULL,
 						 (GDestroyNotify) LIBMTP_destroy_track_t);
-
-	priv->track_transfer_map = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 }
 
 
@@ -398,10 +399,6 @@ rb_mtp_source_constructed (GObject *object)
 	g_signal_connect_object (rb_encoder_factory_get (),
 				 "prepare-source",
 				 G_CALLBACK (prepare_encoder_source_cb),
-				 source, 0);
-	g_signal_connect_object (rb_encoder_factory_get (),
-				 "prepare-sink",
-				 G_CALLBACK (prepare_encoder_sink_cb),
 				 source, 0);
 
 	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "multimedia-player-symbolic");
@@ -533,7 +530,6 @@ rb_mtp_source_finalize (GObject *object)
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (object);
 
 	g_hash_table_destroy (priv->entry_map);
-	g_hash_table_destroy (priv->track_transfer_map);		/* probably need to destroy the tracks too.. */
 
 #if defined(HAVE_GUDEV)
 	if (priv->udev_device) {
@@ -1105,6 +1101,17 @@ get_db_for_source (RBMtpSource *source)
 }
 
 static void
+free_upload (RBMtpSourceTrackUpload *upload)
+{
+	g_unlink (upload->tempfile);
+	g_free (upload->tempfile);
+
+	LIBMTP_destroy_track_t (upload->track);
+	g_object_unref (upload->source);
+	g_free (upload);
+}
+
+static void
 art_request_cb (RBExtDBKey *key, RBExtDBKey *store_key, const char *filename, GValue *data, RBMtpSource *source)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
@@ -1121,23 +1128,18 @@ art_request_cb (RBExtDBKey *key, RBExtDBKey *store_key, const char *filename, GV
 	}
 }
 
-static gboolean
-impl_track_added (RBTransferTarget *target,
-		  RhythmDBEntry *entry,
-		  const char *dest,
-		  guint64 filesize,
-		  const char *media_type)
+static void
+upload_callback (LIBMTP_track_t *track, GError *error, RBMtpSourceTrackUpload *upload)
 {
-	LIBMTP_track_t *track = NULL;
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (target);
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (upload->source);
 	RhythmDB *db;
 
-	track = g_hash_table_lookup (priv->track_transfer_map, dest);
-	if (track == NULL) {
-		rb_debug ("track-added called, but can't find a track for dest URI %s", dest);
-		return FALSE;
+	if (error) {
+		rb_error_dialog (NULL, _("Error transferring track"), "%s", error->message);
+		free_upload (upload);
+		g_error_free (error);
+		return;
 	}
-	g_hash_table_remove (priv->track_transfer_map, dest);
 
 	if (strcmp (track->album, _("Unknown")) != 0) {
 		rb_mtp_thread_add_to_album (priv->device_thread, track, track->album);
@@ -1151,81 +1153,54 @@ impl_track_added (RBTransferTarget *target,
 			rb_ext_db_request (priv->art_store,
 					   key,
 					   (RBExtDBRequestCallback) art_request_cb,
-					   g_object_ref (target),
+					   g_object_ref (upload->source),
 					   (GDestroyNotify) g_object_unref);
 			rb_ext_db_key_free (key);
 		}
 	}
 
-	db = get_db_for_source (RB_MTP_SOURCE (target));
-	add_mtp_track_to_db (RB_MTP_SOURCE (target), db, track);
+	db = get_db_for_source (upload->source);
+	add_mtp_track_to_db (upload->source, db, track);
 	g_object_unref (db);
 
-	queue_free_space_update (RB_MTP_SOURCE (target));
-	return FALSE;
-}
-
-static gboolean
-impl_track_add_error (RBTransferTarget *target,
-		      RhythmDBEntry *entry,
-		      const char *dest,
-		      GError *error)
-{
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (target);
-	/* we don't actually do anything with the error here, we just need to clean up the transfer map */
-	LIBMTP_track_t *track = g_hash_table_lookup (priv->track_transfer_map, dest);
-	if (track != NULL) {
-		LIBMTP_destroy_track_t (track);
-		g_hash_table_remove (priv->track_transfer_map, dest);
-	} else {
-		rb_debug ("track-add-error called, but can't find a track for dest URI %s", dest);
-	}
-
-	return TRUE;
+	queue_free_space_update (upload->source);
+	free_upload (upload);
 }
 
 static void
-prepare_encoder_sink_cb (RBEncoderFactory *factory,
-			 const char *stream_uri,
-			 GObject *sink,
-			 RBMtpSource *source)
+create_folder_callback (uint32_t folder_id, RBMtpSourceTrackUpload *upload)
 {
-	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
-	RhythmDBEntry *entry;
-	RhythmDB *db;
-	LIBMTP_track_t *track;
-	char **bits;
-	char *extension;
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (upload->source);
+	upload->track->parent_id = folder_id;
+
+	rb_mtp_thread_upload_track (priv->device_thread,
+				    upload->track,
+				    upload->tempfile,
+				    (RBMtpUploadCallback) upload_callback,
+				    upload,
+				    NULL);
+}
+
+static gboolean
+impl_track_added (RBTransferTarget *target,
+		  RhythmDBEntry *entry,
+		  const char *dest,
+		  guint64 filesize,
+		  const char *media_type)
+{
+	LIBMTP_track_t *track = NULL;
+	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (target);
+	RBMtpSourceTrackUpload *upload;
+	GFile *destfile;
 	char *track_str;
-	LIBMTP_filetype_t filetype;
-	gulong track_id;
-	GDate d;
 	char **folder_path;
-
-	/* make sure this stream is for a file on our device */
-	if (g_str_has_prefix (stream_uri, "xrbmtp://") == FALSE)
-		return;
-
-	/* extract the entry ID, extension, and MTP filetype from the URI */
-	bits = g_strsplit (stream_uri + strlen ("xrbmtp://"), "/", 3);
-	track_id = strtoul (bits[0], NULL, 0);
-	extension = g_strdup (bits[1]);
-	filetype = strtoul (bits[2], NULL, 0);
-	g_strfreev (bits);
-
-	db = get_db_for_source (source);
-	entry = rhythmdb_entry_lookup_by_id (db, track_id);
-	g_object_unref (db);
-	if (entry == NULL) {
-		g_free (extension);
-		return;
-	}
 
 	track = LIBMTP_new_track_t ();
 	track->title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
 	track->album = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ALBUM);
 	track->artist = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_ARTIST);
 	track->genre = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_GENRE);
+	track->filesize = filesize;
 
 	/* build up device filename */
 	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DISC_NUMBER) > 0) {
@@ -1241,9 +1216,8 @@ prepare_encoder_sink_cb (RBEncoderFactory *factory,
 					   track_str,
 					   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST),
 					   rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE),
-					   extension);
+					   rb_gst_media_type_to_extension (media_type));
 	g_free (track_str);
-	g_free (extension);
 
 	/* construct folder path: artist/album */
 	folder_path = g_new0 (char *, 3);
@@ -1260,6 +1234,7 @@ prepare_encoder_sink_cb (RBEncoderFactory *factory,
 	rb_sanitize_path_for_msdos_filesystem (folder_path[1]);
 
 	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE) > 0) {
+		GDate d;
 		g_date_set_julian (&d, rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_DATE));
 		track->date = gdate_to_char (&d);
 	}
@@ -1268,17 +1243,33 @@ prepare_encoder_sink_cb (RBEncoderFactory *factory,
 	track->rating = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_RATING) * 20;
 	track->usecount = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_PLAY_COUNT);
 
-	track->filetype = filetype;
+	track->filetype = media_type_to_filetype (RB_MTP_SOURCE (target), media_type);
 
-	g_object_set (sink,
-		      "device-thread", priv->device_thread,
-		      "folder-path", folder_path,
-		      "mtp-track", track,
-		      NULL);
-	rhythmdb_entry_unref (entry);
-	g_strfreev (folder_path);
+	upload = g_new0 (RBMtpSourceTrackUpload, 1);
+	upload->track = track;
+	upload->source = g_object_ref (target);
 
-	g_hash_table_insert (priv->track_transfer_map, g_strdup (stream_uri), track);
+	destfile = g_file_new_for_uri (dest);
+	upload->tempfile = g_file_get_path (destfile);
+	g_object_unref (destfile);
+
+	/* create folder, then upload the track, then clean up */
+	rb_mtp_thread_create_folder (priv->device_thread,
+				     (const char **)folder_path,
+				     (RBMtpCreateFolderCallback) create_folder_callback,
+				     upload,
+				     NULL);
+
+	return FALSE;
+}
+
+static gboolean
+impl_track_add_error (RBTransferTarget *target,
+		      RhythmDBEntry *entry,
+		      const char *dest,
+		      GError *error)
+{
+	return TRUE;
 }
 
 static char *
@@ -1287,40 +1278,8 @@ impl_build_dest_uri (RBTransferTarget *target,
 		     const char *media_type,
 		     const char *extension)
 {
-	gulong id;
-	char *uri;
-	LIBMTP_filetype_t filetype;
-
-	if (media_type == NULL) {
-		media_type = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MEDIA_TYPE);
-	}
-	filetype = media_type_to_filetype (RB_MTP_SOURCE (target), media_type);
-	rb_debug ("using libmtp filetype %d (%s) for source media type %s",
-		  filetype,
-		  LIBMTP_Get_Filetype_Description (filetype),
-		  media_type);
-
-	/* the prepare-sink callback needs the entry ID to set up the
-	 * upload data, and we want to use the supplied extension for
-	 * the filename on the device.
-	 *
-	 * this is pretty ugly - it'd be much nicer to have a source-defined
-	 * structure that got passed around (or was accessible from) the various
-	 * hooks and methods called during the track transfer process.  probably
-	 * something to address in my horribly stalled track transfer rewrite..
-	 *
-	 * the structure would either be created when queuing the track for transfer,
-	 * or here; passed to any prepare-source or prepare-sink callbacks for the
-	 * encoder; and then passed to whatever gets called when the transfer is complete.
-	 */
-	id = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_ENTRY_ID);
-	if (extension == NULL) {
-		extension = "";
-	}
-	uri = g_strdup_printf ("xrbmtp://%lu/%s/%d", id, extension, filetype);
-	return uri;
+	return g_strdup (RB_ENCODER_DEST_TEMPFILE);
 }
-
 
 static void
 impl_get_entries (RBMediaPlayerSource *source, const char *category, GHashTable *map)
