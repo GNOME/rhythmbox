@@ -529,6 +529,13 @@ download_track (RBMtpThread *thread, RBMtpThreadTask *task)
 	cb (task->track_id, task->filename, NULL, task->user_data);
 }
 
+static int
+upload_progress (const uint64_t sent, const uint64_t total, const void * const data)
+{
+	rb_debug ("upload: %lu of %lu", sent, total);
+	return 0;
+}
+
 static void
 upload_track (RBMtpThread *thread, RBMtpThreadTask *task)
 {
@@ -536,7 +543,7 @@ upload_track (RBMtpThread *thread, RBMtpThreadTask *task)
 	LIBMTP_error_t *stack;
 	GError *error = NULL;
 
-	if (LIBMTP_Send_Track_From_File (thread->device, task->filename, task->track, NULL, NULL)) {
+	if (LIBMTP_Send_Track_From_File (thread->device, task->filename, task->track, upload_progress, NULL)) {
 		stack = LIBMTP_Get_Errorstack (thread->device);
 		rb_debug ("unable to send track: %s", stack->error_text);
 
