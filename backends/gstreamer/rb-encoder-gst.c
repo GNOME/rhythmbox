@@ -133,7 +133,11 @@ rb_encoder_gst_emit_completed (RBEncoderGst *encoder)
 	}
 
 	encoder->priv->completion_emitted = TRUE;
-	_rb_encoder_emit_completed (RB_ENCODER (encoder), encoder->priv->dest_size, encoder->priv->dest_media_type, encoder->priv->error);
+	_rb_encoder_emit_completed (RB_ENCODER (encoder),
+				    encoder->priv->dest_uri,
+				    encoder->priv->dest_size,
+				    encoder->priv->dest_media_type,
+				    encoder->priv->error);
 }
 
 static void

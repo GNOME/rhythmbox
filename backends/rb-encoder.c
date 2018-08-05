@@ -135,6 +135,7 @@ rb_encoder_interface_init (RBEncoderIface *iface)
 	/**
 	 * RBEncoder::completed:
 	 * @encoder: the #RBEncoder instance
+	 * @dest_uri: destination URI
 	 * @dest_size: size of the output file
 	 * @mediatype: output media type
 	 * @error: encoding error, or NULL if successful
@@ -150,7 +151,7 @@ rb_encoder_interface_init (RBEncoderIface *iface)
 			      G_STRUCT_OFFSET (RBEncoderIface, completed),
 			      NULL, NULL, NULL,
 			      G_TYPE_NONE,
-			      3, G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_POINTER);
+			      4, G_TYPE_STRING, G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_POINTER);
 }
 
 GType
@@ -278,9 +279,9 @@ _rb_encoder_emit_progress (RBEncoder *encoder, double fraction)
 }
 
 void
-_rb_encoder_emit_completed (RBEncoder *encoder, guint64 dest_size, const char *mediatype, GError *error)
+_rb_encoder_emit_completed (RBEncoder *encoder, const char *dest_uri, guint64 dest_size, const char *mediatype, GError *error)
 {
-	g_signal_emit (encoder, signals[COMPLETED], 0, dest_size, mediatype, error);
+	g_signal_emit (encoder, signals[COMPLETED], 0, dest_uri, dest_size, mediatype, error);
 }
 
 void

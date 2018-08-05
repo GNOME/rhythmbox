@@ -125,7 +125,7 @@ gboolean	rb_encoder_get_missing_plugins (RBEncoder *encoder,
 
 /* only to be used by subclasses */
 void	_rb_encoder_emit_progress (RBEncoder *encoder, double fraction);
-void	_rb_encoder_emit_completed (RBEncoder *encoder, guint64 dest_size, const char *mediatype, GError *error);
+void	_rb_encoder_emit_completed (RBEncoder *encoder, const char *uri, guint64 dest_size, const char *mediatype, GError *error);
 
 void	_rb_encoder_emit_prepare_source (RBEncoder *encoder, const char *uri, GObject *source);
 void	_rb_encoder_emit_prepare_sink (RBEncoder *encoder, const char *uri, GObject *sink);

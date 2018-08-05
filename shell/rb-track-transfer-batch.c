@@ -82,6 +82,7 @@ static void	rb_track_transfer_batch_task_progress_init (RBTaskProgressInterface 
 static gboolean start_next (RBTrackTransferBatch *batch);
 static void start_encoding (RBTrackTransferBatch *batch, gboolean overwrite);
 static void track_transfer_completed (RBTrackTransferBatch *batch,
+				      const char *dest_uri,
 				      guint64 dest_size,
 				      const char *mediatype,
 				      gboolean skipped,
@@ -473,7 +474,7 @@ _rb_track_transfer_batch_continue (RBTrackTransferBatch *batch, gboolean overwri
 	if (overwrite) {
 		start_encoding (batch, TRUE);
 	} else {
-		track_transfer_completed (batch, 0, NULL, TRUE, NULL);
+		track_transfer_completed (batch, NULL, 0, NULL, TRUE, NULL);
 	}
 }
 
@@ -507,6 +508,7 @@ encoder_progress_cb (RBEncoder *encoder, double fraction, RBTrackTransferBatch *
 
 static void
 track_transfer_completed (RBTrackTransferBatch *batch,
+			  const char *dest_uri,
 			  guint64 dest_size,
 			  const char *mediatype,
 			  gboolean skipped,
@@ -531,7 +533,7 @@ track_transfer_completed (RBTrackTransferBatch *batch,
 		if (skipped == FALSE) {
 			g_signal_emit (batch, signals[TRACK_DONE], 0,
 				       entry,
-				       batch->priv->current_dest_uri,
+				       dest_uri,
 				       dest_size,
 				       mediatype,
 				       error);
@@ -545,6 +547,7 @@ track_transfer_completed (RBTrackTransferBatch *batch,
 
 static void
 encoder_completed_cb (RBEncoder *encoder,
+		      const char *dest_uri,
 		      guint64 dest_size,
 		      const char *mediatype,
 		      GError *error,
@@ -556,15 +559,14 @@ encoder_completed_cb (RBEncoder *encoder,
 	if (error == NULL) {
 		rb_debug ("encoder finished (size %" G_GUINT64_FORMAT ")", dest_size);
 	} else if (g_error_matches (error, RB_ENCODER_ERROR, RB_ENCODER_ERROR_DEST_EXISTS)) {
-		rb_debug ("encoder stopped because destination %s already exists",
-			  batch->priv->current_dest_uri);
-		g_signal_emit (batch, signals[OVERWRITE_PROMPT], 0, batch->priv->current_dest_uri);
+		rb_debug ("encoder stopped because destination %s already exists", dest_uri);
+		g_signal_emit (batch, signals[OVERWRITE_PROMPT], 0, dest_uri);
 		return;
 	} else {
 		rb_debug ("encoder finished (error: %s)", error->message);
 	}
 
-	track_transfer_completed (batch, dest_size, mediatype, FALSE, error);
+	track_transfer_completed (batch, dest_uri, dest_size, mediatype, FALSE, error);
 }
 
 static char *
@@ -651,7 +653,7 @@ create_parent_dirs_cb (GObject *source_object, GAsyncResult *result, gpointer da
 			g_task_run_in_thread (task, create_parent_dirs_task);
 		} else {
 			rb_debug ("failed to create parent directories for %s", batch->priv->current_dest_uri);
-			track_transfer_completed (batch, 0, NULL, FALSE, error);
+			track_transfer_completed (batch, NULL, 0, NULL, FALSE, error);
 		}
 	} else {
 		rb_debug ("parent directories for %s created", batch->priv->current_dest_uri);
