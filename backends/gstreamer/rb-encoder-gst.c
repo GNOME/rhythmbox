@@ -572,7 +572,10 @@ sink_open_cb (GObject *source_object, GAsyncResult *result, gpointer data)
 		g_error_free (error);
 		rb_encoder_gst_emit_completed (encoder);
 	} else {
-		g_object_set (encoder->priv->sink, "stream", encoder->priv->outstream, NULL);
+		if (encoder->priv->outstream != NULL) {
+			g_object_set (encoder->priv->sink, "stream", encoder->priv->outstream, NULL);
+		}
+
 		_rb_encoder_emit_prepare_sink (RB_ENCODER (encoder), encoder->priv->dest_uri, G_OBJECT (encoder->priv->sink));
 
 		gst_bin_add (GST_BIN (encoder->priv->pipeline), encoder->priv->sink);
