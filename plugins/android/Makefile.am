@@ -27,6 +27,7 @@ AM_CPPFLAGS = 						\
 	-I$(top_srcdir)/sources/sync                   	\
 	-I$(top_srcdir)/podcast                    	\
 	-I$(top_srcdir)/plugins				\
+	-I$(top_srcdir)/backends			\
 	-I$(top_srcdir)/shell				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \

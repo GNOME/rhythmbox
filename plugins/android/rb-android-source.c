@@ -51,6 +51,8 @@
 #include "rb-import-errors-source.h"
 #include "rb-gst-media-types.h"
 #include "rb-task-list.h"
+#include "rb-encoder.h"
+#include "rb-dialog.h"
 
 static void rb_android_device_source_init (RBDeviceSourceInterface *interface);
 static void rb_android_transfer_target_init (RBTransferTargetInterface *interface);
@@ -99,6 +101,8 @@ typedef struct
 
 	GtkWidget *grid;
 	GtkWidget *info_bar;
+
+	gboolean samsung;
 } RBAndroidSourcePrivate;
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (
@@ -650,13 +654,11 @@ sanitize_path (const char *str)
 	return res;
 }
 
+
 static char *
-impl_build_dest_uri (RBTransferTarget *target,
-		     RhythmDBEntry *entry,
-		     const char *media_type,
-		     const char *extension)
+build_device_uri (RBAndroidSource *source, RhythmDBEntry *entry, const char *media_type, const char *extension)
 {
-	RBAndroidSourcePrivate *priv = GET_PRIVATE (target);
+	RBAndroidSourcePrivate *priv = GET_PRIVATE (source);
 	const char *in_artist;
 	char *artist, *album, *title;
 	gulong track_number, disc_number;
@@ -736,6 +738,95 @@ impl_build_dest_uri (RBTransferTarget *target,
 	return uri;
 }
 
+static char *
+impl_build_dest_uri (RBTransferTarget *target,
+		     RhythmDBEntry *entry,
+		     const char *media_type,
+		     const char *extension)
+{
+	RBAndroidSourcePrivate *priv = GET_PRIVATE (target);
+	if (priv->samsung) {
+		return g_strdup (RB_ENCODER_DEST_TEMPFILE);
+	} else {
+		return build_device_uri (RB_ANDROID_SOURCE (target), entry, media_type, extension);
+	}
+}
+
+static void
+track_copy_cb (GObject *src, GAsyncResult *res, gpointer data)
+{
+	RBAndroidSource *source = RB_ANDROID_SOURCE (data);
+	RBAndroidSourcePrivate *priv = GET_PRIVATE (source);
+	RhythmDBEntryType *entry_type;
+	RBShell *shell;
+	RhythmDB *db;
+	GFile *dest;
+	char *uri;
+	GError *error = NULL;
+
+	if (g_task_propagate_boolean (G_TASK (res), &error)) {
+
+		dest = G_FILE (src);
+		uri = g_file_get_uri (dest);
+
+		g_object_get (source, "shell", &shell, NULL);
+		g_object_get (shell, "db", &db, NULL);
+		g_object_unref (shell);
+
+		g_object_get (source, "entry-type", &entry_type, NULL);
+		rhythmdb_add_uri_with_types (db,
+					     uri,
+					     entry_type,
+					     priv->ignore_type,
+					     priv->error_type);
+		g_object_unref (entry_type);
+		g_object_unref (db);
+		g_free (uri);
+
+		update_free_space (source);
+	} else {
+		rb_error_dialog (NULL, _("Error transferring track"), "%s", error->message);
+	}
+
+	g_clear_error (&error);
+	g_object_unref (src);
+	g_object_unref (source);
+}
+
+static void
+copy_track_task (GTask *task, gpointer pdest, gpointer psource, GCancellable *cancel)
+{
+	GFile *source = G_FILE (psource);
+	GFile *dest = G_FILE (pdest);
+	GError *error = NULL;
+	char *uri;
+
+	uri = g_file_get_uri (dest);
+	rb_debug ("creating parent dirs for %s", uri);
+	if (rb_uri_create_parent_dirs (uri, &error) == FALSE) {
+		g_file_delete (source, NULL, NULL);
+		g_free (uri);
+		g_task_return_error (task, error);
+		return;
+	}
+	rb_debug ("moving %s", uri);
+	g_free (uri);
+
+	g_file_move (source,
+		     dest,
+		     G_FILE_COPY_OVERWRITE,
+		     NULL,
+		     NULL,
+		     NULL,
+		     &error);
+	if (error) {
+		g_file_delete (source, NULL, NULL);
+		g_task_return_error (task, error);
+	} else {
+		g_task_return_boolean (task, TRUE);
+	}
+}
+
 static gboolean
 impl_track_added (RBTransferTarget *target,
 		  RhythmDBEntry *entry,
@@ -743,9 +834,29 @@ impl_track_added (RBTransferTarget *target,
 		  guint64 filesize,
 		  const char *media_type)
 {
-	update_free_space (RB_ANDROID_SOURCE (target));
-	return TRUE;
+	RBAndroidSource *source = RB_ANDROID_SOURCE (target);
+	RBAndroidSourcePrivate *priv = GET_PRIVATE (source);
+
+	if (priv->samsung) {
+		char *realdest;
+		GFile *dfile, *sfile;
+		GTask *task;
+
+		realdest = build_device_uri (source, entry, media_type, rb_gst_media_type_to_extension (media_type));
+		dfile = g_file_new_for_uri (realdest);
+		sfile = g_file_new_for_uri (dest);
+		g_free (realdest);
+
+		task = g_task_new (dfile, NULL, track_copy_cb, g_object_ref (source));
+		g_task_set_task_data (task, sfile, g_object_unref);
+		g_task_run_in_thread (task, copy_track_task);
+		return FALSE;
+	} else {
+		update_free_space (source);
+		return TRUE;
+	}
 }
+
 
 static void
 impl_selected (RBDisplayPage *page)
@@ -786,6 +897,7 @@ impl_constructed (GObject *object)
 	RBAndroidSourcePrivate *priv;
 	RhythmDBEntryType *entry_type;
 	RBShell *shell;
+	const char *vendor;
 	char **output_formats;
 
 	source = RB_ANDROID_SOURCE (object);
@@ -834,6 +946,13 @@ impl_constructed (GObject *object)
 		g_object_set (source, "encoding-target", target, NULL);
 	}
 	g_strfreev (output_formats);
+
+	/* some vendors are worse than others */
+	vendor = g_udev_device_get_property (priv->gudev_device, "ID_VENDOR");
+	if (g_ascii_strcasecmp (vendor, "samsung") == 0) {
+		rb_debug ("samsung mode: transfers will use local temporary files");
+		priv->samsung = TRUE;
+	}
 
 	g_object_unref (shell);
 }
