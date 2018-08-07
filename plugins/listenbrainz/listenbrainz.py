@@ -21,6 +21,7 @@
 
 import logging
 import sys
+import threading
 import time
 from gi.repository import GObject
 from gi.repository import Peas
@@ -45,6 +46,7 @@ class ListenBrainzPlugin(GObject.Object, Peas.Activatable):
         self.__current_entry = None
         self.__current_start_time = 0
         self.__current_elapsed = 0
+        self.__lock = threading.Lock()
 
     def do_activate(self):
         logger.debug("activating ListenBrainz plugin")
@@ -57,10 +59,11 @@ class ListenBrainzPlugin(GObject.Object, Peas.Activatable):
         self.__current_start_time = 0
         self.__current_elapsed = 0
         self.__queue = ListenBrainzQueue(self.__client)
-        try:
-            self.__queue.load()
-        except Exception as e:
-            _handle_exception(e)
+        with self.__lock:
+            try:
+                self.__queue.load()
+            except Exception as e:
+                _handle_exception(e)
         self.__queue.activate()
         shell_player = self.object.props.shell_player
         shell_player.connect("playing-song-changed",
@@ -74,8 +77,9 @@ class ListenBrainzPlugin(GObject.Object, Peas.Activatable):
         shell_player.disconnect_by_func(self.on_elapsed_changed)
         self.settings.disconnect_by_func(self.on_user_token_changed)
         self.__queue.deactivate()
-        self.__queue.submit_batch()
-        self.__queue.save()
+        with self.__lock:
+            self.__queue.submit_batch()
+            self.__queue.save()
 
     def on_playing_song_changed(self, player, entry):
         logger.debug("playing-song-changed: %r, %r", player, entry)
@@ -91,10 +95,10 @@ class ListenBrainzPlugin(GObject.Object, Peas.Activatable):
 
         self.__current_start_time = int(time.time())
         track = _entry_to_track(entry)
-        try:
-            self.__client.playing_now(track)
-        except Exception as e:
-            _handle_exception(e)
+        threading.Thread(
+            target=self._run_in_thread,
+            args=[self.__client.playing_now, track]
+            ).start()
 
     def on_elapsed_changed(self, player, elapsed):
         # logger.debug("elapsed-changed: %r, %i" % (player, elapsed))
@@ -112,10 +116,17 @@ class ListenBrainzPlugin(GObject.Object, Peas.Activatable):
             logger.debug("Elapsed: %s / %s", elapsed, duration)
             if elapsed >= 240 or elapsed >= duration / 2:
                 track = _entry_to_track(self.__current_entry)
-                try:
-                    self.__queue.add(self.__current_start_time, track)
-                except Exception as e:
-                    _handle_exception(e)
+                threading.Thread(
+                    target=self._run_in_thread,
+                    args=[self.__queue.add, self.__current_start_time, track]
+                    ).start()
+
+    def _run_in_thread(self, callable, *args):
+        with self.__lock:
+            try:
+                callable(*args)
+            except Exception as e:
+                _handle_exception(e)
 
 
 def _can_be_listened(entry):
