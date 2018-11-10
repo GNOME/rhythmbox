@@ -26,20 +26,23 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-import time
+import gi
 import rb
+import time
 
-from gi.repository import GObject, Gio, GLib, Peas
+gi.require_version('Peas', '1.0')
+gi.require_version('RB', '3.0')
+gi.require_version('Zeitgeist', '2.0')
+
+from gi.repository import GObject, Gio, GLib, Peas, Zeitgeist
 from gi.repository import RB
 
-from zeitgeist.client import ZeitgeistClient
-from zeitgeist.datamodel import Event, Subject, Interpretation, Manifestation
-
 try:
-    IFACE = ZeitgeistClient()
+    logger = Zeitgeist.Log.new()
+
 except RuntimeError as e:
     print("Unable to connect to Zeitgeist, won't send events. Reason: '%s'" % e)
-    IFACE = None
+    logger = None
 
 class ZeitgeistPlugin(GObject.Object, Peas.Activatable):
     __gtype_name__ = 'ZeitgeistPlugin'
@@ -50,7 +53,8 @@ class ZeitgeistPlugin(GObject.Object, Peas.Activatable):
 
     def do_activate(self):
         print("Loading Zeitgeist plugin...")
-        if IFACE is not None:
+
+        if logger is not None:
             shell = self.object
             shell_player = shell.props.shell_player
             self.__psc_id = shell_player.connect("playing-song-changed", self.playing_song_changed)
@@ -61,9 +65,28 @@ class ZeitgeistPlugin(GObject.Object, Peas.Activatable):
             self.__manual_switch = True
             self.__current_song = None
 
-            if IFACE.get_version() >= [0, 3, 2, 999]:
-                IFACE.register_data_source("org.gnome.Rhythmbox,dataprovider", "Rhythmbox", "Play and organize your music collection",
-                                           [Event.new_for_values(actor="application://rhythmbox.desktop")])
+            event = Zeitgeist.Event.new()
+            event.set_property("interpretation", "Source Registration")
+            event.set_property("manifestation", Zeitgeist.USER_ACTIVITY)
+            event.set_property("actor", "application://rhythmbox.desktop")
+
+            datasource = Zeitgeist.DataSource.new()
+            datasource.set_unique_id("org.gnome.Rhythmbox3,dataprovider")
+            datasource.set_name("Rhythmbox")
+            datasource.set_description("Play and organize your music collection")
+            datasource.set_event_templates([event,])
+            datasource.set_enabled(True)
+            datasource.set_timestamp(int(time.time()*1000))
+
+            # Register Rhythmbox as a data source with Zeitgeist
+            # engine.
+            registry = Zeitgeist.DataSourceRegistry.new()
+            registry.register_data_source(datasource)
+
+            # Save references as register_data_source is async.
+            self.event = event
+            self.datasource = datasource
+            self.registry = registry
 
     @staticmethod
     def get_song_info(db, entry):
@@ -85,10 +108,10 @@ class ZeitgeistPlugin(GObject.Object, Peas.Activatable):
 
     def playing_song_changed(self, shell, entry):
         if self.__current_song is not None:
-            self.send_to_zeitgeist_async(self.__current_song, Interpretation.LEAVE_EVENT)
+            self.send_to_zeitgeist_async(self.__current_song, Zeitgeist.LEAVE_EVENT)
 
         if entry is not None:
-            self.send_to_zeitgeist_async(entry, Interpretation.ACCESS_EVENT)
+            self.send_to_zeitgeist_async(entry, Zeitgeist.ACCESS_EVENT)
 
         self.__current_song = entry
         GLib.idle_add(self.reset_manual_switch)
@@ -111,15 +134,16 @@ class ZeitgeistPlugin(GObject.Object, Peas.Activatable):
         """
         shell = self.object
         db = shell.props.db
+
         GLib.idle_add(self.send_to_zeitgeist, db, entry, event_type)
 
     def send_to_zeitgeist(self, db, entry, event_type):
         song = self.get_song_info(db, entry)
 
         if self.__manual_switch:
-            manifest = Manifestation.USER_ACTIVITY
+            manifest = Zeitgeist.USER_ACTIVITY
         else:
-            manifest = Manifestation.SCHEDULED_ACTIVITY
+            manifest = Zeitgeist.SCHEDULED_ACTIVITY
 
         def file_info_complete(obj, res, user_data):
             try:
@@ -129,29 +153,34 @@ class ZeitgeistPlugin(GObject.Object, Peas.Activatable):
 
             uri_mimetype = fi.get_content_type()
 
-            subject = Subject.new_for_values(
-                uri=song["location"],
-                interpretation=unicode(Interpretation.AUDIO),
-                manifestation=unicode(Manifestation.FILE_DATA_OBJECT),
-                origin=song["location"].rpartition("/")[0],
-                mimetype=uri_mimetype,
-                text=" - ".join([song["title"], song["artist"], song["album"]])
-            )
-            event = Event.new_for_values(
-                timestamp=int(time.time()*1000),
-                interpretation=unicode(event_type),
-                manifestation=unicode(manifest),
-                actor="application://rhythmbox.desktop",
-                subjects=[subject,]
-            )
-            IFACE.insert_event(event)
+            subject = Zeitgeist.Subject.new()
+            subject.set_property("uri", song["location"])
+            subject.set_property("interpretation", str(Zeitgeist.AUDIO))
+            subject.set_property("manifestation", str(Zeitgeist.FILE_DATA_OBJECT))
+            subject.set_property("origin", song["location"].rpartition("/")[0])
+            subject.set_property("mimetype", uri_mimetype)
+            subject.set_property("text", " - ".join([song["title"], song["artist"], song["album"]]))
+
+            event = Zeitgeist.Event.new()
+            event.set_property("timestamp", int(time.time()*1000))
+            event.set_property("interpretation", str(event_type))
+            event.set_property("manifestation", str(manifest))
+            event.set_property("actor", "application://rhythmbox.desktop")
+            event.add_subject(subject)
+
+            logger.insert_event(event)
 
         f = Gio.file_new_for_uri(song["location"])
-        f.query_info_async(Gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE, Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, None, file_info_complete, None)
+        f.query_info_async(Gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+                           Gio.FileQueryInfoFlags.NONE,
+                           GLib.PRIORITY_DEFAULT,
+                           None,
+                           file_info_complete,
+                           None)
 
     def do_deactivate(self):
         print("Deactivating Zeitgeist plugin...")
-        if IFACE is not None:
+        if logger is not None:
             shell = self.object
             shell_player = shell.props.shell_player
             shell_player.disconnect(self.__psc_id)
