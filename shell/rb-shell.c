@@ -776,7 +776,7 @@ construct_load_ui (RBShell *shell)
 				    GTK_ACCEL_VISIBLE);
 	rb_application_set_menu_accelerators (shell->priv->application, model, TRUE);
 
-	image = gtk_image_new_from_icon_name ("emblem-system-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
+	image = gtk_image_new_from_icon_name ("open-menu-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
 	gtk_container_add (GTK_CONTAINER (menu_button), image);
 
 	shell->priv->menu_button = GTK_WIDGET (gtk_tool_item_new ());
