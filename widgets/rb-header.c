@@ -296,7 +296,7 @@ rb_header_constructed (GObject *object)
 
 	gtk_grid_set_column_spacing (GTK_GRID (header), 6);
 	gtk_grid_set_column_homogeneous (GTK_GRID (header), TRUE);
-	gtk_container_set_border_width (GTK_CONTAINER (header), 3);
+	gtk_container_set_border_width (GTK_CONTAINER (header), 0);
 
 	/* set up position slider */
 	header->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 10.0, 1.0, 10.0, 0.0));

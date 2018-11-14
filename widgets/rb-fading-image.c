@@ -35,7 +35,7 @@
 #include <lib/rb-util.h>
 
 #define RENDER_FRAME_TIME	(1000 / 25)	/* fps? */
-#define BORDER_WIDTH		1.0
+#define BORDER_WIDTH		0.0
 
 #define MAX_TOOLTIP_SIZE	256
 
