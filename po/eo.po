@@ -9,14 +9,13 @@
 # Michael MORONI, <haikara90@gmail.com>, 2010.
 # Ignatius881 < >, 2011.
 # Patrick OUDEJANS <>, 2009, 2011.
-# Kristjan SCHMIDT <kristjan.schmidt@googlemail.com>, 2010, 2011, 2012, 2017.
+# Kristjan SCHMIDT <kristjan.schmidt@googlemail.com>, 2010, 2011, 2012, 2017, 2018.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=rhythm"
-"box&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2017-10-23 10:42+0000\n"
-"PO-Revision-Date: 2017-12-23 01:53+0200\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
+"POT-Creation-Date: 2018-08-06 12:24+0000\n"
+"PO-Revision-Date: 2018-11-23 14:54+0200\n"
 "Last-Translator: Kristjan SCHMIDT <kristjan.schmidt@googlemail.com>\n"
 "Language-Team: Esperanto <gnome-eo-list@gnome.org>\n"
 "Language: eo\n"
@@ -28,7 +27,12 @@ msgstr ""
 "X-Rosetta-Version: 0.1\n"
 "X-Project-Style: gnome\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:659
+#: ../backends/gstreamer/rb-encoder-gst.c:649
+#, c-format
+msgid "Could not create a temporary file to write to: %s"
+msgstr "Ne eblis krei provizoran skribendan dosieron: %s"
+
+#: ../backends/gstreamer/rb-encoder-gst.c:703
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Ne eblis krei celelementon de GStreamer por skribi en %s"
@@ -37,21 +41,19 @@ msgstr "Ne eblis krei celelementon de GStreamer por skribi en %s"
 #. ?
 #. Translators: the parameter here is an error message
 #: ../backends/gstreamer/rb-player-gst.c:520
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2930
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2931
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Malsukcesis malfermi eligilon: %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:669
 #, c-format
-#| msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgid "Failed to create playbin element; check your GStreamer installation"
 msgstr ""
 "Kreado de playbin-elemento malsukcesis; kontrolu vian instalaĵon de GStreamer"
 
 #: ../backends/gstreamer/rb-player-gst.c:700
 #, c-format
-#| msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr ""
 "Kreado de %s-elemento malsukcesis; kontrolu vian instalaĵon de GStreamer"
@@ -68,32 +70,32 @@ msgid "Failed to start new stream"
 msgstr "Malsukcesis komenci novan fluon"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2843
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2844
 #, c-format
 msgid "Failed to open output device"
 msgstr "Malsukcesis malfermi eligilon"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3232
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3311
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3233
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3312
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Malsukcesis krei elementon de GStreamer; kontroli vian instalaĵon"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3241
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3242
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Malsukcesis krei son-eligan elementon; kontroli vian instalaĵon"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3275
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3328
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3355
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3365
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3375
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3276
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3329
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3356
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3366
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3376
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Malsukcesis ligi ĉenstablon de GStreamer; kontroli vian instalaĵon"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3470
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3471
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Malsukcesis krei ĉenstablon de GStreamer por ludi %s"
@@ -112,14 +114,14 @@ msgstr "Miaj preferataj"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
-#: ../shell/rb-shell.c:513 ../shell/rb-shell.c:2391
+#: ../shell/rb-shell.c:512 ../shell/rb-shell.c:2390
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
 #: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
 #: ../data/rhythmbox-device.desktop.in.in.h:4
 msgid "Play and organize your music collection"
-msgstr "Ludi kaj organizi vian muzikaron"
+msgstr "Ludu kaj organizu vian muzikaron"
 
 #: ../data/rhythmbox.appdata.xml.in.h:3
 msgid ""
@@ -128,12 +130,18 @@ msgid ""
 "network shares, podcasts, radio streams, portable music devices (including "
 "phones), and internet music services such as Last.fm and Magnatune."
 msgstr ""
+"Rhythmnox estas muzika mastruma aplikaĵo kiu funkcias bone en la GNOME "
+"labortablo. Krom muzikon sur via komputilo, ĝi subtenas retdividejojn, "
+"podkastojn, radiofluojn, porteblajn muzikaparatojn (inkluzive telefonojn), "
+"kaj retajn muzikservojn kiel Last.fm kaj Magnatune."
 
 #: ../data/rhythmbox.appdata.xml.in.h:4
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
 msgstr ""
+"Rhythmbox estas libera programaro, bazita sur GTK+ kaj GStreamer, kaj ĝi "
+"estas etendebla per Python- kaj C-kromprogramoj."
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 #: ../data/rhythmbox-device.desktop.in.in.h:2
@@ -148,63 +156,49 @@ msgstr "Muzikludilo Rhythmbox"
 #: ../data/rhythmbox.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
+"Aŭdo;Sono;Kanto;MP3;KD;Podkasto;MTP;iPod;Ludlisto;Last.fm;UPnP;DLNA;Radio;"
 
 #: ../data/ui/app-menu.ui.h:1
-#, fuzzy
-#| msgid "_Music"
 msgid "_Add Music"
-msgstr "_Muziko"
+msgstr "_Aldoni muzikon"
 
 #: ../data/ui/app-menu.ui.h:2
 msgid "_View"
 msgstr "_Vidi"
 
 #: ../data/ui/app-menu.ui.h:3
-#| msgid "Party _Mode"
 msgid "P_arty Mode"
 msgstr "_Festa reĝimo"
 
 #: ../data/ui/app-menu.ui.h:4
-#| msgid "Side _Pane"
 msgid "Side Pane"
 msgstr "Flanka panelo"
 
 #: ../data/ui/app-menu.ui.h:5
-#| msgid "Play _Queue as Side Pane"
 msgid "Play Queue in Side Pane"
 msgstr "Atendovico en la flanka panelo"
 
 #: ../data/ui/app-menu.ui.h:6
-#, fuzzy
-#| msgid "_Song Position Slider"
 msgid "Song Position Slider"
-msgstr "Pozicia ŝovilo"
+msgstr "Kanta pozicia ŝovilo"
 
 #: ../data/ui/app-menu.ui.h:7 ../plugins/artsearch/songinfo.py:64
-#, fuzzy
-#| msgctxt "query-criteria"
-#| msgid "Album Artist"
 msgid "Album Art"
-msgstr "Album-artisto"
+msgstr "Almbumarto"
 
 #: ../data/ui/app-menu.ui.h:8
-#, fuzzy
-#| msgid "Now Playing"
 msgid "Follow Playing Track"
-msgstr "Nun ludanta"
+msgstr "Sekvi ludantan trakon"
 
 #: ../data/ui/app-menu.ui.h:9
 msgid "_Tools"
 msgstr "_Iloj"
 
 #: ../data/ui/app-menu.ui.h:10
-#, fuzzy
-#| msgid "Plu_gins"
 msgid "P_lugins"
 msgstr "Krompro_gramoj"
 
 #: ../data/ui/app-menu.ui.h:11
-#| msgid "Prefere_nces"
 msgid "_Preferences"
 msgstr "_Agordoj"
 
@@ -222,23 +216,19 @@ msgstr "F_ini"
 
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
 #: ../data/ui/podcast-popups.ui.h:9 ../plugins/magnatune/magnatune-popup.ui.h:1
-#| msgid "Add _to Play Queue"
 msgid "Add to Queue"
-msgstr "Aldoni al ludvico"
+msgstr "Aldoni al atendovico"
 
 #: ../data/ui/browser-popup.ui.h:2 ../data/ui/edit-menu.ui.h:7
 #: ../data/ui/playlist-popup.ui.h:2
-#| msgid "Add to P_laylist"
 msgid "Add to Playlist"
 msgstr "Aldoni al ludlisto"
 
 #: ../data/ui/browser-popup.ui.h:3 ../data/ui/playlist-popup.ui.h:3
-#| msgid "_Copy"
 msgid "Copy"
 msgstr "Kopii"
 
 #: ../data/ui/browser-popup.ui.h:4 ../data/ui/playlist-popup.ui.h:4
-#| msgid "Cu_t"
 msgid "Cut"
 msgstr "Eltondi"
 
@@ -249,19 +239,16 @@ msgstr "_Movi rubujen"
 
 #: ../data/ui/browser-popup.ui.h:6 ../data/ui/playlist-popup.ui.h:6
 #: ../plugins/magnatune/magnatune-popup.ui.h:4
-#| msgid "Browse This _Genre"
 msgid "Browse this Genre"
 msgstr "Foliumi ĉi tiun ĝenron"
 
 #: ../data/ui/browser-popup.ui.h:7 ../data/ui/playlist-popup.ui.h:7
 #: ../plugins/magnatune/magnatune-popup.ui.h:5
-#| msgid "Browse This _Artist"
 msgid "Browse this Artist"
 msgstr "Foliumi ĉi tiun artiston"
 
 #: ../data/ui/browser-popup.ui.h:8 ../data/ui/playlist-popup.ui.h:8
 #: ../plugins/magnatune/magnatune-popup.ui.h:6
-#| msgid "Browse This A_lbum"
 msgid "Browse this Album"
 msgstr "Foliumi ĉi tiun albumon"
 
@@ -285,7 +272,7 @@ msgstr "GB"
 
 #: ../data/ui/create-playlist.ui.h:4
 msgid "Minutes"
-msgstr "minutoj"
+msgstr "Minutoj"
 
 #: ../data/ui/create-playlist.ui.h:5
 msgid "Create automatically updating playlist where:"
@@ -297,7 +284,7 @@ msgstr "Al_doni se ajna kriterio estas valida"
 
 #: ../data/ui/create-playlist.ui.h:7 ../widgets/rb-uri-dialog.c:161
 msgid "_Add"
-msgstr ""
+msgstr "_Aldoni"
 
 #: ../data/ui/create-playlist.ui.h:8
 msgid "_Limit to: "
@@ -312,12 +299,10 @@ msgid "_New Playlist"
 msgstr "_Nova ludlisto"
 
 #: ../data/ui/display-page-add-menu.ui.h:2
-#| msgid "New _Automatic Playlist..."
 msgid "New _Automatic Playlist"
 msgstr "Nova _aŭtomata ludlisto"
 
 #: ../data/ui/display-page-add-menu.ui.h:3
-#| msgid "_Load from File..."
 msgid "_Load from File"
 msgstr "Ŝ_argi de dosiero"
 
@@ -346,17 +331,16 @@ msgid "D_eselect All"
 msgstr "Mal_elekti ĉiujn"
 
 #: ../data/ui/edit-menu.ui.h:6
-#| msgid "Add _to Play Queue"
 msgid "Add to Play Queue"
-msgstr "Aldoni al ludvico"
+msgstr "Aldoni al atendovico"
 
 #: ../data/ui/encoding-settings.ui.h:1
 msgid "_Install additional software required to use this format"
-msgstr "_Instali aldonan programaron necesan por uzi tiun formon"
+msgstr "_Instali ceteran programaron necesan por uzi tiun formon"
 
 #: ../data/ui/encoding-settings.ui.h:2
 msgid "Transcode lossless files into this format"
-msgstr ""
+msgstr "Transkodi senperdajn dosierojn al ĉi tiu formato"
 
 #: ../data/ui/general-prefs.ui.h:1
 msgid "Browser Views"
@@ -392,7 +376,7 @@ msgstr "_Artisto"
 
 #: ../data/ui/general-prefs.ui.h:9
 msgid "_Composer"
-msgstr ""
+msgstr "_Komponisto"
 
 #: ../data/ui/general-prefs.ui.h:10
 msgid "A_lbum"
@@ -420,7 +404,7 @@ msgstr "_Takso"
 
 #: ../data/ui/general-prefs.ui.h:16
 msgid "_BPM"
-msgstr ""
+msgstr "_BPM"
 
 #: ../data/ui/general-prefs.ui.h:17
 msgid "C_omment"
@@ -440,25 +424,19 @@ msgstr "Ĝ_enro"
 
 #: ../data/ui/import-dialog.ui.h:1
 msgid "Select a location containing music to add to your library:"
-msgstr ""
+msgstr "Elektu lokon enhavante muzikon por aldoni al via biblioteko:"
 
 #: ../data/ui/import-dialog.ui.h:2 ../data/ui/library-toolbar.ui.h:4
-#, fuzzy
-#| msgctxt "Library"
-#| msgid "Import"
 msgid "Import"
 msgstr "Enporti"
 
 #: ../data/ui/import-dialog.ui.h:3 ../data/ui/podcast-add-dialog.ui.h:3
-#| msgid "_Close"
 msgid "Close"
 msgstr "Fermi"
 
 #: ../data/ui/import-dialog.ui.h:4
-#, fuzzy
-#| msgid "Choose file to be added to the Library"
 msgid "Copy files that are outside the music library"
-msgstr "Elekti la aldonendan dosieron al la biblioteko"
+msgstr "Kopii dosierojn ekstere de la muzikbiblioteko"
 
 #: ../data/ui/import-errors-popup.ui.h:1 ../data/ui/missing-files-popup.ui.h:1
 msgid "_Remove"
@@ -510,7 +488,6 @@ msgstr "Artisto/Artisto - Albumo/Artisto (Albumo) - 01 - Titolo.ogg"
 #: ../plugins/ipod/ipod-toolbar.ui.h:1 ../plugins/iradio/iradio-toolbar.ui.h:1
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:1
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:1
-#| msgid "_Edit"
 msgid "Edit"
 msgstr "Redakti"
 
@@ -531,7 +508,6 @@ msgstr "Foliumi"
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:3
 #: ../plugins/ipod/ipod-toolbar.ui.h:3 ../plugins/iradio/iradio-toolbar.ui.h:3
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:3
-#| msgid "Show All"
 msgid "View All"
 msgstr "Montri ĉiujn"
 
@@ -549,18 +525,15 @@ msgid "_Close"
 msgstr "_Fermi"
 
 #: ../data/ui/media-player-properties.ui.h:3
-#| msgid "<b>Information</b>"
 msgid "Information"
 msgstr "Informoj"
 
 #. Translators: This refers to the usage of media space
 #: ../data/ui/media-player-properties.ui.h:5
-#| msgid "<b>Volume usage</b>"
 msgid "Volume usage"
 msgstr "Sonforteca uzo"
 
 #: ../data/ui/media-player-properties.ui.h:6
-#| msgid "_Preferred format:"
 msgid "Preferred format"
 msgstr "Preferata formo"
 
@@ -572,12 +545,10 @@ msgid "Basic"
 msgstr "Baza"
 
 #: ../data/ui/media-player-properties.ui.h:8 ../data/ui/sync-dialog.ui.h:1
-#| msgid "<b>Sync Preferences</b>"
 msgid "Sync Preferences"
 msgstr "Agordoj por sinkronigado"
 
 #: ../data/ui/media-player-properties.ui.h:9 ../data/ui/sync-dialog.ui.h:2
-#| msgid "<b>Sync Preview</b>"
 msgid "Sync Preview"
 msgstr "Sinkronigi antaŭrigardon"
 
@@ -598,7 +569,7 @@ msgstr "Administrejo de ludilo"
 
 #: ../data/ui/playback-prefs.ui.h:2
 msgid "_Crossfade between tracks"
-msgstr ""
+msgstr "_Transpasi inter trakoj"
 
 #: ../data/ui/playback-prefs.ui.h:3
 msgid "Crossfade Duration (Seconds)"
@@ -651,12 +622,10 @@ msgid "Select playlist format:"
 msgstr "Elekti formaton de ludlisto:"
 
 #: ../data/ui/playlist-save.ui.h:6
-#| msgid "<b>Playlist format</b>"
 msgid "Playlist format"
 msgstr "Ludlista formo"
 
 #: ../data/ui/playlist-toolbar.ui.h:4 ../data/ui/queue-toolbar.ui.h:4
-#| msgid "Playlists"
 msgid "Playlist"
 msgstr "Ludlisto"
 
@@ -666,10 +635,13 @@ msgid ""
 "podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
+"Serĉu podkastojn en la iTunes Store kaj en Miroguide.com, aŭ enigu podkastan "
+"URL-on.\n"
+"Abonu podkastojn por elŝuti novajn epizodojn kiam ili eldoniĝas."
 
 #: ../data/ui/podcast-add-dialog.ui.h:4
 msgid "Subscribe"
-msgstr ""
+msgstr "Aboni"
 
 #: ../data/ui/podcast-feed-properties.ui.h:1
 #: ../data/ui/podcast-properties.ui.h:1
@@ -713,22 +685,18 @@ msgid "Details"
 msgstr "Detaloj"
 
 #: ../data/ui/podcast-popups.ui.h:1
-#| msgid "_New Podcast Feed..."
 msgid "New Podcast Feed..."
 msgstr "Nova fluo de podkasto..."
 
 #: ../data/ui/podcast-popups.ui.h:2
-#| msgid "_Update All Feeds"
 msgid "Update All Feeds"
 msgstr "Ĝisdatigi ĉiujn fluojn"
 
 #: ../data/ui/podcast-popups.ui.h:3
-#| msgid "_Update Podcast Feed"
 msgid "Update Podcast Feed"
 msgstr "Ĝisdatigi fluon de podkasto"
 
 #: ../data/ui/podcast-popups.ui.h:4
-#| msgid "_Delete Podcast Feed"
 msgid "Delete Podcast Feed"
 msgstr "Forigi fluon de podkastoj"
 
@@ -737,23 +705,19 @@ msgstr "Forigi fluon de podkastoj"
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:4
 #: ../plugins/ipod/ipod-toolbar.ui.h:4 ../plugins/iradio/iradio-popup.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:4
-#| msgid "_Properties"
 msgid "Properties"
 msgstr "Atributoj"
 
 #: ../data/ui/podcast-popups.ui.h:6
-#| msgid "Download _Episode"
 msgid "Download Episode"
 msgstr "Elŝuti epizodon"
 
 #: ../data/ui/podcast-popups.ui.h:7
-#| msgid "Cancel Downloads"
 msgid "Cancel Download"
 msgstr "Ĉesi elŝuton"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
 #: ../podcast/rb-podcast-source.c:1237 ../sources/rb-media-player-source.c:1104
-#| msgid "_Delete"
 msgid "Delete"
 msgstr "Forigi"
 
@@ -826,8 +790,6 @@ msgid "Download location:"
 msgstr "Elŝuejo:"
 
 #: ../data/ui/podcast-toolbar.ui.h:4 ../plugins/iradio/iradio-toolbar.ui.h:4
-#| msgctxt "Radio"
-#| msgid "Add"
 msgid "Add"
 msgstr "Aldoni"
 
@@ -836,19 +798,16 @@ msgid "Update"
 msgstr "Ĝisdatigi"
 
 #: ../data/ui/queue-popups.ui.h:1
-#| msgid "Remove From Playlist"
 msgid "Remove from Play Queue"
-msgstr "Forigi de la ludlisto"
+msgstr "Forigi de la atendovico"
 
 #: ../data/ui/queue-popups.ui.h:2
-#| msgid "Shuffle Queue"
 msgid "Shuffle Play Queue"
-msgstr "Miksi ludliston"
+msgstr "Miksi atendovicon"
 
 #: ../data/ui/queue-popups.ui.h:5
-#| msgid "Clear _Queue"
 msgid "Clear Play Queue"
-msgstr "Vakigi ludliston"
+msgstr "Vakigi atendovicon"
 
 #: ../data/ui/queue-toolbar.ui.h:2 ../shell/rb-shell-player.c:3291
 msgid "Shuffle"
@@ -887,17 +846,15 @@ msgid "Album a_rtist:"
 msgstr "Album-a_rtisto:"
 
 #: ../data/ui/song-info-multiple.ui.h:8 ../data/ui/song-info.ui.h:11
-#| msgid "_Comment:"
 msgid "_Composer:"
 msgstr "_Komponisto:"
 
 #. To translators: part of a phrase, for example, disc 1 of 2
 #: ../data/ui/song-info-multiple.ui.h:9 ../data/ui/song-info.ui.h:13
 msgid "of"
-msgstr ""
+msgstr "de"
 
 #: ../data/ui/song-info-multiple.ui.h:10
-#| msgid "Play count:"
 msgid "_Track count:"
 msgstr "_Ludkalkulo:"
 
@@ -914,7 +871,6 @@ msgid "Album a_rtist sort order:"
 msgstr "Album-a_rtista ordigordo:"
 
 #: ../data/ui/song-info-multiple.ui.h:15 ../data/ui/song-info.ui.h:19
-#| msgid "Albu_m sort order:"
 msgid "_Composer sort order:"
 msgstr "_Komponista ordigordo:"
 
@@ -931,12 +887,10 @@ msgid "Track _number:"
 msgstr "Trak_numero:"
 
 #: ../data/ui/song-info.ui.h:8
-#| msgid "BPM:"
 msgid "_BPM:"
 msgstr "_Bitoj dum minuto:"
 
 #: ../data/ui/song-info.ui.h:9
-#| msgid "_Comment:"
 msgid "Comm_ent:"
 msgstr "Kom_ento:"
 
@@ -979,9 +933,9 @@ msgstr "Forigitaj dosieroj:"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:496
-#: ../rhythmdb/rhythmdb.c:3800 ../widgets/rb-entry-view.c:943
+#: ../rhythmdb/rhythmdb.c:3807 ../widgets/rb-entry-view.c:943
 #: ../widgets/rb-entry-view.c:1567 ../widgets/rb-entry-view.c:1580
-#: ../widgets/rb-song-info.c:1545
+#: ../widgets/rb-song-info.c:1546
 msgid "Never"
 msgstr "Neniam"
 
@@ -1025,7 +979,7 @@ msgstr "%d %b %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/android/rb-android-source.c:687
+#: ../plugins/android/rb-android-source.c:689
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -1040,9 +994,9 @@ msgstr "%d %b %Y"
 #: ../plugins/iradio/rb-iradio-source.c:1044
 #: ../plugins/iradio/rb-station-properties-dialog.c:485
 #: ../plugins/lyrics/lyrics.py:70 ../plugins/lyrics/lyrics.py:72
-#: ../plugins/mtpdevice/rb-mtp-source.c:649
-#: ../plugins/mtpdevice/rb-mtp-source.c:1142
-#: ../plugins/mtpdevice/rb-mtp-source.c:1491
+#: ../plugins/mtpdevice/rb-mtp-source.c:645
+#: ../plugins/mtpdevice/rb-mtp-source.c:1144
+#: ../plugins/mtpdevice/rb-mtp-source.c:1450
 #: ../plugins/notification/rb-notification-plugin.c:510
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1926
@@ -1052,9 +1006,9 @@ msgstr "%d %b %Y"
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
 #: ../remote/dbus/rb-client.c:728 ../rhythmdb/rhythmdb.c:2066
 #: ../rhythmdb/rhythmdb.c:2072 ../rhythmdb/rhythmdb.c:2087
-#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5564
-#: ../rhythmdb/rhythmdb.c:5570 ../rhythmdb/rhythmdb.c:5575
-#: ../rhythmdb/rhythmdb.c:5586 ../rhythmdb/rhythmdb.c:5590
+#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5571
+#: ../rhythmdb/rhythmdb.c:5577 ../rhythmdb/rhythmdb.c:5582
+#: ../rhythmdb/rhythmdb.c:5593 ../rhythmdb/rhythmdb.c:5597
 #: ../rhythmdb/rhythmdb-entry-type.c:301
 #: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
 #: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
@@ -1063,9 +1017,9 @@ msgstr "%d %b %Y"
 #: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
 #: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
 #: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1274
-#: ../widgets/rb-header.c:1300 ../widgets/rb-song-info.c:949
-#: ../widgets/rb-song-info.c:961 ../widgets/rb-song-info.c:1233
-#: ../widgets/rb-song-info.c:1572
+#: ../widgets/rb-header.c:1300 ../widgets/rb-song-info.c:950
+#: ../widgets/rb-song-info.c:962 ../widgets/rb-song-info.c:1234
+#: ../widgets/rb-song-info.c:1573
 msgid "Unknown"
 msgstr "Nekonata"
 
@@ -1131,9 +1085,6 @@ msgstr "Malsukcesis krei fontelementon; kontrolu vian instalaĵon"
 
 #: ../metadata/rb-metadata-gst.c:691
 #, c-format
-#| msgid ""
-#| "Failed to create the 'decodebin2' element; check your GStreamer "
-#| "installation"
 msgid ""
 "Failed to create the 'decodebin' element; check your GStreamer installation"
 msgstr ""
@@ -1155,13 +1106,12 @@ msgid "File corrupted during write"
 msgstr "Dosiero difektiĝis dum skribado"
 
 #: ../plugins/android/android.plugin.in.h:1
-#| msgid "Invalid writer device: %s"
 msgid "Android devices"
 msgstr "Androidaj aparatoj"
 
 #: ../plugins/android/android.plugin.in.h:2
 msgid "Support for Android 4.0+ devices (via MTP)"
-msgstr ""
+msgstr "Subteno por Android 4.0+ aparatoj (per MTP)"
 
 #: ../plugins/android/android-info.ui.h:1
 #: ../plugins/generic-player/generic-player-info.ui.h:1
@@ -1190,7 +1140,6 @@ msgstr "Aŭddatumaranĝoj:"
 #: ../plugins/android/android-info.ui.h:5
 #: ../plugins/generic-player/generic-player-info.ui.h:5
 #: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:6
-#| msgid "<b>System</b>"
 msgid "System"
 msgstr "Sistemo"
 
@@ -1204,7 +1153,7 @@ msgstr "Aparat_nomo:"
 #: ../plugins/generic-player/generic-player-info.ui.h:7
 #: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:8
 msgid "Tracks:"
-msgstr "Kantoj:"
+msgstr "Trakoj:"
 
 #: ../plugins/android/android-info.ui.h:8
 #: ../plugins/generic-player/generic-player-info.ui.h:8
@@ -1212,18 +1161,26 @@ msgstr "Kantoj:"
 msgid "Playlists:"
 msgstr "Ludlistoj:"
 
-#: ../plugins/android/rb-android-source.c:199
+#: ../plugins/android/rb-android-source.c:203
 msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
 msgstr ""
+"Neniu memorejo trovita sur ĉi tiu aparato. Povus esti ke vi bezonas malŝlosi "
+"ĝin kaj ŝalti MTP-on."
 
-#: ../plugins/android/rb-android-source.c:399
+#: ../plugins/android/rb-android-source.c:403
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
-#| msgid "Starting %s"
 msgid "Scanning %s"
 msgstr "Skanante %s"
+
+#: ../plugins/android/rb-android-source.c:788
+#: ../plugins/mtpdevice/rb-mtp-source.c:1138
+#: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
+#: ../sources/rb-transfer-target.c:182
+msgid "Error transferring track"
+msgstr "Eraro dum transigi trakon"
 
 #: ../plugins/artsearch/artsearch.plugin.in.h:1
 msgid "Cover art search"
@@ -1235,7 +1192,7 @@ msgstr "Obteni kovrilon el interreto"
 
 #: ../plugins/artsearch/songinfo.py:56
 msgid "_Fetch"
-msgstr ""
+msgstr "_Venigi"
 
 #: ../plugins/artsearch/songinfo.py:60
 msgid "_Browse"
@@ -1243,10 +1200,9 @@ msgstr "_Foliumi"
 
 #: ../plugins/artsearch/songinfo.py:134
 msgid "Select new artwork"
-msgstr ""
+msgstr "Elekti novan artaĵon"
 
 #: ../plugins/artsearch/songinfo.py:136
-#| msgid "Select _All"
 msgid "_Select"
 msgstr "_Elekti"
 
@@ -1277,7 +1233,6 @@ msgstr "Eltiri"
 #: ../plugins/audiocd/audiocd-toolbar.ui.h:3
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:5
 #: ../plugins/ipod/ipod-toolbar.ui.h:5 ../plugins/mtpdevice/mtp-toolbar.ui.h:5
-#| msgid "_Eject"
 msgid "Eject"
 msgstr "Elĵeti"
 
@@ -1286,14 +1241,12 @@ msgid "Reload"
 msgstr "Reŝargi"
 
 #: ../plugins/audiocd/rb-audiocd-info.c:57
-#, fuzzy
-#| msgid "Could not find temporary space!"
 msgid "Could not find a GStreamer CD source plugin"
-msgstr "Ne eblis trovi provizoran spacon"
+msgstr "Ne eblis trovi GStreamer KD fontan kromprogramon"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:386
 msgid "Select tracks to be extracted"
-msgstr "Elekti kantojn por esti eltiritaj"
+msgstr "Elekti eltirendajn trakojn"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:532
 msgid "<Invalid unicode>"
@@ -1307,7 +1260,7 @@ msgstr "Sendi alb_umon"
 #: ../plugins/audiocd/rb-audiocd-source.c:634
 #: ../plugins/audiocd/rb-audiocd-source.c:672
 msgid "H_ide"
-msgstr ""
+msgstr "K_aŝi"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:599
 msgid "Could not find this album on MusicBrainz."
@@ -1321,20 +1274,19 @@ msgstr ""
 #: ../plugins/audiocd/rb-audiocd-source.c:633
 #: ../plugins/audiocd/rb-audiocd-source.c:671
 msgid "_Retry"
-msgstr ""
+msgstr "_Reprovi"
 
 #: ../plugins/audiocd/rb-audiocd-source.c:637
 msgid "Could not search MusicBrainz for album details."
-msgstr ""
+msgstr "Ne povis serĉi MusicBrainz por albumaj detaloj."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:675
-#| msgid "Rhythmbox could not get access to the CD device."
 msgid "Could not read the CD device."
 msgstr "Ne eblis legi de la KD-aparaton."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:879
 msgid "This disc matches multiple albums. Select the correct album."
-msgstr ""
+msgstr "Ĉi tiu disko kongruas plurajn albumojn. Elektu la ĝustan."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:1087
 #, c-format
@@ -1342,18 +1294,16 @@ msgid "Track %u"
 msgstr "Trako %u"
 
 #: ../plugins/audiocd/rb-musicbrainz-lookup.c:406
-#| msgid "No lyrics found"
 msgid "Not found"
 msgstr "Ne trovite"
 
 #: ../plugins/audiocd/rb-musicbrainz-lookup.c:411
-#| msgid "Unable to change station property"
 msgid "Unable to connect to Musicbrainz server"
 msgstr "Ne eblis konekti al servilo de Musicbrainz"
 
 #: ../plugins/audiocd/rb-musicbrainz-lookup.c:416
 msgid "Musicbrainz server error"
-msgstr ""
+msgstr "Musicbrainz servila eraro"
 
 #: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:1
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:2
@@ -1363,7 +1313,7 @@ msgstr "Last.fm"
 #: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:2
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
 msgstr ""
-"Alŝutas prikantajn informojn al Last.fm kaj sonigas radiajn fluojn de Last.fm"
+"Alŝutas prikantajn informojn al Last.fm kaj ludas radiajn fluojn de Last.fm"
 
 #: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:1
 msgid "Which Audioscrobbler services do you wish to use?"
@@ -1391,11 +1341,11 @@ msgstr "Stato:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:5
 msgid "Queued tracks:"
-msgstr "Envicigitaj kantoj:"
+msgstr "Envicigitaj trakoj:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:6
 msgid "Tracks submitted:"
-msgstr "Senditaj kantoj:"
+msgstr "Senditaj trakoj:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:7
 msgid "Last submission time:"
@@ -1436,7 +1386,7 @@ msgstr "Rekomendaĵoj"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:17
 msgid "Top Tracks"
-msgstr "Plej bonaj kantoj"
+msgstr "Plej bonaj trakoj"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:18
 msgid "Loved Tracks"
@@ -1575,7 +1525,7 @@ msgstr "Ĉirkaŭaĵo de uzanto:"
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:71
 msgid "Tracks Loved by User:"
-msgstr "Kantoj ŝatataj de uzanto:"
+msgstr "Trakoj ŝatataj de uzanto:"
 
 #. Translators: describes a radio stream playing tracks recommended to a particular user.
 #. * Followed by a text entry box for the user name.
@@ -1597,7 +1547,7 @@ msgstr "Miksradio por uzanto:"
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:84
 msgid "Tracks Tagged with:"
-msgstr "Kantoj markitaj per:"
+msgstr "Trakoj markitaj per:"
 
 #. Translators: describes a radio stream playing tracks often listened to by members of
 #. * a particular group. Followed by a text entry box for the group name.
@@ -1706,11 +1656,11 @@ msgstr "Eraro aliri stacion: %i - %s"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:754
 msgid "Error tuning station: unexpected response"
-msgstr ""
+msgstr "Eraro aliri stacion: neanticipita respondo"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:759
 msgid "Error tuning station: invalid response"
-msgstr ""
+msgstr "Eraro aliri stacion: nevalida respondo"
 
 #: ../plugins/brasero-disc-recorder/cd-recorder.plugin.in.h:1
 msgid "Audio CD Recorder"
@@ -1750,7 +1700,6 @@ msgid "Unable to create audio CD project"
 msgstr "Ne eblis krei sondiskan projekton"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:654
-#| msgid "_Create Audio CD..."
 msgid "Create Audio CD..."
 msgstr "Krei sondiskon..."
 
@@ -1767,7 +1716,7 @@ msgstr "Albumoj"
 #: ../plugins/context/AlbumTab.py:120
 #, python-format
 msgid "Loading top albums for %s"
-msgstr ""
+msgstr "Ŝargante plej bonajn albumojn por %s"
 
 #: ../plugins/context/ArtistTab.py:59
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:4
@@ -1788,7 +1737,7 @@ msgstr "Kunteksta Fenestro"
 
 #: ../plugins/context/context.plugin.in.h:2
 msgid "Show information related to the currently playing artist and song."
-msgstr "Montri informon rilate al la nuntempa ludanta artisto kaj kanto."
+msgstr "Montri informon rilate al la aktuale ludanta artisto kaj trako."
 
 #: ../plugins/context/LastFM.py:42
 msgid ""
@@ -1804,7 +1753,7 @@ msgstr "Ligiloj"
 
 #: ../plugins/context/LinksTab.py:183
 msgid "No artist specified."
-msgstr ""
+msgstr "Neniu artisto specifita."
 
 #: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:306
 #: ../plugins/lyrics/lyrics.py:391
@@ -1814,7 +1763,7 @@ msgstr "Teksto"
 #: ../plugins/context/LyricsTab.py:104
 #, python-format
 msgid "Loading lyrics for %s by %s"
-msgstr "Ŝarĝo de kanttekstojn por %s de %s"
+msgstr "Ŝargante kanttekstojn por %s de %s"
 
 #: ../plugins/context/LyricsTab.py:120
 msgid "Lyrics not found"
@@ -1822,28 +1771,28 @@ msgstr "Ne trovis kanttekstojn"
 
 #: ../plugins/context/tmpl/album-tmpl.html:46
 msgid "Hide all tracks"
-msgstr "Kaŝi ciujn kantojn"
+msgstr "Kaŝi ciujn trakojn"
 
 #: ../plugins/context/tmpl/album-tmpl.html:47
 #: ../plugins/context/tmpl/album-tmpl.html:80
 msgid "Show all tracks"
-msgstr "Montri ciujn kantojn"
+msgstr "Montri ciujn trakojn"
 
 #: ../plugins/context/tmpl/album-tmpl.html:57
 #, c-format
 msgid "Top albums by %s"
-msgstr ""
+msgstr "Plej bonaj albumoj de %s"
 
 #: ../plugins/context/tmpl/album-tmpl.html:74
 #, c-format
 msgid "%s (%d track)"
 msgid_plural "%s (%d tracks)"
-msgstr[0] "%s (%d kantoj)"
-msgstr[1] "%s (%d kantoj)"
+msgstr[0] "%s (%d trako)"
+msgstr[1] "%s (%d trakoj)"
 
 #: ../plugins/context/tmpl/album-tmpl.html:93
 msgid "Track list not available"
-msgstr "Kant-listo ne disponebla"
+msgstr "Traklisto ne disponeblas"
 
 #: ../plugins/context/tmpl/album-tmpl.html:99
 msgid "Unable to retrieve album information:"
@@ -1866,13 +1815,12 @@ msgid "Share music and play shared music on your local network"
 msgstr "Kunhavigi muzikon kaj ludi kunhavigitan muzikon el via loka reto"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
-#| msgid "<b>Sharing</b>"
 msgid "Sharing"
 msgstr "Kunhavigo"
 
 #: ../plugins/daap/daap-prefs.ui.h:2
 msgid "_Look for touch Remotes"
-msgstr ""
+msgstr "_Serĉi tuŝajn teleregilojn"
 
 #: ../plugins/daap/daap-prefs.ui.h:3
 msgid "_Share my music"
@@ -1884,47 +1832,43 @@ msgstr "Bibliotek_nomo:"
 
 #: ../plugins/daap/daap-prefs.ui.h:5
 msgid "Forget known Remotes"
-msgstr ""
+msgstr "Forgesi konatajn teleregilojn"
 
 #: ../plugins/daap/daap-prefs.ui.h:6
 msgid "Require _password:"
 msgstr "_Pasvorto bezonata:"
 
 #: ../plugins/daap/daap-prefs.ui.h:7
-#, fuzzy
-#| msgid "Remove"
 msgid "Add Remote"
-msgstr "Forigi"
+msgstr "Aldoni teleregilon"
 
 #: ../plugins/daap/daap-prefs.ui.h:8
 msgid "Please enter the passcode displayed on your device."
-msgstr ""
+msgstr "Bonvolu enigi la paskodon montrita sur via aparato."
 
 #: ../plugins/daap/daap-prefs.ui.h:9
 msgid "Could not pair with this Remote"
-msgstr ""
+msgstr "Ne povis pari kun ĉi tiu teleregilo"
 
 #: ../plugins/daap/daap-prefs.ui.h:10
 msgid "You can now control Rhythmbox through your Remote"
-msgstr ""
+msgstr "Vi nun povas regi Rhythmbox tra via teleregilo"
 
 #: ../plugins/daap/daap-toolbar.ui.h:4
-#| msgid "_Disconnect"
 msgid "Disconnect"
 msgstr "Malkonekti"
 
 #: ../plugins/daap/rb-daap-plugin.c:196
-#| msgid "Connect to _DAAP share..."
 msgid "Connect to DAAP share..."
-msgstr "Konekti al DAAP-kunhavigo..."
+msgstr "Konekti al DAAP-dividejo..."
 
 #: ../plugins/daap/rb-daap-plugin.c:511
 msgid "New DAAP share"
-msgstr "Nova DAAP-kunhavigo"
+msgstr "Nova DAAP-dividejo"
 
 #: ../plugins/daap/rb-daap-plugin.c:511
 msgid "Host:port of DAAP share:"
-msgstr "Gastigo:pordo de DAAP-kunhavigo:"
+msgstr "Gastigo:pordo de DAAP-dividejo:"
 
 #: ../plugins/daap/rb-daap-sharing.c:61
 #, c-format
@@ -1934,11 +1878,11 @@ msgstr "Muziko de %s"
 #: ../plugins/daap/rb-daap-source.c:476
 #, c-format
 msgid "The music share '%s' requires a password to connect"
-msgstr "La komuna muziko '%s' necesas pasvorton por konekti"
+msgstr "La muzika dividejo '%s' necesas pasvorton por konekti"
 
 #: ../plugins/daap/rb-daap-source.c:542
 msgid "Retrieving songs from music share"
-msgstr "Ricevanta kantojn el komuna muziko"
+msgstr "Ricevanta trakojn el muzika dividejo"
 
 #: ../plugins/daap/rb-daap-source.c:625
 msgid "Could not connect to shared music"
@@ -1954,25 +1898,25 @@ msgstr "Konektante..."
 
 #: ../plugins/daap/rb-dacp-pairing-page.c:394
 msgid "Could not pair with this Remote."
-msgstr ""
+msgstr "Ne povis pari kun ĉi tiu teleregilo."
 
 #: ../plugins/daap/rb-dacp-pairing-page.c:612
 msgid "Remotes"
-msgstr ""
+msgstr "Teleregiloj"
 
 #: ../plugins/dbus-media-server/dbus-media-server.plugin.in.h:1
 msgid "MediaServer2 D-Bus interface"
-msgstr ""
+msgstr "MediaServer2 D-Bus interfaco"
 
 #: ../plugins/dbus-media-server/dbus-media-server.plugin.in.h:2
 msgid ""
 "Provides an implementation of the MediaServer2 D-Bus interface specification"
-msgstr ""
+msgstr "Provizas realigon de la specifon de MediaServer2 D-Bus interfaco"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1250
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1382
 msgid "All Tracks"
-msgstr ""
+msgstr "Ĉiuj trakoj"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2398
 msgid "Artists"
@@ -1997,8 +1941,6 @@ msgid "Support for FM radio broadcasting services"
 msgstr "Subteno por elsendaj servoj de FM-radioj"
 
 #: ../plugins/fmradio/fmradio-toolbar.ui.h:2
-#| msgctxt "Radio"
-#| msgid "New"
 msgid "New"
 msgstr "Nova"
 
@@ -2021,41 +1963,39 @@ msgstr "Subteno por komunaj sonludiloj (kune kun PSP kaj Nokia 770)"
 #: ../plugins/generic-player/rb-generic-player-source.c:294
 #: ../plugins/ipod/rb-ipod-source.c:333
 #, c-format
-#| msgid "New Playlist"
 msgid "New Playlist on %s"
 msgstr "Nova ludlisto sur %s"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:338
-#: ../sources/rb-library-source.c:378
-#| msgid "Add to P_laylist"
+#: ../sources/rb-library-source.c:375
 msgid "Add to New Playlist"
 msgstr "Aldoni al nova ludlisto"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1370
 #: ../plugins/ipod/rb-ipod-source.c:2045
-#: ../plugins/mtpdevice/rb-mtp-source.c:1571
+#: ../plugins/mtpdevice/rb-mtp-source.c:1530
 msgid "Advanced"
 msgstr "Spertula"
 
 #: ../plugins/grilo/grilo.plugin.in.h:1
 msgid "Grilo media browser"
-msgstr ""
+msgstr "Grilo aŭdovida foliumilo"
 
 #: ../plugins/grilo/grilo.plugin.in.h:2
 msgid "Browse various local and Internet media sources"
-msgstr ""
+msgstr "Foliumi diversajn lokajn kaj retajn aŭdovidajn fontojn"
 
 #: ../plugins/grilo/rb-grilo-source.c:403
 #: ../plugins/soundcloud/soundcloud.py:492
 msgid "Fetch more tracks"
-msgstr ""
+msgstr "Venigi pli da trakoj"
 
 #: ../plugins/grilo/rb-grilo-source.c:926
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Nur montras %d rezulton"
+msgstr[1] "Nur montras %d rezultojn"
 
 #: ../plugins/im-status/im-status.plugin.in.h:1
 msgid "IM Status"
@@ -2066,6 +2006,7 @@ msgid ""
 "Updates IM status according to the current song (works with Empathy and "
 "Pidgin)"
 msgstr ""
+"Ĝisdatigas IM-staton laŭ la aktuala kanto (funkcias kun Empatio kaj Piĝin)"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
@@ -2111,7 +2052,7 @@ msgstr "Podkastoj:"
 
 #: ../plugins/ipod/ipod-info.ui.h:5
 msgid "Device node:"
-msgstr ""
+msgstr "Aparata nodo:"
 
 #: ../plugins/ipod/ipod-info.ui.h:6
 msgid "Mount point:"
@@ -2156,7 +2097,6 @@ msgstr ""
 "aparato ne estas iPod aŭ vi ne deziras pravalorizi ĝin, bonvolu nuligi tion."
 
 #: ../plugins/ipod/ipod-init.ui.h:7
-#| msgid "Unable to initialize new iPod"
 msgid "Do you want to initialize your iPod?"
 msgstr "Ĉu vi volas pravalorizi vian iPod?"
 
@@ -2203,7 +2143,7 @@ msgstr "Ĝenro"
 
 #: ../plugins/iradio/rb-iradio-source.c:352
 msgid "Search your internet radio stations"
-msgstr ""
+msgstr "Serĉi vian interretajn radiajn staciojn"
 
 #: ../plugins/iradio/rb-iradio-source.c:448
 msgid "Radio"
@@ -2229,14 +2169,14 @@ msgstr "URL de la reta radiostacio:"
 #: ../plugins/iradio/rb-station-properties-dialog.c:395
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
 #: ../podcast/rb-podcast-properties-dialog.c:524
-#: ../sources/rb-media-player-source.c:567 ../widgets/rb-song-info.c:1150
+#: ../sources/rb-media-player-source.c:567 ../widgets/rb-song-info.c:1151
 #, c-format
 msgid "%s Properties"
 msgstr "Ecoj de %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:487
 #: ../podcast/rb-podcast-properties-dialog.c:637
-#: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1235
+#: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1236
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kb/s"
@@ -2255,7 +2195,6 @@ msgid "L_ocation:"
 msgstr "L_oko:"
 
 #: ../plugins/lirc/rblirc.plugin.in.h:1
-#| msgid "LIRC "
 msgid "LIRC"
 msgstr "LIRC"
 
@@ -2265,18 +2204,17 @@ msgstr "Kontroli Rhythmbox per infraruĝa teleregilo"
 
 #: ../plugins/lyrics/LyricsConfigureDialog.py:103
 msgid "Choose lyrics folder..."
-msgstr "Elekti la dosierujon de tekstoj..."
+msgstr "Elekti la kanttekstan dosierujon..."
 
 #: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:414
 msgid "Song Lyrics"
-msgstr "Teksto de kanto"
+msgstr "Kanttekstoj"
 
 #: ../plugins/lyrics/lyrics.plugin.in.h:2
 msgid "Fetch song lyrics from the Internet"
-msgstr "Preni kantotekstojn de la Interreto"
+msgstr "Preni kantotekstojn de la interreto"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:1
-#| msgid "<b>Search engines</b>"
 msgid "Search engines"
 msgstr "Serĉiloj"
 
@@ -2285,7 +2223,6 @@ msgid "Browse..."
 msgstr "Foliumi..."
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:3
-#| msgid "<b>Lyrics Folder</b>"
 msgid "Lyrics Folder"
 msgstr "Dosierujo de tekstoj"
 
@@ -2321,18 +2258,15 @@ msgstr "Dark Lyrics (darklyrics.com)"
 
 #: ../plugins/lyrics/LyricsSites.py:45
 msgid "Jlyric (j-lyric.net)"
-msgstr ""
+msgstr "Jlyric (j-lyric.net)"
 
 #: ../plugins/lyrics/LyricsSites.py:46
-#| msgid "Leo's Lyrics (www.leoslyrics.com)"
 msgid "Jetlyrics (jetlyrics.com)"
 msgstr "Jetlyrics (jetlyrics.com)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
-#, fuzzy
-#| msgid "<b>Magnatune online music store</b>"
 msgid "Magnatune online music store"
-msgstr "Magnatune reta muzikvendejo"
+msgstr "Magnatune reta muzikbutiko"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:2
 msgid "Magnatune is an online record label that is not evil.\n"
@@ -2347,6 +2281,8 @@ msgid ""
 "    * Paid members get totally unlimited downloading of the entire catalog "
 "(no other service allows that)"
 msgstr ""
+"    * Pagantaj membroj ricevas entute senlimigita aliron al elŝutado de la "
+"tuta katalogo (neniu alia servo tion permesas)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:7
 #, no-c-format
@@ -2354,16 +2290,19 @@ msgid ""
 "    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's "
 "worth joining"
 msgstr ""
+"    * 10% de via Magnatune abonkostojn ricevas Rhythmbox/GNOME - Indas aliĝi"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:8
 msgid ""
 "    * Open-Source friendly file formats: MP3s and WAVs, but also OGG and "
 "FLAC files."
 msgstr ""
+"    * Malfermitkod-amikaj dosierformatoj: MP3 kaj WAV, sed ankaŭ OGG kaj "
+"FLAC dosieroj."
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:9
 msgid "    * All albums and artists hand-picked"
-msgstr "    * Ĉiuj albumoj kaj artistoj manpreneblaj"
+msgstr "    * Ĉiuj albumoj kaj artistoj manprenitaj"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:10
 msgid "You can find more information at "
@@ -2378,7 +2317,6 @@ msgid "Download Album"
 msgstr "Elŝuti albumon"
 
 #: ../plugins/magnatune/magnatune-popup.ui.h:3
-#| msgid "Artist Information"
 msgid "Artist Info"
 msgstr "Informoj pri artisto"
 
@@ -2464,7 +2402,7 @@ msgstr "$9 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:18
 msgid "$10 US (better than average)"
-msgstr ""
+msgstr "$10 US (pli bona ol mezo)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:19
 msgid "$11 US"
@@ -2472,7 +2410,7 @@ msgstr "$11 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:20
 msgid "$12 US (generous)"
-msgstr ""
+msgstr "$12 US (sindona)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:21
 msgid "$13 US"
@@ -2484,7 +2422,7 @@ msgstr "$14 US"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:23
 msgid "$15 US (VERY generous!)"
-msgstr ""
+msgstr "$15 US (EGE sindona!)"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:24
 msgid "$16 US"
@@ -2567,15 +2505,12 @@ msgid "Magnatune"
 msgstr "Magnatune"
 
 #: ../plugins/magnatune/MagnatuneSource.py:192
-#| msgid "Couldn't purchase album"
 msgid "Couldn't download album"
 msgstr "Ne eblis elŝuti albumon"
 
 #: ../plugins/magnatune/MagnatuneSource.py:193
-#, fuzzy
-#| msgid "You must have a library location set to purchase an album."
 msgid "You must have a library location set to download an album."
-msgstr "Necesas agordi lokon por via muzikkolekto por aĉeti albumon."
+msgstr "Necesas agordi bibliotekan lokon por elŝuti albumon."
 
 #: ../plugins/magnatune/MagnatuneSource.py:255
 msgid "Unable to load catalog"
@@ -2622,11 +2557,9 @@ msgstr ""
 "La teksto de la eraro estas:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:499
-#, fuzzy
-#| msgid "Download this album from Magnatune"
+#: ../plugins/magnatune/MagnatuneSource.py:500
 msgid "Downloading from Magnatune"
-msgstr "Elŝuti ĉi tiun albumon ĉe Magnatune"
+msgstr "Elŝutante de Magnatune"
 
 #: ../plugins/mmkeys/mmkeys.plugin.in.h:1
 msgid "Media Player Keys"
@@ -2638,11 +2571,11 @@ msgstr "Kontroli Rhythmbox uzante fulmoklavojn"
 
 #: ../plugins/mpris/mpris.plugin.in.h:1
 msgid "MPRIS D-Bus interface"
-msgstr ""
+msgstr "MPRIS D-Bus interfaco"
 
 #: ../plugins/mpris/mpris.plugin.in.h:2
 msgid "Provides an implementation of the MPRIS D-Bus interface specification"
-msgstr ""
+msgstr "Provizas realigon de la specifon de MPRIS D-Bus interfaco"
 
 #: ../plugins/mtpdevice/mtpdevice.plugin.in.h:1
 msgid "Portable Players - MTP"
@@ -2652,30 +2585,23 @@ msgstr "Porteblaj ludiloj - MTP"
 msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr "Subteno por MTP-aparatoj (montri enhavon, transiri, ludi el aparato)"
 
-#: ../plugins/mtpdevice/rb-mtp-gst-sink.c:127
-#: ../plugins/mtpdevice/rb-mtp-thread.c:488
-#, c-format
-msgid "Unable to open temporary file: %s"
-msgstr "Ne eblis malfermi provizoran dosieron: %s"
-
-#: ../plugins/mtpdevice/rb-mtp-source.c:603
-#| msgid "Media Player Keys"
+#: ../plugins/mtpdevice/rb-mtp-source.c:599
 msgid "Media Player"
 msgstr "Plurmedia ludilo"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:883
+#: ../plugins/mtpdevice/rb-mtp-source.c:879
 msgid "Media player device error"
 msgstr "Eraro de ludilaparato"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:887
+#: ../plugins/mtpdevice/rb-mtp-source.c:883
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Neeblas malfermi la aparaton %s %s"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:931
+#: ../plugins/mtpdevice/rb-mtp-source.c:927
 msgid "Digital Audio Player"
 msgstr "Diĝita ludilo"
 
@@ -2691,12 +2617,17 @@ msgstr "Ne eblis kopii dosieron de MTP-aparato: %s"
 msgid "Not enough space in %s"
 msgstr "Ne sufiĉa spaco en %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:545
+#: ../plugins/mtpdevice/rb-mtp-thread.c:488
+#, c-format
+msgid "Unable to open temporary file: %s"
+msgstr "Ne eblis malfermi provizoran dosieron: %s"
+
+#: ../plugins/mtpdevice/rb-mtp-thread.c:552
 #, c-format
 msgid "No space left on MTP device"
-msgstr ""
+msgstr "Ne restas spaco sur MTP-aparato"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:548
+#: ../plugins/mtpdevice/rb-mtp-thread.c:555
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "Ne eblis sendi dosieron al MTP-aparato: %s"
@@ -2707,7 +2638,7 @@ msgstr "Sciigo"
 
 #: ../plugins/notification/notification.plugin.in.h:2
 msgid "Notification popups"
-msgstr ""
+msgstr "Ŝprucaj sciigoj"
 
 #: ../plugins/notification/rb-notification-plugin.c:225
 msgid "Previous"
@@ -2740,7 +2671,7 @@ msgstr "el <i>%s</i>"
 #: ../plugins/notification/rb-notification-plugin.c:414
 #: ../widgets/rb-header.c:366
 msgid "Not Playing"
-msgstr "Neludanta"
+msgstr "Neludante"
 
 #: ../plugins/power-manager/power-manager.plugin.in.h:1
 msgid "Power Manager"
@@ -2791,7 +2722,7 @@ msgstr "Zeitgeist"
 
 #: ../plugins/rbzeitgeist/rbzeitgeist.plugin.in.h:2
 msgid "Inform Zeitgeist about your activity"
-msgstr ""
+msgstr "Informi Zeitgeist pri via aktiveco"
 
 #: ../plugins/replaygain/config.py:64
 msgid "-15.0 dB"
@@ -2811,10 +2742,12 @@ msgid ""
 "The GStreamer elements required for ReplayGain processing are not available. "
 "The missing elements are: %s"
 msgstr ""
+"La GStreamer-eroj necesaj por ReplayGain-traktado ne disponeblas. La "
+"mankantaj eroj estas: %s"
 
 #: ../plugins/replaygain/player.py:53
 msgid "ReplayGain GStreamer plugins not available"
-msgstr ""
+msgstr "ReplayGain GStreamer-kromprogramoj ne disponeblas"
 
 #: ../plugins/replaygain/replaygain.plugin.in.h:1
 msgid "ReplayGain"
@@ -2822,7 +2755,7 @@ msgstr "ReludiAkiron"
 
 #: ../plugins/replaygain/replaygain.plugin.in.h:2
 msgid "Use ReplayGain to provide a consistent playback volume"
-msgstr ""
+msgstr "Uzi ReplayGain por certigi koheran ludlaŭtecon"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:1
 msgid "Radio (equal loudness for all tracks)"
@@ -2846,21 +2779,19 @@ msgstr ""
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:6
 msgid "_Apply compression to prevent clipping"
-msgstr ""
+msgstr "_Apliki densigon por malhelpi tondadon"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:7
-#| msgid "Learn more about ReplayGain at replaygain.org"
 msgid "Learn more about ReplayGain"
 msgstr "Lernu pli pri ReplayGain"
 
 #: ../plugins/sendto/sendto.plugin.in.h:1
 msgid "Send tracks"
-msgstr "Sendi kantojn"
+msgstr "Sendi trakojn"
 
 #: ../plugins/sendto/sendto.plugin.in.h:2
-#| msgid "Send selected tracks by email or instant message"
 msgid "Send selected tracks by email"
-msgstr "Sendi elektitajn kantojn per retpoŝto"
+msgstr "Sendi elektitajn trakojn retpoŝto"
 
 #: ../plugins/sendto/sendto.py:51
 msgid "Send to..."
@@ -2869,20 +2800,19 @@ msgstr "Sendi al..."
 #: ../plugins/soundcloud/soundcloud.plugin.in.h:1
 #: ../plugins/soundcloud/soundcloud.py:72
 msgid "SoundCloud"
-msgstr ""
+msgstr "SoundCloud"
 
 #: ../plugins/soundcloud/soundcloud.plugin.in.h:2
 msgid "Browse and play sounds from SoundCloud®"
-msgstr ""
+msgstr "Foliumi kaj ludi sonojn de SoundCloud®"
 
 #: ../plugins/soundcloud/soundcloud.py:96
-#| msgid "Send tracks"
 msgid "Search tracks"
-msgstr "Sendi kantojn"
+msgstr "Sendi trakojn"
 
 #: ../plugins/soundcloud/soundcloud.py:97
 msgid "Search tracks on SoundCloud"
-msgstr ""
+msgstr "Serĉi trakojn sur SoundCloud"
 
 #: ../plugins/soundcloud/soundcloud.py:103
 #, fuzzy
@@ -2899,91 +2829,82 @@ msgid "SoundCloud Sets"
 msgstr ""
 
 #: ../plugins/soundcloud/soundcloud.py:110
-#| msgid "Search albums"
 msgid "Search users"
 msgstr "Serĉi uzantojn"
 
 #: ../plugins/soundcloud/soundcloud.py:111
 msgid "Search users on SoundCloud"
-msgstr ""
+msgstr "Serĉi uzantojn sur SoundCloud"
 
 #: ../plugins/soundcloud/soundcloud.py:112
 msgid "SoundCloud Users"
-msgstr ""
+msgstr "SoundCoud-uzantoj"
 
 #: ../plugins/soundcloud/soundcloud.py:117
-#| msgid "Search albums"
 msgid "Search groups"
 msgstr "Serĉi grupojn"
 
 #: ../plugins/soundcloud/soundcloud.py:118
 msgid "Search groups on SoundCloud"
-msgstr ""
+msgstr "Serĉi grupojn sur SoundCloud"
 
 #: ../plugins/soundcloud/soundcloud.py:119
 msgid "SoundCloud Groups"
-msgstr ""
+msgstr "SoundCloud-grupoj"
 
 #: ../plugins/soundcloud/soundcloud.py:442
 #: ../plugins/soundcloud/soundcloud.py:450
 #, python-format
 msgid "View '%(title)s' on SoundCloud"
-msgstr ""
+msgstr "Montri '%(title)s' sur SoundCloud"
 
 #: ../plugins/soundcloud/soundcloud.py:458
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
-msgstr ""
+msgstr "Montri '%(container)s' sur SoundCloud"
 
 #: ../plugins/webremote/webremote-config.ui.h:1
-#, fuzzy
-#| msgid "Status icon preferences"
 msgid "Web remote control preferences"
-msgstr "Agordoj de stato de piktogramo"
+msgstr "Retaj teleregilaj agordoj"
 
 #: ../plugins/webremote/webremote-config.ui.h:2
 msgid "Listening port:"
-msgstr ""
+msgstr "Aŭskulta prdo:"
 
 #: ../plugins/webremote/webremote-config.ui.h:3
 msgid "Access key:"
-msgstr ""
+msgstr "Alirŝlosilo:"
 
 #: ../plugins/webremote/webremote-config.ui.h:4
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: ../plugins/webremote/webremote.plugin.in.h:1
 msgid "Web remote control"
-msgstr ""
+msgstr "Reta teleregilo"
 
 #: ../plugins/webremote/webremote.plugin.in.h:2
-#, fuzzy
-#| msgid "Control Rhythmbox using key shortcuts"
 msgid "Control Rhythmbox from a web browser"
-msgstr "Kontroli Rhythmbox uzante fulmoklavojn"
+msgstr "Mastrumi Rhythmbox per retumilo"
 
 #: ../plugins/webremote/webremote.py:583
 msgid "Launch web remote control"
-msgstr ""
+msgstr "Lanĉi retan teleregilon"
 
 #: ../podcast/rb-podcast-add-dialog.c:271 ../podcast/rb-podcast-source.c:735
-#, fuzzy, c-format
-#| msgid "%d feed"
-#| msgid_plural "All %d feeds"
+#, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
 msgstr[0] "%d fluo"
-msgstr[1] "Ĉiuj %d fluoj"
+msgstr[1] "%d fluoj"
 
 #: ../podcast/rb-podcast-add-dialog.c:306
-#| msgid "Unable to parse the feed contents"
 msgid "Unable to load the feed. Check your network connection."
-msgstr "Ne eblis ŝargi la fluon. Kontrolu vian retkonekton."
+msgstr "Ne eblas ŝargi la fluon. Kontrolu vian retkonekton."
 
 #: ../podcast/rb-podcast-add-dialog.c:431
 msgid "Unable to search for podcasts. Check your network connection."
-msgstr ""
+msgstr "Ne eblas serĉi podkastojn. Kontrolu vian retkonekton."
 
 #: ../podcast/rb-podcast-add-dialog.c:744 ../sources/rb-library-source.c:134
 #: ../widgets/rb-entry-view.c:1444
@@ -2991,7 +2912,6 @@ msgid "Title"
 msgstr "Titolo"
 
 #: ../podcast/rb-podcast-add-dialog.c:755
-#| msgid "Author:"
 msgid "Author"
 msgstr "Aŭtoro"
 
@@ -3016,7 +2936,7 @@ msgstr "Novaj elŝutaĵoj"
 
 #: ../podcast/rb-podcast-main-source.c:164
 msgid "Downloading podcast"
-msgstr "Elŝutanta podkaston"
+msgstr "Elŝutante podkaston"
 
 #: ../podcast/rb-podcast-main-source.c:181
 msgid "Finished downloading podcast"
@@ -3204,10 +3124,8 @@ msgid "Search podcast episodes"
 msgstr "Serĉi epizodojn de podkastoj"
 
 #: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:639
-#, fuzzy
-#| msgid "Set the rating of the current song"
 msgid "Show the version of the program"
-msgstr "Agordi la pritakson de aktuala kanto"
+msgstr "Montri la version de la programo"
 
 #: ../remote/dbus/rb-client.c:97
 msgid "Don't start a new instance of Rhythmbox"
@@ -3215,11 +3133,11 @@ msgstr "Ne komenci novan ekzemplo de Rhythmbox"
 
 #: ../remote/dbus/rb-client.c:98
 msgid "Quit Rhythmbox"
-msgstr "Eliri el Rhythmbox"
+msgstr "Ĉesigi Rhythmbox"
 
 #: ../remote/dbus/rb-client.c:99
 msgid "Check if Rhythmbox is already running"
-msgstr ""
+msgstr "Kontroli ĉu Rhythmbox jam rulas"
 
 #: ../remote/dbus/rb-client.c:101
 msgid "Don't present an existing Rhythmbox window"
@@ -3235,23 +3153,23 @@ msgstr "Iri al antaŭa kanto"
 
 #: ../remote/dbus/rb-client.c:105
 msgid "Seek in current track"
-msgstr ""
+msgstr "Serĉi en aktuala trako"
 
 #: ../remote/dbus/rb-client.c:107
 msgid "Resume playback if currently paused"
-msgstr "Reludi se nun paŭzita"
+msgstr "Reludi se nun paŭzata"
 
 #: ../remote/dbus/rb-client.c:108
 msgid "Pause playback if currently playing"
-msgstr "Ludi reproduktadon se aktuale estas ludata"
+msgstr "Paŭzigi se nun ludante"
 
 #: ../remote/dbus/rb-client.c:109
 msgid "Toggle play/pause mode"
 msgstr "Baskuligi ludan/paŭzan reĝimon"
 
-#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2297
+#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2296
 msgid "Stop playback"
-msgstr "Haltigi reproduktadon"
+msgstr "Haltigi ludadon"
 
 #: ../remote/dbus/rb-client.c:112
 msgid "Play a specified URI, importing it if necessary"
@@ -3263,11 +3181,11 @@ msgstr "Ludenda URI"
 
 #: ../remote/dbus/rb-client.c:113
 msgid "Add specified tracks to the play queue"
-msgstr "Aldoni elektitajn trakojn al la ludenda listo"
+msgstr "Aldoni elektitajn trakojn al la atendovico"
 
 #: ../remote/dbus/rb-client.c:114
 msgid "Empty the play queue before adding new tracks"
-msgstr "Vakigi la ludendan liston antaŭ aldoni novajn trakojn"
+msgstr "Vakigi la atendovicon antaŭ aldoni novajn trakojn"
 
 #: ../remote/dbus/rb-client.c:116
 msgid "Print the title and artist of the playing song"
@@ -3279,67 +3197,59 @@ msgstr "Presi formatitajn detalojn pri la kanto"
 
 #: ../remote/dbus/rb-client.c:118
 msgid "Select the source matching the specified URI"
-msgstr ""
+msgstr "Elekti la fonton, kiu kongruas la specifitan URI-on"
 
 #: ../remote/dbus/rb-client.c:118
 msgid "Source to select"
-msgstr ""
+msgstr "Elektenda fonto"
 
 #: ../remote/dbus/rb-client.c:119
 msgid "Activate the source matching the specified URI"
-msgstr ""
+msgstr "Ŝalti la fonton, kiu kongruas la specifitan URI-on"
 
 #: ../remote/dbus/rb-client.c:119
 msgid "Source to activate"
-msgstr ""
+msgstr "Ŝaltenda fonto"
 
 #: ../remote/dbus/rb-client.c:120
 msgid "Play from the source matching the specified URI"
-msgstr ""
+msgstr "Ludi de la fonto, kiu kongruas la specifitan URI-on"
 
 #: ../remote/dbus/rb-client.c:120
 msgid "Source to play from"
-msgstr ""
+msgstr "Fonto el kiu oni ludos"
 
 #: ../remote/dbus/rb-client.c:122
-#, fuzzy
-#| msgid "Increase playback volume"
 msgid "Enable repeat playback order"
-msgstr "Pligrandigi sonfortecon de reproduktado"
+msgstr "Ŝalti ripetadon de ludordo"
 
 #: ../remote/dbus/rb-client.c:123
-#, fuzzy
-#| msgid "Decrease playback volume"
 msgid "Disable repeat playback order"
-msgstr "Malpligrandigi sonfortecon de reproduktado"
+msgstr "Malŝalti ripetadon de ludordo"
 
 #: ../remote/dbus/rb-client.c:124
-#, fuzzy
-#| msgid "Increase the playback volume"
 msgid "Enable shuffle playback order"
-msgstr "Pligrandigi la sonfortecon de reproduktado"
+msgstr "Ŝalti miksadon de ludordo"
 
 #: ../remote/dbus/rb-client.c:125
-#, fuzzy
-#| msgid "Decrease the playback volume"
 msgid "Disable shuffle playback order"
-msgstr "Malpligrandigi la sonfortecon de reproduktado"
+msgstr "Malŝalti miksadon de ludordo"
 
 #: ../remote/dbus/rb-client.c:127
 msgid "Set the playback volume"
-msgstr "Agordi la volumon de reproduktado"
+msgstr "Agordi la ludlaŭtecon"
 
 #: ../remote/dbus/rb-client.c:128
 msgid "Increase the playback volume"
-msgstr "Pligrandigi la sonfortecon de reproduktado"
+msgstr "Plilaŭtigi la ludadon"
 
 #: ../remote/dbus/rb-client.c:129
 msgid "Decrease the playback volume"
-msgstr "Malpligrandigi la sonfortecon de reproduktado"
+msgstr "Malplilaŭtigi la ludadon"
 
 #: ../remote/dbus/rb-client.c:130
 msgid "Print the current playback volume"
-msgstr "Montri aktualan sonfortecon de reproduktado"
+msgstr "Montri la aktualan ludlaŭtecon"
 
 #. { "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
 #. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
@@ -3349,43 +3259,37 @@ msgstr "Agordi la pritakson de aktuala kanto"
 
 #: ../remote/dbus/rb-client.c:134
 msgid "Start interactive mode"
-msgstr ""
+msgstr "Komenci interagan reĝimon"
 
 #: ../remote/dbus/rb-client.c:164
 msgid "n - Next track"
-msgstr ""
+msgstr "n - Sekva trako"
 
 #: ../remote/dbus/rb-client.c:165
-#, fuzzy
-#| msgid "Previous"
 msgid "p - Previous track"
-msgstr "Antaŭen"
+msgstr "p - Antaŭa trako"
 
 #: ../remote/dbus/rb-client.c:166
 msgid "space - Play/pause"
-msgstr ""
+msgstr "spaceto - Ludi/paŭzigi"
 
 #: ../remote/dbus/rb-client.c:167
 msgid "s - Show playing track details"
-msgstr ""
+msgstr "s - Montri detalojn de la ludanta trako"
 
 #: ../remote/dbus/rb-client.c:168
-#| msgid "_Decrease Volume"
 msgid "v - Decrease volume"
 msgstr "v - Malpli laŭte"
 
 #: ../remote/dbus/rb-client.c:169
-#| msgid "_Increase Volume"
 msgid "V - Increase volume"
-msgstr "v - Pli laŭte"
+msgstr "V - Pli laŭte"
 
 #: ../remote/dbus/rb-client.c:171
 msgid "h/? - Help"
 msgstr "h/? - Helpo"
 
 #: ../remote/dbus/rb-client.c:172
-#, fuzzy
-#| msgid "_Quit"
 msgid "q - Quit"
 msgstr "q - Ĉesi"
 
@@ -3398,62 +3302,59 @@ msgstr "Neludanta"
 #. Translators: title by artist from album
 #: ../remote/dbus/rb-client.c:741
 msgid "%tt by %ta from %at"
-msgstr ""
+msgstr "%tt de %ta el %at"
 
 #. Translators: title by artist
 #: ../remote/dbus/rb-client.c:744
 msgid "%tt by %ta"
-msgstr ""
+msgstr "%tt de %ta"
 
 #. Translators: title from album
 #: ../remote/dbus/rb-client.c:747
 msgid "%tt from %ta"
-msgstr ""
+msgstr "%tt el %ta"
 
 #. Translators: %te is replaced with elapsed time, %td is replaced with track duration
 #: ../remote/dbus/rb-client.c:758
 #, c-format
 msgid "[%te of %td]"
-msgstr ""
+msgstr "[%te de %td]"
 
 #: ../remote/dbus/rb-client.c:814 ../remote/dbus/rb-client.c:906
-#, fuzzy, c-format
-#| msgid "Pause"
+#, c-format
 msgid "Paused"
-msgstr "Paŭzigi"
+msgstr "Paŭzigita"
 
 #: ../remote/dbus/rb-client.c:858
 #, c-format
 msgid "Seeked to %s"
-msgstr ""
+msgstr "Serĉis ĝis %s"
 
 #: ../remote/dbus/rb-client.c:892
 #, c-format
-#| msgid "Not playing"
 msgid "Now playing: %s %s"
 msgstr "Nun ludante: %s %s"
 
 #: ../remote/dbus/rb-client.c:908
-#, fuzzy, c-format
-#| msgid "Unknown playlist: %s"
+#, c-format
 msgid "Unknown playback state: %s"
-msgstr "Nekonata ludlisto: %s"
+msgstr "Nekonata ludad-stato: %s"
 
 #: ../remote/dbus/rb-client.c:918
 #, c-format
 msgid "Volume is now %.02f"
-msgstr ""
+msgstr "Laŭteco nun estas %.02f"
 
 #. should print this before dbus setup, really
 #: ../remote/dbus/rb-client.c:956
 #, c-format
 msgid "Press 'h' for help."
-msgstr ""
+msgstr "Premu 'h' por helpo."
 
 #: ../remote/dbus/rb-client.c:1396
 #, c-format
 msgid "Playback volume is %f.\n"
-msgstr "La sonfortecon de reproduktado estas %f.\n"
+msgstr "Laŭteco de ludado estas %f.\n"
 
 #: ../rhythmdb/rhythmdb.c:789
 #, c-format
@@ -3475,7 +3376,7 @@ msgstr "Kaj Tiel Plu"
 #.
 #: ../rhythmdb/rhythmdb.c:1825
 msgid "Help!"
-msgstr "Sojle de la Klara Temp'"
+msgstr "Helpo!"
 
 #. Translators: this is an example song title.  If the example
 #. * artist and album names are localised, this should be replaced
@@ -3491,7 +3392,7 @@ msgstr "Malfermu Belulino"
 #: ../rhythmdb/rhythmdb.c:2374
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
-msgstr ""
+msgstr "Ceteraj GStreamer-kromprogramoj necesas por ludi ĉi tiun dosieron: %s"
 
 #: ../rhythmdb/rhythmdb.c:2406
 msgid "invalid unicode in error message"
@@ -3506,21 +3407,21 @@ msgstr "Malplena dosiero"
 msgid "Could not load the music database:"
 msgstr "Ne eblas ŝargi la muzikan datumbazon:"
 
-#: ../rhythmdb/rhythmdb.c:4654
+#: ../rhythmdb/rhythmdb.c:4661
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuto"
 msgstr[1] "%ld minutoj"
 
-#: ../rhythmdb/rhythmdb.c:4655
+#: ../rhythmdb/rhythmdb.c:4662
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld horo"
 msgstr[1] "%ld horoj"
 
-#: ../rhythmdb/rhythmdb.c:4656
+#: ../rhythmdb/rhythmdb.c:4663
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3528,7 +3429,7 @@ msgstr[0] "%ld tago"
 msgstr[1] "%ld tagoj"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4662
+#: ../rhythmdb/rhythmdb.c:4669
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s kaj %s"
@@ -3536,21 +3437,20 @@ msgstr "%s, %s kaj %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4668 ../rhythmdb/rhythmdb.c:4676
-#: ../rhythmdb/rhythmdb.c:4687
+#: ../rhythmdb/rhythmdb.c:4675 ../rhythmdb/rhythmdb.c:4683
+#: ../rhythmdb/rhythmdb.c:4694
 #, c-format
 msgid "%s and %s"
 msgstr "%s kaj %s"
 
 #: ../rhythmdb/rhythmdb-import-job.c:664
 msgid "Scanning"
-msgstr ""
+msgstr "Skanante"
 
-#: ../rhythmdb/rhythmdb-import-job.c:667 ../shell/rb-track-transfer-batch.c:915
-#, fuzzy, c-format
-#| msgid "%d:%02d of %d:%02d"
+#: ../rhythmdb/rhythmdb-import-job.c:667 ../shell/rb-track-transfer-batch.c:917
+#, c-format
 msgid "%d of %d"
-msgstr "%d:%02d el %d:%02d"
+msgstr "%d de %d"
 
 #: ../rhythmdb/rhythmdb-property-model.c:511
 msgid "All"
@@ -3602,8 +3502,16 @@ msgstr "Agordi kromprogramojn"
 #: ../shell/rb-application.c:229
 msgid "translator-credits"
 msgstr ""
-"Aisano, Ignatius881, Kim RIBEIRO, Kristjan SCHMIDT, LaPingvino, Michael "
-"MORONI, Patrick (Petriko) OUDEJANS, Sergio Ĥlutĉin, axel584"
+"Aisano\n"
+"Ignatius881\n"
+"Kim RIBEIRO\n"
+"Kristjan SCHMIDT\n"
+"LaPingvino\n"
+"Michael MORONI\n"
+"Patrick (Petriko) OUDEJANS\n"
+"Sergio Ĥlutĉin\n"
+"axel584\n"
+"Carmen Bianca BAKKER <carmen@carmenbianca.eu>"
 
 #: ../shell/rb-application.c:232
 msgid ""
@@ -3626,7 +3534,7 @@ msgid ""
 msgstr ""
 "Rhythmbox estas distribuite kun la espero ke ĝi estos utila,\n"
 "sed SEN IA AJN GARANTIO; eĉ sen la implica garantio de\n"
-"NEGOCEBLO aŭ ADAPTADO AL IU APARTA CELO. Vidu la\n"
+"NEGOCEBLO aŭ ADAPTADO AL IU APARTA CELO.  Vidu la\n"
 "Ĝeneralan Publikan Permesilon de GNU por pli da detaloj.\n"
 
 #: ../shell/rb-application.c:240
@@ -3654,7 +3562,7 @@ msgstr "Kontribuintoj:"
 
 #: ../shell/rb-application.c:255
 msgid "Music management and playback software for GNOME."
-msgstr "Muzika administrilo kaj reproduktado por GNOME."
+msgstr "Muzika mastruma kaj luda programaro por GNOME."
 
 #: ../shell/rb-application.c:265
 msgid "Rhythmbox Website"
@@ -3686,7 +3594,7 @@ msgstr "Ne konservi permanente ajnan datumon (signifas --no-registration)"
 
 #: ../shell/rb-application.c:636
 msgid "Disable loading of plugins"
-msgstr ""
+msgstr "Malŝalti ŝargadon de kromprogramoj"
 
 #: ../shell/rb-application.c:637
 msgid "Path for database file to use"
@@ -3707,7 +3615,7 @@ msgstr ""
 
 #: ../shell/rb-playlist-manager.c:166
 msgid "MPEG Version 3.0 URL"
-msgstr "MPEG Version 3.0 URL"
+msgstr "MPEG-Versio 3.0 URL"
 
 #: ../shell/rb-playlist-manager.c:167
 msgid "Shoutcast playlist"
@@ -3769,45 +3677,45 @@ msgstr "Nekonata ludlisto: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "Ludlisto %s estas aŭtomata ludlisto"
 
-#: ../shell/rb-shell.c:2090
+#: ../shell/rb-shell.c:2089
 msgid "Error while saving song information"
 msgstr "Eraro dum konservanta informojn pri kantoj"
 
-#: ../shell/rb-shell.c:2294
+#: ../shell/rb-shell.c:2293
 msgid "Pause playback"
-msgstr "Paŭzigi la reproduktadon"
+msgstr "Paŭzigi ludadon"
 
-#: ../shell/rb-shell.c:2301
+#: ../shell/rb-shell.c:2300
 msgid "Start playback"
-msgstr "Ludi reproduktadon"
+msgstr "Komenci ludadon"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2411
+#: ../shell/rb-shell.c:2410
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Paŭzita)"
 
-#: ../shell/rb-shell.c:2819 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2818 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
-msgstr "Neniu registrita fonto povas trakti URI %s"
+msgstr "Neniu registrita fonto povas trakti URI-on %s"
 
-#: ../shell/rb-shell.c:3148
+#: ../shell/rb-shell.c:3147
 #, c-format
 msgid "No registered source matches URI %s"
-msgstr ""
+msgstr "Neniu registrita fonto kongruas URI-on %s"
 
-#: ../shell/rb-shell.c:3181 ../shell/rb-shell.c:3224
+#: ../shell/rb-shell.c:3180 ../shell/rb-shell.c:3223
 #, c-format
 msgid "Unknown song URI: %s"
-msgstr "URI de nekonata kanto: %s"
+msgstr "Nekonata kanta URI: %s"
 
-#: ../shell/rb-shell.c:3233
+#: ../shell/rb-shell.c:3232
 #, c-format
 msgid "Unknown property %s"
 msgstr "Nekonata eco %s"
 
-#: ../shell/rb-shell.c:3247
+#: ../shell/rb-shell.c:3246
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Nevalida tipo de eco %s por eco %s"
@@ -3842,12 +3750,12 @@ msgstr "Neniu sekva kanto"
 
 #: ../shell/rb-shell-player.c:2124
 msgid "Couldn't stop playback"
-msgstr "Ne eblis haltigi reproduktadon"
+msgstr "Ne eblis haltigi ludadon"
 
 #: ../shell/rb-shell-player.c:2243
 #, c-format
 msgid "Playback position not available"
-msgstr "Loko de reproduktado ne disponebla"
+msgstr "Pozicio de ludado ne disponeblas"
 
 #: ../shell/rb-shell-player.c:2275 ../shell/rb-shell-player.c:2309
 #, c-format
@@ -3856,7 +3764,7 @@ msgstr "Aktuala kanto ne estas serĉabla"
 
 #: ../shell/rb-shell-player.c:2465 ../shell/rb-shell-player.c:2776
 msgid "Couldn't start playback"
-msgstr "Ne eblis komenci reproduktadon"
+msgstr "Ne eblis komenci ludadon"
 
 #: ../shell/rb-shell-player.c:3287
 msgid "Linear"
@@ -3901,7 +3809,7 @@ msgstr "Ĝenerala"
 
 #: ../shell/rb-shell-preferences.c:312
 msgid "Playback"
-msgstr "Reproduktado"
+msgstr "Ludado"
 
 #: ../shell/rb-track-transfer-queue.c:174
 #, c-format
@@ -3944,6 +3852,8 @@ msgid ""
 "Additional software is required to encode media in your preferred format:\n"
 "%s"
 msgstr ""
+"Cetera programaro necesas por kodi aŭdovidaĵojn je via preferata formato:\n"
+"%s"
 
 #: ../shell/rb-track-transfer-queue.c:466
 #, c-format
@@ -3956,19 +3866,25 @@ msgid_plural ""
 "by the target device:\n"
 "%s"
 msgstr[0] ""
+"Cetera programaro necesas por konverti %d dosieron al formato subtenata de "
+"la cela aparato:\n"
+"%s"
 msgstr[1] ""
+"Cetera programaro necesas por konverti %d dosierojn al formato subtenata de "
+"la cela aparato:\n"
+"%s"
 
 #: ../shell/rb-track-transfer-queue.c:483
 msgid "Unable to transfer tracks"
-msgstr "Ne eblas transigi trakojn"
+msgstr "Ne eblas transmeti trakojn"
 
 #: ../shell/rb-track-transfer-queue.c:488
 msgid "_Cancel the transfer"
-msgstr ""
+msgstr "_Nuligi la transmeton"
 
 #: ../shell/rb-track-transfer-queue.c:490
 msgid "_Skip these files"
-msgstr ""
+msgstr "_Preterpasi ĉi tiujn dosierojn"
 
 #: ../shell/rb-track-transfer-queue.c:493
 msgid "_Install"
@@ -3981,10 +3897,8 @@ msgstr "Serĉi artistojn"
 
 #: ../sources/rb-auto-playlist-source.c:255 ../sources/rb-browser-source.c:316
 #: ../sources/rb-static-playlist-source.c:297
-#, fuzzy
-#| msgid "Search podcast feeds"
 msgid "Search composers"
-msgstr "Serĉi fluojn de podkastoj"
+msgstr "Serĉi komponistojn"
 
 #: ../sources/rb-auto-playlist-source.c:256 ../sources/rb-browser-source.c:317
 #: ../sources/rb-static-playlist-source.c:298
@@ -3998,10 +3912,8 @@ msgstr "Serĉi titolojn"
 
 #: ../sources/rb-auto-playlist-source.c:258 ../sources/rb-browser-source.c:319
 #: ../sources/rb-static-playlist-source.c:300
-#, fuzzy
-#| msgid "_Search again"
 msgid "Search genres"
-msgstr "Reserĉi"
+msgstr "Serĉi ĝenrojn"
 
 #: ../sources/rb-device-source.c:105
 msgid "Unable to eject"
@@ -4030,11 +3942,11 @@ msgstr "Kunhavigita"
 #. set up info bar for triggering codec installation
 #: ../sources/rb-import-errors-source.c:233
 msgid "Install Additional Software"
-msgstr ""
+msgstr "Instali ceteran programaron"
 
 #: ../sources/rb-import-errors-source.c:239
 msgid "Additional software is required to play some of these files."
-msgstr ""
+msgstr "Cetera programaro necesas por ludi kelkajn tiujn dosierojn."
 
 #: ../sources/rb-import-errors-source.c:346
 msgid "Import Errors"
@@ -4084,74 +3996,69 @@ msgstr "Artisto (Albumo) - Numero - Titolo"
 msgid "Number. Artist - Title"
 msgstr "Numero. Artisto - Titolo"
 
-#: ../sources/rb-library-source.c:418 ../sources/sync/rb-sync-settings-ui.c:217
+#: ../sources/rb-library-source.c:416 ../sources/sync/rb-sync-settings-ui.c:217
 #: ../sources/sync/rb-sync-settings-ui.c:218
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "Muziko"
 
-#: ../sources/rb-library-source.c:472
+#: ../sources/rb-library-source.c:469
 msgid "Choose Library Location"
 msgstr "Elekti lokon de la biblioteko"
 
-#: ../sources/rb-library-source.c:511
+#: ../sources/rb-library-source.c:508
 msgid "Multiple locations set"
 msgstr "Agordi plurajn lokojn"
 
-#: ../sources/rb-library-source.c:1047
+#: ../sources/rb-library-source.c:1044
 msgid "Example Path:"
 msgstr "Ekzemplo de vojo:"
 
-#: ../sources/rb-library-source.c:1201 ../sources/rb-library-source.c:1205
-#: ../sources/rb-transfer-target.c:182
-msgid "Error transferring track"
-msgstr "Eraro dum transigi trakon"
-
-#: ../sources/rb-library-source.c:1287
-#, fuzzy
-#| msgid "Copy tracks to the library"
+#: ../sources/rb-library-source.c:1284
 msgid "Copying tracks to the library"
-msgstr "Kopii kantojn al la biblioteko"
+msgstr "Kopiante trakojn al la biblioteko"
 
-#: ../sources/rb-library-source.c:1361
-#, fuzzy
-#| msgid "Copy tracks to the library"
+#: ../sources/rb-library-source.c:1358
 msgid "Adding tracks to the library"
-msgstr "Kopii kantojn al la biblioteko"
+msgstr "Aldonante trakojn al la biblioteko"
 
 #: ../sources/rb-media-player-source.c:773
 #, c-format
 msgid "Syncing tracks to %s"
-msgstr ""
+msgstr "Sinkronigante trakojn al %s"
 
 #: ../sources/rb-media-player-source.c:829
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
 msgstr ""
+"Vi ne elektis iun ajn muzikojn, ludliston, aŭ podkaston por transmeti al ĉi "
+"tiu aparato."
 
 #: ../sources/rb-media-player-source.c:834
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
 msgstr ""
+"Ne estas sufiĉa spaco sur ĉi tiu aparato por transmeti la elektitajn "
+"muzikon, ludlistojn kaj podkastojn."
 
 #: ../sources/rb-media-player-source.c:885
 #, c-format
 msgid "%s Sync Settings"
-msgstr ""
+msgstr "%s sinkronigaj agordoj"
 
 #: ../sources/rb-media-player-source.c:890
 msgid "Sync with the device"
-msgstr ""
+msgstr "Sinkronigi kun la aparato"
 
 #: ../sources/rb-media-player-source.c:892
 msgid "Don't sync"
-msgstr ""
+msgstr "Ne sinkronigi"
 
 #: ../sources/rb-missing-files-source.c:274
 msgid "Missing Files"
-msgstr "Mankanta dosiero"
+msgstr "Mankantaj dosieroj"
 
 #: ../sources/rb-missing-files-source.c:362
 #, c-format
@@ -4161,15 +4068,14 @@ msgstr[0] "%d mankanta dosiero"
 msgstr[1] "%d mankantaj dosieroj"
 
 #: ../sources/rb-playlist-source.c:1191
-#, fuzzy
-#| msgid "Remove From Playlist"
 msgid "Remove from Playlist"
-msgstr "Forigi de la ludlisto"
+msgstr "Forigi el ludlisto"
 
+# «Play Queue» estas substantivo
 #: ../sources/rb-play-queue-source.c:297 ../sources/rb-play-queue-source.c:399
 #: ../sources/rb-play-queue-source.c:508
 msgid "Play Queue"
-msgstr "Ludi atendovicon"
+msgstr "Atendovico"
 
 #. Translators: format is "<title> by <artist> from <album>"
 #: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:924
@@ -4197,9 +4103,8 @@ msgstr "Bufrado"
 
 #: ../sources/rb-transfer-target.c:450
 #, c-format
-#| msgid "Transferring track %d out of %d"
 msgid "Transferring tracks to %s"
-msgstr "Transigi kantojn al %s"
+msgstr "Transmeti trakojn al %s"
 
 #: ../sources/sync/rb-sync-settings-ui.c:229
 msgid "All Music"
@@ -4242,40 +4147,37 @@ msgid "Show more _details"
 msgstr "Montri pli da _detaloj"
 
 #: ../widgets/rb-alert-dialog.c:370 ../widgets/rb-alert-dialog.c:404
-#| msgid "OK"
 msgid "_OK"
 msgstr "B_one"
 
 #: ../widgets/rb-alert-dialog.c:391
 msgid "_No"
-msgstr ""
+msgstr "_Ne"
 
 #: ../widgets/rb-alert-dialog.c:394
 msgid "_Yes"
-msgstr ""
+msgstr "_Jes"
 
 #: ../widgets/rb-dialog.c:132
 msgid "_Open"
-msgstr ""
+msgstr "_Malfermi"
 
 #: ../widgets/rb-encoding-settings.c:54
 msgid "Constant bit rate"
-msgstr ""
+msgstr "Konstanta bitrapido"
 
 #: ../widgets/rb-encoding-settings.c:55
 msgid "Variable bit rate"
-msgstr ""
+msgstr "Plurbitrapida"
 
 #: ../widgets/rb-encoding-settings.c:402
-#, fuzzy
-#| msgid "Default"
 msgid "Default settings"
-msgstr "Defaŭlto"
+msgstr "Implicitaj agordoj"
 
 #: ../widgets/rb-entry-view.c:1015 ../widgets/rb-entry-view.c:1533
-#: ../widgets/rb-song-info.c:1231
+#: ../widgets/rb-song-info.c:1232
 msgid "Lossless"
-msgstr "Senperde"
+msgstr "Senperda"
 
 #: ../widgets/rb-entry-view.c:1433
 msgid "Track"
@@ -4283,7 +4185,7 @@ msgstr "Trako"
 
 #: ../widgets/rb-entry-view.c:1464
 msgid "Composer"
-msgstr ""
+msgstr "Komponisto"
 
 #: ../widgets/rb-entry-view.c:1494
 msgid "Comment"
@@ -4339,7 +4241,7 @@ msgstr "Nun ludanta"
 
 #: ../widgets/rb-entry-view.c:1961
 msgid "Playback Error"
-msgstr "Eraro de reproduktado"
+msgstr "Eraro de ludado"
 
 #: ../widgets/rb-fading-image.c:301
 msgid "Drop artwork here"
@@ -4349,30 +4251,26 @@ msgstr "Tiri kovrilon ĉi tien"
 #: ../widgets/rb-header.c:1214
 #, c-format
 msgid "-%s / %s"
-msgstr ""
+msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
 #: ../widgets/rb-header.c:1225
 #, c-format
 msgid "%s / %s"
-msgstr ""
+msgstr "%s / %s"
 
 #: ../widgets/rb-import-dialog.c:341
-#, fuzzy
-#| msgid "%d missing file"
-#| msgid_plural "%d missing files"
 msgid "Examining files"
-msgstr "Mankanta dosiero"
+msgstr "Ekzamenante dosierojn"
 
 #. this isn't a terribly helpful message.
 #: ../widgets/rb-import-dialog.c:411
 #, c-format
 msgid "The location you have selected is on the device %s."
-msgstr ""
+msgstr "La loko, kiun vi elektis, estas sur la aparato %s."
 
 #: ../widgets/rb-import-dialog.c:417
 #, c-format
-#| msgid "Show All"
 msgid "Show %s"
 msgstr "Montri %s"
 
@@ -4380,15 +4278,15 @@ msgstr "Montri %s"
 #, c-format
 msgid "Import %d selected track"
 msgid_plural "Import %d selected tracks"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Enporti %d elektitan trakon"
+msgstr[1] "Enporti %d elektitajn trakojn"
 
 #: ../widgets/rb-import-dialog.c:468
 #, c-format
 msgid "Import %d listed track"
 msgid_plural "Import %d listed tracks"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Enporti %d listigitan trakon"
+msgstr[1] "Enporti %d listigitajn trakojn"
 
 #: ../widgets/rb-property-view.c:661
 #, c-format
@@ -4425,7 +4323,7 @@ msgstr "%s (%d)"
 
 #: ../widgets/rb-query-creator.c:194
 msgid "_New"
-msgstr ""
+msgstr "_Nova"
 
 #: ../widgets/rb-query-creator.c:210
 msgid "Create Automatic Playlist"
@@ -4448,7 +4346,7 @@ msgstr "Artisto"
 #: ../widgets/rb-query-creator-properties.c:79
 msgctxt "query-criteria"
 msgid "Composer"
-msgstr ""
+msgstr "Komponisto"
 
 #: ../widgets/rb-query-creator-properties.c:80
 msgctxt "query-criteria"
@@ -4493,7 +4391,7 @@ msgstr "Ludkonto"
 #: ../widgets/rb-query-creator-properties.c:89
 msgctxt "query-criteria"
 msgid "Track Number"
-msgstr "Kantnumero"
+msgstr "Traknumero"
 
 #: ../widgets/rb-query-creator-properties.c:90
 msgctxt "query-criteria"
@@ -4538,12 +4436,12 @@ msgstr "Artisto"
 #: ../widgets/rb-query-creator-properties.c:112
 #: ../widgets/rb-query-creator-properties.c:120
 msgid "_In reverse alphabetical order"
-msgstr "_Inversa aboce"
+msgstr "_Inversa alfabeta ordo"
 
 #: ../widgets/rb-query-creator-properties.c:108
 msgctxt "query-sort"
 msgid "Composer"
-msgstr ""
+msgstr "Komponisto"
 
 #: ../widgets/rb-query-creator-properties.c:109
 msgctxt "query-sort"
@@ -4577,7 +4475,7 @@ msgstr "Pl_i alte taksitaj trakoj unue"
 #: ../widgets/rb-query-creator-properties.c:114
 msgctxt "query-sort"
 msgid "Play Count"
-msgstr "Ludkonto"
+msgstr "Nombro da ludoj"
 
 #: ../widgets/rb-query-creator-properties.c:114
 msgid "W_ith more often played songs first"
@@ -4604,7 +4502,7 @@ msgstr "Pli lon_gaj trakoj unue"
 #: ../widgets/rb-query-creator-properties.c:117
 msgctxt "query-sort"
 msgid "Track Number"
-msgstr "Kantnumero"
+msgstr "Traknumero"
 
 #: ../widgets/rb-query-creator-properties.c:117
 msgid "_In decreasing order"
@@ -4636,11 +4534,11 @@ msgstr "Komento"
 #: ../widgets/rb-query-creator-properties.c:121
 msgctxt "query-sort"
 msgid "Beats Per Minute"
-msgstr "Batoj dum minuto"
+msgstr "Batoj por minuto"
 
 #: ../widgets/rb-query-creator-properties.c:121
 msgid "W_ith faster tempo tracks first"
-msgstr ""
+msgstr "Pl_i rapidaj trakoj unue"
 
 #: ../widgets/rb-query-creator-properties.c:134
 msgid "contains"
@@ -4750,7 +4648,7 @@ msgstr "Vakigi la serĉendan tekston"
 
 #: ../widgets/rb-search-entry.c:234
 msgid "Select the search type"
-msgstr ""
+msgstr "Elekti serĉtipon"
 
 #: ../widgets/rb-search-entry.c:252
 msgid "Search"
@@ -4765,7 +4663,6 @@ msgid "_Back"
 msgstr "_Reen"
 
 #: ../widgets/rb-song-info.c:363
-#| msgid "_Format:"
 msgid "_Forward"
 msgstr "_Antaŭen"
 
@@ -4777,15 +4674,15 @@ msgstr "Ecoj de kanto"
 msgid "Multiple Song Properties"
 msgstr "Ecoj de pluraj kantoj"
 
-#: ../widgets/rb-song-info.c:1294
+#: ../widgets/rb-song-info.c:1295
 msgid "Unknown file name"
 msgstr "Nekonata dosiernomo"
 
-#: ../widgets/rb-song-info.c:1316
+#: ../widgets/rb-song-info.c:1317
 msgid "On the desktop"
 msgstr "Sur la labortablo"
 
-#: ../widgets/rb-song-info.c:1339
+#: ../widgets/rb-song-info.c:1340
 msgid "Unknown location"
 msgstr "Nekonata loko"
 
