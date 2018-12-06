@@ -27,20 +27,24 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox\n"
-"Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?"
-"product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2017-11-04 12:51+0000\n"
-"PO-Revision-Date: 2016-08-11 16:48+0200\n"
-"Last-Translator: Ask Hjorth Larsen <asklarsen@gmail.com>\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
+"POT-Creation-Date: 2018-08-06 12:24+0000\n"
+"PO-Revision-Date: 2018-11-06 14:51+0100\n"
+"Last-Translator: Alan Mortensen <alanmortensen.am@gmail.com>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Lokalize 1.2\n"
+"X-Generator: Poedit 2.0.6\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:659
+#: ../backends/gstreamer/rb-encoder-gst.c:649
+#, c-format
+msgid "Could not create a temporary file to write to: %s"
+msgstr "Kunne ikke oprette en midlertidig fil at skrive til: %s"
+
+#: ../backends/gstreamer/rb-encoder-gst.c:703
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Kunne ikke oprette GStreamer-kanal til skrivning i %s"
@@ -49,7 +53,7 @@ msgstr "Kunne ikke oprette GStreamer-kanal til skrivning i %s"
 #. ?
 #. Translators: the parameter here is an error message
 #: ../backends/gstreamer/rb-player-gst.c:520
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2930
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2931
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Kunne ikke åbne for uddata-enheden: %s"
@@ -77,32 +81,32 @@ msgid "Failed to start new stream"
 msgstr "Kunne ikke starte ny strøm"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2843
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2844
 #, c-format
 msgid "Failed to open output device"
 msgstr "Kunne ikke åbne for uddata-enheden"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3232
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3311
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3233
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3312
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Kunne ikke oprette GStreamer-element; kontrollér din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3241
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3242
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Kunne ikke oprette lyduddata-element; kontrollér din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3275
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3328
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3355
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3365
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3375
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3276
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3329
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3356
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3366
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3376
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Kunne ikke lænke til GStreamer-rørledning; kontrollér din installation"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3470
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3471
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Kunne ikke oprette GStreamer-rørledning til afspilning af %s"
@@ -615,7 +619,7 @@ msgstr "Gem afspilningsliste"
 
 #: ../data/ui/playlist-save.ui.h:3 ../plugins/artsearch/songinfo.py:135
 #: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:534
-#: ../podcast/rb-podcast-source.c:1107 ../shell/rb-track-transfer-queue.c:187
+#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:187
 #: ../widgets/rb-alert-dialog.c:384 ../widgets/rb-alert-dialog.c:401
 #: ../widgets/rb-dialog.c:131 ../widgets/rb-dialog.c:139
 #: ../widgets/rb-query-creator.c:191 ../widgets/rb-uri-dialog.c:158
@@ -727,7 +731,7 @@ msgid "Cancel Download"
 msgstr "Afbryd download"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1240 ../sources/rb-media-player-source.c:1104
+#: ../podcast/rb-podcast-source.c:1237 ../sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Slet"
 
@@ -943,7 +947,7 @@ msgstr "Fjernede filer:"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:496
-#: ../rhythmdb/rhythmdb.c:3800 ../widgets/rb-entry-view.c:943
+#: ../rhythmdb/rhythmdb.c:3807 ../widgets/rb-entry-view.c:943
 #: ../widgets/rb-entry-view.c:1567 ../widgets/rb-entry-view.c:1580
 #: ../widgets/rb-song-info.c:1546
 msgid "Never"
@@ -989,7 +993,7 @@ msgstr "%d. %b %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/android/rb-android-source.c:687
+#: ../plugins/android/rb-android-source.c:689
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -1004,9 +1008,9 @@ msgstr "%d. %b %Y"
 #: ../plugins/iradio/rb-iradio-source.c:1044
 #: ../plugins/iradio/rb-station-properties-dialog.c:485
 #: ../plugins/lyrics/lyrics.py:70 ../plugins/lyrics/lyrics.py:72
-#: ../plugins/mtpdevice/rb-mtp-source.c:649
-#: ../plugins/mtpdevice/rb-mtp-source.c:1142
-#: ../plugins/mtpdevice/rb-mtp-source.c:1491
+#: ../plugins/mtpdevice/rb-mtp-source.c:645
+#: ../plugins/mtpdevice/rb-mtp-source.c:1144
+#: ../plugins/mtpdevice/rb-mtp-source.c:1450
 #: ../plugins/notification/rb-notification-plugin.c:510
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1926
@@ -1016,9 +1020,9 @@ msgstr "%d. %b %Y"
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
 #: ../remote/dbus/rb-client.c:728 ../rhythmdb/rhythmdb.c:2066
 #: ../rhythmdb/rhythmdb.c:2072 ../rhythmdb/rhythmdb.c:2087
-#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5564
-#: ../rhythmdb/rhythmdb.c:5570 ../rhythmdb/rhythmdb.c:5575
-#: ../rhythmdb/rhythmdb.c:5586 ../rhythmdb/rhythmdb.c:5590
+#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5571
+#: ../rhythmdb/rhythmdb.c:5577 ../rhythmdb/rhythmdb.c:5582
+#: ../rhythmdb/rhythmdb.c:5593 ../rhythmdb/rhythmdb.c:5597
 #: ../rhythmdb/rhythmdb-entry-type.c:301
 #: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
 #: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
@@ -1170,7 +1174,7 @@ msgstr "Spor:"
 msgid "Playlists:"
 msgstr "Afspilningslister:"
 
-#: ../plugins/android/rb-android-source.c:199
+#: ../plugins/android/rb-android-source.c:203
 msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
@@ -1178,11 +1182,18 @@ msgstr ""
 "Ingen lagerområder fundet på denne enhed. Måske skal du låse den op og "
 "aktivere MTP."
 
-#: ../plugins/android/rb-android-source.c:399
+#: ../plugins/android/rb-android-source.c:403
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "Skanner %s"
+
+#: ../plugins/android/rb-android-source.c:788
+#: ../plugins/mtpdevice/rb-mtp-source.c:1138
+#: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
+#: ../sources/rb-transfer-target.c:182
+msgid "Error transferring track"
+msgstr "Fejl i overførsel af spor"
 
 #: ../plugins/artsearch/artsearch.plugin.in.h:1
 msgid "Cover art search"
@@ -1970,13 +1981,13 @@ msgid "New Playlist on %s"
 msgstr "Ny afspilningsliste på %s"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:338
-#: ../sources/rb-library-source.c:378
+#: ../sources/rb-library-source.c:375
 msgid "Add to New Playlist"
 msgstr "Føj til ny afspilningsliste"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:1370
 #: ../plugins/ipod/rb-ipod-source.c:2045
-#: ../plugins/mtpdevice/rb-mtp-source.c:1571
+#: ../plugins/mtpdevice/rb-mtp-source.c:1530
 msgid "Advanced"
 msgstr "Avanceret"
 
@@ -2567,7 +2578,7 @@ msgstr ""
 "Fejlbeskeden er:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:499
+#: ../plugins/magnatune/MagnatuneSource.py:500
 msgid "Downloading from Magnatune"
 msgstr "Henter fra Magnatune"
 
@@ -2596,29 +2607,23 @@ msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr ""
 "Understøttelse af MTP-enheder (vis indholdet, overfør, afspil fra enhed)"
 
-#: ../plugins/mtpdevice/rb-mtp-gst-sink.c:127
-#: ../plugins/mtpdevice/rb-mtp-thread.c:488
-#, c-format
-msgid "Unable to open temporary file: %s"
-msgstr "Kan ikke åbne midlertidig fil: %s"
-
-#: ../plugins/mtpdevice/rb-mtp-source.c:603
+#: ../plugins/mtpdevice/rb-mtp-source.c:599
 msgid "Media Player"
 msgstr "Medieafspiller"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:883
+#: ../plugins/mtpdevice/rb-mtp-source.c:879
 msgid "Media player device error"
 msgstr "Enhedsfejl for musikafspiller"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:887
+#: ../plugins/mtpdevice/rb-mtp-source.c:883
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Kan ikke åbne %s %s-enheden"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:931
+#: ../plugins/mtpdevice/rb-mtp-source.c:927
 msgid "Digital Audio Player"
 msgstr "Digital Lydafspiller"
 
@@ -2634,12 +2639,17 @@ msgstr "Kan ikke kopiere fil fra MTP-enheden: %s"
 msgid "Not enough space in %s"
 msgstr "Ikke plads nok i %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:545
+#: ../plugins/mtpdevice/rb-mtp-thread.c:488
+#, c-format
+msgid "Unable to open temporary file: %s"
+msgstr "Kan ikke åbne midlertidig fil: %s"
+
+#: ../plugins/mtpdevice/rb-mtp-thread.c:552
 #, c-format
 msgid "No space left on MTP device"
 msgstr "Der er ingen plads tilbage på MTP-enheden"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:548
+#: ../plugins/mtpdevice/rb-mtp-thread.c:555
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "Kan ikke sende fil til MTP-enheden: %s"
@@ -2934,8 +2944,8 @@ msgid "Episodes"
 msgstr "Episoder"
 
 #: ../podcast/rb-podcast-add-dialog.c:797
-#: ../podcast/rb-podcast-add-dialog.c:808 ../podcast/rb-podcast-source.c:1360
-#: ../podcast/rb-podcast-source.c:1371
+#: ../podcast/rb-podcast-add-dialog.c:808 ../podcast/rb-podcast-source.c:1357
+#: ../podcast/rb-podcast-source.c:1368
 msgid "Date"
 msgstr "Dato"
 
@@ -3069,15 +3079,15 @@ msgstr "_Slet kun kilde"
 msgid "_Delete Feed And Files"
 msgstr "_Slet kilde og filer"
 
-#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1414
+#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1411
 msgid "Downloaded"
 msgstr "Hentet"
 
-#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1416
+#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1413
 msgid "Failed"
 msgstr "Fejlede"
 
-#: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1415
+#: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1412
 msgid "Waiting"
 msgstr "Venter"
 
@@ -3085,11 +3095,11 @@ msgstr "Venter"
 msgid "Podcast Error"
 msgstr "Podcast-fejl"
 
-#: ../podcast/rb-podcast-source.c:1094
+#: ../podcast/rb-podcast-source.c:1091
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Slet podcast-episode og hentet fil?"
 
-#: ../podcast/rb-podcast-source.c:1097
+#: ../podcast/rb-podcast-source.c:1094
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -3099,42 +3109,42 @@ msgstr ""
 "Vær opmærksom på, at du kan slette episoderne og samtidigt beholde den "
 "hentede fil ved at vælge kun at slette episoden."
 
-#: ../podcast/rb-podcast-source.c:1105
+#: ../podcast/rb-podcast-source.c:1102
 msgid "Delete _Episode Only"
 msgstr "Slet kun _episode"
 
-#: ../podcast/rb-podcast-source.c:1111
+#: ../podcast/rb-podcast-source.c:1108
 msgid "_Delete Episode And File"
 msgstr "_Slet episode og fil"
 
-#: ../podcast/rb-podcast-source.c:1217
+#: ../podcast/rb-podcast-source.c:1214
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d episode"
 msgstr[1] "%d episoder"
 
-#: ../podcast/rb-podcast-source.c:1393 ../podcast/rb-podcast-source.c:1448
-#: ../podcast/rb-podcast-source.c:1487
+#: ../podcast/rb-podcast-source.c:1390 ../podcast/rb-podcast-source.c:1445
+#: ../podcast/rb-podcast-source.c:1484
 msgid "Feed"
 msgstr "Kilde"
 
-#: ../podcast/rb-podcast-source.c:1413 ../podcast/rb-podcast-source.c:1431
+#: ../podcast/rb-podcast-source.c:1410 ../podcast/rb-podcast-source.c:1428
 msgid "Status"
 msgstr "Status"
 
 #. ensure search instances exist
-#: ../podcast/rb-podcast-source.c:1533 ../sources/rb-auto-playlist-source.c:253
+#: ../podcast/rb-podcast-source.c:1530 ../sources/rb-auto-playlist-source.c:253
 #: ../sources/rb-browser-source.c:314 ../sources/rb-browser-source.c:332
 #: ../sources/rb-static-playlist-source.c:295
 msgid "Search all fields"
 msgstr "Søg alle felter"
 
-#: ../podcast/rb-podcast-source.c:1534
+#: ../podcast/rb-podcast-source.c:1531
 msgid "Search podcast feeds"
 msgstr "Søg podcast-kilder"
 
-#: ../podcast/rb-podcast-source.c:1535
+#: ../podcast/rb-podcast-source.c:1532
 msgid "Search podcast episodes"
 msgstr "Søg podcast-episoder"
 
@@ -3424,21 +3434,21 @@ msgstr "Tom fil"
 msgid "Could not load the music database:"
 msgstr "Kunne ikke indlæse musikdatabasen:"
 
-#: ../rhythmdb/rhythmdb.c:4654
+#: ../rhythmdb/rhythmdb.c:4661
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minut"
 msgstr[1] "%ld minutter"
 
-#: ../rhythmdb/rhythmdb.c:4655
+#: ../rhythmdb/rhythmdb.c:4662
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld time"
 msgstr[1] "%ld timer"
 
-#: ../rhythmdb/rhythmdb.c:4656
+#: ../rhythmdb/rhythmdb.c:4663
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3446,7 +3456,7 @@ msgstr[0] "%ld dag"
 msgstr[1] "%ld dage"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4662
+#: ../rhythmdb/rhythmdb.c:4669
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s og %s"
@@ -3454,8 +3464,8 @@ msgstr "%s, %s og %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4668 ../rhythmdb/rhythmdb.c:4676
-#: ../rhythmdb/rhythmdb.c:4687
+#: ../rhythmdb/rhythmdb.c:4675 ../rhythmdb/rhythmdb.c:4683
+#: ../rhythmdb/rhythmdb.c:4694
 #, c-format
 msgid "%s and %s"
 msgstr "%s og %s"
@@ -3464,7 +3474,7 @@ msgstr "%s og %s"
 msgid "Scanning"
 msgstr "Skanner"
 
-#: ../rhythmdb/rhythmdb-import-job.c:667 ../shell/rb-track-transfer-batch.c:915
+#: ../rhythmdb/rhythmdb-import-job.c:667 ../shell/rb-track-transfer-batch.c:917
 #, c-format
 msgid "%d of %d"
 msgstr "%d af %d"
@@ -4025,34 +4035,29 @@ msgstr "Kunstner (Album) - Nummer - Titel"
 msgid "Number. Artist - Title"
 msgstr "Nummer. Kunstner - Titel"
 
-#: ../sources/rb-library-source.c:418 ../sources/sync/rb-sync-settings-ui.c:217
+#: ../sources/rb-library-source.c:416 ../sources/sync/rb-sync-settings-ui.c:217
 #: ../sources/sync/rb-sync-settings-ui.c:218
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "Musik"
 
-#: ../sources/rb-library-source.c:472
+#: ../sources/rb-library-source.c:469
 msgid "Choose Library Location"
 msgstr "Vælg samlingsplacering"
 
-#: ../sources/rb-library-source.c:511
+#: ../sources/rb-library-source.c:508
 msgid "Multiple locations set"
 msgstr "Flere placeringer valgt"
 
-#: ../sources/rb-library-source.c:1047
+#: ../sources/rb-library-source.c:1044
 msgid "Example Path:"
 msgstr "Eksempelsti:"
 
-#: ../sources/rb-library-source.c:1201 ../sources/rb-library-source.c:1205
-#: ../sources/rb-transfer-target.c:182
-msgid "Error transferring track"
-msgstr "Fejl i overførsel af spor"
-
-#: ../sources/rb-library-source.c:1287
+#: ../sources/rb-library-source.c:1284
 msgid "Copying tracks to the library"
 msgstr "Kopiér spor til samlingen"
 
-#: ../sources/rb-library-source.c:1361
+#: ../sources/rb-library-source.c:1358
 msgid "Adding tracks to the library"
 msgstr "Føjer spor til samlingen"
 
