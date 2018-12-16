@@ -1737,7 +1737,7 @@ list_item_view_url_activated_cb (GtkMenuItem *menuitem,
 	data = g_hash_table_lookup (page->priv->popup_menu_to_data_map, menu);
 
 	/* some urls are given to us without the http:// prefix */
-	if (g_str_has_prefix (data->url, "http://") == TRUE) {
+	if (g_str_has_prefix (data->url, "http://") || g_str_has_prefix (data->url, "https://")) {
 		gtk_show_uri (NULL, data->url, GDK_CURRENT_TIME, NULL);
 	} else {
 		char *url;
