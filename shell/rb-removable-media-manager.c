@@ -700,21 +700,26 @@ rb_removable_media_manager_add_mount (RBRemovableMediaManager *mgr, GMount *moun
 		return;
 	}
 	mountpoint = g_file_get_path (mount_root);
-	g_object_unref (mount_root);
 
 	device_info = mpid_device_new (mountpoint);
-	g_free (mountpoint);
 
 	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[CREATE_SOURCE_MOUNT], 0, mount, device_info, &source);
 
 	if (source) {
+		GFileMonitor *monitor;
+
 		g_hash_table_insert (priv->mount_mapping, mount, source);
 		rb_removable_media_manager_append_media_source (mgr, source);
+
+		monitor = g_file_monitor_directory (mount_root, G_FILE_MONITOR_NONE, NULL, NULL);
+		g_object_set_data (G_OBJECT (mount), "rb-file-monitor", monitor);
 	} else {
 		rb_debug ("Unhandled media");
 	}
 
 	g_object_unref (device_info);
+	g_free (mountpoint);
+	g_object_unref (mount_root);
 }
 
 static void
@@ -722,6 +727,7 @@ rb_removable_media_manager_remove_mount (RBRemovableMediaManager *mgr, GMount *m
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 	RBSource *source;
+	GFileMonitor *monitor;
 
 	g_assert (mount != NULL);
 
@@ -729,6 +735,12 @@ rb_removable_media_manager_remove_mount (RBRemovableMediaManager *mgr, GMount *m
 	source = g_hash_table_lookup (priv->mount_mapping, mount);
 	if (source) {
 		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
+	}
+
+	monitor = G_FILE_MONITOR (g_object_get_data (G_OBJECT (mount), "rb-file-monitor"));
+	if (monitor != NULL) {
+		g_object_unref (monitor);
+		g_object_set_data (G_OBJECT (mount), "rb-file-monitor", NULL);
 	}
 }
 
