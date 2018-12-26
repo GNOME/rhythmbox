@@ -282,6 +282,9 @@ start_element (GMarkupParseContext *pctx,
 		}
 	}
 
+	if (ctx->map == NULL)
+		return;
+
 	path = get_path (ctx);
 	for (i = 0; ctx->map[i].path != NULL; i++) {
 		if (g_strcmp0 (path, ctx->map[i].path) == 0) {
@@ -361,6 +364,7 @@ rb_musicbrainz_data_parse (const char *data, gssize len, GError **error)
 	ctx.text.len = 0;
 	ctx.text.allocated_len = 0;
 	ctx.item = NULL;
+	ctx.map = NULL;
 	g_queue_init (&ctx.path);
 
 	pctx = g_markup_parse_context_new (&parser, 0, &ctx, NULL);
