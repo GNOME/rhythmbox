@@ -352,7 +352,6 @@ static void
 impl_startup (GApplication *app)
 {
 	RBApplication *rb = RB_APPLICATION (app);
-	gboolean shell_shows_app_menu;
 	GtkBuilder *builder;
 	GMenuModel *menu;
 	GtkCssProvider *provider;
@@ -380,22 +379,11 @@ impl_startup (GApplication *app)
 					 G_N_ELEMENTS (app_actions),
 					 app);
 
-	g_object_get (gtk_settings_get_default (),
-		      "gtk-shell-shows-app-menu", &shell_shows_app_menu,
-		      NULL);
-
 	builder = rb_builder_load ("app-menu.ui", NULL);
 	menu = G_MENU_MODEL (gtk_builder_get_object (builder, "app-menu"));
 	rb_application_link_shared_menus (rb, G_MENU (menu));
 	rb_application_add_shared_menu (rb, "app-menu", menu);
 
-	/* only set the app menu if the shell shows it; otherwise, we'll
-	 * stick a menu button in the toolbar.
-	 */
-	if (shell_shows_app_menu) {
-		gtk_application_set_app_menu (GTK_APPLICATION (app), menu);
-	}
-	
 	g_object_unref (builder);
 
 	/* Use our own css provider */
