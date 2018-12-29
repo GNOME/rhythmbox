@@ -101,8 +101,6 @@ typedef struct
 
 	GtkWidget *grid;
 	GtkWidget *info_bar;
-
-	gboolean samsung;
 } RBAndroidSourcePrivate;
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (
@@ -744,12 +742,7 @@ impl_build_dest_uri (RBTransferTarget *target,
 		     const char *media_type,
 		     const char *extension)
 {
-	RBAndroidSourcePrivate *priv = GET_PRIVATE (target);
-	if (priv->samsung) {
-		return g_strdup (RB_ENCODER_DEST_TEMPFILE);
-	} else {
-		return build_device_uri (RB_ANDROID_SOURCE (target), entry, media_type, extension);
-	}
+	return g_strdup (RB_ENCODER_DEST_TEMPFILE);
 }
 
 static void
@@ -835,26 +828,19 @@ impl_track_added (RBTransferTarget *target,
 		  const char *media_type)
 {
 	RBAndroidSource *source = RB_ANDROID_SOURCE (target);
-	RBAndroidSourcePrivate *priv = GET_PRIVATE (source);
+	char *realdest;
+	GFile *dfile, *sfile;
+	GTask *task;
 
-	if (priv->samsung) {
-		char *realdest;
-		GFile *dfile, *sfile;
-		GTask *task;
+	realdest = build_device_uri (source, entry, media_type, rb_gst_media_type_to_extension (media_type));
+	dfile = g_file_new_for_uri (realdest);
+	sfile = g_file_new_for_uri (dest);
+	g_free (realdest);
 
-		realdest = build_device_uri (source, entry, media_type, rb_gst_media_type_to_extension (media_type));
-		dfile = g_file_new_for_uri (realdest);
-		sfile = g_file_new_for_uri (dest);
-		g_free (realdest);
-
-		task = g_task_new (dfile, NULL, track_copy_cb, g_object_ref (source));
-		g_task_set_task_data (task, sfile, g_object_unref);
-		g_task_run_in_thread (task, copy_track_task);
-		return FALSE;
-	} else {
-		update_free_space (source);
-		return TRUE;
-	}
+	task = g_task_new (dfile, NULL, track_copy_cb, g_object_ref (source));
+	g_task_set_task_data (task, sfile, g_object_unref);
+	g_task_run_in_thread (task, copy_track_task);
+	return FALSE;
 }
 
 
@@ -897,7 +883,6 @@ impl_constructed (GObject *object)
 	RBAndroidSourcePrivate *priv;
 	RhythmDBEntryType *entry_type;
 	RBShell *shell;
-	const char *vendor;
 	char **output_formats;
 
 	source = RB_ANDROID_SOURCE (object);
@@ -946,13 +931,6 @@ impl_constructed (GObject *object)
 		g_object_set (source, "encoding-target", target, NULL);
 	}
 	g_strfreev (output_formats);
-
-	/* some vendors are worse than others */
-	vendor = g_udev_device_get_property (priv->gudev_device, "ID_VENDOR");
-	if (g_ascii_strcasecmp (vendor, "samsung") == 0) {
-		rb_debug ("samsung mode: transfers will use local temporary files");
-		priv->samsung = TRUE;
-	}
 
 	g_object_unref (shell);
 }
