@@ -33,7 +33,7 @@ plugin_in_files = sample-vala.plugin.in
 
 %.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po); $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
 
-AM_VALAFLAGS = --vapidir=$(top_srcdir)/bindings/vala --pkg=rhythmdb --pkg=rb --pkg=gstreamer-0.10 --pkg=libpeas-1.0
+AM_VALAFLAGS = --vapidir=$(top_srcdir)/bindings/vala --pkg=rhythmdb --pkg=rb --pkg=gstreamer-1.0 --pkg=libpeas-1.0
 
 %.c %.h: %.vala
 	$(VALAC) -C $(AM_VALAFLAGS) $^
