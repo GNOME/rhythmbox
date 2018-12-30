@@ -658,6 +658,18 @@ rb_removable_media_manager_remove_volume (RBRemovableMediaManager *mgr, GVolume 
 }
 
 static void
+enum_children_ready (GObject *obj, GAsyncResult *result, gpointer user_data)
+{
+	GFileEnumerator *e;
+	GMount *mount = G_MOUNT (user_data);
+
+	e = g_file_enumerate_children_finish (G_FILE (obj), result, NULL);
+	g_object_set_data (G_OBJECT (mount), "rb-file-enum", e);
+
+	g_object_unref (mount);
+}
+
+static void
 rb_removable_media_manager_add_mount (RBRemovableMediaManager *mgr, GMount *mount)
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
@@ -706,13 +718,16 @@ rb_removable_media_manager_add_mount (RBRemovableMediaManager *mgr, GMount *moun
 	g_signal_emit (G_OBJECT (mgr), rb_removable_media_manager_signals[CREATE_SOURCE_MOUNT], 0, mount, device_info, &source);
 
 	if (source) {
-		GFileMonitor *monitor;
-
 		g_hash_table_insert (priv->mount_mapping, mount, source);
 		rb_removable_media_manager_append_media_source (mgr, source);
 
-		monitor = g_file_monitor_directory (mount_root, G_FILE_MONITOR_NONE, NULL, NULL);
-		g_object_set_data (G_OBJECT (mount), "rb-file-monitor", monitor);
+		/*
+		 * if we don't have an open connection to the mount process,
+		 * gvfs won't invalidate its mount info cache if the mount
+		 * goes away.
+		 */
+		g_file_enumerate_children_async (mount_root, G_FILE_ATTRIBUTE_STANDARD_NAME, G_FILE_QUERY_INFO_NONE, G_PRIORITY_DEFAULT, NULL,
+			enum_children_ready, g_object_ref (mount));
 	} else {
 		rb_debug ("Unhandled media");
 	}
@@ -727,7 +742,7 @@ rb_removable_media_manager_remove_mount (RBRemovableMediaManager *mgr, GMount *m
 {
 	RBRemovableMediaManagerPrivate *priv = GET_PRIVATE (mgr);
 	RBSource *source;
-	GFileMonitor *monitor;
+	GFileEnumerator *e;
 
 	g_assert (mount != NULL);
 
@@ -737,10 +752,10 @@ rb_removable_media_manager_remove_mount (RBRemovableMediaManager *mgr, GMount *m
 		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (source));
 	}
 
-	monitor = G_FILE_MONITOR (g_object_get_data (G_OBJECT (mount), "rb-file-monitor"));
-	if (monitor != NULL) {
-		g_object_unref (monitor);
-		g_object_set_data (G_OBJECT (mount), "rb-file-monitor", NULL);
+	e = G_FILE_ENUMERATOR (g_object_get_data (G_OBJECT (mount), "rb-file-enum"));
+	if (e != NULL) {
+		g_object_unref (e);
+		g_object_set_data (G_OBJECT (mount), "rb-file-enum", NULL);
 	}
 }
 
