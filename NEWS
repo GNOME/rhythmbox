@@ -1,3 +1,74 @@
+Overview of changes in Rhythmbox 3.4.3
+======================================
+
+* Bug fix release for 3.4
+* Android plugin works better with Samsung and Android 9 devices
+* Status bar replaced with floating bar as used by Nautilus
+
+Bugzilla bugs fixed:
+
+727670  ext-db: fix crash when store request processing fails
+767255  build: Remove -Wcast-align warning
+781664  mmkeys: media-player-keys: Fix usage to match API documentation
+788676  magnatune: convert the secret to a string
+788677  magnatune: rework download progress so it actually works
+788706  fmradio: Fix build with GStreamer master
+789155  Ignore newline in track metadata
+789494  brasero-disc-recorder: Fix invalid object reference warnings
+789632  song-info: fix the signal name used for entry deletion
+789706  shell: remove extra pixbuf unref
+789795  mp3 encoding quality slider is misleading
+789839  bump gtk+ requirement to 3.20
+789157  Add dialog-question-symbolic icon for missing files source
+790876  build: Install appstream metadata to non-deprecated location
+791815  Rhythmbox crashes when editing auto playlist sorted by Location / Bitrate
+
+Gitlab issues fixed:
+
+1626 - Help contains the whole text of GFDL
+1646 - Can not transfer songs to phone over MTP, "could not open resource for writing"
+1660 - crashes when I insert a cd
+
+Gitlab merge requests:
+
+7 - all: Remove HAL
+8 - Fix art search traceback
+10 - sources: Fix state of initial import not reflecting reality
+11 - Added Gitlab CI config
+21 - audioscrobbler: Don't break https:// URLS
+
+Translation updates:
+
+- ca, courtesy of Jordi Mas
+- cs, courtesy of Marek Černocký
+- da, courtesy of Alan Mortensen
+- de, courtesy of Mario Blättermann
+- eo, courtesy of Kristjan SCHMIDT
+- es, courtesy of Daniel Mustieles
+- es, courtesy of Rodrigo
+- fi, courtesy of Jiri Grönroos
+- fr, courtesy of Charles Monzat
+- fur, courtesy of "Last-Translator: \n"
+- gl, courtesy of marcos
+- hr, courtesy of gogo
+- hu, courtesy of Meskó Balázs
+- id, courtesy of Kukuh Syafaat
+- it, courtesy of Milo Casagrande
+- lt, courtesy of Aurimas Černius
+- nb, courtesy of Kjartan Maraas
+- nl, courtesy of Nathan Follens
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Rafael Fontenelle
+- sk, courtesy of Dušan Kazik
+- sr, courtesy of Мирослав Николић
+- sr@latin, courtesy of Miroslav Nikolić
+- sv, courtesy of Anders Jonsson
+- tr, courtesy of Emin Tufan Çetin
+- vi, courtesy of Trần Ngọc Quân
+- zh_CN, courtesy of Dingzhong Chen
+- zh_TW, courtesy of Cheng-Chia Tseng
+
+
 Overview of changes in Rhythmbox 3.4.2
 ======================================
 
