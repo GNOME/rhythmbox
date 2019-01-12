@@ -608,23 +608,6 @@ PKG_CHECK_MODULES(CHECK, check, have_check=yes, have_check=no)
 AM_CONDITIONAL([HAVE_CHECK],[test "x$have_check" = "xyes"])
 
 dnl ================================================================
-dnl Browser plugin
-dnl ================================================================
-
-AC_ARG_ENABLE([browser-plugin],
-	[AS_HELP_STRING([--enable-browser-plugin],[compile the iTunes detection browser plugin])],
-	[],[enable_browser_plugin=yes])
-
-MOZILLA_PLUGINDIR=${MOZILLA_PLUGINDIR:-'${libdir}/mozilla/plugins'}
-AC_ARG_VAR([MOZILLA_PLUGINDIR],[Where to install the browser plugin to])
-
-AM_CONDITIONAL([ENABLE_BROWSER_PLUGIN], test x$enable_browser_plugin = xyes)
-if test x$enable_browser_plugin = xyes; then
-	ITMS_HANDLER="x-scheme-handler/itms;x-scheme-handler/itmss;"
-fi
-AC_SUBST(ITMS_HANDLER)
-
-dnl ================================================================
 dnl Use libdmapsharing for DAAP?
 dnl ================================================================
 AC_ARG_ENABLE(daap,
