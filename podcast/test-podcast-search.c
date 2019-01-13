@@ -37,36 +37,7 @@
 
 #include <string.h>
 
-static gboolean debug = FALSE;
 static int done = 0;
-
-void rb_debug_realf (const char *func,
-		     const char *file,
-		     int line,
-		     gboolean newline,
-		     const char *format, ...) G_GNUC_PRINTF (5, 6);
-
-/* For the benefit of the podcast parsing code */
-void
-rb_debug_realf (const char *func,
-	        const char *file,
-	        int line,
-	        gboolean newline,
-	        const char *format, ...)
-{
-	va_list args;
-	char buffer[1025];
-
-	if (debug == FALSE)
-		return;
-
-	va_start (args, format);
-	g_vsnprintf (buffer, 1024, format, args);
-	va_end (args);
-
-	g_printerr (newline ? "%s:%d [%s] %s\n" : "%s:%d [%s] %s",
-		    file, line, func, buffer);
-}
 
 static void
 result_cb (RBPodcastSearch *search, RBPodcastChannel *data)
@@ -131,7 +102,7 @@ int main (int argc, char **argv)
 
 	text = argv[1];
 	if (argv[2] != NULL && strcmp (argv[2], "--debug") == 0) {
-		debug = TRUE;
+		rb_debug_init (TRUE);
 	}
 
 	loop = g_main_loop_new (NULL, FALSE);
