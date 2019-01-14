@@ -157,10 +157,10 @@ enum
 	PROP_SHOW_ALBUM_ART
 };
 
-#define TITLE_FORMAT  "<b>%s</b>"
-#define ALBUM_FORMAT  "<small><i>%s</i></small>"
-#define ARTIST_FORMAT "<small><i>%s</i></small>"
-#define STATIC_TEXT_FORMAT "<small>%s</small>"
+#define TITLE_FORMAT  "<small><b>%s</b></small>"
+#define ALBUM_FORMAT  "<span rise='1'><small><i>%s</i></small></span>"
+#define ARTIST_FORMAT "<span rise='1'><small><i>%s</i></small></span>"
+#define STATIC_TEXT_FORMAT "<span rise='1'><small>%s</small></span>"
 #define STREAM_FORMAT "%s"
 
 /* unicode graphic characters, encoded in UTF-8 */
@@ -339,7 +339,7 @@ rb_header_constructed (GObject *object)
 	gtk_widget_set_valign (header->priv->songbox, GTK_ALIGN_CENTER);
 	gtk_orientable_set_orientation (GTK_ORIENTABLE (header->priv->songbox), GTK_ORIENTATION_VERTICAL);
 
-	header->priv->song = g_object_ref (gtk_label_new (" "));
+	header->priv->song = g_object_ref (gtk_label_new (""));
 	gtk_widget_show (header->priv->song);
 	gtk_label_set_use_markup (GTK_LABEL (header->priv->song), TRUE);
 	gtk_label_set_selectable (GTK_LABEL (header->priv->song), TRUE);

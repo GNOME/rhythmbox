@@ -700,11 +700,11 @@ data/icons/hicolor/32x32/Makefile
 data/icons/hicolor/32x32/apps/Makefile
 data/icons/hicolor/48x48/Makefile
 data/icons/hicolor/48x48/apps/Makefile
-data/icons/hicolor/48x48/status/Makefile
 data/icons/hicolor/256x256/Makefile
 data/icons/hicolor/256x256/apps/Makefile
 data/icons/hicolor/scalable/Makefile
 data/icons/hicolor/scalable/apps/Makefile
+data/icons/hicolor/scalable/status/Makefile
 data/icons/src/Makefile
 sources/Makefile
 sources/sync/Makefile
