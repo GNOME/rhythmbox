@@ -731,12 +731,6 @@ construct_load_ui (RBShell *shell)
 	gtk_window_set_titlebar (GTK_WINDOW (shell->priv->window), headerbar);
 	gtk_header_bar_set_custom_title (GTK_HEADER_BAR (headerbar), GTK_WIDGET (shell->priv->header));
 
-	/* this seems a bit unnecessary */
-	gtk_actionable_set_action_target_value (GTK_ACTIONABLE (gtk_builder_get_object (builder, "shuffle-button")),
-						g_variant_new_boolean (TRUE));
-	gtk_actionable_set_action_target_value (GTK_ACTIONABLE (gtk_builder_get_object (builder, "repeat-button")),
-						g_variant_new_boolean (TRUE));
-
 	shell->priv->play_button = GTK_WIDGET (gtk_builder_get_object (builder, "play-button"));
 	shell->priv->pause_button = GTK_WIDGET (gtk_builder_get_object (builder, "pause-button"));
 	shell->priv->stop_button = GTK_WIDGET (gtk_builder_get_object (builder, "stop-button"));
