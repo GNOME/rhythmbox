@@ -94,9 +94,8 @@
 #include "rb-play-order-random-by-age-and-rating.h"
 #include "rb-play-order-queue.h"
 
-static const char* const state_to_play_order[2][2] =
-	{{"linear",	"linear-loop"},
-	 {"shuffle",	"random-by-age-and-rating"}};
+static const char* const state_to_play_order[4] =
+	{"linear", "linear-loop", "shuffle", "random-by-age-and-rating"};
 
 static void rb_shell_player_class_init (RBShellPlayerClass *klass);
 static void rb_shell_player_init (RBShellPlayer *shell_player);
@@ -940,26 +939,27 @@ rb_shell_player_get_playback_state (RBShellPlayer *player,
 				    gboolean *shuffle,
 				    gboolean *repeat)
 {
-	int i, j;
 	char *play_order;
+	int i, max, state;
 
+	state = max = G_N_ELEMENTS (state_to_play_order);
 	play_order = g_settings_get_string (player->priv->settings, "play-order");
-	for (i = 0; i < G_N_ELEMENTS(state_to_play_order); i++)
-		for (j = 0; j < G_N_ELEMENTS(state_to_play_order[0]); j++)
-			if (!strcmp (play_order, state_to_play_order[i][j]))
-				goto found;
+	for (i = 0; i < max; i++)
+		if (!strcmp (play_order, state_to_play_order[i]))
+			state = i;
 
 	g_free (play_order);
-	return FALSE;
 
-found:
-	if (shuffle != NULL) {
-		*shuffle = i > 0;
-	}
-	if (repeat != NULL) {
-		*repeat = j > 0;
-	}
-	g_free (play_order);
+	if (state >= max)
+		return FALSE;
+
+	/* third and fourth position mean shuffle */
+ 	if (shuffle != NULL)
+		*shuffle = state > 1; 
+	/* second and fourth position mean repeat */
+	if (repeat != NULL)
+		*repeat = state == 1 || state == 3;
+
 	return TRUE;
 }
 
@@ -976,7 +976,7 @@ rb_shell_player_set_playback_state (RBShellPlayer *player,
 				    gboolean shuffle,
 				    gboolean repeat)
 {
-	const char *neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
+	const char *neworder = state_to_play_order[(repeat ? 1 : 0) + (shuffle ? 2 : 0)];
 	g_settings_set_string (player->priv->settings, "play-order", neworder);
 }
 
@@ -2812,29 +2812,26 @@ play_next_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_d
 }
 
 static void
-play_repeat_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_data)
+play_repeat_action_cb (GSimpleAction *action, GVariant *value, gpointer user_data)
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (user_data);
-	const char *neworder;
 	gboolean shuffle = FALSE;
 	gboolean repeat = FALSE;
-	rb_debug ("repeat changed");
 
 	if (player->priv->syncing_state)
 		return;
 
-	rb_shell_player_get_playback_state (player, &shuffle, &repeat);
+	rb_debug ("repeat changed");
 
-	repeat = !repeat;
-	neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
-	g_settings_set_string (player->priv->settings, "play-order", neworder);
+	rb_shell_player_get_playback_state (player, &shuffle, &repeat);
+	repeat = g_variant_get_boolean(value);
+	rb_shell_player_set_playback_state (player, shuffle, repeat);
 }
 
 static void
-play_shuffle_action_cb (GSimpleAction *action, GVariant *parameter, gpointer user_data)
+play_shuffle_action_cb (GSimpleAction *action, GVariant *value, gpointer user_data)
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (user_data);
-	const char *neworder;
 	gboolean shuffle = FALSE;
 	gboolean repeat = FALSE;
 
@@ -2844,10 +2841,8 @@ play_shuffle_action_cb (GSimpleAction *action, GVariant *parameter, gpointer use
 	rb_debug ("shuffle changed");
 
 	rb_shell_player_get_playback_state (player, &shuffle, &repeat);
-
-	shuffle = !shuffle;
-	neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
-	g_settings_set_string (player->priv->settings, "play-order", neworder);
+	shuffle = g_variant_get_boolean(value);
+	rb_shell_player_set_playback_state (player, shuffle, repeat);
 }
 
 static void
@@ -2956,8 +2951,8 @@ rb_shell_player_constructed (GObject *object)
 		{ "play", play_action_cb },
 		{ "play-previous", play_previous_action_cb },
 		{ "play-next", play_next_action_cb },
-		{ "play-repeat", play_repeat_action_cb, "b", "false" },
-		{ "play-shuffle", play_shuffle_action_cb, "b", "false" },
+		{ "play-repeat", NULL, NULL, "false", play_repeat_action_cb },
+		{ "play-shuffle", NULL, NULL, "false", play_shuffle_action_cb },
 		{ "volume-up", play_volume_up_action_cb },
 		{ "volume-down", play_volume_down_action_cb }
 	};
