@@ -20,6 +20,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import logging
+import re
 import sys
 import threading
 import time
@@ -29,6 +30,10 @@ from gi.repository import RB
 from client import ListenBrainzClient, Track
 from queue import ListenBrainzQueue
 from settings import ListenBrainzSettings, load_settings
+
+
+SUPPORTED_TYPES = ("song", "magnatune", "soundcloud")
+RE_MBID = re.compile(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}")
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -139,14 +144,13 @@ def _can_be_listened(entry):
     error = entry.get_string(RB.RhythmDBPropType.PLAYBACK_ERROR)
 
     if category != RB.RhythmDBEntryCategory.NORMAL:
-        logger.debug("Cannot submit %r: Category %s" %
+        logger.debug('Cannot submit %r: Category "%s"' %
                      (title, category.value_name))
         return False
 
     type_name = entry_type.get_name()
-    if  type_name != "song" and not (type_name.startswith("audiocd")
-        and entry.get_string(RB.RhythmDBPropType.MB_ALBUMID)):
-        logger.debug("Cannot submit listen %r: Entry type %s" %
+    if type_name not in SUPPORTED_TYPES and not _is_identified_audiocd(entry):
+        logger.debug('Cannot submit listen %r: Entry type "%s"' %
                      (title, type_name))
         return False
 
@@ -156,6 +160,12 @@ def _can_be_listened(entry):
         return False
 
     return True
+
+
+def _is_identified_audiocd(entry):
+    entry_type = entry.get_entry_type()
+    return (entry_type.get_name().startswith("audiocd")
+            and entry.get_string(RB.RhythmDBPropType.MB_ALBUMID))
 
 
 def _handle_exception(e):
@@ -171,12 +181,21 @@ def _entry_to_track(entry):
     mb_album_id = entry.get_string(RB.RhythmDBPropType.MB_ALBUMID)
     mb_artist_id = entry.get_string(RB.RhythmDBPropType.MB_ARTISTID)
     additional_info = {
-        "release_mbid": mb_album_id or None,
-        "recording_mbid": mb_track_id or None,
-        "artist_mbids": [mb_artist_id] if mb_artist_id else [],
+        "release_mbid": _validate_mbid(mb_album_id),
+        "recording_mbid": _validate_mbid(mb_track_id),
+        "artist_mbids": [mb_artist_id] if _validate_mbid(mb_artist_id) else [],
         "tracknumber": track_number or None
     }
+
+    entry_type = entry.get_entry_type().get_name()
+    if (entry_type != "song" and not entry_type.startswith("audiocd")):
+        additional_info["source"] = entry_type
+
     return Track(artist, title, album, additional_info)
+
+
+def _validate_mbid(mbid):
+    return mbid if RE_MBID.match(mbid) else None
 
 
 GObject.type_register(ListenBrainzSettings)
