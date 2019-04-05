@@ -32,7 +32,7 @@ from queue import ListenBrainzQueue
 from settings import ListenBrainzSettings, load_settings
 
 
-SUPPORTED_TYPES = ("song", "magnatune", "soundcloud")
+UNSUPPORTED_TYPES = ('podcast-post')
 RE_MBID = re.compile(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}")
 
 
@@ -149,23 +149,23 @@ def _can_be_listened(entry):
         return False
 
     type_name = entry_type.get_name()
-    if type_name not in SUPPORTED_TYPES and not _is_identified_audiocd(entry):
+    if type_name in UNSUPPORTED_TYPES or _is_unidentified_audiocd(entry):
         logger.debug('Cannot submit listen %r: Entry type "%s"' %
                      (title, type_name))
         return False
 
     if error is not None:
         logger.debug("Cannot submit %r: Playback error %s" %
-                     (title, error))
+                     (entry.get_string(RB.RhythmDBPropType.LOCATION), error))
         return False
 
     return True
 
 
-def _is_identified_audiocd(entry):
+def _is_unidentified_audiocd(entry):
     entry_type = entry.get_entry_type()
     return (entry_type.get_name().startswith("audiocd")
-            and entry.get_string(RB.RhythmDBPropType.MB_ALBUMID))
+            and not entry.get_string(RB.RhythmDBPropType.MB_ALBUMID))
 
 
 def _handle_exception(e):
@@ -189,13 +189,19 @@ def _entry_to_track(entry):
 
     entry_type = entry.get_entry_type().get_name()
     if (entry_type != "song" and not entry_type.startswith("audiocd")):
-        additional_info["source"] = entry_type
+        additional_info["source"] = _cleanup_source(entry_type)
 
     return Track(artist, title, album, additional_info)
 
 
 def _validate_mbid(mbid):
     return mbid if RE_MBID.match(mbid) else None
+
+
+def _cleanup_source(source):
+    if source.startswith("grilo:grl-"):
+        source = source[10:]
+    return source
 
 
 GObject.type_register(ListenBrainzSettings)
