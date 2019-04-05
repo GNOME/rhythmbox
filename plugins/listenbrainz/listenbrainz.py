@@ -143,9 +143,11 @@ def _can_be_listened(entry):
                      (title, category.value_name))
         return False
 
-    if entry_type.get_name() != "song":
-        logger.debug("Cannot submit listen%r: Entry type %s" %
-                     (title, entry_type.get_name()))
+    type_name = entry_type.get_name()
+    if  type_name != "song" and not (type_name.startswith("audiocd")
+        and entry.get_string(RB.RhythmDBPropType.MB_ALBUMID)):
+        logger.debug("Cannot submit listen %r: Entry type %s" %
+                     (title, type_name))
         return False
 
     if error is not None:
