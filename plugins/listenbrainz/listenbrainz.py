@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Philipp Wolfer <ph.wolfer@gmail.com>
+# Copyright (c) 2018-2019 Philipp Wolfer <ph.wolfer@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -188,7 +188,7 @@ def _entry_to_track(entry):
     }
 
     entry_type = entry.get_entry_type().get_name()
-    if (entry_type != "song" and not entry_type.startswith("audiocd")):
+    if entry_type != "song" and not entry_type.startswith("audiocd"):
         additional_info["source"] = _cleanup_source(entry_type)
 
     return Track(artist, title, album, additional_info)
@@ -200,7 +200,7 @@ def _validate_mbid(mbid):
 
 def _cleanup_source(source):
     if source.startswith("grilo:grl-"):
-        source = source[10:]
+        return source[10:]
     return source
 
 
