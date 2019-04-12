@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Philipp Wolfer <ph.wolfer@gmail.com>
+# Copyright (c) 2018-2019 Philipp Wolfer <ph.wolfer@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -45,7 +45,7 @@ class ListenBrainzQueue:
 
     def add(self, listened_at, track):
         try:
-            # Try to submit immediatelly, and queue if it fails
+            # Try to submit immediately, and queue if it fails
             response = self.__client.listen(listened_at, track)
             if response.status in [401, 429] or response.status >= 500:
                 self._append(listened_at, track)
@@ -57,7 +57,8 @@ class ListenBrainzQueue:
         cache_file = self.get_cache_file_path()
         if os.path.exists(cache_file):
             logger.debug("Loading queue from %s", cache_file)
-            self.__queue = json.load(open(cache_file), object_hook=from_json)
+            with open(cache_file) as f:
+                self.__queue = json.load(f, object_hook=from_json)
 
     def save(self):
         cache_file = self.get_cache_file_path()
@@ -65,7 +66,8 @@ class ListenBrainzQueue:
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
         logger.debug("Saving queue to %s", cache_file)
-        json.dump(self.__queue, open(cache_file, 'w'), cls=QueueEncoder)
+        with open(cache_file, 'w') as f:
+            json.dump(self.__queue, f, cls=QueueEncoder)
 
     def _append(self, listened_at, track):
         logger.debug("Queuing for later submission %s: %s", listened_at, track)
