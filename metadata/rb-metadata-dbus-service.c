@@ -324,11 +324,36 @@ test_load (const char *uri)
 	return rv;
 }
 
+static gboolean
+allow_method_cb (GDBusAuthObserver *observer, const char *mechanism, gpointer data)
+{
+	if (g_strcmp0 (mechanism, "EXTERNAL") == 0)
+		return TRUE;
+	return FALSE;
+}
+
+static gboolean
+auth_cb (GDBusAuthObserver *observer, GIOStream *stream, GCredentials *credentials, gpointer data)
+{
+	gboolean result;
+	GCredentials *own_cred;
+
+	if (credentials == NULL)
+		return FALSE;
+
+	own_cred = g_credentials_new ();
+	result = g_credentials_is_same_user (credentials, own_cred, NULL);
+	g_object_unref (own_cred);
+
+	return result;
+}
+
 int
 main (int argc, char **argv)
 {
 	ServiceData svc = {0,};
 	GError *error = NULL;
+	GDBusAuthObserver *auth;
 	const char *address = NULL;
 	char *guid;
 
@@ -372,13 +397,17 @@ main (int argc, char **argv)
 	rb_debug ("initializing metadata service; pid = %d; address = %s", getpid (), address);
 	svc.metadata = rb_metadata_new ();
 	svc.loop = g_main_loop_new (NULL, TRUE);
+	svc.last_active = time (NULL);
 
 	/* create the server */
 	guid = g_dbus_generate_guid ();
+	auth = g_dbus_auth_observer_new ();
+	g_signal_connect (auth, "allow-mechanism", G_CALLBACK (allow_method_cb), NULL);
+	g_signal_connect (auth, "authorize-authenticated-peer", G_CALLBACK (auth_cb), NULL);
 	svc.server = g_dbus_server_new_sync (address,
 					     G_DBUS_SERVER_FLAGS_NONE,
 					     guid,
-					     NULL,
+					     auth,
 					     NULL,
 					     &error);
 	g_free (guid);
@@ -422,6 +451,7 @@ main (int argc, char **argv)
 
 	g_dbus_server_stop (svc.server);
 	g_object_unref (svc.server);
+	g_object_unref (auth);
 	gst_deinit ();
 
 	return 0;
