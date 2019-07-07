@@ -937,11 +937,13 @@ rb_removable_media_manager_device_is_android (RBRemovableMediaManager *manager, 
 
 	const char *androids[] = {
 		"Android",
-		"Nexus"
+		"Nexus",
+		"Pixel"
 	};
 	const char *android_vendors[] = {
 		"motorola",
-		"OnePlus"
+		"OnePlus",
+		"Google"
 	};
 
 	match = FALSE;
