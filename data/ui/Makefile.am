@@ -1,6 +1,5 @@
 
 GTK_BUILDER_FILES =					\
-	app-menu.ui					\
 	browser-popup.ui				\
 	create-playlist.ui				\
 	display-page-add-menu.ui			\
@@ -11,6 +10,7 @@ GTK_BUILDER_FILES =					\
 	import-errors-popup.ui				\
 	library-prefs.ui				\
 	library-toolbar.ui				\
+	main-menu.ui					\
 	main-toolbar.ui					\
 	media-player-properties.ui			\
 	missing-files-popup.ui				\

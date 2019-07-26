@@ -715,7 +715,6 @@ static void
 construct_load_ui (RBShell *shell)
 {
 	GApplication *app = g_application_get_default ();
-	gboolean shell_shows_app_menu;
 	GtkWidget *toolbar;
 	GtkBuilder *builder;
 	GtkToolItem *tool_item;
@@ -764,25 +763,20 @@ construct_load_ui (RBShell *shell)
 	 * or in party mode where the app menu is inaccessible.
 	 */
 	menu_button = gtk_menu_button_new ();
-	model = rb_application_get_shared_menu (RB_APPLICATION (app), "app-menu");
+	model = rb_application_get_shared_menu (RB_APPLICATION (app), "main-menu");
 	gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (menu_button), model);
 	gtk_style_context_add_class (gtk_widget_get_style_context (menu_button), GTK_STYLE_CLASS_RAISED);
 	g_object_set (menu_button, "margin-top", 12, "margin-bottom", 12, NULL);
 
-	g_object_get (gtk_settings_get_default (),
-		      "gtk-shell-shows-app-menu", &shell_shows_app_menu,
-		      NULL);
-	if (shell_shows_app_menu == FALSE) {
-		gtk_widget_add_accelerator (menu_button,
-					    "activate",
-					    shell->priv->accel_group,
-					    GDK_KEY_F10,
-					    0,
-					    GTK_ACCEL_VISIBLE);
-		rb_application_set_menu_accelerators (shell->priv->application, model, TRUE);
-	}
+	gtk_widget_add_accelerator (menu_button,
+				    "activate",
+				    shell->priv->accel_group,
+				    GDK_KEY_F10,
+				    0,
+				    GTK_ACCEL_VISIBLE);
+	rb_application_set_menu_accelerators (shell->priv->application, model, TRUE);
 
-	image = gtk_image_new_from_icon_name ("emblem-system-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
+	image = gtk_image_new_from_icon_name ("open-menu-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
 	gtk_container_add (GTK_CONTAINER (menu_button), image);
 
 	shell->priv->menu_button = GTK_WIDGET (gtk_tool_item_new ());
@@ -2564,7 +2558,6 @@ window_state_event_cb (GtkWidget           *widget,
 static void
 rb_shell_sync_party_mode (RBShell *shell)
 {
-	gboolean shell_shows_app_menu = TRUE;
 	GAction *action;
 
 	/* party mode does not use gsettings as a model since it
@@ -2573,16 +2566,6 @@ rb_shell_sync_party_mode (RBShell *shell)
 	/* disable/enable quit action */
 	action = g_action_map_lookup_action (G_ACTION_MAP (shell->priv->application), "quit");
 	g_simple_action_set_enabled (G_SIMPLE_ACTION (action), !shell->priv->party_mode);
-
-	/* show/hide menu button */
-	g_object_get (gtk_settings_get_default (),
-		      "gtk-shell-shows-app-menu", &shell_shows_app_menu,
-		      NULL);
-	if (shell_shows_app_menu && (shell->priv->party_mode == FALSE)) {
-		gtk_widget_hide (GTK_WIDGET (shell->priv->menu_button));
-	} else {
-		gtk_widget_show (GTK_WIDGET (shell->priv->menu_button));
-	}
 
 	/* show/hide queue as sidebar ? */
 
