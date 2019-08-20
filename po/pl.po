@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-21 18:04+0100\n"
-"PO-Revision-Date: 2019-02-21 18:05+0100\n"
+"POT-Creation-Date: 2019-08-20 16:09+0200\n"
+"PO-Revision-Date: 2019-08-20 16:10+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <community-poland@mozilla.org>\n"
 "Language: pl\n"
@@ -121,7 +121,7 @@ msgstr "Najwyżej oceniane"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
-#: ../shell/rb-shell.c:512 ../shell/rb-shell.c:2390
+#: ../shell/rb-shell.c:512 ../shell/rb-shell.c:2384
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -170,60 +170,52 @@ msgstr ""
 "Librefm;Magnatune;SoundCloud;UPnP;DLNA;DAAP;MPRIS;LIRC;ReplayGain;Radio;"
 
 #: ../data/ui/app-menu.ui.h:1
-msgid "_Add Music"
-msgstr "_Dodaj muzykę"
-
-#: ../data/ui/app-menu.ui.h:2
 msgid "_View"
 msgstr "_Widok"
 
-#: ../data/ui/app-menu.ui.h:3
+#: ../data/ui/app-menu.ui.h:2
 msgid "P_arty Mode"
 msgstr "Tryb impre_zowy"
 
-#: ../data/ui/app-menu.ui.h:4
+#: ../data/ui/app-menu.ui.h:3
 msgid "Side Pane"
 msgstr "Boczny panel"
 
-#: ../data/ui/app-menu.ui.h:5
+#: ../data/ui/app-menu.ui.h:4
 msgid "Play Queue in Side Pane"
 msgstr "Kolejka odtwarzania w bocznym panelu"
 
-#: ../data/ui/app-menu.ui.h:6
+#: ../data/ui/app-menu.ui.h:5
 msgid "Song Position Slider"
 msgstr "Suwak położenia utworu w czasie"
 
-#: ../data/ui/app-menu.ui.h:7 ../plugins/artsearch/songinfo.py:64
+#: ../data/ui/app-menu.ui.h:6 ../plugins/artsearch/songinfo.py:64
 msgid "Album Art"
 msgstr "Okładka albumu"
 
-#: ../data/ui/app-menu.ui.h:8
+#: ../data/ui/app-menu.ui.h:7
 msgid "Follow Playing Track"
 msgstr "Przewijanie do odtwarzanej ścieżki"
 
-#: ../data/ui/app-menu.ui.h:9
+#: ../data/ui/app-menu.ui.h:8
 msgid "_Tools"
 msgstr "_Narzędzia"
 
-#: ../data/ui/app-menu.ui.h:10
+#: ../data/ui/app-menu.ui.h:9
 msgid "P_lugins"
 msgstr "_Wtyczki"
 
-#: ../data/ui/app-menu.ui.h:11
+#: ../data/ui/app-menu.ui.h:10
 msgid "_Preferences"
 msgstr "_Preferencje"
 
-#: ../data/ui/app-menu.ui.h:12 ../shell/rb-shell-preferences.c:195
+#: ../data/ui/app-menu.ui.h:11 ../shell/rb-shell-preferences.c:195
 msgid "_Help"
 msgstr "Pomo_c"
 
-#: ../data/ui/app-menu.ui.h:13
-msgid "_About"
+#: ../data/ui/app-menu.ui.h:12
+msgid "_About Rhythmbox"
 msgstr "_O programie"
-
-#: ../data/ui/app-menu.ui.h:14
-msgid "_Quit"
-msgstr "Za_kończ"
 
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
 #: ../data/ui/podcast-popups.ui.h:9 ../plugins/magnatune/magnatune-popup.ui.h:1
@@ -3156,7 +3148,7 @@ msgstr "Przeszukiwanie kanałów podcastów"
 msgid "Search podcast episodes"
 msgstr "Przeszukiwanie odcinków podcastów"
 
-#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:639
+#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:627
 msgid "Show the version of the program"
 msgstr "Wyświetla wersję programu"
 
@@ -3200,7 +3192,7 @@ msgstr "Wstrzymuje odtwarzanie, jeśli jest uruchomione"
 msgid "Toggle play/pause mode"
 msgstr "Przełącza tryby odtwarzania/wstrzymania"
 
-#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2296
+#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2290
 msgid "Stop playback"
 msgstr "Zatrzymuje odtwarzanie"
 
@@ -3609,39 +3601,39 @@ msgstr "Witryna programu Rhythmbox"
 msgid "Couldn't display help"
 msgstr "Nie można wyświetlić pomocy"
 
-#: ../shell/rb-application.c:631
+#: ../shell/rb-application.c:619
 msgid "Enable debug output"
 msgstr "Włącza wyjście debugowania"
 
-#: ../shell/rb-application.c:632
+#: ../shell/rb-application.c:620
 msgid "Enable debug output matching a specified string"
 msgstr "Włącza wyjście debugowania pasujące do podanego ciągu"
 
-#: ../shell/rb-application.c:633
+#: ../shell/rb-application.c:621
 msgid "Do not update the library with file changes"
 msgstr "Wyłącza aktualizowania kolekcji"
 
-#: ../shell/rb-application.c:634
+#: ../shell/rb-application.c:622
 msgid "Do not register the shell"
 msgstr "Wyłącza rejestrowanie powłoki"
 
-#: ../shell/rb-application.c:635
+#: ../shell/rb-application.c:623
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Wyłącza trwały zapis danych (implikuje --no-registration)"
 
-#: ../shell/rb-application.c:636
+#: ../shell/rb-application.c:624
 msgid "Disable loading of plugins"
 msgstr "Wyłącza wczytywanie wtyczek"
 
-#: ../shell/rb-application.c:637
+#: ../shell/rb-application.c:625
 msgid "Path for database file to use"
 msgstr "Ścieżka do używanego pliku bazy danych"
 
-#: ../shell/rb-application.c:638
+#: ../shell/rb-application.c:626
 msgid "Path for playlists file to use"
 msgstr "Ścieżka do używania przez pliki list odtwarzania"
 
-#: ../shell/rb-application.c:651
+#: ../shell/rb-application.c:639
 #, c-format
 msgid ""
 "%s\n"
@@ -3715,45 +3707,45 @@ msgstr "Nieznana lista odtwarzania: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "Lista %s jest automatyczną listą odtwarzania"
 
-#: ../shell/rb-shell.c:2089
+#: ../shell/rb-shell.c:2083
 msgid "Error while saving song information"
 msgstr "Błąd podczas zapisywania informacji o utworze"
 
-#: ../shell/rb-shell.c:2293
+#: ../shell/rb-shell.c:2287
 msgid "Pause playback"
 msgstr "Wstrzymuje odtwarzanie"
 
-#: ../shell/rb-shell.c:2300
+#: ../shell/rb-shell.c:2294
 msgid "Start playback"
 msgstr "Rozpoczyna odtwarzanie"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2410
+#: ../shell/rb-shell.c:2404
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (wstrzymany)"
 
-#: ../shell/rb-shell.c:2818 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2801 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Żadne zarejestrowane źródło nie obsługuje adresu URI %s"
 
-#: ../shell/rb-shell.c:3147
+#: ../shell/rb-shell.c:3130
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Żadne zarejestrowane źródło nie pasuje do adresu URI %s"
 
-#: ../shell/rb-shell.c:3180 ../shell/rb-shell.c:3223
+#: ../shell/rb-shell.c:3163 ../shell/rb-shell.c:3206
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Nieznany adres URI utworu: %s"
 
-#: ../shell/rb-shell.c:3232
+#: ../shell/rb-shell.c:3215
 #, c-format
 msgid "Unknown property %s"
 msgstr "Nieznana właściwość %s"
 
-#: ../shell/rb-shell.c:3246
+#: ../shell/rb-shell.c:3229
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Nieprawidłowy typ %s właściwości %s"
