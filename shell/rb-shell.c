@@ -782,6 +782,8 @@ construct_load_ui (RBShell *shell)
 	gtk_widget_show_all (shell->priv->menu_button);
 	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), GTK_TOOL_ITEM (shell->priv->menu_button), -1);
 
+	rb_application_add_accelerator (RB_APPLICATION (app), "<Primary>q", "app.quit", NULL);
+
 	rb_profile_end ("loading ui");
 }
 
