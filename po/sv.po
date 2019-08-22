@@ -1,16 +1,16 @@
 # Swedish messages for rhythmbox.
-# Copyright © 2002-2018 Free Software Foundation, Inc.
+# Copyright © 2002-2019 Free Software Foundation, Inc.
 # Fredrik Tuomas <fredrik@jpl.se>, 2005, 2006, 2007.
 # Christian Rose <menthos@menthos.com>, 2002, 2003, 2004.
 # Daniel Nylander <po@danielnylander.se>, 2006, 2007, 2008, 2009, 2010, 2011, 2012.
-# Anders Jonsson <anders.jonsson@norsjovallen.se>, 2014, 2015, 2016, 2018.
+# Anders Jonsson <anders.jonsson@norsjovallen.se>, 2014, 2015, 2016, 2018, 2019.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2018-08-06 12:24+0000\n"
-"PO-Revision-Date: 2018-09-03 14:18+0200\n"
+"POT-Creation-Date: 2019-08-20 04:10+0000\n"
+"PO-Revision-Date: 2019-08-22 17:49+0200\n"
 "Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 2.2.3\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:649
 #, c-format
@@ -112,7 +112,7 @@ msgstr "Mina högst rankade"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
-#: ../shell/rb-shell.c:512 ../shell/rb-shell.c:2390
+#: ../shell/rb-shell.c:512 ../shell/rb-shell.c:2384
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -156,60 +156,52 @@ msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr "Ljud;Låt;MP3;CD;Podcast;MTP;iPod;Spellista;Last.fm;UPnP;DLNA;Radio;"
 
 #: ../data/ui/app-menu.ui.h:1
-msgid "_Add Music"
-msgstr "_Lägg till musik"
-
-#: ../data/ui/app-menu.ui.h:2
 msgid "_View"
 msgstr "V_isa"
 
-#: ../data/ui/app-menu.ui.h:3
+#: ../data/ui/app-menu.ui.h:2
 msgid "P_arty Mode"
 msgstr "Part_yläge"
 
-#: ../data/ui/app-menu.ui.h:4
+#: ../data/ui/app-menu.ui.h:3
 msgid "Side Pane"
 msgstr "Sidopanel"
 
-#: ../data/ui/app-menu.ui.h:5
+#: ../data/ui/app-menu.ui.h:4
 msgid "Play Queue in Side Pane"
 msgstr "Spelkö i sidopanel"
 
-#: ../data/ui/app-menu.ui.h:6
+#: ../data/ui/app-menu.ui.h:5
 msgid "Song Position Slider"
 msgstr "Låtpositionsväljare"
 
-#: ../data/ui/app-menu.ui.h:7 ../plugins/artsearch/songinfo.py:64
+#: ../data/ui/app-menu.ui.h:6 ../plugins/artsearch/songinfo.py:64
 msgid "Album Art"
 msgstr "Skivomslag"
 
-#: ../data/ui/app-menu.ui.h:8
+#: ../data/ui/app-menu.ui.h:7
 msgid "Follow Playing Track"
 msgstr "Följ spår som spelas"
 
-#: ../data/ui/app-menu.ui.h:9
+#: ../data/ui/app-menu.ui.h:8
 msgid "_Tools"
 msgstr "V_erktyg"
 
-#: ../data/ui/app-menu.ui.h:10
+#: ../data/ui/app-menu.ui.h:9
 msgid "P_lugins"
 msgstr "Ins_ticksmoduler"
 
-#: ../data/ui/app-menu.ui.h:11
+#: ../data/ui/app-menu.ui.h:10
 msgid "_Preferences"
 msgstr "Inställ_ningar"
 
-#: ../data/ui/app-menu.ui.h:12 ../shell/rb-shell-preferences.c:195
+#: ../data/ui/app-menu.ui.h:11 ../shell/rb-shell-preferences.c:195
 msgid "_Help"
 msgstr "_Hjälp"
 
-#: ../data/ui/app-menu.ui.h:13
-msgid "_About"
-msgstr "_Om"
-
-#: ../data/ui/app-menu.ui.h:14
-msgid "_Quit"
-msgstr "A_vsluta"
+#: ../data/ui/app-menu.ui.h:12
+msgid "_About Rhythmbox"
+msgstr "_Om Rhythmbox"
 
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
 #: ../data/ui/podcast-popups.ui.h:9 ../plugins/magnatune/magnatune-popup.ui.h:1
@@ -978,7 +970,7 @@ msgstr "%d %b %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/android/rb-android-source.c:689
+#: ../plugins/android/rb-android-source.c:687
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -1162,7 +1154,7 @@ msgstr "Spår:"
 msgid "Playlists:"
 msgstr "Spellistor:"
 
-#: ../plugins/android/rb-android-source.c:203
+#: ../plugins/android/rb-android-source.c:201
 msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
@@ -1170,13 +1162,13 @@ msgstr ""
 "Inga lagringsområden hittades på denna enhet. Du kan behöva låsa upp den och "
 "aktivera MTP."
 
-#: ../plugins/android/rb-android-source.c:403
+#: ../plugins/android/rb-android-source.c:401
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "Söker igenom %s"
 
-#: ../plugins/android/rb-android-source.c:788
+#: ../plugins/android/rb-android-source.c:781
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
 #: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
 #: ../sources/rb-transfer-target.c:182
@@ -1294,15 +1286,15 @@ msgstr "Denna skiva matchar flera album. Välj det rätta albumet."
 msgid "Track %u"
 msgstr "Spår %u"
 
-#: ../plugins/audiocd/rb-musicbrainz-lookup.c:406
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:410
 msgid "Not found"
 msgstr "Hittades inte"
 
-#: ../plugins/audiocd/rb-musicbrainz-lookup.c:411
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:415
 msgid "Unable to connect to Musicbrainz server"
 msgstr "Kunde inte ansluta till Musicbrainz-servern"
 
-#: ../plugins/audiocd/rb-musicbrainz-lookup.c:416
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:420
 msgid "Musicbrainz server error"
 msgstr "Serverfel för Musicbrainz"
 
@@ -3135,7 +3127,7 @@ msgstr "Sök poddsändningskanaler"
 msgid "Search podcast episodes"
 msgstr "Sök poddsändningsavsnitt"
 
-#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:639
+#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:627
 msgid "Show the version of the program"
 msgstr "Visa programversionen"
 
@@ -3179,7 +3171,7 @@ msgstr "Pausa i uppspelning om uppspelning sker"
 msgid "Toggle play/pause mode"
 msgstr "Växla uppspelnings-/pausläge"
 
-#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2296
+#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2290
 msgid "Stop playback"
 msgstr "Stoppa uppspelning"
 
@@ -3582,39 +3574,39 @@ msgstr "Webbplatsen för Rhythmbox"
 msgid "Couldn't display help"
 msgstr "Kunde inte visa hjälp"
 
-#: ../shell/rb-application.c:631
+#: ../shell/rb-application.c:619
 msgid "Enable debug output"
 msgstr "Aktivera felsökningsutskrifter"
 
-#: ../shell/rb-application.c:632
+#: ../shell/rb-application.c:620
 msgid "Enable debug output matching a specified string"
 msgstr "Aktivera felsökningsutskrifter som matchar en speciell sträng"
 
-#: ../shell/rb-application.c:633
+#: ../shell/rb-application.c:621
 msgid "Do not update the library with file changes"
 msgstr "Uppdatera inte biblioteket med filändringar"
 
-#: ../shell/rb-application.c:634
+#: ../shell/rb-application.c:622
 msgid "Do not register the shell"
 msgstr "Registrera inte skalet"
 
-#: ../shell/rb-application.c:635
+#: ../shell/rb-application.c:623
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Spara inte någon data permanent (betyder --no-registration)"
 
-#: ../shell/rb-application.c:636
+#: ../shell/rb-application.c:624
 msgid "Disable loading of plugins"
 msgstr "Inaktivera inläsning av insticksmoduler"
 
-#: ../shell/rb-application.c:637
+#: ../shell/rb-application.c:625
 msgid "Path for database file to use"
 msgstr "Sökväg till databasfil att använda"
 
-#: ../shell/rb-application.c:638
+#: ../shell/rb-application.c:626
 msgid "Path for playlists file to use"
 msgstr "Sökväg till spellistefiler att använda"
 
-#: ../shell/rb-application.c:651
+#: ../shell/rb-application.c:639
 #, c-format
 msgid ""
 "%s\n"
@@ -3688,45 +3680,45 @@ msgstr "Okänd spellista: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "Spellistan %s är en automatisk spellista"
 
-#: ../shell/rb-shell.c:2089
+#: ../shell/rb-shell.c:2083
 msgid "Error while saving song information"
 msgstr "Kunde inte spara låtinformation"
 
-#: ../shell/rb-shell.c:2293
+#: ../shell/rb-shell.c:2287
 msgid "Pause playback"
 msgstr "Pausa uppspelningen"
 
-#: ../shell/rb-shell.c:2300
+#: ../shell/rb-shell.c:2294
 msgid "Start playback"
 msgstr "Börja spela"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2410
+#: ../shell/rb-shell.c:2404
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausad)"
 
-#: ../shell/rb-shell.c:2818 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2801 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ingen registerad källa kan hantera URI %s"
 
-#: ../shell/rb-shell.c:3147
+#: ../shell/rb-shell.c:3130
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Ingen registerad källa matchar URI:n %s"
 
-#: ../shell/rb-shell.c:3180 ../shell/rb-shell.c:3223
+#: ../shell/rb-shell.c:3163 ../shell/rb-shell.c:3206
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Okänd URI för låt: %s"
 
-#: ../shell/rb-shell.c:3232
+#: ../shell/rb-shell.c:3215
 #, c-format
 msgid "Unknown property %s"
 msgstr "Okänd egenskap %s"
 
-#: ../shell/rb-shell.c:3246
+#: ../shell/rb-shell.c:3229
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Okänd egenskapstyp %s för egenskap %s"
@@ -4700,6 +4692,15 @@ msgstr "På skrivbordet"
 #: ../widgets/rb-song-info.c:1340
 msgid "Unknown location"
 msgstr "Okänd plats"
+
+#~ msgid "_Add Music"
+#~ msgstr "_Lägg till musik"
+
+#~ msgid "_About"
+#~ msgstr "_Om"
+
+#~ msgid "_Quit"
+#~ msgstr "A_vsluta"
 
 #~ msgid "Status Bar"
 #~ msgstr "Statusrad"
