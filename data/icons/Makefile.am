@@ -1,2 +1,2 @@
-SUBDIRS = hicolor src
+SUBDIRS = hicolor
 

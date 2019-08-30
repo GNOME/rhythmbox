@@ -1,1 +1,1 @@
-SUBDIRS = apps status
+SUBDIRS = status
