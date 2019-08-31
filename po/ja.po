@@ -1,5 +1,5 @@
 # rhythmbox ja.po.
-# Copyright (C) 2002-2012 rhythmbox's COPYRIHGT HOLDER
+# Copyright (C) 2002-2019 rhythmbox's COPYRIHGT HOLDER
 # Norihiro UMEDA <norihiro@users.sourceforge.jp>, 2002-2003.
 # Takeshi AIHANA <takeshi.aihana@gmail.com>, 2003-2009.
 # Mitsuya Shibata <mty.shibata@gmail.com>, 2009.
@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
 "POT-Creation-Date: 2019-08-20 04:10+0000\n"
-"PO-Revision-Date: 2019-02-23 00:26+0900\n"
+"PO-Revision-Date: 2019-08-31 22:01+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
@@ -28,10 +28,9 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:649
-#, fuzzy, c-format
-#| msgid "Could not create a GStreamer sink element to write to %s"
+#, c-format
 msgid "Could not create a temporary file to write to: %s"
-msgstr "%sに出力する際にGStreamer sinkを生成できませんでした"
+msgstr "書き込み用の一時ファイルを作成できませんでした: %s"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:703
 #, c-format
@@ -213,10 +212,8 @@ msgid "_Help"
 msgstr "ヘルプ(_H)"
 
 #: ../data/ui/app-menu.ui.h:12
-#, fuzzy
-#| msgid "Quit Rhythmbox"
 msgid "_About Rhythmbox"
-msgstr "Rhythmboxを終了する"
+msgstr "Rhythmboxについて(_A)"
 
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
 #: ../data/ui/podcast-popups.ui.h:9 ../plugins/magnatune/magnatune-popup.ui.h:1
@@ -2008,14 +2005,10 @@ msgid "IM Status"
 msgstr "IMの状態"
 
 #: ../plugins/im-status/im-status.plugin.in.h:2
-#, fuzzy
-#| msgid ""
-#| "Updates IM status according to the current song (works with Empathy, "
-#| "Gossip, and Pidgin)"
 msgid ""
 "Updates IM status according to the current song (works with Empathy and "
 "Pidgin)"
-msgstr "再生中の楽曲に応じてIM(EmpathyとGossip、Pidgin)の状態を更新します"
+msgstr "再生中の楽曲に応じてIM(EmpathyとPidgin)の状態を更新します"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
@@ -2787,20 +2780,16 @@ msgid "_Apply compression to prevent clipping"
 msgstr "クリッピングを妨げるためにコンプレッションを適用(_A)"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:7
-#, fuzzy
-#| msgid "Learn more about ReplayGain at replaygain.org"
 msgid "Learn more about ReplayGain"
-msgstr "ReplayGainについて詳しい情報はreplaygain.orgから取得できます"
+msgstr ""
 
 #: ../plugins/sendto/sendto.plugin.in.h:1
 msgid "Send tracks"
 msgstr "トラック情報を送る"
 
 #: ../plugins/sendto/sendto.plugin.in.h:2
-#, fuzzy
-#| msgid "Send selected tracks by email or instant message"
 msgid "Send selected tracks by email"
-msgstr "選択されたトラックをEメールからインスタントメッセンジャーで送信"
+msgstr "選択されたトラックをメールで送信します"
 
 #: ../plugins/sendto/sendto.py:51
 msgid "Send to..."
@@ -2871,18 +2860,16 @@ msgid "View '%(container)s' on SoundCloud"
 msgstr "SoundCloudの'%(container)s'を確認する"
 
 #: ../plugins/webremote/webremote-config.ui.h:1
-#, fuzzy
-#| msgid "Status icon preferences"
 msgid "Web remote control preferences"
-msgstr "状態アイコンの設定"
+msgstr "ウェブリモートコントロールの設定"
 
 #: ../plugins/webremote/webremote-config.ui.h:2
 msgid "Listening port:"
-msgstr ""
+msgstr "待受ポート:"
 
 #: ../plugins/webremote/webremote-config.ui.h:3
 msgid "Access key:"
-msgstr ""
+msgstr "アクセスキー:"
 
 #: ../plugins/webremote/webremote-config.ui.h:4
 msgid "0"
@@ -2890,25 +2877,21 @@ msgstr "0"
 
 #: ../plugins/webremote/webremote.plugin.in.h:1
 msgid "Web remote control"
-msgstr ""
+msgstr "ウェブリモートコントロール"
 
 #: ../plugins/webremote/webremote.plugin.in.h:2
-#, fuzzy
-#| msgid "Control Rhythmbox using key shortcuts"
 msgid "Control Rhythmbox from a web browser"
-msgstr "キーボードショートカットを使ってRhythmboxをコントロールします"
+msgstr "ウェブブラウザーからRhythmboxをコントロールします"
 
 #: ../plugins/webremote/webremote.py:583
 msgid "Launch web remote control"
-msgstr ""
+msgstr "ウェブリモートコントロールを起動"
 
 #: ../podcast/rb-podcast-add-dialog.c:271 ../podcast/rb-podcast-source.c:735
-#, fuzzy, c-format
-#| msgid "%d feed"
-#| msgid_plural "All %d feeds"
+#, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
-msgstr[0] "合計%d個の配信元"
+msgstr[0] "%d個の配信元"
 
 #: ../podcast/rb-podcast-add-dialog.c:306
 msgid "Unable to load the feed. Check your network connection."
@@ -3135,10 +3118,8 @@ msgid "Search podcast episodes"
 msgstr "Podcastのエピソードを検索します"
 
 #: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:627
-#, fuzzy
-#| msgid "Set the rating of the current song"
 msgid "Show the version of the program"
-msgstr "現在再生している曲を評価します"
+msgstr "プログラムのバージョンを表示する"
 
 #: ../remote/dbus/rb-client.c:97
 msgid "Don't start a new instance of Rhythmbox"
