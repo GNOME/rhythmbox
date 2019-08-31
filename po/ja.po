@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2019-01-10 15:30+0000\n"
+"POT-Creation-Date: 2019-08-20 04:10+0000\n"
 "PO-Revision-Date: 2019-02-23 00:26+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
@@ -121,7 +121,7 @@ msgstr "トップ10"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
-#: ../shell/rb-shell.c:512 ../shell/rb-shell.c:2390
+#: ../shell/rb-shell.c:512 ../shell/rb-shell.c:2384
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -169,60 +169,54 @@ msgstr ""
 "サルプラグアンドプレイ;ラジオ;musicplayer;"
 
 #: ../data/ui/app-menu.ui.h:1
-msgid "_Add Music"
-msgstr "楽曲の追加(_A)"
-
-#: ../data/ui/app-menu.ui.h:2
 msgid "_View"
 msgstr "表示(_V)"
 
-#: ../data/ui/app-menu.ui.h:3
+#: ../data/ui/app-menu.ui.h:2
 msgid "P_arty Mode"
 msgstr "パーティモード(_A)"
 
-#: ../data/ui/app-menu.ui.h:4
+#: ../data/ui/app-menu.ui.h:3
 msgid "Side Pane"
 msgstr "サイドペイン"
 
-#: ../data/ui/app-menu.ui.h:5
+#: ../data/ui/app-menu.ui.h:4
 msgid "Play Queue in Side Pane"
 msgstr "サイドペインのキューを再生する"
 
-#: ../data/ui/app-menu.ui.h:6
+#: ../data/ui/app-menu.ui.h:5
 msgid "Song Position Slider"
 msgstr "再生位置の調整スライダー"
 
-#: ../data/ui/app-menu.ui.h:7 ../plugins/artsearch/songinfo.py:64
+#: ../data/ui/app-menu.ui.h:6 ../plugins/artsearch/songinfo.py:64
 msgid "Album Art"
 msgstr "アルバムアート"
 
-#: ../data/ui/app-menu.ui.h:8
+#: ../data/ui/app-menu.ui.h:7
 msgid "Follow Playing Track"
 msgstr "再生中のトラックを追跡する"
 
-#: ../data/ui/app-menu.ui.h:9
+#: ../data/ui/app-menu.ui.h:8
 msgid "_Tools"
 msgstr "ツール(_T)"
 
-#: ../data/ui/app-menu.ui.h:10
+#: ../data/ui/app-menu.ui.h:9
 msgid "P_lugins"
 msgstr "プラグイン(_L)"
 
-#: ../data/ui/app-menu.ui.h:11
+#: ../data/ui/app-menu.ui.h:10
 msgid "_Preferences"
 msgstr "設定(_P)"
 
-#: ../data/ui/app-menu.ui.h:12 ../shell/rb-shell-preferences.c:195
+#: ../data/ui/app-menu.ui.h:11 ../shell/rb-shell-preferences.c:195
 msgid "_Help"
 msgstr "ヘルプ(_H)"
 
-#: ../data/ui/app-menu.ui.h:13
-msgid "_About"
-msgstr "このアプリケーションについて(_A)"
-
-#: ../data/ui/app-menu.ui.h:14
-msgid "_Quit"
-msgstr "終了(_Q)"
+#: ../data/ui/app-menu.ui.h:12
+#, fuzzy
+#| msgid "Quit Rhythmbox"
+msgid "_About Rhythmbox"
+msgstr "Rhythmboxを終了する"
 
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
 #: ../data/ui/podcast-popups.ui.h:9 ../plugins/magnatune/magnatune-popup.ui.h:1
@@ -1178,8 +1172,8 @@ msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
 msgstr ""
-"このデバイスにはストレージ領域が見つかりません。ロックを解除してMTPを有効化"
-"してください。"
+"このデバイスにはストレージ領域が見つかりません。ロックを解除してMTPを有効化し"
+"てください。"
 
 #: ../plugins/android/rb-android-source.c:401
 #: ../plugins/generic-player/rb-generic-player-source.c:565
@@ -3140,7 +3134,7 @@ msgstr "Podcastの配信情報を検索します"
 msgid "Search podcast episodes"
 msgstr "Podcastのエピソードを検索します"
 
-#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:639
+#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:627
 #, fuzzy
 #| msgid "Set the rating of the current song"
 msgid "Show the version of the program"
@@ -3186,7 +3180,7 @@ msgstr "現在再生中ならば停止する"
 msgid "Toggle play/pause mode"
 msgstr "再生と一時停止モードを切り替える"
 
-#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2296
+#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2290
 msgid "Stop playback"
 msgstr "再生を停止します"
 
@@ -3593,39 +3587,39 @@ msgstr "Rhythmboxのウェブサイト"
 msgid "Couldn't display help"
 msgstr "ヘルプを表示できませんでした"
 
-#: ../shell/rb-application.c:631
+#: ../shell/rb-application.c:619
 msgid "Enable debug output"
 msgstr "デバッグ表示にする"
 
-#: ../shell/rb-application.c:632
+#: ../shell/rb-application.c:620
 msgid "Enable debug output matching a specified string"
 msgstr "指定した文字列に一致するデバッグ出力にする"
 
-#: ../shell/rb-application.c:633
+#: ../shell/rb-application.c:621
 msgid "Do not update the library with file changes"
 msgstr "ファイルが変更されたライブラリを更新しない"
 
-#: ../shell/rb-application.c:634
+#: ../shell/rb-application.c:622
 msgid "Do not register the shell"
 msgstr "SHELLを登録しない"
 
-#: ../shell/rb-application.c:635
+#: ../shell/rb-application.c:623
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "どのデータも保存しない(--no-registrationを含む)"
 
-#: ../shell/rb-application.c:636
+#: ../shell/rb-application.c:624
 msgid "Disable loading of plugins"
 msgstr "プラグインのロードを無効にする"
 
-#: ../shell/rb-application.c:637
+#: ../shell/rb-application.c:625
 msgid "Path for database file to use"
 msgstr "使用するデータベースへのパスを指定する"
 
-#: ../shell/rb-application.c:638
+#: ../shell/rb-application.c:626
 msgid "Path for playlists file to use"
 msgstr "使用するプレイリストのパスを指定する"
 
-#: ../shell/rb-application.c:651
+#: ../shell/rb-application.c:639
 #, c-format
 msgid ""
 "%s\n"
@@ -3699,45 +3693,45 @@ msgstr "不明なプレイリスト: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "%sはオートプレイリストです"
 
-#: ../shell/rb-shell.c:2089
+#: ../shell/rb-shell.c:2083
 msgid "Error while saving song information"
 msgstr "楽曲情報を保存する際にエラー"
 
-#: ../shell/rb-shell.c:2293
+#: ../shell/rb-shell.c:2287
 msgid "Pause playback"
 msgstr "一時停止します"
 
-#: ../shell/rb-shell.c:2300
+#: ../shell/rb-shell.c:2294
 msgid "Start playback"
 msgstr "再生を開始します"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2410
+#: ../shell/rb-shell.c:2404
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (一時停止中)"
 
-#: ../shell/rb-shell.c:2818 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2801 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "URI%sを処理できるソースが登録されていません"
 
-#: ../shell/rb-shell.c:3147
+#: ../shell/rb-shell.c:3130
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "URI%sに一致する登録されたソースはありません"
 
-#: ../shell/rb-shell.c:3180 ../shell/rb-shell.c:3223
+#: ../shell/rb-shell.c:3163 ../shell/rb-shell.c:3206
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "不明な曲のURI: %s"
 
-#: ../shell/rb-shell.c:3232
+#: ../shell/rb-shell.c:3215
 #, c-format
 msgid "Unknown property %s"
 msgstr "不明なプロパティ%s"
 
-#: ../shell/rb-shell.c:3246
+#: ../shell/rb-shell.c:3229
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "プロパティ%2$sの種類%1$sが間違っています"
@@ -4694,6 +4688,15 @@ msgstr "このデスクトップ"
 #: ../widgets/rb-song-info.c:1340
 msgid "Unknown location"
 msgstr "不明な場所"
+
+#~ msgid "_Add Music"
+#~ msgstr "楽曲の追加(_A)"
+
+#~ msgid "_About"
+#~ msgstr "このアプリケーションについて(_A)"
+
+#~ msgid "_Quit"
+#~ msgstr "終了(_Q)"
 
 #~ msgid "Status Bar"
 #~ msgstr "ステータスバー"
