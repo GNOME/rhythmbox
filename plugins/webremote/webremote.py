@@ -534,6 +534,10 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 		shell = self.object
 		self.db = shell.props.db
 
+		self.artcache = os.path.join(RB.user_cache_dir(), "album-art", "")
+		self.art_store = RB.ExtDB(name="album-art")
+		self.art_store.connect("added", self.art_added_cb)
+
 		self.shell_player = shell.props.shell_player
 		self.shell_player.connect("playing-song-changed", self.playing_song_changed_cb)
 		self.shell_player.connect("playing-song-property-changed", self.playing_song_property_changed_cb)
@@ -552,10 +556,6 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 
 		self.http_listen()
 		self.http_server.run_async()
-
-		self.artcache = os.path.join(RB.user_cache_dir(), "album-art", "")
-		self.art_store = RB.ExtDB(name="album-art")
-		self.art_store.connect("added", self.art_added_cb)
 
 
 	def do_deactivate(self):
