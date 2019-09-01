@@ -19,7 +19,10 @@ before_script:
 test:
   stage: test
   script:
-    - NOCONFIGURE=1 ./autogen.sh
-    - ./configure
+    - mkdir build
+    - cd build
+    - NOCONFIGURE=1 ../autogen.sh
+    - ../configure
     - make
     - make check
+    - make install
