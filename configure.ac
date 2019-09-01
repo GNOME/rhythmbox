@@ -711,6 +711,7 @@ plugins/notification/Makefile
 plugins/grilo/Makefile
 plugins/soundcloud/Makefile
 plugins/webremote/Makefile
+plugins/listenbrainz/Makefile
 sample-plugins/Makefile
 sample-plugins/sample/Makefile
 sample-plugins/sample-python/Makefile

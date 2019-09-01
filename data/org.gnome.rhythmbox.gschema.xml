@@ -331,6 +331,14 @@
     <child name='source' schema='org.gnome.rhythmbox.plugins.iradio.source'/>
   </schema>
 
+  <schema id="org.gnome.rhythmbox.plugins.listenbrainz" path="/org/gnome/rhythmbox/plugins/listenbrainz/">
+      <key type="s" name="user-token">
+          <default>""</default>
+          <summary>ListenBrainz user token</summary>
+          <description></description>
+      </key>
+  </schema>
+
   <schema id="org.gnome.rhythmbox.plugins.lyrics" path="/org/gnome/rhythmbox/plugins/lyrics/">
     <key name="sites" type="as">
       <default>['lyrc.com.ar']</default>	<!-- do we have any that work? -->
