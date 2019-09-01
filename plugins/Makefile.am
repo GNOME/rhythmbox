@@ -21,7 +21,6 @@ SUBDIRS +=						\
 	pythonconsole					\
 	rbzeitgeist					\
 	replaygain					\
-	sendto						\
 	soundcloud					\
 	webremote					\
 	rb

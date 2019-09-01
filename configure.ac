@@ -702,7 +702,6 @@ plugins/rb/rbconfig.py
 plugins/power-manager/Makefile
 plugins/mmkeys/Makefile
 plugins/context/Makefile
-plugins/sendto/Makefile
 plugins/replaygain/Makefile
 plugins/mpris/Makefile
 plugins/dbus-media-server/Makefile
