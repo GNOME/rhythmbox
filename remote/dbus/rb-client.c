@@ -298,14 +298,18 @@ parse_pattern (const char *pattern, GHashTable *properties, gint64 elapsed, gboo
 					string = g_utf8_strdown (g_variant_get_string (value, NULL), -1);
 				break;
 			case 'a':
-				value = g_hash_table_lookup (properties, "xesam:artist");
+				value = g_hash_table_lookup (properties, "xesam:albumArtist");
+				if (value == NULL)
+					value = g_hash_table_lookup (properties, "xesam:artist");
 				if (value) {
 					strv = g_variant_get_strv (value, NULL);
 					string = g_strdup (strv[0]);
 				}
 				break;
 			case 'A':
-				value = g_hash_table_lookup (properties, "xesam:artist");
+				value = g_hash_table_lookup (properties, "xesam:albumArtist");
+				if (value == NULL)
+					value = g_hash_table_lookup (properties, "xesam:artist");
 				if (value) {
 					strv = g_variant_get_strv (value, NULL);
 					string = g_utf8_strdown (strv[0], -1);
