@@ -1996,13 +1996,15 @@ set_props_from_metadata (RhythmDB *db,
 		g_value_unset (&val);
 	}
 
-	/* bitrate */
-	if (rb_metadata_get (metadata,
-			     RB_METADATA_FIELD_BITRATE,
-			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, TRUE,
-					     RHYTHMDB_PROP_BITRATE, &val);
-		g_value_unset (&val);
+	/* bitrate (only set for non-lossless media types) */
+	if (!rb_gst_media_type_is_lossless (media_type)) {
+		if (rb_metadata_get (metadata,
+				     RB_METADATA_FIELD_BITRATE,
+				     &val)) {
+			rhythmdb_entry_set_internal (db, entry, TRUE,
+						     RHYTHMDB_PROP_BITRATE, &val);
+			g_value_unset (&val);
+		}
 	}
 
 	/* date */
