@@ -404,6 +404,8 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 			return "image/png"
 		elif data[0:5] == b'<?xml':
 			return "image/svg+xml"
+		elif data[0:4] == b'<svg':
+			return "image/svg+xml"
 		else:
 			return "image/jpeg"
 
