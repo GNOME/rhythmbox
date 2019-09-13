@@ -302,11 +302,7 @@ rb_safe_strcmp (const char *a,
 gboolean
 rb_is_main_thread (void)
 {
-	if (g_thread_supported()) {
-		return GPOINTER_TO_UINT(g_private_get (&private_is_primary_thread)) == 1;
-	} else {
-		return TRUE;
-	}
+	return GPOINTER_TO_UINT(g_private_get (&private_is_primary_thread)) == 1;
 }
 
 static gboolean
