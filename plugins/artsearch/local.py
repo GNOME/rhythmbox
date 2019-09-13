@@ -150,6 +150,11 @@ class LocalSearch:
 		self.file = Gio.file_new_for_uri(location)
 
 		self.album = key.get_field("album")
+		if self.album is None:
+			print("not searching, we don't have an album")
+			callback(args)
+			return
+
 		self.artists = key.get_field_values("artist")
 		self.store = store
 		self.callback = callback
