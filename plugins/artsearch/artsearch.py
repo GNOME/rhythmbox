@@ -46,9 +46,11 @@ class Search(object):
 
 	def next_search(self):
 		if len(self.searches) == 0:
-			key = RB.ExtDBKey.create_storage("album", self.key.get_field("album"))
-			key.add_field("artist", self.key.get_field("artist"))
-			self.store.store(key, RB.ExtDBSourceType.NONE, None)
+			album = self.key.get_field("album")
+			if album is not None:
+				key = RB.ExtDBKey.create_storage("album", album)
+				key.add_field("artist", self.key.get_field("artist"))
+				self.store.store(key, RB.ExtDBSourceType.NONE, None)
 			return False
 
 		search = self.searches.pop(0)
