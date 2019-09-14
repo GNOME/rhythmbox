@@ -302,11 +302,7 @@ rb_safe_strcmp (const char *a,
 gboolean
 rb_is_main_thread (void)
 {
-	if (g_thread_supported()) {
-		return GPOINTER_TO_UINT(g_private_get (&private_is_primary_thread)) == 1;
-	} else {
-		return TRUE;
-	}
+	return GPOINTER_TO_UINT(g_private_get (&private_is_primary_thread)) == 1;
 }
 
 static gboolean
@@ -409,7 +405,7 @@ rb_string_split_words (const gchar *string)
 			}
 
 			break;
-		case G_UNICODE_COMBINING_MARK:
+		case G_UNICODE_SPACING_MARK:
 		case G_UNICODE_ENCLOSING_MARK:
 		case G_UNICODE_NON_SPACING_MARK:
 		case G_UNICODE_CONNECT_PUNCTUATION:
@@ -497,7 +493,7 @@ rb_search_fold (const char *original)
 
 	for (cur = unicode; *cur != 0; cur++) {
 		switch (g_unichar_type (*cur)) {
-		case G_UNICODE_COMBINING_MARK:
+		case G_UNICODE_SPACING_MARK:
 		case G_UNICODE_ENCLOSING_MARK:
 		case G_UNICODE_NON_SPACING_MARK:
 		case G_UNICODE_CONNECT_PUNCTUATION:
