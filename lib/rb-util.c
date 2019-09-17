@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+/* -*- Mode: C; coding: utf-8; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *
@@ -559,9 +559,9 @@ rb_make_time_string (guint nseconds)
 	seconds = nseconds % 60;
 
 	if (hours == 0)
-		return g_strdup_printf (_("%d:%02d"), minutes, seconds);
+		return g_strdup_printf (_("%d∶%02d"), minutes, seconds);
 	else
-		return g_strdup_printf (_("%d:%02d:%02d"), hours, minutes, seconds);
+		return g_strdup_printf (_("%d∶%02d∶%02d"), hours, minutes, seconds);
 }
 
 
@@ -625,20 +625,20 @@ rb_make_elapsed_time_string (guint elapsed, guint duration, gboolean show_remain
 		 * with the abs(). */
 		int remaining_seconds = abs (remaining % 60);
 		if (hours2 == 0)
-			return g_strdup_printf (_("%d:%02d of %d:%02d remaining"),
+			return g_strdup_printf (_("%d∶%02d of %d∶%02d remaining"),
 						remaining_minutes, remaining_seconds,
 						minutes2, seconds2);
 		else
-			return g_strdup_printf (_("%d:%02d:%02d of %d:%02d:%02d remaining"),
+			return g_strdup_printf (_("%d∶%02d∶%02d of %d∶%02d∶%02d remaining"),
 						remaining_hours, remaining_minutes, remaining_seconds,
 						hours2, minutes2, seconds2);
 	} else {
 		if (hours == 0 && hours2 == 0)
-			return g_strdup_printf (_("%d:%02d of %d:%02d"),
+			return g_strdup_printf (_("%d∶%02d of %d∶%02d"),
 						minutes, seconds,
 						minutes2, seconds2);
 		else
-			return g_strdup_printf (_("%d:%02d:%02d of %d:%02d:%02d"),
+			return g_strdup_printf (_("%d∶%02d∶%02d of %d∶%02d∶%02d"),
 						hours, minutes, seconds,
 						hours2, minutes2, seconds2);
 	}
