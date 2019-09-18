@@ -397,21 +397,6 @@ AM_GNU_GETTEXT([external])
 AC_SUBST([GETTEXT_PACKAGE], [rhythmbox])
 AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], "$GETTEXT_PACKAGE", [Define to the gettext package name.])
 
-dnl LIRC
-AC_ARG_ENABLE(lirc,
-	AC_HELP_STRING([--enable-lirc],[enable lirc support]))
-with_lirc=no
-if test x"$enable_lirc" != xno; then
-	AC_CHECK_HEADER(lirc/lirc_client.h,[with_lirc=yes],[with_lirc=no])
-	if test x"$with_lirc" = xyes; then
-		AC_CHECK_LIB(lirc_client,lirc_init,[with_lirc=yes],[with_lirc=no])
-	fi
-	if test x"$with_lirc" = xno -a x"$enable_lirc" = xyes; then
-		AC_MSG_ERROR([lirc explicitly requested but no support found])
-	fi
-fi
-AM_CONDITIONAL(WITH_LIRC, test x"$with_lirc" = xyes)
-
 AC_ARG_ENABLE(uninstalled-build,
               AC_HELP_STRING([--enable-uninstalled-build],
 			     [Search for files in build directory as well]),
@@ -691,7 +676,6 @@ plugins/im-status/Makefile
 plugins/ipod/Makefile
 plugins/mtpdevice/Makefile
 plugins/iradio/Makefile
-plugins/lirc/Makefile
 plugins/lyrics/Makefile
 plugins/pythonconsole/Makefile
 plugins/artsearch/Makefile
