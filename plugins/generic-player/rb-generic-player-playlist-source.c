@@ -209,6 +209,13 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 	}
 
 	temp_path = g_strdup_printf ("%s%06X", priv->playlist_path, g_random_int_range (0, 0xFFFFFF));
+
+	GError *error_parent_dir = NULL;
+	if(!rb_uri_create_parent_dirs(g_filename_to_uri(temp_path, NULL, NULL), &error_parent_dir)) {
+		g_warning ("Playlist save failed: %s", error_parent_dir ? error_parent_dir->message : "<no error>");
+	}
+	g_clear_error (&error_parent_dir);
+
 	file = g_file_new_for_path (temp_path);
 
 	parser = totem_pl_parser_new ();
