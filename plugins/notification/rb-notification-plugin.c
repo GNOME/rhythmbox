@@ -254,7 +254,6 @@ do_notify (RBNotificationPlugin *plugin,
 		notify_notification_set_hint (notification, hint, g_variant_new_boolean (TRUE));
 	}
 
-	// Avoid sounds between tracks
 	notify_notification_set_hint (notification, "suppress-sound", g_variant_new_boolean (TRUE));
 
 	if (notify_notification_show (notification, &error) == FALSE) {
