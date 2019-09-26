@@ -7,11 +7,11 @@ GTK_BUILDER_FILES =					\
 	edit-menu.ui					\
 	encoding-settings.ui				\
 	general-prefs.ui				\
+	headerbar.ui					\
 	import-dialog.ui				\
 	import-errors-popup.ui				\
 	library-prefs.ui				\
 	library-toolbar.ui				\
-	main-toolbar.ui					\
 	media-player-properties.ui			\
 	missing-files-popup.ui				\
 	playback-prefs.ui				\

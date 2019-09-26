@@ -243,6 +243,8 @@ struct _RBShellPrivate
 	GtkWidget *queue_sidebar;
 	GtkWidget *menu_button;
 	GtkWidget *play_button;
+	GtkWidget *pause_button;
+	GtkWidget *stop_button;
 
 	GtkBox *sidebar_container;
 	GtkBox *right_sidebar_container;
@@ -715,56 +717,28 @@ static void
 construct_load_ui (RBShell *shell)
 {
 	GApplication *app = g_application_get_default ();
-	GtkWidget *toolbar;
+	GtkWidget *headerbar;
 	GtkBuilder *builder;
-	GtkToolItem *tool_item;
 	GtkWidget *menu_button;
-	GtkWidget *image;
 	GMenuModel *model;
 
 	rb_debug ("shell: loading ui");
 	rb_profile_start ("loading ui");
 
-	builder = rb_builder_load ("main-toolbar.ui", NULL);
-	toolbar = GTK_WIDGET (gtk_builder_get_object (builder, "main-toolbar"));
+	builder = rb_builder_load ("headerbar.ui", NULL);
+
+	headerbar = GTK_WIDGET (gtk_builder_get_object (builder, "headerbar"));
+	gtk_window_set_titlebar (GTK_WINDOW (shell->priv->window), headerbar);
+	gtk_header_bar_set_custom_title (GTK_HEADER_BAR (headerbar), GTK_WIDGET (shell->priv->header));
 
 	shell->priv->play_button = GTK_WIDGET (gtk_builder_get_object (builder, "play-button"));
-
-	image = gtk_button_get_image (GTK_BUTTON (gtk_builder_get_object (builder, "next-button")));
-	gtk_image_set_from_icon_name (GTK_IMAGE (image), "media-skip-forward-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
-
-	image = gtk_button_get_image (GTK_BUTTON (gtk_builder_get_object (builder, "previous-button")));
-	gtk_image_set_from_icon_name (GTK_IMAGE (image), "media-skip-backward-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
-
-	image = gtk_button_get_image (GTK_BUTTON (gtk_builder_get_object (builder, "play-button")));
-	gtk_image_set_from_icon_name (GTK_IMAGE (image), "media-playback-start-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
-
-	/* this seems a bit unnecessary */
-	gtk_actionable_set_action_target_value (GTK_ACTIONABLE (gtk_builder_get_object (builder, "shuffle-button")),
-						g_variant_new_boolean (TRUE));
-	gtk_actionable_set_action_target_value (GTK_ACTIONABLE (gtk_builder_get_object (builder, "repeat-button")),
-						g_variant_new_boolean (TRUE));
-
-	gtk_style_context_add_class (gtk_widget_get_style_context (toolbar),
-				     GTK_STYLE_CLASS_PRIMARY_TOOLBAR);
-	gtk_box_pack_start (GTK_BOX (shell->priv->main_vbox), toolbar, FALSE, FALSE, 0);
-	gtk_box_reorder_child (GTK_BOX (shell->priv->main_vbox), toolbar, 1);
-
-	g_object_unref (builder);
-
-	tool_item = gtk_tool_item_new ();
-	gtk_tool_item_set_expand (tool_item, TRUE);
-	gtk_container_add (GTK_CONTAINER (tool_item), GTK_WIDGET (shell->priv->header));
-	gtk_widget_show_all (GTK_WIDGET (tool_item));
-	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), tool_item, -1);
-
+	shell->priv->pause_button = GTK_WIDGET (gtk_builder_get_object (builder, "pause-button"));
+	shell->priv->stop_button = GTK_WIDGET (gtk_builder_get_object (builder, "stop-button"));
 
 	/* menu tool button */
-	menu_button = gtk_menu_button_new ();
+	menu_button = GTK_WIDGET (gtk_builder_get_object (builder, "menu-button"));
 	model = rb_application_get_shared_menu (RB_APPLICATION (app), "app-menu");
 	gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (menu_button), model);
-	gtk_style_context_add_class (gtk_widget_get_style_context (menu_button), GTK_STYLE_CLASS_RAISED);
-	g_object_set (menu_button, "margin-top", 12, "margin-bottom", 12, NULL);
 
 	gtk_widget_add_accelerator (menu_button,
 				    "activate",
@@ -774,13 +748,7 @@ construct_load_ui (RBShell *shell)
 				    GTK_ACCEL_VISIBLE);
 	rb_application_set_menu_accelerators (shell->priv->application, model, TRUE);
 
-	image = gtk_image_new_from_icon_name ("open-menu-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
-	gtk_container_add (GTK_CONTAINER (menu_button), image);
-
-	shell->priv->menu_button = GTK_WIDGET (gtk_tool_item_new ());
-	gtk_container_add (GTK_CONTAINER (shell->priv->menu_button), menu_button);
-	gtk_widget_show_all (shell->priv->menu_button);
-	gtk_toolbar_insert (GTK_TOOLBAR (toolbar), GTK_TOOL_ITEM (shell->priv->menu_button), -1);
+	g_object_unref (builder);
 
 	rb_application_add_accelerator (RB_APPLICATION (app), "<Primary>q", "app.quit", NULL);
 
@@ -2276,26 +2244,20 @@ rb_shell_playing_from_queue_cb (RBShellPlayer *player,
 static void
 rb_shell_playing_changed_cb (RBShellPlayer *player, gboolean playing, RBShell *shell)
 {
-	const char *tooltip;
-	const char *icon_name;
-	GtkWidget *image;
-
-	image = gtk_button_get_image (GTK_BUTTON (shell->priv->play_button));
 	if (playing) {
+		gtk_widget_set_visible (shell->priv->play_button, FALSE);
 		if (rb_source_can_pause (rb_shell_player_get_active_source (shell->priv->player_shell))) {
-			icon_name = "media-playback-pause-symbolic";
-			tooltip = _("Pause playback");
+			gtk_widget_set_visible (shell->priv->pause_button, TRUE);
+			gtk_widget_set_visible (shell->priv->stop_button, FALSE);
 		} else {
-			icon_name = "media-playback-stop-symbolic";
-			tooltip = _("Stop playback");
+			gtk_widget_set_visible (shell->priv->stop_button, TRUE);
+			gtk_widget_set_visible (shell->priv->pause_button, FALSE);
 		}
 	} else {
-		icon_name = "media-playback-start-symbolic";
-		tooltip = _("Start playback");
+		gtk_widget_set_visible (shell->priv->play_button, TRUE);
+		gtk_widget_set_visible (shell->priv->pause_button, FALSE);
+		gtk_widget_set_visible (shell->priv->stop_button, FALSE);
 	}
-	gtk_image_set_from_icon_name (GTK_IMAGE (image), icon_name, GTK_ICON_SIZE_LARGE_TOOLBAR);
-
-	gtk_widget_set_tooltip_text (GTK_WIDGET (shell->priv->play_button), tooltip);
 }
 
 static void

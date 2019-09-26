@@ -157,9 +157,10 @@ enum
 	PROP_SHOW_ALBUM_ART
 };
 
-#define TITLE_FORMAT  "<big><b>%s</b></big>"
-#define ALBUM_FORMAT  "<i>%s</i>"
-#define ARTIST_FORMAT "<i>%s</i>"
+#define TITLE_FORMAT  "<b>%s</b>"
+#define ALBUM_FORMAT  "<small><i>%s</i></small>"
+#define ARTIST_FORMAT "<small><i>%s</i></small>"
+#define STATIC_TEXT_FORMAT "<small>%s</small>"
 #define STREAM_FORMAT "%s"
 
 /* unicode graphic characters, encoded in UTF-8 */
@@ -296,7 +297,7 @@ rb_header_constructed (GObject *object)
 
 	gtk_grid_set_column_spacing (GTK_GRID (header), 6);
 	gtk_grid_set_column_homogeneous (GTK_GRID (header), TRUE);
-	gtk_container_set_border_width (GTK_CONTAINER (header), 3);
+	gtk_container_set_border_width (GTK_CONTAINER (header), 0);
 
 	/* set up position slider */
 	header->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 10.0, 1.0, 10.0, 0.0));
@@ -930,14 +931,14 @@ rb_header_sync (RBHeader *header)
 
 			if (album != NULL && album[0] != '\0') {
 				t = rb_text_cat (dir,
-						 by, "%s",
+						 by, STATIC_TEXT_FORMAT,
 						 artist, ARTIST_FORMAT,
-						 from, "%s",
+						 from, STATIC_TEXT_FORMAT,
 						 album, ALBUM_FORMAT,
 						 NULL);
 			} else {
 				t = rb_text_cat (dir,
-						 by, "%s",
+						 by, STATIC_TEXT_FORMAT,
 						 artist, ARTIST_FORMAT,
 						 NULL);
 			}
