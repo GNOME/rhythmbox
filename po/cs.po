@@ -16,16 +16,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2018-08-06 12:24+0000\n"
-"PO-Revision-Date: 2018-09-07 08:23+0100\n"
-"Last-Translator: Marek Černocký <marek@manet.cz>\n"
+"POT-Creation-Date: 2019-09-03 12:23+0000\n"
+"PO-Revision-Date: 2019-09-18 14:38+0200\n"
+"Last-Translator: Daniel Rusek <mail@asciiwolf.com>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Gtranslator 2.91.7\n"
+"X-Generator: Poedit 2.2.3\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:649
 #, c-format
@@ -117,7 +117,7 @@ msgstr "Mé nejlépe hodnocené"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
-#: ../shell/rb-shell.c:512 ../shell/rb-shell.c:2390
+#: ../shell/rb-shell.c:512 ../shell/rb-shell.c:2384
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -163,60 +163,48 @@ msgstr ""
 "seznam skladeb;Last.fm;UPnP;DLNA;rádio;"
 
 #: ../data/ui/app-menu.ui.h:1
-msgid "_Add Music"
-msgstr "Přid_at hudbu"
-
-#: ../data/ui/app-menu.ui.h:2
 msgid "_View"
 msgstr "_Zobrazit"
 
-#: ../data/ui/app-menu.ui.h:3
+#: ../data/ui/app-menu.ui.h:2
 msgid "P_arty Mode"
 msgstr "Režim v_ečírku"
 
-#: ../data/ui/app-menu.ui.h:4
+#: ../data/ui/app-menu.ui.h:3
 msgid "Side Pane"
 msgstr "Postranní panel"
 
-#: ../data/ui/app-menu.ui.h:5
+#: ../data/ui/app-menu.ui.h:4
 msgid "Play Queue in Side Pane"
 msgstr "Fronta v postranním panelu"
 
-#: ../data/ui/app-menu.ui.h:6
+#: ../data/ui/app-menu.ui.h:5
 msgid "Song Position Slider"
 msgstr "Posuvník pozice ve skladbě"
 
-#: ../data/ui/app-menu.ui.h:7 ../plugins/artsearch/songinfo.py:64
+#: ../data/ui/app-menu.ui.h:6 ../plugins/artsearch/songinfo.py:64
 msgid "Album Art"
 msgstr "Grafika alba"
 
-#: ../data/ui/app-menu.ui.h:8
+#: ../data/ui/app-menu.ui.h:7
 msgid "Follow Playing Track"
 msgstr "Následovat přehrávanou skladbu"
 
-#: ../data/ui/app-menu.ui.h:9
+#: ../data/ui/app-menu.ui.h:8
 msgid "_Tools"
 msgstr "Nás_troje"
 
-#: ../data/ui/app-menu.ui.h:10
-msgid "P_lugins"
-msgstr "Zásuvné modu_ly"
-
-#: ../data/ui/app-menu.ui.h:11
+#: ../data/ui/app-menu.ui.h:9
 msgid "_Preferences"
 msgstr "_Předvolby"
 
-#: ../data/ui/app-menu.ui.h:12 ../shell/rb-shell-preferences.c:195
+#: ../data/ui/app-menu.ui.h:10 ../shell/rb-shell-preferences.c:195
 msgid "_Help"
 msgstr "_Nápověda"
 
-#: ../data/ui/app-menu.ui.h:13
-msgid "_About"
-msgstr "O _aplikaci"
-
-#: ../data/ui/app-menu.ui.h:14
-msgid "_Quit"
-msgstr "U_končit"
+#: ../data/ui/app-menu.ui.h:11
+msgid "_About Rhythmbox"
+msgstr "O _aplikaci Rhythmbox"
 
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
 #: ../data/ui/podcast-popups.ui.h:9 ../plugins/magnatune/magnatune-popup.ui.h:1
@@ -522,7 +510,7 @@ msgstr "Vlastnosti přehrávače médií"
 #: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
 #: ../plugins/iradio/rb-station-properties-dialog.c:182
 #: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:318 ../shell/rb-application.c:165
+#: ../podcast/rb-podcast-properties-dialog.c:318
 #: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:377
 #: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
 msgid "_Close"
@@ -938,7 +926,7 @@ msgstr "Odstraněné soubory:"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:496
-#: ../rhythmdb/rhythmdb.c:3807 ../widgets/rb-entry-view.c:943
+#: ../rhythmdb/rhythmdb.c:3809 ../widgets/rb-entry-view.c:943
 #: ../widgets/rb-entry-view.c:1567 ../widgets/rb-entry-view.c:1580
 #: ../widgets/rb-song-info.c:1546
 msgid "Never"
@@ -984,7 +972,7 @@ msgstr "%e. %b %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/android/rb-android-source.c:689
+#: ../plugins/android/rb-android-source.c:687
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -1009,11 +997,11 @@ msgstr "%e. %b %Y"
 #: ../podcast/rb-podcast-properties-dialog.c:639
 #: ../podcast/rb-podcast-properties-dialog.c:703
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
-#: ../remote/dbus/rb-client.c:728 ../rhythmdb/rhythmdb.c:2066
-#: ../rhythmdb/rhythmdb.c:2072 ../rhythmdb/rhythmdb.c:2087
-#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5571
-#: ../rhythmdb/rhythmdb.c:5577 ../rhythmdb/rhythmdb.c:5582
-#: ../rhythmdb/rhythmdb.c:5593 ../rhythmdb/rhythmdb.c:5597
+#: ../remote/dbus/rb-client.c:732 ../rhythmdb/rhythmdb.c:2068
+#: ../rhythmdb/rhythmdb.c:2074 ../rhythmdb/rhythmdb.c:2089
+#: ../rhythmdb/rhythmdb.c:2123 ../rhythmdb/rhythmdb.c:5573
+#: ../rhythmdb/rhythmdb.c:5579 ../rhythmdb/rhythmdb.c:5584
+#: ../rhythmdb/rhythmdb.c:5595 ../rhythmdb/rhythmdb.c:5599
 #: ../rhythmdb/rhythmdb-entry-type.c:301
 #: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
 #: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
@@ -1167,7 +1155,7 @@ msgstr "Skladeb:"
 msgid "Playlists:"
 msgstr "Seznamů skladeb:"
 
-#: ../plugins/android/rb-android-source.c:203
+#: ../plugins/android/rb-android-source.c:201
 msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
@@ -1175,13 +1163,13 @@ msgstr ""
 "Na tomto zařízení nebyla nalezena žádná oblast pro ukládání. Možná jej "
 "budete muset odemknout a povolit MTP."
 
-#: ../plugins/android/rb-android-source.c:403
+#: ../plugins/android/rb-android-source.c:401
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "Prochází se %s"
 
-#: ../plugins/android/rb-android-source.c:788
+#: ../plugins/android/rb-android-source.c:781
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
 #: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
 #: ../sources/rb-transfer-target.c:182
@@ -1299,15 +1287,15 @@ msgstr "Tento disk odpovídá více albům. Vyberte správné album."
 msgid "Track %u"
 msgstr "Skladba %u"
 
-#: ../plugins/audiocd/rb-musicbrainz-lookup.c:406
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:410
 msgid "Not found"
 msgstr "Nenalezeno"
 
-#: ../plugins/audiocd/rb-musicbrainz-lookup.c:411
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:415
 msgid "Unable to connect to Musicbrainz server"
 msgstr "Nelze se připojit k serveru Musicbrainz"
 
-#: ../plugins/audiocd/rb-musicbrainz-lookup.c:416
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:420
 msgid "Musicbrainz server error"
 msgstr "Chyba serveru Musicbrainz"
 
@@ -2217,6 +2205,26 @@ msgstr "LIRC"
 msgid "Control Rhythmbox using an infrared remote control"
 msgstr "Ovládání aplikace Rhythmbox pomocí infračerveného dálkového ovladače"
 
+#: ../plugins/listenbrainz/listenbrainz.plugin.in.h:1
+msgid "ListenBrainz"
+msgstr ""
+
+#: ../plugins/listenbrainz/listenbrainz.plugin.in.h:2
+msgid "Submit your listens to ListenBrainz"
+msgstr ""
+
+#: ../plugins/listenbrainz/settings.ui.h:1
+#| msgid "Username:"
+msgid "User token:"
+msgstr ""
+
+#: ../plugins/listenbrainz/settings.ui.h:2
+msgid ""
+"To submit your listens to ListenBrainz, enter your ListenBrainz user token "
+"below. You can see your user token in your <a href=\"https://listenbrainz."
+"org/profile/\">user profile</a>."
+msgstr ""
+
 #: ../plugins/lyrics/LyricsConfigureDialog.py:103
 msgid "Choose lyrics folder..."
 msgstr "Vybrat složku textů…"
@@ -2698,7 +2706,7 @@ msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr "Zabraňuje Správě napájení v uspání počítače během přehrávání"
 
 #: ../plugins/power-manager/rb-power-manager-plugin.c:97
-#: ../remote/dbus/rb-client.c:814 ../remote/dbus/rb-client.c:904
+#: ../remote/dbus/rb-client.c:818 ../remote/dbus/rb-client.c:908
 #, c-format
 msgid "Playing"
 msgstr "Přehrává se"
@@ -2800,18 +2808,6 @@ msgstr "Použít komprim_aci, aby se zabránilo ořezání"
 #: ../plugins/replaygain/replaygain-prefs.ui.h:7
 msgid "Learn more about ReplayGain"
 msgstr "Dovědět se více o RaplayGain"
-
-#: ../plugins/sendto/sendto.plugin.in.h:1
-msgid "Send tracks"
-msgstr "Odeslat skladby"
-
-#: ../plugins/sendto/sendto.plugin.in.h:2
-msgid "Send selected tracks by email"
-msgstr "Odesílání vybraných skladeb e-mailem"
-
-#: ../plugins/sendto/sendto.py:51
-msgid "Send to..."
-msgstr "Odeslat…"
 
 #: ../plugins/soundcloud/soundcloud.plugin.in.h:1
 #: ../plugins/soundcloud/soundcloud.py:72
@@ -3140,7 +3136,7 @@ msgstr "Hledat kanály podcastů"
 msgid "Search podcast episodes"
 msgstr "Hledat díly podcastů"
 
-#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:639
+#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:563
 msgid "Show the version of the program"
 msgstr "Zobrazit verzi programu"
 
@@ -3184,7 +3180,7 @@ msgstr "Pozastavit přehrávání, pokud hraje"
 msgid "Toggle play/pause mode"
 msgstr "Přepnout mezi přehráváním a pozastavením"
 
-#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2296
+#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2290
 msgid "Stop playback"
 msgstr "Zastavit přehrávání"
 
@@ -3310,65 +3306,65 @@ msgstr "h/? – nápověda"
 msgid "q - Quit"
 msgstr "q – ukončit"
 
-#: ../remote/dbus/rb-client.c:542 ../remote/dbus/rb-client.c:568
-#: ../remote/dbus/rb-client.c:791 ../remote/dbus/rb-client.c:875
+#: ../remote/dbus/rb-client.c:546 ../remote/dbus/rb-client.c:572
+#: ../remote/dbus/rb-client.c:795 ../remote/dbus/rb-client.c:879
 #, c-format
 msgid "Not playing"
 msgstr "Nepřehrává se"
 
 #. Translators: title by artist from album
-#: ../remote/dbus/rb-client.c:741
+#: ../remote/dbus/rb-client.c:745
 msgid "%tt by %ta from %at"
 msgstr "%tt od %ta z %at"
 
 #. Translators: title by artist
-#: ../remote/dbus/rb-client.c:744
+#: ../remote/dbus/rb-client.c:748
 msgid "%tt by %ta"
 msgstr "%tt od %ta"
 
 #. Translators: title from album
-#: ../remote/dbus/rb-client.c:747
+#: ../remote/dbus/rb-client.c:751
 msgid "%tt from %ta"
 msgstr "%tt z %ta"
 
 #. Translators: %te is replaced with elapsed time, %td is replaced with track duration
-#: ../remote/dbus/rb-client.c:758
+#: ../remote/dbus/rb-client.c:762
 #, c-format
 msgid "[%te of %td]"
 msgstr "[%te z %td]"
 
-#: ../remote/dbus/rb-client.c:814 ../remote/dbus/rb-client.c:906
+#: ../remote/dbus/rb-client.c:818 ../remote/dbus/rb-client.c:910
 #, c-format
 msgid "Paused"
 msgstr "Pozastaveno"
 
-#: ../remote/dbus/rb-client.c:858
+#: ../remote/dbus/rb-client.c:862
 #, c-format
 msgid "Seeked to %s"
 msgstr "Přeskočeno na %s"
 
-#: ../remote/dbus/rb-client.c:892
+#: ../remote/dbus/rb-client.c:896
 #, c-format
 msgid "Now playing: %s %s"
 msgstr "Přehrává se: %s %s"
 
-#: ../remote/dbus/rb-client.c:908
+#: ../remote/dbus/rb-client.c:912
 #, c-format
 msgid "Unknown playback state: %s"
 msgstr "Neznámý stav přehrávání: %s"
 
-#: ../remote/dbus/rb-client.c:918
+#: ../remote/dbus/rb-client.c:922
 #, c-format
 msgid "Volume is now %.02f"
 msgstr "Hlasitost je %.02f"
 
 #. should print this before dbus setup, really
-#: ../remote/dbus/rb-client.c:956
+#: ../remote/dbus/rb-client.c:960
 #, c-format
 msgid "Press 'h' for help."
 msgstr "Pro nápovědu zmáčkněte „h“."
 
-#: ../remote/dbus/rb-client.c:1396
+#: ../remote/dbus/rb-client.c:1400
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Hlasitost přehrávání je %f.\n"
@@ -3406,27 +3402,27 @@ msgstr "Kdepak, ty ptáčku, hnízdo máš"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2374
+#: ../rhythmdb/rhythmdb.c:2376
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 "K přehrávání tohoto souboru jsou zapotřebí dodatečné zásuvné moduly "
 "GStreamer: %s"
 
-#: ../rhythmdb/rhythmdb.c:2406
+#: ../rhythmdb/rhythmdb.c:2408
 msgid "invalid unicode in error message"
 msgstr "neplatné Unicode v chybové zprávě"
 
-#: ../rhythmdb/rhythmdb.c:2529
+#: ../rhythmdb/rhythmdb.c:2531
 #, c-format
 msgid "Empty file"
 msgstr "Prázdný soubor"
 
-#: ../rhythmdb/rhythmdb.c:3227
+#: ../rhythmdb/rhythmdb.c:3229
 msgid "Could not load the music database:"
 msgstr "Nepodařilo se načíst hudební databázi:"
 
-#: ../rhythmdb/rhythmdb.c:4661
+#: ../rhythmdb/rhythmdb.c:4663
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3434,7 +3430,7 @@ msgstr[0] "%ld minuta"
 msgstr[1] "%ld minuty"
 msgstr[2] "%ld minut"
 
-#: ../rhythmdb/rhythmdb.c:4662
+#: ../rhythmdb/rhythmdb.c:4664
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3442,7 +3438,7 @@ msgstr[0] "%ld hodina"
 msgstr[1] "%ld hodiny"
 msgstr[2] "%ld hodin"
 
-#: ../rhythmdb/rhythmdb.c:4663
+#: ../rhythmdb/rhythmdb.c:4665
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3451,7 +3447,7 @@ msgstr[1] "%ld dny"
 msgstr[2] "%ld dnů"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4669
+#: ../rhythmdb/rhythmdb.c:4671
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s a %s"
@@ -3459,8 +3455,8 @@ msgstr "%s, %s a %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4675 ../rhythmdb/rhythmdb.c:4683
-#: ../rhythmdb/rhythmdb.c:4694
+#: ../rhythmdb/rhythmdb.c:4677 ../rhythmdb/rhythmdb.c:4685
+#: ../rhythmdb/rhythmdb.c:4696
 #, c-format
 msgid "%s and %s"
 msgstr "%s a %s"
@@ -3517,11 +3513,7 @@ msgstr "Vzorový modul ve Vala"
 msgid "A sample plugin in Vala with no features"
 msgstr "Vzorový přídavný modul ve Vala bez žádných funkcí"
 
-#: ../shell/rb-application.c:162
-msgid "Configure Plugins"
-msgstr "Nastavit přídavné moduly"
-
-#: ../shell/rb-application.c:229
+#: ../shell/rb-application.c:166
 msgid "translator-credits"
 msgstr ""
 "Michal Bukovjan <bukm@centrum.cz>\n"
@@ -3531,7 +3523,7 @@ msgstr ""
 "Petr Kovář <pknbe@volny.cz>\n"
 "Marek Černocký <marek@manet.cz>"
 
-#: ../shell/rb-application.c:232
+#: ../shell/rb-application.c:169
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3543,7 +3535,7 @@ msgstr ""
 "Free Software Foundation; buď verze 2 této licence, nebo\n"
 "(dle vlastního uvážení) kterékoliv pozdější verze.\n"
 
-#: ../shell/rb-application.c:236
+#: ../shell/rb-application.c:173
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3555,7 +3547,7 @@ msgstr ""
 " PRODEJNOSTI anebo VHODNOSTI PRO URČITÝ ÚČEL. Další podrobnosti\n"
 " hledejte v GNU General Public License.\n"
 
-#: ../shell/rb-application.c:240
+#: ../shell/rb-application.c:177
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3566,63 +3558,63 @@ msgstr ""
 "Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 
-#: ../shell/rb-application.c:247
+#: ../shell/rb-application.c:184
 msgid "Maintainers:"
 msgstr "Správci:"
 
-#: ../shell/rb-application.c:250
+#: ../shell/rb-application.c:187
 msgid "Former Maintainers:"
 msgstr "Dřívější správci:"
 
-#: ../shell/rb-application.c:253
+#: ../shell/rb-application.c:190
 msgid "Contributors:"
 msgstr "Přispěvatelé:"
 
-#: ../shell/rb-application.c:255
+#: ../shell/rb-application.c:192
 msgid "Music management and playback software for GNOME."
 msgstr "Software pro správu a přehrávání hudby pro prostředí GNOME."
 
-#: ../shell/rb-application.c:265
+#: ../shell/rb-application.c:202
 msgid "Rhythmbox Website"
 msgstr "Webová stránka Rhythmboxu"
 
-#: ../shell/rb-application.c:293 ../shell/rb-shell-preferences.c:163
+#: ../shell/rb-application.c:230 ../shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "Nepodařilo se zobrazit nápovědu"
 
-#: ../shell/rb-application.c:631
+#: ../shell/rb-application.c:555
 msgid "Enable debug output"
 msgstr "Povolit ladicí výstup"
 
-#: ../shell/rb-application.c:632
+#: ../shell/rb-application.c:556
 msgid "Enable debug output matching a specified string"
 msgstr "Povolit ladicí výstup odpovídající zadanému řetězci"
 
-#: ../shell/rb-application.c:633
+#: ../shell/rb-application.c:557
 msgid "Do not update the library with file changes"
 msgstr "Neaktualizovat kolekci podle změn souborů"
 
-#: ../shell/rb-application.c:634
+#: ../shell/rb-application.c:558
 msgid "Do not register the shell"
 msgstr "Neregistrovat shell"
 
-#: ../shell/rb-application.c:635
+#: ../shell/rb-application.c:559
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Neukládat natrvalo žádná data (implikuje --no-registration)"
 
-#: ../shell/rb-application.c:636
+#: ../shell/rb-application.c:560
 msgid "Disable loading of plugins"
 msgstr "Zakázat načítání zásuvných modulů"
 
-#: ../shell/rb-application.c:637
+#: ../shell/rb-application.c:561
 msgid "Path for database file to use"
 msgstr "Cesta k souboru používané databáze"
 
-#: ../shell/rb-application.c:638
+#: ../shell/rb-application.c:562
 msgid "Path for playlists file to use"
 msgstr "Cesta k používaným seznamům skladeb"
 
-#: ../shell/rb-application.c:651
+#: ../shell/rb-application.c:575
 #, c-format
 msgid ""
 "%s\n"
@@ -3697,45 +3689,45 @@ msgstr "Neznámý seznam skladeb: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "Seznam skladeb %s je automatický seznam skladeb"
 
-#: ../shell/rb-shell.c:2089
+#: ../shell/rb-shell.c:2083
 msgid "Error while saving song information"
 msgstr "Chyba při ukládání informací o skladbě"
 
-#: ../shell/rb-shell.c:2293
+#: ../shell/rb-shell.c:2287
 msgid "Pause playback"
 msgstr "Pozastavit přehrávání"
 
-#: ../shell/rb-shell.c:2300
+#: ../shell/rb-shell.c:2294
 msgid "Start playback"
 msgstr "Začít přehrávání"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2410
+#: ../shell/rb-shell.c:2404
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pozastaveno)"
 
-#: ../shell/rb-shell.c:2818 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2801 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Žádné registrované zdroje nemohou obsluhovat URI %s"
 
-#: ../shell/rb-shell.c:3147
+#: ../shell/rb-shell.c:3130
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Žádný registrovaný zdroj neodpovídá adrese URI %s"
 
-#: ../shell/rb-shell.c:3180 ../shell/rb-shell.c:3223
+#: ../shell/rb-shell.c:3163 ../shell/rb-shell.c:3206
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Neznámé URI skladby: %s"
 
-#: ../shell/rb-shell.c:3232
+#: ../shell/rb-shell.c:3215
 #, c-format
 msgid "Unknown property %s"
 msgstr "Neznámá vlastnost %s"
 
-#: ../shell/rb-shell.c:3246
+#: ../shell/rb-shell.c:3229
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Neplatný typ vlastnosti %s pro vlastnost %s"
@@ -3830,6 +3822,10 @@ msgstr "Obecné"
 #: ../shell/rb-shell-preferences.c:312
 msgid "Playback"
 msgstr "Přehrávání"
+
+#: ../shell/rb-shell-preferences.c:428
+msgid "Plugins"
+msgstr "Zásuvné moduly"
 
 #: ../shell/rb-track-transfer-queue.c:174
 #, c-format
@@ -4726,3 +4722,24 @@ msgstr "Na ploše"
 #: ../widgets/rb-song-info.c:1340
 msgid "Unknown location"
 msgstr "Neznámé umístění"
+
+#~ msgid "_Add Music"
+#~ msgstr "Přid_at hudbu"
+
+#~ msgid "_About"
+#~ msgstr "O _aplikaci"
+
+#~ msgid "_Quit"
+#~ msgstr "U_končit"
+
+#~ msgid "Send tracks"
+#~ msgstr "Odeslat skladby"
+
+#~ msgid "Send selected tracks by email"
+#~ msgstr "Odesílání vybraných skladeb e-mailem"
+
+#~ msgid "Send to..."
+#~ msgstr "Odeslat…"
+
+#~ msgid "Configure Plugins"
+#~ msgstr "Nastavit přídavné moduly"
