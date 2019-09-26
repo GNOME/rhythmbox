@@ -254,6 +254,8 @@ do_notify (RBNotificationPlugin *plugin,
 		notify_notification_set_hint (notification, hint, g_variant_new_boolean (TRUE));
 	}
 
+	notify_notification_set_hint (notification, "suppress-sound", g_variant_new_boolean (TRUE));
+
 	if (notify_notification_show (notification, &error) == FALSE) {
 		g_warning ("Failed to send notification (%s): %s", primary, error->message);
 		g_error_free (error);
