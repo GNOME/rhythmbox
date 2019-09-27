@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2019-08-20 04:10+0000\n"
+"POT-Creation-Date: 2019-09-26 10:31+0000\n"
 "PO-Revision-Date: 2019-08-31 22:01+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
@@ -200,18 +200,14 @@ msgid "_Tools"
 msgstr "ツール(_T)"
 
 #: ../data/ui/app-menu.ui.h:9
-msgid "P_lugins"
-msgstr "プラグイン(_L)"
-
-#: ../data/ui/app-menu.ui.h:10
 msgid "_Preferences"
 msgstr "設定(_P)"
 
-#: ../data/ui/app-menu.ui.h:11 ../shell/rb-shell-preferences.c:195
+#: ../data/ui/app-menu.ui.h:10 ../shell/rb-shell-preferences.c:195
 msgid "_Help"
 msgstr "ヘルプ(_H)"
 
-#: ../data/ui/app-menu.ui.h:12
+#: ../data/ui/app-menu.ui.h:11
 msgid "_About Rhythmbox"
 msgstr "Rhythmboxについて(_A)"
 
@@ -520,7 +516,7 @@ msgstr "メディアプレイヤーのプロパティ"
 #: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
 #: ../plugins/iradio/rb-station-properties-dialog.c:182
 #: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:318 ../shell/rb-application.c:165
+#: ../podcast/rb-podcast-properties-dialog.c:318
 #: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:377
 #: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
 msgid "_Close"
@@ -936,7 +932,7 @@ msgstr "削除したファイル:"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:496
-#: ../rhythmdb/rhythmdb.c:3807 ../widgets/rb-entry-view.c:943
+#: ../rhythmdb/rhythmdb.c:3809 ../widgets/rb-entry-view.c:943
 #: ../widgets/rb-entry-view.c:1567 ../widgets/rb-entry-view.c:1580
 #: ../widgets/rb-song-info.c:1546
 msgid "Never"
@@ -981,7 +977,7 @@ msgstr "%Y年%B%d日"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:581
 #: ../plugins/android/rb-android-source.c:687
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
@@ -1000,18 +996,18 @@ msgstr "%Y年%B%d日"
 #: ../plugins/mtpdevice/rb-mtp-source.c:645
 #: ../plugins/mtpdevice/rb-mtp-source.c:1144
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
-#: ../plugins/notification/rb-notification-plugin.c:510
+#: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1926
 #: ../podcast/rb-podcast-manager.c:2025
 #: ../podcast/rb-podcast-properties-dialog.c:639
 #: ../podcast/rb-podcast-properties-dialog.c:703
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
-#: ../remote/dbus/rb-client.c:728 ../rhythmdb/rhythmdb.c:2066
-#: ../rhythmdb/rhythmdb.c:2072 ../rhythmdb/rhythmdb.c:2087
-#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5571
-#: ../rhythmdb/rhythmdb.c:5577 ../rhythmdb/rhythmdb.c:5582
-#: ../rhythmdb/rhythmdb.c:5593 ../rhythmdb/rhythmdb.c:5597
+#: ../remote/dbus/rb-client.c:732 ../rhythmdb/rhythmdb.c:2068
+#: ../rhythmdb/rhythmdb.c:2074 ../rhythmdb/rhythmdb.c:2089
+#: ../rhythmdb/rhythmdb.c:2123 ../rhythmdb/rhythmdb.c:5573
+#: ../rhythmdb/rhythmdb.c:5579 ../rhythmdb/rhythmdb.c:5584
+#: ../rhythmdb/rhythmdb.c:5595 ../rhythmdb/rhythmdb.c:5599
 #: ../rhythmdb/rhythmdb-entry-type.c:301
 #: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
 #: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
@@ -1036,34 +1032,34 @@ msgstr "シンボリックリンクが多すぎます"
 msgid "Cannot get free space at %s: %s"
 msgstr "%sで空き領域を確保できませんでした: %s"
 
-#: ../lib/rb-util.c:566 ../plugins/context/tmpl/album-tmpl.html:21
+#: ../lib/rb-util.c:562 ../plugins/context/tmpl/album-tmpl.html:21
 #: ../remote/dbus/rb-client.c:217
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:568 ../plugins/context/tmpl/album-tmpl.html:19
+#: ../lib/rb-util.c:564 ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:219
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:632
+#: ../lib/rb-util.c:628
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "残り%d:%02d / %d:%02d"
 
-#: ../lib/rb-util.c:636
+#: ../lib/rb-util.c:632
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "残り%d:%02d:%02d / %d:%02d:%02d"
 
-#: ../lib/rb-util.c:641
+#: ../lib/rb-util.c:637
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d / %d:%02d"
 
-#: ../lib/rb-util.c:645
+#: ../lib/rb-util.c:641
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d / %d:%02d:%02d"
@@ -2203,6 +2199,27 @@ msgstr "LIRC"
 msgid "Control Rhythmbox using an infrared remote control"
 msgstr "赤外線リモコンを使ってRhythmboxをコントロールします"
 
+#: ../plugins/listenbrainz/listenbrainz.plugin.in.h:1
+msgid "ListenBrainz"
+msgstr ""
+
+#: ../plugins/listenbrainz/listenbrainz.plugin.in.h:2
+msgid "Submit your listens to ListenBrainz"
+msgstr ""
+
+#: ../plugins/listenbrainz/settings.ui.h:1
+#, fuzzy
+#| msgid "Username:"
+msgid "User token:"
+msgstr "ユーザー名:"
+
+#: ../plugins/listenbrainz/settings.ui.h:2
+msgid ""
+"To submit your listens to ListenBrainz, enter your ListenBrainz user token "
+"below. You can see your user token in your <a href=\"https://listenbrainz."
+"org/profile/\">user profile</a>."
+msgstr ""
+
 #: ../plugins/lyrics/LyricsConfigureDialog.py:103
 msgid "Choose lyrics folder..."
 msgstr "フォルダーの選択..."
@@ -2657,18 +2674,18 @@ msgid "Next"
 msgstr "次へ"
 
 #. Translators: by Artist
-#: ../plugins/notification/rb-notification-plugin.c:332
+#: ../plugins/notification/rb-notification-plugin.c:334
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "アーティスト: <i>%s</i> /"
 
 #. Translators: from Album
-#: ../plugins/notification/rb-notification-plugin.c:334
+#: ../plugins/notification/rb-notification-plugin.c:336
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "アルバム:<i>%s</i>"
 
-#: ../plugins/notification/rb-notification-plugin.c:414
+#: ../plugins/notification/rb-notification-plugin.c:416
 #: ../widgets/rb-header.c:366
 msgid "Not Playing"
 msgstr "再生していません"
@@ -2682,7 +2699,7 @@ msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr "再生中にマシンをサスペンドしてバッテリーの消費を抑えます"
 
 #: ../plugins/power-manager/rb-power-manager-plugin.c:97
-#: ../remote/dbus/rb-client.c:814 ../remote/dbus/rb-client.c:904
+#: ../remote/dbus/rb-client.c:818 ../remote/dbus/rb-client.c:908
 #, c-format
 msgid "Playing"
 msgstr "再生中です"
@@ -2783,18 +2800,6 @@ msgstr "クリッピングを妨げるためにコンプレッションを適用
 msgid "Learn more about ReplayGain"
 msgstr ""
 
-#: ../plugins/sendto/sendto.plugin.in.h:1
-msgid "Send tracks"
-msgstr "トラック情報を送る"
-
-#: ../plugins/sendto/sendto.plugin.in.h:2
-msgid "Send selected tracks by email"
-msgstr "選択されたトラックをメールで送信します"
-
-#: ../plugins/sendto/sendto.py:51
-msgid "Send to..."
-msgstr "送る..."
-
 #: ../plugins/soundcloud/soundcloud.plugin.in.h:1
 #: ../plugins/soundcloud/soundcloud.py:72
 msgid "SoundCloud"
@@ -2883,7 +2888,7 @@ msgstr "ウェブリモートコントロール"
 msgid "Control Rhythmbox from a web browser"
 msgstr "ウェブブラウザーからRhythmboxをコントロールします"
 
-#: ../plugins/webremote/webremote.py:583
+#: ../plugins/webremote/webremote.py:585
 msgid "Launch web remote control"
 msgstr "ウェブリモートコントロールを起動"
 
@@ -3117,7 +3122,7 @@ msgstr "Podcastの配信情報を検索します"
 msgid "Search podcast episodes"
 msgstr "Podcastのエピソードを検索します"
 
-#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:627
+#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:563
 msgid "Show the version of the program"
 msgstr "プログラムのバージョンを表示する"
 
@@ -3287,68 +3292,68 @@ msgstr "h/? - ヘルプ"
 msgid "q - Quit"
 msgstr "q - 終了"
 
-#: ../remote/dbus/rb-client.c:542 ../remote/dbus/rb-client.c:568
-#: ../remote/dbus/rb-client.c:791 ../remote/dbus/rb-client.c:875
+#: ../remote/dbus/rb-client.c:546 ../remote/dbus/rb-client.c:572
+#: ../remote/dbus/rb-client.c:795 ../remote/dbus/rb-client.c:879
 #, c-format
 msgid "Not playing"
 msgstr "何も再生していません"
 
 # 試しに原文のままで問題ないか。問題がある場合は再度翻訳対象
 #. Translators: title by artist from album
-#: ../remote/dbus/rb-client.c:741
+#: ../remote/dbus/rb-client.c:745
 msgid "%tt by %ta from %at"
 msgstr ""
 
 # 試しに原文のままで問題ないか。問題がある場合は再度翻訳対象
 #. Translators: title by artist
-#: ../remote/dbus/rb-client.c:744
+#: ../remote/dbus/rb-client.c:748
 msgid "%tt by %ta"
 msgstr ""
 
 # 試しに原文のままで問題ないか。問題がある場合は再度翻訳対象
 #. Translators: title from album
-#: ../remote/dbus/rb-client.c:747
+#: ../remote/dbus/rb-client.c:751
 msgid "%tt from %ta"
 msgstr ""
 
 #. Translators: %te is replaced with elapsed time, %td is replaced with track duration
-#: ../remote/dbus/rb-client.c:758
+#: ../remote/dbus/rb-client.c:762
 #, c-format
 msgid "[%te of %td]"
 msgstr "[%te / %td]"
 
-#: ../remote/dbus/rb-client.c:814 ../remote/dbus/rb-client.c:906
+#: ../remote/dbus/rb-client.c:818 ../remote/dbus/rb-client.c:910
 #, c-format
 msgid "Paused"
 msgstr "一時停止"
 
-#: ../remote/dbus/rb-client.c:858
+#: ../remote/dbus/rb-client.c:862
 #, c-format
 msgid "Seeked to %s"
 msgstr "%s へシークしました"
 
-#: ../remote/dbus/rb-client.c:892
+#: ../remote/dbus/rb-client.c:896
 #, c-format
 msgid "Now playing: %s %s"
 msgstr "再生中: %s %s"
 
-#: ../remote/dbus/rb-client.c:908
+#: ../remote/dbus/rb-client.c:912
 #, c-format
 msgid "Unknown playback state: %s"
 msgstr "不明な再生状態: %s"
 
-#: ../remote/dbus/rb-client.c:918
+#: ../remote/dbus/rb-client.c:922
 #, c-format
 msgid "Volume is now %.02f"
 msgstr "現在の音量は %.02f"
 
 #. should print this before dbus setup, really
-#: ../remote/dbus/rb-client.c:956
+#: ../remote/dbus/rb-client.c:960
 #, c-format
 msgid "Press 'h' for help."
 msgstr "ヘルプを見るには 'h' キーを押してください。"
 
-#: ../remote/dbus/rb-client.c:1396
+#: ../remote/dbus/rb-client.c:1400
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "音量は%fです。\n"
@@ -3386,44 +3391,44 @@ msgstr "Ticket To Ride"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2374
+#: ../rhythmdb/rhythmdb.c:2376
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "このファイルを再生するにはGStreamerの追加のプラグインが必要です: %s"
 
-#: ../rhythmdb/rhythmdb.c:2406
+#: ../rhythmdb/rhythmdb.c:2408
 msgid "invalid unicode in error message"
 msgstr "おかしなUnicode文字がエラーメッセージの中に含まれています"
 
-#: ../rhythmdb/rhythmdb.c:2529
+#: ../rhythmdb/rhythmdb.c:2531
 #, c-format
 msgid "Empty file"
 msgstr "空のファイル"
 
-#: ../rhythmdb/rhythmdb.c:3227
+#: ../rhythmdb/rhythmdb.c:3229
 msgid "Could not load the music database:"
 msgstr "楽曲データベースを読み込めませんでした:"
 
-#: ../rhythmdb/rhythmdb.c:4661
+#: ../rhythmdb/rhythmdb.c:4663
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld分間"
 
-#: ../rhythmdb/rhythmdb.c:4662
+#: ../rhythmdb/rhythmdb.c:4664
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld時間"
 
-#: ../rhythmdb/rhythmdb.c:4663
+#: ../rhythmdb/rhythmdb.c:4665
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld日間"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4669
+#: ../rhythmdb/rhythmdb.c:4671
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s(%s%s)"
@@ -3431,8 +3436,8 @@ msgstr "%s(%s%s)"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4675 ../rhythmdb/rhythmdb.c:4683
-#: ../rhythmdb/rhythmdb.c:4694
+#: ../rhythmdb/rhythmdb.c:4677 ../rhythmdb/rhythmdb.c:4685
+#: ../rhythmdb/rhythmdb.c:4696
 #, c-format
 msgid "%s and %s"
 msgstr "(%sと%s)"
@@ -3489,11 +3494,7 @@ msgstr "Vala言語のサンプルプラグイン"
 msgid "A sample plugin in Vala with no features"
 msgstr "機能のないサンプルプラグインです(Vala言語版)"
 
-#: ../shell/rb-application.c:162
-msgid "Configure Plugins"
-msgstr "プラグインの設定"
-
-#: ../shell/rb-application.c:229
+#: ../shell/rb-application.c:166
 msgid "translator-credits"
 msgstr ""
 "相花 毅 <takeshi.aihana@gmail.com>\n"
@@ -3510,7 +3511,7 @@ msgstr ""
 "松澤 二郎 <jmatsuzawa@gnome.org>\n"
 "日本GNOMEユーザー会 <http://www.gnome.gr.jp/>"
 
-#: ../shell/rb-application.c:232
+#: ../shell/rb-application.c:169
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3522,7 +3523,7 @@ msgstr ""
 "第二版、あるいはそれ以降の版が定める条項の下で本プログラムを\n"
 "再頒布または変更することができます。\n"
 
-#: ../shell/rb-application.c:236
+#: ../shell/rb-application.c:173
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3533,7 +3534,7 @@ msgstr ""
 "完全に無保証です。商用利用または特定の目的における適合性の保証\n"
 "はありません。詳細は GNU 一般公衆利用許諾契約書をご覧ください。\n"
 
-#: ../shell/rb-application.c:240
+#: ../shell/rb-application.c:177
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3544,63 +3545,63 @@ msgstr ""
 "Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA まで\n"
 "連絡してください。\n"
 
-#: ../shell/rb-application.c:247
+#: ../shell/rb-application.c:184
 msgid "Maintainers:"
 msgstr "メンテナ:"
 
-#: ../shell/rb-application.c:250
+#: ../shell/rb-application.c:187
 msgid "Former Maintainers:"
 msgstr "主要メンテナ:"
 
-#: ../shell/rb-application.c:253
+#: ../shell/rb-application.c:190
 msgid "Contributors:"
 msgstr "貢献者:"
 
-#: ../shell/rb-application.c:255
+#: ../shell/rb-application.c:192
 msgid "Music management and playback software for GNOME."
 msgstr "GNOME向けの楽曲管理、再生ソフトウェアです。"
 
-#: ../shell/rb-application.c:265
+#: ../shell/rb-application.c:202
 msgid "Rhythmbox Website"
 msgstr "Rhythmboxのウェブサイト"
 
-#: ../shell/rb-application.c:293 ../shell/rb-shell-preferences.c:163
+#: ../shell/rb-application.c:230 ../shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "ヘルプを表示できませんでした"
 
-#: ../shell/rb-application.c:619
+#: ../shell/rb-application.c:555
 msgid "Enable debug output"
 msgstr "デバッグ表示にする"
 
-#: ../shell/rb-application.c:620
+#: ../shell/rb-application.c:556
 msgid "Enable debug output matching a specified string"
 msgstr "指定した文字列に一致するデバッグ出力にする"
 
-#: ../shell/rb-application.c:621
+#: ../shell/rb-application.c:557
 msgid "Do not update the library with file changes"
 msgstr "ファイルが変更されたライブラリを更新しない"
 
-#: ../shell/rb-application.c:622
+#: ../shell/rb-application.c:558
 msgid "Do not register the shell"
 msgstr "SHELLを登録しない"
 
-#: ../shell/rb-application.c:623
+#: ../shell/rb-application.c:559
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "どのデータも保存しない(--no-registrationを含む)"
 
-#: ../shell/rb-application.c:624
+#: ../shell/rb-application.c:560
 msgid "Disable loading of plugins"
 msgstr "プラグインのロードを無効にする"
 
-#: ../shell/rb-application.c:625
+#: ../shell/rb-application.c:561
 msgid "Path for database file to use"
 msgstr "使用するデータベースへのパスを指定する"
 
-#: ../shell/rb-application.c:626
+#: ../shell/rb-application.c:562
 msgid "Path for playlists file to use"
 msgstr "使用するプレイリストのパスを指定する"
 
-#: ../shell/rb-application.c:639
+#: ../shell/rb-application.c:575
 #, c-format
 msgid ""
 "%s\n"
@@ -3807,6 +3808,12 @@ msgstr "全般"
 #: ../shell/rb-shell-preferences.c:312
 msgid "Playback"
 msgstr "再生"
+
+#: ../shell/rb-shell-preferences.c:428
+#, fuzzy
+#| msgid "P_lugins"
+msgid "Plugins"
+msgstr "プラグイン(_L)"
 
 #: ../shell/rb-track-transfer-queue.c:174
 #, c-format
@@ -4669,6 +4676,18 @@ msgstr "このデスクトップ"
 #: ../widgets/rb-song-info.c:1340
 msgid "Unknown location"
 msgstr "不明な場所"
+
+#~ msgid "Send tracks"
+#~ msgstr "トラック情報を送る"
+
+#~ msgid "Send selected tracks by email"
+#~ msgstr "選択されたトラックをメールで送信します"
+
+#~ msgid "Send to..."
+#~ msgstr "送る..."
+
+#~ msgid "Configure Plugins"
+#~ msgstr "プラグインの設定"
 
 #~ msgid "_Add Music"
 #~ msgstr "楽曲の追加(_A)"
