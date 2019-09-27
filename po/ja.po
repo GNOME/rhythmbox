@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
 "POT-Creation-Date: 2019-09-26 10:31+0000\n"
-"PO-Revision-Date: 2019-08-31 22:01+0900\n"
+"PO-Revision-Date: 2019-09-27 23:00+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
@@ -962,14 +962,14 @@ msgstr "%Aの%p%I:%M"
 #.
 #: ../lib/rb-cut-and-paste-code.c:143
 msgid "%b %d %I:%M %p"
-msgstr "%B%d日の%p%I:%M"
+msgstr "%B%-d日の%p%I:%M"
 
 #. Translators: "friendly time" string for a day in a different year,
 #. * strftime format. e.g. "Feb 12 1997"
 #.
 #: ../lib/rb-cut-and-paste-code.c:148
 msgid "%b %d %Y"
-msgstr "%Y年%B%d日"
+msgstr "%Y年%B%-d日"
 
 #. impossible time or broken locale settings
 #. we really do need to fix this so untagged entries actually have NULL rather than
@@ -2208,10 +2208,8 @@ msgid "Submit your listens to ListenBrainz"
 msgstr ""
 
 #: ../plugins/listenbrainz/settings.ui.h:1
-#, fuzzy
-#| msgid "Username:"
 msgid "User token:"
-msgstr "ユーザー名:"
+msgstr "ユーザートークン:"
 
 #: ../plugins/listenbrainz/settings.ui.h:2
 msgid ""
@@ -3136,7 +3134,7 @@ msgstr "Rhythmboxを終了する"
 
 #: ../remote/dbus/rb-client.c:99
 msgid "Check if Rhythmbox is already running"
-msgstr "Rhythmboxが既に実行中かチェック"
+msgstr "Rhythmboxがすでに実行中かチェック"
 
 #: ../remote/dbus/rb-client.c:101
 msgid "Don't present an existing Rhythmbox window"
@@ -3498,18 +3496,19 @@ msgstr "機能のないサンプルプラグインです(Vala言語版)"
 msgid "translator-credits"
 msgstr ""
 "相花 毅 <takeshi.aihana@gmail.com>\n"
-"KAMAGASAKO Masatoshi <emerald@gnome.gr.jp>\n"
-"Norihiro UMEDA <norihiro@users.sourceforge.jp>\n"
-"Mitsuya Shibata <mty.shibata@gmail.com>\n"
 "草野 貴之 <AE5T-KSN@asahi-net.or.jp>\n"
+"日本 GNOME ユーザー会 <http://www.gnome.gr.jp/>\n"
+"松澤 二郎 <jmatsuzawa@gnome.org>\n"
+"Akira Tanaka <root.167d36d4acb91@gmail.com>\n"
 "Hajime Taira <htaira@redhat.com>\n"
 "Hiroshi Tagawa <kuponuga@gmail.com>\n"
-"Kiyotaka NISHIBORI <ml.nishibori.kiyotaka@gmail.com>\n"
-"OKANO Takayoshi <kano@na.rim.or.jp>\n"
 "Kentaro KAZUHAMA <kazken3@gmail.com>\n"
-"Akira Tanaka <root.167d36d4acb91@gmail.com>\n"
-"松澤 二郎 <jmatsuzawa@gnome.org>\n"
-"日本GNOMEユーザー会 <http://www.gnome.gr.jp/>"
+"KAMAGASAKO Masatoshi <emerald@gnome.gr.jp>\n"
+"Kiyotaka NISHIBORI <ml.nishibori.kiyotaka@gmail.com>\n"
+"Mitsuya Shibata <mty.shibata@gmail.com>\n"
+"Norihiro UMEDA <norihiro@users.sourceforge.jp>\n"
+"OKANO Takayoshi <kano@na.rim.or.jp>\n"
+"sicklylife <translation@sicklylife.jp>"
 
 #: ../shell/rb-application.c:169
 msgid ""
@@ -3662,7 +3661,7 @@ msgstr "サポートしていないファイルの拡張子を指定しました
 #: ../shell/rb-playlist-manager.c:1475
 #, c-format
 msgid "Playlist %s already exists"
-msgstr "プレイリスト%sは既に存在します"
+msgstr "プレイリスト%sはすでに存在します"
 
 #: ../shell/rb-playlist-manager.c:1505 ../shell/rb-playlist-manager.c:1538
 #: ../shell/rb-playlist-manager.c:1578 ../shell/rb-playlist-manager.c:1621
@@ -3810,15 +3809,13 @@ msgid "Playback"
 msgstr "再生"
 
 #: ../shell/rb-shell-preferences.c:428
-#, fuzzy
-#| msgid "P_lugins"
 msgid "Plugins"
-msgstr "プラグイン(_L)"
+msgstr "プラグイン"
 
 #: ../shell/rb-track-transfer-queue.c:174
 #, c-format
 msgid "The file \"%s\" already exists. Do you want to replace it?"
-msgstr "ファイル\"%s\"は既に存在します。置き換えますか?"
+msgstr "ファイル\"%s\"はすでに存在します。置き換えますか?"
 
 #: ../shell/rb-track-transfer-queue.c:188
 msgid "_Skip"
