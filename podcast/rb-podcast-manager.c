@@ -273,7 +273,6 @@ rb_podcast_manager_constructed (GObject *object)
 	/* add built in search types */
 	pd->priv->searches = g_array_new (FALSE, FALSE, sizeof (GType));
 	rb_podcast_manager_add_search (pd, rb_podcast_search_itunes_get_type ());
-	rb_podcast_manager_add_search (pd, rb_podcast_search_miroguide_get_type ());
 
 	pd->priv->settings = g_settings_new (PODCAST_SETTINGS_SCHEMA);
 	g_signal_connect_object (pd->priv->settings,

@@ -69,6 +69,5 @@ void		rb_podcast_search_finished		(RBPodcastSearch *search, gboolean successful)
 /* built in search types */
 
 GType		rb_podcast_search_itunes_get_type	(void);
-GType		rb_podcast_search_miroguide_get_type	(void);
 
 #endif /* RB_PODCAST_SEARCH_H */

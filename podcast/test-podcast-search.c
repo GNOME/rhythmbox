@@ -107,11 +107,11 @@ result_cb (RBPodcastSearch *search, RBPodcastChannel *data)
 }
 
 static void
-finished_cb (RBPodcastSearch *search, GMainLoop *loop)
+finished_cb (RBPodcastSearch *search, gboolean successful, GMainLoop *loop)
 {
-	g_print ("Search %s finished\n", G_OBJECT_TYPE_NAME (search));
+	g_print ("Search %s finished (%d)\n", G_OBJECT_TYPE_NAME (search), successful);
 	done++;
-	if (done == 2) {
+	if (done == 1) {
 		g_main_loop_quit (loop);
 	}
 }
@@ -120,7 +120,6 @@ int main (int argc, char **argv)
 {
 	GMainLoop *loop;
 	RBPodcastSearch *itunes;
-	RBPodcastSearch *miroguide;
 	char *text;
 
 	setlocale (LC_ALL, "");
@@ -135,15 +134,11 @@ int main (int argc, char **argv)
 	loop = g_main_loop_new (NULL, FALSE);
 
 	itunes = RB_PODCAST_SEARCH (g_object_new (rb_podcast_search_itunes_get_type (), NULL));
-	miroguide = RB_PODCAST_SEARCH (g_object_new (rb_podcast_search_miroguide_get_type (), NULL));
 
 	g_signal_connect (itunes, "result", G_CALLBACK (result_cb), NULL);
-	g_signal_connect (miroguide, "result", G_CALLBACK (result_cb), NULL);
 	g_signal_connect (itunes, "finished", G_CALLBACK (finished_cb), loop);
-	g_signal_connect (miroguide, "finished", G_CALLBACK (finished_cb), loop);
 
 	rb_podcast_search_start (itunes, text, 10);
-	rb_podcast_search_start (miroguide, text, 10);
 
 	g_main_loop_run (loop);
 

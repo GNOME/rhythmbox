@@ -12,8 +12,7 @@ librbpodcast_parse_la_SOURCES = 			\
 	rb-podcast-parse.c				\
 	rb-podcast-parse.h				\
 	rb-podcast-search.c				\
-	rb-podcast-search-itunes.c			\
-	rb-podcast-search-miroguide.c
+	rb-podcast-search-itunes.c
 
 librbpodcast_la_SOURCES =				\
 	$(podcastinclude_HEADERS)			\
@@ -27,7 +26,6 @@ librbpodcast_la_SOURCES =				\
 	rb-podcast-main-source.h			\
 	rb-podcast-search.c				\
 	rb-podcast-search-itunes.c			\
-	rb-podcast-search-miroguide.c			\
 	rb-podcast-settings.h				\
 	rb-podcast-source.c				\
 	rb-podcast-source.h				\
