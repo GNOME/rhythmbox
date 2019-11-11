@@ -61,7 +61,7 @@ static void rb_podcast_search_itunes_init (RBPodcastSearchITunes *search);
 
 G_DEFINE_TYPE (RBPodcastSearchITunes, rb_podcast_search_itunes, RB_TYPE_PODCAST_SEARCH);
 
-#define ITUNES_SEARCH_URI	"http://itunes.apple.com/WebObjects/MZStoreServices.woa/ws/wsSearch"
+#define ITUNES_SEARCH_URI	"https://itunes.apple.com/WebObjects/MZStoreServices.woa/ws/wsSearch"
 
 static void
 process_results (RBPodcastSearchITunes *search, JsonParser *parser)
