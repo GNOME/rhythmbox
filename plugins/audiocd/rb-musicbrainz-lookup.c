@@ -461,7 +461,7 @@ rb_musicbrainz_lookup (const char *entity,
 						 SOUP_SESSION_USER_AGENT,
 						 "Rhythmbox/" VERSION " ",
 						 NULL);
-	uri_str = g_strdup_printf ("http://musicbrainz.org/ws/2/%s/%s", entity, entity_id);
+	uri_str = g_strdup_printf ("https://musicbrainz.org/ws/2/%s/%s", entity, entity_id);
 	uri = soup_uri_new (uri_str);
 	g_free (uri_str);
 
@@ -512,7 +512,7 @@ rb_musicbrainz_create_submit_url (const char *disc_id, const char *full_disc_id)
 	}
 	g_strfreev (bits);
 
-	url = g_string_new ("http://mm.musicbrainz.org/bare/cdlookup.html?id=");
+	url = g_string_new ("https://mm.musicbrainz.org/cdtoc/attach?id=");
 
 	g_string_append (url, disc_id);		/* urlencode? */
 	g_string_append_printf (url, "&tracks=%d&toc=%d", intbits[1], intbits[0]);
