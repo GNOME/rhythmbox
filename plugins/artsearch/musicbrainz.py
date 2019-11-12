@@ -31,12 +31,12 @@ import rb
 from gi.repository import RB
 
 # musicbrainz URLs
-MUSICBRAINZ_RELEASE_URL = "http://musicbrainz.org/ws/2/release/%s?inc=artists"
+MUSICBRAINZ_RELEASE_URL = "https://musicbrainz.org/ws/2/release/%s?inc=artists"
 MUSICBRAINZ_RELEASE_PREFIX = "http://musicbrainz.org/release/"
 MUSICBRAINZ_RELEASE_SUFFIX = ".html"
 
 MUSICBRAINZ_SEARCH_QUERY = "artist:\"%s\" AND release:\"%s\""
-MUSICBRAINZ_SEARCH_URL = "http://musicbrainz.org/ws/2/release/?query=%s&limit=1"
+MUSICBRAINZ_SEARCH_URL = "https://musicbrainz.org/ws/2/release/?query=%s&limit=1"
 
 # musicbrainz IDs
 MUSICBRAINZ_VARIOUS_ARTISTS = "89ad4ac3-39f7-470e-963a-56509c546377"

@@ -43,7 +43,7 @@ REPEAT_SEARCH_PERIOD = 86400 * 7
 # this API key belongs to jonathan@d14n.org
 # and was generated specifically for this use
 API_KEY = 'ff56d530598d65c1a4088e57da7be2f9'
-API_URL = 'http://ws.audioscrobbler.com/2.0/'
+API_URL = 'https://ws.audioscrobbler.com/2.0/'
 
 # LASTFM_LOGO = "lastfm_red_small.png"
 # LASTFM_TOOLTIP = (LASTFM_LOGO, _("Image provided by Last.fm"))
