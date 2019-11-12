@@ -42,7 +42,7 @@ MUSICBRAINZ_SEARCH_URL = "https://musicbrainz.org/ws/2/release/?query=%s&limit=1
 MUSICBRAINZ_VARIOUS_ARTISTS = "89ad4ac3-39f7-470e-963a-56509c546377"
 
 # Amazon URL bits
-AMAZON_IMAGE_URL = "http://images.amazon.com/images/P/%s.01.LZZZZZZZ.jpg"
+AMAZON_IMAGE_URL = "https://images-na.ssl-images-amazon.com/images/P/%s.01.LZZZZZZZ.jpg"
 
 class MusicBrainzSearch(object):
 
