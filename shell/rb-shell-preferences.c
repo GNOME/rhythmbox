@@ -152,11 +152,12 @@ help_cb (GtkWidget *widget,
 	 RBShellPreferences *shell_preferences)
 {
 	GError *error = NULL;
+	GtkWidget *window = gtk_widget_get_toplevel (widget);
 
-	gtk_show_uri (gtk_widget_get_screen (widget),
-		      "help:rhythmbox/prefs",
-		      gtk_get_current_event_time (),
-		      &error);
+	gtk_show_uri_on_window (GTK_WINDOW (window),
+				"help:rhythmbox/prefs",
+				gtk_get_current_event_time (),
+				&error);
 
 	if (error != NULL) {
 		rb_error_dialog (NULL,

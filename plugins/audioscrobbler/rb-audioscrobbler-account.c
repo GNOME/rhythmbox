@@ -54,11 +54,6 @@ struct _RBAudioscrobblerAccountPrivate
 	gchar *session_key;
 	RBAudioscrobblerAccountLoginStatus login_status;
 
-	/* Widgets for the prefs pane */
-	GtkWidget *config_widget;
-	GtkWidget *login_status_label;
-	GtkWidget *auth_button;
-
 	/* Timeout notifications */
 	guint session_key_timeout_id;
 

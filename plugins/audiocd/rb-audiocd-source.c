@@ -566,12 +566,14 @@ submit_info_bar_response_cb (GtkInfoBar *info_bar, gint response_id, RBAudioCdSo
 
 	if (response_id == GTK_RESPONSE_OK) {
 		char *submit_url;
+		GtkWidget *window;
 
 		submit_url = rb_musicbrainz_create_submit_url (
 			source->priv->disc_info->musicbrainz_disc_id,
 			source->priv->disc_info->musicbrainz_full_disc_id);
 
-		if (!gtk_show_uri (NULL, submit_url, GDK_CURRENT_TIME, &error)) {
+		window = gtk_widget_get_toplevel (GTK_WIDGET (info_bar));
+		if (!gtk_show_uri_on_window (GTK_WINDOW (window), submit_url, GDK_CURRENT_TIME, &error)) {
 			rb_debug ("Could not launch submit URL %s: %s", submit_url, error->message);
 			g_error_free (error);
 		}

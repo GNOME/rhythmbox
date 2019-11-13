@@ -42,7 +42,7 @@ m4_ifdef([LT_OUTPUT], [LT_OUTPUT])
 AC_C_BIGENDIAN
 AC_CHECK_SIZEOF(long)
 
-GTK_REQS=3.20.0
+GTK_REQS=3.22.0
 
 GST_REQS=1.4.0
 GDK_PIXBUF_REQS=2.18.0
@@ -494,8 +494,8 @@ fi
 dnl Set required and max glib/gdk versions
 AC_DEFINE(GLIB_VERSION_MIN_REQUIRED, GLIB_VERSION_2_38, [minimum glib version])
 AC_DEFINE(GLIB_VERSION_MAX_ALLOWED, GLIB_VERSION_2_38, [maximum glib version])
-AC_DEFINE(GDK_VERSION_MIN_REQUIRED, GDK_VERSION_3_16, [minimum gdk version])
-AC_DEFINE(GDK_VERSION_MAX_ALLOWED, GDK_VERSION_3_16, [maximum gdk version])
+AC_DEFINE(GDK_VERSION_MIN_REQUIRED, GDK_VERSION_3_22, [minimum gdk version])
+AC_DEFINE(GDK_VERSION_MAX_ALLOWED, GDK_VERSION_3_22, [maximum gdk version])
 
 dnl Check for -fno-strict-aliasing
 FLAGS="-fno-strict-aliasing"

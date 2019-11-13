@@ -221,10 +221,10 @@ help_action_cb (GSimpleAction *action, GVariant *parameters, gpointer user_data)
 
 	g_object_get (app->priv->shell, "window", &window, NULL);
 
-	gtk_show_uri (gtk_widget_get_screen (GTK_WIDGET (window)),
-		      "help:rhythmbox",
-		      gtk_get_current_event_time (),
-		      &error);
+	gtk_show_uri_on_window (window,
+				"help:rhythmbox",
+				gtk_get_current_event_time (),
+				&error);
 
 	if (error != NULL) {
 		rb_error_dialog (NULL, _("Couldn't display help"),

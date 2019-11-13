@@ -1731,18 +1731,20 @@ list_item_view_url_activated_cb (GtkMenuItem *menuitem,
                                  RBAudioscrobblerProfilePage *page)
 {
 	GtkWidget *menu;
+	GtkWindow *window;
 	RBAudioscrobblerUserData *data;
 
 	menu = gtk_widget_get_parent (GTK_WIDGET (menuitem));
+	window = GTK_WINDOW (gtk_widget_get_toplevel (menu));
 	data = g_hash_table_lookup (page->priv->popup_menu_to_data_map, menu);
 
 	/* some urls are given to us without the http:// prefix */
 	if (g_str_has_prefix (data->url, "http://") || g_str_has_prefix (data->url, "https://")) {
-		gtk_show_uri (NULL, data->url, GDK_CURRENT_TIME, NULL);
+		gtk_show_uri_on_window (window, data->url, GDK_CURRENT_TIME, NULL);
 	} else {
 		char *url;
 		url = g_strdup_printf ("%s%s", "http://", data->url);
-		gtk_show_uri (NULL, url, GDK_CURRENT_TIME, NULL);
+		gtk_show_uri_on_window (window, url, GDK_CURRENT_TIME, NULL);
 		g_free (url);
 	}
 }
