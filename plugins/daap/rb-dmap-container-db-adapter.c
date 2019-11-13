@@ -27,6 +27,8 @@
  *
  */
 
+#include "config.h"
+
 #include "rb-playlist-manager.h"
 #include "rb-playlist-source.h"
 #include "rb-dmap-container-db-adapter.h"

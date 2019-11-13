@@ -27,6 +27,8 @@
  *
  */
 
+#include "config.h"
+
 #include "rhythmdb-query-model.h"
 #include "rb-rhythmdb-query-model-dmap-db-adapter.h"
 #include "rb-daap-record.h"
