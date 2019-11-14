@@ -244,7 +244,6 @@ impl_constructed (GObject *object)
 	RBDACPPairingPage *page = RB_DACP_PAIRING_PAGE (object);
 	GtkWidget *passcode_widget;
 	GtkWidget *close_pairing_button;
-	PangoFontDescription *font;
 	GObject *plugin;
 	int i;
 
@@ -262,14 +261,11 @@ impl_constructed (GObject *object)
 	page->priv->pairing_widget = GTK_WIDGET (gtk_builder_get_object (page->priv->builder, "pairing_widget"));
 	page->priv->pairing_status_widget = GTK_WIDGET (gtk_builder_get_object (page->priv->builder, "pairing_status_widget"));
 
-	font = pango_font_description_from_string ("normal 28");
-
 	for (i = 0; i < 4; i++) {
 		char *entry_name;
 
 		entry_name = g_strdup_printf ("passcode_entry%d", i + 1);
 		page->priv->entries[i] = GTK_WIDGET (gtk_builder_get_object (page->priv->builder, entry_name));
-		gtk_widget_override_font (page->priv->entries[i], font);
 		g_signal_connect_object (page->priv->entries[i],
 		                         "insert-text",
 		                         G_CALLBACK (entry_insert_text_cb),
@@ -282,8 +278,6 @@ impl_constructed (GObject *object)
 		                         0);
 		g_free (entry_name);
 	}
-
-	pango_font_description_free (font);
 
 	gtk_widget_show (passcode_widget);
 
