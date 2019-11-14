@@ -469,14 +469,14 @@ scroll_row_timeout (gpointer data)
 	GtkAdjustment* vadj;
 	RbTreeDndData *priv_data;
 	GdkWindow *window;
-	GdkDeviceManager *device_manager;
+	GdkSeat *seat;
 
 	priv_data = g_object_get_data (G_OBJECT (tree_view), RB_TREE_DND_STRING);
 	g_return_val_if_fail(priv_data != NULL, TRUE);
 
 	window = gtk_tree_view_get_bin_window (tree_view);
-	device_manager = gdk_display_get_device_manager (gdk_window_get_display (window));
-	gdk_window_get_device_position (window, gdk_device_manager_get_client_pointer (device_manager), &x, &y, NULL);
+	seat = gdk_display_get_default_seat (gdk_window_get_display (window));
+	gdk_window_get_device_position (window, gdk_seat_get_pointer (seat), &x, &y, NULL);
 	gtk_tree_view_convert_widget_to_bin_window_coords (tree_view, x, y, &x, &y);
 	gtk_tree_view_convert_bin_window_to_tree_coords (tree_view, x, y, &x, &y);
 
