@@ -130,9 +130,7 @@ search_cb (RBSearchEntry *search_entry, const char *text, RBSourceToolbar *toolb
 static void
 show_popup_cb (RBSearchEntry *search_entry, RBSourceToolbar *toolbar)
 {
-	gtk_menu_popup (GTK_MENU (toolbar->priv->search_popup),
-			NULL, NULL, NULL, NULL, 3,
-			gtk_get_current_event_time ());
+	gtk_menu_popup_at_pointer (GTK_MENU (toolbar->priv->search_popup), NULL);
 }
 
 

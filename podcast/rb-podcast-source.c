@@ -175,7 +175,7 @@ podcast_posts_show_popup_cb (RBEntryView *view,
 
 	menu = gtk_menu_new_from_model (source->priv->episode_popup);
 	gtk_menu_attach_to_widget (GTK_MENU (menu), GTK_WIDGET (source), NULL);
-	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 3, gtk_get_current_event_time ());
+	gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
 }
 
 static void
@@ -202,7 +202,7 @@ podcast_feeds_show_popup_cb (RBPropertyView *view,
 
 	menu = gtk_menu_new_from_model (source->priv->feed_popup);
 	gtk_menu_attach_to_widget (GTK_MENU (menu), GTK_WIDGET (source), NULL);
-	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 3, gtk_get_current_event_time ());
+	gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
 }
 
 static GPtrArray *

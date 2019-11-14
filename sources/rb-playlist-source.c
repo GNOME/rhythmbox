@@ -500,13 +500,7 @@ default_show_entry_view_popup (RBPlaylistSource *source,
 
 	menu = gtk_menu_new_from_model (G_MENU_MODEL (source->priv->popup));
 	gtk_menu_attach_to_widget (GTK_MENU (menu), GTK_WIDGET (source), NULL);
-	gtk_menu_popup (GTK_MENU (menu),
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			3,
-			gtk_get_current_event_time ());
+	gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
 }
 
 static void
