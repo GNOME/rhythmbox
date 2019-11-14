@@ -1574,13 +1574,9 @@ create_list_button (RBAudioscrobblerProfilePage *page,
 	char *button_markup;
 	int label_indent;
 	GtkWidget *label;
-	GtkWidget *label_alignment;
 
 	button = gtk_button_new ();
-	gtk_button_set_alignment (GTK_BUTTON (button),
-		                  0, 0.5);
-	gtk_button_set_focus_on_click (GTK_BUTTON (button),
-		                       FALSE);
+	gtk_widget_set_focus_on_click (GTK_WIDGET (button), FALSE);
 	gtk_button_set_relief (GTK_BUTTON (button),
 		               GTK_RELIEF_NONE);
 
@@ -1590,18 +1586,15 @@ create_list_button (RBAudioscrobblerProfilePage *page,
 	if (data->image != NULL) {
 		GtkWidget *image;
 		GtkWidget *viewport;
-		GtkWidget *alignment;
 
 		image = gtk_image_new_from_pixbuf (data->image);
 
 		viewport = gtk_viewport_new (NULL, NULL);
 		gtk_container_add (GTK_CONTAINER (viewport), image);
-
-		alignment = gtk_alignment_new (0, 0.5, 0, 0);
-		gtk_container_add (GTK_CONTAINER (alignment), viewport);
+		gtk_widget_set_valign (viewport, GTK_ALIGN_CENTER);
 
 		gtk_box_pack_start (GTK_BOX (button_contents),
-		                    alignment,
+		                    viewport,
 		                    FALSE, FALSE, 0);
 
 		label_indent = max_sibling_image_width - gdk_pixbuf_get_width (data->image);
@@ -1629,17 +1622,11 @@ create_list_button (RBAudioscrobblerProfilePage *page,
 
 	label = gtk_label_new ("");
 	gtk_label_set_markup (GTK_LABEL (label), button_markup);
+	gtk_widget_set_margin_start (label, label_indent);
 	g_free (button_markup);
 
-	label_alignment = gtk_alignment_new (0, 0.5, 0, 0);
-	gtk_container_add (GTK_CONTAINER (label_alignment), label);
-
-	gtk_alignment_set_padding (GTK_ALIGNMENT (label_alignment),
-	                           0, 0,
-	                           label_indent, 0);
-
 	gtk_box_pack_start (GTK_BOX (button_contents),
-	                    label_alignment,
+	                    label,
 	                    FALSE, FALSE, 0);
 
 	g_signal_connect (button,
@@ -1722,7 +1709,7 @@ list_item_clicked_cb (GtkButton *button, RBAudioscrobblerProfilePage *page)
 
 	/* show menu if it has any items in it */
 	if (g_list_length (gtk_container_get_children (GTK_CONTAINER (menu))) != 0) {
-		gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time ());
+		gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
 	}
 }
 
