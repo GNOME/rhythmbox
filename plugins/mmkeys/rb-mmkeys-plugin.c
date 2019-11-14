@@ -185,9 +185,12 @@ grab_mmkey (int key_code,
 	    GdkWindow *root)
 {
 	Display *display;
-	gdk_error_trap_push ();
+	GdkDisplay *gdk_display;
 
-	display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+	gdk_display = gdk_display_get_default ();
+	gdk_x11_display_error_trap_push (gdk_display);
+
+	display = GDK_DISPLAY_XDISPLAY (gdk_display);
 	XGrabKey (display, key_code,
 		  0,
 		  GDK_WINDOW_XID (root), True,
@@ -221,8 +224,8 @@ grab_mmkey (int key_code,
 		  GDK_WINDOW_XID (root), True,
 		  GrabModeAsync, GrabModeAsync);
 
-	gdk_flush ();
-        if (gdk_error_trap_pop ()) {
+	gdk_display_flush (gdk_display);
+        if (gdk_x11_display_error_trap_pop (gdk_display)) {
 		rb_debug ("Error grabbing key");
 	}
 }
@@ -232,9 +235,12 @@ ungrab_mmkey (int key_code,
 	      GdkWindow *root)
 {
 	Display *display;
-	gdk_error_trap_push ();
+	GdkDisplay *gdk_display;
 
-	display = GDK_DISPLAY_XDISPLAY (gdk_display_get_default ());
+	gdk_display = gdk_display_get_default ();
+	gdk_x11_display_error_trap_push (gdk_display);
+
+	display = GDK_DISPLAY_XDISPLAY (gdk_display);
 	XUngrabKey (display, key_code, 0, GDK_WINDOW_XID (root));
 	XUngrabKey (display, key_code, Mod2Mask, GDK_WINDOW_XID (root));
 	XUngrabKey (display, key_code, Mod5Mask, GDK_WINDOW_XID (root));
@@ -244,8 +250,8 @@ ungrab_mmkey (int key_code,
 	XUngrabKey (display, key_code, Mod5Mask | LockMask, GDK_WINDOW_XID (root));
 	XUngrabKey (display, key_code, Mod2Mask | Mod5Mask | LockMask, GDK_WINDOW_XID (root));
 
-	gdk_flush ();
-        if (gdk_error_trap_pop ()) {
+	gdk_display_flush (gdk_display);
+        if (gdk_x11_display_error_trap_pop (gdk_display)) {
 		rb_debug ("Error grabbing key");
 	}
 }
