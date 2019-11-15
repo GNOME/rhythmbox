@@ -221,19 +221,19 @@ read_gvfs_disc_info (RBAudioCDInfo *info)
 }
 
 static void
-audiocd_info_thread (GSimpleAsyncResult *result, GObject *object, GCancellable *cancellable)
+audiocd_info_thread (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable)
 {
 	RBAudioCDInfo *info;
 	GError *error = NULL;
 
-	info = g_simple_async_result_get_op_res_gpointer (result);
+	info = task_data;
 
 	if (read_gst_disc_info (info, &error)) {
 		read_gvfs_disc_info (info);
+		g_task_return_pointer (task, info, NULL);
 	} else {
 		rb_audiocd_info_free (info);
-		g_simple_async_result_set_op_res_gpointer (result, NULL, NULL);
-		g_simple_async_result_take_error (result, error);
+		g_task_return_error (task, error);
 	}
 }
 
@@ -263,27 +263,22 @@ rb_audiocd_info_get (const char *device,
 		     GAsyncReadyCallback callback,
 		     gpointer user_data)
 {
-	GSimpleAsyncResult *result;
+	GTask *task;
 	RBAudioCDInfo *info;
 
-	result = g_simple_async_result_new (NULL, callback, user_data, rb_audiocd_info_get);
-	g_simple_async_result_set_check_cancellable (result, cancellable);
+	task = g_task_new (NULL, NULL, callback, user_data);
 
 	info = g_new0 (RBAudioCDInfo, 1);
 	info->device = g_strdup (device);
-	g_simple_async_result_set_op_res_gpointer (result, info, NULL);
+	g_task_set_task_data (task, info, NULL);
 
-	g_simple_async_result_run_in_thread (result, audiocd_info_thread, G_PRIORITY_DEFAULT, cancellable);
+	g_task_run_in_thread (task, audiocd_info_thread);
 }
 
 RBAudioCDInfo *
 rb_audiocd_info_finish (GAsyncResult *result,
 			GError **error)
 {
-	g_return_val_if_fail (g_simple_async_result_is_valid (result, NULL, rb_audiocd_info_get),
-			      NULL);
-	if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result), error))
-		return NULL;
-
-	return g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result));
+	g_return_val_if_fail (g_task_is_valid (result, NULL), NULL);
+	return g_task_propagate_pointer (G_TASK (result), error);
 }

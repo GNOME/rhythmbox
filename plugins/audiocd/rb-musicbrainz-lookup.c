@@ -396,7 +396,7 @@ rb_musicbrainz_data_get_attr_values (RBMusicBrainzData *data, const char *attr)
 
 
 static void
-lookup_cb (SoupSession *session, SoupMessage *msg, GSimpleAsyncResult *result)
+lookup_cb (SoupSession *session, SoupMessage *msg, GTask *task)
 {
 	RBMusicBrainzData *data;
 	int code;
@@ -404,34 +404,33 @@ lookup_cb (SoupSession *session, SoupMessage *msg, GSimpleAsyncResult *result)
 
 	g_object_get (msg, SOUP_MESSAGE_STATUS_CODE, &code, NULL);
 	if (code == SOUP_STATUS_NOT_FOUND || code == SOUP_STATUS_BAD_REQUEST)  {
-		g_simple_async_result_set_error (result,
-						 RB_MUSICBRAINZ_ERROR,
-						 RB_MUSICBRAINZ_ERROR_NOT_FOUND,
-						 _("Not found"));
+		g_task_return_new_error (task,
+					 RB_MUSICBRAINZ_ERROR,
+					 RB_MUSICBRAINZ_ERROR_NOT_FOUND,
+					 _("Not found"));
 	} else if (code < 100) {
-		g_simple_async_result_set_error (result,
-						 RB_MUSICBRAINZ_ERROR,
-						 RB_MUSICBRAINZ_ERROR_NETWORK,
-						 _("Unable to connect to Musicbrainz server"));
+		g_task_return_new_error (task,
+					 RB_MUSICBRAINZ_ERROR,
+					 RB_MUSICBRAINZ_ERROR_NETWORK,
+					 _("Unable to connect to Musicbrainz server"));
 	} else if (code != SOUP_STATUS_OK || msg->response_body->data == NULL) {
-		g_simple_async_result_set_error (result,
-						 RB_MUSICBRAINZ_ERROR,
-						 RB_MUSICBRAINZ_ERROR_SERVER,
-						 _("Musicbrainz server error"));
+		g_task_return_new_error (task,
+					 RB_MUSICBRAINZ_ERROR,
+					 RB_MUSICBRAINZ_ERROR_SERVER,
+					 _("Musicbrainz server error"));
 	} else {
 		data = rb_musicbrainz_data_parse (msg->response_body->data,
 						  msg->response_body->length,
 						  &error);
 		if (data == NULL) {
-			g_simple_async_result_set_from_error (result, error);
+			g_task_return_error (task, error);
 			g_clear_error (&error);
 		} else {
-			g_simple_async_result_set_op_res_gpointer (result, data, NULL);
+			g_task_return_pointer (task, data, NULL);
 		}
 	}
 
-	g_simple_async_result_complete (result);
-	g_object_unref (result);
+	g_object_unref (task);
 	g_object_unref (session);
 }
 
@@ -443,18 +442,14 @@ rb_musicbrainz_lookup (const char *entity,
 		       GAsyncReadyCallback callback,
 		       gpointer user_data)
 {
-	GSimpleAsyncResult *result;
+	GTask *task;
 	SoupURI *uri;
 	SoupMessage *message;
 	SoupSession *session;
 	char *uri_str;
 	char *inc;
 
-	result = g_simple_async_result_new (NULL,
-					    callback,
-					    user_data,
-					    rb_musicbrainz_lookup);
-	g_simple_async_result_set_check_cancellable (result, cancellable);
+	task = g_task_new (NULL, NULL, callback, user_data);
 
 	session = soup_session_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
 						 SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
@@ -477,21 +472,15 @@ rb_musicbrainz_lookup (const char *entity,
 	soup_session_queue_message (session,
 				    message,
 				    (SoupSessionCallback) lookup_cb,
-				    result);
+				    task);
 }
 
 RBMusicBrainzData *
 rb_musicbrainz_lookup_finish (GAsyncResult *result,
 			      GError **error)
 {
-	g_return_val_if_fail (g_simple_async_result_is_valid (result,
-							      NULL,
-							      rb_musicbrainz_lookup),
-			      NULL);
-	if (g_simple_async_result_propagate_error (G_SIMPLE_ASYNC_RESULT (result), error))
-		return NULL;
-
-	return g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result));
+	g_return_val_if_fail (g_task_is_valid (result, NULL), NULL);
+	return g_task_propagate_pointer (G_TASK (result), error);
 }
 
 char *
