@@ -64,7 +64,8 @@ static void update_free_space_next (RBAndroidSource *source);
 enum
 {
 	PROP_0,
-	PROP_MOUNT,
+	PROP_VOLUME,
+	PROP_MOUNT_ROOT,
 	PROP_IGNORE_ENTRY_TYPE,
 	PROP_ERROR_ENTRY_TYPE,
 	PROP_DEVICE_INFO,
@@ -88,7 +89,8 @@ typedef struct
 
 	MPIDDevice *device_info;
 	GUdevDevice *gudev_device;
-	GMount *mount;
+	GVolume *volume;
+	GObject *mount_root;
 	gboolean ejecting;
 
 	GList *storage;
@@ -321,12 +323,9 @@ static void
 rescan_music_dirs (RBAndroidSource *source)
 {
 	RBAndroidSourcePrivate *priv = GET_PRIVATE (source);
-	GMount *mount;
 	GFile *root;
 
-	g_object_get (source, "mount", &mount, NULL);
-	root = g_mount_get_root (mount);
-	g_object_unref (mount);
+	g_object_get (source, "mount-root", &root, NULL);
 
 	priv->scanned = 0;
 	g_queue_push_tail (&priv->to_scan, root);
@@ -360,31 +359,22 @@ import_complete_cb (RhythmDBImportJob *job, int total, RBAndroidSource *source)
 	g_clear_object (&priv->import_job);
 }
 
-static gboolean
-ensure_loaded (RBAndroidSource *source)
+static void
+actually_load (RBAndroidSource *source)
 {
 	RBAndroidSourcePrivate *priv = GET_PRIVATE (source);
-	RBSourceLoadStatus status;
-	RhythmDBEntryType *entry_type;
-	GMount *mount;
-	GFile *root;
 	RBTaskList *tasklist;
+	RhythmDBEntryType *entry_type;
 	RBShell *shell;
+	GFile *root;
 	char *name;
 	char *label;
-
-	if (priv->loaded) {
-		g_object_get (source, "load-status", &status, NULL);
-		return (status == RB_SOURCE_LOAD_STATUS_LOADED);
-	}
 
 	priv->loaded = TRUE;
 	rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
 
 	/* identify storage containers and find music dirs within them */
-	g_object_get (source, "mount", &mount, "entry-type", &entry_type, NULL);
-	root = g_mount_get_root (mount);
-	g_object_unref (mount);
+	g_object_get (source, "mount-root", &root, "entry-type", &entry_type, NULL);
 
 	priv->cancel = g_cancellable_new ();
 	priv->import_job = rhythmdb_import_job_new (priv->db, entry_type, priv->ignore_type, priv->error_type);
@@ -395,7 +385,7 @@ ensure_loaded (RBAndroidSource *source)
 	g_queue_push_tail (&priv->to_scan, root);
 	g_object_unref (entry_type);
 
-	find_music_dirs (RB_ANDROID_SOURCE (source));
+	find_music_dirs (source);
 
 	g_object_get (source, "name", &name, "shell", &shell, NULL);
 	label = g_strdup_printf (_("Scanning %s"), name);
@@ -408,7 +398,47 @@ ensure_loaded (RBAndroidSource *source)
 
 	g_free (label);
 	g_free (name);
-	return FALSE;
+}
+
+static void
+volume_mount_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
+{
+	RBAndroidSource *source = RB_ANDROID_SOURCE (user_data);
+	GVolume *volume = G_VOLUME (source_object);
+	GError *error = NULL;
+
+	rb_debug ("volume mount finished");
+	if (g_volume_mount_finish (volume, res, &error)) {
+		actually_load (source);
+	} else {
+		rb_error_dialog (NULL, _("Error mounting Android device"), "%s", error->message);
+		g_clear_error (&error);
+	}
+}
+
+static gboolean
+ensure_loaded (RBAndroidSource *source)
+{
+	RBAndroidSourcePrivate *priv = GET_PRIVATE (source);
+	RBSourceLoadStatus status;
+	GMount *mount;
+
+	if (priv->loaded) {
+		g_object_get (source, "load-status", &status, NULL);
+		return (status == RB_SOURCE_LOAD_STATUS_LOADED);
+	}
+
+	mount = g_volume_get_mount (priv->volume);
+	if (mount != NULL) {
+		rb_debug ("volume is mounted");
+		g_object_unref (mount);
+		actually_load (source);
+		return FALSE;
+	}
+
+	rb_debug ("mounting volume");
+	g_volume_mount (priv->volume, G_MOUNT_MOUNT_NONE, NULL, NULL, volume_mount_cb, source);
+	return TRUE;
 }
 
 static void
@@ -421,15 +451,12 @@ delete_data_destroy (gpointer data)
 static gboolean
 can_delete_directory (RBAndroidSource *source, GFile *dir)
 {
-	GMount *mount;
 	GFile *root;
 	char *path;
 	int i;
 	int c;
 
-	g_object_get (source, "mount", &mount, NULL);
-	root = g_mount_get_root (mount);
-	g_object_unref (mount);
+	g_object_get (source, "mount-root", &root, NULL);
 
 	/*
 	 * path here will be sdcard/Music/something for anything we want to delete
@@ -442,6 +469,7 @@ can_delete_directory (RBAndroidSource *source, GFile *dir)
 	}
 
 	g_free (path);
+	g_object_unref (root);
 	return (c > 1);
 }
 
@@ -950,8 +978,11 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 	case PROP_DEVICE_INFO:
 		priv->device_info = g_value_dup_object (value);
 		break;
-	case PROP_MOUNT:
-		priv->mount = g_value_dup_object (value);
+	case PROP_VOLUME:
+		priv->volume = g_value_dup_object (value);
+		break;
+	case PROP_MOUNT_ROOT:
+		priv->mount_root = g_value_dup_object (value);
 		break;
 	case PROP_GUDEV_DEVICE:
 		priv->gudev_device = g_value_dup_object (value);
@@ -977,8 +1008,11 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 	case PROP_DEVICE_INFO:
 		g_value_set_object (value, priv->device_info);
 		break;
-	case PROP_MOUNT:
-		g_value_set_object (value, priv->mount);
+	case PROP_VOLUME:
+		g_value_set_object (value, priv->volume);
+		break;
+	case PROP_MOUNT_ROOT:
+		g_value_set_object (value, priv->mount_root);
 		break;
 	case PROP_GUDEV_DEVICE:
 		g_value_set_object (value, priv->gudev_device);
@@ -1019,7 +1053,8 @@ impl_dispose (GObject *object)
 	}
 
 	g_clear_object (&priv->device_info);
-	g_clear_object (&priv->mount);
+	g_clear_object (&priv->volume);
+	g_clear_object (&priv->mount_root);
 	g_clear_object (&priv->gudev_device);
 
 	G_OBJECT_CLASS (rb_android_source_parent_class)->dispose (object);
@@ -1105,11 +1140,18 @@ rb_android_source_class_init (RBAndroidSourceClass *klass)
 							      MPID_TYPE_DEVICE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
-					 PROP_MOUNT,
-					 g_param_spec_object ("mount",
-							      "mount",
-							      "GMount object",
-							      G_TYPE_MOUNT,
+					 PROP_VOLUME,
+					 g_param_spec_object ("volume",
+							      "volume",
+							      "GVolume object",
+							      G_TYPE_VOLUME,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_MOUNT_ROOT,
+					 g_param_spec_object ("mount-root",
+							      "mount root",
+							      "Mount root",
+							      G_TYPE_OBJECT,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,

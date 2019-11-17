@@ -92,7 +92,7 @@ source_deleted_cb (RBAndroidSource *source, RBAndroidPlugin *plugin)
 }
 
 static RBSource *
-create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *device_info, RBAndroidPlugin *plugin)
+create_source_cb (RBRemovableMediaManager *rmm, GVolume *volume, RBAndroidPlugin *plugin)
 {
 	RBSource *source = NULL;
 	RBShell *shell;
@@ -104,29 +104,23 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 	GUdevDevice *gudev_device;
 	GtkBuilder *builder;
 	GMenu *toolbar;
-	GVolume *volume;
 	GSettings *settings;
 	GFile *root;
+	MPIDDevice *device_info;
 	const char *device_serial;
 	const char *mpi_file;
 	char *uri_prefix;
 	char *name;
 	char *path;
 
-	volume = g_mount_get_volume (mount);
-	if (volume == NULL)
-		return NULL;
-
 	dev = rb_removable_media_manager_get_gudev_device (rmm, volume);
 	if (dev == NULL) {
-		g_object_unref (volume);
 		return NULL;
 	}
 	gudev_device = G_UDEV_DEVICE (dev);
 
 	if (rb_removable_media_manager_device_is_android (rmm, G_OBJECT (gudev_device)) == FALSE) {
 		g_object_unref (gudev_device);
-		g_object_unref (volume);
 		return NULL;
 	}
 
@@ -144,9 +138,8 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 
 	device_serial = g_udev_device_get_property (gudev_device, "ID_SERIAL");
 
-	root = g_mount_get_root (mount);
+	root = g_volume_get_activation_root (volume);
 	uri_prefix = g_file_get_uri (root);
-	g_object_unref (root);
 
 	rb_debug ("metadata cache mapping: %s <=> %s", uri_prefix, device_serial);
 
@@ -200,7 +193,8 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 					  "entry-type", entry_type,
 					  "ignore-entry-type", ignore_type,
 					  "error-entry-type", error_type,
-					  "mount", mount,
+					  "volume", volume,
+					  "mount-root", root,
 					  "shell", shell,
 					  "device-info", device_info,
 					  "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
@@ -222,7 +216,6 @@ create_source_cb (RBRemovableMediaManager *rmm, GMount *mount, MPIDDevice *devic
 				 plugin, 0);
 
 	g_object_unref (shell);
-	g_object_unref (volume);
 	return source;
 }
 
@@ -237,7 +230,7 @@ impl_activate (PeasActivatable *plugin)
 	g_object_get (plugin, "object", &shell, NULL);
 	g_object_get (shell, "removable-media-manager", &rmm, NULL);
 
-	g_signal_connect_object (rmm, "create-source-mount", G_CALLBACK (create_source_cb), pi, 0);
+	g_signal_connect_object (rmm, "create-source-volume", G_CALLBACK (create_source_cb), pi, 0);
 
 	g_object_get (rmm, "scanned", &scanned, NULL);
 	if (scanned)
