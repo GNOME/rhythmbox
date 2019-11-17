@@ -84,7 +84,7 @@ struct _RBExtDBPrivate
 
 	GList *requests;
 	GAsyncQueue *store_queue;
-	GSimpleAsyncResult *store_op;
+	GTask *store_op;
 };
 
 typedef struct {
@@ -346,7 +346,7 @@ impl_constructor (GType type, guint n_construct_properties, GObjectConstructPara
 		RBExtDB *inst = l->data;
 		if (g_strcmp0 (name, inst->priv->name) == 0) {
 			rb_debug ("found existing metadata store %s", name);
-			return g_object_ref (inst);
+			return G_OBJECT (g_object_ref (inst));
 		}
 	}
 
@@ -619,16 +619,25 @@ static void
 load_request_cb (RBExtDB *store, GAsyncResult *result, gpointer data)
 {
 	RBExtDBRequest *req;
-	req = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result));
+	gboolean res;
+	GError *error = NULL;
 
-	rb_debug ("finished loading %s", req->filename);
+	req = g_task_get_task_data (G_TASK (result));
+	res = g_task_propagate_boolean (G_TASK (result), &error);
+	if (res == FALSE) {
+		rb_debug ("failed to load %s", req->filename);
+		g_clear_error (&error);
+	} else {
+		rb_debug ("finished loading %s", req->filename);
+	}
+
 	req->callback (req->key, req->store_key, req->filename, req->data, req->user_data);
 
 	g_object_unref (result);
 }
 
 static void
-do_load_request (GSimpleAsyncResult *result, GObject *object, GCancellable *cancel)
+do_load_request (GTask *task, gpointer source_object, gpointer data, GCancellable *cancel)
 {
 	RBExtDBRequest *req;
 	GFile *f;
@@ -636,7 +645,7 @@ do_load_request (GSimpleAsyncResult *result, GObject *object, GCancellable *canc
 	gsize file_data_size;
 	GError *error = NULL;
 
-	req = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result));
+	req = g_task_get_task_data (task);
 
 	rb_debug ("loading data from %s", req->filename);
 	f = g_file_new_for_path (req->filename);
@@ -646,6 +655,8 @@ do_load_request (GSimpleAsyncResult *result, GObject *object, GCancellable *canc
 		g_clear_error (&error);
 
 		/* probably need to delete the item from the db */
+		/* propagate error? */
+		g_task_return_boolean (task, FALSE);
 	} else {
 		GString *s;
 		GValue d = G_VALUE_INIT;
@@ -659,14 +670,16 @@ do_load_request (GSimpleAsyncResult *result, GObject *object, GCancellable *canc
 		g_value_init (&d, G_TYPE_GSTRING);
 		g_value_take_boxed (&d, s);
 		req->data = NULL;
-		g_signal_emit (object, signals[LOAD], 0, &d, &req->data);
+		g_signal_emit (source_object, signals[LOAD], 0, &d, &req->data);
 		g_value_unset (&d);
 
 		if (req->data) {
 			rb_debug ("converted data into value of type %s",
 				  G_VALUE_TYPE_NAME (req->data));
+			g_task_return_boolean (task, TRUE);
 		} else {
 			rb_debug ("data conversion failed");
+			g_task_return_boolean (task, FALSE);
 		}
 	}
 
@@ -708,7 +721,7 @@ rb_ext_db_request (RBExtDB *store,
 
 	filename = rb_ext_db_lookup (store, key, &store_key);
 	if (store_key != NULL) {
-		GSimpleAsyncResult *load_op;
+		GTask *load_op;
 
 		if (filename == NULL) {
 			if (rb_debug_here ()) {
@@ -728,20 +741,13 @@ rb_ext_db_request (RBExtDB *store,
 			rb_debug ("found cached match %s under key %s", filename, str);
 			g_free (str);
 		}
-		load_op = g_simple_async_result_new (G_OBJECT (store),
-						     (GAsyncReadyCallback) load_request_cb,
-						     NULL,
-						     rb_ext_db_request);
+		load_op = g_task_new (store, NULL, (GAsyncReadyCallback) load_request_cb, NULL);
 
 		req = create_request (key, callback, user_data, destroy);
 		req->filename = filename;
 		req->store_key = store_key;
-		g_simple_async_result_set_op_res_gpointer (load_op, req, (GDestroyNotify) free_request);
-
-		g_simple_async_result_run_in_thread (load_op,
-						     do_load_request,
-						     G_PRIORITY_DEFAULT,
-						     NULL);	/* no cancel? */
+		g_task_set_task_data (load_op, req, (GDestroyNotify) free_request);
+		g_task_run_in_thread (load_op, (GTaskThreadFunc) do_load_request);
 		return FALSE;
 	}
 
@@ -818,11 +824,15 @@ static void
 store_request_cb (RBExtDB *store, GAsyncResult *result, gpointer data)
 {
 	RBExtDBStoreRequest *sreq;
-	sreq = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result));
+	GError *error = NULL;
+	gboolean stored;
 
-	if (sreq == NULL) {
-		/* do nothing */
-	} else if (sreq->stored) {
+	sreq = g_task_get_task_data (G_TASK (result));
+	stored = g_task_propagate_boolean (G_TASK (result), &error);
+
+	g_clear_error (&error);
+
+	if (stored) {
 		GList *l;
 
 		/* answer any matching queries */
@@ -855,9 +865,9 @@ store_request_cb (RBExtDB *store, GAsyncResult *result, gpointer data)
 }
 
 static void
-do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *cancel)
+do_store_request (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancel)
 {
-	RBExtDB *store = RB_EXT_DB (object);
+	RBExtDB *store = RB_EXT_DB (source_object);
 	RBExtDBStoreRequest *req;
 	RBExtDBSourceType last_source_type = RB_EXT_DB_SOURCE_NONE;
 	guint64 last_time = 0;
@@ -868,14 +878,9 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 	TDB_DATA tdbkey;
 	TDB_DATA tdbdata;
 	gboolean ignore;
+	gboolean stored;
 
-	req = g_async_queue_try_pop (store->priv->store_queue);
-	if (req == NULL) {
-		rb_debug ("nothing to do");
-		g_simple_async_result_set_op_res_gpointer (result, NULL, NULL);
-		return;
-	}
-	g_simple_async_result_set_op_res_gpointer (result, req, (GDestroyNotify)free_store_request);
+	req = g_task_get_task_data (task);
 
 	/* convert key to storage blob */
 	if (rb_debug_here()) {
@@ -906,6 +911,7 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 		g_free (tdbkey.dptr);
 		if (tdbdata.dptr != NULL)
 			free (tdbdata.dptr);
+		g_task_return_boolean (task, FALSE);
 		return;
 	}
 
@@ -994,6 +1000,7 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 		rb_debug ("don't know how to save data of type %s", G_VALUE_TYPE_NAME (req->data));
 	}
 
+	stored = FALSE;
 	if (file_data != NULL && file_data_size > 0) {
 		GFile *f;
 		GError *error = NULL;
@@ -1047,7 +1054,7 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 			rb_debug ("error saving %s: %s", req->filename, error->message);
 			g_clear_error (&error);
 		} else {
-			req->stored = TRUE;
+			stored = TRUE;
 		}
 
 		g_free (basename);
@@ -1060,12 +1067,12 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 			g_free (filename);
 			filename = NULL;
 		}
-		req->stored = TRUE;
+		stored = TRUE;
 	} else if (req->source_type == RB_EXT_DB_SOURCE_NONE) {
-		req->stored = TRUE;
+		stored = TRUE;
 	}
 
-	if (req->stored) {
+	if (stored) {
 		TDB_DATA store_data;
 
 		g_get_current_time (&now);
@@ -1084,29 +1091,31 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 	g_free (filename);
 
 	g_free (tdbkey.dptr);
+	g_task_return_boolean (task, stored);
 }
 
 static void
 maybe_start_store_request (RBExtDB *store)
 {
+	RBExtDBStoreRequest *req;
+
 	if (store->priv->store_op != NULL) {
 		rb_debug ("already doing something");
 		return;
 	}
 
-	if (g_async_queue_length (store->priv->store_queue) < 1) {
+	req = g_async_queue_try_pop (store->priv->store_queue);
+	if (req == NULL) {
 		rb_debug ("nothing to do");
 		return;
 	}
 
-	store->priv->store_op = g_simple_async_result_new (G_OBJECT (store),
-							   (GAsyncReadyCallback) store_request_cb,
-							   NULL,
-							   maybe_start_store_request);
-	g_simple_async_result_run_in_thread (store->priv->store_op,
-					     do_store_request,
-					     G_PRIORITY_DEFAULT,
-					     NULL);	/* no cancel? */
+	store->priv->store_op = g_task_new (store,
+					    NULL,
+					    (GAsyncReadyCallback) store_request_cb,
+					    NULL);
+	g_task_set_task_data (store->priv->store_op, req, (GDestroyNotify) free_store_request);
+	g_task_run_in_thread (store->priv->store_op, do_store_request);
 }
 
 static void
