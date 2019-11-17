@@ -28,12 +28,15 @@ import xml.dom.minidom as dom
 
 import urllib.parse
 import rb
-from gi.repository import RB
+from gi.repository import RB, GLib
 
 # musicbrainz URLs
 MUSICBRAINZ_RELEASE_URL = "https://musicbrainz.org/ws/2/release/%s?inc=artists"
 MUSICBRAINZ_RELEASE_PREFIX = "http://musicbrainz.org/release/"
 MUSICBRAINZ_RELEASE_SUFFIX = ".html"
+
+# cover art archive
+COVERARTARCHIVE_IMAGE_URL = "https://coverartarchive.org/release/%s/front"
 
 MUSICBRAINZ_SEARCH_QUERY = "artist:\"%s\" AND release:\"%s\""
 MUSICBRAINZ_SEARCH_URL = "https://musicbrainz.org/ws/2/release/?query=%s&limit=1"
@@ -46,6 +49,28 @@ AMAZON_IMAGE_URL = "https://images-na.ssl-images-amazon.com/images/P/%s.01.LZZZZ
 
 class MusicBrainzSearch(object):
 
+	def get_image_cb (self, data, args):
+		(storekey, store, urls, callback, cbargs) = args
+		url = urls[0]
+		urls = urls[1:]
+		if data is None:
+			self.try_image_urls(storekey, store, urls, callback, cbargs)
+			return
+
+		store.store_raw(storekey, RB.ExtDBSourceType.SEARCH, GLib.Bytes.new_take(data))
+		callback(*cbargs)
+
+	def try_image_urls (self, storekey, store, urls, callback, *args):
+		if len(urls) == 0:
+			print("no more image urls to try")
+			callback(*args)
+			return
+
+		print("%d urls to try, trying %s" % (len(urls), urls[0]))
+		loader = rb.Loader()
+		loader.get_url(urls[0], self.get_image_cb, (storekey, store, urls, callback, args))
+
+
 	def get_release_cb (self, data, args):
 		(key, store, callback, cbargs) = args
 		if data is None:
@@ -55,6 +80,10 @@ class MusicBrainzSearch(object):
 
 		try:
 			parsed = dom.parseString(data)
+
+			# get release MBID
+			rel = parsed.getElementsByTagName('release')
+			mbid = rel[0].attributes['id'].firstChild.data
 
 			storekey = RB.ExtDBKey.create_storage('album', key.get_field('album'))
 
@@ -70,20 +99,19 @@ class MusicBrainzSearch(object):
 						print("got musicbrainz artist name %s" % artistname)
 						storekey.add_field('artist', artistname)
 
+			urls = []
+
+			# just need an mbid to use coverartarchive
+			urls.append(COVERARTARCHIVE_IMAGE_URL % mbid)
 
 			# look for an ASIN tag
 			asin_tags = parsed.getElementsByTagName('asin')
 			if len(asin_tags) > 0:
 				asin = asin_tags[0].firstChild.data
+				urls.append(AMAZON_IMAGE_URL % asin)
 
-				print("got ASIN %s" % asin)
-				image_url = AMAZON_IMAGE_URL % asin
 
-				store.store_uri(storekey, RB.ExtDBSourceType.SEARCH, image_url)
-			else:
-				print("no ASIN for this release")
-
-			callback(*cbargs)
+			self.try_image_urls(storekey, store, urls, callback, args)
 		except Exception as e:
 			print("exception parsing musicbrainz response: %s" % e)
 			callback(*cbargs)
