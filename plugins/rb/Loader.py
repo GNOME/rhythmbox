@@ -46,6 +46,10 @@ class Loader(object):
 				call_callback(self.callback, contents, self.args)
 			else:
 				call_callback(self.callback, None, self.args)
+		except GLib.Error as ge:
+			if not ge.matches(Gio.io_error_quark(), Gio.IOErrorEnum.NOT_FOUND):
+				sys.excepthook(*sys.exc_info())
+			call_callback(self.callback, None, self.args)
 		except Exception as e:
 			sys.excepthook(*sys.exc_info())
 			call_callback(self.callback, None, self.args)
