@@ -983,6 +983,12 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 		GString *str = g_value_get_boxed (req->data);
 		file_data = (const char *)str->str;
 		file_data_size = str->len;
+	} else if (G_VALUE_HOLDS (req->data, G_TYPE_BYTES)) {
+		GBytes *bytes = g_value_get_boxed (req->data);
+		gsize nbytes;
+
+		file_data = g_bytes_get_data (bytes, &nbytes);
+		file_data_size = nbytes;
 	} else {
 		/* warning? */
 		rb_debug ("don't know how to save data of type %s", G_VALUE_TYPE_NAME (req->data));

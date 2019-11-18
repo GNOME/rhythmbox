@@ -349,6 +349,9 @@ load_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
 		GByteArray *bytes = g_value_get_boxed (value);
 		data = (const char *)bytes->data;
 		data_size = bytes->len;
+	} else if (G_VALUE_HOLDS (value, G_TYPE_BYTES)) {
+		GBytes *bytes = g_value_get_boxed (value);
+		data = g_bytes_get_data (bytes, &data_size);
 	} else {
 		rb_debug ("unable to load pixbufs from values of type %s", G_VALUE_TYPE_NAME (value));
 		return NULL;
