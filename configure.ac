@@ -2,7 +2,7 @@ AC_PREREQ(2.63.2)
 
 AC_INIT([rhythmbox],
 	[3.4.3],
-	[https://bugzilla.gnome.org/enter_bug.cgi?product=rhythmbox])
+	[https://gitlab.gnome.org/GNOME/rhythmbox/issues/new])
 AC_CONFIG_SRCDIR(rhythmbox.pc.in)
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS(config.h)
