@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-03 18:57+0200\n"
-"PO-Revision-Date: 2019-09-03 18:58+0200\n"
+"POT-Creation-Date: 2019-11-18 14:35+0100\n"
+"PO-Revision-Date: 2019-11-18 14:37+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <community-poland@mozilla.org>\n"
 "Language: pl\n"
@@ -977,8 +977,8 @@ msgstr "%d %b %Y"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/android/rb-android-source.c:687
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:581
+#: ../plugins/android/rb-android-source.c:715
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -996,10 +996,10 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:645
 #: ../plugins/mtpdevice/rb-mtp-source.c:1144
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
-#: ../plugins/notification/rb-notification-plugin.c:510
+#: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1926
-#: ../podcast/rb-podcast-manager.c:2025
+#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
+#: ../podcast/rb-podcast-manager.c:2024
 #: ../podcast/rb-podcast-properties-dialog.c:639
 #: ../podcast/rb-podcast-properties-dialog.c:703
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
@@ -1032,34 +1032,34 @@ msgstr "Za dużo dowiązań symbolicznych"
 msgid "Cannot get free space at %s: %s"
 msgstr "Nie można uzyskać wolnego miejsca na %s: %s"
 
-#: ../lib/rb-util.c:566 ../plugins/context/tmpl/album-tmpl.html:21
+#: ../lib/rb-util.c:562 ../plugins/context/tmpl/album-tmpl.html:21
 #: ../remote/dbus/rb-client.c:217
 #, c-format
 msgid "%d:%02d"
 msgstr "%d∶%02d"
 
-#: ../lib/rb-util.c:568 ../plugins/context/tmpl/album-tmpl.html:19
+#: ../lib/rb-util.c:564 ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:219
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d∶%02d∶%02d"
 
-#: ../lib/rb-util.c:632
+#: ../lib/rb-util.c:628
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d∶%02d z pozostałych %d∶%02d"
 
-#: ../lib/rb-util.c:636
+#: ../lib/rb-util.c:632
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d∶%02d∶%02d z pozostałych %d∶%02d∶%02d"
 
-#: ../lib/rb-util.c:641
+#: ../lib/rb-util.c:637
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d∶%02d z %d∶%02d"
 
-#: ../lib/rb-util.c:645
+#: ../lib/rb-util.c:641
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d∶%02d∶%02d z %d∶%02d∶%02d"
@@ -1163,7 +1163,7 @@ msgstr "Ścieżki:"
 msgid "Playlists:"
 msgstr "Listy odtwarzania:"
 
-#: ../plugins/android/rb-android-source.c:201
+#: ../plugins/android/rb-android-source.c:203
 msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
@@ -1171,13 +1171,17 @@ msgstr ""
 "Na tym urządzeniu nie odnaleziono żadnych obszarów przechowywania danych. "
 "Należy je odblokować i włączyć obsługę MTP."
 
-#: ../plugins/android/rb-android-source.c:401
+#: ../plugins/android/rb-android-source.c:391
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "Wyszukiwanie w %s"
 
-#: ../plugins/android/rb-android-source.c:781
+#: ../plugins/android/rb-android-source.c:414
+msgid "Error mounting Android device"
+msgstr "Błąd podczas montowania urządzenia z systemem Android"
+
+#: ../plugins/android/rb-android-source.c:809
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
 #: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
 #: ../sources/rb-transfer-target.c:182
@@ -2697,18 +2701,18 @@ msgid "Next"
 msgstr "Następny"
 
 #. Translators: by Artist
-#: ../plugins/notification/rb-notification-plugin.c:332
+#: ../plugins/notification/rb-notification-plugin.c:334
 #, c-format
 msgid "by <i>%s</i>"
 msgstr " <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/notification/rb-notification-plugin.c:334
+#: ../plugins/notification/rb-notification-plugin.c:336
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "z <i>%s</i>"
 
-#: ../plugins/notification/rb-notification-plugin.c:414
+#: ../plugins/notification/rb-notification-plugin.c:416
 #: ../widgets/rb-header.c:366
 msgid "Not Playing"
 msgstr "Bezczynny"
@@ -2915,7 +2919,7 @@ msgstr "Zdalne sterowanie przez sieć"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Sterowanie programem Rhythmbox z przeglądarki WWW"
 
-#: ../plugins/webremote/webremote.py:583
+#: ../plugins/webremote/webremote.py:585
 msgid "Launch web remote control"
 msgstr "Uruchom zdalne sterowanie przez sieć"
 
@@ -2984,30 +2988,30 @@ msgstr "Błąd w podcaście"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Dodać kanał podcastu mimo to?"
 
-#: ../podcast/rb-podcast-manager.c:925
+#: ../podcast/rb-podcast-manager.c:924
 msgid "Error creating podcast download directory"
 msgstr "Wystąpił błąd podczas tworzenia katalogu pobierania podcastów"
 
-#: ../podcast/rb-podcast-manager.c:926
+#: ../podcast/rb-podcast-manager.c:925
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Nie można utworzyć katalogu pobierania dla %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:1045
+#: ../podcast/rb-podcast-manager.c:1044
 msgid "Invalid URL"
 msgstr "Nieprawidłowy adres URL"
 
-#: ../podcast/rb-podcast-manager.c:1046
+#: ../podcast/rb-podcast-manager.c:1045
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "Adres URL „%s” jest nieprawidłowy, proszę sprawdzić jego poprawność."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1057
+#: ../podcast/rb-podcast-manager.c:1056
 msgid "URL already added"
 msgstr "Adres URL został już dodany"
 
-#: ../podcast/rb-podcast-manager.c:1058
+#: ../podcast/rb-podcast-manager.c:1057
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3016,7 +3020,7 @@ msgstr ""
 "Adres URL „%s” został już dodany jako stacja radiowa. Jeśli jest to kanał "
 "podcastów, to proszę usunąć tę stację radiową."
 
-#: ../podcast/rb-podcast-manager.c:1158
+#: ../podcast/rb-podcast-manager.c:1157
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3027,11 +3031,11 @@ msgstr ""
 "adres URL albo kanał jest uszkodzony. Czy mimo wszystko spróbować użyć tego "
 "kanału?"
 
-#: ../podcast/rb-podcast-manager.c:1274
+#: ../podcast/rb-podcast-manager.c:1273
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2240
+#: ../podcast/rb-podcast-manager.c:2239
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -3399,7 +3403,7 @@ msgstr "Nie można uzyskać dostępu do %s: %s"
 #.
 #: ../rhythmdb/rhythmdb.c:1819
 msgid "The Beatles"
-msgstr "Kensuke Ushio"
+msgstr "Cult of Luna"
 
 #. Translators: this is an example album name.  If the
 #. * example artist name is localised, this should be replaced
@@ -3407,7 +3411,7 @@ msgstr "Kensuke Ushio"
 #.
 #: ../rhythmdb/rhythmdb.c:1825
 msgid "Help!"
-msgstr "Devilman Crybaby"
+msgstr "A Dawn to Fear"
 
 #. Translators: this is an example song title.  If the example
 #. * artist and album names are localised, this should be replaced
@@ -3415,7 +3419,7 @@ msgstr "Devilman Crybaby"
 #.
 #: ../rhythmdb/rhythmdb.c:1831
 msgid "Ticket To Ride"
-msgstr "Night Ride"
+msgstr "Inland Rain"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
