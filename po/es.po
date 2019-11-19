@@ -19,15 +19,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2019-09-03 12:23+0000\n"
-"PO-Revision-Date: 2019-09-09 09:32+0200\n"
+"POT-Creation-Date: 2019-11-17 07:56+0000\n"
+"PO-Revision-Date: 2019-11-19 09:57+0100\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Spanish - Spain <gnome-es-list@gnome.org>\n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Gtranslator 3.32.1\n"
+"X-Generator: Gtranslator 3.34.0\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:649
@@ -208,7 +208,6 @@ msgid "_Help"
 msgstr "Ay_uda"
 
 #: ../data/ui/app-menu.ui.h:11
-#| msgid "Quit Rhythmbox"
 msgid "_About Rhythmbox"
 msgstr "_Acerca de de Rhythmbox"
 
@@ -978,8 +977,8 @@ msgstr "%d %b %Y"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/android/rb-android-source.c:687
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:581
+#: ../plugins/android/rb-android-source.c:715
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -997,10 +996,10 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:645
 #: ../plugins/mtpdevice/rb-mtp-source.c:1144
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
-#: ../plugins/notification/rb-notification-plugin.c:510
+#: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1926
-#: ../podcast/rb-podcast-manager.c:2025
+#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
+#: ../podcast/rb-podcast-manager.c:2024
 #: ../podcast/rb-podcast-properties-dialog.c:639
 #: ../podcast/rb-podcast-properties-dialog.c:703
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
@@ -1033,34 +1032,34 @@ msgstr "Demasiados enlaces simbólicos"
 msgid "Cannot get free space at %s: %s"
 msgstr "No se puede obtener espacio libre en %s: %s"
 
-#: ../lib/rb-util.c:566 ../plugins/context/tmpl/album-tmpl.html:21
+#: ../lib/rb-util.c:562 ../plugins/context/tmpl/album-tmpl.html:21
 #: ../remote/dbus/rb-client.c:217
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:568 ../plugins/context/tmpl/album-tmpl.html:19
+#: ../lib/rb-util.c:564 ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:219
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:632
+#: ../lib/rb-util.c:628
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d de %d:%02d restante"
 
-#: ../lib/rb-util.c:636
+#: ../lib/rb-util.c:632
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d de %d:%02d:%02d restante"
 
-#: ../lib/rb-util.c:641
+#: ../lib/rb-util.c:637
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d de %d:%02d"
 
-#: ../lib/rb-util.c:645
+#: ../lib/rb-util.c:641
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d de %d:%02d:%02d"
@@ -1162,7 +1161,7 @@ msgstr "Pistas:"
 msgid "Playlists:"
 msgstr "Listas de reproducción:"
 
-#: ../plugins/android/rb-android-source.c:201
+#: ../plugins/android/rb-android-source.c:203
 msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
@@ -1170,13 +1169,18 @@ msgstr ""
 "No se han encontrado áreas de almacenamiento en este dispositivo. Puede "
 "necesitar desbloquearlo y activar MTP."
 
-#: ../plugins/android/rb-android-source.c:401
+#: ../plugins/android/rb-android-source.c:391
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "Analizando %s"
 
-#: ../plugins/android/rb-android-source.c:781
+#: ../plugins/android/rb-android-source.c:414
+#| msgid "Android devices"
+msgid "Error mounting Android device"
+msgstr "Error al montar el dispositivo Android"
+
+#: ../plugins/android/rb-android-source.c:809
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
 #: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
 #: ../sources/rb-transfer-target.c:182
@@ -2224,7 +2228,6 @@ msgid "Submit your listens to ListenBrainz"
 msgstr "Enviar sus canciones a ListenBrainz"
 
 #: ../plugins/listenbrainz/settings.ui.h:1
-#| msgid "Username:"
 msgid "User token:"
 msgstr "Testigo de usuario:"
 
@@ -2700,18 +2703,18 @@ msgid "Next"
 msgstr "Siguiente"
 
 #. Translators: by Artist
-#: ../plugins/notification/rb-notification-plugin.c:332
+#: ../plugins/notification/rb-notification-plugin.c:334
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "por <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/notification/rb-notification-plugin.c:334
+#: ../plugins/notification/rb-notification-plugin.c:336
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
 
-#: ../plugins/notification/rb-notification-plugin.c:414
+#: ../plugins/notification/rb-notification-plugin.c:416
 #: ../widgets/rb-header.c:366
 msgid "Not Playing"
 msgstr "No se reproduce nada"
@@ -2918,7 +2921,7 @@ msgstr "Control remoto web"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Controlar Rhythmbox desde un navegador web"
 
-#: ../plugins/webremote/webremote.py:583
+#: ../plugins/webremote/webremote.py:585
 msgid "Launch web remote control"
 msgstr "Lanzar control remoto web"
 
@@ -2986,30 +2989,30 @@ msgstr "Error en el podcast"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s: ¿Quiere añadir el proveedor de podcast de todas formas?"
 
-#: ../podcast/rb-podcast-manager.c:925
+#: ../podcast/rb-podcast-manager.c:924
 msgid "Error creating podcast download directory"
 msgstr "Error al crear la carpeta de descarga del Podcast"
 
-#: ../podcast/rb-podcast-manager.c:926
+#: ../podcast/rb-podcast-manager.c:925
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "No se pudo crear la carpeta de descarga para %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:1045
+#: ../podcast/rb-podcast-manager.c:1044
 msgid "Invalid URL"
 msgstr "URL no válido"
 
-#: ../podcast/rb-podcast-manager.c:1046
+#: ../podcast/rb-podcast-manager.c:1045
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "La URL «%s» no es válida, compruébelo."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1057
+#: ../podcast/rb-podcast-manager.c:1056
 msgid "URL already added"
 msgstr "La URL ya se ha añadido"
 
-#: ../podcast/rb-podcast-manager.c:1058
+#: ../podcast/rb-podcast-manager.c:1057
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3018,7 +3021,7 @@ msgstr ""
 "La URL «%s» ya se ha añadido como una emisora de radio. Si esto es un "
 "proveedor de Podcast, elimine la emisora de radio."
 
-#: ../podcast/rb-podcast-manager.c:1158
+#: ../podcast/rb-podcast-manager.c:1157
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3029,11 +3032,11 @@ msgstr ""
 "URL, o el proveedor quizá esté roto. ¿Quiere que Rhythmbox intente usarlo de "
 "todas formas?"
 
-#: ../podcast/rb-podcast-manager.c:1274
+#: ../podcast/rb-podcast-manager.c:1273
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2240
+#: ../podcast/rb-podcast-manager.c:2239
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Hubo un problema al añadir este Podcast: %s. Compruebe el URL: %s"
@@ -3840,7 +3843,6 @@ msgid "Playback"
 msgstr "Reproducción"
 
 #: ../shell/rb-shell-preferences.c:428
-#| msgid "P_lugins"
 msgid "Plugins"
 msgstr "_Complementos1"
 
