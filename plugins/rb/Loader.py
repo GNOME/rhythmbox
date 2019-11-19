@@ -24,8 +24,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
-from gi.repository import GObject, GLib, Gio
+import gi
+gi.require_version('Soup', '2.4')
+from gi.repository import GObject, GLib, Gio, Soup
 import sys
+
+from rbconfig import rhythmbox_version
 
 def call_callback(callback, data, args):
 	try:
@@ -34,24 +38,21 @@ def call_callback(callback, data, args):
 	except Exception as e:
 		sys.excepthook(*sys.exc_info())
 
+loader_session = None
 
 class Loader(object):
 	def __init__ (self):
+		global loader_session
+		if loader_session is None:
+			loader_session = Soup.Session()
+			loader_session.props.user_agent = "Rhythmbox/" + rhythmbox_version
 		self._cancel = Gio.Cancellable()
 
-	def _contents_cb (self, file, result, data):
-		try:
-			(ok, contents, etag) = file.load_contents_finish(result)
-			if ok:
-				call_callback(self.callback, contents, self.args)
-			else:
-				call_callback(self.callback, None, self.args)
-		except GLib.Error as ge:
-			if not ge.matches(Gio.io_error_quark(), Gio.IOErrorEnum.NOT_FOUND):
-				sys.excepthook(*sys.exc_info())
-			call_callback(self.callback, None, self.args)
-		except Exception as e:
-			sys.excepthook(*sys.exc_info())
+	def _message_cb(self, session, message, data):
+		status = message.props.status_code
+		if status == 200:
+			call_callback(self.callback, message.props.response_body_data.get_data(), self.args)
+		else:
 			call_callback(self.callback, None, self.args)
 
 	def get_url (self, url, callback, *args):
@@ -59,8 +60,10 @@ class Loader(object):
 		self.callback = callback
 		self.args = args
 		try:
-			file = Gio.file_new_for_uri(url)
-			file.load_contents_async(self._cancel, self._contents_cb, None)
+			global loader_session
+			req = Soup.Message.new("GET", url)
+			headers = req.props.request_headers
+			loader_session.queue_message(req, self._message_cb, None)
 		except Exception as e:
 			sys.excepthook(*sys.exc_info())
 			callback(None, *args)
