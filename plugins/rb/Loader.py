@@ -72,37 +72,3 @@ class Loader(object):
 		self._cancel.cancel()
 
 
-
-class UpdateCheck(object):
-	def __init__ (self):
-		self._cancel = Gio.Cancellable()
-
-	def _file_info_cb (self, file, result, data):
-		try:
-			rfi = file.query_info_finish(result)
-			remote_mod = rfi.get_attribute_uint64(Gio.FILE_ATTRIBUTE_TIME_MODIFIED)
-			call_callback(self.callback, remote_mod != self.local_mod, self.args)
-		except Exception as e:
-			sys.excepthook(*sys.exc_info())
-			call_callback(self.callback, False, self.args)
-
-	def check_for_update (self, local, remote, callback, *args):
-		self.local = local
-		self.remote = remote
-		self.callback = callback
-		self.args = args
-
-		try:
-			lf = Gio.file_new_for_commandline_arg(local)
-			lfi = lf.query_info(Gio.FILE_ATTRIBUTE_TIME_MODIFIED, Gio.FileQueryInfoFlags.NONE, None)
-			self.local_mod = lfi.get_attribute_uint64(Gio.FILE_ATTRIBUTE_TIME_MODIFIED)
-
-			rf = Gio.file_new_for_uri(remote)
-			rf.query_info_async(Gio.FILE_ATTRIBUTE_TIME_MODIFIED, Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, self._cancel, self._file_info_cb, None)
-		except Exception as e:
-			sys.excepthook(*sys.exc_info())
-			self.callback(True, *self.args)
-
-	def cancel (self):
-		self._cancel.cancel()
-

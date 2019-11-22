@@ -35,7 +35,6 @@ from gi.repository import RB, Gtk
 
 # rb classes
 from Loader import Loader
-from Loader import UpdateCheck
 from Coroutine import Coroutine
 from URLCache import URLCache
 import rbconfig
