@@ -438,7 +438,7 @@ ensure_loaded (RBAndroidSource *source)
 
 	rb_debug ("mounting volume");
 	g_volume_mount (priv->volume, G_MOUNT_MOUNT_NONE, NULL, NULL, volume_mount_cb, source);
-	return TRUE;
+	return FALSE;
 }
 
 static void
