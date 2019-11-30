@@ -557,7 +557,6 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 		self.http_server.add_handler(path="/", callback=self.http_root_cb)
 
 		self.http_listen()
-		self.http_server.run_async()
 
 
 	def do_deactivate(self):
