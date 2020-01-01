@@ -261,38 +261,6 @@ rb_gvalue_compare (GValue *a, GValue *b)
 }
 
 /**
- * rb_compare_gtimeval:
- * @a: left hand side
- * @b: right hand size
- *
- * Compares two #GTimeVal structures for sorting.
- *
- * Return value: -1 if @a < @b, 0 if @a == @b, 1 if @a > @b
- */
-int
-rb_compare_gtimeval (GTimeVal *a, GTimeVal *b)
-{
-	if (a->tv_sec == b->tv_sec)
-		/* It's quite unlikely that microseconds are equal,
-		 * so just ignore that case, we don't need a lot
-		 * of precision.
-		 */
-		return a->tv_usec > b->tv_usec ? 1 : -1;
-	else if (a->tv_sec > b->tv_sec)
-		return 1;
-	else
-		return -1;
-}
-
-/* this is obsoleted by g_strcmp0, don't use it */
-int
-rb_safe_strcmp (const char *a,
-                const char *b)
-{
-	return (!a && !b) ? 0 : (a && !b) || (!a && b) ? 1 : strcmp (a, b);
-}
-
-/**
  * rb_is_main_thread:
  *
  * Checks if currently executing on the main thread.
