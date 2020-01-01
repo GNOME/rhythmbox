@@ -125,7 +125,7 @@ enum
 	PROP_SHOW_BROWSER
 };
 
-G_DEFINE_TYPE (RBPodcastSource, rb_podcast_source, RB_TYPE_SOURCE)
+G_DEFINE_TYPE_WITH_CODE (RBPodcastSource, rb_podcast_source, RB_TYPE_SOURCE, G_ADD_PRIVATE (RBPodcastSource))
 
 static void
 podcast_posts_view_sort_order_changed_cb (GObject *object,
@@ -1630,9 +1630,7 @@ static void
 rb_podcast_source_init (RBPodcastSource *source)
 {
 	GtkIconTheme *icon_theme;
-	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source,
-						    RB_TYPE_PODCAST_SOURCE,
-						    RBPodcastSourcePrivate);
+	source->priv = rb_podcast_source_get_instance_private (source);
 
 	source->priv->selected_feeds = NULL;
 
@@ -1701,6 +1699,4 @@ rb_podcast_source_class_init (RBPodcastSourceClass *klass)
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
 	g_object_class_override_property (object_class, PROP_SHOW_BROWSER, "show-browser");
-
-	g_type_class_add_private (klass, sizeof (RBPodcastSourcePrivate));
 }

@@ -68,9 +68,6 @@ typedef struct _RBLibraryBrowserRebuildData RBLibraryBrowserRebuildData;
 
 static void destroy_idle_rebuild_model (RBLibraryBrowserRebuildData *data);
 
-G_DEFINE_TYPE (RBLibraryBrowser, rb_library_browser, GTK_TYPE_BOX)
-#define RB_LIBRARY_BROWSER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LIBRARY_BROWSER, RBLibraryBrowserPrivate))
-
 /**
  * SECTION:rb-library-browser
  * @short_description: album/artist/genre browser widget
@@ -114,6 +111,9 @@ typedef struct
 
 	RBLibraryBrowserRebuildData *rebuild_data;
 } RBLibraryBrowserPrivate;
+
+G_DEFINE_TYPE_WITH_CODE (RBLibraryBrowser, rb_library_browser, GTK_TYPE_BOX, G_ADD_PRIVATE (RBLibraryBrowser))
+#define RB_LIBRARY_BROWSER_GET_PRIVATE(o) (rb_library_browser_get_instance_private (RB_LIBRARY_BROWSER (o)))
 
 enum
 {
@@ -218,8 +218,6 @@ rb_library_browser_class_init (RBLibraryBrowserClass *klass)
 							      "browser view selection",
 							      "artists-albums",
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
-
-	g_type_class_add_private (klass, sizeof (RBLibraryBrowserPrivate));
 }
 
 static void

@@ -117,7 +117,7 @@ static const char *podcast_uri_prefixes[] = {
 
 static guint signals[LAST_SIGNAL] = {0,};
 
-G_DEFINE_TYPE (RBPodcastAddDialog, rb_podcast_add_dialog, GTK_TYPE_BOX);
+G_DEFINE_TYPE_WITH_CODE (RBPodcastAddDialog, rb_podcast_add_dialog, GTK_TYPE_BOX, G_ADD_PRIVATE (RBPodcastAddDialog));
 
 
 static gboolean
@@ -896,9 +896,7 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 static void
 rb_podcast_add_dialog_init (RBPodcastAddDialog *dialog)
 {
-	dialog->priv = G_TYPE_INSTANCE_GET_PRIVATE (dialog,
-						    RB_TYPE_PODCAST_ADD_DIALOG,
-						    RBPodcastAddDialogPrivate);
+	dialog->priv = rb_podcast_add_dialog_get_instance_private (dialog);
 }
 
 static void
@@ -944,8 +942,6 @@ rb_podcast_add_dialog_class_init (RBPodcastAddDialogClass *klass)
 					NULL,
 					G_TYPE_NONE,
 					0);
-
-	g_type_class_add_private (object_class, sizeof (RBPodcastAddDialogPrivate));
 
 	gtk_binding_entry_add_signal (gtk_binding_set_by_class (klass),
 				      GDK_KEY_Escape,

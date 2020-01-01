@@ -163,10 +163,11 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED(
 	rb_ipod_source,
 	RB_TYPE_MEDIA_PLAYER_SOURCE,
 	0,
+	G_ADD_PRIVATE_DYNAMIC (RBiPodSource)
 	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_DEVICE_SOURCE, rb_ipod_device_source_init)
 	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_TRANSFER_TARGET, rb_ipod_source_transfer_target_init))
 
-#define IPOD_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IPOD_SOURCE, RBiPodSourcePrivate))
+#define IPOD_SOURCE_GET_PRIVATE(o)   (rb_ipod_source_get_instance_private (RB_IPOD_SOURCE (o)))
 
 static void
 rb_ipod_source_class_init (RBiPodSourceClass *klass)
@@ -218,8 +219,6 @@ rb_ipod_source_class_init (RBiPodSourceClass *klass)
 							      G_TYPE_MOUNT,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_override_property (object_class, PROP_DEVICE_SERIAL, "serial");
-
-	g_type_class_add_private (klass, sizeof (RBiPodSourcePrivate));
 }
 
 static void

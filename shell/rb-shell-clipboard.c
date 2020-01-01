@@ -117,8 +117,6 @@ struct RBShellClipboardPrivate
 	GMenuModel *playlist_menu;
 };
 
-#define RB_SHELL_CLIPBOARD_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHELL_CLIPBOARD, RBShellClipboardPrivate))
-
 enum
 {
 	PROP_0,
@@ -128,7 +126,7 @@ enum
 };
 
 
-G_DEFINE_TYPE (RBShellClipboard, rb_shell_clipboard, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_CODE (RBShellClipboard, rb_shell_clipboard, G_TYPE_OBJECT, G_ADD_PRIVATE (RBShellClipboard))
 
 static void
 rb_shell_clipboard_class_init (RBShellClipboardClass *klass)
@@ -163,14 +161,12 @@ rb_shell_clipboard_class_init (RBShellClipboardClass *klass)
 							      "RBPlaylistSource object",
 							      RB_TYPE_PLAYLIST_SOURCE,
 							      G_PARAM_READWRITE));
-
-	g_type_class_add_private (klass, sizeof (RBShellClipboardPrivate));
 }
 
 static void
 rb_shell_clipboard_init (RBShellClipboard *shell_clipboard)
 {
-	shell_clipboard->priv = RB_SHELL_CLIPBOARD_GET_PRIVATE (shell_clipboard);
+	shell_clipboard->priv = rb_shell_clipboard_get_instance_private (shell_clipboard);
 
 	shell_clipboard->priv->signal_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 								    NULL, g_free);

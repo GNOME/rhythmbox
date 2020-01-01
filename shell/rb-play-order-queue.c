@@ -43,15 +43,15 @@ static void rb_queue_play_order_playing_entry_changed (RBPlayOrder *porder,
 static void rb_queue_play_order_playing_entry_removed (RBPlayOrder *porder,
 						       RhythmDBEntry *entry);
 
-G_DEFINE_TYPE (RBQueuePlayOrder, rb_queue_play_order, RB_TYPE_PLAY_ORDER)
-#define RB_QUEUE_PLAY_ORDER_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_QUEUE_PLAY_ORDER, RBQueuePlayOrderPrivate))
-
 typedef struct _RBQueuePlayOrderPrivate RBQueuePlayOrderPrivate;
 
 struct _RBQueuePlayOrderPrivate
 {
 	gboolean playing_entry_removed;
 };
+
+G_DEFINE_TYPE_WITH_CODE (RBQueuePlayOrder, rb_queue_play_order, RB_TYPE_PLAY_ORDER, G_ADD_PRIVATE (RBQueuePlayOrder))
+#define RB_QUEUE_PLAY_ORDER_GET_PRIVATE(object) (rb_queue_play_order_get_instance_private (RB_QUEUE_PLAY_ORDER (object)))
 
 RBPlayOrder *
 rb_queue_play_order_new (RBShellPlayer *player)
@@ -74,8 +74,6 @@ rb_queue_play_order_class_init (RBQueuePlayOrderClass *klass)
 	porder->get_previous = rb_queue_play_order_get_previous;
 	porder->playing_entry_changed = rb_queue_play_order_playing_entry_changed;
 	porder->playing_entry_removed = rb_queue_play_order_playing_entry_removed;
-
-	g_type_class_add_private (klass, sizeof (RBQueuePlayOrderPrivate));
 }
 
 static void

@@ -73,10 +73,7 @@ struct RBCellRendererRatingClassPrivate
 	RBRatingPixbufs *pixbufs;
 };
 
-G_DEFINE_TYPE (RBCellRendererRating, rb_cell_renderer_rating, GTK_TYPE_CELL_RENDERER)
-#define RB_CELL_RENDERER_RATING_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
-						RB_TYPE_CELL_RENDERER_RATING, \
-						RBCellRendererRatingPrivate))
+G_DEFINE_TYPE_WITH_CODE (RBCellRendererRating, rb_cell_renderer_rating, GTK_TYPE_CELL_RENDERER, G_ADD_PRIVATE (RBCellRendererRating))
 
 
 /**
@@ -111,7 +108,7 @@ rb_cell_renderer_rating_init (RBCellRendererRating *cellrating)
 		klass->priv->pixbufs = rb_rating_pixbufs_load ();
 	}
 
-	cellrating->priv = RB_CELL_RENDERER_RATING_GET_PRIVATE (cellrating);
+	cellrating->priv = rb_cell_renderer_rating_get_instance_private (cellrating);
 
 	/* set the renderer able to be activated */
 	g_object_set (cellrating,
@@ -162,8 +159,6 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 			      2,
 			      G_TYPE_STRING,
 			      G_TYPE_DOUBLE);
-
-	g_type_class_add_private (class, sizeof (RBCellRendererRatingPrivate));
 }
 
 static void

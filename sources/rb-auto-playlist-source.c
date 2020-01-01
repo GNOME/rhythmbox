@@ -128,8 +128,8 @@ struct _RBAutoPlaylistSourcePrivate
 	GAction *search_action;
 };
 
-G_DEFINE_TYPE (RBAutoPlaylistSource, rb_auto_playlist_source, RB_TYPE_PLAYLIST_SOURCE)
-#define GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_AUTO_PLAYLIST_SOURCE, RBAutoPlaylistSourcePrivate))
+G_DEFINE_TYPE_WITH_CODE (RBAutoPlaylistSource, rb_auto_playlist_source, RB_TYPE_PLAYLIST_SOURCE, G_ADD_PRIVATE (RBAutoPlaylistSource))
+#define GET_PRIVATE(object) (rb_auto_playlist_source_get_instance_private (RB_AUTO_PLAYLIST_SOURCE (object)))
 
 static void
 rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
@@ -157,8 +157,6 @@ rb_auto_playlist_source_class_init (RBAutoPlaylistSourceClass *klass)
 
 	g_object_class_override_property (object_class, PROP_BASE_QUERY_MODEL, "base-query-model");
 	g_object_class_override_property (object_class, PROP_SHOW_BROWSER, "show-browser");
-
-	g_type_class_add_private (klass, sizeof (RBAutoPlaylistSourcePrivate));
 }
 
 static void

@@ -42,12 +42,6 @@
 static void rhythmdb_property_model_tree_model_init (GtkTreeModelIface *iface);
 static void rhythmdb_property_model_drag_source_init (RbTreeDragSourceIface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(RhythmDBPropertyModel, rhythmdb_property_model, G_TYPE_OBJECT,
-			G_IMPLEMENT_INTERFACE(GTK_TYPE_TREE_MODEL,
-					      rhythmdb_property_model_tree_model_init)
-			G_IMPLEMENT_INTERFACE(RB_TYPE_TREE_DRAG_SOURCE,
-					      rhythmdb_property_model_drag_source_init))
-
 /*
  * Structure for entries in the property model.
  * The sort string is derived from one of a list of properties, so we
@@ -191,7 +185,12 @@ struct RhythmDBPropertyModelPrivate
 	guint syncing_id;
 };
 
-#define RHYTHMDB_PROPERTY_MODEL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE_PROPERTY_MODEL, RhythmDBPropertyModelPrivate))
+G_DEFINE_TYPE_WITH_CODE(RhythmDBPropertyModel, rhythmdb_property_model, G_TYPE_OBJECT,
+			G_ADD_PRIVATE (RhythmDBPropertyModel)
+			G_IMPLEMENT_INTERFACE(GTK_TYPE_TREE_MODEL,
+					      rhythmdb_property_model_tree_model_init)
+			G_IMPLEMENT_INTERFACE(RB_TYPE_TREE_DRAG_SOURCE,
+					      rhythmdb_property_model_drag_source_init))
 
 enum
 {
@@ -288,8 +287,6 @@ rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 							      "RhythmDBQueryModel object ",
 							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READWRITE));
-
-	g_type_class_add_private (klass, sizeof (RhythmDBPropertyModelPrivate));
 }
 
 static void
@@ -499,7 +496,7 @@ rhythmdb_property_model_init (RhythmDBPropertyModel *model)
 			gtk_target_list_new (targets_composer,
 					     G_N_ELEMENTS (targets_composer));
 
-	model->priv = RHYTHMDB_PROPERTY_MODEL_GET_PRIVATE (model);
+	model->priv = rhythmdb_property_model_get_instance_private (model);
 
 	model->priv->stamp = g_random_int ();
 

@@ -37,6 +37,9 @@
 #include "rhythmdb.h"
 #include "rb-daap-record.h"
 
+static void rb_daap_record_daap_iface_init (gpointer iface, gpointer data);
+static void rb_daap_record_dmap_iface_init (gpointer iface, gpointer data);
+
 struct RBDAAPRecordPrivate {
 	guint64 filesize;
 	char *location;
@@ -60,6 +63,15 @@ struct RBDAAPRecordPrivate {
 	char *sort_album;
 	gint64 albumid;
 };
+
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDAAPRecord,
+				rb_daap_record,
+				G_TYPE_OBJECT,
+				0,
+				G_ADD_PRIVATE_DYNAMIC (RBDAAPRecord)
+				G_IMPLEMENT_INTERFACE_DYNAMIC (DAAP_TYPE_RECORD, rb_daap_record_daap_iface_init)
+				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_RECORD, rb_daap_record_dmap_iface_init))
+
 
 enum {
 	PROP_0,
@@ -281,7 +293,7 @@ rb_daap_record_read (DAAPRecord *record, GError **error)
 static void
 rb_daap_record_init (RBDAAPRecord *record)
 {
-	record->priv = RB_DAAP_RECORD_GET_PRIVATE (record);
+	record->priv = rb_daap_record_get_instance_private (record);
 
         record->priv->location		= NULL;
         record->priv->format		= NULL;
@@ -309,8 +321,6 @@ static void
 rb_daap_record_class_init (RBDAAPRecordClass *klass)
 {
 	GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-
-	g_type_class_add_private (klass, sizeof (RBDAAPRecordPrivate));
 
 	gobject_class->set_property = rb_daap_record_set_property;
 	gobject_class->get_property = rb_daap_record_get_property;
@@ -368,13 +378,6 @@ rb_daap_record_dmap_iface_init (gpointer iface, gpointer data)
 
 	g_assert (G_TYPE_FROM_INTERFACE (dmap_record) == DMAP_TYPE_RECORD);
 }
-
-G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDAAPRecord,
-				rb_daap_record,
-				G_TYPE_OBJECT,
-				0,
-				G_IMPLEMENT_INTERFACE_DYNAMIC (DAAP_TYPE_RECORD, rb_daap_record_daap_iface_init)
-				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_RECORD, rb_daap_record_dmap_iface_init))
 
 static void
 rb_daap_record_finalize (GObject *object)

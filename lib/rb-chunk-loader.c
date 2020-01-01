@@ -58,7 +58,7 @@ struct _RBChunkLoaderPrivate
 	GDestroyNotify destroy_data;
 };
 
-G_DEFINE_TYPE (RBChunkLoader, rb_chunk_loader, G_TYPE_OBJECT);
+G_DEFINE_TYPE_WITH_CODE (RBChunkLoader, rb_chunk_loader, G_TYPE_OBJECT, G_ADD_PRIVATE (RBChunkLoader));
 
 static void
 stream_close_cb (GObject *obj, GAsyncResult *res, gpointer data)
@@ -306,7 +306,7 @@ impl_finalize (GObject *object)
 static void
 rb_chunk_loader_init (RBChunkLoader *loader)
 {
-	loader->priv = G_TYPE_INSTANCE_GET_PRIVATE (loader, RB_TYPE_CHUNK_LOADER, RBChunkLoaderPrivate);
+	loader->priv = rb_chunk_loader_get_instance_private (loader);
 }
 
 static void
@@ -315,6 +315,4 @@ rb_chunk_loader_class_init (RBChunkLoaderClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = impl_finalize;
-
-	g_type_class_add_private (klass, sizeof (RBChunkLoaderPrivate));
 }

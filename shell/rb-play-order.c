@@ -98,8 +98,6 @@ struct RBPlayOrderPrivate
 	gboolean have_previous;
 };
 
-#define RB_PLAY_ORDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAY_ORDER, RBPlayOrderPrivate))
-
 enum
 {
 	PROP_0,
@@ -115,7 +113,7 @@ enum
 
 static guint rb_play_order_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBPlayOrder, rb_play_order, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_CODE (RBPlayOrder, rb_play_order, G_TYPE_OBJECT, G_ADD_PRIVATE (RBPlayOrder))
 
 static void
 rb_play_order_class_init (RBPlayOrderClass *klass)
@@ -175,14 +173,12 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 			      NULL,
 			      G_TYPE_NONE,
 			      2, G_TYPE_BOOLEAN, G_TYPE_BOOLEAN);
-
-	g_type_class_add_private (klass, sizeof (RBPlayOrderPrivate));
 }
 
 static void
 rb_play_order_init (RBPlayOrder *porder)
 {
-	porder->priv = RB_PLAY_ORDER_GET_PRIVATE (porder);
+	porder->priv = rb_play_order_get_instance_private (porder);
 }
 
 static void

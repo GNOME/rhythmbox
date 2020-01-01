@@ -49,6 +49,7 @@ static guint rhythmdb_query_result_list_signals[LAST_SIGNAL] = { 0 };
 static void rhythmdb_query_result_list_query_results_init (RhythmDBQueryResultsIface *iface);
 
 G_DEFINE_TYPE_WITH_CODE(RhythmDBQueryResultList, rhythmdb_query_result_list, G_TYPE_OBJECT,
+			G_ADD_PRIVATE (RhythmDBQueryResultList)
 			G_IMPLEMENT_INTERFACE(RHYTHMDB_TYPE_QUERY_RESULTS,
 					      rhythmdb_query_result_list_query_results_init));
 
@@ -97,9 +98,7 @@ impl_finalize (GObject *object)
 static void
 rhythmdb_query_result_list_init (RhythmDBQueryResultList *list)
 {
-	list->priv = G_TYPE_INSTANCE_GET_PRIVATE (list,
-						  RHYTHMDB_TYPE_QUERY_RESULT_LIST,
-						  RhythmDBQueryResultListPrivate);
+	list->priv = rhythmdb_query_result_list_get_instance_private (list);
 }
 
 static void
@@ -131,8 +130,6 @@ rhythmdb_query_result_list_class_init (RhythmDBQueryResultListClass *klass)
 			      NULL, NULL,
 			      NULL,
 			      G_TYPE_NONE, 0);
-
-	g_type_class_add_private (klass, sizeof (RhythmDBQueryResultListPrivate));
 }
 
 

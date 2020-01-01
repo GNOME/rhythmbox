@@ -135,8 +135,6 @@ struct _RBAudioscrobblerUserPrivate {
 	GHashTable *file_to_cancellable_map;
 };
 
-#define RB_AUDIOSCROBBLER_USER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_USER, RBAudioscrobblerUserPrivate))
-
 static void rb_audioscrobbler_user_constructed (GObject *object);
 static void rb_audioscrobbler_user_dispose (GObject* object);
 static void rb_audioscrobbler_user_finalize (GObject *object);
@@ -243,7 +241,7 @@ enum {
 
 static guint rb_audioscrobbler_user_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_DYNAMIC_TYPE (RBAudioscrobblerUser, rb_audioscrobbler_user, G_TYPE_OBJECT)
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBAudioscrobblerUser, rb_audioscrobbler_user, G_TYPE_OBJECT, 0, G_ADD_PRIVATE_DYNAMIC (RBAudioscrobblerUser))
 
 RBAudioscrobblerUser *
 rb_audioscrobbler_user_new (RBAudioscrobblerService *service)
@@ -338,8 +336,6 @@ rb_audioscrobbler_user_class_init (RBAudioscrobblerUserClass *klass)
 		              G_TYPE_NONE,
 		              1,
 		              G_TYPE_PTR_ARRAY);
-
-	g_type_class_add_private (klass, sizeof (RBAudioscrobblerUserPrivate));
 }
 
 static void
@@ -350,7 +346,7 @@ rb_audioscrobbler_user_class_finalize (RBAudioscrobblerUserClass *klass)
 static void
 rb_audioscrobbler_user_init (RBAudioscrobblerUser *user)
 {
-	user->priv = RB_AUDIOSCROBBLER_USER_GET_PRIVATE (user);
+	user->priv = rb_audioscrobbler_user_get_instance_private (user);
 
 	user->priv->soup_session =
 		soup_session_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,

@@ -81,6 +81,7 @@ struct _RBEncoderGstPrivate {
 };
 
 G_DEFINE_TYPE_WITH_CODE(RBEncoderGst, rb_encoder_gst, G_TYPE_OBJECT,
+			G_ADD_PRIVATE (RBEncoderGst)
 			G_IMPLEMENT_INTERFACE(RB_TYPE_ENCODER,
 					      rb_encoder_init))
 
@@ -900,7 +901,7 @@ impl_finalize (GObject *object)
 static void
 rb_encoder_gst_init (RBEncoderGst *encoder)
 {
-        encoder->priv = (G_TYPE_INSTANCE_GET_PRIVATE ((encoder), RB_TYPE_ENCODER_GST, RBEncoderGstPrivate));
+        encoder->priv = rb_encoder_gst_get_instance_private (encoder);
 }
 
 static void
@@ -917,8 +918,6 @@ rb_encoder_gst_class_init (RBEncoderGstClass *klass)
         GObjectClass *object_class = (GObjectClass *) klass;
 
         object_class->finalize = impl_finalize;
-
-        g_type_class_add_private (klass, sizeof (RBEncoderGstPrivate));
 }
 
 RBEncoder*

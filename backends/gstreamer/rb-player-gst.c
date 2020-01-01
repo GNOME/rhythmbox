@@ -52,11 +52,6 @@ static void rb_player_gst_filter_init (RBPlayerGstFilterIface *iface);
 
 static void state_change_finished (RBPlayerGst *mp, GError *error);
 
-G_DEFINE_TYPE_WITH_CODE(RBPlayerGst, rb_player_gst, G_TYPE_OBJECT,
-			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER, rb_player_init)
-			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER_GST_FILTER, rb_player_gst_filter_init)
-			)
-
 #define RB_PLAYER_GST_TICK_HZ 5
 #define STATE_CHANGE_MESSAGE_TIMEOUT 5
 
@@ -125,6 +120,12 @@ struct _RBPlayerGstPrivate
 	GMutex eos_lock;
 	GCond eos_cond;
 };
+
+G_DEFINE_TYPE_WITH_CODE(RBPlayerGst, rb_player_gst, G_TYPE_OBJECT,
+			G_ADD_PRIVATE (RBPlayerGst)
+			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER, rb_player_init)
+			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER_GST_FILTER, rb_player_gst_filter_init)
+			)
 
 static void
 _destroy_stream_data (RBPlayerGst *player)
@@ -1027,10 +1028,7 @@ rb_player_gst_new (GError **error)
 static void
 rb_player_gst_init (RBPlayerGst *mp)
 {
-	mp->priv = (G_TYPE_INSTANCE_GET_PRIVATE ((mp),
-		    RB_TYPE_PLAYER_GST,
-		    RBPlayerGstPrivate));
-
+	mp->priv = rb_player_gst_get_instance_private (mp);
 	g_mutex_init (&mp->priv->eos_lock);
 	g_cond_init (&mp->priv->eos_cond);
 }
@@ -1190,7 +1188,5 @@ rb_player_gst_class_init (RBPlayerGstClass *klass)
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_POINTER, G_TYPE_STRV, G_TYPE_STRV);
-
-	g_type_class_add_private (klass, sizeof (RBPlayerGstPrivate));
 }
 

@@ -51,8 +51,6 @@ typedef enum {
 
 typedef GstElement *(*RBAddTaggerElem) (GstElement *pipeline, GstPad *srcpad, GstTagList *tags);
 
-G_DEFINE_TYPE(RBMetaData, rb_metadata, G_TYPE_OBJECT)
-
 struct RBMetaDataPrivate
 {
 	GstDiscovererInfo *info;
@@ -71,6 +69,8 @@ struct RBMetaDataPrivate
 	GstTagList *tags;
 	gboolean sink_linked;
 };
+
+G_DEFINE_TYPE_WITH_CODE(RBMetaData, rb_metadata, G_TYPE_OBJECT, G_ADD_PRIVATE (RBMetaData))
 
 void
 rb_metadata_reset (RBMetaData *md)
@@ -1054,7 +1054,7 @@ rb_metadata_finalize (GObject *object)
 static void
 rb_metadata_init (RBMetaData *md)
 {
-	md->priv = (G_TYPE_INSTANCE_GET_PRIVATE ((md), RB_TYPE_METADATA, RBMetaDataPrivate));
+	md->priv = rb_metadata_get_instance_private (md);
 
 	md->priv->taggers = g_hash_table_new (g_str_hash, g_str_equal);
 
@@ -1093,8 +1093,6 @@ rb_metadata_class_init (RBMetaDataClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = rb_metadata_finalize;
-
-	g_type_class_add_private (klass, sizeof (RBMetaDataPrivate));
 }
 
 RBMetaData *

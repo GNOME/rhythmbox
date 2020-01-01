@@ -82,7 +82,7 @@ struct _RBEncodingSettingsPrivate
 	gulong profile_changed_id;
 };
 
-G_DEFINE_TYPE (RBEncodingSettings, rb_encoding_settings, GTK_TYPE_BOX);
+G_DEFINE_TYPE_WITH_CODE (RBEncodingSettings, rb_encoding_settings, GTK_TYPE_BOX, G_ADD_PRIVATE (RBEncodingSettings));
 
 /**
  * SECTION:rb-encoding-settings
@@ -629,9 +629,7 @@ impl_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *ps
 static void
 rb_encoding_settings_init (RBEncodingSettings *settings)
 {
-	settings->priv = G_TYPE_INSTANCE_GET_PRIVATE (settings,
-						      RB_TYPE_ENCODING_SETTINGS,
-						      RBEncodingSettingsPrivate);
+	settings->priv = rb_encoding_settings_get_instance_private (settings);
 }
 
 static void
@@ -714,8 +712,6 @@ rb_encoding_settings_class_init (RBEncodingSettingsClass *klass)
 							       "whether to show options relating to lossless encodings",
 							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_type_class_add_private (klass, sizeof (RBEncodingSettingsPrivate));
 }
 
 /**

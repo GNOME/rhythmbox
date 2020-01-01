@@ -73,8 +73,7 @@ struct RBShufflePlayOrderPrivate
 	RhythmDBEntry *external_playing_entry;
 };
 
-G_DEFINE_TYPE (RBShufflePlayOrder, rb_shuffle_play_order, RB_TYPE_PLAY_ORDER)
-#define RB_SHUFFLE_PLAY_ORDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SHUFFLE_PLAY_ORDER, RBShufflePlayOrderPrivate))
+G_DEFINE_TYPE_WITH_CODE (RBShufflePlayOrder, rb_shuffle_play_order, RB_TYPE_PLAY_ORDER, G_ADD_PRIVATE (RBShufflePlayOrder))
 
 RBPlayOrder *
 rb_shuffle_play_order_new (RBShellPlayer *player)
@@ -112,14 +111,12 @@ rb_shuffle_play_order_class_init (RBShufflePlayOrderClass *klass)
 	porder->go_next = rb_shuffle_play_order_go_next;
 	porder->get_previous = rb_shuffle_play_order_get_previous;
 	porder->go_previous = rb_shuffle_play_order_go_previous;
-
-	g_type_class_add_private (klass, sizeof (RBShufflePlayOrderPrivate));
 }
 
 static void
 rb_shuffle_play_order_init (RBShufflePlayOrder *sorder)
 {
-	sorder->priv = RB_SHUFFLE_PLAY_ORDER_GET_PRIVATE (sorder);
+	sorder->priv = rb_shuffle_play_order_get_instance_private (sorder);
 
 	sorder->priv->history = rb_history_new (FALSE,
 						(GFunc) rhythmdb_entry_unref,

@@ -22,7 +22,7 @@
 
 #include "gossip-cell-renderer-expander.h"
 
-#define GET_PRIV(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GOSSIP_TYPE_CELL_RENDERER_EXPANDER, GossipCellRendererExpanderPriv))
+#define GET_PRIV(obj) (gossip_cell_renderer_expander_get_instance_private (obj))
 
 static void     gossip_cell_renderer_expander_init         (GossipCellRendererExpander      *expander);
 static void     gossip_cell_renderer_expander_class_init   (GossipCellRendererExpanderClass *klass);
@@ -63,21 +63,22 @@ enum {
 	PROP_ACTIVATABLE
 };
 
-typedef struct _GossipCellRendererExpanderPriv GossipCellRendererExpanderPriv;
+typedef struct _GossipCellRendererExpanderPrivate GossipCellRendererExpanderPrivate;
 
-struct _GossipCellRendererExpanderPriv {
+struct _GossipCellRendererExpanderPrivate {
 	gint                 expander_size;
 
 	guint                activatable : 1;
 	GtkExpanderStyle     expander_style;
 };
 
-G_DEFINE_TYPE (GossipCellRendererExpander, gossip_cell_renderer_expander, GTK_TYPE_CELL_RENDERER)
+G_DEFINE_TYPE_WITH_CODE (GossipCellRendererExpander, gossip_cell_renderer_expander, GTK_TYPE_CELL_RENDERER,
+			 G_ADD_PRIVATE (GossipCellRendererExpander))
 
 static void
 gossip_cell_renderer_expander_init (GossipCellRendererExpander *expander)
 {
-	GossipCellRendererExpanderPriv *priv;
+	GossipCellRendererExpanderPrivate *priv;
 
 	priv = GET_PRIV (expander);
 
@@ -132,8 +133,6 @@ gossip_cell_renderer_expander_class_init (GossipCellRendererExpanderClass *klass
 							       "The expander can be activated",
 							       TRUE,
 							       G_PARAM_READWRITE));
-
-	g_type_class_add_private (object_class, sizeof (GossipCellRendererExpanderPriv));
 }
 
 static void
@@ -143,7 +142,7 @@ gossip_cell_renderer_expander_get_property (GObject    *object,
 					    GParamSpec *pspec)
 {
 	GossipCellRendererExpander     *expander;
-	GossipCellRendererExpanderPriv *priv;
+	GossipCellRendererExpanderPrivate *priv;
 
 	expander = GOSSIP_CELL_RENDERER_EXPANDER (object);
 	priv = GET_PRIV (expander);
@@ -174,7 +173,7 @@ gossip_cell_renderer_expander_set_property (GObject      *object,
 					    GParamSpec   *pspec)
 {
 	GossipCellRendererExpander     *expander;
-	GossipCellRendererExpanderPriv *priv;
+	GossipCellRendererExpanderPrivate *priv;
 
 	expander = GOSSIP_CELL_RENDERER_EXPANDER (object);
 	priv = GET_PRIV (expander);
@@ -215,7 +214,7 @@ gossip_cell_renderer_expander_get_size (GtkCellRenderer *cell,
 					gint            *height)
 {
 	GossipCellRendererExpander     *expander;
-	GossipCellRendererExpanderPriv *priv;
+	GossipCellRendererExpanderPrivate *priv;
 	gint                            xpad, ypad;
 	gfloat                          xalign, yalign;
 
@@ -260,7 +259,7 @@ gossip_cell_renderer_expander_render (GtkCellRenderer      *cell,
 				      GtkCellRendererState  flags)
 {
 	GossipCellRendererExpander     *expander;
-	GossipCellRendererExpanderPriv *priv;
+	GossipCellRendererExpanderPrivate *priv;
 	GtkStyleContext                *style_context;
 	gint                            x_offset, y_offset;
 	gint                            xpad, ypad;
@@ -312,13 +311,13 @@ gossip_cell_renderer_expander_activate (GtkCellRenderer      *cell,
 					const GdkRectangle   *cell_area,
 					GtkCellRendererState  flags)
 {
-	GossipCellRendererExpanderPriv *priv;
+	GossipCellRendererExpanderPrivate *priv;
 	GtkTreePath                    *path;
 	gboolean                        in_cell;
 	int                             mouse_x;
 	int                             mouse_y;
 
-	priv = GET_PRIV (cell);
+	priv = GET_PRIV (GOSSIP_CELL_RENDERER_EXPANDER (cell));
 
 	if (!GTK_IS_TREE_VIEW (widget) || !priv->activatable)
 		return FALSE;

@@ -169,8 +169,7 @@ static const RhythmDBPropertyDef rhythmdb_properties[] = {
 #define RB_PARSE_NICK_END (xmlChar *) "]"
 
 
-#define RHYTHMDB_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE, RhythmDBPrivate))
-G_DEFINE_ABSTRACT_TYPE(RhythmDB, rhythmdb, G_TYPE_OBJECT)
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE(RhythmDB, rhythmdb, G_TYPE_OBJECT, G_ADD_PRIVATE (RhythmDB))
 
 /* file attributes requested in RHYTHMDB_ACTION_STAT and RHYTHMDB_ACTION_LOAD */
 #define RHYTHMDB_FILE_INFO_ATTRIBUTES			\
@@ -614,8 +613,6 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      NULL,
 			      G_TYPE_MOUNT_OPERATION,
 			      0);
-
-	g_type_class_add_private (klass, sizeof (RhythmDBPrivate));
 }
 
 static void
@@ -704,7 +701,7 @@ rhythmdb_init (RhythmDB *db)
 	guint i;
 	GEnumClass *prop_class;
 
-	db->priv = RHYTHMDB_GET_PRIVATE (db);
+	db->priv = rhythmdb_get_instance_private (db);
 
 	db->priv->settings = g_settings_new ("org.gnome.rhythmbox.rhythmdb");
 	g_signal_connect_object (db->priv->settings, "changed", G_CALLBACK (db_settings_changed_cb), db, 0);

@@ -130,8 +130,6 @@ struct RBBrowserSourcePrivate
 	GAction *search_action;
 };
 
-#define RB_BROWSER_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_BROWSER_SOURCE, RBBrowserSourcePrivate))
-
 static const GtkTargetEntry songs_view_drag_types[] = {
 	{ "application/x-rhythmbox-entry", 0, 0 },
 	{ "text/uri-list", 0, 1 }
@@ -145,7 +143,7 @@ enum
 	PROP_SHOW_BROWSER
 };
 
-G_DEFINE_ABSTRACT_TYPE (RBBrowserSource, rb_browser_source, RB_TYPE_SOURCE)
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (RBBrowserSource, rb_browser_source, RB_TYPE_SOURCE, G_ADD_PRIVATE (RBBrowserSource))
 
 static void
 rb_browser_source_class_init (RBBrowserSourceClass *klass)
@@ -191,14 +189,12 @@ rb_browser_source_class_init (RBBrowserSourceClass *klass)
 	g_object_class_override_property (object_class,
 					  PROP_SHOW_BROWSER,
 					  "show-browser");
-
-	g_type_class_add_private (klass, sizeof (RBBrowserSourcePrivate));
 }
 
 static void
 rb_browser_source_init (RBBrowserSource *source)
 {
-	source->priv = RB_BROWSER_SOURCE_GET_PRIVATE (source);
+	source->priv = rb_browser_source_get_instance_private (source);
 }
 
 static void

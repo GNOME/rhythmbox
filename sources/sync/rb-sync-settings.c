@@ -78,9 +78,9 @@ enum {
 
 static guint signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBSyncSettings, rb_sync_settings, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_CODE (RBSyncSettings, rb_sync_settings, G_TYPE_OBJECT, G_ADD_PRIVATE (RBSyncSettings))
 
-#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SYNC_SETTINGS, RBSyncSettingsPrivate))
+#define GET_PRIVATE(o) (rb_sync_settings_get_instance_private (RB_SYNC_SETTINGS (o)))
 
 RBSyncSettings *
 rb_sync_settings_new (const char *keyfile)
@@ -439,5 +439,4 @@ rb_sync_settings_class_init (RBSyncSettingsClass *klass)
 					 NULL,
 					 G_TYPE_NONE,
 					 0);
-	g_type_class_add_private (object_class, sizeof (RBSyncSettingsPrivate));
 }

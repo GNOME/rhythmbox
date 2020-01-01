@@ -106,7 +106,7 @@ enum
 	PROP_PLUGIN
 };
 
-G_DEFINE_DYNAMIC_TYPE (RBStationPropertiesDialog, rb_station_properties_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBStationPropertiesDialog, rb_station_properties_dialog, GTK_TYPE_DIALOG, 0, G_ADD_PRIVATE_DYNAMIC (RBStationPropertiesDialog))
 
 static void
 rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass)
@@ -137,8 +137,6 @@ rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass)
 
 	object_class->dispose = rb_station_properties_dialog_dispose;
 	object_class->finalize = rb_station_properties_dialog_finalize;
-
-	g_type_class_add_private (klass, sizeof (RBStationPropertiesDialogPrivate));
 }
 
 static void
@@ -149,7 +147,7 @@ rb_station_properties_dialog_class_finalize (RBStationPropertiesDialogClass *kla
 static void
 rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 {
-        dialog->priv = RB_STATION_PROPERTIES_DIALOG_GET_PRIVATE (dialog);
+        dialog->priv = rb_station_properties_dialog_get_instance_private (dialog);
 }
 
 static void

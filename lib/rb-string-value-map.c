@@ -47,7 +47,8 @@ struct RBStringValueMapPrivate {
 	GHashTable *map;
 };
 
-G_DEFINE_TYPE (RBStringValueMap, rb_string_value_map, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_CODE (RBStringValueMap, rb_string_value_map, G_TYPE_OBJECT,
+			 G_ADD_PRIVATE (RBStringValueMap))
 
 
 static void
@@ -56,14 +57,12 @@ rb_string_value_map_class_init (RBStringValueMapClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = rb_string_value_map_finalize;
-
-	g_type_class_add_private (klass, sizeof (RBStringValueMapPrivate));
 }
 
 static void
 rb_string_value_map_init (RBStringValueMap *map)
 {
-	map->priv = G_TYPE_INSTANCE_GET_PRIVATE (map, RB_TYPE_STRING_VALUE_MAP, RBStringValueMapPrivate);
+	map->priv = rb_string_value_map_get_instance_private (map);
 
 	map->priv->map = g_hash_table_new_full (g_str_hash,
 						g_str_equal,

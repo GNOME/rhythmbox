@@ -45,7 +45,7 @@ struct _RBTaskListDisplayPrivate
 	GArray *widgets;
 };
 
-G_DEFINE_TYPE (RBTaskListDisplay, rb_task_list_display, GTK_TYPE_GRID);
+G_DEFINE_TYPE_WITH_CODE (RBTaskListDisplay, rb_task_list_display, GTK_TYPE_GRID, G_ADD_PRIVATE (RBTaskListDisplay));
 
 enum {
 	PROP_0,
@@ -199,7 +199,7 @@ impl_dispose (GObject *object)
 static void
 rb_task_list_display_init (RBTaskListDisplay *list)
 {
-	list->priv = G_TYPE_INSTANCE_GET_PRIVATE (list, RB_TYPE_TASK_LIST_DISPLAY, RBTaskListDisplayPrivate);
+	list->priv = rb_task_list_display_get_instance_private (list);
 
 	list->priv->widgets = g_array_new (FALSE, FALSE, sizeof (GtkWidget *));
 }
@@ -208,8 +208,6 @@ static void
 rb_task_list_display_class_init (RBTaskListDisplayClass *klass)
 {
 	GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-
-	g_type_class_add_private (klass, sizeof (RBTaskListDisplayPrivate));
 
 	gobject_class->constructed = impl_constructed;
 	gobject_class->dispose = impl_dispose;

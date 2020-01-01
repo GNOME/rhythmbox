@@ -53,7 +53,7 @@ struct _RBSourceToolbarPrivate
 	GAction *search_action;
 };
 
-G_DEFINE_TYPE (RBSourceToolbar, rb_source_toolbar, GTK_TYPE_GRID)
+G_DEFINE_TYPE_WITH_CODE (RBSourceToolbar, rb_source_toolbar, GTK_TYPE_GRID, G_ADD_PRIVATE (RBSourceToolbar))
 
 /**
  * SECTION:rb-source-toolbar
@@ -226,7 +226,7 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 static void
 rb_source_toolbar_init (RBSourceToolbar *toolbar)
 {
-	toolbar->priv = G_TYPE_INSTANCE_GET_PRIVATE (toolbar, RB_TYPE_SOURCE_TOOLBAR, RBSourceToolbarPrivate);
+	toolbar->priv = rb_source_toolbar_get_instance_private (toolbar);
 
 	toolbar->priv->search_value = -1;
 }
@@ -266,7 +266,6 @@ rb_source_toolbar_class_init (RBSourceToolbarClass *klass)
 							      "GtkAccelGroup instance",
 							      GTK_TYPE_ACCEL_GROUP,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_type_class_add_private (klass, sizeof (RBSourceToolbarPrivate));
 }
 
 /**

@@ -80,7 +80,6 @@ static void rb_source_row_inserted_cb (GtkTreeModel *model,
 				       GtkTreeIter *iter,
 				       RBSource *source);
 
-G_DEFINE_ABSTRACT_TYPE (RBSource, rb_source, RB_TYPE_DISPLAY_PAGE)
 
 /**
  * SECTION:rb-source
@@ -117,6 +116,8 @@ struct _RBSourcePrivate
 	GMenu *toolbar_menu;
 	GMenuModel *playlist_menu;
 };
+
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (RBSource, rb_source, RB_TYPE_DISPLAY_PAGE, G_ADD_PRIVATE (RBSource))
 
 enum
 {
@@ -361,14 +362,12 @@ rb_source_class_init (RBSourceClass *klass)
 			      NULL,
 			      G_TYPE_NONE,
 			      0);
-
-	g_type_class_add_private (object_class, sizeof (RBSourcePrivate));
 }
 
 static void
 rb_source_init (RBSource *source)
 {
-	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source, RB_TYPE_SOURCE, RBSourcePrivate);
+	source->priv = rb_source_get_instance_private (source);
 }
 
 static void

@@ -142,8 +142,6 @@ struct RBPlaylistSourcePrivate
 	GMenu *popup;
 };
 
-#define RB_PLAYLIST_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAYLIST_SOURCE, RBPlaylistSourcePrivate))
-
 enum
 {
 	PROP_0,
@@ -156,7 +154,7 @@ static const GtkTargetEntry target_uri [] = { { "text/uri-list", 0, 0 } };
 
 static GSettingsBackend *playlist_settings_backend = NULL;
 
-G_DEFINE_ABSTRACT_TYPE (RBPlaylistSource, rb_playlist_source, RB_TYPE_SOURCE);
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (RBPlaylistSource, rb_playlist_source, RB_TYPE_SOURCE, G_ADD_PRIVATE (RBPlaylistSource));
 
 static void
 rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
@@ -225,14 +223,12 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 							       "whether this playlist is attached to the local library",
 							       TRUE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_type_class_add_private (klass, sizeof (RBPlaylistSourcePrivate));
 }
 
 static void
 rb_playlist_source_init (RBPlaylistSource *source)
 {
-	source->priv = RB_PLAYLIST_SOURCE_GET_PRIVATE (source);
+	source->priv = rb_playlist_source_get_instance_private (source);
 	
 	if (playlist_settings_backend == NULL) {
 		playlist_settings_backend = g_memory_settings_backend_new ();

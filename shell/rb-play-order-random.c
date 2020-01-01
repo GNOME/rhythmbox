@@ -69,15 +69,14 @@ static void rb_random_db_entry_deleted (RBPlayOrder *porder, RhythmDBEntry *entr
 static void rb_random_handle_query_model_changed (RBRandomPlayOrder *rorder);
 static void rb_random_filter_history (RBRandomPlayOrder *rorder, RhythmDBQueryModel *model);
 
-struct RBRandomPlayOrderPrivate
+struct _RBRandomPlayOrderPrivate
 {
 	RBHistory *history;
 
 	gboolean query_model_changed;
 };
 
-G_DEFINE_TYPE (RBRandomPlayOrder, rb_random_play_order, RB_TYPE_PLAY_ORDER)
-#define RB_RANDOM_PLAY_ORDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_RANDOM_PLAY_ORDER, RBRandomPlayOrderPrivate))
+G_DEFINE_TYPE_WITH_CODE (RBRandomPlayOrder, rb_random_play_order, RB_TYPE_PLAY_ORDER, G_ADD_PRIVATE (RBRandomPlayOrder))
 
 static void
 rb_random_play_order_class_init (RBRandomPlayOrderClass *klass)
@@ -100,14 +99,12 @@ rb_random_play_order_class_init (RBRandomPlayOrderClass *klass)
 	porder->go_next = rb_random_play_order_go_next;
 	porder->get_previous = rb_random_play_order_get_previous;
 	porder->go_previous = rb_random_play_order_go_previous;
-
-	g_type_class_add_private (klass, sizeof (RBRandomPlayOrderPrivate));
 }
 
 static void
 rb_random_play_order_init (RBRandomPlayOrder *rorder)
 {
-	rorder->priv = RB_RANDOM_PLAY_ORDER_GET_PRIVATE (rorder);
+	rorder->priv = rb_random_play_order_get_instance_private (rorder);
 
 	rorder->priv->history = rb_history_new (TRUE,
 						(GFunc) rhythmdb_entry_unref,

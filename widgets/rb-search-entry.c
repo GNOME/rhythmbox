@@ -72,8 +72,7 @@ struct RBSearchEntryPrivate
 	guint timeout;
 };
 
-G_DEFINE_TYPE (RBSearchEntry, rb_search_entry, GTK_TYPE_BOX)
-#define RB_SEARCH_ENTRY_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SEARCH_ENTRY, RBSearchEntryPrivate))
+G_DEFINE_TYPE_WITH_CODE (RBSearchEntry, rb_search_entry, GTK_TYPE_BOX, G_ADD_PRIVATE (RBSearchEntry))
 
 /**
  * SECTION:rb-search-entry
@@ -196,14 +195,12 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 							       "whether to display the search menu icon",
 							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_type_class_add_private (klass, sizeof (RBSearchEntryPrivate));
 }
 
 static void
 rb_search_entry_init (RBSearchEntry *entry)
 {
-	entry->priv = RB_SEARCH_ENTRY_GET_PRIVATE (entry);
+	entry->priv = rb_search_entry_get_instance_private (entry);
 	gtk_orientable_set_orientation (GTK_ORIENTABLE (entry), GTK_ORIENTATION_HORIZONTAL);
 }
 

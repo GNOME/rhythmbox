@@ -116,9 +116,9 @@ typedef struct {
 
 } RbIpodDbPrivate;
 
-G_DEFINE_DYNAMIC_TYPE (RbIpodDb, rb_ipod_db, G_TYPE_OBJECT)
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RbIpodDb, rb_ipod_db, G_TYPE_OBJECT, 0, G_ADD_PRIVATE_DYNAMIC (RbIpodDb))
 
-#define IPOD_DB_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_IPOD_DB, RbIpodDbPrivate))
+#define IPOD_DB_GET_PRIVATE(o)   (rb_ipod_db_get_instance_private (RB_IPOD_DB (o)))
 
 enum {
 	BEFORE_SAVE,
@@ -233,8 +233,6 @@ rb_ipod_db_class_init (RbIpodDbClass *klass)
 			      NULL,
 			      G_TYPE_NONE,
 			      0);
-
-	g_type_class_add_private (klass, sizeof (RbIpodDbPrivate));
 }
 
 static void

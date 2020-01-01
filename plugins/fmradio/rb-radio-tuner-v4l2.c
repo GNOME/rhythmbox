@@ -50,7 +50,7 @@ struct _RBRadioTunerPrivate {
 	guint32 freq_mul;
 };
 
-G_DEFINE_DYNAMIC_TYPE (RBRadioTuner, rb_radio_tuner, G_TYPE_OBJECT);
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBRadioTuner, rb_radio_tuner, G_TYPE_OBJECT, 0, G_ADD_PRIVATE_DYNAMIC (RBRadioTuner));
 
 static void rb_radio_tuner_finalize (GObject *object);
 
@@ -60,8 +60,6 @@ rb_radio_tuner_class_init (RBRadioTunerClass *class)
 	GObjectClass *object_class = G_OBJECT_CLASS (class);
 
 	object_class->finalize = rb_radio_tuner_finalize;
-
-	g_type_class_add_private (class, sizeof (RBRadioTunerPrivate));
 }
 
 static void
@@ -72,8 +70,7 @@ rb_radio_tuner_class_finalize (RBRadioTunerClass *class)
 static void
 rb_radio_tuner_init (RBRadioTuner *self)
 {
-	self->priv = G_TYPE_INSTANCE_GET_PRIVATE(self, RB_TYPE_RADIO_TUNER,
-						 RBRadioTunerPrivate);
+	self->priv = rb_radio_tuner_get_instance_private (self);
 	self->priv->fd = -1;
 }
 

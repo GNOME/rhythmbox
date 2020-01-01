@@ -110,10 +110,11 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (
 	rb_android_source,
 	RB_TYPE_MEDIA_PLAYER_SOURCE,
 	0,
+	G_ADD_PRIVATE_DYNAMIC (RBAndroidSource)
 	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_DEVICE_SOURCE, rb_android_device_source_init)
 	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_TRANSFER_TARGET, rb_android_transfer_target_init))
 
-#define GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_ANDROID_SOURCE, RBAndroidSourcePrivate))
+#define GET_PRIVATE(o)   (rb_android_source_get_instance_private (RB_ANDROID_SOURCE (o)))
 
 static void
 free_space_cb (GObject *obj, GAsyncResult *res, gpointer data)
@@ -1163,8 +1164,6 @@ rb_android_source_class_init (RBAndroidSourceClass *klass)
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_override_property (object_class, PROP_DEVICE_SERIAL, "serial");
-
-	g_type_class_add_private (klass, sizeof (RBAndroidSourcePrivate));
 }
 
 static void

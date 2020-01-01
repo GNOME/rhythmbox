@@ -44,7 +44,7 @@ G_BEGIN_DECLS
 typedef struct _RBRandomPlayOrder RBRandomPlayOrder;
 typedef struct _RBRandomPlayOrderClass RBRandomPlayOrderClass;
 
-typedef struct RBRandomPlayOrderPrivate RBRandomPlayOrderPrivate;
+typedef struct _RBRandomPlayOrderPrivate RBRandomPlayOrderPrivate;
 
 struct _RBRandomPlayOrder
 {

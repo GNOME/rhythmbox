@@ -70,8 +70,7 @@ struct _RBRatingPrivate
 	RBRatingPixbufs *pixbufs;
 };
 
-G_DEFINE_TYPE (RBRating, rb_rating, GTK_TYPE_WIDGET)
-#define RB_RATING_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_RATING, RBRatingPrivate))
+G_DEFINE_TYPE_WITH_CODE (RBRating, rb_rating, GTK_TYPE_WIDGET, G_ADD_PRIVATE (RBRating))
 
 /**
  * SECTION:rb-rating
@@ -195,14 +194,12 @@ rb_rating_class_init (RBRatingClass *klass)
 	gtk_binding_entry_add_signal (binding_set, GDK_KEY_KP_Subtract, 0, "adjust-rating", 1, G_TYPE_DOUBLE, -1.0);
 	gtk_binding_entry_add_signal (binding_set, GDK_KEY_Left, 0, "adjust-rating", 1, G_TYPE_DOUBLE, -1.0);
 	gtk_binding_entry_add_signal (binding_set, GDK_KEY_KP_Left, 0, "adjust-rating", 1, G_TYPE_DOUBLE, -1.0);
-	
-	g_type_class_add_private (klass, sizeof (RBRatingPrivate));
 }
 
 static void
 rb_rating_init (RBRating *rating)
 {
-	rating->priv = RB_RATING_GET_PRIVATE (rating);
+	rating->priv = rb_rating_get_instance_private (rating);
 
 	/* create the needed icons */
 	rating->priv->pixbufs = rb_rating_pixbufs_load ();

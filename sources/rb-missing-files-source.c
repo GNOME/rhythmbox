@@ -84,7 +84,7 @@ struct RBMissingFilesSourcePrivate
 	GMenuModel *popup;
 };
 
-G_DEFINE_TYPE (RBMissingFilesSource, rb_missing_files_source, RB_TYPE_SOURCE);
+G_DEFINE_TYPE_WITH_CODE (RBMissingFilesSource, rb_missing_files_source, RB_TYPE_SOURCE, G_ADD_PRIVATE (RBMissingFilesSource));
 
 static void
 rb_missing_files_source_class_init (RBMissingFilesSourceClass *klass)
@@ -115,14 +115,12 @@ rb_missing_files_source_class_init (RBMissingFilesSourceClass *klass)
 	source_class->song_properties = impl_song_properties;
 	source_class->try_playlist = (RBSourceFeatureFunc) rb_false_function;
 	source_class->can_pause = (RBSourceFeatureFunc) rb_false_function;
-
-	g_type_class_add_private (klass, sizeof (RBMissingFilesSourcePrivate));
 }
 
 static void
 rb_missing_files_source_init (RBMissingFilesSource *source)
 {
-	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source, RB_TYPE_MISSING_FILES_SOURCE, RBMissingFilesSourcePrivate);
+	source->priv = rb_missing_files_source_get_instance_private (source);
 }
 
 static void

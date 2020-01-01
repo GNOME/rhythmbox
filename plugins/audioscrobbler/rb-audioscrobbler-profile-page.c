@@ -235,7 +235,7 @@ enum {
 	PROP_TOOLBAR_MENU
 };
 
-G_DEFINE_DYNAMIC_TYPE (RBAudioscrobblerProfilePage, rb_audioscrobbler_profile_page, RB_TYPE_DISPLAY_PAGE)
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBAudioscrobblerProfilePage, rb_audioscrobbler_profile_page, RB_TYPE_DISPLAY_PAGE, 0, G_ADD_PRIVATE_DYNAMIC (RBAudioscrobblerProfilePage))
 
 RBDisplayPage *
 rb_audioscrobbler_profile_page_new (RBShell *shell, GObject *plugin, RBAudioscrobblerService *service)
@@ -303,8 +303,6 @@ rb_audioscrobbler_profile_page_class_init (RBAudioscrobblerProfilePageClass *kla
 							      "toolbar menu",
 							      G_TYPE_MENU,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_type_class_add_private (klass, sizeof (RBAudioscrobblerProfilePagePrivate));
 }
 
 static void
@@ -315,7 +313,7 @@ rb_audioscrobbler_profile_page_class_finalize (RBAudioscrobblerProfilePageClass 
 static void
 rb_audioscrobbler_profile_page_init (RBAudioscrobblerProfilePage *page)
 {
-	page->priv = G_TYPE_INSTANCE_GET_PRIVATE (page, RB_TYPE_AUDIOSCROBBLER_PROFILE_PAGE, RBAudioscrobblerProfilePagePrivate);
+	page->priv = rb_audioscrobbler_profile_page_get_instance_private (page);
 
 	page->priv->button_to_popup_menu_map = g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, g_object_unref);
 	page->priv->popup_menu_to_data_map = g_hash_table_new (g_direct_hash, g_direct_equal);

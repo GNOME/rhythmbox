@@ -126,6 +126,7 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (
 	rb_audiocd_source,
 	RB_TYPE_SOURCE,
 	0,
+	G_ADD_PRIVATE_DYNAMIC (RBAudioCdSource)
 	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_DEVICE_SOURCE,
 				       rb_audiocd_device_source_init))
 
@@ -206,7 +207,6 @@ rb_audiocd_source_class_init (RBAudioCdSourceClass *klass)
 							      "volume",
 							      G_TYPE_VOLUME,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_type_class_add_private (klass, sizeof (RBAudioCdSourcePrivate));
 }
 
 static void
@@ -217,9 +217,7 @@ rb_audiocd_source_class_finalize (RBAudioCdSourceClass *klass)
 static void
 rb_audiocd_source_init (RBAudioCdSource *source)
 {
-	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source,
-						    RB_TYPE_AUDIOCD_SOURCE,
-						    RBAudioCdSourcePrivate);
+	source->priv = rb_audiocd_source_get_instance_private (source);
 }
 
 static void

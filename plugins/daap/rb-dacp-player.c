@@ -108,13 +108,14 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDACPPlayer,
 				rb_dacp_player,
 				G_TYPE_OBJECT,
 				0,
+				G_ADD_PRIVATE_DYNAMIC (RBDACPPlayer)
 				G_IMPLEMENT_INTERFACE_DYNAMIC (DACP_TYPE_PLAYER,
 							       rb_dacp_player_iface_init))
 
 static void
 rb_dacp_player_init (RBDACPPlayer *object)
 {
-	object->priv = RB_DACP_PLAYER_GET_PRIVATE (object);
+	object->priv = rb_dacp_player_get_instance_private (object);
 }
 
 static void
@@ -134,8 +135,6 @@ static void
 rb_dacp_player_class_init (RBDACPPlayerClass *klass)
 {
 	GObjectClass* object_class = G_OBJECT_CLASS (klass);
-
-	g_type_class_add_private (klass, sizeof (RBDACPPlayerPrivate));
 
 	object_class->set_property = rb_dacp_player_set_property;
 	object_class->get_property = rb_dacp_player_get_property;

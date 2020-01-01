@@ -104,7 +104,7 @@ enum {
 	PROP_SERVICE_NAME
 };
 
-G_DEFINE_DYNAMIC_TYPE (RBDACPPairingPage, rb_dacp_pairing_page, RB_TYPE_DISPLAY_PAGE)
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDACPPairingPage, rb_dacp_pairing_page, RB_TYPE_DISPLAY_PAGE, 0, G_ADD_PRIVATE_DYNAMIC (RBDACPPairingPage))
 
 static gboolean
 entry_insert_text_cb (GtkWidget *entry, gchar *text, gint len, gint *position, RBDACPPairingPage *page)
@@ -221,8 +221,6 @@ rb_dacp_pairing_page_class_init (RBDACPPairingPageClass *klass)
 							      "mDNS/DNS-SD service name of the share",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_type_class_add_private (klass, sizeof (RBDACPPairingPagePrivate));
 }
 
 static void
@@ -233,9 +231,7 @@ rb_dacp_pairing_page_class_finalize (RBDACPPairingPageClass *klass)
 static void
 rb_dacp_pairing_page_init (RBDACPPairingPage *page)
 {
-	page->priv = G_TYPE_INSTANCE_GET_PRIVATE (page,
-						  RB_TYPE_DACP_PAIRING_PAGE,
-						  RBDACPPairingPagePrivate);
+	page->priv = rb_dacp_pairing_page_get_instance_private (page);
 }
 
 static void

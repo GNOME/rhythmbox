@@ -57,7 +57,7 @@ enum {
 
 static guint signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBSyncState, rb_sync_state, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_CODE (RBSyncState, rb_sync_state, G_TYPE_OBJECT, G_ADD_PRIVATE (RBSyncState))
 
 static gboolean
 entry_is_undownloaded_podcast (RhythmDBEntry *entry)
@@ -455,7 +455,7 @@ rb_sync_state_new (RBMediaPlayerSource *source, RBSyncSettings *settings)
 static void
 rb_sync_state_init (RBSyncState *state)
 {
-	state->priv = G_TYPE_INSTANCE_GET_PRIVATE (state, RB_TYPE_SYNC_STATE, RBSyncStatePrivate);
+	state->priv = rb_sync_state_get_instance_private (state);
 }
 
 static void
@@ -550,6 +550,4 @@ rb_sync_state_class_init (RBSyncStateClass *klass)
 					 NULL,
 					 G_TYPE_NONE,
 					 0);
-
-	g_type_class_add_private (object_class, sizeof (RBSyncStatePrivate));
 }

@@ -68,7 +68,7 @@ struct _RhythmDBEntryTypePrivate
 };
 
 
-G_DEFINE_TYPE (RhythmDBEntryType, rhythmdb_entry_type, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_CODE (RhythmDBEntryType, rhythmdb_entry_type, G_TYPE_OBJECT, G_ADD_PRIVATE (RhythmDBEntryType))
 
 /**
  * SECTION:rhythmdb-entry-type
@@ -353,9 +353,7 @@ rhythmdb_entry_type_purge_metadata_cache (RhythmDBEntryType *etype, const char *
 static void
 rhythmdb_entry_type_init (RhythmDBEntryType *etype)
 {
-	etype->priv = G_TYPE_INSTANCE_GET_PRIVATE (etype,
-						   RHYTHMDB_TYPE_ENTRY_TYPE,
-						   RhythmDBEntryTypePrivate);
+	etype->priv = rhythmdb_entry_type_get_instance_private (etype);
 }
 
 static void
@@ -546,8 +544,6 @@ rhythmdb_entry_type_class_init (RhythmDBEntryTypeClass *klass)
 							      "metadata cache name",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_type_class_add_private (klass, sizeof (RhythmDBEntryTypePrivate));
 }
 
 

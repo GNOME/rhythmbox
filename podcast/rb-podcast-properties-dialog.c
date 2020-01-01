@@ -108,7 +108,8 @@ enum
 	PROP_BACKEND
 };
 
-G_DEFINE_TYPE (RBPodcastPropertiesDialog, rb_podcast_properties_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE_WITH_CODE (RBPodcastPropertiesDialog, rb_podcast_properties_dialog, GTK_TYPE_DIALOG,
+			 G_ADD_PRIVATE (RBPodcastPropertiesDialog))
 
 /* list of HTML-ish strings that we search for to distinguish plain text from HTML podcast
  * descriptions.  we don't really have anything else to go on - regular content type
@@ -282,8 +283,6 @@ rb_podcast_properties_dialog_class_init (RBPodcastPropertiesDialogClass *klass)
 
 	object_class->dispose = rb_podcast_properties_dialog_dispose;
 	object_class->finalize = rb_podcast_properties_dialog_finalize;
-
-	g_type_class_add_private (klass, sizeof (RBPodcastPropertiesDialogPrivate));
 }
 
 static void
@@ -293,9 +292,7 @@ rb_podcast_properties_dialog_init (RBPodcastPropertiesDialog *dialog)
 	GtkBuilder *builder;
 	AtkObject *lobj, *robj;
 
-	dialog->priv = G_TYPE_INSTANCE_GET_PRIVATE (dialog,
-						    RB_TYPE_PODCAST_PROPERTIES_DIALOG,
-						    RBPodcastPropertiesDialogPrivate);
+	dialog->priv = rb_podcast_properties_dialog_get_instance_private (dialog);
 
 	g_signal_connect_object (G_OBJECT (dialog),
 				 "response",

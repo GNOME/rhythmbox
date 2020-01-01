@@ -95,7 +95,7 @@ struct _RhythmDBMetadataCachePrivate
 	guint64 purge_age;
 };
 
-G_DEFINE_TYPE (RhythmDBMetadataCache, rhythmdb_metadata_cache, G_TYPE_OBJECT);
+G_DEFINE_TYPE_WITH_CODE (RhythmDBMetadataCache, rhythmdb_metadata_cache, G_TYPE_OBJECT, G_ADD_PRIVATE (RhythmDBMetadataCache));
 
 static GHashTable *instances = NULL;
 
@@ -428,9 +428,7 @@ rhythmdb_metadata_cache_purge (RhythmDBMetadataCache *cache,
 static void
 rhythmdb_metadata_cache_init (RhythmDBMetadataCache *cache)
 {
-	cache->priv = G_TYPE_INSTANCE_GET_PRIVATE (cache,
-						   RHYTHMDB_TYPE_METADATA_CACHE,
-						   RhythmDBMetadataCachePrivate);
+	cache->priv = rhythmdb_metadata_cache_get_instance_private (cache);
 }
 
 static void
@@ -548,6 +546,4 @@ rhythmdb_metadata_cache_class_init (RhythmDBMetadataCacheClass *klass)
 							      "cache file name",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_type_class_add_private (klass, sizeof (RhythmDBMetadataCachePrivate));
 }

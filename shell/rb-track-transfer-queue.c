@@ -77,7 +77,7 @@ struct _RBTrackTransferQueuePrivate
 	time_t current_start_time;
 };
 
-G_DEFINE_TYPE (RBTrackTransferQueue, rb_track_transfer_queue, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_CODE (RBTrackTransferQueue, rb_track_transfer_queue, G_TYPE_OBJECT, G_ADD_PRIVATE (RBTrackTransferQueue))
 
 /**
  * SECTION:rb-track-transfer-queue
@@ -624,10 +624,7 @@ rb_track_transfer_queue_cancel_for_source (RBTrackTransferQueue *queue, RBSource
 static void
 rb_track_transfer_queue_init (RBTrackTransferQueue *queue)
 {
-	queue->priv = G_TYPE_INSTANCE_GET_PRIVATE (queue,
-						   RB_TYPE_TRACK_TRANSFER_QUEUE,
-						   RBTrackTransferQueuePrivate);
-
+	queue->priv = rb_track_transfer_queue_get_instance_private (queue);
 	queue->priv->batch_queue = g_queue_new ();
 }
 
@@ -771,6 +768,4 @@ rb_track_transfer_queue_class_init (RBTrackTransferQueueClass *klass)
 			      G_TYPE_BOOLEAN,
 			      3,
 			      G_TYPE_STRV, G_TYPE_STRV, G_TYPE_CLOSURE);
-
-	g_type_class_add_private (klass, sizeof (RBTrackTransferQueuePrivate));
 }

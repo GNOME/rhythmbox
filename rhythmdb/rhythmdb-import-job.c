@@ -107,6 +107,7 @@ G_DEFINE_TYPE_EXTENDED (RhythmDBImportJob,
 			rhythmdb_import_job,
 			G_TYPE_OBJECT,
 			0,
+			G_ADD_PRIVATE (RhythmDBImportJob)
 			G_IMPLEMENT_INTERFACE (RB_TYPE_TASK_PROGRESS, rhythmdb_import_job_task_progress_init));
 
 /**
@@ -575,9 +576,7 @@ entry_added_cb (RhythmDB *db,
 static void
 rhythmdb_import_job_init (RhythmDBImportJob *job)
 {
-	job->priv = G_TYPE_INSTANCE_GET_PRIVATE (job,
-						 RHYTHMDB_TYPE_IMPORT_JOB,
-						 RhythmDBImportJobPrivate);
+	job->priv = rhythmdb_import_job_get_instance_private (job);
 
 	g_mutex_init (&job->priv->lock);
 	job->priv->outstanding = g_queue_new ();
@@ -852,6 +851,4 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 			      NULL,
 			      G_TYPE_NONE,
 			      1, G_TYPE_INT);
-
-	g_type_class_add_private (klass, sizeof (RhythmDBImportJobPrivate));
 }

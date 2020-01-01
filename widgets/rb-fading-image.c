@@ -67,7 +67,7 @@ struct _RBFadingImagePrivate
 	gboolean use_tooltip;
 };
 
-G_DEFINE_TYPE (RBFadingImage, rb_fading_image, GTK_TYPE_WIDGET)
+G_DEFINE_TYPE_WITH_CODE (RBFadingImage, rb_fading_image, GTK_TYPE_WIDGET, G_ADD_PRIVATE (RBFadingImage))
 
 /**
  * SECTION:rb-fading-image
@@ -473,7 +473,7 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 static void
 rb_fading_image_init (RBFadingImage *image)
 {
-	image->priv = G_TYPE_INSTANCE_GET_PRIVATE (image, RB_TYPE_FADING_IMAGE, RBFadingImagePrivate);
+	image->priv = rb_fading_image_get_instance_private (image);
 }
 
 static void
@@ -552,8 +552,6 @@ rb_fading_image_class_init (RBFadingImageClass *klass)
 			      NULL,
 			      G_TYPE_NONE,
 			      1, GDK_TYPE_PIXBUF);
-
-	g_type_class_add_private (klass, sizeof (RBFadingImagePrivate));
 }
 
 

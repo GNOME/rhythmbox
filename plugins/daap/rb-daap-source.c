@@ -107,7 +107,7 @@ enum {
 	PROP_PASSWORD_PROTECTED
 };
 
-G_DEFINE_DYNAMIC_TYPE (RBDAAPSource, rb_daap_source, RB_TYPE_BROWSER_SOURCE);
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDAAPSource, rb_daap_source, RB_TYPE_BROWSER_SOURCE, 0, G_ADD_PRIVATE_DYNAMIC (RBDAAPSource));
 
 G_DEFINE_DYNAMIC_TYPE (RBDAAPEntryType, rb_daap_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
 
@@ -218,8 +218,6 @@ rb_daap_source_class_init (RBDAAPSourceClass *klass)
 							       "Whether the share is password protected",
 							       FALSE,
 							       G_PARAM_READWRITE));
-
-	g_type_class_add_private (klass, sizeof (RBDAAPSourcePrivate));
 }
 
 static void
@@ -230,9 +228,7 @@ rb_daap_source_class_finalize (RBDAAPSourceClass *klass)
 static void
 rb_daap_source_init (RBDAAPSource *source)
 {
-	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source,
-						    RB_TYPE_DAAP_SOURCE,
-						    RBDAAPSourcePrivate);
+	source->priv = rb_daap_source_get_instance_private (source);
 }
 
 static void

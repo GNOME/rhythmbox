@@ -91,8 +91,6 @@ struct RBPropertyViewPrivate
 	guint reset_selection_id;
 };
 
-#define RB_PROPERTY_VIEW_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PROPERTY_VIEW, RBPropertyViewPrivate))
-
 /**
  * SECTION:rb-property-view
  * @short_description: a #GtkTreeView backed by a #RhythmDBPropertyModel
@@ -129,7 +127,7 @@ enum
 
 static guint rb_property_view_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBPropertyView, rb_property_view, GTK_TYPE_SCROLLED_WINDOW)
+G_DEFINE_TYPE_WITH_CODE (RBPropertyView, rb_property_view, GTK_TYPE_SCROLLED_WINDOW, G_ADD_PRIVATE (RBPropertyView))
 
 static void
 rb_property_view_class_init (RBPropertyViewClass *klass)
@@ -299,14 +297,12 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      NULL,
 			      G_TYPE_NONE,
 			      0);
-
-	g_type_class_add_private (klass, sizeof (RBPropertyViewPrivate));
 }
 
 static void
 rb_property_view_init (RBPropertyView *view)
 {
-	view->priv = RB_PROPERTY_VIEW_GET_PRIVATE (view);
+	view->priv = rb_property_view_get_instance_private (view);
 }
 
 static void

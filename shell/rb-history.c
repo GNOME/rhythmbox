@@ -61,8 +61,6 @@ struct RBHistoryPrivate
 	gpointer destroy_userdata;
 };
 
-#define RB_HISTORY_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_HISTORY, RBHistoryPrivate))
-
 #define MAX_HISTORY_SIZE 50
 
 static void rb_history_class_init (RBHistoryClass *klass);
@@ -91,7 +89,7 @@ enum
 	PROP_MAX_SIZE,
 };
 
-G_DEFINE_TYPE (RBHistory, rb_history, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_CODE (RBHistory, rb_history, G_TYPE_OBJECT, G_ADD_PRIVATE (RBHistory))
 
 static void
 rb_history_class_init (RBHistoryClass *klass)
@@ -129,8 +127,6 @@ rb_history_class_init (RBHistoryClass *klass)
 							    0, G_MAXUINT,
 							    0,
 							    G_PARAM_READWRITE));
-
-	g_type_class_add_private (klass, sizeof (RBHistoryPrivate));
 }
 
 /**
@@ -163,7 +159,7 @@ rb_history_new (gboolean truncate_on_play, GFunc destroyer, gpointer destroy_use
 static void
 rb_history_init (RBHistory *hist)
 {
-	hist->priv = RB_HISTORY_GET_PRIVATE (hist);
+	hist->priv = rb_history_get_instance_private (hist);
 
 	hist->priv->entry_to_seqptr = g_hash_table_new (g_direct_hash,
 							g_direct_equal);

@@ -77,12 +77,12 @@ typedef struct {
 	GSettings *encoding_settings;
 } RBMediaPlayerSourcePrivate;
 
-G_DEFINE_TYPE (RBMediaPlayerSource, rb_media_player_source, RB_TYPE_BROWSER_SOURCE);
+G_DEFINE_TYPE_WITH_CODE (RBMediaPlayerSource, rb_media_player_source, RB_TYPE_BROWSER_SOURCE, G_ADD_PRIVATE (RBMediaPlayerSource));
 
-G_DEFINE_TYPE (RBMediaPlayerEntryType, rb_media_player_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
+G_DEFINE_TYPE_WITH_CODE (RBMediaPlayerEntryType, rb_media_player_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE, G_ADD_PRIVATE (RBMediaPlayerEntryType));
 
-#define MEDIA_PLAYER_SOURCE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_MEDIA_PLAYER_SOURCE, RBMediaPlayerSourcePrivate))
-#define MEDIA_PLAYER_ENTRY_TYPE_GET_PRIVATE(o)   (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_MEDIA_PLAYER_ENTRY_TYPE, RBMediaPlayerEntryTypePrivate))
+#define MEDIA_PLAYER_SOURCE_GET_PRIVATE(o)   (rb_media_player_source_get_instance_private (RB_MEDIA_PLAYER_SOURCE (o)))
+#define MEDIA_PLAYER_ENTRY_TYPE_GET_PRIVATE(o)   (rb_media_player_entry_type_get_instance_private (RB_MEDIA_PLAYER_ENTRY_TYPE (o)))
 
 static void rb_media_player_entry_type_class_init (RBMediaPlayerEntryTypeClass *klass);
 static void rb_media_player_entry_type_init (RBMediaPlayerEntryType *etype);
@@ -223,8 +223,6 @@ rb_media_player_entry_type_class_init (RBMediaPlayerEntryTypeClass *klass)
 							      "uri prefix for entries",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_type_class_add_private (klass, sizeof (RBMediaPlayerEntryTypePrivate));
 }
 
 static void
@@ -295,8 +293,6 @@ rb_media_player_source_class_init (RBMediaPlayerSourceClass *klass)
 							      "GSettings holding encoding settings",
 							      G_TYPE_SETTINGS,
 							      G_PARAM_READWRITE));
-
-	g_type_class_add_private (klass, sizeof (RBMediaPlayerSourcePrivate));
 }
 
 static void

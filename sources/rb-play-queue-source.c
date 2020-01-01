@@ -137,8 +137,8 @@ enum
 	PROP_PLAY_ORDER
 };
 
-G_DEFINE_TYPE (RBPlayQueueSource, rb_play_queue_source, RB_TYPE_STATIC_PLAYLIST_SOURCE)
-#define RB_PLAY_QUEUE_SOURCE_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), RB_TYPE_PLAY_QUEUE_SOURCE, RBPlayQueueSourcePrivate))
+G_DEFINE_TYPE_WITH_CODE (RBPlayQueueSource, rb_play_queue_source, RB_TYPE_STATIC_PLAYLIST_SOURCE, G_ADD_PRIVATE (RBPlayQueueSource))
+#define RB_PLAY_QUEUE_SOURCE_GET_PRIVATE(object) (rb_play_queue_source_get_instance_private (RB_PLAY_QUEUE_SOURCE (object)))
 
 static const GDBusInterfaceVTable play_queue_vtable = {
 	(GDBusInterfaceMethodCallFunc) rb_play_queue_dbus_method_call,
@@ -230,8 +230,6 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 	g_object_class_override_property (object_class,
 					  PROP_PLAY_ORDER,
 					  "play-order");
-
-	g_type_class_add_private (klass, sizeof (RBPlayQueueSourcePrivate));
 }
 
 static void

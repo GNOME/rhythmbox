@@ -46,7 +46,7 @@ struct _RBDisplayPageMenuPrivate
 	int item_count;
 };
 
-G_DEFINE_TYPE (RBDisplayPageMenu, rb_display_page_menu, G_TYPE_MENU_MODEL);
+G_DEFINE_TYPE_WITH_CODE (RBDisplayPageMenu, rb_display_page_menu, G_TYPE_MENU_MODEL, G_ADD_PRIVATE (RBDisplayPageMenu));
 
 /**
  * SECTION:rb-display-page-menu
@@ -441,7 +441,7 @@ impl_set_property (GObject *object, guint prop_id, const GValue *value, GParamSp
 static void
 rb_display_page_menu_init (RBDisplayPageMenu *menu)
 {
-	menu->priv = G_TYPE_INSTANCE_GET_PRIVATE (menu, RB_TYPE_DISPLAY_PAGE_MENU, RBDisplayPageMenuPrivate);
+	menu->priv = rb_display_page_menu_get_instance_private (menu);
 }
 
 static void
@@ -492,8 +492,6 @@ rb_display_page_menu_class_init (RBDisplayPageMenuClass *klass)
 							      "action name",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_type_class_add_private (klass, sizeof (RBDisplayPageMenuPrivate));
 }
 
 

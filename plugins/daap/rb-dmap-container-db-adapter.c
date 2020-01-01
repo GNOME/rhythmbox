@@ -36,11 +36,21 @@
 
 #include <libdmapsharing/dmap.h>
 
+static void rb_dmap_container_db_adapter_interface_init (gpointer iface, gpointer data);
+
 static guint next_playlist_id = 2;
 
 struct RBDMAPContainerDbAdapterPrivate {
 	RBPlaylistManager *playlist_manager;
 };
+
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDMAPContainerDbAdapter,
+				rb_dmap_container_db_adapter,
+				G_TYPE_OBJECT,
+				0,
+				G_ADD_PRIVATE_DYNAMIC (RBDMAPContainerDbAdapter)
+				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_CONTAINER_DB,
+							       rb_dmap_container_db_adapter_interface_init))
 
 typedef struct ForeachAdapterData {
 	gpointer data;
@@ -128,13 +138,12 @@ rb_dmap_container_db_adapter_count (DMAPContainerDb *db)
 static void
 rb_dmap_container_db_adapter_init (RBDMAPContainerDbAdapter *db)
 {
-	db->priv = RB_DMAP_CONTAINER_DB_ADAPTER_GET_PRIVATE (db);
+	db->priv = rb_dmap_container_db_adapter_get_instance_private (db);
 }
 
 static void
 rb_dmap_container_db_adapter_class_init (RBDMAPContainerDbAdapterClass *klass)
 {
-	g_type_class_add_private (klass, sizeof (RBDMAPContainerDbAdapterPrivate));
 }
 
 static void
@@ -153,13 +162,6 @@ rb_dmap_container_db_adapter_interface_init (gpointer iface, gpointer data)
 	dmap_db->foreach = rb_dmap_container_db_adapter_foreach;
 	dmap_db->count = rb_dmap_container_db_adapter_count;
 }
-
-G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDMAPContainerDbAdapter,
-				rb_dmap_container_db_adapter,
-				G_TYPE_OBJECT,
-				0,
-				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_CONTAINER_DB,
-							       rb_dmap_container_db_adapter_interface_init))
 
 static void
 assign_id (RBPlaylistManager *mgr,

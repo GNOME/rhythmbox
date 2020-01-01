@@ -33,7 +33,6 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 
-G_DEFINE_ABSTRACT_TYPE (RBDisplayPage, rb_display_page, GTK_TYPE_BOX)
 
 /**
  * SECTION:rb-display-page
@@ -66,6 +65,8 @@ struct _RBDisplayPagePrivate
 
 	GList *pending_children;
 };
+
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (RBDisplayPage, rb_display_page, GTK_TYPE_BOX, G_ADD_PRIVATE (RBDisplayPage))
 
 enum
 {
@@ -564,7 +565,7 @@ static void
 rb_display_page_init (RBDisplayPage *page)
 {
 	gtk_orientable_set_orientation (GTK_ORIENTABLE (page), GTK_ORIENTATION_HORIZONTAL);
-	page->priv = G_TYPE_INSTANCE_GET_PRIVATE (page, RB_TYPE_DISPLAY_PAGE, RBDisplayPagePrivate);
+	page->priv = rb_display_page_get_instance_private (page);
 
 	page->priv->visible = TRUE;
 }
@@ -698,6 +699,4 @@ rb_display_page_class_init (RBDisplayPageClass *klass)
 			      NULL,
 			      G_TYPE_NONE,
 			      0);
-
-	g_type_class_add_private (object_class, sizeof (RBDisplayPagePrivate));
 }

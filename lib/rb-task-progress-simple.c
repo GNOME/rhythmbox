@@ -65,6 +65,7 @@ G_DEFINE_TYPE_EXTENDED (RBTaskProgressSimple,
 			rb_task_progress_simple,
 			G_TYPE_OBJECT,
 			0,
+			G_ADD_PRIVATE (RBTaskProgressSimple)
 			G_IMPLEMENT_INTERFACE (RB_TYPE_TASK_PROGRESS, rb_task_progress_simple_task_progress_init));
 
 enum {
@@ -163,7 +164,7 @@ impl_finalize (GObject *object)
 static void
 rb_task_progress_simple_init (RBTaskProgressSimple *task)
 {
-	task->priv = G_TYPE_INSTANCE_GET_PRIVATE (task, RB_TYPE_TASK_PROGRESS_SIMPLE, RBTaskProgressSimplePrivate);
+	task->priv = rb_task_progress_simple_get_instance_private (task);
 }
 
 static void
@@ -176,8 +177,6 @@ static void
 rb_task_progress_simple_class_init (RBTaskProgressSimpleClass *klass)
 {
 	GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-
-	g_type_class_add_private (klass, sizeof (RBTaskProgressSimplePrivate));
 
 	gobject_class->finalize = impl_finalize;
 	gobject_class->set_property = impl_set_property;

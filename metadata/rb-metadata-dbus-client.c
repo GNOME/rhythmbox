@@ -93,7 +93,7 @@ struct RBMetaDataPrivate
 	GHashTable *metadata;
 };
 
-G_DEFINE_TYPE (RBMetaData, rb_metadata, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_CODE (RBMetaData, rb_metadata, G_TYPE_OBJECT, G_ADD_PRIVATE (RBMetaData))
 
 static void
 rb_metadata_class_init (RBMetaDataClass *klass)
@@ -102,15 +102,13 @@ rb_metadata_class_init (RBMetaDataClass *klass)
 
 	object_class->finalize = rb_metadata_finalize;
 
-	g_type_class_add_private (object_class, sizeof (RBMetaDataPrivate));
-
 	main_context = g_main_context_new ();	/* maybe not needed? */
 }
 
 static void
 rb_metadata_init (RBMetaData *md)
 {
-	md->priv = G_TYPE_INSTANCE_GET_PRIVATE (md, RB_TYPE_METADATA, RBMetaDataPrivate);
+	md->priv = rb_metadata_get_instance_private (md);
 }
 
 static void

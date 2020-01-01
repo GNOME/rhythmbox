@@ -54,7 +54,7 @@ enum {
 	PROP_SYNC_STATE
 };
 
-G_DEFINE_TYPE (RBSyncStateUI, rb_sync_state_ui, GTK_TYPE_BOX)
+G_DEFINE_TYPE_WITH_CODE (RBSyncStateUI, rb_sync_state_ui, GTK_TYPE_BOX, G_ADD_PRIVATE (RBSyncStateUI))
 
 
 static char *
@@ -213,7 +213,7 @@ rb_sync_state_ui_new (RBSyncState *state)
 static void
 rb_sync_state_ui_init (RBSyncStateUI *ui)
 {
-	ui->priv = G_TYPE_INSTANCE_GET_PRIVATE (ui, RB_TYPE_SYNC_STATE_UI, RBSyncStateUIPrivate);
+	ui->priv = rb_sync_state_ui_get_instance_private (ui);
 	gtk_orientable_set_orientation (GTK_ORIENTABLE (ui), GTK_ORIENTATION_VERTICAL);
 }
 
@@ -317,6 +317,4 @@ rb_sync_state_ui_class_init (RBSyncStateUIClass *klass)
 							      "RBSyncState instance",
 							      RB_TYPE_SYNC_STATE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_type_class_add_private (object_class, sizeof (RBSyncStateUIPrivate));
 }

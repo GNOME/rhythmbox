@@ -82,15 +82,14 @@ struct RBFeedPodcastPropertiesDialogPrivate
 	GtkWidget   *close_button;
 };
 
-#define RB_FEED_PODCAST_PROPERTIES_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_FEED_PODCAST_PROPERTIES_DIALOG, RBFeedPodcastPropertiesDialogPrivate))
-
 enum
 {
 	PROP_0,
 	PROP_BACKEND
 };
 
-G_DEFINE_TYPE (RBFeedPodcastPropertiesDialog, rb_feed_podcast_properties_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE_WITH_CODE (RBFeedPodcastPropertiesDialog, rb_feed_podcast_properties_dialog, GTK_TYPE_DIALOG,
+			 G_ADD_PRIVATE (RBFeedPodcastPropertiesDialog))
 
 static void
 rb_feed_podcast_properties_dialog_class_init (RBFeedPodcastPropertiesDialogClass *klass)
@@ -98,8 +97,6 @@ rb_feed_podcast_properties_dialog_class_init (RBFeedPodcastPropertiesDialogClass
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = rb_feed_podcast_properties_dialog_finalize;
-
-	g_type_class_add_private (klass, sizeof (RBFeedPodcastPropertiesDialogPrivate));
 }
 
 static void
@@ -108,7 +105,7 @@ rb_feed_podcast_properties_dialog_init (RBFeedPodcastPropertiesDialog *dialog)
 	GtkWidget  *content_area;
 	GtkBuilder *builder;
 
-	dialog->priv = RB_FEED_PODCAST_PROPERTIES_DIALOG_GET_PRIVATE (dialog);
+	dialog->priv = rb_feed_podcast_properties_dialog_get_instance_private (dialog);
 
 	g_signal_connect_object (G_OBJECT (dialog),
 				 "response",

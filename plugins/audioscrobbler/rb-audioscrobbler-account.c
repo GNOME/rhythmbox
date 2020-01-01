@@ -61,8 +61,6 @@ struct _RBAudioscrobblerAccountPrivate
 	SoupSession *soup_session;
 };
 
-#define RB_AUDIOSCROBBLER_ACCOUNT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_AUDIOSCROBBLER_ACCOUNT, RBAudioscrobblerAccountPrivate))
-
 static void          rb_audioscrobbler_account_class_init (RBAudioscrobblerAccountClass *klass);
 static void          rb_audioscrobbler_account_init (RBAudioscrobblerAccount *account);
 static void          rb_audioscrobbler_account_constructed (GObject *object);
@@ -108,7 +106,7 @@ enum
 
 static guint rb_audioscrobbler_account_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_DYNAMIC_TYPE (RBAudioscrobblerAccount, rb_audioscrobbler_account, G_TYPE_OBJECT)
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBAudioscrobblerAccount, rb_audioscrobbler_account, G_TYPE_OBJECT, 0, G_ADD_PRIVATE_DYNAMIC (RBAudioscrobblerAccount))
 
 RBAudioscrobblerAccount *
 rb_audioscrobbler_account_new (RBAudioscrobblerService *service)
@@ -180,8 +178,6 @@ rb_audioscrobbler_account_class_init (RBAudioscrobblerAccountClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      RB_TYPE_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS);
-
-	g_type_class_add_private (klass, sizeof (RBAudioscrobblerAccountPrivate));
 }
 
 static void
@@ -192,7 +188,7 @@ rb_audioscrobbler_account_class_finalize (RBAudioscrobblerAccountClass *klass)
 static void
 rb_audioscrobbler_account_init (RBAudioscrobblerAccount *account)
 {
-	account->priv = RB_AUDIOSCROBBLER_ACCOUNT_GET_PRIVATE (account);
+	account->priv = rb_audioscrobbler_account_get_instance_private (account);
 
 	account->priv->username = NULL;
 	account->priv->auth_token = NULL;

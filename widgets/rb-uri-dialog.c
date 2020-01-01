@@ -75,8 +75,6 @@ struct RBURIDialogPrivate
 	GtkWidget   *cancelbutton;
 };
 
-#define RB_URI_DIALOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_URI_DIALOG, RBURIDialogPrivate))
-
 enum
 {
 	LOCATION_ADDED,
@@ -91,7 +89,7 @@ enum
 
 static guint rb_uri_dialog_signals [LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBURIDialog, rb_uri_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE_WITH_CODE (RBURIDialog, rb_uri_dialog, GTK_TYPE_DIALOG, G_ADD_PRIVATE (RBURIDialog))
 
 static void
 rb_uri_dialog_class_init (RBURIDialogClass *klass)
@@ -131,8 +129,6 @@ rb_uri_dialog_class_init (RBURIDialogClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
-
-	g_type_class_add_private (klass, sizeof (RBURIDialogPrivate));
 }
 
 static void
@@ -142,7 +138,7 @@ rb_uri_dialog_init (RBURIDialog *dialog)
 	GtkBuilder *builder;
 
 	/* create the dialog and some buttons forward - close */
-	dialog->priv = RB_URI_DIALOG_GET_PRIVATE (dialog);
+	dialog->priv = rb_uri_dialog_get_instance_private (dialog);
 
 	g_signal_connect_object (G_OBJECT (dialog),
 				 "response",

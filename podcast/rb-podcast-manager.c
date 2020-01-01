@@ -121,9 +121,6 @@ struct RBPodcastManagerPrivate
 	GFile *timestamp_file;
 };
 
-#define RB_PODCAST_MANAGER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PODCAST_MANAGER, RBPodcastManagerPrivate))
-
-
 static guint rb_podcast_manager_signals[LAST_SIGNAL] = { 0 };
 
 /* functions */
@@ -172,7 +169,7 @@ static gboolean end_job					(RBPodcastManagerInfo *data);
 static void cancel_job					(RBPodcastManagerInfo *pd);
 static void rb_podcast_manager_start_update_timer 	(RBPodcastManager *pd);
 
-G_DEFINE_TYPE (RBPodcastManager, rb_podcast_manager, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_CODE (RBPodcastManager, rb_podcast_manager, G_TYPE_OBJECT, G_ADD_PRIVATE (RBPodcastManager))
 
 static void
 rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
@@ -246,14 +243,12 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 				G_TYPE_STRING,
 				G_TYPE_STRING,
 				G_TYPE_BOOLEAN);
-
-	g_type_class_add_private (klass, sizeof (RBPodcastManagerPrivate));
 }
 
 static void
 rb_podcast_manager_init (RBPodcastManager *pd)
 {
-	pd->priv = RB_PODCAST_MANAGER_GET_PRIVATE (pd);
+	pd->priv = rb_podcast_manager_get_instance_private (pd);
 
 	pd->priv->source_sync = 0;
 	pd->priv->db = NULL;

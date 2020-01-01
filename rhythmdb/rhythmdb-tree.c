@@ -67,7 +67,6 @@ typedef struct RhythmDBTreeProperty
 
 #define RHYTHMDB_TREE_PROPERTY_FROM_ENTRY(entry) ((RhythmDBTreeProperty *) entry->data)
 
-G_DEFINE_TYPE(RhythmDBTree, rhythmdb_tree, RHYTHMDB_TYPE)
 
 static void rhythmdb_tree_finalize (GObject *object);
 
@@ -151,6 +150,8 @@ struct RhythmDBTreePrivate
 	guint idle_load_id;
 };
 
+G_DEFINE_TYPE_WITH_CODE (RhythmDBTree, rhythmdb_tree, RHYTHMDB_TYPE, G_ADD_PRIVATE (RhythmDBTree))
+
 typedef struct
 {
 	RBRefString *name;
@@ -162,8 +163,6 @@ typedef struct
 	RBRefString *typename;
 	GList *properties;
 } RhythmDBUnknownEntry;
-
-#define RHYTHMDB_TREE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE_TREE, RhythmDBTreePrivate))
 
 enum
 {
@@ -209,14 +208,12 @@ rhythmdb_tree_class_init (RhythmDBTreeClass *klass)
 	rhythmdb_class->impl_evaluate_query = rhythmdb_tree_evaluate_query;
 	rhythmdb_class->impl_do_full_query = rhythmdb_tree_do_full_query;
 	rhythmdb_class->impl_entry_type_registered = rhythmdb_tree_entry_type_registered;
-
-	g_type_class_add_private (klass, sizeof (RhythmDBTreePrivate));
 }
 
 static void
 rhythmdb_tree_init (RhythmDBTree *db)
 {
-	db->priv = RHYTHMDB_TREE_GET_PRIVATE (db);
+	db->priv = rhythmdb_tree_get_instance_private (db);
 
 	db->priv->entries = g_hash_table_new (rb_refstring_hash, rb_refstring_equal);
 	db->priv->entry_ids = g_hash_table_new (g_direct_hash, g_direct_equal);

@@ -126,11 +126,6 @@ enum
 	PROP_SHOW_BROWSER
 };
 
-G_DEFINE_TYPE (RBStaticPlaylistSource, rb_static_playlist_source, RB_TYPE_PLAYLIST_SOURCE)
-#define RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), \
-								RB_TYPE_STATIC_PLAYLIST_SOURCE, \
-								RBStaticPlaylistSourcePrivate))
-
 typedef struct
 {
 	RhythmDBQueryModel *base_model;
@@ -145,6 +140,9 @@ typedef struct
 	GAction *search_action;
 
 } RBStaticPlaylistSourcePrivate;
+
+G_DEFINE_TYPE_WITH_CODE (RBStaticPlaylistSource, rb_static_playlist_source, RB_TYPE_PLAYLIST_SOURCE, G_ADD_PRIVATE (RBStaticPlaylistSource))
+#define RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE(object) (rb_static_playlist_source_get_instance_private (RB_STATIC_PLAYLIST_SOURCE (object)))
 
 static void
 rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
@@ -181,8 +179,6 @@ rb_static_playlist_source_class_init (RBStaticPlaylistSourceClass *klass)
 	g_object_class_override_property (object_class,
 					  PROP_SHOW_BROWSER,
 					  "show-browser");
-
-	g_type_class_add_private (klass, sizeof (RBStaticPlaylistSourcePrivate));
 }
 
 static void

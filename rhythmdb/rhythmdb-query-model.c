@@ -53,16 +53,6 @@ static void rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface);
 static void rhythmdb_query_model_drag_source_init (RbTreeDragSourceIface *iface);
 static void rhythmdb_query_model_drag_dest_init (RbTreeDragDestIface *iface);
 
-G_DEFINE_TYPE_WITH_CODE(RhythmDBQueryModel, rhythmdb_query_model, G_TYPE_OBJECT,
-			G_IMPLEMENT_INTERFACE(RHYTHMDB_TYPE_QUERY_RESULTS,
-					      rhythmdb_query_model_query_results_init)
-			G_IMPLEMENT_INTERFACE(GTK_TYPE_TREE_MODEL,
-					      rhythmdb_query_model_tree_model_init)
-			G_IMPLEMENT_INTERFACE(RB_TYPE_TREE_DRAG_SOURCE,
-					      rhythmdb_query_model_drag_source_init)
-			G_IMPLEMENT_INTERFACE(RB_TYPE_TREE_DRAG_DEST,
-					      rhythmdb_query_model_drag_dest_init))
-
 static void rhythmdb_query_model_init (RhythmDBQueryModel *shell_player);
 static void rhythmdb_query_model_constructed (GObject *object);
 static void rhythmdb_query_model_dispose (GObject *object);
@@ -242,7 +232,16 @@ struct _RhythmDBQueryModelPrivate
 	gint query_reapply_timeout_id;
 };
 
-#define RHYTHMDB_QUERY_MODEL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RHYTHMDB_TYPE_QUERY_MODEL, RhythmDBQueryModelPrivate))
+G_DEFINE_TYPE_WITH_CODE(RhythmDBQueryModel, rhythmdb_query_model, G_TYPE_OBJECT,
+			G_ADD_PRIVATE (RhythmDBQueryModel)
+			G_IMPLEMENT_INTERFACE(RHYTHMDB_TYPE_QUERY_RESULTS,
+					      rhythmdb_query_model_query_results_init)
+			G_IMPLEMENT_INTERFACE(GTK_TYPE_TREE_MODEL,
+					      rhythmdb_query_model_tree_model_init)
+			G_IMPLEMENT_INTERFACE(RB_TYPE_TREE_DRAG_SOURCE,
+					      rhythmdb_query_model_drag_source_init)
+			G_IMPLEMENT_INTERFACE(RB_TYPE_TREE_DRAG_DEST,
+					      rhythmdb_query_model_drag_dest_init))
 
 enum
 {
@@ -493,8 +492,6 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      NULL,
 			      G_TYPE_BOOLEAN,
 			      1, RHYTHMDB_TYPE_ENTRY);
-
-	g_type_class_add_private (klass, sizeof (RhythmDBQueryModelPrivate));
 }
 
 static void
@@ -669,7 +666,7 @@ rhythmdb_query_model_init (RhythmDBQueryModel *model)
 			= gtk_target_list_new (rhythmdb_query_model_drag_types,
 					       G_N_ELEMENTS (rhythmdb_query_model_drag_types));
 
-	model->priv = RHYTHMDB_QUERY_MODEL_GET_PRIVATE (model);
+	model->priv = rhythmdb_query_model_get_instance_private (model);
 
 	model->priv->stamp = g_random_int ();
 

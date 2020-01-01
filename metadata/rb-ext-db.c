@@ -109,7 +109,7 @@ typedef struct {
 	gboolean stored;
 } RBExtDBStoreRequest;
 
-G_DEFINE_TYPE (RBExtDB, rb_ext_db, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_CODE (RBExtDB, rb_ext_db, G_TYPE_OBJECT, G_ADD_PRIVATE (RBExtDB))
 
 static void
 free_request (RBExtDBRequest *request)
@@ -402,7 +402,7 @@ impl_finalize (GObject *object)
 static void
 rb_ext_db_init (RBExtDB *store)
 {
-	store->priv = G_TYPE_INSTANCE_GET_PRIVATE (store, RB_TYPE_EXT_DB, RBExtDBPrivate);
+	store->priv = rb_ext_db_get_instance_private (store);
 
 	store->priv->store_queue = g_async_queue_new ();
 }
@@ -510,8 +510,6 @@ rb_ext_db_class_init (RBExtDBClass *klass)
 			      NULL,
 			      G_TYPE_POINTER,
 			      1, G_TYPE_VALUE);
-
-	g_type_class_add_private (klass, sizeof (RBExtDBPrivate));
 }
 
 

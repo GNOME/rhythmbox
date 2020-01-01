@@ -161,10 +161,11 @@ G_DEFINE_DYNAMIC_TYPE_EXTENDED(
 	rb_mtp_source,
 	RB_TYPE_MEDIA_PLAYER_SOURCE,
 	0,
+	G_ADD_PRIVATE_DYNAMIC (RBMtpSource)
 	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_DEVICE_SOURCE, rb_mtp_device_source_init)
 	G_IMPLEMENT_INTERFACE_DYNAMIC (RB_TYPE_TRANSFER_TARGET, rb_mtp_source_transfer_target_init))
 
-#define MTP_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_MTP_SOURCE, RBMtpSourcePrivate))
+#define MTP_SOURCE_GET_PRIVATE(o) (rb_mtp_source_get_instance_private (RB_MTP_SOURCE (o)))
 
 enum
 {
@@ -230,8 +231,6 @@ rb_mtp_source_class_init (RBMtpSourceClass *klass)
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 #endif
 	g_object_class_override_property (object_class, PROP_DEVICE_SERIAL, "serial");
-
-	g_type_class_add_private (klass, sizeof (RBMtpSourcePrivate));
 }
 
 static void
@@ -1247,7 +1246,7 @@ impl_track_added (RBTransferTarget *target,
 
 	upload = g_new0 (RBMtpSourceTrackUpload, 1);
 	upload->track = track;
-	upload->source = g_object_ref (target);
+	upload->source = RB_MTP_SOURCE (g_object_ref (target));
 
 	destfile = g_file_new_for_uri (dest);
 	upload->tempfile = g_file_get_path (destfile);

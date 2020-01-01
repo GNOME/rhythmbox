@@ -165,8 +165,7 @@ struct RBLibrarySourcePrivate
 	GSettings *encoding_settings;
 };
 
-#define RB_LIBRARY_SOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LIBRARY_SOURCE, RBLibrarySourcePrivate))
-G_DEFINE_TYPE (RBLibrarySource, rb_library_source, RB_TYPE_BROWSER_SOURCE)
+G_DEFINE_TYPE_WITH_CODE (RBLibrarySource, rb_library_source, RB_TYPE_BROWSER_SOURCE, G_ADD_PRIVATE (RBLibrarySource))
 
 static void
 rb_library_source_class_init (RBLibrarySourceClass *klass)
@@ -191,14 +190,12 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 
 	browser_source_class->has_drop_support = (RBBrowserSourceFeatureFunc) rb_true_function;
 	browser_source_class->pack_content = impl_pack_content;
-
-	g_type_class_add_private (klass, sizeof (RBLibrarySourcePrivate));
 }
 
 static void
 rb_library_source_init (RBLibrarySource *source)
 {
-	source->priv = RB_LIBRARY_SOURCE_GET_PRIVATE (source);
+	source->priv = rb_library_source_get_instance_private (source);
 }
 
 static void

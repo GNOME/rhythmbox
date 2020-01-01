@@ -125,6 +125,7 @@ G_DEFINE_TYPE_EXTENDED (RBTrackTransferBatch,
 			rb_track_transfer_batch,
 			G_TYPE_OBJECT,
 			0,
+			G_ADD_PRIVATE (RBTrackTransferBatch)
 			G_IMPLEMENT_INTERFACE (RB_TYPE_TASK_PROGRESS, rb_track_transfer_batch_task_progress_init));
 
 /**
@@ -789,9 +790,7 @@ start_next (RBTrackTransferBatch *batch)
 static void
 rb_track_transfer_batch_init (RBTrackTransferBatch *batch)
 {
-	batch->priv = G_TYPE_INSTANCE_GET_PRIVATE (batch,
-						   RB_TYPE_TRACK_TRANSFER_BATCH,
-						   RBTrackTransferBatchPrivate);
+	batch->priv = rb_track_transfer_batch_get_instance_private (batch);
 }
 
 static void
@@ -1263,6 +1262,4 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 			      NULL, NULL, NULL,
 			      G_TYPE_NONE,
 			      5, RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING, G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_POINTER);
-
-	g_type_class_add_private (klass, sizeof (RBTrackTransferBatchPrivate));
 }

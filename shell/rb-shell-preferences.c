@@ -134,7 +134,7 @@ struct RBShellPreferencesPrivate
 };
 
 
-G_DEFINE_TYPE (RBShellPreferences, rb_shell_preferences, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE_WITH_CODE (RBShellPreferences, rb_shell_preferences, GTK_TYPE_DIALOG, G_ADD_PRIVATE (RBShellPreferences))
 
 static void
 rb_shell_preferences_class_init (RBShellPreferencesClass *klass)
@@ -143,8 +143,6 @@ rb_shell_preferences_class_init (RBShellPreferencesClass *klass)
 
 	object_class->finalize = impl_finalize;
 	object_class->dispose = impl_dispose;
-
-	g_type_class_add_private (klass, sizeof (RBShellPreferencesPrivate));
 }
 
 static void
@@ -176,9 +174,7 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	GtkBuilder *builder;
 	int i;
 
-	shell_preferences->priv = G_TYPE_INSTANCE_GET_PRIVATE (shell_preferences,
-							       RB_TYPE_SHELL_PREFERENCES,
-							       RBShellPreferencesPrivate);
+	shell_preferences->priv = rb_shell_preferences_get_instance_private (shell_preferences);
 
 	g_signal_connect_object (shell_preferences,
 				 "delete_event",

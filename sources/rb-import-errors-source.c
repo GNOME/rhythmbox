@@ -82,7 +82,7 @@ struct _RBImportErrorsSourcePrivate
 	GMenuModel *popup;
 };
 
-G_DEFINE_TYPE (RBImportErrorsSource, rb_import_errors_source, RB_TYPE_SOURCE);
+G_DEFINE_TYPE_WITH_CODE (RBImportErrorsSource, rb_import_errors_source, RB_TYPE_SOURCE, G_ADD_PRIVATE (RBImportErrorsSource));
 
 /**
  * SECTION:rb-import-errors-source
@@ -149,14 +149,12 @@ rb_import_errors_source_class_init (RBImportErrorsSourceClass *klass)
 							      "Entry type for entries of this type to be ignored",
 							      RHYTHMDB_TYPE_ENTRY_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_type_class_add_private (klass, sizeof (RBImportErrorsSourcePrivate));
 }
 
 static void
 rb_import_errors_source_init (RBImportErrorsSource *source)
 {
-	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source, RB_TYPE_IMPORT_ERRORS_SOURCE, RBImportErrorsSourcePrivate);
+	source->priv = rb_import_errors_source_get_instance_private (source);
 }
 
 static void

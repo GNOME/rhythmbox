@@ -67,7 +67,7 @@ struct _RBDisplayPageGroupPrivate
 	gboolean loaded;
 };
 
-G_DEFINE_TYPE (RBDisplayPageGroup, rb_display_page_group, RB_TYPE_DISPLAY_PAGE)
+G_DEFINE_TYPE_WITH_CODE (RBDisplayPageGroup, rb_display_page_group, RB_TYPE_DISPLAY_PAGE, G_ADD_PRIVATE (RBDisplayPageGroup))
 
 static GHashTable *display_page_groups_map;
 
@@ -286,9 +286,7 @@ impl_constructed (GObject *object)
 static void
 rb_display_page_group_init (RBDisplayPageGroup *group)
 {
-	group->priv = G_TYPE_INSTANCE_GET_PRIVATE (group,
-						   RB_TYPE_DISPLAY_PAGE_GROUP,
-						   RBDisplayPageGroupPrivate);
+	group->priv = rb_display_page_group_get_instance_private (group);
 }
 
 static void
@@ -348,6 +346,4 @@ rb_display_page_group_class_init (RBDisplayPageGroupClass *klass)
 							       "Whether the group is loaded",
 							       FALSE,
 							       G_PARAM_READABLE));
-
-	g_type_class_add_private (klass, sizeof (RBDisplayPageGroupPrivate));
 }

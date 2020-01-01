@@ -158,8 +158,6 @@ struct RBSongInfoPrivate
 	RhythmDBPropertyModel* genres;
 };
 
-#define RB_SONG_INFO_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SONG_INFO, RBSongInfoPrivate))
-
 /**
  * SECTION:rb-song-info
  * @short_description: song properties dialog
@@ -207,7 +205,7 @@ enum
 
 static guint rb_song_info_signals[LAST_SIGNAL] = { 0 };
 
-G_DEFINE_TYPE (RBSongInfo, rb_song_info, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE_WITH_CODE (RBSongInfo, rb_song_info, GTK_TYPE_DIALOG, G_ADD_PRIVATE (RBSongInfo))
 
 static void
 rb_song_info_class_init (RBSongInfoClass *klass)
@@ -318,15 +316,13 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      RHYTHMDB_TYPE_ENTRY);
-
-	g_type_class_add_private (klass, sizeof (RBSongInfoPrivate));
 }
 
 static void
 rb_song_info_init (RBSongInfo *song_info)
 {
 	/* create the dialog and some buttons backward - forward - close */
-	song_info->priv = RB_SONG_INFO_GET_PRIVATE (song_info);
+	song_info->priv = rb_song_info_get_instance_private (song_info);
 
 	g_signal_connect_object (G_OBJECT (song_info),
 				 "response",

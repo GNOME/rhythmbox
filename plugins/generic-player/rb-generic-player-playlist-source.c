@@ -49,11 +49,13 @@ typedef struct
 	gboolean loading;
 } RBGenericPlayerPlaylistSourcePrivate;
 
-G_DEFINE_DYNAMIC_TYPE(RBGenericPlayerPlaylistSource,
+G_DEFINE_DYNAMIC_TYPE_EXTENDED(RBGenericPlayerPlaylistSource,
 		      rb_generic_player_playlist_source,
-		      RB_TYPE_STATIC_PLAYLIST_SOURCE)
+		      RB_TYPE_STATIC_PLAYLIST_SOURCE,
+		      0,
+		      G_ADD_PRIVATE_DYNAMIC (RBGenericPlayerPlaylistSource))
 
-#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_GENERIC_PLAYER_PLAYLIST_SOURCE, RBGenericPlayerPlaylistSourcePrivate))
+#define GET_PRIVATE(o) (rb_generic_player_playlist_source_get_instance_private (RB_GENERIC_PLAYER_PLAYLIST_SOURCE (o)))
 
 enum {
 	PROP_0,
@@ -558,8 +560,6 @@ rb_generic_player_playlist_source_class_init (RBGenericPlayerPlaylistSourceClass
 							      "path to root of the device",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
-
-	g_type_class_add_private (klass, sizeof (RBGenericPlayerPlaylistSourcePrivate));
 }
 
 static void

@@ -194,16 +194,6 @@ static gboolean silencesrc_push (RBPlayerGstXFade *player);
 GType rb_xfade_stream_get_type (void);
 GType rb_xfade_stream_bin_get_type (void);
 
-G_DEFINE_TYPE_WITH_CODE(RBPlayerGstXFade, rb_player_gst_xfade, G_TYPE_OBJECT,
-			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER,
-					      rb_player_init)
-			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER_GST_TEE,
-					      rb_player_gst_tee_init)
-			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER_GST_FILTER,
-					      rb_player_gst_filter_init))
-
-#define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PLAYER_GST_XFADE, RBPlayerGstXFadePrivate))
-
 #define RB_PLAYER_GST_XFADE_TICK_HZ 5
 
 #define EPSILON			(0.001)
@@ -284,6 +274,15 @@ struct _RBPlayerGstXFadePrivate
 	char silence_buffer[1024];
 	guint silence_idle_id;
 };
+
+G_DEFINE_TYPE_WITH_CODE(RBPlayerGstXFade, rb_player_gst_xfade, G_TYPE_OBJECT,
+			G_ADD_PRIVATE (RBPlayerGstXFade)
+			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER,
+					      rb_player_init)
+			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER_GST_TEE,
+					      rb_player_gst_tee_init)
+			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER_GST_FILTER,
+					      rb_player_gst_filter_init))
 
 
 /* these aren't actually used to construct bitmasks,
@@ -708,8 +707,6 @@ rb_player_gst_xfade_class_init (RBPlayerGstXFadeClass *klass)
 			      G_TYPE_ARRAY,
 			      1,
 			      G_TYPE_STRING);
-
-	g_type_class_add_private (klass, sizeof (RBPlayerGstXFadePrivate));
 }
 
 static void
@@ -747,7 +744,7 @@ rb_player_gst_filter_init (RBPlayerGstFilterIface *iface)
 static void
 rb_player_gst_xfade_init (RBPlayerGstXFade *player)
 {
-	player->priv = GET_PRIVATE (player);
+	player->priv = rb_player_gst_xfade_get_instance_private (player);
 
 	g_rec_mutex_init (&player->priv->stream_list_lock);
 	g_rec_mutex_init (&player->priv->sink_lock);

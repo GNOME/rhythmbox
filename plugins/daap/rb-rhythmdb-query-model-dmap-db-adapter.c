@@ -37,9 +37,20 @@
 #include <glib/gi18n.h>
 #include <libdmapsharing/dmap.h>
 
+static void rb_rhythmdb_query_model_dmap_db_adapter_interface_init (gpointer iface, gpointer data);
+
 struct RBRhythmDBQueryModelDMAPDbAdapterPrivate {
 	RhythmDBQueryModel *model;
 };
+
+G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBRhythmDBQueryModelDMAPDbAdapter,
+				rb_rhythmdb_query_model_dmap_db_adapter,
+				G_TYPE_OBJECT,
+				0,
+				G_ADD_PRIVATE_DYNAMIC (RBRhythmDBQueryModelDMAPDbAdapter)
+				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_DB,
+							       rb_rhythmdb_query_model_dmap_db_adapter_interface_init))
+
 
 typedef struct ForeachAdapterData {
 	gpointer data;
@@ -119,13 +130,12 @@ rb_rhythmdb_query_model_dmap_db_adapter_add (DMAPDb *db, DMAPRecord *record)
 static void
 rb_rhythmdb_query_model_dmap_db_adapter_init (RBRhythmDBQueryModelDMAPDbAdapter *db)
 {
-	db->priv = RB_RHYTHMDB_QUERY_MODEL_DMAP_DB_ADAPTER_GET_PRIVATE (db);
+	db->priv = rb_rhythmdb_query_model_dmap_db_adapter_get_instance_private (db);
 }
 
 static void
 rb_rhythmdb_query_model_dmap_db_adapter_class_init (RBRhythmDBQueryModelDMAPDbAdapterClass *klass)
 {
-	g_type_class_add_private (klass, sizeof (RBRhythmDBQueryModelDMAPDbAdapterPrivate));
 }
 
 static void
@@ -145,13 +155,6 @@ rb_rhythmdb_query_model_dmap_db_adapter_interface_init (gpointer iface, gpointer
 	dmap_db->foreach = rb_rhythmdb_query_model_dmap_db_adapter_foreach;
 	dmap_db->count = rb_rhythmdb_query_model_dmap_db_adapter_count;
 }
-
-G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBRhythmDBQueryModelDMAPDbAdapter,
-				rb_rhythmdb_query_model_dmap_db_adapter,
-				G_TYPE_OBJECT,
-				0,
-				G_IMPLEMENT_INTERFACE_DYNAMIC (DMAP_TYPE_DB,
-							       rb_rhythmdb_query_model_dmap_db_adapter_interface_init))
 
 RBRhythmDBQueryModelDMAPDbAdapter *
 rb_rhythmdb_query_model_dmap_db_adapter_new (RhythmDBQueryModel *model)

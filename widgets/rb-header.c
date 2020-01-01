@@ -168,7 +168,7 @@ static const char *const UNICODE_MIDDLE_DOT = "\xC2\xB7";
 #define SCROLL_UP_SEEK_OFFSET	5
 #define SCROLL_DOWN_SEEK_OFFSET -5
 
-G_DEFINE_TYPE (RBHeader, rb_header, GTK_TYPE_GRID)
+G_DEFINE_TYPE_WITH_CODE (RBHeader, rb_header, GTK_TYPE_GRID, G_ADD_PRIVATE (RBHeader))
 
 static void
 rb_header_class_init (RBHeaderClass *klass)
@@ -276,14 +276,12 @@ rb_header_class_init (RBHeaderClass *klass)
 							       "whether to show album art",
 							       TRUE,
 							       G_PARAM_READWRITE));
-
-	g_type_class_add_private (klass, sizeof (RBHeaderPrivate));
 }
 
 static void
 rb_header_init (RBHeader *header)
 {
-	header->priv = G_TYPE_INSTANCE_GET_PRIVATE (header, RB_TYPE_HEADER, RBHeaderPrivate);
+	header->priv = rb_header_get_instance_private (header);
 }
 
 static void
