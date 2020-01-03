@@ -820,6 +820,8 @@ construct_plugins (RBShell *shell)
 		return;
 	}
 
+	g_type_ensure (PEAS_GTK_TYPE_PLUGIN_MANAGER);
+
 	rb_profile_start ("loading plugins");
 	shell->priv->plugin_settings = g_settings_new ("org.gnome.rhythmbox.plugins");
 
