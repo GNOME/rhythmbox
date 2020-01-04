@@ -6,13 +6,13 @@
 # Alberto Fernández Benito <afernn@euskalnet.net>, 2004.
 # Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>, 2004, 2005, 2006, 2008, 2009, 2010.
 # Iñaki Larrañaga Murgoitio <dooteo@zundan.com>, 2007.
-# Asier Sarasua Garmendia  <asier.sarasua@gmail.com>, 2019.
+# Asier Sarasua Garmendia  <asier.sarasua@gmail.com>, 2019, 2020.
 #
 msgid ""
 msgstr "Project-Id-Version: eu\n"
-"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2019-09-01 20:59+0000\n"
-"PO-Revision-Date: 2019-09-03 10:00+0100\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/atomix/issues\n"
+"POT-Creation-Date: 2019-09-02 20:18+0000\n"
+"PO-Revision-Date: 2020-01-04 10:00+0100\n"
 "Last-Translator: Asier Sarasua Garmendia <asier.sarasua@gmail.com>\n"
 "Language-Team: Basque <librezale@librezale.eus>\n"
 "Language: eu\n"
@@ -95,11 +95,11 @@ msgstr "Huts egin du GStreamer kanalizazioa sortzean %s erreproduzitzeko"
 
 #: ../data/playlists.xml.in.h:1
 msgid "Recently Added"
-msgstr "Duela gutxi gehituta"
+msgstr "Azken aldian gehitua"
 
 #: ../data/playlists.xml.in.h:2
 msgid "Recently Played"
-msgstr "Duela gutxi erreproduzitua"
+msgstr "Azken aldian erreproduzitua"
 
 #: ../data/playlists.xml.in.h:3
 msgid "My Top Rated"
@@ -177,18 +177,14 @@ msgid "_Tools"
 msgstr "_Tresnak"
 
 #: ../data/ui/app-menu.ui.h:9
-msgid "P_lugins"
-msgstr "P_luginak"
-
-#: ../data/ui/app-menu.ui.h:10
 msgid "_Preferences"
 msgstr "_Hobespenak"
 
-#: ../data/ui/app-menu.ui.h:11 ../shell/rb-shell-preferences.c:195
+#: ../data/ui/app-menu.ui.h:10 ../shell/rb-shell-preferences.c:195
 msgid "_Help"
 msgstr "_Laguntza"
 
-#: ../data/ui/app-menu.ui.h:12
+#: ../data/ui/app-menu.ui.h:11
 msgid "_About Rhythmbox"
 msgstr "Rhythmbox aplikazioari _buruz"
 
@@ -250,7 +246,7 @@ msgstr "GB"
 
 #: ../data/ui/create-playlist.ui.h:4
 msgid "Minutes"
-msgstr "minutu"
+msgstr "Minutuak"
 
 #: ../data/ui/create-playlist.ui.h:5
 msgid "Create automatically updating playlist where:"
@@ -290,7 +286,7 @@ msgstr "Bilatu gailu berriak"
 
 #: ../data/ui/edit-menu.ui.h:1
 msgid "Cu_t"
-msgstr "_Ebaki"
+msgstr "_Moztu"
 
 #: ../data/ui/edit-menu.ui.h:2
 msgid "_Copy"
@@ -496,7 +492,7 @@ msgstr "Multimedia erreproduzigailuaren propietateak"
 #: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
 #: ../plugins/iradio/rb-station-properties-dialog.c:182
 #: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:318 ../shell/rb-application.c:165
+#: ../podcast/rb-podcast-properties-dialog.c:318
 #: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:377
 #: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
 msgid "_Close"
@@ -908,7 +904,7 @@ msgstr "Kendutako fitxategiak:"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:496
-#: ../rhythmdb/rhythmdb.c:3807 ../widgets/rb-entry-view.c:943
+#: ../rhythmdb/rhythmdb.c:3809 ../widgets/rb-entry-view.c:943
 #: ../widgets/rb-entry-view.c:1567 ../widgets/rb-entry-view.c:1580
 #: ../widgets/rb-song-info.c:1546
 msgid "Never"
@@ -953,8 +949,8 @@ msgstr "%Y %b %d"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/android/rb-android-source.c:687
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:581
+#: ../plugins/android/rb-android-source.c:715
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -972,18 +968,18 @@ msgstr "%Y %b %d"
 #: ../plugins/mtpdevice/rb-mtp-source.c:645
 #: ../plugins/mtpdevice/rb-mtp-source.c:1144
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
-#: ../plugins/notification/rb-notification-plugin.c:510
+#: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1926
-#: ../podcast/rb-podcast-manager.c:2025
+#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
+#: ../podcast/rb-podcast-manager.c:2024
 #: ../podcast/rb-podcast-properties-dialog.c:639
 #: ../podcast/rb-podcast-properties-dialog.c:703
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
-#: ../remote/dbus/rb-client.c:728 ../rhythmdb/rhythmdb.c:2066
-#: ../rhythmdb/rhythmdb.c:2072 ../rhythmdb/rhythmdb.c:2087
-#: ../rhythmdb/rhythmdb.c:2121 ../rhythmdb/rhythmdb.c:5571
-#: ../rhythmdb/rhythmdb.c:5577 ../rhythmdb/rhythmdb.c:5582
-#: ../rhythmdb/rhythmdb.c:5593 ../rhythmdb/rhythmdb.c:5597
+#: ../remote/dbus/rb-client.c:732 ../rhythmdb/rhythmdb.c:2068
+#: ../rhythmdb/rhythmdb.c:2074 ../rhythmdb/rhythmdb.c:2089
+#: ../rhythmdb/rhythmdb.c:2123 ../rhythmdb/rhythmdb.c:5573
+#: ../rhythmdb/rhythmdb.c:5579 ../rhythmdb/rhythmdb.c:5584
+#: ../rhythmdb/rhythmdb.c:5595 ../rhythmdb/rhythmdb.c:5599
 #: ../rhythmdb/rhythmdb-entry-type.c:301
 #: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
 #: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
@@ -1008,34 +1004,34 @@ msgstr "Esteka sinboliko gehiegi"
 msgid "Cannot get free space at %s: %s"
 msgstr "Ezin da leku librea lortu %s-(e)n: %s"
 
-#: ../lib/rb-util.c:566 ../plugins/context/tmpl/album-tmpl.html:21
+#: ../lib/rb-util.c:562 ../plugins/context/tmpl/album-tmpl.html:21
 #: ../remote/dbus/rb-client.c:217
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:568 ../plugins/context/tmpl/album-tmpl.html:19
+#: ../lib/rb-util.c:564 ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:219
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:632
+#: ../lib/rb-util.c:628
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d / %d:%02d faltan"
 
-#: ../lib/rb-util.c:636
+#: ../lib/rb-util.c:632
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d / %d:%02d:%02d faltan"
 
-#: ../lib/rb-util.c:641
+#: ../lib/rb-util.c:637
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d / %d:%02d"
 
-#: ../lib/rb-util.c:645
+#: ../lib/rb-util.c:641
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d / %d:%02d:%02d"
@@ -1130,19 +1126,23 @@ msgstr "Pistak:"
 msgid "Playlists:"
 msgstr "Erreprodukzio-zerrendak:"
 
-#: ../plugins/android/rb-android-source.c:201
+#: ../plugins/android/rb-android-source.c:203
 msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
 msgstr "Ez da biltegiratze-gunerik aurkitu gailu honetan. Hura desblokeatu eta MTP gaitu beharko duzu agian."
 
-#: ../plugins/android/rb-android-source.c:401
+#: ../plugins/android/rb-android-source.c:391
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "%s eskaneatzen"
 
-#: ../plugins/android/rb-android-source.c:781
+#: ../plugins/android/rb-android-source.c:414
+msgid "Error mounting Android device"
+msgstr "Errorea Android gailua muntatzean"
+
+#: ../plugins/android/rb-android-source.c:809
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
 #: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
 #: ../sources/rb-transfer-target.c:182
@@ -1447,15 +1447,15 @@ msgstr "%s erreprodukzio"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1670
 #, c-format
 msgid "_View on %s"
-msgstr ""
+msgstr "_Ikusi hemen: %s"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1687
 msgid "Listen to _Similar Artists Radio"
-msgstr ""
+msgstr "Entzun _antzeko artisten irratia"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1701
 msgid "Listen to _Top Fans Radio"
-msgstr ""
+msgstr "Entzun _zale gorenen irratia"
 
 #. Translators: describes a radio stream playing tracks similar to those by an artist.
 #. * Followed by a text entry box for the artist name.
@@ -1505,21 +1505,21 @@ msgstr "Erabiltzailearentzako gomendioak:"
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:80
 msgid "Mix Radio for User:"
-msgstr ""
+msgstr "Nahastu irratia erabiltzailearentzako:"
 
 #. Translators: describes a radio stream playing tracks tagged with a particular tag.
 #. * Followed by a text entry box for the tag.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:84
 msgid "Tracks Tagged with:"
-msgstr ""
+msgstr "Honako etiketa duten pistak:"
 
 #. Translators: describes a radio stream playing tracks often listened to by members of
 #. * a particular group. Followed by a text entry box for the group name.
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:88
 msgid "Listened by Group:"
-msgstr ""
+msgstr "Honako taldeak entzuna:"
 
 #. Translators: I have chosen these names for the radio stations based upon
 #. * what last.fm's website uses or what I thought to be sensible.
@@ -1540,33 +1540,33 @@ msgstr "%s fan-irratia"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:127
 #, c-format
 msgid "%s's Library"
-msgstr "%s(r)en liburutegia"
+msgstr "%s erabiltzailearen liburutegia"
 
 #. Translators: station is built from the "neighbourhood" of the user %s.
 #. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:130
 #, c-format
 msgid "%s's Neighbourhood"
-msgstr "%s(r)en auzoa"
+msgstr "%s erabiltzailearen auzoa"
 
 #. Translators: station is built from the tracks which have been "loved" by the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:132
 #, c-format
 msgid "%s's Loved Tracks"
-msgstr "%s(r)en gogoko kantak"
+msgstr "%s erabiltzailearen gogoko kantak"
 
 #. Translators: station is built from the tracks which are recommended to the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:134
 #, c-format
 msgid "%s's Recommended Radio"
-msgstr ""
+msgstr "%s erabiltzaileak gomendatutako irratia"
 
 #. Translators: station is the "Mix Radio" for the user %s.
 #. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for description.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:137
 #, c-format
 msgid "%s's Mix Radio"
-msgstr ""
+msgstr "%s erabiltzailearen nahaste-irratia"
 
 #. Translators: station is built from the tracks which have been "tagged" with %s.
 #. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
@@ -1574,7 +1574,7 @@ msgstr ""
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:141
 #, c-format
 msgid "%s Tag Radio"
-msgstr ""
+msgstr "%s etiketadun irratia"
 
 #. Translators: station is built from the library of the group %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:143
@@ -1708,7 +1708,7 @@ msgstr "Erakutsi unean erreproduzitzen ari den artista eta abestiaren informazio
 msgid ""
 "This information is only available to Last.fm users. Ensure the Last.fm "
 "plugin is enabled, select Last.fm in the side pane, and log in."
-msgstr ""
+msgstr "Informazio hau Last.fm erabiltzaileentzako soilik dago erabilgarri. Ziurtatu Last-fm plugina gaituta dagoela, hautatu Last.fm alboko panelean eta hasi saioa."
 
 #: ../plugins/context/LinksTab.py:55
 msgid "Links"
@@ -1783,7 +1783,7 @@ msgstr "Partekatzea"
 
 #: ../plugins/daap/daap-prefs.ui.h:2
 msgid "_Look for touch Remotes"
-msgstr ""
+msgstr "_Bilatu ukimen-urrunekoak"
 
 #: ../plugins/daap/daap-prefs.ui.h:3
 msgid "_Share my music"
@@ -1795,7 +1795,7 @@ msgstr "Liburutegiaren ize_na:"
 
 #: ../plugins/daap/daap-prefs.ui.h:5
 msgid "Forget known Remotes"
-msgstr ""
+msgstr "Ahaztu urruneko ezagunak"
 
 #: ../plugins/daap/daap-prefs.ui.h:6
 msgid "Require _password:"
@@ -1811,11 +1811,11 @@ msgstr "Sartu zure gailuan bistaratu den pasakodea."
 
 #: ../plugins/daap/daap-prefs.ui.h:9
 msgid "Could not pair with this Remote"
-msgstr ""
+msgstr "Ezin izan da urruneko honekin parekatu"
 
 #: ../plugins/daap/daap-prefs.ui.h:10
 msgid "You can now control Rhythmbox through your Remote"
-msgstr ""
+msgstr "Orain zure urrunekoaren bidez kontrolatu dezakzeu Rhythmbox"
 
 #: ../plugins/daap/daap-toolbar.ui.h:4
 msgid "Disconnect"
@@ -1861,7 +1861,7 @@ msgstr "Konektatzen…"
 
 #: ../plugins/daap/rb-dacp-pairing-page.c:394
 msgid "Could not pair with this Remote."
-msgstr ""
+msgstr "Ezin izan da urruneko honekin parekatu."
 
 #: ../plugins/daap/rb-dacp-pairing-page.c:612
 msgid "Remotes"
@@ -1874,7 +1874,7 @@ msgstr "MediaServer2 D-Bus interfazea"
 #: ../plugins/dbus-media-server/dbus-media-server.plugin.in.h:2
 msgid ""
 "Provides an implementation of the MediaServer2 D-Bus interface specification"
-msgstr ""
+msgstr "MediaServer2 D-Bus interfazearen espezifikazioaren inplementazio bat ematen du"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1250
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1382
@@ -1927,7 +1927,7 @@ msgstr "Audioko erreproduzigailu orokorren euskarria (eta PSP eta Nokia 770)"
 #: ../plugins/ipod/rb-ipod-source.c:333
 #, c-format
 msgid "New Playlist on %s"
-msgstr ""
+msgstr "Erreprodukzio-zerrenda berria hemen: %s"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:338
 #: ../sources/rb-library-source.c:375
@@ -1946,7 +1946,7 @@ msgstr "Grilo multimedia-arakatzailea"
 
 #: ../plugins/grilo/grilo.plugin.in.h:2
 msgid "Browse various local and Internet media sources"
-msgstr ""
+msgstr "Arakatu interneteko eta lokaleko multimedia-iturburuak"
 
 #: ../plugins/grilo/rb-grilo-source.c:403
 #: ../plugins/soundcloud/soundcloud.py:492
@@ -1962,13 +1962,13 @@ msgstr[1] "%d emaitza soilik erakusten"
 
 #: ../plugins/im-status/im-status.plugin.in.h:1
 msgid "IM Status"
-msgstr "BM egoera"
+msgstr "IM egoera"
 
 #: ../plugins/im-status/im-status.plugin.in.h:2
 msgid ""
 "Updates IM status according to the current song (works with Empathy and "
 "Pidgin)"
-msgstr ""
+msgstr "IM egoera eguneratzen du uneko abestiaren arabera (Empathy eta Pidgin aplikazioarekin funtzionatzen du)"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
@@ -2169,14 +2169,14 @@ msgstr "Bidali zuren entzunaldiak ListenBrainz-era"
 
 #: ../plugins/listenbrainz/settings.ui.h:1
 msgid "User token:"
-msgstr ""
+msgstr "Erabiltzaile-tokena:"
 
 #: ../plugins/listenbrainz/settings.ui.h:2
 msgid ""
 "To submit your listens to ListenBrainz, enter your ListenBrainz user token "
 "below. You can see your user token in your <a href=\"https://listenbrainz."
 "org/profile/\">user profile</a>."
-msgstr ""
+msgstr "Zure entzunaldiak ListenBrainz webgunera bidaltzeko, sartu ListenBrainz zerbitzuan duzun erabiltzaile-tokena azpian. Zure tokena ikusteko, jo <a href=\"https://listenbrainz.org/profile/\">erabiltzaile-profilera</a>."
 
 #: ../plugins/lyrics/LyricsConfigureDialog.py:103
 msgid "Choose lyrics folder..."
@@ -2242,11 +2242,11 @@ msgstr "Jetlyrics (jetlyrics.com)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
 msgid "Magnatune online music store"
-msgstr ""
+msgstr "Magnatune, lineako musika-biltegia"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:2
 msgid "Magnatune is an online record label that is not evil.\n"
-msgstr ""
+msgstr "Magnatune lineako grabazio-zigilu bat da, gaiztoa ez dena.\n"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:4
 msgid "    * Free listening of all songs"
@@ -2256,20 +2256,20 @@ msgstr "    * Kanta guztiak libreki entzun daitezke"
 msgid ""
 "    * Paid members get totally unlimited downloading of the entire catalog "
 "(no other service allows that)"
-msgstr ""
+msgstr "    * Ordainpeko kideek katalogo osoa mugarik gabe deskargatu dezakete (ez dago hori ahalbidetzen duen beste zerbitzurik)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:7
 #, no-c-format
 msgid ""
 "    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's "
 "worth joining"
-msgstr ""
+msgstr "    * Zure Magnatune kuotaren %10 Rhythmbox/GNOME proiektuetara doa - Merezi du kide bihurtzea"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:8
 msgid ""
 "    * Open-Source friendly file formats: MP3s and WAVs, but also OGG and "
 "FLAC files."
-msgstr ""
+msgstr "    * Kode irekiaz ondo konpontzen diren fitxategi-formatuak: MP3 eta WAV, baina baita OGG eta FLAC fitxategiak ere."
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:9
 msgid "    * All albums and artists hand-picked"
@@ -2479,7 +2479,7 @@ msgstr "ezin izan da albuma deskargatu"
 
 #: ../plugins/magnatune/MagnatuneSource.py:193
 msgid "You must have a library location set to download an album."
-msgstr ""
+msgstr "Liburutegi-kokaleku ba ezarri behar duzu album bat deskargatu ahal izateko."
 
 #: ../plugins/magnatune/MagnatuneSource.py:255
 msgid "Unable to load catalog"
@@ -2541,7 +2541,7 @@ msgstr "MPRIS D-Bus interfazea"
 
 #: ../plugins/mpris/mpris.plugin.in.h:2
 msgid "Provides an implementation of the MPRIS D-Bus interface specification"
-msgstr ""
+msgstr "MPRIS D-Bus interfazearen espezifikazioaren inplementazio bat ematen du"
 
 #: ../plugins/mtpdevice/mtpdevice.plugin.in.h:1
 msgid "Portable Players - MTP"
@@ -2591,7 +2591,7 @@ msgstr "Ezin da aldi baterako fitxategia ireki: %s"
 #: ../plugins/mtpdevice/rb-mtp-thread.c:552
 #, c-format
 msgid "No space left on MTP device"
-msgstr ""
+msgstr "Ez dago leku librerik MTP gailuan"
 
 #: ../plugins/mtpdevice/rb-mtp-thread.c:555
 #, c-format
@@ -2623,18 +2623,18 @@ msgid "Next"
 msgstr "Hurrengoa"
 
 #. Translators: by Artist
-#: ../plugins/notification/rb-notification-plugin.c:332
+#: ../plugins/notification/rb-notification-plugin.c:334
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "<i>%s</i>-(r)ena"
 
 #. Translators: from Album
-#: ../plugins/notification/rb-notification-plugin.c:334
+#: ../plugins/notification/rb-notification-plugin.c:336
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "<i>%s</i>(e)tik"
 
-#: ../plugins/notification/rb-notification-plugin.c:414
+#: ../plugins/notification/rb-notification-plugin.c:416
 #: ../widgets/rb-header.c:366
 msgid "Not Playing"
 msgstr "Ez dago ezer erreproduzitzen"
@@ -2648,7 +2648,7 @@ msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr "Geldiarazi energia-kudeatzaileak esekitzea gailua erreproduzitzean"
 
 #: ../plugins/power-manager/rb-power-manager-plugin.c:97
-#: ../remote/dbus/rb-client.c:814 ../remote/dbus/rb-client.c:904
+#: ../remote/dbus/rb-client.c:818 ../remote/dbus/rb-client.c:908
 #, c-format
 msgid "Playing"
 msgstr "Erreproduzitzen"
@@ -2676,7 +2676,7 @@ msgid ""
 "After you press OK, Rhythmbox will wait until you connect to it with winpdb "
 "or rpdb2. If you have not set a debugger password in the file %s, it will "
 "use the default password ('rhythmbox')."
-msgstr ""
+msgstr "'Ados' sakatu ondoren, Rhythmbox zain egongo da winpdb edo rpdb2-rekin konektatzen zaren arte. Ez baduzu araztailearen pasahitzik zehaztu %s fitxategian, pasahitz lehenetsia erabiliko da (“rhythmbox“)."
 
 #. ex:noet:ts=8:
 #: ../plugins/rbzeitgeist/rbzeitgeist.plugin.in.h:1
@@ -2746,18 +2746,6 @@ msgstr "_Aplikatu konpresioa mozketa eragozteko"
 msgid "Learn more about ReplayGain"
 msgstr "Ikasi gehiago ReplayGain zerbitzuari buruz"
 
-#: ../plugins/sendto/sendto.plugin.in.h:1
-msgid "Send tracks"
-msgstr "Bidali pistak"
-
-#: ../plugins/sendto/sendto.plugin.in.h:2
-msgid "Send selected tracks by email"
-msgstr "Bidali hautatutako pistak posta bidez"
-
-#: ../plugins/sendto/sendto.py:51
-msgid "Send to..."
-msgstr "Bidali hona…"
-
 #: ../plugins/soundcloud/soundcloud.plugin.in.h:1
 #: ../plugins/soundcloud/soundcloud.py:72
 msgid "SoundCloud"
@@ -2815,20 +2803,20 @@ msgstr "SoundCloud taldeak"
 #: ../plugins/soundcloud/soundcloud.py:450
 #, python-format
 msgid "View '%(title)s' on SoundCloud"
-msgstr ""
+msgstr "Ikusi '%(title)s' SoundCloud zerbitzuan"
 
 #: ../plugins/soundcloud/soundcloud.py:458
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
-msgstr ""
+msgstr "Ikusi '%(container)s' SoundCloud zerbitzuan"
 
 #: ../plugins/webremote/webremote-config.ui.h:1
 msgid "Web remote control preferences"
-msgstr ""
+msgstr "Web bidezko urruneko kontrol-hobespenak"
 
 #: ../plugins/webremote/webremote-config.ui.h:2
 msgid "Listening port:"
-msgstr ""
+msgstr "Entzuteko ataka:"
 
 #: ../plugins/webremote/webremote-config.ui.h:3
 msgid "Access key:"
@@ -2840,15 +2828,15 @@ msgstr "0"
 
 #: ../plugins/webremote/webremote.plugin.in.h:1
 msgid "Web remote control"
-msgstr ""
+msgstr "Web bidezko urruneko kontrola"
 
 #: ../plugins/webremote/webremote.plugin.in.h:2
 msgid "Control Rhythmbox from a web browser"
 msgstr "Kontrolatu Rhythmbox web arakatzaile batetik"
 
-#: ../plugins/webremote/webremote.py:583
+#: ../plugins/webremote/webremote.py:585
 msgid "Launch web remote control"
-msgstr ""
+msgstr "Abiarazi web bidezko urruneko kontrola"
 
 #: ../podcast/rb-podcast-add-dialog.c:271 ../podcast/rb-podcast-source.c:735
 #, c-format
@@ -2914,37 +2902,37 @@ msgstr "Errorea podcast-en"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Hala ere, nahi duzu podcast-aren jarioa gehitzea?"
 
-#: ../podcast/rb-podcast-manager.c:925
+#: ../podcast/rb-podcast-manager.c:924
 msgid "Error creating podcast download directory"
 msgstr "Errorea podcast-ak deskargatzeko direktorioa sortzean"
 
-#: ../podcast/rb-podcast-manager.c:926
+#: ../podcast/rb-podcast-manager.c:925
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Ezin da deskargatzeko direktorioa sortu '%s'(e)ntzako: %s"
 
-#: ../podcast/rb-podcast-manager.c:1045
+#: ../podcast/rb-podcast-manager.c:1044
 msgid "Invalid URL"
 msgstr "URL baliogabea"
 
-#: ../podcast/rb-podcast-manager.c:1046
+#: ../podcast/rb-podcast-manager.c:1045
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "“%s” URLa ez da baliozkoa, egiaztatu ezazu."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1057
+#: ../podcast/rb-podcast-manager.c:1056
 msgid "URL already added"
 msgstr "URLa jadanik gehituta"
 
-#: ../podcast/rb-podcast-manager.c:1058
+#: ../podcast/rb-podcast-manager.c:1057
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr "“%s” URLa jadanik irrati gisa gehituta dago. Podcast baten jarioa bada kendu irratia."
 
-#: ../podcast/rb-podcast-manager.c:1158
+#: ../podcast/rb-podcast-manager.c:1157
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2952,11 +2940,11 @@ msgid ""
 "anyway?"
 msgstr "'%s' URLa ez dirudi podcast-eko jarioa denik. Agian URL okerra da, edo jarioa hondatuta dago. Hala ere, nahi duzu Rhythmbox-ek hori erabiltzea?"
 
-#: ../podcast/rb-podcast-manager.c:1274
+#: ../podcast/rb-podcast-manager.c:1273
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2240
+#: ../podcast/rb-podcast-manager.c:2239
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Arazoak daude podcast hau gehitzean: %s. Egiaztatu URLa: %s"
@@ -3070,7 +3058,7 @@ msgstr "Bilatu podcast jarioak"
 msgid "Search podcast episodes"
 msgstr "Bilatu podcast-aren pasarteak"
 
-#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:627
+#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:563
 msgid "Show the version of the program"
 msgstr "Erakutsi programaren bertsioa"
 
@@ -3144,7 +3132,7 @@ msgstr "Bistaratu formateatuta abestiaren xehetasunak"
 
 #: ../remote/dbus/rb-client.c:118
 msgid "Select the source matching the specified URI"
-msgstr ""
+msgstr "Hautatu zehaztutako URIarekin bat datorren iturburua"
 
 #: ../remote/dbus/rb-client.c:118
 msgid "Source to select"
@@ -3152,7 +3140,7 @@ msgstr "Hautatuko den iturburua"
 
 #: ../remote/dbus/rb-client.c:119
 msgid "Activate the source matching the specified URI"
-msgstr ""
+msgstr "Aktibatu zehaztutako URIarekin bat datorren iturburua"
 
 #: ../remote/dbus/rb-client.c:119
 msgid "Source to activate"
@@ -3160,27 +3148,27 @@ msgstr "Aktibatuko den iturburua"
 
 #: ../remote/dbus/rb-client.c:120
 msgid "Play from the source matching the specified URI"
-msgstr ""
+msgstr "Erreproduzitu zehaztutako URIarekin bat datorren iturburutik"
 
 #: ../remote/dbus/rb-client.c:120
 msgid "Source to play from"
-msgstr ""
+msgstr "Erreproduzituko den iturburua"
 
 #: ../remote/dbus/rb-client.c:122
 msgid "Enable repeat playback order"
-msgstr ""
+msgstr "Gaitu erreprodukzio errepikatuaren ordena"
 
 #: ../remote/dbus/rb-client.c:123
 msgid "Disable repeat playback order"
-msgstr ""
+msgstr "Desgaitu erreprodukzio errepikatuaren ordena"
 
 #: ../remote/dbus/rb-client.c:124
 msgid "Enable shuffle playback order"
-msgstr ""
+msgstr "Gaitu ausazko erreprodukzioaren ordena"
 
 #: ../remote/dbus/rb-client.c:125
 msgid "Disable shuffle playback order"
-msgstr ""
+msgstr "Desgaitu ausazko erreprodukzioaren ordena"
 
 #: ../remote/dbus/rb-client.c:127
 msgid "Set the playback volume"
@@ -3218,11 +3206,11 @@ msgstr "p - Aurreko pista"
 
 #: ../remote/dbus/rb-client.c:166
 msgid "space - Play/pause"
-msgstr ""
+msgstr "zuriunea - Erreproduzitu / pausarazi"
 
 #: ../remote/dbus/rb-client.c:167
 msgid "s - Show playing track details"
-msgstr ""
+msgstr "s - Erakutsi erreprodukzio-pisten xehetasunak"
 
 #: ../remote/dbus/rb-client.c:168
 msgid "v - Decrease volume"
@@ -3240,65 +3228,65 @@ msgstr "h/? - Laguntza"
 msgid "q - Quit"
 msgstr "q - Irten"
 
-#: ../remote/dbus/rb-client.c:542 ../remote/dbus/rb-client.c:568
-#: ../remote/dbus/rb-client.c:791 ../remote/dbus/rb-client.c:875
+#: ../remote/dbus/rb-client.c:546 ../remote/dbus/rb-client.c:572
+#: ../remote/dbus/rb-client.c:795 ../remote/dbus/rb-client.c:879
 #, c-format
 msgid "Not playing"
 msgstr "Ez dago ezer erreproduzitzen"
 
 #. Translators: title by artist from album
-#: ../remote/dbus/rb-client.c:741
+#: ../remote/dbus/rb-client.c:745
 msgid "%tt by %ta from %at"
 msgstr "%tt honek: %ta hemendik: %at"
 
 #. Translators: title by artist
-#: ../remote/dbus/rb-client.c:744
+#: ../remote/dbus/rb-client.c:748
 msgid "%tt by %ta"
 msgstr "%tt honek: %ta"
 
 #. Translators: title from album
-#: ../remote/dbus/rb-client.c:747
+#: ../remote/dbus/rb-client.c:751
 msgid "%tt from %ta"
 msgstr "%tt hemendik: %ta"
 
 #. Translators: %te is replaced with elapsed time, %td is replaced with track duration
-#: ../remote/dbus/rb-client.c:758
+#: ../remote/dbus/rb-client.c:762
 #, c-format
 msgid "[%te of %td]"
 msgstr "[%te / %td]"
 
-#: ../remote/dbus/rb-client.c:814 ../remote/dbus/rb-client.c:906
+#: ../remote/dbus/rb-client.c:818 ../remote/dbus/rb-client.c:910
 #, c-format
 msgid "Paused"
 msgstr "Pausatuta"
 
-#: ../remote/dbus/rb-client.c:858
+#: ../remote/dbus/rb-client.c:862
 #, c-format
 msgid "Seeked to %s"
-msgstr ""
+msgstr "%s bilatuta"
 
-#: ../remote/dbus/rb-client.c:892
+#: ../remote/dbus/rb-client.c:896
 #, c-format
 msgid "Now playing: %s %s"
 msgstr "Orain erreproduzitzen: %s %s"
 
-#: ../remote/dbus/rb-client.c:908
+#: ../remote/dbus/rb-client.c:912
 #, c-format
 msgid "Unknown playback state: %s"
-msgstr ""
+msgstr "Erreprodukzio-egoera ezezaguna: %s"
 
-#: ../remote/dbus/rb-client.c:918
+#: ../remote/dbus/rb-client.c:922
 #, c-format
 msgid "Volume is now %.02f"
 msgstr "Bolumena orain: %.02f"
 
 #. should print this before dbus setup, really
-#: ../remote/dbus/rb-client.c:956
+#: ../remote/dbus/rb-client.c:960
 #, c-format
 msgid "Press 'h' for help."
 msgstr "Skatu 'h' laguntzarako."
 
-#: ../remote/dbus/rb-client.c:1396
+#: ../remote/dbus/rb-client.c:1400
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Erreprodukzio-bolumena: %f.\n"
@@ -3336,39 +3324,39 @@ msgstr "Ehun ginen"
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2374
+#: ../rhythmdb/rhythmdb.c:2376
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "GStreamer plugin gehigarriak behar dira fitxategi hau erreproduzitzeko: %s"
 
-#: ../rhythmdb/rhythmdb.c:2406
+#: ../rhythmdb/rhythmdb.c:2408
 msgid "invalid unicode in error message"
 msgstr "baliogabeko unicode-a erroreko mezuan"
 
-#: ../rhythmdb/rhythmdb.c:2529
+#: ../rhythmdb/rhythmdb.c:2531
 #, c-format
 msgid "Empty file"
 msgstr "Fitxategi hutsa"
 
-#: ../rhythmdb/rhythmdb.c:3227
+#: ../rhythmdb/rhythmdb.c:3229
 msgid "Could not load the music database:"
 msgstr "Ezin izan da musikaren datu-basea kargatu:"
 
-#: ../rhythmdb/rhythmdb.c:4661
+#: ../rhythmdb/rhythmdb.c:4663
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "Minutu %ld"
 msgstr[1] "%ld minutu"
 
-#: ../rhythmdb/rhythmdb.c:4662
+#: ../rhythmdb/rhythmdb.c:4664
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "Ordu %ld"
 msgstr[1] "%ld ordu"
 
-#: ../rhythmdb/rhythmdb.c:4663
+#: ../rhythmdb/rhythmdb.c:4665
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3376,7 +3364,7 @@ msgstr[0] "Egun %ld"
 msgstr[1] "%ld egun"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4669
+#: ../rhythmdb/rhythmdb.c:4671
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s eta %s"
@@ -3384,8 +3372,8 @@ msgstr "%s, %s eta %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4675 ../rhythmdb/rhythmdb.c:4683
-#: ../rhythmdb/rhythmdb.c:4694
+#: ../rhythmdb/rhythmdb.c:4677 ../rhythmdb/rhythmdb.c:4685
+#: ../rhythmdb/rhythmdb.c:4696
 #, c-format
 msgid "%s and %s"
 msgstr "%s eta %s"
@@ -3440,15 +3428,11 @@ msgstr "Vala pluginaren adibidea"
 msgid "A sample plugin in Vala with no features"
 msgstr "Eginbiderik gabeko Vala adibidearen plugina"
 
-#: ../shell/rb-application.c:162
-msgid "Configure Plugins"
-msgstr "Konfiguratu pluginak"
-
-#: ../shell/rb-application.c:229
+#: ../shell/rb-application.c:166
 msgid "translator-credits"
 msgstr "Asier Sarasua Garmendia <asier.sarasua@gmail.com>"
 
-#: ../shell/rb-application.c:232
+#: ../shell/rb-application.c:169
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3458,7 +3442,7 @@ msgstr "Rhythmbox software librea da; birbana eta/edo alda dezakezu Software \n"
 "Foundation-ek argitaratutako GNU Lizentzia Publiko Orokorraren 2. bertsioan, \n"
 "edo (nahiago baduzu) beste berriago batean, jasotako baldintzak betez gero.\n"
 
-#: ../shell/rb-application.c:236
+#: ../shell/rb-application.c:173
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3469,7 +3453,7 @@ msgstr "Rhythmbox erabilgarria izango delakoan banatzen da, baina, INOLAKO \n"
 "MERKATURATZEKO edo HELBURU PARTIKULARRETARAKO ERABILTZEKO. \n"
 "Argibide gehiago nahi izanez gero, ikus GNU Lizentzia Publiko Orokorra.\n"
 
-#: ../shell/rb-application.c:240
+#: ../shell/rb-application.c:177
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3478,63 +3462,63 @@ msgstr "Rhythmbox-ekin batera GNU Lizentzia Publiko Orokorraren kopia bat jasoko
 "zenuen; hala ez bada, idatzi hona: Free SoftwareFoundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.\n"
 
-#: ../shell/rb-application.c:247
+#: ../shell/rb-application.c:184
 msgid "Maintainers:"
 msgstr "Garapenaren arduradunak:"
 
-#: ../shell/rb-application.c:250
+#: ../shell/rb-application.c:187
 msgid "Former Maintainers:"
 msgstr "Haserako arduradunak:"
 
-#: ../shell/rb-application.c:253
+#: ../shell/rb-application.c:190
 msgid "Contributors:"
 msgstr "Laguntzaileak:"
 
-#: ../shell/rb-application.c:255
+#: ../shell/rb-application.c:192
 msgid "Music management and playback software for GNOME."
 msgstr "Musika kudeatzeko eta erreproduzitzeko softwarea GNOMErako."
 
-#: ../shell/rb-application.c:265
+#: ../shell/rb-application.c:202
 msgid "Rhythmbox Website"
 msgstr "Rhythmbox-en web gunea"
 
-#: ../shell/rb-application.c:293 ../shell/rb-shell-preferences.c:163
+#: ../shell/rb-application.c:230 ../shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "Ezin izan da laguntza bistaratu"
 
-#: ../shell/rb-application.c:619
+#: ../shell/rb-application.c:555
 msgid "Enable debug output"
 msgstr "Gaitu arazketaren irteera"
 
-#: ../shell/rb-application.c:620
+#: ../shell/rb-application.c:556
 msgid "Enable debug output matching a specified string"
 msgstr "Gaitu arazketaren irteera kate bat bilatzeko"
 
-#: ../shell/rb-application.c:621
+#: ../shell/rb-application.c:557
 msgid "Do not update the library with file changes"
 msgstr "Ez eguneratu liburutegia fitxategi-aldaketekin"
 
-#: ../shell/rb-application.c:622
+#: ../shell/rb-application.c:558
 msgid "Do not register the shell"
 msgstr "Ez erregistratu shell-a"
 
-#: ../shell/rb-application.c:623
+#: ../shell/rb-application.c:559
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Datuak betirako ez gorde (--no-registration inplikatzen du)"
 
-#: ../shell/rb-application.c:624
+#: ../shell/rb-application.c:560
 msgid "Disable loading of plugins"
 msgstr "Desgaitu pluginak kargatzea"
 
-#: ../shell/rb-application.c:625
+#: ../shell/rb-application.c:561
 msgid "Path for database file to use"
 msgstr "Erabiliko den datubase-fitxategiaren bidea"
 
-#: ../shell/rb-application.c:626
+#: ../shell/rb-application.c:562
 msgid "Path for playlists file to use"
 msgstr "Erabiliko den erreprodukzio-zerrenda fitxategiaren bidea"
 
-#: ../shell/rb-application.c:639
+#: ../shell/rb-application.c:575
 #, c-format
 msgid ""
 "%s\n"
@@ -3627,12 +3611,12 @@ msgstr "%s (Pausatua)"
 #: ../shell/rb-shell.c:2801 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
-msgstr "Ez da %s URIa kudeatzeko iturbururik erregistratu"
+msgstr "Ez dago %s URIa kudeatu dezakeen iturburu erregistraturik"
 
 #: ../shell/rb-shell.c:3130
 #, c-format
 msgid "No registered source matches URI %s"
-msgstr ""
+msgstr "Ez dago %s URIarekin bat datorren iturburu erregistraturik"
 
 #: ../shell/rb-shell.c:3163 ../shell/rb-shell.c:3206
 #, c-format
@@ -3740,6 +3724,10 @@ msgstr "Orokorra"
 msgid "Playback"
 msgstr "Erreproduzitu"
 
+#: ../shell/rb-shell-preferences.c:428
+msgid "Plugins"
+msgstr "Pluginak"
+
 #: ../shell/rb-track-transfer-queue.c:174
 #, c-format
 msgid "The file \"%s\" already exists. Do you want to replace it?"
@@ -3771,8 +3759,8 @@ msgid_plural ""
 "%d files cannot be transferred as they must be converted into a format "
 "supported by the target device but no suitable encoding profiles are "
 "available"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d fitxategia ezin da transferitu, helburuko gailuak onartzen duen formatu batera bihurtu behar baita, baina ez da aurkitu kodetze-profil egokirik"
+msgstr[1] "%d fitxategiak ezin dira transferitu, helburuko gailuak onartzen duen formatu batera bihurtu behar baitira, baina ez da aurkitu kodetze-profil egokirik"
 
 #. XXX should provide the option of picking a different format?
 #: ../shell/rb-track-transfer-queue.c:462
@@ -3780,7 +3768,8 @@ msgstr[1] ""
 msgid ""
 "Additional software is required to encode media in your preferred format:\n"
 "%s"
-msgstr ""
+msgstr "Software gehigarria behar da multimedia zure formatu hobetsiarekin kodetzeko:\n"
+"%s"
 
 #: ../shell/rb-track-transfer-queue.c:466
 #, c-format
@@ -3792,8 +3781,10 @@ msgid_plural ""
 "Additional software is required to convert %d files into a format supported "
 "by the target device:\n"
 "%s"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Software gehigarria behar da fitxategi %d helburuko gailuak onartzen duen formatuarekin kodetzeko:\n"
+"%s"
+msgstr[1] "Software gehigarria behar da %d fitxategi helburuko gailuak onartzen duen formatuarekin kodetzeko:\n"
+"%s"
 
 #: ../shell/rb-track-transfer-queue.c:483
 msgid "Unable to transfer tracks"
@@ -3946,19 +3937,19 @@ msgstr "Pistak liburutegiari gehitzen"
 #: ../sources/rb-media-player-source.c:773
 #, c-format
 msgid "Syncing tracks to %s"
-msgstr ""
+msgstr "Pistak sinkronizatzen %s(r)ekin"
 
 #: ../sources/rb-media-player-source.c:829
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
-msgstr ""
+msgstr "Ez duzu hautatu gailu honetara transferitu nahi duzun musikarik, erreprodukzio-zerrendarik edo podcastik."
 
 #: ../sources/rb-media-player-source.c:834
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
-msgstr ""
+msgstr "Ez dago nahiko leku gailuan hautatutako musika, erreprodukzio-zerrendak eta podcastak transferitzeko."
 
 #: ../sources/rb-media-player-source.c:885
 #, c-format
@@ -4020,7 +4011,7 @@ msgstr "Bufferreratzen"
 #: ../sources/rb-transfer-target.c:450
 #, c-format
 msgid "Transferring tracks to %s"
-msgstr ""
+msgstr "Pistak %s gailura transferitzen"
 
 #: ../sources/sync/rb-sync-settings-ui.c:229
 msgid "All Music"
@@ -4036,11 +4027,11 @@ msgstr "Erabilgarri"
 
 #: ../widgets/rb-alert-dialog.c:86
 msgid "Image/label border"
-msgstr ""
+msgstr "Irudiaren/etiketaren ertza"
 
 #: ../widgets/rb-alert-dialog.c:87
 msgid "Width of border around the label and image in the alert dialog"
-msgstr ""
+msgstr "Etiketaren eta irudiaren inguruko ertzaren zabalera alertako elkarrizketa-koadroan"
 
 #: ../widgets/rb-alert-dialog.c:96
 msgid "Alert Type"
@@ -4201,8 +4192,8 @@ msgstr[1] "Inportatu hautatutako %d pista"
 #, c-format
 msgid "Import %d listed track"
 msgid_plural "Import %d listed tracks"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Inportatu zerrendatutako pista %d"
+msgstr[1] "Inportatu zerrendatutako %d pista"
 
 #: ../widgets/rb-property-view.c:661
 #, c-format
@@ -4454,7 +4445,7 @@ msgstr "Kolpe minutuko"
 
 #: ../widgets/rb-query-creator-properties.c:121
 msgid "W_ith faster tempo tracks first"
-msgstr ""
+msgstr "_Konpas azkarreko pistak lehenik"
 
 #: ../widgets/rb-query-creator-properties.c:134
 msgid "contains"
@@ -4602,4 +4593,14 @@ msgstr "Mahaigainean"
 msgid "Unknown location"
 msgstr "Kokaleku ezezaguna"
 
+#~ msgid "Send tracks"
+#~ msgstr "Bidali pistak"
 
+#~ msgid "Send selected tracks by email"
+#~ msgstr "Bidali hautatutako pistak posta bidez"
+
+#~ msgid "Send to..."
+#~ msgstr "Bidali hona…"
+
+#~ msgid "Configure Plugins"
+#~ msgstr "Konfiguratu pluginak"
