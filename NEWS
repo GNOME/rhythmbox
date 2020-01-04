@@ -1,3 +1,71 @@
+Overview of changes in Rhythmbox 3.4.4
+======================================
+
+* Bug fix release for 3.4
+* Support for fetching cover art from coverartarchive.org
+* Uses HTTPS for external requests where possible
+* New Listenbrainz plugin
+* Sendto plugin removed
+
+
+Issues fixed:
+
+1340 - Consider removing iTunes detection plugin
+1582 - Type errors in rhythmbox; cover art plugin
+1688 - print-playing-formats %aa and %aA report wrong value
+1692 - Does org.gnome.rhythmbox.statusbar-visible still exist?
+1696 - Inconsistent Quality/Bitrate for FLAC and ALAC
+1700 - Update app icon
+1713 - Google Pixel phones are Android phones
+1729 - Plugins for Android sync do not work
+1730 - Podcasts searched over plain HTTP
+1741 - Invalid object type 'PeasGtkPluginManager' while loading plugin preferences
+
+Merge requests:
+
+9 - listenbrainz: Added ListenBrainz plugin
+14 - PythonConsole plugin: Print command output's repr() instead of str()
+17 - fix albumart width in webremote ui
+18 - zeitgeist: Use zeitgeist via Gobject introspection
+22 - Drop Mozilla plugin
+23 - ci: Use srcdir != builddir in CI
+24 - iradio: Add Kink 'no alternative'
+25 - Remove obsolete ITMS_HANDLER reference in desktop file
+28 - Do silent notifications
+29 - Fix some deprecated code usage, and update appdata
+31 - Bugs now reported on GitLab
+33 - Add Nexus 5X and all bq devices as recognised Androids
+
+
+Translation updates:
+
+- ca, courtesy of Jordi Mas
+- cs, courtesy of Marek Černocký
+- da, courtesy of Alan Mortensen
+- en_GB, courtesy of Bruce Cowan
+- es, courtesy of Daniel Mustieles
+- eu, courtesy of Asier Sarasua Garmendia
+- fi, courtesy of Jiri Grönroos
+- fr, courtesy of Claude Paroz
+- fur, courtesy of Fabio Tomat
+- hr, courtesy of gogo
+- hu, courtesy of Balázs Úr
+- id, courtesy of Kukuh Syafaat
+- it, courtesy of Milo Casagrande
+- ja, courtesy of sicklylife
+- lt, courtesy of Aurimas Černius
+- mjw, courtesy of Jor Teron
+- nl, courtesy of Nathan Follens
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Rafael Fontenelle
+- sl, courtesy of Matej Urbančič
+- sr, courtesy of Марко М. Костић
+- sv, courtesy of Anders Jonsson
+- tr, courtesy of Sabri Ünal
+- vi, courtesy of Trần Ngọc Quân
+
+
+
 Overview of changes in Rhythmbox 3.4.3
 ======================================
 
