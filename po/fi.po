@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2019-09-03 12:23+0000\n"
-"PO-Revision-Date: 2019-09-07 17:48+0300\n"
+"POT-Creation-Date: 2019-11-17 07:56+0000\n"
+"PO-Revision-Date: 2020-01-04 15:55+0200\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <lokalisointi-lista@googlegroups.com>\n"
 "Language: fi\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.2.4\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:649
 #, fuzzy, c-format
@@ -850,11 +850,11 @@ msgstr "Ka_ppaleiden määrä:"
 
 #: ../data/ui/song-info-multiple.ui.h:12 ../data/ui/song-info.ui.h:16
 msgid "Albu_m sort order:"
-msgstr "_Albumijärjestys"
+msgstr "_Albumijärjestys:"
 
 #: ../data/ui/song-info-multiple.ui.h:13 ../data/ui/song-info.ui.h:17
 msgid "_Artist sort order:"
-msgstr "_Esittäjäjärjestys"
+msgstr "_Esittäjäjärjestys:"
 
 #: ../data/ui/song-info-multiple.ui.h:14 ../data/ui/song-info.ui.h:18
 msgid "Album a_rtist sort order:"
@@ -902,7 +902,7 @@ msgstr "Tiedoston koko:"
 
 #: ../data/ui/song-info.ui.h:29
 msgid "Date added:"
-msgstr "Lisäyspäivä"
+msgstr "Lisäyspäivä:"
 
 #: ../data/ui/sync-state.ui.h:1
 msgid "Current contents"
@@ -968,8 +968,8 @@ msgstr "%d %Bta %Y"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/android/rb-android-source.c:687
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:581
+#: ../plugins/android/rb-android-source.c:715
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -987,10 +987,10 @@ msgstr "%d %Bta %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:645
 #: ../plugins/mtpdevice/rb-mtp-source.c:1144
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
-#: ../plugins/notification/rb-notification-plugin.c:510
+#: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1926
-#: ../podcast/rb-podcast-manager.c:2025
+#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
+#: ../podcast/rb-podcast-manager.c:2024
 #: ../podcast/rb-podcast-properties-dialog.c:639
 #: ../podcast/rb-podcast-properties-dialog.c:703
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
@@ -1023,34 +1023,34 @@ msgstr "Liian monta symbolista linkkiä"
 msgid "Cannot get free space at %s: %s"
 msgstr "Taltion %s vapaata tilaa ei voi selvittää: %s"
 
-#: ../lib/rb-util.c:566 ../plugins/context/tmpl/album-tmpl.html:21
+#: ../lib/rb-util.c:562 ../plugins/context/tmpl/album-tmpl.html:21
 #: ../remote/dbus/rb-client.c:217
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:568 ../plugins/context/tmpl/album-tmpl.html:19
+#: ../lib/rb-util.c:564 ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:219
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:632
+#: ../lib/rb-util.c:628
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d / %d:%02d jäljellä"
 
-#: ../lib/rb-util.c:636
+#: ../lib/rb-util.c:632
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d / %d:%02d:%02d jäljellä"
 
-#: ../lib/rb-util.c:641
+#: ../lib/rb-util.c:637
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d / %d:%02d"
 
-#: ../lib/rb-util.c:645
+#: ../lib/rb-util.c:641
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d / %d:%02d:%02d"
@@ -1150,7 +1150,7 @@ msgstr "Kappaleet:"
 msgid "Playlists:"
 msgstr "Soittolistat:"
 
-#: ../plugins/android/rb-android-source.c:201
+#: ../plugins/android/rb-android-source.c:203
 msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
@@ -1158,13 +1158,17 @@ msgstr ""
 "Tältä laitteelta ei löytynyt tallennusalueita. Laitteen lukitus tulee "
 "mahdollisesti avata ja MTP ottaa käyttöön."
 
-#: ../plugins/android/rb-android-source.c:401
+#: ../plugins/android/rb-android-source.c:391
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "Selataan %s"
 
-#: ../plugins/android/rb-android-source.c:781
+#: ../plugins/android/rb-android-source.c:414
+msgid "Error mounting Android device"
+msgstr "Android-laitteen liittäminen aiheutti virheen"
+
+#: ../plugins/android/rb-android-source.c:809
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
 #: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
 #: ../sources/rb-transfer-target.c:182
@@ -1856,7 +1860,7 @@ msgstr "Uusi DAAP-jakoon"
 
 #: ../plugins/daap/rb-daap-plugin.c:511
 msgid "Host:port of DAAP share:"
-msgstr "DAAP-jaon verkkonimi ja portti"
+msgstr "DAAP-jaon verkkonimi ja portti:"
 
 #: ../plugins/daap/rb-daap-sharing.c:61
 #, c-format
@@ -2200,10 +2204,8 @@ msgid "Submit your listens to ListenBrainz"
 msgstr "Lähetä kuuntelutietosi ListenBrainziin"
 
 #: ../plugins/listenbrainz/settings.ui.h:1
-#, fuzzy
-#| msgid "Username:"
 msgid "User token:"
-msgstr "Käyttäjätunnus:"
+msgstr "Käyttäjäpoletti:"
 
 #: ../plugins/listenbrainz/settings.ui.h:2
 msgid ""
@@ -2211,6 +2213,9 @@ msgid ""
 "below. You can see your user token in your <a href=\"https://listenbrainz."
 "org/profile/\">user profile</a>."
 msgstr ""
+"Lähettääksesi tiedot kuuntelemastasi musiikista ListenBrainziin, kirjoita "
+"alapuolelle ListenBrainz-käyttäjäpoletti. Löydät käyttäjäpoletin <a href="
+"\"https://listenbrainz.org/profile/\">käyttäjäprofiilistasi</a>."
 
 #: ../plugins/lyrics/LyricsConfigureDialog.py:103
 msgid "Choose lyrics folder..."
@@ -2669,18 +2674,18 @@ msgid "Next"
 msgstr "Seuraava"
 
 #. Translators: by Artist
-#: ../plugins/notification/rb-notification-plugin.c:332
+#: ../plugins/notification/rb-notification-plugin.c:334
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "<i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/notification/rb-notification-plugin.c:334
+#: ../plugins/notification/rb-notification-plugin.c:336
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "- <i>%s</i>"
 
-#: ../plugins/notification/rb-notification-plugin.c:414
+#: ../plugins/notification/rb-notification-plugin.c:416
 #: ../widgets/rb-header.c:366
 msgid "Not Playing"
 msgstr "Soitto pysäytetty"
@@ -2887,7 +2892,7 @@ msgstr "Verkon etäohjaus"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Ohjaa Rytmilaatikkoa selaimella"
 
-#: ../plugins/webremote/webremote.py:583
+#: ../plugins/webremote/webremote.py:585
 msgid "Launch web remote control"
 msgstr "Käynnistä verkon etäohjaus"
 
@@ -2955,30 +2960,30 @@ msgstr "Virhe podcastissa"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Haluatko lisätä podcast-virran joka tapauksessa?"
 
-#: ../podcast/rb-podcast-manager.c:925
+#: ../podcast/rb-podcast-manager.c:924
 msgid "Error creating podcast download directory"
 msgstr "Virhe luotaessa podcastien noutokansiota"
 
-#: ../podcast/rb-podcast-manager.c:926
+#: ../podcast/rb-podcast-manager.c:925
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Noutokansiota kohteelle %s ei voitu luoda: %s"
 
-#: ../podcast/rb-podcast-manager.c:1045
+#: ../podcast/rb-podcast-manager.c:1044
 msgid "Invalid URL"
 msgstr "Virheellinen URL"
 
-#: ../podcast/rb-podcast-manager.c:1046
+#: ../podcast/rb-podcast-manager.c:1045
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL \"%s\" ei ole kelvollinen, tarkista sen muotoilu."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1057
+#: ../podcast/rb-podcast-manager.c:1056
 msgid "URL already added"
 msgstr "URL on jo lisätty"
 
-#: ../podcast/rb-podcast-manager.c:1058
+#: ../podcast/rb-podcast-manager.c:1057
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2987,7 +2992,7 @@ msgstr ""
 "URL \"%s\" on jo lisätty radioasemaksi. Jos tämä on Podcast-virta, poista "
 "ensin vastaava radioasema."
 
-#: ../podcast/rb-podcast-manager.c:1158
+#: ../podcast/rb-podcast-manager.c:1157
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2998,11 +3003,11 @@ msgstr ""
 "sisältö voi olla virheellinen. Haluatko Rytmilaatikon yrittävän käyttää sitä "
 "tästä huolimatta?"
 
-#: ../podcast/rb-podcast-manager.c:1274
+#: ../podcast/rb-podcast-manager.c:1273
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2240
+#: ../podcast/rb-podcast-manager.c:2239
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Tapahtui virhe lisättäessä tätä podcastia. %s. Tarkista URL: %s"
@@ -3506,7 +3511,7 @@ msgstr "Esimerkkiliitännäinen Valalla, joka ei tee mitään"
 #: ../shell/rb-application.c:166
 msgid "translator-credits"
 msgstr ""
-"Jiri Grönroos, 2010-2017\n"
+"Jiri Grönroos, 2010-2020\n"
 "Ilkka Tuohela, 2002-2008\n"
 "Timo Jyrinki, 2008\n"
 "\n"
