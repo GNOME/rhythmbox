@@ -124,7 +124,7 @@ msgstr "Rhythmbox"
 #: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
 #: ../data/rhythmbox-device.desktop.in.in.h:4
 msgid "Play and organize your music collection"
-msgstr "Přehrávat a organizovat vaši hudební kolekce"
+msgstr "Přehrávejte si a organizujte svoji hudební sbírku"
 
 #: ../data/rhythmbox.appdata.xml.in.h:3
 msgid ""
@@ -416,7 +416,7 @@ msgstr "Žán_r"
 
 #: ../data/ui/import-dialog.ui.h:1
 msgid "Select a location containing music to add to your library:"
-msgstr "Vyberte umístění obsahující hudbu, která se má přidat do kolekce:"
+msgstr "Vyberte umístění obsahující hudbu, která se má přidat do sbírky:"
 
 #: ../data/ui/import-dialog.ui.h:2 ../data/ui/library-toolbar.ui.h:4
 msgid "Import"
@@ -432,11 +432,11 @@ msgstr "Kopírovat soubory, které jsou mimo hudební kolkci"
 
 #: ../data/ui/import-errors-popup.ui.h:1 ../data/ui/missing-files-popup.ui.h:1
 msgid "_Remove"
-msgstr "_Odstranit"
+msgstr "_Odebrat"
 
 #: ../data/ui/library-prefs.ui.h:1
 msgid "Library Location"
-msgstr "Umístění kolekce"
+msgstr "Umístění sbírky"
 
 #: ../data/ui/library-prefs.ui.h:2
 msgid "_Music files are placed in:"
@@ -448,11 +448,11 @@ msgstr "_Procházet…"
 
 #: ../data/ui/library-prefs.ui.h:4
 msgid "_Watch my library for new files"
-msgstr "_Hledat v mé kolekci nové soubory"
+msgstr "_Hledat v mé sbírce nové soubory"
 
 #: ../data/ui/library-prefs.ui.h:5
 msgid "Library Structure"
-msgstr "Struktura kolekce"
+msgstr "Struktura sbírky"
 
 #: ../data/ui/library-prefs.ui.h:6
 msgid "F_older hierarchy:"
@@ -792,7 +792,7 @@ msgstr "Aktualizovat"
 
 #: ../data/ui/queue-popups.ui.h:1
 msgid "Remove from Play Queue"
-msgstr "Odstranit z fronty"
+msgstr "Odebrat z fronty"
 
 #: ../data/ui/queue-popups.ui.h:2
 msgid "Shuffle Play Queue"
@@ -921,7 +921,7 @@ msgstr "Přidané soubory:"
 
 #: ../data/ui/sync-state.ui.h:4
 msgid "Removed files:"
-msgstr "Odstraněné soubory:"
+msgstr "Odebrané soubory:"
 
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
@@ -1459,7 +1459,7 @@ msgstr "Chyba připojení. Zkuste se prosím přihlásit znovu."
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1230
 msgid "My Library"
-msgstr "Moje kolekce"
+msgstr "Moje sbírka"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1238
 msgid "My Recommendations"
@@ -1509,7 +1509,7 @@ msgstr "Největší fanoušci umělce:"
 #.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:63
 msgid "Library of User:"
-msgstr "Kolekce uživatele:"
+msgstr "Sbírka uživatele:"
 
 #. Translators: describes a radio stream playing tracks played by users similar to a
 #. * particular user.  Followed by a text entry box for the user name.
@@ -1573,7 +1573,7 @@ msgstr "Rádio fanoušků umělce %s"
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:127
 #, c-format
 msgid "%s's Library"
-msgstr "Kolekce uživatele %s"
+msgstr "Sbírka uživatele %s"
 
 #. Translators: station is built from the "neighbourhood" of the user %s.
 #. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
@@ -1829,7 +1829,7 @@ msgstr "_Sdílet mou hudbu"
 
 #: ../plugins/daap/daap-prefs.ui.h:4
 msgid "Library _name:"
-msgstr "_Název kolekce:"
+msgstr "_Název sbírky:"
 
 #: ../plugins/daap/daap-prefs.ui.h:5
 msgid "Forget known Remotes"
@@ -2140,7 +2140,7 @@ msgstr "Podpora pro služby vysílání přenášené přes Internet"
 #: ../plugins/iradio/iradio-popup.ui.h:1 ../shell/rb-shell-clipboard.c:258
 #: ../sources/rb-source.c:1230 ../widgets/rb-query-creator.c:802
 msgid "Remove"
-msgstr "Odstranit"
+msgstr "Odebrat"
 
 #: ../plugins/iradio/rb-iradio-source.c:332 ../widgets/rb-entry-view.c:1484
 #: ../widgets/rb-library-browser.c:134
@@ -2538,7 +2538,7 @@ msgstr "Nelze stáhnout album"
 
 #: ../plugins/magnatune/MagnatuneSource.py:193
 msgid "You must have a library location set to download an album."
-msgstr "Ke stažení alba musíte mít nastavené umístění kolekce."
+msgstr "Ke stažení alba musíte mít nastavené umístění sbírky."
 
 #: ../plugins/magnatune/MagnatuneSource.py:255
 msgid "Unable to load catalog"
@@ -3002,7 +3002,7 @@ msgid ""
 "podcast feed, please remove the radio station."
 msgstr ""
 "URL „%s“ již bylo přidáno jako stanice rádia. Pokud se jedná o kanál "
-"podcastu, odstraňte prosím tuto stanici rádia."
+"podcastu, odeberte prosím tuto stanici rádia."
 
 #: ../podcast/rb-podcast-manager.c:1157
 #, c-format
@@ -3598,7 +3598,7 @@ msgstr "Povolit ladicí výstup odpovídající zadanému řetězci"
 
 #: ../shell/rb-application.c:557
 msgid "Do not update the library with file changes"
-msgstr "Neaktualizovat kolekci podle změn souborů"
+msgstr "Neaktualizovat sbírku podle změn souborů"
 
 #: ../shell/rb-application.c:558
 msgid "Do not register the shell"
@@ -3810,7 +3810,7 @@ msgstr "Náhodně podle doby od posledního přehrání a hodnocení"
 
 #: ../shell/rb-shell-player.c:3301
 msgid "Linear, removing entries once played"
-msgstr "Lineárně, odstraňovat položky po přehrání"
+msgstr "Lineárně, odebírat položky po přehrání"
 
 #: ../shell/rb-shell-player.c:3311
 #, c-format
@@ -3959,7 +3959,7 @@ msgstr "Nelze odpojit"
 
 #: ../sources/rb-display-page-group.c:86
 msgid "Library"
-msgstr "Kolekce"
+msgstr "Sbírka"
 
 #: ../sources/rb-display-page-group.c:89
 msgid "Stores"
@@ -4039,7 +4039,7 @@ msgstr "Hudba"
 
 #: ../sources/rb-library-source.c:469
 msgid "Choose Library Location"
-msgstr "Vyberte umístění kolekce"
+msgstr "Vyberte umístění sbírky"
 
 #: ../sources/rb-library-source.c:508
 msgid "Multiple locations set"
@@ -4051,11 +4051,11 @@ msgstr "Příklad cesty:"
 
 #: ../sources/rb-library-source.c:1284
 msgid "Copying tracks to the library"
-msgstr "Kopírují se skladby do kolekce"
+msgstr "Kopírují se skladby do sbírky"
 
 #: ../sources/rb-library-source.c:1358
 msgid "Adding tracks to the library"
-msgstr "Přidávají se skladby do kolekce"
+msgstr "Přidávají se skladby do sbírky"
 
 #: ../sources/rb-media-player-source.c:773
 #, c-format
@@ -4105,7 +4105,7 @@ msgstr[2] "%d chybějících souborů"
 
 #: ../sources/rb-playlist-source.c:1191
 msgid "Remove from Playlist"
-msgstr "Odstranit ze seznamu skladeb"
+msgstr "Odebrat ze seznamu skladeb"
 
 #: ../sources/rb-play-queue-source.c:297 ../sources/rb-play-queue-source.c:399
 #: ../sources/rb-play-queue-source.c:508
@@ -4463,7 +4463,7 @@ msgstr "Čas posledního přehrání"
 #: ../widgets/rb-query-creator-properties.c:96
 msgctxt "query-criteria"
 msgid "Time Added to Library"
-msgstr "Čas přidání do kolekce"
+msgstr "Čas přidání do sbírky"
 
 #: ../widgets/rb-query-creator-properties.c:107
 msgctxt "query-sort"
