@@ -1,20 +1,10 @@
-image: ubuntu:bionic
+image: fedora:31
 
 stages:
   - test
 
 before_script:
-  - apt-get update
-  - apt-get install -y build-essential intltool gtk-doc-tools pkg-config
-                       libgtk-3-dev libgstreamer1.0-dev
-                       libgstreamer-plugins-base1.0-dev libgdk-pixbuf2.0-dev
-                       libglib2.0-dev libgpod-dev libtotem-plparser-dev
-                       libsoup2.4-dev libgudev-1.0-dev libmtp-dev libnotify-dev
-                       libbrasero-media3-dev
-                       libsecret-1-dev libpeas-dev yelp-tools x11proto-core-dev
-                       liblircclient-dev python3-dev python-gi-dev
-                       libdmapsharing-3.0-dev libjson-glib-dev libgrilo-0.3-dev
-                       libxml2-dev libtdb-dev
+  - dnf install -y which diffutils make file git python3-devel gettext-devel libappstream-glib intltool libxml2-devel itstool json-glib-devel libnotify-devel yelp-tools gstreamer1-devel libgudev-devel python3-gobject-devel gstreamer1-plugins-base-devel libmtp-devel libpeas-devel libgpod-devel brasero-devel libtdb-devel libsoup-devel gobject-introspection-devel grilo-devel gtk3-devel libdmapsharing-devel libsecret-devel totem-pl-parser-devel gtk-doc xorg-x11-server-Xvfb librsvg2
 
 test:
   stage: test
@@ -22,7 +12,12 @@ test:
     - mkdir build
     - cd build
     - NOCONFIGURE=1 ../autogen.sh
-    - ../configure
+    - ../configure --disable-daap
     - make
-    - make check
     - make install
+    - xvfb-run -a -s "-screen 0 1024x768x24" make check
+  artifacts:
+    paths:
+      - build/config.log
+      - build/tests/*.log
+    when: always
