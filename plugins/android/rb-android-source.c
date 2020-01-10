@@ -721,7 +721,7 @@ build_device_uri (RBAndroidSource *source, RhythmDBEntry *entry, const char *med
 		if (p != NULL) {
 			*p = '\0';
 		}
-		file = g_strdup_printf ("%s%s", title, ext);
+		file = g_strdup_printf (G_DIR_SEPARATOR_S "%s%s", title, ext);
 	}
 
 	if (file == NULL) {
