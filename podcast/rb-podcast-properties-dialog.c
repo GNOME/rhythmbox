@@ -123,6 +123,8 @@ static const char *html_clues[] = {
 	"<i>",
 	"<ul>",
 	"<br",
+	"<div ",
+	"<div>",
 	"<img ",
 	"&lt;",
 	"&gt;",
