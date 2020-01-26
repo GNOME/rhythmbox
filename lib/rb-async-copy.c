@@ -113,7 +113,7 @@ rb_async_copy_start (RBAsyncCopy *copy,
 
 	g_file_copy_async (copy->priv->src,
 			   copy->priv->dest,
-			   G_FILE_COPY_NONE,
+			   G_FILE_COPY_OVERWRITE,
 			   G_PRIORITY_DEFAULT,
 			   copy->priv->cancel,
 			   progress_cb,
