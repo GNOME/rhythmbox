@@ -465,7 +465,7 @@ class MagnatuneSource(RB.BrowserSource):
 				track_uri = RB.sanitize_uri_for_filesystem(track_uri)
 				RB.uri_create_parent_dirs(track_uri)
 
-				track_out = Gio.file_new_for_uri(track_uri).create(Gio.FileCreateFlags.NONE, None)
+				track_out = Gio.file_new_for_uri(track_uri).replace(None, False, Gio.FileCreateFlags.NONE, None)
 				if track_out is not None:
 					track_out.write(album.read(track), None)
 					track_out.close(None)
