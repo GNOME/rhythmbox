@@ -489,23 +489,19 @@ class MagnatuneSource(RB.BrowserSource):
 					     Gio.FileCreateFlags.PRIVATE|Gio.FileCreateFlags.REPLACE_DESTINATION,
 					     None)
 
-		try:
-			# For some reason, Gio.FileCopyFlags.OVERWRITE doesn't work for copy_async
-			dest.delete(None)
-		except:
-			pass
-
 		if self.__download_progress is None:
 			self.__download_progress = RB.TaskProgressSimple.new()
 			self.__download_progress.props.task_label = _("Downloading from Magnatune")
 			self.__download_progress.connect('cancel-task', self.cancel_downloads)
 			self.props.shell.props.task_list.add_task(self.__download_progress)
 
-		dl = RB.AsyncCopy()
-		dl.set_progress(download_progress, self)
-		dl.start(audio_dl_uri, dest.get_uri(), download_finished, self)
-		self.__downloads[audio_dl_uri] = (0, 0) # (current, total)
-		self.__copies[audio_dl_uri] = dl
+		# one async copy object per download
+		if audio_dl_uri not in self.__copies:
+			dl = RB.AsyncCopy()
+			dl.set_progress(download_progress, self)
+			dl.start(audio_dl_uri, dest.get_uri(), download_finished, self)
+			self.__downloads[audio_dl_uri] = (0, 0) # (current, total)
+			self.__copies[audio_dl_uri] = dl
 
 	def cancel_downloads(self, task):
 		for download in self.__copies.values():
