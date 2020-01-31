@@ -516,12 +516,12 @@ class MagnatuneSource(RB.BrowserSource):
 	def playing_entry_changed(self, entry):
 		if not self.__db or not entry:
 			return
-		if entry.get_entry_type() != self.__db.entry_type_get_by_name("MagnatuneEntryType"):
+		if entry.get_entry_type() != self.__db.entry_type_get_by_name("magnatune"):
 			return
 
 		sku = self.__sku_dict[entry.get_string(RB.RhythmDBPropType.LOCATION)]
 		key = RB.ExtDBKey.create_storage("album", entry.get_string(RB.RhythmDBPropType.ALBUM))
 		key.add_field("artist", entry.get_string(RB.RhythmDBPropType.ARTIST))
-		self.__art_store.store_uri(key, self.__art_dict[sku])
+		self.__art_store.store_uri(key, RB.ExtDBSourceType.EMBEDDED, self.__art_dict[sku])
 
 GObject.type_register(MagnatuneSource)
