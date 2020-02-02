@@ -48,7 +48,7 @@ magnatune_partner_id = "rhythmbox"
 # URIs
 magnatune_song_info_uri = "http://magnatune.com/info/song_info_xml.zip"
 magnatune_changed_uri = "http://magnatune.com/info/changed.txt"
-magnatune_buy_album_uri = "https://magnatune.com/buy/choose?"
+magnatune_member_signup_uri = "http://magnatune.com/member/signup?"
 magnatune_api_download_uri = "http://%s:%s@download.magnatune.com/buy/membership_free_dl_xml?"
 
 magnatune_in_progress_dir = Gio.file_new_for_path(RB.user_data_dir()).resolve_relative_path('magnatune')
@@ -172,15 +172,13 @@ class MagnatuneSource(RB.BrowserSource):
 		if len(tracks) == 0:
 			return
 
-		tr = tracks[0]
-		sku = self.__sku_dict[tr.get_string(RB.RhythmDBPropType.LOCATION)]
-		url = magnatune_buy_album_uri + urllib.parse.urlencode({ 'sku': sku, 'ref': magnatune_partner_id })
+		url = magnatune_member_signup_uri + urllib.parse.urlencode({ 'ref': magnatune_partner_id })
 		Gtk.show_uri(screen, url, Gdk.CURRENT_TIME)
 
 
 	def download_album(self):
 		if self.__settings['account-type'] != 'download':
-			# The user doesn't have a download account, so redirect them to the download signup page
+			# The user doesn't have a download account, so redirect them to the member signup page
 			self.download_redirect()
 			return
 
