@@ -59,7 +59,7 @@ rb_metadata_gst_tag_to_field (const char *tag)
 	else if (!strcmp (tag, GST_TAG_ALBUM_VOLUME_NUMBER))
 		return RB_METADATA_FIELD_DISC_NUMBER;
 	else if (!strcmp (tag, GST_TAG_ALBUM_VOLUME_COUNT))
-		return RB_METADATA_FIELD_MAX_TRACK_NUMBER;
+		return RB_METADATA_FIELD_MAX_DISC_NUMBER;
 	else if (!strcmp (tag, GST_TAG_DESCRIPTION))
 		return RB_METADATA_FIELD_DESCRIPTION;
 	else if (!strcmp (tag, GST_TAG_VERSION))
