@@ -304,12 +304,18 @@ class SoundCloudSource(RB.StreamingSource):
 			self.loader = rb.Loader()
 			self.loader.get_url(self.more_tracks_url, self.search_tracks_api_cb)
 
+	def clear_container_store(self):
+		selection = self.container_view.get_selection()
+		selection.disconnect(self.container_view_changed_id)
+		self.containers.clear()
+		self.container_view_changed_id = selection.connect('changed', self.selection_changed_cb)
+
 	def do_search(self):
 		self.cancel_request()
 
 		base = 'https://api.soundcloud.com'
 		self.new_model()
-		self.containers.clear()
+		self.clear_container_store()
 		self.more_tracks_url = None
 		self.more_containers_url = None
 		self.fetch_more_button.set_sensitive(False)
@@ -521,7 +527,7 @@ class SoundCloudSource(RB.StreamingSource):
 		c = Gtk.TreeViewColumn("", r, text=0)
 		self.container_view.append_column(c)
 
-		self.container_view.get_selection().connect('changed', self.selection_changed_cb)
+		self.container_view_changed_id = self.container_view.get_selection().connect('changed', self.selection_changed_cb)
 
 		self.songs = RB.EntryView(db=shell.props.db,
 					  shell_player=shell.props.shell_player,
