@@ -113,13 +113,6 @@ class SoundCloudSource(RB.StreamingSource):
 				'endpoint': '/users.json',
 				'containers': True
 			},
-			'groups': {
-				'label': _("Search groups"),
-				'placeholder': _("Search groups on SoundCloud"),
-				'title': _("SoundCloud Groups"),
-				'endpoint': '/groups.json',
-				'containers': True
-			},
 		}
 
 		self.container_types = {
@@ -133,11 +126,6 @@ class SoundCloudSource(RB.StreamingSource):
 				'tracks-url': '.json',
 				'tracks-type': 'playlist',
 			},
-			'group': {
-				'attributes': ['name', 'kind', 'uri', 'permalink_url', 'artwork_url', 'description'],
-				'tracks-url': '/tracks.json',
-				'tracks-type': 'plain',
-			}
 		}
 
 	def hide_entry_cb(self, entry):
