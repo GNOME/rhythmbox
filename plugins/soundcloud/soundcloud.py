@@ -238,10 +238,9 @@ class SoundCloudSource(RB.StreamingSource):
 		for item in stuff['collection']:
 			self.add_container(item)
 
-		if 'next_href' in stuff:
+		self.more_containers_url = stuff.get('next_href')
+		if self.more_containers_url:
 			self.add_container_marker()
-			self.more_containers_url = stuff.get('next_href')
-
 
 	def resolve_api_cb(self, data):
 		if data is None:
