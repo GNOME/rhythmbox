@@ -314,6 +314,7 @@ class SoundCloudSource(RB.StreamingSource):
 
 		base = 'https://api.soundcloud.com'
 		self.new_model()
+		self.remove_container_marker()
 		self.clear_container_store()
 		self.more_tracks_url = None
 		self.more_containers_url = None
