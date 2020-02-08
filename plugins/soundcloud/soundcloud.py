@@ -219,8 +219,8 @@ class SoundCloudSource(RB.StreamingSource):
 		for item in stuff['collection']:
 			self.add_track(db, entry_type, item)
 
-		if 'next_href' in stuff:
-			self.more_tracks_url = stuff.get('next_href')
+		self.more_tracks_url = stuff.get('next_href')
+		if self.more_tracks_url:
 			self.fetch_more_button.set_sensitive(True)
 
 
@@ -485,6 +485,7 @@ class SoundCloudSource(RB.StreamingSource):
 
 		self.fetch_more_button = Gtk.Button.new_with_label(_("Fetch more tracks"))
 		self.fetch_more_button.connect("clicked", self.show_more_cb)
+		self.fetch_more_button.set_sensitive(False)
 
 		action = Gio.SimpleAction.new("soundcloud-search-type", GLib.VariantType.new('s'))
 		action.connect("activate", self.search_type_action_cb)
