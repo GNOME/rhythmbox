@@ -8,7 +8,7 @@
 # Hiroshi Tagawa <kuponuga@gmail.com>, 2010.
 # Kiyotaka NISHIBORI <ml.nishibori.kiyotaka@gmail.com>, 2010.
 # OKANO Takayoshi <kano@na.rim.or.jp>, 2011-2012.
-# Kentaro KAZUHAMA <kazken3@gmail.com>, 2012.
+# Kentaro KAZUHAMA <kazken3@gmail.com>, 2012, 2020.
 # Jiro Matsuzawa <jmatsuzawa@gnome.org>, 2012-2014.
 # Hajime Taira <htaira@redhat.com>, 2016.
 # sicklylife <translation@sicklylife.jp>, 2019-2020.
@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
 "POT-Creation-Date: 2020-02-02 01:04+0000\n"
-"PO-Revision-Date: 2020-01-07 22:00+0900\n"
+"PO-Revision-Date: 2020-02-12 20:00+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
@@ -628,17 +628,12 @@ msgid "Playlist"
 msgstr "プレイリスト"
 
 #: ../data/ui/podcast-add-dialog.ui.h:1
-#, fuzzy
-#| msgid ""
-#| "Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
-#| "podcast feed URL.\n"
-#| "Subscribe to podcasts to download new episodes as they are published."
 msgid ""
 "Search for podcasts in the iTunes Store, or enter a podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
-"iTunes StoreやMiroguide.comのポッドキャストを検索するか、ポッドキャストフィー"
-"ドのURLを入力します。\n"
+"iTunes Storeのポッドキャストを検索するか、ポッドキャストフィードのURLを入力"
+"します。\n"
 "発行済みの新しいエピソードをダウンロードするにはポッドキャストを購読します。"
 
 #: ../data/ui/podcast-add-dialog.ui.h:4
@@ -1169,8 +1164,8 @@ msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
 msgstr ""
-"このデバイスにはストレージ領域が見つかりません。ロックを解除してMTPを有効化し"
-"てください。"
+"このデバイスのストレージ領域が見つかりませんでした。ロックを解除してMTPを有効"
+"にしてください。"
 
 #: ../plugins/android/rb-android-source.c:391
 #: ../plugins/generic-player/rb-generic-player-source.c:565
@@ -2902,7 +2897,7 @@ msgstr "ウェブリモートコントロールを起動"
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
-msgstr[0] "%d個の配信元"
+msgstr[0] "%d個のフィード"
 
 #: ../podcast/rb-podcast-add-dialog.c:306
 msgid "Unable to load the feed. Check your network connection."
