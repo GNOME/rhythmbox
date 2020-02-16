@@ -1,5 +1,5 @@
 # Brazilian Portuguese translation of rhythmbox.
-# Copyright (C) 2019 Rhythmbox copyright holders
+# Copyright (C) 2020 Rhythmbox copyright holders
 # This file is distributed under the same license as the rhythmbox package.
 # Alexandre Folle de Menezes <afmenez@terra.com.br>, 2003.
 # Evandro Fernandes Giovanini <evandrofg@ig.com.br>, 2003.
@@ -22,14 +22,14 @@
 # Henrique P. Machado <hpmachado@gnome.org>, 2012.
 # Antonio Fernandes C. Neto <fernandesn@gnome.org>, 2013.
 # Enrico Nicoletto <liverig@gmail.com>, 2008, 2013, 2016
-# Rafael Fontenelle <rafaelff@gnome.org>, 2014-2019.
+# Rafael Fontenelle <rafaelff@gnome.org>, 2014-2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2019-11-17 07:56+0000\n"
-"PO-Revision-Date: 2019-11-29 04:54-0300\n"
+"POT-Creation-Date: 2020-02-02 01:04+0000\n"
+"PO-Revision-Date: 2020-02-16 16:36-0300\n"
 "Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
@@ -130,7 +130,7 @@ msgstr "Minhas preferidas"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
-#: ../shell/rb-shell.c:512 ../shell/rb-shell.c:2384
+#: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2389
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -524,7 +524,7 @@ msgstr "Propriedades do reprodutor de mídia"
 #: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
 #: ../plugins/iradio/rb-station-properties-dialog.c:182
 #: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:318
+#: ../podcast/rb-podcast-properties-dialog.c:320
 #: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:377
 #: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
 msgid "_Close"
@@ -636,13 +636,16 @@ msgid "Playlist"
 msgstr "Lista de reprodução"
 
 #: ../data/ui/podcast-add-dialog.ui.h:1
+#| msgid ""
+#| "Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
+#| "podcast feed URL.\n"
+#| "Subscribe to podcasts to download new episodes as they are published."
 msgid ""
-"Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
-"podcast feed URL.\n"
+"Search for podcasts in the iTunes Store, or enter a podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
-"Pesquise por podcasts na iTunes Store e no Miroguide.com, ou digite um URL "
-"de uma fonte de podcast.\n"
+"Pesquise por podcasts na iTunes Store, ou digite um URL de uma fonte de "
+"podcast.\n"
 "Assine podcasts para baixar novos episódios assim que forem publicados."
 
 #: ../data/ui/podcast-add-dialog.ui.h:4
@@ -1007,8 +1010,8 @@ msgstr "%d de %b de %Y"
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
 #: ../podcast/rb-podcast-manager.c:2024
-#: ../podcast/rb-podcast-properties-dialog.c:639
-#: ../podcast/rb-podcast-properties-dialog.c:703
+#: ../podcast/rb-podcast-properties-dialog.c:641
+#: ../podcast/rb-podcast-properties-dialog.c:705
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
 #: ../remote/dbus/rb-client.c:732 ../rhythmdb/rhythmdb.c:2068
 #: ../rhythmdb/rhythmdb.c:2074 ../rhythmdb/rhythmdb.c:2089
@@ -1184,7 +1187,6 @@ msgid "Scanning %s"
 msgstr "Varrendo %s"
 
 #: ../plugins/android/rb-android-source.c:414
-#| msgid "Android devices"
 msgid "Error mounting Android device"
 msgstr "Erro ao montar o dispositivo Android"
 
@@ -2195,14 +2197,14 @@ msgstr "URL da estação de rádio na Internet:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:395
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:524
+#: ../podcast/rb-podcast-properties-dialog.c:526
 #: ../sources/rb-media-player-source.c:567 ../widgets/rb-song-info.c:1151
 #, c-format
 msgid "%s Properties"
 msgstr "Propriedades de %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:487
-#: ../podcast/rb-podcast-properties-dialog.c:637
+#: ../podcast/rb-podcast-properties-dialog.c:639
 #: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1236
 #, c-format
 msgid "%lu kbps"
@@ -2930,7 +2932,7 @@ msgstr "Controle remoto web"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Controle o Rhythmbox usando um navegador web"
 
-#: ../plugins/webremote/webremote.py:585
+#: ../plugins/webremote/webremote.py:584
 msgid "Launch web remote control"
 msgstr "Inicie o controle remote web"
 
@@ -3073,7 +3075,7 @@ msgstr "Não foi possível analisar o conteúdo da fonte"
 msgid "The feed does not contain any downloadable items"
 msgstr "A fonte não contém qualquer item que possa ser baixado"
 
-#: ../podcast/rb-podcast-properties-dialog.c:587
+#: ../podcast/rb-podcast-properties-dialog.c:589
 msgid "Not Downloaded"
 msgstr "Não baixado"
 
@@ -3212,7 +3214,7 @@ msgstr "Pausar a reprodução se estiver em execução"
 msgid "Toggle play/pause mode"
 msgstr "Alternar entre os modos reproduzir e pausar"
 
-#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2290
+#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2295
 msgid "Stop playback"
 msgstr "Parar a reprodução"
 
@@ -3735,45 +3737,45 @@ msgstr "Lista de reprodução desconhecida: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "A lista de reprodução %s é uma lista automática"
 
-#: ../shell/rb-shell.c:2083
+#: ../shell/rb-shell.c:2088
 msgid "Error while saving song information"
 msgstr "Erro ao salvar as informações da música"
 
-#: ../shell/rb-shell.c:2287
+#: ../shell/rb-shell.c:2292
 msgid "Pause playback"
 msgstr "Pausar a reprodução"
 
-#: ../shell/rb-shell.c:2294
+#: ../shell/rb-shell.c:2299
 msgid "Start playback"
 msgstr "Iniciar a reprodução"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2404
+#: ../shell/rb-shell.c:2409
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausado)"
 
-#: ../shell/rb-shell.c:2801 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2806 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Nenhuma fonte registrada pode lidar com o URI %s"
 
-#: ../shell/rb-shell.c:3130
+#: ../shell/rb-shell.c:3135
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Nenhuma fonte registrada corresponde ao URI %s"
 
-#: ../shell/rb-shell.c:3163 ../shell/rb-shell.c:3206
+#: ../shell/rb-shell.c:3168 ../shell/rb-shell.c:3211
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI de música desconhecido: %s"
 
-#: ../shell/rb-shell.c:3215
+#: ../shell/rb-shell.c:3220
 #, c-format
 msgid "Unknown property %s"
 msgstr "Propriedade %s desconhecida"
 
-#: ../shell/rb-shell.c:3229
+#: ../shell/rb-shell.c:3234
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Tipo de propriedade %s inválida para a propriedade %s"
