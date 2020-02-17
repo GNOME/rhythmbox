@@ -1,16 +1,16 @@
 # Hungarian translation for rhythmbox.
-# Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2018, 2019 Free Software Foundation, Inc.
+# Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2018, 2019, 2020 Free Software Foundation, Inc.
 # This file is distributed under the same license as the rhythmbox package.
 #
 # László Dvornik <dvornik at gnome dot hu>, 2004.
 # Gábor Kelemen <kelemeng at gnome dot hu>, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015.
-# Balázs Úr <ur.balazs at fsf dot hu>, 2014, 2015, 2016, 2018, 2019.
+# Balázs Úr <ur.balazs at fsf dot hu>, 2014, 2015, 2016, 2018, 2019, 2020.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2019-09-03 12:23+0000\n"
-"PO-Revision-Date: 2019-09-09 07:41+0200\n"
+"POT-Creation-Date: 2020-02-02 01:04+0000\n"
+"PO-Revision-Date: 2020-02-17 23:29+0100\n"
 "Last-Translator: Balázs Úr <ur.balazs at fsf dot hu>\n"
 "Language-Team: Hungarian <gnome-hu-list at gnome dot org>\n"
 "Language: hu\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 18.12.3\n"
+"X-Generator: Lokalize 19.04.3\n"
 "X-Launchpad-Export-Date: 2011-12-28 11:04+0000\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:649
@@ -110,7 +110,7 @@ msgstr "Legjobb értékelés"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
-#: ../shell/rb-shell.c:512 ../shell/rb-shell.c:2384
+#: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2389
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -504,7 +504,7 @@ msgstr "Médialejátszó tulajdonságai"
 #: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
 #: ../plugins/iradio/rb-station-properties-dialog.c:182
 #: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:318
+#: ../podcast/rb-podcast-properties-dialog.c:320
 #: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:377
 #: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
 msgid "_Close"
@@ -616,13 +616,16 @@ msgid "Playlist"
 msgstr "Lejátszólista"
 
 #: ../data/ui/podcast-add-dialog.ui.h:1
+#| msgid ""
+#| "Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
+#| "podcast feed URL.\n"
+#| "Subscribe to podcasts to download new episodes as they are published."
 msgid ""
-"Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
-"podcast feed URL.\n"
+"Search for podcasts in the iTunes Store, or enter a podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
-"Keressen podcastokat az iTunes Store-ban és a Miroguide.com-on, vagy adja "
-"meg a podcast forrás URL-címét.\n"
+"Keressen podcastokat az iTunes Store-ban, vagy adja meg a podcast forrás"
+" URL-címét.\n"
 "Iratkozzon fel a podcastokra az új epizódok letöltéséhez azok közzétételekor."
 
 #: ../data/ui/podcast-add-dialog.ui.h:4
@@ -964,8 +967,8 @@ msgstr "%Y %b %e"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/android/rb-android-source.c:687
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:581
+#: ../plugins/android/rb-android-source.c:715
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -983,12 +986,12 @@ msgstr "%Y %b %e"
 #: ../plugins/mtpdevice/rb-mtp-source.c:645
 #: ../plugins/mtpdevice/rb-mtp-source.c:1144
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
-#: ../plugins/notification/rb-notification-plugin.c:510
+#: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1926
-#: ../podcast/rb-podcast-manager.c:2025
-#: ../podcast/rb-podcast-properties-dialog.c:639
-#: ../podcast/rb-podcast-properties-dialog.c:703
+#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
+#: ../podcast/rb-podcast-manager.c:2024
+#: ../podcast/rb-podcast-properties-dialog.c:641
+#: ../podcast/rb-podcast-properties-dialog.c:705
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
 #: ../remote/dbus/rb-client.c:732 ../rhythmdb/rhythmdb.c:2068
 #: ../rhythmdb/rhythmdb.c:2074 ../rhythmdb/rhythmdb.c:2089
@@ -1019,34 +1022,34 @@ msgstr "Túl sok szimbolikus hivatkozás"
 msgid "Cannot get free space at %s: %s"
 msgstr "Nem kérhető le a szabad helyet ennél: %s: %s"
 
-#: ../lib/rb-util.c:566 ../plugins/context/tmpl/album-tmpl.html:21
+#: ../lib/rb-util.c:562 ../plugins/context/tmpl/album-tmpl.html:21
 #: ../remote/dbus/rb-client.c:217
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:568 ../plugins/context/tmpl/album-tmpl.html:19
+#: ../lib/rb-util.c:564 ../plugins/context/tmpl/album-tmpl.html:19
 #: ../remote/dbus/rb-client.c:219
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:632
+#: ../lib/rb-util.c:628
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d / %d:%02d van még hátra"
 
-#: ../lib/rb-util.c:636
+#: ../lib/rb-util.c:632
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "%d:%02d:%02d / %d:%02d:%02d van még hátra"
 
-#: ../lib/rb-util.c:641
+#: ../lib/rb-util.c:637
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d / %d:%02d"
 
-#: ../lib/rb-util.c:645
+#: ../lib/rb-util.c:641
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d / %d:%02d:%02d"
@@ -1146,7 +1149,7 @@ msgstr "Számok:"
 msgid "Playlists:"
 msgstr "Lejátszólisták:"
 
-#: ../plugins/android/rb-android-source.c:201
+#: ../plugins/android/rb-android-source.c:203
 msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
@@ -1154,13 +1157,18 @@ msgstr ""
 "Nem találhatók tárolóterületek ezen az eszközön. Talán fel kell oldani azt, "
 "és engedélyezni kell az MTP-t."
 
-#: ../plugins/android/rb-android-source.c:401
+#: ../plugins/android/rb-android-source.c:391
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "%s beolvasása"
 
-#: ../plugins/android/rb-android-source.c:781
+#: ../plugins/android/rb-android-source.c:414
+#| msgid "Android devices"
+msgid "Error mounting Android device"
+msgstr "Hiba az Android eszköz csatolásakor"
+
+#: ../plugins/android/rb-android-source.c:809
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
 #: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
 #: ../sources/rb-transfer-target.c:182
@@ -2155,14 +2163,14 @@ msgstr "Az internetes rádióállomás URL-címe:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:395
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:524
+#: ../podcast/rb-podcast-properties-dialog.c:526
 #: ../sources/rb-media-player-source.c:567 ../widgets/rb-song-info.c:1151
 #, c-format
 msgid "%s Properties"
 msgstr "%s tulajdonságai"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:487
-#: ../podcast/rb-podcast-properties-dialog.c:637
+#: ../podcast/rb-podcast-properties-dialog.c:639
 #: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1236
 #, c-format
 msgid "%lu kbps"
@@ -2200,7 +2208,6 @@ msgid "Submit your listens to ListenBrainz"
 msgstr "Hallgatások beküldése a ListenBrainz projektbe"
 
 #: ../plugins/listenbrainz/settings.ui.h:1
-#| msgid "Username:"
 msgid "User token:"
 msgstr "Felhasználói token:"
 
@@ -2210,10 +2217,9 @@ msgid ""
 "below. You can see your user token in your <a href=\"https://listenbrainz."
 "org/profile/\">user profile</a>."
 msgstr ""
-"A ListenBrainz projektbe történő hallgatások beküldéséhez adja meg alább a"
-" ListenBrainz felhasználói tokenjét. A felhasználói tokenjét a <a"
-" href=\"https://listenbrainz.org/profile/\">felhasználói profilban</a>"
-" láthatja."
+"A ListenBrainz projektbe történő hallgatások beküldéséhez adja meg alább a "
+"ListenBrainz felhasználói tokenjét. A felhasználói tokenjét a <a href="
+"\"https://listenbrainz.org/profile/\">felhasználói profilban</a> láthatja."
 
 #: ../plugins/lyrics/LyricsConfigureDialog.py:103
 msgid "Choose lyrics folder..."
@@ -2673,18 +2679,18 @@ msgid "Next"
 msgstr "Következő"
 
 #. Translators: by Artist
-#: ../plugins/notification/rb-notification-plugin.c:332
+#: ../plugins/notification/rb-notification-plugin.c:334
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "<i>%s</i> előadó"
 
 #. Translators: from Album
-#: ../plugins/notification/rb-notification-plugin.c:334
+#: ../plugins/notification/rb-notification-plugin.c:336
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "<i>%s</i> albumról"
 
-#: ../plugins/notification/rb-notification-plugin.c:414
+#: ../plugins/notification/rb-notification-plugin.c:416
 #: ../widgets/rb-header.c:366
 msgid "Not Playing"
 msgstr "Nincs lejátszás"
@@ -2891,7 +2897,7 @@ msgstr "Webes távirányítás"
 msgid "Control Rhythmbox from a web browser"
 msgstr "A Rhythmbox irányítása webböngészőből"
 
-#: ../plugins/webremote/webremote.py:583
+#: ../plugins/webremote/webremote.py:584
 msgid "Launch web remote control"
 msgstr "Webes távirányítás elindítása"
 
@@ -2959,30 +2965,30 @@ msgstr "Hiba a podcastban"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Mindenképp felveszi a podcastforrást?"
 
-#: ../podcast/rb-podcast-manager.c:925
+#: ../podcast/rb-podcast-manager.c:924
 msgid "Error creating podcast download directory"
 msgstr "Hiba a podcast letöltési könyvtárának létrehozásakor"
 
-#: ../podcast/rb-podcast-manager.c:926
+#: ../podcast/rb-podcast-manager.c:925
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Nem lehet létrehozni a(z) %s letöltési könyvtárát: %s"
 
-#: ../podcast/rb-podcast-manager.c:1045
+#: ../podcast/rb-podcast-manager.c:1044
 msgid "Invalid URL"
 msgstr "Érvénytelen URL"
 
-#: ../podcast/rb-podcast-manager.c:1046
+#: ../podcast/rb-podcast-manager.c:1045
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "Az URL („%s”) érvénytelen, ellenőrizze."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1057
+#: ../podcast/rb-podcast-manager.c:1056
 msgid "URL already added"
 msgstr "Az URL már fel van véve"
 
-#: ../podcast/rb-podcast-manager.c:1058
+#: ../podcast/rb-podcast-manager.c:1057
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2991,7 +2997,7 @@ msgstr ""
 "Az URL („%s”) már fel van véve rádióállomásként. Ha ez egy podcast-forrás, "
 "akkor távolítsa el a rádióállomások közül."
 
-#: ../podcast/rb-podcast-manager.c:1158
+#: ../podcast/rb-podcast-manager.c:1157
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3001,11 +3007,11 @@ msgstr ""
 "Az URL („%s”) nem tűnik podcast-forrásnak. Lehet, hogy az URL hibás, vagy a "
 "forrás sérült. Szeretné, hogy a Rhythmbox mindenképp megpróbálja használni?"
 
-#: ../podcast/rb-podcast-manager.c:1274
+#: ../podcast/rb-podcast-manager.c:1273
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2240
+#: ../podcast/rb-podcast-manager.c:2239
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -3032,7 +3038,7 @@ msgstr "A forrás tartalma nem dolgozható fel"
 msgid "The feed does not contain any downloadable items"
 msgstr "Ez a hírforrás nem tartalmaz letölthető elemeket"
 
-#: ../podcast/rb-podcast-properties-dialog.c:587
+#: ../podcast/rb-podcast-properties-dialog.c:589
 msgid "Not Downloaded"
 msgstr "Nincs letöltve"
 
@@ -3171,7 +3177,7 @@ msgstr "Lejátszás szüneteltetése lejátszás esetén"
 msgid "Toggle play/pause mode"
 msgstr "Lejátszás/szünet mód átváltása"
 
-#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2290
+#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2295
 msgid "Stop playback"
 msgstr "Lejátszás leállítása"
 
@@ -3671,46 +3677,46 @@ msgstr "Ismeretlen lejátszólista: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "A lejátszólista (%s) egy automatikus lejátszólista"
 
-#: ../shell/rb-shell.c:2083
+#: ../shell/rb-shell.c:2088
 msgid "Error while saving song information"
 msgstr "Hiba a száminformációk mentése közben"
 
-#: ../shell/rb-shell.c:2287
+#: ../shell/rb-shell.c:2292
 msgid "Pause playback"
 msgstr "Lejátszás szüneteltetése"
 
-#: ../shell/rb-shell.c:2294
+#: ../shell/rb-shell.c:2299
 msgid "Start playback"
 msgstr "Lejátszás indítása"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2404
+#: ../shell/rb-shell.c:2409
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (leállítva)"
 
-#: ../shell/rb-shell.c:2801 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2806 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr ""
 "Egyetlen regisztrált forrás sem képes kezelni a következő URI címet: %s"
 
-#: ../shell/rb-shell.c:3130
+#: ../shell/rb-shell.c:3135
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Egyetlen regisztrált forrás sem felel meg a következő URI-címnek: %s"
 
-#: ../shell/rb-shell.c:3163 ../shell/rb-shell.c:3206
+#: ../shell/rb-shell.c:3168 ../shell/rb-shell.c:3211
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Ismeretlen szám URI: %s"
 
-#: ../shell/rb-shell.c:3215
+#: ../shell/rb-shell.c:3220
 #, c-format
 msgid "Unknown property %s"
 msgstr "Ismeretlen tulajdonság: %s"
 
-#: ../shell/rb-shell.c:3229
+#: ../shell/rb-shell.c:3234
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "%s tulajdonságtípus érvénytelen %s tulajdonsághoz"
@@ -3808,7 +3814,6 @@ msgid "Playback"
 msgstr "Lejátszás"
 
 #: ../shell/rb-shell-preferences.c:428
-#| msgid "P_lugins"
 msgid "Plugins"
 msgstr "Bővítmények"
 
