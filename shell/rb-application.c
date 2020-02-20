@@ -205,7 +205,7 @@ about_action_cb (GSimpleAction *action, GVariant *parameters, gpointer user_data
 			       "authors", (const char **) authors,
 			       "documenters", (const char **) documenters,
 			       "translator-credits", strcmp (translator_credits, "translator-credits") != 0 ? translator_credits : NULL,
-			       "logo-icon-name", "org.gnome.Rhythmbox",
+			       "logo-icon-name", RB_APP_ICON,
 			       NULL);
 	g_string_free (comment, TRUE);
 	g_free (license_trans);
