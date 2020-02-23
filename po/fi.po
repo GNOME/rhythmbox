@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2019-11-17 07:56+0000\n"
-"PO-Revision-Date: 2020-01-04 15:55+0200\n"
+"POT-Creation-Date: 2020-02-02 01:04+0000\n"
+"PO-Revision-Date: 2020-02-23 13:42+0200\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <lokalisointi-lista@googlegroups.com>\n"
 "Language: fi\n"
@@ -22,15 +22,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2.4\n"
+"X-Generator: Poedit 2.3\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:649
-#, fuzzy, c-format
-#| msgid "Could not create a GStreamer sink element to write to %s"
+#, c-format
 msgid "Could not create a temporary file to write to: %s"
-msgstr ""
-"Ei voitu luoda GStreamer-tuottajaelementtiä kohteeseen %s kirjoittamista "
-"varten"
+msgstr "Ei voitu luoda väliaikaistiedostoa johon kirjoittaa: %s"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:703
 #, c-format
@@ -114,7 +111,7 @@ msgstr "Parhaiten arvostellut"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
 #: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
-#: ../shell/rb-shell.c:512 ../shell/rb-shell.c:2384
+#: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2389
 msgid "Rhythmbox"
 msgstr "Rytmilaatikko"
 
@@ -508,7 +505,7 @@ msgstr "Mediasoittimen ominaisuudet"
 #: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
 #: ../plugins/iradio/rb-station-properties-dialog.c:182
 #: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:318
+#: ../podcast/rb-podcast-properties-dialog.c:320
 #: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:377
 #: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
 msgid "_Close"
@@ -621,12 +618,10 @@ msgstr "Soittolista"
 
 #: ../data/ui/podcast-add-dialog.ui.h:1
 msgid ""
-"Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
-"podcast feed URL.\n"
+"Search for podcasts in the iTunes Store, or enter a podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
-"Etsi podcasteja iTunes Storesta ja Miroguide.comista, tai kirjoita podcastin "
-"verkko-osoite.\n"
+"Etsi podcasteja iTunes Storesta, tai kirjoita podcastin verkko-osoite.\n"
 "Tilaa podcast ladataksesi uudet jaksot niiden tullessa julki."
 
 #: ../data/ui/podcast-add-dialog.ui.h:4
@@ -991,8 +986,8 @@ msgstr "%d %Bta %Y"
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
 #: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
 #: ../podcast/rb-podcast-manager.c:2024
-#: ../podcast/rb-podcast-properties-dialog.c:639
-#: ../podcast/rb-podcast-properties-dialog.c:703
+#: ../podcast/rb-podcast-properties-dialog.c:641
+#: ../podcast/rb-podcast-properties-dialog.c:705
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
 #: ../remote/dbus/rb-client.c:732 ../rhythmdb/rhythmdb.c:2068
 #: ../rhythmdb/rhythmdb.c:2074 ../rhythmdb/rhythmdb.c:2089
@@ -2061,7 +2056,7 @@ msgstr "Laiteohjelmiston versio:"
 
 #: ../plugins/ipod/ipod-init.ui.h:1
 msgid "iPod detected"
-msgstr "Havaittiin iPod"
+msgstr "iPod havaittu"
 
 #: ../plugins/ipod/ipod-init.ui.h:3
 msgid "_Initialize"
@@ -2161,14 +2156,14 @@ msgstr "Internetradiokanavan URL:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:395
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:524
+#: ../podcast/rb-podcast-properties-dialog.c:526
 #: ../sources/rb-media-player-source.c:567 ../widgets/rb-song-info.c:1151
 #, c-format
 msgid "%s Properties"
 msgstr "%s ominaisuudet"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:487
-#: ../podcast/rb-podcast-properties-dialog.c:637
+#: ../podcast/rb-podcast-properties-dialog.c:639
 #: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1236
 #, c-format
 msgid "%lu kbps"
@@ -2306,7 +2301,7 @@ msgid ""
 "worth joining"
 msgstr ""
 "    * 10 % Magnatune-jäsenyytesi maksuista tilitetään Rytmilaatikolle/"
-"Gnomelle - yksi hyvä syy lisää liittyä!"
+"Gnomelle - yksi hyvä syy lisää liittyä"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:8
 msgid ""
@@ -2892,7 +2887,7 @@ msgstr "Verkon etäohjaus"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Ohjaa Rytmilaatikkoa selaimella"
 
-#: ../plugins/webremote/webremote.py:585
+#: ../plugins/webremote/webremote.py:584
 msgid "Launch web remote control"
 msgstr "Käynnistä verkon etäohjaus"
 
@@ -3032,7 +3027,7 @@ msgstr "Virran sisältöä ei voi tulkita"
 msgid "The feed does not contain any downloadable items"
 msgstr "Virta ei sisällä mitään noudettavaa"
 
-#: ../podcast/rb-podcast-properties-dialog.c:587
+#: ../podcast/rb-podcast-properties-dialog.c:589
 msgid "Not Downloaded"
 msgstr "Ei noudettu"
 
@@ -3171,7 +3166,7 @@ msgstr "Pysäytä toisto, jos ollaan soittamassa"
 msgid "Toggle play/pause mode"
 msgstr "Vaihtele soiton/pysäytyksen tilaa"
 
-#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2290
+#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2295
 msgid "Stop playback"
 msgstr "Lopeta soitto"
 
@@ -3697,45 +3692,45 @@ msgstr "Tuntematon soittolista: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "Soittolista %s on automaattinen soittolista"
 
-#: ../shell/rb-shell.c:2083
+#: ../shell/rb-shell.c:2088
 msgid "Error while saving song information"
 msgstr "Virhe tallennettaessa kappaleen tietoja"
 
-#: ../shell/rb-shell.c:2287
+#: ../shell/rb-shell.c:2292
 msgid "Pause playback"
 msgstr "Pysäytä toisto"
 
-#: ../shell/rb-shell.c:2294
+#: ../shell/rb-shell.c:2299
 msgid "Start playback"
 msgstr "Aloita soitto"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2404
+#: ../shell/rb-shell.c:2409
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pysäytetty)"
 
-#: ../shell/rb-shell.c:2801 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2806 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Yksikään rekisteröity lähde ei voi käsitellä URIa %s"
 
-#: ../shell/rb-shell.c:3130
+#: ../shell/rb-shell.c:3135
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Yksikään rekisteröity lähde ei vastaa URIa %s"
 
-#: ../shell/rb-shell.c:3163 ../shell/rb-shell.c:3206
+#: ../shell/rb-shell.c:3168 ../shell/rb-shell.c:3211
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Tuntematon kappaleen URI: %s"
 
-#: ../shell/rb-shell.c:3215
+#: ../shell/rb-shell.c:3220
 #, c-format
 msgid "Unknown property %s"
 msgstr "Tuntematon ominaisuus %s"
 
-#: ../shell/rb-shell.c:3229
+#: ../shell/rb-shell.c:3234
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Virheellinen ominaisuuden tyyppi %s ominaisuudelle %s"
