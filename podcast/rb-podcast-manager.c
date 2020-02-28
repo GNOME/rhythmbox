@@ -767,6 +767,7 @@ rb_podcast_manager_next_file (RBPodcastManager * pd)
 	}
 
 	data->source = g_file_new_for_uri (location);
+	data->cancel = g_cancellable_new ();
 
 	g_file_read_async (data->source,
 	                   0,
@@ -994,7 +995,6 @@ download_podcast (GFileInfo *src_info, RBPodcastManagerInfo *data)
 	g_signal_emit (data->pd, rb_podcast_manager_signals[START_DOWNLOAD],
 		       0, data->entry);
 
-	data->cancel = g_cancellable_new ();
 	data->thread = g_thread_new ("podcast-download",
 				     (GThreadFunc) podcast_download_thread,
 				     data);
