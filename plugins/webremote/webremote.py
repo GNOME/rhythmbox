@@ -455,7 +455,7 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 			msg.set_status(404)
 			return
 
-		if re.match("/icon/[a-zA-Z.-]+/[0-9]+", path) is None:
+		if re.match("/icon/[a-zA-Z0-9.-]+/[0-9]+", path) is None:
 			msg.set_status(404)
 			return
 

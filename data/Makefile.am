@@ -4,7 +4,7 @@ SUBDIRS = ui icons
 @INTLTOOL_DESKTOP_RULE@
 
 Multimediadir = $(datadir)/applications
-Multimedia_in_files = rhythmbox.desktop.in rhythmbox-device.desktop.in
+Multimedia_in_files = org.gnome.Rhythmbox3.desktop.in rhythmbox-device.desktop.in
 Multimedia_DATA = $(Multimedia_in_files:.desktop.in=.desktop)
 
 playlists_in_files = playlists.xml.in
@@ -34,7 +34,7 @@ service_DATA = $(service_in_files:.service.in=.service)
 
 appdatadir = $(datadir)/metainfo
 appdata_DATA = $(appdata_in_files:.xml.in=.xml)
-appdata_in_files = rhythmbox.appdata.xml.in
+appdata_in_files = org.gnome.Rhythmbox3.appdata.xml.in
 
 # Rule to make the service file with bindir expanded
 $(service_DATA): $(service_in_files) Makefile
@@ -60,15 +60,15 @@ EXTRA_DIST = $(service_in_files)    \
 	     $(playlists_in_files)  \
 	     $(profiles_DATA)       \
 	     $(appdata_in_files)    \
-	     rhythmbox.desktop.in.in \
+	     org.gnome.Rhythmbox3.desktop.in.in \
 	     rhythmbox-device.desktop.in.in
 
 CLEANFILES = 					\
-	rhythmbox.desktop			\
+	org.gnome.Rhythmbox3.desktop			\
 	rhythmbox-device.desktop		\
 	org.gnome.Rhythmbox3.service		\
 	playlists.xml				\
-	rhythmbox.desktop.in			\
+	org.gnome.Rhythmbox3.desktop.in			\
 	rhythmbox-device.desktop.in		\
 	gschemas.compiled			\
 	$(appdata_DATA)

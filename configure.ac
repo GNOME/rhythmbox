@@ -667,7 +667,7 @@ widgets/Makefile
 podcast/Makefile
 shell/Makefile
 data/Makefile
-data/rhythmbox.desktop.in
+data/org.gnome.Rhythmbox3.desktop.in
 data/rhythmbox-device.desktop.in
 data/ui/Makefile
 data/icons/Makefile
