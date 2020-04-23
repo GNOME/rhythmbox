@@ -668,7 +668,7 @@ podcast/Makefile
 shell/Makefile
 data/Makefile
 data/org.gnome.Rhythmbox3.desktop.in
-data/rhythmbox-device.desktop.in
+data/org.gnome.Rhythmbox3.device.desktop.in
 data/ui/Makefile
 data/icons/Makefile
 data/icons/hicolor/Makefile
