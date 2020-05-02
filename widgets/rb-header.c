@@ -301,6 +301,7 @@ rb_header_constructed (GObject *object)
 	/* set up position slider */
 	header->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 10.0, 1.0, 10.0, 0.0));
 	header->priv->scale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, header->priv->adjustment);
+	gtk_widget_set_no_show_all (header->priv->scale, TRUE);
 	gtk_range_set_fill_level (GTK_RANGE (header->priv->scale), 0.0);
 	gtk_range_set_show_fill_level (GTK_RANGE (header->priv->scale), FALSE);
 	gtk_range_set_restrict_to_fill_level (GTK_RANGE (header->priv->scale), FALSE);
