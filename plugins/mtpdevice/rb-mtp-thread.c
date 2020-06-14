@@ -532,7 +532,7 @@ download_track (RBMtpThread *thread, RBMtpThreadTask *task)
 static int
 upload_progress (const uint64_t sent, const uint64_t total, const void * const data)
 {
-	rb_debug ("upload: %lu of %lu", sent, total);
+	rb_debug ("upload: %" G_GUINT64_FORMAT " of %" G_GUINT64_FORMAT, sent, total);
 	return 0;
 }
 
