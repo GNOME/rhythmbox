@@ -40,6 +40,22 @@ AM_CPPFLAGS = 						\
 	$(RHYTHMBOX_CFLAGS)				\
 	$(IPOD_CFLAGS)
 
+if HAVE_CHECK
+noinst_PROGRAMS = test-ipod
+TESTS = test-ipod
+
+test_ipod_SOURCES = 					\
+	test-ipod.c					\
+	rb-ipod-helpers.c				\
+	rb-ipod-helpers.h
+
+test_ipod_LDADD = \
+	$(CHECK_LIBS)					\
+	$(RHYTHMBOX_LIBS)				\
+	$(top_builddir)/shell/librhythmbox-core.la	\
+	$(IPOD_LIBS)
+endif
+
 plugin_in_files = ipod.plugin.in
 
 %.plugin: %.plugin.in $(INTLTOOL_MERGE) $(wildcard $(top_srcdir)/po/*po) ; $(INTLTOOL_MERGE) $(top_srcdir)/po $< $@ -d -u -c $(top_builddir)/po/.intltool-merge-cache
