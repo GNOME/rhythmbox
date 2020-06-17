@@ -33,6 +33,24 @@
 
 #include "mediaplayerid.h"
 
+/* From gvfs/daemon/gvfsbackendafc.c */
+typedef enum
+{
+	VIRTUAL_PORT_AFC = 1,
+	VIRTUAL_PORT_AFC_JAILBROKEN = 2,
+	VIRTUAL_PORT_APPS = 3,
+	VIRTUAL_PORT_MIN = VIRTUAL_PORT_AFC,
+	VIRTUAL_PORT_MAX = VIRTUAL_PORT_APPS
+} VirtualPort;
+
+typedef enum
+{
+	AFC_URI_INVALID = 0,
+	AFC_URI_PORT_UNKNOWN,
+	AFC_URI_NOT_IPOD,
+	AFC_URI_IS_IPOD
+} AfcUriStatus;
+
 G_BEGIN_DECLS
 void rb_ipod_helpers_fill_model_combo (GtkWidget *combo, const char *mountpoint);
 
@@ -41,6 +59,7 @@ guint64 rb_ipod_helpers_get_free_space (const char *mountpoint);
 char *rb_ipod_helpers_get_device (RBSource *source);
 gboolean rb_ipod_helpers_is_ipod (GMount *mount, MPIDDevice *device_info);
 gboolean rb_ipod_helpers_needs_init (GMount *mount);
+AfcUriStatus rb_ipod_helpers_afc_uri_parse (const gchar *uri);
 G_END_DECLS
 
 #endif /* __RB_IPOD_HELPERS_H */
