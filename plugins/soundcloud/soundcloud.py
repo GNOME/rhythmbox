@@ -113,13 +113,6 @@ class SoundCloudSource(RB.StreamingSource):
 				'endpoint': '/users.json',
 				'containers': True
 			},
-			'groups': {
-				'label': _("Search groups"),
-				'placeholder': _("Search groups on SoundCloud"),
-				'title': _("SoundCloud Groups"),
-				'endpoint': '/groups.json',
-				'containers': True
-			},
 		}
 
 		self.container_types = {
@@ -133,11 +126,6 @@ class SoundCloudSource(RB.StreamingSource):
 				'tracks-url': '.json',
 				'tracks-type': 'playlist',
 			},
-			'group': {
-				'attributes': ['name', 'kind', 'uri', 'permalink_url', 'artwork_url', 'description'],
-				'tracks-url': '/tracks.json',
-				'tracks-type': 'plain',
-			}
 		}
 
 	def hide_entry_cb(self, entry):
@@ -231,8 +219,8 @@ class SoundCloudSource(RB.StreamingSource):
 		for item in stuff['collection']:
 			self.add_track(db, entry_type, item)
 
-		if 'next_href' in stuff:
-			self.more_tracks_url = stuff.get('next_href')
+		self.more_tracks_url = stuff.get('next_href')
+		if self.more_tracks_url:
 			self.fetch_more_button.set_sensitive(True)
 
 
@@ -250,10 +238,9 @@ class SoundCloudSource(RB.StreamingSource):
 		for item in stuff['collection']:
 			self.add_container(item)
 
-		if 'next_href' in stuff:
+		self.more_containers_url = stuff.get('next_href')
+		if self.more_containers_url:
 			self.add_container_marker()
-			self.more_containers_url = stuff.get('next_href')
-
 
 	def resolve_api_cb(self, data):
 		if data is None:
@@ -316,12 +303,19 @@ class SoundCloudSource(RB.StreamingSource):
 			self.loader = rb.Loader()
 			self.loader.get_url(self.more_tracks_url, self.search_tracks_api_cb)
 
+	def clear_container_store(self):
+		selection = self.container_view.get_selection()
+		selection.disconnect(self.container_view_changed_id)
+		self.containers.clear()
+		self.container_view_changed_id = selection.connect('changed', self.selection_changed_cb)
+
 	def do_search(self):
 		self.cancel_request()
 
 		base = 'https://api.soundcloud.com'
 		self.new_model()
-		self.containers.clear()
+		self.remove_container_marker()
+		self.clear_container_store()
 		self.more_tracks_url = None
 		self.more_containers_url = None
 		self.fetch_more_button.set_sensitive(False)
@@ -491,6 +485,7 @@ class SoundCloudSource(RB.StreamingSource):
 
 		self.fetch_more_button = Gtk.Button.new_with_label(_("Fetch more tracks"))
 		self.fetch_more_button.connect("clicked", self.show_more_cb)
+		self.fetch_more_button.set_sensitive(False)
 
 		action = Gio.SimpleAction.new("soundcloud-search-type", GLib.VariantType.new('s'))
 		action.connect("activate", self.search_type_action_cb)
@@ -533,7 +528,7 @@ class SoundCloudSource(RB.StreamingSource):
 		c = Gtk.TreeViewColumn("", r, text=0)
 		self.container_view.append_column(c)
 
-		self.container_view.get_selection().connect('changed', self.selection_changed_cb)
+		self.container_view_changed_id = self.container_view.get_selection().connect('changed', self.selection_changed_cb)
 
 		self.songs = RB.EntryView(db=shell.props.db,
 					  shell_player=shell.props.shell_player,
