@@ -2055,6 +2055,8 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 		g_value_unset (&image_val);
 
 		key = rb_ext_db_key_create_storage ("album", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
+		rb_ext_db_key_add_field (key, "artist", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
+
 		rb_ext_db_store_uri (pd->priv->art_store,
 				     key,
 				     RB_EXT_DB_SOURCE_SEARCH,	/* sort of */
