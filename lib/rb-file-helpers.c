@@ -275,8 +275,12 @@ rb_find_plugin_data_file (GObject *object, const char *name)
 		}
 	}
 
-	rb_debug ("found '%s' when searching for file '%s' for plugin '%s'",
-		  ret, name, plugin_name);
+	if (ret == NULL) {
+		rb_debug ("didn't find file '%s' for plugin '%s'", name, plugin_name);
+	} else {
+		rb_debug ("found '%s' when searching for file '%s' for plugin '%s'",
+			  ret, name, plugin_name);
+	}
 
 	/* ensure it's an absolute path */
 	if (ret != NULL && ret[0] != '/') {
