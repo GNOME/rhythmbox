@@ -45,6 +45,7 @@
 #include "rb-util.h"
 #include "rb-debug.h"
 #include "rb-application.h"
+#include "rb-stock-icons.h"
 
 int
 main (int argc, char **argv)
@@ -76,7 +77,7 @@ main (int argc, char **argv)
 #endif
 
 	g_set_application_name (_("Rhythmbox"));
-	gtk_window_set_default_icon_name ("rhythmbox");
+	gtk_window_set_default_icon_name (RB_APP_ICON);
 
 #if defined(USE_UNINSTALLED_DIRS)
 	g_irepository_prepend_search_path (SHARE_UNINSTALLED_BUILDDIR "/../bindings/gi");
