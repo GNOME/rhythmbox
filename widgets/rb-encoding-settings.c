@@ -43,6 +43,7 @@
 
 #define CUSTOM_SETTINGS_PREFIX "rhythmbox-custom-settings"
 #define CBR_SETTINGS_PRESET CUSTOM_SETTINGS_PREFIX "-cbr"
+#define CVBR_SETTINGS_PRESET CUSTOM_SETTINGS_PREFIX "-cvbr"
 /* this preset name was used in releases where we only had VBR custom settings */
 #define VBR_SETTINGS_PRESET CUSTOM_SETTINGS_PREFIX
 
@@ -53,6 +54,7 @@ static struct {
 } encoding_styles[] = {
 	{ "cbr", N_("Constant bit rate"), CBR_SETTINGS_PRESET },
 	{ "vbr", N_("Variable bit rate"), VBR_SETTINGS_PRESET },
+	{ "cvbr", N_("Constrained Variable bit rate"), CVBR_SETTINGS_PRESET },
 };
 
 static void rb_encoding_settings_class_init (RBEncodingSettingsClass *klass);
