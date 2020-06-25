@@ -107,8 +107,7 @@ rate-control = 0
 rate-control = 1
 
 [rhythmbox-encoding-opusenc-vbr]
-cbr = false
-constrained-vbr = true
+bitrate-type = constrained-vbr
 
 [rhythmbox-encoding-opusenc-cbr]
-cbr = true
+bitrate-type = cbr
