@@ -954,7 +954,9 @@ download_podcast (GFileInfo *src_info, RBPodcastManagerInfo *data)
 		local_size = g_file_info_get_attribute_uint64 (dest_info,
 							       G_FILE_ATTRIBUTE_STANDARD_SIZE);
 		g_object_unref (dest_info);
-		if (local_size == data->download_size) {
+		if (local_size == 0) {
+			rb_debug ("local file is empty");
+		} else if (local_size == data->download_size) {
 			GValue val = {0,};
 
 			rb_debug ("local file is the same size as the download (%" G_GUINT64_FORMAT ")",
@@ -1617,10 +1619,12 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 
 	/* open local file */
 	if (data->out_stream == NULL) {
-		data->out_stream = g_file_create (data->destination,
-						  G_FILE_CREATE_NONE,
-						  data->cancel,
-						  &error);
+		data->out_stream = g_file_replace (data->destination,
+						   NULL,
+						   FALSE,
+						   G_FILE_CREATE_NONE,
+						   data->cancel,
+						   &error);
 		if (error != NULL) {
 			download_error (data, error);
 			g_error_free (error);
