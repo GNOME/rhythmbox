@@ -38,6 +38,9 @@
 #include "rb-file-helpers.h"
 #include "rb-util.h"
 
+static gulong pre_delete_sig_handler;
+static gulong post_delete_sig_handler;
+
 static int
 _get_property_count (RhythmDBPropertyModel *model, const char *artist)
 {
@@ -51,6 +54,65 @@ _get_property_count (RhythmDBPropertyModel *model, const char *artist)
 	gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
 			    RHYTHMDB_PROPERTY_MODEL_COLUMN_NUMBER, &count, -1);
 	return count;
+}
+
+static void
+verify_pre_row_deletion (RhythmDBPropertyModel *propmodel)
+{
+	char *artist;
+	gint nrows;
+	GtkTreeIter iter;
+
+	nrows = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (propmodel), NULL);
+	ck_assert (nrows == 3);
+
+	/* skip 'All' */
+	ck_assert (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (propmodel), &iter));
+
+	/* artist 1 */
+	ck_assert (gtk_tree_model_iter_next (GTK_TREE_MODEL (propmodel), &iter));
+	gtk_tree_model_get (GTK_TREE_MODEL (propmodel), &iter,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &artist, -1);
+	ck_assert (g_strcmp0 (artist, "x") == 0);
+	g_free (artist);
+
+	/* artist 2 */
+	ck_assert (gtk_tree_model_iter_next (GTK_TREE_MODEL (propmodel), &iter));
+	gtk_tree_model_get (GTK_TREE_MODEL (propmodel), &iter,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &artist, -1);
+	ck_assert (g_strcmp0 (artist, "y") == 0);
+	g_free (artist);
+
+	/* end of model */
+	ck_assert (gtk_tree_model_iter_next (GTK_TREE_MODEL (propmodel), &iter) == FALSE);
+
+	g_signal_handler_disconnect (G_OBJECT (propmodel), pre_delete_sig_handler);
+}
+
+static void
+verify_post_row_deletion (RhythmDBPropertyModel *propmodel)
+{
+	char *artist;
+	gint nrows;
+	GtkTreeIter iter;
+
+	nrows = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (propmodel), NULL);
+	ck_assert (nrows == 2);
+
+	/* skip 'All' */
+	ck_assert (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (propmodel), &iter));
+
+	/* artist 1 */
+	ck_assert (gtk_tree_model_iter_next (GTK_TREE_MODEL (propmodel), &iter));
+	gtk_tree_model_get (GTK_TREE_MODEL (propmodel), &iter,
+			    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &artist, -1);
+	ck_assert (g_strcmp0 (artist, "y") == 0);
+	g_free (artist);
+
+	/* end of model */
+	ck_assert (gtk_tree_model_iter_next (GTK_TREE_MODEL (propmodel), &iter) == FALSE);
+
+	g_signal_handler_disconnect (G_OBJECT (propmodel), post_delete_sig_handler);
 }
 
 /* tests property models attached to static query models */
@@ -98,7 +160,15 @@ START_TEST (test_rhythmdb_property_model_static)
 	end_step ();
 
 	/* change one */
-	set_waiting_signal (G_OBJECT (propmodel), "row-deleted");
+	pre_delete_sig_handler = set_waiting_signal_with_callback (G_OBJECT (propmodel),
+								   "pre-row-deletion",
+								   G_CALLBACK (verify_pre_row_deletion),
+								   NULL);
+	post_delete_sig_handler = set_waiting_signal_with_callback (G_OBJECT (propmodel),
+								    "row-deleted",
+								    G_CALLBACK (verify_post_row_deletion),
+								    NULL);
+
 	set_entry_string (db, a, RHYTHMDB_PROP_ARTIST, "y");
 	rhythmdb_commit (db);
 	wait_for_signal ();

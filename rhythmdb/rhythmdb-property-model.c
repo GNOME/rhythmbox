@@ -886,14 +886,14 @@ rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
 
 	path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
 	g_signal_emit (G_OBJECT (model), rhythmdb_property_model_signals[PRE_ROW_DELETION], 0);
-	gtk_tree_model_row_deleted (GTK_TREE_MODEL (model), path);
-	gtk_tree_path_free (path);
-
 	g_sequence_remove (ptr);
 	g_hash_table_remove (model->priv->reverse_map, propstr);
 	prop->refcount = 0xdeadbeef;
 	rb_refstring_unref (prop->string);
 	rb_refstring_unref (prop->sort_string);
+
+	gtk_tree_model_row_deleted (GTK_TREE_MODEL (model), path);
+	gtk_tree_path_free (path);
 
 	g_free (prop);
 }
