@@ -28,8 +28,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2020-02-02 01:04+0000\n"
-"PO-Revision-Date: 2020-02-16 16:36-0300\n"
+"POT-Creation-Date: 2020-06-20 11:40+0000\n"
+"PO-Revision-Date: 2020-07-18 12:18-0300\n"
 "Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
@@ -37,7 +37,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
-"X-Generator: Gtranslator 3.32.0\n"
+"X-Generator: Gtranslator 3.36.0\n"
 "X-Project-Style: gnome\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:649
@@ -129,7 +129,7 @@ msgid "My Top Rated"
 msgstr "Minhas preferidas"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
 #: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2389
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
@@ -137,7 +137,7 @@ msgstr "Rhythmbox"
 #: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
 #: ../data/rhythmbox-device.desktop.in.in.h:4
 msgid "Play and organize your music collection"
-msgstr "Reproduz e organiza a sua coleção de músicas"
+msgstr "Reproduza e organize a sua coleção de músicas"
 
 #: ../data/rhythmbox.appdata.xml.in.h:3
 msgid ""
@@ -636,10 +636,6 @@ msgid "Playlist"
 msgstr "Lista de reprodução"
 
 #: ../data/ui/podcast-add-dialog.ui.h:1
-#| msgid ""
-#| "Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
-#| "podcast feed URL.\n"
-#| "Subscribe to podcasts to download new episodes as they are published."
 msgid ""
 "Search for podcasts in the iTunes Store, or enter a podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
@@ -1025,19 +1021,19 @@ msgstr "%d de %b de %Y"
 #: ../shell/rb-shell-player.c:2714 ../shell/rb-shell-player.c:2716
 #: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
 #: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
-#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1274
-#: ../widgets/rb-header.c:1300 ../widgets/rb-song-info.c:950
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1275
+#: ../widgets/rb-header.c:1301 ../widgets/rb-song-info.c:950
 #: ../widgets/rb-song-info.c:962 ../widgets/rb-song-info.c:1234
 #: ../widgets/rb-song-info.c:1573
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#: ../lib/rb-file-helpers.c:471
+#: ../lib/rb-file-helpers.c:475
 #, c-format
 msgid "Too many symlinks"
 msgstr "Links simbólicos em excesso"
 
-#: ../lib/rb-file-helpers.c:1305
+#: ../lib/rb-file-helpers.c:1309
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Não foi possível obter o espaço livre em %s: %s"
@@ -2009,7 +2005,7 @@ msgid "Browse various local and Internet media sources"
 msgstr "Navegue em várias fontes de mídia localmente ou na web"
 
 #: ../plugins/grilo/rb-grilo-source.c:403
-#: ../plugins/soundcloud/soundcloud.py:492
+#: ../plugins/soundcloud/soundcloud.py:486
 msgid "Fetch more tracks"
 msgstr "Obter mais faixas"
 
@@ -2557,36 +2553,36 @@ msgstr "http://www.magnatune.com/info/"
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:192
+#: ../plugins/magnatune/MagnatuneSource.py:190
 msgid "Couldn't download album"
 msgstr "Não foi possível baixar o álbum"
 
-#: ../plugins/magnatune/MagnatuneSource.py:193
+#: ../plugins/magnatune/MagnatuneSource.py:191
 msgid "You must have a library location set to download an album."
 msgstr ""
 "Você deve possuir um local definido da biblioteca para baixar um álbum."
 
-#: ../plugins/magnatune/MagnatuneSource.py:255
+#: ../plugins/magnatune/MagnatuneSource.py:253
 msgid "Unable to load catalog"
 msgstr "Não foi possível carregar o catálogo"
 
-#: ../plugins/magnatune/MagnatuneSource.py:256
+#: ../plugins/magnatune/MagnatuneSource.py:254
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
 "Não foi possível analisar o catálogo do Magnatune; por favor envie um "
 "relatório de erro."
 
-#: ../plugins/magnatune/MagnatuneSource.py:277
-#: ../plugins/magnatune/MagnatuneSource.py:334
+#: ../plugins/magnatune/MagnatuneSource.py:275
+#: ../plugins/magnatune/MagnatuneSource.py:332
 msgid "Loading Magnatune catalog"
 msgstr "Carregando o catálogo do Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:406
+#: ../plugins/magnatune/MagnatuneSource.py:404
 msgid "Download Error"
 msgstr "Erro no download"
 
-#: ../plugins/magnatune/MagnatuneSource.py:407
+#: ../plugins/magnatune/MagnatuneSource.py:405
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2597,11 +2593,11 @@ msgstr ""
 "O servidor do Magnatune devolveu:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1628
+#: ../plugins/magnatune/MagnatuneSource.py:408 ../widgets/rb-entry-view.c:1628
 msgid "Error"
 msgstr "Erro"
 
-#: ../plugins/magnatune/MagnatuneSource.py:411
+#: ../plugins/magnatune/MagnatuneSource.py:409
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -2612,7 +2608,7 @@ msgstr ""
 "A mensagem de erro é:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:500
+#: ../plugins/magnatune/MagnatuneSource.py:492
 msgid "Downloading from Magnatune"
 msgstr "Baixando do Magnatune"
 
@@ -2726,7 +2722,7 @@ msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:416
-#: ../widgets/rb-header.c:366
+#: ../widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "Nada sendo reproduzido"
 
@@ -2885,25 +2881,13 @@ msgstr "Pesquisar usuários no SoundCloud"
 msgid "SoundCloud Users"
 msgstr "Usuários no SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:117
-msgid "Search groups"
-msgstr "Pesquisar grupos"
-
-#: ../plugins/soundcloud/soundcloud.py:118
-msgid "Search groups on SoundCloud"
-msgstr "Pesquisar grupos no SoundCloud"
-
-#: ../plugins/soundcloud/soundcloud.py:119
-msgid "SoundCloud Groups"
-msgstr "Grupos no SoundCloud"
-
-#: ../plugins/soundcloud/soundcloud.py:442
-#: ../plugins/soundcloud/soundcloud.py:450
+#: ../plugins/soundcloud/soundcloud.py:436
+#: ../plugins/soundcloud/soundcloud.py:444
 #, python-format
 msgid "View '%(title)s' on SoundCloud"
 msgstr "Ver “%(title)s” no SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:458
+#: ../plugins/soundcloud/soundcloud.py:452
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
 msgstr "Ver “%(container)s” no SoundCloud"
@@ -4149,11 +4133,11 @@ msgid "Play Queue"
 msgstr "Fila de reprodução"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:924
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
 msgid "by"
 msgstr "por"
 
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:926
 msgid "from"
 msgstr "de"
 
@@ -4319,13 +4303,13 @@ msgid "Drop artwork here"
 msgstr "Adicione a arte de capa aqui"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1214
+#: ../widgets/rb-header.c:1215
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1225
+#: ../widgets/rb-header.c:1226
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
@@ -4758,6 +4742,15 @@ msgstr "Na área de trabalho"
 #: ../widgets/rb-song-info.c:1340
 msgid "Unknown location"
 msgstr "Localização desconhecida"
+
+#~ msgid "Search groups"
+#~ msgstr "Pesquisar grupos"
+
+#~ msgid "Search groups on SoundCloud"
+#~ msgstr "Pesquisar grupos no SoundCloud"
+
+#~ msgid "SoundCloud Groups"
+#~ msgstr "Grupos no SoundCloud"
 
 #~ msgid "_Add Music"
 #~ msgstr "_Adicionar música"
