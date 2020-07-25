@@ -10,21 +10,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2020-03-22 18:38+0000\n"
-"PO-Revision-Date: 2020-03-26 16:33+0200\n"
+"POT-Creation-Date: 2020-07-25 08:32+0000\n"
+"PO-Revision-Date: 2020-07-25 17:59+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
-"Language-Team: Ukrainian <kde-i18n-uk@kde.org>\n"
+"Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
 "=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Lokalize 20.03.70\n"
+"X-Generator: Lokalize 20.07.70\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:649
 #, c-format
-#| msgid "Could not create a GStreamer sink element to write to %s"
 msgid "Could not create a temporary file to write to: %s"
 msgstr "Не вдалося створити тимчасовий файл для запису до нього даних: %s"
 
@@ -44,7 +43,6 @@ msgstr "Не вдалося відкрити пристрій виводу: %s"
 
 #: ../backends/gstreamer/rb-player-gst.c:669
 #, c-format
-#| msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgid "Failed to create playbin element; check your GStreamer installation"
 msgstr ""
 "Помилка створення елемента playbin, перевірте коректність встановлення "
@@ -52,11 +50,9 @@ msgstr ""
 
 #: ../backends/gstreamer/rb-player-gst.c:700
 #, c-format
-#| msgid "Failed to create playbin2 element; check your GStreamer installation"
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr ""
-"Помилка створення елемента %s, перевірте коректність встановлення "
-"GStreamer"
+"Помилка створення елемента %s, перевірте коректність встановлення GStreamer"
 
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1107
 #: ../backends/gstreamer/rb-player-gst-xfade.c:1121
@@ -117,7 +113,7 @@ msgid "My Top Rated"
 msgstr "Мої улюблені композиції"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
 #: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2389
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
@@ -134,20 +130,21 @@ msgid ""
 "network shares, podcasts, radio streams, portable music devices (including "
 "phones), and internet music services such as Last.fm and Magnatune."
 msgstr ""
-"Rhythmbox — програма для керування музичними даними, яку тісно інтегровано до"
-" стільниці GNOME. Окрім роботи із музичними файлами, які зберігаються на"
-" вашому комп'ютері, у програмі передбачено підтримку роботи зі спільними"
-" ресурсами у мережі, подкастами, потоками радіотрансляцій, портативними"
-" музичними пристроями (включно із телефонами) та музичними службами у"
-" інтернеті, зокрема Last.fm і Magnatune."
+"Rhythmbox — програма для керування музичними даними, яку тісно інтегровано "
+"до стільниці GNOME. Окрім роботи із музичними файлами, які зберігаються на "
+"вашому комп'ютері, у програмі передбачено підтримку роботи зі спільними "
+"ресурсами у мережі, подкастами, потоками радіотрансляцій, портативними "
+"музичними пристроями (включно із телефонами) та музичними службами у "
+"інтернеті, зокрема Last.fm і Magnatune."
 
 #: ../data/rhythmbox.appdata.xml.in.h:4
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
 msgstr ""
-"Rhythmbox є вільним програмним забезпеченням, заснованим на GTK+ і GStreamer,"
-" можливості якого можна розширити за допомогою додатків мовами Python і C."
+"Rhythmbox є вільним програмним забезпеченням, заснованим на GTK+ і "
+"GStreamer, можливості якого можна розширити за допомогою додатків мовами "
+"Python і C."
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 #: ../data/rhythmbox-device.desktop.in.in.h:2
@@ -162,41 +159,35 @@ msgstr "Програвач музики Rhythmbox"
 #: ../data/rhythmbox.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
-"Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;звук;пісня"
-";пісні;мп3;подкаст;іпод;список відтворення;відтворення;ласт.фм;длна;радіо;"
+"Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;звук;"
+"пісня;пісні;мп3;подкаст;іпод;список відтворення;відтворення;ласт.фм;длна;"
+"радіо;"
 
 #: ../data/ui/app-menu.ui.h:1
 msgid "_View"
 msgstr "П_ерегляд"
 
 #: ../data/ui/app-menu.ui.h:2
-#| msgid "Party _Mode"
 msgid "P_arty Mode"
 msgstr "Режи_м вечірки"
 
 #: ../data/ui/app-menu.ui.h:3
-#| msgid "Side _Pane"
 msgid "Side Pane"
 msgstr "Бічна панель"
 
 #: ../data/ui/app-menu.ui.h:4
-#| msgid "Play _Queue as Side Pane"
 msgid "Play Queue in Side Pane"
 msgstr "Черга творів на бічній панелі"
 
 #: ../data/ui/app-menu.ui.h:5
-#| msgid "_Song Position Slider"
 msgid "Song Position Slider"
 msgstr "Повзунок позиції у пісні"
 
 #: ../data/ui/app-menu.ui.h:6 ../plugins/artsearch/songinfo.py:64
-#| msgctxt "query-criteria"
-#| msgid "Album Artist"
 msgid "Album Art"
 msgstr "Обкладинка альбому"
 
 #: ../data/ui/app-menu.ui.h:7
-#| msgid "Now Playing"
 msgid "Follow Playing Track"
 msgstr "Стежити за поточним відтворенням"
 
@@ -205,7 +196,6 @@ msgid "_Tools"
 msgstr "_Засоби"
 
 #: ../data/ui/app-menu.ui.h:9
-#| msgid "Prefere_nces"
 msgid "_Preferences"
 msgstr "_Налаштування"
 
@@ -214,29 +204,24 @@ msgid "_Help"
 msgstr "_Довідка"
 
 #: ../data/ui/app-menu.ui.h:11
-#| msgid "Quit Rhythmbox"
 msgid "_About Rhythmbox"
 msgstr "_Про Rhythmbox"
 
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
 #: ../data/ui/podcast-popups.ui.h:9 ../plugins/magnatune/magnatune-popup.ui.h:1
-#| msgid "Add _to Play Queue"
 msgid "Add to Queue"
 msgstr "Додати до черги відтворення"
 
 #: ../data/ui/browser-popup.ui.h:2 ../data/ui/edit-menu.ui.h:7
 #: ../data/ui/playlist-popup.ui.h:2
-#| msgid "Add to P_laylist"
 msgid "Add to Playlist"
 msgstr "Додати до списку композицій"
 
 #: ../data/ui/browser-popup.ui.h:3 ../data/ui/playlist-popup.ui.h:3
-#| msgid "_Copy"
 msgid "Copy"
 msgstr "Копіювати"
 
 #: ../data/ui/browser-popup.ui.h:4 ../data/ui/playlist-popup.ui.h:4
-#| msgid "Cu_t"
 msgid "Cut"
 msgstr "Вирізати"
 
@@ -247,19 +232,16 @@ msgstr "_Перемістити в смітник"
 
 #: ../data/ui/browser-popup.ui.h:6 ../data/ui/playlist-popup.ui.h:6
 #: ../plugins/magnatune/magnatune-popup.ui.h:4
-#| msgid "Browse This _Genre"
 msgid "Browse this Genre"
 msgstr "Показати цей жанр"
 
 #: ../data/ui/browser-popup.ui.h:7 ../data/ui/playlist-popup.ui.h:7
 #: ../plugins/magnatune/magnatune-popup.ui.h:5
-#| msgid "Browse This _Artist"
 msgid "Browse this Artist"
 msgstr "Показати цього виконавця"
 
 #: ../data/ui/browser-popup.ui.h:8 ../data/ui/playlist-popup.ui.h:8
 #: ../plugins/magnatune/magnatune-popup.ui.h:6
-#| msgid "Browse This A_lbum"
 msgid "Browse this Album"
 msgstr "Показати цей альбом"
 
@@ -310,12 +292,10 @@ msgid "_New Playlist"
 msgstr "_Новий список композицій"
 
 #: ../data/ui/display-page-add-menu.ui.h:2
-#| msgid "New _Automatic Playlist..."
 msgid "New _Automatic Playlist"
 msgstr "Новий _автоматичний список композицій"
 
 #: ../data/ui/display-page-add-menu.ui.h:3
-#| msgid "_Load from File..."
 msgid "_Load from File"
 msgstr "_Завантажити з файла"
 
@@ -344,7 +324,6 @@ msgid "D_eselect All"
 msgstr "З_няти виділення з усього"
 
 #: ../data/ui/edit-menu.ui.h:6
-#| msgid "Add _to Play Queue"
 msgid "Add to Play Queue"
 msgstr "Додати до черги відтворення"
 
@@ -442,18 +421,14 @@ msgstr ""
 "Виберіть місце, де міститься музика, щоб додати його до вашої фонотеки:"
 
 #: ../data/ui/import-dialog.ui.h:2 ../data/ui/library-toolbar.ui.h:4
-#| msgctxt "Library"
-#| msgid "Import"
 msgid "Import"
 msgstr "Імпортувати"
 
 #: ../data/ui/import-dialog.ui.h:3 ../data/ui/podcast-add-dialog.ui.h:3
-#| msgid "_Close"
 msgid "Close"
 msgstr "Закрити"
 
 #: ../data/ui/import-dialog.ui.h:4
-#| msgid "Choose file to be added to the Library"
 msgid "Copy files that are outside the music library"
 msgstr "Копіювати файли з-поза меж фонотеки"
 
@@ -507,7 +482,6 @@ msgstr "Виконавець/Виконавець — Альбом/Викона�
 #: ../plugins/ipod/ipod-toolbar.ui.h:1 ../plugins/iradio/iradio-toolbar.ui.h:1
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:1
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:1
-#| msgid "_Edit"
 msgid "Edit"
 msgstr "Змінити"
 
@@ -528,7 +502,6 @@ msgstr "Огляд"
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:3
 #: ../plugins/ipod/ipod-toolbar.ui.h:3 ../plugins/iradio/iradio-toolbar.ui.h:3
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:3
-#| msgid "Show All"
 msgid "View All"
 msgstr "Переглянути все"
 
@@ -546,18 +519,15 @@ msgid "_Close"
 msgstr "_Закрити"
 
 #: ../data/ui/media-player-properties.ui.h:3
-#| msgid "<b>Information</b>"
 msgid "Information"
 msgstr "Інформація"
 
 #. Translators: This refers to the usage of media space
 #: ../data/ui/media-player-properties.ui.h:5
-#| msgid "<b>Volume usage</b>"
 msgid "Volume usage"
 msgstr "Використання тому"
 
 #: ../data/ui/media-player-properties.ui.h:6
-#| msgid "_Preferred format:"
 msgid "Preferred format"
 msgstr "Бажаний формат"
 
@@ -569,12 +539,10 @@ msgid "Basic"
 msgstr "Основне"
 
 #: ../data/ui/media-player-properties.ui.h:8 ../data/ui/sync-dialog.ui.h:1
-#| msgid "<b>Sync Preferences</b>"
 msgid "Sync Preferences"
 msgstr "Параметри синхронізації"
 
 #: ../data/ui/media-player-properties.ui.h:9 ../data/ui/sync-dialog.ui.h:2
-#| msgid "<b>Sync Preview</b>"
 msgid "Sync Preview"
 msgstr "Попередній перегляд синхронізації"
 
@@ -648,7 +616,6 @@ msgid "Select playlist format:"
 msgstr "Вибрати формат списку:"
 
 #: ../data/ui/playlist-save.ui.h:6
-#| msgid "<b>Playlist format</b>"
 msgid "Playlist format"
 msgstr "Формат списку відтворення"
 
@@ -662,7 +629,8 @@ msgid ""
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
 "Пошукайте подкасти у Крамниці iTunes або вкажіть адресу подачі подкаста.\n"
-"Підпишіться на подкасти, щоб отримувати нові серії, щойно їх буде оприлюднено."
+"Підпишіться на подкасти, щоб отримувати нові серії, щойно їх буде "
+"оприлюднено."
 
 #: ../data/ui/podcast-add-dialog.ui.h:4
 msgid "Subscribe"
@@ -710,22 +678,18 @@ msgid "Details"
 msgstr "Подробиці"
 
 #: ../data/ui/podcast-popups.ui.h:1
-#| msgid "_New Podcast Feed..."
 msgid "New Podcast Feed..."
 msgstr "Новий подкаст-канал…"
 
 #: ../data/ui/podcast-popups.ui.h:2
-#| msgid "_Update All Feeds"
 msgid "Update All Feeds"
 msgstr "Оновити всі канали"
 
 #: ../data/ui/podcast-popups.ui.h:3
-#| msgid "_Update Podcast Feed"
 msgid "Update Podcast Feed"
 msgstr "Оновити подкаст-канал"
 
 #: ../data/ui/podcast-popups.ui.h:4
-#| msgid "_Delete Podcast Feed"
 msgid "Delete Podcast Feed"
 msgstr "Вилучити подкаст-канал"
 
@@ -734,23 +698,19 @@ msgstr "Вилучити подкаст-канал"
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:4
 #: ../plugins/ipod/ipod-toolbar.ui.h:4 ../plugins/iradio/iradio-popup.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:4
-#| msgid "_Properties"
 msgid "Properties"
 msgstr "Властивості"
 
 #: ../data/ui/podcast-popups.ui.h:6
-#| msgid "Download _Episode"
 msgid "Download Episode"
 msgstr "Звантажити епізод"
 
 #: ../data/ui/podcast-popups.ui.h:7
-#| msgid "Cancel Downloads"
 msgid "Cancel Download"
 msgstr "Скасувати звантаження"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
 #: ../podcast/rb-podcast-source.c:1237 ../sources/rb-media-player-source.c:1104
-#| msgid "_Delete"
 msgid "Delete"
 msgstr "Вилучити"
 
@@ -823,8 +783,6 @@ msgid "Download location:"
 msgstr "Тека для звантажень:"
 
 #: ../data/ui/podcast-toolbar.ui.h:4 ../plugins/iradio/iradio-toolbar.ui.h:4
-#| msgctxt "Radio"
-#| msgid "Add"
 msgid "Add"
 msgstr "Додати"
 
@@ -833,17 +791,14 @@ msgid "Update"
 msgstr "Оновити"
 
 #: ../data/ui/queue-popups.ui.h:1
-#| msgid "Remove From Playlist"
 msgid "Remove from Play Queue"
 msgstr "Вилучити із черги відтворення"
 
 #: ../data/ui/queue-popups.ui.h:2
-#| msgid "Shuffle Queue"
 msgid "Shuffle Play Queue"
 msgstr "Перемішати чергу відтворення"
 
 #: ../data/ui/queue-popups.ui.h:5
-#| msgid "Clear _Queue"
 msgid "Clear Play Queue"
 msgstr "Спорожнити чергу відтворення"
 
@@ -884,7 +839,6 @@ msgid "Album a_rtist:"
 msgstr "Альбом, _виконавець:"
 
 #: ../data/ui/song-info-multiple.ui.h:8 ../data/ui/song-info.ui.h:11
-#| msgid "_Comment:"
 msgid "_Composer:"
 msgstr "_Композитор:"
 
@@ -894,7 +848,6 @@ msgid "of"
 msgstr "з"
 
 #: ../data/ui/song-info-multiple.ui.h:10
-#| msgid "Play count:"
 msgid "_Track count:"
 msgstr "Кі_лькість композицій:"
 
@@ -911,7 +864,6 @@ msgid "Album a_rtist sort order:"
 msgstr "Впорядкування — альбом, ви_конавець:"
 
 #: ../data/ui/song-info-multiple.ui.h:15 ../data/ui/song-info.ui.h:19
-#| msgid "Albu_m sort order:"
 msgid "_Composer sort order:"
 msgstr "Порядок с_ортування композиторів:"
 
@@ -928,12 +880,10 @@ msgid "Track _number:"
 msgstr "_Номер доріжки:"
 
 #: ../data/ui/song-info.ui.h:8
-#| msgid "BPM:"
 msgid "_BPM:"
 msgstr "_Темп:"
 
 #: ../data/ui/song-info.ui.h:9
-#| msgid "_Comment:"
 msgid "Comm_ent:"
 msgstr "_Коментар:"
 
@@ -1042,8 +992,8 @@ msgstr "%b %d %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
 #: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
-#: ../podcast/rb-podcast-manager.c:2024
+#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1929
+#: ../podcast/rb-podcast-manager.c:2028
 #: ../podcast/rb-podcast-properties-dialog.c:641
 #: ../podcast/rb-podcast-properties-dialog.c:705
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
@@ -1059,19 +1009,19 @@ msgstr "%b %d %Y"
 #: ../shell/rb-shell-player.c:2714 ../shell/rb-shell-player.c:2716
 #: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
 #: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
-#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1274
-#: ../widgets/rb-header.c:1300 ../widgets/rb-song-info.c:950
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1275
+#: ../widgets/rb-header.c:1301 ../widgets/rb-song-info.c:950
 #: ../widgets/rb-song-info.c:962 ../widgets/rb-song-info.c:1234
 #: ../widgets/rb-song-info.c:1573
 msgid "Unknown"
 msgstr "Невідомо"
 
-#: ../lib/rb-file-helpers.c:471
+#: ../lib/rb-file-helpers.c:475
 #, c-format
 msgid "Too many symlinks"
 msgstr "Занадто багато символьних посилань"
 
-#: ../lib/rb-file-helpers.c:1305
+#: ../lib/rb-file-helpers.c:1309
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Не вдалося отримати вільний простір на %s: %s"
@@ -1129,9 +1079,6 @@ msgstr ""
 
 #: ../metadata/rb-metadata-gst.c:691
 #, c-format
-#| msgid ""
-#| "Failed to create the 'decodebin2' element; check your GStreamer "
-#| "installation"
 msgid ""
 "Failed to create the 'decodebin' element; check your GStreamer installation"
 msgstr ""
@@ -1153,7 +1100,6 @@ msgid "File corrupted during write"
 msgstr "Під час запису файл пошкоджено"
 
 #: ../plugins/android/android.plugin.in.h:1
-#| msgid "Invalid writer device: %s"
 msgid "Android devices"
 msgstr "Пристрої Android"
 
@@ -1188,7 +1134,6 @@ msgstr "Аудіоформати:"
 #: ../plugins/android/android-info.ui.h:5
 #: ../plugins/generic-player/generic-player-info.ui.h:5
 #: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:6
-#| msgid "<b>System</b>"
 msgid "System"
 msgstr "Система"
 
@@ -1215,13 +1160,12 @@ msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
 msgstr ""
-"На цьому пристрої не виявлено областей зберігання даних. Ймовірно, вам слід"
-" розблокувати його і увімкнути MTP."
+"На цьому пристрої не виявлено областей зберігання даних. Ймовірно, вам слід "
+"розблокувати його і увімкнути MTP."
 
 #: ../plugins/android/rb-android-source.c:391
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
-#| msgid "Starting %s"
 msgid "Scanning %s"
 msgstr "Сканування %s"
 
@@ -1253,12 +1197,10 @@ msgid "_Browse"
 msgstr "_Огляд"
 
 #: ../plugins/artsearch/songinfo.py:134
-#| msgid "Select the search type"
 msgid "Select new artwork"
 msgstr "Виберіть нову обкладинку"
 
 #: ../plugins/artsearch/songinfo.py:136
-#| msgid "Select _All"
 msgid "_Select"
 msgstr "_Вибрати"
 
@@ -1289,7 +1231,6 @@ msgstr "Копіювати"
 #: ../plugins/audiocd/audiocd-toolbar.ui.h:3
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:5
 #: ../plugins/ipod/ipod-toolbar.ui.h:5 ../plugins/mtpdevice/mtp-toolbar.ui.h:5
-#| msgid "_Eject"
 msgid "Eject"
 msgstr "Виштовхнути"
 
@@ -1298,7 +1239,6 @@ msgid "Reload"
 msgstr "Перезавантажити"
 
 #: ../plugins/audiocd/rb-audiocd-info.c:57
-#| msgid "Could not find temporary space!"
 msgid "Could not find a GStreamer CD source plugin"
 msgstr "Не вдалося знайти додаток джерел даних компакт-дисків GStreamer"
 
@@ -1338,7 +1278,6 @@ msgid "Could not search MusicBrainz for album details."
 msgstr "Не вдалося знайти MusicBrainz для отримання параметрів альбому."
 
 #: ../plugins/audiocd/rb-audiocd-source.c:675
-#| msgid "Could not add service"
 msgid "Could not read the CD device."
 msgstr "Не вдалося прочитати дані із пристрою для читання компакт-дисків."
 
@@ -1352,12 +1291,10 @@ msgid "Track %u"
 msgstr "Доріжка %u"
 
 #: ../plugins/audiocd/rb-musicbrainz-lookup.c:410
-#| msgid "No lyrics found"
 msgid "Not found"
 msgstr "Не знайдено"
 
 #: ../plugins/audiocd/rb-musicbrainz-lookup.c:415
-#| msgid "Unable to change station property"
 msgid "Unable to connect to Musicbrainz server"
 msgstr "Не вдалося встановити з'єднання із сервером Musicbrainz"
 
@@ -1761,7 +1698,6 @@ msgid "Unable to create audio CD project"
 msgstr "Не вдалося створити проект звукового CD"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:654
-#| msgid "_Create Audio CD..."
 msgid "Create Audio CD..."
 msgstr "Створити звуковий компактний диск…"
 
@@ -1879,7 +1815,6 @@ msgid "Share music and play shared music on your local network"
 msgstr "Оприлюднення і відтворення музики у вашій локальній мережі"
 
 #: ../plugins/daap/daap-prefs.ui.h:1
-#| msgid "<b>Sharing</b>"
 msgid "Sharing"
 msgstr "Оприлюднення"
 
@@ -1904,7 +1839,6 @@ msgid "Require _password:"
 msgstr "Вимагати _пароль:"
 
 #: ../plugins/daap/daap-prefs.ui.h:7
-#| msgid "<b>Add Remote</b>"
 msgid "Add Remote"
 msgstr "Додати віддалений об'єкт"
 
@@ -1913,7 +1847,6 @@ msgid "Please enter the passcode displayed on your device."
 msgstr "Введіть код-пароль, показаний на вашому пристрої."
 
 #: ../plugins/daap/daap-prefs.ui.h:9
-#| msgid "Could not pair with this Remote."
 msgid "Could not pair with this Remote"
 msgstr "Не вдалося з'єднатись з віддаленим об'єктом"
 
@@ -1922,12 +1855,10 @@ msgid "You can now control Rhythmbox through your Remote"
 msgstr "Тепер ви можете керувати програвачем Rhythmbox віддалено"
 
 #: ../plugins/daap/daap-toolbar.ui.h:4
-#| msgid "_Disconnect"
 msgid "Disconnect"
 msgstr "Від’єднатися"
 
 #: ../plugins/daap/rb-daap-plugin.c:196
-#| msgid "Connect to _DAAP share..."
 msgid "Connect to DAAP share..."
 msgstr "Під'єднатись до джерела DAAP…"
 
@@ -2010,8 +1941,6 @@ msgid "Support for FM radio broadcasting services"
 msgstr "Підтримка служб мовлення радіо FM"
 
 #: ../plugins/fmradio/fmradio-toolbar.ui.h:2
-#| msgctxt "Radio"
-#| msgid "New"
 msgid "New"
 msgstr "Створити"
 
@@ -2034,13 +1963,11 @@ msgstr "Підтримка поширених портативних аудіо�
 #: ../plugins/generic-player/rb-generic-player-source.c:294
 #: ../plugins/ipod/rb-ipod-source.c:333
 #, c-format
-#| msgid "New Playlist"
 msgid "New Playlist on %s"
 msgstr "Новий список композицій на %s"
 
 #: ../plugins/generic-player/rb-generic-player-source.c:338
 #: ../sources/rb-library-source.c:375
-#| msgid "Add to P_laylist"
 msgid "Add to New Playlist"
 msgstr "Додати до нового списку композицій"
 
@@ -2059,7 +1986,7 @@ msgid "Browse various local and Internet media sources"
 msgstr "Оглянути різні локальні або інтернетні джерела"
 
 #: ../plugins/grilo/rb-grilo-source.c:403
-#: ../plugins/soundcloud/soundcloud.py:492
+#: ../plugins/soundcloud/soundcloud.py:486
 msgid "Fetch more tracks"
 msgstr "Одержати більше доріжок"
 
@@ -2076,9 +2003,6 @@ msgid "IM Status"
 msgstr " Стан IM"
 
 #: ../plugins/im-status/im-status.plugin.in.h:2
-#| msgid ""
-#| "Updates IM status according to the current song (works with Empathy, "
-#| "Gossip, and Pidgin)"
 msgid ""
 "Updates IM status according to the current song (works with Empathy and "
 "Pidgin)"
@@ -2176,7 +2100,6 @@ msgstr ""
 "скасування."
 
 #: ../plugins/ipod/ipod-init.ui.h:7
-#| msgid "Unable to initialize new iPod"
 msgid "Do you want to initialize your iPod?"
 msgstr "Хочете ініціалізувати ваш iPod?"
 
@@ -2296,7 +2219,6 @@ msgid "Submit your listens to ListenBrainz"
 msgstr "Надсилайте ваші дані щодо прослуховування на ListenBrainz"
 
 #: ../plugins/listenbrainz/settings.ui.h:1
-#| msgid "Username:"
 msgid "User token:"
 msgstr "Ключ користувача:"
 
@@ -2306,10 +2228,9 @@ msgid ""
 "below. You can see your user token in your <a href=\"https://listenbrainz."
 "org/profile/\">user profile</a>."
 msgstr ""
-"Щоб надіслати дані щодо музики, яку ви слухаєте, на ListenBrainz, вкажіть"
-" нижче ваш ключ користувача ListenBrainz. Знайти ваш ключ користувача можна у"
-" <a href=\"https://listenbrainz."
-"org/profile/\">профілі користувача</a>."
+"Щоб надіслати дані щодо музики, яку ви слухаєте, на ListenBrainz, вкажіть "
+"нижче ваш ключ користувача ListenBrainz. Знайти ваш ключ користувача можна у "
+"<a href=\"https://listenbrainz.org/profile/\">профілі користувача</a>."
 
 #: ../plugins/lyrics/LyricsConfigureDialog.py:103
 msgid "Choose lyrics folder..."
@@ -2324,7 +2245,6 @@ msgid "Fetch song lyrics from the Internet"
 msgstr "Отримання текстів пісень з інтернету"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:1
-#| msgid "<b>Search engines</b>"
 msgid "Search engines"
 msgstr "Рушії пошуку"
 
@@ -2333,7 +2253,6 @@ msgid "Browse..."
 msgstr "Огляд…"
 
 #: ../plugins/lyrics/lyrics-prefs.ui.h:3
-#| msgid "<b>Lyrics Folder</b>"
 msgid "Lyrics Folder"
 msgstr "Тека зі словами пісень"
 
@@ -2372,12 +2291,10 @@ msgid "Jlyric (j-lyric.net)"
 msgstr "Jlyric (j-lyric.net)"
 
 #: ../plugins/lyrics/LyricsSites.py:46
-#| msgid "Leo's Lyrics (www.leoslyrics.com)"
 msgid "Jetlyrics (jetlyrics.com)"
 msgstr "Jetlyrics (jetlyrics.com)"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:1
-#| msgid "<b>Magnatune online music store</b>"
 msgid "Magnatune online music store"
 msgstr "Музичний інтернет-магазин Magnatune"
 
@@ -2431,7 +2348,6 @@ msgid "Download Album"
 msgstr "Звантажити альбом"
 
 #: ../plugins/magnatune/magnatune-popup.ui.h:3
-#| msgid "Artist Information"
 msgid "Artist Info"
 msgstr "Інформація про виконавця"
 
@@ -2672,7 +2588,6 @@ msgstr ""
 "%s"
 
 #: ../plugins/magnatune/MagnatuneSource.py:492
-#| msgid "Download this album from Magnatune"
 msgid "Downloading from Magnatune"
 msgstr "Отримання з Magnatune"
 
@@ -2685,14 +2600,10 @@ msgid "Control Rhythmbox using key shortcuts"
 msgstr "Контролювання Rhythmbox за допомогою скорочень"
 
 #: ../plugins/mpris/mpris.plugin.in.h:1
-#| msgid "MediaServer2 D-Bus interface"
 msgid "MPRIS D-Bus interface"
 msgstr "Інтерфейс MPRIS D-Bus"
 
 #: ../plugins/mpris/mpris.plugin.in.h:2
-#| msgid ""
-#| "Provides an implementation of the MediaServer2 D-Bus interface "
-#| "specification"
 msgid "Provides an implementation of the MPRIS D-Bus interface specification"
 msgstr "Забезпечує реалізацію специфікації інтерфейсу MPRIS D-Bus"
 
@@ -2790,7 +2701,7 @@ msgid "from <i>%s</i>"
 msgstr "з альбому <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:416
-#: ../widgets/rb-header.c:366
+#: ../widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "Нічого не відтворюється"
 
@@ -2906,7 +2817,6 @@ msgid "_Apply compression to prevent clipping"
 msgstr "_Застосувати стиснення для запобігання відсікання"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:7
-#| msgid "Learn more about ReplayGain at replaygain.org"
 msgid "Learn more about ReplayGain"
 msgstr "Дізнатися більше про ReplayGain"
 
@@ -2920,7 +2830,6 @@ msgid "Browse and play sounds from SoundCloud®"
 msgstr "Навігація і відтворення даних з SoundCloud®"
 
 #: ../plugins/soundcloud/soundcloud.py:96
-#| msgid "Send tracks"
 msgid "Search tracks"
 msgstr "Пошук композицій"
 
@@ -2929,7 +2838,6 @@ msgid "Search tracks on SoundCloud"
 msgstr "Пошук композицій на SoundCloud"
 
 #: ../plugins/soundcloud/soundcloud.py:103
-#| msgid "Search artists"
 msgid "Search sets"
 msgstr "Пошук сетів"
 
@@ -2942,7 +2850,6 @@ msgid "SoundCloud Sets"
 msgstr "Сети SoundCloud"
 
 #: ../plugins/soundcloud/soundcloud.py:110
-#| msgid "Search albums"
 msgid "Search users"
 msgstr "Пошук користувачів"
 
@@ -2954,32 +2861,18 @@ msgstr "Пошук користувачів на SoundCloud"
 msgid "SoundCloud Users"
 msgstr "Користувачі SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:117
-#| msgid "Search albums"
-msgid "Search groups"
-msgstr "Пошук груп"
-
-#: ../plugins/soundcloud/soundcloud.py:118
-msgid "Search groups on SoundCloud"
-msgstr "Пошук груп на SoundCloud"
-
-#: ../plugins/soundcloud/soundcloud.py:119
-msgid "SoundCloud Groups"
-msgstr "Групи SoundCloud"
-
-#: ../plugins/soundcloud/soundcloud.py:442
-#: ../plugins/soundcloud/soundcloud.py:450
+#: ../plugins/soundcloud/soundcloud.py:436
+#: ../plugins/soundcloud/soundcloud.py:444
 #, python-format
 msgid "View '%(title)s' on SoundCloud"
 msgstr "Переглянути «%(title)s» на SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:458
+#: ../plugins/soundcloud/soundcloud.py:452
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
 msgstr "Переглянути «%(container)s» на SoundCloud"
 
 #: ../plugins/webremote/webremote-config.ui.h:1
-#| msgid "Status icon preferences"
 msgid "Web remote control preferences"
 msgstr "Параметри віддаленого інтернет-керування"
 
@@ -3000,7 +2893,6 @@ msgid "Web remote control"
 msgstr "Віддалене інтернет-керування"
 
 #: ../plugins/webremote/webremote.plugin.in.h:2
-#| msgid "Control Rhythmbox using key shortcuts"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Керування Rhythmbox за допомогою браузера"
 
@@ -3010,8 +2902,6 @@ msgstr "Запустити віддалене інтернет-керуванн�
 
 #: ../podcast/rb-podcast-add-dialog.c:271 ../podcast/rb-podcast-source.c:735
 #, c-format
-#| msgid "%d feed"
-#| msgid_plural "All %d feeds"
 msgid "%d feed"
 msgid_plural "%d feeds"
 msgstr[0] "%d канал"
@@ -3019,7 +2909,6 @@ msgstr[1] "%d канали"
 msgstr[2] "%d каналів"
 
 #: ../podcast/rb-podcast-add-dialog.c:306
-#| msgid "Unable to parse the feed contents"
 msgid "Unable to load the feed. Check your network connection."
 msgstr ""
 "Не вдалося завантажити канал. Перевірте, чи працює з'єднання із інтернетом."
@@ -3027,8 +2916,8 @@ msgstr ""
 #: ../podcast/rb-podcast-add-dialog.c:431
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr ""
-"Не вдалося виконати пошук подкастів. Перевірте, чи працездатне"
-" інтернет-з'єднання."
+"Не вдалося виконати пошук подкастів. Перевірте, чи працездатне інтернет-"
+"з'єднання."
 
 #: ../podcast/rb-podcast-add-dialog.c:744 ../sources/rb-library-source.c:134
 #: ../widgets/rb-entry-view.c:1444
@@ -3036,7 +2925,6 @@ msgid "Title"
 msgstr "Назва"
 
 #: ../podcast/rb-podcast-add-dialog.c:755
-#| msgid "Author:"
 msgid "Author"
 msgstr "Автор"
 
@@ -3080,30 +2968,30 @@ msgstr "Помилка в подкасті"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Однаково додати подкаст-канал?"
 
-#: ../podcast/rb-podcast-manager.c:924
+#: ../podcast/rb-podcast-manager.c:925
 msgid "Error creating podcast download directory"
 msgstr "Не вдалося створити каталог для звантаження подкастів"
 
-#: ../podcast/rb-podcast-manager.c:925
+#: ../podcast/rb-podcast-manager.c:926
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Не вдалося створити каталог для звантаження %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:1044
+#: ../podcast/rb-podcast-manager.c:1046
 msgid "Invalid URL"
 msgstr "Некоректний URL"
 
-#: ../podcast/rb-podcast-manager.c:1045
+#: ../podcast/rb-podcast-manager.c:1047
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "Некоректний URL «%s», перевірте правильність написання."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1056
+#: ../podcast/rb-podcast-manager.c:1058
 msgid "URL already added"
 msgstr "URL вже додано"
 
-#: ../podcast/rb-podcast-manager.c:1057
+#: ../podcast/rb-podcast-manager.c:1059
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3112,7 +3000,7 @@ msgstr ""
 "URL «%s» вже додано як радіостанцію. Якщо це подкаст-канал, вилучіть цю "
 "радіостанцію."
 
-#: ../podcast/rb-podcast-manager.c:1157
+#: ../podcast/rb-podcast-manager.c:1159
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3122,11 +3010,11 @@ msgstr ""
 "URL «%s» не вказує на подкаст-канал. Можливо, він введений неправильно, або "
 "канал не працює. Бажаєте, щоб Rhythmbox однаково використовував його?"
 
-#: ../podcast/rb-podcast-manager.c:1273
+#: ../podcast/rb-podcast-manager.c:1275
 msgid "Podcast"
 msgstr "Подкаст"
 
-#: ../podcast/rb-podcast-manager.c:2239
+#: ../podcast/rb-podcast-manager.c:2245
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Під час додавання подкасту виникла помилка: %s.  Перевірте URL: %s"
@@ -3248,7 +3136,6 @@ msgid "Search podcast episodes"
 msgstr "Пошук подкаст-епізодів"
 
 #: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:563
-#| msgid "Set the rating of the current song"
 msgid "Show the version of the program"
 msgstr "Показати версію програми"
 
@@ -3345,22 +3232,18 @@ msgid "Source to play from"
 msgstr "Джерело, з якого відтворити"
 
 #: ../remote/dbus/rb-client.c:122
-#| msgid "Unable to start playback pipeline"
 msgid "Enable repeat playback order"
 msgstr "Увімкнути повторне відтворення"
 
 #: ../remote/dbus/rb-client.c:123
-#| msgid "Decrease playback volume"
 msgid "Disable repeat playback order"
 msgstr "Вимкнути повторне відтворення"
 
 #: ../remote/dbus/rb-client.c:124
-#| msgid "Increase the playback volume"
 msgid "Enable shuffle playback order"
 msgstr "Увімкнути випадковий порядок відтворення"
 
 #: ../remote/dbus/rb-client.c:125
-#| msgid "Decrease the playback volume"
 msgid "Disable shuffle playback order"
 msgstr "Вимкнути випадковий порядок відтворення"
 
@@ -3395,7 +3278,6 @@ msgid "n - Next track"
 msgstr "n — наступна композиція"
 
 #: ../remote/dbus/rb-client.c:165
-#| msgid "Previous"
 msgid "p - Previous track"
 msgstr "p — попередня композиція"
 
@@ -3408,12 +3290,10 @@ msgid "s - Show playing track details"
 msgstr "s — показати дані щодо композиції, яка відтворюється"
 
 #: ../remote/dbus/rb-client.c:168
-#| msgid "_Decrease Volume"
 msgid "v - Decrease volume"
 msgstr "v — зменшити гучність"
 
 #: ../remote/dbus/rb-client.c:169
-#| msgid "_Increase Volume"
 msgid "V - Increase volume"
 msgstr "V — збільшити гучність"
 
@@ -3422,7 +3302,6 @@ msgid "h/? - Help"
 msgstr "h/? — довідка"
 
 #: ../remote/dbus/rb-client.c:172
-#| msgid "_Quit"
 msgid "q - Quit"
 msgstr "q — вийти"
 
@@ -3450,13 +3329,11 @@ msgstr "%tt з %ta"
 #. Translators: %te is replaced with elapsed time, %td is replaced with track duration
 #: ../remote/dbus/rb-client.c:762
 #, c-format
-#| msgid "%s of %s"
 msgid "[%te of %td]"
 msgstr "[%te з %td]"
 
 #: ../remote/dbus/rb-client.c:818 ../remote/dbus/rb-client.c:910
 #, c-format
-#| msgid "Pause"
 msgid "Paused"
 msgstr "Призупинено"
 
@@ -3467,13 +3344,11 @@ msgstr "Позиціювання на %s"
 
 #: ../remote/dbus/rb-client.c:896
 #, c-format
-#| msgid "Not playing"
 msgid "Now playing: %s %s"
 msgstr "Зараз відтворюємо: %s %s"
 
 #: ../remote/dbus/rb-client.c:912
 #, c-format
-#| msgid "Unknown playlist: %s"
 msgid "Unknown playback state: %s"
 msgstr "Невідомий стан відтворення: %s"
 
@@ -3584,13 +3459,11 @@ msgid "%s and %s"
 msgstr "%s і %s"
 
 #: ../rhythmdb/rhythmdb-import-job.c:664
-#| msgid "Banning song"
 msgid "Scanning"
 msgstr "Сканування"
 
 #: ../rhythmdb/rhythmdb-import-job.c:667 ../shell/rb-track-transfer-batch.c:917
 #, c-format
-#| msgid "%s of %s"
 msgid "%d of %d"
 msgstr "%d з %d"
 
@@ -3944,7 +3817,6 @@ msgid "Playback"
 msgstr "Відтворення"
 
 #: ../shell/rb-shell-preferences.c:428
-#| msgid "Plu_gins"
 msgid "Plugins"
 msgstr "Додатки"
 
@@ -4045,7 +3917,6 @@ msgstr "Пошук за виконавцями"
 
 #: ../sources/rb-auto-playlist-source.c:255 ../sources/rb-browser-source.c:316
 #: ../sources/rb-static-playlist-source.c:297
-#| msgid "Search podcast feeds"
 msgid "Search composers"
 msgstr "Пошук композиторів"
 
@@ -4061,7 +3932,6 @@ msgstr "Пошук за назвами"
 
 #: ../sources/rb-auto-playlist-source.c:258 ../sources/rb-browser-source.c:319
 #: ../sources/rb-static-playlist-source.c:300
-#| msgid "_Search again"
 msgid "Search genres"
 msgstr "Пошук жанрів"
 
@@ -4166,12 +4036,10 @@ msgid "Example Path:"
 msgstr "Приклад шляху:"
 
 #: ../sources/rb-library-source.c:1284
-#| msgid "Copy tracks to the library"
 msgid "Copying tracks to the library"
 msgstr "Копіюємо композиції до фонотеки"
 
 #: ../sources/rb-library-source.c:1358
-#| msgid "Copy tracks to the library"
 msgid "Adding tracks to the library"
 msgstr "Додаємо композиції до фонотеки"
 
@@ -4222,7 +4090,6 @@ msgstr[1] "Немає %d файлів"
 msgstr[2] "Немає %d файлів"
 
 #: ../sources/rb-playlist-source.c:1191
-#| msgid "Remove From Playlist"
 msgid "Remove from Playlist"
 msgstr "Вилучити зі списку"
 
@@ -4232,11 +4099,11 @@ msgid "Play Queue"
 msgstr "Черга відтворення"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:924
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
 msgid "by"
 msgstr "виконує"
 
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:926
 msgid "from"
 msgstr "з альбому"
 
@@ -4258,7 +4125,6 @@ msgstr "Буферизація"
 
 #: ../sources/rb-transfer-target.c:450
 #, c-format
-#| msgid "Transferring track %d out of %d"
 msgid "Transferring tracks to %s"
 msgstr "Переносимо композиції на %s"
 
@@ -4303,7 +4169,6 @@ msgid "Show more _details"
 msgstr "_Докладніше"
 
 #: ../widgets/rb-alert-dialog.c:370 ../widgets/rb-alert-dialog.c:404
-#| msgid "OK"
 msgid "_OK"
 msgstr "_Гаразд"
 
@@ -4319,16 +4184,20 @@ msgstr "_Так"
 msgid "_Open"
 msgstr "_Відкрити"
 
-#: ../widgets/rb-encoding-settings.c:54
+#: ../widgets/rb-encoding-settings.c:55
 msgid "Constant bit rate"
 msgstr "Стала бітова швидкість"
 
-#: ../widgets/rb-encoding-settings.c:55
+#: ../widgets/rb-encoding-settings.c:56
 msgid "Variable bit rate"
 msgstr "Змінна бітова швидкість"
 
-#: ../widgets/rb-encoding-settings.c:402
-#| msgid "Default"
+#: ../widgets/rb-encoding-settings.c:57
+#| msgid "Variable bit rate"
+msgid "Constrained Variable bit rate"
+msgstr "Обмежена змінна бітова швидкість"
+
+#: ../widgets/rb-encoding-settings.c:404
 msgid "Default settings"
 msgstr "Типові параметри"
 
@@ -4406,20 +4275,18 @@ msgid "Drop artwork here"
 msgstr "Перетягнути зображення сюди"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1214
+#: ../widgets/rb-header.c:1215
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s з %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1225
+#: ../widgets/rb-header.c:1226
 #, c-format
 msgid "%s / %s"
 msgstr "%s з %s"
 
 #: ../widgets/rb-import-dialog.c:341
-#| msgid "%d missing file"
-#| msgid_plural "%d missing files"
 msgid "Examining files"
 msgstr "Вивчаємо файли"
 
@@ -4431,7 +4298,6 @@ msgstr "На пристрої %s немає вказаного вами місц
 
 #: ../widgets/rb-import-dialog.c:417
 #, c-format
-#| msgid "Show All"
 msgid "Show %s"
 msgstr "Показати %s"
 
@@ -4831,7 +4697,6 @@ msgid "_Back"
 msgstr "_Назад"
 
 #: ../widgets/rb-song-info.c:363
-#| msgid "_Format:"
 msgid "_Forward"
 msgstr "_Далі"
 
