@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ro\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2020-06-20 11:40+0000\n"
-"PO-Revision-Date: 2020-07-13 15:11+0300\n"
+"POT-Creation-Date: 2020-07-25 08:32+0000\n"
+"PO-Revision-Date: 2020-07-25 13:27+0300\n"
 "Last-Translator: Florentina Mușat <florentina.musat.28@gmail.com>\n"
 "Language-Team: Gnome Romanian Translation Team\n"
 "Language: ro\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2);\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: Poedit 2.4\n"
 "X-Launchpad-Export-Date: 2014-07-13 17:08+0000\n"
 "X-Project-Style: gnome\n"
 
@@ -990,8 +990,8 @@ msgstr "%b %d %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
 #: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
-#: ../podcast/rb-podcast-manager.c:2024
+#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1929
+#: ../podcast/rb-podcast-manager.c:2028
 #: ../podcast/rb-podcast-properties-dialog.c:641
 #: ../podcast/rb-podcast-properties-dialog.c:705
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
@@ -2968,30 +2968,30 @@ msgstr "Eroare în podcast"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Doriți să adăugați fluxul podcastului oricum?"
 
-#: ../podcast/rb-podcast-manager.c:924
+#: ../podcast/rb-podcast-manager.c:925
 msgid "Error creating podcast download directory"
 msgstr "Eroare la crearea dosarului cu descărcări de podcasturi"
 
-#: ../podcast/rb-podcast-manager.c:925
+#: ../podcast/rb-podcast-manager.c:926
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Nu s-a putut crea dosarul de descărcare pentru %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:1044
+#: ../podcast/rb-podcast-manager.c:1046
 msgid "Invalid URL"
 msgstr "URL nevalid"
 
-#: ../podcast/rb-podcast-manager.c:1045
+#: ../podcast/rb-podcast-manager.c:1047
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL-ul „%s” nu este valid, verificați-l."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1056
+#: ../podcast/rb-podcast-manager.c:1058
 msgid "URL already added"
 msgstr "URL deja adăugat"
 
-#: ../podcast/rb-podcast-manager.c:1057
+#: ../podcast/rb-podcast-manager.c:1059
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3000,7 +3000,7 @@ msgstr ""
 "URL-ul „%s” a fost deja adăugat ca post radio. Dacă acesta este un flux "
 "podcast, eliminați întâi postul de radio."
 
-#: ../podcast/rb-podcast-manager.c:1157
+#: ../podcast/rb-podcast-manager.c:1159
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3010,11 +3010,11 @@ msgstr ""
 "URL-ul „%s” nu pare a fi un flux podcast. Poate fi un URL eronat sau fluxul "
 "poate fi greșit. Doriți ca Rhythmbox să îl folosească oricum?"
 
-#: ../podcast/rb-podcast-manager.c:1273
+#: ../podcast/rb-podcast-manager.c:1275
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2239
+#: ../podcast/rb-podcast-manager.c:2245
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -4227,15 +4227,19 @@ msgstr "_Da"
 msgid "_Open"
 msgstr "_Deschide"
 
-#: ../widgets/rb-encoding-settings.c:54
+#: ../widgets/rb-encoding-settings.c:55
 msgid "Constant bit rate"
 msgstr "Rată de biți constantă"
 
-#: ../widgets/rb-encoding-settings.c:55
+#: ../widgets/rb-encoding-settings.c:56
 msgid "Variable bit rate"
 msgstr "Rată de biți variabilă"
 
-#: ../widgets/rb-encoding-settings.c:402
+#: ../widgets/rb-encoding-settings.c:57
+msgid "Constrained Variable bit rate"
+msgstr "Rată de biți de variabilă constrânsă"
+
+#: ../widgets/rb-encoding-settings.c:404
 msgid "Default settings"
 msgstr "Configurări implicite"
 
