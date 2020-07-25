@@ -527,13 +527,15 @@ gboolean
 rb_gst_encoder_set_encoding_style (GstElement *encoder, const char *style)
 {
 	GstElementFactory *factory;
+	const char *element_name;
 	char *group_name;
 	char **keys;
 	int i;
 
 	factory = gst_element_get_factory (encoder);
+	element_name = gst_plugin_feature_get_name (GST_PLUGIN_FEATURE (factory));
 	group_name = g_strdup_printf (ENCODER_STYLE_SETTINGS_PREFIX "%s-%s",
-				      gst_plugin_feature_get_name (GST_PLUGIN_FEATURE (factory)),
+				      element_name,
 				      style);
 	rb_debug ("applying settings from %s", group_name);
 
@@ -551,22 +553,25 @@ rb_gst_encoder_set_encoding_style (GstElement *encoder, const char *style)
 
 		pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (encoder), keys[i]);
 		if (pspec == NULL) {
-			rb_debug ("couldn't find property %s", keys[i]);
+			g_warning ("couldn't find encoder property %s:%s", element_name, keys[i]);
 			continue;
 		}
 
 		value = g_key_file_get_string (get_target_keyfile (), group_name, keys[i], NULL);
-		if (value == NULL) {
-			rb_debug ("couldn't get value for property %s", keys[i]);
+
+		/* g_key_file_get_string () returns an empty string on empty value */
+		if (value[0] == '\0') {
+			g_warning ("no value specified for encoder property %s:%s", element_name, keys[i]);
+			/* we continue, as we don't want implicit gvalue conversions to set property values */
 			continue;
 		}
 
 		g_value_init (&v, pspec->value_type);
 		if (gst_value_deserialize (&v, value)) {
-			rb_debug ("applying value \"%s\" to property %s", value, keys[i]);
+			rb_debug ("applying value \"%s\" to property %s:%s", value, element_name, keys[i]);
 			g_object_set_property (G_OBJECT (encoder), keys[i], &v);
 		} else {
-			rb_debug ("couldn't deserialize value \"%s\" for property %s", value, keys[i]);
+			g_warning ("couldn't deserialize value \"%s\" for encoder property %s:%s", value, element_name, keys[i]);
 		}
 
 		g_value_unset (&v);
