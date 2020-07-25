@@ -1467,6 +1467,11 @@ download_info_free (RBPodcastManagerInfo *data)
 		data->cancel = NULL;
 	}
 
+	if (data->in_stream != NULL) {
+		g_input_stream_close (G_INPUT_STREAM (data->in_stream), NULL, NULL);
+		g_clear_object (&data->in_stream);
+	}
+
 	if (data->source) {
 		g_object_unref (data->source);
 		data->source = NULL;
@@ -1664,7 +1669,7 @@ podcast_download_thread (RBPodcastManagerInfo *data)
 
 	/* close everything - don't allow these operations to be cancelled */
 	g_input_stream_close (G_INPUT_STREAM (data->in_stream), NULL, NULL);
-	g_object_unref (data->in_stream);
+	g_clear_object (&data->in_stream);
 
 	g_output_stream_close (G_OUTPUT_STREAM (data->out_stream), NULL, &error);
 	g_object_unref (data->out_stream);
