@@ -833,7 +833,7 @@ rb_segmented_bar_draw (GtkWidget *widget, cairo_t *context_)
 				 priv->bar_height);
 		cairo_clip (context);
 		cairo_matrix_init_scale (&matrix, 1, -1);
-		cairo_matrix_translate (&matrix, 0, -(2*priv->bar_height) + 1);
+		cairo_matrix_translate (&matrix, 0, -(gdouble)(2*priv->bar_height) + 1);
 		cairo_transform (context, &matrix);
 
 		cairo_set_source (context, bar_pattern);
