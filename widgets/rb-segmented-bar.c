@@ -173,7 +173,7 @@ rb_segmented_bar_class_init (RBSegmentedBarClass *klass)
                                                                "show-reflection",
                                                                "Whether there will be a reflection below the segmented bar",
                                                                TRUE,
-                                                               G_PARAM_READWRITE));
+                                                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
         /**
          * RBSegmentedBar:show-labels:
@@ -187,7 +187,7 @@ rb_segmented_bar_class_init (RBSegmentedBarClass *klass)
                                                                "show-labels",
                                                                "Whether the labels describing the various segments should be shown",
                                                                TRUE,
-                                                               G_PARAM_READWRITE));
+                                                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
         /**
          * RBSegmentedBar:bar-height:
          *
