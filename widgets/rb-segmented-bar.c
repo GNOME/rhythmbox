@@ -777,37 +777,32 @@ static void rb_segmented_bar_render_labels (RBSegmentedBar *bar,
 }
 
 static gboolean
-rb_segmented_bar_draw (GtkWidget *widget, cairo_t *context_)
+rb_segmented_bar_draw (GtkWidget *widget, cairo_t *context)
 {
 	RBSegmentedBar *bar;
 	RBSegmentedBarPrivate *priv;
 	GtkAllocation allocation;
 	cairo_pattern_t *bar_pattern;
-	cairo_t *context;
 
 	g_return_val_if_fail (RB_IS_SEGMENTED_BAR (widget), FALSE);
 
 	bar = RB_SEGMENTED_BAR (widget);
 	priv = RB_SEGMENTED_BAR_GET_PRIVATE (bar);
 
-	/* XXX should use the context passed in, but this currently
-	 * doesn't work properly with pre-existing translation
-	 */
-	context = gdk_cairo_create (gtk_widget_get_window (widget));
 	if (priv->reflect) {
 		cairo_push_group (context);
 	}
 
 	cairo_set_operator (context, CAIRO_OPERATOR_OVER);
 	gtk_widget_get_allocation (widget, &allocation);
+
 	if (gtk_widget_get_direction (GTK_WIDGET (widget)) == GTK_TEXT_DIR_LTR) {
-		cairo_translate (context, allocation.x + priv->h_padding, allocation.y);
+		cairo_translate (context, priv->h_padding, 0);
 	} else {
-		cairo_translate (context,
-				 allocation.x + allocation.width - priv->h_padding,
-				 allocation.y);
+		cairo_translate (context, allocation.width - priv->h_padding, 0);
 		cairo_scale (context, -1.0, 1.0);
 	}
+
 	cairo_rectangle (context, 0, 0,
 			 allocation.width - priv->h_padding,
 			 MAX (2*priv->bar_height, priv->bar_height + priv->bar_label_spacing + priv->layout_height));
@@ -856,8 +851,8 @@ rb_segmented_bar_draw (GtkWidget *widget, cairo_t *context_)
 	if (priv->show_labels) {
 		if (priv->reflect) {
 			cairo_translate (context,
-					 allocation.x + (allocation.width - priv->layout_width)/2,
-					 allocation.y + priv->bar_height + priv->bar_label_spacing);
+					 (allocation.width - priv->layout_width)/2,
+					 priv->bar_height + priv->bar_label_spacing);
 		} else {
 			cairo_translate (context,
 					 -priv->h_padding + (allocation.width - priv->layout_width)/2,
@@ -866,7 +861,6 @@ rb_segmented_bar_draw (GtkWidget *widget, cairo_t *context_)
 		rb_segmented_bar_render_labels (bar, context);
 	}
 	cairo_pattern_destroy (bar_pattern);
-	cairo_destroy (context);
 
 	return TRUE;
 }
