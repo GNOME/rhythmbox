@@ -69,7 +69,8 @@ rbwidgets_dep = declare_dependency(
 
 # These are interactive UI tests.
 test_rb_segmented_bar = executable('test-rb-segmented-bar', 'test-rb-segmented-bar.c',
-  dependencies: [rbwidgets_dep, librb_dep])
+  dependencies: [rbwidgets_dep, librb_dep],
+  include_directories: [sourcesinc, rhythmdbinc])
 
 test_uri_dialog_resources = gnome.compile_resources('test-uri-dialog-resources', 'test-uri-dialog.gresource.xml',
   source_dir: ['../data'])
