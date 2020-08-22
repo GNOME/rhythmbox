@@ -214,8 +214,8 @@ music_dirs_done (RBAndroidSource *source)
 static void
 enum_files_cb (GObject *obj, GAsyncResult *result, gpointer data)
 {
-	RBAndroidSource *source = RB_ANDROID_SOURCE (data);
-	RBAndroidSourcePrivate *priv = GET_PRIVATE(source);
+	RBAndroidSource *source;
+	RBAndroidSourcePrivate *priv;
 	GFileEnumerator *e = G_FILE_ENUMERATOR (obj);
 	GError *error = NULL;
 	GFileInfo *info;
@@ -225,9 +225,15 @@ enum_files_cb (GObject *obj, GAsyncResult *result, gpointer data)
 	files = g_file_enumerator_next_files_finish (e, result, &error);
 	if (error != NULL) {
 		rb_debug ("error listing files: %s", error->message);
-		music_dirs_done (source);
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			music_dirs_done (RB_ANDROID_SOURCE (data));
+		}
+		g_clear_error (&error);
 		return;
 	}
+
+	source = RB_ANDROID_SOURCE (data);
+	priv = GET_PRIVATE(source);
 
 	if (files == NULL) {
 		priv->scanned++;
@@ -276,19 +282,23 @@ enum_files_cb (GObject *obj, GAsyncResult *result, gpointer data)
 static void
 enum_child_cb (GObject *obj, GAsyncResult *result, gpointer data)
 {
-	RBAndroidSource *source = RB_ANDROID_SOURCE (data);
-	RBAndroidSourcePrivate *priv = GET_PRIVATE(source);
+	RBAndroidSource *source;
+	RBAndroidSourcePrivate *priv;
 	GFileEnumerator *e;
 	GError *error = NULL;
 
 	e = g_file_enumerate_children_finish (G_FILE (obj), result, &error);
 	if (e == NULL) {
 		rb_debug ("enum error: %s", error->message);
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			music_dirs_done (RB_ANDROID_SOURCE (data));
+		}
 		g_clear_error (&error);
-		music_dirs_done (source);
 		return;
 	}
 
+	source = RB_ANDROID_SOURCE (data);
+	priv = GET_PRIVATE(source);
 	g_file_enumerator_next_files_async (e, 64, G_PRIORITY_DEFAULT, priv->cancel, enum_files_cb, source);
 }
 
@@ -370,6 +380,10 @@ actually_load (RBAndroidSource *source)
 	char *name;
 	char *label;
 
+	if (priv->loaded) {
+		rb_debug ("already loading");
+		return;
+	}
 	priv->loaded = TRUE;
 	rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
 
@@ -1030,6 +1044,11 @@ static void
 impl_dispose (GObject *object)
 {
 	RBAndroidSourcePrivate *priv = GET_PRIVATE (object);
+
+	if (priv->cancel != NULL) {
+		g_cancellable_cancel (priv->cancel);
+		g_clear_object (&priv->cancel);
+	}
 
 	if (priv->db != NULL) {
 		if (priv->ignore_type != NULL) {
