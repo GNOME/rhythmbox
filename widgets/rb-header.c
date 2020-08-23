@@ -382,6 +382,8 @@ rb_header_constructed (GObject *object)
 
 	/* elapsed time / duration display */
 	header->priv->timelabel = gtk_label_new ("");
+	gtk_label_set_attributes (GTK_LABEL (header->priv->timelabel),
+				  rb_text_numeric_get_pango_attr_list ());
 	gtk_widget_set_halign (header->priv->timelabel, GTK_ALIGN_END);
 	gtk_widget_set_no_show_all (header->priv->timelabel, TRUE);
 

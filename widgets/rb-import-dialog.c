@@ -36,6 +36,7 @@
 #include "rb-builder-helpers.h"
 #include "rb-debug.h"
 #include "rb-util.h"
+#include "rb-text-helpers.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-search-entry.h"
 #include "rhythmdb-entry-type.h"
@@ -469,6 +470,9 @@ update_status_idle (RBImportDialog *dialog)
 	}
 	text = g_strdup_printf (fmt, count);
 	gtk_button_set_label (GTK_BUTTON (dialog->priv->import_button), text);
+	/* a new child label is created each time button label is set */
+	gtk_label_set_attributes (GTK_LABEL (gtk_bin_get_child (GTK_BIN (dialog->priv->import_button))),
+				  rb_text_numeric_get_pango_attr_list ());
 	g_free (text);
 
 	/* hack to get these strings marked for translation */

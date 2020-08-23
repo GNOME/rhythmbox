@@ -88,6 +88,7 @@
 #include "rb-dialog.h"
 #include "rb-debug.h"
 #include "rb-util.h"
+#include "rb-text-helpers.h"
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
 #include "rb-cell-renderer-pixbuf.h"
@@ -1418,6 +1419,7 @@ rb_entry_view_append_column (RBEntryView *view,
 	gboolean ellipsize = FALSE;
 	gboolean resizable = TRUE;
 	gint column_width = -1;
+	gboolean has_numeric_data = FALSE;
 
 	column = gtk_tree_view_column_new ();
 
@@ -1427,6 +1429,7 @@ rb_entry_view_append_column (RBEntryView *view,
 	switch (coltype) {
 	case RB_ENTRY_VIEW_COL_TRACK_NUMBER:
 		propid = RHYTHMDB_PROP_TRACK_NUMBER;
+		has_numeric_data = TRUE;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_long_cell_data_func;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_track_sort_func;
@@ -1497,6 +1500,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		break;
 	case RB_ENTRY_VIEW_COL_DURATION:
 		propid = RHYTHMDB_PROP_DURATION;
+		has_numeric_data = TRUE;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_duration_cell_data_func;
 		sort_propid = cell_data->propid;
@@ -1509,6 +1513,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		break;
 	case RB_ENTRY_VIEW_COL_YEAR:
 		propid = RHYTHMDB_PROP_DATE;
+		has_numeric_data = TRUE;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_year_cell_data_func;
 		sort_propid = cell_data->propid;
@@ -1521,6 +1526,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		break;
 	case RB_ENTRY_VIEW_COL_QUALITY:
 		propid = RHYTHMDB_PROP_BITRATE;
+		has_numeric_data = TRUE;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_quality_cell_data_func;
 		sort_propid = cell_data->propid;
@@ -1557,6 +1563,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		break;
 	case RB_ENTRY_VIEW_COL_PLAY_COUNT:
 		propid = RHYTHMDB_PROP_PLAY_COUNT;
+		has_numeric_data = TRUE;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_play_count_cell_data_func;
 		sort_propid = cell_data->propid;
@@ -1569,6 +1576,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		break;
 	case RB_ENTRY_VIEW_COL_LAST_PLAYED:
 		propid = RHYTHMDB_PROP_LAST_PLAYED;
+		has_numeric_data = TRUE;
 		cell_data->propid = RHYTHMDB_PROP_LAST_PLAYED_STR;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
 		sort_propid = RHYTHMDB_PROP_LAST_PLAYED;
@@ -1581,6 +1589,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		break;
 	case RB_ENTRY_VIEW_COL_FIRST_SEEN:
 		propid = RHYTHMDB_PROP_FIRST_SEEN;
+		has_numeric_data = TRUE;
 		cell_data->propid = RHYTHMDB_PROP_FIRST_SEEN_STR;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
 		sort_propid = RHYTHMDB_PROP_FIRST_SEEN;
@@ -1592,6 +1601,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		break;
 	case RB_ENTRY_VIEW_COL_LAST_SEEN:
 		propid = RHYTHMDB_PROP_LAST_SEEN;
+		has_numeric_data = TRUE;
 		cell_data->propid = RHYTHMDB_PROP_LAST_SEEN_STR;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
 		sort_propid = RHYTHMDB_PROP_LAST_SEEN;
@@ -1613,6 +1623,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		break;
 	case RB_ENTRY_VIEW_COL_BPM:
 		propid = RHYTHMDB_PROP_BPM;
+		has_numeric_data = TRUE;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_bpm_cell_data_func;
 		sort_func = (GCompareDataFunc) rhythmdb_query_model_double_ceiling_sort_func;
@@ -1643,6 +1654,17 @@ rb_entry_view_append_column (RBEntryView *view,
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
 		gtk_tree_view_column_set_cell_data_func (column, renderer,
 							 cell_data_func, cell_data, g_free);
+
+		/* use tabular figures and right align columns
+		 * with numeric data.
+		 */
+		if (has_numeric_data) {
+			g_object_set (renderer,
+				      "attributes", rb_text_numeric_get_pango_attr_list (),
+				      "xalign", 1.0,
+				      NULL);
+			gtk_tree_view_column_set_alignment (column, 1.0);
+		}
 
 		g_object_set_data (G_OBJECT (renderer), CELL_PROPID_ITEM, GINT_TO_POINTER (propid));
 		g_signal_connect_object (renderer, "edited",

@@ -30,6 +30,7 @@
 
 #include <glib.h>
 #include <pango/pango-bidi-type.h>
+#include <pango/pango-attributes.h>
 
 G_BEGIN_DECLS
 
@@ -38,6 +39,8 @@ gboolean rb_text_direction_conflict (PangoDirection dir1, PangoDirection dir2);
 PangoDirection rb_text_common_direction (const char *first, ...);
 
 char *rb_text_cat (PangoDirection base_dir, ...);
+
+PangoAttrList *rb_text_numeric_get_pango_attr_list (void);
 
 G_END_DECLS
 
