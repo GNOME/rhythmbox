@@ -39,9 +39,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2020-03-22 18:38+0000\n"
-"PO-Revision-Date: 2020-04-06 20:39+0200\n"
-"Last-Translator: Justin van Steijn <jvs@fsfe.org>\n"
+"POT-Creation-Date: 2020-07-25 08:32+0000\n"
+"PO-Revision-Date: 2020-08-25 22:12+0200\n"
+"Last-Translator: Nathan Follens <nthn@unseen.is>\n"
 "Language-Team: Dutch <gnome-nl-list@gnome.org>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -49,7 +49,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Launchpad-Export-Date: 2013-03-03 22:20+0000\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.4.1\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:649
 #, c-format
@@ -145,7 +145,7 @@ msgid "My Top Rated"
 msgstr "Hoogst gewaardeerd"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
 #: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2389
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
@@ -1060,8 +1060,8 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
 #: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
-#: ../podcast/rb-podcast-manager.c:2024
+#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1929
+#: ../podcast/rb-podcast-manager.c:2028
 #: ../podcast/rb-podcast-properties-dialog.c:641
 #: ../podcast/rb-podcast-properties-dialog.c:705
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
@@ -1077,19 +1077,19 @@ msgstr "%d %b %Y"
 #: ../shell/rb-shell-player.c:2714 ../shell/rb-shell-player.c:2716
 #: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
 #: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
-#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1274
-#: ../widgets/rb-header.c:1300 ../widgets/rb-song-info.c:950
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1275
+#: ../widgets/rb-header.c:1301 ../widgets/rb-song-info.c:950
 #: ../widgets/rb-song-info.c:962 ../widgets/rb-song-info.c:1234
 #: ../widgets/rb-song-info.c:1573
 msgid "Unknown"
 msgstr "Onbekend"
 
-#: ../lib/rb-file-helpers.c:471
+#: ../lib/rb-file-helpers.c:475
 #, c-format
 msgid "Too many symlinks"
 msgstr "Te veel symlinks"
 
-#: ../lib/rb-file-helpers.c:1305
+#: ../lib/rb-file-helpers.c:1309
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Kan geen vrije ruimte verkrijgen op %s: %s"
@@ -2094,7 +2094,7 @@ msgid "Browse various local and Internet media sources"
 msgstr "Door verscheidene lokale en internet-mediabronnen bladeren"
 
 #: ../plugins/grilo/rb-grilo-source.c:403
-#: ../plugins/soundcloud/soundcloud.py:492
+#: ../plugins/soundcloud/soundcloud.py:486
 msgid "Fetch more tracks"
 msgstr "Meer nummers ophalen"
 
@@ -2824,7 +2824,7 @@ msgstr "van <i>%s</i>"
 
 # niet bezig met afspelen/niet aan het afspelen
 #: ../plugins/notification/rb-notification-plugin.c:416
-#: ../widgets/rb-header.c:366
+#: ../widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "Niet aan het afspelen"
 
@@ -2984,25 +2984,13 @@ msgstr "Gebruikers zoeken op SoundCloud"
 msgid "SoundCloud Users"
 msgstr "SoundCloud-gebruikers"
 
-#: ../plugins/soundcloud/soundcloud.py:117
-msgid "Search groups"
-msgstr "Groepen zoeken"
-
-#: ../plugins/soundcloud/soundcloud.py:118
-msgid "Search groups on SoundCloud"
-msgstr "Groepen zoeken op SoundCloud"
-
-#: ../plugins/soundcloud/soundcloud.py:119
-msgid "SoundCloud Groups"
-msgstr "SoundCloud-groepen"
-
-#: ../plugins/soundcloud/soundcloud.py:442
-#: ../plugins/soundcloud/soundcloud.py:450
+#: ../plugins/soundcloud/soundcloud.py:436
+#: ../plugins/soundcloud/soundcloud.py:444
 #, python-format
 msgid "View '%(title)s' on SoundCloud"
 msgstr "‘%(title)s’ bekijken op SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:458
+#: ../plugins/soundcloud/soundcloud.py:452
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
 msgstr "‘%(container)s’ bekijken op SoundCloud"
@@ -3100,30 +3088,30 @@ msgstr "Fout in podcast"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Wilt u de podcast-feed toch toevoegen?"
 
-#: ../podcast/rb-podcast-manager.c:924
+#: ../podcast/rb-podcast-manager.c:925
 msgid "Error creating podcast download directory"
 msgstr "Fout bij het aanmaken van de downloadmap voor podcasts"
 
-#: ../podcast/rb-podcast-manager.c:925
+#: ../podcast/rb-podcast-manager.c:926
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "Kan de downloadmap voor %s niet aanmaken: %s"
 
-#: ../podcast/rb-podcast-manager.c:1044
+#: ../podcast/rb-podcast-manager.c:1046
 msgid "Invalid URL"
 msgstr "Ongeldige URL"
 
-#: ../podcast/rb-podcast-manager.c:1045
+#: ../podcast/rb-podcast-manager.c:1047
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "Controleer de URL ‘%s’ want deze is ongeldig."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1056
+#: ../podcast/rb-podcast-manager.c:1058
 msgid "URL already added"
 msgstr "URL is al toegevoegd"
 
-#: ../podcast/rb-podcast-manager.c:1057
+#: ../podcast/rb-podcast-manager.c:1059
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3133,7 +3121,7 @@ msgstr ""
 "is, verwijder dan het radiostation."
 
 # te beluisteren/af te spelen
-#: ../podcast/rb-podcast-manager.c:1157
+#: ../podcast/rb-podcast-manager.c:1159
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3143,11 +3131,11 @@ msgstr ""
 "De URL ‘%s’ is kennelijk geen podcast-feed. Mogelijk is de URL verkeerd, of "
 "is de feed beschadigd. Wilt u toch proberen het met Rhythmbox af te spelen?"
 
-#: ../podcast/rb-podcast-manager.c:1273
+#: ../podcast/rb-podcast-manager.c:1275
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2239
+#: ../podcast/rb-podcast-manager.c:2245
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -4307,13 +4295,13 @@ msgstr "Wachtrij"
 
 # Trackname from Albumname by Artistname
 #. Translators: format is "<title> by <artist> from <album>"
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:924
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
 msgid "by"
 msgstr "door"
 
 # denk "van (het album...) door (de artiest...)"
 # Trackname from Albumname by Artistname
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:926
 msgid "from"
 msgstr "van"
 
@@ -4395,15 +4383,19 @@ msgstr "_Ja"
 msgid "_Open"
 msgstr "_Openen"
 
-#: ../widgets/rb-encoding-settings.c:54
+#: ../widgets/rb-encoding-settings.c:55
 msgid "Constant bit rate"
 msgstr "Constante bitsnelheid"
 
-#: ../widgets/rb-encoding-settings.c:55
+#: ../widgets/rb-encoding-settings.c:56
 msgid "Variable bit rate"
 msgstr "Variabele bitsnelheid"
 
-#: ../widgets/rb-encoding-settings.c:402
+#: ../widgets/rb-encoding-settings.c:57
+msgid "Constrained Variable bit rate"
+msgstr "Beperkt variabele bitsnelheid"
+
+#: ../widgets/rb-encoding-settings.c:404
 msgid "Default settings"
 msgstr "Standaardinstellingen"
 
@@ -4487,13 +4479,13 @@ msgid "Drop artwork here"
 msgstr "Sleep albumhoezen hier naar toe"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1214
+#: ../widgets/rb-header.c:1215
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1225
+#: ../widgets/rb-header.c:1226
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
@@ -4942,6 +4934,15 @@ msgstr "Op het werkblad"
 #: ../widgets/rb-song-info.c:1340
 msgid "Unknown location"
 msgstr "Onbekende locatie"
+
+#~ msgid "Search groups"
+#~ msgstr "Groepen zoeken"
+
+#~ msgid "Search groups on SoundCloud"
+#~ msgstr "Groepen zoeken op SoundCloud"
+
+#~ msgid "SoundCloud Groups"
+#~ msgstr "SoundCloud-groepen"
 
 #~ msgid "_Add Music"
 #~ msgstr "Muziek _toevoegen"
