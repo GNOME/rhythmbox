@@ -36,6 +36,7 @@
 #include <glib/gstdio.h>
 #include <gio/gio.h>
 #include <gtk/gtk.h>
+#include <libsoup/soup.h>
 
 #include "rb-podcast-settings.h"
 #include "rb-podcast-manager.h"
@@ -51,6 +52,9 @@
 #include "rb-util.h"
 #include "rb-missing-plugins.h"
 #include "rb-ext-db.h"
+
+#define DOWNLOAD_BUFFER_SIZE		65536
+#define DOWNLOAD_RETRY_DELAY		15
 
 enum
 {
@@ -82,20 +86,19 @@ typedef struct
 	RBPodcastManager *pd;
 
 	RhythmDBEntry *entry;
-	char *query_string;
 
-	GFile *source;
+	SoupMessage *request;
 	GFile *destination;
-	GFileInputStream *in_stream;
+	GInputStream *in_stream;
 	GFileOutputStream *out_stream;
 
-	guint64 download_offset;
 	guint64 download_size;
 	guint progress;
+	char *buffer;
 
 	GCancellable *cancel;
-	GThread *thread;
-} RBPodcastManagerInfo;
+	GTask *task;
+} RBPodcastDownload;
 
 typedef struct
 {
@@ -103,15 +106,14 @@ typedef struct
 	char *url;
 	gboolean automatic;
 	gboolean existing_feed;
-} RBPodcastThreadInfo;
+} RBPodcastUpdate;
 
 struct RBPodcastManagerPrivate
 {
 	RhythmDB *db;
 	GList *download_list;
-	RBPodcastManagerInfo *active_download;
+	RBPodcastDownload *active_download;
 	guint source_sync;
-	guint next_file_id;
 	int updating;
 	gboolean shutdown;
 	RBExtDB *art_store;
@@ -119,6 +121,8 @@ struct RBPodcastManagerPrivate
 	GArray *searches;
 	GSettings *settings;
 	GFile *timestamp_file;
+
+	SoupSession *soup_session;
 };
 
 #define RB_PODCAST_MANAGER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PODCAST_MANAGER, RBPodcastManagerPrivate))
@@ -140,15 +144,6 @@ static void rb_podcast_manager_get_property 		(GObject *object,
 							 guint prop_id,
 		                                	 GValue *value,
                 		                	 GParamSpec *pspec);
-static void read_file_cb				(GFile *source,
-							 GAsyncResult *result,
-							 RBPodcastManagerInfo *data);
-static void download_file_info_cb			(GFile *source,
-							 GAsyncResult *result,
-							 RBPodcastManagerInfo *data);
-static void download_podcast				(GFileInfo *src_info,
-							 RBPodcastManagerInfo *data);
-static void rb_podcast_manager_abort_download		(RBPodcastManagerInfo *data);
 static gboolean rb_podcast_manager_update_feeds_cb 	(gpointer data);
 static void rb_podcast_manager_save_metadata		(RBPodcastManager *pd,
 						  	 RhythmDBEntry *entry);
@@ -160,16 +155,18 @@ static void rb_podcast_manager_handle_feed_error	(RBPodcastManager *mgr,
 							 GError *error,
 							 gboolean emit);
 
-static gpointer rb_podcast_manager_thread_parse_feed	(RBPodcastThreadInfo *info);
+static gpointer rb_podcast_manager_thread_parse_feed	(RBPodcastUpdate *info);
 static void podcast_settings_changed_cb			(GSettings *settings,
 							 const char *key,
 							 RBPodcastManager *mgr);
 
 /* internal functions */
-static void download_info_free				(RBPodcastManagerInfo *data);
-static gpointer podcast_download_thread			(RBPodcastManagerInfo *data);
-static gboolean end_job					(RBPodcastManagerInfo *data);
-static void cancel_job					(RBPodcastManagerInfo *pd);
+static void download_task				(GTask *task,
+							 gpointer source_object,
+							 gpointer task_data,
+							 GCancellable *cancel);
+static void download_info_free				(RBPodcastDownload *data);
+static void cancel_download				(RBPodcastDownload *pd);
 static void rb_podcast_manager_start_update_timer 	(RBPodcastManager *pd);
 
 G_DEFINE_TYPE (RBPodcastManager, rb_podcast_manager, G_TYPE_OBJECT)
@@ -301,6 +298,10 @@ rb_podcast_manager_constructed (GObject *object)
 
 	pd->priv->art_store = rb_ext_db_new ("album-art");
 
+	pd->priv->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
+								PACKAGE "/" VERSION,
+								NULL);
+
 	rb_podcast_manager_start_update_timer (pd);
 }
 
@@ -313,11 +314,6 @@ rb_podcast_manager_dispose (GObject *object)
 
 	pd = RB_PODCAST_MANAGER (object);
 	g_return_if_fail (pd->priv != NULL);
-
-	if (pd->priv->next_file_id != 0) {
-		g_source_remove (pd->priv->next_file_id);
-		pd->priv->next_file_id = 0;
-	}
 
 	if (pd->priv->source_sync != 0) {
 		g_source_remove (pd->priv->source_sync);
@@ -489,7 +485,7 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd,
 	status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
 	if ((status < RHYTHMDB_PODCAST_STATUS_COMPLETE) ||
 	    (status == RHYTHMDB_PODCAST_STATUS_WAITING)) {
-		RBPodcastManagerInfo *data;
+		RBPodcastDownload *data;
 		GValue val = { 0, };
 		GTimeVal now;
 
@@ -510,15 +506,12 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd,
 
 		rb_debug ("Adding podcast episode %s to download list", get_remote_location (entry));
 
-		data = g_new0 (RBPodcastManagerInfo, 1);
+		data = g_new0 (RBPodcastDownload, 1);
 		data->pd = g_object_ref (pd);
 		data->entry = rhythmdb_entry_ref (entry);
 
 		pd->priv->download_list = g_list_append (pd->priv->download_list, data);
-		if (pd->priv->next_file_id == 0) {
-			pd->priv->next_file_id =
-				g_idle_add ((GSourceFunc) rb_podcast_manager_next_file, pd);
-		}
+		rb_podcast_manager_next_file (pd);
 	}
 }
 
@@ -540,7 +533,7 @@ rb_podcast_manager_entry_downloaded (RhythmDBEntry *entry)
 gboolean
 rb_podcast_manager_entry_in_download_queue (RBPodcastManager *pd, RhythmDBEntry *entry)
 {
-	RBPodcastManagerInfo *info;
+	RBPodcastDownload *info;
 	GList *l;
 
 	for (l = pd->priv->download_list; l != NULL; l = l->next) {
@@ -691,340 +684,11 @@ rb_podcast_manager_update_feeds_cb (gpointer data)
 	return FALSE;
 }
 
-static void
-download_error (RBPodcastManagerInfo *data, GError *error)
-{
-	GValue val = {0,};
-
-	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) == FALSE) {
-		rb_debug ("error downloading %s: %s",
-			  get_remote_location (data->entry),
-			  error->message);
-
-		g_value_init (&val, G_TYPE_ULONG);
-		g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
-		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
-		g_value_unset (&val);
-
-		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_string (&val, error->message);
-		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
-		g_value_unset (&val);
-	} else {
-		rb_debug ("download of %s was cancelled", get_remote_location (data->entry));
-	}
-
-	rhythmdb_commit (data->pd->priv->db);
-
-	if (rb_is_main_thread() == FALSE) {
-		g_idle_add ((GSourceFunc)end_job, data);
-	} else {
-		rb_podcast_manager_abort_download (data);
-	}
-}
-
-static gboolean
-rb_podcast_manager_next_file (RBPodcastManager * pd)
-{
-	const char *location;
-	RBPodcastManagerInfo *data;
-	char *query_string;
-	GList *d;
-
-	g_assert (rb_is_main_thread ());
-
-	rb_debug ("looking for something to download");
-
-	pd->priv->next_file_id = 0;
-
-	if (pd->priv->active_download != NULL) {
-		rb_debug ("already downloading something");
-		return FALSE;
-	}
-
-	d = g_list_first (pd->priv->download_list);
-	if (d == NULL) {
-		rb_debug ("download queue is empty");
-		return FALSE;
-	}
-
-	data = (RBPodcastManagerInfo *) d->data;
-	g_assert (data != NULL);
-	g_assert (data->entry != NULL);
-
-	pd->priv->active_download = data;
-
-	location = get_remote_location (data->entry);
-	rb_debug ("processing %s", location);
-
-	/* extract the query string so we can remove it later if it appears
-	 * in download URLs
-	 */
-	query_string = strchr (location, '?');
-	if (query_string != NULL) {
-		query_string--;
-		data->query_string = g_strdup (query_string);
-	}
-
-	data->source = g_file_new_for_uri (location);
-	data->cancel = g_cancellable_new ();
-
-	g_file_read_async (data->source,
-	                   0,
-	                   data->cancel,
-	                   (GAsyncReadyCallback) read_file_cb,
-	                   data);
-	return FALSE;
-}
-
-static void
-read_file_cb (GFile *source,
-              GAsyncResult *result,
-              RBPodcastManagerInfo *data)
-{
-	GError *error = NULL;
-	GFileInfo *src_info;
-
-	g_assert (rb_is_main_thread ());
-
-	rb_debug ("started read for %s",
-		  get_remote_location (data->entry));
-
-	data->in_stream = g_file_read_finish (data->source,
-	                                      result,
-	                                      &error);
-	if (error != NULL) {
-		download_error (data, error);
-		g_error_free (error);
-		return;
-	}
-
-	src_info = g_file_input_stream_query_info (data->in_stream,
-	                                           G_FILE_ATTRIBUTE_STANDARD_SIZE ","
-	                                           G_FILE_ATTRIBUTE_STANDARD_COPY_NAME ","
-	                                           G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME ","
-	                                           G_FILE_ATTRIBUTE_STANDARD_EDIT_NAME,
-	                                           NULL,
-	                                           &error);
-
-	/* If no stream information then probably using an old version of gvfs, fall back
-	 * to getting the stream information from the GFile.
-	 */
-	if (error != NULL) {
-		rb_debug ("file info query from input failed, trying query on file: %s", error->message);
-		g_error_free (error);
-
-		g_file_query_info_async (data->source,
-		                         G_FILE_ATTRIBUTE_STANDARD_SIZE ","
-		                         G_FILE_ATTRIBUTE_STANDARD_COPY_NAME ","
-	                                 G_FILE_ATTRIBUTE_STANDARD_DISPLAY_NAME ","
-		                         G_FILE_ATTRIBUTE_STANDARD_EDIT_NAME,
-		                         G_FILE_QUERY_INFO_NONE,
-		                         0,
-		                         data->cancel,
-		                         (GAsyncReadyCallback) download_file_info_cb,
-		                         data);
-		return;
-	}
-
-	rb_debug ("got file info results for %s",
-		  get_remote_location (data->entry));
-
-	download_podcast (src_info, data);
-}
-
-static void
-download_file_info_cb (GFile *source,
-                       GAsyncResult *result,
-                       RBPodcastManagerInfo *data)
-{
-	GError *error = NULL;
-	GFileInfo *src_info;
-
-	src_info = g_file_query_info_finish (source, result, &error);
-
-	if (error != NULL) {
-		download_error (data, error);
-		g_error_free (error);
-	} else {
-		rb_debug ("got file info results for %s",
-			  get_remote_location (data->entry));
-
-		download_podcast (src_info, data);
-	}
-}
-
-static void
-download_podcast (GFileInfo *src_info, RBPodcastManagerInfo *data)
-{
-	GError *error = NULL;
-	char *local_file_name = NULL;
-	char *feed_folder;
-	char *esc_local_file_name;
-	char *local_file_uri;
-	char *sane_local_file_uri;
-	char *conf_dir_uri;
-
-	if (src_info != NULL) {
-		data->download_size = g_file_info_get_attribute_uint64 (src_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
-
-		local_file_name = g_file_info_get_attribute_as_string (src_info, G_FILE_ATTRIBUTE_STANDARD_COPY_NAME);
-		if (local_file_name == NULL) {
-			/* probably shouldn't be using this, but the gvfs http backend doesn't
-			 * set the copy name (yet)
-			 */
-			local_file_name = g_strdup (g_file_info_get_edit_name (src_info));
-		}
-
-		g_object_unref (src_info);
-	}
-
-	if (local_file_name == NULL) {
-		/* fall back to the basename from the original URI */
-		local_file_name = g_file_get_basename (data->source);
-		rb_debug ("didn't get a filename from the file info request; using basename %s", local_file_name);
-	}
-
-	/* if the filename ends with the query string from the original URI,
-	 * remove it.
-	 */
-	if (data->query_string &&
-	    g_str_has_suffix (local_file_name, data->query_string)) {
-		local_file_name[strlen (local_file_name) - strlen (data->query_string)] = '\0';
-		rb_debug ("removing query string \"%s\" -> local file name \"%s\"", data->query_string, local_file_name);
-	}
-
-	esc_local_file_name = g_uri_escape_string (local_file_name,
-						   G_URI_RESERVED_CHARS_ALLOWED_IN_PATH,
-						   TRUE);
-	feed_folder = g_uri_escape_string (rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_ALBUM),
-					   G_URI_RESERVED_CHARS_ALLOWED_IN_PATH,
-					   TRUE);
-	g_strdelimit (feed_folder, "/", '_');
-	g_strdelimit (esc_local_file_name, "/", '_');
-
-	/* construct local filename */
-	conf_dir_uri = rb_podcast_manager_get_podcast_dir (data->pd);
-	local_file_uri = g_build_filename (conf_dir_uri,
-					   feed_folder,
-					   esc_local_file_name,
-					   NULL);
-
-	g_free (local_file_name);
-	g_free (feed_folder);
-	g_free (esc_local_file_name);
-
-	sane_local_file_uri = rb_sanitize_uri_for_filesystem (local_file_uri, NULL);
-	g_free (local_file_uri);
-
-	rb_debug ("download URI: %s", sane_local_file_uri);
-
-	if (rb_uri_create_parent_dirs (sane_local_file_uri, &error) == FALSE) {
-		rb_debug ("error creating parent dirs: %s", error->message);
-
-		rb_error_dialog (NULL, _("Error creating podcast download directory"),
-				 _("Unable to create the download directory for %s: %s"),
-				 sane_local_file_uri, error->message);
-
-		g_error_free (error);
-		rb_podcast_manager_abort_download (data);
-		return;
-	}
-
-	data->destination = g_file_new_for_uri (sane_local_file_uri);
-	if (g_file_query_exists (data->destination, NULL)) {
-		GFileInfo *dest_info;
-		guint64 local_size;
-
-		dest_info = g_file_query_info (data->destination,
-					       G_FILE_ATTRIBUTE_STANDARD_SIZE,
-					       G_FILE_QUERY_INFO_NONE,
-					       NULL,
-					       &error);
-		if (error != NULL) {
-			/* hrm */
-			g_warning ("Looking at downloaded podcast file %s: %s",
-				   sane_local_file_uri, error->message);
-			g_error_free (error);
-			rb_podcast_manager_abort_download (data);
-			return;
-		}
-
-		/* check size */
-		local_size = g_file_info_get_attribute_uint64 (dest_info,
-							       G_FILE_ATTRIBUTE_STANDARD_SIZE);
-		g_object_unref (dest_info);
-		if (local_size == 0) {
-			rb_debug ("local file is empty");
-		} else if (local_size == data->download_size) {
-			GValue val = {0,};
-
-			rb_debug ("local file is the same size as the download (%" G_GUINT64_FORMAT ")",
-				  local_size);
-
-			g_value_init (&val, G_TYPE_ULONG);
-			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_COMPLETE);
-			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
-			g_value_unset (&val);
-
-			g_value_init (&val, G_TYPE_STRING);
-			g_value_take_string (&val, g_file_get_uri (data->destination));
-			set_download_location (data->pd->priv->db, data->entry, &val);
-			g_value_unset (&val);
-
-			rb_podcast_manager_save_metadata (data->pd, data->entry);
-
-			rb_podcast_manager_abort_download (data);
-			return;
-		} else if (local_size < data->download_size) {
-			rb_debug ("podcast partly downloaded (%" G_GUINT64_FORMAT " of %" G_GUINT64_FORMAT ")",
-				  local_size, data->download_size);
-			data->download_offset = local_size;
-		} else {
-			rb_debug ("replacing local file as it's larger than the download");
-			g_file_delete (data->destination, NULL, &error);
-			if (error != NULL) {
-				g_warning ("Removing existing download: %s", error->message);
-				g_error_free (error);
-				rb_podcast_manager_abort_download (data);
-				return;
-			}
-		}
-	}
-
-	g_free (sane_local_file_uri);
-
-	g_signal_emit (data->pd, rb_podcast_manager_signals[START_DOWNLOAD],
-		       0, data->entry);
-
-	data->thread = g_thread_new ("podcast-download",
-				     (GThreadFunc) podcast_download_thread,
-				     data);
-}
-
-static void
-rb_podcast_manager_abort_download (RBPodcastManagerInfo *data)
-{
-	RBPodcastManager *mgr = data->pd;
-
-	g_assert (rb_is_main_thread ());
-
-	mgr->priv->download_list = g_list_remove (mgr->priv->download_list, data);
-	download_info_free (data);
-
-	if (mgr->priv->active_download == data)
-		mgr->priv->active_download = NULL;
-
-	if (mgr->priv->next_file_id == 0) {
-		mgr->priv->next_file_id =
-			g_idle_add ((GSourceFunc) rb_podcast_manager_next_file, mgr);
-	}
-}
 
 gboolean
 rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboolean automatic)
 {
-	RBPodcastThreadInfo *info;
+	RBPodcastUpdate *info;
 	RhythmDBEntry *entry;
 	GFile *feed;
 	char *feed_url;
@@ -1071,7 +735,7 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 		existing_feed = FALSE;
 	}
 
-	info = g_new0 (RBPodcastThreadInfo, 1);
+	info = g_new0 (RBPodcastUpdate, 1);
 	info->pd = g_object_ref (pd);
 	info->url = feed_url;
 	info->automatic = automatic;
@@ -1130,7 +794,7 @@ rb_podcast_manager_parse_complete_cb (RBPodcastManagerParseResult *result)
 }
 
 static void
-confirm_bad_mime_type_response_cb (GtkDialog *dialog, int response, RBPodcastThreadInfo *info)
+confirm_bad_mime_type_response_cb (GtkDialog *dialog, int response, RBPodcastUpdate *info)
 {
 	if (response == GTK_RESPONSE_YES) {
 		/* set the 'existing feed' flag to avoid the mime type check */
@@ -1150,7 +814,7 @@ confirm_bad_mime_type_response_cb (GtkDialog *dialog, int response, RBPodcastThr
 }
 
 static gboolean
-confirm_bad_mime_type (RBPodcastThreadInfo *info)
+confirm_bad_mime_type (RBPodcastUpdate *info)
 {
 	GtkWidget *dialog;
 	dialog = gtk_message_dialog_new (NULL, 0,
@@ -1166,7 +830,7 @@ confirm_bad_mime_type (RBPodcastThreadInfo *info)
 }
 
 static gpointer
-rb_podcast_manager_thread_parse_feed (RBPodcastThreadInfo *info)
+rb_podcast_manager_thread_parse_feed (RBPodcastUpdate *info)
 {
 	RBPodcastChannel *feed = g_new0 (RBPodcastChannel, 1);
 	RBPodcastManagerParseResult *result;
@@ -1457,278 +1121,6 @@ rb_podcast_manager_db_entry_added_cb (RBPodcastManager *pd, RhythmDBEntry *entry
         rb_podcast_manager_download_entry (pd, entry);
 }
 
-static void
-download_info_free (RBPodcastManagerInfo *data)
-{
-	/* what should this do about the thread and etc.? */
-
-	if (data->cancel != NULL) {
-		g_object_unref (data->cancel);
-		data->cancel = NULL;
-	}
-
-	if (data->in_stream != NULL) {
-		g_input_stream_close (G_INPUT_STREAM (data->in_stream), NULL, NULL);
-		g_clear_object (&data->in_stream);
-	}
-
-	if (data->source) {
-		g_object_unref (data->source);
-		data->source = NULL;
-	}
-
-	if (data->destination) {
-		g_object_unref (data->destination);
-		data->destination = NULL;
-	}
-
-	if (data->query_string) {
-		g_free (data->query_string);
-		data->query_string = NULL;
-	}
-
-	if (data->entry) {
-		rhythmdb_entry_unref (data->entry);
-	}
-
-	g_free (data);
-}
-
-static void
-download_progress (RBPodcastManagerInfo *data, guint64 downloaded, guint64 total, gboolean complete)
-{
-	guint local_progress = 0;
-
-	if (downloaded > 0 && total > 0)
-		local_progress = (100 * downloaded) / total;
-
-	if (local_progress != data->progress) {
-		GValue val = {0,};
-
-		rb_debug ("%s: %" G_GUINT64_FORMAT "/ %" G_GUINT64_FORMAT,
-			  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION),
-			  downloaded, total);
-
-		g_value_init (&val, G_TYPE_ULONG);
-		g_value_set_ulong (&val, local_progress);
-		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
-		g_value_unset (&val);
-
-		rhythmdb_commit (data->pd->priv->db);
-
-		data->progress = local_progress;
-	}
-
-	if (complete) {
-		if (g_cancellable_is_cancelled (data->cancel) == FALSE) {
-			GValue val = {0,};
-			rb_debug ("download of %s completed",
-				  get_remote_location (data->entry));
-
-			g_value_init (&val, G_TYPE_UINT64);
-			g_value_set_uint64 (&val, downloaded);
-			rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_FILE_SIZE, &val);
-			g_value_unset (&val);
-
-			if (total == 0 || downloaded >= total) {
-				g_value_init (&val, G_TYPE_ULONG);
-				g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_COMPLETE);
-				rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
-				g_value_unset (&val);
-			}
-
-			rb_podcast_manager_save_metadata (data->pd,
-							  data->entry);
-		}
-		g_idle_add ((GSourceFunc)end_job, data);
-	}
-}
-
-static gpointer
-podcast_download_thread (RBPodcastManagerInfo *data)
-{
-	GError *error = NULL;
-	char buf[8192];
-	gssize n_read;
-	gssize n_written;
-	guint64 downloaded;
-
-	/* if we have an offset to download from, try the seek
-	 * before anything else.  if we can't seek, we'll have to
-	 * grab the whole thing.
-	 */
-	downloaded = 0;
-	if (data->download_offset != 0) {
-		g_seekable_seek (G_SEEKABLE (data->in_stream),
-				 data->download_offset,
-				 G_SEEK_SET,
-				 data->cancel,
-				 &error);
-		if (error == NULL) {
-			/* ok, now we can open the output file for appending */
-			rb_debug ("seek to offset %" G_GUINT64_FORMAT " successful", data->download_offset);
-			data->out_stream = g_file_append_to (data->destination,
-							     G_FILE_CREATE_NONE,
-							     data->cancel,
-							     &error);
-			downloaded = data->download_offset;
-		} else if (error->domain == G_IO_ERROR &&
-			   error->code == G_IO_ERROR_NOT_SUPPORTED) {
-			/* can't seek, download the whole thing */
-			rb_debug ("seeking failed: %s", error->message);
-			g_clear_error (&error);
-		}
-	}
-	if (error != NULL) {
-		download_error (data, error);
-		g_error_free (error);
-		return NULL;
-	}
-
-	/* set the downloaded location for the episode
-	 * and do it before opening the file, so that the monitor
-	 * doesn't add a normal entry for us
-	 */
-	if (get_download_location (data->entry) == NULL) {
-		GValue val = {0,};
-		char *uri = g_file_get_uri (data->destination);
-
-		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_string (&val, uri);
-		set_download_location (data->pd->priv->db, data->entry, &val);
-		g_value_unset (&val);
-
-		rhythmdb_commit (data->pd->priv->db);
-		g_free (uri);
-	}
-
-	/* gvfs doesn't do file info queries from streams, so this doesn't help, but
-	 * maybe some day it will..
-	 */
-	if (data->download_size == 0) {
-		GFileInfo *info;
-
-		info = g_file_input_stream_query_info (data->in_stream,
-						       G_FILE_ATTRIBUTE_STANDARD_SIZE,
-						       NULL,
-						       &error);
-		if (error != NULL) {
-			rb_debug ("stream info query failed: %s", error->message);
-			g_clear_error (&error);
-		} else {
-			data->download_size = g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
-			rb_debug ("got file size from stream: %" G_GINT64_FORMAT, data->download_size);
-			g_object_unref (info);
-		}
-	}
-
-	/* open local file */
-	if (data->out_stream == NULL) {
-		data->out_stream = g_file_replace (data->destination,
-						   NULL,
-						   FALSE,
-						   G_FILE_CREATE_NONE,
-						   data->cancel,
-						   &error);
-		if (error != NULL) {
-			download_error (data, error);
-			g_error_free (error);
-			return NULL;
-		}
-	}
-
-	/* loop, copying from input stream to output stream */
-	while (TRUE) {
-		char *p;
-		n_read = g_input_stream_read (G_INPUT_STREAM (data->in_stream),
-					      buf, sizeof (buf),
-					      data->cancel,
-					      &error);
-		if (n_read < 1) {
-			break;
-		}
-
-		p = buf;
-		while (n_read > 0) {
-			n_written = g_output_stream_write (G_OUTPUT_STREAM (data->out_stream),
-							   p, n_read,
-							   data->cancel,
-							   &error);
-			if (n_written == -1) {
-				break;
-			}
-			p += n_written;
-			n_read -= n_written;
-			downloaded += n_written;
-		}
-		if (n_written == -1)
-			break;
-
-		download_progress (data, downloaded, data->download_size, FALSE);
-	}
-
-	/* close everything - don't allow these operations to be cancelled */
-	g_input_stream_close (G_INPUT_STREAM (data->in_stream), NULL, NULL);
-	g_clear_object (&data->in_stream);
-
-	g_output_stream_close (G_OUTPUT_STREAM (data->out_stream), NULL, &error);
-	g_object_unref (data->out_stream);
-
-	if (error != NULL) {
-		download_error (data, error);
-		g_error_free (error);
-	} else {
-		download_progress (data, downloaded, data->download_size, TRUE);
-	}
-
-	rb_debug ("exiting download thread");
-	return NULL;
-}
-
-static gboolean
-end_job	(RBPodcastManagerInfo *data)
-{
-	RBPodcastManager *pd = data->pd;
-
-	g_assert (rb_is_main_thread ());
-
-	rb_debug ("cleaning up download of %s",
-		  get_remote_location (data->entry));
-
-	data->pd->priv->download_list = g_list_remove (data->pd->priv->download_list, data);
-
-	g_signal_emit (data->pd, rb_podcast_manager_signals[FINISH_DOWNLOAD],
-		       0, data->entry);
-
-	g_assert (pd->priv->active_download == data);
-	pd->priv->active_download = NULL;
-
-	download_info_free (data);
-
-	if (pd->priv->next_file_id == 0) {
-		pd->priv->next_file_id =
-			g_idle_add ((GSourceFunc) rb_podcast_manager_next_file, pd);
-	}
-	return FALSE;
-}
-
-static void
-cancel_job (RBPodcastManagerInfo *data)
-{
-	g_assert (rb_is_main_thread ());
-	rb_debug ("cancelling download of %s", get_remote_location (data->entry));
-
-	/* is this the active download? */
-	if (data == data->pd->priv->active_download) {
-		g_cancellable_cancel (data->cancel);
-
-		/* download data will be cleaned up after next progress callback */
-	} else {
-		/* destroy download data */
-		data->pd->priv->download_list = g_list_remove (data->pd->priv->download_list, data);
-		download_info_free (data);
-	}
-}
 
 
 void
@@ -1854,9 +1246,9 @@ rb_podcast_manager_cancel_download (RBPodcastManager *pd, RhythmDBEntry *entry)
 	g_assert (rb_is_main_thread ());
 
 	for (lst = pd->priv->download_list; lst != NULL; lst = lst->next) {
-		RBPodcastManagerInfo *data = (RBPodcastManagerInfo *) lst->data;
+		RBPodcastDownload *data = (RBPodcastDownload *) lst->data;
 		if (data->entry == entry) {
-			cancel_job (data);
+			cancel_download (data);
 			return;
 		}
 	}
@@ -2265,8 +1657,8 @@ rb_podcast_manager_shutdown (RBPodcastManager *pd)
 
 	lst = g_list_reverse (g_list_copy (pd->priv->download_list));
 	for (l = lst; l != NULL; l = l->next) {
-		RBPodcastManagerInfo *data = (RBPodcastManagerInfo *) l->data;
-		cancel_job (data);
+		RBPodcastDownload *data = (RBPodcastDownload *) l->data;
+		cancel_download (data);
 	}
 	g_list_free (lst);
 
@@ -2325,4 +1717,516 @@ rb_podcast_manager_get_searches (RBPodcastManager *pd)
 	}
 
 	return searches;
+}
+
+static void
+podcast_download_cb (GObject *source_object, GAsyncResult *res, gpointer data)
+{
+	RBPodcastManager *pd = RB_PODCAST_MANAGER (source_object);
+	RBPodcastDownload *download;
+	GError *error = NULL;
+	GTask *task = G_TASK (res);
+	GValue val = {0,};
+
+	download = g_task_get_task_data (task);
+	rb_debug ("cleaning up download of %s",
+		  get_remote_location (download->entry));
+
+	pd->priv->download_list = g_list_remove (pd->priv->download_list, download);
+
+	g_assert (pd->priv->active_download == download);
+	pd->priv->active_download = NULL;
+
+	download_info_free (download);
+
+	g_task_propagate_boolean (task, &error);
+	if (error) {
+		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) == FALSE) {
+			rb_debug ("error downloading %s: %s",
+				  get_remote_location (download->entry),
+				  error->message);
+
+			g_value_init (&val, G_TYPE_ULONG);
+			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
+			rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_STATUS, &val);
+			g_value_unset (&val);
+
+			g_value_init (&val, G_TYPE_STRING);
+			g_value_set_string (&val, error->message);
+			rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
+			g_value_unset (&val);
+
+			rhythmdb_commit (pd->priv->db);
+		} else {
+			rb_debug ("download of %s was cancelled", get_remote_location (download->entry));
+		}
+
+		g_clear_error (&error);
+	}
+
+	g_signal_emit (pd, rb_podcast_manager_signals[FINISH_DOWNLOAD], 0, download->entry);
+
+	g_object_unref (task);
+	rb_podcast_manager_next_file (pd);
+}
+
+static gboolean
+rb_podcast_manager_next_file (RBPodcastManager *pd)
+{
+	RBPodcastDownload *download;
+	GList *d;
+	GTask *task;
+
+	g_assert (rb_is_main_thread ());
+
+	rb_debug ("looking for something to download");
+
+	if (pd->priv->active_download != NULL) {
+		rb_debug ("already downloading something");
+		return FALSE;
+	}
+
+	d = g_list_first (pd->priv->download_list);
+	if (d == NULL) {
+		rb_debug ("download queue is empty");
+		return FALSE;
+	}
+
+	download = (RBPodcastDownload *) d->data;
+	g_assert (download != NULL);
+	g_assert (download->entry != NULL);
+
+	rb_debug ("processing %s", get_remote_location (download->entry));
+
+	pd->priv->active_download = download;
+	download->cancel = g_cancellable_new ();
+	task = g_task_new (pd, download->cancel, podcast_download_cb, NULL);
+	g_task_set_task_data (task, download, NULL);
+	g_task_run_in_thread (task, download_task);
+
+	return FALSE;
+}
+
+static void
+download_info_free (RBPodcastDownload *download)
+{
+	g_clear_object (&download->cancel);
+	g_clear_object (&download->destination);
+
+	if (download->in_stream) {
+		g_input_stream_close (download->in_stream, NULL, NULL);
+		g_clear_object (&download->in_stream);
+	}
+
+	if (download->out_stream) {
+		g_output_stream_close (G_OUTPUT_STREAM (download->out_stream), NULL, NULL);
+		g_clear_object (&download->out_stream);
+	}
+
+	if (download->entry) {
+		rhythmdb_entry_unref (download->entry);
+	}
+
+	g_clear_object (&download->request);
+	g_free (download->buffer);
+	g_free (download);
+}
+
+
+static void
+download_progress (RBPodcastDownload *data, guint64 downloaded, guint64 total)
+{
+	guint local_progress = 0;
+
+	if (downloaded > 0 && total > 0)
+		local_progress = (100 * downloaded) / total;
+
+	if (local_progress != data->progress) {
+		GValue val = {0,};
+
+		rb_debug ("%s: %" G_GUINT64_FORMAT "/ %" G_GUINT64_FORMAT,
+			  rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_LOCATION),
+			  downloaded, total);
+
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, local_progress);
+		rhythmdb_entry_set (data->pd->priv->db, data->entry, RHYTHMDB_PROP_STATUS, &val);
+		g_value_unset (&val);
+
+		rhythmdb_commit (data->pd->priv->db);
+
+		data->progress = local_progress;
+	}
+}
+
+static char *
+get_local_download_uri (RBPodcastManager *pd, RBPodcastDownload *download)
+{
+	char *local_file_name = NULL;
+	char *esc_local_file_name;
+	char *local_file_uri;
+	char *conf_dir_uri;
+	char *feed_folder;
+	const char *query_string;
+	GHashTable *params;
+
+	if (soup_message_headers_get_content_disposition (download->request->response_headers, NULL, &params)) {
+		const char *name = g_hash_table_lookup (params, "filename");
+		if (name) {
+			local_file_name = g_strdup (name);
+			rb_debug ("got content disposition filename %s", local_file_name);
+		}
+
+		g_hash_table_destroy (params);
+	}
+	if (local_file_name == NULL) {
+		GFile *source;
+		SoupURI *remote_uri;
+
+		remote_uri = soup_message_get_uri (download->request);
+		rb_debug ("download uri path %s", soup_uri_get_path (remote_uri));
+
+		source = g_file_new_for_path (soup_uri_get_path (remote_uri));
+		local_file_name = g_file_get_basename (source);
+		g_object_unref (source);
+		rb_debug ("got local filename from uri: %s", local_file_name);
+	}
+
+	/* if the filename ends with the query string from the original URI, remove it */
+	query_string = strchr (get_remote_location (download->entry), '?');
+	if (query_string != NULL) {
+		query_string--;
+		if (g_str_has_suffix (local_file_name, query_string)) {
+			local_file_name[strlen (local_file_name) - strlen (query_string)] = '\0';
+			rb_debug ("removing query string \"%s\" -> local file name \"%s\"", query_string, local_file_name);
+		}
+	}
+
+	esc_local_file_name = g_uri_escape_string (local_file_name,
+						   G_URI_RESERVED_CHARS_ALLOWED_IN_PATH,
+						   TRUE);
+	feed_folder = g_uri_escape_string (rhythmdb_entry_get_string (download->entry, RHYTHMDB_PROP_ALBUM),
+					   G_URI_RESERVED_CHARS_ALLOWED_IN_PATH,
+					   TRUE);
+	g_strdelimit (feed_folder, "/", '_');
+	g_strdelimit (esc_local_file_name, "/", '_');
+
+	/* construct local filename */
+	conf_dir_uri = rb_podcast_manager_get_podcast_dir (pd);
+	local_file_uri = g_build_filename (conf_dir_uri, feed_folder, esc_local_file_name, NULL);
+
+	g_free (local_file_name);
+	g_free (feed_folder);
+	g_free (esc_local_file_name);
+
+	return local_file_uri;
+}
+
+static gboolean
+retry_on_error (GError *error)
+{
+	if (error->domain == G_IO_ERROR) {
+		switch (error->code) {
+			case G_IO_ERROR_CLOSED:
+			case G_IO_ERROR_CONNECTION_CLOSED:
+			case G_IO_ERROR_TIMED_OUT:
+			case G_IO_ERROR_NOT_CONNECTED:
+				return TRUE;
+
+			default:
+				return FALSE;
+		}
+	} else if (error->domain == G_RESOLVER_ERROR) {
+		switch (error->code) {
+		case G_RESOLVER_ERROR_TEMPORARY_FAILURE:
+			return TRUE;
+		default:
+			return FALSE;
+		}
+	} else if (error->domain == SOUP_HTTP_ERROR) {
+		switch (error->code) {
+		case SOUP_STATUS_CANT_RESOLVE:
+		case SOUP_STATUS_CANT_RESOLVE_PROXY:
+		case SOUP_STATUS_CANT_CONNECT:
+		case SOUP_STATUS_CANT_CONNECT_PROXY:
+		case SOUP_STATUS_SSL_FAILED:
+		case SOUP_STATUS_IO_ERROR:
+		case SOUP_STATUS_REQUEST_TIMEOUT:
+		case SOUP_STATUS_INTERNAL_SERVER_ERROR:
+		case SOUP_STATUS_BAD_GATEWAY:
+		case SOUP_STATUS_SERVICE_UNAVAILABLE:
+		case SOUP_STATUS_GATEWAY_TIMEOUT:
+			return TRUE;
+		default:
+			return FALSE;
+		}
+	} else {
+		return FALSE;
+	}
+}
+
+static void
+download_task (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancel)
+{
+	RBPodcastManager *pd = RB_PODCAST_MANAGER (source_object);
+	RBPodcastDownload *download = task_data;
+	GError *error = NULL;
+	gssize remote_size;
+	const char *local_file_uri;
+	gssize n_read;
+	guint64 downloaded;
+	gboolean retry;
+	gboolean eof;
+	int retries;
+
+	/*
+	 * if we already have a local download location, get the file size
+	 * (and check if it's even still there).
+	 * we could also store the modification time and etag reported by the server
+	 * to detect changes in the remote file better.
+	 */
+	local_file_uri = get_download_location (download->entry);
+	if (local_file_uri != NULL) {
+		rb_debug ("checking local copy at %s", local_file_uri);
+		download->destination = g_file_new_for_uri (local_file_uri);
+		if (g_file_query_exists (download->destination, NULL)) {
+			GFileInfo *dest_info;
+
+			dest_info = g_file_query_info (download->destination,
+						       G_FILE_ATTRIBUTE_STANDARD_SIZE,
+						       G_FILE_QUERY_INFO_NONE,
+						       NULL,
+						       &error);
+			if (error != NULL) {
+				g_task_return_error (task, error);
+				return;
+			}
+
+			downloaded = g_file_info_get_attribute_uint64 (dest_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+			g_object_unref (dest_info);
+		} else {
+			/* clear download location? */
+			rb_debug ("local copy not found");
+			downloaded = 0;
+		}
+	} else {
+		rb_debug ("no local copy location set");
+		downloaded = 0;
+	}
+
+	remote_size = -1;
+	retries = 5;
+	while (retries-- > 0) {
+		if (download->in_stream != NULL) {
+			g_input_stream_close (download->in_stream, NULL, NULL);
+			g_clear_object (&download->in_stream);
+		}
+		g_clear_object (&download->request);
+		g_clear_error (&error);
+		retry = FALSE;
+		eof = FALSE;
+
+		download->request = soup_message_new ("GET", get_remote_location (download->entry));
+		if (downloaded != 0)
+			soup_message_headers_set_range (download->request->request_headers, downloaded, -1);
+		download->in_stream = soup_session_send (pd->priv->soup_session, download->request, download->cancel, &error);
+		if (error == NULL && !SOUP_STATUS_IS_SUCCESSFUL (download->request->status_code)) {
+			error = g_error_new (SOUP_HTTP_ERROR, download->request->status_code, "%s", download->request->reason_phrase);
+		}
+
+		if (error != NULL) {
+			if (retry_on_error (error)) {
+				rb_debug ("retrying after error from http request: %s", error->message);
+				continue;
+			}
+
+			rb_debug ("giving up after error from http request: %s", error->message);
+			g_task_return_error (task, error);
+			return;
+		}
+
+		/* check that the server actually honoured our range request */
+		if (downloaded != 0) {
+			goffset start, end, total;
+			if (soup_message_headers_get_content_range (download->request->response_headers, &start, &end, &total)) {
+				if (start != downloaded) {
+					rb_debug ("range request mismatched, redownloading from start");
+					downloaded = 0;
+					continue;
+				}
+				remote_size = total;
+				rb_debug ("resuming download at offset %ld, %ld bytes left", start, total);
+			} else {
+				downloaded = 0;
+				remote_size = soup_message_headers_get_content_length (download->request->response_headers);
+				rb_debug ("server didn't honour range request, starting again, total %ld", remote_size);
+			}
+		} else {
+			remote_size = soup_message_headers_get_content_length (download->request->response_headers);
+			rb_debug ("total download size %ld", remote_size);
+		}
+
+		if (downloaded == remote_size) {
+			rb_debug ("local file is the same size as the download (%" G_GUINT64_FORMAT ")",
+				  downloaded);
+			break;
+		} else if (downloaded > remote_size) {
+			rb_debug ("replacing local file as it's larger than the download");
+
+			downloaded = 0;
+			continue;
+		}
+
+		if (download->destination == NULL) {
+			GValue val = {0,};
+			char *dl_uri;
+			char *sane_dl_uri;
+
+			dl_uri = get_local_download_uri (pd, download);
+			sane_dl_uri = rb_sanitize_uri_for_filesystem (dl_uri, NULL);
+			g_free (dl_uri);
+
+			rb_debug ("download URI: %s", sane_dl_uri);
+
+			if (rb_uri_create_parent_dirs (sane_dl_uri, &error) == FALSE) {
+				rb_debug ("error creating parent dirs: %s", error->message);
+				g_task_return_error (task, error);
+				g_free (sane_dl_uri);
+				return;
+			}
+
+			/* set the download location for the episode */
+			g_value_init (&val, G_TYPE_STRING);
+			g_value_set_string (&val, sane_dl_uri);
+			set_download_location (pd->priv->db, download->entry, &val);
+			g_value_unset (&val);
+
+			rhythmdb_commit (pd->priv->db);
+
+			download->destination = g_file_new_for_uri (sane_dl_uri);
+			g_free (sane_dl_uri);
+		}
+
+		/* open the local file */
+		if (downloaded != 0) {
+			download->out_stream = g_file_append_to (download->destination,
+								 G_FILE_CREATE_NONE,
+								 download->cancel,
+								 &error);
+		} else {
+			download->out_stream = g_file_replace (download->destination,
+							       NULL,
+							       FALSE,
+							       G_FILE_CREATE_NONE,
+							       download->cancel,
+							       &error);
+			downloaded = 0;
+		}
+
+		if (error != NULL) {
+			g_task_return_error (task, error);
+			return;
+		}
+
+		/* loop, copying from input stream to output stream */
+		download->buffer = g_new0 (char, DOWNLOAD_BUFFER_SIZE);
+		while (TRUE) {
+			char *p;
+			n_read = g_input_stream_read (download->in_stream,
+						      download->buffer, DOWNLOAD_BUFFER_SIZE,
+						      download->cancel,
+						      &error);
+			if (n_read == 0) {
+				eof = TRUE;
+				break;
+			} else if (n_read < 0) {
+				if (retry_on_error (error)) {
+					rb_debug ("retrying after error reading from input stream: %s", error->message);
+					retry = TRUE;
+				} else {
+					rb_debug ("giving up after error reading from input stream: %s", error->message);
+				}
+				break;
+			}
+
+			p = download->buffer;
+			if (g_output_stream_write_all (G_OUTPUT_STREAM (download->out_stream),
+						       p,
+						       n_read,
+						       NULL,
+						       download->cancel,
+						       &error) == FALSE) {
+				/* never retry after a write error */
+				break;
+			}
+			p += n_read;
+			downloaded += n_read;
+
+			download_progress (download, downloaded, remote_size);
+		}
+
+		/* close everything - don't allow these operations to be cancelled */
+		g_input_stream_close (download->in_stream, NULL, NULL);
+		g_clear_object (&download->in_stream);
+
+		g_output_stream_close (G_OUTPUT_STREAM (download->out_stream), NULL, &error);
+		g_clear_object (&download->out_stream);
+
+		if (eof) {
+			if (remote_size == 0 || downloaded == remote_size) {
+				rb_debug ("full file downloaded");
+				break;
+			}
+			rb_debug ("haven't got the whole file yet, retrying");
+		} else if (retry == FALSE) {
+			rb_debug ("not retrying");
+			break;
+		}
+
+		g_usleep (DOWNLOAD_RETRY_DELAY * G_USEC_PER_SEC);
+	}
+
+	if (error != NULL) {
+		g_task_return_error (task, error);
+	} else {
+		GValue val = {0,};
+
+		rb_debug ("download of %s completed", get_remote_location (download->entry));
+
+		g_value_init (&val, G_TYPE_UINT64);
+		g_value_set_uint64 (&val, downloaded);
+		rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_FILE_SIZE, &val);
+		g_value_unset (&val);
+
+		if (remote_size == 0 || downloaded >= remote_size) {
+			g_value_init (&val, G_TYPE_ULONG);
+			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_COMPLETE);
+			rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_STATUS, &val);
+			g_value_unset (&val);
+		}
+
+		rb_podcast_manager_save_metadata (pd, download->entry);
+		g_task_return_boolean (task, TRUE);
+	}
+
+	rb_debug ("finished");
+}
+
+
+static void
+cancel_download (RBPodcastDownload *data)
+{
+	g_assert (rb_is_main_thread ());
+	rb_debug ("cancelling download of %s", get_remote_location (data->entry));
+
+	/* is this the active download? */
+	if (data == data->pd->priv->active_download) {
+		g_cancellable_cancel (data->cancel);
+
+		/* download data will be cleaned up after the task returns */
+	} else {
+		/* destroy download data */
+		data->pd->priv->download_list = g_list_remove (data->pd->priv->download_list, data);
+		download_info_free (data);
+	}
 }
