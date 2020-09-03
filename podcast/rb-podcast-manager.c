@@ -1925,6 +1925,7 @@ get_local_download_uri (RBPodcastManager *pd, RBPodcastDownload *download)
 static gboolean
 retry_on_error (GError *error)
 {
+	rb_debug ("retry on error %s/%d (%s)", g_quark_to_string (error->domain), error->code, error->message);
 	if (error->domain == G_IO_ERROR) {
 		switch (error->code) {
 			case G_IO_ERROR_CLOSED:
@@ -2037,6 +2038,7 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 		if (error != NULL) {
 			if (retry_on_error (error)) {
 				rb_debug ("retrying after error from http request: %s", error->message);
+				g_usleep (DOWNLOAD_RETRY_DELAY * G_USEC_PER_SEC);
 				continue;
 			}
 
