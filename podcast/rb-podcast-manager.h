@@ -55,13 +55,6 @@ typedef struct
 typedef struct
 {
 	GObjectClass parent_class;
-
-	/* signals */
-	void        (*start_download)    		(RBPodcastManager* pd, RhythmDBEntry *entry);
-	void        (*finish_download)   		(RBPodcastManager* pd, RhythmDBEntry *entry);
-	void        (*feed_updates_available)   	(RBPodcastManager* pd, RhythmDBEntry *entry);
-	void        (*process_error)	   		(RBPodcastManager* pd, const char *url, const char *error, gboolean existing);
-
 } RBPodcastManagerClass;
 
 GType                   rb_podcast_manager_get_type    		(void);

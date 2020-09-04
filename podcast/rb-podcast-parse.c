@@ -40,6 +40,12 @@
 #include "rb-podcast-parse.h"
 #include "rb-file-helpers.h"
 
+typedef struct {
+	RBPodcastChannel *channel;
+	RBPodcastParseCallback callback;
+	gpointer user_data;
+} RBPodcastParseData;
+
 GQuark
 rb_podcast_parse_error_quark (void)
 {
@@ -148,98 +154,65 @@ entry_parsed (TotemPlParser *parser,
 	channel->posts = g_list_prepend (channel->posts, item);
 }
 
-gboolean
-rb_podcast_parse_load_feed (RBPodcastChannel *data,
-			    const char *file_name,
-			    gboolean existing_feed,
-			    GError **error)
+static void
+parse_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
-	GFile *file;
-	GFileInfo *fileinfo;
-	TotemPlParser *plparser;
+	RBPodcastParseData *data = user_data;
+	RBPodcastChannel *channel = data->channel;
+	GError *error = NULL;
 
-	data->url = g_strdup (file_name);
+	totem_pl_parser_parse_finish (TOTEM_PL_PARSER (source_object), res, &error);
+	if (error) {
+		rb_debug ("parsing %s as a podcast failed: %s", channel->url, error->message);
+		g_clear_error (&error);
 
-	/* if the URL has a .rss, .xml or .atom extension (before the query string),
-	 * don't bother checking the MIME type.
-	 */
-	if (rb_uri_could_be_podcast (file_name, &data->is_opml) || existing_feed) {
-		rb_debug ("not checking mime type for %s (should be %s file)", file_name,
-			  data->is_opml ? "OPML" : "Podcast");
-	} else {
-		GError *ferror = NULL;
-		char *content_type;
-
-		rb_debug ("checking mime type for %s", file_name);
-
-		file = g_file_new_for_uri (file_name);
-		fileinfo = g_file_query_info (file, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE, 0, NULL, &ferror);
-		if (ferror != NULL) {
-			g_set_error (error,
-				     RB_PODCAST_PARSE_ERROR,
-				     RB_PODCAST_PARSE_ERROR_FILE_INFO,
-				     _("Unable to check file type: %s"),
-				     ferror->message);
-			g_object_unref (file);
-			g_clear_error (&ferror);
-			return FALSE;
-		}
-
-		content_type = g_file_info_get_attribute_as_string (fileinfo, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE);
-		g_object_unref (file);
-		g_object_unref (fileinfo);
-
-		if (content_type != NULL
-		    && strstr (content_type, "html") == NULL
-		    && strstr (content_type, "xml") == NULL
-		    && strstr (content_type, "rss") == NULL
-		    && strstr (content_type, "opml") == NULL) {
-			g_set_error (error,
-				     RB_PODCAST_PARSE_ERROR,
-				     RB_PODCAST_PARSE_ERROR_MIME_TYPE,
-				     _("Unexpected file type: %s"),
-				     content_type);
-			g_free (content_type);
-			return FALSE;
-		} else if (content_type != NULL
-			   && strstr (content_type, "opml") != NULL) {
-			data->is_opml = TRUE;
-		}
-
-		g_free (content_type);
-	}
-
-	plparser = totem_pl_parser_new ();
-	g_object_set (plparser, "recurse", FALSE, "force", TRUE, NULL);
-	g_signal_connect (G_OBJECT (plparser), "entry-parsed", G_CALLBACK (entry_parsed), data);
-	g_signal_connect (G_OBJECT (plparser), "playlist-started", G_CALLBACK (playlist_started), data);
-	g_signal_connect (G_OBJECT (plparser), "playlist-ended", G_CALLBACK (playlist_ended), data);
-
-	if (totem_pl_parser_parse (plparser, file_name, FALSE) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
-		rb_debug ("Parsing %s as a Podcast failed", file_name);
-		g_set_error (error,
+		g_set_error (&error,
 			     RB_PODCAST_PARSE_ERROR,
 			     RB_PODCAST_PARSE_ERROR_XML_PARSE,
 			     _("Unable to parse the feed contents"));
-		g_object_unref (plparser);
-		return FALSE;
-	}
-	g_object_unref (plparser);
-
-	/* treat empty feeds, or feeds that don't contain any downloadable items, as
-	 * an error.
-	 */
-	if (data->posts == NULL) {
-		rb_debug ("Parsing %s as a podcast succeeded, but the feed contains no downloadable items", file_name);
-		g_set_error (error,
+	} else if (channel->posts == NULL) {
+		/*
+		 * treat empty feeds, or feeds that don't contain any downloadable items, as
+		 * an error.
+		 */
+		rb_debug ("parsing %s as a podcast succeeded, but the feed contains no downloadable items", channel->url);
+		g_set_error (&error,
 			     RB_PODCAST_PARSE_ERROR,
 			     RB_PODCAST_PARSE_ERROR_NO_ITEMS,
 			     _("The feed does not contain any downloadable items"));
-		return FALSE;
+	} else {
+		rb_debug ("parsing %s as a podcast succeeded", channel->url);
 	}
 
-	rb_debug ("Parsing %s as a Podcast succeeded", file_name);
-	return TRUE;
+	data->callback (channel, error, data->user_data);
+	g_object_unref (source_object);
+	g_free (data);
+}
+
+void
+rb_podcast_parse_load_feed (RBPodcastChannel *channel,
+			    const char *feed_url,
+			    GCancellable *cancellable,
+			    RBPodcastParseCallback callback,
+			    gpointer user_data)
+{
+	TotemPlParser *plparser;
+	RBPodcastParseData *data;
+
+	channel->url = g_strdup (feed_url);
+
+	data = g_new0 (RBPodcastParseData, 1);
+	data->channel = channel;
+	data->callback = callback;
+	data->user_data = user_data;
+
+	plparser = totem_pl_parser_new ();
+	g_object_set (plparser, "recurse", FALSE, "force", TRUE, NULL);
+	g_signal_connect (plparser, "entry-parsed", G_CALLBACK (entry_parsed), channel);
+	g_signal_connect (plparser, "playlist-started", G_CALLBACK (playlist_started), channel);
+	g_signal_connect (plparser, "playlist-ended", G_CALLBACK (playlist_ended), channel);
+
+	totem_pl_parser_parse_async (plparser, channel->url, FALSE, cancellable, parse_cb, data);
 }
 
 RBPodcastChannel *

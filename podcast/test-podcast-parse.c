@@ -66,39 +66,30 @@ rb_debug_realf (const char *func,
 		    file, line, func, buffer);
 }
 
-int main (int argc, char **argv)
+static void
+parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 {
-	RBPodcastChannel *data;
+	GMainLoop *ml = user_data;
 	GList *l;
 	GDate date = {0,};
 	char datebuf[1024];
-	GError *error = NULL;
 
-	setlocale (LC_ALL, "");
-	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-
-	if (argv[2] != NULL && strcmp (argv[2], "--debug") == 0) {
-		debug = TRUE;
+	if (error) {
+		g_warning ("Couldn't parse %s: %s", channel->url, error->message);
+		g_main_loop_quit (ml);
+		return;
 	}
 
-	data = g_new0 (RBPodcastChannel, 1);
-	if (rb_podcast_parse_load_feed (data, argv[1], FALSE, &error) == FALSE) {
-		g_warning ("Couldn't parse %s: %s", argv[1], error->message);
-		g_clear_error (&error);
-		return 1;
-	}
-
-	g_date_set_time_t (&date, data->pub_date);
+	g_date_set_time_t (&date, channel->pub_date);
 	g_date_strftime (datebuf, 1024, "%F %T", &date);
 
-	g_print ("Podcast title: %s\n", data->title);
-	g_print ("Description: %s\n", data->description);
-	g_print ("Author: %s\n", data->author);
+	g_print ("Podcast title: %s\n", channel->title);
+	g_print ("Description: %s\n", channel->description);
+	g_print ("Author: %s\n", channel->author);
 	g_print ("Date: %s\n", datebuf);
 	g_print ("\n");
 
-	for (l = data->posts; l != NULL; l = l->next) {
+	for (l = channel->posts; l != NULL; l = l->next) {
 		RBPodcastItem *item = l->data;
 
 		g_date_set_time_t (&date, item->pub_date);
@@ -111,6 +102,29 @@ int main (int argc, char **argv)
 		g_print ("\tDescription: %s\n", item->description);
 		g_print ("\n");
 	}
+
+	g_main_loop_quit (ml);
+}
+
+int
+main (int argc, char **argv)
+{
+	RBPodcastChannel *data;
+	GMainLoop *ml;
+
+	setlocale (LC_ALL, "");
+	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
+	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+
+	if (argv[2] != NULL && strcmp (argv[2], "--debug") == 0) {
+		debug = TRUE;
+	}
+
+	ml = g_main_loop_new (NULL, FALSE);
+	data = g_new0 (RBPodcastChannel, 1);
+	rb_podcast_parse_load_feed (data, argv[1], NULL, parse_cb, ml);
+
+	g_main_loop_run (ml);
 
 	return 0;
 }

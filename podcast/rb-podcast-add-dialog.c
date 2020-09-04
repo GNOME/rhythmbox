@@ -286,11 +286,22 @@ typedef struct {
 	gboolean single;
 	GError *error;
 	int reset_count;
-} ParseThreadData;
+} ParseData;
 
-static gboolean
-parse_finished (ParseThreadData *data)
+static void
+parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 {
+	ParseData *data = user_data;
+
+	if (error != NULL) {
+		/* fake up a channel with just the url as the title, allowing the user
+		 * to subscribe to the podcast anyway.
+		 */
+		data->channel->url = g_strdup (data->url);
+		data->channel->title = g_strdup (data->url);
+		g_error_free (error);
+	}
+
 	if (data->reset_count != data->dialog->priv->reset_count) {
 		rb_debug ("dialog reset while parsing");
 		rb_podcast_parse_channel_free (data->channel);
@@ -298,7 +309,6 @@ parse_finished (ParseThreadData *data)
 		g_clear_error (&data->error);
 		g_free (data->url);
 		g_free (data);
-		return FALSE;
 	}
 
 	if (data->error != NULL) {
@@ -374,30 +384,14 @@ parse_finished (ParseThreadData *data)
 	g_clear_error (&data->error);
 	g_free (data->url);
 	g_free (data);
-	return FALSE;
-}
-
-static gpointer
-parse_thread (ParseThreadData *data)
-{
-	if (rb_podcast_parse_load_feed (data->channel, data->url, FALSE, &data->error) == FALSE) {
-		/* fake up a channel with just the url as the title, allowing the user
-		 * to subscribe to the podcast anyway.
-		 */
-		data->channel->url = g_strdup (data->url);
-		data->channel->title = g_strdup (data->url);
-	}
-
-	g_idle_add ((GSourceFunc) parse_finished, data);
-	return NULL;
 }
 
 static void
 parse_in_thread (RBPodcastAddDialog *dialog, const char *text, gboolean existing, gboolean single)
 {
-	ParseThreadData *data;
+	ParseData *data;
 
-	data = g_new0 (ParseThreadData, 1);
+	data = g_new0 (ParseData, 1);
 	data->dialog = g_object_ref (dialog);
 	data->url = g_strdup (text);
 	data->channel = g_new0 (RBPodcastChannel, 1);
@@ -405,7 +399,7 @@ parse_in_thread (RBPodcastAddDialog *dialog, const char *text, gboolean existing
 	data->single = single;
 	data->reset_count = dialog->priv->reset_count;
 
-	g_thread_new ("podcast parser", (GThreadFunc) parse_thread, data);
+	rb_podcast_parse_load_feed (data->channel, data->url, NULL, parse_cb, data);
 }
 
 static void

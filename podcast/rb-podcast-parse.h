@@ -29,6 +29,7 @@
 #define RB_PODCAST_PARSE_H
 
 #include <glib.h>
+#include <gio/gio.h>
 
 typedef enum
 {
@@ -75,10 +76,13 @@ GType	rb_podcast_item_get_type (void);
 #define RB_TYPE_PODCAST_CHANNEL	(rb_podcast_channel_get_type ())
 #define RB_TYPE_PODCAST_ITEM (rb_podcast_item_get_type ())
 
-gboolean rb_podcast_parse_load_feed	(RBPodcastChannel *data,
-					 const char *url,
-					 gboolean existing_feed,
-					 GError **error);
+typedef void (*RBPodcastParseCallback) (RBPodcastChannel *data, GError *error, gpointer user_data);
+
+void	rb_podcast_parse_load_feed (RBPodcastChannel *data,
+				    const char *url,
+				    GCancellable *cancellable,
+				    RBPodcastParseCallback callback,
+				    gpointer user_data);
 
 RBPodcastChannel *rb_podcast_parse_channel_copy (RBPodcastChannel *data);
 RBPodcastItem *rb_podcast_parse_item_copy (RBPodcastItem *data);

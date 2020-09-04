@@ -68,19 +68,10 @@ enum
 {
 	START_DOWNLOAD,
 	FINISH_DOWNLOAD,
-	PROCESS_ERROR,
+	FEED_PARSE_ERROR,
 	FEED_UPDATES_AVAILABLE,
 	LAST_SIGNAL
 };
-
-/* passed from feed parsing threads back to main thread */
-typedef struct
-{
-	GError			*error;
-	RBPodcastChannel 	*channel;
-	RBPodcastManager	*pd;
-	gboolean		 automatic;
-} RBPodcastManagerParseResult;
 
 typedef struct
 {
@@ -106,7 +97,8 @@ typedef struct
 	RBPodcastManager *pd;
 	char *url;
 	gboolean automatic;
-	gboolean existing_feed;
+	RBPodcastChannel *channel;
+	GError *error;
 } RBPodcastUpdate;
 
 struct RBPodcastManagerPrivate
@@ -116,8 +108,8 @@ struct RBPodcastManagerPrivate
 	RBPodcastDownload *active_download;
 	guint source_sync;
 	int updating;
-	gboolean shutdown;
 	RBExtDB *art_store;
+	GCancellable *update_cancel;
 
 	GArray *searches;
 	GSettings *settings;
@@ -151,12 +143,7 @@ static void rb_podcast_manager_save_metadata		(RBPodcastManager *pd,
 static void rb_podcast_manager_db_entry_added_cb 	(RBPodcastManager *pd,
 							 RhythmDBEntry *entry);
 static gboolean rb_podcast_manager_next_file 		(RBPodcastManager * pd);
-static void rb_podcast_manager_handle_feed_error	(RBPodcastManager *mgr,
-							 const char *url,
-							 GError *error,
-							 gboolean emit);
 
-static gpointer rb_podcast_manager_thread_parse_feed	(RBPodcastUpdate *info);
 static void podcast_settings_changed_cb			(GSettings *settings,
 							 const char *key,
 							 RBPodcastManager *mgr);
@@ -203,7 +190,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 	       g_signal_new ("start_download",
 		       		G_OBJECT_CLASS_TYPE (object_class),
 		 		G_SIGNAL_RUN_LAST,
-				G_STRUCT_OFFSET (RBPodcastManagerClass, start_download),
+				0,
 				NULL, NULL,
 				NULL,
 				G_TYPE_NONE,
@@ -214,7 +201,7 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 	       g_signal_new ("finish_download",
 		       		G_OBJECT_CLASS_TYPE (object_class),
 		 		G_SIGNAL_RUN_LAST,
-				G_STRUCT_OFFSET (RBPodcastManagerClass, finish_download),
+				0,
 				NULL, NULL,
 				NULL,
 				G_TYPE_NONE,
@@ -225,18 +212,18 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 	       g_signal_new ("feed_updates_available",
 		       		G_OBJECT_CLASS_TYPE (object_class),
 		 		G_SIGNAL_RUN_LAST,
-				G_STRUCT_OFFSET (RBPodcastManagerClass, feed_updates_available),
+				0,
 				NULL, NULL,
 				NULL,
 				G_TYPE_NONE,
 				1,
 				RHYTHMDB_TYPE_ENTRY);
 
-	rb_podcast_manager_signals[PROCESS_ERROR] =
-	       g_signal_new ("process_error",
+	rb_podcast_manager_signals[FEED_PARSE_ERROR] =
+	       g_signal_new ("feed-parse-error",
 		       		G_OBJECT_CLASS_TYPE (object_class),
 				G_SIGNAL_RUN_LAST,
-				G_STRUCT_OFFSET (RBPodcastManagerClass, process_error),
+				0,
 				NULL, NULL,
 				NULL,
 				G_TYPE_NONE,
@@ -255,7 +242,6 @@ rb_podcast_manager_init (RBPodcastManager *pd)
 
 	pd->priv->source_sync = 0;
 	pd->priv->db = NULL;
-
 }
 
 static void
@@ -302,6 +288,8 @@ rb_podcast_manager_constructed (GObject *object)
 	pd->priv->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
 								PACKAGE "/" VERSION,
 								NULL);
+
+	pd->priv->update_cancel = g_cancellable_new ();
 
 	rb_podcast_manager_start_update_timer (pd);
 }
@@ -624,8 +612,8 @@ void
 rb_podcast_manager_update_feeds (RBPodcastManager *pd)
 {
 	RhythmDBQueryResultList *list;
-        RhythmDBEntry *entry;
-        const char *uri;
+	RhythmDBEntry *entry;
+	const char *uri;
 	guint status;
 	GList *l;
 
@@ -672,15 +660,156 @@ rb_podcast_manager_update_feeds_cb (gpointer data)
 	return FALSE;
 }
 
+static void
+podcast_update_free (RBPodcastUpdate *update)
+{
+	RBPodcastManager *pd = update->pd;
+
+	if (--pd->priv->updating == 0) {
+		g_object_notify (G_OBJECT (pd), "updating");
+	}
+	g_object_unref (pd);
+
+	g_clear_error (&update->error);
+	rb_podcast_parse_channel_free (update->channel);
+	g_free (update->url);
+	g_free (update);
+}
+
+static void
+feed_parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
+{
+	RBPodcastUpdate *update = user_data;
+	RBPodcastManager *pd = update->pd;
+	RhythmDBEntry *entry;
+	GValue v = {0,};
+	gboolean existing = FALSE;
+
+	if (error == NULL) {
+		if (channel->is_opml) {
+			GList *l;
+
+			rb_debug ("Loading OPML feeds from %s", channel->url);
+
+			for (l = channel->posts; l != NULL; l = l->next) {
+				RBPodcastItem *item = l->data;
+				/* assume the feeds don't already exist */
+				rb_podcast_manager_subscribe_feed (pd, item->url, FALSE);
+			}
+		} else {
+			rb_podcast_manager_add_parsed_feed (pd, channel);
+		}
+	} else if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+		rb_debug ("podcast update cancelled");
+		g_error_free (error);
+	} else {
+		/* set the error in the feed entry, if one exists */
+		entry = rhythmdb_entry_lookup_by_location (pd->priv->db, channel->url);
+		if (entry != NULL && rhythmdb_entry_get_entry_type (entry) == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
+			g_value_init (&v, G_TYPE_STRING);
+			g_value_set_string (&v, error->message);
+			rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &v);
+			g_value_unset (&v);
+
+			g_value_init (&v, G_TYPE_ULONG);
+			g_value_set_ulong (&v, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
+			rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &v);
+			g_value_unset (&v);
+
+			rhythmdb_commit (pd->priv->db);
+			existing = TRUE;
+		}
+
+		/* if this was a result of a direct user action, emit the error signal too */
+		if (update->automatic) {
+			gchar *error_msg;
+			error_msg = g_strdup_printf (_("There was a problem adding this podcast: %s.  Please verify the URL: %s"),
+						     error->message, channel->url);
+			g_signal_emit (pd,
+				       rb_podcast_manager_signals[FEED_PARSE_ERROR],
+				       0, channel->url, error_msg, existing);
+			g_free (error_msg);
+		}
+		g_error_free (error);
+	}
+
+	podcast_update_free (update);
+}
+
+static void
+start_feed_parse (RBPodcastManager *pd, RBPodcastUpdate *update)
+{
+	pd->priv->updating++;
+	if (pd->priv->updating == 1) {
+		g_object_notify (G_OBJECT (pd), "updating");
+	}
+
+	rb_podcast_parse_load_feed (update->channel, update->url, pd->priv->update_cancel, feed_parse_cb, update);
+}
+
+static void
+confirm_bad_mime_type_response_cb (GtkDialog *dialog, int response, RBPodcastUpdate *update)
+{
+	if (response == GTK_RESPONSE_YES) {
+		start_feed_parse (update->pd, update);
+	} else {
+		podcast_update_free (update);
+	}
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
+mime_type_check_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
+{
+	RBPodcastUpdate *update = user_data;
+	GFileInfo *file_info;
+	GtkWidget *dialog;
+	char *content_type;
+	GError *error = NULL;
+
+	file_info = g_file_query_info_finish (G_FILE (source_object), res, &error);
+	if (file_info == NULL) {
+		g_object_unref (source_object);
+		feed_parse_cb (update->channel, error, update);
+		return;
+	}
+
+	content_type = g_file_info_get_attribute_as_string (file_info, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE);
+	if (content_type != NULL
+	    && strstr (content_type, "html") == NULL
+	    && strstr (content_type, "xml") == NULL
+	    && strstr (content_type, "rss") == NULL
+	    && strstr (content_type, "opml") == NULL) {
+		dialog = gtk_message_dialog_new (NULL, 0,
+						 GTK_MESSAGE_QUESTION,
+						 GTK_BUTTONS_YES_NO,
+						 _("The URL '%s' does not appear to be a podcast feed. "
+						 "It may be the wrong URL, or the feed may be broken. "
+						 "Would you like Rhythmbox to attempt to use it anyway?"),
+						 update->url);
+		gtk_widget_show_all (dialog);
+		g_signal_connect (dialog, "response", G_CALLBACK (confirm_bad_mime_type_response_cb), update);
+		g_clear_error (&error);
+	} else if (content_type != NULL && strstr (content_type, "opml") != NULL) {
+		update->channel->is_opml = TRUE;
+		start_feed_parse (update->pd, update);
+	} else {
+		start_feed_parse (update->pd, update);
+	}
+
+	g_free (content_type);
+	g_object_unref (file_info);
+	g_object_unref (source_object);
+}
 
 gboolean
 rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboolean automatic)
 {
-	RBPodcastUpdate *info;
+	RBPodcastUpdate *update;
 	RhythmDBEntry *entry;
 	GFile *feed;
 	char *feed_url;
-	gboolean existing_feed;
 
 	if (g_str_has_prefix (url, "feed://") || g_str_has_prefix (url, "itpc://")) {
 		char *tmp;
@@ -692,16 +821,14 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 		feed = g_file_new_for_uri (url);
 	}
 
-	/* hmm.  can we check if the GFile we got is something useful? */
-#if 0
-	if (valid_url == NULL) {
-		rb_error_dialog (NULL, _("Invalid URL"),
-				 _("The URL \"%s\" is not valid, please check it."), url);
-		return FALSE;
-	}
-#endif
+	feed_url = g_file_get_uri (feed);
 
-	feed_url = g_file_get_uri (feed);		/* not sure this buys us anything at all */
+	update = g_new0 (RBPodcastUpdate, 1);
+	update->pd = g_object_ref (pd);
+	update->url = feed_url;
+	update->automatic = automatic;
+	update->channel = g_new0 (RBPodcastChannel, 1);
+
 	entry = rhythmdb_entry_lookup_by_location (pd->priv->db, feed_url);
 	if (entry) {
 		GValue v = {0,};
@@ -710,143 +837,33 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 			rb_error_dialog (NULL, _("URL already added"),
 					 _("The URL \"%s\" has already been added as a radio station. "
 					 "If this is a podcast feed, please remove the radio station."), url);
+			g_object_unref (feed);
+			podcast_update_free (update);
 			return FALSE;
 		}
-		existing_feed = TRUE;
 
 		g_value_init (&v, G_TYPE_ULONG);
 		g_value_set_ulong (&v, RHYTHMDB_PODCAST_FEED_STATUS_UPDATING);
 		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &v);
 		rhythmdb_commit (pd->priv->db);
 		g_value_unset (&v);
+
+		start_feed_parse (pd, update);
+	} else if (rb_uri_could_be_podcast (feed_url, NULL)) {
+		rb_debug ("not checking mime type for %s", feed_url);
+		start_feed_parse (pd, update);
 	} else {
-		existing_feed = FALSE;
+		g_file_query_info_async (feed,
+					 G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+					 0,
+					 G_PRIORITY_DEFAULT,
+					 pd->priv->update_cancel,
+					 mime_type_check_cb,
+					 update);
 	}
 
-	info = g_new0 (RBPodcastUpdate, 1);
-	info->pd = g_object_ref (pd);
-	info->url = feed_url;
-	info->automatic = automatic;
-	info->existing_feed = existing_feed;
-	pd->priv->updating++;
-	if (pd->priv->updating == 1) {
-		g_object_notify (G_OBJECT (pd), "updating");
-	}
-
-	g_thread_new ("podcast-parse",
-		      (GThreadFunc) rb_podcast_manager_thread_parse_feed,
-		      info);
-
+	g_object_unref (feed);
 	return TRUE;
-}
-
-static void
-rb_podcast_manager_free_parse_result (RBPodcastManagerParseResult *result)
-{
-	rb_podcast_parse_channel_free (result->channel);
-	g_object_unref (result->pd);
-	g_clear_error (&result->error);
-	g_free (result);
-}
-
-static gboolean
-rb_podcast_manager_parse_complete_cb (RBPodcastManagerParseResult *result)
-{
-	if (result->pd->priv->shutdown) {
-		return FALSE;
-	}
-
-	if (result->error) {
-		rb_podcast_manager_handle_feed_error (result->pd,
-						      (char *)result->channel->url,
-						      result->error,
-						      (result->automatic == FALSE));
-	} else if (result->channel->is_opml) {
-		GList *l;
-
-		rb_debug ("Loading OPML feeds from %s", result->channel->url);
-
-		for (l = result->channel->posts; l != NULL; l = l->next) {
-			RBPodcastItem *item = l->data;
-			/* assume the feeds don't already exist */
-			rb_podcast_manager_subscribe_feed (result->pd, item->url, FALSE);
-		}
-	} else {
-		rb_podcast_manager_add_parsed_feed (result->pd, result->channel);
-	}
-	if (--result->pd->priv->updating == 0) {
-		g_object_notify (G_OBJECT (result->pd), "updating");
-	}
-
-	return FALSE;
-}
-
-static void
-confirm_bad_mime_type_response_cb (GtkDialog *dialog, int response, RBPodcastUpdate *info)
-{
-	if (response == GTK_RESPONSE_YES) {
-		/* set the 'existing feed' flag to avoid the mime type check */
-		info->existing_feed = TRUE;
-		g_thread_new ("podcast-parse",
-			      (GThreadFunc) rb_podcast_manager_thread_parse_feed,
-			      info);
-	} else {
-		g_free (info->url);
-		g_free (info);
-		if (--info->pd->priv->updating == 0) {
-			g_object_notify (G_OBJECT (info->pd), "updating");
-		}
-	}
-
-	gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
-static gboolean
-confirm_bad_mime_type (RBPodcastUpdate *info)
-{
-	GtkWidget *dialog;
-	dialog = gtk_message_dialog_new (NULL, 0,
-					 GTK_MESSAGE_QUESTION,
-					 GTK_BUTTONS_YES_NO,
-					 _("The URL '%s' does not appear to be a podcast feed. "
-					 "It may be the wrong URL, or the feed may be broken. "
-					 "Would you like Rhythmbox to attempt to use it anyway?"),
-					 info->url);
-	gtk_widget_show_all (dialog);
-	g_signal_connect (dialog, "response", G_CALLBACK (confirm_bad_mime_type_response_cb), info);
-	return FALSE;
-}
-
-static gpointer
-rb_podcast_manager_thread_parse_feed (RBPodcastUpdate *info)
-{
-	RBPodcastChannel *feed = g_new0 (RBPodcastChannel, 1);
-	RBPodcastManagerParseResult *result;
-
-	result = g_new0 (RBPodcastManagerParseResult, 1);
-	result->channel = feed;
-	result->pd = info->pd;		/* adopts our reference */
-	result->automatic = info->automatic;
-
-	g_clear_error (&result->error);
-
-	rb_debug ("attempting to parse feed %s", info->url);
-	if (rb_podcast_parse_load_feed (feed, info->url, info->existing_feed, &result->error) == FALSE) {
-		if (g_error_matches (result->error,
-				     RB_PODCAST_PARSE_ERROR,
-				     RB_PODCAST_PARSE_ERROR_MIME_TYPE)) {
-			g_idle_add ((GSourceFunc) confirm_bad_mime_type, info);
-			return NULL;
-		}
-	}
-
-	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
-			 (GSourceFunc) rb_podcast_manager_parse_complete_cb,
-			 result,
-			 (GDestroyNotify) rb_podcast_manager_free_parse_result);
-	g_free (info->url);
-	g_free (info);
-	return NULL;
 }
 
 RhythmDBEntry *
@@ -1598,45 +1615,6 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 	rhythmdb_commit (db);
 }
 
-static void
-rb_podcast_manager_handle_feed_error (RBPodcastManager *mgr,
-				      const char *url,
-				      GError *error,
-				      gboolean emit)
-{
-	RhythmDBEntry *entry;
-	GValue v = {0,};
-	gboolean existing = FALSE;
-
-	/* set the error in the feed entry, if one exists */
-	entry = rhythmdb_entry_lookup_by_location (mgr->priv->db, url);
-	if (entry != NULL && rhythmdb_entry_get_entry_type (entry) == RHYTHMDB_ENTRY_TYPE_PODCAST_FEED) {
-		g_value_init (&v, G_TYPE_STRING);
-		g_value_set_string (&v, error->message);
-		rhythmdb_entry_set (mgr->priv->db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &v);
-		g_value_unset (&v);
-
-		g_value_init (&v, G_TYPE_ULONG);
-		g_value_set_ulong (&v, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
-		rhythmdb_entry_set (mgr->priv->db, entry, RHYTHMDB_PROP_STATUS, &v);
-		g_value_unset (&v);
-
-		rhythmdb_commit (mgr->priv->db);
-		existing = TRUE;
-	}
-
-	/* if this was a result of a direct user action, emit the error signal too */
-	if (emit) {
-		gchar *error_msg;
-		error_msg = g_strdup_printf (_("There was a problem adding this podcast: %s.  Please verify the URL: %s"),
-					     error->message, url);
-		g_signal_emit (mgr,
-			       rb_podcast_manager_signals[PROCESS_ERROR],
-			       0, url, error_msg, existing);
-		g_free (error_msg);
-	}
-}
-
 void
 rb_podcast_manager_shutdown (RBPodcastManager *pd)
 {
@@ -1644,14 +1622,14 @@ rb_podcast_manager_shutdown (RBPodcastManager *pd)
 
 	g_assert (rb_is_main_thread ());
 
+	g_cancellable_cancel (pd->priv->update_cancel);
+
 	lst = g_list_reverse (g_list_copy (pd->priv->download_list));
 	for (l = lst; l != NULL; l = l->next) {
 		RBPodcastDownload *data = (RBPodcastDownload *) l->data;
 		cancel_download (data);
 	}
 	g_list_free (lst);
-
-	pd->priv->shutdown = TRUE;
 }
 
 char *

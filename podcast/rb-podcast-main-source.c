@@ -380,7 +380,7 @@ impl_constructed (GObject *object)
 				source, 0);
 
 	g_signal_connect_object (podcast_mgr,
-				 "process_error",
+				 "feed-parse-error",
 				 G_CALLBACK (feed_error_cb),
 				 source, 0);
 
