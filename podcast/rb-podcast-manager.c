@@ -46,6 +46,7 @@
 #include "rb-debug.h"
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
+#include "rhythmdb-query-result-list.h"
 #include "rb-podcast-parse.h"
 #include "rb-dialog.h"
 #include "rb-metadata.h"
@@ -619,46 +620,33 @@ rb_podcast_manager_start_update_timer (RBPodcastManager *pd)
 	}
 }
 
-static gboolean
-rb_podcast_manager_head_query_cb (GtkTreeModel *query_model,
-				  GtkTreePath *path,
-				  GtkTreeIter *iter,
-				  RBPodcastManager *manager)
-{
-        const char *uri;
-        RhythmDBEntry *entry;
-	guint status;
-
-        gtk_tree_model_get (query_model, iter, 0, &entry, -1);
-        uri = get_remote_location (entry);
-	status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
-
-	if (status == RHYTHMDB_PODCAST_FEED_STATUS_NORMAL)
-		rb_podcast_manager_subscribe_feed (manager, uri, TRUE);
-
-	rhythmdb_entry_unref (entry);
-
-        return FALSE;
-}
-
 void
 rb_podcast_manager_update_feeds (RBPodcastManager *pd)
 {
-	GtkTreeModel *query_model;
+	RhythmDBQueryResultList *list;
+        RhythmDBEntry *entry;
+        const char *uri;
+	guint status;
+	GList *l;
 
-	query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty (pd->priv->db));
-
+	list = rhythmdb_query_result_list_new ();
 	rhythmdb_do_full_query (pd->priv->db,
-				RHYTHMDB_QUERY_RESULTS (query_model),
+				RHYTHMDB_QUERY_RESULTS (list),
                                 RHYTHMDB_QUERY_PROP_EQUALS,
                                 RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
                                 RHYTHMDB_QUERY_END);
 
- 	gtk_tree_model_foreach (query_model,
-		                (GtkTreeModelForeachFunc) rb_podcast_manager_head_query_cb,
-                                pd);
+	l = rhythmdb_query_result_list_get_results (list);
+	for (; l != NULL; l = l->next) {
+		entry = l->data;
 
-	g_object_unref (query_model);
+		uri = get_remote_location (entry);
+		status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
+		if (status == RHYTHMDB_PODCAST_FEED_STATUS_NORMAL)
+			rb_podcast_manager_subscribe_feed (pd, uri, TRUE);
+	}
+
+	g_object_unref (list);
 }
 
 static gboolean
