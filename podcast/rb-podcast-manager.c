@@ -1737,8 +1737,6 @@ podcast_download_cb (GObject *source_object, GAsyncResult *res, gpointer data)
 	g_assert (pd->priv->active_download == download);
 	pd->priv->active_download = NULL;
 
-	download_info_free (download);
-
 	g_task_propagate_boolean (task, &error);
 	if (error) {
 		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) == FALSE) {
@@ -1765,6 +1763,8 @@ podcast_download_cb (GObject *source_object, GAsyncResult *res, gpointer data)
 	}
 
 	g_signal_emit (pd, rb_podcast_manager_signals[FINISH_DOWNLOAD], 0, download->entry);
+
+	download_info_free (download);
 
 	g_object_unref (task);
 	rb_podcast_manager_next_file (pd);
