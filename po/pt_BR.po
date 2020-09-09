@@ -21,23 +21,23 @@
 # Daniel S. Koda <danielskoda@gmail.com>, 2010.
 # Henrique P. Machado <hpmachado@gnome.org>, 2012.
 # Antonio Fernandes C. Neto <fernandesn@gnome.org>, 2013.
-# Enrico Nicoletto <liverig@gmail.com>, 2008, 2013, 2016
 # Rafael Fontenelle <rafaelff@gnome.org>, 2014-2020.
+# Enrico Nicoletto <liverig@gmail.com>, 2008, 2013, 2016, 2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2020-06-20 11:40+0000\n"
-"PO-Revision-Date: 2020-07-18 12:18-0300\n"
-"Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
+"POT-Creation-Date: 2020-09-02 12:52+0000\n"
+"PO-Revision-Date: 2020-09-09 19:04-0300\n"
+"Last-Translator: Enrico Nicoletto <liverig@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
-"X-Generator: Gtranslator 3.36.0\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.4.1\n"
 "X-Project-Style: gnome\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:649
@@ -984,7 +984,7 @@ msgstr "%d de %b de %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:581
-#: ../plugins/android/rb-android-source.c:715
+#: ../plugins/android/rb-android-source.c:729
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -1004,8 +1004,8 @@ msgstr "%d de %b de %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
 #: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
-#: ../podcast/rb-podcast-manager.c:2024
+#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1326
+#: ../podcast/rb-podcast-manager.c:1425
 #: ../podcast/rb-podcast-properties-dialog.c:641
 #: ../podcast/rb-podcast-properties-dialog.c:705
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
@@ -1176,17 +1176,17 @@ msgstr ""
 "Nenhuma área de armazenamento encontrada neste dispositivo. Você pode "
 "precisar desbloqueá-lo e habilitar MTP."
 
-#: ../plugins/android/rb-android-source.c:391
+#: ../plugins/android/rb-android-source.c:405
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "Varrendo %s"
 
-#: ../plugins/android/rb-android-source.c:414
+#: ../plugins/android/rb-android-source.c:428
 msgid "Error mounting Android device"
 msgstr "Erro ao montar o dispositivo Android"
 
-#: ../plugins/android/rb-android-source.c:809
+#: ../plugins/android/rb-android-source.c:823
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
 #: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
 #: ../sources/rb-transfer-target.c:182
@@ -2985,30 +2985,21 @@ msgstr "Erro no podcast"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Você gostaria de adicionar a fonte do podcast mesmo assim?"
 
-#: ../podcast/rb-podcast-manager.c:924
-msgid "Error creating podcast download directory"
-msgstr "Erro ao criar o diretório de downloads de podcast"
-
-#: ../podcast/rb-podcast-manager.c:925
-#, c-format
-msgid "Unable to create the download directory for %s: %s"
-msgstr "Falha ao criar o diretório de download para %s: %s"
-
-#: ../podcast/rb-podcast-manager.c:1044
+#: ../podcast/rb-podcast-manager.c:710
 msgid "Invalid URL"
 msgstr "URL inválido"
 
-#: ../podcast/rb-podcast-manager.c:1045
+#: ../podcast/rb-podcast-manager.c:711
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "O URL “%s” não é válido, por favor verifique-o."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1056
+#: ../podcast/rb-podcast-manager.c:722
 msgid "URL already added"
 msgstr "URL já adicionado"
 
-#: ../podcast/rb-podcast-manager.c:1057
+#: ../podcast/rb-podcast-manager.c:723
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3017,7 +3008,7 @@ msgstr ""
 "O URL “%s” já foi adicionado como uma estação de rádio. Se isso é uma fonte "
 "(“feed”) de podcast, por favor remova a estação de rádio."
 
-#: ../podcast/rb-podcast-manager.c:1157
+#: ../podcast/rb-podcast-manager.c:823
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3028,11 +3019,11 @@ msgstr ""
 "URL ou a fonte pode estar defeituosa. Você gostaria que o Rhythmbox tentasse "
 "usá-la mesmo assim?"
 
-#: ../podcast/rb-podcast-manager.c:1273
+#: ../podcast/rb-podcast-manager.c:939
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2239
+#: ../podcast/rb-podcast-manager.c:1642
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -4217,15 +4208,19 @@ msgstr "_Sim"
 msgid "_Open"
 msgstr "_Abrir"
 
-#: ../widgets/rb-encoding-settings.c:54
+#: ../widgets/rb-encoding-settings.c:55
 msgid "Constant bit rate"
 msgstr "Taxa de bits constante"
 
-#: ../widgets/rb-encoding-settings.c:55
+#: ../widgets/rb-encoding-settings.c:56
 msgid "Variable bit rate"
 msgstr "Taxa de bits variável"
 
-#: ../widgets/rb-encoding-settings.c:402
+#: ../widgets/rb-encoding-settings.c:57
+msgid "Constrained Variable bit rate"
+msgstr "Taxa de bits variável com restrição"
+
+#: ../widgets/rb-encoding-settings.c:404
 msgid "Default settings"
 msgstr "Configurações padrão"
 
@@ -4742,6 +4737,12 @@ msgstr "Na área de trabalho"
 #: ../widgets/rb-song-info.c:1340
 msgid "Unknown location"
 msgstr "Localização desconhecida"
+
+#~ msgid "Error creating podcast download directory"
+#~ msgstr "Erro ao criar o diretório de downloads de podcast"
+
+#~ msgid "Unable to create the download directory for %s: %s"
+#~ msgstr "Falha ao criar o diretório de download para %s: %s"
 
 #~ msgid "Search groups"
 #~ msgstr "Pesquisar grupos"
