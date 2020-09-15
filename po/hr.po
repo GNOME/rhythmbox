@@ -5,9 +5,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox 0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2020-02-02 01:04+0000\n"
-"PO-Revision-Date: 2020-02-09 18:16+0100\n"
-"Last-Translator: Milo Ivir <mail@milotype.de>\n"
+"POT-Creation-Date: 2020-09-02 12:52+0000\n"
+"PO-Revision-Date: 2020-09-15 18:45+0200\n"
+"Last-Translator: gogo <trebelnik2@gmail.com>\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
 "Language: hr\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Launchpad-Export-Date: 2016-11-23 20:44+0000\n"
-"X-Generator: Poedit 1.8.12\n"
+"X-Generator: Poedit 2.3\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:649
 #, c-format
@@ -103,7 +103,7 @@ msgid "My Top Rated"
 msgstr "Najpopularnije"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
 #: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2389
 msgid "Rhythmbox"
 msgstr "Rhytmbox"
@@ -956,7 +956,7 @@ msgstr "%b %d %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:581
-#: ../plugins/android/rb-android-source.c:715
+#: ../plugins/android/rb-android-source.c:729
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -976,8 +976,8 @@ msgstr "%b %d %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
 #: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
-#: ../podcast/rb-podcast-manager.c:2024
+#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1326
+#: ../podcast/rb-podcast-manager.c:1425
 #: ../podcast/rb-podcast-properties-dialog.c:641
 #: ../podcast/rb-podcast-properties-dialog.c:705
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
@@ -993,19 +993,19 @@ msgstr "%b %d %Y"
 #: ../shell/rb-shell-player.c:2714 ../shell/rb-shell-player.c:2716
 #: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
 #: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
-#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1274
-#: ../widgets/rb-header.c:1300 ../widgets/rb-song-info.c:950
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1275
+#: ../widgets/rb-header.c:1301 ../widgets/rb-song-info.c:950
 #: ../widgets/rb-song-info.c:962 ../widgets/rb-song-info.c:1234
 #: ../widgets/rb-song-info.c:1573
 msgid "Unknown"
 msgstr "Nepoznato"
 
-#: ../lib/rb-file-helpers.c:471
+#: ../lib/rb-file-helpers.c:475
 #, c-format
 msgid "Too many symlinks"
 msgstr "Previše simboličkih poveznica"
 
-#: ../lib/rb-file-helpers.c:1305
+#: ../lib/rb-file-helpers.c:1309
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Nemoguće doznati slobodan prostor na %s: %s"
@@ -1147,17 +1147,17 @@ msgstr ""
 "Nema pronađenih prostora pohrane na ovom uređaju. Trebate ga otključati i "
 "omogućiti MTP."
 
-#: ../plugins/android/rb-android-source.c:391
+#: ../plugins/android/rb-android-source.c:405
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "Pretraživanje %s"
 
-#: ../plugins/android/rb-android-source.c:414
+#: ../plugins/android/rb-android-source.c:428
 msgid "Error mounting Android device"
 msgstr "Greška montiranja Android uređaja"
 
-#: ../plugins/android/rb-android-source.c:809
+#: ../plugins/android/rb-android-source.c:823
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
 #: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
 #: ../sources/rb-transfer-target.c:182
@@ -1968,7 +1968,7 @@ msgid "Browse various local and Internet media sources"
 msgstr "Pretražujte razne lokalne i Internet izvore multimedije"
 
 #: ../plugins/grilo/rb-grilo-source.c:403
-#: ../plugins/soundcloud/soundcloud.py:492
+#: ../plugins/soundcloud/soundcloud.py:486
 msgid "Fetch more tracks"
 msgstr "Preuzmi više zapisa"
 
@@ -2512,34 +2512,34 @@ msgstr "http://www.magnatune.com/info/"
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:192
+#: ../plugins/magnatune/MagnatuneSource.py:190
 msgid "Couldn't download album"
 msgstr "Nemoguće preuzimanje albuma"
 
-#: ../plugins/magnatune/MagnatuneSource.py:193
+#: ../plugins/magnatune/MagnatuneSource.py:191
 msgid "You must have a library location set to download an album."
 msgstr ""
 "Kako biste mogli preuzeti album, morate imati određenu lokaciju fonoteke."
 
-#: ../plugins/magnatune/MagnatuneSource.py:255
+#: ../plugins/magnatune/MagnatuneSource.py:253
 msgid "Unable to load catalog"
 msgstr "Nemoguće učitati katalog"
 
-#: ../plugins/magnatune/MagnatuneSource.py:256
+#: ../plugins/magnatune/MagnatuneSource.py:254
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr "Rhythmbox nije razumio Magantunov katalog, prijavite grešku."
 
-#: ../plugins/magnatune/MagnatuneSource.py:277
-#: ../plugins/magnatune/MagnatuneSource.py:334
+#: ../plugins/magnatune/MagnatuneSource.py:275
+#: ../plugins/magnatune/MagnatuneSource.py:332
 msgid "Loading Magnatune catalog"
 msgstr "Učitavanje Magnatunovog kataloga"
 
-#: ../plugins/magnatune/MagnatuneSource.py:406
+#: ../plugins/magnatune/MagnatuneSource.py:404
 msgid "Download Error"
 msgstr "Greška pri preuzimanju"
 
-#: ../plugins/magnatune/MagnatuneSource.py:407
+#: ../plugins/magnatune/MagnatuneSource.py:405
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2550,11 +2550,11 @@ msgstr ""
 "Magnatune poslužitelj je odgovorio:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1628
+#: ../plugins/magnatune/MagnatuneSource.py:408 ../widgets/rb-entry-view.c:1628
 msgid "Error"
 msgstr "Greška"
 
-#: ../plugins/magnatune/MagnatuneSource.py:411
+#: ../plugins/magnatune/MagnatuneSource.py:409
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -2565,7 +2565,7 @@ msgstr ""
 "Tekst greške je:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:500
+#: ../plugins/magnatune/MagnatuneSource.py:492
 msgid "Downloading from Magnatune"
 msgstr "Preuzimanje s Magnatuna"
 
@@ -2677,7 +2677,7 @@ msgid "from <i>%s</i>"
 msgstr "s albuma <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:416
-#: ../widgets/rb-header.c:366
+#: ../widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "Trenutno se ne svira"
 
@@ -2835,25 +2835,13 @@ msgstr "Pretraži korisnike na SoundCloudu"
 msgid "SoundCloud Users"
 msgstr "SoundCloud korisnici"
 
-#: ../plugins/soundcloud/soundcloud.py:117
-msgid "Search groups"
-msgstr "Pretraži grupe"
-
-#: ../plugins/soundcloud/soundcloud.py:118
-msgid "Search groups on SoundCloud"
-msgstr "Pretraži grupe na SoundCloudu"
-
-#: ../plugins/soundcloud/soundcloud.py:119
-msgid "SoundCloud Groups"
-msgstr "SoundCloud grupe"
-
-#: ../plugins/soundcloud/soundcloud.py:442
-#: ../plugins/soundcloud/soundcloud.py:450
+#: ../plugins/soundcloud/soundcloud.py:436
+#: ../plugins/soundcloud/soundcloud.py:444
 #, python-format
 msgid "View '%(title)s' on SoundCloud"
 msgstr "Pogledaj '%(title)s' na SoundCloudu"
 
-#: ../plugins/soundcloud/soundcloud.py:458
+#: ../plugins/soundcloud/soundcloud.py:452
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
 msgstr "Pogledaj '%(container)s' na SoundCloudu"
@@ -2951,30 +2939,21 @@ msgstr "Greška u podcastu"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Želite li svejedno dodati podcast kanal?"
 
-#: ../podcast/rb-podcast-manager.c:924
-msgid "Error creating podcast download directory"
-msgstr "Greška pri stvaranju podcast mape preuzimanja"
-
-#: ../podcast/rb-podcast-manager.c:925
-#, c-format
-msgid "Unable to create the download directory for %s: %s"
-msgstr "Nemoguće stvoriti mapu preuzimanja za %s: %s"
-
-#: ../podcast/rb-podcast-manager.c:1044
+#: ../podcast/rb-podcast-manager.c:710
 msgid "Invalid URL"
 msgstr "Nevažeći URL"
 
-#: ../podcast/rb-podcast-manager.c:1045
+#: ../podcast/rb-podcast-manager.c:711
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL \"%s\" je neispravan, provjerite ga."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1056
+#: ../podcast/rb-podcast-manager.c:722
 msgid "URL already added"
 msgstr "URL je već dodan"
 
-#: ../podcast/rb-podcast-manager.c:1057
+#: ../podcast/rb-podcast-manager.c:723
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2983,7 +2962,7 @@ msgstr ""
 "URL \"%s\" je već dodan kao radio stanica. Ako je ovo podcast kanal, "
 "uklonite ga s popisa radio stanica."
 
-#: ../podcast/rb-podcast-manager.c:1157
+#: ../podcast/rb-podcast-manager.c:823
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2993,11 +2972,11 @@ msgstr ""
 "Izgleda da URL %s nije pudcast kanal. Možda URL nije ispravan, ili izvor "
 "nije ispravan. Želite li svejedno koristiti ovaj izvor?"
 
-#: ../podcast/rb-podcast-manager.c:1273
+#: ../podcast/rb-podcast-manager.c:939
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2239
+#: ../podcast/rb-podcast-manager.c:1642
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Dogodio se problem pri dodavanju ovog podcasta: %s. Provjerite URL: %s"
@@ -4098,11 +4077,11 @@ msgid "Play Queue"
 msgstr "Redoslijed reprodukcije"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:924
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
 msgid "by"
 msgstr "od"
 
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:926
 msgid "from"
 msgstr "iz"
 
@@ -4183,15 +4162,19 @@ msgstr "_Da"
 msgid "_Open"
 msgstr "_Otvori"
 
-#: ../widgets/rb-encoding-settings.c:54
+#: ../widgets/rb-encoding-settings.c:55
 msgid "Constant bit rate"
 msgstr "Nepromjenjiva brzina prijenosa"
 
-#: ../widgets/rb-encoding-settings.c:55
+#: ../widgets/rb-encoding-settings.c:56
 msgid "Variable bit rate"
 msgstr "Promjenjiva brzina prijenosa"
 
-#: ../widgets/rb-encoding-settings.c:402
+#: ../widgets/rb-encoding-settings.c:57
+msgid "Constrained Variable bit rate"
+msgstr "Ograničena brzina prijenosa"
+
+#: ../widgets/rb-encoding-settings.c:404
 msgid "Default settings"
 msgstr "Uobičajene postavke"
 
@@ -4269,13 +4252,13 @@ msgid "Drop artwork here"
 msgstr "Ispusti sliku albuma ovdje"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1214
+#: ../widgets/rb-header.c:1215
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1225
+#: ../widgets/rb-header.c:1226
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
@@ -4713,3 +4696,18 @@ msgstr "Na radnoj površini"
 #: ../widgets/rb-song-info.c:1340
 msgid "Unknown location"
 msgstr "Nepoznata lokacija"
+
+#~ msgid "Search groups"
+#~ msgstr "Pretraži grupe"
+
+#~ msgid "Search groups on SoundCloud"
+#~ msgstr "Pretraži grupe na SoundCloudu"
+
+#~ msgid "SoundCloud Groups"
+#~ msgstr "SoundCloud grupe"
+
+#~ msgid "Error creating podcast download directory"
+#~ msgstr "Greška pri stvaranju podcast mape preuzimanja"
+
+#~ msgid "Unable to create the download directory for %s: %s"
+#~ msgstr "Nemoguće stvoriti mapu preuzimanja za %s: %s"
