@@ -9,15 +9,16 @@
 # Launchpad Contributors, 2013.
 # Simge Sezgin <simgesezgin88@gmail.com>, 2015.
 # Muhammet Kara <muhammetk@gmail.com>, 2011, 2012, 2013, 2014, 2016.
-# Emin Tufan Çetin <etcetin@gmail.com>, 2017, 2018.
+# Sabri Ünal <libreajans@gmail.com>, 2020.
+# Emin Tufan Çetin <etcetin@gmail.com>, 2017, 2018, 2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2020-02-02 01:04+0000\n"
-"PO-Revision-Date: 2020-02-19 16:31+0300\n"
-"Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
+"POT-Creation-Date: 2020-09-02 12:52+0000\n"
+"PO-Revision-Date: 2020-09-21 00:30+0300\n"
+"Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>\n"
 "Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
@@ -35,7 +36,7 @@ msgstr "Şuna yazmak için geçici dosya oluşturulamadı: %s"
 #: ../backends/gstreamer/rb-encoder-gst.c:703
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
-msgstr "%s üzerine yazmak için bir GStreamer alıcı ögesi oluşturulamadı"
+msgstr "%s üzerine yazmak için GStreamer alıcı ögesi oluşturulamadı"
 
 #. Translators: the parameter here is an error message
 #. ?
@@ -111,7 +112,7 @@ msgid "My Top Rated"
 msgstr "En İyiler"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
 #: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2389
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
@@ -128,7 +129,7 @@ msgid ""
 "network shares, podcasts, radio streams, portable music devices (including "
 "phones), and internet music services such as Last.fm and Magnatune."
 msgstr ""
-"Rhythmbox GNOME masaüstünde iyi çalışmak üzere tasarlanmış bir müzik yönetim "
+"Rhythmbox GNOME masaüstünde iyi çalışmak üzere tasarlanmış müzik yönetim "
 "uygulamasıdır. Bilgisayarınzda kayıtlı müziğe ek olarak, ağ paylaşımlarını, "
 "podcast’ları, radyo akışlarını, taşınabilir müzik aygıtlarını (telefonlar "
 "dahil), ve Last.fm ve Magnatune gibi internet müzik servislerini de "
@@ -139,7 +140,7 @@ msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
 msgstr ""
-"Rhythmbox GTK+ ve GStreamer temelli bir Özgür yazılımdır, ve Python veya C "
+"Rhythmbox GTK+ ve GStreamer temelli Özgür yazılımdır, ve Python veya C "
 "ile yazılan eklentilerle geliştirilebilir."
 
 #: ../data/rhythmbox.desktop.in.in.h:2
@@ -268,7 +269,7 @@ msgstr "Kendiliğinden güncellenen çalma listesi oluştur:"
 
 #: ../data/ui/create-playlist.ui.h:6
 msgid "A_dd if any criteria are matched"
-msgstr "Herhangi bir ölçüt eşleşirse _ekle"
+msgstr "Herhangi ölçüt eşleşirse _ekle"
 
 #: ../data/ui/create-playlist.ui.h:7 ../widgets/rb-uri-dialog.c:161
 msgid "_Add"
@@ -966,7 +967,7 @@ msgstr "%d %b %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:581
-#: ../plugins/android/rb-android-source.c:715
+#: ../plugins/android/rb-android-source.c:729
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -986,8 +987,8 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
 #: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
-#: ../podcast/rb-podcast-manager.c:2024
+#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1326
+#: ../podcast/rb-podcast-manager.c:1425
 #: ../podcast/rb-podcast-properties-dialog.c:641
 #: ../podcast/rb-podcast-properties-dialog.c:705
 #: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
@@ -1003,19 +1004,19 @@ msgstr "%d %b %Y"
 #: ../shell/rb-shell-player.c:2714 ../shell/rb-shell-player.c:2716
 #: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
 #: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
-#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1274
-#: ../widgets/rb-header.c:1300 ../widgets/rb-song-info.c:950
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1275
+#: ../widgets/rb-header.c:1301 ../widgets/rb-song-info.c:950
 #: ../widgets/rb-song-info.c:962 ../widgets/rb-song-info.c:1234
 #: ../widgets/rb-song-info.c:1573
 msgid "Unknown"
 msgstr "Bilinmeyen"
 
-#: ../lib/rb-file-helpers.c:471
+#: ../lib/rb-file-helpers.c:475
 #, c-format
 msgid "Too many symlinks"
 msgstr "Çok fazla simgesel bağ"
 
-#: ../lib/rb-file-helpers.c:1305
+#: ../lib/rb-file-helpers.c:1309
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "%s içindeki boş alan bulunamıyor: %s"
@@ -1055,19 +1056,19 @@ msgstr "%d:%02d:%02d / %d:%02d:%02d"
 #: ../metadata/rb-metadata-gst.c:509
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
-msgstr "Etiketler, birden çok akış içerdiği için bu dosyaya yazılamadı"
+msgstr "Etiketler, birden çok akış içerdiğinden bu dosyaya yazılamadı"
 
 #: ../metadata/rb-metadata-gst.c:549
 #, c-format
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
 msgstr ""
-"Etiketler, desteklenen bir biçimde kodlanmadığı için bu dosyaya yazılamadı"
+"Etiketler, desteklenen biçimde kodlanmadığından bu dosyaya yazılamadı"
 
 #: ../metadata/rb-metadata-gst.c:681
 #, c-format
 msgid "Failed to create a source element; check your installation"
-msgstr "Bir kaynak ögesi oluşturulamadı; kurulumunuzu denetleyin"
+msgstr "Kaynak ögesi oluşturulamadı; kurulumunuzu denetleyin"
 
 #: ../metadata/rb-metadata-gst.c:691
 #, c-format
@@ -1152,17 +1153,17 @@ msgstr ""
 "Bu aygıtta depolama alanı bulunamadı. Kilidini açmanız ve MTP’yi "
 "etkinleştirmeniz gerekebilir."
 
-#: ../plugins/android/rb-android-source.c:391
+#: ../plugins/android/rb-android-source.c:405
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "%s Taranıyor"
 
-#: ../plugins/android/rb-android-source.c:414
+#: ../plugins/android/rb-android-source.c:428
 msgid "Error mounting Android device"
 msgstr "Android aygıt bağlanırken hata oluştu"
 
-#: ../plugins/android/rb-android-source.c:809
+#: ../plugins/android/rb-android-source.c:823
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
 #: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
 #: ../sources/rb-transfer-target.c:182
@@ -1347,7 +1348,7 @@ msgstr "Gönderim istatistikleri"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:11
 msgid "Create a Radio Station"
-msgstr "Bir Radyo İstasyonu Kur"
+msgstr "Radyo İstasyonu Oluştur"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:12
 msgid "Type:"
@@ -1666,7 +1667,7 @@ msgstr "Rhythmbox, ses diskini kaydedemedi"
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:201
 #, c-format
 msgid "Unable to build an audio track list"
-msgstr "Bir ses parçası listesi oluşturulamadı"
+msgstr "Ses parçası listesi oluşturulamadı"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:212
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:404
@@ -1863,7 +1864,7 @@ msgstr "%s’in Müziği"
 #: ../plugins/daap/rb-daap-source.c:476
 #, c-format
 msgid "The music share '%s' requires a password to connect"
-msgstr "'%s' müzik paylaşımı bağlanmak için bir parola gerektiriyor"
+msgstr "'%s' müzik paylaşımı bağlanmak için parola gerektiriyor"
 
 #: ../plugins/daap/rb-daap-source.c:542
 msgid "Retrieving songs from music share"
@@ -1971,7 +1972,7 @@ msgid "Browse various local and Internet media sources"
 msgstr "Çeşitli yerel ve internet ortam kaynaklarına göz atın"
 
 #: ../plugins/grilo/rb-grilo-source.c:403
-#: ../plugins/soundcloud/soundcloud.py:492
+#: ../plugins/soundcloud/soundcloud.py:486
 msgid "Fetch more tracks"
 msgstr "Daha çok parça getir"
 
@@ -2075,12 +2076,12 @@ msgid ""
 "initialize the iPod, please fill in the information below. If the device is "
 "not an iPod, or you do not wish to initialize it, please click cancel."
 msgstr ""
-"Rhytmbox ilklendirilmemiş veya hatalı iPod olabilecek bir aygıt tespit etti. "
+"Rhytmbox ilklendirilmemiş veya hatalı iPod olabilecek aygıt saptadı. "
 "Rhytmbox aygıtı kullanmadan önce bu aygıt ilklendirilmelidir; ancak bu işlem "
-"var olan bir şarkıya ya da meta bilgisine zarar verebilir. Eğer Rhytmbox’ın "
+"var olan şarkıya ya da meta bilgisine zarar verebilir. Eğer Rhytmbox’ın "
 "bu iPod’u ilklendirmesini istiyorsanız, aşağıdaki bilgileri doldurun. Eğer "
-"bu aygıt bir iPod değilse ya da bu aygıtı ilklendirmek istemiyorsanız, "
-"lütfen iptal’e tıklayın."
+"bu aygıt iPod değilse ya da bu aygıtı ilklendirmek istemiyorsanız, "
+"lütfen iptale tıklayın."
 
 #: ../plugins/ipod/ipod-init.ui.h:7
 msgid "Do you want to initialize your iPod?"
@@ -2174,7 +2175,7 @@ msgstr "İstanyon özelliği değiştirilemedi"
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
 msgstr ""
-"Öyle bir istasyon zaten var olduğundan, istasyon adresi %s olarak "
+"İstasyon var olduğundan, istasyon adresi %s olarak "
 "değiştirilemedi"
 
 #: ../plugins/iradio/station-properties.ui.h:5
@@ -2279,7 +2280,7 @@ msgstr "Magnatune çevrimiçi müzik mağazası"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:2
 msgid "Magnatune is an online record label that is not evil.\n"
-msgstr "Magnatune iyi niyetli bir çevrimiçi müzik şirketidir.\n"
+msgstr "Magnatune, iyi niyetli çevrim içi müzik şirketidir.\n"
 
 #: ../plugins/magnatune/magnatune-loading.ui.h:4
 msgid "    * Free listening of all songs"
@@ -2472,15 +2473,15 @@ msgstr "Magnatune Bilgisi"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:33
 msgid "I don't have a Magnatune account"
-msgstr "Bir magnatune hesabım yok"
+msgstr "Magnatune hesabım yok"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:34
 msgid "I have a streaming account"
-msgstr "Bir internet üzerinden yayın hesabım var"
+msgstr "İnternet üzerinden yayın hesabım var"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:35
 msgid "I have a download account"
-msgstr "Bir indirme hesabım var"
+msgstr "İndirme hesabım var"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:36
 msgid "Username:"
@@ -2492,11 +2493,11 @@ msgstr "Parola:"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:38
 msgid "Preferred audio _format:"
-msgstr "Tercih edilen ses _biçimi:"
+msgstr "Yeğlenen ses _biçimi:"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:39
 msgid "Get an account at "
-msgstr "Buradan bir hesap al: "
+msgstr "Şuradan hesap al: "
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:40
 msgid "http://magnatune.com/compare_plans"
@@ -2514,60 +2515,60 @@ msgstr "http://www.magnatune.com/info/"
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:192
+#: ../plugins/magnatune/MagnatuneSource.py:190
 msgid "Couldn't download album"
 msgstr "Albüm indirilemedi"
 
-#: ../plugins/magnatune/MagnatuneSource.py:193
+#: ../plugins/magnatune/MagnatuneSource.py:191
 msgid "You must have a library location set to download an album."
-msgstr "Albüm indirmek için bir kütüphane konumu ayarlamış olmanız gerekir."
+msgstr "Albüm indirmek için kütüphane konumu ayarlamış olmanız gerekir."
 
-#: ../plugins/magnatune/MagnatuneSource.py:255
+#: ../plugins/magnatune/MagnatuneSource.py:253
 msgid "Unable to load catalog"
 msgstr "Katalog yüklenemedi"
 
-#: ../plugins/magnatune/MagnatuneSource.py:256
+#: ../plugins/magnatune/MagnatuneSource.py:254
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
-"Rhythmbox Magnatune kataloğunu algılayamadı, lütfen bir hata raporu giriniz."
+"Rhythmbox Magnatune kataloğunu algılayamadı, lütfen hata raporu giriniz."
 
-#: ../plugins/magnatune/MagnatuneSource.py:277
-#: ../plugins/magnatune/MagnatuneSource.py:334
+#: ../plugins/magnatune/MagnatuneSource.py:275
+#: ../plugins/magnatune/MagnatuneSource.py:332
 msgid "Loading Magnatune catalog"
 msgstr "Magnatune kataloğu yükleniyor"
 
-#: ../plugins/magnatune/MagnatuneSource.py:406
+#: ../plugins/magnatune/MagnatuneSource.py:404
 msgid "Download Error"
 msgstr "İndirme Hatası"
 
-#: ../plugins/magnatune/MagnatuneSource.py:407
+#: ../plugins/magnatune/MagnatuneSource.py:405
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
 "The Magnatune server returned:\n"
 "%s"
 msgstr ""
-"İndirme yetkilendirilmeye çalışılırken bir hata oluştu.\n"
+"İndirme yetkilendirilmeye çalışılırken hata oluştu.\n"
 "Magnatune sunucusu aşağıdaki yanıtı döndürdü:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1628
+#: ../plugins/magnatune/MagnatuneSource.py:408 ../widgets/rb-entry-view.c:1628
 msgid "Error"
 msgstr "Hata"
 
-#: ../plugins/magnatune/MagnatuneSource.py:411
+#: ../plugins/magnatune/MagnatuneSource.py:409
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
 "The error text is:\n"
 "%s"
 msgstr ""
-"Albüm indirilmeye çalışılırken bir hata oluştu.\n"
+"Albüm indirilmeye çalışılırken hata oluştu.\n"
 "Hata metni:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:500
+#: ../plugins/magnatune/MagnatuneSource.py:492
 msgid "Downloading from Magnatune"
 msgstr "Magnatune’dan İndiriliyor"
 
@@ -2680,7 +2681,7 @@ msgid "from <i>%s</i>"
 msgstr "<i>%s</i> albümünden söylüyor."
 
 #: ../plugins/notification/rb-notification-plugin.c:416
-#: ../widgets/rb-header.c:366
+#: ../widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "Çalmıyor"
 
@@ -2723,7 +2724,7 @@ msgid ""
 "use the default password ('rhythmbox')."
 msgstr ""
 "Tamam’a bastıktan sonra Rhythmbox, winpdb ya da rpdb2 ile bağlanmanızı "
-"bekleyecek. Eğer %s dosyasında bir hata ayıklayıcı parolası atamadıysanız, "
+"bekleyecek. Eğer %s dosyasında hata ayıklayıcı parolası atamadıysanız, "
 "öntanımlı ('rhythmbox') parolasını kullanacaktır."
 
 #. ex:noet:ts=8:
@@ -2766,7 +2767,7 @@ msgstr "ReplayGain"
 
 #: ../plugins/replaygain/replaygain.plugin.in.h:2
 msgid "Use ReplayGain to provide a consistent playback volume"
-msgstr "Tutarlı bir çalma sesi düzeyi sağlamak için ReplayGain’i kullan"
+msgstr "Tutarlı çalma sesi düzeyi sağlamak için ReplayGain’i kullan"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:1
 msgid "Radio (equal loudness for all tracks)"
@@ -2837,25 +2838,13 @@ msgstr "SoundCloud’da kullanıcı ara"
 msgid "SoundCloud Users"
 msgstr "SoundCloud Kullanıcıları"
 
-#: ../plugins/soundcloud/soundcloud.py:117
-msgid "Search groups"
-msgstr "Gruplarda ara"
-
-#: ../plugins/soundcloud/soundcloud.py:118
-msgid "Search groups on SoundCloud"
-msgstr "SoundCloud’da grup ara"
-
-#: ../plugins/soundcloud/soundcloud.py:119
-msgid "SoundCloud Groups"
-msgstr "SoundCloud Grupları"
-
-#: ../plugins/soundcloud/soundcloud.py:442
-#: ../plugins/soundcloud/soundcloud.py:450
+#: ../plugins/soundcloud/soundcloud.py:436
+#: ../plugins/soundcloud/soundcloud.py:444
 #, python-format
 msgid "View '%(title)s' on SoundCloud"
 msgstr "'%(title)s' başlıkları SoundCloud'da Görüntüle"
 
-#: ../plugins/soundcloud/soundcloud.py:458
+#: ../plugins/soundcloud/soundcloud.py:452
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
 msgstr "'%(container)s' SoundCloud'da Görüntüle"
@@ -2951,39 +2940,30 @@ msgstr "Ortam akışında hata"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Ortam akışı kaynağını yine de eklemek istiyor musunuz?"
 
-#: ../podcast/rb-podcast-manager.c:924
-msgid "Error creating podcast download directory"
-msgstr "Ortam akışı indirme dizini oluşturulurken hata"
-
-#: ../podcast/rb-podcast-manager.c:925
-#, c-format
-msgid "Unable to create the download directory for %s: %s"
-msgstr "%s için indirme dizini oluşturulamadı: %s"
-
-#: ../podcast/rb-podcast-manager.c:1044
+#: ../podcast/rb-podcast-manager.c:710
 msgid "Invalid URL"
 msgstr "Geçersiz URL"
 
-#: ../podcast/rb-podcast-manager.c:1045
+#: ../podcast/rb-podcast-manager.c:711
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "\"%s\" adresi geçersiz, lütfen denetleyin."
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1056
+#: ../podcast/rb-podcast-manager.c:722
 msgid "URL already added"
 msgstr "URL zaten eklenmiş"
 
-#: ../podcast/rb-podcast-manager.c:1057
+#: ../podcast/rb-podcast-manager.c:723
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr ""
-"\"%s\" adresi zaten bir radyo istasyonu olarak eklenmiş. Eğer bu bir ortam "
+"\"%s\" adresi zaten radyo istasyonu olarak eklenmiş. Eğer bu bir ortam "
 "akışı ise lütfen radyo istasyonunu kaldırın."
 
-#: ../podcast/rb-podcast-manager.c:1157
+#: ../podcast/rb-podcast-manager.c:823
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2994,11 +2974,11 @@ msgstr ""
 "bozuk olabilir. Rhythmbox uygulamasının yine de bunu kullanmayı denemesini "
 "ister misiniz?"
 
-#: ../podcast/rb-podcast-manager.c:1273
+#: ../podcast/rb-podcast-manager.c:939
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2239
+#: ../podcast/rb-podcast-manager.c:1642
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
@@ -3124,7 +3104,7 @@ msgstr "Programın sürümünü göster"
 
 #: ../remote/dbus/rb-client.c:97
 msgid "Don't start a new instance of Rhythmbox"
-msgstr "Yeni bir Rhythmbox penceresi başlatma"
+msgstr "Yeni Rhythmbox penceresi başlatma"
 
 #: ../remote/dbus/rb-client.c:98
 msgid "Quit Rhythmbox"
@@ -3454,7 +3434,7 @@ msgid ""
 "The database was created by a later version of Rhythmbox.  This version of "
 "Rhythmbox cannot read the database."
 msgstr ""
-"Veri tabanı Rhythmbox’un ileri bir sürümü ile oluşturulmuş.  Rhythmbox’un bu "
+"Veri tabanı Rhythmbox’un ileri sürümü ile oluşturulmuş.  Rhythmbox’un bu "
 "sürümü veri tabanını okuyamıyor."
 
 #: ../sample-plugins/sample-python/sample-python.plugin.in.h:1
@@ -3463,7 +3443,7 @@ msgstr "Python Örnek Eklentisi"
 
 #: ../sample-plugins/sample-python/sample-python.plugin.in.h:2
 msgid "A sample plugin in Python with no features"
-msgstr "Pyhton ile yazılmış özelliksiz bir örnek eklenti"
+msgstr "Pyhton ile yazılmış özelliksiz örnek eklenti"
 
 #: ../sample-plugins/sample-python/sample-python.py:20
 msgid "Python Source"
@@ -3477,7 +3457,7 @@ msgstr "Örnek Eklenti"
 
 #: ../sample-plugins/sample/sample.plugin.in.h:2
 msgid "A sample plugin in C with no features"
-msgstr "C ile yazılmış özelliksiz bir örnek eklenti"
+msgstr "C ile yazılmış özelliksiz örnek eklenti"
 
 #: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:1
 msgid "Vala Sample Plugin"
@@ -3485,13 +3465,14 @@ msgstr "Vala Örnek Eklentisi"
 
 #: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:2
 msgid "A sample plugin in Vala with no features"
-msgstr "Vala ile yazılmış özelliksiz bir örnek eklenti"
+msgstr "Vala ile yazılmış özelliksiz örnek eklenti"
 
 #: ../shell/rb-application.c:166
 msgid "translator-credits"
 msgstr ""
 "Enver ALTIN <enver.altin@frontsite.com.tr>\n"
 "Muhammet Kara <muhammetk@gmail.com>"
+"Emin Tufan Çetin <etcetin@gmail.com>"
 
 #: ../shell/rb-application.c:169
 msgid ""
@@ -3557,7 +3538,7 @@ msgstr "Hata ayıklama çıktısını etkinleştir"
 
 #: ../shell/rb-application.c:556
 msgid "Enable debug output matching a specified string"
-msgstr "Belirli bir dizgeyle eşleşen hata ayıklama çıktısını etkinleştir"
+msgstr "Belirli dizgeyle eşleşen hata ayıklama çıktısını etkinleştir"
 
 #: ../shell/rb-application.c:557
 msgid "Do not update the library with file changes"
@@ -3655,7 +3636,7 @@ msgstr "Bilinmeyen çalma listesi: %s"
 #: ../shell/rb-playlist-manager.c:1546 ../shell/rb-playlist-manager.c:1586
 #, c-format
 msgid "Playlist %s is an automatic playlist"
-msgstr "%s, bir otomatik çalma listesidir"
+msgstr "%s, otomatik çalma listesidir"
 
 #: ../shell/rb-shell.c:2088
 msgid "Error while saving song information"
@@ -3828,7 +3809,7 @@ msgid_plural ""
 "supported by the target device but no suitable encoding profiles are "
 "available"
 msgstr[0] ""
-"%d dosyası hedef aygıtın desteklediği bir biçime dönüştürülmesi gerekirken "
+"%d dosyası hedef aygıtın desteklediği biçime dönüştürülmesi gerekirken "
 "uygun kodlama profilleri kullanılabilir olmadığundan aktarılamaz"
 
 #. XXX should provide the option of picking a different format?
@@ -3852,7 +3833,7 @@ msgid_plural ""
 "by the target device:\n"
 "%s"
 msgstr[0] ""
-"%d dosyayı hedef aygıtın desteklediği bir biçime dönüştürmek için ek yazılım "
+"%d dosyayı hedef aygıtın desteklediği biçime dönüştürmek için ek yazılım "
 "gerekiyor:\n"
 "%s"
 
@@ -4056,11 +4037,11 @@ msgid "Play Queue"
 msgstr "Çalma Kuyruğu"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:924
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
 msgid "by"
 msgstr "tarafından"
 
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:926
 msgid "from"
 msgstr "kimden"
 
@@ -4141,15 +4122,19 @@ msgstr "_Evet"
 msgid "_Open"
 msgstr "_Aç"
 
-#: ../widgets/rb-encoding-settings.c:54
+#: ../widgets/rb-encoding-settings.c:55
 msgid "Constant bit rate"
 msgstr "Sabit bit oranı"
 
-#: ../widgets/rb-encoding-settings.c:55
+#: ../widgets/rb-encoding-settings.c:56
 msgid "Variable bit rate"
 msgstr "Değişken bit oranı"
 
-#: ../widgets/rb-encoding-settings.c:402
+#: ../widgets/rb-encoding-settings.c:57
+msgid "Constrained Variable bit rate"
+msgstr "Kısıtlı Değişken bit oranı"
+
+#: ../widgets/rb-encoding-settings.c:404
 msgid "Default settings"
 msgstr "Öntanımlı ayarlar"
 
@@ -4188,7 +4173,7 @@ msgstr "000 kbps"
 
 #: ../widgets/rb-entry-view.c:1542
 msgid "Rating"
-msgstr "Popülerlik"
+msgstr "Gözdelik"
 
 #: ../widgets/rb-entry-view.c:1564
 msgid "Play Count"
@@ -4227,13 +4212,13 @@ msgid "Drop artwork here"
 msgstr "Çizimi buraya sürükleyin"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1214
+#: ../widgets/rb-header.c:1215
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1225
+#: ../widgets/rb-header.c:1226
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
@@ -4657,6 +4642,21 @@ msgstr "Masaüstünde"
 #: ../widgets/rb-song-info.c:1340
 msgid "Unknown location"
 msgstr "Bilinmeyen konum"
+
+#~ msgid "Search groups"
+#~ msgstr "Gruplarda ara"
+
+#~ msgid "Search groups on SoundCloud"
+#~ msgstr "SoundCloud’da grup ara"
+
+#~ msgid "SoundCloud Groups"
+#~ msgstr "SoundCloud Grupları"
+
+#~ msgid "Error creating podcast download directory"
+#~ msgstr "Ortam akışı indirme dizini oluşturulurken hata"
+
+#~ msgid "Unable to create the download directory for %s: %s"
+#~ msgstr "%s için indirme dizini oluşturulamadı: %s"
 
 #~ msgid "_Add Music"
 #~ msgstr "Müzik _Ekle"
