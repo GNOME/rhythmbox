@@ -797,12 +797,20 @@ rb_property_view_set_selection (RBPropertyView *view,
 			gtk_tree_selection_select_iter (view->priv->selection, &iter);
 			path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->prop_model), &iter);
 			if (path != NULL) {
-				gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view->priv->treeview),
-							      path, NULL, TRUE,
-							      0.5, 0.0);
+				GtkTreePath *start_path, *end_path;
+
+				if (gtk_tree_view_get_visible_range (GTK_TREE_VIEW (view->priv->treeview), &start_path, &end_path)) {
+					if (gtk_tree_path_compare (path, start_path) < 0 ||
+					    gtk_tree_path_compare (path, end_path) > 0) {
+						gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view->priv->treeview),
+									      path, NULL, TRUE,
+									      0.5, 0.0);
+					}
+					gtk_tree_path_free (start_path);
+					gtk_tree_path_free (end_path);
+				}
 				gtk_tree_path_free (path);
 			}
-
 		}
 	}
 
