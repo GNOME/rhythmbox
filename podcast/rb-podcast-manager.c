@@ -1922,6 +1922,28 @@ get_local_download_uri (RBPodcastManager *pd, RBPodcastDownload *download)
 	return local_file_uri;
 }
 
+static void
+finish_download (RBPodcastManager *pd, RBPodcastDownload *download, guint64 remote_size, guint64 downloaded)
+{
+	GValue val = {0,};
+
+	rb_debug ("download of %s completed", get_remote_location (download->entry));
+
+	g_value_init (&val, G_TYPE_UINT64);
+	g_value_set_uint64 (&val, downloaded);
+	rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_FILE_SIZE, &val);
+	g_value_unset (&val);
+
+	if (remote_size == 0 || downloaded >= remote_size) {
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_COMPLETE);
+		rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_STATUS, &val);
+		g_value_unset (&val);
+	}
+
+	rb_podcast_manager_save_metadata (pd, download->entry);
+}
+
 static gboolean
 retry_on_error (GError *error)
 {
@@ -1979,6 +2001,61 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 	gboolean retry;
 	gboolean eof;
 	int retries;
+	GValue val = {0,};
+	char *dl_uri;
+	char *sane_dl_uri;
+
+	/*
+	 * first do a HEAD request to get the remote file size and determine the local
+	 * file name.
+	 */
+	retries = 5;
+	remote_size = 0;
+	while (retries-- > 0) {
+		if (download->in_stream != NULL) {
+			g_input_stream_close (download->in_stream, NULL, NULL);
+			g_clear_object (&download->in_stream);
+		}
+		g_clear_object (&download->request);
+		g_clear_error (&error);
+
+		download->request = soup_message_new ("HEAD", get_remote_location (download->entry));
+		download->in_stream = soup_session_send (pd->priv->soup_session, download->request, download->cancel, &error);
+		if (error == NULL && !SOUP_STATUS_IS_SUCCESSFUL (download->request->status_code)) {
+			error = g_error_new (SOUP_HTTP_ERROR, download->request->status_code, "%s", download->request->reason_phrase);
+		}
+
+		if (error == NULL) {
+			remote_size = soup_message_headers_get_content_length (download->request->response_headers);
+			rb_debug ("remote file size %ld", remote_size);
+			break;
+		} else if (retry_on_error (error) == FALSE) {
+			rb_debug ("giving up after error from http request: %s", error->message);
+			g_task_return_error (task, error);
+			break;
+		}
+
+		rb_debug ("retrying after error from http request: %s", error->message);
+		g_usleep (DOWNLOAD_RETRY_DELAY * G_USEC_PER_SEC);
+	}
+
+	if (error != NULL) {
+		g_task_return_error (task, error);
+		return;
+	}
+
+	dl_uri = get_local_download_uri (pd, download);
+	sane_dl_uri = rb_sanitize_uri_for_filesystem (dl_uri, NULL);
+	g_free (dl_uri);
+
+	rb_debug ("download URI: %s", sane_dl_uri);
+
+	if (rb_uri_create_parent_dirs (sane_dl_uri, &error) == FALSE) {
+		rb_debug ("error creating parent dirs: %s", error->message);
+		g_task_return_error (task, error);
+		g_free (sane_dl_uri);
+		return;
+	}
 
 	/*
 	 * if we already have a local download location, get the file size
@@ -1987,36 +2064,61 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 	 * to detect changes in the remote file better.
 	 */
 	local_file_uri = get_download_location (download->entry);
+	downloaded = 0;
 	if (local_file_uri != NULL) {
-		rb_debug ("checking local copy at %s", local_file_uri);
 		download->destination = g_file_new_for_uri (local_file_uri);
-		if (g_file_query_exists (download->destination, NULL)) {
-			GFileInfo *dest_info;
+		if (strcmp (local_file_uri, sane_dl_uri) == 0) {
+			rb_debug ("checking local copy at %s", local_file_uri);
+			if (g_file_query_exists (download->destination, NULL)) {
+				GFileInfo *dest_info;
 
-			dest_info = g_file_query_info (download->destination,
-						       G_FILE_ATTRIBUTE_STANDARD_SIZE,
-						       G_FILE_QUERY_INFO_NONE,
-						       NULL,
-						       &error);
-			if (error != NULL) {
-				g_task_return_error (task, error);
-				return;
+				dest_info = g_file_query_info (download->destination,
+							       G_FILE_ATTRIBUTE_STANDARD_SIZE,
+							       G_FILE_QUERY_INFO_NONE,
+							       NULL,
+							       &error);
+				if (error != NULL) {
+					g_task_return_error (task, error);
+					g_free (sane_dl_uri);
+					return;
+				}
+
+				downloaded = g_file_info_get_attribute_uint64 (dest_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+				g_object_unref (dest_info);
+			} else {
+				rb_debug ("local copy not found");
 			}
-
-			downloaded = g_file_info_get_attribute_uint64 (dest_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
-			g_object_unref (dest_info);
 		} else {
-			/* clear download location? */
-			rb_debug ("local copy not found");
-			downloaded = 0;
+			rb_debug ("local download uri has changed, removing old file at %s", local_file_uri);
+			g_file_delete (download->destination, download->cancel, NULL);
+			download->destination = NULL;
 		}
-	} else {
-		rb_debug ("no local copy location set");
+	}
+
+	if (download->destination == NULL) {
+		/* set the download location for the episode */
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, sane_dl_uri);
+		set_download_location (pd->priv->db, download->entry, &val);
+		g_value_unset (&val);
+
+		rhythmdb_commit (pd->priv->db);
+
+		download->destination = g_file_new_for_uri (sane_dl_uri);
+	}
+	g_free (sane_dl_uri);
+
+	if (downloaded == remote_size) {
+		rb_debug ("local file is the same size as the download (%" G_GUINT64_FORMAT ")",
+			  downloaded);
+		finish_download (pd, download, remote_size, downloaded);
+		g_task_return_boolean (task, TRUE);
+		return;
+	} else if (downloaded > remote_size) {
+		rb_debug ("replacing local file as it's larger than the download");
 		downloaded = 0;
 	}
 
-	remote_size = -1;
-	retries = 5;
 	while (retries-- > 0) {
 		if (download->in_stream != NULL) {
 			g_input_stream_close (download->in_stream, NULL, NULL);
@@ -2063,50 +2165,6 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 				remote_size = soup_message_headers_get_content_length (download->request->response_headers);
 				rb_debug ("server didn't honour range request, starting again, total %ld", remote_size);
 			}
-		} else {
-			remote_size = soup_message_headers_get_content_length (download->request->response_headers);
-			rb_debug ("total download size %ld", remote_size);
-		}
-
-		if (downloaded == remote_size) {
-			rb_debug ("local file is the same size as the download (%" G_GUINT64_FORMAT ")",
-				  downloaded);
-			break;
-		} else if (downloaded > remote_size) {
-			rb_debug ("replacing local file as it's larger than the download");
-
-			downloaded = 0;
-			continue;
-		}
-
-		if (download->destination == NULL) {
-			GValue val = {0,};
-			char *dl_uri;
-			char *sane_dl_uri;
-
-			dl_uri = get_local_download_uri (pd, download);
-			sane_dl_uri = rb_sanitize_uri_for_filesystem (dl_uri, NULL);
-			g_free (dl_uri);
-
-			rb_debug ("download URI: %s", sane_dl_uri);
-
-			if (rb_uri_create_parent_dirs (sane_dl_uri, &error) == FALSE) {
-				rb_debug ("error creating parent dirs: %s", error->message);
-				g_task_return_error (task, error);
-				g_free (sane_dl_uri);
-				return;
-			}
-
-			/* set the download location for the episode */
-			g_value_init (&val, G_TYPE_STRING);
-			g_value_set_string (&val, sane_dl_uri);
-			set_download_location (pd->priv->db, download->entry, &val);
-			g_value_unset (&val);
-
-			rhythmdb_commit (pd->priv->db);
-
-			download->destination = g_file_new_for_uri (sane_dl_uri);
-			g_free (sane_dl_uri);
 		}
 
 		/* open the local file */
@@ -2191,23 +2249,7 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 	if (error != NULL) {
 		g_task_return_error (task, error);
 	} else {
-		GValue val = {0,};
-
-		rb_debug ("download of %s completed", get_remote_location (download->entry));
-
-		g_value_init (&val, G_TYPE_UINT64);
-		g_value_set_uint64 (&val, downloaded);
-		rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_FILE_SIZE, &val);
-		g_value_unset (&val);
-
-		if (remote_size == 0 || downloaded >= remote_size) {
-			g_value_init (&val, G_TYPE_ULONG);
-			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_COMPLETE);
-			rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_STATUS, &val);
-			g_value_unset (&val);
-		}
-
-		rb_podcast_manager_save_metadata (pd, download->entry);
+		finish_download (pd, download, remote_size, downloaded);
 		g_task_return_boolean (task, TRUE);
 	}
 
