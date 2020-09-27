@@ -2058,65 +2058,64 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 	}
 
 	/*
-	 * if we already have a local download location, get the file size
-	 * (and check if it's even still there).
-	 * we could also store the modification time and etag reported by the server
-	 * to detect changes in the remote file better.
+	 * if we've previously attempted to download this item, and now our
+	 * idea of the local uri is different, delete the old file.
 	 */
 	local_file_uri = get_download_location (download->entry);
-	downloaded = 0;
 	if (local_file_uri != NULL) {
-		download->destination = g_file_new_for_uri (local_file_uri);
-		if (strcmp (local_file_uri, sane_dl_uri) == 0) {
-			rb_debug ("checking local copy at %s", local_file_uri);
-			if (g_file_query_exists (download->destination, NULL)) {
-				GFileInfo *dest_info;
+		if (strcmp (local_file_uri, sane_dl_uri) != 0) {
+			GFile *del;
 
-				dest_info = g_file_query_info (download->destination,
-							       G_FILE_ATTRIBUTE_STANDARD_SIZE,
-							       G_FILE_QUERY_INFO_NONE,
-							       NULL,
-							       &error);
-				if (error != NULL) {
-					g_task_return_error (task, error);
-					g_free (sane_dl_uri);
-					return;
-				}
-
-				downloaded = g_file_info_get_attribute_uint64 (dest_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
-				g_object_unref (dest_info);
-			} else {
-				rb_debug ("local copy not found");
-			}
-		} else {
+			del = g_file_new_for_uri (local_file_uri);
 			rb_debug ("local download uri has changed, removing old file at %s", local_file_uri);
-			g_file_delete (download->destination, download->cancel, NULL);
-			download->destination = NULL;
+			g_file_delete (del, download->cancel, NULL);
+			g_object_unref (del);
 		}
 	}
 
-	if (download->destination == NULL) {
-		/* set the download location for the episode */
-		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_string (&val, sane_dl_uri);
-		set_download_location (pd->priv->db, download->entry, &val);
-		g_value_unset (&val);
+	/* set the download location for the episode */
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, sane_dl_uri);
+	set_download_location (pd->priv->db, download->entry, &val);
+	g_value_unset (&val);
 
-		rhythmdb_commit (pd->priv->db);
+	rhythmdb_commit (pd->priv->db);
 
-		download->destination = g_file_new_for_uri (sane_dl_uri);
-	}
+	/* check for an existing partial download */
+	downloaded = 0;
+	rb_debug ("checking for local copy at %s", sane_dl_uri);
+	download->destination = g_file_new_for_uri (sane_dl_uri);
 	g_free (sane_dl_uri);
 
-	if (downloaded == remote_size) {
-		rb_debug ("local file is the same size as the download (%" G_GUINT64_FORMAT ")",
-			  downloaded);
-		finish_download (pd, download, remote_size, downloaded);
-		g_task_return_boolean (task, TRUE);
-		return;
-	} else if (downloaded > remote_size) {
-		rb_debug ("replacing local file as it's larger than the download");
-		downloaded = 0;
+	if (g_file_query_exists (download->destination, NULL)) {
+		GFileInfo *dest_info;
+
+		dest_info = g_file_query_info (download->destination,
+					       G_FILE_ATTRIBUTE_STANDARD_SIZE,
+					       G_FILE_QUERY_INFO_NONE,
+					       NULL,
+					       &error);
+		if (error != NULL) {
+			g_task_return_error (task, error);
+			return;
+		}
+
+		downloaded = g_file_info_get_attribute_uint64 (dest_info, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+		g_object_unref (dest_info);
+		if (downloaded == remote_size) {
+			rb_debug ("local file is the same size as the download (%" G_GUINT64_FORMAT ")",
+				  downloaded);
+			finish_download (pd, download, remote_size, downloaded);
+			g_task_return_boolean (task, TRUE);
+			return;
+		} else if (downloaded > remote_size) {
+			rb_debug ("replacing local file as it's larger than the download");
+			downloaded = 0;
+		} else {
+			rb_debug ("local file size %" G_GUINT64_FORMAT, downloaded);
+		}
+	} else {
+		rb_debug ("local copy not found");
 	}
 
 	while (retries-- > 0) {
@@ -2180,10 +2179,10 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 							       G_FILE_CREATE_NONE,
 							       download->cancel,
 							       &error);
-			downloaded = 0;
 		}
 
 		if (error != NULL) {
+			rb_debug ("error opening local file: %s", error->message);
 			g_task_return_error (task, error);
 			return;
 		}
