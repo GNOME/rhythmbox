@@ -2073,10 +2073,15 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 		}
 	}
 
-	/* set the download location for the episode */
+	/* set the download location for the episode, set progress to 0% */
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, sane_dl_uri);
 	set_download_location (pd->priv->db, download->entry, &val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_ULONG);
+	g_value_set_ulong (&val, 0);
+	rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_STATUS, &val);
 	g_value_unset (&val);
 
 	rhythmdb_commit (pd->priv->db);
