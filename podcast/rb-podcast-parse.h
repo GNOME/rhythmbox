@@ -79,7 +79,6 @@ GType	rb_podcast_item_get_type (void);
 typedef void (*RBPodcastParseCallback) (RBPodcastChannel *data, GError *error, gpointer user_data);
 
 void	rb_podcast_parse_load_feed (RBPodcastChannel *data,
-				    const char *url,
 				    GCancellable *cancellable,
 				    RBPodcastParseCallback callback,
 				    gpointer user_data);

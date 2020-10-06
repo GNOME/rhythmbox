@@ -280,7 +280,6 @@ update_feed_status (RBPodcastAddDialog *dialog)
 
 typedef struct {
 	RBPodcastAddDialog *dialog;
-	char *url;
 	RBPodcastChannel *channel;
 	gboolean existing;
 	gboolean single;
@@ -293,12 +292,13 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 {
 	ParseData *data = user_data;
 
+	g_assert (channel == data->channel);
+
 	if (error != NULL) {
 		/* fake up a channel with just the url as the title, allowing the user
 		 * to subscribe to the podcast anyway.
 		 */
-		data->channel->url = g_strdup (data->url);
-		data->channel->title = g_strdup (data->url);
+		channel->title = g_strdup (channel->url);
 		g_error_free (error);
 	}
 
@@ -307,8 +307,8 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 		rb_podcast_parse_channel_free (data->channel);
 		g_object_unref (data->dialog);
 		g_clear_error (&data->error);
-		g_free (data->url);
 		g_free (data);
+		return;
 	}
 
 	if (data->error != NULL) {
@@ -336,23 +336,18 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 		update_feed_status (data->dialog);
 		rb_podcast_parse_channel_free (data->channel);
 	} else if (data->existing) {
-		/* find the row for the feed, replace the channel */
 		GtkTreeIter iter;
 		gboolean found = FALSE;
 
+		/* find the row for the feed */
 		if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (data->dialog->priv->feed_model), &iter)) {
 			do {
-				RBPodcastChannel *channel;
+				RBPodcastChannel *rchannel;
 				gtk_tree_model_get (GTK_TREE_MODEL (data->dialog->priv->feed_model), &iter,
-						    FEED_COLUMN_PARSED_FEED, &channel,
+						    FEED_COLUMN_PARSED_FEED, &rchannel,
 						    -1);
-				if (g_strcmp0 (channel->url, data->url) == 0) {
-					gtk_list_store_set (data->dialog->priv->feed_model,
-							    &iter,
-							    FEED_COLUMN_PARSED_FEED, data->channel,
-							    -1);
+				if (g_strcmp0 (rchannel->url, channel->url) == 0) {
 					found = TRUE;
-					rb_podcast_parse_channel_free (channel);
 					break;
 				}
 			} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (data->dialog->priv->feed_model), &iter));
@@ -382,24 +377,41 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 
 	g_object_unref (data->dialog);
 	g_clear_error (&data->error);
-	g_free (data->url);
 	g_free (data);
 }
 
 static void
-parse_in_thread (RBPodcastAddDialog *dialog, const char *text, gboolean existing, gboolean single)
+parse_search_text (RBPodcastAddDialog *dialog, const char *text)
+{
+	ParseData *data;
+	RBPodcastChannel *channel;
+
+	channel = g_new0 (RBPodcastChannel, 1);
+	channel->url = g_strdup (text);
+
+	data = g_new0 (ParseData, 1);
+	data->dialog = g_object_ref (dialog);
+	data->channel = channel;
+	data->existing = FALSE;
+	data->single = TRUE;
+	data->reset_count = dialog->priv->reset_count;
+
+	rb_podcast_parse_load_feed (data->channel, NULL, parse_cb, data);
+}
+
+static void
+parse_search_result (RBPodcastAddDialog *dialog, RBPodcastChannel *channel)
 {
 	ParseData *data;
 
 	data = g_new0 (ParseData, 1);
 	data->dialog = g_object_ref (dialog);
-	data->url = g_strdup (text);
-	data->channel = g_new0 (RBPodcastChannel, 1);
-	data->existing = existing;
-	data->single = single;
+	data->channel = channel;
+	data->existing = TRUE;
+	data->single = FALSE;
 	data->reset_count = dialog->priv->reset_count;
 
-	rb_podcast_parse_load_feed (data->channel, data->url, NULL, parse_cb, data);
+	rb_podcast_parse_load_feed (channel, NULL, parse_cb, data);
 }
 
 static void
@@ -450,14 +462,14 @@ search_cb (RBSearchEntry *entry, const char *text, RBPodcastAddDialog *dialog)
 	/* if the entered text looks like a feed URL, parse it directly */
 	for (i = 0; i < G_N_ELEMENTS (podcast_uri_prefixes); i++) {
 		if (g_str_has_prefix (text, podcast_uri_prefixes[i])) {
-			parse_in_thread (dialog, text, FALSE, TRUE);
+			parse_search_text (dialog, text);
 			return;
 		}
 	}
 
 	/* not really sure about this one */
 	if (g_path_is_absolute (text)) {
-		parse_in_thread (dialog, text, FALSE, TRUE);
+		parse_search_text (dialog, text);
 		return;
 	}
 
@@ -558,7 +570,7 @@ feed_selection_changed_cb (GtkTreeSelection *selection, RBPodcastAddDialog *dial
 
 		if (channel->posts == NULL) {
 			rb_debug ("parsing feed %s to get posts", channel->url);
-			parse_in_thread (dialog, channel->url, TRUE, FALSE);
+			parse_search_result (dialog, channel);
 		} else {
 			add_posts_for_feed (dialog, channel);
 		}

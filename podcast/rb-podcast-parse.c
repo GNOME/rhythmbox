@@ -64,20 +64,27 @@ playlist_metadata_foreach (const char *key,
 	RBPodcastChannel *channel = (RBPodcastChannel *) data;
 
 	if (strcmp (key, TOTEM_PL_PARSER_FIELD_TITLE) == 0) {
+		g_free (channel->title);
 		channel->title = g_strdup (value);
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_LANGUAGE) == 0) {
+		g_free (channel->lang);
 		channel->lang = g_strdup (value);
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_DESCRIPTION) == 0) {
+		g_free (channel->description);
 		channel->description = g_strdup (value);
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_AUTHOR) == 0) {
+		g_free (channel->author);
 		channel->author = g_strdup (value);
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_CONTACT) == 0) {
+		g_free (channel->contact);
 		channel->contact = g_strdup (value);
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_IMAGE_URI) == 0) {
+		g_free (channel->img);
 		channel->img = g_strdup (value);
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_PUB_DATE) == 0) {
 		channel->pub_date = totem_pl_parser_parse_date (value, FALSE);
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_COPYRIGHT) == 0) {
+		g_free (channel->copyright);
 		channel->copyright = g_strdup (value);
 	}
 }
@@ -191,15 +198,12 @@ parse_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 
 void
 rb_podcast_parse_load_feed (RBPodcastChannel *channel,
-			    const char *feed_url,
 			    GCancellable *cancellable,
 			    RBPodcastParseCallback callback,
 			    gpointer user_data)
 {
 	TotemPlParser *plparser;
 	RBPodcastParseData *data;
-
-	channel->url = g_strdup (feed_url);
 
 	data = g_new0 (RBPodcastParseData, 1);
 	data->channel = channel;

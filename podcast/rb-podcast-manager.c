@@ -95,7 +95,6 @@ typedef struct
 typedef struct
 {
 	RBPodcastManager *pd;
-	char *url;
 	gboolean automatic;
 	RBPodcastChannel *channel;
 	GError *error;
@@ -672,7 +671,6 @@ podcast_update_free (RBPodcastUpdate *update)
 
 	g_clear_error (&update->error);
 	rb_podcast_parse_channel_free (update->channel);
-	g_free (update->url);
 	g_free (update);
 }
 
@@ -744,7 +742,7 @@ start_feed_parse (RBPodcastManager *pd, RBPodcastUpdate *update)
 		g_object_notify (G_OBJECT (pd), "updating");
 	}
 
-	rb_podcast_parse_load_feed (update->channel, update->url, pd->priv->update_cancel, feed_parse_cb, update);
+	rb_podcast_parse_load_feed (update->channel, pd->priv->update_cancel, feed_parse_cb, update);
 }
 
 static void
@@ -787,7 +785,7 @@ mime_type_check_cb (GObject *source_object, GAsyncResult *res, gpointer user_dat
 						 _("The URL '%s' does not appear to be a podcast feed. "
 						 "It may be the wrong URL, or the feed may be broken. "
 						 "Would you like Rhythmbox to attempt to use it anyway?"),
-						 update->url);
+						 update->channel->url);
 		gtk_widget_show_all (dialog);
 		g_signal_connect (dialog, "response", G_CALLBACK (confirm_bad_mime_type_response_cb), update);
 		g_clear_error (&error);
@@ -825,9 +823,9 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 
 	update = g_new0 (RBPodcastUpdate, 1);
 	update->pd = g_object_ref (pd);
-	update->url = feed_url;
 	update->automatic = automatic;
 	update->channel = g_new0 (RBPodcastChannel, 1);
+	update->channel->url = g_strdup (feed_url);
 
 	entry = rhythmdb_entry_lookup_by_location (pd->priv->db, feed_url);
 	if (entry) {

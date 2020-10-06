@@ -122,7 +122,8 @@ main (int argc, char **argv)
 
 	ml = g_main_loop_new (NULL, FALSE);
 	data = g_new0 (RBPodcastChannel, 1);
-	rb_podcast_parse_load_feed (data, argv[1], NULL, parse_cb, ml);
+	data->url = g_strdup (argv[1]);
+	rb_podcast_parse_load_feed (data, NULL, parse_cb, ml);
 
 	g_main_loop_run (ml);
 
