@@ -2031,7 +2031,6 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 			break;
 		} else if (retry_on_error (error) == FALSE) {
 			rb_debug ("giving up after error from http request: %s", error->message);
-			g_task_return_error (task, error);
 			break;
 		}
 
