@@ -455,14 +455,27 @@ rb_rating_button_press_cb (GtkWidget *widget,
 static gboolean
 rb_rating_set_rating_cb (RBRating *rating, gdouble score)
 {
-	rb_rating_set_rating (rating, score);
+	g_signal_emit (G_OBJECT (rating), rb_rating_signals[RATED], 0, score);
+
 	return TRUE;
 }
 
 static gboolean
 rb_rating_adjust_rating_cb (RBRating *rating, gdouble adjust)
 {
-	rb_rating_set_rating (rating, rating->priv->rating + adjust);
+	gdouble new_rating;
+
+	new_rating = rating->priv->rating + adjust;
+
+	/* clip to the rating range */
+	if (new_rating > RB_RATING_MAX_SCORE) {
+		new_rating = RB_RATING_MAX_SCORE;
+	} else if (new_rating < 0.0) {
+		new_rating = 0.0;
+	}
+
+	g_signal_emit (G_OBJECT (rating), rb_rating_signals[RATED], 0, new_rating);
+
 	return TRUE;
 }
 
