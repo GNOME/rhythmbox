@@ -1758,6 +1758,10 @@ podcast_download_cb (GObject *source_object, GAsyncResult *res, gpointer data)
 			rhythmdb_commit (pd->priv->db);
 		} else {
 			rb_debug ("download of %s was cancelled", get_remote_location (download->entry));
+			g_value_init (&val, G_TYPE_ULONG);
+			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_PAUSED);
+			rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_STATUS, &val);
+			g_value_unset (&val);
 		}
 
 		g_clear_error (&error);
@@ -2251,6 +2255,10 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 	}
 
 	if (error != NULL) {
+		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			rb_debug ("deleting cancelled download");
+			g_file_delete (download->destination, NULL, NULL);
+		}
 		g_task_return_error (task, error);
 	} else {
 		finish_download (pd, download, remote_size, downloaded);
