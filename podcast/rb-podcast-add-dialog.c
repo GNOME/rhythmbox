@@ -690,6 +690,7 @@ impl_constructed (GObject *object)
 	RhythmDBQuery *query;
 	RhythmDBQueryModel *query_model;
 	const char *episode_strings[3];
+	int xpad, ypad;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_add_dialog_parent_class, constructed, object);
 	dialog = RB_PODCAST_ADD_DIALOG (object);
@@ -741,7 +742,11 @@ impl_constructed (GObject *object)
 						       G_TYPE_ULONG);	/* date */
 	gtk_tree_view_set_model (GTK_TREE_VIEW (dialog->priv->feed_view), GTK_TREE_MODEL (dialog->priv->feed_model));
 
-	column = gtk_tree_view_column_new_with_attributes (_("Title"), gtk_cell_renderer_pixbuf_new (), "pixbuf", FEED_COLUMN_IMAGE, NULL);
+	renderer = gtk_cell_renderer_pixbuf_new ();
+	gtk_cell_renderer_get_padding (renderer, &xpad, &ypad);
+	gtk_cell_renderer_set_fixed_size (renderer, PODCAST_IMAGE_SIZE + (xpad * 2), PODCAST_IMAGE_SIZE + (ypad * 2));
+
+	column = gtk_tree_view_column_new_with_attributes (_("Title"), renderer, "pixbuf", FEED_COLUMN_IMAGE, NULL);
 	renderer = gtk_cell_renderer_text_new ();
 	g_object_set (renderer, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
 	gtk_tree_view_column_pack_start (column, renderer, TRUE);
