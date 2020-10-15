@@ -67,7 +67,7 @@ typedef struct
 GType                   rb_podcast_manager_get_type    		(void);
 RBPodcastManager*      	rb_podcast_manager_new         		(RhythmDB *db);
 void                    rb_podcast_manager_download_entry  	(RBPodcastManager *pd, RhythmDBEntry *entry);
-void		        rb_podcast_manager_cancel_download	(RBPodcastManager *pd, RhythmDBEntry *entry);
+gboolean	        rb_podcast_manager_cancel_download	(RBPodcastManager *pd, RhythmDBEntry *entry);
 void 			rb_podcast_manager_update_feeds 	(RBPodcastManager *pd);
 void                    rb_podcast_manager_start_sync  		(RBPodcastManager *pd);
 void			rb_podcast_manager_delete_download	(RBPodcastManager *pd, RhythmDBEntry *entry);

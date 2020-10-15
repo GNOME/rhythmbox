@@ -453,6 +453,7 @@ podcast_download_cancel_action_cb (GSimpleAction *action, GVariant *parameter, g
 
 	lst = rb_entry_view_get_selected_entries (posts);
 	g_value_init (&val, G_TYPE_ULONG);
+	g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_PAUSED);
 
 	while (lst != NULL) {
 		RhythmDBEntry *entry  = (RhythmDBEntry *) lst->data;
@@ -460,9 +461,9 @@ podcast_download_cancel_action_cb (GSimpleAction *action, GVariant *parameter, g
 
 		if ((status > 0 && status < RHYTHMDB_PODCAST_STATUS_COMPLETE) ||
 		    status == RHYTHMDB_PODCAST_STATUS_WAITING) {
-			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_PAUSED);
-			rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
-			rb_podcast_manager_cancel_download (source->priv->podcast_mgr, entry);
+			if (rb_podcast_manager_cancel_download (source->priv->podcast_mgr, entry) == FALSE) {
+				rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
+			}
 		}
 
 		lst = lst->next;

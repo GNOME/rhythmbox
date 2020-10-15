@@ -166,7 +166,7 @@ static void download_task				(GTask *task,
 							 gpointer task_data,
 							 GCancellable *cancel);
 static void download_info_free				(RBPodcastDownload *data);
-static void cancel_download				(RBPodcastDownload *pd);
+static gboolean cancel_download				(RBPodcastDownload *pd);
 static void rb_podcast_manager_start_update_timer 	(RBPodcastManager *pd);
 
 G_DEFINE_TYPE (RBPodcastManager, rb_podcast_manager, G_TYPE_OBJECT)
@@ -1239,7 +1239,7 @@ rb_podcast_manager_delete_download (RBPodcastManager *pd, RhythmDBEntry *entry)
 	g_object_unref (file);
 }
 
-void
+gboolean
 rb_podcast_manager_cancel_download (RBPodcastManager *pd, RhythmDBEntry *entry)
 {
 	GList *lst;
@@ -1248,10 +1248,11 @@ rb_podcast_manager_cancel_download (RBPodcastManager *pd, RhythmDBEntry *entry)
 	for (lst = pd->priv->download_list; lst != NULL; lst = lst->next) {
 		RBPodcastDownload *data = (RBPodcastDownload *) lst->data;
 		if (data->entry == entry) {
-			cancel_download (data);
-			return;
+			return cancel_download (data);
 		}
 	}
+
+	return FALSE;
 }
 
 static void
@@ -2260,7 +2261,7 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 }
 
 
-static void
+static gboolean
 cancel_download (RBPodcastDownload *data)
 {
 	g_assert (rb_is_main_thread ());
@@ -2271,9 +2272,11 @@ cancel_download (RBPodcastDownload *data)
 		g_cancellable_cancel (data->cancel);
 
 		/* download data will be cleaned up after the task returns */
+		return TRUE;
 	} else {
 		/* destroy download data */
 		data->pd->priv->download_list = g_list_remove (data->pd->priv->download_list, data);
 		download_info_free (data);
+		return FALSE;
 	}
 }
