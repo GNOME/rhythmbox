@@ -1969,14 +1969,16 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 	guint64 downloaded;
 	gboolean retry;
 	gboolean eof;
+	goffset start, end, total;
 	int retries;
 	GValue val = {0,};
 	char *dl_uri;
 	char *sane_dl_uri;
 
 	/*
-	 * first do a HEAD request to get the remote file size and determine the local
-	 * file name.
+	 * first request to get the remote file size and determine the local file name.
+	 * some podcast hosts don't handle HEAD requests properly, so instead do a GET
+	 * for only the first byte.
 	 */
 	retries = 5;
 	remote_size = 0;
@@ -1988,14 +1990,19 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 		g_clear_object (&download->request);
 		g_clear_error (&error);
 
-		download->request = soup_message_new ("HEAD", get_remote_location (download->entry));
+		download->request = soup_message_new ("GET", get_remote_location (download->entry));
+		soup_message_headers_set_range (download->request->request_headers, 0, 0);
 		download->in_stream = soup_session_send (pd->priv->soup_session, download->request, download->cancel, &error);
 		if (error == NULL && !SOUP_STATUS_IS_SUCCESSFUL (download->request->status_code)) {
 			error = g_error_new (SOUP_HTTP_ERROR, download->request->status_code, "%s", download->request->reason_phrase);
 		}
 
 		if (error == NULL) {
-			remote_size = soup_message_headers_get_content_length (download->request->response_headers);
+			if (soup_message_headers_get_content_range (download->request->response_headers, &start, &end, &total)) {
+				remote_size = total;
+			} else {
+				remote_size = soup_message_headers_get_content_length (download->request->response_headers);
+			}
 			rb_debug ("remote file size %ld", remote_size);
 			break;
 		} else if (retry_on_error (error) == FALSE) {
@@ -2123,7 +2130,6 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 
 		/* check that the server actually honoured our range request */
 		if (downloaded != 0) {
-			goffset start, end, total;
 			if (soup_message_headers_get_content_range (download->request->response_headers, &start, &end, &total)) {
 				if (start != downloaded) {
 					rb_debug ("range request mismatched, redownloading from start");
