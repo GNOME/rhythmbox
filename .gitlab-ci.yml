@@ -1,4 +1,4 @@
-image: ubuntu:bionic
+image: ubuntu:focal
 
 stages:
   - test
@@ -33,18 +33,42 @@ variables:
     libgrilo-0.3-dev
     libxml2-dev
     libtdb-dev
+    python3-pip
+    ninja-build
+    check
+    valac
+    xvfb
+
+  MESON_ARGS:
+    -Dprefix=/usr
+    -Dfm_radio=disabled
+    -Dplugins_python=enabled
+    -Dlibnotify=enabled
+    -Dmmkeys=enabled
+    -Ddaap=enabled
+    -Dgrilo=enabled
+    -Dgudev=enabled
+    -Dipod=enabled
+    -Dlibsecret=enabled
+    -Dmtp=enabled
+    -Dlirc=enabled
+    -Dsample-plugins=true
+    -Dgtk_doc=true
+    -Dhelp=true
+    -Dtests=true
 
 before_script:
+  - export DEBIAN_FRONTEND=noninteractive
   - apt-get update
   - apt-get install -y $UBUNTU_DEPS
+  - pip3 install meson
 
 test:
   stage: test
   script:
-    - mkdir build
-    - cd build
-    - NOCONFIGURE=1 ../autogen.sh
-    - ../configure
-    - make
-    - make check
-    - make install
+    - mkdir _build
+    - cd _build
+    - meson .. $MESON_ARGS
+    - ninja
+    - G_MESSAGES_DEBUG=all GSETTINGS_BACKEND=memory GSETTINGS_SCHEMA_DIR=${CI_PROJECT_DIR}/_build/data/ xvfb-run -a -s "-screen 0 1024x768x24" meson test
+    - ninja install
