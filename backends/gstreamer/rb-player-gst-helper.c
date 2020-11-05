@@ -426,17 +426,17 @@ rb_gst_create_filter_bin ()
 {
 	GstElement *bin;
 	GstElement *audioconvert;
-	GstElement *identity;
+	GstElement *volume;
 	GstPad *pad;
 
 	bin = gst_bin_new ("filterbin");
 
 	audioconvert = gst_element_factory_make ("audioconvert", "filteraudioconvert");
-	identity = gst_element_factory_make ("identity", "filteridentity");
-	gst_bin_add_many (GST_BIN (bin), audioconvert, identity, NULL);
-	gst_element_link (identity, audioconvert);
+	volume = gst_element_factory_make ("volume", "filtervolume");
+	gst_bin_add_many (GST_BIN (bin), volume, audioconvert, NULL);
+	gst_element_link (volume, audioconvert);
 
-	pad = gst_element_get_static_pad (identity, "sink");
+	pad = gst_element_get_static_pad (volume, "sink");
 	gst_element_add_pad (bin, gst_ghost_pad_new ("sink", pad));
 	gst_object_unref (pad);
 
