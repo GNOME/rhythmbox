@@ -170,18 +170,30 @@ start_download_cb (RBPodcastManager *pd,
 static void
 finish_download_cb (RBPodcastManager *pd,
 		    RhythmDBEntry *entry,
+		    GError *error,
 		    RBPodcastMainSource *source)
 {
 	RBShell *shell;
 	char *podcast_name;
+	char *primary, *secondary;
 
 	podcast_name = g_markup_escape_text (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), -1);
 
 	g_object_get (source, "shell", &shell, NULL);
-	rb_shell_notify_custom (shell, 4000, _("Finished downloading podcast"), podcast_name, NULL, FALSE);
+
+	if (error) {
+		primary = _("Error downloading podcast");
+		secondary = g_strdup_printf ("%s\n\n%s", podcast_name, error->message);
+	} else {
+		primary = _("Finished downloading podcast");
+		secondary = g_strdup_printf ("%s", podcast_name);
+	}
+
+	rb_shell_notify_custom (shell, 4000, primary, secondary, NULL, FALSE);
 	g_object_unref (shell);
 
 	g_free (podcast_name);
+	g_free (secondary);
 }
 
 static void
