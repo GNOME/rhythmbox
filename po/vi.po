@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2020-01-02 01:24+0000\n"
-"PO-Revision-Date: 2020-01-02 13:41+0700\n"
+"POT-Creation-Date: 2020-11-18 20:30+0000\n"
+"PO-Revision-Date: 2020-12-04 13:59+0700\n"
 "Last-Translator: Trần Ngọc Quân <vnwildman@gmail.com>\n"
 "Language-Team: Vietnamese <gnome-vi-list@gnome.org>\n"
 "Language: vi\n"
@@ -108,8 +108,8 @@ msgid "My Top Rated"
 msgstr "Điểm cao"
 
 #: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
-#: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2387
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
+#: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2389
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -461,7 +461,7 @@ msgstr "Định dạng ư_a dùng:"
 
 #: ../data/ui/library-prefs.ui.h:9
 msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
-msgstr "Nghệ sĩ/Nghệ sĩ - Tập/Nghệ sĩ (Tập nhạc) - 01 - Tiêu đề.ogg"
+msgstr "Nghệ sĩ/Nghệ sĩ - Tập/Nghệ sĩ (Tuyển tập) - 01 - Tiêu đề.ogg"
 
 #: ../data/ui/library-toolbar.ui.h:1 ../data/ui/playlist-toolbar.ui.h:1
 #: ../data/ui/podcast-toolbar.ui.h:1 ../data/ui/queue-toolbar.ui.h:1
@@ -503,7 +503,7 @@ msgstr "Thuộc tính trình phát đa phương tiện"
 #: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
 #: ../plugins/iradio/rb-station-properties-dialog.c:182
 #: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:318
+#: ../podcast/rb-podcast-properties-dialog.c:320
 #: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:377
 #: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
 msgid "_Close"
@@ -589,8 +589,8 @@ msgid "Save Playlist"
 msgstr "Lưu danh sách phát"
 
 #: ../data/ui/playlist-save.ui.h:3 ../plugins/artsearch/songinfo.py:135
-#: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:534
-#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:187
+#: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:535
+#: ../podcast/rb-podcast-source.c:1105 ../shell/rb-track-transfer-queue.c:187
 #: ../widgets/rb-alert-dialog.c:384 ../widgets/rb-alert-dialog.c:401
 #: ../widgets/rb-dialog.c:131 ../widgets/rb-dialog.c:139
 #: ../widgets/rb-query-creator.c:191 ../widgets/rb-uri-dialog.c:158
@@ -616,11 +616,10 @@ msgstr "Danh sách phát"
 
 #: ../data/ui/podcast-add-dialog.ui.h:1
 msgid ""
-"Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
-"podcast feed URL.\n"
+"Search for podcasts in the iTunes Store, or enter a podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
-"Tìm podcast trên iTunes Store và Miroguide.com, hoặc nhập URL podcast.\n"
+"Tìm podcast trên iTunes Store, hoặc nhập URL cấp podcast.\n"
 "Đăng ký podcast để tải về phần mới khi được công bố."
 
 #: ../data/ui/podcast-add-dialog.ui.h:4
@@ -701,7 +700,7 @@ msgid "Cancel Download"
 msgstr "Hủy việc tải về"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1237 ../sources/rb-media-player-source.c:1104
+#: ../podcast/rb-podcast-source.c:1238 ../sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Xóa"
 
@@ -803,7 +802,7 @@ msgstr "Xóa trắng"
 
 #: ../data/ui/song-info-multiple.ui.h:1 ../data/ui/song-info.ui.h:1
 msgid "Albu_m:"
-msgstr "_Tập nhạc:"
+msgstr "_Tuyển tập:"
 
 #: ../data/ui/song-info-multiple.ui.h:2 ../data/ui/song-info.ui.h:5
 #: ../plugins/audiocd/album-info.ui.h:2
@@ -963,7 +962,7 @@ msgstr "%d %b %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:581
-#: ../plugins/android/rb-android-source.c:715
+#: ../plugins/android/rb-android-source.c:729
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -983,11 +982,11 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
 #: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
-#: ../podcast/rb-podcast-manager.c:2024
-#: ../podcast/rb-podcast-properties-dialog.c:639
-#: ../podcast/rb-podcast-properties-dialog.c:703
-#: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
+#: ../podcast/rb-podcast-add-dialog.c:615 ../podcast/rb-podcast-manager.c:1330
+#: ../podcast/rb-podcast-manager.c:1429
+#: ../podcast/rb-podcast-properties-dialog.c:641
+#: ../podcast/rb-podcast-properties-dialog.c:705
+#: ../podcast/rb-podcast-source.c:795 ../remote/dbus/rb-client.c:215
 #: ../remote/dbus/rb-client.c:732 ../rhythmdb/rhythmdb.c:2068
 #: ../rhythmdb/rhythmdb.c:2074 ../rhythmdb/rhythmdb.c:2089
 #: ../rhythmdb/rhythmdb.c:2123 ../rhythmdb/rhythmdb.c:5573
@@ -1000,19 +999,19 @@ msgstr "%d %b %Y"
 #: ../shell/rb-shell-player.c:2714 ../shell/rb-shell-player.c:2716
 #: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
 #: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
-#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1274
-#: ../widgets/rb-header.c:1300 ../widgets/rb-song-info.c:950
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1275
+#: ../widgets/rb-header.c:1301 ../widgets/rb-song-info.c:950
 #: ../widgets/rb-song-info.c:962 ../widgets/rb-song-info.c:1234
 #: ../widgets/rb-song-info.c:1573
 msgid "Unknown"
 msgstr "Không biết"
 
-#: ../lib/rb-file-helpers.c:471
+#: ../lib/rb-file-helpers.c:475
 #, c-format
 msgid "Too many symlinks"
 msgstr "Quá nhiều liên kết"
 
-#: ../lib/rb-file-helpers.c:1305
+#: ../lib/rb-file-helpers.c:1309
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Không thể lấy chỗ còn trống tại %s: %s"
@@ -1149,17 +1148,17 @@ msgid ""
 msgstr ""
 "Trên thiết vị này không có phần lưu trữ. Bạn cần bỏ khóa nó và bật MTP."
 
-#: ../plugins/android/rb-android-source.c:391
+#: ../plugins/android/rb-android-source.c:405
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "Đang quét %s"
 
-#: ../plugins/android/rb-android-source.c:414
+#: ../plugins/android/rb-android-source.c:428
 msgid "Error mounting Android device"
 msgstr "Lỗi gắn thiết bị Android"
 
-#: ../plugins/android/rb-android-source.c:809
+#: ../plugins/android/rb-android-source.c:823
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
 #: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
 #: ../sources/rb-transfer-target.c:182
@@ -1376,7 +1375,7 @@ msgstr "Bài yêu thích"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:496
 msgid "OK"
-msgstr "OK"
+msgstr "Đồng ý"
 
 #: ../plugins/audioscrobbler/rb-audioscrobbler.c:499
 msgid "Logging in"
@@ -1692,7 +1691,7 @@ msgstr "Sao CD Nhạc…"
 #: ../plugins/context/AlbumTab.py:57
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2399
 msgid "Albums"
-msgstr "Tập nhạc"
+msgstr "Tuyển tập"
 
 #. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
 #: ../plugins/context/AlbumTab.py:120
@@ -1763,7 +1762,7 @@ msgstr "Hiện tất cả bài hát"
 #: ../plugins/context/tmpl/album-tmpl.html:57
 #, c-format
 msgid "Top albums by %s"
-msgstr "Tập nhạc đầu bảng của %s"
+msgstr "Tuyển tập đầu bảng của %s"
 
 #: ../plugins/context/tmpl/album-tmpl.html:74
 #, c-format
@@ -1967,7 +1966,7 @@ msgid "Browse various local and Internet media sources"
 msgstr "Duyệt các nguồn phương tiện Internet và cục bộ khác nhau"
 
 #: ../plugins/grilo/rb-grilo-source.c:403
-#: ../plugins/soundcloud/soundcloud.py:492
+#: ../plugins/soundcloud/soundcloud.py:486
 msgid "Fetch more tracks"
 msgstr "Lấy thêm bài"
 
@@ -2148,14 +2147,14 @@ msgstr "URL của đài phát Internet:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:395
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:524
+#: ../podcast/rb-podcast-properties-dialog.c:526
 #: ../sources/rb-media-player-source.c:567 ../widgets/rb-song-info.c:1151
 #, c-format
 msgid "%s Properties"
 msgstr "Thuộc tính %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:487
-#: ../podcast/rb-podcast-properties-dialog.c:637
+#: ../podcast/rb-podcast-properties-dialog.c:639
 #: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1236
 #, c-format
 msgid "%lu kbps"
@@ -2246,10 +2245,7 @@ msgid "Searching for lyrics..."
 msgstr "Đang tìm lời nhạc…"
 
 #. { 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
-#: ../plugins/lyrics/LyricsSites.py:42
-msgid "WinampCN (www.winampcn.com)"
-msgstr "WinampCN (www.winampcn.com)"
-
+#. { 'id': 'winampcn.com', 	'class': WinampcnParser, 	'name': _("WinampCN (www.winampcn.com)") 	},
 #: ../plugins/lyrics/LyricsSites.py:43
 msgid "TerraBrasil (terra.com.br)"
 msgstr "TerraBrasil (terra.com.br)"
@@ -2507,33 +2503,33 @@ msgstr "http://www.magnatune.com/info/"
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:192
+#: ../plugins/magnatune/MagnatuneSource.py:190
 msgid "Couldn't download album"
 msgstr "Không thể tải tập nhạc về"
 
-#: ../plugins/magnatune/MagnatuneSource.py:193
+#: ../plugins/magnatune/MagnatuneSource.py:191
 msgid "You must have a library location set to download an album."
 msgstr "Bạn phải xác định vị trí thư viện để có thể tải tập nhạc về."
 
-#: ../plugins/magnatune/MagnatuneSource.py:255
+#: ../plugins/magnatune/MagnatuneSource.py:253
 msgid "Unable to load catalog"
 msgstr "Không thể tải danh sách"
 
-#: ../plugins/magnatune/MagnatuneSource.py:256
+#: ../plugins/magnatune/MagnatuneSource.py:254
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr "Rhythmbox không thể hiểu danh sách Magnatune, vui lòng thông báo lỗi."
 
-#: ../plugins/magnatune/MagnatuneSource.py:277
-#: ../plugins/magnatune/MagnatuneSource.py:334
+#: ../plugins/magnatune/MagnatuneSource.py:275
+#: ../plugins/magnatune/MagnatuneSource.py:332
 msgid "Loading Magnatune catalog"
 msgstr "Đang tải danh sách Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:406
+#: ../plugins/magnatune/MagnatuneSource.py:404
 msgid "Download Error"
 msgstr "Lỗi tải về"
 
-#: ../plugins/magnatune/MagnatuneSource.py:407
+#: ../plugins/magnatune/MagnatuneSource.py:405
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2544,11 +2540,11 @@ msgstr ""
 "Máy phục vụ Magnatune trả về:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1628
+#: ../plugins/magnatune/MagnatuneSource.py:408 ../widgets/rb-entry-view.c:1628
 msgid "Error"
 msgstr "Lỗi"
 
-#: ../plugins/magnatune/MagnatuneSource.py:411
+#: ../plugins/magnatune/MagnatuneSource.py:409
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -2559,7 +2555,7 @@ msgstr ""
 "Nội dung lỗi:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:500
+#: ../plugins/magnatune/MagnatuneSource.py:492
 msgid "Downloading from Magnatune"
 msgstr "Tải về từ Magnatune"
 
@@ -2671,7 +2667,7 @@ msgid "from <i>%s</i>"
 msgstr "trong <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:416
-#: ../widgets/rb-header.c:366
+#: ../widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "Không phát"
 
@@ -2765,7 +2761,7 @@ msgstr "Đài phát thanh (âm thanh bằng nhau cho mọi bản nhạc)"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:2
 msgid "Album (ideal loudness for all tracks)"
-msgstr "Tập nhạc (Âm lượng lớn lý tưởng cho mọi bản nhạc)"
+msgstr "Tuyển tập (Âm lượng lớn lý tưởng cho mọi bản nhạc)"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:3
 msgid "ReplayGain preferences"
@@ -2828,25 +2824,13 @@ msgstr "Tìm các người dùng trên SoundCloud"
 msgid "SoundCloud Users"
 msgstr "Người dùng SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:117
-msgid "Search groups"
-msgstr "Tìm kiếm nhóm"
-
-#: ../plugins/soundcloud/soundcloud.py:118
-msgid "Search groups on SoundCloud"
-msgstr "Tìm các nhóm trên SoundCloud"
-
-#: ../plugins/soundcloud/soundcloud.py:119
-msgid "SoundCloud Groups"
-msgstr "Nhóm SoundCloud"
-
-#: ../plugins/soundcloud/soundcloud.py:442
-#: ../plugins/soundcloud/soundcloud.py:450
+#: ../plugins/soundcloud/soundcloud.py:436
+#: ../plugins/soundcloud/soundcloud.py:444
 #, python-format
 msgid "View '%(title)s' on SoundCloud"
 msgstr "Xem “%(title)s” trên SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:458
+#: ../plugins/soundcloud/soundcloud.py:452
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
 msgstr "Xem “%(container)s” trên SoundCloud"
@@ -2879,37 +2863,37 @@ msgstr "Điều khiển Rhythmbox từ xa bằng trình duyệt"
 msgid "Launch web remote control"
 msgstr "Khởi chạy bộ từ xa bằng trình duyệt"
 
-#: ../podcast/rb-podcast-add-dialog.c:271 ../podcast/rb-podcast-source.c:735
+#: ../podcast/rb-podcast-add-dialog.c:271 ../podcast/rb-podcast-source.c:736
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
 msgstr[0] "%d nguồn cấp"
 
-#: ../podcast/rb-podcast-add-dialog.c:306
+#: ../podcast/rb-podcast-add-dialog.c:316
 msgid "Unable to load the feed. Check your network connection."
 msgstr "Không thể tải feed. Kiểm tra lại kết nối mạng."
 
-#: ../podcast/rb-podcast-add-dialog.c:431
+#: ../podcast/rb-podcast-add-dialog.c:437
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Không thể tìm podcast. Kiểm tra kết nối mạng."
 
-#: ../podcast/rb-podcast-add-dialog.c:744 ../sources/rb-library-source.c:134
+#: ../podcast/rb-podcast-add-dialog.c:755 ../sources/rb-library-source.c:134
 #: ../widgets/rb-entry-view.c:1444
 msgid "Title"
 msgstr "Tựa đề"
 
-#: ../podcast/rb-podcast-add-dialog.c:755
+#: ../podcast/rb-podcast-add-dialog.c:766
 msgid "Author"
 msgstr "Tác giả"
 
-#: ../podcast/rb-podcast-add-dialog.c:760
-#: ../podcast/rb-podcast-add-dialog.c:763
+#: ../podcast/rb-podcast-add-dialog.c:771
+#: ../podcast/rb-podcast-add-dialog.c:774
 msgid "Episodes"
 msgstr "Phần"
 
-#: ../podcast/rb-podcast-add-dialog.c:797
-#: ../podcast/rb-podcast-add-dialog.c:808 ../podcast/rb-podcast-source.c:1357
-#: ../podcast/rb-podcast-source.c:1368
+#: ../podcast/rb-podcast-add-dialog.c:808
+#: ../podcast/rb-podcast-add-dialog.c:819 ../podcast/rb-podcast-source.c:1358
+#: ../podcast/rb-podcast-source.c:1369
 msgid "Date"
 msgstr "Ngày"
 
@@ -2942,39 +2926,12 @@ msgstr "Lỗi trong Podcast"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Bạn vẫn muốn thêm nguồn podcast này chứ?"
 
-#: ../podcast/rb-podcast-manager.c:924
-msgid "Error creating podcast download directory"
-msgstr "Gặp lỗi khi tạo thư mục lưu podcast tải về"
-
-#: ../podcast/rb-podcast-manager.c:925
+#: ../podcast/rb-podcast-manager.c:724
 #, c-format
-msgid "Unable to create the download directory for %s: %s"
-msgstr "Không thể tạo thư mục lấy về cho %s: %s"
+msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
+msgstr "Gặp lỗi khi thêm Podcast: %s. Vui lòng kiểm tra URL: %s"
 
-#: ../podcast/rb-podcast-manager.c:1044
-msgid "Invalid URL"
-msgstr "URL không hợp lệ"
-
-#: ../podcast/rb-podcast-manager.c:1045
-#, c-format
-msgid "The URL \"%s\" is not valid, please check it."
-msgstr "URL \"%s\" không hợp lệ, vui lòng kiểm tra."
-
-#. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1056
-msgid "URL already added"
-msgstr "URL đã được thêm"
-
-#: ../podcast/rb-podcast-manager.c:1057
-#, c-format
-msgid ""
-"The URL \"%s\" has already been added as a radio station. If this is a "
-"podcast feed, please remove the radio station."
-msgstr ""
-"URL \"%s\" đã được thêm dạng đài phát thanh. Nếu đây là nguồn Podcast, vui "
-"lòng gỡ bỏ đài phát này."
-
-#: ../podcast/rb-podcast-manager.c:1157
+#: ../podcast/rb-podcast-manager.c:785
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2985,44 +2942,43 @@ msgstr ""
 "chỉ mạng không đúng, hoặc nguồn bị ngắt. Bạn có muốn trình Rhythmbox cố sử "
 "dụng nó không?"
 
-#: ../podcast/rb-podcast-manager.c:1273
+#. added as something else, probably iradio
+#: ../podcast/rb-podcast-manager.c:835
+msgid "URL already added"
+msgstr "URL đã được thêm"
+
+#: ../podcast/rb-podcast-manager.c:836
+#, c-format
+msgid ""
+"The URL \"%s\" has already been added as a radio station. If this is a "
+"podcast feed, please remove the radio station."
+msgstr ""
+"URL \"%s\" đã được thêm dạng đài phát thanh. Nếu đây là nguồn Podcast, vui "
+"lòng gỡ bỏ đài phát này."
+
+#: ../podcast/rb-podcast-manager.c:942
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2239
-#, c-format
-msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
-msgstr "Gặp lỗi khi thêm Podcast: %s. Vui lòng kiểm tra URL: %s"
-
-#: ../podcast/rb-podcast-parse.c:181
-#, c-format
-msgid "Unable to check file type: %s"
-msgstr "Không thể kiểm tra kiểu tập tin: %s"
-
-#: ../podcast/rb-podcast-parse.c:200
-#, c-format
-msgid "Unexpected file type: %s"
-msgstr "Gặp tập tin có kiểu lạ: %s"
-
-#: ../podcast/rb-podcast-parse.c:223
+#: ../podcast/rb-podcast-parse.c:179
 #, c-format
 msgid "Unable to parse the feed contents"
 msgstr "Không thể phân tích nội dung nguồn"
 
-#: ../podcast/rb-podcast-parse.c:237
+#: ../podcast/rb-podcast-parse.c:189
 #, c-format
 msgid "The feed does not contain any downloadable items"
 msgstr "Nguồn không chứa mục nào có thể tải về"
 
-#: ../podcast/rb-podcast-properties-dialog.c:587
+#: ../podcast/rb-podcast-properties-dialog.c:589
 msgid "Not Downloaded"
 msgstr "Chưa tải về"
 
-#: ../podcast/rb-podcast-source.c:521
+#: ../podcast/rb-podcast-source.c:522
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Xóa bỏ nguồn Podcast và những tập tin đã tải về chứ?"
 
-#: ../podcast/rb-podcast-source.c:524
+#: ../podcast/rb-podcast-source.c:525
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -3032,35 +2988,35 @@ msgstr ""
 "lòng nhớ rằng bạn có thể chỉ xóa bỏ nguồn và giữ lại những tập tin đã tải về "
 "bằng cách chọn chỉ xóa bỏ nguồn."
 
-#: ../podcast/rb-podcast-source.c:532
+#: ../podcast/rb-podcast-source.c:533
 msgid "Delete _Feed Only"
 msgstr "_Chỉ xóa bỏ nguồn"
 
-#: ../podcast/rb-podcast-source.c:539
+#: ../podcast/rb-podcast-source.c:540
 msgid "_Delete Feed And Files"
 msgstr "_Xóa bỏ nguồn và tập tin"
 
-#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1411
+#: ../podcast/rb-podcast-source.c:621 ../podcast/rb-podcast-source.c:1412
 msgid "Downloaded"
 msgstr "Đã tải về"
 
-#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1413
+#: ../podcast/rb-podcast-source.c:625 ../podcast/rb-podcast-source.c:1414
 msgid "Failed"
 msgstr "Gặp lỗi"
 
-#: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1412
+#: ../podcast/rb-podcast-source.c:629 ../podcast/rb-podcast-source.c:1413
 msgid "Waiting"
 msgstr "Đang chờ"
 
-#: ../podcast/rb-podcast-source.c:957
+#: ../podcast/rb-podcast-source.c:958
 msgid "Podcast Error"
 msgstr "Lỗi Podcast"
 
-#: ../podcast/rb-podcast-source.c:1091
+#: ../podcast/rb-podcast-source.c:1092
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Xóa bỏ phần Podcast và tập tin đã tải về chứ?"
 
-#: ../podcast/rb-podcast-source.c:1094
+#: ../podcast/rb-podcast-source.c:1095
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -3070,41 +3026,41 @@ msgstr ""
 "ý rằng bạn có thể xóa bỏ tình tiết mà vẫn giữ tập tin đã tải về bằng cách "
 "chọn chỉ xóa bỏ tình tiết."
 
-#: ../podcast/rb-podcast-source.c:1102
+#: ../podcast/rb-podcast-source.c:1103
 msgid "Delete _Episode Only"
 msgstr "Chỉ xóa bỏ _phần"
 
-#: ../podcast/rb-podcast-source.c:1108
+#: ../podcast/rb-podcast-source.c:1109
 msgid "_Delete Episode And File"
 msgstr "_Xóa bỏ phần và tập tin"
 
-#: ../podcast/rb-podcast-source.c:1214
+#: ../podcast/rb-podcast-source.c:1215
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d phần"
 
-#: ../podcast/rb-podcast-source.c:1390 ../podcast/rb-podcast-source.c:1445
-#: ../podcast/rb-podcast-source.c:1484
+#: ../podcast/rb-podcast-source.c:1391 ../podcast/rb-podcast-source.c:1446
+#: ../podcast/rb-podcast-source.c:1485
 msgid "Feed"
 msgstr "Nguồn tin"
 
-#: ../podcast/rb-podcast-source.c:1410 ../podcast/rb-podcast-source.c:1428
+#: ../podcast/rb-podcast-source.c:1411 ../podcast/rb-podcast-source.c:1429
 msgid "Status"
 msgstr "Trạng thái"
 
 #. ensure search instances exist
-#: ../podcast/rb-podcast-source.c:1530 ../sources/rb-auto-playlist-source.c:253
+#: ../podcast/rb-podcast-source.c:1531 ../sources/rb-auto-playlist-source.c:253
 #: ../sources/rb-browser-source.c:314 ../sources/rb-browser-source.c:332
 #: ../sources/rb-static-playlist-source.c:295
 msgid "Search all fields"
 msgstr "Tìm kiếm qua mọi trường"
 
-#: ../podcast/rb-podcast-source.c:1531
+#: ../podcast/rb-podcast-source.c:1532
 msgid "Search podcast feeds"
 msgstr "Tìm kiếm nguồn podcast"
 
-#: ../podcast/rb-podcast-source.c:1532
+#: ../podcast/rb-podcast-source.c:1533
 msgid "Search podcast episodes"
 msgstr "Tìm kiếm phần podcast"
 
@@ -3152,7 +3108,7 @@ msgstr "Tạm dừng phát lại nếu đang phát"
 msgid "Toggle play/pause mode"
 msgstr "Bật/tắt chế độ phát/tạm dừng"
 
-#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2293
+#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2295
 msgid "Stop playback"
 msgstr "Dừng phát nhạc"
 
@@ -3287,7 +3243,7 @@ msgstr "Không phát"
 #. Translators: title by artist from album
 #: ../remote/dbus/rb-client.c:745
 msgid "%tt by %ta from %at"
-msgstr "%tt bởi %s từ %s"
+msgstr "%tt bởi %ta từ %at"
 
 #. Translators: title by artist
 #: ../remote/dbus/rb-client.c:748
@@ -3533,7 +3489,7 @@ msgstr "Cộng tác viên:"
 
 #: ../shell/rb-application.c:192
 msgid "Music management and playback software for GNOME."
-msgstr "Phần mềm quản lý và chơi nhạc dành cho GNOME."
+msgstr "Phần mềm quản lý và phát nhạc dành cho GNOME."
 
 #: ../shell/rb-application.c:202
 msgid "Rhythmbox Website"
@@ -3649,45 +3605,45 @@ msgstr "Không biết danh sách phát: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "Danh sách %s là một danh sách phát tự động"
 
-#: ../shell/rb-shell.c:2086
+#: ../shell/rb-shell.c:2088
 msgid "Error while saving song information"
 msgstr "Gặp lỗi khi lưu thông tin bài nhạc"
 
-#: ../shell/rb-shell.c:2290
+#: ../shell/rb-shell.c:2292
 msgid "Pause playback"
 msgstr "Tạm dừng phát nhạc"
 
-#: ../shell/rb-shell.c:2297
+#: ../shell/rb-shell.c:2299
 msgid "Start playback"
 msgstr "Bắt đầu phát"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2407
+#: ../shell/rb-shell.c:2409
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (tạm ngừng)"
 
-#: ../shell/rb-shell.c:2804 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2806 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Không có nguồn đã đăng kí có khả năng quản lý URI %s"
 
-#: ../shell/rb-shell.c:3133
+#: ../shell/rb-shell.c:3135
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Không có nguồn đã đăng kí khớp URI %s"
 
-#: ../shell/rb-shell.c:3166 ../shell/rb-shell.c:3209
+#: ../shell/rb-shell.c:3168 ../shell/rb-shell.c:3211
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Không biết URI của bài nhạc: %s"
 
-#: ../shell/rb-shell.c:3218
+#: ../shell/rb-shell.c:3220
 #, c-format
 msgid "Unknown property %s"
 msgstr "Thuộc tính lạ: %s"
 
-#: ../shell/rb-shell.c:3232
+#: ../shell/rb-shell.c:3234
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Kiểu thuộc tính không hợp lệ %s cho thuộc tính %s"
@@ -3806,7 +3762,7 @@ msgstr "Bỏ qua _hết"
 
 #: ../shell/rb-track-transfer-queue.c:191
 msgid "Replace _All"
-msgstr "Thay thế _hết"
+msgstr "Tha_y thế hết"
 
 #: ../shell/rb-track-transfer-queue.c:438
 #, c-format
@@ -3933,20 +3889,20 @@ msgstr[0] "%d lỗi nhập"
 
 #: ../sources/rb-library-source.c:121
 msgid "Artist/Artist - Album"
-msgstr "Nghệ sĩ/Nghệ sĩ — Tập nhạc"
+msgstr "Nghệ sĩ/Nghệ sĩ — Tuyển tập"
 
 #: ../sources/rb-library-source.c:122
 msgid "Artist/Album"
-msgstr "Nghệ sĩ/Tập nhạc"
+msgstr "Nghệ sĩ/Tuyển tập"
 
 #: ../sources/rb-library-source.c:123
 msgid "Artist - Album"
-msgstr "Nghệ sĩ — Tập nhạc"
+msgstr "Nghệ sĩ — Tuyển tập"
 
 #: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1474
 #: ../widgets/rb-library-browser.c:136
 msgid "Album"
-msgstr "Tập nhạc"
+msgstr "Tuyển tập"
 
 #: ../sources/rb-library-source.c:130
 msgid "Number - Title"
@@ -3962,7 +3918,7 @@ msgstr "Nghệ sĩ - Số - Tựa đề"
 
 #: ../sources/rb-library-source.c:133
 msgid "Artist (Album) - Number - Title"
-msgstr "Nghệ sĩ (Tập nhạc) - Số - Tựa đề"
+msgstr "Nghệ sĩ (Tuyển tập) - Số - Tựa đề"
 
 #: ../sources/rb-library-source.c:135
 msgid "Number. Artist - Title"
@@ -4046,11 +4002,11 @@ msgid "Play Queue"
 msgstr "Hàng đợi phát"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:924
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
 msgid "by"
 msgstr "bởi"
 
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:926
 msgid "from"
 msgstr "trong"
 
@@ -4099,7 +4055,7 @@ msgstr "Kiểu báo động"
 
 #: ../widgets/rb-alert-dialog.c:97
 msgid "The type of alert"
-msgstr "Kiểu báo động"
+msgstr "Kiểu của cảnh báo"
 
 #: ../widgets/rb-alert-dialog.c:105
 msgid "Alert Buttons"
@@ -4129,15 +4085,20 @@ msgstr "_Có"
 msgid "_Open"
 msgstr "_Mở"
 
-#: ../widgets/rb-encoding-settings.c:54
+#: ../widgets/rb-encoding-settings.c:55
 msgid "Constant bit rate"
 msgstr "Tốc độ bít cố định"
 
-#: ../widgets/rb-encoding-settings.c:55
+#: ../widgets/rb-encoding-settings.c:56
 msgid "Variable bit rate"
 msgstr "Tốc độ bít biến đổi"
 
-#: ../widgets/rb-encoding-settings.c:402
+# See <https://en.wikipedia.org/wiki/Variable_bitrate>
+#: ../widgets/rb-encoding-settings.c:57
+msgid "Constrained Variable bit rate"
+msgstr "Tốc độ bít biến đổi hạn chế"
+
+#: ../widgets/rb-encoding-settings.c:404
 msgid "Default settings"
 msgstr "Cài đặt mặc định"
 
@@ -4215,13 +4176,13 @@ msgid "Drop artwork here"
 msgstr "Thả ảnh bìa vào đây"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1214
+#: ../widgets/rb-header.c:1215
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1225
+#: ../widgets/rb-header.c:1226
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
@@ -4312,7 +4273,7 @@ msgstr "Người soạn"
 #: ../widgets/rb-query-creator-properties.c:80
 msgctxt "query-criteria"
 msgid "Album"
-msgstr "Tập nhạc"
+msgstr "Tuyển tập"
 
 #: ../widgets/rb-query-creator-properties.c:81
 msgctxt "query-criteria"
@@ -4407,7 +4368,7 @@ msgstr "Người soạn"
 #: ../widgets/rb-query-creator-properties.c:109
 msgctxt "query-sort"
 msgid "Album"
-msgstr "Tập nhạc"
+msgstr "Tuyển tập"
 
 # Xem <http://forums.ilounge.com/itunes-related-mac-pc-applications/215223-whats-difference-between-artist-album-artist.html>
 #: ../widgets/rb-query-creator-properties.c:110
@@ -4646,6 +4607,40 @@ msgstr "Trên màn hình nền"
 #: ../widgets/rb-song-info.c:1340
 msgid "Unknown location"
 msgstr "Vị trí không biết"
+
+#~ msgid "WinampCN (www.winampcn.com)"
+#~ msgstr "WinampCN (www.winampcn.com)"
+
+#~ msgid "Search groups"
+#~ msgstr "Tìm kiếm nhóm"
+
+#~ msgid "Search groups on SoundCloud"
+#~ msgstr "Tìm các nhóm trên SoundCloud"
+
+#~ msgid "SoundCloud Groups"
+#~ msgstr "Nhóm SoundCloud"
+
+#~ msgid "Error creating podcast download directory"
+#~ msgstr "Gặp lỗi khi tạo thư mục lưu podcast tải về"
+
+#, c-format
+#~ msgid "Unable to create the download directory for %s: %s"
+#~ msgstr "Không thể tạo thư mục lấy về cho %s: %s"
+
+#~ msgid "Invalid URL"
+#~ msgstr "URL không hợp lệ"
+
+#, c-format
+#~ msgid "The URL \"%s\" is not valid, please check it."
+#~ msgstr "URL \"%s\" không hợp lệ, vui lòng kiểm tra."
+
+#, c-format
+#~ msgid "Unable to check file type: %s"
+#~ msgstr "Không thể kiểm tra kiểu tập tin: %s"
+
+#, c-format
+#~ msgid "Unexpected file type: %s"
+#~ msgstr "Gặp tập tin có kiểu lạ: %s"
 
 #~ msgid "_Add Music"
 #~ msgstr "_Thêm bài hát"
