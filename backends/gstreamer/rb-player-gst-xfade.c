@@ -1087,8 +1087,10 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 		return FALSE;
 	}
 
+	g_mutex_lock (&stream->lock);
 	if (stream->adder_pad != NULL) {
 		rb_debug ("stream %s is already linked", stream->uri);
+		g_mutex_unlock (&stream->lock);
 		return TRUE;
 	}
 	stream->needs_unlink = FALSE;
@@ -1105,6 +1107,7 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 			     RB_PLAYER_ERROR,
 			     RB_PLAYER_ERROR_GENERAL,
 			     _("Failed to link new stream into GStreamer pipeline"));
+		g_mutex_unlock (&stream->lock);
 		return FALSE;
 	}
 
@@ -1120,14 +1123,13 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 			     RB_PLAYER_ERROR_GENERAL,
 			     _("Failed to link new stream into GStreamer pipeline"));
 		return FALSE;
+		g_mutex_unlock (&stream->lock);
 	}
-
 
 	g_atomic_int_inc (&player->priv->linked_streams);
 	rb_debug ("now have %d linked streams", player->priv->linked_streams);
 
 	result = TRUE;
-	g_mutex_lock (&stream->lock);
 	if (stream->src_blocked) {
 		GstStateChangeReturn state_ret;
 
