@@ -361,6 +361,7 @@ typedef struct
 	gboolean fading;
 	gboolean starting_eos;
 	gboolean use_buffering;
+	gboolean buffered;
 
 	gulong adjust_probe_id;
 	gulong block_probe_id;
@@ -1881,6 +1882,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 
 		if (progress >= 100) {
 			GError *error = NULL;
+			stream->buffered = TRUE;
 			switch (stream->state) {
 			case PREROLLING:
 				rb_debug ("stream %s is buffered, now waiting", stream->uri);
@@ -1942,10 +1944,13 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				progress = 100;
 				break;
 			default:
-				rb_debug ("stream buffering, stopping playback");
-				unlink_and_block_stream (stream);
+				if (stream->buffered) {
+					rb_debug ("stream buffering, stopping playback");
+					unlink_and_block_stream (stream);
+				}
 				break;
 			}
+			stream->buffered = FALSE;
 		}
 
 		_rb_player_emit_buffering (RB_PLAYER (player), stream->stream_data, progress);
@@ -2178,6 +2183,7 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	stream->state = WAITING;
 
 	stream->use_buffering = FALSE;
+	stream->buffered = FALSE;
 	for (i = 0; i < G_N_ELEMENTS (stream_schemes); i++) {
 		if (gst_uri_has_protocol (uri, stream_schemes[i])) {
 			stream->use_buffering = TRUE;
@@ -2578,7 +2584,7 @@ stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream
 	gst_query_unref (query);
 	g_object_unref (src);
 
-	if (stream->use_buffering) {
+	if (stream->use_buffering && (stream->buffered == FALSE)) {
 		rb_debug ("stream %s requires buffering", stream->uri);
 		switch (stream->state) {
 		case PREROLL_PLAY:
