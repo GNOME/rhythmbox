@@ -1894,6 +1894,11 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				break;
 
 			case PREROLL_PLAY:
+				if (stream->decoder_pad == NULL) {
+					rb_debug ("stream %s buffered, but no decoded pad yet", stream->uri);
+					break;
+				}
+
 				rb_debug ("stream %s is buffered, now playing", stream->uri);
 				if (actually_start_stream (stream, &error) == FALSE) {
 					emit_stream_error (stream, error);
