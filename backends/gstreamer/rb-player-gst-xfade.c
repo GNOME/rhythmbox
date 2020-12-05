@@ -2735,7 +2735,7 @@ get_times_and_stream (RBPlayerGstXFade *player, RBXFadeStream **pstream, gint64 
 		if (pos != NULL) {
 			if (buffering) {
 				*pos = 0;
-			} else if (stream->state == PAUSED) {
+			} else if (stream->state == PAUSED || stream->adder_pad == NULL) {
 				*pos = -1;
 
 				gst_element_query_position (stream->volume, GST_FORMAT_TIME, pos);
