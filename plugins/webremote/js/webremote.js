@@ -215,7 +215,7 @@ var connect = function() {
 				imgsrc = path + "?" + sign(path);
 				imgclass = "albumart";
 			} else {
-				imgsrc = "/icon/org.gnome.Rhythmbox-symbolic/128";
+				imgsrc = "/icon/org.gnome.Rhythmbox3-symbolic/128";
 				imgclass = "noalbumart";
 			}
 			replaceImage("trackimage", imgclass, imgsrc);

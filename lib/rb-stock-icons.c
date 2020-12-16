@@ -37,7 +37,7 @@
 #include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
 
-const char RB_APP_ICON[] = "org.gnome.Rhythmbox";
+const char RB_APP_ICON[] = "org.gnome.Rhythmbox3";
 const char RB_STOCK_SET_STAR[] = "rhythmbox-set-star";
 const char RB_STOCK_UNSET_STAR[] = "rhythmbox-unset-star";
 const char RB_STOCK_NO_STAR[] = "rhythmbox-no-star";

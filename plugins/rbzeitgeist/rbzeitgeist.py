@@ -68,7 +68,7 @@ class ZeitgeistPlugin(GObject.Object, Peas.Activatable):
             event = Zeitgeist.Event.new()
             event.set_property("interpretation", "Source Registration")
             event.set_property("manifestation", Zeitgeist.USER_ACTIVITY)
-            event.set_property("actor", "application://rhythmbox.desktop")
+            event.set_property("actor", "application://org.gnome.Rhythmbox3.desktop")
 
             datasource = Zeitgeist.DataSource.new()
             datasource.set_unique_id("org.gnome.Rhythmbox3,dataprovider")
@@ -165,7 +165,7 @@ class ZeitgeistPlugin(GObject.Object, Peas.Activatable):
             event.set_property("timestamp", int(time.time()*1000))
             event.set_property("interpretation", str(event_type))
             event.set_property("manifestation", str(manifest))
-            event.set_property("actor", "application://rhythmbox.desktop")
+            event.set_property("actor", "application://org.gnome.Rhythmbox3.desktop")
             event.add_subject(subject)
 
             logger.insert_event(event)

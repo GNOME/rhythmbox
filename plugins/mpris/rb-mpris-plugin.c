@@ -291,9 +291,9 @@ get_root_property (GDBusConnection *connection,
 		char *path;
 
 #ifdef USE_UNINSTALLED_DIRS
-		path = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "rhythmbox.desktop", NULL);
+		path = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "org.gnome.Rhythmbox3.desktop", NULL);
 #else
-		path = g_build_filename (DATADIR, "applications", "rhythmbox.desktop", NULL);
+		path = g_build_filename (DATADIR, "applications", "org.gnome.Rhythmbox3.desktop", NULL);
 #endif
 		if (path != NULL) {
 			char *basename;

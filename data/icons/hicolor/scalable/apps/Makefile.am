@@ -5,8 +5,8 @@ context = apps
 iconsdir = $(themedir)/$(size)/$(context)
 
 icons_DATA = \
-	org.gnome.Rhythmbox.svg \
-	org.gnome.Rhythmbox-symbolic.svg
+	org.gnome.Rhythmbox3.svg \
+	org.gnome.Rhythmbox3-symbolic.svg
 
 noinst_DATA =
 
