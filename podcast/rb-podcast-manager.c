@@ -1970,6 +1970,7 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 	gboolean retry;
 	gboolean eof;
 	goffset start, end, total;
+	gboolean range_request;
 	int retries;
 	GValue val = {0,};
 	char *dl_uri;
@@ -1982,6 +1983,7 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 	 */
 	retries = 5;
 	remote_size = 0;
+	range_request = TRUE;
 	while (retries-- > 0) {
 		if (download->in_stream != NULL) {
 			g_input_stream_close (download->in_stream, NULL, NULL);
@@ -2113,6 +2115,12 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 			soup_message_headers_set_range (download->request->request_headers, downloaded, -1);
 		download->in_stream = soup_session_send (pd->priv->soup_session, download->request, download->cancel, &error);
 		if (error == NULL && !SOUP_STATUS_IS_SUCCESSFUL (download->request->status_code)) {
+			if (download->request->status_code == SOUP_STATUS_REQUESTED_RANGE_NOT_SATISFIABLE) {
+				rb_debug ("got requested range not satisfiable, disabling resume and retrying");
+				range_request = FALSE;
+				downloaded = 0;
+				continue;
+			}
 			error = g_error_new (SOUP_HTTP_ERROR, download->request->status_code, "%s", download->request->reason_phrase);
 		}
 
@@ -2139,6 +2147,7 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 				remote_size = total;
 				rb_debug ("resuming download at offset %ld, %ld bytes left", start, total);
 			} else {
+				range_request = FALSE;
 				downloaded = 0;
 				remote_size = soup_message_headers_get_content_length (download->request->response_headers);
 				rb_debug ("server didn't honour range request, starting again, total %ld", remote_size);
@@ -2215,7 +2224,11 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 				rb_debug ("full file downloaded");
 				break;
 			}
-			rb_debug ("haven't got the whole file yet, retrying");
+			if (range_request == FALSE) {
+				rb_debug ("range request not supported, restarting");
+				downloaded = 0;
+			} else
+				rb_debug ("haven't got the whole file yet, retrying at %ld", downloaded);
 		} else if (retry == FALSE) {
 			rb_debug ("not retrying");
 			break;
