@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2020-09-02 12:52+0000\n"
-"PO-Revision-Date: 2020-09-21 19:07+0200\n"
+"POT-Creation-Date: 2020-10-16 07:19+0000\n"
+"PO-Revision-Date: 2021-01-16 19:51+0100\n"
 "Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "Language-Team: Friulian <fur@li.org>\n"
 "Language: fur\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #: ../backends/gstreamer/rb-encoder-gst.c:649
 #, c-format
@@ -579,8 +579,8 @@ msgid "Save Playlist"
 msgstr "Salve liste des musichis"
 
 #: ../data/ui/playlist-save.ui.h:3 ../plugins/artsearch/songinfo.py:135
-#: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:534
-#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:187
+#: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:535
+#: ../podcast/rb-podcast-source.c:1105 ../shell/rb-track-transfer-queue.c:187
 #: ../widgets/rb-alert-dialog.c:384 ../widgets/rb-alert-dialog.c:401
 #: ../widgets/rb-dialog.c:131 ../widgets/rb-dialog.c:139
 #: ../widgets/rb-query-creator.c:191 ../widgets/rb-uri-dialog.c:158
@@ -688,7 +688,7 @@ msgid "Cancel Download"
 msgstr "Anule discjariament"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1237 ../sources/rb-media-player-source.c:1104
+#: ../podcast/rb-podcast-source.c:1238 ../sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Elimine"
 
@@ -970,11 +970,11 @@ msgstr "%d di %b dal %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
 #: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1326
-#: ../podcast/rb-podcast-manager.c:1425
+#: ../podcast/rb-podcast-add-dialog.c:615 ../podcast/rb-podcast-manager.c:1330
+#: ../podcast/rb-podcast-manager.c:1429
 #: ../podcast/rb-podcast-properties-dialog.c:641
 #: ../podcast/rb-podcast-properties-dialog.c:705
-#: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
+#: ../podcast/rb-podcast-source.c:795 ../remote/dbus/rb-client.c:215
 #: ../remote/dbus/rb-client.c:732 ../rhythmdb/rhythmdb.c:2068
 #: ../rhythmdb/rhythmdb.c:2074 ../rhythmdb/rhythmdb.c:2089
 #: ../rhythmdb/rhythmdb.c:2123 ../rhythmdb/rhythmdb.c:5573
@@ -1805,7 +1805,7 @@ msgstr ""
 
 #: ../plugins/daap/daap-prefs.ui.h:7
 msgid "Add Remote"
-msgstr "Zonte rimot"
+msgstr "Zonte esterni"
 
 #: ../plugins/daap/daap-prefs.ui.h:8
 msgid "Please enter the passcode displayed on your device."
@@ -1867,7 +1867,7 @@ msgstr ""
 
 #: ../plugins/daap/rb-dacp-pairing-page.c:612
 msgid "Remotes"
-msgstr "Rimots"
+msgstr "Esternis"
 
 #: ../plugins/dbus-media-server/dbus-media-server.plugin.in.h:1
 msgid "MediaServer2 D-Bus interface"
@@ -2008,7 +2008,7 @@ msgstr ""
 
 #: ../plugins/ipod/ipod-info.ui.h:1
 msgid "iPod _name:"
-msgstr ""
+msgstr "_Non dal iPod:"
 
 #: ../plugins/ipod/ipod-info.ui.h:3 ../plugins/mtpdevice/mtp-info.ui.h:9
 msgid "Podcasts:"
@@ -2016,35 +2016,35 @@ msgstr ""
 
 #: ../plugins/ipod/ipod-info.ui.h:5
 msgid "Device node:"
-msgstr ""
+msgstr "Grop dispositîf:"
 
 #: ../plugins/ipod/ipod-info.ui.h:6
 msgid "Mount point:"
-msgstr ""
+msgstr "Pont di montaç:"
 
 #: ../plugins/ipod/ipod-info.ui.h:7
 msgid "Database version:"
-msgstr ""
+msgstr "Version base di dâts:"
 
 #: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:3
 msgid "Firmware version:"
-msgstr ""
+msgstr "Version Firmware:"
 
 #: ../plugins/ipod/ipod-init.ui.h:1
 msgid "iPod detected"
-msgstr ""
+msgstr "Rilevât iPod"
 
 #: ../plugins/ipod/ipod-init.ui.h:3
 msgid "_Initialize"
-msgstr ""
+msgstr "_Inizialize"
 
 #: ../plugins/ipod/ipod-init.ui.h:4
 msgid "_Name:"
-msgstr ""
+msgstr "_Non:"
 
 #: ../plugins/ipod/ipod-init.ui.h:5
 msgid "_Model:"
-msgstr ""
+msgstr "_Model:"
 
 #: ../plugins/ipod/ipod-init.ui.h:6
 msgid ""
@@ -2057,7 +2057,7 @@ msgstr ""
 
 #: ../plugins/ipod/ipod-init.ui.h:7
 msgid "Do you want to initialize your iPod?"
-msgstr ""
+msgstr "Desideristu inizializâ il to iPod?"
 
 #: ../plugins/ipod/ipod.plugin.in.h:1
 msgid "Portable Players - iPod"
@@ -2069,11 +2069,11 @@ msgstr ""
 
 #: ../plugins/ipod/rb-ipod-source.c:317
 msgid "New playlist"
-msgstr ""
+msgstr "Gnove liste di musichis"
 
 #: ../plugins/ipod/rb-ipod-source.c:461
 msgid "Unable to initialize new iPod"
-msgstr ""
+msgstr "Impussibil inizializâ il gnûf iPod"
 
 #: ../plugins/ipod/rb-ipod-source.c:1492 ../podcast/rb-podcast-main-source.c:76
 #: ../sources/sync/rb-sync-settings-ui.c:263
@@ -2093,12 +2093,12 @@ msgstr ""
 #: ../plugins/iradio/iradio-popup.ui.h:1 ../shell/rb-shell-clipboard.c:258
 #: ../sources/rb-source.c:1230 ../widgets/rb-query-creator.c:802
 msgid "Remove"
-msgstr ""
+msgstr "Gjave"
 
 #: ../plugins/iradio/rb-iradio-source.c:332 ../widgets/rb-entry-view.c:1484
 #: ../widgets/rb-library-browser.c:134
 msgid "Genre"
-msgstr ""
+msgstr "Gjenar"
 
 #: ../plugins/iradio/rb-iradio-source.c:352
 msgid "Search your internet radio stations"
@@ -2106,32 +2106,33 @@ msgstr ""
 
 #: ../plugins/iradio/rb-iradio-source.c:448
 msgid "Radio"
-msgstr ""
+msgstr "Radio"
 
 #: ../plugins/iradio/rb-iradio-source.c:588
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d stazion"
+msgstr[1] "%d stazions"
 
 #. should prevent multiple dialogs?  going to kill this nonsense anyway soon..
 #: ../plugins/iradio/rb-iradio-source.c:958
 #: ../plugins/iradio/rb-station-properties-dialog.c:399
 msgid "New Internet Radio Station"
-msgstr ""
+msgstr "Gnove stazion radio di internet"
 
 #: ../plugins/iradio/rb-iradio-source.c:958
 msgid "URL of internet radio station:"
-msgstr ""
+msgstr "URL de stazion radio di internet:"
 
+# %s e je une stringhe, duncje si supon un non
 #: ../plugins/iradio/rb-station-properties-dialog.c:395
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
 #: ../podcast/rb-podcast-properties-dialog.c:526
 #: ../sources/rb-media-player-source.c:567 ../widgets/rb-song-info.c:1151
-#, c-format
+#, fuzzy, c-format
 msgid "%s Properties"
-msgstr ""
+msgstr "Proprietâts di %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:487
 #: ../podcast/rb-podcast-properties-dialog.c:639
@@ -2222,10 +2223,7 @@ msgid "Searching for lyrics..."
 msgstr ""
 
 #. { 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
-#: ../plugins/lyrics/LyricsSites.py:42
-msgid "WinampCN (www.winampcn.com)"
-msgstr ""
-
+#. { 'id': 'winampcn.com', 	'class': WinampcnParser, 	'name': _("WinampCN (www.winampcn.com)") 	},
 #: ../plugins/lyrics/LyricsSites.py:43
 msgid "TerraBrasil (terra.com.br)"
 msgstr ""
@@ -2824,38 +2822,38 @@ msgstr ""
 msgid "Launch web remote control"
 msgstr ""
 
-#: ../podcast/rb-podcast-add-dialog.c:271 ../podcast/rb-podcast-source.c:735
+#: ../podcast/rb-podcast-add-dialog.c:271 ../podcast/rb-podcast-source.c:736
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../podcast/rb-podcast-add-dialog.c:306
+#: ../podcast/rb-podcast-add-dialog.c:316
 msgid "Unable to load the feed. Check your network connection."
 msgstr ""
 
-#: ../podcast/rb-podcast-add-dialog.c:431
+#: ../podcast/rb-podcast-add-dialog.c:437
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr ""
 
-#: ../podcast/rb-podcast-add-dialog.c:744 ../sources/rb-library-source.c:134
+#: ../podcast/rb-podcast-add-dialog.c:755 ../sources/rb-library-source.c:134
 #: ../widgets/rb-entry-view.c:1444
 msgid "Title"
 msgstr ""
 
-#: ../podcast/rb-podcast-add-dialog.c:755
+#: ../podcast/rb-podcast-add-dialog.c:766
 msgid "Author"
 msgstr ""
 
-#: ../podcast/rb-podcast-add-dialog.c:760
-#: ../podcast/rb-podcast-add-dialog.c:763
+#: ../podcast/rb-podcast-add-dialog.c:771
+#: ../podcast/rb-podcast-add-dialog.c:774
 msgid "Episodes"
 msgstr ""
 
-#: ../podcast/rb-podcast-add-dialog.c:797
-#: ../podcast/rb-podcast-add-dialog.c:808 ../podcast/rb-podcast-source.c:1357
-#: ../podcast/rb-podcast-source.c:1368
+#: ../podcast/rb-podcast-add-dialog.c:808
+#: ../podcast/rb-podcast-add-dialog.c:819 ../podcast/rb-podcast-source.c:1358
+#: ../podcast/rb-podcast-source.c:1369
 msgid "Date"
 msgstr ""
 
@@ -2888,28 +2886,12 @@ msgstr ""
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:710
-msgid "Invalid URL"
-msgstr ""
-
-#: ../podcast/rb-podcast-manager.c:711
+#: ../podcast/rb-podcast-manager.c:724
 #, c-format
-msgid "The URL \"%s\" is not valid, please check it."
+msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
 
-#. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:722
-msgid "URL already added"
-msgstr ""
-
-#: ../podcast/rb-podcast-manager.c:723
-#, c-format
-msgid ""
-"The URL \"%s\" has already been added as a radio station. If this is a "
-"podcast feed, please remove the radio station."
-msgstr ""
-
-#: ../podcast/rb-podcast-manager.c:823
+#: ../podcast/rb-podcast-manager.c:785
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2917,31 +2899,28 @@ msgid ""
 "anyway?"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:939
+#. added as something else, probably iradio
+#: ../podcast/rb-podcast-manager.c:835
+msgid "URL already added"
+msgstr ""
+
+#: ../podcast/rb-podcast-manager.c:836
+#, c-format
+msgid ""
+"The URL \"%s\" has already been added as a radio station. If this is a "
+"podcast feed, please remove the radio station."
+msgstr ""
+
+#: ../podcast/rb-podcast-manager.c:942
 msgid "Podcast"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:1642
-#, c-format
-msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
-msgstr ""
-
-#: ../podcast/rb-podcast-parse.c:181
-#, c-format
-msgid "Unable to check file type: %s"
-msgstr ""
-
-#: ../podcast/rb-podcast-parse.c:200
-#, c-format
-msgid "Unexpected file type: %s"
-msgstr ""
-
-#: ../podcast/rb-podcast-parse.c:223
+#: ../podcast/rb-podcast-parse.c:179
 #, c-format
 msgid "Unable to parse the feed contents"
 msgstr ""
 
-#: ../podcast/rb-podcast-parse.c:237
+#: ../podcast/rb-podcast-parse.c:189
 #, c-format
 msgid "The feed does not contain any downloadable items"
 msgstr ""
@@ -2950,88 +2929,88 @@ msgstr ""
 msgid "Not Downloaded"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:521
+#: ../podcast/rb-podcast-source.c:522
 msgid "Delete the podcast feed and downloaded files?"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:524
+#: ../podcast/rb-podcast-source.c:525
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
 "choosing to delete the feed only."
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:532
+#: ../podcast/rb-podcast-source.c:533
 msgid "Delete _Feed Only"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:539
+#: ../podcast/rb-podcast-source.c:540
 msgid "_Delete Feed And Files"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1411
+#: ../podcast/rb-podcast-source.c:621 ../podcast/rb-podcast-source.c:1412
 msgid "Downloaded"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1413
+#: ../podcast/rb-podcast-source.c:625 ../podcast/rb-podcast-source.c:1414
 msgid "Failed"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1412
+#: ../podcast/rb-podcast-source.c:629 ../podcast/rb-podcast-source.c:1413
 msgid "Waiting"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:957
+#: ../podcast/rb-podcast-source.c:958
 msgid "Podcast Error"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1091
+#: ../podcast/rb-podcast-source.c:1092
 msgid "Delete the podcast episode and downloaded file?"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1094
+#: ../podcast/rb-podcast-source.c:1095
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
 "file by choosing to delete the episode only."
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1102
+#: ../podcast/rb-podcast-source.c:1103
 msgid "Delete _Episode Only"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1108
+#: ../podcast/rb-podcast-source.c:1109
 msgid "_Delete Episode And File"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1214
+#: ../podcast/rb-podcast-source.c:1215
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../podcast/rb-podcast-source.c:1390 ../podcast/rb-podcast-source.c:1445
-#: ../podcast/rb-podcast-source.c:1484
+#: ../podcast/rb-podcast-source.c:1391 ../podcast/rb-podcast-source.c:1446
+#: ../podcast/rb-podcast-source.c:1485
 msgid "Feed"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1410 ../podcast/rb-podcast-source.c:1428
+#: ../podcast/rb-podcast-source.c:1411 ../podcast/rb-podcast-source.c:1429
 msgid "Status"
 msgstr ""
 
 #. ensure search instances exist
-#: ../podcast/rb-podcast-source.c:1530 ../sources/rb-auto-playlist-source.c:253
+#: ../podcast/rb-podcast-source.c:1531 ../sources/rb-auto-playlist-source.c:253
 #: ../sources/rb-browser-source.c:314 ../sources/rb-browser-source.c:332
 #: ../sources/rb-static-playlist-source.c:295
 msgid "Search all fields"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1531
+#: ../podcast/rb-podcast-source.c:1532
 msgid "Search podcast feeds"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1532
+#: ../podcast/rb-podcast-source.c:1533
 msgid "Search podcast episodes"
 msgstr ""
 
@@ -3694,7 +3673,6 @@ msgid "Playback"
 msgstr ""
 
 #: ../shell/rb-shell-preferences.c:428
-#| msgid "P_lugins"
 msgid "Plugins"
 msgstr "Plugins"
 
