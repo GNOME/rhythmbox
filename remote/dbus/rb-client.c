@@ -1165,6 +1165,7 @@ main (int argc, char **argv)
 	if (quit) {
 		rb_debug ("quitting existing instance");
 		g_action_group_activate_action (G_ACTION_GROUP (app), "quit", NULL);
+		g_dbus_connection_flush_sync (bus, NULL, NULL);
 		exit (0);
 	}
 
