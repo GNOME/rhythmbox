@@ -459,7 +459,7 @@ podcast_download_cancel_action_cb (GSimpleAction *action, GVariant *parameter, g
 		RhythmDBEntry *entry  = (RhythmDBEntry *) lst->data;
 		gulong status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
 
-		if ((status > 0 && status < RHYTHMDB_PODCAST_STATUS_COMPLETE) ||
+		if (status < RHYTHMDB_PODCAST_STATUS_COMPLETE ||
 		    status == RHYTHMDB_PODCAST_STATUS_WAITING) {
 			if (rb_podcast_manager_cancel_download (source->priv->podcast_mgr, entry) == FALSE) {
 				rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
