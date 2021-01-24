@@ -1718,8 +1718,6 @@ podcast_download_cb (GObject *source_object, GAsyncResult *res, gpointer data)
 			g_value_set_string (&val, error->message);
 			rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
 			g_value_unset (&val);
-
-			rhythmdb_commit (pd->priv->db);
 		} else {
 			rb_debug ("download of %s was cancelled", get_remote_location (download->entry));
 			g_value_init (&val, G_TYPE_ULONG);
@@ -1728,6 +1726,7 @@ podcast_download_cb (GObject *source_object, GAsyncResult *res, gpointer data)
 			g_value_unset (&val);
 		}
 
+		rhythmdb_commit (pd->priv->db);
 		g_clear_error (&error);
 	}
 
