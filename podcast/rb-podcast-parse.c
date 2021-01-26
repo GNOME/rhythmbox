@@ -37,6 +37,7 @@
 #include <glib/gprintf.h>
 
 #include "rb-debug.h"
+#include "rb-util.h"
 #include "rb-podcast-parse.h"
 #include "rb-file-helpers.h"
 
@@ -220,10 +221,18 @@ rb_podcast_parse_load_feed (RBPodcastChannel *channel,
 }
 
 RBPodcastChannel *
+rb_podcast_parse_channel_new (void)
+{
+	RBPodcastChannel *data;
+	data = g_new0 (RBPodcastChannel, 1);
+	data->refcount = 1;
+	return data;
+}
+
+RBPodcastChannel *
 rb_podcast_parse_channel_copy (RBPodcastChannel *data)
 {
-	RBPodcastChannel *copy;
-	copy = g_new0 (RBPodcastChannel, 1);
+	RBPodcastChannel *copy = rb_podcast_parse_channel_new ();
 	copy->url = g_strdup (data->url);
 	copy->title = g_strdup (data->title);
 	copy->lang = g_strdup (data->lang);
@@ -250,10 +259,22 @@ rb_podcast_parse_channel_copy (RBPodcastChannel *data)
 	return copy;
 }
 
+RBPodcastChannel *
+rb_podcast_parse_channel_ref (RBPodcastChannel *data)
+{
+	data->refcount++;
+	return data;
+}
+
 void
-rb_podcast_parse_channel_free (RBPodcastChannel *data)
+rb_podcast_parse_channel_unref (RBPodcastChannel *data)
 {
 	g_return_if_fail (data != NULL);
+	g_assert (rb_is_main_thread ());
+
+	if (--data->refcount > 0) {
+		return;
+	}
 
 	g_list_foreach (data->posts, (GFunc) rb_podcast_parse_item_free, NULL);
 	g_list_free (data->posts);
@@ -269,7 +290,6 @@ rb_podcast_parse_channel_free (RBPodcastChannel *data)
 	g_free (data->copyright);
 
 	g_free (data);
-	data = NULL;
 }
 
 RBPodcastItem *
@@ -307,7 +327,7 @@ rb_podcast_channel_get_type (void)
 	if (G_UNLIKELY (type == 0)) {
 		type = g_boxed_type_register_static ("RBPodcastChannel",
 						     (GBoxedCopyFunc)rb_podcast_parse_channel_copy,
-						     (GBoxedFreeFunc)rb_podcast_parse_channel_free);
+						     (GBoxedFreeFunc)rb_podcast_parse_channel_unref);
 	}
 	return type;
 }

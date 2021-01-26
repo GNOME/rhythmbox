@@ -670,7 +670,7 @@ podcast_update_free (RBPodcastUpdate *update)
 	g_object_unref (pd);
 
 	g_clear_error (&update->error);
-	rb_podcast_parse_channel_free (update->channel);
+	rb_podcast_parse_channel_unref (update->channel);
 	g_free (update);
 }
 

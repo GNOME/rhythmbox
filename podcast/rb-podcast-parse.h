@@ -55,6 +55,8 @@ typedef struct
 
 typedef struct
 {
+	int refcount;
+
 	char* url;
 	char* title;
 	char* lang;
@@ -83,9 +85,11 @@ void	rb_podcast_parse_load_feed (RBPodcastChannel *data,
 				    RBPodcastParseCallback callback,
 				    gpointer user_data);
 
+RBPodcastChannel *rb_podcast_parse_channel_new (void);
 RBPodcastChannel *rb_podcast_parse_channel_copy (RBPodcastChannel *data);
 RBPodcastItem *rb_podcast_parse_item_copy (RBPodcastItem *data);
-void rb_podcast_parse_channel_free 	(RBPodcastChannel *data);
+RBPodcastChannel *rb_podcast_parse_channel_ref	(RBPodcastChannel *data);
+void rb_podcast_parse_channel_unref 	(RBPodcastChannel *data);
 void rb_podcast_parse_item_free 	(RBPodcastItem *data);
 
 #endif /* RB_PODCAST_PARSE_H */

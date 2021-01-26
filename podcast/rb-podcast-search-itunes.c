@@ -93,7 +93,7 @@ process_results (RBPodcastSearchITunes *search, JsonParser *parser)
 
 		rb_debug ("got result %s (%s)", channel->title, channel->url);
 		rb_podcast_search_result (RB_PODCAST_SEARCH (search), channel);
-		rb_podcast_parse_channel_free (channel);
+		rb_podcast_parse_channel_unref (channel);
 	}
 }
 

@@ -125,7 +125,7 @@ remove_all_feeds_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, 
 {
 	RBPodcastChannel *channel;
 	gtk_tree_model_get (model, iter, FEED_COLUMN_PARSED_FEED, &channel, -1);
-	rb_podcast_parse_channel_free (channel);
+	rb_podcast_parse_channel_unref (channel);
 	return FALSE;
 }
 
@@ -304,7 +304,7 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 
 	if (data->reset_count != data->dialog->priv->reset_count) {
 		rb_debug ("dialog reset while parsing");
-		rb_podcast_parse_channel_free (data->channel);
+		rb_podcast_parse_channel_unref (data->channel);
 		g_object_unref (data->dialog);
 		g_clear_error (&data->error);
 		g_free (data);
@@ -327,14 +327,14 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 			RBPodcastItem *item;
 
 			item = l->data;
-			channel = g_new0 (RBPodcastChannel, 1);
+			channel = rb_podcast_parse_channel_new ();
 			channel->url = g_strdup (item->url);
 			channel->title = g_strdup (item->title);
 			/* none of the other fields get populated anyway */
 			insert_search_result (data->dialog, channel, FALSE);
 		}
 		update_feed_status (data->dialog);
-		rb_podcast_parse_channel_free (data->channel);
+		rb_podcast_parse_channel_unref (data->channel);
 	} else if (data->existing) {
 		GtkTreeIter iter;
 		gboolean found = FALSE;
@@ -355,7 +355,7 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 
 		/* if the row is selected, create entries for the channel contents */
 		if (found == FALSE) {
-			rb_podcast_parse_channel_free (data->channel);
+			rb_podcast_parse_channel_unref (data->channel);
 		} else if (data->dialog->priv->have_selection) {
 			GtkTreePath *a;
 			GtkTreePath *b;
@@ -375,6 +375,7 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 		update_feed_status (data->dialog);
 	}
 
+	rb_podcast_parse_channel_unref (data->channel);
 	g_object_unref (data->dialog);
 	g_clear_error (&data->error);
 	g_free (data);
@@ -386,7 +387,7 @@ parse_search_text (RBPodcastAddDialog *dialog, const char *text)
 	ParseData *data;
 	RBPodcastChannel *channel;
 
-	channel = g_new0 (RBPodcastChannel, 1);
+	channel = rb_podcast_parse_channel_new ();
 	channel->url = g_strdup (text);
 
 	data = g_new0 (ParseData, 1);
@@ -406,7 +407,7 @@ parse_search_result (RBPodcastAddDialog *dialog, RBPodcastChannel *channel)
 
 	data = g_new0 (ParseData, 1);
 	data->dialog = g_object_ref (dialog);
-	data->channel = channel;
+	data->channel = rb_podcast_parse_channel_ref (channel);
 	data->existing = TRUE;
 	data->single = FALSE;
 	data->reset_count = dialog->priv->reset_count;
