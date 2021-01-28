@@ -354,9 +354,7 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 		}
 
 		/* if the row is selected, create entries for the channel contents */
-		if (found == FALSE) {
-			rb_podcast_parse_channel_unref (data->channel);
-		} else if (data->dialog->priv->have_selection) {
+		if (found && data->dialog->priv->have_selection) {
 			GtkTreePath *a;
 			GtkTreePath *b;
 
