@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the rhythmbox package.
 # Предраг Кртолица <predrag_k@optusnet.com.au>
 # Милош Поповић <gpopac@gmail.com>, 2010.
-# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2011—2021.
 # Марко М. Костић <marko.m.kostic@gmail.com>
+# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2011—2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2020-10-16 07:19+0000\n"
-"PO-Revision-Date: 2021-01-20 09:56+0200\n"
+"POT-Creation-Date: 2021-01-20 09:01+0000\n"
+"PO-Revision-Date: 2021-02-05 08:49+0200\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: српски <gnome-sr@googlegroups.org>\n"
 "Language: sr\n"
@@ -36,7 +36,7 @@ msgstr ""
 #. ?
 #. Translators: the parameter here is an error message
 #: ../backends/gstreamer/rb-player-gst.c:520
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2931
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2944
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Не могу да отворим излазни уређај: %s"
@@ -51,45 +51,45 @@ msgstr "Не могу да направим „playbin“ елемент; про
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr "Не могу да направим „%s“ елемент; проверите инсталацију Гстримера"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1107
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1121
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1110
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1125
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Не могу да повежем нови ток у Гстример"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1167
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1170
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Не могу да почнем нови ток"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2844
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2857
 #, c-format
 msgid "Failed to open output device"
 msgstr "Не могу да отворим излазни уређај"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3233
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3312
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3246
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3325
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "Не могу да направим Гстример елемент; проверите инсталацију програма"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3242
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3255
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Не могу да направим елемент звучног излаза; проверите инсталацију програма"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3276
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3329
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3356
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3366
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3376
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3289
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3342
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3369
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3379
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3389
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "Не могу да повежем Гстример процес; проверите инсталацију програма"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3471
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3484
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "Не могу да направим Гстример процес како бих пустио „%s“"
@@ -106,18 +106,20 @@ msgstr "Последње слушане"
 msgid "My Top Rated"
 msgstr "Најбоље оцењене"
 
-#: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
+#: ../data/org.gnome.Rhythmbox3.appdata.xml.in.h:1
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:1
+#: ../data/org.gnome.Rhythmbox3.device.desktop.in.in.h:1 ../shell/main.c:79
 #: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2389
 msgid "Rhythmbox"
 msgstr "Ритам машина"
 
-#: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
-#: ../data/rhythmbox-device.desktop.in.in.h:4
+#: ../data/org.gnome.Rhythmbox3.appdata.xml.in.h:2
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:4
+#: ../data/org.gnome.Rhythmbox3.device.desktop.in.in.h:4
 msgid "Play and organize your music collection"
 msgstr "Слушајте и уређујте музичку збирку"
 
-#: ../data/rhythmbox.appdata.xml.in.h:3
+#: ../data/org.gnome.Rhythmbox3.appdata.xml.in.h:3
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -130,7 +132,7 @@ msgstr ""
 "(укључујући телефоне), и интернетне услуге музике као што су Ласт.фм и "
 "Мегатјун."
 
-#: ../data/rhythmbox.appdata.xml.in.h:4
+#: ../data/org.gnome.Rhythmbox3.appdata.xml.in.h:4
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
@@ -138,17 +140,17 @@ msgstr ""
 "Ритам машина је слободан софтвер, заснован на Гтк+ и Гстримеру, и може се "
 "проширити прикључцима писаним у Питону или Ц-у."
 
-#: ../data/rhythmbox.desktop.in.in.h:2
-#: ../data/rhythmbox-device.desktop.in.in.h:2
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:2
+#: ../data/org.gnome.Rhythmbox3.device.desktop.in.in.h:2
 msgid "Music Player"
 msgstr "Музички програм"
 
-#: ../data/rhythmbox.desktop.in.in.h:3
-#: ../data/rhythmbox-device.desktop.in.in.h:3
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:3
+#: ../data/org.gnome.Rhythmbox3.device.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
 msgstr "Ритам машина музички програм"
 
-#: ../data/rhythmbox.desktop.in.in.h:5
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
 "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;pesma;"
@@ -615,10 +617,6 @@ msgid "Playlist"
 msgstr "Списак нумера"
 
 #: ../data/ui/podcast-add-dialog.ui.h:1
-#| msgid ""
-#| "Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
-#| "podcast feed URL.\n"
-#| "Subscribe to podcasts to download new episodes as they are published."
 msgid ""
 "Search for podcasts in the iTunes Store, or enter a podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
@@ -1162,7 +1160,6 @@ msgid "Scanning %s"
 msgstr "Прегледам %s"
 
 #: ../plugins/android/rb-android-source.c:428
-#| msgid "Android devices"
 msgid "Error mounting Android device"
 msgstr "Грешка качења Андроид уређаја"
 
@@ -4170,7 +4167,6 @@ msgid "Variable bit rate"
 msgstr "Променљив битски проток"
 
 #: ../widgets/rb-encoding-settings.c:57
-#, fuzzy
 #| msgid "Variable bit rate"
 msgid "Constrained Variable bit rate"
 msgstr "Ограничен променљив битски проток"
