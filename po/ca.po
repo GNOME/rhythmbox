@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2019-12-27 19:02+0000\n"
+"POT-Creation-Date: 2021-01-15 19:58+0000\n"
 "PO-Revision-Date: 2020-01-27 21:02+0100\n"
 "Last-Translator: Jordi Mas <jmas@softcatala.org>\n"
 "Language-Team: softcatala\n"
@@ -38,7 +38,7 @@ msgstr ""
 #. ?
 #. Translators: the parameter here is an error message
 #: ../backends/gstreamer/rb-player-gst.c:520
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2931
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2944
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "No s'ha pogut obrir el dispositiu de sortida: %s"
@@ -56,46 +56,47 @@ msgid "Failed to create %s element; check your GStreamer installation"
 msgstr ""
 "No s'ha pogut crear l'element %s, comproveu la instal·lació del GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1107
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1121
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1110
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1125
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "No s'ha pogut enllaçar el flux nou al conducte del GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1167
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1170
 #, c-format
 msgid "Failed to start new stream"
 msgstr "No s'ha pogut iniciar el flux nou"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2844
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2857
 #, c-format
 msgid "Failed to open output device"
 msgstr "No s'ha pogut obrir el dispositiu de sortida"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3233
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3312
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3246
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3325
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
-msgstr "No s'ha pogut crear l'element del GStreamer, comproveu la instal·lació"
+msgstr ""
+"No s'ha pogut crear l'element del GStreamer, comproveu la instal·lació"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3242
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3255
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "No s'ha pogut crear un element de sortida d'àudio, comproveu la instal·lació"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3276
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3329
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3356
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3366
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3376
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3289
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3342
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3369
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3379
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3389
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "No s'ha pogut enllaçar el conducte del GStreamer, comproveu la instal·lació"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3471
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3484
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "No s'ha pogut crear el conducte del GStreamer per a reproduir %s"
@@ -112,21 +113,23 @@ msgstr "Reproduïdes recentment"
 msgid "My Top Rated"
 msgstr "Les millor puntuades"
 
-#: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
-#: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2387
+#: ../data/org.gnome.Rhythmbox3.appdata.xml.in.h:1
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:1
+#: ../data/org.gnome.Rhythmbox3.device.desktop.in.in.h:1 ../shell/main.c:79
+#: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2389
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
-#: ../data/rhythmbox-device.desktop.in.in.h:4
+#: ../data/org.gnome.Rhythmbox3.appdata.xml.in.h:2
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:4
+#: ../data/org.gnome.Rhythmbox3.device.desktop.in.in.h:4
 msgid "Play and organize your music collection"
 msgstr "Reproduïu i organitzeu la col·lecció de música"
 
-#: ../data/rhythmbox.appdata.xml.in.h:3
+#: ../data/org.gnome.Rhythmbox3.appdata.xml.in.h:3
 msgid ""
-"Rhythmbox is a music management application, designed to work well under the "
-"GNOME desktop. In addition to music stored on your computer, it supports "
+"Rhythmbox is a music management application, designed to work well under the"
+" GNOME desktop. In addition to music stored on your computer, it supports "
 "network shares, podcasts, radio streams, portable music devices (including "
 "phones), and internet music services such as Last.fm and Magnatune."
 msgstr ""
@@ -136,7 +139,7 @@ msgstr ""
 "ràdio, dispositius de música portable (inclosos telèfons) i serveis de "
 "música d'Internet com Last.fm o Magnatune."
 
-#: ../data/rhythmbox.appdata.xml.in.h:4
+#: ../data/org.gnome.Rhythmbox3.appdata.xml.in.h:4
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
@@ -144,21 +147,21 @@ msgstr ""
 "El Rhythmbox és programari lliure, basat en GTK+ i GStreamer, i és "
 "extensible mitjançant connectors escrits en Python o C."
 
-#: ../data/rhythmbox.desktop.in.in.h:2
-#: ../data/rhythmbox-device.desktop.in.in.h:2
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:2
+#: ../data/org.gnome.Rhythmbox3.device.desktop.in.in.h:2
 msgid "Music Player"
 msgstr "Reproductor de música"
 
-#: ../data/rhythmbox.desktop.in.in.h:3
-#: ../data/rhythmbox-device.desktop.in.in.h:3
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:3
+#: ../data/org.gnome.Rhythmbox3.device.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
 msgstr "Reproductor de música Rhythmbox"
 
-#: ../data/rhythmbox.desktop.in.in.h:5
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
-"Audio;Cançó;MP3;CD;Podcast;MTP;iPod;Llista de reproducció;Last.fm;UPnP;DLNA;"
-"Ràdio;"
+"Audio;Cançó;MP3;CD;Podcast;MTP;iPod;Llista de "
+"reproducció;Last.fm;UPnP;DLNA;Ràdio;"
 
 #: ../data/ui/app-menu.ui.h:1
 msgid "_View"
@@ -205,7 +208,8 @@ msgid "_About Rhythmbox"
 msgstr "_Quant al Rhythmbox"
 
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
-#: ../data/ui/podcast-popups.ui.h:9 ../plugins/magnatune/magnatune-popup.ui.h:1
+#: ../data/ui/podcast-popups.ui.h:9
+#: ../plugins/magnatune/magnatune-popup.ui.h:1
 msgid "Add to Queue"
 msgstr "Afegeix a la cua de reproducció"
 
@@ -506,10 +510,11 @@ msgstr "Mostra-les totes"
 msgid "Media Player Properties"
 msgstr "Propietats del reproductor multimèdia"
 
-#: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
+#: ../data/ui/media-player-properties.ui.h:2
+#: ../plugins/daap/daap-prefs.ui.h:11
 #: ../plugins/iradio/rb-station-properties-dialog.c:182
 #: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:318
+#: ../podcast/rb-podcast-properties-dialog.c:320
 #: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:377
 #: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
 msgid "_Close"
@@ -595,8 +600,8 @@ msgid "Save Playlist"
 msgstr "Desa la llista de reproducció"
 
 #: ../data/ui/playlist-save.ui.h:3 ../plugins/artsearch/songinfo.py:135
-#: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:534
-#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:187
+#: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:535
+#: ../podcast/rb-podcast-source.c:1105 ../shell/rb-track-transfer-queue.c:187
 #: ../widgets/rb-alert-dialog.c:384 ../widgets/rb-alert-dialog.c:401
 #: ../widgets/rb-dialog.c:131 ../widgets/rb-dialog.c:139
 #: ../widgets/rb-query-creator.c:191 ../widgets/rb-uri-dialog.c:158
@@ -622,13 +627,11 @@ msgstr "Llista de reproducció"
 
 #: ../data/ui/podcast-add-dialog.ui.h:1
 msgid ""
-"Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
-"podcast feed URL.\n"
+"Search for podcasts in the iTunes Store, or enter a podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
-"Cerca si hi ha podcasts a la botiga de l'iTunes i a Miroguide.com o "
-"introduïu l'URL d'un canal de podcasts.\n"
-"Subscriviu-vos a podcasts per baixar-vos els episodis nous quan es publiquin."
+"Cerca si hi ha podcasts a la botiga de l'iTunes, o introduïu l'URL d'un canal de podcasts.\n"
+"Subscriviu-vos a podcasts per a baixar-vos els episodis nous quan es publiquin."
 
 #: ../data/ui/podcast-add-dialog.ui.h:4
 msgid "Subscribe"
@@ -708,7 +711,8 @@ msgid "Cancel Download"
 msgstr "Cancel·la la baixada"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1237 ../sources/rb-media-player-source.c:1104
+#: ../podcast/rb-podcast-source.c:1238
+#: ../sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Suprimeix"
 
@@ -930,9 +934,9 @@ msgstr "Fitxers suprimits:"
 msgid "Never"
 msgstr "Mai"
 
-# FIXME... 24h clock!
 #. Translators: "friendly time" string for the current day, strftime format.
 #. like "Today 12:34 am"
+# FIXME... 24h clock!
 #: ../lib/rb-cut-and-paste-code.c:105
 msgid "Today %I:%M %p"
 msgstr "Avui %H:%M"
@@ -969,7 +973,7 @@ msgstr "%d %b de %Y"
 #. information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:581
-#: ../plugins/android/rb-android-source.c:715
+#: ../plugins/android/rb-android-source.c:729
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -989,11 +993,11 @@ msgstr "%d %b de %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
 #: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
-#: ../podcast/rb-podcast-manager.c:2024
-#: ../podcast/rb-podcast-properties-dialog.c:639
-#: ../podcast/rb-podcast-properties-dialog.c:703
-#: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
+#: ../podcast/rb-podcast-add-dialog.c:615 ../podcast/rb-podcast-manager.c:1330
+#: ../podcast/rb-podcast-manager.c:1429
+#: ../podcast/rb-podcast-properties-dialog.c:641
+#: ../podcast/rb-podcast-properties-dialog.c:705
+#: ../podcast/rb-podcast-source.c:795 ../remote/dbus/rb-client.c:215
 #: ../remote/dbus/rb-client.c:732 ../rhythmdb/rhythmdb.c:2068
 #: ../rhythmdb/rhythmdb.c:2074 ../rhythmdb/rhythmdb.c:2089
 #: ../rhythmdb/rhythmdb.c:2123 ../rhythmdb/rhythmdb.c:5573
@@ -1006,19 +1010,19 @@ msgstr "%d %b de %Y"
 #: ../shell/rb-shell-player.c:2714 ../shell/rb-shell-player.c:2716
 #: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
 #: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
-#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1274
-#: ../widgets/rb-header.c:1300 ../widgets/rb-song-info.c:950
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1275
+#: ../widgets/rb-header.c:1301 ../widgets/rb-song-info.c:950
 #: ../widgets/rb-song-info.c:962 ../widgets/rb-song-info.c:1234
 #: ../widgets/rb-song-info.c:1573
 msgid "Unknown"
 msgstr "Desconegut"
 
-#: ../lib/rb-file-helpers.c:471
+#: ../lib/rb-file-helpers.c:475
 #, c-format
 msgid "Too many symlinks"
 msgstr "Hi ha massa enllaços simbòlics"
 
-#: ../lib/rb-file-helpers.c:1305
+#: ../lib/rb-file-helpers.c:1309
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "No es pot obtenir espai lliure a %s: %s"
@@ -1067,8 +1071,8 @@ msgstr ""
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
 msgstr ""
-"No s'han pogut escriure les etiquetes al fitxer, ja que no està codificat en "
-"un format reconegut"
+"No s'han pogut escriure les etiquetes al fitxer, ja que no està codificat en"
+" un format reconegut"
 
 #: ../metadata/rb-metadata-gst.c:681
 #, c-format
@@ -1089,8 +1093,8 @@ msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
 "installation"
 msgstr ""
-"No s'ha pogut crear l'element «giostreamsink», comproveu la instal·lació del "
-"GStreamer"
+"No s'ha pogut crear l'element «giostreamsink», comproveu la instal·lació del"
+" GStreamer"
 
 #: ../metadata/rb-metadata-gst.c:783
 #, c-format
@@ -1161,17 +1165,17 @@ msgstr ""
 "No s'han trobat àrees d'emmagatzematge en aquest dispositiu. Potser heu de "
 "desbloquejar-lo i activar MTP."
 
-#: ../plugins/android/rb-android-source.c:391
+#: ../plugins/android/rb-android-source.c:405
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "S'estan escanejant %s"
 
-#: ../plugins/android/rb-android-source.c:414
+#: ../plugins/android/rb-android-source.c:428
 msgid "Error mounting Android device"
 msgstr "S'ha produït un error muntant un dispositiu Android"
 
-#: ../plugins/android/rb-android-source.c:809
+#: ../plugins/android/rb-android-source.c:823
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
 #: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
 #: ../sources/rb-transfer-target.c:182
@@ -1477,8 +1481,8 @@ msgstr "escolta %s"
 
 #. Translators: %s is the name of the audioscrobbler service, for example
 #. "Last.fm".
-#. * This is the label for menu item which when activated will take the user to
-#. the
+#. * This is the label for menu item which when activated will take the user
+#. to the
 #. * artist/track's page on the service's website.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1670
 #, c-format
@@ -1514,8 +1518,8 @@ msgstr "Millors fans de l'artista:"
 msgid "Library of User:"
 msgstr "Biblioteca de l'usuari:"
 
-#. Translators: describes a radio stream playing tracks played by users similar
-#. to a
+#. Translators: describes a radio stream playing tracks played by users
+#. similar to a
 #. * particular user.  Followed by a text entry box for the user name.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:67
 msgid "Neighbourhood of User:"
@@ -1578,14 +1582,15 @@ msgid "%s's Library"
 msgstr "Biblioteca de %s"
 
 #. Translators: station is built from the "neighbourhood" of the user %s.
-#. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
+#. * Last.fm uses "neighbourhood" to mean other users with similar music
+#. tastes
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:130
 #, c-format
 msgid "%s's Neighbourhood"
 msgstr "Veïns de %s"
 
-#. Translators: station is built from the tracks which have been "loved" by the
-#. user %s
+#. Translators: station is built from the tracks which have been "loved" by
+#. the user %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:132
 #, c-format
 msgid "%s's Loved Tracks"
@@ -1608,8 +1613,8 @@ msgstr "Ràdio mix de %s"
 
 #. Translators: station is built from the tracks which have been "tagged" with
 #. %s.
-#. * Last.fm lets users "tag" songs with any string they wish. Tags are usually
-#. genres,
+#. * Last.fm lets users "tag" songs with any string they wish. Tags are
+#. usually genres,
 #. * but nationalities, record labels, decades and very random words are also
 #. common
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:141
@@ -1635,8 +1640,8 @@ msgstr "L'URL d'emissora no vàlid"
 #. Subscriber only station
 #. Translators: %s is the name of the audioscrobbler service, for example
 #. "Last.fm".
-#. * This message indicates that to listen to this radio station the user needs
-#. to be
+#. * This message indicates that to listen to this radio station the user
+#. needs to be
 #. * a paying subscriber to the service.
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:731
 #, c-format
@@ -1679,8 +1684,8 @@ msgstr "Gravador de CD d'àudio"
 #: ../plugins/brasero-disc-recorder/cd-recorder.plugin.in.h:2
 msgid "Record audio CDs from playlists and duplicate audio CDs"
 msgstr ""
-"Enregistra un CD d'àudio a partir de les llistes de reproducció i duplica un "
-"CD d'àudio"
+"Enregistra un CD d'àudio a partir de les llistes de reproducció i duplica un"
+" CD d'àudio"
 
 #: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:165
 msgid "Rhythmbox could not duplicate the disc"
@@ -1751,7 +1756,8 @@ msgstr "Subfinestra contextual"
 #: ../plugins/context/context.plugin.in.h:2
 msgid "Show information related to the currently playing artist and song."
 msgstr ""
-"Mostra informació relacionada amb l'artista i la cançó que s'està reproduint."
+"Mostra informació relacionada amb l'artista i la cançó que s'està "
+"reproduint."
 
 #: ../plugins/context/LastFM.py:42
 msgid ""
@@ -2006,7 +2012,7 @@ msgid "Browse various local and Internet media sources"
 msgstr "Navegueu per fonts multimèdia locals o d'Internet"
 
 #: ../plugins/grilo/rb-grilo-source.c:403
-#: ../plugins/soundcloud/soundcloud.py:492
+#: ../plugins/soundcloud/soundcloud.py:486
 msgid "Fetch more tracks"
 msgstr "Aconsegueix més peces"
 
@@ -2106,8 +2112,8 @@ msgstr "_Model:"
 #: ../plugins/ipod/ipod-init.ui.h:6
 msgid ""
 "Rhythmbox has detected a device that is probably an uninitialized or "
-"corrupted iPod. It must be initialized before Rhythmbox can use it, but this "
-"will destroy any song metadata already present. If you wish Rhythmbox to "
+"corrupted iPod. It must be initialized before Rhythmbox can use it, but this"
+" will destroy any song metadata already present. If you wish Rhythmbox to "
 "initialize the iPod, please fill in the information below. If the device is "
 "not an iPod, or you do not wish to initialize it, please click cancel."
 msgstr ""
@@ -2140,7 +2146,8 @@ msgstr "Llista de reproducció nova"
 msgid "Unable to initialize new iPod"
 msgstr "No s'ha pogut inicialitzar l'iPod nou"
 
-#: ../plugins/ipod/rb-ipod-source.c:1492 ../podcast/rb-podcast-main-source.c:76
+#: ../plugins/ipod/rb-ipod-source.c:1492
+#: ../podcast/rb-podcast-main-source.c:76
 #: ../sources/sync/rb-sync-settings-ui.c:263
 #: ../sources/sync/rb-sync-settings-ui.c:264
 #: ../sources/sync/rb-sync-state-ui.c:78
@@ -2192,14 +2199,14 @@ msgstr "URL de l'emissora de ràdio per Internet:"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:395
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:524
+#: ../podcast/rb-podcast-properties-dialog.c:526
 #: ../sources/rb-media-player-source.c:567 ../widgets/rb-song-info.c:1151
 #, c-format
 msgid "%s Properties"
 msgstr "Propietats de %s"
 
 #: ../plugins/iradio/rb-station-properties-dialog.c:487
-#: ../podcast/rb-podcast-properties-dialog.c:637
+#: ../podcast/rb-podcast-properties-dialog.c:639
 #: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1236
 #, c-format
 msgid "%lu kbps"
@@ -2242,9 +2249,12 @@ msgstr "Testimoni d'usuari:"
 #: ../plugins/listenbrainz/settings.ui.h:2
 msgid ""
 "To submit your listens to ListenBrainz, enter your ListenBrainz user token "
-"below. You can see your user token in your <a href=\"https://listenbrainz."
-"org/profile/\">user profile</a>."
+"below. You can see your user token in your <a "
+"href=\"https://listenbrainz.org/profile/\">user profile</a>."
 msgstr ""
+"Per a enviar les vostres reproduccions a ListenBrainz, introduïu el testimoni "
+"d'usuari de ListenBrainz a sota. Podeu veure el testimoni d'usuari en el"
+" vostre <a href=\"https://listenbrainz.org/profile/\">perfil d'usuari</a>."
 
 #: ../plugins/lyrics/LyricsConfigureDialog.py:103
 msgid "Choose lyrics folder..."
@@ -2289,10 +2299,8 @@ msgstr "S'estan cercant les lletres..."
 
 #. { 'id': 'astraweb.com',         'class': AstrawebParser,        'name':
 #. _("Astraweb (www.astraweb.com)")        },
-#: ../plugins/lyrics/LyricsSites.py:42
-msgid "WinampCN (www.winampcn.com)"
-msgstr "WinampCN (www.winampcn.com)"
-
+#. { 'id': 'winampcn.com',         'class': WinampcnParser,        'name':
+#. _("WinampCN (www.winampcn.com)")        },
 #: ../plugins/lyrics/LyricsSites.py:43
 msgid "TerraBrasil (terra.com.br)"
 msgstr "TerraBrasil (terra.com.br)"
@@ -2550,35 +2558,36 @@ msgstr "http://www.magnatune.com/info/"
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:192
+#: ../plugins/magnatune/MagnatuneSource.py:190
 msgid "Couldn't download album"
 msgstr "No s'ha pogut baixar l'àlbum"
 
-#: ../plugins/magnatune/MagnatuneSource.py:193
+#: ../plugins/magnatune/MagnatuneSource.py:191
 msgid "You must have a library location set to download an album."
-msgstr "Heu d'establir la ubicació de la biblioteca per a poder baixar àlbums."
+msgstr ""
+"Heu d'establir la ubicació de la biblioteca per a poder baixar àlbums."
 
-#: ../plugins/magnatune/MagnatuneSource.py:255
+#: ../plugins/magnatune/MagnatuneSource.py:253
 msgid "Unable to load catalog"
 msgstr "No s'ha pogut carregar el catàleg"
 
-#: ../plugins/magnatune/MagnatuneSource.py:256
+#: ../plugins/magnatune/MagnatuneSource.py:254
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
-"El Rhythmbox no ha pogut entendre el catàleg de Magnatune, envieu un informe "
-"de l'errada."
+"El Rhythmbox no ha pogut entendre el catàleg de Magnatune, envieu un informe"
+" de l'errada."
 
-#: ../plugins/magnatune/MagnatuneSource.py:277
-#: ../plugins/magnatune/MagnatuneSource.py:334
+#: ../plugins/magnatune/MagnatuneSource.py:275
+#: ../plugins/magnatune/MagnatuneSource.py:332
 msgid "Loading Magnatune catalog"
 msgstr "S'està carregant el catàleg de Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:406
+#: ../plugins/magnatune/MagnatuneSource.py:404
 msgid "Download Error"
 msgstr "S'ha produït un error en baixar"
 
-#: ../plugins/magnatune/MagnatuneSource.py:407
+#: ../plugins/magnatune/MagnatuneSource.py:405
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2589,11 +2598,11 @@ msgstr ""
 "El servidor de Magnatune ha retornat:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1628
+#: ../plugins/magnatune/MagnatuneSource.py:408 ../widgets/rb-entry-view.c:1628
 msgid "Error"
 msgstr "Error"
 
-#: ../plugins/magnatune/MagnatuneSource.py:411
+#: ../plugins/magnatune/MagnatuneSource.py:409
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -2604,7 +2613,7 @@ msgstr ""
 "El text de l'error és:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:500
+#: ../plugins/magnatune/MagnatuneSource.py:492
 msgid "Downloading from Magnatune"
 msgstr "S'està baixant des de Magnatune"
 
@@ -2623,7 +2632,8 @@ msgstr "Interfície MPRIS D-Bus"
 #: ../plugins/mpris/mpris.plugin.in.h:2
 msgid "Provides an implementation of the MPRIS D-Bus interface specification"
 msgstr ""
-"Proporciona una implementació de l'especificació de la interfície MPRIS D-Bus"
+"Proporciona una implementació de l'especificació de la interfície MPRIS "
+"D-Bus"
 
 #: ../plugins/mtpdevice/mtpdevice.plugin.in.h:1
 msgid "Portable Players - MTP"
@@ -2718,7 +2728,7 @@ msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
 
 #: ../plugins/notification/rb-notification-plugin.c:416
-#: ../widgets/rb-header.c:366
+#: ../widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "No s'està reproduint"
 
@@ -2753,7 +2763,8 @@ msgstr "Depurador del Python"
 
 #: ../plugins/pythonconsole/pythonconsole.py:106
 msgid "You can access the main window through the 'shell' variable :"
-msgstr "Podeu accedir a la finestra principal a través de la variable «shell»:"
+msgstr ""
+"Podeu accedir a la finestra principal a través de la variable «shell»:"
 
 #: ../plugins/pythonconsole/pythonconsole.py:121
 #, python-format
@@ -2763,8 +2774,8 @@ msgid ""
 "use the default password ('rhythmbox')."
 msgstr ""
 "Després de prémer D'acord, el Rhythmbox s'esperarà fins que us hi connecteu "
-"amb el winpdb o l'rpdb2. Si no heu establert una contrasenya de depuració en "
-"el fitxer %s, s'utilitzarà la contrasenya per defecte («rhythmbox»)."
+"amb el winpdb o l'rpdb2. Si no heu establert una contrasenya de depuració en"
+" el fitxer %s, s'utilitzarà la contrasenya per defecte («rhythmbox»)."
 
 #. ex:noet:ts=8:
 #: ../plugins/rbzeitgeist/rbzeitgeist.plugin.in.h:1
@@ -2790,8 +2801,8 @@ msgstr "15,0 dB"
 #: ../plugins/replaygain/player.py:52
 #, python-format
 msgid ""
-"The GStreamer elements required for ReplayGain processing are not available. "
-"The missing elements are: %s"
+"The GStreamer elements required for ReplayGain processing are not available."
+" The missing elements are: %s"
 msgstr ""
 "Els elements del GStreamer que calen per al processament del ReplayGain no "
 "estan disponibles. Els elements que falten són: %s"
@@ -2878,25 +2889,13 @@ msgstr "Cerca usuaris al SoundCloud"
 msgid "SoundCloud Users"
 msgstr "Usuaris del SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:117
-msgid "Search groups"
-msgstr "Cerca grups"
-
-#: ../plugins/soundcloud/soundcloud.py:118
-msgid "Search groups on SoundCloud"
-msgstr "Cerca grups al SoundCloud"
-
-#: ../plugins/soundcloud/soundcloud.py:119
-msgid "SoundCloud Groups"
-msgstr "Grups del SoundCloud"
-
-#: ../plugins/soundcloud/soundcloud.py:442
-#: ../plugins/soundcloud/soundcloud.py:450
+#: ../plugins/soundcloud/soundcloud.py:436
+#: ../plugins/soundcloud/soundcloud.py:444
 #, python-format
 msgid "View '%(title)s' on SoundCloud"
 msgstr "Mostra «%(title)s» al SoundCloud"
 
-#: ../plugins/soundcloud/soundcloud.py:458
+#: ../plugins/soundcloud/soundcloud.py:452
 #, python-format
 msgid "View '%(container)s' on SoundCloud"
 msgstr "Mostra «%(container)s» al SoundCloud"
@@ -2929,38 +2928,38 @@ msgstr "Controla el Rhythmbox des d'un navegador web"
 msgid "Launch web remote control"
 msgstr "Inicia el control remot web"
 
-#: ../podcast/rb-podcast-add-dialog.c:271 ../podcast/rb-podcast-source.c:735
+#: ../podcast/rb-podcast-add-dialog.c:271 ../podcast/rb-podcast-source.c:736
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
 msgstr[0] "%d canal"
 msgstr[1] "%d canals"
 
-#: ../podcast/rb-podcast-add-dialog.c:306
+#: ../podcast/rb-podcast-add-dialog.c:316
 msgid "Unable to load the feed. Check your network connection."
 msgstr "No s'ha pogut carregar el canal. Comproveu la connexió de la xarxa."
 
-#: ../podcast/rb-podcast-add-dialog.c:431
+#: ../podcast/rb-podcast-add-dialog.c:437
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "No s'han pogut cercar podcasts. Comproveu la connexió de la xarxa."
 
-#: ../podcast/rb-podcast-add-dialog.c:744 ../sources/rb-library-source.c:134
+#: ../podcast/rb-podcast-add-dialog.c:755 ../sources/rb-library-source.c:134
 #: ../widgets/rb-entry-view.c:1444
 msgid "Title"
 msgstr "Títol"
 
-#: ../podcast/rb-podcast-add-dialog.c:755
+#: ../podcast/rb-podcast-add-dialog.c:766
 msgid "Author"
 msgstr "Autor"
 
-#: ../podcast/rb-podcast-add-dialog.c:760
-#: ../podcast/rb-podcast-add-dialog.c:763
+#: ../podcast/rb-podcast-add-dialog.c:771
+#: ../podcast/rb-podcast-add-dialog.c:774
 msgid "Episodes"
 msgstr "Episodis"
 
-#: ../podcast/rb-podcast-add-dialog.c:797
-#: ../podcast/rb-podcast-add-dialog.c:808 ../podcast/rb-podcast-source.c:1357
-#: ../podcast/rb-podcast-source.c:1368
+#: ../podcast/rb-podcast-add-dialog.c:808
+#: ../podcast/rb-podcast-add-dialog.c:819 ../podcast/rb-podcast-source.c:1358
+#: ../podcast/rb-podcast-source.c:1369
 msgid "Date"
 msgstr "Data"
 
@@ -2993,30 +2992,30 @@ msgstr "Hi ha un error al podcast"
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Voleu afegir el canal de podcast igualment?"
 
-#: ../podcast/rb-podcast-manager.c:924
-msgid "Error creating podcast download directory"
-msgstr "S'ha produït un error en crear el directori de baixades de podcasts"
-
-#: ../podcast/rb-podcast-manager.c:925
+#: ../podcast/rb-podcast-manager.c:724
 #, c-format
-msgid "Unable to create the download directory for %s: %s"
-msgstr "No s'ha pogut crear el directori de baixades per a %s: %s"
+msgid ""
+"There was a problem adding this podcast: %s.  Please verify the URL: %s"
+msgstr ""
+"S'ha produït un problema en afegir aquest podcast: %s. Comproveu l'URL: %s"
 
-#: ../podcast/rb-podcast-manager.c:1044
-msgid "Invalid URL"
-msgstr "URL no vàlid"
-
-#: ../podcast/rb-podcast-manager.c:1045
+#: ../podcast/rb-podcast-manager.c:785
 #, c-format
-msgid "The URL \"%s\" is not valid, please check it."
-msgstr "L'URL «%s» no és vàlid, comproveu-lo."
+msgid ""
+"The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
+"or the feed may be broken. Would you like Rhythmbox to attempt to use it "
+"anyway?"
+msgstr ""
+"Sembla que l'URL «%s» no és un canal de podcast. Pot ser que l'URL sigui "
+"incorrecte, o que el canal estigui trencat. Voleu que el Rhythmbox l'intenti"
+" utilitzar igualment?"
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1056
+#: ../podcast/rb-podcast-manager.c:835
 msgid "URL already added"
 msgstr "Ja s'ha afegit l'URL"
 
-#: ../podcast/rb-podcast-manager.c:1057
+#: ../podcast/rb-podcast-manager.c:836
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -3025,56 +3024,29 @@ msgstr ""
 "L'URL «%s» ja s'ha afegit com una emissora de ràdio. Si això és un canal de "
 "podcast, suprimiu l'emissora de ràdio."
 
-#: ../podcast/rb-podcast-manager.c:1157
-#, c-format
-msgid ""
-"The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
-"or the feed may be broken. Would you like Rhythmbox to attempt to use it "
-"anyway?"
-msgstr ""
-"Sembla que l'URL «%s» no és un canal de podcast. Pot ser que l'URL sigui "
-"incorrecte, o que el canal estigui trencat. Voleu que el Rhythmbox l'intenti "
-"utilitzar igualment?"
-
-#: ../podcast/rb-podcast-manager.c:1273
+#: ../podcast/rb-podcast-manager.c:942
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2239
-#, c-format
-msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
-msgstr ""
-"S'ha produït un problema en afegir aquest podcast: %s. Comproveu l'URL: %s"
-
-#: ../podcast/rb-podcast-parse.c:181
-#, c-format
-msgid "Unable to check file type: %s"
-msgstr "No s'ha pogut comprovar el tipus de fitxer: %s"
-
-#: ../podcast/rb-podcast-parse.c:200
-#, c-format
-msgid "Unexpected file type: %s"
-msgstr "Tipus de fitxer inesperat: %s"
-
-#: ../podcast/rb-podcast-parse.c:223
+#: ../podcast/rb-podcast-parse.c:179
 #, c-format
 msgid "Unable to parse the feed contents"
 msgstr "No s'han pogut analitzar els continguts del canal"
 
-#: ../podcast/rb-podcast-parse.c:237
+#: ../podcast/rb-podcast-parse.c:189
 #, c-format
 msgid "The feed does not contain any downloadable items"
 msgstr "El canal no conté cap element per a baixar"
 
-#: ../podcast/rb-podcast-properties-dialog.c:587
+#: ../podcast/rb-podcast-properties-dialog.c:589
 msgid "Not Downloaded"
 msgstr "No baixat"
 
-#: ../podcast/rb-podcast-source.c:521
+#: ../podcast/rb-podcast-source.c:522
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Voleu suprimir el canal del podcast i els fitxers baixats?"
 
-#: ../podcast/rb-podcast-source.c:524
+#: ../podcast/rb-podcast-source.c:525
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -3084,80 +3056,81 @@ msgstr ""
 "en compte que podeu suprimir el canal però mantenir els fitxers baixats "
 "seleccionant suprimir només el canal."
 
-#: ../podcast/rb-podcast-source.c:532
+#: ../podcast/rb-podcast-source.c:533
 msgid "Delete _Feed Only"
 msgstr "Suprimeix només el _canal"
 
-#: ../podcast/rb-podcast-source.c:539
+#: ../podcast/rb-podcast-source.c:540
 msgid "_Delete Feed And Files"
 msgstr "Suprimeix el canal i els _fitxers"
 
-#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1411
+#: ../podcast/rb-podcast-source.c:621 ../podcast/rb-podcast-source.c:1412
 msgid "Downloaded"
 msgstr "Baixat"
 
-#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1413
+#: ../podcast/rb-podcast-source.c:625 ../podcast/rb-podcast-source.c:1414
 msgid "Failed"
 msgstr "Ha fallat"
 
-#: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1412
+#: ../podcast/rb-podcast-source.c:629 ../podcast/rb-podcast-source.c:1413
 msgid "Waiting"
 msgstr "S'està esperant"
 
-#: ../podcast/rb-podcast-source.c:957
+#: ../podcast/rb-podcast-source.c:958
 msgid "Podcast Error"
 msgstr "S'ha produït un error al podcast"
 
-#: ../podcast/rb-podcast-source.c:1091
+#: ../podcast/rb-podcast-source.c:1092
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Voleu suprimir l'episodi del podcast i el fitxer baixat?"
 
-#: ../podcast/rb-podcast-source.c:1094
+#: ../podcast/rb-podcast-source.c:1095
 msgid ""
-"If you choose to delete the episode and file, they will be permanently "
-"lost.  Please note that you can delete the episode but keep the downloaded "
-"file by choosing to delete the episode only."
+"If you choose to delete the episode and file, they will be permanently lost."
+"  Please note that you can delete the episode but keep the downloaded file "
+"by choosing to delete the episode only."
 msgstr ""
 "Si trieu suprimir l'episodi i el fitxer, es perdran permanentment. Tingueu "
 "en compte que podeu suprimir l'episodi però mantenir el fitxer baixat "
 "seleccionant suprimir només l'episodi."
 
-#: ../podcast/rb-podcast-source.c:1102
+#: ../podcast/rb-podcast-source.c:1103
 msgid "Delete _Episode Only"
 msgstr "Suprimeix només l'_episodi"
 
-#: ../podcast/rb-podcast-source.c:1108
+#: ../podcast/rb-podcast-source.c:1109
 msgid "_Delete Episode And File"
 msgstr "Suprimeix l'episodi i el _fitxer"
 
-#: ../podcast/rb-podcast-source.c:1214
+#: ../podcast/rb-podcast-source.c:1215
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d episodi"
 msgstr[1] "%d episodis"
 
-#: ../podcast/rb-podcast-source.c:1390 ../podcast/rb-podcast-source.c:1445
-#: ../podcast/rb-podcast-source.c:1484
+#: ../podcast/rb-podcast-source.c:1391 ../podcast/rb-podcast-source.c:1446
+#: ../podcast/rb-podcast-source.c:1485
 msgid "Feed"
 msgstr "Canal"
 
-#: ../podcast/rb-podcast-source.c:1410 ../podcast/rb-podcast-source.c:1428
+#: ../podcast/rb-podcast-source.c:1411 ../podcast/rb-podcast-source.c:1429
 msgid "Status"
 msgstr "Estat"
 
 #. ensure search instances exist
-#: ../podcast/rb-podcast-source.c:1530 ../sources/rb-auto-playlist-source.c:253
-#: ../sources/rb-browser-source.c:314 ../sources/rb-browser-source.c:332
+#: ../podcast/rb-podcast-source.c:1531
+#: ../sources/rb-auto-playlist-source.c:253 ../sources/rb-browser-source.c:314
+#: ../sources/rb-browser-source.c:332
 #: ../sources/rb-static-playlist-source.c:295
 msgid "Search all fields"
 msgstr "Cerca tots els camps"
 
-#: ../podcast/rb-podcast-source.c:1531
+#: ../podcast/rb-podcast-source.c:1532
 msgid "Search podcast feeds"
 msgstr "Cerca els canals de podcast"
 
-#: ../podcast/rb-podcast-source.c:1532
+#: ../podcast/rb-podcast-source.c:1533
 msgid "Search podcast episodes"
 msgstr "Cerca episodis de podcast"
 
@@ -3205,7 +3178,7 @@ msgstr "Fes una pausa de la reproducció si s'està reproduint"
 msgid "Toggle play/pause mode"
 msgstr "Commuta el mode reproducció/pausa"
 
-#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2293
+#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2295
 msgid "Stop playback"
 msgstr "Atura la reproducció"
 
@@ -3290,7 +3263,8 @@ msgid "Print the current playback volume"
 msgstr "Mostra el volum de la reproducció actual"
 
 #. { "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
-#. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
+#. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL
+#. },
 #: ../remote/dbus/rb-client.c:133
 msgid "Set the rating of the current song"
 msgstr "Estableix la puntuació de la cançó actual"
@@ -3484,7 +3458,8 @@ msgstr "%s i %s"
 msgid "Scanning"
 msgstr "S'estan escanejant"
 
-#: ../rhythmdb/rhythmdb-import-job.c:667 ../shell/rb-track-transfer-batch.c:917
+#: ../rhythmdb/rhythmdb-import-job.c:667
+#: ../shell/rb-track-transfer-batch.c:917
 #, c-format
 msgid "%d of %d"
 msgstr "%d de %d"
@@ -3501,8 +3476,8 @@ msgid ""
 "The database was created by a later version of Rhythmbox.  This version of "
 "Rhythmbox cannot read the database."
 msgstr ""
-"La base de dades es va crear amb una versió posterior del Rhythmbox. Aquesta "
-"versió no la pot llegir."
+"La base de dades es va crear amb una versió posterior del Rhythmbox. Aquesta"
+" versió no la pot llegir."
 
 #: ../sample-plugins/sample-python/sample-python.plugin.in.h:1
 msgid "Python Sample Plugin"
@@ -3641,8 +3616,7 @@ msgid ""
 "Run '%s --help' to see a full list of available command line options.\n"
 msgstr ""
 "%s\n"
-"Executa «%s --help» per a veure una llista completa de les opcions "
-"disponibles de la línia d'ordres.\n"
+"Executa «%s --help» per a veure una llista completa de les opcions disponibles de la línia d'ordres.\n"
 
 #: ../shell/rb-playlist-manager.c:166
 msgid "MPEG Version 3.0 URL"
@@ -3710,45 +3684,45 @@ msgstr "La llista de reproducció %s és desconeguda"
 msgid "Playlist %s is an automatic playlist"
 msgstr "La llista de reproducció %s és una llista de reproducció automàtica"
 
-#: ../shell/rb-shell.c:2086
+#: ../shell/rb-shell.c:2088
 msgid "Error while saving song information"
 msgstr "S'ha produït un error en desar la informació de la cançó"
 
-#: ../shell/rb-shell.c:2290
+#: ../shell/rb-shell.c:2292
 msgid "Pause playback"
 msgstr "Fes una pausa a la reproducció"
 
-#: ../shell/rb-shell.c:2297
+#: ../shell/rb-shell.c:2299
 msgid "Start playback"
 msgstr "Comença la reproducció"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2407
+#: ../shell/rb-shell.c:2409
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (En pausa)"
 
-#: ../shell/rb-shell.c:2804 ../sources/rb-play-queue-source.c:664
+#: ../shell/rb-shell.c:2806 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Cap font registrada pot gestionar l'URI %s"
 
-#: ../shell/rb-shell.c:3133
+#: ../shell/rb-shell.c:3135
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "No hi ha cap font registrada que coincideixi amb l'URI %s"
 
-#: ../shell/rb-shell.c:3166 ../shell/rb-shell.c:3209
+#: ../shell/rb-shell.c:3168 ../shell/rb-shell.c:3211
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "No es coneix l'URI de la cançó: %s"
 
-#: ../shell/rb-shell.c:3218
+#: ../shell/rb-shell.c:3220
 #, c-format
 msgid "Unknown property %s"
 msgstr "No es coneix la propietat %s"
 
-#: ../shell/rb-shell.c:3232
+#: ../shell/rb-shell.c:3234
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "El tipus %s per a la propietat %s no és vàlid"
@@ -3884,9 +3858,9 @@ msgstr[0] ""
 "format admès per aquest, però no s'ha trobat cap perfil de codificació que "
 "ho permeti fer"
 msgstr[1] ""
-"No es poden transferir %d fitxers al dispositiu, ja que s'han de convertir en "
-"un format admès per aquest, però no s'ha trobat cap perfil de codificació "
-"que ho permeti fer"
+"No es poden transferir %d fitxers al dispositiu, ja que s'han de convertir "
+"en un format admès per aquest, però no s'ha trobat cap perfil de codificació"
+" que ho permeti fer"
 
 #. XXX should provide the option of picking a different format?
 #: ../shell/rb-track-transfer-queue.c:462
@@ -3895,27 +3869,22 @@ msgid ""
 "Additional software is required to encode media in your preferred format:\n"
 "%s"
 msgstr ""
-"Es requereix programari addicional per a codificar fitxers multimèdia en el "
-"vostre format preferit:\n"
+"Es requereix programari addicional per a codificar fitxers multimèdia en el vostre format preferit:\n"
 "%s"
 
 #: ../shell/rb-track-transfer-queue.c:466
 #, c-format
 msgid ""
-"Additional software is required to convert %d file into a format supported "
-"by the target device:\n"
+"Additional software is required to convert %d file into a format supported by the target device:\n"
 "%s"
 msgid_plural ""
-"Additional software is required to convert %d files into a format supported "
-"by the target device:\n"
+"Additional software is required to convert %d files into a format supported by the target device:\n"
 "%s"
 msgstr[0] ""
-"Es requereix programari addicional per a convertir %d fitxer a un format admès "
-"pel dispositiu:\n"
+"Es requereix programari addicional per a convertir %d fitxer a un format admès pel dispositiu:\n"
 "%s"
 msgstr[1] ""
-"Es requereix programari addicional per a convertir %d fitxers a un format "
-"admès pel dispositiu:\n"
+"Es requereix programari addicional per a convertir %d fitxers a un format admès pel dispositiu:\n"
 "%s"
 
 #: ../shell/rb-track-transfer-queue.c:483
@@ -4041,7 +4010,8 @@ msgstr "Artista (Àlbum) - Número - Títol"
 msgid "Number. Artist - Title"
 msgstr "Número. Artista - Títol"
 
-#: ../sources/rb-library-source.c:416 ../sources/sync/rb-sync-settings-ui.c:217
+#: ../sources/rb-library-source.c:416
+#: ../sources/sync/rb-sync-settings-ui.c:217
 #: ../sources/sync/rb-sync-settings-ui.c:218
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
@@ -4085,8 +4055,8 @@ msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
 msgstr ""
-"No hi ha suficient espai lliure al dispositiu per a transferir la música, les "
-"llistes de reproducció i els podcasts seleccionats."
+"No hi ha suficient espai lliure al dispositiu per a transferir la música, "
+"les llistes de reproducció i els podcasts seleccionats."
 
 #: ../sources/rb-media-player-source.c:885
 #, c-format
@@ -4122,11 +4092,11 @@ msgid "Play Queue"
 msgstr "Cua de reproducció"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:924
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
 msgid "by"
 msgstr "per"
 
-#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:926
 msgid "from"
 msgstr "de"
 
@@ -4207,15 +4177,19 @@ msgstr "_Sí"
 msgid "_Open"
 msgstr "_Obre"
 
-#: ../widgets/rb-encoding-settings.c:54
+#: ../widgets/rb-encoding-settings.c:55
 msgid "Constant bit rate"
 msgstr "Taxa de bits constant"
 
-#: ../widgets/rb-encoding-settings.c:55
+#: ../widgets/rb-encoding-settings.c:56
 msgid "Variable bit rate"
 msgstr "Taxa de bits variable"
 
-#: ../widgets/rb-encoding-settings.c:402
+#: ../widgets/rb-encoding-settings.c:57
+msgid "Constrained Variable bit rate"
+msgstr "Taxa de bits variable restringida"
+
+#: ../widgets/rb-encoding-settings.c:404
 msgid "Default settings"
 msgstr "Paràmetres per defecte"
 
@@ -4293,13 +4267,13 @@ msgid "Drop artwork here"
 msgstr "Deixeu anar les imatges"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1214
+#: ../widgets/rb-header.c:1215
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1225
+#: ../widgets/rb-header.c:1226
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
@@ -4728,62 +4702,3 @@ msgstr "A l'escriptori"
 msgid "Unknown location"
 msgstr "La ubicació és desconeguda"
 
-#~ msgid "_Add Music"
-#~ msgstr "Afegeix _música"
-
-#~ msgid "_About"
-#~ msgstr "_Quant a"
-
-#~ msgid "_Quit"
-#~ msgstr "_Surt"
-
-#~ msgid "Send tracks"
-#~ msgstr "Envia peces"
-
-#~ msgid "Send selected tracks by email"
-#~ msgstr "Envia les peces seleccionades per correu electrònic"
-
-#~ msgid "Send to..."
-#~ msgstr "Envia a..."
-
-#~ msgid "Configure Plugins"
-#~ msgstr "Configura els connectors"
-
-#~ msgid "Status Bar"
-#~ msgstr "Barra d'estat"
-
-#~ msgid "Tuning station"
-#~ msgstr "S'està sintonitzant l'emissora"
-
-#~ msgid "Low quality"
-#~ msgstr "Qualitat baixa"
-
-#~ msgid "Normal quality"
-#~ msgstr "Qualitat normal"
-
-#~ msgid "High quality"
-#~ msgstr "Qualitat alta"
-
-#~ msgid "Fullscreen"
-#~ msgstr "Pantalla completa"
-
-#~ msgid "Visual Effect"
-#~ msgstr "Efectes visuals"
-
-#~ msgid "Visual Effects"
-#~ msgstr "Efectes visuals"
-
-#~ msgid "Display"
-#~ msgstr "Visualització"
-
-#~ msgid "Visualization"
-#~ msgstr "Visualització"
-
-#~ msgid "Displays visualizations"
-#~ msgstr "Mostra visualitzacions"
-
-#~ msgid "Format settings:"
-#~ msgstr "Paràmetres del format:"
-
-#~ msgid "Unable to display requested URI"
-#~ msgstr "No es pot mostrar l'URI sol·licitat"
