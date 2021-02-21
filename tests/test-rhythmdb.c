@@ -59,7 +59,7 @@ START_TEST (test_rhythmdb_indexing)
 	gboolean b;
 
 	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///whee.ogg");
-	fail_unless (entry != NULL, "failed to create entry");
+	ck_assert_msg (entry != NULL, "failed to create entry");
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Rock");
@@ -84,16 +84,16 @@ START_TEST (test_rhythmdb_indexing)
 	rhythmdb_commit (db);
 
 	/* check the data is recorded correctly */
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), "file:///whee.ogg") == 0,
-		     "LOCATION set incorrectly");
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE), "Rock") == 0,
-		     "GENRE set incorrectly");
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST), "Nine Inch Nails") == 0,
-		     "ARTIST set incorrectly");
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM), "Pretty Hate Machine") == 0,
-		     "ALBUM set incorrectly");
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), "Sin") == 0,
-		     "TITLE set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), "file:///whee.ogg") == 0,
+		       "LOCATION set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE), "Rock") == 0,
+		       "GENRE set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST), "Nine Inch Nails") == 0,
+		       "ARTIST set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM), "Pretty Hate Machine") == 0,
+		       "ALBUM set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), "Sin") == 0,
+		       "TITLE set incorrectly");
 
 	/* check changing album */
 	g_value_init (&val, G_TYPE_STRING);
@@ -102,16 +102,16 @@ START_TEST (test_rhythmdb_indexing)
 	g_value_unset (&val);
 	rhythmdb_commit (db);
 
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), "file:///whee.ogg") == 0,
-		     "LOCATION set incorrectly");
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE), "Rock") == 0,
-		     "GENRE set incorrectly");
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST), "Nine Inch Nails") == 0,
-		     "ARTIST set incorrectly");
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM), "Broken") == 0,
-		     "ALBUM set incorrectly");
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), "Sin") == 0,
-		     "TITLE set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), "file:///whee.ogg") == 0,
+		       "LOCATION set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE), "Rock") == 0,
+		       "GENRE set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST), "Nine Inch Nails") == 0,
+		       "ARTIST set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM), "Broken") == 0,
+		       "ALBUM set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), "Sin") == 0,
+		       "TITLE set incorrectly");
 
 	/* check changing artist */
 	g_value_init (&val, G_TYPE_STRING);
@@ -120,16 +120,16 @@ START_TEST (test_rhythmdb_indexing)
 	g_value_unset (&val);
 	rhythmdb_commit (db);
 
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), "file:///whee.ogg") == 0,
-		     "LOCATION set incorrectly");
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE), "Rock") == 0,
-		     "GENRE set incorrectly");
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST), "Evanescence") == 0,
-		     "ARTIST set incorrectly");
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM), "Broken") == 0,
-		     "ALBUM set incorrectly");
-	fail_unless (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), "Sin") == 0,
-		     "TITLE set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION), "file:///whee.ogg") == 0,
+		       "LOCATION set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_GENRE), "Rock") == 0,
+		       "GENRE set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST), "Evanescence") == 0,
+		       "ARTIST set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ALBUM), "Broken") == 0,
+		       "ALBUM set incorrectly");
+	ck_assert_msg (strcmp (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), "Sin") == 0,
+		       "TITLE set incorrectly");
 
 	/* check removal */
 	rhythmdb_entry_delete (db, entry);
@@ -137,7 +137,7 @@ START_TEST (test_rhythmdb_indexing)
 
 	b = FALSE;
 	rhythmdb_entry_foreach (db, (RhythmDBEntryForeachFunc) set_true, &b);
-	fail_unless (b == FALSE, "entry not deleted");
+	ck_assert_msg (b == FALSE, "entry not deleted");
 }
 END_TEST
 
@@ -148,40 +148,40 @@ START_TEST (test_rhythmdb_multiple)
 	/* add multiple entries */
 	entry1 = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///foo.mp3");
 	rhythmdb_commit (db);
-	fail_unless (entry1 != NULL, "failed to create entry");
-	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///foo.mp3") == entry1, "entry missing");
+	ck_assert_msg (entry1 != NULL, "failed to create entry");
+	ck_assert_msg (rhythmdb_entry_lookup_by_location (db, "file:///foo.mp3") == entry1, "entry missing");
 
 	entry2 = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///bar.mp3");
 	rhythmdb_commit (db);
-	fail_unless (entry2 != NULL, "failed to create entry");
-	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///bar.mp3") == entry2, "entry missing");
+	ck_assert_msg (entry2 != NULL, "failed to create entry");
+	ck_assert_msg (rhythmdb_entry_lookup_by_location (db, "file:///bar.mp3") == entry2, "entry missing");
 
 	entry3 = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///baz.mp3");
 	rhythmdb_commit (db);
-	fail_unless (entry3 != NULL, "failed to create entry");
-	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///baz.mp3") == entry3, "entry missing");
+	ck_assert_msg (entry3 != NULL, "failed to create entry");
+	ck_assert_msg (rhythmdb_entry_lookup_by_location (db, "file:///baz.mp3") == entry3, "entry missing");
 
 	/* check they're still there */
-	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///foo.mp3") == entry1, "entry missing");
-	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///bar.mp3") == entry2, "entry missing");
-	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///baz.mp3") == entry3, "entry missing");
+	ck_assert_msg (rhythmdb_entry_lookup_by_location (db, "file:///foo.mp3") == entry1, "entry missing");
+	ck_assert_msg (rhythmdb_entry_lookup_by_location (db, "file:///bar.mp3") == entry2, "entry missing");
+	ck_assert_msg (rhythmdb_entry_lookup_by_location (db, "file:///baz.mp3") == entry3, "entry missing");
 
 	/* remove the middle one and check again */
 	rhythmdb_entry_delete (db, entry2);
 	rhythmdb_commit (db);
 
-	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///foo.mp3") == entry1, "entry missing");
-	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///bar.mp3") == NULL, "entry not deleted");
-	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///baz.mp3") == entry3, "entry missing");
+	ck_assert_msg (rhythmdb_entry_lookup_by_location (db, "file:///foo.mp3") == entry1, "entry missing");
+	ck_assert_msg (rhythmdb_entry_lookup_by_location (db, "file:///bar.mp3") == NULL, "entry not deleted");
+	ck_assert_msg (rhythmdb_entry_lookup_by_location (db, "file:///baz.mp3") == entry3, "entry missing");
 
 	/* and the others */
 	rhythmdb_entry_delete (db, entry1);
 	rhythmdb_entry_delete (db, entry3);
 	rhythmdb_commit (db);
 
-	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///foo.mp3") == NULL, "entry not deleted");
-	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///bar.mp3") == NULL, "entry not deleted");
-	fail_unless (rhythmdb_entry_lookup_by_location (db, "file:///baz.mp3") == NULL, "entry not deleted");
+	ck_assert_msg (rhythmdb_entry_lookup_by_location (db, "file:///foo.mp3") == NULL, "entry not deleted");
+	ck_assert_msg (rhythmdb_entry_lookup_by_location (db, "file:///bar.mp3") == NULL, "entry not deleted");
+	ck_assert_msg (rhythmdb_entry_lookup_by_location (db, "file:///baz.mp3") == NULL, "entry not deleted");
 }
 END_TEST
 
@@ -192,7 +192,7 @@ START_TEST (test_rhythmdb_mirroring)
 	const char *str;
 
 	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///foo.mp3");
-	fail_unless (entry != NULL, "failed to create entry");
+	ck_assert_msg (entry != NULL, "failed to create entry");
 
 	/* check the last-played date is mirrored */
 	g_value_init (&val, G_TYPE_ULONG);
@@ -202,7 +202,7 @@ START_TEST (test_rhythmdb_mirroring)
 	rhythmdb_commit (db);
 
 	str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LAST_PLAYED_STR);
-	fail_unless (str && (strlen (str) > 0), "date not converted to string");
+	ck_assert_msg (str && (strlen (str) > 0), "date not converted to string");
 
 	/* check folded and sort-key varients */
 	g_value_init (&val, G_TYPE_STRING);
@@ -212,9 +212,9 @@ START_TEST (test_rhythmdb_mirroring)
 	rhythmdb_commit (db);
 
 	str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE_SORT_KEY);
-	fail_unless (str && (strlen (str) > 0), "sort-key not generated");
+	ck_assert_msg (str && (strlen (str) > 0), "sort-key not generated");
 	str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE_FOLDED);
-	fail_unless (str && (strcmp (str, "foo") == 0), "folded variant not generated");
+	ck_assert_msg (str && (strcmp (str, "foo") == 0), "folded variant not generated");
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "BAR");
@@ -223,9 +223,9 @@ START_TEST (test_rhythmdb_mirroring)
 	rhythmdb_commit (db);
 
 	str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE_SORT_KEY);
-	fail_unless (str && (strlen (str) > 0), "sort-key not generated");
+	ck_assert_msg (str && (strlen (str) > 0), "sort-key not generated");
 	str = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE_FOLDED);
-	fail_unless (str && (strcmp (str, "bar") == 0), "folded variant not generated");
+	ck_assert_msg (str && (strcmp (str, "bar") == 0), "folded variant not generated");
 
 
 }
@@ -256,72 +256,72 @@ START_TEST (test_rhythmdb_keywords)
 	keyword_baz = rb_refstring_new ("baz");
 
 	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///foo.mp3");
-	fail_unless (entry != NULL, "failed to create entry");
+	ck_assert_msg (entry != NULL, "failed to create entry");
 
 	/* new entries should have 0 keywords */
 	list = rhythmdb_entry_keywords_get (db, entry);
-	fail_unless (count_and_free_refstring_list (list) == 0, "new entry had keywords");
+	ck_assert_msg (count_and_free_refstring_list (list) == 0, "new entry had keywords");
 
 	/* adding one keyword */
 	ret = rhythmdb_entry_keyword_add (db, entry, keyword_foo);
-	fail_unless (ret == FALSE, "entry incorrectly reported as having keyword already");
+	ck_assert_msg (ret == FALSE, "entry incorrectly reported as having keyword already");
 	list = rhythmdb_entry_keywords_get (db, entry);
-	fail_unless (count_and_free_refstring_list (list) == 1, "entry wrong number of keywords after one was added");
+	ck_assert_msg (count_and_free_refstring_list (list) == 1, "entry wrong number of keywords after one was added");
 
 	/* has added keyword */
 	ret = rhythmdb_entry_keyword_has (db, entry, keyword_foo);
-	fail_unless (ret == TRUE, "reported not having just-added keyword");
+	ck_assert_msg (ret == TRUE, "reported not having just-added keyword");
 
 	/* add keyword again */
 	ret = rhythmdb_entry_keyword_add (db, entry, keyword_foo);
-	fail_unless (ret == TRUE, "entry incorrectly reported as not keyword already");
+	ck_assert_msg (ret == TRUE, "entry incorrectly reported as not keyword already");
 
 	/* check keyword count*/
 	list = rhythmdb_entry_keywords_get (db, entry);
-	fail_unless (count_and_free_refstring_list (list) == 1, "entry wrong number of keywords after one was re-added");
+	ck_assert_msg (count_and_free_refstring_list (list) == 1, "entry wrong number of keywords after one was re-added");
 
 	/* ensure it has only that keyword */
 	ret = rhythmdb_entry_keyword_has (db, entry, keyword_bar);
-	fail_unless (ret == FALSE, "reported having wrong keyword");
+	ck_assert_msg (ret == FALSE, "reported having wrong keyword");
 
 	/* remove the keyword */
 	ret = rhythmdb_entry_keyword_remove (db, entry, keyword_foo);
-	fail_unless (ret == TRUE, "reported having not previously having keyword");
+	ck_assert_msg (ret == TRUE, "reported having not previously having keyword");
 
 	/* has removed keyword */
 	ret = rhythmdb_entry_keyword_has (db, entry, keyword_foo);
-	fail_unless (ret == FALSE, "reported having just-removed keyword");
+	ck_assert_msg (ret == FALSE, "reported having just-removed keyword");
 
 	/* check count is back to zero */
 	list = rhythmdb_entry_keywords_get (db, entry);
-	fail_unless (count_and_free_refstring_list (list) == 0, "entry has keywords after they were removed");
+	ck_assert_msg (count_and_free_refstring_list (list) == 0, "entry has keywords after they were removed");
 
 	/* try removing keyword again */
 	ret = rhythmdb_entry_keyword_remove (db, entry, keyword_foo);
-	fail_unless (ret == FALSE, "reported previously having already removed keyword");
+	ck_assert_msg (ret == FALSE, "reported previously having already removed keyword");
 
 	/* add and remove several keywords */
 	ret = rhythmdb_entry_keyword_add (db, entry, keyword_foo);
-	fail_unless (ret == FALSE, "reported previously having already removed keyword");
+	ck_assert_msg (ret == FALSE, "reported previously having already removed keyword");
 	ret = rhythmdb_entry_keyword_add (db, entry, keyword_bar);
-	fail_unless (ret == FALSE, "reported previously having already never-added keyword");
+	ck_assert_msg (ret == FALSE, "reported previously having already never-added keyword");
 	ret = rhythmdb_entry_keyword_add (db, entry, keyword_baz);
-	fail_unless (ret == FALSE, "reported previously having already never-added keyword");
+	ck_assert_msg (ret == FALSE, "reported previously having already never-added keyword");
 
 	list = rhythmdb_entry_keywords_get (db, entry);
-	fail_unless (count_and_free_refstring_list (list) == 3, "entry wrong number of keywords after several were added");
+	ck_assert_msg (count_and_free_refstring_list (list) == 3, "entry wrong number of keywords after several were added");
 	ret = rhythmdb_entry_keyword_remove (db, entry, keyword_foo);
-	fail_unless (ret == TRUE, "reported previously not having added keyword");
+	ck_assert_msg (ret == TRUE, "reported previously not having added keyword");
 	list = rhythmdb_entry_keywords_get (db, entry);
-	fail_unless (count_and_free_refstring_list (list) == 2, "entry wrong number of keywords after several were added");
+	ck_assert_msg (count_and_free_refstring_list (list) == 2, "entry wrong number of keywords after several were added");
 	ret = rhythmdb_entry_keyword_remove (db, entry, keyword_bar);
-	fail_unless (ret == TRUE, "reported previously not having added keyword");
+	ck_assert_msg (ret == TRUE, "reported previously not having added keyword");
 	list = rhythmdb_entry_keywords_get (db, entry);
-	fail_unless (count_and_free_refstring_list (list) == 1, "entry wrong number of keywords after several were added");
+	ck_assert_msg (count_and_free_refstring_list (list) == 1, "entry wrong number of keywords after several were added");
 	ret = rhythmdb_entry_keyword_remove (db, entry, keyword_baz);
-	fail_unless (ret == TRUE, "reported previously not having added keyword");
+	ck_assert_msg (ret == TRUE, "reported previously not having added keyword");
 	list = rhythmdb_entry_keywords_get (db, entry);
-	fail_unless (count_and_free_refstring_list (list) == 0, "entry wrong number of keywords after several were added");
+	ck_assert_msg (count_and_free_refstring_list (list) == 0, "entry wrong number of keywords after several were added");
 }
 END_TEST
 
@@ -344,7 +344,7 @@ START_TEST (test_rhythmdb_deserialisation1)
 				RHYTHMDB_PROP_TYPE, RHYTHMDB_ENTRY_TYPE_IGNORE,
 				RHYTHMDB_QUERY_END);
 	wait_for_signal ();
-	fail_unless (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL) == 0, "deserialisation incorrect");
+	ck_assert_msg (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL) == 0, "deserialisation incorrect");
 	g_object_unref (model);
 }
 END_TEST
@@ -368,7 +368,7 @@ START_TEST (test_rhythmdb_deserialisation2)
 				RHYTHMDB_QUERY_END);
 	wait_for_signal ();
 	/* FIXME: this fails for some reason
-	fail_unless (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL) == 1, "deserialisation incorrect");*/
+	ck_assert_msg (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL) == 1, "deserialisation incorrect");*/
 	g_object_unref (model);
 
 	/* TODO: check values */
@@ -395,7 +395,7 @@ START_TEST (test_rhythmdb_deserialisation3)
 				RHYTHMDB_QUERY_END);
 	wait_for_signal ();
 	/* FIXME: this fails for some reason
-	fail_unless (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL) == 1, "deserialisation incorrect");*/
+	ck_assert_msg (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (model), NULL) == 1, "deserialisation incorrect");*/
 	g_object_unref (model);
 
 	/* TODO: check values */
@@ -415,16 +415,16 @@ START_TEST (test_rhythmdb_podcast_upgrade)
 
 	entry = rhythmdb_entry_lookup_by_location (db, "file:///home/tester/Desktop/BBC%20Xtra/xtra_20080906-1226a.mp3");
 
-	fail_unless (entry != NULL, "entry missing");
-	fail_unless (rhythmdb_entry_get_entry_type (entry) == RHYTHMDB_ENTRY_TYPE_PODCAST_POST, "entry isn't a podcast");
+	ck_assert_msg (entry != NULL, "entry missing");
+	ck_assert_msg (rhythmdb_entry_get_entry_type (entry) == RHYTHMDB_ENTRY_TYPE_PODCAST_POST, "entry isn't a podcast");
 	mountpoint = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
 
-	fail_unless (mountpoint != NULL, "no mountpoint for podcast");
-	fail_unless (strcmp (mountpoint, "http://downloads.bbc.co.uk/podcasts/worldservice/xtra/xtra_20080906-1226a.mp3") == 0, "wrong mountpoint for podcast");
+	ck_assert_msg (mountpoint != NULL, "no mountpoint for podcast");
+	ck_assert_msg (strcmp (mountpoint, "http://downloads.bbc.co.uk/podcasts/worldservice/xtra/xtra_20080906-1226a.mp3") == 0, "wrong mountpoint for podcast");
 
 	entry = rhythmdb_entry_lookup_by_location (db, "http://downloads.bbc.co.uk/podcasts/worldservice/xtra/xtra_20080903-1217a.mp3");
-	fail_unless (entry != NULL, "entry not upgraded");
-	fail_unless (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT) == NULL, "wrong mountpoint for podcast");
+	ck_assert_msg (entry != NULL, "entry not upgraded");
+	ck_assert_msg (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT) == NULL, "wrong mountpoint for podcast");
 }
 END_TEST
 
@@ -434,23 +434,23 @@ START_TEST (test_rhythmdb_modify_after_delete)
 	GValue val = {0,};
 
 	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///whee.ogg");
-	fail_unless (entry != NULL, "failed to create entry");
+	ck_assert_msg (entry != NULL, "failed to create entry");
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Anything");
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
 	g_value_unset (&val);
-	
+
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Nothing");
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &val);
 	g_value_unset (&val);
-	
+
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Something");
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
 	g_value_unset (&val);
-	
+
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Thing");
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
@@ -461,12 +461,12 @@ START_TEST (test_rhythmdb_modify_after_delete)
 
 	rhythmdb_entry_delete (db, entry);
 	rhythmdb_commit (db);
-	
+
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Something Else");
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
 	g_value_unset (&val);
-	
+
 	rhythmdb_commit (db);
 	rhythmdb_entry_unref (entry);
 }
@@ -476,7 +476,7 @@ static void
 commit_change_merge_cb (RhythmDB *db, RhythmDBEntry *entry, GArray *changes, gpointer ok)
 {
 	int expected = GPOINTER_TO_INT (ok);
-	fail_unless (changes->len == expected, "commit change lists merged");
+	ck_assert_msg (changes->len == expected, "commit change lists merged");
 }
 
 START_TEST (test_rhythmdb_commit_change_merging)
@@ -485,7 +485,7 @@ START_TEST (test_rhythmdb_commit_change_merging)
 	GValue val = {0,};
 
 	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///whee.ogg");
-	fail_unless (entry != NULL, "failed to create entry");
+	ck_assert_msg (entry != NULL, "failed to create entry");
 
 	rhythmdb_commit (db);
 

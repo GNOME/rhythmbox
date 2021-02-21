@@ -53,19 +53,19 @@ START_TEST (test_rb_audioscrobbler_entry)
 	as_gstring = g_string_new ("");
 	rb_audioscrobbler_entry_save_to_string (as_gstring, entry);
 	rb_debug ("string form: %s", as_gstring->str);
-	fail_unless (as_gstring->len != 0, "entry saved as string should not be empty");
+	ck_assert_msg (as_gstring->len != 0, "entry saved as string should not be empty");
 
 	reload = rb_audioscrobbler_entry_load_from_string (as_gstring->str);
-	fail_unless (reload != NULL, "entry-as-string can be converted back to an entry");
+	ck_assert_msg (reload != NULL, "entry-as-string can be converted back to an entry");
 
 	rb_audioscrobbler_entry_debug (entry, 0);
 	rb_audioscrobbler_entry_debug (reload, 1);
-	fail_unless (strcmp (entry->title, reload->title) == 0, "title made it back OK");
-	fail_unless (strcmp (entry->artist, reload->artist) == 0, "artist made it back OK");
-	fail_unless (strcmp (entry->album, reload->album) == 0, "album made it back OK");
-	fail_unless (strcmp (entry->mbid, reload->mbid) == 0, "album made it back OK");
-	fail_unless (entry->length == reload->length, "length made it back OK");
-	fail_unless (entry->play_time == reload->play_time, "play time made it back OK");
+	ck_assert_msg (strcmp (entry->title, reload->title) == 0, "title made it back OK");
+	ck_assert_msg (strcmp (entry->artist, reload->artist) == 0, "artist made it back OK");
+	ck_assert_msg (strcmp (entry->album, reload->album) == 0, "album made it back OK");
+	ck_assert_msg (strcmp (entry->mbid, reload->mbid) == 0, "album made it back OK");
+	ck_assert_msg (entry->length == reload->length, "length made it back OK");
+	ck_assert_msg (entry->play_time == reload->play_time, "play time made it back OK");
 
 	rb_audioscrobbler_entry_free (entry);
 	rb_audioscrobbler_entry_free (reload);

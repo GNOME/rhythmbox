@@ -29,10 +29,6 @@
 #ifndef __TEST_UTILS_H
 #define __TEST_UTILS_H
 
-#ifndef fail_if
-#define fail_if(expr, ...) fail_unless(!(expr), "Failure '"#expr"' occured")
-#endif
-
 /* yes.  really. */
 extern RhythmDB *db;
 
