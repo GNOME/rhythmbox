@@ -44,7 +44,7 @@ test_get_short_path_name (const char *in, const char *expected)
 
 	out = rb_uri_get_short_path_name (in);
 	rb_debug ("extracting short path from \"%s\", expecting \"%s\", got \"%s\"", in, expected, out);
-	fail_unless (strcmp (out, expected) == 0);
+	ck_assert (strcmp (out, expected) == 0);
 	g_free (out);
 }
 
@@ -58,7 +58,7 @@ START_TEST (test_rb_uri_get_short_path_name)
 	/* nothing */
 	in = NULL;
 	out = rb_uri_get_short_path_name (in);
-	fail_unless (out == NULL);
+	ck_assert (out == NULL);
 	g_free (out);
 
 	/* just a file name */
@@ -93,10 +93,10 @@ END_TEST
 START_TEST (test_rb_check_dir_has_space)
 {
 	init_once (TRUE);
-	fail_unless (rb_check_dir_has_space_uri ("file:///tmp", 1));
-	fail_unless (rb_check_dir_has_space_uri ("file:///etc/passwd", 1));
-	fail_unless (rb_check_dir_has_space_uri ("file:///tmp/NONEXISTANT_FILE", 1));
-	fail_unless (rb_check_dir_has_space_uri ("file:///tmp/NONEXISTANT/THISDOESNTEXISTEITHER/NORDOESTHIS", G_MAXUINT64) == FALSE);
+	ck_assert (rb_check_dir_has_space_uri ("file:///tmp", 1));
+	ck_assert (rb_check_dir_has_space_uri ("file:///etc/passwd", 1));
+	ck_assert (rb_check_dir_has_space_uri ("file:///tmp/NONEXISTANT_FILE", 1));
+	ck_assert (rb_check_dir_has_space_uri ("file:///tmp/NONEXISTANT/THISDOESNTEXISTEITHER/NORDOESTHIS", G_MAXUINT64) == FALSE);
 }
 END_TEST
 

@@ -13,10 +13,6 @@
 
 #include "test-utils.h"
 
-#ifndef fail_if
-#define fail_if(expr, ...) fail_unless(!(expr), "Failure '"#expr"' occured")
-#endif
-
 static gboolean
 rhythmdb_query_equal (const RhythmDBQuery *q1, const RhythmDBQuery *q2)
 {
@@ -81,16 +77,16 @@ query_creator_test_load_query (RhythmDB *db,
 						   squery,
 						   limit_type, limit_value,
 						   sort_column, sort_direction);
-	
+
 	str1 = rhythmdb_query_to_string (db, squery);
-	fail_unless (creator != NULL,
-		     "could not create query editor for %s", str1);
+	ck_assert_msg (creator != NULL,
+		       "could not create query editor for %s", str1);
 
 	/* check queries */
 	query2 = rb_query_creator_get_query (RB_QUERY_CREATOR (creator));
 	str2 = rhythmdb_query_to_string (db, query2);
-	fail_unless (rhythmdb_query_equal (squery, query2),
-		     "queries differ: %s; %s", str1, str2);
+	ck_assert_msg (rhythmdb_query_equal (squery, query2),
+		       "queries differ: %s; %s", str1, str2);
 	rhythmdb_query_free (query2);
 	g_free (str2);
 	g_free (str1);
@@ -98,13 +94,13 @@ query_creator_test_load_query (RhythmDB *db,
 	/* check limits */
 	rb_query_creator_get_limit (RB_QUERY_CREATOR (creator),
 				    &limit_type2, &limit_value2);
-	fail_unless (limit_type == limit_type2,
-		     "limit types differ: %d; %d", limit_type, limit_type2);
+	ck_assert_msg (limit_type == limit_type2,
+		       "limit types differ: %d; %d", limit_type, limit_type2);
 	if (limit_value == NULL) {
-		fail_unless (limit_value == limit_value2, "wasn't supposed to get a limit value");
+		ck_assert_msg (limit_value == limit_value2, "wasn't supposed to get a limit value");
 	} else {
-		fail_unless (g_variant_equal (limit_value, limit_value2),
-			     "limit values differ: %s; %s", g_variant_print (limit_value, TRUE), g_variant_print (limit_value2, TRUE));
+		ck_assert_msg (g_variant_equal (limit_value, limit_value2),
+			       "limit values differ: %s; %s", g_variant_print (limit_value, TRUE), g_variant_print (limit_value2, TRUE));
 	}
 	if (limit_value2)
 		g_variant_unref (limit_value2);
@@ -112,10 +108,10 @@ query_creator_test_load_query (RhythmDB *db,
 	/* check sorting */
 	rb_query_creator_get_sort_order (RB_QUERY_CREATOR (creator),
 					 &sort_column2, &sort_direction2);
-	fail_unless (strcmp (sort_column2, sort_column) == 0,
-		     "sort columns differ: %s; %s", sort_column, sort_column2);
-	fail_unless (sort_direction2 == sort_direction,
-		     "sort directions differ: %d; %d", sort_direction, sort_direction2);
+	ck_assert_msg (strcmp (sort_column2, sort_column) == 0,
+		       "sort columns differ: %s; %s", sort_column, sort_column2);
+	ck_assert_msg (sort_direction2 == sort_direction,
+		       "sort directions differ: %d; %d", sort_direction, sort_direction2);
 
 	rhythmdb_query_free (squery);
 	gtk_widget_destroy (creator);

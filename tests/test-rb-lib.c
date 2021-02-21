@@ -42,43 +42,43 @@ START_TEST (test_rb_string_value_map)
 	GValue val = {0,};
 
 	map = rb_string_value_map_new ();
-	fail_unless (rb_string_value_map_size (map) == 0, "new map should have 0 entries");
+	ck_assert_msg (rb_string_value_map_size (map) == 0, "new map should have 0 entries");
 
 	g_value_init (&val, G_TYPE_INT);
 	g_value_set_int (&val, 42);
 	rb_string_value_map_set (map, "foo", &val);
 	g_value_unset (&val);
-	fail_unless (rb_string_value_map_size (map) == 1, "map with 1 entry added should have 1 entry");
+	ck_assert_msg (rb_string_value_map_size (map) == 1, "map with 1 entry added should have 1 entry");
 
-	fail_unless (rb_string_value_map_get (map, "foo", &val), "couldn't retrieve just-added entry");
-	fail_unless (g_value_get_int (&val) == 42, "entry returned wrong value");
+	ck_assert_msg (rb_string_value_map_get (map, "foo", &val), "couldn't retrieve just-added entry");
+	ck_assert_msg (g_value_get_int (&val) == 42, "entry returned wrong value");
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, "BAZ");
 	rb_string_value_map_set (map, "bar", &val);
 	g_value_unset (&val);
-	fail_unless (rb_string_value_map_size (map) == 2, "map with 2 entries added should have 2 entries");
+	ck_assert_msg (rb_string_value_map_size (map) == 2, "map with 2 entries added should have 2 entries");
 
-	fail_unless (rb_string_value_map_get (map, "foo", &val), "couldn't retrieve entry");
-	fail_unless (g_value_get_int (&val) == 42, "entry returned wrong value");
+	ck_assert_msg (rb_string_value_map_get (map, "foo", &val), "couldn't retrieve entry");
+	ck_assert_msg (g_value_get_int (&val) == 42, "entry returned wrong value");
 	g_value_unset (&val);
 
-	fail_unless (strcmp (g_value_get_string (rb_string_value_map_peek (map, "bar")), "BAZ") == 0,
-		     "wrong string returned");
+	ck_assert_msg (strcmp (g_value_get_string (rb_string_value_map_peek (map, "bar")), "BAZ") == 0,
+		       "wrong string returned");
 
-	fail_unless (rb_string_value_map_get (map, "wombat", &val) == FALSE, "could retrieve non-existant entry");
+	ck_assert_msg (rb_string_value_map_get (map, "wombat", &val) == FALSE, "could retrieve non-existant entry");
 
 	rb_string_value_map_remove (map, "foo");
-	fail_unless (rb_string_value_map_size (map) == 1, "map with second entry removed should have 1 entry");
+	ck_assert_msg (rb_string_value_map_size (map) == 1, "map with second entry removed should have 1 entry");
 
-	fail_unless (strcmp (g_value_get_string (rb_string_value_map_peek (map, "bar")), "BAZ") == 0,
-		     "wrong string returned");
+	ck_assert_msg (strcmp (g_value_get_string (rb_string_value_map_peek (map, "bar")), "BAZ") == 0,
+		       "wrong string returned");
 
 	rb_string_value_map_remove (map, "bar");
-	fail_unless (rb_string_value_map_size (map) == 0, "map with both entries removed should have 0 entries");
+	ck_assert_msg (rb_string_value_map_size (map) == 0, "map with both entries removed should have 0 entries");
 
-	fail_unless (rb_string_value_map_peek (map, "bar") == NULL, "removed entry should return NULL");
+	ck_assert_msg (rb_string_value_map_peek (map, "bar") == NULL, "removed entry should return NULL");
 }
 END_TEST
 

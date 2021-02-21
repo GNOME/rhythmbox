@@ -137,7 +137,7 @@ test_rhythmdb_setup (void)
 	init_once (TRUE);
 
 	db = rhythmdb_tree_new ("test");
-	fail_unless (db != NULL, "failed to initialise DB");
+	ck_assert_msg (db != NULL, "failed to initialise DB");
 	rhythmdb_start_action_thread (db);
 
 	/* allow songs and ignored entries to be synced to for the tests */
@@ -153,7 +153,7 @@ test_rhythmdb_setup (void)
 void
 test_rhythmdb_shutdown (void)
 {
-	fail_unless (db != NULL, "failed to shutdown DB");
+	ck_assert_msg (db != NULL, "failed to shutdown DB");
 	rhythmdb_shutdown (db);
 
 	/* release the reference, and wait until after finalisation */

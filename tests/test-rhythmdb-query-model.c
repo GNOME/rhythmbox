@@ -47,13 +47,13 @@ test_query_eval (RhythmDB *db, RhythmDBQuery *query, RhythmDBEntry *entry, gbool
 	/* direct evaluation - need to preprocess it first */
 	processed = rhythmdb_query_copy (query);
 	rhythmdb_query_preprocess (db, processed);
-	fail_unless (rhythmdb_evaluate_query (db, processed, entry) == expected, what);
+	ck_assert_msg (rhythmdb_evaluate_query (db, processed, entry) == expected, "%s", what);
 	rhythmdb_query_free (processed);
 
 	/* query evaluation - query is preprocessed by rhythmdb */
 	model = rhythmdb_query_model_new_empty (db);
 	rhythmdb_do_full_query_parsed (db, RHYTHMDB_QUERY_RESULTS (model), query);
-	fail_unless (rhythmdb_query_model_entry_to_iter (model, entry, &iter) == expected, what);
+	ck_assert_msg (rhythmdb_query_model_entry_to_iter (model, entry, &iter) == expected, "%s", what);
 	g_object_unref (model);
 }
 
@@ -75,7 +75,7 @@ START_TEST (test_rhythmdb_db_queries)
 	start_test_case ();
 
 	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, "file:///whee.ogg");
-	fail_unless (entry != NULL, "failed to create entry");
+	ck_assert_msg (entry != NULL, "failed to create entry");
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, "Rock");
@@ -247,8 +247,8 @@ START_TEST (test_hidden_chain_filter)
 
 	/* add entry to base, should be in both */
 	rhythmdb_query_model_add_entry (base_model, entry, -1);
-	fail_unless (rhythmdb_query_model_entry_to_iter (base_model, entry, &iter));
-	fail_unless (rhythmdb_query_model_entry_to_iter (filter_model, entry, &iter));
+	ck_assert (rhythmdb_query_model_entry_to_iter (base_model, entry, &iter));
+	ck_assert (rhythmdb_query_model_entry_to_iter (filter_model, entry, &iter));
 
 	end_step ();
 
@@ -259,8 +259,8 @@ START_TEST (test_hidden_chain_filter)
 	rhythmdb_commit (db);
 	wait_for_signal ();
 
-	fail_unless (rhythmdb_query_model_entry_to_iter (base_model, entry, &iter));
-	fail_if (rhythmdb_query_model_entry_to_iter (filter_model, entry, &iter));
+	ck_assert (rhythmdb_query_model_entry_to_iter (base_model, entry, &iter));
+	ck_assert (rhythmdb_query_model_entry_to_iter (filter_model, entry, &iter) == FALSE);
 
 	end_step ();
 
@@ -271,8 +271,8 @@ START_TEST (test_hidden_chain_filter)
 	rhythmdb_commit (db);
 	wait_for_signal ();
 
-	fail_unless (rhythmdb_query_model_entry_to_iter (base_model, entry, &iter));
-	fail_unless (rhythmdb_query_model_entry_to_iter (filter_model, entry, &iter));
+	ck_assert (rhythmdb_query_model_entry_to_iter (base_model, entry, &iter));
+	ck_assert (rhythmdb_query_model_entry_to_iter (filter_model, entry, &iter));
 
 	end_step ();
 
