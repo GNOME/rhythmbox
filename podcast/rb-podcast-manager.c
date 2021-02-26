@@ -891,7 +891,8 @@ rb_podcast_manager_add_post (RhythmDB *db,
 			     const char *name,
 			     const char *title,
 			     const char *subtitle,
-			     const char *generator,
+			     const char *channel_author,
+			     const char *item_author,
 			     const char *uri,
 			     const char *description,
 			     const char *guid,
@@ -963,11 +964,21 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_STRING);
-	if (generator)
-		g_value_set_string (&val, generator);
+	if (item_author)
+		g_value_set_string (&val, item_author);
+	else if (channel_author)
+		g_value_set_string (&val, channel_author);
 	else
 		g_value_set_static_string (&val, "");
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_STRING);
+	if (channel_author)
+		g_value_set_string (&val, channel_author);
+	else
+		g_value_set_static_string (&val, "");
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM_ARTIST, &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_ULONG);
@@ -1529,7 +1540,8 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 			    title,
 			    item->title,
 			    data->url,
-			    (item->author ? item->author : data->author),
+			    data->author,
+			    item->author,
 			    item->url,
 			    item->description,
 			    item->guid,
