@@ -836,6 +836,7 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 					 _("The URL \"%s\" has already been added as a radio station. "
 					 "If this is a podcast feed, please remove the radio station."), url);
 			g_object_unref (feed);
+			g_free (feed_url);
 			podcast_update_free (update);
 			return FALSE;
 		}
@@ -851,7 +852,7 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 		rb_debug ("not checking mime type for %s", feed_url);
 		start_feed_parse (pd, update);
 	} else {
-		g_file_query_info_async (feed,
+		g_file_query_info_async (g_object_ref (feed),
 					 G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
 					 0,
 					 G_PRIORITY_DEFAULT,
@@ -861,6 +862,7 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 	}
 
 	g_object_unref (feed);
+	g_free (feed_url);
 	return TRUE;
 }
 
