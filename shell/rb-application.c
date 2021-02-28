@@ -901,13 +901,18 @@ rb_application_activate_key (RBApplication *app, GdkEventKey *event)
 	GList *l;
 	GtkWidget *window;
 	gboolean ret = FALSE;
+	guint event_keyval;
+	GdkModifierType event_mods;
 
 	g_object_get (app->priv->shell, "window", &window, NULL);
 
+	event_keyval = gdk_keyval_to_lower (event->keyval);
+	event_mods = (gtk_accelerator_get_default_mod_mask () & event->state);
+
 	for (l = app->priv->accelerators; l != NULL; l = l->next) {
 		RBApplicationAccel *accel = l->data;
-		if (accel->keyval == event->keyval &&
-		    accel->mods == event->state) {
+		if (accel->keyval == event_keyval &&
+		    accel->mods == event_mods) {
 			GActionGroup *group;
 
 			group = gtk_widget_get_action_group (window, accel->prefix);
