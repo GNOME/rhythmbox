@@ -368,7 +368,7 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 			gtk_tree_path_free (b);
 		}
 	} else {
-		/* model owns data->channel now */
+		rb_podcast_parse_channel_ref (data->channel);
 		insert_search_result (data->dialog, data->channel, data->single);
 		update_feed_status (data->dialog);
 	}
