@@ -283,7 +283,6 @@ typedef struct {
 	RBPodcastChannel *channel;
 	gboolean existing;
 	gboolean single;
-	GError *error;
 	int reset_count;
 } ParseData;
 
@@ -294,24 +293,19 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 
 	g_assert (channel == data->channel);
 
+	if (data->reset_count != data->dialog->priv->reset_count) {
+		rb_debug ("dialog reset while parsing");
+		rb_podcast_parse_channel_unref (data->channel);
+		g_object_unref (data->dialog);
+		g_free (data);
+		return;
+	}
+
 	if (error != NULL) {
 		/* fake up a channel with just the url as the title, allowing the user
 		 * to subscribe to the podcast anyway.
 		 */
 		channel->title = g_strdup (channel->url);
-		g_error_free (error);
-	}
-
-	if (data->reset_count != data->dialog->priv->reset_count) {
-		rb_debug ("dialog reset while parsing");
-		rb_podcast_parse_channel_unref (data->channel);
-		g_object_unref (data->dialog);
-		g_clear_error (&data->error);
-		g_free (data);
-		return;
-	}
-
-	if (data->error != NULL) {
 		gtk_label_set_label (GTK_LABEL (data->dialog->priv->info_bar_message),
 				     _("Unable to load the feed. Check your network connection."));
 		gtk_widget_show (data->dialog->priv->info_bar);
@@ -375,7 +369,6 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 
 	rb_podcast_parse_channel_unref (data->channel);
 	g_object_unref (data->dialog);
-	g_clear_error (&data->error);
 	g_free (data);
 }
 
