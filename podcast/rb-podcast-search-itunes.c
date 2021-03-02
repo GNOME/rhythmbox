@@ -81,7 +81,7 @@ process_results (RBPodcastSearchITunes *search, JsonParser *parser)
 
 		/* check wrapperType==track, kind==podcast ? */
 
-		channel = g_new0 (RBPodcastChannel, 1);
+		channel = rb_podcast_parse_channel_new ();
 
 		channel->url = g_strdup (json_object_get_string_member (feed, "collectionViewUrl"));
 		channel->title = g_strdup (json_object_get_string_member (feed, "collectionName"));

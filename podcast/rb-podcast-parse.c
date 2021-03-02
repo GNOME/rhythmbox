@@ -270,6 +270,8 @@ void
 rb_podcast_parse_channel_unref (RBPodcastChannel *data)
 {
 	g_return_if_fail (data != NULL);
+	g_return_if_fail (data->refcount > 0);
+
 	g_assert (rb_is_main_thread ());
 
 	if (--data->refcount > 0) {
