@@ -221,6 +221,8 @@ insert_search_result (RBPodcastAddDialog *dialog, RBPodcastChannel *channel, gbo
 	GFile *image_file;
 	int episodes;
 
+	rb_podcast_parse_channel_ref (channel);
+
 	if (channel->posts) {
 		episodes = g_list_length (channel->posts);
 	} else {
@@ -326,6 +328,7 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 			channel->title = g_strdup (item->title);
 			/* none of the other fields get populated anyway */
 			insert_search_result (data->dialog, channel, FALSE);
+			rb_podcast_parse_channel_unref (channel);
 		}
 		update_feed_status (data->dialog);
 		rb_podcast_parse_channel_unref (data->channel);
@@ -362,7 +365,6 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 			gtk_tree_path_free (b);
 		}
 	} else {
-		rb_podcast_parse_channel_ref (data->channel);
 		insert_search_result (data->dialog, data->channel, data->single);
 		update_feed_status (data->dialog);
 	}
@@ -410,7 +412,7 @@ static void
 podcast_search_result_cb (RBPodcastSearch *search, RBPodcastChannel *feed, RBPodcastAddDialog *dialog)
 {
 	rb_debug ("got result %s from podcast search %s", feed->url, G_OBJECT_TYPE_NAME (search));
-	insert_search_result (dialog, rb_podcast_parse_channel_copy (feed), FALSE);
+	insert_search_result (dialog, feed, FALSE);
 }
 
 static void
