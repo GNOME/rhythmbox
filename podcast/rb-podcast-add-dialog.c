@@ -331,7 +331,6 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 			rb_podcast_parse_channel_unref (channel);
 		}
 		update_feed_status (data->dialog);
-		rb_podcast_parse_channel_unref (data->channel);
 	} else if (data->existing) {
 		GtkTreeIter iter;
 		gboolean found = FALSE;
