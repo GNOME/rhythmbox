@@ -32,6 +32,7 @@
 #include <glib-object.h>
 #include <glib/gi18n.h>
 
+#include "rb-util.h"
 #include "rb-podcast-search.h"
 
 #include <string.h>
@@ -125,6 +126,8 @@ int main (int argc, char **argv)
 	setlocale (LC_ALL, "");
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+
+	rb_threads_init ();
 
 	text = argv[1];
 	if (argv[2] != NULL && strcmp (argv[2], "--debug") == 0) {
