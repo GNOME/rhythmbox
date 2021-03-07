@@ -169,34 +169,46 @@ parse_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 	RBPodcastChannel *channel = data->channel;
 	GError *error = NULL;
 
-	totem_pl_parser_parse_finish (TOTEM_PL_PARSER (source_object), res, &error);
-	if (error) {
-		channel->status = RB_PODCAST_PARSE_STATUS_ERROR;
-		rb_debug ("parsing %s as a podcast failed: %s", channel->url, error->message);
+	channel->status = RB_PODCAST_PARSE_STATUS_ERROR;
+	switch (totem_pl_parser_parse_finish (TOTEM_PL_PARSER (source_object), res, &error)) {
+	case TOTEM_PL_PARSER_RESULT_ERROR:
+	case TOTEM_PL_PARSER_RESULT_IGNORED:
+	case TOTEM_PL_PARSER_RESULT_UNHANDLED:
+		rb_debug ("parsing %s as a podcast failed", channel->url);
+		/* totem-pl-parser doesn't return interesting errors */
 		g_clear_error (&error);
-
 		g_set_error (&error,
 			     RB_PODCAST_PARSE_ERROR,
 			     RB_PODCAST_PARSE_ERROR_XML_PARSE,
 			     _("Unable to parse the feed contents"));
-	} else if (channel->posts == NULL) {
-		channel->status = RB_PODCAST_PARSE_STATUS_ERROR;
-		/*
-		 * treat empty feeds, or feeds that don't contain any downloadable items, as
-		 * an error.
-		 */
-		rb_debug ("parsing %s as a podcast succeeded, but the feed contains no downloadable items", channel->url);
-		g_set_error (&error,
-			     RB_PODCAST_PARSE_ERROR,
-			     RB_PODCAST_PARSE_ERROR_NO_ITEMS,
-			     _("The feed does not contain any downloadable items"));
-	} else {
-		channel->status = RB_PODCAST_PARSE_STATUS_SUCCESS;
-		rb_debug ("parsing %s as a podcast succeeded", channel->url);
+		break;
+
+	case TOTEM_PL_PARSER_RESULT_SUCCESS:
+		if (error != NULL) {
+			/* currently only happens when parsing was cancelled */
+		} else if (channel->posts == NULL) {
+			/*
+			 * treat empty feeds, or feeds that don't contain any downloadable items, as
+			 * an error.
+			 */
+			rb_debug ("parsing %s as a podcast succeeded, but the feed contains no downloadable items", channel->url);
+			g_set_error (&error,
+				     RB_PODCAST_PARSE_ERROR,
+				     RB_PODCAST_PARSE_ERROR_NO_ITEMS,
+				     _("The feed does not contain any downloadable items"));
+		} else {
+			channel->status = RB_PODCAST_PARSE_STATUS_SUCCESS;
+			rb_debug ("parsing %s as a podcast succeeded", channel->url);
+		}
+		break;
+
+	default:
+		g_assert_not_reached ();
 	}
 
 	data->callback (channel, error, data->user_data);
 	g_object_unref (source_object);
+	g_clear_error (&error);
 	g_free (data);
 }
 
