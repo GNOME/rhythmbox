@@ -982,6 +982,7 @@ rb_podcast_add_dialog_reset (RBPodcastAddDialog *dialog, const char *text, gbool
 	rhythmdb_entry_delete_by_type (dialog->priv->db, RHYTHMDB_ENTRY_TYPE_PODCAST_SEARCH);
 	rhythmdb_commit (dialog->priv->db);
 
+	gtk_widget_hide (dialog->priv->info_bar);
 	rb_search_entry_set_text (dialog->priv->search_entry, text);
 
 	if (load) {
