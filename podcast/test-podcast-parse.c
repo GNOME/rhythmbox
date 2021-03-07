@@ -32,6 +32,7 @@
 #include <glib-object.h>
 #include <glib/gi18n.h>
 
+#include "rb-util.h"
 #include "rb-podcast-parse.h"
 
 #include <string.h>
@@ -103,6 +104,7 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 		g_print ("\n");
 	}
 
+	rb_podcast_parse_channel_unref (channel);
 	g_main_loop_quit (ml);
 }
 
@@ -116,12 +118,14 @@ main (int argc, char **argv)
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
+	rb_threads_init ();
+
 	if (argv[2] != NULL && strcmp (argv[2], "--debug") == 0) {
 		debug = TRUE;
 	}
 
 	ml = g_main_loop_new (NULL, FALSE);
-	data = g_new0 (RBPodcastChannel, 1);
+	data = rb_podcast_parse_channel_new ();
 	data->url = g_strdup (argv[1]);
 	rb_podcast_parse_load_feed (data, NULL, parse_cb, ml);
 

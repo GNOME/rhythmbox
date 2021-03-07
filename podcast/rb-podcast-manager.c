@@ -824,7 +824,7 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 	update = g_new0 (RBPodcastUpdate, 1);
 	update->pd = g_object_ref (pd);
 	update->automatic = automatic;
-	update->channel = g_new0 (RBPodcastChannel, 1);
+	update->channel = rb_podcast_parse_channel_new ();
 	update->channel->url = g_strdup (feed_url);
 
 	entry = rhythmdb_entry_lookup_by_location (pd->priv->db, feed_url);
