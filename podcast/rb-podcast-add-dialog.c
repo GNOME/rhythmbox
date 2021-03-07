@@ -304,12 +304,22 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 	}
 
 	if (error != NULL) {
-		/* fake up a channel with just the url as the title, allowing the user
-		 * to subscribe to the podcast anyway.
-		 */
-		channel->title = g_strdup (channel->url);
-		gtk_label_set_label (GTK_LABEL (data->dialog->priv->info_bar_message),
-				     _("Unable to load the feed. Check your network connection."));
+		const char *message;
+		if (g_error_matches (error, RB_PODCAST_PARSE_ERROR, RB_PODCAST_PARSE_ERROR_NO_ITEMS)) {
+			message = error->message;
+		} else {
+			message = _("Unable to load the feed. Check your network connection.");
+		}
+
+		if (channel->title == NULL || channel->title[0] == '\0') {
+			/* fake up a channel with just the url as the
+			 * title, allowing the user to subscribe to
+			 * the podcast anyway.
+			 */
+			channel->title = g_strdup (channel->url);
+		}
+
+		gtk_label_set_label (GTK_LABEL (data->dialog->priv->info_bar_message), message);
 		gtk_widget_show (data->dialog->priv->info_bar);
 	} else {
 		gtk_widget_hide (data->dialog->priv->info_bar);
