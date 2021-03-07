@@ -561,11 +561,15 @@ feed_selection_changed_cb (GtkTreeSelection *selection, RBPodcastAddDialog *dial
 				    FEED_COLUMN_PARSED_FEED, &channel,
 				    -1);
 
-		if (channel->posts == NULL) {
+		switch (channel->status) {
+		case RB_PODCAST_PARSE_STATUS_UNPARSED:
+		case RB_PODCAST_PARSE_STATUS_ERROR:
 			rb_debug ("parsing feed %s to get posts", channel->url);
 			parse_search_result (dialog, channel);
-		} else {
+			break;
+		case RB_PODCAST_PARSE_STATUS_SUCCESS:
 			add_posts_for_feed (dialog, channel);
+			break;
 		}
 	}
 }
