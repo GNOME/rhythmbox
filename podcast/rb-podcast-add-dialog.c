@@ -556,6 +556,8 @@ feed_selection_changed_cb (GtkTreeSelection *selection, RBPodcastAddDialog *dial
 	if (dialog->priv->clearing)
 		return;
 
+	gtk_widget_hide (dialog->priv->info_bar);
+
 	dialog->priv->have_selection =
 		gtk_tree_selection_get_selected (selection, &model, &dialog->priv->selected_feed);
 	gtk_widget_set_sensitive (dialog->priv->subscribe_button, dialog->priv->have_selection);
