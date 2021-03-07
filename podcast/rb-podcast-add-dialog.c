@@ -494,7 +494,7 @@ subscribe_selected_feed (RBPodcastAddDialog *dialog)
 			    &dialog->priv->selected_feed,
 			    FEED_COLUMN_PARSED_FEED, &channel,
 			    -1);
-	if (channel->posts != NULL) {
+	if (channel->status == RB_PODCAST_PARSE_STATUS_SUCCESS) {
 		rb_podcast_manager_add_parsed_feed (dialog->priv->podcast_mgr, channel);
 	} else {
 		rb_podcast_manager_subscribe_feed (dialog->priv->podcast_mgr, channel->url, TRUE);
