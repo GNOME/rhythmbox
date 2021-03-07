@@ -39,6 +39,13 @@ typedef enum
 	RB_PODCAST_PARSE_ERROR_NO_ITEMS,		/* feed doesn't contain any downloadable items */
 } RBPodcastParseError;
 
+typedef enum
+{
+	RB_PODCAST_PARSE_STATUS_UNPARSED,		/* feed unparsed */
+	RB_PODCAST_PARSE_STATUS_SUCCESS,		/* feed parse succeeded */
+	RB_PODCAST_PARSE_STATUS_ERROR,			/* feed parse failed */
+} RBPodcastParseStatus;
+
 #define RB_PODCAST_PARSE_ERROR rb_podcast_parse_error_quark ()
 GQuark rb_podcast_parse_error_quark (void);
 
@@ -71,6 +78,7 @@ typedef struct
 
 	GList *posts;
 	int num_posts;
+	RBPodcastParseStatus status;
 } RBPodcastChannel;
 
 GType	rb_podcast_channel_get_type (void);

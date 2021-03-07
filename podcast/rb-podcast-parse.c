@@ -171,6 +171,7 @@ parse_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 
 	totem_pl_parser_parse_finish (TOTEM_PL_PARSER (source_object), res, &error);
 	if (error) {
+		channel->status = RB_PODCAST_PARSE_STATUS_ERROR;
 		rb_debug ("parsing %s as a podcast failed: %s", channel->url, error->message);
 		g_clear_error (&error);
 
@@ -179,6 +180,7 @@ parse_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 			     RB_PODCAST_PARSE_ERROR_XML_PARSE,
 			     _("Unable to parse the feed contents"));
 	} else if (channel->posts == NULL) {
+		channel->status = RB_PODCAST_PARSE_STATUS_ERROR;
 		/*
 		 * treat empty feeds, or feeds that don't contain any downloadable items, as
 		 * an error.
@@ -189,6 +191,7 @@ parse_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 			     RB_PODCAST_PARSE_ERROR_NO_ITEMS,
 			     _("The feed does not contain any downloadable items"));
 	} else {
+		channel->status = RB_PODCAST_PARSE_STATUS_SUCCESS;
 		rb_debug ("parsing %s as a podcast succeeded", channel->url);
 	}
 
