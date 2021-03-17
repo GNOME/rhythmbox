@@ -292,6 +292,7 @@ static void
 parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 {
 	ParseData *data = user_data;
+	gboolean is_selected_channel = FALSE;
 
 	g_assert (channel == data->channel);
 
@@ -303,14 +304,18 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 		return;
 	}
 
-	if (error != NULL) {
-		const char *message;
-		if (g_error_matches (error, RB_PODCAST_PARSE_ERROR, RB_PODCAST_PARSE_ERROR_NO_ITEMS)) {
-			message = error->message;
-		} else {
-			message = _("Unable to load the feed. Check your network connection.");
-		}
+	/* get selected feed if any */
+	if (data->dialog->priv->have_selection) {
+		RBPodcastChannel *selected_channel;
+		gtk_tree_model_get (GTK_TREE_MODEL (data->dialog->priv->feed_model),
+				    &data->dialog->priv->selected_feed,
+				    FEED_COLUMN_PARSED_FEED, &selected_channel,
+				    -1);
+		if (channel == selected_channel)
+			is_selected_channel = TRUE;
+	}
 
+	if (error != NULL) {
 		if (channel->title == NULL || channel->title[0] == '\0') {
 			/* fake up a channel with just the url as the
 			 * title, allowing the user to subscribe to
@@ -319,10 +324,21 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 			channel->title = g_strdup (channel->url);
 		}
 
-		gtk_label_set_label (GTK_LABEL (data->dialog->priv->info_bar_message), message);
-		gtk_widget_show (data->dialog->priv->info_bar);
+		if (is_selected_channel) {
+			const char *message;
+			if (g_error_matches (error, RB_PODCAST_PARSE_ERROR, RB_PODCAST_PARSE_ERROR_NO_ITEMS)) {
+				message = error->message;
+			} else {
+				message = _("Unable to load the feed. Check your network connection.");
+			}
+
+			gtk_label_set_label (GTK_LABEL (data->dialog->priv->info_bar_message), message);
+			gtk_widget_show (data->dialog->priv->info_bar);
+		}
 	} else {
-		gtk_widget_hide (data->dialog->priv->info_bar);
+		if (is_selected_channel) {
+			gtk_widget_hide (data->dialog->priv->info_bar);
+		}
 	}
 
 	if (data->channel->is_opml) {
