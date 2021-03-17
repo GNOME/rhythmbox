@@ -298,7 +298,7 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 
 	if (data->reset_count != data->dialog->priv->reset_count) {
 		rb_debug ("dialog reset while parsing");
-		rb_podcast_parse_channel_unref (data->channel);
+		rb_podcast_parse_channel_unref (channel);
 		g_object_unref (data->dialog);
 		g_free (data);
 		return;
@@ -341,10 +341,10 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 		}
 	}
 
-	if (data->channel->is_opml) {
+	if (channel->is_opml) {
 		GList *l;
 		/* convert each item into its own channel */
-		for (l = data->channel->posts; l != NULL; l = l->next) {
+		for (l = channel->posts; l != NULL; l = l->next) {
 			RBPodcastChannel *channel;
 			RBPodcastItem *item;
 
@@ -383,18 +383,18 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 			a = gtk_tree_model_get_path (GTK_TREE_MODEL (data->dialog->priv->feed_model), &iter);
 			b = gtk_tree_model_get_path (GTK_TREE_MODEL (data->dialog->priv->feed_model), &data->dialog->priv->selected_feed);
 			if (gtk_tree_path_compare (a, b) == 0) {
-				add_posts_for_feed (data->dialog, data->channel);
+				add_posts_for_feed (data->dialog, channel);
 			}
 
 			gtk_tree_path_free (a);
 			gtk_tree_path_free (b);
 		}
 	} else {
-		insert_search_result (data->dialog, data->channel, data->single);
+		insert_search_result (data->dialog, channel, data->single);
 		update_feed_status (data->dialog);
 	}
 
-	rb_podcast_parse_channel_unref (data->channel);
+	rb_podcast_parse_channel_unref (channel);
 	g_object_unref (data->dialog);
 	g_free (data);
 }
