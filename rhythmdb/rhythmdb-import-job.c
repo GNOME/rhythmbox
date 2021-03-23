@@ -89,6 +89,7 @@ struct _RhythmDBImportJobPrivate
 	RhythmDBEntryType *error_type;
 	GMutex		lock;
 	GSList		*uri_list;
+	GSList		*next;
 	gboolean	started;
 	GCancellable    *cancel;
 
@@ -168,6 +169,38 @@ rhythmdb_import_job_add_uri (RhythmDBImportJob *job, const char *uri)
 	g_mutex_lock (&job->priv->lock);
 	job->priv->uri_list = g_slist_prepend (job->priv->uri_list, g_strdup (uri));
 	g_mutex_unlock (&job->priv->lock);
+}
+
+/**
+ * rhythmdb_import_job_includes_uri:
+ * @job: a #RhythmDBImportJob
+ * @uri: a URI to check
+ *
+ * Checks if the specified URI is included in the import job.
+ *
+ * Return value: %TRUE if the import job includes the URI
+ */
+gboolean
+rhythmdb_import_job_includes_uri (RhythmDBImportJob *job, const char *uri)
+{
+	gboolean result = FALSE;
+	GSList *i;
+
+	g_mutex_lock (&job->priv->lock);
+	i = job->priv->uri_list;
+	while (i != NULL) {
+		const char *luri = i->data;
+		if ((g_strcmp0 (uri, luri) == 0) ||
+		    rb_uri_is_descendant (uri, luri)) {
+			result = TRUE;
+			break;
+		}
+
+		i = i->next;
+	}
+	g_mutex_unlock (&job->priv->lock);
+
+	return result;
 }
 
 /* must be called with lock held */
@@ -331,7 +364,16 @@ uri_recurse_func (GFile *file, GFileInfo *info, RhythmDBImportJob *job)
 		if (r != NULL) {
 			uri = g_file_get_uri (r);
 			g_object_unref (r);
+
+			if (rhythmdb_import_job_includes_uri (job, uri)) {
+				rb_debug ("symlink target %s already included", uri);
+				g_free (uri);
+				return TRUE;
+			}
 		} else {
+			uri = g_file_get_uri (file);
+			rb_debug ("unable to resolve symlink %s", uri);
+			g_free (uri);
 			return FALSE;
 		}
 	} else {
@@ -386,14 +428,13 @@ static void
 next_uri (RhythmDBImportJob *job)
 {
 	g_mutex_lock (&job->priv->lock);
-	if (job->priv->uri_list == NULL) {
+	if (job->priv->next == NULL) {
 		rb_debug ("no more uris to scan");
 		job->priv->scan_complete = TRUE;
 		g_idle_add ((GSourceFunc)emit_scan_complete_idle, job);
 	} else {
-		char *uri = job->priv->uri_list->data;
-		job->priv->uri_list = g_slist_delete_link (job->priv->uri_list,
-							   job->priv->uri_list);
+		const char *uri = job->priv->next->data;
+		job->priv->next = job->priv->next->next;
 
 		rb_debug ("scanning uri %s", uri);
 		rb_uri_handle_recursively_async (uri,
@@ -401,8 +442,6 @@ next_uri (RhythmDBImportJob *job)
 						 (RBUriRecurseFunc) uri_recurse_func,
 						 job,
 						 (GDestroyNotify) next_uri);
-
-		g_free (uri);
 	}
 	g_mutex_unlock (&job->priv->lock);
 }
@@ -424,6 +463,7 @@ rhythmdb_import_job_start (RhythmDBImportJob *job)
 	g_mutex_lock (&job->priv->lock);
 	job->priv->started = TRUE;
 	job->priv->uri_list = g_slist_reverse (job->priv->uri_list);
+	job->priv->next = job->priv->uri_list;
 	g_mutex_unlock (&job->priv->lock);
 	
 	/* reference is released in emit_scan_complete_idle */

@@ -71,6 +71,7 @@ RhythmDBImportJob *rhythmdb_import_job_new		(RhythmDB *db,
 							 RhythmDBEntryType *ignore_type,
 							 RhythmDBEntryType *error_type);
 void		rhythmdb_import_job_add_uri		(RhythmDBImportJob *job, const char *uri);
+gboolean	rhythmdb_import_job_includes_uri	(RhythmDBImportJob *job, const char *uri);
 void		rhythmdb_import_job_start		(RhythmDBImportJob *job);
 void		rhythmdb_import_job_cancel		(RhythmDBImportJob *job);
 
