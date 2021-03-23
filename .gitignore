@@ -6,7 +6,12 @@
 *.plugin
 cscope.out
 *.ui~
+*.loT
+*.ui.h
+*.in.h
 
+configure.tmp
+conftest*
 autom4te*.cache
 stamp-h
 stamp-h.in
@@ -33,10 +38,8 @@ rhythmbox.pc
 ABOUT-NLS
 
 #
-bindings/gi/MPID-3.0.gir
-bindings/gi/MPID-3.0.typelib
-bindings/gi/RB-3.0.gir
-bindings/gi/RB-3.0.typelib
+!bindings/gi/Makefile.am
+bindings/gi/
 
 #
 org.gnome.Rhythmbox3.service
@@ -46,6 +49,7 @@ org.gnome.Rhythmbox3.device.desktop.in
 playlists.xml
 gschemas.compiled
 org.gnome.rhythmbox.gschema.valid
+org.gnome.Rhythmbox3.appdata.xml
 
 #
 help/*.omf
@@ -67,11 +71,6 @@ metadata/rhythmbox-metadata
 metadata/test-metadata
 
 #
-plugins/audiocd/sj-metadata-marshal.c
-plugins/audiocd/sj-metadata-marshal.h
-plugins/daap/rb-daap-glue.h
-
-#
 sample-plugins/sample-vala/rb-sample-vala-plugin.c
 sample-plugins/sample-vala/rb-sample-vala-plugin.h
 sample-plugins/sample-vala/libsample_vala_la_vala.stamp
@@ -80,12 +79,12 @@ sample-plugins/sample-vala/libsample_vala_la_vala.stamp
 po/*.gmo
 po/*.mo
 po/*.pot
-po/Makefile.in.in
+po/Makefile.in.in*
 po/POTFILES
 po/missing
 po/notexist
 po/stamp-it
-po/.intltool-merge-cache
+po/.intltool-merge-cache*
 po/Makevars.template
 po/Rules-quot
 po/boldquot.sed
@@ -105,11 +104,6 @@ remote/dbus/rhythmbox-client
 #
 shell/*.tab
 shell/rhythmbox
-shell/rb-shell-glue.h
-shell/rb-shell-player-glue.h
-shell/rb-playlist-manager-glue.h
-shell/rb-shell-binding.h
-shell/rb-shell-player-binding.h
 shell/rb-resources.c
 
 #
@@ -149,5 +143,3 @@ widgets/test-uri-dialog
 plugins/audiocd/test-cd
 plugins/rb/rbconfig.py
 plugins/*/*-resources.c
-
-data/rhythmbox.appdata.xml
