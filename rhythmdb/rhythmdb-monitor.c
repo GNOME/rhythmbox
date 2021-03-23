@@ -280,7 +280,7 @@ rhythmdb_directory_change_cb (GFileMonitor *monitor,
 
 			/* ignore new files outside of the library locations */
 			for (i = 0; db->priv->library_locations[i] != NULL; i++) {
-				if (g_str_has_prefix (canon_uri, db->priv->library_locations[i])) {
+				if (rb_uri_is_descendant (canon_uri, db->priv->library_locations[i])) {
 					in_library = TRUE;
 					break;
 				}
