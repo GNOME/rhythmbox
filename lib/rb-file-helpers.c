@@ -1484,6 +1484,48 @@ rb_file_find_extant_parent (GFile *file)
 }
 
 /**
+ * rb_uri_is_descendant:
+ * @uri: URI to check
+ * @ancestor: a URI to check against
+ *
+ * Checks if @uri refers to a path beneath @ancestor, such that removing some number
+ * of path segments of @uri would result in @ancestor.
+ * It doesn't do any filesystem operations, it just looks at the URIs as strings.
+ * The URI strings should be built by looking at a filesystem rather than user input,
+ * and must not have path segments that are empty (multiple slashes) or '.' or '..'.
+ *
+ * Given this input, checking if one URI is a descendant of another is pretty simple.
+ * A descendant URI must have the ancestor as a prefix, and if the ancestor ends with
+ * a slash, there must be at least one character after that, otherwise the following
+ * character must be a slash with at least one character after it.
+ *
+ * Return value: %TRUE if @uri is a descendant of @ancestor
+ */
+gboolean
+rb_uri_is_descendant (const char *uri, const char *ancestor)
+{
+	int len;
+
+	if (g_str_has_prefix (uri, ancestor) == FALSE)
+		return FALSE;
+
+	len = strlen(ancestor);
+	if (ancestor[len - 1] == '/') {
+		/*
+		 * following character in uri must be a new path segment, not
+		 * the end of the uri.  not considering multiple slashes here.
+		 */
+		return (uri[len] != '\0');
+	} else {
+		/*
+		 * following character in uri must be a separator, with something after it.
+		 * not considering multiple slashes here.
+		 */
+		return ((uri[len] == '/') && strlen(uri) > (len + 1));
+	}
+}
+
+/**
  * rb_uri_get_filesystem_type:
  * @uri: URI to get filesystem type for
  * @mount_point: optionally returns the mount point for the filesystem as a URI
