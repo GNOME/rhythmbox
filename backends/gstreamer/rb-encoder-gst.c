@@ -649,7 +649,6 @@ sink_open (GTask *task, gpointer source_object, gpointer task_data, GCancellable
 				     _("Could not create a temporary file to write to: %s"),
 				    error->message);
 			g_task_return_error (task, error);
-			g_object_unref (task);
 			return;
 		}
 
@@ -708,7 +707,6 @@ sink_open (GTask *task, gpointer source_object, gpointer task_data, GCancellable
 	} else {
 		g_task_return_boolean (task, TRUE);
 	}
-	g_object_unref (task);
 }
 
 static void
@@ -762,6 +760,7 @@ impl_encode (RBEncoder *bencoder,
 
 		task = g_task_new (encoder, encoder->priv->open_cancel, sink_open_cb, NULL);
 		g_task_run_in_thread (task, sink_open);
+		g_object_unref (task);
 	}
 }
 
