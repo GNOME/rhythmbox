@@ -1383,34 +1383,6 @@ rb_uri_get_mount_point (const char *uri)
 	return mountpoint;
 }
 
-static gboolean
-check_file_is_directory (GFile *file, GError **error)
-{
-	GFileInfo *info;
-
-	info = g_file_query_info (file, G_FILE_ATTRIBUTE_STANDARD_TYPE, G_FILE_QUERY_INFO_NONE, NULL, error);
-	if (*error == NULL) {
-		/* check it's a directory */
-		GFileType filetype;
-		gboolean ret = TRUE;
-
-		filetype = g_file_info_get_attribute_uint32 (info, G_FILE_ATTRIBUTE_STANDARD_TYPE);
-		if (filetype != G_FILE_TYPE_DIRECTORY) {
-			/* um.. */
-			ret = FALSE;
-		}
-
-		g_object_unref (info);
-		return ret;
-	}
-
-	if (g_error_matches (*error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-		g_clear_error (error);
-	}
-	return FALSE;
-}
-
-
 /**
  * rb_uri_create_parent_dirs:
  * @uri: a URI for which to create parent directories
@@ -1427,6 +1399,7 @@ rb_uri_create_parent_dirs (const char *uri, GError **error)
 	GFile *file;
 	GFile *parent;
 	gboolean ret;
+	GError *err = NULL;
 
 	/* ignore internal URI schemes */
 	if (g_str_has_prefix (uri, "xrb")) {
@@ -1441,9 +1414,14 @@ rb_uri_create_parent_dirs (const char *uri, GError **error)
 		return TRUE;
 	}
 
-	ret = check_file_is_directory (parent, error);
-	if (ret == FALSE && *error == NULL) {
-		ret = g_file_make_directory_with_parents (parent, NULL, error);
+	ret = g_file_make_directory_with_parents (parent, NULL, &err);
+	if (err != NULL) {
+		if (g_error_matches (err, G_IO_ERROR, G_IO_ERROR_EXISTS)) {
+			g_error_free (err);
+			ret = TRUE;
+		} else {
+			g_propagate_error (error, err);
+		}
 	}
 
 	g_object_unref (parent);
