@@ -2850,6 +2850,11 @@ start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 	gboolean waiting;
 	GError *generic_error = NULL;
 	GstBus *bus;
+	GstIterator *iter;
+	guint64 basetime;
+	gboolean done;
+	GValue item = {0, };
+	GstElement *element;
 
 	g_set_error (&generic_error,
 		     RB_PLAYER_ERROR,
@@ -3035,6 +3040,40 @@ start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 	/* set the pipeline to PLAYING so it selects a clock */
 	gst_element_set_state (player->priv->pipeline, GST_STATE_PLAYING);
 
+	/*
+	 * apply the pipeline's new base time to the sink.
+	 * the sink might be (almost certainly is) a bin containing the real sink,
+	 * so we have to do this thoroughly.
+	 */
+	basetime = gst_element_get_base_time (GST_ELEMENT (player->priv->pipeline));
+	gst_element_set_base_time (GST_ELEMENT (player->priv->sink), basetime);
+	if (GST_IS_BIN (player->priv->sink)) {
+		iter = gst_bin_iterate_recurse (GST_BIN (player->priv->sink));
+		done = FALSE;
+
+		while (done == FALSE) {
+			switch (gst_iterator_next (iter, &item)) {
+			case GST_ITERATOR_OK:
+				element = g_value_get_object (&item);
+				gst_element_set_base_time (element, basetime);
+				break;
+
+			case GST_ITERATOR_RESYNC:
+				gst_iterator_resync (iter);
+				break;
+
+			case GST_ITERATOR_ERROR:
+				rb_debug ("unable to sync base time on sink");
+				done = TRUE;
+				break;
+
+			case GST_ITERATOR_DONE:
+				done = TRUE;
+				break;
+			}
+		}
+	}
+
 	/* now that the sink is running, start polling for playing position.
 	 * might want to replace this with a complicated set of pad probes
 	 * to avoid polling, but duration queries on the sink are better
@@ -3089,7 +3128,6 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 static gboolean
 stop_sink (RBPlayerGstXFade *player)
 {
-#if 0
 	GstStateChangeReturn sr;
 
 	switch (player->priv->sink_state) {
@@ -3144,8 +3182,6 @@ stop_sink (RBPlayerGstXFade *player)
 		break;
 	}
 
-	return TRUE;
-#endif
 	return TRUE;
 }
 
