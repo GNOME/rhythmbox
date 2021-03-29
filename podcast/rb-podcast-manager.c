@@ -2146,7 +2146,7 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 					continue;
 				}
 				remote_size = total;
-				rb_debug ("resuming download at offset %ld, %ld bytes left", start, total);
+				rb_debug ("resuming download at offset %" G_GOFFSET_FORMAT ", %" G_GOFFSET_FORMAT " bytes left", start, total);
 			} else {
 				range_request = FALSE;
 				downloaded = 0;
@@ -2229,7 +2229,7 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 				rb_debug ("range request not supported, restarting");
 				downloaded = 0;
 			} else
-				rb_debug ("haven't got the whole file yet, retrying at %ld", downloaded);
+				rb_debug ("haven't got the whole file yet, retrying at %" G_GUINT64_FORMAT, downloaded);
 		} else if (retry == FALSE) {
 			rb_debug ("not retrying");
 			break;
