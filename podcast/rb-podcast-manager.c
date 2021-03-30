@@ -2006,7 +2006,7 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 			} else {
 				remote_size = soup_message_headers_get_content_length (download->request->response_headers);
 			}
-			rb_debug ("remote file size %ld", remote_size);
+			rb_debug ("remote file size %" G_GSSIZE_FORMAT, remote_size);
 			break;
 		} else if (retry_on_error (error) == FALSE) {
 			rb_debug ("giving up after error from http request: %s", error->message);
@@ -2151,7 +2151,7 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 				range_request = FALSE;
 				downloaded = 0;
 				remote_size = soup_message_headers_get_content_length (download->request->response_headers);
-				rb_debug ("server didn't honour range request, starting again, total %ld", remote_size);
+				rb_debug ("server didn't honour range request, starting again, total %" G_GSSIZE_FORMAT, remote_size);
 			}
 		}
 
