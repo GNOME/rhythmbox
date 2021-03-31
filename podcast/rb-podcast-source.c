@@ -1023,13 +1023,10 @@ impl_add_to_queue (RBSource *source, RBSource *queue)
 
 	for (iter = selection; iter; iter = iter->next) {
 		RhythmDBEntry *entry = (RhythmDBEntry *)iter->data;
-		if (!rb_podcast_manager_entry_downloaded (entry))
-			continue;
 		rb_static_playlist_source_add_entry (RB_STATIC_PLAYLIST_SOURCE (queue),
 						     entry, -1);
+		rhythmdb_entry_unref (entry);
 	}
-
-	g_list_foreach (selection, (GFunc)rhythmdb_entry_unref, NULL);
 	g_list_free (selection);
 }
 
