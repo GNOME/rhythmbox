@@ -700,7 +700,7 @@ main (int argc, char **argv)
 	rb_profile_start ("rhythmdb-property-model test suite");
 
 	rb_threads_init ();
-	setlocale (LC_ALL, NULL);
+	setlocale (LC_ALL, "");
 	rb_debug_init (TRUE);
 	rb_refstring_system_init ();
 	rb_file_helpers_init (TRUE);
