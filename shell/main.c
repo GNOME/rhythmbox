@@ -66,7 +66,7 @@ main (int argc, char **argv)
 	g_setenv ("GSETTINGS_SCHEMA_DIR", SHARE_UNINSTALLED_BUILDDIR, TRUE);
 #endif
 
-	setlocale (LC_ALL, NULL);
+	setlocale (LC_ALL, "");
 
 #ifdef ENABLE_NLS
 	/* initialize i18n */
