@@ -357,6 +357,8 @@ main (int argc, char **argv)
 	const char *address = NULL;
 	char *guid;
 
+	setlocale (LC_ALL, "");
+
 #ifdef ENABLE_NLS
 	/* initialize i18n */
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
