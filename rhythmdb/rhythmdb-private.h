@@ -181,6 +181,10 @@ struct _RhythmDBPrivate
 	GList *deleted_entries_to_emit;
 	GHashTable *changed_entries_to_emit;
 
+	GList *barriers_done;
+	GMutex barrier_mutex;
+	GCond barrier_condition;
+
 	gboolean can_save;
 	gboolean saving;
 	gboolean dirty;
@@ -206,7 +210,8 @@ typedef struct
 		RHYTHMDB_EVENT_THREAD_EXITED,
 		RHYTHMDB_EVENT_DB_SAVED,
 		RHYTHMDB_EVENT_QUERY_COMPLETE,
-		RHYTHMDB_EVENT_ENTRY_SET
+		RHYTHMDB_EVENT_ENTRY_SET,
+		RHYTHMDB_EVENT_BARRIER
 	} type;
 	RBRefString *uri;
 	RBRefString *real_uri; /* Target of a symlink, if any */

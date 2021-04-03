@@ -1001,6 +1001,8 @@ rhythmdb_event_free (RhythmDB *db,
 	case RHYTHMDB_EVENT_METADATA_CACHE:
 		free_cached_metadata(&result->cached_metadata);
 		break;
+	case RHYTHMDB_EVENT_BARRIER:
+		break;
 	}
 	if (result->error)
 		g_error_free (result->error);
@@ -1547,6 +1549,28 @@ rhythmdb_commit_internal (RhythmDB *db,
 			  gboolean sync_changes,
 			  GThread *thread)
 {
+	/*
+	 * during normal operation, if committing from a worker thread,
+	 * wait for changes made on the thread to be processed by the main thread.
+	 * this avoids races and ensures the signals emitted are correct.
+	 */
+	if (db->priv->action_thread_running && !rb_is_main_thread ()) {
+		RhythmDBEvent *event;
+
+		event = g_slice_new0 (RhythmDBEvent);
+		event->db = db;
+		event->type = RHYTHMDB_EVENT_BARRIER;
+
+		g_mutex_lock (&db->priv->barrier_mutex);
+		rhythmdb_push_event (db, event);
+		while (g_list_find (db->priv->barriers_done, event) == NULL)
+			g_cond_wait (&db->priv->barrier_condition, &db->priv->barrier_mutex);
+		db->priv->barriers_done = g_list_remove (db->priv->barriers_done, event);
+		g_mutex_unlock (&db->priv->barrier_mutex);
+
+		rhythmdb_event_free (db, event);
+	}
+
 	g_mutex_lock (&db->priv->change_mutex);
 
 	if (sync_changes) {
@@ -2626,7 +2650,8 @@ rhythmdb_process_one_event (RhythmDBEvent *event, RhythmDB *db)
 	    ((event->type == RHYTHMDB_EVENT_STAT)
 	     || (event->type == RHYTHMDB_EVENT_METADATA_LOAD)
 	     || (event->type == RHYTHMDB_EVENT_METADATA_CACHE)
-	     || (event->type == RHYTHMDB_EVENT_ENTRY_SET))) {
+	     || (event->type == RHYTHMDB_EVENT_ENTRY_SET)
+	     || (event->type == RHYTHMDB_EVENT_BARRIER))) {
 		rb_debug ("Database is read-only, delaying event processing");
 		g_async_queue_push (db->priv->delayed_write_queue, event);
 		return;
@@ -2673,6 +2698,16 @@ rhythmdb_process_one_event (RhythmDBEvent *event, RhythmDB *db)
 	case RHYTHMDB_EVENT_QUERY_COMPLETE:
 		rb_debug ("processing RHYTHMDB_EVENT_QUERY_COMPLETE");
 		rhythmdb_read_leave (db);
+		break;
+	case RHYTHMDB_EVENT_BARRIER:
+		rb_debug ("processing RHYTHMDB_EVENT_BARRIER");
+		g_mutex_lock (&db->priv->barrier_mutex);
+		db->priv->barriers_done = g_list_prepend (db->priv->barriers_done, event);
+		g_cond_broadcast (&db->priv->barrier_condition);
+		g_mutex_unlock (&db->priv->barrier_mutex);
+
+		/* freed by the thread waiting on the barrier */
+		free = FALSE;
 		break;
 	}
 	if (free)

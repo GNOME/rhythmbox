@@ -402,6 +402,102 @@ START_TEST (test_rhythmdb_deserialisation3)
 }
 END_TEST
 
+
+#define BARRIER_TEST_THREADS	10
+
+typedef struct {
+	RhythmDBEntry *entry;
+	int committed;
+	GThread *thread;
+} BarrierTestData;
+
+static gpointer
+test_worker (gpointer xdata)
+{
+	BarrierTestData *data = xdata;
+	GValue val = {0, };
+	const char *str;
+
+	rb_debug ("worker thread");
+
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_static_string (&val, "Bbb");
+	rhythmdb_entry_set (db, data->entry, RHYTHMDB_PROP_TITLE, &val);
+	g_value_unset (&val);
+
+	rb_debug ("checking");
+	str = rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_TITLE);
+	ck_assert_msg (str && (strcmp (str, "Aaa") == 0), "changes should not be visible on worker thread yet");
+
+	rb_debug ("committing");
+	rhythmdb_commit (db);
+
+	rb_debug ("checking again");
+	str = rhythmdb_entry_get_string (data->entry, RHYTHMDB_PROP_TITLE);
+	ck_assert_msg (str && (strcmp (str, "Bbb") == 0), "changes should be visible on worker thread now");
+
+	rb_debug ("done");
+	data->committed = 1;
+	return NULL;
+}
+
+
+START_TEST (test_rhythmdb_thread_barrier)
+{
+	BarrierTestData data[BARRIER_TEST_THREADS];
+	const char *str;
+	GValue val = {0, };
+	int i;
+
+	for (i = 0; i < BARRIER_TEST_THREADS; i++) {
+		char *uri;
+
+
+		uri = g_strdup_printf ("file:///bar%d.ogg", i);
+		data[i].committed = 0;
+		data[i].entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IGNORE, uri);
+		ck_assert_msg (data[i].entry != NULL, "failed to create entry");
+
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_static_string (&val, "Aaa");
+		rhythmdb_entry_set (db, data[i].entry, RHYTHMDB_PROP_TITLE, &val);
+		g_value_unset (&val);
+
+		g_free (uri);
+	}
+	rhythmdb_commit (db);
+
+	end_step ();
+
+	for (i = 0; i < BARRIER_TEST_THREADS; i++) {
+		data[i].thread = g_thread_new ("test-worker", test_worker, &data[i]);
+	}
+
+	rb_debug ("letting worker threads run");
+	g_usleep (G_USEC_PER_SEC / 10);
+
+	for (i = 0; i < BARRIER_TEST_THREADS; i++) {
+		/* worker threads' commits shouldn't finish until we let the event queue run */
+		ck_assert_msg (data[i].committed == 0, "worker thread should not be able to commit");
+		str = rhythmdb_entry_get_string (data[i].entry, RHYTHMDB_PROP_TITLE);
+		ck_assert_msg (str && (strcmp (str, "Aaa") == 0), "worker thread changes should not be visible yet");
+	}
+
+	rb_debug ("processing events from worker threads");
+	end_step ();
+
+	rb_debug ("joining worker threads");
+	for (i = 0; i < BARRIER_TEST_THREADS; i++) {
+		g_thread_join (data[i].thread);
+	}
+
+	rb_debug ("checking final state");
+	for (i = 0; i < BARRIER_TEST_THREADS; i++) {
+		str = rhythmdb_entry_get_string (data[i].entry, RHYTHMDB_PROP_TITLE);
+		ck_assert_msg (str && (strcmp (str, "Bbb") == 0), "worker thread changes be visible now");
+	}
+}
+
 START_TEST (test_rhythmdb_podcast_upgrade)
 {
 	RhythmDBEntry *entry;
@@ -533,6 +629,9 @@ rhythmdb_suite (void)
 	tcase_add_test (tc_chain, test_rhythmdb_deserialisation2);
 	tcase_add_test (tc_chain, test_rhythmdb_deserialisation3);
 	/*tcase_add_test (tc_chain, test_rhythmdb_serialisation);*/
+
+	/* tests for entry changes and commits from worker threads */
+	tcase_add_test (tc_chain, test_rhythmdb_thread_barrier);
 
 	/* tests for breakable bug fixes */
 	tcase_add_test (tc_chain, test_rhythmdb_podcast_upgrade);
