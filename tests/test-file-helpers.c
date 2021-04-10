@@ -100,6 +100,22 @@ START_TEST (test_rb_check_dir_has_space)
 }
 END_TEST
 
+START_TEST (test_rb_uri_is_descendant)
+{
+	ck_assert (rb_uri_is_descendant ("file:///tmp", "file:///"));
+	ck_assert (rb_uri_is_descendant ("file:///tmp/2", "file:///"));
+	ck_assert (rb_uri_is_descendant ("file:///tmp/2", "file:///tmp"));
+	ck_assert (rb_uri_is_descendant ("file:///tmp/2", "file:///tmp/"));
+	ck_assert (rb_uri_is_descendant ("file:///tmp/", "file:///tmp") == FALSE);
+	ck_assert (rb_uri_is_descendant ("file:///tmp", "file:///tmp/") == FALSE);
+	ck_assert (rb_uri_is_descendant ("file:///tmp/", "file:///tmp/") == FALSE);
+	ck_assert (rb_uri_is_descendant ("file:///tmp", "file:///tmp") == FALSE);
+	ck_assert (rb_uri_is_descendant ("file:///tmp2", "file:///tmp") == FALSE);
+	ck_assert (rb_uri_is_descendant ("file:///tmp/2", "file:///tmp2") == FALSE);
+	ck_assert (rb_uri_is_descendant ("file:///tmp/22", "file:///tmp/2") == FALSE);
+}
+END_TEST
+
 static Suite *
 rb_file_helpers_suite ()
 {
@@ -110,6 +126,7 @@ rb_file_helpers_suite ()
 
 	tcase_add_test (tc_chain, test_rb_uri_get_short_path_name);
 	tcase_add_test (tc_chain, test_rb_check_dir_has_space);
+	tcase_add_test (tc_chain, test_rb_uri_is_descendant);
 
 	return s;
 }

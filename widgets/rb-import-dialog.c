@@ -431,7 +431,7 @@ current_folder_changed_cb (GtkFileChooser *chooser, RBImportDialog *dialog)
 	locations = g_settings_get_strv (settings, "locations");
 	gtk_widget_set_sensitive (dialog->priv->copy_check, TRUE);
 	for (i = 0; locations[i] != NULL; i++) {
-		if (g_str_has_prefix (uri, locations[i])) {
+		if ((g_strcmp0 (uri, locations[i]) == 0) || rb_uri_is_descendant (uri, locations[i])) {
 			gtk_widget_set_sensitive (dialog->priv->copy_check, FALSE);
 			break;
 		}

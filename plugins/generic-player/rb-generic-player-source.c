@@ -683,7 +683,7 @@ default_uri_from_playlist_uri (RBGenericPlayerSource *source, const char *uri)
 	char *full_uri;
 
 	mount_uri = rb_generic_player_source_get_mount_path (source);
-	if (g_str_has_prefix (uri, mount_uri)) {
+	if (rb_uri_is_descendant (uri, mount_uri)) {
 		return g_strdup (uri);
 	}
 
@@ -704,7 +704,7 @@ default_uri_to_playlist_uri (RBGenericPlayerSource *source, const char *uri, Tot
 	case TOTEM_PL_PARSER_IRIVER_PLA:
 		/* we need absolute paths within the device filesystem for this format */
 		mount_uri = rb_generic_player_source_get_mount_path (source);
-		if (g_str_has_prefix (uri, mount_uri) == FALSE) {
+		if (rb_uri_is_descendant (uri, mount_uri) == FALSE) {
 			rb_debug ("uri %s is not under device mount uri %s", uri, mount_uri);
 			return NULL;
 		}

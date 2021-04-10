@@ -60,6 +60,7 @@ gboolean	rb_uri_is_writable	(const char *uri);
 gboolean	rb_uri_is_local		(const char *uri);
 gboolean	rb_uri_is_hidden	(const char *uri);
 gboolean	rb_uri_could_be_podcast (const char *uri, gboolean *is_opml);
+gboolean	rb_uri_is_descendant	(const char *uri, const char *ancestor);
 char *		rb_uri_make_hidden      (const char *uri);
 char *		rb_uri_get_dir_name	(const char *uri);
 char *		rb_uri_get_short_path_name (const char *uri);
