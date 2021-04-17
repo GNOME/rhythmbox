@@ -33,6 +33,7 @@
 #include <time.h>
 #include <string.h>
 #include <unistd.h>
+#include <locale.h>
 
 #include <glib/gi18n.h>
 #include <gst/gst.h>
