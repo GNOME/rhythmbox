@@ -37,6 +37,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <gpod/itdb.h>
+#include <libsoup/soup.h>
 
 #include "rb-ipod-helpers.h"
 #include "rb-util.h"
@@ -327,6 +328,31 @@ rb_ipod_helpers_mount_has_ipod_db (GMount *mount)
         return result;
 }
 
+AfcUriStatus
+rb_ipod_helpers_afc_uri_parse (const gchar *uri_str)
+{
+	g_autoptr(SoupURI) uri = NULL;
+	guint port;
+
+	uri = soup_uri_new (uri_str);
+	if (!uri) {
+		rb_debug ("Invalid afc uri: '%s'", uri_str);
+		return AFC_URI_INVALID;
+	}
+	/* Skip scheme check, as it's done in the caller */
+	port = soup_uri_get_port (uri);
+
+	if (port == 0) {
+		rb_debug ("afc uri '%s' is an ipod", uri_str);
+		return AFC_URI_IS_IPOD;
+	} else if (port >= VIRTUAL_PORT_MIN && port <= VIRTUAL_PORT_MAX) {
+		rb_debug ("afc uri '%s' %s ipod", uri_str, port == VIRTUAL_PORT_AFC ? "is" : "is not");
+		return (port == VIRTUAL_PORT_AFC ? AFC_URI_IS_IPOD : AFC_URI_NOT_IPOD);
+	}
+	rb_debug ("Unknown port %d in afc uri: '%s'", port, uri_str);
+	return AFC_URI_PORT_UNKNOWN;
+}
+
 gboolean
 rb_ipod_helpers_is_ipod (GMount *mount, MPIDDevice *device_info)
 {
@@ -354,15 +380,10 @@ rb_ipod_helpers_is_ipod (GMount *mount, MPIDDevice *device_info)
 
 			if (g_file_has_uri_scheme (root, "afc") != FALSE) {
 				gchar *uri;
+				AfcUriStatus status;
 				uri = g_file_get_uri (root);
-				/* afc://<40 chars>:stuff */
-				g_assert (strlen (uri) >= 46);
-				if (uri[6 + 40] == ':' &&
-				    uri[6 + 40 + 1] != '1') {
-					result = FALSE;
-				} else {
-					result = TRUE;
-				}
+				status = rb_ipod_helpers_afc_uri_parse (uri);
+				result = (status == AFC_URI_IS_IPOD);
 				g_free (uri);
 			} else {
 				gchar *mount_point;
