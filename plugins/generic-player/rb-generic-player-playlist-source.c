@@ -64,9 +64,7 @@ enum {
 
 typedef struct {
 	RBGenericPlayerPlaylistSource *source;
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,29,1)
 	TotemPlPlaylist *playlist;
-#endif
 	TotemPlParserType playlist_type;
 } SavePlaylistData;
 
