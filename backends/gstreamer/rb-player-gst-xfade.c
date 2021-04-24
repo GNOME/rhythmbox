@@ -384,6 +384,7 @@ typedef struct
 
 static void adjust_stream_base_time (RBXFadeStream *stream);
 static gboolean actually_start_stream (RBXFadeStream *stream, GError **error);
+static GstPadProbeReturn stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream);
 
 static void rb_xfade_stream_class_init (RBXFadeStreamClass *klass);
 
@@ -1869,6 +1870,7 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 	{
 		const GstStructure *s;
 		gint progress;
+		gboolean resume;
 
 		s = gst_message_get_structure (message);
 		if (!gst_structure_get_int (s, "buffer-percent", &progress)) {
@@ -1910,20 +1912,32 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 				break;
 
 			default:
-				/* make sure we're not going to remove it */
 				g_mutex_lock (&stream->lock);
-				if (stream->block_probe_id != 0) {
-					gst_pad_remove_probe (stream->src_pad, stream->block_probe_id);
-					stream->block_probe_id = 0;
-					stream->needs_unlink = FALSE;
+				stream->needs_unlink = FALSE;
+				resume = stream->src_blocked;
+				if (resume == FALSE) {
+					rb_debug ("stream %s is buffered, waiting for block callback to resume", stream->uri);
+					if (stream->block_probe_id != 0) {
+						gst_pad_remove_probe (stream->src_pad, stream->block_probe_id);
+						stream->block_probe_id = 0;
+					}
+					stream->block_probe_id =
+					    gst_pad_add_probe (stream->src_pad,
+							       GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
+							       (GstPadProbeCallback) stream_src_blocked_cb,
+							       stream,
+							       NULL);
 				}
 				g_mutex_unlock (&stream->lock);
 
-				rb_debug ("stream %s is buffered, resuming", stream->uri);
-				link_and_unblock_stream (stream, &error);
-				if (error) {
-					g_warning ("couldn't restart newly buffered stream: %s", error->message);
-					g_clear_error (&error);
+				if (resume) {
+					rb_debug ("stream %s is buffered and already blocked, resuming", stream->uri);
+
+					link_and_unblock_stream (stream, &error);
+					if (error) {
+						g_warning ("couldn't restart newly buffered stream: %s", error->message);
+						g_clear_error (&error);
+					}
 				}
 				break;
 			}
@@ -2561,6 +2575,7 @@ stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream
 {
 	GError *error = NULL;
 	gboolean start_stream = FALSE;
+	gboolean link_stream = FALSE;
 	GstElement *src;
 	GstQuery *query;
 
@@ -2613,6 +2628,11 @@ stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream
 		rb_debug ("stream %s is prerolled, need to start it", stream->uri);
 		start_stream = TRUE;
 		break;
+	case PLAYING:
+	case FADING_IN:
+		rb_debug ("stream %s already playing, unblocking", stream->uri);
+		link_stream = TRUE;
+		break;
 	default:
 		rb_debug ("didn't expect to get preroll completion callback in this state (%d)", stream->state);
 		break;
@@ -2623,6 +2643,10 @@ stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream
 	if (start_stream == TRUE) {	
 		/* not sure this is actually an acceptable thing to do on a streaming thread.. */
 		if (actually_start_stream (stream, &error) == FALSE) {
+			emit_stream_error (stream, error);
+		}
+	} else if (link_stream == TRUE) {
+		if (link_and_unblock_stream (stream, &error) == FALSE) {
 			emit_stream_error (stream, error);
 		}
 	}
