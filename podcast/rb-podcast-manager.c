@@ -445,6 +445,27 @@ set_download_location (RhythmDB *db, RhythmDBEntry *entry, GValue *value)
 	}
 }
 
+static void
+unset_download_location (RhythmDB *db, RhythmDBEntry *entry)
+{
+	GValue val = {0, };
+	const char *remote_location;
+
+	remote_location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+	if (remote_location == NULL)
+		return;
+
+	/* restore mountpoint as location */
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, remote_location);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LOCATION, &val);
+
+	/* unset mountpoint */
+	g_value_reset (&val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
+	g_value_unset (&val);
+}
+
 static const char *
 get_remote_location (RhythmDBEntry *entry)
 {
@@ -1727,6 +1748,8 @@ podcast_download_cb (GObject *source_object, GAsyncResult *res, gpointer data)
 			rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_STATUS, &val);
 			g_value_unset (&val);
 		}
+
+		unset_download_location (pd->priv->db, download->entry);
 
 		rhythmdb_commit (pd->priv->db);
 		g_clear_error (&error);
