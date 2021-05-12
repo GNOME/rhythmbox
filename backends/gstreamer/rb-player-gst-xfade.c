@@ -351,6 +351,7 @@ typedef struct
 	gboolean src_blocked;
 	gboolean needs_unlink;
 	GstClockTime base_time;
+	GstClockTime block_time;
 
 	gint64 seek_target;
 
@@ -359,6 +360,8 @@ typedef struct
 	RBPlayerPlayType play_type;
 	gint64 crossfade;
 	gboolean fading;
+	double pending_fade_start;
+	double pending_fade_end;
 	gboolean starting_eos;
 	gboolean use_buffering;
 	gboolean buffered;
@@ -382,7 +385,9 @@ typedef struct
 #define RB_XFADE_STREAM(obj)	(G_TYPE_CHECK_INSTANCE_CAST ((obj), RB_TYPE_XFADE_STREAM, RBXFadeStream))
 #define RB_IS_XFADE_STREAM(obj)	(G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_XFADE_STREAM))
 
-static void adjust_stream_base_time (RBXFadeStream *stream);
+static void start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time, GstClockTime stream_time);
+static void defer_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time);
+static void adjust_stream_base_time (RBXFadeStream *stream, gint64 stream_pos);
 static gboolean actually_start_stream (RBXFadeStream *stream, GError **error);
 static GstPadProbeReturn stream_src_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream);
 
@@ -888,17 +893,29 @@ adjust_base_time_probe_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *st
 {
 	rb_debug ("attempting to adjust base time for stream %s", stream->uri);
 	g_mutex_lock (&stream->lock);
-	adjust_stream_base_time (stream);
+	adjust_stream_base_time (stream, GST_BUFFER_PTS (GST_PAD_PROBE_INFO_BUFFER (info)));
 	g_mutex_unlock (&stream->lock);
 	return GST_PAD_PROBE_OK;
 }
 
+static void
+adjust_stream_base_time_probe (RBXFadeStream *stream)
+{
+	if (stream->adjust_probe_id == 0) {
+		stream->adjust_probe_id =
+			gst_pad_add_probe (stream->ghost_pad,
+					   GST_PAD_PROBE_TYPE_BUFFER,
+					   (GstPadProbeCallback) adjust_base_time_probe_cb,
+					   stream,
+					   NULL);
+	}
+}
+
 /* updates a stream's base time so its position is reported correctly */
 static void
-adjust_stream_base_time (RBXFadeStream *stream)
+adjust_stream_base_time (RBXFadeStream *stream, gint64 stream_pos)
 {
-	gint64 output_pos = -1;
-	gint64 stream_pos = -1;
+	gint64 output_pos = GST_CLOCK_TIME_NONE;
 
 	if (stream->adder_pad == NULL) {
 		rb_debug ("stream isn't linked, can't adjust base time");
@@ -906,18 +923,21 @@ adjust_stream_base_time (RBXFadeStream *stream)
 	}
 
 	gst_element_query_position (GST_PAD_PARENT (stream->adder_pad), GST_FORMAT_TIME, &output_pos);
-	if (output_pos != -1) {
-		stream->base_time = output_pos;
+	if (output_pos == GST_CLOCK_TIME_NONE) {
+		rb_debug ("couldn't get pipeline position, can't adjust base time");
+		return;
 	}
 
-	/* offset the base position to account for the current stream position */
-	gst_element_query_position (stream->volume, GST_FORMAT_TIME, &stream_pos);
-	if (stream_pos != -1) {
-		rb_debug ("adjusting base time: %" G_GINT64_FORMAT
-		    " - %" G_GINT64_FORMAT " => %" G_GINT64_FORMAT,
-		    stream->base_time, stream_pos,
-		    stream->base_time - stream_pos);
-		stream->base_time -= stream_pos;
+	if (stream_pos != GST_CLOCK_TIME_NONE) {
+		rb_debug ("adjusting base time: %" G_GINT64_FORMAT " - %" G_GINT64_FORMAT " => %" G_GINT64_FORMAT,
+		    output_pos, stream_pos, output_pos - stream_pos);
+		stream->base_time = output_pos - stream_pos;
+
+		if (stream->pending_fade_start != stream->pending_fade_end) {
+			start_stream_fade (stream, stream->pending_fade_start, stream->pending_fade_end, stream->crossfade, stream_pos);
+			stream->pending_fade_start = 0.0;
+			stream->pending_fade_end = 0.0;
+		}
 
 		/* once we've successfully adjusted the base time, we don't need the data probe */
 		if (stream->adjust_probe_id != 0) {
@@ -925,17 +945,8 @@ adjust_stream_base_time (RBXFadeStream *stream)
 			stream->adjust_probe_id = 0;
 		}
 	} else {
-		rb_debug ("unable to adjust base time as position query failed");
-
-		/* add a pad probe to attempt to adjust when the next buffer goes out */
-		if (stream->adjust_probe_id == 0) {
-			stream->adjust_probe_id =
-				gst_pad_add_probe (stream->ghost_pad,
-						   GST_PAD_PROBE_TYPE_BUFFER,
-						   (GstPadProbeCallback) adjust_base_time_probe_cb,
-						   stream,
-						   NULL);
-		}
+		rb_debug ("unable to adjust base time as we don't have a stream position");
+		adjust_stream_base_time_probe (stream);
 	}
 }
 
@@ -1019,13 +1030,12 @@ volume_changed_cb (GObject *object, GParamSpec *pspec, RBPlayerGstXFade *player)
  * is done.
  */
 static void
-start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time)
+start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time, GstClockTime stream_time)
 {
-	gint64 pos = -1;
+	gint64 pos = stream_time;
 
-	/* hmm, can we take the stream lock safely here?  probably should.. */
-
-	gst_element_query_position (stream->volume, GST_FORMAT_TIME, &pos);
+	if (pos == GST_CLOCK_TIME_NONE)
+		gst_element_query_position (stream->volume, GST_FORMAT_TIME, &pos);
 	if (pos < 0) {
 		/* probably means we haven't actually started the stream yet.
 		 * we also get (weird) negative results with some decoders
@@ -1068,6 +1078,32 @@ start_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time)
 	 * controller won't get updated.
 	 */
 	gst_base_transform_set_passthrough (GST_BASE_TRANSFORM (stream->volume), FALSE);
+}
+
+/* prepares to start fading a stream, used when we don't have a usable timestamp on
+ * the stream yet.  assumes that the stream will be linked soon, so its base time
+ * will be calculated, at which point the fade will start.
+ */
+static void
+defer_stream_fade (RBXFadeStream *stream, double start, double end, gint64 time)
+{
+	/* start the fade when we adjust the stream base time */
+	rb_debug ("deferring fade in until we have a stream position");
+
+	g_signal_handlers_block_by_func (stream->volume, volume_changed_cb, stream->player);
+
+	g_object_set (stream->volume, "volume", start, NULL);
+
+	gst_timed_value_control_source_unset_all (stream->fader);
+
+	if (gst_timed_value_control_source_set (stream->fader, 0, start/10.0) == FALSE) {
+		rb_debug ("controller didn't like our 0 start point");
+	}
+
+	g_signal_handlers_unblock_by_func (stream->volume, volume_changed_cb, stream->player);
+
+	stream->pending_fade_start = start;
+	stream->pending_fade_end = end;
 }
 
 
@@ -1137,13 +1173,14 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 
 	rb_debug ("stream %s is unblocked -> FADING_IN | PLAYING", stream->uri);
 	stream->src_blocked = FALSE;
-	if (stream->fading)
+	if (stream->fading || (stream->pending_fade_start != stream->pending_fade_end))
 		stream->state = FADING_IN;
 	else
 		stream->state = PLAYING;
 
 	stream->base_time = GST_CLOCK_TIME_NONE;
-	adjust_stream_base_time (stream);
+	stream->block_time = GST_CLOCK_TIME_NONE;
+	adjust_stream_base_time_probe (stream);
 
 	/* should handle state change failures here.. */
 	scr = gst_element_set_state (GST_ELEMENT (stream), GST_STATE_PLAYING);
@@ -1344,6 +1381,10 @@ unlink_blocked_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 	stream->src_blocked = TRUE;
 	stream->emitted_playing = FALSE;
 	stream->emitted_image = FALSE;
+	if (info != NULL)
+		stream->block_time = GST_BUFFER_PTS (GST_PAD_PROBE_INFO_BUFFER (info));
+	else
+		stream->block_time = GST_CLOCK_TIME_NONE;
 
 	stream_state = stream->state;
 	player = stream->player;
@@ -2108,6 +2149,7 @@ stream_src_event_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 	GstEvent *event;
 	GstStructure *s;
 	GstTagList *tags;
+	const GstSegment *seg;
 	GValue v = {0,};
 
 	event = GST_EVENT (info->data);
@@ -2126,9 +2168,10 @@ stream_src_event_cb (GstPad *pad, GstPadProbeInfo *info, RBXFadeStream *stream)
 		break;
 
 	case GST_EVENT_SEGMENT:
+		gst_event_parse_segment (event, &seg);
 		rb_debug ("got new segment for stream %s", stream->uri);
 		g_mutex_lock (&stream->lock);
-		adjust_stream_base_time (stream);
+		adjust_stream_base_time (stream, seg->start);
 		g_mutex_unlock (&stream->lock);
 		break;
 
@@ -2186,6 +2229,8 @@ create_stream (RBPlayerGstXFade *player, const char *uri, gpointer stream_data, 
 	stream->stream_data_destroy = stream_data_destroy;
 	stream->uri = g_strdup (uri);
 	stream->state = WAITING;
+	stream->base_time = GST_CLOCK_TIME_NONE;
+	stream->block_time = GST_CLOCK_TIME_NONE;
 
 	stream->use_buffering = FALSE;
 	stream->buffered = FALSE;
@@ -2389,6 +2434,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 	gboolean ret = TRUE;
 	gboolean need_reap = FALSE;
 	gboolean playing;
+	gboolean fading;
 	GList *l;
 	GList *to_fade;
 
@@ -2431,6 +2477,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 
 		g_rec_mutex_unlock (&player->priv->stream_list_lock);
 
+		fading = FALSE;
 		for (l = to_fade; l != NULL; l = l->next) {
 			RBXFadeStream *pstream = (RBXFadeStream *)l->data;
 			double fade_out_start = 1.0f;
@@ -2444,10 +2491,19 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 				/* fall through */
 
 			case PLAYING:
-				start_stream_fade (pstream, fade_out_start, 0.0f, fade_out_time);
+				start_stream_fade (pstream, fade_out_start, 0.0f, fade_out_time, GST_CLOCK_TIME_NONE);
 				pstream->state = FADING_OUT;
 
-				start_stream_fade (stream, 0.0f, 1.0f, stream->crossfade);
+				g_mutex_lock (&stream->lock);
+				if (fading == FALSE) {
+					if (stream->block_time != GST_CLOCK_TIME_NONE) {
+						start_stream_fade (stream, 0.0f, 1.0f, stream->crossfade, stream->block_time);
+					} else {
+						defer_stream_fade (stream, 0.0f, 1.0f, stream->crossfade);
+					}
+					fading = TRUE;
+				}
+				g_mutex_unlock (&stream->lock);
 				break;
 
 			default:
@@ -2459,7 +2515,7 @@ actually_start_stream (RBXFadeStream *stream, GError **error)
 		}
 		g_list_free (to_fade);
 
-		if (stream->fading == FALSE) {
+		if (fading == FALSE) {
 			rb_debug ("stream isn't fading; setting volume to 1.0");
 			gst_timed_value_control_source_set (GST_TIMED_VALUE_CONTROL_SOURCE (stream->fader), 0, 0.1);
 			gst_base_transform_set_passthrough (GST_BASE_TRANSFORM (stream->volume), TRUE);
@@ -2747,9 +2803,13 @@ get_times_and_stream (RBPlayerGstXFade *player, RBXFadeStream **pstream, gint64 
 			if (buffering) {
 				*pos = 0;
 			} else if (stream->state == PAUSED || stream->adder_pad == NULL) {
-				*pos = -1;
 
-				gst_element_query_position (stream->volume, GST_FORMAT_TIME, pos);
+				*pos = stream->block_time;
+				if (*pos == GST_CLOCK_TIME_NONE)
+					gst_element_query_position (stream->volume, GST_FORMAT_TIME, pos);
+			} else if (stream->base_time == GST_CLOCK_TIME_NONE) {
+				/* stream is playing but we don't have a base time yet */
+				*pos = 0;
 			} else {
 				/* for playing streams, we subtract the current output position
 				 * (a running counter generated by the adder) from the position
@@ -3719,7 +3779,7 @@ rb_player_gst_xfade_play (RBPlayer *iplayer,
 
 	case PAUSED:
 		rb_debug ("unpausing stream %s", stream->uri);
-		start_stream_fade (stream, 0.0f, 1.0f, PAUSE_FADE_LENGTH);
+		start_stream_fade (stream, 0.0f, 1.0f, PAUSE_FADE_LENGTH, stream->block_time);
 		ret = link_and_unblock_stream (stream, error);
 		break;
 
@@ -3837,9 +3897,17 @@ rb_player_gst_xfade_pause (RBPlayer *iplayer)
 			g_object_get (stream->volume, "volume", &fade_out_start, NULL);
 			fade_out_time = (gint64)(((double) PAUSE_FADE_LENGTH) * fade_out_start);
 
+			/* if we haven't even started the fade yet, go straight to PAUSED */
+			if (stream->pending_fade_start != stream->pending_fade_end) {
+				stream->state = PAUSED;
+				unlink_and_block_stream (stream);
+				break;
+			}
+
 		case PLAYING:
 			stream->state = FADING_OUT_PAUSED;
-			start_stream_fade (stream, fade_out_start, 0.0f, fade_out_time);
+			start_stream_fade (stream, fade_out_start, 0.0f, fade_out_time, GST_CLOCK_TIME_NONE);
+			break;
 
 		default:
 			/* shouldn't happen, but ignore it if it does */
