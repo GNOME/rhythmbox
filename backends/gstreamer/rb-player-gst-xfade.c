@@ -1927,10 +1927,13 @@ rb_player_gst_xfade_bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstXFade *
 					rb_debug ("stream %s buffered, but no decoded pad yet", stream->uri);
 					break;
 				}
-
-				rb_debug ("stream %s is buffered, now playing", stream->uri);
-				if (actually_start_stream (stream, &error) == FALSE) {
-					emit_stream_error (stream, error);
+				if (stream->src_blocked == TRUE) {
+					rb_debug ("stream %s is buffered, now playing", stream->uri);
+					if (actually_start_stream (stream, &error) == FALSE) {
+						emit_stream_error (stream, error);
+					}
+				} else {
+					rb_debug ("stream %s is buffered, waiting for block callback to play", stream->uri);
 				}
 				break;
 
