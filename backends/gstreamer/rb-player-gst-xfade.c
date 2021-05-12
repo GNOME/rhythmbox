@@ -1090,88 +1090,74 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 	}
 
 	g_mutex_lock (&stream->lock);
-	if (stream->adder_pad != NULL) {
-		rb_debug ("stream %s is already linked", stream->uri);
-		g_mutex_unlock (&stream->lock);
-		return TRUE;
-	}
 	stream->needs_unlink = FALSE;
-
-	rb_debug ("linking stream %s", stream->uri);
-	if (GST_ELEMENT_PARENT (GST_ELEMENT (stream)) == NULL)
-		gst_bin_add (GST_BIN (player->priv->pipeline), GST_ELEMENT (stream));
-
-	stream->adder_pad = gst_element_get_request_pad (player->priv->adder, "sink_%u");
 	if (stream->adder_pad == NULL) {
-		/* this error message kind of sucks */
-		rb_debug ("couldn't get adder pad to link in new stream");
-		g_set_error (error,
-			     RB_PLAYER_ERROR,
-			     RB_PLAYER_ERROR_GENERAL,
-			     _("Failed to link new stream into GStreamer pipeline"));
-		g_mutex_unlock (&stream->lock);
-		return FALSE;
-	}
+		rb_debug ("linking stream %s", stream->uri);
+		if (GST_ELEMENT_PARENT (GST_ELEMENT (stream)) == NULL)
+			gst_bin_add (GST_BIN (player->priv->pipeline), GST_ELEMENT (stream));
 
-	plr = gst_pad_link (stream->ghost_pad, stream->adder_pad);
-	if (GST_PAD_LINK_FAILED (plr)) {
-		gst_element_release_request_pad (player->priv->adder, stream->adder_pad);
-		stream->adder_pad = NULL;
-
-		/* this error message kind of sucks */
-		rb_debug ("linking stream pad to adder pad failed: %d", plr);
-		g_set_error (error,
-			     RB_PLAYER_ERROR,
-			     RB_PLAYER_ERROR_GENERAL,
-			     _("Failed to link new stream into GStreamer pipeline"));
-		return FALSE;
-		g_mutex_unlock (&stream->lock);
-	}
-
-	g_atomic_int_inc (&player->priv->linked_streams);
-	rb_debug ("now have %d linked streams", player->priv->linked_streams);
-
-	result = TRUE;
-	if (stream->src_blocked) {
-		GstStateChangeReturn state_ret;
-
-		if (stream->block_probe_id != 0) {
-			gst_pad_remove_probe (stream->src_pad, stream->block_probe_id);
-			stream->block_probe_id = 0;
-		}
-
-		rb_debug ("stream %s is unblocked -> FADING_IN | PLAYING", stream->uri);
-		stream->src_blocked = FALSE;
-		if (stream->fading)
-			stream->state = FADING_IN;
-		else
-			stream->state = PLAYING;
-		
-		adjust_stream_base_time (stream);
-
-		/* should handle state change failures here.. */
-		state_ret = gst_element_set_state (GST_ELEMENT (stream), GST_STATE_PLAYING);
-		rb_debug ("stream %s state change returned: %s", stream->uri,
-			  gst_element_state_change_return_get_name (state_ret));
-
-		post_stream_playing_message (stream, FALSE);
-	} else {
-		rb_debug ("??? stream %s is already unblocked -> PLAYING", stream->uri);
-		stream->state = PLAYING;
-		adjust_stream_base_time (stream);
-
-		scr = gst_element_set_state (GST_ELEMENT (stream), GST_STATE_PLAYING);
-
-		post_stream_playing_message (stream, FALSE);
-
-		if (scr == GST_STATE_CHANGE_FAILURE) {
+		stream->adder_pad = gst_element_get_request_pad (player->priv->adder, "sink_%u");
+		if (stream->adder_pad == NULL) {
+			/* this error message kind of sucks */
+			rb_debug ("couldn't get adder pad to link in new stream");
 			g_set_error (error,
 				     RB_PLAYER_ERROR,
 				     RB_PLAYER_ERROR_GENERAL,
-				     _("Failed to start new stream"));
-			result = FALSE;
+				     _("Failed to link new stream into GStreamer pipeline"));
+			g_mutex_unlock (&stream->lock);
+			return FALSE;
 		}
+
+		plr = gst_pad_link (stream->ghost_pad, stream->adder_pad);
+		if (GST_PAD_LINK_FAILED (plr)) {
+			gst_element_release_request_pad (player->priv->adder, stream->adder_pad);
+			stream->adder_pad = NULL;
+
+			/* this error message kind of sucks */
+			rb_debug ("linking stream pad to adder pad failed: %d", plr);
+			g_set_error (error,
+				     RB_PLAYER_ERROR,
+				     RB_PLAYER_ERROR_GENERAL,
+				     _("Failed to link new stream into GStreamer pipeline"));
+			return FALSE;
+			g_mutex_unlock (&stream->lock);
+		}
+
+		g_atomic_int_inc (&player->priv->linked_streams);
+		rb_debug ("now have %d linked streams", player->priv->linked_streams);
+	} else {
+		rb_debug ("stream %s is already linked", stream->uri);
 	}
+
+	result = TRUE;
+	if (stream->block_probe_id != 0) {
+		gst_pad_remove_probe (stream->src_pad, stream->block_probe_id);
+		stream->block_probe_id = 0;
+	}
+
+	rb_debug ("stream %s is unblocked -> FADING_IN | PLAYING", stream->uri);
+	stream->src_blocked = FALSE;
+	if (stream->fading)
+		stream->state = FADING_IN;
+	else
+		stream->state = PLAYING;
+
+	stream->base_time = GST_CLOCK_TIME_NONE;
+	adjust_stream_base_time (stream);
+
+	/* should handle state change failures here.. */
+	scr = gst_element_set_state (GST_ELEMENT (stream), GST_STATE_PLAYING);
+	rb_debug ("stream %s state change returned: %s", stream->uri,
+		  gst_element_state_change_return_get_name (scr));
+	if (scr == GST_STATE_CHANGE_FAILURE) {
+		g_set_error (error,
+			     RB_PLAYER_ERROR,
+			     RB_PLAYER_ERROR_GENERAL,
+			     _("Failed to start new stream"));
+		result = FALSE;
+	}
+
+	post_stream_playing_message (stream, FALSE);
 	g_mutex_unlock (&stream->lock);
 	return result;
 }
