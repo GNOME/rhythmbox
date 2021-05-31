@@ -1106,6 +1106,7 @@ rb_uri_mkstemp (const char *prefix, char **uri_ret, GOutputStream **stream, GErr
 		*stream = G_OUTPUT_STREAM (fstream);
 		return TRUE;
 	} else {
+		g_propagate_error (error, e);
 		g_free (uri);
 		return FALSE;
 	}
