@@ -568,8 +568,6 @@ rb_playlist_source_drop_cb (GtkWidget *widget,
 	gtk_drag_finish (context, TRUE, FALSE, time);
 }
 
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,29,1)
-
 static void
 set_field_from_property (TotemPlPlaylist *playlist,
 			 TotemPlPlaylistIter *iter,
@@ -611,38 +609,6 @@ playlist_iter_foreach (GtkTreeModel *model,
 	return FALSE;
 }
 
-
-#else
-
-static void
-playlist_iter_func (GtkTreeModel *model,
-		    GtkTreeIter *iter,
-		    char **uri,
-		    char **title,
-		    gboolean *custom_title,
-		    gpointer user_data)
-{
-	RhythmDBEntry *entry;
-
-	gtk_tree_model_get (model, iter, 0, &entry, -1);
-
-	if (uri != NULL) {
-		*uri = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_LOCATION);
-	}
-	if (title != NULL) {
-		*title = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_TITLE);
-	}
-	if (custom_title != NULL) {
-		*custom_title = TRUE;
-	}
-
-	if (entry != NULL) {
-		rhythmdb_entry_unref (entry);
-	}
-}
-
-#endif
-
 /**
  * rb_playlist_source_save_playlist:
  * @source: a #RBPlaylistSource
@@ -661,10 +627,8 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source,
 	GError *error = NULL;
 	char *name;
 	gint totem_format;
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,29,1)
 	TotemPlPlaylist *playlist;
 	GFile *file;
-#endif
 
 	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (source));
 
@@ -686,7 +650,6 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source,
 		break;
 	}
 
-#if TOTEM_PL_PARSER_CHECK_VERSION(2,29,1)
 	file = g_file_new_for_uri (uri);
 	playlist = totem_pl_playlist_new ();
 
@@ -696,12 +659,6 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source,
 	totem_pl_parser_save (pl, playlist, file, name, totem_format, &error);
 	g_object_unref (playlist);
 	g_object_unref (file);
-#else
-	totem_pl_parser_write_with_title (pl, GTK_TREE_MODEL (source->priv->model),
-					  playlist_iter_func, uri, name,
-					  totem_format,
-					  NULL, &error);
-#endif
 	g_object_unref (pl);
 	g_free (name);
 	if (error != NULL) {
