@@ -1155,8 +1155,8 @@ link_and_unblock_stream (RBXFadeStream *stream, GError **error)
 				     RB_PLAYER_ERROR,
 				     RB_PLAYER_ERROR_GENERAL,
 				     _("Failed to link new stream into GStreamer pipeline"));
-			return FALSE;
 			g_mutex_unlock (&stream->lock);
+			return FALSE;
 		}
 
 		g_atomic_int_inc (&player->priv->linked_streams);
