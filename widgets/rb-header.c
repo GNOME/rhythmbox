@@ -386,6 +386,7 @@ rb_header_constructed (GObject *object)
 	gtk_widget_set_no_show_all (header->priv->timelabel, TRUE);
 
 	header->priv->timebutton = gtk_button_new ();
+	gtk_widget_set_valign (header->priv->timebutton, GTK_ALIGN_CENTER);
 	gtk_button_set_relief (GTK_BUTTON (header->priv->timebutton), GTK_RELIEF_NONE);
 	gtk_container_add (GTK_CONTAINER (header->priv->timebutton), header->priv->timelabel);
 	g_signal_connect_object (header->priv->timebutton,
@@ -418,6 +419,7 @@ rb_header_constructed (GObject *object)
 
 	/* volume button */
 	header->priv->volume_button = gtk_volume_button_new ();
+	gtk_widget_set_valign (header->priv->volume_button, GTK_ALIGN_CENTER);
 	g_signal_connect (header->priv->volume_button, "value-changed",
 			  G_CALLBACK (volume_widget_changed_cb),
 			  header);
