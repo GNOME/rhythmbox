@@ -528,6 +528,7 @@ selection_changed_cb (RBEntryView *view, RBImportDialog *dialog)
 static void
 impl_constructed (GObject *object)
 {
+	GtkStyleContext *context;
 	RBImportDialog *dialog;
 	RhythmDBQuery *query;
 	GtkBuilder *builder;
@@ -558,6 +559,8 @@ impl_constructed (GObject *object)
 	builder = rb_builder_load ("import-dialog.ui", NULL);
 
 	dialog->priv->import_button = GTK_WIDGET (gtk_builder_get_object (builder, "import-button"));
+	context = gtk_widget_get_style_context (GTK_WIDGET (dialog->priv->import_button));
+	gtk_style_context_add_class (context, GTK_STYLE_CLASS_SUGGESTED_ACTION);
 	g_signal_connect_object (dialog->priv->import_button, "clicked", G_CALLBACK (import_clicked_cb), dialog, 0);
 	gtk_widget_set_sensitive (dialog->priv->import_button, FALSE);
 
