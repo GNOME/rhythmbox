@@ -497,6 +497,7 @@ START_TEST (test_rhythmdb_thread_barrier)
 		ck_assert_msg (str && (strcmp (str, "Bbb") == 0), "worker thread changes be visible now");
 	}
 }
+END_TEST
 
 START_TEST (test_rhythmdb_podcast_upgrade)
 {
