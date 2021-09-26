@@ -1,19 +1,19 @@
 # Polish translation for rhythmbox.
-# Copyright © 2003-2020 the rhythmbox authors.
+# Copyright © 2003-2021 the rhythmbox authors.
 # This file is distributed under the same license as the rhythmbox package.
 # Zbigniew Chyla <chyla@alice.ci.pwr.wroc.pl>, 2003.
 # Artur Flinta <aflinta@at.kernel.pl>, 2003-2004.
 # Tomasz Dominikowski <dominikowski@gmail.com>, 2007-2009.
 # Wadim Dziedzic <wdziedzic@aviary.pl>, 2008.
-# Piotr Drąg <piotrdrag@gmail.com>, 2009-2020.
-# Aviary.pl <community-poland@mozilla.org>, 2007-2020.
+# Piotr Drąg <piotrdrag@gmail.com>, 2009-2021.
+# Aviary.pl <community-poland@mozilla.org>, 2007-2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-26 14:47+0200\n"
-"PO-Revision-Date: 2020-07-26 14:55+0200\n"
+"POT-Creation-Date: 2021-09-26 17:32+0200\n"
+"PO-Revision-Date: 2021-09-26 17:33+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <community-poland@mozilla.org>\n"
 "Language: pl\n"
@@ -23,12 +23,12 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:649
+#: ../backends/gstreamer/rb-encoder-gst.c:652
 #, c-format
 msgid "Could not create a temporary file to write to: %s"
 msgstr "Nie można utworzyć pliku tymczasowego do zapisu: %s"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:703
+#: ../backends/gstreamer/rb-encoder-gst.c:705
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr ""
@@ -39,7 +39,7 @@ msgstr ""
 #. ?
 #. Translators: the parameter here is an error message
 #: ../backends/gstreamer/rb-player-gst.c:520
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2931
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3023
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Otwarcie urządzenia wyjściowego się nie powiodło: %s"
@@ -58,50 +58,50 @@ msgstr ""
 "Utworzenie elementu %s się nie powiodło; proszę sprawdzić poprawność "
 "instalacji biblioteki GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1107
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1121
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1142
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1157
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "Połączenie strumienia w potok biblioteki GStreamer się nie powiodło"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1167
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1193
 #, c-format
 msgid "Failed to start new stream"
 msgstr "Rozpoczęcie nowego strumienia się nie powiodło"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2844
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2936
 #, c-format
 msgid "Failed to open output device"
 msgstr "Otwarcie urządzenia wyjściowego się nie powiodło"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3233
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3312
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3356
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3435
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Utworzenie elementu biblioteki GStreamer się nie powiodło; proszę sprawdzić "
 "poprawność instalacji"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3242
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3365
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Utworzenie elementu wyjścia dźwiękowego się nie powiodło; proszę sprawdzić "
 "poprawność instalacji"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3276
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3329
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3356
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3366
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3376
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3399
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3452
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3479
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3489
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3499
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Połączenie strumienia biblioteki GStreamer się nie powiodło; proszę "
 "sprawdzić poprawność instalacji"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3471
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3594
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr ""
@@ -119,18 +119,20 @@ msgstr "Ostatnio odtwarzane"
 msgid "My Top Rated"
 msgstr "Najwyżej oceniane"
 
-#: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
+#: ../data/org.gnome.Rhythmbox3.appdata.xml.in.h:1
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:1
+#: ../data/org.gnome.Rhythmbox3.device.desktop.in.in.h:1 ../shell/main.c:79
 #: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2389
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
-#: ../data/rhythmbox-device.desktop.in.in.h:4
+#: ../data/org.gnome.Rhythmbox3.appdata.xml.in.h:2
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:4
+#: ../data/org.gnome.Rhythmbox3.device.desktop.in.in.h:4
 msgid "Play and organize your music collection"
 msgstr "Odtwarzanie i organizowanie kolekcji muzycznej"
 
-#: ../data/rhythmbox.appdata.xml.in.h:3
+#: ../data/org.gnome.Rhythmbox3.appdata.xml.in.h:3
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -143,7 +145,7 @@ msgstr ""
 "odtwarzacze muzyki (w tym smartfony) oraz serwisy internetowe Last.fm "
 "i Magnatune."
 
-#: ../data/rhythmbox.appdata.xml.in.h:4
+#: ../data/org.gnome.Rhythmbox3.appdata.xml.in.h:4
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
@@ -152,17 +154,17 @@ msgstr ""
 "i GStreamer, i jest rozszerzalny dzięki mechanizmowi wtyczek napisanych "
 "w językach Python i C."
 
-#: ../data/rhythmbox.desktop.in.in.h:2
-#: ../data/rhythmbox-device.desktop.in.in.h:2
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:2
+#: ../data/org.gnome.Rhythmbox3.device.desktop.in.in.h:2
 msgid "Music Player"
 msgstr "Odtwarzacz muzyki"
 
-#: ../data/rhythmbox.desktop.in.in.h:3
-#: ../data/rhythmbox-device.desktop.in.in.h:3
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:3
+#: ../data/org.gnome.Rhythmbox3.device.desktop.in.in.h:3
 msgid "Rhythmbox Music Player"
 msgstr "Odtwarzacz muzyki Rhythmbox"
 
-#: ../data/rhythmbox.desktop.in.in.h:5
+#: ../data/org.gnome.Rhythmbox3.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
 "Dźwięk;Audio;Piosenka;Utwór;MP3;Ogg;Vorbis;FLAC;CD;Płyta;Podcast;Podkasty;"
@@ -603,8 +605,8 @@ msgid "Save Playlist"
 msgstr "Zapis listy odtwarzania"
 
 #: ../data/ui/playlist-save.ui.h:3 ../plugins/artsearch/songinfo.py:135
-#: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:534
-#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:187
+#: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:535
+#: ../podcast/rb-podcast-source.c:1102 ../shell/rb-track-transfer-queue.c:187
 #: ../widgets/rb-alert-dialog.c:384 ../widgets/rb-alert-dialog.c:401
 #: ../widgets/rb-dialog.c:131 ../widgets/rb-dialog.c:139
 #: ../widgets/rb-query-creator.c:191 ../widgets/rb-uri-dialog.c:158
@@ -714,7 +716,7 @@ msgid "Cancel Download"
 msgstr "Anuluj pobieranie"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1237 ../sources/rb-media-player-source.c:1104
+#: ../podcast/rb-podcast-source.c:1235 ../sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Usuń"
 
@@ -930,7 +932,7 @@ msgstr "Usunięte pliki:"
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
 #: ../plugins/iradio/rb-station-properties-dialog.c:496
-#: ../rhythmdb/rhythmdb.c:3809 ../widgets/rb-entry-view.c:943
+#: ../rhythmdb/rhythmdb.c:3844 ../widgets/rb-entry-view.c:943
 #: ../widgets/rb-entry-view.c:1567 ../widgets/rb-entry-view.c:1580
 #: ../widgets/rb-song-info.c:1546
 msgid "Never"
@@ -976,7 +978,7 @@ msgstr "%d %b %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:581
-#: ../plugins/android/rb-android-source.c:715
+#: ../plugins/android/rb-android-source.c:729
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
 #: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
@@ -996,16 +998,16 @@ msgstr "%d %b %Y"
 #: ../plugins/mtpdevice/rb-mtp-source.c:1450
 #: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1934
-#: ../podcast/rb-podcast-manager.c:2033
+#: ../podcast/rb-podcast-add-dialog.c:640 ../podcast/rb-podcast-manager.c:1354
+#: ../podcast/rb-podcast-manager.c:1453
 #: ../podcast/rb-podcast-properties-dialog.c:641
 #: ../podcast/rb-podcast-properties-dialog.c:705
-#: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
-#: ../remote/dbus/rb-client.c:732 ../rhythmdb/rhythmdb.c:2068
-#: ../rhythmdb/rhythmdb.c:2074 ../rhythmdb/rhythmdb.c:2089
-#: ../rhythmdb/rhythmdb.c:2123 ../rhythmdb/rhythmdb.c:5573
-#: ../rhythmdb/rhythmdb.c:5579 ../rhythmdb/rhythmdb.c:5584
-#: ../rhythmdb/rhythmdb.c:5595 ../rhythmdb/rhythmdb.c:5599
+#: ../podcast/rb-podcast-source.c:795 ../remote/dbus/rb-client.c:215
+#: ../remote/dbus/rb-client.c:732 ../rhythmdb/rhythmdb.c:2092
+#: ../rhythmdb/rhythmdb.c:2098 ../rhythmdb/rhythmdb.c:2113
+#: ../rhythmdb/rhythmdb.c:2147 ../rhythmdb/rhythmdb.c:5608
+#: ../rhythmdb/rhythmdb.c:5614 ../rhythmdb/rhythmdb.c:5619
+#: ../rhythmdb/rhythmdb.c:5630 ../rhythmdb/rhythmdb.c:5634
 #: ../rhythmdb/rhythmdb-entry-type.c:301
 #: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
 #: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
@@ -1025,7 +1027,7 @@ msgstr "Nieznany"
 msgid "Too many symlinks"
 msgstr "Za dużo dowiązań symbolicznych"
 
-#: ../lib/rb-file-helpers.c:1309
+#: ../lib/rb-file-helpers.c:1310
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "Nie można uzyskać wolnego miejsca na %s: %s"
@@ -1169,17 +1171,17 @@ msgstr ""
 "Na tym urządzeniu nie odnaleziono żadnych obszarów przechowywania danych. "
 "Należy je odblokować i włączyć obsługę MTP."
 
-#: ../plugins/android/rb-android-source.c:391
+#: ../plugins/android/rb-android-source.c:405
 #: ../plugins/generic-player/rb-generic-player-source.c:565
 #, c-format
 msgid "Scanning %s"
 msgstr "Wyszukiwanie w %s"
 
-#: ../plugins/android/rb-android-source.c:414
+#: ../plugins/android/rb-android-source.c:428
 msgid "Error mounting Android device"
 msgstr "Błąd podczas montowania urządzenia z systemem Android"
 
-#: ../plugins/android/rb-android-source.c:809
+#: ../plugins/android/rb-android-source.c:823
 #: ../plugins/mtpdevice/rb-mtp-source.c:1138
 #: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
 #: ../sources/rb-transfer-target.c:182
@@ -2282,10 +2284,7 @@ msgid "Searching for lyrics..."
 msgstr "Wyszukiwanie tekstu utworu…"
 
 #. { 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
-#: ../plugins/lyrics/LyricsSites.py:42
-msgid "WinampCN (www.winampcn.com)"
-msgstr "WinampCN (www.winampcn.com)"
-
+#. { 'id': 'winampcn.com', 	'class': WinampcnParser, 	'name': _("WinampCN (www.winampcn.com)") 	},
 #: ../plugins/lyrics/LyricsSites.py:43
 msgid "TerraBrasil (terra.com.br)"
 msgstr "TerraBrasil (terra.com.br)"
@@ -2909,7 +2908,7 @@ msgstr "Sterowanie programem Rhythmbox z przeglądarki WWW"
 msgid "Launch web remote control"
 msgstr "Uruchom zdalne sterowanie przez sieć"
 
-#: ../podcast/rb-podcast-add-dialog.c:271 ../podcast/rb-podcast-source.c:735
+#: ../podcast/rb-podcast-add-dialog.c:273 ../podcast/rb-podcast-source.c:736
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
@@ -2917,31 +2916,31 @@ msgstr[0] "%d kanał"
 msgstr[1] "%d kanały"
 msgstr[2] "%d kanałów"
 
-#: ../podcast/rb-podcast-add-dialog.c:306
+#: ../podcast/rb-podcast-add-dialog.c:332
 msgid "Unable to load the feed. Check your network connection."
 msgstr "Nie można wczytać kanału. Proszę sprawdzić połączenie sieciowe."
 
-#: ../podcast/rb-podcast-add-dialog.c:431
+#: ../podcast/rb-podcast-add-dialog.c:456
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Nie można wyszukać podcastów. Proszę sprawdzić połączenie sieciowe."
 
-#: ../podcast/rb-podcast-add-dialog.c:744 ../sources/rb-library-source.c:134
+#: ../podcast/rb-podcast-add-dialog.c:780 ../sources/rb-library-source.c:134
 #: ../widgets/rb-entry-view.c:1444
 msgid "Title"
 msgstr "Tytuł"
 
-#: ../podcast/rb-podcast-add-dialog.c:755
+#: ../podcast/rb-podcast-add-dialog.c:791
 msgid "Author"
 msgstr "Autor"
 
-#: ../podcast/rb-podcast-add-dialog.c:760
-#: ../podcast/rb-podcast-add-dialog.c:763
+#: ../podcast/rb-podcast-add-dialog.c:796
+#: ../podcast/rb-podcast-add-dialog.c:799
 msgid "Episodes"
 msgstr "Odcinki"
 
-#: ../podcast/rb-podcast-add-dialog.c:797
-#: ../podcast/rb-podcast-add-dialog.c:808 ../podcast/rb-podcast-source.c:1357
-#: ../podcast/rb-podcast-source.c:1368
+#: ../podcast/rb-podcast-add-dialog.c:833
+#: ../podcast/rb-podcast-add-dialog.c:844 ../podcast/rb-podcast-source.c:1355
+#: ../podcast/rb-podcast-source.c:1366
 msgid "Date"
 msgstr "Data"
 
@@ -2957,56 +2956,35 @@ msgstr "Nowe pobierania"
 msgid "Downloading podcast"
 msgstr "Pobieranie podcastu"
 
-#: ../podcast/rb-podcast-main-source.c:181
+#: ../podcast/rb-podcast-main-source.c:185
+msgid "Error downloading podcast"
+msgstr "Błąd podczas pobierania podcastu"
+
+#: ../podcast/rb-podcast-main-source.c:188
 msgid "Finished downloading podcast"
 msgstr "Ukończono pobieranie podcastu"
 
-#: ../podcast/rb-podcast-main-source.c:198
+#: ../podcast/rb-podcast-main-source.c:210
 msgid "New updates available from"
 msgstr "Dostępne są nowe aktualizacje z"
 
-#: ../podcast/rb-podcast-main-source.c:237
+#: ../podcast/rb-podcast-main-source.c:249
 msgid "Error in podcast"
 msgstr "Błąd w podcaście"
 
-#: ../podcast/rb-podcast-main-source.c:244
+#: ../podcast/rb-podcast-main-source.c:256
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Dodać kanał podcastu mimo to?"
 
-#: ../podcast/rb-podcast-manager.c:925
-msgid "Error creating podcast download directory"
-msgstr "Wystąpił błąd podczas tworzenia katalogu pobierania podcastów"
-
-#: ../podcast/rb-podcast-manager.c:926
+#: ../podcast/rb-podcast-manager.c:746
 #, c-format
-msgid "Unable to create the download directory for %s: %s"
-msgstr "Nie można utworzyć katalogu pobierania dla %s: %s"
-
-#: ../podcast/rb-podcast-manager.c:1046
-msgid "Invalid URL"
-msgstr "Nieprawidłowy adres URL"
-
-#: ../podcast/rb-podcast-manager.c:1047
-#, c-format
-msgid "The URL \"%s\" is not valid, please check it."
-msgstr "Adres URL „%s” jest nieprawidłowy, proszę sprawdzić jego poprawność."
-
-#. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1058
-msgid "URL already added"
-msgstr "Adres URL został już dodany"
-
-#: ../podcast/rb-podcast-manager.c:1059
-#, c-format
-msgid ""
-"The URL \"%s\" has already been added as a radio station. If this is a "
-"podcast feed, please remove the radio station."
+msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
-"Adres URL „%s” został już dodany jako stacja radiowa. Jeśli jest to kanał "
-"podcastów, to proszę usunąć tę stację radiową."
+"Wystąpił problem podczas dodawania tego podcastu: %s. Proszę sprawdzić "
+"poprawność adresu URL: %s"
 
-#: ../podcast/rb-podcast-manager.c:1159
+#: ../podcast/rb-podcast-manager.c:807
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -3017,33 +2995,30 @@ msgstr ""
 "adres URL albo kanał jest uszkodzony. Czy mimo wszystko spróbować użyć tego "
 "kanału?"
 
-#: ../podcast/rb-podcast-manager.c:1275
+#. added as something else, probably iradio
+#: ../podcast/rb-podcast-manager.c:857
+msgid "URL already added"
+msgstr "Adres URL został już dodany"
+
+#: ../podcast/rb-podcast-manager.c:858
+#, c-format
+msgid ""
+"The URL \"%s\" has already been added as a radio station. If this is a "
+"podcast feed, please remove the radio station."
+msgstr ""
+"Adres URL „%s” został już dodany jako stacja radiowa. Jeśli jest to kanał "
+"podcastów, to proszę usunąć tę stację radiową."
+
+#: ../podcast/rb-podcast-manager.c:966
 msgid "Podcast"
 msgstr "Podcast"
 
-#: ../podcast/rb-podcast-manager.c:2250
-#, c-format
-msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
-msgstr ""
-"Wystąpił problem podczas dodawania tego podcastu: %s. Proszę sprawdzić "
-"poprawność adresu URL: %s"
-
 #: ../podcast/rb-podcast-parse.c:181
-#, c-format
-msgid "Unable to check file type: %s"
-msgstr "Nie można sprawdzić typu pliku: %s"
-
-#: ../podcast/rb-podcast-parse.c:200
-#, c-format
-msgid "Unexpected file type: %s"
-msgstr "Nieoczekiwany typ pliku: %s"
-
-#: ../podcast/rb-podcast-parse.c:223
 #, c-format
 msgid "Unable to parse the feed contents"
 msgstr "Nie można przetworzyć zawartości kanału"
 
-#: ../podcast/rb-podcast-parse.c:237
+#: ../podcast/rb-podcast-parse.c:192
 #, c-format
 msgid "The feed does not contain any downloadable items"
 msgstr "Kanał nie zawiera żadnych elementów do pobrania"
@@ -3052,11 +3027,11 @@ msgstr "Kanał nie zawiera żadnych elementów do pobrania"
 msgid "Not Downloaded"
 msgstr "Nie pobrano"
 
-#: ../podcast/rb-podcast-source.c:521
+#: ../podcast/rb-podcast-source.c:522
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Usunąć kanał podcastu i pobrane pliki?"
 
-#: ../podcast/rb-podcast-source.c:524
+#: ../podcast/rb-podcast-source.c:525
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -3066,35 +3041,35 @@ msgstr ""
 "bezpowrotnie utracone. Proszę zwrócić uwagę, że można usunąć kanał, ale "
 "zachować pobrane pliki, wybierając usunięcie wyłącznie kanału."
 
-#: ../podcast/rb-podcast-source.c:532
+#: ../podcast/rb-podcast-source.c:533
 msgid "Delete _Feed Only"
 msgstr "Usuń tylko _kanał"
 
-#: ../podcast/rb-podcast-source.c:539
+#: ../podcast/rb-podcast-source.c:540
 msgid "_Delete Feed And Files"
 msgstr "_Usuń kanał i pliki"
 
-#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1411
+#: ../podcast/rb-podcast-source.c:621 ../podcast/rb-podcast-source.c:1409
 msgid "Downloaded"
 msgstr "Pobrane"
 
-#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1413
+#: ../podcast/rb-podcast-source.c:625 ../podcast/rb-podcast-source.c:1411
 msgid "Failed"
 msgstr "Nieudane"
 
-#: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1412
+#: ../podcast/rb-podcast-source.c:629 ../podcast/rb-podcast-source.c:1410
 msgid "Waiting"
 msgstr "Oczekiwanie"
 
-#: ../podcast/rb-podcast-source.c:957
+#: ../podcast/rb-podcast-source.c:958
 msgid "Podcast Error"
 msgstr "Błąd podcastu"
 
-#: ../podcast/rb-podcast-source.c:1091
+#: ../podcast/rb-podcast-source.c:1089
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Usunąć odcinek podcastu i pobrany plik?"
 
-#: ../podcast/rb-podcast-source.c:1094
+#: ../podcast/rb-podcast-source.c:1092
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -3104,15 +3079,15 @@ msgstr ""
 "bezpowrotnie utracone. Proszę zwrócić uwagę, że można usunąć odcinek, ale "
 "zachować pobrany plik, wybierając usunięcie wyłącznie odcinka."
 
-#: ../podcast/rb-podcast-source.c:1102
+#: ../podcast/rb-podcast-source.c:1100
 msgid "Delete _Episode Only"
 msgstr "Usuń tylko _odcinek"
 
-#: ../podcast/rb-podcast-source.c:1108
+#: ../podcast/rb-podcast-source.c:1106
 msgid "_Delete Episode And File"
 msgstr "_Usuń odcinek i plik"
 
-#: ../podcast/rb-podcast-source.c:1214
+#: ../podcast/rb-podcast-source.c:1212
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -3120,27 +3095,27 @@ msgstr[0] "%d odcinek"
 msgstr[1] "%d odcinki"
 msgstr[2] "%d odcinków"
 
-#: ../podcast/rb-podcast-source.c:1390 ../podcast/rb-podcast-source.c:1445
-#: ../podcast/rb-podcast-source.c:1484
+#: ../podcast/rb-podcast-source.c:1388 ../podcast/rb-podcast-source.c:1443
+#: ../podcast/rb-podcast-source.c:1482
 msgid "Feed"
 msgstr "Kanał"
 
-#: ../podcast/rb-podcast-source.c:1410 ../podcast/rb-podcast-source.c:1428
+#: ../podcast/rb-podcast-source.c:1408 ../podcast/rb-podcast-source.c:1426
 msgid "Status"
 msgstr "Stan"
 
 #. ensure search instances exist
-#: ../podcast/rb-podcast-source.c:1530 ../sources/rb-auto-playlist-source.c:253
+#: ../podcast/rb-podcast-source.c:1528 ../sources/rb-auto-playlist-source.c:253
 #: ../sources/rb-browser-source.c:314 ../sources/rb-browser-source.c:332
 #: ../sources/rb-static-playlist-source.c:295
 msgid "Search all fields"
 msgstr "Przeszukiwanie wszystkich pól"
 
-#: ../podcast/rb-podcast-source.c:1531
+#: ../podcast/rb-podcast-source.c:1529
 msgid "Search podcast feeds"
 msgstr "Przeszukiwanie kanałów podcastów"
 
-#: ../podcast/rb-podcast-source.c:1532
+#: ../podcast/rb-podcast-source.c:1530
 msgid "Search podcast episodes"
 msgstr "Przeszukiwanie odcinków podcastów"
 
@@ -3372,7 +3347,7 @@ msgstr "Głośność wynosi teraz %.02f"
 msgid "Press 'h' for help."
 msgstr "Wciśnięcie „h” wyświetli pomoc."
 
-#: ../remote/dbus/rb-client.c:1400
+#: ../remote/dbus/rb-client.c:1401
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Głośność odtwarzania wynosi %f.\n"
@@ -3387,7 +3362,7 @@ msgstr "Nie można uzyskać dostępu do %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1819
+#: ../rhythmdb/rhythmdb.c:1843
 msgid "The Beatles"
 msgstr "Carpenter Brut"
 
@@ -3395,7 +3370,7 @@ msgstr "Carpenter Brut"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1825
+#: ../rhythmdb/rhythmdb.c:1849
 msgid "Help!"
 msgstr "Trilogy"
 
@@ -3403,34 +3378,34 @@ msgstr "Trilogy"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1831
+#: ../rhythmdb/rhythmdb.c:1855
 msgid "Ticket To Ride"
 msgstr "Roller Mobster"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2376
+#: ../rhythmdb/rhythmdb.c:2400
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 "Do odtworzenia tego pliku wymagane są dodatkowe wtyczki biblioteki "
 "GStreamer: %s"
 
-#: ../rhythmdb/rhythmdb.c:2408
+#: ../rhythmdb/rhythmdb.c:2432
 msgid "invalid unicode in error message"
 msgstr "nieprawidłowy znak unikodu w komunikacie o błędzie"
 
-#: ../rhythmdb/rhythmdb.c:2531
+#: ../rhythmdb/rhythmdb.c:2555
 #, c-format
 msgid "Empty file"
 msgstr "Pusty plik"
 
-#: ../rhythmdb/rhythmdb.c:3229
+#: ../rhythmdb/rhythmdb.c:3264
 msgid "Could not load the music database:"
 msgstr "Nie można wczytać bazy danych muzyki:"
 
-#: ../rhythmdb/rhythmdb.c:4663
+#: ../rhythmdb/rhythmdb.c:4698
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3438,7 +3413,7 @@ msgstr[0] "%ld minuta"
 msgstr[1] "%ld minuty"
 msgstr[2] "%ld minut"
 
-#: ../rhythmdb/rhythmdb.c:4664
+#: ../rhythmdb/rhythmdb.c:4699
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3446,7 +3421,7 @@ msgstr[0] "%ld godzina"
 msgstr[1] "%ld godziny"
 msgstr[2] "%ld godzin"
 
-#: ../rhythmdb/rhythmdb.c:4665
+#: ../rhythmdb/rhythmdb.c:4700
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3455,7 +3430,7 @@ msgstr[1] "%ld dni"
 msgstr[2] "%ld dni"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4671
+#: ../rhythmdb/rhythmdb.c:4706
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s i %s"
@@ -3463,17 +3438,17 @@ msgstr "%s, %s i %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4677 ../rhythmdb/rhythmdb.c:4685
-#: ../rhythmdb/rhythmdb.c:4696
+#: ../rhythmdb/rhythmdb.c:4712 ../rhythmdb/rhythmdb.c:4720
+#: ../rhythmdb/rhythmdb.c:4731
 #, c-format
 msgid "%s and %s"
 msgstr "%s i %s"
 
-#: ../rhythmdb/rhythmdb-import-job.c:664
+#: ../rhythmdb/rhythmdb-import-job.c:704
 msgid "Scanning"
 msgstr "Wyszukiwanie"
 
-#: ../rhythmdb/rhythmdb-import-job.c:667 ../shell/rb-track-transfer-batch.c:917
+#: ../rhythmdb/rhythmdb-import-job.c:707 ../shell/rb-track-transfer-batch.c:917
 #, c-format
 msgid "%d of %d"
 msgstr "%d z %d"
@@ -3528,8 +3503,8 @@ msgstr ""
 "Artur Flinta <aflinta@at.kernel.pl>, 2003-2004\n"
 "Tomasz Dominikowski <dominikowski@gmail.com>, 2007-2009\n"
 "Wadim Dziedzic <wdziedzic@aviary.pl>, 2008\n"
-"Piotr Drąg <piotrdrag@gmail.com>, 2009-2020\n"
-"Aviary.pl <community-poland@mozilla.org>, 2007-2020"
+"Piotr Drąg <piotrdrag@gmail.com>, 2009-2021\n"
+"Aviary.pl <community-poland@mozilla.org>, 2007-2021"
 
 #: ../shell/rb-application.c:169
 msgid ""
@@ -3675,7 +3650,7 @@ msgstr "Wszystkie pliki"
 msgid "Load Playlist"
 msgstr "Wczytanie listy odtwarzania"
 
-#: ../shell/rb-playlist-manager.c:1142 ../sources/rb-playlist-source.c:708
+#: ../shell/rb-playlist-manager.c:1142 ../sources/rb-playlist-source.c:665
 msgid "Couldn't save playlist"
 msgstr "Nie można zapisać listy odtwarzania"
 
@@ -4111,7 +4086,7 @@ msgstr[0] "%d brakujący plik"
 msgstr[1] "%d brakujące pliki"
 msgstr[2] "%d brakujących plików"
 
-#: ../sources/rb-playlist-source.c:1191
+#: ../sources/rb-playlist-source.c:1148
 msgid "Remove from Playlist"
 msgstr "Usuń z listy odtwarzania"
 
