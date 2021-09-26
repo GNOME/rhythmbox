@@ -767,7 +767,7 @@ construct_load_ui (RBShell *shell)
 	model = rb_application_get_shared_menu (RB_APPLICATION (app), "app-menu");
 	gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (menu_button), model);
 	gtk_style_context_add_class (gtk_widget_get_style_context (menu_button), GTK_STYLE_CLASS_RAISED);
-	g_object_set (menu_button, "margin-top", 12, "margin-bottom", 12, NULL);
+	gtk_widget_set_valign (menu_button, GTK_ALIGN_CENTER);
 
 	gtk_widget_add_accelerator (menu_button,
 				    "activate",
@@ -777,7 +777,7 @@ construct_load_ui (RBShell *shell)
 				    GTK_ACCEL_VISIBLE);
 	rb_application_set_menu_accelerators (shell->priv->application, model, TRUE);
 
-	image = gtk_image_new_from_icon_name ("open-menu-symbolic", GTK_ICON_SIZE_LARGE_TOOLBAR);
+	image = gtk_image_new_from_icon_name ("open-menu-symbolic", GTK_ICON_SIZE_SMALL_TOOLBAR);
 	gtk_container_add (GTK_CONTAINER (menu_button), image);
 
 	shell->priv->menu_button = GTK_WIDGET (gtk_tool_item_new ());
