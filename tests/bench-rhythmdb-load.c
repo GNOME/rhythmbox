@@ -100,7 +100,7 @@ main (int argc, char **argv)
 	rb_profile_start ("load test");
 
 	rb_threads_init ();
-	setlocale (LC_ALL, NULL);
+	setlocale (LC_ALL, "");
 	gtk_init (&argc, &argv);
 	rb_debug_init (FALSE);
 	rb_refstring_system_init ();

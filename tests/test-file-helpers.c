@@ -140,7 +140,7 @@ main (int argc, char **argv)
 
 	rb_profile_start ("rb-file-helpers test suite");
 	rb_threads_init ();
-	setlocale (LC_ALL, NULL);
+	setlocale (LC_ALL, "");
 	rb_debug_init (TRUE);
 	rb_file_helpers_init (TRUE);
 

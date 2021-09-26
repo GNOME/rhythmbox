@@ -31,6 +31,7 @@
  */
 
 #include <config.h>
+#include <locale.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -146,6 +147,8 @@ int main(int argc, char **argv)
 	GOptionContext *context;
 	gboolean retval;
 	GError *error = NULL;
+
+	setlocale (LC_ALL, "");
 
 	context = g_option_context_new (NULL);
 	g_option_context_add_main_entries (context, entries, NULL);
