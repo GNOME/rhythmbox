@@ -575,9 +575,12 @@ sink_open_cb (GObject *source_object, GAsyncResult *result, gpointer data)
 	GError *error = NULL;
 
 	if (g_task_propagate_boolean (G_TASK (result), &error) == FALSE) {
-		set_error (encoder, error);
+		/* this would have already been done as part of cancel action */
+		if (encoder->priv->cancelled == FALSE) {
+			set_error (encoder, error);
+			rb_encoder_gst_emit_completed (encoder);
+		}
 		g_error_free (error);
-		rb_encoder_gst_emit_completed (encoder);
 	} else {
 		if (encoder->priv->outstream != NULL) {
 			g_object_set (encoder->priv->sink, "stream", encoder->priv->outstream, NULL);
