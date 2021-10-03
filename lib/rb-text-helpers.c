@@ -227,3 +227,23 @@ rb_text_cat (PangoDirection base_dir, ...)
 
 	return g_string_free (result, FALSE);
 }
+
+PangoAttrList *
+rb_text_numeric_get_pango_attr_list (void)
+{
+	static PangoAttrList *attr_list = NULL;
+
+	if (attr_list == NULL) {
+		/*
+		 * use tabular figures to ensure constant width for
+		 * numeric data in text widgets / renderers. this
+		 * ensures that numeric data which gets updated ( like
+		 * track time label ) doesn't cause wiggle to the
+		 * widgets / renderers that display them.
+		 */
+		attr_list = pango_attr_list_new ();
+		pango_attr_list_insert (attr_list, pango_attr_font_features_new ("tnum=1"));
+	}
+
+	return attr_list;
+}

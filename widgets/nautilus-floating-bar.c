@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include "nautilus-floating-bar.h"
+#include "rb-text-helpers.h"
 
 #define HOVER_HIDE_TIMEOUT_INTERVAL 100
 
@@ -417,6 +418,8 @@ nautilus_floating_bar_constructed (GObject *obj)
     gtk_container_add (GTK_CONTAINER (labels_box), w);
     self->primary_label_widget = w;
     gtk_widget_show (w);
+
+    gtk_label_set_attributes (GTK_LABEL (w), rb_text_numeric_get_pango_attr_list ());
 
     w = gtk_label_new (NULL);
     gtk_label_set_single_line_mode (GTK_LABEL (w), TRUE);

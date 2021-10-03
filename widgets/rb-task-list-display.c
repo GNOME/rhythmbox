@@ -32,6 +32,7 @@
 #include <lib/rb-task-progress.h>
 #include <lib/rb-list-model.h>
 #include <lib/rb-builder-helpers.h>
+#include <lib/rb-text-helpers.h>
 #include <lib/rb-util.h>
 
 #define TASK_REMOVE_DELAY	15
@@ -112,6 +113,7 @@ task_list_changed_cb (RBListModel *model, int position, int removed, int added, 
 
 		widget = GTK_WIDGET (gtk_builder_get_object (b, "task-detail"));
 		g_object_bind_property (task, "task-detail", widget, "label", G_BINDING_SYNC_CREATE);
+		gtk_label_set_attributes (GTK_LABEL (widget), rb_text_numeric_get_pango_attr_list ());
 
 		widget = GTK_WIDGET (gtk_builder_get_object (b, "task-progress"));
 		g_object_bind_property (task, "task-progress", widget, "fraction", G_BINDING_SYNC_CREATE);
