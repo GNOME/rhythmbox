@@ -1244,13 +1244,12 @@ rb_song_info_update_bitrate (RBSongInfo *song_info)
 static void
 rb_song_info_update_duration (RBSongInfo *song_info)
 {
-	char *text = NULL;
-	long duration = 0;
-	int minutes, seconds;
+	char *text;
+	long duration;
+
 	duration = rhythmdb_entry_get_ulong (song_info->priv->current_entry, RHYTHMDB_PROP_DURATION);
-	minutes = duration / 60;
-	seconds = duration % 60;
-	text = g_strdup_printf ("%d:%02d", minutes, seconds);
+
+	text = rb_make_duration_string (duration);
 	gtk_label_set_text (GTK_LABEL (song_info->priv->duration), text);
 	g_free (text);
 }
