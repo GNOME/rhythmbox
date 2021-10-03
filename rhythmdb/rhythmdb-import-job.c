@@ -374,7 +374,7 @@ uri_recurse_func (GFile *file, GFileInfo *info, RhythmDBImportJob *job)
 			uri = g_file_get_uri (file);
 			rb_debug ("unable to resolve symlink %s", uri);
 			g_free (uri);
-			return FALSE;
+			return TRUE;
 		}
 	} else {
 		uri = g_file_get_uri (file);
