@@ -99,6 +99,15 @@ mark_signal (void)
 	}
 }
 
+gulong
+set_waiting_signal_with_callback (GObject *o, const char *name, GCallback callback, gpointer data)
+{
+	gulong custom_sig_handler;
+	custom_sig_handler = g_signal_connect (o, name, callback, data);
+	set_waiting_signal (o, name);
+	return custom_sig_handler;
+}
+
 void
 set_waiting_signal (GObject *o, const char *name)
 {

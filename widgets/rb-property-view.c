@@ -88,7 +88,7 @@ struct RBPropertyViewPrivate
 
 	gboolean draggable;
 	gboolean handling_row_deletion;
-	guint reset_selection_id;
+	guint update_selection_id;
 };
 
 #define RB_PROPERTY_VIEW_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PROPERTY_VIEW, RBPropertyViewPrivate))
@@ -369,9 +369,9 @@ rb_property_view_dispose (GObject *object)
 
 	view = RB_PROPERTY_VIEW (object);
 
-	if (view->priv->reset_selection_id != 0) {
-		g_source_remove (view->priv->reset_selection_id);
-		view->priv->reset_selection_id = 0;
+	if (view->priv->update_selection_id != 0) {
+		g_source_remove (view->priv->update_selection_id);
+		view->priv->update_selection_id = 0;
 	}
 
 	rb_property_view_set_model_internal (view, NULL);
@@ -573,23 +573,27 @@ rb_property_view_pre_row_deleted_cb (RhythmDBPropertyModel *model,
 }
 
 static gboolean
-reset_selection_cb (RBPropertyView *view)
+update_selection_cb (RBPropertyView *view)
 {
-	GtkTreeIter first_iter;
-	if ((gtk_tree_selection_count_selected_rows (view->priv->selection) == 0) &&
-	    gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model), &first_iter)) {
-		rb_debug ("no rows selected, signalling reset");
-		g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
-						 G_CALLBACK (rb_property_view_selection_changed_cb),
-						 view);
-		gtk_tree_selection_select_iter (view->priv->selection, &first_iter);
-		g_signal_emit (G_OBJECT (view), rb_property_view_signals[SELECTION_RESET], 0);
-		g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
-						   G_CALLBACK (rb_property_view_selection_changed_cb),
-						   view);
+	if (gtk_tree_selection_count_selected_rows (view->priv->selection) == 0) {
+		GtkTreeIter first_iter;
+
+		if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model), &first_iter)) {
+			rb_debug ("no rows selected, signalling reset");
+			g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
+							 G_CALLBACK (rb_property_view_selection_changed_cb),
+							 view);
+			gtk_tree_selection_select_iter (view->priv->selection, &first_iter);
+			g_signal_emit (G_OBJECT (view), rb_property_view_signals[SELECTION_RESET], 0);
+			g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
+							   G_CALLBACK (rb_property_view_selection_changed_cb),
+							   view);
+		}
+	} else {
+		rb_property_view_selection_changed_cb (view->priv->selection, view);
 	}
 
-	view->priv->reset_selection_id = 0;
+	view->priv->update_selection_id = 0;
 	return FALSE;
 }
 
@@ -600,17 +604,15 @@ rb_property_view_post_row_deleted_cb (GtkTreeModel *model,
 {
 	view->priv->handling_row_deletion = FALSE;
 	rb_debug ("post row deleted");
-	if (gtk_tree_selection_count_selected_rows (view->priv->selection) == 0) {
-		if (view->priv->reset_selection_id == 0) {
-			/* we could be in the middle of renaming a property.
-			 * we've seen it being removed, but we haven't seen the
-			 * new name being added yet, which means the property model
-			 * is out of sync with the query model, so we can't
-			 * reset the selection here.  wait until we've finished
-			 * processing the change.
-			 */
-			view->priv->reset_selection_id = g_idle_add ((GSourceFunc) reset_selection_cb, view);
-		}
+	if (view->priv->update_selection_id == 0) {
+		/* we could be in the middle of renaming a property.
+		 * we've seen it being removed, but we haven't seen the
+		 * new name being added yet, which means the property model
+		 * is out of sync with the query model, so we can't
+		 * reset the selection here.  wait until we've finished
+		 * processing the change.
+		 */
+		view->priv->update_selection_id = g_idle_add ((GSourceFunc) update_selection_cb, view);
 	}
 }
 
