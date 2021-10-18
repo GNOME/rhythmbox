@@ -346,7 +346,7 @@ impl_constructor (GType type, guint n_construct_properties, GObjectConstructPara
 		RBExtDB *inst = l->data;
 		if (g_strcmp0 (name, inst->priv->name) == 0) {
 			rb_debug ("found existing metadata store %s", name);
-			return g_object_ref (inst);
+			return g_object_ref (G_OBJECT (inst));
 		}
 	}
 
