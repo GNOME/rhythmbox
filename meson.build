@@ -30,6 +30,9 @@ add_project_arguments(common_cflags, language: 'c')
 libmath = cc.find_library('m')
 
 glib_required = '2.38.0'
+cdata.set('GLIB_VERSION_MIN_REQUIRED', 'GLIB_VERSION_2_38')
+cdata.set('GLIB_VERSION_MAX_ALLOWED', 'GLIB_VERSION_2_38')
+
 gstreamer_required = '1.4.0'
 
 cairo = dependency('cairo', required: true)
