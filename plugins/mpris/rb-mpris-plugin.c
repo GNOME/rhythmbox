@@ -1405,8 +1405,8 @@ impl_activate (PeasActivatable *bplugin)
 {
 	RBMprisPlugin *plugin;
 	GDBusInterfaceInfo *ifaceinfo;
-	GError *error = NULL;
-	RBShell *shell;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(RBShell) shell = NULL;
 
 	rb_debug ("activating MPRIS plugin");
 
@@ -1421,7 +1421,6 @@ impl_activate (PeasActivatable *bplugin)
 	plugin->connection = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
 	if (error != NULL) {
 		g_warning ("Unable to connect to D-Bus session bus: %s", error->message);
-		g_object_unref (shell);
 		return;
 	}
 
@@ -1429,7 +1428,6 @@ impl_activate (PeasActivatable *bplugin)
 	plugin->node_info = g_dbus_node_info_new_for_xml (mpris_introspection_xml, &error);
 	if (error != NULL) {
 		g_warning ("Unable to read MPRIS interface specificiation: %s", error->message);
-		g_object_unref (shell);
 		return;
 	}
 
@@ -1444,7 +1442,7 @@ impl_activate (PeasActivatable *bplugin)
 							     &error);
 	if (error != NULL) {
 		g_warning ("unable to register MPRIS root interface: %s", error->message);
-		g_error_free (error);
+		g_clear_error (&error);
 	}
 
 	/* register player interface */
@@ -1458,7 +1456,7 @@ impl_activate (PeasActivatable *bplugin)
 							       &error);
 	if (error != NULL) {
 		g_warning ("Unable to register MPRIS player interface: %s", error->message);
-		g_error_free (error);
+		g_clear_error (&error);
 	}
 
 	/* register playlists interface */
@@ -1470,10 +1468,8 @@ impl_activate (PeasActivatable *bplugin)
 								  plugin,
 								  NULL,
 								  &error);
-	if (error != NULL) {
+	if (error != NULL)
 		g_warning ("Unable to register MPRIS playlists interface: %s", error->message);
-		g_error_free (error);
-	}
 
 	/* connect signal handlers for stuff */
 	g_signal_connect_object (plugin->player,
@@ -1538,7 +1534,6 @@ impl_activate (PeasActivatable *bplugin)
 					      (GBusNameLostCallback) name_lost_cb,
 					      g_object_ref (plugin),
 					      g_object_unref);
-	g_object_unref (shell);
 }
 
 static void
@@ -1561,18 +1556,9 @@ impl_deactivate	(PeasActivatable *bplugin)
 		plugin->playlists_id = 0;
 	}
 
-	if (plugin->property_emit_id != 0) {
-		g_source_remove (plugin->property_emit_id);
-		plugin->property_emit_id = 0;
-	}
-	if (plugin->player_property_changes != NULL) {
-		g_hash_table_destroy (plugin->player_property_changes);
-		plugin->player_property_changes = NULL;
-	}
-	if (plugin->playlist_property_changes != NULL) {
-		g_hash_table_destroy (plugin->playlist_property_changes);
-		plugin->playlist_property_changes = NULL;
-	}
+	g_clear_handle_id (&plugin->property_emit_id, g_source_remove);
+	g_clear_pointer (&plugin->player_property_changes, g_hash_table_destroy);
+	g_clear_pointer (&plugin->playlist_property_changes, g_hash_table_destroy);
 
 	if (plugin->player != NULL) {
 		g_signal_handlers_disconnect_by_func (plugin->player,
@@ -1593,8 +1579,7 @@ impl_deactivate	(PeasActivatable *bplugin)
 		g_signal_handlers_disconnect_by_func (plugin->player,
 						      G_CALLBACK (elapsed_nano_changed_cb),
 						      plugin);
-		g_object_unref (plugin->player);
-		plugin->player = NULL;
+		g_clear_object (&plugin->player);
 	}
 	if (plugin->db != NULL) {
 		g_signal_handlers_disconnect_by_func (plugin->db,
@@ -1603,38 +1588,24 @@ impl_deactivate	(PeasActivatable *bplugin)
 		g_signal_handlers_disconnect_by_func (plugin->db,
 						      G_CALLBACK (entry_changed_cb),
 						      plugin);
-		g_object_unref (plugin->db);
-		plugin->db = NULL;
+		g_clear_object (&plugin->db);
 	}
 	if (plugin->page_model != NULL) {
 		g_signal_handlers_disconnect_by_func (plugin->page_model,
 						      G_CALLBACK (display_page_inserted_cb),
 						      plugin);
-		g_object_unref (plugin->page_model);
-		plugin->page_model = NULL;
+		g_clear_object (&plugin->page_model);
 	}
 
-	if (plugin->name_own_id > 0) {
-		g_bus_unown_name (plugin->name_own_id);
-		plugin->name_own_id = 0;
-	}
-
-	if (plugin->node_info != NULL) {
-		g_dbus_node_info_unref (plugin->node_info);
-		plugin->node_info = NULL;
-	}
-
-	if (plugin->connection != NULL) {
-		g_object_unref (plugin->connection);
-		plugin->connection = NULL;
-	}
+	g_clear_handle_id (&plugin->name_own_id, g_bus_unown_name);
+	g_clear_pointer (&plugin->node_info, g_dbus_node_info_unref);
+	g_clear_object (&plugin->connection);
 
 	if (plugin->art_store != NULL) {
 		g_signal_handlers_disconnect_by_func (plugin->art_store,
 						      G_CALLBACK (art_added_cb),
 						      plugin);
-		g_object_unref (plugin->art_store);
-		plugin->art_store = NULL;
+		g_clear_object (&plugin->art_store);
 	}
 }
 
