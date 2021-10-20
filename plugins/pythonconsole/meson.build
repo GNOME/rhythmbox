@@ -7,8 +7,8 @@ install_data(pythonconsole_plugin_files,
   install_dir: pythonconsole_plugin_dir)
 
 pythonconsole_plugin_descriptor = custom_target('pythonconsole-plugin-descriptor',
-  input: 'pythonconsole.plugin.in',
+  input: 'pythonconsole.desktop.plugin.in',
   output: 'pythonconsole.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: pythonconsole_plugin_dir)

@@ -2,6 +2,19 @@ plugin_headers = ['rb-plugin-macros.h']
 
 install_headers(plugin_headers, subdir: 'rhythmbox/plugins')
 
+po_dir = meson.project_source_root() / 'po'
+# FIXME: Move custom_target to i18n.merge_file when gettext acquires plugin support.
+#        http://lists.gnu.org/archive/html/bug-gettext/2017-06/msg00001.html
+msgfmt_plugin_cmd = [
+  find_program('msgfmt'),
+  '--desktop',
+  '--keyword=Name',
+  '--keyword=Description',
+  '--template=@INPUT@',
+  '-d', po_dir,
+  '--output=@OUTPUT@'
+]
+
 subdir('audiocd')
 subdir('audioscrobbler')
 subdir('dbus-media-server')

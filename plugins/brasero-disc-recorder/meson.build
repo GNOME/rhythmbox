@@ -13,8 +13,8 @@ shared_module('cd-recorder',
   install_dir: brasero_disc_recorder_plugin_dir)
 
 brasero_disc_recorder_plugin_descriptor = custom_target('brasero-disc-recorder-plugin-descriptor',
-  input: 'cd-recorder.plugin.in',
+  input: 'cd-recorder.desktop.plugin.in',
   output: 'cd-recorder.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: brasero_disc_recorder_plugin_dir)

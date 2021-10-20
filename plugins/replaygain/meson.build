@@ -10,9 +10,9 @@ install_data(replaygain_plugin_files,
   install_dir: replaygain_plugin_dir)
 
 replaygain_plugin_descriptor = custom_target('replaygain-plugin-descriptor',
-  input: 'replaygain.plugin.in',
+  input: 'replaygain.desktop.plugin.in',
   output: 'replaygain.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: replaygain_plugin_dir)
 

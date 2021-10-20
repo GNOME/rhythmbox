@@ -24,9 +24,9 @@ shared_module('ipod',
   install_dir: ipod_plugin_dir)
 
 ipod_plugin_descriptor = custom_target('ipod-plugin-descriptor',
-  input: 'ipod.plugin.in',
+  input: 'ipod.desktop.plugin.in',
   output: 'ipod.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: ipod_plugin_dir)
 

@@ -7,8 +7,8 @@ install_data(rbzeitgeist_plugin_files,
   install_dir: rbzeitgeist_plugin_dir)
 
 rbzeitgeist_plugin_descriptor = custom_target('rbzeitgeist-plugin-descriptor',
-  input: 'rbzeitgeist.plugin.in',
+  input: 'rbzeitgeist.desktop.plugin.in',
   output: 'rbzeitgeist.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: rbzeitgeist_plugin_dir)

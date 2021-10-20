@@ -45,23 +45,23 @@ lib/rb-file-helpers.c
 lib/rb-util.c
 metadata/rb-metadata-dbus-client.c
 metadata/rb-metadata-gst.c
-[type: gettext/ini]plugins/android/android.plugin.in
+plugins/android/android.desktop.plugin.in
 [type: gettext/glade]plugins/android/android-info.ui
 [type: gettext/glade]plugins/android/android-toolbar.ui
 plugins/android/rb-android-plugin.c
 plugins/android/rb-android-source.c
-[type: gettext/ini]plugins/artsearch/artsearch.plugin.in
+plugins/artsearch/artsearch.desktop.plugin.in
 plugins/artsearch/artsearch.py
 plugins/artsearch/lastfm.py
 plugins/artsearch/songinfo.py
 [type: gettext/glade]plugins/audiocd/album-info.ui
-[type: gettext/ini]plugins/audiocd/audiocd.plugin.in
+plugins/audiocd/audiocd.desktop.plugin.in
 [type: gettext/glade]plugins/audiocd/audiocd-toolbar.ui
 plugins/audiocd/rb-audiocd-info.c
 plugins/audiocd/rb-audiocd-plugin.c
 plugins/audiocd/rb-audiocd-source.c
 plugins/audiocd/rb-musicbrainz-lookup.c
-[type: gettext/ini]plugins/audioscrobbler/audioscrobbler.plugin.in
+plugins/audioscrobbler/audioscrobbler.desktop.plugin.in
 [type: gettext/glade]plugins/audioscrobbler/audioscrobbler-preferences.ui
 [type: gettext/glade]plugins/audioscrobbler/audioscrobbler-profile.ui
 plugins/audioscrobbler/rb-audioscrobbler.c
@@ -69,11 +69,11 @@ plugins/audioscrobbler/rb-audioscrobbler-entry.c
 plugins/audioscrobbler/rb-audioscrobbler-plugin.c
 plugins/audioscrobbler/rb-audioscrobbler-profile-page.c
 plugins/audioscrobbler/rb-audioscrobbler-radio-source.c
-[type: gettext/ini]plugins/brasero-disc-recorder/cd-recorder.plugin.in
+plugins/brasero-disc-recorder/cd-recorder.desktop.plugin.in
 plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c
 plugins/context/AlbumTab.py
 plugins/context/ArtistTab.py
-[type: gettext/ini]plugins/context/context.plugin.in
+plugins/context/context.desktop.plugin.in
 plugins/context/ContextView.py
 plugins/context/LastFM.py
 plugins/context/LinksTab.py
@@ -82,7 +82,7 @@ plugins/context/tmpl/album-tmpl.html
 plugins/context/tmpl/artist-tmpl.html
 plugins/context/tmpl/loading.html
 plugins/context/tmpl/lyrics-tmpl.html
-[type: gettext/ini]plugins/daap/daap.plugin.in
+plugins/daap/daap.desktop.plugin.in
 [type: gettext/glade]plugins/daap/daap-prefs.ui
 [type: gettext/glade]plugins/daap/daap-toolbar.ui
 plugins/daap/rb-daap-plugin.c
@@ -90,78 +90,78 @@ plugins/daap/rb-daap-sharing.c
 plugins/daap/rb-daap-source.c
 plugins/daap/rb-dacp-pairing-page.c
 plugins/daap/rb-rhythmdb-dmap-db-adapter.c
-[type: gettext/ini]plugins/dbus-media-server/dbus-media-server.plugin.in
+plugins/dbus-media-server/dbus-media-server.desktop.plugin.in
 plugins/dbus-media-server/rb-dbus-media-server-plugin.c
-[type: gettext/ini]plugins/fmradio/fmradio.plugin.in
+plugins/fmradio/fmradio.desktop.plugin.in
 [type: gettext/glade]plugins/fmradio/fmradio-popup.ui
 [type: gettext/glade]plugins/fmradio/fmradio-toolbar.ui
 plugins/fmradio/rb-fm-radio-source.c
 [type: gettext/glade]plugins/generic-player/generic-player-info.ui
 [type: gettext/glade]plugins/generic-player/generic-player-toolbar.ui
-[type: gettext/ini]plugins/generic-player/generic-player.plugin.in
+plugins/generic-player/generic-player.desktop.plugin.in
 plugins/generic-player/rb-generic-player-plugin.c
 plugins/generic-player/rb-generic-player-source.c
 plugins/generic-player/rb-nokia770-source.c
 plugins/generic-player/rb-psp-source.c
-[type: gettext/ini]plugins/grilo/grilo.plugin.in
+plugins/grilo/grilo.desktop.plugin.in
 plugins/grilo/rb-grilo-plugin.c
 plugins/grilo/rb-grilo-source.c
-[type: gettext/ini]plugins/im-status/im-status.plugin.in
+plugins/im-status/im-status.desktop.plugin.in
 plugins/im-status/im-status.py
 [type: gettext/glade]plugins/ipod/ipod-info.ui
 [type: gettext/glade]plugins/ipod/ipod-init.ui
 [type: gettext/glade]plugins/ipod/ipod-toolbar.ui
-[type: gettext/ini]plugins/ipod/ipod.plugin.in
+plugins/ipod/ipod.desktop.plugin.in
 plugins/ipod/rb-ipod-helpers.c
 plugins/ipod/rb-ipod-plugin.c
 plugins/ipod/rb-ipod-source.c
-[type: gettext/ini]plugins/iradio/iradio.plugin.in
+plugins/iradio/iradio.desktop.plugin.in
 [type: gettext/glade]plugins/iradio/iradio-popup.ui
 [type: gettext/glade]plugins/iradio/iradio-toolbar.ui
 plugins/iradio/rb-iradio-source.c
 plugins/iradio/rb-station-properties-dialog.c
 [type: gettext/glade]plugins/iradio/station-properties.ui
 plugins/lirc/rb-lirc-plugin.c
-[type: gettext/ini]plugins/lirc/rblirc.plugin.in
-[type: gettext/ini]plugins/listenbrainz/listenbrainz.plugin.in
+plugins/lirc/rblirc.desktop.plugin.in
+plugins/listenbrainz/listenbrainz.desktop.plugin.in
 [type: gettext/glade]plugins/listenbrainz/settings.ui
 plugins/lyrics/LyricsConfigureDialog.py
-[type: gettext/ini]plugins/lyrics/lyrics.plugin.in
+plugins/lyrics/lyrics.desktop.plugin.in
 [type: gettext/glade]plugins/lyrics/lyrics-prefs.ui
 plugins/lyrics/lyrics.py
 plugins/lyrics/LyricsSites.py
 [type: gettext/glade]plugins/magnatune/magnatune-loading.ui
 [type: gettext/glade]plugins/magnatune/magnatune-popup.ui
 [type: gettext/glade]plugins/magnatune/magnatune-toolbar.ui
-[type: gettext/ini]plugins/magnatune/magnatune.plugin.in
+plugins/magnatune/magnatune.desktop.plugin.in
 [type: gettext/glade]plugins/magnatune/magnatune-prefs.ui
 plugins/magnatune/magnatune.py
 plugins/magnatune/MagnatuneSource.py
-[type: gettext/ini]plugins/mmkeys/mmkeys.plugin.in
-[type: gettext/ini]plugins/mpris/mpris.plugin.in
-[type: gettext/ini]plugins/mtpdevice/mtpdevice.plugin.in
+plugins/mmkeys/mmkeys.desktop.plugin.in
+plugins/mpris/mpris.desktop.plugin.in
+plugins/mtpdevice/mtpdevice.desktop.plugin.in
 [type: gettext/glade]plugins/mtpdevice/mtp-info.ui
 [type: gettext/glade]plugins/mtpdevice/mtp-toolbar.ui
 plugins/mtpdevice/rb-mtp-gst-src.c
 plugins/mtpdevice/rb-mtp-plugin.c
 plugins/mtpdevice/rb-mtp-source.c
 plugins/mtpdevice/rb-mtp-thread.c
-[type: gettext/ini]plugins/notification/notification.plugin.in
+plugins/notification/notification.desktop.plugin.in
 plugins/notification/rb-notification-plugin.c
-[type: gettext/ini]plugins/power-manager/power-manager.plugin.in
+plugins/power-manager/power-manager.desktop.plugin.in
 plugins/power-manager/rb-power-manager-plugin.c
-[type: gettext/ini]plugins/pythonconsole/pythonconsole.plugin.in
+plugins/pythonconsole/pythonconsole.desktop.plugin.in
 plugins/pythonconsole/pythonconsole.py
-[type: gettext/ini]plugins/rbzeitgeist/rbzeitgeist.plugin.in
+plugins/rbzeitgeist/rbzeitgeist.desktop.plugin.in
 plugins/replaygain/config.py
 plugins/replaygain/player.py
-[type: gettext/ini]plugins/replaygain/replaygain.plugin.in
+plugins/replaygain/replaygain.desktop.plugin.in
 [type: gettext/glade]plugins/replaygain/replaygain-prefs.ui
-[type: gettext/ini]plugins/soundcloud/soundcloud.plugin.in
+plugins/soundcloud/soundcloud.desktop.plugin.in
 plugins/soundcloud/soundcloud.py
 [type: gettext/glade]plugins/soundcloud/soundcloud.ui
 [type: gettext/glade]plugins/webremote/webremote-config.ui
-[type: gettext/ini]plugins/webremote/webremote.plugin.in
+plugins/webremote/webremote.desktop.plugin.in
 plugins/webremote/webremote.py
 podcast/rb-feed-podcast-properties-dialog.c
 podcast/rb-podcast-add-dialog.c
@@ -178,11 +178,11 @@ rhythmdb/rhythmdb-metadata-cache.c
 rhythmdb/rhythmdb-monitor.c
 rhythmdb/rhythmdb-property-model.c
 rhythmdb/rhythmdb-tree.c
-[type: gettext/ini]sample-plugins/sample-python/sample-python.plugin.in
+sample-plugins/sample-python/sample-python.desktop.plugin.in
 sample-plugins/sample-python/sample-python.py
 sample-plugins/sample/rb-sample-plugin.c
-[type: gettext/ini]sample-plugins/sample/sample.plugin.in
-[type: gettext/ini]sample-plugins/sample-vala/sample-vala.plugin.in
+sample-plugins/sample/sample.desktop.plugin.in
+sample-plugins/sample-vala/sample-vala.desktop.plugin.in
 shell/main.c
 shell/rb-application.c
 shell/rb-playlist-manager.c

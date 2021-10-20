@@ -25,9 +25,9 @@ shared_module('audioscrobbler',
   install_dir: audioscrobbler_plugin_dir)
 
 audioscrobbler_plugin_descriptor = custom_target('audioscrobbler-plugin-descriptor',
-  input: 'audioscrobbler.plugin.in',
+  input: 'audioscrobbler.desktop.plugin.in',
   output: 'audioscrobbler.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: audioscrobbler_plugin_dir)
 

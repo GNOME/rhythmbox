@@ -21,8 +21,8 @@ shared_module('fmradio',
   install_dir: fmradio_plugin_dir)
 
 fmradio_plugin_descriptor = custom_target('fmradio-plugin-descriptor',
-  input: 'fmradio.plugin.in',
+  input: 'fmradio.desktop.plugin.in',
   output: 'fmradio.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: fmradio_plugin_dir)

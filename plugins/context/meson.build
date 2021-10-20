@@ -15,9 +15,9 @@ install_data(context_plugin_files,
   install_dir: context_plugin_dir)
 
 context_plugin_descriptor = custom_target('context-plugin-descriptor',
-  input: 'context.plugin.in',
+  input: 'context.desktop.plugin.in',
   output: 'context.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: context_plugin_dir)
 

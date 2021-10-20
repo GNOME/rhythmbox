@@ -13,9 +13,9 @@ shared_module('rblirc',
   install: true)
 
 lirc_plugin_descriptor = custom_target('lirc-plugin-descriptor',
-  input: 'rblirc.plugin.in',
+  input: 'rblirc.desktop.plugin.in',
   output: 'rblirc.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: lirc_plugin_dir)
 

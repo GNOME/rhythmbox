@@ -20,8 +20,8 @@ shared_module('mpris',
   install_dir: mpris_plugin_dir)
 
 mpris_plugin_descriptor = custom_target('mpris-plugin-descriptor',
-  input: 'mpris.plugin.in',
+  input: 'mpris.desktop.plugin.in',
   output: 'mpris.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: mpris_plugin_dir)

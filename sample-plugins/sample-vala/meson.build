@@ -22,8 +22,8 @@ shared_module('sample-vala',
   install: true)
 
 sample_vala_plugin_descriptor = custom_target('sample-vala-plugin-descriptor',
-  input: 'sample-vala.plugin.in',
+  input: 'sample-vala.desktop.plugin.in',
   output: 'sample-vala.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: sample_vala_plugin_dir)

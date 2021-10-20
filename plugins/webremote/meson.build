@@ -9,9 +9,9 @@ install_data(webremote_plugin_files,
   install_dir: webremote_plugin_dir)
 
 webremote_plugin_descriptor = custom_target('webremote-plugin-descriptor',
-  input: 'webremote.plugin.in',
+  input: 'webremote.desktop.plugin.in',
   output: 'webremote.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: webremote_plugin_dir)
 

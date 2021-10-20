@@ -8,9 +8,9 @@ install_data(soundcloud_plugin_files,
   install_dir: soundcloud_plugin_dir)
 
 soundcloud_plugin_descriptor = custom_target('soundcloud-plugin-descriptor',
-  input: 'soundcloud.plugin.in',
+  input: 'soundcloud.desktop.plugin.in',
   output: 'soundcloud.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: soundcloud_plugin_dir)
 
