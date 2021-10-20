@@ -62,10 +62,6 @@ main (int argc, char **argv)
 
 	g_random_set_seed (time (0));
 
-#ifdef USE_UNINSTALLED_DIRS
-	g_setenv ("GSETTINGS_SCHEMA_DIR", SHARE_UNINSTALLED_BUILDDIR, TRUE);
-#endif
-
 	setlocale (LC_ALL, "");
 
 #ifdef ENABLE_NLS
@@ -78,10 +74,6 @@ main (int argc, char **argv)
 
 	g_set_application_name (_("Rhythmbox"));
 	gtk_window_set_default_icon_name (RB_APP_ICON);
-
-#if defined(USE_UNINSTALLED_DIRS)
-	g_irepository_prepend_search_path (SHARE_UNINSTALLED_BUILDDIR "/../bindings/gi");
-#endif
 
 	rb_threads_init ();
 

@@ -63,21 +63,10 @@ static char *dot_dir = NULL;
 static char *user_data_dir = NULL;
 static char *user_cache_dir = NULL;
 
-static char *uninstalled_paths[] = {
-	SHARE_UNINSTALLED_DIR "/",
-	SHARE_UNINSTALLED_DIR "/ui/",
-	SHARE_UNINSTALLED_BUILDDIR "/",
-	SHARE_UNINSTALLED_BUILDDIR "/ui/",
-	SHARE_DIR "/",
-	NULL
-};
-
 static char *installed_paths[] = {
 	SHARE_DIR "/",
 	NULL
 };
-
-static char **search_paths;
 
 static const char *recurse_attributes =
 		G_FILE_ATTRIBUTE_STANDARD_NAME ","
@@ -121,8 +110,8 @@ rb_file (const char *filename)
 	if (ret != NULL)
 		return ret;
 
-	for (i = 0; search_paths[i] != NULL; i++) {
-		ret = g_strconcat (search_paths[i], filename, NULL);
+	for (i = 0; installed_paths[i] != NULL; i++) {
+		ret = g_strconcat (installed_paths[i], filename, NULL);
 		if (g_file_test (ret, G_FILE_TEST_EXISTS) == TRUE) {
 			g_hash_table_insert (files, g_strdup (filename), ret);
 			return (const char *) ret;
@@ -320,19 +309,12 @@ rb_find_plugin_resource (GObject *object, const char *name)
 
 /**
  * rb_file_helpers_init:
- * @uninstalled: if %TRUE, search in source and build directories
- * as well as installed locations
  *
  * Sets up file search paths for @rb_file.  Must be called on startup.
  */
 void
-rb_file_helpers_init (gboolean uninstalled)
+rb_file_helpers_init (void)
 {
-	if (uninstalled)
-		search_paths = uninstalled_paths;
-	else
-		search_paths = installed_paths;
-
 	files = g_hash_table_new_full (g_str_hash,
 				       g_str_equal,
 				       (GDestroyNotify) g_free,

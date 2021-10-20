@@ -50,9 +50,8 @@
  * signal handlers where possible.
  *
  * The caller can specify an absolute path to the file, a resource path
- * starting with /org/gnome/Rhythmbox/ or just a filename, in which case
- * the file will be loaded from GResources (in normal builds) or the source
- * data/ui directory (in uninstalled builds).
+ * starting with /org/gnome/Rhythmbox/ or just a filename.
+ * The file will be loaded from GResources.
  *
  * Return value: (transfer full): #GtkBuilder object built from the file
  */
@@ -73,13 +72,8 @@ rb_builder_load (const char *file, gpointer user_data)
 		name = file;
 		resource = NULL;
 	} else {
-#if defined(USE_UNINSTALLED_DIRS)
-		name = rb_file (file);
-		resource = NULL;
-#else
 		resource = g_strdup_printf ("/org/gnome/Rhythmbox/ui/%s", file);
 		name = NULL;
-#endif
 	}
 
 	builder = gtk_builder_new ();
@@ -118,8 +112,6 @@ rb_builder_load_plugin_file (GObject *plugin, const char *file, gpointer user_da
 {
 	char *path = NULL;
 	GtkBuilder *builder;
-
-#if !defined(USE_UNINSTALLED_DIRS)
 	GBytes *bytes;
 
 	path = rb_find_plugin_resource (plugin, file);
@@ -130,7 +122,6 @@ rb_builder_load_plugin_file (GObject *plugin, const char *file, gpointer user_da
 		g_free (path);
 		path = NULL;
 	}
-#endif
 	if (path == NULL) {
 		path = rb_find_plugin_data_file (plugin, file);
 		if (path == NULL) {

@@ -15,7 +15,7 @@ int main (int argc, char **argv)
 	GtkWidget *dialog;
 
 	gtk_init (&argc, &argv);
-	rb_file_helpers_init (TRUE);
+	rb_file_helpers_init ();
 
 	dialog = rb_uri_dialog_new ("Dialog title", "dialog label");
 	g_signal_connect (G_OBJECT (dialog), "location-added",

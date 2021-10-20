@@ -174,10 +174,6 @@ cdata.set('GETTEXT_PACKAGE', '"rhythmbox"')
 cdata.set('PACKAGE', '"rhythmbox"')
 cdata.set('VERSION', '@0@'.format(meson.project_version()))
 
-cdata.set('SHARE_UNINSTALLED_DIR', '"@0@"'.format(meson.project_source_root() + '/data'))
-cdata.set('SHARE_UNINSTALLED_BUILDDIR', '"@0@"'.format(meson.project_build_root() + '/data'))
-cdata.set('METADATA_UNINSTALLED_DIR', '"@0@"'.format(meson.project_build_root() + '/metadata'))
-
 # Needed so that we can build static libraries and later link them into
 # shared libraries.
 add_global_arguments('-fPIC', language: 'c')

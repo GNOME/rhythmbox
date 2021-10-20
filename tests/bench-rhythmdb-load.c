@@ -104,7 +104,7 @@ main (int argc, char **argv)
 	gtk_init (&argc, &argv);
 	rb_debug_init (FALSE);
 	rb_refstring_system_init ();
-	rb_file_helpers_init (TRUE);
+	rb_file_helpers_init ();
 
 	db = rhythmdb_tree_new ("test");
 	g_object_set (G_OBJECT (db), "name", name, NULL);

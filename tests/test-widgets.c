@@ -316,7 +316,7 @@ main (int argc, char **argv)
 	rb_threads_init ();
 	rb_debug_init (TRUE);
 	rb_refstring_system_init ();
-	rb_file_helpers_init (TRUE);
+	rb_file_helpers_init ();
 
 	/* setup tests */
 	s = rb_query_creator_suite ();

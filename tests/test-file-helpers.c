@@ -142,7 +142,7 @@ main (int argc, char **argv)
 	rb_threads_init ();
 	setlocale (LC_ALL, "");
 	rb_debug_init (TRUE);
-	rb_file_helpers_init (TRUE);
+	rb_file_helpers_init ();
 
 	/* setup tests */
 	s = rb_file_helpers_suite ();

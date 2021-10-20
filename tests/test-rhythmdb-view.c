@@ -105,7 +105,7 @@ main (int argc, char **argv)
 
 	gtk_init (&argc, &argv);
 	rb_thread_helpers_init ();
-	rb_file_helpers_init (TRUE);
+	rb_file_helpers_init ();
 	rb_stock_icons_init ();
 	rb_debug_init (TRUE);
 

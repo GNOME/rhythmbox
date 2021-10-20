@@ -464,12 +464,7 @@ rb_application_init (RBApplication *app)
 	rb_user_data_dir ();
 	rb_refstring_system_init ();
 
-#ifdef USE_UNINSTALLED_DIRS
-	rb_file_helpers_init (TRUE);
-#else
-	rb_file_helpers_init (FALSE);
-#endif
-
+	rb_file_helpers_init ();
 	app->priv->shared_menus = g_hash_table_new_full (g_str_hash,
 							 g_str_equal,
 							 (GDestroyNotify) g_free,

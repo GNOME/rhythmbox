@@ -101,8 +101,6 @@
 #include "rb-task-list.h"
 #include "rb-task-list-display.h"
 
-#define UNINSTALLED_PLUGINS_LOCATION "plugins"
-
 #define PLAYING_ENTRY_NOTIFY_TIME 4
 
 #define ALBUM_ART_MIN_SIZE	32
@@ -867,17 +865,6 @@ construct_plugins (RBShell *shell)
 				     plugindir,
 				     plugindir);
 	g_free (plugindir);
-
-#ifdef USE_UNINSTALLED_DIRS
-	plugindir = g_build_filename (SHARE_UNINSTALLED_BUILDDIR, "..", UNINSTALLED_PLUGINS_LOCATION, NULL);
-	plugindatadir = g_build_filename (SHARE_UNINSTALLED_DIR, "..", UNINSTALLED_PLUGINS_LOCATION, NULL);
-	rb_debug ("uninstalled plugin search path: %s / %s", plugindir, plugindatadir);
-	peas_engine_add_search_path (shell->priv->plugin_engine,
-				     plugindir,
-				     plugindatadir);
-	g_free (plugindir);
-	g_free (plugindatadir);
-#endif
 
 	plugindir = g_build_filename (LIBDIR, "rhythmbox", "plugins", NULL);
 	plugindatadir = g_build_filename (DATADIR, "rhythmbox", "plugins", NULL);
