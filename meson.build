@@ -126,13 +126,6 @@ if get_option('lirc').allowed()
   endif
 endif
 
-enable_mmkeys = false
-if get_option('mmkeys').allowed()
-  if cc.has_header('X11/XF86keysym.h', required: get_option('mmkeys'))
-    enable_mmkeys = true
-  endif
-endif
-
 have_libbrasero_media = false
 if get_option('brasero').allowed()
   brasero_media = dependency('libbrasero-media3', version: '>= 2.31.5', required: get_option('brasero'))
@@ -276,8 +269,7 @@ summary({'Database': get_option('database'),
          'Coherence check level': get_option('rhythmdb_debug'),
          'Tests': enable_check},
         section: 'General')
-summary({'Multimedia keys': enable_mmkeys,
-         'iPod integration': use_ipod,
+summary({'iPod integration': use_ipod,
          'MTP integration': use_mtp,
          'CD burning support': have_libbrasero_media,
          'DAAP (music sharing) support': have_libdmapsharing,
