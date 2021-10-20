@@ -31,7 +31,7 @@ G_BEGIN_DECLS
 typedef enum {
 	MPID_ERROR_NONE,
 	MPID_ERROR_NO_DEVICE_PATH,			/* unable to find the device path */
-	MPID_ERROR_MECHANISM_FAILED,			/* mechanism (udev, hal) not available */
+	MPID_ERROR_MECHANISM_FAILED,			/* mechanism (udev) not available */
 	MPID_ERROR_NOT_MEDIA_PLAYER,			/* device is not a media player */
 	MPID_ERROR_DEVICE_INFO_MISSING			/* the device info file is missing */
 } MPIDError;

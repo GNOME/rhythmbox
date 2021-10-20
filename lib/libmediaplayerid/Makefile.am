@@ -21,7 +21,7 @@ AM_CPPFLAGS =				\
 if USE_GUDEV
 
 libmediaplayerid_la_SOURCES += mpid-udev.c
-EXTRA_DIST = mpid-hal.c mpid-dummy.c
+EXTRA_DIST = mpid-dummy.c
 
 AM_CPPFLAGS += $(GUDEV_CFLAGS)
 libmediaplayerid_la_LIBADD = $(GUDEV_LIBS)
@@ -29,7 +29,7 @@ libmediaplayerid_la_LIBADD = $(GUDEV_LIBS)
 else
 
 libmediaplayerid_la_SOURCES += mpid-dummy.c
-EXTRA_DIST = mpid-udev.c mpid-hal.c
+EXTRA_DIST = mpid-udev.c
 
 endif #  HAVE_GUDEV
 
