@@ -88,6 +88,10 @@ rb_transfer_target_build_dest_uri (RBTransferTarget *target,
 	RBTransferTargetInterface *iface = RB_TRANSFER_TARGET_GET_IFACE (target);
 	char *uri;
 
+	/* if we require a separate upload step, always transfer to a temporary file */
+	if (iface->track_upload)
+		return g_strdup (RB_ENCODER_DEST_TEMPFILE);
+
 	uri = iface->build_dest_uri (target, entry, media_type, extension);
 	if (uri != NULL) {
 		rb_debug ("built dest uri for media type '%s', extension '%s': %s",
@@ -98,6 +102,54 @@ rb_transfer_target_build_dest_uri (RBTransferTarget *target,
 	}
 
 	return uri;
+}
+
+/**
+ * rb_transfer_target_track_prepare:
+ * @target: an #RBTransferTarget
+ * @entry: the source #RhythmDBEntry for the transfer
+ * @uri: the destination URI
+ * @error: returns error information
+ *
+ * Performs any preparation necessary before starting the transfer.
+ * This is called on a task thread, so no UI interaction is possible.
+ *
+ */
+void
+rb_transfer_target_track_prepare (RBTransferTarget *target,
+				  RhythmDBEntry *entry,
+				  const char *uri,
+				  GError **error)
+{
+	RBTransferTargetInterface *iface = RB_TRANSFER_TARGET_GET_IFACE (target);
+	if (iface->track_prepare)
+		iface->track_prepare (target, entry, uri, error);
+}
+
+/**
+ * rb_transfer_target_track_upload:
+ * @target: an #RBTransferTarget
+ * @entry: the source #RhythmDBEntry for the transfer
+ * @uri: the destination URI
+ * @dest_size: the size of the destination file
+ * @media_type: the media type of the destination file
+ * @error: returns error information
+ *
+ * This is called after a transfer to a temporary file has finished,
+ * allowing the transfer target to upload the file to a device or a
+ * remote service.
+ */
+void
+rb_transfer_target_track_upload (RBTransferTarget *target,
+				 RhythmDBEntry *entry,
+				 const char *uri,
+				 guint64 dest_size,
+				 const char *media_type,
+				 GError **error)
+{
+	RBTransferTargetInterface *iface = RB_TRANSFER_TARGET_GET_IFACE (target);
+	g_assert (iface->track_upload != NULL);
+	iface->track_upload (target, entry, uri, dest_size, media_type, error);
 }
 
 /**
@@ -345,6 +397,35 @@ get_dest_uri_cb (RBTrackTransferBatch *batch,
 }
 
 static void
+track_prepare_cb (RBTrackTransferBatch *batch,
+		  GTask *task,
+		  RhythmDBEntry *entry,
+		  const char *uri,
+		  RBTransferTarget *target)
+{
+	GError *error = NULL;
+	rb_transfer_target_track_prepare (target, entry, uri, &error);
+	if (error != NULL)
+		g_task_return_error (task, error);
+}
+
+static void
+track_postprocess_cb (RBTrackTransferBatch *batch,
+		      GTask *task,
+		      RhythmDBEntry *entry,
+		      const char *uri,
+		      guint64 dest_size,
+		      const char *media_type,
+		      RBTransferTarget *target)
+{
+	GError *error = NULL;
+
+	rb_transfer_target_track_upload (target, entry, uri, dest_size, media_type, &error);
+	if (error != NULL)
+		g_task_return_error (task, error);
+}
+
+static void
 track_done_cb (RBTrackTransferBatch *batch,
 	       RhythmDBEntry *entry,
 	       const char *dest,
@@ -382,6 +463,7 @@ track_done_cb (RBTrackTransferBatch *batch,
 RBTrackTransferBatch *
 rb_transfer_target_transfer (RBTransferTarget *target, GSettings *settings, GList *entries, gboolean defer)
 {
+	RBTransferTargetInterface *iface = RB_TRANSFER_TARGET_GET_IFACE (target);
 	RBTrackTransferQueue *xferq;
 	RBTaskList *tasklist;
 	RBShell *shell;
@@ -406,6 +488,9 @@ rb_transfer_target_transfer (RBTransferTarget *target, GSettings *settings, GLis
 		batch = rb_track_transfer_batch_new (NULL, settings, NULL, G_OBJECT (target), G_OBJECT (xferq));
 
 		g_signal_connect_object (batch, "get-dest-uri", G_CALLBACK (get_dest_uri_cb), target, 0);
+		g_signal_connect_object (batch, "track-prepare", G_CALLBACK (track_prepare_cb), target, 0);
+		if (iface->track_upload)
+			g_signal_connect_object (batch, "track-postprocess", G_CALLBACK (track_postprocess_cb), target, 0);
 		g_signal_connect_object (batch, "track-done", G_CALLBACK (track_done_cb), target, 0);
 	} else {
 		start_batch = TRUE;

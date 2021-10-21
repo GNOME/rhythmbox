@@ -49,6 +49,16 @@ struct _RBTransferTargetInterface
 						 RhythmDBEntry *entry,
 						 const char *media_type,
 						 const char *extension);
+	void		(*track_prepare)	(RBTransferTarget *target,
+						 RhythmDBEntry *entry,
+						 const char *uri,
+						 GError **error);
+	void		(*track_upload)		(RBTransferTarget *target,
+						 RhythmDBEntry *entry,
+						 const char *uri,
+						 guint64 dest_size,
+						 const char *media_type,
+						 GError **error);
 	gboolean	(*track_added)		(RBTransferTarget *target,
 						 RhythmDBEntry *entry,
 						 const char *uri,
@@ -68,6 +78,16 @@ char*		rb_transfer_target_build_dest_uri 	(RBTransferTarget *target,
 							 RhythmDBEntry *entry,
 							 const char *media_type,
 							 const char *extension);
+void		rb_transfer_target_track_prepare	(RBTransferTarget *target,
+							 RhythmDBEntry *entry,
+							 const char *uri,
+							 GError **error);
+void		rb_transfer_target_track_upload		(RBTransferTarget *target,
+							 RhythmDBEntry *entry,
+							 const char *uri,
+							 guint64 dest_size,
+							 const char *media_type,
+							 GError **error);
 void		rb_transfer_target_track_added		(RBTransferTarget *target,
 							 RhythmDBEntry *entry,
 							 const char *uri,
