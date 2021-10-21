@@ -778,110 +778,73 @@ build_device_uri (RBAndroidSource *source, RhythmDBEntry *entry, const char *med
 	return uri;
 }
 
-static char *
-impl_build_dest_uri (RBTransferTarget *target,
-		     RhythmDBEntry *entry,
-		     const char *media_type,
-		     const char *extension)
-{
-	return g_strdup (RB_ENCODER_DEST_TEMPFILE);
-}
-
 static void
-track_copy_cb (GObject *src, GAsyncResult *res, gpointer data)
+impl_track_upload (RBTransferTarget *target,
+		   RhythmDBEntry *entry,
+		   const char *dest,
+		   guint64 filesize,
+		   const char *media_type,
+		   GError **error)
 {
-	RBAndroidSource *source = RB_ANDROID_SOURCE (data);
-	RBAndroidSourcePrivate *priv = GET_PRIVATE (source);
-	RhythmDBEntryType *entry_type;
-	RBShell *shell;
-	RhythmDB *db;
-	GFile *dest;
-	char *uri;
-	GError *error = NULL;
+	RBAndroidSource *source = RB_ANDROID_SOURCE (target);
+	char *realdest;
+	GFile *dfile, *sfile;
 
-	if (g_task_propagate_boolean (G_TASK (res), &error)) {
+	realdest = build_device_uri (source, entry, media_type, rb_gst_media_type_to_extension (media_type));
+	dfile = g_file_new_for_uri (realdest);
+	sfile = g_file_new_for_uri (dest);
 
-		dest = G_FILE (src);
-		uri = g_file_get_uri (dest);
-
-		g_object_get (source, "shell", &shell, NULL);
-		g_object_get (shell, "db", &db, NULL);
-		g_object_unref (shell);
-
-		g_object_get (source, "entry-type", &entry_type, NULL);
-		rhythmdb_add_uri_with_types (db,
-					     uri,
-					     entry_type,
-					     priv->ignore_type,
-					     priv->error_type);
-		g_object_unref (entry_type);
-		g_object_unref (db);
-		g_free (uri);
-
-		update_free_space (source);
-	} else {
-		rb_error_dialog (NULL, _("Error transferring track"), "%s", error->message);
-	}
-
-	g_clear_error (&error);
-	g_object_unref (src);
-	g_object_unref (source);
-}
-
-static void
-copy_track_task (GTask *task, gpointer pdest, gpointer psource, GCancellable *cancel)
-{
-	GFile *source = G_FILE (psource);
-	GFile *dest = G_FILE (pdest);
-	GError *error = NULL;
-	char *uri;
-
-	uri = g_file_get_uri (dest);
-	rb_debug ("creating parent dirs for %s", uri);
-	if (rb_uri_create_parent_dirs (uri, &error) == FALSE) {
-		g_file_delete (source, NULL, NULL);
-		g_free (uri);
-		g_task_return_error (task, error);
+	rb_debug ("creating parent dirs for %s", realdest);
+	if (rb_uri_create_parent_dirs (realdest, error) == FALSE) {
+		g_file_delete (sfile, NULL, NULL);
+		g_free (realdest);
+		g_object_unref (dfile);
+		g_object_unref (sfile);
 		return;
 	}
-	rb_debug ("moving %s", uri);
-	g_free (uri);
 
-	g_file_move (source,
-		     dest,
-		     G_FILE_COPY_OVERWRITE,
-		     NULL,
-		     NULL,
-		     NULL,
-		     &error);
-	if (error) {
-		g_file_delete (source, NULL, NULL);
-		g_task_return_error (task, error);
-	} else {
-		g_task_return_boolean (task, TRUE);
+	rb_debug ("moving %s to %s", dest, realdest);
+	if (g_file_move (sfile, dfile, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, error) == FALSE) {
+		g_file_delete (sfile, NULL, NULL);
 	}
+
+	g_free (realdest);
+	g_object_unref (dfile);
+	g_object_unref (sfile);
 }
 
 static gboolean
 impl_track_added (RBTransferTarget *target,
 		  RhythmDBEntry *entry,
 		  const char *dest,
-		  guint64 filesize,
+		  guint64 dest_size,
 		  const char *media_type)
 {
 	RBAndroidSource *source = RB_ANDROID_SOURCE (target);
+	RBAndroidSourcePrivate *priv = GET_PRIVATE (source);
+	RhythmDBEntryType *entry_type;
+	RBShell *shell;
+	RhythmDB *db;
 	char *realdest;
-	GFile *dfile, *sfile;
-	GTask *task;
+
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "db", &db, NULL);
+
+	g_object_get (source, "entry-type", &entry_type, NULL);
 
 	realdest = build_device_uri (source, entry, media_type, rb_gst_media_type_to_extension (media_type));
-	dfile = g_file_new_for_uri (realdest);
-	sfile = g_file_new_for_uri (dest);
+	rhythmdb_add_uri_with_types (db,
+				     realdest,
+				     entry_type,
+				     priv->ignore_type,
+				     priv->error_type);
 	g_free (realdest);
 
-	task = g_task_new (dfile, NULL, track_copy_cb, g_object_ref (source));
-	g_task_set_task_data (task, sfile, g_object_unref);
-	g_task_run_in_thread (task, copy_track_task);
+	update_free_space (source);
+
+	g_object_unref (entry_type);
+	g_object_unref (shell);
+	g_object_unref (db);
 	return FALSE;
 }
 
@@ -1099,7 +1062,7 @@ rb_android_device_source_init (RBDeviceSourceInterface *interface)
 static void
 rb_android_transfer_target_init (RBTransferTargetInterface *interface)
 {
-	interface->build_dest_uri = impl_build_dest_uri;
+	interface->track_upload = impl_track_upload;
 	interface->track_added = impl_track_added;
 }
 
