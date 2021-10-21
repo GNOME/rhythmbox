@@ -990,7 +990,7 @@ info_available_cb (RBPlayer *backend,
         gboolean set_field = FALSE;
 	char *str = NULL;
 
-	/* sanity check */
+	/* coherence check */
 	if (!rb_player_opened (backend)) {
 		rb_debug ("Got info_available but not playing");
 		return;

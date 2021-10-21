@@ -689,7 +689,7 @@ rb_audioscrobbler_offline_play_notify_cb (RhythmDB *db,
 {
 	g_return_if_fail (G_VALUE_HOLDS_ULONG (metadata));
 
-	/* FIXME: do sanity checks on play_date value? */
+	/* FIXME: do coherence checks on play_date value? */
 	if (rb_audioscrobbler_is_queueable (rb_entry)) {
 		AudioscrobblerEntry *as_entry;
 		
