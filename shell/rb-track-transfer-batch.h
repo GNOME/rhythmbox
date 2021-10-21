@@ -81,6 +81,18 @@ struct _RBTrackTransferBatchClass
 					 guint64 dest_size,
 					 const char *mediatype,
 					 GError *error);
+
+	void	(*track_prepare)	(RBTrackTransferBatch *batch,
+					 GTask *task,
+					 RhythmDBEntry *entry,
+					 const char *dest);
+
+	void	(*track_postprocess)	(RBTrackTransferBatch *batch,
+					 GTask *task,
+					 RhythmDBEntry *entry,
+					 const char *dest,
+					 guint64 dest_size,
+					 const char *mediatype);
 };
 
 GType			rb_track_transfer_batch_get_type	(void);

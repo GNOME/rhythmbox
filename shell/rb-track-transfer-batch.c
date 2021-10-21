@@ -52,6 +52,8 @@ enum
 	TRACK_STARTED,
 	TRACK_PROGRESS,
 	TRACK_DONE,
+	TRACK_PREPARE,
+	TRACK_POSTPROCESS,
 	LAST_SIGNAL
 };
 
@@ -545,6 +547,52 @@ track_transfer_completed (RBTrackTransferBatch *batch,
 	}
 }
 
+
+typedef struct {
+	char *dest_uri;
+	guint64 dest_size;
+	char *mediatype;
+} TransferPostprocessData;
+
+static void
+transfer_postprocess_data_destroy (gpointer data)
+{
+	TransferPostprocessData *td = data;
+	g_free (td->dest_uri);
+	g_free (td->mediatype);
+	g_free (td);
+}
+
+static void
+postprocess_transfer_cb (GObject *source_object, GAsyncResult *result, gpointer data)
+{
+	RBTrackTransferBatch *batch;
+	GError *error = NULL;
+	TransferPostprocessData *td = g_task_get_task_data (G_TASK (result));
+
+	batch = RB_TRACK_TRANSFER_BATCH (source_object);
+	if (g_task_propagate_boolean (G_TASK (result), &error) == FALSE) {
+		rb_debug ("postprocessing failed for transfer %s: %s", td->dest_uri, error->message);
+		track_transfer_completed (batch, NULL, 0, NULL, FALSE, error);
+		g_clear_error (&error);
+	} else {
+		rb_debug ("postprocessing done for %s", td->dest_uri);
+		track_transfer_completed (batch, td->dest_uri, td->dest_size, td->mediatype, FALSE, NULL);
+	}
+}
+
+static void
+postprocess_transfer (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable)
+{
+	RBTrackTransferBatch *batch;
+	TransferPostprocessData *td = task_data;
+
+	batch = RB_TRACK_TRANSFER_BATCH (source_object);
+	g_signal_emit (batch, signals[TRACK_POSTPROCESS], 0, task, batch->priv->current, td->dest_uri, td->dest_size, td->mediatype);
+	if (g_task_had_error (task) == FALSE)
+		g_task_return_boolean (task, TRUE);
+}
+
 static void
 encoder_completed_cb (RBEncoder *encoder,
 		      const char *dest_uri,
@@ -566,7 +614,23 @@ encoder_completed_cb (RBEncoder *encoder,
 		rb_debug ("encoder finished (error: %s)", error->message);
 	}
 
-	track_transfer_completed (batch, dest_uri, dest_size, mediatype, FALSE, error);
+	if (g_signal_has_handler_pending (batch, signals[TRACK_POSTPROCESS], 0, TRUE)) {
+		GTask *task;
+		TransferPostprocessData *td;
+
+		task = g_task_new (batch, NULL, postprocess_transfer_cb, NULL);
+		td = g_new0 (TransferPostprocessData, 1);
+		td->dest_uri = g_strdup (dest_uri);
+		td->dest_size = dest_size;
+		td->mediatype = g_strdup (mediatype);
+		g_task_set_task_data (task, td, transfer_postprocess_data_destroy);
+
+		rb_debug ("postprocessing for %s", dest_uri);
+		g_task_run_in_thread (task, postprocess_transfer);
+	} else {
+		rb_debug ("no postprocessing for %s", dest_uri);
+		track_transfer_completed (batch, dest_uri, dest_size, mediatype, FALSE, error);
+	}
 }
 
 static char *
@@ -613,7 +677,7 @@ start_encoding (RBTrackTransferBatch *batch, gboolean overwrite)
 }
 
 static void
-create_parent_dirs_task (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable)
+prepare_transfer_task (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable)
 {
 	RBTrackTransferBatch *batch;
 	GError *error = NULL;
@@ -621,6 +685,26 @@ create_parent_dirs_task (GTask *task, gpointer source_object, gpointer task_data
 	batch = RB_TRACK_TRANSFER_BATCH (source_object);
 	rb_debug ("creating parent dirs for %s", batch->priv->current_dest_uri);
 	if (rb_uri_create_parent_dirs (batch->priv->current_dest_uri, &error) == FALSE) {
+		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_INVALID_FILENAME)) {
+			char *dest;
+
+			g_clear_error (&error);
+			dest = rb_sanitize_uri_for_filesystem (batch->priv->current_dest_uri, "msdos");
+			g_free (batch->priv->current_dest_uri);
+
+			rb_debug ("retrying parent dir creation with sanitized uri: %s", dest);
+			batch->priv->current_dest_uri = dest;
+
+			rb_uri_create_parent_dirs (batch->priv->current_dest_uri, &error);
+		}
+	}
+
+	if (error == NULL) {
+		rb_debug ("preparing for %s", batch->priv->current_dest_uri);
+		g_signal_emit (batch, signals[TRACK_PREPARE], 0, task, batch->priv->current, batch->priv->current_dest_uri);
+	}
+
+	if (error != NULL) {
 		g_task_return_error (task, error);
 	} else {
 		g_task_return_boolean (task, TRUE);
@@ -629,34 +713,17 @@ create_parent_dirs_task (GTask *task, gpointer source_object, gpointer task_data
 }
 
 static void
-create_parent_dirs_cb (GObject *source_object, GAsyncResult *result, gpointer data)
+prepare_transfer_cb (GObject *source_object, GAsyncResult *result, gpointer data)
 {
 	RBTrackTransferBatch *batch;
 	GError *error = NULL;
 
 	batch = RB_TRACK_TRANSFER_BATCH (source_object);
 	if (g_task_propagate_boolean (G_TASK (result), &error) == FALSE) {
-
-		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_INVALID_FILENAME) &&
-		    (batch->priv->current_dest_uri_sanitized == FALSE)) {
-			GTask *task;
-			char *dest;
-
-			g_clear_error (&error);
-			dest = rb_sanitize_uri_for_filesystem (batch->priv->current_dest_uri, "msdos");
-			g_free (batch->priv->current_dest_uri);
-			batch->priv->current_dest_uri = dest;
-			batch->priv->current_dest_uri_sanitized = TRUE;
-
-			rb_debug ("retrying parent dir creation with sanitized uri: %s", dest);
-			task = g_task_new (batch, NULL, create_parent_dirs_cb, NULL);
-			g_task_run_in_thread (task, create_parent_dirs_task);
-		} else {
-			rb_debug ("failed to create parent directories for %s", batch->priv->current_dest_uri);
-			track_transfer_completed (batch, NULL, 0, NULL, FALSE, error);
-		}
+		rb_debug ("failed to prepare transfer of %s: %s", batch->priv->current_dest_uri, error->message);
+		track_transfer_completed (batch, NULL, 0, NULL, FALSE, error);
 	} else {
-		rb_debug ("parent directories for %s created", batch->priv->current_dest_uri);
+		rb_debug ("successfully prepared to transfer %s", batch->priv->current_dest_uri);
 		g_signal_emit (batch, signals[TRACK_STARTED], 0,
 			       batch->priv->current,
 			       batch->priv->current_dest_uri);
@@ -773,8 +840,8 @@ start_next (RBTrackTransferBatch *batch)
 	if (batch->priv->current != NULL) {
 		GTask *task;
 
-		task = g_task_new (batch, NULL, create_parent_dirs_cb, NULL);
-		g_task_run_in_thread (task, create_parent_dirs_task);
+		task = g_task_new (batch, NULL, prepare_transfer_cb, NULL);
+		g_task_run_in_thread (task, prepare_transfer_task);
 	} else {
 		g_signal_emit (batch, signals[COMPLETE], 0);
 		g_object_notify (G_OBJECT (batch), "task-outcome");
@@ -1263,6 +1330,52 @@ rb_track_transfer_batch_class_init (RBTrackTransferBatchClass *klass)
 			      NULL, NULL, NULL,
 			      G_TYPE_NONE,
 			      5, RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING, G_TYPE_UINT64, G_TYPE_STRING, G_TYPE_POINTER);
+
+	/**
+	 * RBTrackTransferBatch::track-prepare:
+	 * @batch: the #RBTrackTransferBatch
+	 * @task: the current #GTask
+	 * @entry: the #RhythmDBEntry being transferred
+	 * @dest: the destination URI for the transfer
+	 *
+	 * Emitted when a track transfer is about to start, allowing signal handlers
+	 * to perform any preparation required.  The signal is emitted on the task
+	 * thread, so no UI interaction is possible.
+	 *
+	 * Use g_task_return_error() with the provided #GTask to report errors.
+	 */
+	signals [TRACK_PREPARE] =
+		g_signal_new ("track-prepare",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBTrackTransferBatchClass, track_prepare),
+			      NULL, NULL, NULL,
+			      G_TYPE_NONE,
+			      3, G_TYPE_TASK, RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING);
+
+	/**
+	 * RBTrackTransferBatch::track-postprocess:
+	 * @batch: the #RBTrackTransferBatch
+	 * @task: the current #GTask
+	 * @entry: the #RhythmDBEntry being transferred
+	 * @dest: the destination URI for the transfer
+	 * @dest_size: the size of the destination file
+	 * @dest_mediatype: the media type of the destination file
+	 *
+	 * Emitted when a track transfer is finishing, allowing signal handlers
+	 * to perform any post-processing required.  The signal is emitted on the
+	 * task thread, so no UI interaction is possible
+	 *
+	 * Use g_task_return_error() with the provided #GTask to report errors.
+	 */
+	signals [TRACK_POSTPROCESS] =
+		g_signal_new ("track-postprocess",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBTrackTransferBatchClass, track_postprocess),
+			      NULL, NULL, NULL,
+			      G_TYPE_NONE,
+			      5, G_TYPE_TASK, RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING, G_TYPE_UINT64, G_TYPE_STRING);
 
 	g_type_class_add_private (klass, sizeof (RBTrackTransferBatchPrivate));
 }
