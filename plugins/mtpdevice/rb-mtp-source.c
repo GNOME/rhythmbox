@@ -80,6 +80,12 @@ static void impl_delete_selected (RBSource *asource);
 static RBTrackTransferBatch *impl_paste (RBSource *asource, GList *entries);
 static gboolean impl_uri_is_source (RBSource *asource, const char *uri);
 
+static void impl_track_upload (RBTransferTarget *target,
+			       RhythmDBEntry *entry,
+			       const char *dest,
+			       guint64 filesize,
+			       const char *media_type,
+			       GError **error);
 static gboolean impl_track_added (RBTransferTarget *target,
 				  RhythmDBEntry *entry,
 				  const char *dest,
@@ -89,10 +95,6 @@ static gboolean impl_track_add_error (RBTransferTarget *target,
 				      RhythmDBEntry *entry,
 				      const char *dest,
 				      GError *error);
-static char *impl_build_dest_uri (RBTransferTarget *target,
-				  RhythmDBEntry *entry,
-				  const char *media_type,
-				  const char *extension);
 
 static void impl_eject (RBDeviceSource *source);
 static gboolean impl_can_eject (RBDeviceSource *source);
@@ -128,6 +130,9 @@ typedef struct
 	RBMtpSource *source;
 	LIBMTP_track_t *track;
 	char *tempfile;
+	GError *error;
+	GCond cond;
+	GMutex lock;
 } RBMtpSourceTrackUpload;
 
 typedef struct
@@ -244,7 +249,7 @@ rb_mtp_device_source_init (RBDeviceSourceInterface *interface)
 static void
 rb_mtp_source_transfer_target_init (RBTransferTargetInterface *interface)
 {
-	interface->build_dest_uri = impl_build_dest_uri;
+	interface->track_upload = impl_track_upload;
 	interface->track_added = impl_track_added;
 	interface->track_add_error = impl_track_add_error;
 }
@@ -1101,17 +1106,6 @@ get_db_for_source (RBMtpSource *source)
 }
 
 static void
-free_upload (RBMtpSourceTrackUpload *upload)
-{
-	g_unlink (upload->tempfile);
-	g_free (upload->tempfile);
-
-	LIBMTP_destroy_track_t (upload->track);
-	g_object_unref (upload->source);
-	g_free (upload);
-}
-
-static void
 art_request_cb (RBExtDBKey *key, RBExtDBKey *store_key, const char *filename, GValue *data, RBMtpSource *source)
 {
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
@@ -1135,13 +1129,16 @@ upload_callback (LIBMTP_track_t *track, GError *error, RBMtpSourceTrackUpload *u
 	RhythmDB *db;
 
 	if (error) {
-		rb_error_dialog (NULL, _("Error transferring track"), "%s", error->message);
-		free_upload (upload);
-		g_error_free (error);
+		rb_debug ("upload failed: %s", error->message);
+		upload->error = error;
+		g_mutex_lock (&upload->lock);
+		g_cond_signal (&upload->cond);
+		g_mutex_unlock (&upload->lock);
 		return;
 	}
 
 	if (strcmp (track->album, _("Unknown")) != 0) {
+		rb_debug ("adding track to album %s", track->album);
 		rb_mtp_thread_add_to_album (priv->device_thread, track, track->album);
 
 		if (priv->album_art_supported) {
@@ -1164,7 +1161,9 @@ upload_callback (LIBMTP_track_t *track, GError *error, RBMtpSourceTrackUpload *u
 	g_object_unref (db);
 
 	queue_free_space_update (upload->source);
-	free_upload (upload);
+	g_mutex_lock (&upload->lock);
+	g_cond_signal (&upload->cond);
+	g_mutex_unlock (&upload->lock);
 }
 
 static void
@@ -1173,6 +1172,7 @@ create_folder_callback (uint32_t folder_id, RBMtpSourceTrackUpload *upload)
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (upload->source);
 	upload->track->parent_id = folder_id;
 
+	rb_debug ("folder created, uploading file from %s", upload->tempfile);
 	rb_mtp_thread_upload_track (priv->device_thread,
 				    upload->track,
 				    upload->tempfile,
@@ -1181,12 +1181,13 @@ create_folder_callback (uint32_t folder_id, RBMtpSourceTrackUpload *upload)
 				    NULL);
 }
 
-static gboolean
-impl_track_added (RBTransferTarget *target,
-		  RhythmDBEntry *entry,
-		  const char *dest,
-		  guint64 filesize,
-		  const char *media_type)
+static void
+impl_track_upload (RBTransferTarget *target,
+		   RhythmDBEntry *entry,
+		   const char *dest,
+		   guint64 filesize,
+		   const char *media_type,
+		   GError **error)
 {
 	LIBMTP_track_t *track = NULL;
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (target);
@@ -1246,6 +1247,10 @@ impl_track_added (RBTransferTarget *target,
 	track->filetype = media_type_to_filetype (RB_MTP_SOURCE (target), media_type);
 
 	upload = g_new0 (RBMtpSourceTrackUpload, 1);
+	g_cond_init (&upload->cond);
+	g_mutex_init (&upload->lock);
+
+	g_mutex_lock (&upload->lock);
 	upload->track = track;
 	upload->source = g_object_ref (target);
 
@@ -1254,12 +1259,37 @@ impl_track_added (RBTransferTarget *target,
 	g_object_unref (destfile);
 
 	/* create folder, then upload the track, then clean up */
+	rb_debug ("creating folder %s/%s", folder_path[0], folder_path[1]);
 	rb_mtp_thread_create_folder (priv->device_thread,
 				     (const char **)folder_path,
 				     (RBMtpCreateFolderCallback) create_folder_callback,
 				     upload,
 				     NULL);
 
+	g_cond_wait (&upload->cond, &upload->lock);
+
+	g_unlink (upload->tempfile);
+	g_free (upload->tempfile);
+
+	LIBMTP_destroy_track_t (upload->track);
+	g_object_unref (upload->source);
+
+	if (upload->error)
+		*error = upload->error;
+	g_mutex_unlock (&upload->lock);
+	g_free (upload);
+
+	rb_debug ("track upload finished");
+}
+
+static gboolean
+impl_track_added (RBTransferTarget *target,
+		  RhythmDBEntry *entry,
+		  const char *dest,
+		  guint64 filesize,
+		  const char *media_type)
+{
+	/* already added to the database in upload */
 	return FALSE;
 }
 
@@ -1270,15 +1300,6 @@ impl_track_add_error (RBTransferTarget *target,
 		      GError *error)
 {
 	return TRUE;
-}
-
-static char *
-impl_build_dest_uri (RBTransferTarget *target,
-		     RhythmDBEntry *entry,
-		     const char *media_type,
-		     const char *extension)
-{
-	return g_strdup (RB_ENCODER_DEST_TEMPFILE);
 }
 
 static void
