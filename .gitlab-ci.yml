@@ -72,3 +72,9 @@ test:
     - ninja
     - G_MESSAGES_DEBUG=all GSETTINGS_BACKEND=memory GSETTINGS_SCHEMA_DIR=${CI_PROJECT_DIR}/_build/data/ xvfb-run -a -s "-screen 0 1024x768x24" meson test
     - ninja install
+  artifacts:
+    when: always
+    name: "rhythmbox-${CI_COMMIT_REF_NAME}"
+    paths:
+      - "${CI_PROJECT_DIR}/_build/meson-logs"
+      - "${CI_PROJECT_DIR}/_build/meson-dist"
