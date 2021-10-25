@@ -63,7 +63,7 @@ struct RBShufflePlayOrderPrivate
 {
 	RBHistory *history;
 
-	/** TRUE if the query model has been changed */
+	/* TRUE if the query model has been changed */
 	gboolean query_model_changed;
 
 	GHashTable *entries_removed;
