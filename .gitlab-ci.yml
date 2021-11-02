@@ -1,28 +1,80 @@
-image: ubuntu:bionic
+image: ubuntu:focal
 
 stages:
   - test
 
+variables:
+  UBUNTU_DEPS:
+    build-essential
+    intltool
+    gtk-doc-tools
+    pkg-config
+    libgtk-3-dev
+    libgstreamer1.0-dev
+    libgstreamer-plugins-base1.0-dev
+    libgdk-pixbuf2.0-dev
+    libglib2.0-dev
+    libgpod-dev
+    libtotem-plparser-dev
+    libsoup2.4-dev
+    libgudev-1.0-dev
+    libmtp-dev
+    libnotify-dev
+    libbrasero-media3-dev
+    libsecret-1-dev
+    libpeas-dev
+    yelp-tools
+    x11proto-core-dev
+    liblircclient-dev
+    python3-dev
+    python-gi-dev
+    libdmapsharing-3.0-dev
+    libjson-glib-dev
+    libgrilo-0.3-dev
+    libxml2-dev
+    libtdb-dev
+    python3-pip
+    ninja-build
+    check
+    valac
+    xvfb
+
+  MESON_ARGS:
+    -Dprefix=/usr
+    -Dfm_radio=disabled
+    -Dplugins_python=enabled
+    -Dlibnotify=enabled
+    -Dmmkeys=enabled
+    -Ddaap=enabled
+    -Dgrilo=enabled
+    -Dgudev=enabled
+    -Dipod=enabled
+    -Dlibsecret=enabled
+    -Dmtp=enabled
+    -Dlirc=enabled
+    -Dsample-plugins=true
+    -Dgtk_doc=true
+    -Dhelp=true
+    -Dtests=true
+
 before_script:
+  - export DEBIAN_FRONTEND=noninteractive
   - apt-get update
-  - apt-get install -y build-essential intltool gtk-doc-tools pkg-config
-                       libgtk-3-dev libgstreamer1.0-dev
-                       libgstreamer-plugins-base1.0-dev libgdk-pixbuf2.0-dev
-                       libglib2.0-dev libgpod-dev libtotem-plparser-dev
-                       libsoup2.4-dev libgudev-1.0-dev libmtp-dev libnotify-dev
-                       libbrasero-media3-dev
-                       libsecret-1-dev libpeas-dev yelp-tools x11proto-core-dev
-                       liblircclient-dev python3-dev python-gi-dev
-                       libdmapsharing-3.0-dev libjson-glib-dev libgrilo-0.3-dev
-                       libxml2-dev libtdb-dev
+  - apt-get install -y $UBUNTU_DEPS
+  - pip3 install meson
 
 test:
   stage: test
   script:
-    - mkdir build
-    - cd build
-    - NOCONFIGURE=1 ../autogen.sh
-    - ../configure
-    - make
-    - make check
-    - make install
+    - mkdir _build
+    - cd _build
+    - meson .. $MESON_ARGS
+    - ninja
+    - G_MESSAGES_DEBUG=all GSETTINGS_BACKEND=memory GSETTINGS_SCHEMA_DIR=${CI_PROJECT_DIR}/_build/data/ xvfb-run -a -s "-screen 0 1024x768x24" meson test
+    - ninja install
+  artifacts:
+    when: always
+    name: "rhythmbox-${CI_COMMIT_REF_NAME}"
+    paths:
+      - "${CI_PROJECT_DIR}/_build/meson-logs"
+      - "${CI_PROJECT_DIR}/_build/meson-dist"

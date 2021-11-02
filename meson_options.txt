@@ -1,0 +1,39 @@
+option('brasero', type: 'feature', value: 'auto',
+       description: 'Enable disc burning support using libbrasero-media')
+option('daap', type: 'feature', value: 'auto',
+       description: 'Enable DAAP sharing support using libdmapsharing')
+option('fm_radio', type: 'feature', value: 'auto',
+       description: 'Enable FM radio support')
+option('grilo', type: 'feature', value: 'auto',
+       description: 'Enable Grilo support')
+option('gudev', type: 'feature', value: 'auto',
+       description: 'Enable GUdev for hardware detection')
+option('ipod', type: 'feature', value: 'auto',
+       description: 'Enable iPod support')
+option('libnotify', type: 'feature', value: 'auto',
+       description: 'Enable desktop notifications with libnotify')
+option('libsecret', type: 'feature', value: 'auto',
+       description: 'Enable keyring support using libsecret')
+option('lirc', type: 'feature', value: 'auto',
+       description: 'Enable lirc support')
+option('mmkeys', type: 'feature', value: 'auto',
+       description: 'Enable multimedia keys support')
+option('mtp', type: 'feature', value: 'auto',
+       description: 'Enable MTP support')
+option('plugins_python', type: 'feature', value: 'auto',
+       description: 'Enable Python plugins')
+option('plugins_vala', type: 'feature', value: 'auto',
+       description: 'Enable Vala plugins')
+option('sample-plugins', type: 'boolean', value: 'false',
+       description: 'Whether to install sample plugins')
+
+option('help', type: 'boolean', value: 'true',
+       description: 'Install user documentation')
+option('gtk_doc', type: 'boolean', value: 'false',
+       description: 'Use gtk-doc to build documentation')
+option('database', type: 'combo', choices: ['tree'], value: 'tree',
+       description: 'Select the database to use (default tree)')
+option('tests', type: 'boolean', value: 'false',
+       description: 'Build tests')
+option('rhythmdb_debug', type: 'combo', choices: ['0', '1', '2'], value: '0',
+       description: 'Level of RhythmDB sanity checking')

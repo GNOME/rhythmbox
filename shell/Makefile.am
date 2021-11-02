@@ -51,6 +51,7 @@ AM_CPPFLAGS = 						\
 
 shellincludedir = $(includedir)/rhythmbox/shell
 shellinclude_HEADERS =					\
+	rb-application.h				\
 	rb-shell.h					\
 	rb-shell-player.h				\
 	rb-shell-preferences.h				\
@@ -64,7 +65,6 @@ shellinclude_HEADERS =					\
 librhythmbox_core_la_SOURCES =				\
 	$(shellinclude_HEADERS)				\
 	rb-application.c				\
-	rb-application.h				\
 	rb-history.c					\
 	rb-play-order.c					\
 	rb-play-order-linear.c				\
