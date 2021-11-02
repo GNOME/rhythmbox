@@ -477,6 +477,24 @@ get_remote_location (RhythmDBEntry *entry)
 	return location;
 }
 
+static void
+set_remote_location (RhythmDB *db, RhythmDBEntry *entry, const char *url)
+{
+	GValue val = {0, };
+	const char *old;
+
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, url);
+
+	old = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+	if (old == NULL) {
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LOCATION, &val);
+	} else {
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MOUNTPOINT, &val);
+	}
+	g_value_unset (&val);
+}
+
 void
 rb_podcast_manager_download_entry (RBPodcastManager *pd,
 				   RhythmDBEntry *entry)
@@ -891,100 +909,81 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 RhythmDBEntry *
 rb_podcast_manager_add_post (RhythmDB *db,
 			     gboolean search_result,
+			     RhythmDBEntry *entry,
 			     const char *name,
 			     const char *title,
 			     const char *subtitle,
 			     const char *generator,
 			     const char *uri,
 			     const char *description,
+			     const char *guid,
 			     gulong date,
 			     gulong duration,
 			     guint64 filesize)
 {
-	RhythmDBEntry *entry;
 	RhythmDBEntryType *entry_type;
 	GValue val = {0,};
 	GTimeVal time;
+	gboolean new_entry;
 
 	if (!uri || !name || !title || !g_utf8_validate(uri, -1, NULL)) {
 		return NULL;
 	}
-	entry = rhythmdb_entry_lookup_by_location (db, uri);
-	if (entry)
-		return NULL;
 
-	if (search_result == FALSE) {
-		RhythmDBQueryModel *mountpoint_entries;
-		GtkTreeIter iter;
-
-		/*
-		 * Does the uri exist as the mount-point?
-		 * This check is necessary since after an entry's file is downloaded,
-		 * the location stored in the db changes to the local file path
-		 * instead of the uri. The uri moves to the mount-point attribute.
-		 * Consequently, without this check, every downloaded entry will be
-		 * re-added to the db.
-		 */
-		mountpoint_entries = rhythmdb_query_model_new_empty (db);
-		g_object_set (mountpoint_entries, "show-hidden", TRUE, NULL);
-		rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (mountpoint_entries),
-			RHYTHMDB_QUERY_PROP_EQUALS,
-			RHYTHMDB_PROP_TYPE,
-			RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
-			RHYTHMDB_QUERY_PROP_EQUALS,
-			RHYTHMDB_PROP_MOUNTPOINT,
-			uri,
-			RHYTHMDB_QUERY_END);
-
-		if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (mountpoint_entries), &iter)) {
-			g_object_unref (mountpoint_entries);
-			return NULL;
-		}
-		g_object_unref (mountpoint_entries);
+	if (search_result) {
+		g_assert (entry == NULL);
+		entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_SEARCH;
+	} else {
+		entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
 	}
 
-	if (search_result)
-		entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_SEARCH;
-	else
-		entry_type = RHYTHMDB_ENTRY_TYPE_PODCAST_POST;
+	if (entry == NULL) {
+		entry = rhythmdb_entry_new (db, entry_type, uri);
+		if (entry == NULL)
+			return NULL;
+		new_entry = TRUE;
+	} else {
+		new_entry = FALSE;
 
-	entry = rhythmdb_entry_new (db,
-				    entry_type,
-				    uri);
-	if (entry == NULL)
-		return NULL;
-
-	g_get_current_time (&time);
-	if (date == 0)
-		date = time.tv_sec;
+		/* change uri if it moved */
+		if (g_str_equal (uri, get_remote_location (entry)) == FALSE) {
+			rb_debug ("episode uri changed from %s to %s", get_remote_location (entry), uri);
+			set_remote_location (db, entry, uri);
+		}
+	}
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, name);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
+	g_value_unset (&val);
 
-	g_value_reset (&val);
+	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_static_string (&val, _("Podcast"));
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
+	g_value_unset (&val);
 
-	g_value_reset (&val);
+	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, title);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
+	g_value_unset (&val);
 
-	g_value_reset (&val);
+	g_value_init (&val, G_TYPE_STRING);
 	if (subtitle)
 		g_value_set_string (&val, subtitle);
 	else
 		g_value_set_static_string (&val, "");
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_SUBTITLE, &val);
+	g_value_unset (&val);
 
-	g_value_reset (&val);
+	g_value_init (&val, G_TYPE_STRING);
 	if (description)
 		g_value_set_string (&val, description);
 	else
 		g_value_set_static_string (&val, "");
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DESCRIPTION, &val);
+	g_value_unset (&val);
 
-	g_value_reset (&val);
+	g_value_init (&val, G_TYPE_STRING);
 	if (generator)
 		g_value_set_string (&val, generator);
 	else
@@ -993,37 +992,51 @@ rb_podcast_manager_add_post (RhythmDB *db,
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_ULONG);
-	g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_PAUSED);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &val);
-
-	g_value_reset (&val);
+	g_get_current_time (&time);
+	if (date == 0)
+		date = time.tv_sec;
 	g_value_set_ulong (&val, date);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_POST_TIME, &val);
-
-	g_value_reset (&val);
-	g_value_set_ulong (&val, duration);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &val);
-
-	g_value_reset (&val);
-	g_value_set_ulong (&val, 0);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &val);
-
-	/* first seen */
-	g_value_reset (&val);
-	g_value_set_ulong (&val, time.tv_sec);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &val);
 	g_value_unset (&val);
 
-	/* initialize the rating */
-	g_value_init (&val, G_TYPE_DOUBLE);
-	g_value_set_double (&val, 0.0);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &val);
-	g_value_unset (&val);
+	if (guid != NULL) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, guid);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PODCAST_GUID, &val);
+		g_value_unset (&val);
+	}
 
-	g_value_init (&val, G_TYPE_UINT64);
-	g_value_set_uint64 (&val, filesize);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FILE_SIZE, &val);
-	g_value_unset (&val);
+	if (new_entry) {
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_PAUSED);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &val);
+		g_value_unset (&val);
+
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, 0);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &val);
+		g_value_unset (&val);
+
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, time.tv_sec);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &val);
+		g_value_unset (&val);
+
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, duration);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &val);
+		g_value_unset (&val);
+
+		g_value_init (&val, G_TYPE_DOUBLE);
+		g_value_set_double (&val, 0.0);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &val);
+		g_value_unset (&val);
+
+		g_value_init (&val, G_TYPE_UINT64);
+		g_value_set_uint64 (&val, filesize);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FILE_SIZE, &val);
+		g_value_unset (&val);
+	}
 
 	return entry;
 }
@@ -1290,31 +1303,6 @@ podcast_settings_changed_cb (GSettings *settings, const char *key, RBPodcastMana
 	}
 }
 
-/* this bit really wants to die */
-
-static gboolean
-remove_if_not_downloaded (GtkTreeModel *model,
-			  GtkTreePath *path,
-			  GtkTreeIter *iter,
-			  GList **remove)
-{
-	RhythmDBEntry *entry;
-
-	entry = rhythmdb_query_model_iter_to_entry (RHYTHMDB_QUERY_MODEL (model),
-						    iter);
-	if (entry != NULL) {
-		if (rb_podcast_manager_entry_downloaded (entry) == FALSE) {
-			rb_debug ("entry %s is no longer present in the feed and has not been downloaded",
-				  get_remote_location (entry));
-			*remove = g_list_prepend (*remove, entry);
-		} else {
-			rhythmdb_entry_unref (entry);
-		}
-	}
-
-	return FALSE;
-}
-
 void
 rb_podcast_manager_insert_feed_url (RBPodcastManager *pd, const char *url)
 {
@@ -1380,7 +1368,8 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 	GList *download_entries = NULL;
 	gboolean new_feed, updated;
 	RhythmDB *db = pd->priv->db;
-	RhythmDBQueryModel *existing_entries = NULL;
+	RhythmDBQueryResultList *results = NULL;
+	GList *existing_entries = NULL;
 	enum {
 		DOWNLOAD_NONE,
 		DOWNLOAD_NEWEST,
@@ -1389,7 +1378,7 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 
 	RhythmDBEntry *entry;
 
-	GList *lst_songs;
+	GList *l;
 
 	new_feed = TRUE;
 
@@ -1410,9 +1399,8 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 		/* find all the existing entries in this feed, so we can cull those
 		 * that haven't been downloaded and are no longer present in the feed.
 		 */
-		existing_entries = rhythmdb_query_model_new_empty (db);
-		g_object_set (existing_entries, "show-hidden", TRUE, NULL);
-		rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (existing_entries),
+		results = rhythmdb_query_result_list_new ();
+		rhythmdb_do_full_query (db, RHYTHMDB_QUERY_RESULTS (results),
 				 	RHYTHMDB_QUERY_PROP_EQUALS,
 					  RHYTHMDB_PROP_TYPE,
 					  RHYTHMDB_ENTRY_TYPE_PODCAST_POST,
@@ -1420,6 +1408,7 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 					  RHYTHMDB_PROP_SUBTITLE,
 					  data->url,
 					RHYTHMDB_QUERY_END);
+		existing_entries = g_list_copy (rhythmdb_query_result_list_get_results (results));
 	} else {
 		rb_debug ("Adding podcast feed: %s", data->url);
 		entry = rhythmdb_entry_new (db,
@@ -1515,46 +1504,55 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 	/* insert episodes */
 	new_last_post = last_post;
 	updated = FALSE;
-	for (lst_songs = data->posts; lst_songs != NULL; lst_songs = g_list_next (lst_songs)) {
-		RBPodcastItem *item = (RBPodcastItem *) lst_songs->data;
+	for (l = data->posts; l != NULL; l = g_list_next (l)) {
+		RBPodcastItem *item = (RBPodcastItem *) l->data;
 		RhythmDBEntry *post_entry;
 
 		if (existing_entries != NULL) {
-			GtkTreeIter iter;
-			RhythmDBEntry *entry = NULL;
+			GList *l;
+			const char *guid;
 
-			/* look for an existing entry with this remote location */
-			if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (existing_entries), &iter)) {
-				do {
-					entry = rhythmdb_query_model_iter_to_entry (existing_entries, &iter);
-					if (strcmp (get_remote_location (entry), item->url) == 0) {
-						rhythmdb_entry_unref (entry);
-						break;
-					}
-					rhythmdb_entry_unref (entry);
-					entry = NULL;
-
-				} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (existing_entries), &iter));
+			/* look for an existing entry that matches this item */
+			l = existing_entries;
+			for (l = existing_entries; l != NULL; l = g_list_next (l)) {
+				post_entry = l->data;
+				guid = rhythmdb_entry_get_string (post_entry, RHYTHMDB_PROP_PODCAST_GUID);
+				if (g_strcmp0 (guid, item->guid) == 0) {
+					rb_debug ("guid %s matched", guid);
+					break;
+				}
+				if (strcmp (get_remote_location (post_entry), item->url) == 0) {
+					rb_debug ("url %s matched", item->url);
+					break;
+				}
 			}
 
-			if (entry != NULL) {
+			if (l != NULL) {
 				/* mark this entry as still being available */
-				rhythmdb_query_model_remove_entry (existing_entries, entry);
+				existing_entries = g_list_remove_link (existing_entries, l);
+				g_list_free (l);
+			} else {
+				rb_debug ("episode url %s (guid %s) not matched", item->url, item->guid);
+				post_entry = NULL;
 			}
+		} else {
+			rb_debug ("no existing episodes to match");
+			post_entry = NULL;
 		}
-
 
 		post_entry =
 		    rb_podcast_manager_add_post (db,
 			    FALSE,
+			    post_entry,
 			    title,
-			    (gchar *) item->title,
-			    (gchar *) data->url,
-			    (gchar *) (item->author ? item->author : data->author),
-			    (gchar *) item->url,
-			    (gchar *) item->description,
-			    (gulong) (item->pub_date > 0 ? item->pub_date : data->pub_date),
-			    (gulong) item->duration,
+			    item->title,
+			    data->url,
+			    (item->author ? item->author : data->author),
+			    item->url,
+			    item->description,
+			    item->guid,
+			    item->pub_date > 0 ? item->pub_date : data->pub_date,
+			    item->duration,
 			    item->filesize);
 
 		if (post_entry)
@@ -1618,21 +1616,16 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_SEEN, &last_update_val);
 	g_value_unset (&last_update_val);
 
-	if (existing_entries != NULL) {
-		GList *remove = NULL;
-		GList *i;
+	for (l = existing_entries; l != NULL; l = g_list_next (l)) {
+		RhythmDBEntry *entry = l->data;
 
-		/* look for expired entries to remove */
-		gtk_tree_model_foreach (GTK_TREE_MODEL (existing_entries),
-					(GtkTreeModelForeachFunc) remove_if_not_downloaded,
-					&remove);
-		for (i = remove; i != NULL; i = i->next) {
-			rhythmdb_entry_delete (db, (RhythmDBEntry *)i->data);
+		if (rb_podcast_manager_entry_downloaded (entry) == FALSE) {
+			rb_debug ("entry %s is no longer present in the feed and has not been downloaded",
+				  get_remote_location (entry));
+			rhythmdb_entry_delete (db, entry);
 		}
-		g_list_free (remove);
-
-		g_object_unref (existing_entries);
 	}
+	g_clear_object (&results);
 
 	rhythmdb_commit (db);
 }

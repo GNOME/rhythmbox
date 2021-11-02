@@ -118,6 +118,8 @@ entry_metadata_foreach (const char *key,
 
 	if (strcmp (key, TOTEM_PL_PARSER_FIELD_TITLE) == 0) {
 		item->title = g_strdup (value);
+	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_ID) == 0) {
+		item->guid = g_strdup (value);
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_URI) == 0) {
 		item->url = g_strdup (value);
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_DESCRIPTION) == 0) {

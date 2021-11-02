@@ -55,6 +55,7 @@ typedef struct
 	char* url;
 	char* description;
 	char* author;
+	char* guid;
 	guint64 pub_date;
 	gulong duration;
 	guint64 filesize;

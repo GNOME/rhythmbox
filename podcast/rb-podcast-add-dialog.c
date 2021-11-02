@@ -156,12 +156,14 @@ add_posts_for_feed (RBPodcastAddDialog *dialog, RBPodcastChannel *channel)
 
 		rb_podcast_manager_add_post (dialog->priv->db,
 					     TRUE,
+					     NULL,
 					     channel->title ? channel->title : channel->url,
 					     item->title,
 					     channel->url,
 					     (item->author ? item->author : channel->author),
 					     item->url,
 					     item->description,
+					     item->guid,
 					     (item->pub_date > 0 ? item->pub_date : channel->pub_date),
 					     item->duration,
 					     item->filesize);

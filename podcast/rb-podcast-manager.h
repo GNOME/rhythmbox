@@ -76,12 +76,14 @@ void            	rb_podcast_manager_unsubscribe_feed    	(RhythmDB *db, const gc
 void			rb_podcast_manager_shutdown 		(RBPodcastManager *pd);
 RhythmDBEntry *         rb_podcast_manager_add_post  	  	(RhythmDB *db,
 								 gboolean search_result,
+								 RhythmDBEntry *entry,
                                			         	 const char *name,
 	                                                 	 const char *title,
 	                                                 	 const char *subtitle,
 	                                                 	 const char *generator,
 	                                                 	 const char *uri,
 		        	                               	 const char *description,
+								 const char *guid,
 	        	                                       	 gulong date,
 								 gulong duration,
 								 guint64 filesize);

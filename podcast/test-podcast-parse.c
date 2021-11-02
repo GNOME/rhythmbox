@@ -68,6 +68,7 @@ parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 		g_date_strftime (datebuf, 1024, "%F %T", &date);
 
 		g_print ("\tItem title: %s\n", item->title);
+		g_print ("\tGUID: %s\n", item->guid);
 		g_print ("\tURL: %s\n", item->url);
 		g_print ("\tAuthor: %s\n", item->author);
 		g_print ("\tDate: %s\n", datebuf);
