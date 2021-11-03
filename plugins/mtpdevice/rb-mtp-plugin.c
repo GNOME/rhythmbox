@@ -56,26 +56,22 @@
 
 
 #define RB_TYPE_MTP_PLUGIN		(rb_mtp_plugin_get_type ())
-#define RB_MTP_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_MTP_PLUGIN, RBMtpPlugin))
-#define RB_MTP_PLUGIN_CLASS(k)		(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_IPOD_PLUGIN, RBMtpPluginClass))
-#define RB_IS_MTP_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_MTP_PLUGIN))
-#define RB_IS_MTP_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_MTP_PLUGIN))
-#define RB_MTP_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_MTP_PLUGIN, RBMtpPluginClass))
+G_DECLARE_FINAL_TYPE (RBMtpPlugin, rb_mtp_plugin, RB, MTP_PLUGIN, PeasExtensionBase)
 
 
-typedef struct
+struct _RBMtpPlugin
 {
 	PeasExtensionBase parent;
 
 	guint create_device_source_id;
 
 	GList *mtp_sources;
-} RBMtpPlugin;
+};
 
-typedef struct
+struct _RBMtpPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBMtpPluginClass;
+};
 
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
