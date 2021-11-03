@@ -40,14 +40,7 @@
 #include "rb-file-helpers.h"
 
 #define RB_TYPE_FM_RADIO_PLUGIN         (rb_fm_radio_plugin_get_type ())
-#define RB_FM_RADIO_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_FM_RADIO_PLUGIN, RBFMRadioPlugin))
-#define RB_FM_RADIO_PLUGIN_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_FM_RADIO_PLUGIN, RBFMRadioPluginClass))
-#define RB_IS_FM_RADIO_PLUGIN(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_FM_RADIO_PLUGIN))
-#define RB_IS_FM_RADIO_PLUGIN_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_FM_RADIO_PLUGIN))
-#define RB_FM_RADIO_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_FM_RADIO_PLUGIN, RBFMRadioPluginClass))
-
-typedef struct _RBFMRadioPlugin RBFMRadioPlugin;
-typedef struct _RBFMRadioPluginClass RBFMRadioPluginClass;
+G_DECLARE_FINAL_TYPE (RBFMRadioPlugin, rb_fm_radio_plugin, RB, FM_RADIO_PLUGIN, PeasExtensionBase)
 
 struct _RBFMRadioPlugin {
 	PeasExtensionBase parent;
