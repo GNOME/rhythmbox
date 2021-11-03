@@ -47,11 +47,7 @@
 #include "rb-file-helpers.h"
 
 #define RB_TYPE_LIRC_PLUGIN		(rb_lirc_plugin_get_type ())
-#define RB_LIRC_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_LIRC_PLUGIN, RBLircPlugin))
-#define RB_LIRC_PLUGIN_CLASS(k)		(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_LIRC_PLUGIN, RBLircPluginClass))
-#define RB_IS_LIRC_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_LIRC_PLUGIN))
-#define RB_IS_LIRC_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_LIRC_PLUGIN))
-#define RB_LIRC_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_LIRC_PLUGIN, RBLircPluginClass))
+G_DECLARE_FINAL_TYPE (RBLircPlugin, rb_lirc_plugin, RB, LIRC_PLUGIN, PeasExtensionBase)
 
 #define RB_IR_COMMAND_PLAY "play"
 #define RB_IR_COMMAND_PAUSE "pause"
@@ -68,18 +64,18 @@
 #define RB_IR_COMMAND_MUTE "mute"
 #define RB_IR_COMMAND_QUIT "quit"
 
-typedef struct
+struct _RBLircPlugin
 {
 	PeasExtensionBase parent;
 	RBShellPlayer *shell_player;
 	struct lirc_config *lirc_config;
 	GIOChannel *lirc_channel;
-} RBLircPlugin;
+};
 
-typedef struct
+struct _RBLircPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBLircPluginClass;
+};
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
