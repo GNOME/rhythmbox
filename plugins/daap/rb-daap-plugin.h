@@ -35,14 +35,7 @@
 G_BEGIN_DECLS
 
 #define RB_TYPE_DAAP_PLUGIN         (rb_daap_plugin_get_type ())
-#define RB_DAAP_PLUGIN(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_DAAP_PLUGIN, RBDaapPlugin))
-#define RB_DAAP_PLUGIN_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_DAAP_PLUGIN, RBDaapPluginClass))
-#define RB_IS_DAAP_PLUGIN(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_DAAP_PLUGIN))
-#define RB_IS_DAAP_PLUGIN_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_DAAP_PLUGIN))
-#define RB_DAAP_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_DAAP_PLUGIN, RBDaapPluginClass))
-
-typedef struct _RBDaapPlugin RBDaapPlugin;
-typedef struct _RBDaapPluginClass RBDaapPluginClass;
+G_DECLARE_FINAL_TYPE (RBDaapPlugin, rb_daap_plugin, RB, DAAP_PLUGIN, PeasExtensionBase)
 
 GType		rb_daap_plugin_get_type		(void);
 
