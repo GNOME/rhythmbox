@@ -183,7 +183,7 @@ ping_metadata_service (GError **error)
 						  "ping");
 	response = g_dbus_connection_send_message_with_reply_sync (dbus_connection,
 								   message,
-								   G_DBUS_MESSAGE_FLAGS_NONE,
+								   G_DBUS_SEND_MESSAGE_FLAGS_NONE,
 								   RB_METADATA_DBUS_TIMEOUT,
 								   NULL,
 								   NULL,
