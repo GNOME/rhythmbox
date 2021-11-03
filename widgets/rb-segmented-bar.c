@@ -624,7 +624,7 @@ static void rb_segmented_bar_render_strokes (RBSegmentedBar *bar,
 	cairo_pattern_t *seg_sep_dark = make_segment_gradient (height,
 							       0, 0, 0, 0.125);
 	gdouble seg_w = 20;
-	gdouble x;
+	gdouble x = 0.0;
 	if (seg_w > radius) {
 		x = seg_w;
 	} else {
