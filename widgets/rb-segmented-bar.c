@@ -646,7 +646,7 @@ static void rb_segmented_bar_render_strokes (RBSegmentedBar *bar,
 		x += seg_w;
 	}
 
-	draw_rounded_rectangle (context, 0.5, 0.5,
+	draw_rounded_rectangle (context, 0, 0,
 			       	width - 1, height - 1, radius);
 	cairo_set_source (context, stroke);
 	cairo_stroke (context);
