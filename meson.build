@@ -71,10 +71,9 @@ endif
 
 use_ipod = false
 if get_option('ipod').allowed()
-  libgpod = dependency('libgpod-1.0', version: '>= 0.6', required: get_option('ipod'))
+  libgpod = dependency('libgpod-1.0', version: '>= 0.7.92', required: get_option('ipod'))
   if libgpod.found()
     use_ipod = true
-    cdata.set('HAVE_ITDB_START_STOP_SYNC', libgpod.version() >= '0.7.92')
   endif
 endif
 
