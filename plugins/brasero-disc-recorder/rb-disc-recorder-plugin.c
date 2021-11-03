@@ -62,13 +62,9 @@
 #include "rb-application.h"
 
 #define RB_TYPE_DISC_RECORDER_PLUGIN		(rb_disc_recorder_plugin_get_type ())
-#define RB_DISC_RECORDER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_DISC_RECORDER_PLUGIN, RBDiscRecorderPlugin))
-#define RB_DISC_RECORDER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_DISC_RECORDER_PLUGIN, RBDiscRecorderPluginClass))
-#define RB_IS_DISC_RECORDER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_DISC_RECORDER_PLUGIN))
-#define RB_IS_DISC_RECORDER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_DISC_RECORDER_PLUGIN))
-#define RB_DISC_RECORDER_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_DISC_RECORDER_PLUGIN, RBDiscRecorderPluginClass))
+G_DECLARE_FINAL_TYPE (RBDiscRecorderPlugin, rb_disc_recorder_plugin, RB, DISC_RECORDER_PLUGIN, PeasExtensionBase)
 
-typedef struct
+struct _RBDiscRecorderPlugin
 {
 	PeasExtensionBase parent;
 
@@ -78,12 +74,12 @@ typedef struct
 	GAction        *burn_action;
 	GAction        *copy_action;
 
-} RBDiscRecorderPlugin;
+};
 
-typedef struct
+struct _RBDiscRecorderPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBDiscRecorderPluginClass;
+};
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
