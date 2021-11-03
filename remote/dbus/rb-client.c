@@ -857,7 +857,7 @@ interact_mpris_player_signal (GDBusProxy *proxy, char *sender, char *signal_name
 		gint64 pos;
 		char *str;
 		g_variant_get (parameters, "(x)", &pos);
-		if (abs(pos - data->position) >= G_USEC_PER_SEC) {
+		if (llabs(pos - data->position) >= G_USEC_PER_SEC) {
 			str = rb_make_duration_string (pos, FALSE);
 			g_print (_("Seeked to %s"), str);
 			g_print ("\r\n");
