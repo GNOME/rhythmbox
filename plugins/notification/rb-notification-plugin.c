@@ -47,13 +47,9 @@
 #define PLAYING_ENTRY_NOTIFY_TIME	4
 
 #define RB_TYPE_NOTIFICATION_PLUGIN		(rb_notification_plugin_get_type ())
-#define RB_NOTIFICATION_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_NOTIFICATION_PLUGIN, RBNotificationPlugin))
-#define RB_NOTIFICATION_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_NOTIFICATION_PLUGIN, RBNotificationPluginClass))
-#define RB_IS_NOTIFICATION_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_NOTIFICATION_PLUGIN))
-#define RB_IS_NOTIFICATION_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_NOTIFICATION_PLUGIN))
-#define RB_NOTIFICATION_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_NOTIFICATION_PLUGIN, RBNotificationPluginClass))
+G_DECLARE_FINAL_TYPE (RBNotificationPlugin, rb_notification_plugin, RB, NOTIFICATION_PLUGIN, PeasExtensionBase)
 
-typedef struct
+struct _RBNotificationPlugin
 {
 	PeasExtensionBase parent;
 
@@ -72,12 +68,12 @@ typedef struct
 	RBShellPlayer *shell_player;
 	RhythmDB *db;
 	RBExtDB *art_store;
-} RBNotificationPlugin;
+};
 
-typedef struct
+struct _RBNotificationPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBNotificationPluginClass;
+};
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule  *module);
 
