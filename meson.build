@@ -227,7 +227,7 @@ enable_fm_radio = false
 if get_option('fm_radio').allowed()
   if cc.has_header('linux/videodev2.h')
     enable_fm_radio = true
-  elif get_option('fm_radio') == 'enabled'
+  elif get_option('fm_radio').enabled()
     error('FM radio plugin explicitly requested, but cannot be built')
   endif
 endif
