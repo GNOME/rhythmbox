@@ -42,25 +42,21 @@
 #include "rb-shell.h"
 
 #define RB_TYPE_GPM_PLUGIN		(rb_gpm_plugin_get_type ())
-#define RB_GPM_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_GPM_PLUGIN, RBGPMPlugin))
-#define RB_GPM_PLUGIN_CLASS(k)		(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_GPM_PLUGIN, RBGPMPluginClass))
-#define RB_IS_GPM_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_GPM_PLUGIN))
-#define RB_IS_GPM_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_GPM_PLUGIN))
-#define RB_GPM_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_GPM_PLUGIN, RBGPMPluginClass))
+G_DECLARE_FINAL_TYPE (RBGPMPlugin, rb_gpm_plugin, RB, GPM_PLUGIN, PeasExtensionBase)
 
-typedef struct
+struct _RBGPMPlugin
 {
 	PeasExtensionBase parent;
 
 	guint cookie;
 	gint handler_id;
 	gint timeout_id;
-} RBGPMPlugin;
+};
 
-typedef struct
+struct _RBGPMPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBGPMPluginClass;
+};
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
