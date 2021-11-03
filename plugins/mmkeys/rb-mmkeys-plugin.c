@@ -53,13 +53,9 @@
 #endif /* HAVE_MMKEYS */
 
 #define RB_TYPE_MMKEYS_PLUGIN		(rb_mmkeys_plugin_get_type ())
-#define RB_MMKEYS_PLUGIN(o)			(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_MMKEYS_PLUGIN, RBMMKeysPlugin))
-#define RB_MMKEYS_PLUGIN_CLASS(k)		(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_MMKEYS_PLUGIN, RBMMKeysPluginClass))
-#define RB_IS_MMKEYS_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_MMKEYS_PLUGIN))
-#define RB_IS_MMKEYS_PLUGIN_CLASS(k)		(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_MMKEYS_PLUGIN))
-#define RB_MMKEYS_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_MMKEYS_PLUGIN, RBMMKeysPluginClass))
+G_DECLARE_FINAL_TYPE (RBMMKeysPlugin, rb_mmkeys_plugin, RB, MMKEYS_PLUGIN, PeasExtensionBase)
 
-typedef struct
+struct _RBMMKeysPlugin
 {
 	PeasExtensionBase parent;
 
@@ -71,12 +67,12 @@ typedef struct
 	RBShell *shell;
 	RBShellPlayer *shell_player;
 	GDBusProxy *proxy;
-} RBMMKeysPlugin;
+} ;
 
-typedef struct
+struct _RBMMKeysPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBMMKeysPluginClass;
+};
 
 RB_DEFINE_PLUGIN(RB_TYPE_MMKEYS_PLUGIN, RBMMKeysPlugin, rb_mmkeys_plugin,)
 
