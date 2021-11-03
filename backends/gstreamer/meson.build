@@ -22,7 +22,6 @@ rbbackendsgstreamer_lib = static_library('rbbackendsgstreamer',
   dependencies: [gstreamer_backend_dependencies, rhythmdb_dep, librb_dep],
   c_args: gstreamer_backend_c_args,
   include_directories: backends_inc,
-  link_args: ['-export-dynamic'],
 )
 
 rbbackendsgstreamer_dep = declare_dependency(

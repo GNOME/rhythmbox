@@ -48,7 +48,6 @@ rbmetadata_lib = static_library('rbmetadata', metadata_sources,
   c_args: metadata_c_args,
   dependencies: [metadata_deps, librb_dep],
   install: false,
-  link_args: ['-export-dynamic']
 )
 
 rbmetadata_dep = declare_dependency(

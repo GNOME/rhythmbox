@@ -64,7 +64,6 @@ sources_lib = static_library('sources', sources_sources,
   dependencies: sources_dependencies + [librb_dep, rhythmdb_dep,
     rbbackends_dep, rbmetadata_dep, sourcesync_dep],
   install: false,
-  link_args: ['-export-dynamic']
 )
 
 sources_dep = declare_dependency(

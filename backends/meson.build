@@ -29,7 +29,6 @@ rbbackends_lib = static_library('rbbackends',
   backends_sources,
   dependencies: [librb_dep, rbbackendsgstreamer_dep],
   c_args: backends_c_args,
-  link_args: ['-export-dynamic'],
 )
 
 rbbackends_dep = declare_dependency(

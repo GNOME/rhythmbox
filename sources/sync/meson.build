@@ -24,7 +24,6 @@ sourcesync_lib = static_library('sourcesync', sourcesync_sources,
   include_directories: [configinc, shellinc, sourcesinc, widgetsinc],
   dependencies: sourcesync_dependencies,
   install: false,
-  link_args: ['-export-dynamic']
 )
 
 sourcesync_dep = declare_dependency(

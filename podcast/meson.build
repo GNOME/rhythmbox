@@ -37,7 +37,6 @@ rbpodcast_lib = static_library('rbpodcast', podcast_sources,
   include_directories: [configinc, shellinc, sourcesinc, widgetsinc],
   dependencies: [podcast_dependencies, librb_dep, rhythmdb_dep, rbmetadata_dep],
   install: false,
-  link_args: ['-export-dynamic']
 )
 
 rbpodcast_dep = declare_dependency(

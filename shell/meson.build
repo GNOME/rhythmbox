@@ -96,7 +96,6 @@ librhythmbox_core = shared_library('rhythmbox-core',
   dependencies: [rhythmbox_core_dependencies,  mediaplayerid_dep, rhythmdb_dep,
     rbbackends_dep, rbpodcast_dep, rbwidgets_dep, sources_dep],
   install: 'true',
-  link_args: ['-export-dynamic'],
   link_whole: [librb, rbwidgets_lib, sources_lib],
   version: '@0@.@1@.@2@'.format(RHYTHMBOX_CORE_CURRENT, RHYTHMBOX_CORE_REVISION, RHYTHMBOX_CORE_AGE)
 )
@@ -148,7 +147,6 @@ endif
 executable('rhythmbox', 'main.c',
   dependencies: rhythmbox_dependencies,
   include_directories: [ pluginsinc ],
-  link_args: ['-export-dynamic'],
   install: true,
   install_rpath: rpath
 )

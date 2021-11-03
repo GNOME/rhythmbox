@@ -48,8 +48,7 @@ rhythmdb_dependencies = [libmath]
 librhythmdb = static_library('rhythmdb', rhythmdb_sources,
   c_args: c_args,
   dependencies: [rhythmdb_dependencies, librb_dep],
-  include_directories: [podcastinc, widgetsinc],
-  link_args: '-export-dynamic')
+  include_directories: [podcastinc, widgetsinc])
 
 rhythmdb_dep = declare_dependency(
   link_with: librhythmdb,
