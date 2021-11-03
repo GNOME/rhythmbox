@@ -53,25 +53,21 @@
 
 
 #define RB_TYPE_IPOD_PLUGIN		(rb_ipod_plugin_get_type ())
-#define RB_IPOD_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_IPOD_PLUGIN, RBIpodPlugin))
-#define RB_IPOD_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_IPOD_PLUGIN, RBIpodPluginClass))
-#define RB_IS_IPOD_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_IPOD_PLUGIN))
-#define RB_IS_IPOD_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_IPOD_PLUGIN))
-#define RB_IPOD_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_IPOD_PLUGIN, RBIpodPluginClass))
+G_DECLARE_FINAL_TYPE (RBIpodPlugin, rb_ipod_plugin, RB, IPOD_PLUGIN, PeasExtensionBase)
 
-typedef struct
+struct _RBIpodPlugin
 {
 	PeasExtensionBase parent;
 
 	RBShell *shell;
 
 	GList *ipod_sources;
-} RBIpodPlugin;
+};
 
-typedef struct
+struct _RBIpodPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBIpodPluginClass;
+};
 
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
