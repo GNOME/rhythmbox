@@ -59,7 +59,6 @@ libxml = dependency('libxml-2.0', version: '>= 2.7.8', required: true)
 pango = dependency('pango', required: true)
 tdb = dependency('tdb', version: '>= 1.2.6', required: true)
 totem_plparser = dependency('totem-plparser', version: '>= 3.2.0', required: true)
-zlib = dependency('zlib', required: true)
 
 use_gudev = false
 if get_option('gudev').allowed()
