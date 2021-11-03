@@ -54,13 +54,9 @@
 #include "rb-audioscrobbler-user.h"
 
 #define RB_TYPE_AUDIOSCROBBLER_PLUGIN		(rb_audioscrobbler_plugin_get_type ())
-#define RB_AUDIOSCROBBLER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_AUDIOSCROBBLER_PLUGIN, RBAudioscrobblerPlugin))
-#define RB_AUDIOSCROBBLER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_AUDIOSCROBBLER_PLUGIN, RBAudioscrobblerPluginClass))
-#define RB_IS_AUDIOSCROBBLER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_AUDIOSCROBBLER_PLUGIN))
-#define RB_IS_AUDIOSCROBBLER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_AUDIOSCROBBLER_PLUGIN))
-#define RB_AUDIOSCROBBLER_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_AUDIOSCROBBLER_PLUGIN, RBAudioscrobblerPluginClass))
+G_DECLARE_FINAL_TYPE (RBAudioscrobblerPlugin, rb_audioscrobbler_plugin, RB, AUDIOSCROBBLER_PLUGIN, PeasExtensionBase)
 
-typedef struct
+struct _RBAudioscrobblerPlugin
 {
 	PeasExtensionBase parent;
 
@@ -75,12 +71,12 @@ typedef struct
 	GSettings *librefm_settings;
 	GtkWidget *librefm_enabled_check;
 	RBDisplayPage *librefm_page;
-} RBAudioscrobblerPlugin;
+};
 
-typedef struct
+struct _RBAudioscrobblerPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBAudioscrobblerPluginClass;
+};
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
