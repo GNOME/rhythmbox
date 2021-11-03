@@ -141,6 +141,7 @@ cdata.set10('WITH_RHYTHMDB_TREE', 1)
 cdata.set10('RHYTHMDB_ENABLE_COHERENCE_CHECK', get_option('rhythmdb_debug'))
 
 have_gnu_fwrite_unlocked = cc.has_function('fwrite_unlocked')
+cdata.set10('HAVE_GNU_FWRITE_UNLOCKED', have_gnu_fwrite_unlocked)
 
 gdk_targets = run_command(['pkg-config', '--variable', 'targets', 'gdk-3.0']).stdout().strip()
 
