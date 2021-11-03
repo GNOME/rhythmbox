@@ -130,7 +130,7 @@ rhythmdb_metadata_cache_get (RhythmDB *db, const char *name)
 
 	obj = g_hash_table_lookup (instances, name);
 	if (obj)
-		return g_object_ref (obj);
+		return RHYTHMDB_METADATA_CACHE (g_object_ref (obj));
 
 	obj = g_object_new (RHYTHMDB_TYPE_METADATA_CACHE,
 			    "db", db,
