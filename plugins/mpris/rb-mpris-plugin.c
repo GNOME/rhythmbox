@@ -46,11 +46,7 @@
 #include <metadata/rb-ext-db.h>
 
 #define RB_TYPE_MPRIS_PLUGIN		(rb_mpris_plugin_get_type ())
-#define RB_MPRIS_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_MPRIS_PLUGIN, RBMprisPlugin))
-#define RB_MPRIS_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_MPRIS_PLUGIN, RBMprisPluginClass))
-#define RB_IS_MPRIS_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_MPRIS_PLUGIN))
-#define RB_IS_MPRIS_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_MPRIS_PLUGIN))
-#define RB_MPRIS_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_MPRIS_PLUGIN, RBMprisPluginClass))
+G_DECLARE_FINAL_TYPE (RBMprisPlugin, rb_mpris_plugin, RB, MPRIS_PLUGIN, PeasExtensionBase)
 
 #define ENTRY_OBJECT_PATH_PREFIX 	"/org/mpris/MediaPlayer2/Track/"
 
@@ -58,7 +54,7 @@
 
 #include "mpris-spec.h"
 
-typedef struct
+struct _RBMprisPlugin
 {
 	PeasExtensionBase parent;
 
@@ -82,13 +78,12 @@ typedef struct
 	guint property_emit_id;
 
 	gint64 last_elapsed;
-} RBMprisPlugin;
+};
 
-typedef struct
+struct _RBMprisPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBMprisPluginClass;
-
+};
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
