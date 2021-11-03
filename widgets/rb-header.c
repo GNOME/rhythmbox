@@ -1042,7 +1042,7 @@ slider_press_callback (GtkWidget *widget,
 
 	/* hack: pretend the trough is at least 20 pixels high */
 	height = gtk_widget_get_allocated_height (widget);
-	if (abs (event->y - (height / 2)) < 10)
+	if (fabs (event->y - (height / 2)) < 10)
 		event->y = height / 2;
 
 	return FALSE;
