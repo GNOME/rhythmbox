@@ -54,23 +54,19 @@
 #include "rb-application.h"
 
 #define RB_TYPE_GENERIC_PLAYER_PLUGIN		(rb_generic_player_plugin_get_type ())
-#define RB_GENERIC_PLAYER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_GENERIC_PLAYER_PLUGIN, RBGenericPlayerPlugin))
-#define RB_GENERIC_PLAYER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_GENERIC_PLAYER_PLUGIN, RBGenericPlayerPluginClass))
-#define RB_IS_GENERIC_PLAYER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_GENERIC_PLAYER_PLUGIN))
-#define RB_IS_GENERIC_PLAYER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_GENERIC_PLAYER_PLUGIN))
-#define RB_GENERIC_PLAYER_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_GENERIC_PLAYER_PLUGIN, RBGenericPlayerPluginClass))
+G_DECLARE_FINAL_TYPE (RBGenericPlayerPlugin, rb_generic_player_plugin, RB, GENERIC_PLAYER_PLUGIN, PeasExtensionBase)
 
-typedef struct
+struct _RBGenericPlayerPlugin
 {
 	PeasExtensionBase parent;
 
 	GList *player_sources;
-} RBGenericPlayerPlugin;
+};
 
-typedef struct
+struct _RBGenericPlayerPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBGenericPlayerPluginClass;
+};
 
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule  *module);
