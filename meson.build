@@ -1,5 +1,3 @@
-#GRILO_REQS=0.3.0
-
 project('rhythmbox', 'c',
   version: '3.4.4',
   meson_version: '>= 0.59.0',
@@ -248,7 +246,6 @@ if get_option('grilo').allowed()
 
   if grilo.found()
     enable_grilo = true
-    cdata.set('HAVE_GRILO', 1)
   endif
 endif
 
