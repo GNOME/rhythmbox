@@ -152,9 +152,6 @@ if totem_plparser_uselibcamel == 'no'
   error('totem playlist parsing library has Podcast parsing disabled')
 endif
 
-#RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $GSTREAMER_CFLAGS -DGST_USE_UNSTABLE_API"
-#RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $GSTREAMER_LIBS"
-
 test_strftime_src = '''#include <time.h>
 int main ()
 {
@@ -192,9 +189,6 @@ pkgdatadir = datadir / 'rhythmbox'
 #################
 # Plugin support
 
-#PLUGIN_LIBTOOL_FLAGS="-module -avoid-version"
-#AC_SUBST(PLUGIN_LIBTOOL_FLAGS)
-#
 plugindir = libdir / 'rhythmbox' / 'plugins'
 cdata.set('PLUGINDIR', plugindir)
 
