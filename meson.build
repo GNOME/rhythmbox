@@ -324,11 +324,3 @@ if get_option('help')
   subdir('help')
 endif
 
-# Some tests that can't be defined in the subdirs because rhythmbox_core_dep
-# must be defined first.
-
-test_metadata = executable('test-metadata',
-  'metadata/test-metadata.c',
-  dependencies: rhythmbox_core_dep)
-test('test-metadata', test_metadata)
-

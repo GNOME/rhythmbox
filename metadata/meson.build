@@ -17,12 +17,9 @@ metadata_sources = files(
 metadata_service_sources = [
   'rb-metadata-common.c',
   'rb-metadata-dbus.c',
+  'rb-metadata-dbus-service.c',
   'rb-metadata-gst.c',
   'rb-metadata-gst-common.c'
-]
-
-metadata_dbus_service_sources = [
-  'rb-metadata-dbus-service.c'
 ]
 
 full_libexecdir = get_option('prefix') / get_option('libexecdir')
@@ -58,13 +55,17 @@ rbmetadata_dep = declare_dependency(
 
 # service
 
-rbmetadatasvc_lib = static_library('rbmetadatasvc', metadata_service_sources,
-  dependencies: [librb_dep, rbmetadata_dep, gtk])
-
-executable('rhythmbox-metadata', metadata_dbus_service_sources,
-  link_with: rbmetadatasvc_lib,
-  dependencies: [librb_dep, rbmetadata_dep, gtk],
+executable('rhythmbox-metadata', metadata_service_sources,
+  link_with: rbmetadata_lib,
+  dependencies: [librb_dep, rbmetadata_dep],
   install: true,
   install_dir: get_option('libexecdir'),
   install_rpath: rpath
+)
+
+# test program
+
+executable('test-metadata', 'test-metadata.c',
+  link_with: rbmetadata_lib,
+  dependencies: [librb_dep, rbmetadata_dep],
 )
