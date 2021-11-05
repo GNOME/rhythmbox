@@ -33,6 +33,7 @@
 #include <glib/gi18n.h>
 
 #include "rb-util.h"
+#include "rb-debug.h"
 #include "rb-podcast-search.h"
 
 #include <string.h>
