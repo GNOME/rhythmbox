@@ -30,7 +30,7 @@ podcast_c_args = [
   '-DG_LOG_DOMAIN="RhythmBox"'
 ]
 
-podcast_dependencies = [ json_glib, libsoup, totem_plparser ]
+podcast_dependencies = [ json_glib, libsoup, totem_plparser, gdk_pixbuf ]
 
 rbpodcast_lib = static_library('rbpodcast', podcast_sources,
   c_args: lib_c_args,

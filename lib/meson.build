@@ -46,7 +46,7 @@ lib_c_args = [
 
 lib_dependencies = [
    gio, gio_unix, glib, gmodule_export, gobject, gstreamer, gstreamer_pbutils, gtk,
-   libpeas, libpeas_gtk, libxml
+   gdk_pixbuf, libpeas, libpeas_gtk, libxml, pango
 ]
 
 librb = static_library('rb', lib_sources,
