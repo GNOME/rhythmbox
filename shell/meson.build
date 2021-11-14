@@ -83,6 +83,9 @@ shell_c_args = [
 ]
 
 rhythmbox_core_dependencies = [gobject_introspection, libpeas]
+if gdk_targets.contains('x11')
+  rhythmbox_core_dependencies += [x11]
+endif
 
 rhythmbox_core_include_directories = [
   configinc, libinc, mpidinc, metadatainc, rhythmdbinc, backendsinc, pluginsinc,
