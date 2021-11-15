@@ -129,12 +129,6 @@ impl_activate (PeasActivatable *bplugin)
 	gtk_icon_theme_append_search_path (theme, icondir);
 	g_free (icondir);
 
-#if defined(USE_UNINSTALLED_DIRS)
-	icondir = g_build_filename (peas_plugin_info_get_module_dir (plugin_info), "icons", NULL);
-	gtk_icon_theme_append_search_path (theme, icondir);
-	g_free (icondir);
-#endif
-
 	g_signal_connect_object (plugin->lastfm_settings,
 				 "changed",
 				 G_CALLBACK (lastfm_settings_changed_cb),

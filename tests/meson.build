@@ -2,7 +2,8 @@ if enable_check
   test('test-rhythmdb',
     executable('test-rhythmdb',
       ['test-rhythmdb.c', 'test-utils.c'],
-      dependencies: [rhythmbox_core_dep, check]),
+      dependencies: [rhythmbox_core_dep, check],
+      c_args: ['-DTEST_DIR="@0@"'.format(meson.current_source_dir())]),
     depends: gschemas_compiled)
 
   test('test-rhythmdb-query-model',

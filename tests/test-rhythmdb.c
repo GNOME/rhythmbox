@@ -505,7 +505,7 @@ START_TEST (test_rhythmdb_podcast_upgrade)
 	const char *mountpoint;
 
 	/* load db with old podcasts setups */
-	g_object_set (G_OBJECT (db), "name", SHARE_UNINSTALLED_DIR "/../tests/podcast-upgrade.xml", NULL);
+	g_object_set (G_OBJECT (db), "name", TEST_DIR "/podcast-upgrade.xml", NULL);
 	set_waiting_signal (G_OBJECT (db), "load-complete");
 	rhythmdb_load (db);
 	wait_for_signal ();
@@ -657,7 +657,7 @@ main (int argc, char **argv)
 	rb_threads_init ();
 	rb_debug_init (TRUE);
 	rb_refstring_system_init ();
-	rb_file_helpers_init (TRUE);
+	rb_file_helpers_init ();
 
 	/* setup tests */
 	s = rhythmdb_suite ();

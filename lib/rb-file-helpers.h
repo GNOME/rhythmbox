@@ -93,7 +93,7 @@ GFile *		rb_file_find_extant_parent (GFile *file);
 
 gboolean	rb_uri_create_parent_dirs (const char *uri, GError **error);
 
-void		rb_file_helpers_init	(gboolean uninstalled);
+void		rb_file_helpers_init	(void);
 void		rb_file_helpers_shutdown(void);
 
 char *		rb_uri_get_filesystem_type (const char *uri, char **mount_point);

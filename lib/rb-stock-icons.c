@@ -61,9 +61,6 @@ rb_stock_icons_init (void)
 	g_free (dot_icon_dir);
 
 	gtk_icon_theme_append_search_path (theme, SHARE_DIR G_DIR_SEPARATOR_S "icons");
-#ifdef USE_UNINSTALLED_DIRS
-	gtk_icon_theme_append_search_path (theme, SHARE_UNINSTALLED_DIR G_DIR_SEPARATOR_S "icons");
-#endif
 
 	/* add resource icons */
 	gtk_icon_theme_add_resource_path (theme, "/org/gnome/Rhythmbox/icons/hicolor");
