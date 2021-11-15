@@ -28,13 +28,12 @@ Rhythmbox can also make use of the following packages:
 Simple install procedure
 ========================
 
-  % ./configure                                  # run the 'configure' script
-  % make                                         # build Rhythmbox
-  [ Become root if necessary ]
-  % make install                                 # install Rhythmbox
+  % meson _build                                 # prepare the build
+  % ninja -C _build                              # build Rhythmbox
+  % ninja -C _build install                      # install Rhythmbox
 
 The Details
 ===========
 
-More detailed installation instructions can be found in INSTALL.
-
+More detailed installation instructions can be found in [meson's
+website](https://mesonbuild.com/Quick-guide.html).
