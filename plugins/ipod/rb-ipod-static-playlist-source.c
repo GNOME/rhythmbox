@@ -105,7 +105,7 @@ playlist_before_save (RbIpodDb *ipod_db, gpointer data)
 		return;
 	priv->was_reordered = FALSE;
 
-	/* Sanity check that all tracks are in entry_map */
+	/* Coherence check that all tracks are in entry_map */
 
 	g_object_get (G_OBJECT (data), "base-query-model", &model, NULL);
 	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter)) {
