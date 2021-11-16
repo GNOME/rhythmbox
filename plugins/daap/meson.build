@@ -35,8 +35,8 @@ shared_module('daap',
   install_dir: daap_plugin_dir)
 
 daap_plugin_descriptor = custom_target('daap-plugin-descriptor',
-  input: 'daap.plugin.in',
+  input: 'daap.desktop.plugin.in',
   output: 'daap.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: daap_plugin_dir)

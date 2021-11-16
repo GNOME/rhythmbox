@@ -12,8 +12,8 @@ shared_module('sample',
   install: true)
 
 sample_plugin_descriptor = custom_target('sample-plugin-descriptor',
-  input: 'sample.plugin.in',
+  input: 'sample.desktop.plugin.in',
   output: 'sample.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: sample_plugin_dir)

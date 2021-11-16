@@ -29,8 +29,8 @@ shared_module('mtpdevice',
   install_dir: mtpdevice_plugin_dir)
 
 mtpdevice_plugin_descriptor = custom_target('mtpdevice-plugin-descriptor',
-  input: 'mtpdevice.plugin.in',
+  input: 'mtpdevice.desktop.plugin.in',
   output: 'mtpdevice.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: mtpdevice_plugin_dir)

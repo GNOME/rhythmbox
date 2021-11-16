@@ -13,8 +13,8 @@ install_data(artsearch_plugin_files,
   install_dir: artsearch_plugin_dir)
 
 artsearch_plugin_descriptor = custom_target('artsearch-plugin-descriptor',
-  input: 'artsearch.plugin.in',
+  input: 'artsearch.desktop.plugin.in',
   output: 'artsearch.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: artsearch_plugin_dir)

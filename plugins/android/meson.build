@@ -18,8 +18,8 @@ shared_module('android',
   install_dir: android_plugin_dir)
 
 android_plugin_descriptor = custom_target('android-plugin-descriptor',
-  input: 'android.plugin.in',
+  input: 'android.desktop.plugin.in',
   output: 'android.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: android_plugin_dir)

@@ -9,14 +9,15 @@ foreach desktop_file : desktop_files
     output: desktop_file + '.in',
     configuration: cdata
   )
-  desktop_file = custom_target(
+  desktop_file = i18n.merge_file(
     desktop_file,
     input: desktop_in_file,
     output: desktop_file,
     install: true,
     install_dir: datadir / 'applications',
-    command: [intltool_merge, '--quiet', '--desktop-style', '--utf8', po_dir, '@INPUT@', '@OUTPUT@'],
-)
+    po_dir: po_dir,
+    type: 'desktop',
+  )
 endforeach
 
 service_conf = configuration_data()

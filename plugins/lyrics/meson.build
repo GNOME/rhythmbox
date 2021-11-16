@@ -18,9 +18,9 @@ install_data(lyrics_plugin_files,
   install_dir: lyrics_plugin_dir)
 
 lyrics_plugin_descriptor = custom_target('lyrics-plugin-descriptor',
-  input: 'lyrics.plugin.in',
+  input: 'lyrics.desktop.plugin.in',
   output: 'lyrics.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: lyrics_plugin_dir)
 

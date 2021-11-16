@@ -7,8 +7,8 @@ install_data(im_status_plugin_files,
   install_dir: im_status_plugin_dir)
 
 im_status_plugin_descriptor = custom_target('im-status-plugin-descriptor',
-  input: 'im-status.plugin.in',
+  input: 'im-status.desktop.plugin.in',
   output: 'im-status.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: im_status_plugin_dir)

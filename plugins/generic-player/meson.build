@@ -21,8 +21,8 @@ shared_module('generic-player',
   install_dir: generic_player_plugin_dir)
 
 generic_player_plugin_descriptor = custom_target('generic-player-plugin-descriptor',
-  input: 'generic-player.plugin.in',
+  input: 'generic-player.desktop.plugin.in',
   output: 'generic-player.plugin',
-  command: [intltool_merge, '--quiet', '--desktop-style', meson.project_source_root() + '/po', '@INPUT@', '@OUTPUT@'],
+  command: msgfmt_plugin_cmd,
   install: true,
   install_dir: generic_player_plugin_dir)
