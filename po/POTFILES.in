@@ -1,4 +1,5 @@
-[encoding: UTF-8]
+# List of source files containing translatable strings.
+# Please keep this file sorted alphabetically.
 backends/gstreamer/rb-encoder-gst.c
 backends/gstreamer/rb-player-gst.c
 backends/gstreamer/rb-player-gst-xfade.c
@@ -7,63 +8,63 @@ data/playlists.xml.in
 data/org.gnome.Rhythmbox3.appdata.xml.in
 data/org.gnome.Rhythmbox3.desktop.in.in
 data/org.gnome.Rhythmbox3.device.desktop.in.in
-[type: gettext/glade]data/ui/app-menu.ui
-[type: gettext/glade]data/ui/browser-popup.ui
-[type: gettext/glade]data/ui/create-playlist.ui
-[type: gettext/glade]data/ui/display-page-add-menu.ui
-[type: gettext/glade]data/ui/edit-menu.ui
-[type: gettext/glade]data/ui/encoding-settings.ui
-[type: gettext/glade]data/ui/general-prefs.ui
-[type: gettext/glade]data/ui/import-dialog.ui
-[type: gettext/glade]data/ui/import-errors-popup.ui
-[type: gettext/glade]data/ui/library-prefs.ui
-[type: gettext/glade]data/ui/library-toolbar.ui
-[type: gettext/glade]data/ui/main-toolbar.ui
-[type: gettext/glade]data/ui/media-player-properties.ui
-[type: gettext/glade]data/ui/missing-files-popup.ui
-[type: gettext/glade]data/ui/playback-prefs.ui
-[type: gettext/glade]data/ui/playlist-menu.ui
-[type: gettext/glade]data/ui/playlist-popup.ui
-[type: gettext/glade]data/ui/playlist-save.ui
-[type: gettext/glade]data/ui/playlist-toolbar.ui
-[type: gettext/glade]data/ui/plugin-prefs.ui
-[type: gettext/glade]data/ui/podcast-add-dialog.ui
-[type: gettext/glade]data/ui/podcast-feed-properties.ui
-[type: gettext/glade]data/ui/podcast-popups.ui
-[type: gettext/glade]data/ui/podcast-prefs.ui
-[type: gettext/glade]data/ui/podcast-properties.ui
-[type: gettext/glade]data/ui/podcast-toolbar.ui
-[type: gettext/glade]data/ui/queue-popups.ui
-[type: gettext/glade]data/ui/queue-toolbar.ui
-[type: gettext/glade]data/ui/song-info-multiple.ui
-[type: gettext/glade]data/ui/song-info.ui
-[type: gettext/glade]data/ui/sync-dialog.ui
-[type: gettext/glade]data/ui/sync-state.ui
-[type: gettext/glade]data/ui/uri-new.ui
+data/ui/app-menu.ui
+data/ui/browser-popup.ui
+data/ui/create-playlist.ui
+data/ui/display-page-add-menu.ui
+data/ui/edit-menu.ui
+data/ui/encoding-settings.ui
+data/ui/general-prefs.ui
+data/ui/import-dialog.ui
+data/ui/import-errors-popup.ui
+data/ui/library-prefs.ui
+data/ui/library-toolbar.ui
+data/ui/main-toolbar.ui
+data/ui/media-player-properties.ui
+data/ui/missing-files-popup.ui
+data/ui/playback-prefs.ui
+data/ui/playlist-menu.ui
+data/ui/playlist-popup.ui
+data/ui/playlist-save.ui
+data/ui/playlist-toolbar.ui
+data/ui/plugin-prefs.ui
+data/ui/podcast-add-dialog.ui
+data/ui/podcast-feed-properties.ui
+data/ui/podcast-popups.ui
+data/ui/podcast-prefs.ui
+data/ui/podcast-properties.ui
+data/ui/podcast-toolbar.ui
+data/ui/queue-popups.ui
+data/ui/queue-toolbar.ui
+data/ui/song-info-multiple.ui
+data/ui/song-info.ui
+data/ui/sync-dialog.ui
+data/ui/sync-state.ui
+data/ui/uri-new.ui
 lib/rb-cut-and-paste-code.c
 lib/rb-file-helpers.c
 lib/rb-util.c
 metadata/rb-metadata-dbus-client.c
 metadata/rb-metadata-gst.c
 plugins/android/android.desktop.plugin.in
-[type: gettext/glade]plugins/android/android-info.ui
-[type: gettext/glade]plugins/android/android-toolbar.ui
+plugins/android/android-info.ui
+plugins/android/android-toolbar.ui
 plugins/android/rb-android-plugin.c
 plugins/android/rb-android-source.c
 plugins/artsearch/artsearch.desktop.plugin.in
 plugins/artsearch/artsearch.py
 plugins/artsearch/lastfm.py
 plugins/artsearch/songinfo.py
-[type: gettext/glade]plugins/audiocd/album-info.ui
+plugins/audiocd/album-info.ui
 plugins/audiocd/audiocd.desktop.plugin.in
-[type: gettext/glade]plugins/audiocd/audiocd-toolbar.ui
+plugins/audiocd/audiocd-toolbar.ui
 plugins/audiocd/rb-audiocd-info.c
 plugins/audiocd/rb-audiocd-plugin.c
 plugins/audiocd/rb-audiocd-source.c
 plugins/audiocd/rb-musicbrainz-lookup.c
 plugins/audioscrobbler/audioscrobbler.desktop.plugin.in
-[type: gettext/glade]plugins/audioscrobbler/audioscrobbler-preferences.ui
-[type: gettext/glade]plugins/audioscrobbler/audioscrobbler-profile.ui
+plugins/audioscrobbler/audioscrobbler-preferences.ui
+plugins/audioscrobbler/audioscrobbler-profile.ui
 plugins/audioscrobbler/rb-audioscrobbler.c
 plugins/audioscrobbler/rb-audioscrobbler-entry.c
 plugins/audioscrobbler/rb-audioscrobbler-plugin.c
@@ -83,8 +84,8 @@ plugins/context/tmpl/artist-tmpl.html
 plugins/context/tmpl/loading.html
 plugins/context/tmpl/lyrics-tmpl.html
 plugins/daap/daap.desktop.plugin.in
-[type: gettext/glade]plugins/daap/daap-prefs.ui
-[type: gettext/glade]plugins/daap/daap-toolbar.ui
+plugins/daap/daap-prefs.ui
+plugins/daap/daap-toolbar.ui
 plugins/daap/rb-daap-plugin.c
 plugins/daap/rb-daap-sharing.c
 plugins/daap/rb-daap-source.c
@@ -93,11 +94,11 @@ plugins/daap/rb-rhythmdb-dmap-db-adapter.c
 plugins/dbus-media-server/dbus-media-server.desktop.plugin.in
 plugins/dbus-media-server/rb-dbus-media-server-plugin.c
 plugins/fmradio/fmradio.desktop.plugin.in
-[type: gettext/glade]plugins/fmradio/fmradio-popup.ui
-[type: gettext/glade]plugins/fmradio/fmradio-toolbar.ui
+plugins/fmradio/fmradio-popup.ui
+plugins/fmradio/fmradio-toolbar.ui
 plugins/fmradio/rb-fm-radio-source.c
-[type: gettext/glade]plugins/generic-player/generic-player-info.ui
-[type: gettext/glade]plugins/generic-player/generic-player-toolbar.ui
+plugins/generic-player/generic-player-info.ui
+plugins/generic-player/generic-player-toolbar.ui
 plugins/generic-player/generic-player.desktop.plugin.in
 plugins/generic-player/rb-generic-player-plugin.c
 plugins/generic-player/rb-generic-player-source.c
@@ -108,40 +109,40 @@ plugins/grilo/rb-grilo-plugin.c
 plugins/grilo/rb-grilo-source.c
 plugins/im-status/im-status.desktop.plugin.in
 plugins/im-status/im-status.py
-[type: gettext/glade]plugins/ipod/ipod-info.ui
-[type: gettext/glade]plugins/ipod/ipod-init.ui
-[type: gettext/glade]plugins/ipod/ipod-toolbar.ui
+plugins/ipod/ipod-info.ui
+plugins/ipod/ipod-init.ui
+plugins/ipod/ipod-toolbar.ui
 plugins/ipod/ipod.desktop.plugin.in
 plugins/ipod/rb-ipod-helpers.c
 plugins/ipod/rb-ipod-plugin.c
 plugins/ipod/rb-ipod-source.c
 plugins/iradio/iradio.desktop.plugin.in
-[type: gettext/glade]plugins/iradio/iradio-popup.ui
-[type: gettext/glade]plugins/iradio/iradio-toolbar.ui
+plugins/iradio/iradio-popup.ui
+plugins/iradio/iradio-toolbar.ui
 plugins/iradio/rb-iradio-source.c
 plugins/iradio/rb-station-properties-dialog.c
-[type: gettext/glade]plugins/iradio/station-properties.ui
+plugins/iradio/station-properties.ui
 plugins/lirc/rb-lirc-plugin.c
 plugins/lirc/rblirc.desktop.plugin.in
 plugins/listenbrainz/listenbrainz.desktop.plugin.in
-[type: gettext/glade]plugins/listenbrainz/settings.ui
+plugins/listenbrainz/settings.ui
 plugins/lyrics/LyricsConfigureDialog.py
 plugins/lyrics/lyrics.desktop.plugin.in
-[type: gettext/glade]plugins/lyrics/lyrics-prefs.ui
+plugins/lyrics/lyrics-prefs.ui
 plugins/lyrics/lyrics.py
 plugins/lyrics/LyricsSites.py
-[type: gettext/glade]plugins/magnatune/magnatune-loading.ui
-[type: gettext/glade]plugins/magnatune/magnatune-popup.ui
-[type: gettext/glade]plugins/magnatune/magnatune-toolbar.ui
+plugins/magnatune/magnatune-loading.ui
+plugins/magnatune/magnatune-popup.ui
+plugins/magnatune/magnatune-toolbar.ui
 plugins/magnatune/magnatune.desktop.plugin.in
-[type: gettext/glade]plugins/magnatune/magnatune-prefs.ui
+plugins/magnatune/magnatune-prefs.ui
 plugins/magnatune/magnatune.py
 plugins/magnatune/MagnatuneSource.py
 plugins/mmkeys/mmkeys.desktop.plugin.in
 plugins/mpris/mpris.desktop.plugin.in
 plugins/mtpdevice/mtpdevice.desktop.plugin.in
-[type: gettext/glade]plugins/mtpdevice/mtp-info.ui
-[type: gettext/glade]plugins/mtpdevice/mtp-toolbar.ui
+plugins/mtpdevice/mtp-info.ui
+plugins/mtpdevice/mtp-toolbar.ui
 plugins/mtpdevice/rb-mtp-gst-src.c
 plugins/mtpdevice/rb-mtp-plugin.c
 plugins/mtpdevice/rb-mtp-source.c
@@ -156,11 +157,11 @@ plugins/rbzeitgeist/rbzeitgeist.desktop.plugin.in
 plugins/replaygain/config.py
 plugins/replaygain/player.py
 plugins/replaygain/replaygain.desktop.plugin.in
-[type: gettext/glade]plugins/replaygain/replaygain-prefs.ui
+plugins/replaygain/replaygain-prefs.ui
 plugins/soundcloud/soundcloud.desktop.plugin.in
 plugins/soundcloud/soundcloud.py
-[type: gettext/glade]plugins/soundcloud/soundcloud.ui
-[type: gettext/glade]plugins/webremote/webremote-config.ui
+plugins/soundcloud/soundcloud.ui
+plugins/webremote/webremote-config.ui
 plugins/webremote/webremote.desktop.plugin.in
 plugins/webremote/webremote.py
 podcast/rb-feed-podcast-properties-dialog.c
