@@ -8,7 +8,7 @@ install_data(soundcloud_plugin_files,
   install_dir: soundcloud_plugin_dir)
 
 soundcloud_plugin_descriptor = custom_target('soundcloud-plugin-descriptor',
-  input: 'soundcloud.desktop.plugin.in',
+  input: 'soundcloud.plugin.desktop.in',
   output: 'soundcloud.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

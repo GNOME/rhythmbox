@@ -21,7 +21,7 @@ shared_module('fmradio',
   install_dir: fmradio_plugin_dir)
 
 fmradio_plugin_descriptor = custom_target('fmradio-plugin-descriptor',
-  input: 'fmradio.desktop.plugin.in',
+  input: 'fmradio.plugin.desktop.in',
   output: 'fmradio.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

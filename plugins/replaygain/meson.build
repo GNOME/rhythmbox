@@ -10,7 +10,7 @@ install_data(replaygain_plugin_files,
   install_dir: replaygain_plugin_dir)
 
 replaygain_plugin_descriptor = custom_target('replaygain-plugin-descriptor',
-  input: 'replaygain.desktop.plugin.in',
+  input: 'replaygain.plugin.desktop.in',
   output: 'replaygain.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

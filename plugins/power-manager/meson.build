@@ -13,7 +13,7 @@ shared_module('power-manager',
   install_dir: power_manager_plugin_dir)
 
 power_manager_plugin_descriptor = custom_target('power-manager-plugin-descriptor',
-  input: 'power-manager.desktop.plugin.in',
+  input: 'power-manager.plugin.desktop.in',
   output: 'power-manager.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

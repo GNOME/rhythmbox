@@ -12,7 +12,7 @@ shared_module('notification',
   install_dir: notification_plugin_dir)
 
 notification_plugin_descriptor = custom_target('notification-plugin-descriptor',
-  input: 'notification.desktop.plugin.in',
+  input: 'notification.plugin.desktop.in',
   output: 'notification.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

@@ -13,7 +13,7 @@ shared_module('rblirc',
   install: true)
 
 lirc_plugin_descriptor = custom_target('lirc-plugin-descriptor',
-  input: 'rblirc.desktop.plugin.in',
+  input: 'rblirc.plugin.desktop.in',
   output: 'rblirc.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

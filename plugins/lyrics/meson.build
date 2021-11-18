@@ -18,7 +18,7 @@ install_data(lyrics_plugin_files,
   install_dir: lyrics_plugin_dir)
 
 lyrics_plugin_descriptor = custom_target('lyrics-plugin-descriptor',
-  input: 'lyrics.desktop.plugin.in',
+  input: 'lyrics.plugin.desktop.in',
   output: 'lyrics.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

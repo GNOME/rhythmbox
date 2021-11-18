@@ -20,7 +20,7 @@ shared_module('mpris',
   install_dir: mpris_plugin_dir)
 
 mpris_plugin_descriptor = custom_target('mpris-plugin-descriptor',
-  input: 'mpris.desktop.plugin.in',
+  input: 'mpris.plugin.desktop.in',
   output: 'mpris.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

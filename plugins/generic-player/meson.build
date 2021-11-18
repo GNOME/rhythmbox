@@ -21,7 +21,7 @@ shared_module('generic-player',
   install_dir: generic_player_plugin_dir)
 
 generic_player_plugin_descriptor = custom_target('generic-player-plugin-descriptor',
-  input: 'generic-player.desktop.plugin.in',
+  input: 'generic-player.plugin.desktop.in',
   output: 'generic-player.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

@@ -12,7 +12,7 @@ shared_module('sample',
   install: true)
 
 sample_plugin_descriptor = custom_target('sample-plugin-descriptor',
-  input: 'sample.desktop.plugin.in',
+  input: 'sample.plugin.desktop.in',
   output: 'sample.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

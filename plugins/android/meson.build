@@ -18,7 +18,7 @@ shared_module('android',
   install_dir: android_plugin_dir)
 
 android_plugin_descriptor = custom_target('android-plugin-descriptor',
-  input: 'android.desktop.plugin.in',
+  input: 'android.plugin.desktop.in',
   output: 'android.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

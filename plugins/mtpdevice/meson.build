@@ -29,7 +29,7 @@ shared_module('mtpdevice',
   install_dir: mtpdevice_plugin_dir)
 
 mtpdevice_plugin_descriptor = custom_target('mtpdevice-plugin-descriptor',
-  input: 'mtpdevice.desktop.plugin.in',
+  input: 'mtpdevice.plugin.desktop.in',
   output: 'mtpdevice.plugin',
   command: msgfmt_plugin_cmd,
   install: true,
