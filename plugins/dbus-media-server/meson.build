@@ -13,7 +13,7 @@ shared_module('dbus-media-server',
   install_dir: dbus_media_server_plugin_dir)
 
 dbus_media_server_plugin_descriptor = custom_target('dbus-media-server-plugin-descriptor',
-  input: 'dbus-media-server.desktop.plugin.in',
+  input: 'dbus-media-server.plugin.desktop.in',
   output: 'dbus-media-server.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

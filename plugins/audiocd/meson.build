@@ -19,7 +19,7 @@ shared_module('audiocd',
   install_dir: audiocd_plugin_dir)
 
 audiocd_plugin_descriptor = custom_target('audiocd-plugin-descriptor',
-  input: 'audiocd.desktop.plugin.in',
+  input: 'audiocd.plugin.desktop.in',
   output: 'audiocd.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

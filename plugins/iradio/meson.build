@@ -23,7 +23,7 @@ shared_module('iradio',
   install_dir: iradio_plugin_dir)
 
 iradio_plugin_descriptor = custom_target('iradio-plugin-descriptor',
-  input: 'iradio.desktop.plugin.in',
+  input: 'iradio.plugin.desktop.in',
   output: 'iradio.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

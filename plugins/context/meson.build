@@ -15,7 +15,7 @@ install_data(context_plugin_files,
   install_dir: context_plugin_dir)
 
 context_plugin_descriptor = custom_target('context-plugin-descriptor',
-  input: 'context.desktop.plugin.in',
+  input: 'context.plugin.desktop.in',
   output: 'context.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

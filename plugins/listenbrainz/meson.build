@@ -15,7 +15,7 @@ install_data(['settings.ui'],
   install_dir: listenbrainz_plugin_data_dir)
 
 listenbrainz_plugin_descriptor = custom_target('listenbrainz-plugin-descriptor',
-  input: 'listenbrainz.desktop.plugin.in',
+  input: 'listenbrainz.plugin.desktop.in',
   output: 'listenbrainz.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

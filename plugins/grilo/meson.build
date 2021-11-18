@@ -16,7 +16,7 @@ shared_module('grilo',
   install_dir: grilo_plugin_dir)
 
 grilo_plugin_descriptor = custom_target('grilo-plugin-descriptor',
-  input: 'grilo.desktop.plugin.in',
+  input: 'grilo.plugin.desktop.in',
   output: 'grilo.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

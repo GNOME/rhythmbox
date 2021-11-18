@@ -22,7 +22,7 @@ shared_module('sample-vala',
   install: true)
 
 sample_vala_plugin_descriptor = custom_target('sample-vala-plugin-descriptor',
-  input: 'sample-vala.desktop.plugin.in',
+  input: 'sample-vala.plugin.desktop.in',
   output: 'sample-vala.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

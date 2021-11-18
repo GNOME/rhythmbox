@@ -12,7 +12,7 @@ shared_module('mmkeys',
   install_dir: mmkeys_plugin_dir)
 
 mmkeys_plugin_descriptor = custom_target('mmkeys-plugin-descriptor',
-  input: 'mmkeys.desktop.plugin.in',
+  input: 'mmkeys.plugin.desktop.in',
   output: 'mmkeys.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

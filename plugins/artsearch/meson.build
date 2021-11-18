@@ -13,7 +13,7 @@ install_data(artsearch_plugin_files,
   install_dir: artsearch_plugin_dir)
 
 artsearch_plugin_descriptor = custom_target('artsearch-plugin-descriptor',
-  input: 'artsearch.desktop.plugin.in',
+  input: 'artsearch.plugin.desktop.in',
   output: 'artsearch.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

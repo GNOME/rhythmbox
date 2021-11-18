@@ -24,7 +24,7 @@ shared_module('ipod',
   install_dir: ipod_plugin_dir)
 
 ipod_plugin_descriptor = custom_target('ipod-plugin-descriptor',
-  input: 'ipod.desktop.plugin.in',
+  input: 'ipod.plugin.desktop.in',
   output: 'ipod.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

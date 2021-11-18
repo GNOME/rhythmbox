@@ -12,7 +12,7 @@ install_data(magnatune_plugin_files,
   install_dir: magnatune_plugin_dir)
 
 magnatune_plugin_descriptor = custom_target('magnatune-plugin-descriptor',
-  input: 'magnatune.desktop.plugin.in',
+  input: 'magnatune.plugin.desktop.in',
   output: 'magnatune.plugin',
   command: msgfmt_plugin_cmd,
   install: true,

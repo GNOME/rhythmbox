@@ -9,7 +9,7 @@ install_data(webremote_plugin_files,
   install_dir: webremote_plugin_dir)
 
 webremote_plugin_descriptor = custom_target('webremote-plugin-descriptor',
-  input: 'webremote.desktop.plugin.in',
+  input: 'webremote.plugin.desktop.in',
   output: 'webremote.plugin',
   command: msgfmt_plugin_cmd,
   install: true,
