@@ -64,12 +64,13 @@ install_man(mans)
 
 appdata = 'org.gnome.Rhythmbox3.appdata.xml'
 
-appdata_file = custom_target('appdata',
+appdata_file = i18n.merge_file('appdata',
   input: appdata + '.in',
   output: appdata,
   install: true,
   install_dir: datadir / 'metainfo',
-  command: [intltool_merge, '--quiet', '--xml-style', '--utf8', po_dir, '@INPUT@', '@OUTPUT@'],
+  po_dir: po_dir,
+  type: 'xml',
 )
 
 # Validate Appdata
