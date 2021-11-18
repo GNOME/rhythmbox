@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <rhythmdb-playlists>
   <playlist type="automatic" limit-count="0" limit-size="0" limit-time="0" sort-key="FirstSeen" sort-direction="1">
-    <_name>Recently Added</_name>
+    <name>Recently Added</name>
     <conjunction>
       <equals prop="type">song</equals>
       <subquery>
@@ -12,7 +12,7 @@
     </conjunction>
   </playlist>
   <playlist type="automatic" limit-count="0" limit-size="0" limit-time="0" sort-key="LastPlayed" sort-direction="1">
-    <_name>Recently Played</_name>
+    <name>Recently Played</name>
     <conjunction>
       <equals prop="type">song</equals>
       <subquery>
@@ -23,7 +23,7 @@
     </conjunction>
   </playlist>
   <playlist type="automatic" limit-count="0" limit-size="0" limit-time="0" sort-key="Rating" sort-direction="1">
-    <_name>My Top Rated</_name>
+    <name>My Top Rated</name>
     <conjunction>
       <equals prop="type">song</equals>
       <subquery>

@@ -58,8 +58,6 @@ tdb = dependency('tdb', version: '>= 1.2.6', required: true)
 totem_plparser = dependency('totem-plparser', version: '>= 3.2.0', required: true)
 zlib = dependency('zlib', required: true)
 
-intltool_merge = find_program('intltool-merge')
-
 use_gudev = false
 if get_option('gudev').allowed()
   gudev = dependency('gudev-1.0', version: '>= 143', required: get_option('gudev'))

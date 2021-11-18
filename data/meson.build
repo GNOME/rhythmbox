@@ -43,14 +43,12 @@ gschemas_compiled = custom_target('gschemas.compiled',
   command: [glib_compile_schemas, '--targetdir=' + meson.current_build_dir(), meson.current_source_dir()]
 )
 
-# It would be nice to avoid requiring intltool, and just use Gettext's msgfmt
-# tool. The blocker is we need to write an appropriate .its file to describe
-# how to translate Rhythmbox's XML playlist format, because msgfmt doesn't
-# support the Intltool 'generic XML style' that we currently use.
-playlists_xml = custom_target('playlists.xml',
+playlists_xml = i18n.merge_file(
+  'playlists.xml',
   input: 'playlists.xml.in',
   output: 'playlists.xml',
-  command: [intltool_merge, '--quiet', '--xml-style', '--utf8', '../po', '@INPUT@', '@OUTPUT@'],
+  po_dir: po_dir,
+  data_dirs: meson.project_source_root() / 'data'
 )
 
 install_data('rhythmbox.gep',
@@ -66,12 +64,13 @@ install_man(mans)
 
 appdata = 'org.gnome.Rhythmbox3.appdata.xml'
 
-appdata_file = custom_target('appdata',
+appdata_file = i18n.merge_file('appdata',
   input: appdata + '.in',
   output: appdata,
   install: true,
   install_dir: datadir / 'metainfo',
-  command: [intltool_merge, '--quiet', '--xml-style', '--utf8', po_dir, '@INPUT@', '@OUTPUT@'],
+  po_dir: po_dir,
+  type: 'xml',
 )
 
 # Validate Appdata
