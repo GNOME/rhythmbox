@@ -48,7 +48,8 @@
 #define RECOMMENDED_ARTISTS_LIFETIME 86400   /* 24 hours */
 
 static RBAudioscrobblerUserData *
-rb_audioscrobbler_user_data_new () {
+rb_audioscrobbler_user_data_new (void)
+{
 	RBAudioscrobblerUserData *data = g_slice_new0 (RBAudioscrobblerUserData);
 
 	data->refcount = 1;

@@ -261,7 +261,7 @@ rb_gst_encoding_profile_get_media_type (GstEncodingProfile *profile)
 }
 
 static char *
-get_encoding_target_file ()
+get_encoding_target_file (void)
 {
 	char *target_file;
 
@@ -280,7 +280,7 @@ get_encoding_target_file ()
  * Return value: (transfer none): default encoding target
  */
 GstEncodingTarget *
-rb_gst_get_default_encoding_target ()
+rb_gst_get_default_encoding_target (void)
 {
 	if (default_target == NULL) {
 		char *target_file;

@@ -255,7 +255,7 @@ new_connection_cb (GDBusServer *server,
 }
 
 static int
-test_saveable_types ()
+test_saveable_types (void)
 {
 	RBMetaData *md;
 	char **saveable;
