@@ -22,7 +22,15 @@ common_cflags = [
   '-DGLIB_DISABLE_DEPRECATION_WARNINGS',
 ]
 test_cflags = [
-  '-Wno-deprecated-declarations'
+  '-Wno-deprecated-declarations',
+  '-Wformat=2',
+  '-Wno-format-nonliteral',
+  '-Wmissing-declarations',
+  '-Wmissing-prototypes',
+  '-Wnested-externs',
+  '-Wpointer-arith',
+  '-Wcast-align',
+  '-Wstrict-prototypes',
 ]
 common_cflags += cc.get_supported_arguments (test_cflags)
 add_project_arguments(common_cflags, language: 'c')
