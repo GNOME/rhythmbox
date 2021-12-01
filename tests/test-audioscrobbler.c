@@ -74,7 +74,7 @@ START_TEST (test_rb_audioscrobbler_entry)
 END_TEST
 
 static Suite *
-rb_audioscrobbler_suite ()
+rb_audioscrobbler_suite (void)
 {
 	Suite *s = suite_create ("rb-audioscrobbler");
 	TCase *tc_chain = tcase_create ("rb-audioscrobbler-entry");

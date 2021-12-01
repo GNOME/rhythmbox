@@ -117,7 +117,7 @@ START_TEST (test_rb_uri_is_descendant)
 END_TEST
 
 static Suite *
-rb_file_helpers_suite ()
+rb_file_helpers_suite (void)
 {
 	Suite *s = suite_create ("rb-file-helpers");
 	TCase *tc_chain = tcase_create ("rb-file-helpers-core");
