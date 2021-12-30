@@ -1131,6 +1131,10 @@ save_entry (RhythmDBTree *db,
 			if (podcast)
 				save_entry_ulong (ctx, elt_name, podcast->post_time, FALSE);
 			break;
+		case RHYTHMDB_PROP_PODCAST_GUID:
+			if (podcast && podcast->guid)
+				save_entry_string(ctx, elt_name, rb_refstring_get (podcast->guid));
+			break;
 		case RHYTHMDB_PROP_KEYWORD:
 			keywords = rhythmdb_entry_keywords_get (RHYTHMDB (db), entry);
 

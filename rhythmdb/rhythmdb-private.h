@@ -44,6 +44,7 @@ typedef struct {
 	RBRefString *lang;
 	RBRefString *copyright;
 	RBRefString *image;
+	RBRefString *guid;
 	gulong status;	/* 0-99: downloading
 			   100: Complete
 			   101: Error

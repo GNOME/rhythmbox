@@ -131,6 +131,7 @@ static const RhythmDBPropertyDef rhythmdb_properties[] = {
 	PROP_ENTRY(COPYRIGHT, G_TYPE_STRING, "copyright"),
 	PROP_ENTRY(IMAGE, G_TYPE_STRING, "image"),
 	PROP_ENTRY(POST_TIME, G_TYPE_ULONG, "post-time"),
+	PROP_ENTRY(PODCAST_GUID, G_TYPE_STRING, "podcast-guid"),
 
 	PROP_ENTRY(MUSICBRAINZ_TRACKID, G_TYPE_STRING, "mb-trackid"),
 	PROP_ENTRY(MUSICBRAINZ_ARTISTID, G_TYPE_STRING, "mb-artistid"),
@@ -3805,6 +3806,12 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 			g_assert (podcast);
 			podcast->post_time = g_value_get_ulong (value);
 			break;
+		case RHYTHMDB_PROP_PODCAST_GUID:
+			g_assert (podcast);
+			if (podcast->guid != NULL)
+				rb_refstring_unref (podcast->guid);
+			podcast->guid = rb_refstring_new (g_value_get_string (value));
+			break;
 		case RHYTHMDB_NUM_PROPERTIES:
 			g_assert_not_reached ();
 			break;
@@ -5070,6 +5077,11 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 	case RHYTHMDB_PROP_IMAGE:
 		if (podcast)
 			return rb_refstring_get (podcast->image);
+		else
+			return NULL;
+	case RHYTHMDB_PROP_PODCAST_GUID:
+		if (podcast)
+			return rb_refstring_get (podcast->guid);
 		else
 			return NULL;
 

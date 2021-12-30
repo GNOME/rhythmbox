@@ -80,6 +80,7 @@ podcast_post_create (RhythmDBEntryType *entry_type, RhythmDBEntry *entry)
 	podcast->lang = rb_refstring_ref (empty);
 	podcast->copyright = rb_refstring_ref (empty);
 	podcast->image = rb_refstring_ref (empty);
+	podcast->guid = NULL;
 	rb_refstring_unref (empty);
 }
 
@@ -92,6 +93,8 @@ podcast_data_destroy (RhythmDBEntryType *entry_type, RhythmDBEntry *entry)
 	rb_refstring_unref (podcast->lang);
 	rb_refstring_unref (podcast->copyright);
 	rb_refstring_unref (podcast->image);
+	if (podcast->guid != NULL)
+		rb_refstring_unref (podcast->guid);
 }
 
 /**
