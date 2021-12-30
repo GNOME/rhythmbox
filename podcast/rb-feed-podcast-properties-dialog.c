@@ -317,11 +317,7 @@ rb_feed_podcast_properties_dialog_update_summary (RBFeedPodcastPropertiesDialog 
 	const char *summary;
 
 	summary = rhythmdb_entry_get_string (dialog->priv->current_entry,
-					     RHYTHMDB_PROP_SUMMARY);
-	if (summary == NULL || summary[0] == '\0') {
-		summary = rhythmdb_entry_get_string (dialog->priv->current_entry,
-						     RHYTHMDB_PROP_DESCRIPTION);
-	}
+					     RHYTHMDB_PROP_DESCRIPTION);
 	if (summary == NULL || summary[0] == '\0') {
 		summary = rhythmdb_entry_get_string (dialog->priv->current_entry,
 						     RHYTHMDB_PROP_SUBTITLE);
