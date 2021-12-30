@@ -77,7 +77,6 @@ podcast_post_create (RhythmDBEntryType *entry_type, RhythmDBEntry *entry)
 	RBRefString *empty = rb_refstring_new ("");
 	podcast->description = rb_refstring_ref (empty);
 	podcast->subtitle = rb_refstring_ref (empty);
-	podcast->summary = rb_refstring_ref (empty);
 	podcast->lang = rb_refstring_ref (empty);
 	podcast->copyright = rb_refstring_ref (empty);
 	podcast->image = rb_refstring_ref (empty);
@@ -90,7 +89,6 @@ podcast_data_destroy (RhythmDBEntryType *entry_type, RhythmDBEntry *entry)
 	RhythmDBPodcastFields *podcast = RHYTHMDB_ENTRY_GET_TYPE_DATA (entry, RhythmDBPodcastFields);
 	rb_refstring_unref (podcast->description);
 	rb_refstring_unref (podcast->subtitle);
-	rb_refstring_unref (podcast->summary);
 	rb_refstring_unref (podcast->lang);
 	rb_refstring_unref (podcast->copyright);
 	rb_refstring_unref (podcast->image);

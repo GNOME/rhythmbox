@@ -3778,9 +3778,7 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 			podcast->subtitle = rb_refstring_new (g_value_get_string (value));
 			break;
 		case RHYTHMDB_PROP_SUMMARY:
-			g_assert (podcast);
-			rb_refstring_unref (podcast->summary);
-			podcast->summary = rb_refstring_new (g_value_get_string (value));
+			g_assert_not_reached ();
 			break;
 		case RHYTHMDB_PROP_LANG:
 			g_assert (podcast);
@@ -5058,10 +5056,7 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		else
 			return NULL;
 	case RHYTHMDB_PROP_SUMMARY:
-		if (podcast)
-			return rb_refstring_get (podcast->summary);
-		else
-			return NULL;
+		return NULL;
 	case RHYTHMDB_PROP_LANG:
 		if (podcast)
 			return rb_refstring_get (podcast->lang);

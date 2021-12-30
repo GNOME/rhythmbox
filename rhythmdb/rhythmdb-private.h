@@ -41,7 +41,6 @@ typedef struct {
 	/* podcast */
 	RBRefString *description;
 	RBRefString *subtitle;
-	RBRefString *summary;
 	RBRefString *lang;
 	RBRefString *copyright;
 	RBRefString *image;
