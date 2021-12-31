@@ -150,7 +150,9 @@ static void
 add_posts_for_feed (RBPodcastAddDialog *dialog, RBPodcastChannel *channel)
 {
 	GList *l;
+	gulong position;
 
+	position = 1;
 	for (l = channel->posts; l != NULL; l = l->next) {
 		RBPodcastItem *item = (RBPodcastItem *) l->data;
 
@@ -166,6 +168,7 @@ add_posts_for_feed (RBPodcastAddDialog *dialog, RBPodcastChannel *channel)
 					     item->guid,
 					     (item->pub_date > 0 ? item->pub_date : channel->pub_date),
 					     item->duration,
+					     position++,
 					     item->filesize);
 	}
 

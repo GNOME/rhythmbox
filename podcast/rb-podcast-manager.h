@@ -86,6 +86,7 @@ RhythmDBEntry *         rb_podcast_manager_add_post  	  	(RhythmDB *db,
 								 const char *guid,
 	        	                                       	 gulong date,
 								 gulong duration,
+								 gulong position,
 								 guint64 filesize);
 
 gboolean		rb_podcast_manager_entry_downloaded	(RhythmDBEntry *entry);

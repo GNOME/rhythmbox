@@ -821,6 +821,13 @@ podcast_post_feed_sort_func (RhythmDBEntry *a,
 	if (ret != 0)
 		return ret;
 
+	/* position in the feed (if available) */
+	a_val = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_TRACK_NUMBER);
+	b_val = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_TRACK_NUMBER);
+
+	if (a_val != b_val)
+		return (a_val < b_val) ? 1 : -1;
+
 	a_val = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_POST_TIME);
 	b_val = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_POST_TIME);
 

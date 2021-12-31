@@ -919,6 +919,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 			     const char *guid,
 			     gulong date,
 			     gulong duration,
+			     gulong position,
 			     guint64 filesize)
 {
 	RhythmDBEntryType *entry_type;
@@ -997,6 +998,11 @@ rb_podcast_manager_add_post (RhythmDB *db,
 		date = time.tv_sec;
 	g_value_set_ulong (&val, date);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_POST_TIME, &val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_ULONG);
+	g_value_set_ulong (&val, position);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &val);
 	g_value_unset (&val);
 
 	if (guid != NULL) {
@@ -1349,6 +1355,31 @@ rb_podcast_manager_insert_feed_url (RBPodcastManager *pd, const char *url)
 	g_value_unset (&last_update_val);
 }
 
+static gint
+existing_entry_sort (gconstpointer a, gconstpointer b)
+{
+	gulong ta, tb;
+
+	/* sort by track numbers (ascending), or by date (descending) if not available yet */
+	ta = rhythmdb_entry_get_ulong ((RhythmDBEntry *)a, RHYTHMDB_PROP_TRACK_NUMBER);
+	tb = rhythmdb_entry_get_ulong ((RhythmDBEntry *)b, RHYTHMDB_PROP_TRACK_NUMBER);
+	if (ta < tb)
+		return -1;
+	else if (ta > tb)
+		return 1;
+	else if (ta != 0)
+		return 0;
+
+	ta = rhythmdb_entry_get_ulong ((RhythmDBEntry *)a, RHYTHMDB_PROP_POST_TIME);
+	tb = rhythmdb_entry_get_ulong ((RhythmDBEntry *)b, RHYTHMDB_PROP_POST_TIME);
+	if (ta > tb)
+		return -1;
+	else if (ta < tb)
+		return 1;
+	else
+		return 0;
+}
+
 void
 rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 {
@@ -1364,6 +1395,7 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 	GValue error_val = { 0, };
 	gulong last_post = 0;
 	gulong new_last_post;
+	gulong position;
 	const char *title;
 	GList *download_entries = NULL;
 	gboolean new_feed, updated;
@@ -1409,6 +1441,7 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 					  data->url,
 					RHYTHMDB_QUERY_END);
 		existing_entries = g_list_copy (rhythmdb_query_result_list_get_results (results));
+		existing_entries = g_list_sort (existing_entries, existing_entry_sort);
 	} else {
 		rb_debug ("Adding podcast feed: %s", data->url);
 		entry = rhythmdb_entry_new (db,
@@ -1504,6 +1537,7 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 	/* insert episodes */
 	new_last_post = last_post;
 	updated = FALSE;
+	position = 1;
 	for (l = data->posts; l != NULL; l = g_list_next (l)) {
 		RBPodcastItem *item = (RBPodcastItem *) l->data;
 		RhythmDBEntry *post_entry;
@@ -1553,6 +1587,7 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 			    item->guid,
 			    item->pub_date > 0 ? item->pub_date : data->pub_date,
 			    item->duration,
+			    position++,
 			    item->filesize);
 
 		if (post_entry)
@@ -1623,6 +1658,14 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 			rb_debug ("entry %s is no longer present in the feed and has not been downloaded",
 				  get_remote_location (entry));
 			rhythmdb_entry_delete (db, entry);
+		} else {
+			GValue v = {0, };
+
+			/* assign track numbers to remaining entries in the same order */
+			g_value_init (&v, G_TYPE_ULONG);
+			g_value_set_ulong (&v, position++);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &v);
+			g_value_unset (&v);
 		}
 	}
 	g_clear_object (&results);
