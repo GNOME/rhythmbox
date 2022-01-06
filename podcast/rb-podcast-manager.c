@@ -918,7 +918,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 			     const char *description,
 			     const char *guid,
 			     gulong date,
-			     gulong duration,
+			     gint64 duration,
 			     gulong position,
 			     guint64 filesize)
 {
@@ -1028,10 +1028,12 @@ rb_podcast_manager_add_post (RhythmDB *db,
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &val);
 		g_value_unset (&val);
 
-		g_value_init (&val, G_TYPE_ULONG);
-		g_value_set_ulong (&val, duration);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &val);
-		g_value_unset (&val);
+		if (duration > 0) {
+			g_value_init (&val, G_TYPE_ULONG);
+			g_value_set_ulong (&val, duration);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &val);
+			g_value_unset (&val);
+		}
 
 		g_value_init (&val, G_TYPE_DOUBLE);
 		g_value_set_double (&val, 0.0);

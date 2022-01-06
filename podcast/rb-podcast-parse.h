@@ -57,7 +57,7 @@ typedef struct
 	char* author;
 	char* guid;
 	guint64 pub_date;
-	gulong duration;
+	gint64 duration;
 	guint64 filesize;
 } RBPodcastItem;
 
