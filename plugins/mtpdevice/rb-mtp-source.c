@@ -1252,7 +1252,7 @@ impl_track_upload (RBTransferTarget *target,
 
 	g_mutex_lock (&upload->lock);
 	upload->track = track;
-	upload->source = g_object_ref (target);
+	upload->source = RB_MTP_SOURCE (g_object_ref (target));
 
 	destfile = g_file_new_for_uri (dest);
 	upload->tempfile = g_file_get_path (destfile);

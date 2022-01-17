@@ -54,23 +54,19 @@
 
 
 #define RB_TYPE_ANDROID_PLUGIN		(rb_android_plugin_get_type ())
-#define RB_ANDROID_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_ANDROID_PLUGIN, RBAndroidPlugin))
-#define RB_ANDROID_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_ANDROID_PLUGIN, RBAndroidPluginClass))
-#define RB_IS_ANDROID_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_ANDROID_PLUGIN))
-#define RB_IS_ANDROID_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_ANDROID_PLUGIN))
-#define RB_ANDROID_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_ANDROID_PLUGIN, RBAndroidPluginClass))
+G_DECLARE_FINAL_TYPE (RBAndroidPlugin, rb_android_plugin, RB, ANDROID_PLUGIN, PeasExtensionBase)
 
-typedef struct
+struct _RBAndroidPlugin
 {
 	PeasExtensionBase parent;
 
 	GList *sources;
-} RBAndroidPlugin;
+};
 
-typedef struct
+struct _RBAndroidPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBAndroidPluginClass;
+};
 
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule  *module);

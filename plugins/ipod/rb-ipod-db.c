@@ -142,9 +142,7 @@ rb_itdb_save (RbIpodDb *ipod_db, GError **error)
 	if (priv->needs_shuffle_db) {
 		itdb_shuffle_write (priv->itdb, error);
 	}
-#ifdef HAVE_ITDB_START_STOP_SYNC
 	itdb_stop_sync (priv->itdb);
-#endif
 }
 
 static void
@@ -899,9 +897,7 @@ rb_ipod_db_save_async (RbIpodDb *ipod_db)
 	RbIpodDbPrivate *priv = IPOD_DB_GET_PRIVATE (ipod_db);
 
 	if (priv->save_timeout_id == 0) {
-#ifdef HAVE_ITDB_START_STOP_SYNC
 		itdb_start_sync (priv->itdb);
-#endif
 		rb_debug ("Scheduling iPod database save in 2 seconds");
 	} else {
 		g_source_remove (priv->save_timeout_id);

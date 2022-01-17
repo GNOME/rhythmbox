@@ -44,11 +44,7 @@
 #include "rb-ext-db.h"
 
 #define RB_TYPE_GRILO_PLUGIN		(rb_grilo_plugin_get_type ())
-#define RB_GRILO_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_GRILO_PLUGIN, RBGriloPlugin))
-#define RB_GRILO_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_GRILO_PLUGIN, RBGriloPluginClass))
-#define RB_IS_GRILO_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_GRILO_PLUGIN))
-#define RB_IS_GRILO_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_GRILO_PLUGIN))
-#define RB_GRILO_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_GRILO_PLUGIN, RBGriloPluginClass))
+G_DECLARE_FINAL_TYPE (RBGriloPlugin, rb_grilo_plugin, RB, GRILO_PLUGIN, PeasExtensionBase)
 
 static const char *ignored_plugins[] = {
 	"grl-bookmarks",
@@ -60,7 +56,7 @@ static const char *ignored_plugins[] = {
 	"grl-tracker"
 };
 
-typedef struct
+struct _RBGriloPlugin
 {
 	PeasExtensionBase parent;
 
@@ -71,12 +67,12 @@ typedef struct
 	RBExtDB *art_store;
 	gulong handler_id_source_added;
 	gulong handler_id_source_removed;
-} RBGriloPlugin;
+};
 
-typedef struct
+struct _RBGriloPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBGriloPluginClass;
+};
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 GType	rb_grilo_plugin_get_type		(void) G_GNUC_CONST;

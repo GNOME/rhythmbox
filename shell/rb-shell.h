@@ -101,6 +101,8 @@ struct _RBShellClass
 	void     (*database_load_complete) (RBShell *shell);
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(RBShell, g_object_unref)
+
 GType		rb_shell_get_type	(void);
 
 gboolean        rb_shell_present        (RBShell *shell, guint32 timestamp, GError **error);

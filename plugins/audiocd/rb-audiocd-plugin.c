@@ -54,13 +54,9 @@
 
 
 #define RB_TYPE_AUDIOCD_PLUGIN		(rb_audiocd_plugin_get_type ())
-#define RB_AUDIOCD_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_AUDIOCD_PLUGIN, RBAudioCdPlugin))
-#define RB_AUDIOCD_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_AUDIOCD_PLUGIN, RBAudioCdPluginClass))
-#define RB_IS_AUDIOCD_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_AUDIOCD_PLUGIN))
-#define RB_IS_AUDIOCD_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_AUDIOCD_PLUGIN))
-#define RB_AUDIOCD_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_AUDIOCD_PLUGIN, RBAudioCdPluginClass))
+G_DECLARE_FINAL_TYPE (RBAudioCdPlugin, rb_audiocd_plugin, RB, AUDIOCD_PLUGIN, PeasExtensionBase)
 
-typedef struct
+struct _RBAudioCdPlugin
 {
 	PeasExtensionBase parent;
 
@@ -68,12 +64,12 @@ typedef struct
 
 	GHashTable *sources;
 	char       *playing_uri;
-} RBAudioCdPlugin;
+};
 
-typedef struct
+struct _RBAudioCdPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBAudioCdPluginClass;
+};
 
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);

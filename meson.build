@@ -37,7 +37,10 @@ add_project_arguments(common_cflags, language: 'c')
 
 libmath = cc.find_library('m')
 
-glib_required = '2.38.0'
+glib_required = '2.56.0'
+cdata.set('GLIB_VERSION_MIN_REQUIRED', 'GLIB_VERSION_2_56')
+cdata.set('GLIB_VERSION_MAX_ALLOWED', 'GLIB_VERSION_2_56')
+
 gstreamer_required = '1.4.0'
 
 cairo = dependency('cairo', required: true)
@@ -64,7 +67,6 @@ libxml = dependency('libxml-2.0', version: '>= 2.7.8', required: true)
 pango = dependency('pango', required: true)
 tdb = dependency('tdb', version: '>= 1.2.6', required: true)
 totem_plparser = dependency('totem-plparser', version: '>= 3.2.0', required: true)
-zlib = dependency('zlib', required: true)
 
 use_gudev = false
 if get_option('gudev').allowed()
@@ -77,10 +79,9 @@ endif
 
 use_ipod = false
 if get_option('ipod').allowed()
-  libgpod = dependency('libgpod-1.0', version: '>= 0.6', required: get_option('ipod'))
+  libgpod = dependency('libgpod-1.0', version: '>= 0.7.92', required: get_option('ipod'))
   if libgpod.found()
     use_ipod = true
-    cdata.set('HAVE_ITDB_START_STOP_SYNC', libgpod.version() >= '0.7.92')
   endif
 endif
 
@@ -147,6 +148,7 @@ cdata.set10('WITH_RHYTHMDB_TREE', 1)
 cdata.set10('RHYTHMDB_ENABLE_COHERENCE_CHECK', get_option('rhythmdb_debug'))
 
 have_gnu_fwrite_unlocked = cc.has_function('fwrite_unlocked')
+cdata.set10('HAVE_GNU_FWRITE_UNLOCKED', have_gnu_fwrite_unlocked)
 
 gdk_targets = run_command(['pkg-config', '--variable', 'targets', 'gdk-3.0']).stdout().strip()
 

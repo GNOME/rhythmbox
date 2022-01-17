@@ -1423,7 +1423,7 @@ impl_add_uri (RBSource *asource,
 
 		cbdata = g_new0 (struct ImportJobCallbackData, 1);
 		cbdata->uri = g_strdup (uri);
-		cbdata->source = g_object_ref (source);
+		cbdata->source = RB_SOURCE (g_object_ref (source));
 		cbdata->callback = callback;
 		cbdata->data = data;
 		cbdata->destroy_data = destroy_data;

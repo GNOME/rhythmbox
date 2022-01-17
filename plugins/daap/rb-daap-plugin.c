@@ -146,7 +146,7 @@ RB_DEFINE_PLUGIN(RB_TYPE_DAAP_PLUGIN,
 static void
 rb_daap_plugin_init (RBDaapPlugin *plugin)
 {
-	GSettings *daap_settings;
+	g_autoptr(GSettings) daap_settings = NULL;
 
 	rb_debug ("RBDaapPlugin initialising");
 	rb_daap_src_set_plugin (G_OBJECT (plugin));
@@ -155,7 +155,6 @@ rb_daap_plugin_init (RBDaapPlugin *plugin)
 
 	daap_settings = g_settings_new ("org.gnome.rhythmbox.plugins.daap");
 	plugin->dacp_settings = g_settings_get_child (daap_settings, "dacp");
-	g_object_unref (daap_settings);
 
 	rb_register_gst_plugin ();
 }
@@ -165,7 +164,7 @@ impl_activate (PeasActivatable *bplugin)
 {
 	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (bplugin);
 	gboolean no_registration;
-	RBShell *shell;
+	g_autoptr(RBShell) shell = NULL;
 	GApplication *app;
 
 	plugin->shutdown = FALSE;
@@ -211,15 +210,13 @@ impl_activate (PeasActivatable *bplugin)
 	}
 
 	register_daap_dbus_iface (plugin);
-
-	g_object_unref (shell);
 }
 
 static void
 impl_deactivate	(PeasActivatable *bplugin)
 {
 	RBDaapPlugin *plugin = RB_DAAP_PLUGIN (bplugin);
-	RBShell *shell;
+	g_autoptr(RBShell) shell = NULL;
 
 	rb_debug ("Shutting down DAAP plugin");
 
@@ -238,29 +235,11 @@ impl_deactivate	(PeasActivatable *bplugin)
 		stop_browsing (plugin);
 	}
 
-	if (plugin->settings) {
-		g_object_unref (plugin->settings);
-		plugin->settings = NULL;
-	}
-
-	g_object_unref (plugin->dacp_share);
-
-	if (plugin->preferences) {
-		gtk_widget_destroy (plugin->preferences);
-		plugin->preferences = NULL;
-	}
-
-	if (plugin->builder) {
-		g_object_unref (plugin->builder);
-		plugin->builder = NULL;
-	}
-
-	if (plugin->bus) {
-		g_object_unref (plugin->bus);
-		plugin->bus = NULL;
-	}
-
-	g_object_unref (shell);
+	g_clear_object (&plugin->settings);
+	g_clear_object (&plugin->dacp_share);
+	g_clear_pointer (&plugin->preferences, gtk_widget_destroy);
+	g_clear_object (&plugin->builder);
+	g_clear_object (&plugin->bus);
 }
 
 /* DAAP share icons */
@@ -296,7 +275,7 @@ mdns_service_added (DMAPMdnsBrowser *browser,
 		    RBDaapPlugin *plugin)
 {
 	RBSource *source;
-	RBShell *shell;
+	g_autoptr(RBShell) shell = NULL;
 
 	rb_debug ("New service: %s name=%s host=%s port=%u password=%d",
 		   service->service_name,
@@ -321,8 +300,6 @@ mdns_service_added (DMAPMdnsBrowser *browser,
 		rb_shell_append_display_page (shell,
 					      RB_DISPLAY_PAGE (source),
 					      RB_DISPLAY_PAGE_GROUP_SHARED);
-
-		g_object_unref (shell);
 	} else {
 		g_object_set (source,
 			      "name", service->name,
@@ -403,7 +380,7 @@ start_browsing (RBDaapPlugin *plugin)
 static void
 stop_browsing (RBDaapPlugin *plugin)
 {
-	GError *error;
+	g_autoptr(GError) error = NULL;
 
 	if (plugin->mdns_browser == NULL) {
 		return;
@@ -419,13 +396,10 @@ stop_browsing (RBDaapPlugin *plugin)
 
 	error = NULL;
 	dmap_mdns_browser_stop (plugin->mdns_browser, &error);
-	if (error != NULL) {
+	if (error != NULL)
 		g_warning ("Unable to stop mDNS browsing: %s", error->message);
-		g_error_free (error);
-	}
 
-	g_object_unref (plugin->mdns_browser);
-	plugin->mdns_browser = NULL;
+	g_clear_object (&plugin->mdns_browser);
 }
 
 static void
@@ -589,15 +563,12 @@ static void
 forget_remotes_button_toggled_cb (GtkToggleButton *button,
 				  gpointer data)
 {
-	GSettings *dacp_settings;
-	GSettings *daap_settings;
+	g_autoptr(GSettings) dacp_settings = NULL;
+	g_autoptr(GSettings) daap_settings = NULL;
 
 	daap_settings = g_settings_new ("org.gnome.rhythmbox.plugins.daap");
 	dacp_settings = g_settings_get_child (daap_settings, "dacp");
 	g_settings_reset (dacp_settings, "known-remotes");
-
-	g_object_unref (dacp_settings);
-	g_object_unref (daap_settings);
 }
 
 static gboolean
@@ -605,10 +576,10 @@ share_name_entry_focus_out_event_cb (GtkEntry *entry,
 				     GdkEventFocus *event,
 				     gpointer data)
 {
-	GSettings  *settings;
+	g_autoptr(GSettings) settings = NULL;
+	g_autofree char *old_name = NULL;
 	gboolean    changed;
 	const char *name;
-	char       *old_name;
 
 	settings = g_settings_new ("org.gnome.rhythmbox.sharing");
 	name = gtk_entry_get_text (entry);
@@ -628,9 +599,6 @@ share_name_entry_focus_out_event_cb (GtkEntry *entry,
 		g_settings_set_string (settings, "share-name", name);
 	}
 
-	g_free (old_name);
-	g_object_unref (settings);
-
 	return FALSE;
 }
 
@@ -639,10 +607,10 @@ share_password_entry_focus_out_event_cb (GtkEntry *entry,
 					 GdkEventFocus *event,
 					 RBDaapPlugin *plugin)
 {
-	GSettings  *settings;
+	g_autoptr(GSettings) settings = NULL;
+	g_autofree char *old_pw = NULL;
 	gboolean    changed;
 	const char *pw;
-	char       *old_pw;
 
 	pw = gtk_entry_get_text (entry);
 	settings = g_settings_new ("org.gnome.rhythmbox.sharing");
@@ -661,9 +629,6 @@ share_password_entry_focus_out_event_cb (GtkEntry *entry,
 	if (changed) {
 		g_settings_set_string (settings, "share-password", pw);
 	}
-
-	g_free (old_pw);
-	g_object_unref (settings);
 
 	return FALSE;
 }
@@ -808,8 +773,8 @@ static const GDBusInterfaceVTable daap_dbus_vtable = {
 static void
 register_daap_dbus_iface (RBDaapPlugin *plugin)
 {
-	GError *error = NULL;
-	GDBusNodeInfo *node_info;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GDBusNodeInfo) node_info = NULL;
 	GDBusInterfaceInfo *iface_info;
 
 	if (plugin->dbus_intf_id != 0) {
@@ -821,7 +786,6 @@ register_daap_dbus_iface (RBDaapPlugin *plugin)
 		plugin->bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
 		if (plugin->bus == NULL) {
 			rb_debug ("Unable to register DAAP DBus interface: %s", error->message);
-			g_clear_error (&error);
 			return;
 		}
 	}
@@ -829,7 +793,6 @@ register_daap_dbus_iface (RBDaapPlugin *plugin)
 	node_info = g_dbus_node_info_new_for_xml (rb_daap_dbus_iface, &error);
 	if (error != NULL) {
 		rb_debug ("Unable to parse DAAP DBus spec: %s", error->message);
-		g_clear_error (&error);
 		return;
 	}
 
@@ -842,12 +805,8 @@ register_daap_dbus_iface (RBDaapPlugin *plugin)
 						   g_object_ref (plugin),
 						   g_object_unref,
 						   &error);
-	if (error != NULL) {
+	if (error != NULL)
 		rb_debug ("Unable to register DAAP DBus interface: %s", error->message);
-		g_clear_error (&error);
-	}
-
-	g_dbus_node_info_unref (node_info);
 }
 
 static void

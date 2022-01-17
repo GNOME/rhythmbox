@@ -50,23 +50,19 @@
 
 
 #define RB_TYPE_IRADIO_PLUGIN		(rb_iradio_plugin_get_type ())
-#define RB_IRADIO_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_IRADIO_PLUGIN, RBIRadioPlugin))
-#define RB_IRADIO_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_IRADIO_PLUGIN, RBIRadioPluginClass))
-#define RB_IS_IRADIO_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_IRADIO_PLUGIN))
-#define RB_IS_IRADIO_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_IRADIO_PLUGIN))
-#define RB_IRADIO_PLUGIN_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_IRADIO_PLUGIN, RBIRadioPluginClass))
+G_DECLARE_FINAL_TYPE (RBIRadioPlugin, rb_iradio_plugin, RB, IRADIO_PLUGIN, PeasExtensionBase)
 
-typedef struct
+struct _RBIRadioPlugin
 {
 	PeasExtensionBase parent;
 
 	RBSource *source;
-} RBIRadioPlugin;
+};
 
-typedef struct
+struct _RBIRadioPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBIRadioPluginClass;
+};
 
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);

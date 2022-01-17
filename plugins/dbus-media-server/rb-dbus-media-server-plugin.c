@@ -48,11 +48,7 @@
 #include <rhythmdb/rhythmdb-property-model.h>
 
 #define RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN	(rb_dbus_media_server_plugin_get_type ())
-#define RB_DBUS_MEDIA_SERVER_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN, RBMediaServer2Plugin))
-#define RB_DBUS_MEDIA_SERVER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN, RBMediaServer2PluginClass))
-#define RB_IS_DBUS_MEDIA_SERVER_PLUGIN(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN))
-#define RB_IS_DBUS_MEDIA_SERVER_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN))
-#define RB_DBUS_MEDIA_SERVER_PLUGIN_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN, RBMediaServer2PluginClass))
+G_DECLARE_FINAL_TYPE (RBDbusMediaServerPlugin, rb_dbus_media_server_plugin, RB, DBUS_MEDIA_SERVER_PLUGIN, PeasExtensionBase)
 
 #include "dbus-media-server-spec.h"
 
@@ -66,7 +62,7 @@
 #define RB_MEDIASERVER2_ENTRY_SUBTREE	RB_MEDIASERVER2_PREFIX "Entry"
 #define RB_MEDIASERVER2_ENTRY_PREFIX	RB_MEDIASERVER2_ENTRY_SUBTREE "/"
 
-typedef struct
+struct _RBDbusMediaServerPlugin
 {
 	PeasExtensionBase parent;
 
@@ -89,12 +85,12 @@ typedef struct
 	GSettings *settings;
 	RhythmDB *db;
 	RBDisplayPageModel *display_page_model;
-} RBMediaServer2Plugin;
+};
 
-typedef struct
+struct _RBDbusMediaServerPluginClass
 {
 	PeasExtensionBaseClass parent_class;
-} RBMediaServer2PluginClass;
+};
 
 typedef struct
 {
@@ -106,7 +102,7 @@ typedef struct
 
 	gboolean (*match_source) (RBSource *source);
 
-	RBMediaServer2Plugin *plugin;
+	RBDbusMediaServerPlugin *plugin;
 } CategoryRegistrationData;
 
 typedef struct
@@ -122,7 +118,7 @@ typedef struct
 	guint all_tracks_reg_id[2];
 	GList *properties;
 
-	RBMediaServer2Plugin *plugin;
+	RBDbusMediaServerPlugin *plugin;
 } SourceRegistrationData;
 
 typedef struct
@@ -138,23 +134,23 @@ typedef struct
 	GList *updated_values;
 } SourcePropertyRegistrationData;
 
-RB_DEFINE_PLUGIN(RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN, RBMediaServer2Plugin, rb_dbus_media_server_plugin,)
+RB_DEFINE_PLUGIN(RB_TYPE_DBUS_MEDIA_SERVER_PLUGIN, RBDbusMediaServerPlugin, rb_dbus_media_server_plugin,)
 
 G_MODULE_EXPORT void peas_register_types (PeasObjectModule *module);
 
-static void unregister_source_container (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data, gboolean deactivating);
-static void emit_source_tracks_property_updates (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data);
-static void emit_property_value_property_updates (RBMediaServer2Plugin *plugin, SourcePropertyRegistrationData *source_data, RBRefString *value);
-static void emit_category_container_property_updates (RBMediaServer2Plugin *plugin, CategoryRegistrationData *category_data);
-static void emit_root_property_updates (RBMediaServer2Plugin *plugin);
+static void unregister_source_container (RBDbusMediaServerPlugin *plugin, SourceRegistrationData *source_data, gboolean deactivating);
+static void emit_source_tracks_property_updates (RBDbusMediaServerPlugin *plugin, SourceRegistrationData *source_data);
+static void emit_property_value_property_updates (RBDbusMediaServerPlugin *plugin, SourcePropertyRegistrationData *source_data, RBRefString *value);
+static void emit_category_container_property_updates (RBDbusMediaServerPlugin *plugin, CategoryRegistrationData *category_data);
+static void emit_root_property_updates (RBDbusMediaServerPlugin *plugin);
 
 static void
-rb_dbus_media_server_plugin_init (RBMediaServer2Plugin *plugin)
+rb_dbus_media_server_plugin_init (RBDbusMediaServerPlugin *plugin)
 {
 }
 
 static void
-register_object (RBMediaServer2Plugin *plugin,
+register_object (RBDbusMediaServerPlugin *plugin,
 		 const GDBusInterfaceVTable *vtable,
 		 GDBusInterfaceInfo *iface_info,
 		 const char *object_path,
@@ -195,7 +191,7 @@ register_object (RBMediaServer2Plugin *plugin,
 }
 
 static void
-unregister_object (RBMediaServer2Plugin *plugin, guint *ids)
+unregister_object (RBDbusMediaServerPlugin *plugin, guint *ids)
 {
 	if (ids[0] != 0) {
 		g_dbus_connection_unregister_object (plugin->connection, ids[0]);
@@ -328,7 +324,7 @@ get_entry_property (GDBusConnection *connection,
 		    const char *interface_name,
 		    const char *property_name,
 		    GError **error,
-		    RBMediaServer2Plugin *plugin)
+		    RBDbusMediaServerPlugin *plugin)
 {
 	RhythmDBEntry *entry;
 
@@ -359,7 +355,7 @@ static char **
 enumerate_entry_subtree (GDBusConnection *connection,
 			 const char *sender,
 			 const char *object_path,
-			 RBMediaServer2Plugin *plugin)
+			 RBDbusMediaServerPlugin *plugin)
 {
 	return (char **)g_new0(char *, 1);
 }
@@ -369,7 +365,7 @@ introspect_entry_subtree (GDBusConnection *connection,
 			  const char *sender,
 			  const char *object_path,
 			  const char *node,
-			  RBMediaServer2Plugin *plugin)
+			  RBDbusMediaServerPlugin *plugin)
 {
 	GPtrArray *p;
 	GDBusInterfaceInfo *i;
@@ -394,7 +390,7 @@ dispatch_entry_subtree (GDBusConnection *connection,
 			const char *interface_name,
 			const char *node,
 			gpointer *out_user_data,
-			RBMediaServer2Plugin *plugin)
+			RBDbusMediaServerPlugin *plugin)
 {
 	*out_user_data = plugin;
 	return &entry_vtable;
@@ -429,7 +425,7 @@ emit_updated (GDBusConnection *connection, const char *path)
 }
 
 static gboolean
-emit_container_updated_cb (RBMediaServer2Plugin *plugin)
+emit_container_updated_cb (RBDbusMediaServerPlugin *plugin)
 {
 	GList *l, *ll, *lll;
 
@@ -494,7 +490,7 @@ emit_container_updated_cb (RBMediaServer2Plugin *plugin)
 }
 
 static void
-emit_updated_in_idle (RBMediaServer2Plugin *plugin)
+emit_updated_in_idle (RBDbusMediaServerPlugin *plugin)
 {
 	if (plugin->emit_updated_id == 0) {
 		plugin->emit_updated_id =
@@ -752,7 +748,7 @@ get_property_value_property (GDBusConnection *connection,
 }
 
 static void
-emit_property_value_property_updates (RBMediaServer2Plugin *plugin, SourcePropertyRegistrationData *data, RBRefString *value)
+emit_property_value_property_updates (RBDbusMediaServerPlugin *plugin, SourcePropertyRegistrationData *data, RBRefString *value)
 {
 	GError *error = NULL;
 	const char *invalidated[] = { NULL };
@@ -1273,7 +1269,7 @@ get_source_tracks_property (GDBusConnection *connection,
 }
 
 static void
-add_source_tracks_property (RBMediaServer2Plugin *plugin, GVariantBuilder *properties, const char *iface, const char *property, SourceRegistrationData *source_data)
+add_source_tracks_property (RBDbusMediaServerPlugin *plugin, GVariantBuilder *properties, const char *iface, const char *property, SourceRegistrationData *source_data)
 {
 	GVariant *v;
 	v = get_source_tracks_property (plugin->connection, NULL, source_data->dbus_path, iface, property, NULL, source_data);
@@ -1281,7 +1277,7 @@ add_source_tracks_property (RBMediaServer2Plugin *plugin, GVariantBuilder *prope
 }
 
 static void
-emit_source_tracks_property_updates (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data)
+emit_source_tracks_property_updates (RBDbusMediaServerPlugin *plugin, SourceRegistrationData *source_data)
 {
 	GError *error = NULL;
 	const char *invalidated[] = { NULL };
@@ -1575,7 +1571,7 @@ add_source_container (GVariantBuilder *list, SourceRegistrationData *source_data
 }
 
 static int
-count_sources_by_parent (RBMediaServer2Plugin *plugin, const char *parent_dbus_path)
+count_sources_by_parent (RBDbusMediaServerPlugin *plugin, const char *parent_dbus_path)
 {
 	GList *l;
 	int count = 0;
@@ -1590,7 +1586,7 @@ count_sources_by_parent (RBMediaServer2Plugin *plugin, const char *parent_dbus_p
 }
 
 static void
-list_sources_by_parent (RBMediaServer2Plugin *plugin,
+list_sources_by_parent (RBDbusMediaServerPlugin *plugin,
 			GVariantBuilder *list,
 			const char *parent_dbus_path,
 			guint *list_offset,
@@ -1621,7 +1617,7 @@ list_sources_by_parent (RBMediaServer2Plugin *plugin,
 }
 
 static SourceRegistrationData *
-find_registration_data (RBMediaServer2Plugin *plugin, RBSource *source)
+find_registration_data (RBDbusMediaServerPlugin *plugin, RBSource *source)
 {
 	GList *l;
 	for (l = plugin->sources; l != NULL; l = l->next) {
@@ -1759,7 +1755,7 @@ name_updated_cb (RBSource *source, GParamSpec *pspec, SourceRegistrationData *so
 }
 
 static void
-source_deleted_cb (RBDisplayPage *page, RBMediaServer2Plugin *plugin)
+source_deleted_cb (RBDisplayPage *page, RBDbusMediaServerPlugin *plugin)
 {
 	SourceRegistrationData *source_data;
 
@@ -1772,7 +1768,7 @@ source_deleted_cb (RBDisplayPage *page, RBMediaServer2Plugin *plugin)
 
 
 static SourceRegistrationData *
-register_source_container (RBMediaServer2Plugin *plugin,
+register_source_container (RBDbusMediaServerPlugin *plugin,
 			   RBSource *source,
 			   const char *dbus_path,
 			   const char *parent_dbus_path,
@@ -1816,7 +1812,7 @@ register_source_container (RBMediaServer2Plugin *plugin,
 }
 
 static void
-unregister_source_container (RBMediaServer2Plugin *plugin, SourceRegistrationData *source_data, gboolean deactivating)
+unregister_source_container (RBDbusMediaServerPlugin *plugin, SourceRegistrationData *source_data, gboolean deactivating)
 {
 	/* if object registration ids exist, unregister the object */
 	unregister_object (plugin, source_data->dbus_reg_id);
@@ -1879,7 +1875,7 @@ add_category_container (GVariantBuilder *list, CategoryRegistrationData *data, c
 }
 
 static void
-list_categories_by_parent (RBMediaServer2Plugin *plugin,
+list_categories_by_parent (RBDbusMediaServerPlugin *plugin,
 			   GVariantBuilder *list,
 			   const char *parent_dbus_path,
 			   guint *list_offset,
@@ -1910,7 +1906,7 @@ list_categories_by_parent (RBMediaServer2Plugin *plugin,
 }
 
 static int
-count_categories_by_parent (RBMediaServer2Plugin *plugin, const char *parent_dbus_path)
+count_categories_by_parent (RBDbusMediaServerPlugin *plugin, const char *parent_dbus_path)
 {
 	GList *l;
 	int count = 0;
@@ -2017,7 +2013,7 @@ get_category_container_property (GDBusConnection *connection,
 }
 
 static void
-add_category_container_property (RBMediaServer2Plugin *plugin, GVariantBuilder *properties, const char *iface, const char *property, CategoryRegistrationData *category_data)
+add_category_container_property (RBDbusMediaServerPlugin *plugin, GVariantBuilder *properties, const char *iface, const char *property, CategoryRegistrationData *category_data)
 {
 	GVariant *v;
 	v = get_category_container_property (plugin->connection, NULL, category_data->dbus_path, iface, property, NULL, category_data);
@@ -2025,7 +2021,7 @@ add_category_container_property (RBMediaServer2Plugin *plugin, GVariantBuilder *
 }
 
 static void
-emit_category_container_property_updates (RBMediaServer2Plugin *plugin, CategoryRegistrationData *category_data)
+emit_category_container_property_updates (RBDbusMediaServerPlugin *plugin, CategoryRegistrationData *category_data)
 {
 	GError *error = NULL;
 	const char *invalidated[] = { NULL };
@@ -2067,7 +2063,7 @@ static const GDBusInterfaceVTable category_container_vtable =
 };
 
 static void
-register_category_container (RBMediaServer2Plugin *plugin,
+register_category_container (RBDbusMediaServerPlugin *plugin,
 			     const char *name,
 			     const char *dbus_path,
 			     const char *parent_dbus_path,
@@ -2103,7 +2099,7 @@ destroy_category_data (CategoryRegistrationData *category_data)
 }
 
 static void
-unregister_category_container (RBMediaServer2Plugin *plugin, CategoryRegistrationData *category_data, gboolean deactivating)
+unregister_category_container (RBDbusMediaServerPlugin *plugin, CategoryRegistrationData *category_data, gboolean deactivating)
 {
 	/* if object registration ids exist, unregister the object */
 	unregister_object (plugin, category_data->dbus_reg_id);
@@ -2129,7 +2125,7 @@ root_method_call (GDBusConnection *connection,
 		  const char *method_name,
 		  GVariant *parameters,
 		  GDBusMethodInvocation *invocation,
-		  RBMediaServer2Plugin *plugin)
+		  RBDbusMediaServerPlugin *plugin)
 {
 	if (g_strcmp0 (interface_name, MEDIA_SERVER2_CONTAINER_IFACE_NAME) == 0) {
 		guint list_offset;
@@ -2178,7 +2174,7 @@ get_root_property (GDBusConnection *connection,
 		   const char *interface_name,
 		   const char *property_name,
 		   GError **error,
-		   RBMediaServer2Plugin *plugin)
+		   RBDbusMediaServerPlugin *plugin)
 {
 	GVariant *v;
 	int count;
@@ -2223,7 +2219,7 @@ get_root_property (GDBusConnection *connection,
 }
 
 static void
-add_root_property (RBMediaServer2Plugin *plugin, GVariantBuilder *properties, const char *iface, const char *property)
+add_root_property (RBDbusMediaServerPlugin *plugin, GVariantBuilder *properties, const char *iface, const char *property)
 {
 	GVariant *v;
 	v = get_root_property (plugin->connection, NULL, RB_MEDIASERVER2_ROOT, iface, property, NULL, plugin);
@@ -2231,7 +2227,7 @@ add_root_property (RBMediaServer2Plugin *plugin, GVariantBuilder *properties, co
 }
 
 static void
-emit_root_property_updates (RBMediaServer2Plugin *plugin)
+emit_root_property_updates (RBDbusMediaServerPlugin *plugin)
 {
 	GError *error = NULL;
 	const char *invalidated[] = { NULL };
@@ -2298,7 +2294,7 @@ is_shareable_device (RBSource *source)
 */
 
 static void
-display_page_inserted_cb (RBDisplayPageModel *model, RBDisplayPage *page, GtkTreeIter *iter, RBMediaServer2Plugin *plugin)
+display_page_inserted_cb (RBDisplayPageModel *model, RBDisplayPage *page, GtkTreeIter *iter, RBDbusMediaServerPlugin *plugin)
 {
 	GList *l;
 
@@ -2323,7 +2319,7 @@ display_page_inserted_cb (RBDisplayPageModel *model, RBDisplayPage *page, GtkTre
 }
 
 static gboolean
-display_page_foreach_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBMediaServer2Plugin *plugin)
+display_page_foreach_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, RBDbusMediaServerPlugin *plugin)
 {
 	RBDisplayPage *page;
 
@@ -2339,13 +2335,13 @@ display_page_foreach_cb (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *it
 /* plugin */
 
 static void
-name_acquired_cb (GDBusConnection *connection, const char *name, RBMediaServer2Plugin *plugin)
+name_acquired_cb (GDBusConnection *connection, const char *name, RBDbusMediaServerPlugin *plugin)
 {
 	rb_debug ("acquired dbus name %s", name);
 }
 
 static void
-name_lost_cb (GDBusConnection *connection, const char *name, RBMediaServer2Plugin *plugin)
+name_lost_cb (GDBusConnection *connection, const char *name, RBDbusMediaServerPlugin *plugin)
 {
 	rb_debug ("lost dbus name %s", name);
 }
@@ -2353,7 +2349,7 @@ name_lost_cb (GDBusConnection *connection, const char *name, RBMediaServer2Plugi
 static void
 impl_activate (PeasActivatable *bplugin)
 {
-	RBMediaServer2Plugin *plugin;
+	RBDbusMediaServerPlugin *plugin;
 	GDBusInterfaceInfo *container_iface;
 	SourceRegistrationData *source_data;
 	RBSource *source;
@@ -2439,7 +2435,7 @@ impl_activate (PeasActivatable *bplugin)
 static void
 impl_deactivate	(PeasActivatable *bplugin)
 {
-	RBMediaServer2Plugin *plugin;
+	RBDbusMediaServerPlugin *plugin;
 	GList *l;
 
 	plugin = RB_DBUS_MEDIA_SERVER_PLUGIN (bplugin);
