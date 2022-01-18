@@ -28,3 +28,9 @@
 
 /* Define to the version of this package. */
 #define VERSION "@VERSION@"
+
+/* Define if prctl is available. */
+#mesondefine HAVE_PRCTL
+
+/* Define if pthread_getname_np is available. */
+#mesondefine HAVE_PTHREAD_GETNAME_NP

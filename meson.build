@@ -145,6 +145,19 @@ cdata.set('HAVE_CFMAKERAW', have_cfmakeraw)
 
 gdk_targets = run_command(['pkg-config', '--variable', 'targets', 'gdk-3.0']).stdout().strip()
 
+have_prctl = cc.has_function('prctl', prefix: '#include <sys/prctl.h>')
+cdata.set('HAVE_PRCTL', have_prctl)
+
+have_pthread_getname_np = cc.links('''
+  #include <pthread.h>
+  int main() {
+    char nm[17];
+    pthread_getname_np(pthread_self(), nm, sizeof(nm));
+  }''', name: 'pthread_getname_np')
+cdata.set('HAVE_PTHREAD_GETNAME_NP', have_pthread_getname_np)
+
+
+
 totem_plparser_uselibcamel = run_command(['pkg-config', '--variable', 'uselibcamel', 'totem-plparser']).stdout().strip()
 
 if gdk_targets.contains('x11')

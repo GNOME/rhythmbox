@@ -36,6 +36,11 @@
 #include <stdarg.h>
 #include <signal.h>
 #include <time.h>
+#if defined(HAVE_PRCTL)
+#include <sys/prctl.h>
+#elif defined(HAVE_PTHREAD_GETNAME_NP)
+#include <pthread.h>
+#endif
 
 #include <glib.h>
 
@@ -95,12 +100,21 @@ _rb_debug_print (const char *func, const char *file, const int line, gboolean ne
 {
 	char str_time[255];
 	time_t the_time;
+	char thread_name[17] = {0,};
+
+#if defined(HAVE_PRCTL)
+	prctl(PR_GET_NAME, thread_name, 0, 0, 0);
+#elif defined(HAVE_PTHREAD_GETNAME_NP)
+	pthread_getname_np(pthread_self (), thread_name, sizeof(thread_name));
+#endif
+	if (thread_name[0] == '\0' || g_str_equal (thread_name, "pool-rhythmbox"))
+		snprintf (thread_name, sizeof (thread_name)-1, "%p", g_thread_self ());
 
 	time (&the_time);
 	strftime (str_time, 254, "%H:%M:%S", localtime (&the_time));
 
-	g_printerr (newline ? "(%s) [%p] [%s] %s:%d: %s\n" : "(%s) [%p] [%s] %s:%d: %s",
-		    str_time, g_thread_self (), func, file, line, buffer);
+	g_printerr (newline ? "(%s) <%s> [%s] %s:%d: %s\n" : "(%s) <%s> [%s] %s:%d: %s",
+		    str_time, thread_name, func, file, line, buffer);
 }
 
 /**
