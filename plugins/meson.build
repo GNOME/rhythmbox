@@ -33,7 +33,6 @@ if enable_python
   subdir('pythonconsole')
   subdir('rbzeitgeist')
   subdir('replaygain')
-  subdir('soundcloud')
   subdir('webremote')
   subdir('rb')
 
