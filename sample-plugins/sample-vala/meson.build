@@ -16,7 +16,6 @@ vala_deps = [
 
 shared_module('sample-vala',
   sample_vala_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   dependencies: vala_deps,
   install_dir: sample_vala_plugin_dir,
   install: true)

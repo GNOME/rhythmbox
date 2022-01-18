@@ -7,7 +7,6 @@ brasero_disc_recorder_sources = [
 
 shared_module('cd-recorder',
   brasero_disc_recorder_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   dependencies: [rhythmbox_core_dep, brasero_media],
   install: true,
   install_dir: brasero_disc_recorder_plugin_dir)

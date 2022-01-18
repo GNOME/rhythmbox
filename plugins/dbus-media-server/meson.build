@@ -7,7 +7,6 @@ dbus_media_server_sources = [
 
 shared_module('dbus-media-server',
   dbus_media_server_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   dependencies: [rhythmbox_core_dep],
   install: true,
   install_dir: dbus_media_server_plugin_dir)

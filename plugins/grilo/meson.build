@@ -10,7 +10,6 @@ grilo_dependencies = [rhythmbox_core_dep, grilo]
 
 shared_module('grilo',
   grilo_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   dependencies: grilo_dependencies,
   install: true,
   install_dir: grilo_plugin_dir)

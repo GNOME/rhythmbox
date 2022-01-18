@@ -6,7 +6,6 @@ notification_sources = [
 shared_module('notification',
   notification_sources,
   dependencies: [rhythmbox_core_dep, libnotify, pango],
-  c_args: ['-DHAVE_CONFIG_H'],
   include_directories: pluginsinc,
   install: true,
   install_dir: notification_plugin_dir)

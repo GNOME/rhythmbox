@@ -15,7 +15,6 @@ generic_player_sources = [
 
 shared_module('generic-player',
   generic_player_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   dependencies: [rhythmbox_core_dep],
   install: true,
   install_dir: generic_player_plugin_dir)

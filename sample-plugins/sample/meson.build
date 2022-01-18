@@ -6,7 +6,6 @@ sample_sources = [
 
 shared_module('sample',
   sample_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   dependencies: [rhythmbox_core_dep],
   install_dir: sample_plugin_dir,
   install: true)

@@ -11,7 +11,6 @@ android_sources = [
 
 shared_module('android',
   android_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   dependencies: [rhythmbox_core_dep, gudev],
   include_directories: pluginsinc,
   install: true,

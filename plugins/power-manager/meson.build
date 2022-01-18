@@ -7,7 +7,6 @@ power_manager_sources = [
 
 shared_module('power-manager',
   power_manager_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   dependencies: [rhythmbox_core_dep],
   install: true,
   install_dir: power_manager_plugin_dir)

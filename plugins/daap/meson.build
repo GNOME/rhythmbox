@@ -22,7 +22,7 @@ daap_sources = [
 ]
 
 daap_dependencies = [rhythmbox_core_dep, pango]
-args = ['-DHAVE_CONFIG_H']
+args = []
 
 if libdmapsharing4.found()
   daap_dependencies += libdmapsharing4

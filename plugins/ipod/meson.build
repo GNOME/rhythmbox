@@ -18,7 +18,6 @@ ipod_dependencies = [rhythmbox_core_dep, libgpod]
 
 shared_module('ipod',
   ipod_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   dependencies: ipod_dependencies,
   install: true,
   install_dir: ipod_plugin_dir)

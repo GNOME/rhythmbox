@@ -7,7 +7,6 @@ lirc_sources = [
 
 shared_module('rblirc',
   lirc_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   dependencies: [rhythmbox_core_dep, lirc],
   install_dir: lirc_plugin_dir,
   install: true)

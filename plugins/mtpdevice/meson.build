@@ -23,7 +23,6 @@ endif
 
 shared_module('mtpdevice',
   mtpdevice_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   dependencies: mtpdevice_dependencies,
   install: true,
   install_dir: mtpdevice_plugin_dir)

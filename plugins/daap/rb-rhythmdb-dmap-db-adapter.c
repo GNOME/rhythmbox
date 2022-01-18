@@ -27,9 +27,7 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
 
 #include "rhythmdb.h"
 #include "rb-rhythmdb-dmap-db-adapter.h"

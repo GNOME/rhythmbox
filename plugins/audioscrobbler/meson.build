@@ -19,7 +19,6 @@ audioscrobbler_test_sources = [
 
 shared_module('audioscrobbler',
   audioscrobbler_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   dependencies: [rhythmbox_core_dep, json_glib, totem_plparser],
   install: true,
   install_dir: audioscrobbler_plugin_dir)

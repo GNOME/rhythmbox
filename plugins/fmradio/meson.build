@@ -15,7 +15,6 @@ fmradio_sources = [
 
 shared_module('fmradio',
   fmradio_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
   dependencies: [rhythmbox_core_dep],
   install: true,
   install_dir: fmradio_plugin_dir)
