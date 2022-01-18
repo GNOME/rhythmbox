@@ -116,6 +116,7 @@ if get_option('libsecret').allowed()
   endif
 endif
 cdata.set('PY_LIBSECRET_ENABLED', use_libsecret)
+cdata.set('WITH_LIBSECRET', use_libsecret)
 
 use_lirc = false
 if get_option('lirc').allowed()
@@ -143,7 +144,7 @@ if get_option('brasero').allowed()
 endif
 
 have_gnu_fwrite_unlocked = cc.has_function('fwrite_unlocked')
-cdata.set10('HAVE_GNU_FWRITE_UNLOCKED', have_gnu_fwrite_unlocked)
+cdata.set('HAVE_GNU_FWRITE_UNLOCKED', have_gnu_fwrite_unlocked)
 
 gdk_targets = run_command(['pkg-config', '--variable', 'targets', 'gdk-3.0']).stdout().strip()
 
