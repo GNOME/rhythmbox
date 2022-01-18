@@ -26,11 +26,8 @@ rhythmdb_sources = files(
   'rhythmdb-query-results.c',
   'rhythmdb-query.c',
   'rhythmdb-song-entry-types.c',
+  'rhythmdb-tree.c',
 )
-
-if get_option('database') == 'tree'
-  rhythmdb_sources += files('rhythmdb-tree.c')
-endif
 
 c_args = [
   '-DGNOMELOCALEDIR="' + datadir + '/locale"',

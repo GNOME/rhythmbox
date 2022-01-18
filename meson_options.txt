@@ -31,9 +31,5 @@ option('help', type: 'boolean', value: 'true',
        description: 'Install user documentation')
 option('gtk_doc', type: 'boolean', value: 'false',
        description: 'Use gtk-doc to build documentation')
-option('database', type: 'combo', choices: ['tree'], value: 'tree',
-       description: 'Select the database to use (default tree)')
 option('tests', type: 'boolean', value: 'false',
        description: 'Build tests')
-option('rhythmdb_debug', type: 'combo', choices: ['0', '1', '2'], value: '0',
-       description: 'Level of RhythmDB coherence checking')

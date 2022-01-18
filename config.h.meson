@@ -14,35 +14,14 @@
 /* Use GUdev for hardware detection */
 #mesondefine HAVE_GUDEV
 
-/* Have libbrasero-media */
-#mesondefine HAVE_LIBBRASERO_MEDIA
-
-/* Define if libdmapsharing support is enabled */
-#mesondefine HAVE_LIBDMAPSHARING
-
 /* define if Multimedia Keys are enabled */
 #mesondefine HAVE_MMKEYS
-
-/* Define if libnotify support is enabled */
-#mesondefine HAVE_NOTIFY
-
-/* Define if strftime supports %E and %O modifiers. */
-#mesondefine HAVE_STRFTIME_EXTENSION
 
 /* Name of package */
 #mesondefine PACKAGE
 
-/* Define to the level of RhythmDB coherence checking */
-#mesondefine RHYTHMDB_ENABLE_COHERENCE_CHECK
-
 /* Define if libsecret support is enabled */
 #mesondefine WITH_LIBSECRET
 
-/* Define if you are using the RhythmDB tree database */
-#mesondefine WITH_RHYTHMDB_TREE
-
-/* Define to 1 if the X Window System is missing or not being used. */
-#mesondefine X_DISPLAY_MISSING
-#
 /* Define to the version of this package. */
 #define VERSION "@VERSION@"

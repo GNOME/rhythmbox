@@ -61,11 +61,7 @@
 #include "rb-shell.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
-#ifdef WITH_RHYTHMDB_TREE
 #include "rhythmdb-tree.h"
-#else
-#error "no database specified. configure broken?"
-#endif
 #include "rb-display-page-tree.h"
 #include "rb-display-page-group.h"
 #include "rb-file-helpers.h"
@@ -457,11 +453,7 @@ construct_db (RBShell *shell)
 		pathname = rb_find_user_data_file ("rhythmdb.xml");
 	}
 
-#ifdef WITH_RHYTHMDB_TREE
 	shell->priv->db = rhythmdb_tree_new (pathname);
-#elif defined(WITH_RHYTHMDB_GDA)
-	shell->priv->db = rhythmdb_gda_new (pathname);
-#endif
 	g_free (pathname);
 
 	if (shell->priv->dry_run)

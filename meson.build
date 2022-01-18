@@ -138,14 +138,9 @@ if get_option('brasero').allowed()
   brasero_media = dependency('libbrasero-media3', version: '>= 2.31.5', required: get_option('brasero'))
 
   if brasero_media.found()
-    cdata.set('HAVE_LIBBRASERO_MEDIA', 1)
     have_libbrasero_media = true
   endif
 endif
-
-cdata.set10('WITH_RHYTHMDB_TREE', 1)
-
-cdata.set10('RHYTHMDB_ENABLE_COHERENCE_CHECK', get_option('rhythmdb_debug'))
 
 have_gnu_fwrite_unlocked = cc.has_function('fwrite_unlocked')
 cdata.set10('HAVE_GNU_FWRITE_UNLOCKED', have_gnu_fwrite_unlocked)
@@ -160,22 +155,6 @@ endif
 
 if totem_plparser_uselibcamel == 'no'
   error('totem playlist parsing library has Podcast parsing disabled')
-endif
-
-test_strftime_src = '''#include <time.h>
-int main ()
-{
-  char buf[100];
-  struct tm tm = {0};
-  tm.tm_year = 99;
-  if (strftime(buf, 100, "%EY", &tm) == 4 &&
-      strcmp (buf, "1999")==0)
-    return 0;
-  return 1;
-}'''
-
-if cc.compiles(test_strftime_src, name: 'whether strftime supports %E and %O modifiers')
-  cdata.set('HAVE_STRFTIME_EXTENSION', 1)
 endif
 
 cdata.set('GETTEXT_PACKAGE', '"rhythmbox"')
@@ -235,12 +214,10 @@ if get_option('daap').allowed()
   libdmapsharing4 = dependency('libdmapsharing-4.0', version: '>= 3.9.4', required: false)
 
   if libdmapsharing4.found()
-    cdata.set('HAVE_LIBDMAPSHARING4', 1)
     have_libdmapsharing = true
   else
     libdmapsharing = dependency('libdmapsharing-3.0', version: '>= 2.9.19', required: get_option('daap'))
     if libdmapsharing.found()
-      cdata.set('HAVE_LIBDMAPSHARING', 1)
       have_libdmapsharing = true
     endif
   endif
@@ -278,9 +255,7 @@ configure_file(input : 'config.h.meson',
   output : 'config.h',
 configuration : cdata)
 
-summary({'Database': get_option('database'),
-         'Coherence check level': get_option('rhythmdb_debug'),
-         'Tests': enable_check},
+summary({'Tests': enable_check},
         section: 'General')
 summary({'Multimedia keys': enable_mmkeys,
          'iPod integration': use_ipod,
