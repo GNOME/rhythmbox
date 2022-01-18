@@ -232,11 +232,17 @@ endif
 
 have_libdmapsharing = false
 if get_option('daap').allowed()
-  libdmapsharing = dependency('libdmapsharing-3.0', version: '>= 2.9.19', required: get_option('daap'))
+  libdmapsharing4 = dependency('libdmapsharing-4.0', version: '>= 3.9.4', required: false)
 
-  if libdmapsharing.found()
-    cdata.set('HAVE_LIBDMAPSHARING', 1)
+  if libdmapsharing4.found()
+    cdata.set('HAVE_LIBDMAPSHARING4', 1)
     have_libdmapsharing = true
+  else
+    libdmapsharing = dependency('libdmapsharing-3.0', version: '>= 2.9.19', required: get_option('daap'))
+    if libdmapsharing.found()
+      cdata.set('HAVE_LIBDMAPSHARING', 1)
+      have_libdmapsharing = true
+    endif
   endif
 endif
 

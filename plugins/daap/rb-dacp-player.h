@@ -33,6 +33,8 @@
 #include <glib-object.h>
 #include <libdmapsharing/dmap.h>
 
+#include "rb-dacp-compat.h"
+
 G_BEGIN_DECLS
 
 #define RB_TYPE_DACP_PLAYER             (rb_dacp_player_get_type ())
@@ -52,7 +54,7 @@ struct _RBDACPPlayerClass
 {
 	GObjectClass parent_class;
 
-	void (*player_updated) (DACPPlayer *player);
+	void (*player_updated) (DmapControlPlayer *player);
 };
 
 struct _RBDACPPlayer

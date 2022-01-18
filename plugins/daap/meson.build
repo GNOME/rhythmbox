@@ -21,7 +21,15 @@ daap_sources = [
   'rb-rhythmdb-query-model-dmap-db-adapter.c',
 ]
 
-daap_dependencies = [rhythmbox_core_dep, libdmapsharing, pango]
+daap_dependencies = [rhythmbox_core_dep, pango]
+args = ['-DHAVE_CONFIG_H']
+
+if libdmapsharing4.found()
+  daap_dependencies += libdmapsharing4
+else
+  args += '-DLIBDMAPSHARING_COMPAT'
+  daap_dependencies += libdmapsharing
+endif
 
 if use_libsecret
   daap_dependencies += libsecret
@@ -29,7 +37,7 @@ endif
 
 shared_module('daap',
   daap_sources,
-  c_args: ['-DHAVE_CONFIG_H'],
+  c_args: args,
   dependencies: daap_dependencies,
   install: true,
   install_dir: daap_plugin_dir)

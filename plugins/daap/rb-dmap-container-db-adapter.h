@@ -32,6 +32,7 @@
 
 #include <libdmapsharing/dmap.h>
 
+#include "rb-dmap-compat.h"
 #include "rb-playlist-manager.h"
 
 G_BEGIN_DECLS
