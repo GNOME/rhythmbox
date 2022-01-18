@@ -20,7 +20,6 @@ subdir('audioscrobbler')
 subdir('dbus-media-server')
 subdir('generic-player')
 subdir('iradio')
-subdir('mmkeys')
 subdir('mpris')
 subdir('power-manager')
 
