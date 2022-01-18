@@ -30,11 +30,13 @@
 #ifndef __RB_DAAP_SOURCE_H
 #define __RB_DAAP_SOURCE_H
 
+#include <gst/gst.h>
+#include <libdmapsharing/dmap.h>
+#include <libsoup/soup.h>
+
+#include "rb-daap-compat.h"
 #include "rb-shell.h"
 #include "rb-browser-source.h"
-
-#include <gst/gst.h>
-#include <libsoup/soup.h>
 
 G_BEGIN_DECLS
 

@@ -32,6 +32,8 @@
 
 #include <libdmapsharing/dmap.h>
 
+#include "rb-daap-compat.h"
+
 G_BEGIN_DECLS
 
 #define RB_TYPE_DAAP_RECORD_FACTORY         (rb_daap_record_factory_get_type ())
@@ -60,7 +62,7 @@ GType                  rb_daap_record_factory_get_type (void);
 
 RBDAAPRecordFactory *rb_daap_record_factory_new      (void);
 
-DMAPRecord            *rb_daap_record_factory_create   (DMAPRecordFactory *factory, gpointer user_data);
+DmapRecord            *rb_daap_record_factory_create   (DmapRecordFactory *factory, gpointer user_data, GError **error);
 
 void                   _rb_daap_record_factory_register_type (GTypeModule *module);
 

@@ -32,6 +32,7 @@
 
 #include <libdmapsharing/dmap.h>
 
+#include "rb-daap-compat.h"
 #include "rb-playlist-source.h"
 
 G_BEGIN_DECLS
@@ -57,15 +58,16 @@ typedef struct {
 
 GType rb_daap_container_record_get_type (void);
 
-guint         rb_daap_container_record_get_id          (DMAPContainerRecord *record);
+guint         rb_daap_container_record_get_id          (DmapContainerRecord *record);
 
-void	      rb_daap_container_record_add_entry       (DMAPContainerRecord *container_record,
-							DMAPRecord *record,
-							gint id);
+void	      rb_daap_container_record_add_entry       (DmapContainerRecord *container_record,
+							DmapRecord *record,
+							gint id,
+							GError **error);
 
-guint64       rb_daap_container_record_get_entry_count (DMAPContainerRecord *record);
+guint64       rb_daap_container_record_get_entry_count (DmapContainerRecord *record);
 
-DMAPDb *rb_daap_container_record_get_entries     (DMAPContainerRecord *record);
+DmapDb *rb_daap_container_record_get_entries     (DmapContainerRecord *record);
 
 RBDAAPContainerRecord *rb_daap_container_record_new (char *name,
 						     RBPlaylistSource *model);

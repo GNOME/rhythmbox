@@ -31,13 +31,14 @@
 #include "rb-daap-record-factory.h"
 #include "rb-daap-record.h"
 
-DMAPRecord *
-rb_daap_record_factory_create  (DMAPRecordFactory *factory,
-				gpointer user_data)
+DmapRecord *
+rb_daap_record_factory_create  (DmapRecordFactory *factory,
+                                gpointer user_data,
+                                GError **error)
 {
-	DAAPRecord *record;
+	DmapAvRecord *record;
 
-	record = DAAP_RECORD (rb_daap_record_new ((RhythmDBEntry *) user_data));
+	record = DMAP_AV_RECORD (rb_daap_record_new ((RhythmDBEntry *) user_data));
 
 	return (DMAP_RECORD (record));
 }
@@ -60,11 +61,11 @@ rb_daap_record_factory_class_finalize (RBDAAPRecordFactoryClass *klass)
 static void
 rb_daap_record_factory_interface_init (gpointer iface, gpointer data)
 {
-	DMAPRecordFactoryIface *factory = iface;
+	DmapRecordFactoryInterface *factory = iface;
 
 	g_assert (G_TYPE_FROM_INTERFACE (factory) == DMAP_TYPE_RECORD_FACTORY);
 
-	factory->create = rb_daap_record_factory_create;
+	factory->create = rb_daap_record_factory_create_compat;
 }
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDAAPRecordFactory,
