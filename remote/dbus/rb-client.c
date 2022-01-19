@@ -138,6 +138,8 @@ static GOptionEntry args[] = {
 	{ NULL }
 };
 
+#if defined(HAVE_CFMAKERAW)
+
 typedef struct {
 	GApplication *app;
 	GDBusProxy *mpris_player;
@@ -176,6 +178,7 @@ struct {
 	/* quit rhythmbox? */
 };
 
+#endif
 
 static gboolean
 annoy (GError **error)
@@ -633,6 +636,8 @@ rate_song (GDBusProxy *mpris, gdouble song_rating)
 	g_hash_table_destroy (properties);
 }
 
+#if defined(HAVE_CFMAKERAW)
+
 static void
 interact_quit (InteractData *data, int ch)
 {
@@ -971,6 +976,7 @@ interact (InteractData *data)
 	tcsetattr(0, TCSAFLUSH, &orig_tt);
 }
 
+#endif /* HAVE_CFMAKERAW */
 
 static void
 check_loaded_state (GVariant *state)
@@ -1144,6 +1150,7 @@ main (int argc, char **argv)
 
 	/* interactive mode takes precedence over anything else */
 	if (interactive) {
+#if defined(HAVE_CFMAKERAW)
 		InteractData data;
 		rb_debug ("entering interactive mode");
 		if (!isatty(1)) {
@@ -1159,6 +1166,10 @@ main (int argc, char **argv)
 
 		interact (&data);
 		exit (0);
+#else
+		g_warning ("interactive mode not available on this system");
+		exit (1);
+#endif
 	}
 
 	/* activate or quit */

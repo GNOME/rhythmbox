@@ -139,6 +139,10 @@ endif
 have_gnu_fwrite_unlocked = cc.has_function('fwrite_unlocked')
 cdata.set('HAVE_GNU_FWRITE_UNLOCKED', have_gnu_fwrite_unlocked)
 
+# rhythmbox-client interactive mode uses this non-standard function
+have_cfmakeraw = cc.has_function('cfmakeraw', prefix: '#include <termios.h>')
+cdata.set('HAVE_CFMAKERAW', have_cfmakeraw)
+
 gdk_targets = run_command(['pkg-config', '--variable', 'targets', 'gdk-3.0']).stdout().strip()
 
 totem_plparser_uselibcamel = run_command(['pkg-config', '--variable', 'uselibcamel', 'totem-plparser']).stdout().strip()
