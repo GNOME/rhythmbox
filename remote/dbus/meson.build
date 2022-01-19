@@ -4,7 +4,6 @@ client_c_args = [
   '-DPIXMAP_DIR="' + datadir + '/pixmaps"',
   '-DSHARE_DIR="' + pkgdatadir + '"',
   '-DDATADIR="' + datadir + '"',
-  '-D__EXTENSIONS__',
 ]
 
 executable('rhythmbox-client',

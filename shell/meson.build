@@ -79,7 +79,6 @@ shell_c_args = [
   '-DSHARE_DIR="' + pkgdatadir + '"',
   '-DDATADIR="' + datadir + '"',
   '-DLIBDIR="' + libdir + '"',
-  '-D__EXTENSIONS__',
 ]
 
 rhythmbox_core_dependencies = [gobject_introspection, libpeas]

@@ -26,8 +26,6 @@
  *
  */
 
-#define __EXTENSIONS__
-
 #include "config.h"
 
 #include <string.h>
