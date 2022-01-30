@@ -130,12 +130,10 @@ class LocalSearch:
 			enumfiles.next_files_async(ITEMS_PER_NOTIFICATION, GLib.PRIORITY_DEFAULT, None, self._enum_dir_cb, [])
 		except Exception as e:
 			print("okay, probably done: %s" % e)
-			if e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.NOT_SUPPORTED):
-				self.callback(self.callback_args)
-			elif not isinstance(e, GLib.GError):
+			if not isinstance(e, GLib.GError):
 				import sys
 				sys.excepthook(*sys.exc_info())
-				self.callback(self.callback_args)
+			self.callback(self.callback_args)
 
 
 	def search (self, key, last_time, store, callback, *args):
