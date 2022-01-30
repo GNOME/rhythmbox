@@ -223,7 +223,7 @@ endif
 
 enable_grilo = false
 if get_option('grilo').allowed()
-  grilo = dependency('grilo-0.3', version: '>= 0.3.0', required: get_option('grilo'))
+  grilo = dependency('grilo-0.3', version: '>= 0.3.1', required: get_option('grilo'))
 
   if grilo.found()
     enable_grilo = true

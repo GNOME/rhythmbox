@@ -298,6 +298,10 @@ rb_grilo_source_constructed (GObject *object)
 		source->priv->grilo_keys = g_list_prepend (source->priv->grilo_keys,
 							   GUINT_TO_POINTER(GRL_METADATA_KEY_TRACK_NUMBER));
 	}
+	if (g_list_find ((GList *)source_keys, GUINT_TO_POINTER(GRL_METADATA_KEY_ALBUM_DISC_NUMBER))) {
+		source->priv->grilo_keys = g_list_prepend (source->priv->grilo_keys,
+							   GUINT_TO_POINTER(GRL_METADATA_KEY_ALBUM_DISC_NUMBER));
+	}
 
 	if (g_list_find ((GList *)source_keys, GUINT_TO_POINTER(GRL_METADATA_KEY_TITLE))) {
 		rb_entry_view_append_column (source->priv->entry_view, RB_ENTRY_VIEW_COL_TITLE, TRUE);
@@ -642,6 +646,14 @@ create_entry_for_media (RhythmDB *db, RhythmDBEntryType *entry_type, GrlData *da
 		g_value_init (&v, G_TYPE_ULONG);
 		g_value_set_ulong (&v, grl_data_get_int (data, GRL_METADATA_KEY_TRACK_NUMBER));
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &v);
+		g_value_unset (&v);
+	}
+
+	if (grl_data_has_key (data, GRL_METADATA_KEY_ALBUM_DISC_NUMBER)) {
+		GValue v = {0,};
+		g_value_init (&v, G_TYPE_ULONG);
+		g_value_set_ulong (&v, grl_data_get_int (data, GRL_METADATA_KEY_ALBUM_DISC_NUMBER));
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DISC_NUMBER, &v);
 		g_value_unset (&v);
 	}
 
