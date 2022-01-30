@@ -92,12 +92,8 @@ class MusicBrainzSearch(object):
 			if len(artist_tags) > 0:
 				artist_id = artist_tags[0].attributes['id'].firstChild.data
 				if artist_id != MUSICBRAINZ_VARIOUS_ARTISTS:
-					# add the artist name (as album-artist) to the storage key
-					nametags = artist_tags[0].getElementsByTagName('name')
-					if len(nametags) > 0:
-						artistname = nametags[0].firstChild.data
-						print("got musicbrainz artist name %s" % artistname)
-						storekey.add_field('artist', artistname)
+					# add the artist name to the storage key
+					storekey.add_field('artist', key.get_field('artist'))
 
 			urls = []
 
