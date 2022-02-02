@@ -136,7 +136,10 @@ if get_option('brasero').allowed()
   endif
 endif
 
-have_gnu_fwrite_unlocked = cc.has_function('fwrite_unlocked')
+have_gnu_fwrite_unlocked = false
+if cc.has_function('fwrite_unlocked')
+  have_gnu_fwrite_unlocked = cc.has_header_symbol('stdio.h', 'fwrite_unlocked')
+endif
 cdata.set('HAVE_GNU_FWRITE_UNLOCKED', have_gnu_fwrite_unlocked)
 
 # rhythmbox-client interactive mode uses this non-standard function
