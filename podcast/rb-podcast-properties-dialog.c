@@ -375,10 +375,7 @@ rb_podcast_properties_dialog_dispose (GObject *object)
 
 	g_return_if_fail (dialog->priv != NULL);
 
-	if (dialog->priv->db != NULL) {
-		g_object_unref (dialog->priv->db);
-		dialog->priv->db = NULL;
-	}
+	g_clear_object (&dialog->priv->db);
 
 	G_OBJECT_CLASS (rb_podcast_properties_dialog_parent_class)->dispose (object);
 }
@@ -402,9 +399,7 @@ static void
 rb_podcast_properties_dialog_set_entry_view (RBPodcastPropertiesDialog *dialog,
 					     RBEntryView               *view)
 {
-	if (dialog->priv->db != NULL) {
-		g_object_unref (dialog->priv->db);
-	}
+	g_clear_object (&dialog->priv->db);
 
 	dialog->priv->entry_view = view;
 

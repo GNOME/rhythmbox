@@ -405,10 +405,8 @@ impl_dispose (GObject *object)
 	RBPodcastMainSource *source;
 
 	source = RB_PODCAST_MAIN_SOURCE (object);
-	if (source->priv->config_widget != NULL) {
-		g_object_unref (source->priv->config_widget);
-		source->priv->config_widget = NULL;
-	}
+
+	g_clear_object (&source->priv->config_widget);
 
 	G_OBJECT_CLASS (rb_podcast_main_source_parent_class)->dispose (object);
 }

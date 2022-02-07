@@ -304,30 +304,12 @@ rb_podcast_manager_dispose (GObject *object)
 	pd = RB_PODCAST_MANAGER (object);
 	g_return_if_fail (pd->priv != NULL);
 
-	if (pd->priv->source_sync != 0) {
-		g_source_remove (pd->priv->source_sync);
-		pd->priv->source_sync = 0;
-	}
+	g_clear_handle_id (&pd->priv->source_sync, g_source_remove);
 
-	if (pd->priv->db != NULL) {
-		g_object_unref (pd->priv->db);
-		pd->priv->db = NULL;
-	}
-
-	if (pd->priv->settings != NULL) {
-		g_object_unref (pd->priv->settings);
-		pd->priv->settings = NULL;
-	}
-
-	if (pd->priv->timestamp_file != NULL) {
-		g_object_unref (pd->priv->timestamp_file);
-		pd->priv->timestamp_file = NULL;
-	}
-
-	if (pd->priv->art_store != NULL) {
-		g_object_unref (pd->priv->art_store);
-		pd->priv->art_store = NULL;
-	}
+	g_clear_object (&pd->priv->db);
+	g_clear_object (&pd->priv->settings);
+	g_clear_object (&pd->priv->timestamp_file);
+	g_clear_object (&pd->priv->art_store);
 
 	G_OBJECT_CLASS (rb_podcast_manager_parent_class)->dispose (object);
 }
@@ -585,10 +567,7 @@ rb_podcast_manager_start_update_timer (RBPodcastManager *pd)
 
 	g_return_if_fail (RB_IS_PODCAST_MANAGER (pd));
 
-	if (pd->priv->source_sync != 0) {
-		g_source_remove (pd->priv->source_sync);
-		pd->priv->source_sync = 0;
-	}
+	g_clear_handle_id (&pd->priv->source_sync, g_source_remove);
 
 	if (pd->priv->timestamp_file == NULL) {
 		rb_debug ("unable to record podcast update time, so periodic updates are disabled");

@@ -886,14 +886,8 @@ impl_dispose (GObject *object)
 {
 	RBPodcastAddDialog *dialog = RB_PODCAST_ADD_DIALOG (object);
 
-	if (dialog->priv->podcast_mgr != NULL) {
-		g_object_unref (dialog->priv->podcast_mgr);
-		dialog->priv->podcast_mgr = NULL;
-	}
-	if (dialog->priv->db != NULL) {
-		g_object_unref (dialog->priv->db);
-		dialog->priv->db = NULL;
-	}
+	g_clear_object (&dialog->priv->podcast_mgr);
+	g_clear_object (&dialog->priv->db);
 
 	G_OBJECT_CLASS (rb_podcast_add_dialog_parent_class)->dispose (object);
 }
