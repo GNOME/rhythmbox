@@ -1315,18 +1315,15 @@ void
 rb_podcast_manager_insert_feed_url (RBPodcastManager *pd, const char *url)
 {
 	RhythmDBEntry *entry;
-	GValue status_val = { 0, };
-	GValue title_val = { 0, };
-	GValue author_val = { 0, };
-	GValue last_update_val = { 0, };
+	GValue val = { 0, };
 
 	entry = rhythmdb_entry_lookup_by_location (pd->priv->db, url);
 	if (entry) {
 		rb_debug ("podcast feed entry for %s found", url);
-		g_value_init (&status_val, G_TYPE_ULONG);
-		g_value_set_ulong (&status_val, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
-		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &status_val);
-		g_value_unset (&status_val);
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
+		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
+		g_value_unset (&val);
 		return;
 	}
 	rb_debug ("adding podcast feed %s with no entries", url);
@@ -1336,25 +1333,25 @@ rb_podcast_manager_insert_feed_url (RBPodcastManager *pd, const char *url)
 	if (entry == NULL)
 		return;
 
-	g_value_init (&status_val, G_TYPE_ULONG);
-	g_value_set_ulong (&status_val, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
-	rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &status_val);
-	g_value_unset (&status_val);
+	g_value_init (&val, G_TYPE_ULONG);
+	g_value_set_ulong (&val, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
+	rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
+	g_value_unset (&val);
 
-	g_value_init (&title_val, G_TYPE_STRING);
-	g_value_set_string (&title_val, url);
-	rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_TITLE, &title_val);
-	g_value_unset (&title_val);
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, url);
+	rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_TITLE, &val);
+	g_value_unset (&val);
 
-	g_value_init (&author_val, G_TYPE_STRING);
-	g_value_set_static_string (&author_val, _("Unknown"));
-	rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_ARTIST, &author_val);
-	g_value_unset (&author_val);
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_static_string (&val, _("Unknown"));
+	rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_ARTIST, &val);
+	g_value_unset (&val);
 
-	g_value_init (&last_update_val, G_TYPE_ULONG);
-	g_value_set_ulong (&last_update_val, time(NULL));
-	rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_LAST_SEEN, &last_update_val);
-	g_value_unset (&last_update_val);
+	g_value_init (&val, G_TYPE_ULONG);
+	g_value_set_ulong (&val, time(NULL));
+	rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_LAST_SEEN, &val);
+	g_value_unset (&val);
 }
 
 static gint
@@ -1385,16 +1382,7 @@ existing_entry_sort (gconstpointer a, gconstpointer b)
 void
 rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data)
 {
-	GValue description_val = { 0, };
-	GValue title_val = { 0, };
-	GValue lang_val = { 0, };
-	GValue copyright_val = { 0, };
-	GValue image_val = { 0, };
-	GValue author_val = { 0, };
-	GValue status_val = { 0, };
-	GValue last_post_val = { 0, };
-	GValue last_update_val = { 0, };
-	GValue error_val = { 0, };
+	GValue val = { 0, };
 	gulong last_post = 0;
 	gulong new_last_post;
 	gulong position;
@@ -1423,10 +1411,10 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 			return;
 
 		rb_debug ("Podcast feed entry for %s found", data->url);
-		g_value_init (&status_val, G_TYPE_ULONG);
-		g_value_set_ulong (&status_val, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
-		g_value_unset (&status_val);
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &val);
+		g_value_unset (&val);
 		last_post = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_POST_TIME);
 		new_feed = FALSE;
 
@@ -1452,60 +1440,60 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 		if (entry == NULL)
 			return;
 
-		g_value_init (&status_val, G_TYPE_ULONG);
-		g_value_set_ulong (&status_val, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &status_val);
-		g_value_unset (&status_val);
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, RHYTHMDB_PODCAST_FEED_STATUS_NORMAL);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_STATUS, &val);
+		g_value_unset (&val);
 	}
 
 	/* if the feed does not contain a title, use the URL instead */
-	g_value_init (&title_val, G_TYPE_STRING);
+	g_value_init (&val, G_TYPE_STRING);
 	if (data->title == NULL || strlen ((gchar *)data->title) == 0) {
-		g_value_set_string (&title_val, (gchar *) data->url);
+		g_value_set_string (&val, (gchar *) data->url);
 		title = data->url;
 	} else {
-		g_value_set_string (&title_val, (gchar *) data->title);
+		g_value_set_string (&val, (gchar *) data->title);
 		title = data->title;
 	}
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &title_val);
-	g_value_unset (&title_val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
+	g_value_unset (&val);
 
-	g_value_init (&author_val, G_TYPE_STRING);
+	g_value_init (&val, G_TYPE_STRING);
 	if (data->author)
-		g_value_set_string (&author_val, (gchar *) data->author);
+		g_value_set_string (&val, (gchar *) data->author);
 	else
-		g_value_set_static_string (&author_val, _("Unknown"));
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &author_val);
-	g_value_unset (&author_val);
+		g_value_set_static_string (&val, _("Unknown"));
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &val);
+	g_value_unset (&val);
 
 	if (data->description) {
-		g_value_init (&description_val, G_TYPE_STRING);
-		g_value_set_string (&description_val, (gchar *) data->description);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DESCRIPTION, &description_val);
-		g_value_unset (&description_val);
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, (gchar *) data->description);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DESCRIPTION, &val);
+		g_value_unset (&val);
 	}
 
 	if (data->lang) {
-		g_value_init (&lang_val, G_TYPE_STRING);
-		g_value_set_string (&lang_val, (gchar *) data->lang);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LANG, &lang_val);
-		g_value_unset (&lang_val);
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, (gchar *) data->lang);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LANG, &val);
+		g_value_unset (&val);
 	}
 
 	if (data->copyright) {
-		g_value_init (&copyright_val, G_TYPE_STRING);
-		g_value_set_string (&copyright_val, (gchar *) data->copyright);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_COPYRIGHT, &copyright_val);
-		g_value_unset (&copyright_val);
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, (gchar *) data->copyright);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_COPYRIGHT, &val);
+		g_value_unset (&val);
 	}
 
 	if (data->img) {
 		RBExtDBKey *key;
 
-		g_value_init (&image_val, G_TYPE_STRING);
-		g_value_set_string (&image_val, (gchar *) data->img);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_IMAGE, &image_val);
-		g_value_unset (&image_val);
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, (gchar *) data->img);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_IMAGE, &val);
+		g_value_unset (&val);
 
 		key = rb_ext_db_key_create_storage ("album", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE));
 		rb_ext_db_key_add_field (key, "artist", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_ARTIST));
@@ -1517,10 +1505,10 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 	}
 
 	/* clear any error that might have been set earlier */
-	g_value_init (&error_val, G_TYPE_STRING);
-	g_value_set_string (&error_val, NULL);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &error_val);
-	g_value_unset (&error_val);
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, NULL);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
+	g_value_unset (&val);
 
 	if (g_settings_get_enum (pd->priv->settings, PODCAST_DOWNLOAD_INTERVAL) == PODCAST_INTERVAL_MANUAL) {
 		/* if automatic updates are disabled, don't download anything */
@@ -1613,18 +1601,17 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 	}
 
 	if (download_mode != DOWNLOAD_NONE) {
-		GValue status = {0,};
 		GList *t;
 
-		g_value_init (&status, G_TYPE_ULONG);
-		g_value_set_ulong (&status, RHYTHMDB_PODCAST_STATUS_WAITING);
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_WAITING);
 		for (t = download_entries; t != NULL; t = g_list_next (t)) {
 			rhythmdb_entry_set (db,
 					    (RhythmDBEntry*) t->data,
 					    RHYTHMDB_PROP_STATUS,
-					    &status);
+					    &val);
 		}
-		g_value_unset (&status);
+		g_value_unset (&val);
 	}
 	g_list_free (download_entries);
 
@@ -1635,23 +1622,15 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 	if (data->pub_date > new_last_post)
 		new_last_post = data->pub_date;
 
-	g_value_init (&last_post_val, G_TYPE_ULONG);
-	g_value_set_ulong (&last_post_val, new_last_post);
+	g_value_init (&val, G_TYPE_ULONG);
+	g_value_set_ulong (&val, new_last_post);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_POST_TIME, &val);
+	g_value_unset (&val);
 
-	if (new_feed)
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_POST_TIME, &last_post_val);
-	else
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_POST_TIME, &last_post_val);
-	g_value_unset (&last_post_val);
-
-	g_value_init (&last_update_val, G_TYPE_ULONG);
-	g_value_set_ulong (&last_update_val, time(NULL));
-
-	if (new_feed)
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_SEEN, &last_update_val);
-	else
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_SEEN, &last_update_val);
-	g_value_unset (&last_update_val);
+	g_value_init (&val, G_TYPE_ULONG);
+	g_value_set_ulong (&val, time(NULL));
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_SEEN, &val);
+	g_value_unset (&val);
 
 	for (l = existing_entries; l != NULL; l = g_list_next (l)) {
 		RhythmDBEntry *entry = l->data;
@@ -1661,13 +1640,11 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 				  get_remote_location (entry));
 			rhythmdb_entry_delete (db, entry);
 		} else {
-			GValue v = {0, };
-
 			/* assign track numbers to remaining entries in the same order */
-			g_value_init (&v, G_TYPE_ULONG);
-			g_value_set_ulong (&v, position++);
-			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &v);
-			g_value_unset (&v);
+			g_value_init (&val, G_TYPE_ULONG);
+			g_value_set_ulong (&val, position++);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &val);
+			g_value_unset (&val);
 		}
 	}
 	g_clear_object (&results);
