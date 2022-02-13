@@ -73,6 +73,8 @@ gboolean                rb_podcast_manager_subscribe_feed    	(RBPodcastManager 
 void			rb_podcast_manager_add_parsed_feed	(RBPodcastManager *pd, RBPodcastChannel *feed);
 void			rb_podcast_manager_insert_feed_url	(RBPodcastManager *pd, const char *url);
 void            	rb_podcast_manager_unsubscribe_feed    	(RhythmDB *db, const gchar* url);
+gboolean		rb_podcast_manager_feed_updating	(RBPodcastManager *pd, const char *url);
+
 void			rb_podcast_manager_shutdown 		(RBPodcastManager *pd);
 RhythmDBEntry *         rb_podcast_manager_add_post  	  	(RhythmDB *db,
 								 gboolean search_result,

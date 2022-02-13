@@ -767,8 +767,8 @@ podcast_feed_pixbuf_cell_data_func (GtkTreeViewColumn *column,
 	g_free (title);
 
 	if (entry != NULL) {
-		gulong status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
-		if (status == RHYTHMDB_PODCAST_FEED_STATUS_UPDATING) {
+		const char *url = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		if (rb_podcast_manager_feed_updating (source->priv->podcast_mgr, url)) {
 			pixbuf = source->priv->refresh_pixbuf;
 		} else if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR)) {
 			pixbuf = source->priv->error_pixbuf;

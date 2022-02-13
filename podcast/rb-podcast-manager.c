@@ -105,10 +105,11 @@ struct RBPodcastManagerPrivate
 	RhythmDB *db;
 	GList *download_list;
 	RBPodcastDownload *active_download;
-	guint source_sync;
-	int updating;
 	RBExtDB *art_store;
 	GCancellable *update_cancel;
+
+	guint update_feeds_id;
+	GList *updating;
 
 	GArray *searches;
 	GSettings *settings;
@@ -240,7 +241,7 @@ rb_podcast_manager_init (RBPodcastManager *pd)
 {
 	pd->priv = RB_PODCAST_MANAGER_GET_PRIVATE (pd);
 
-	pd->priv->source_sync = 0;
+	pd->priv->update_feeds_id = 0;
 	pd->priv->db = NULL;
 }
 
@@ -304,7 +305,7 @@ rb_podcast_manager_dispose (GObject *object)
 	pd = RB_PODCAST_MANAGER (object);
 	g_return_if_fail (pd->priv != NULL);
 
-	g_clear_handle_id (&pd->priv->source_sync, g_source_remove);
+	g_clear_handle_id (&pd->priv->update_feeds_id, g_source_remove);
 
 	g_clear_object (&pd->priv->db);
 	g_clear_object (&pd->priv->settings);
@@ -378,7 +379,7 @@ rb_podcast_manager_get_property (GObject *object,
 		g_value_set_object (value, pd->priv->db);
 		break;
 	case PROP_UPDATING:
-		g_value_set_boolean (value, (pd->priv->updating > 0));
+		g_value_set_boolean (value, (g_list_length (pd->priv->updating) > 0));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -567,7 +568,7 @@ rb_podcast_manager_start_update_timer (RBPodcastManager *pd)
 
 	g_return_if_fail (RB_IS_PODCAST_MANAGER (pd));
 
-	g_clear_handle_id (&pd->priv->source_sync, g_source_remove);
+	g_clear_handle_id (&pd->priv->update_feeds_id, g_source_remove);
 
 	if (pd->priv->timestamp_file == NULL) {
 		rb_debug ("unable to record podcast update time, so periodic updates are disabled");
@@ -616,13 +617,12 @@ rb_podcast_manager_start_update_timer (RBPodcastManager *pd)
 
 	if (last_time + interval_sec < now) {
 		rb_debug ("periodic update should already have happened");
-		pd->priv->source_sync = g_idle_add ((GSourceFunc) rb_podcast_manager_update_feeds_cb,
-						    pd);
+		pd->priv->update_feeds_id = g_idle_add ((GSourceFunc) rb_podcast_manager_update_feeds_cb, pd);
 	} else {
 		rb_debug ("next periodic update in %" G_GUINT64_FORMAT " seconds", (last_time + interval_sec) - now);
-		pd->priv->source_sync = g_timeout_add_seconds ((last_time + interval_sec) - now,
-							       (GSourceFunc) rb_podcast_manager_update_feeds_cb,
-							       pd);
+		pd->priv->update_feeds_id = g_timeout_add_seconds ((last_time + interval_sec) - now,
+								   (GSourceFunc) rb_podcast_manager_update_feeds_cb,
+								   pd);
 	}
 }
 
@@ -632,7 +632,6 @@ rb_podcast_manager_update_feeds (RBPodcastManager *pd)
 	RhythmDBQueryResultList *list;
 	RhythmDBEntry *entry;
 	const char *uri;
-	guint status;
 	GList *l;
 
 	list = rhythmdb_query_result_list_new ();
@@ -646,9 +645,8 @@ rb_podcast_manager_update_feeds (RBPodcastManager *pd)
 	for (; l != NULL; l = l->next) {
 		entry = l->data;
 
-		uri = get_remote_location (entry);
-		status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
-		if (status == RHYTHMDB_PODCAST_FEED_STATUS_NORMAL)
+		uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+		if (rb_podcast_manager_feed_updating (pd, uri) == FALSE)
 			rb_podcast_manager_subscribe_feed (pd, uri, TRUE);
 	}
 
@@ -662,7 +660,7 @@ rb_podcast_manager_update_feeds_cb (gpointer data)
 
 	g_assert (rb_is_main_thread ());
 
-	pd->priv->source_sync = 0;
+	pd->priv->update_feeds_id = 0;
 
 	if (g_file_set_attribute_uint64 (pd->priv->timestamp_file,
 					 G_FILE_ATTRIBUTE_TIME_MODIFIED,
@@ -683,14 +681,29 @@ podcast_update_free (RBPodcastUpdate *update)
 {
 	RBPodcastManager *pd = update->pd;
 
-	if (--pd->priv->updating == 0) {
+	g_assert (g_list_find (pd->priv->updating, update));
+	pd->priv->updating = g_list_remove (pd->priv->updating, update);
+	if (g_list_length (pd->priv->updating) == 0)
 		g_object_notify (G_OBJECT (pd), "updating");
-	}
+
 	g_object_unref (pd);
 
 	g_clear_error (&update->error);
 	rb_podcast_parse_channel_unref (update->channel);
 	g_free (update);
+}
+
+gboolean
+rb_podcast_manager_feed_updating (RBPodcastManager *pm, const char *url)
+{
+	GList *l;
+	for (l = pm->priv->updating; l != NULL; l = l->next) {
+		RBPodcastUpdate *update = l->data;
+		if (g_str_equal (update->channel->url, url))
+			return TRUE;
+	}
+
+	return FALSE;
 }
 
 static void
@@ -756,11 +769,6 @@ feed_parse_cb (RBPodcastChannel *channel, GError *error, gpointer user_data)
 static void
 start_feed_parse (RBPodcastManager *pd, RBPodcastUpdate *update)
 {
-	pd->priv->updating++;
-	if (pd->priv->updating == 1) {
-		g_object_notify (G_OBJECT (pd), "updating");
-	}
-
 	rb_podcast_parse_load_feed (update->channel, pd->priv->update_cancel, feed_parse_cb, update);
 }
 
@@ -845,6 +853,10 @@ rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboole
 	update->automatic = automatic;
 	update->channel = rb_podcast_parse_channel_new ();
 	update->channel->url = g_strdup (feed_url);
+
+	pd->priv->updating = g_list_prepend (pd->priv->updating, update);
+	if (g_list_length (pd->priv->updating) == 1)
+		g_object_notify (G_OBJECT (pd), "updating");
 
 	entry = rhythmdb_entry_lookup_by_location (pd->priv->db, feed_url);
 	if (entry) {
