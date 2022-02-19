@@ -39,6 +39,7 @@
 #include "rb-file-helpers.h"
 #include "rb-util.h"
 #include "rb-application.h"
+#include "rb-debug.h"
 
 struct _RBPodcastMainSourcePrivate
 {
@@ -197,24 +198,6 @@ finish_download_cb (RBPodcastManager *pd,
 }
 
 static void
-feed_updates_available_cb (RBPodcastManager *pd,
-			   RhythmDBEntry *entry,
-			   RBPodcastMainSource *source)
-{
-	RBShell *shell;
-	char *podcast_name;
-
-	podcast_name = g_markup_escape_text (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), -1);
-
-	g_object_get (source, "shell", &shell, NULL);
-	rb_shell_notify_custom (shell, 4000, _("New updates available from"), podcast_name, NULL, FALSE);
-	g_object_unref (shell);
-
-	g_free (podcast_name);
-
-}
-
-static void
 error_dialog_response_cb (GtkDialog *dialog, int response, RBPodcastMainSource *source)
 {
 	const char *url = g_object_get_data (G_OBJECT (dialog), "feed-url");
@@ -230,39 +213,68 @@ error_dialog_response_cb (GtkDialog *dialog, int response, RBPodcastMainSource *
 }
 
 static void
-feed_error_cb (RBPodcastManager *pd,
-	       const char *url,
-	       const char *error,
-	       gboolean existing,
-	       RBPodcastMainSource *source)
+feed_update_status_cb (RBPodcastManager *mgr, const char *url, RBPodcastFeedUpdateStatus status, const char *error, gpointer data)
 {
+	RBPodcastSource *source;
+	RhythmDBEntry *entry;
+	RBShell *shell;
+	char *podcast_name;
+	char *nice_error;
 	GtkWidget *dialog;
+	RhythmDB *db;
 
-	/* if the podcast feed doesn't already exist in the db,
-	 * ask if the user wants to add it anyway; if it already
-	 * exists, there's nothing to do besides reporting the error.
-	 */
-	dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source))),
-					 GTK_DIALOG_DESTROY_WITH_PARENT,
-					 GTK_MESSAGE_ERROR,
-					 existing ? GTK_BUTTONS_OK : GTK_BUTTONS_YES_NO,
-					 _("Error in podcast"));
+	source = data;
+	g_object_get (source, "shell", &shell, NULL);
+	g_object_get (shell, "db", &db, NULL);
 
-	if (existing) {
-		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-							  "%s", error);
-	} else {
-		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-							  _("%s. Would you like to add the podcast feed anyway?"), error);
+	entry = rhythmdb_entry_lookup_by_location (db, url);
+
+	switch (status) {
+	case RB_PODCAST_FEED_UPDATE_ERROR:
+		/* if the podcast feed doesn't already exist in the db,
+		 * ask if the user wants to add it anyway; if it already
+		 * exists, there's nothing to do besides reporting the error.
+		 */
+		dialog = gtk_message_dialog_new (GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source))),
+						 GTK_DIALOG_DESTROY_WITH_PARENT,
+						 GTK_MESSAGE_ERROR,
+						 (entry != NULL) ? GTK_BUTTONS_OK : GTK_BUTTONS_YES_NO,
+						 _("Error in podcast"));
+
+		nice_error = g_strdup_printf (_("There was a problem adding this podcast: %s.  Please verify the URL: %s"), error, url);
+		if (entry != NULL) {
+			gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+								  "%s", nice_error);
+		} else {
+			gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+								  _("%s. Would you like to add the podcast feed anyway?"), nice_error);
+		}
+		g_free (nice_error);
+
+		gtk_window_set_title (GTK_WINDOW (dialog), "");
+		gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
+
+		g_object_set_data_full (G_OBJECT (dialog), "feed-url", g_strdup (url), g_free);
+		g_signal_connect (dialog, "response", G_CALLBACK (error_dialog_response_cb), source);
+
+		gtk_widget_show_all (dialog);
+
+		break;
+
+	case RB_PODCAST_FEED_UPDATE_UPDATED:
+		podcast_name = g_markup_escape_text (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), -1);
+
+		rb_shell_notify_custom (shell, 4000, _("New updates available from"), podcast_name, NULL, FALSE);
+
+		g_free (podcast_name);
+		break;
+
+	default:
+		break;
 	}
 
-	gtk_window_set_title (GTK_WINDOW (dialog), "");
-	gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
-
-	g_object_set_data_full (G_OBJECT (dialog), "feed-url", g_strdup (url), g_free);
-	g_signal_connect (dialog, "response", G_CALLBACK (error_dialog_response_cb), source);
-
-	gtk_widget_show_all (dialog);
+	g_object_unref (shell);
+	g_object_unref (db);
 }
 
 static void
@@ -387,13 +399,8 @@ impl_constructed (GObject *object)
 				source, 0);
 
 	g_signal_connect_object (podcast_mgr,
-				"feed_updates_available",
-				G_CALLBACK (feed_updates_available_cb),
-				source, 0);
-
-	g_signal_connect_object (podcast_mgr,
-				 "feed-parse-error",
-				 G_CALLBACK (feed_error_cb),
+				 "feed-update-status",
+				 G_CALLBACK (feed_update_status_cb),
 				 source, 0);
 
 	rb_display_page_set_icon_name (RB_DISPLAY_PAGE (source), "application-rss+xml-symbolic");

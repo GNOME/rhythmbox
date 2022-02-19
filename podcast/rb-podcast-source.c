@@ -1231,6 +1231,25 @@ impl_get_status (RBDisplayPage *page, char **text, gboolean *busy)
 }
 
 static void
+feed_update_status_cb (RBPodcastManager *mgr,
+		       const char *url,
+		       RBPodcastFeedUpdateStatus status,
+		       const char *error,
+		       gpointer data)
+{
+	RBPodcastSource *source = RB_PODCAST_SOURCE (data);
+	GtkTreeIter iter;
+
+	if (rhythmdb_property_model_iter_from_string (source->priv->feed_model, url, &iter)) {
+		GtkTreePath *path;
+
+		path = gtk_tree_model_get_path (GTK_TREE_MODEL (source->priv->feed_model), &iter);
+		gtk_tree_model_row_changed (GTK_TREE_MODEL (source->priv->feed_model), path, &iter);
+		gtk_tree_path_free (path);
+	}
+}
+
+static void
 podcast_manager_updating_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 {
 	rb_display_page_notify_status_changed (RB_DISPLAY_PAGE (data));
@@ -1588,6 +1607,7 @@ impl_constructed (GObject *object)
 	g_object_unref (accel_group);
 	g_object_unref (shell);
 
+	g_signal_connect_object (source->priv->podcast_mgr, "feed-update-status", G_CALLBACK (feed_update_status_cb), source, 0);
 	g_signal_connect (source->priv->podcast_mgr, "notify::updating", G_CALLBACK (podcast_manager_updating_cb), source);
 
 	rb_podcast_source_do_query (source, TRUE);

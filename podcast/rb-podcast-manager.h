@@ -36,6 +36,20 @@
 
 G_BEGIN_DECLS
 
+typedef enum {
+	RB_PODCAST_FEED_UPDATE_STARTED = 0,
+	RB_PODCAST_FEED_UPDATE_ERROR,
+	RB_PODCAST_FEED_UPDATE_ERROR_BG,
+	RB_PODCAST_FEED_UPDATE_CONFLICT,
+	RB_PODCAST_FEED_UPDATE_CANCELLED,
+	RB_PODCAST_FEED_UPDATE_SUBSCRIBED,
+	RB_PODCAST_FEED_UPDATE_UNCHANGED,
+	RB_PODCAST_FEED_UPDATE_UPDATED
+} RBPodcastFeedUpdateStatus;
+
+GType			rb_podcast_feed_update_status_get_type (void);
+#define RB_TYPE_PODCAST_FEED_UPDATE_STATUS (rb_podcast_feed_update_status_get_type())
+
 #define RB_TYPE_PODCAST_MANAGER            (rb_podcast_manager_get_type ())
 #define RB_PODCAST_MANAGER(o)              (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_PODCAST_MANAGER, RBPodcastManager))
 #define RB_PODCAST_MANAGER_CLASS(k)        (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_PODCAST_MANAGER, RBPodcastManagerClass))
