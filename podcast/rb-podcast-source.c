@@ -284,9 +284,6 @@ rb_podcast_source_do_query (RBPodcastSource *source, gboolean feed_query)
 						      RHYTHMDB_QUERY_PROP_EQUALS,
 						      RHYTHMDB_PROP_TYPE,
 						      RHYTHMDB_ENTRY_TYPE_PODCAST_FEED,
-						      RHYTHMDB_QUERY_PROP_NOT_EQUAL,
-						      RHYTHMDB_PROP_STATUS,
-						      RHYTHMDB_PODCAST_FEED_STATUS_HIDDEN,
 						      RHYTHMDB_QUERY_END);
 			g_object_unref (feed_query_model);
 		} else {
@@ -908,7 +905,7 @@ podcast_entry_changed_cb (RhythmDB *db,
 
 		switch (change->prop) {
 		case RHYTHMDB_PROP_PLAYBACK_ERROR:
-		case RHYTHMDB_PROP_STATUS:
+		case RHYTHMDB_PROP_TITLE:
 			feed_changed = TRUE;
 			break;
 		default:

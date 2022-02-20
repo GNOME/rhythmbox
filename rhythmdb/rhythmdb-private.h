@@ -45,11 +45,7 @@ typedef struct {
 	RBRefString *copyright;
 	RBRefString *image;
 	RBRefString *guid;
-	gulong status;	/* 0-99: downloading
-			   100: Complete
-			   101: Error
-			   102: wait
-			   103: pause */
+	gulong status;
 	gulong post_time;
 } RhythmDBPodcastFields;
 
