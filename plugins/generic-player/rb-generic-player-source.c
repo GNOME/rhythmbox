@@ -985,7 +985,7 @@ sanitize_path (const char *str)
 		str++;
 
 	s = g_strdup (str);
-	g_strdelimit (s, "/", '-');
+	rb_sanitize_path_for_msdos_filesystem (s);
 	res = g_uri_escape_string (s, G_URI_RESERVED_CHARS_ALLOWED_IN_PATH_ELEMENT, TRUE);
 	g_free (s);
 	return res;
