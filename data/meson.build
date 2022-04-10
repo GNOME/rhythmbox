@@ -10,7 +10,6 @@ foreach desktop_file : desktop_files
     configuration: cdata
   )
   desktop_file = i18n.merge_file(
-    desktop_file,
     input: desktop_in_file,
     output: desktop_file,
     install: true,
@@ -44,7 +43,6 @@ gschemas_compiled = custom_target('gschemas.compiled',
 )
 
 playlists_xml = i18n.merge_file(
-  'playlists.xml',
   input: 'playlists.xml.in',
   output: 'playlists.xml',
   po_dir: po_dir,
@@ -64,7 +62,7 @@ install_man(mans)
 
 appdata = 'org.gnome.Rhythmbox3.appdata.xml'
 
-appdata_file = i18n.merge_file('appdata',
+appdata_file = i18n.merge_file(
   input: appdata + '.in',
   output: appdata,
   install: true,
