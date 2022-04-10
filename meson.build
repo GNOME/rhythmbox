@@ -150,7 +150,7 @@ cdata.set('HAVE_GNU_FWRITE_UNLOCKED', have_gnu_fwrite_unlocked)
 have_cfmakeraw = cc.has_function('cfmakeraw', prefix: '#include <termios.h>')
 cdata.set('HAVE_CFMAKERAW', have_cfmakeraw)
 
-gdk_targets = run_command(['pkg-config', '--variable', 'targets', 'gdk-3.0']).stdout().strip()
+gdk_targets = run_command(['pkg-config', '--variable', 'targets', 'gdk-3.0'], check: true).stdout().strip()
 
 have_prctl = cc.has_function('prctl', prefix: '#include <sys/prctl.h>')
 cdata.set('HAVE_PRCTL', have_prctl)
@@ -165,7 +165,7 @@ cdata.set('HAVE_PTHREAD_GETNAME_NP', have_pthread_getname_np)
 
 
 
-totem_plparser_uselibcamel = run_command(['pkg-config', '--variable', 'uselibcamel', 'totem-plparser']).stdout().strip()
+totem_plparser_uselibcamel = run_command(['pkg-config', '--variable', 'uselibcamel', 'totem-plparser'], check: true).stdout().strip()
 
 if gdk_targets.contains('x11')
   x11 = dependency('x11', required: true)
@@ -203,7 +203,7 @@ enable_python = false
 if get_option('plugins_python').allowed()
   python = find_program('python3', required: get_option('plugins_python'))
   pygobject = dependency('pygobject-3.0', version: '>= 3.0.0', required: get_option('plugins_python'))
-  pyoverridesdir = run_command([python, '-c', '''import gi; print(gi._overridesdir)''']).stdout().strip()
+  pyoverridesdir = run_command([python, '-c', '''import gi; print(gi._overridesdir)'''], check: true).stdout().strip()
   enable_python = true
 endif
 
