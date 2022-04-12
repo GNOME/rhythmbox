@@ -3,8 +3,9 @@ Prerequisites
 
 Rhythmbox requires the following packages:
 
-- A working GNOME platform (more specifically, you need glib 2.36, gtk+ 3.12,
+- A working GNOME platform (more specifically, you need glib 2.56, gtk+ 3.16,
   and libsoup 2.42)
+- meson between 0.59 and 0.62
 - totem-plparser 3.2.0 or newer
 - GStreamer 1.4.0. or newer and associated plugin packages
 - libpeas 0.7.3 or newer
@@ -17,22 +18,29 @@ Rhythmbox can also make use of the following packages:
 - pygobject 3.0.0 or newer for python plugin support
 - GUdev 143 or newer, or HAL (for iPod and generic audio player support)
 - libgpod 0.6 or newer (for iPod support)
-- libmusicbrainz 3.0.2 or 4.0.0 or newer (for audio CD track listings)
 - libnotify 0.7 or newer
 - libbrasero-media 2.31.5 or newer
-- libdmapsharing 2.9.11 or newer
+- libdmapsharing 2.9.19 or newer
 - libmtp 0.3.0 or newer
-- grilo 0.3.0 or newer
+- grilo 0.3.1 or newer
 
 
 Simple install procedure
 ========================
 
-  % meson _build                                 # prepare the build
+  % meson _build -Dprefix=$PWD/_install          # prepare the build
   % ninja -C _build                              # build Rhythmbox
   % ninja -C _build install                      # install Rhythmbox
+  % glib-compile-schemas _install/share/glib-2.0/schemas
 
-The supported version of meson for building Rhythmbox is 0.62.
+This installs Rhythmbox to the _install directory under the source tree.
+The executable to run will then be _install/bin/rhythmbox.
+Before you can run it from there, you will also need to set an environment
+variable to load schemas from the install location:
+
+  % export GSETTINGS_SCHEMA_DIR=$PWD/_install/share/glib-2.0/schemas
+  % _install/bin/rhythmbox
+
 
 The Details
 ===========
