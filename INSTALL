@@ -3,8 +3,7 @@ Prerequisites
 
 Rhythmbox requires the following packages:
 
-- A working GNOME platform (more specifically, you need glib 2.56, gtk+ 3.16,
-  and libsoup 2.42)
+- A working GNOME platform including glib 2.56, gtk+ 3.16, and libsoup 2.42
 - meson between 0.59 and 0.62
 - totem-plparser 3.2.0 or newer
 - GStreamer 1.4.0. or newer and associated plugin packages
@@ -12,17 +11,27 @@ Rhythmbox requires the following packages:
 - json-glib
 - libxml2 2.7.8 or newer
 - tdb 1.2.6 or newer
+- gettext 0.20 or newer
 
 Rhythmbox can also make use of the following packages:
 
-- pygobject 3.0.0 or newer for python plugin support
-- GUdev 143 or newer, or HAL (for iPod and generic audio player support)
+- pygobject 3.0.0 or newer (for python plugin support)
+- GUdev 143 or newer (for iPod and generic audio player support)
 - libgpod 0.6 or newer (for iPod support)
 - libnotify 0.7 or newer
 - libbrasero-media 2.31.5 or newer
 - libdmapsharing 2.9.19 or newer
 - libmtp 0.3.0 or newer
+- libsecret 0.18 or newer
 - grilo 0.3.1 or newer
+- itstool (for documentation)
+- gtk-doc (for development documentation)
+
+Many package managers provide a way to install all the build dependencies for
+a package, such as 'dnf builddep' or 'apt-get build-dep', which will install
+almost all of the above.  The requirements may have changed slightly between
+the version packaged in the distribution and the current development version,
+so you might have to install some additional packages.
 
 
 Simple install procedure
@@ -41,6 +50,9 @@ variable to load schemas from the install location:
   % export GSETTINGS_SCHEMA_DIR=$PWD/_install/share/glib-2.0/schemas
   % _install/bin/rhythmbox
 
+By default, the build will enable optional features if the packages they require
+are installed.  To check which options are available and which are enabled,
+run 'meson configure _build'.
 
 The Details
 ===========
