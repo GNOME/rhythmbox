@@ -35,6 +35,7 @@
 import string
 import sys
 import re
+import os
 import traceback
 
 from gi.repository import GLib, Gtk, Gdk, Gio, GObject, Pango, Peas
@@ -117,10 +118,10 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 		self.window.grab_focus()
 
 	def enable_debugging(self, action, parameter, shell):
-		pwd_path = os.path.join(rb.user_data_dir(), "rpdb2_password")
+		pwd_path = os.path.join(RB.user_data_dir(), "rpdb2_password")
 		msg = _("After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in the file %s, it will use the default password ('rhythmbox').") % pwd_path
 		dialog = Gtk.MessageDialog(None, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK_CANCEL, msg)
-		if dialog.run() == Gtk.RESPONSE_OK:
+		if dialog.run() == Gtk.ResponseType.OK:
 			password = "rhythmbox"
 			if os.path.exists(pwd_path):
 				pwd_file = open(pwd_path)
