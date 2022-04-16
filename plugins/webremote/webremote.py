@@ -467,7 +467,20 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 			msg.set_status(404)
 			return
 
-		self.send_file_response(msg, icon.get_filename(), self.image_content_type)
+		iconfile = icon.get_filename()
+		try:
+			res = Gio.resources_lookup_data(iconfile, 0)
+			data = res.get_data()
+			content_type = self.image_content_type(data)
+			msg.set_response(content_type, Soup.MemoryUse.COPY, data)
+			msg.set_status(200)
+		except gi.repository.GLib.GError as ge:
+			# assume we couldn't find the resource, so try it as a filename
+			self.send_file_response(msg, icon.get_filename(), self.image_content_type)
+		except Exception as e:
+			sys.excepthook(*sys.exc_info())
+			msg.set_status(500)
+
 
 	def serve_static(self, msg, path, subdir, content_type):
 
