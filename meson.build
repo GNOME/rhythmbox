@@ -3,8 +3,8 @@ project('rhythmbox', 'c',
   meson_version: '>= 0.59.0',
   default_options: ['c_std=gnu89'])
 
-if meson.version().version_compare('> 0.62.0')
-      error('unsupported version of meson, please use 0.62')
+if meson.version().version_compare('> 0.61.0')
+      error('unsupported version of meson, please use 0.61')
 endif
 
 gnome = import('gnome')
