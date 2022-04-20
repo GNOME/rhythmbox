@@ -40,7 +40,6 @@ Simple install procedure
   % meson _build -Dprefix=$PWD/_install          # prepare the build
   % ninja -C _build                              # build Rhythmbox
   % ninja -C _build install                      # install Rhythmbox
-  % glib-compile-schemas _install/share/glib-2.0/schemas
 
 This installs Rhythmbox to the _install directory under the source tree.
 The executable to run will then be _install/bin/rhythmbox.
