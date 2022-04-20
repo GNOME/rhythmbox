@@ -1909,6 +1909,11 @@ finish_download (RBPodcastManager *pd, RBPodcastDownload *download, guint64 remo
 		g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_COMPLETE);
 		rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_STATUS, &val);
 		g_value_unset (&val);
+
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, NULL);
+		rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
+		g_value_unset (&val);
 	}
 
 	rb_podcast_manager_save_metadata (pd, download->entry);
