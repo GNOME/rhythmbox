@@ -44,11 +44,20 @@ from gi.repository import RB
 import gettext
 gettext.install('rhythmbox', RB.locale_dir())
 
+DEBUG_PORT = 5678
+
 try:
 	import rpdb2
 	have_rpdb2 = True
 except:
 	have_rpdb2 = False
+
+try:
+	import debugpy
+	have_debugpy = True
+except:
+	have_debugpy = False
+
 
 class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 	__gtype_name__ = 'PythonConsolePlugin'
@@ -72,24 +81,38 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 					 Gio.MenuItem.new(label=_("Python Console"),
 						 	  detailed_action="app.python-console"))
 
-		if have_rpdb2:
-			action = Gio.SimpleAction.new("python-debugger", None)
-			action.connect('activate', self.enable_debugging, shell)
-			app.add_action(action)
+		self.rpdb2_action = Gio.SimpleAction.new("python-debugger-winpdb", None)
+		self.rpdb2_action.connect('activate', self.attach_winpdb, shell)
+		app.add_action(self.rpdb2_action)
 
-			app.add_plugin_menu_item("tools",
-						 "python-debugger",
-						 Gio.MenuItem.new(label=_("Python Debugger"),
-								  detailed_action="app.python-debugger"))
+		app.add_plugin_menu_item("tools",
+					 "python-debugger-winpdb",
+					 Gio.MenuItem.new(label=_("Python Debugger (winpdb)"),
+							  detailed_action="app.python-debugger-winpdb"))
+
+		self.debugpy_action = Gio.SimpleAction.new("python-debugger-debugpy", None)
+		self.debugpy_action.connect('activate', self.enable_debugpy, shell)
+		app.add_action(self.debugpy_action)
+
+		app.add_plugin_menu_item("tools",
+					 "python-debugger-debugpy",
+					 Gio.MenuItem.new(label=_("Python Debugger (debugpy)"),
+							  detailed_action="app.python-debugger-debugpy"))
 
 	def do_deactivate(self):
 		shell = self.object
 		app = shell.props.application
 
 		app.remove_plugin_menu_item("tools", "python-console")
-		app.remove_plugin_menu_item("tools", "python-debugger")
 		app.remove_action("python-console")
-		app.remove_action("python-debugger")
+
+		app.remove_plugin_menu_item("tools", "python-debugger-winpdb")
+		app.remove_action("python-debugger-winpdb")
+		self.rpdb2_action = None
+
+		app.remove_plugin_menu_item("tools", "python-debugger-debugpy")
+		app.remove_action("python-debugger-debugpy")
+		self.debugpy_action = None
 		
 		if self.window is not None:
 			self.window.destroy()
@@ -117,7 +140,12 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 			self.window.show_all()
 		self.window.grab_focus()
 
-	def enable_debugging(self, action, parameter, shell):
+	def attach_winpdb(self, action, parameter, shell):
+		if have_rpdb2 is False:
+			self.missing_python_module("rpdb2", "winpdb")
+			self.rpdb2_action.set_enabled(False)
+			return False
+
 		pwd_path = os.path.join(RB.user_data_dir(), "rpdb2_password")
 		msg = _("After you press OK, Rhythmbox will wait until you connect to it with winpdb or rpdb2. If you have not set a debugger password in the file %s, it will use the default password ('rhythmbox').") % pwd_path
 		dialog = Gtk.MessageDialog(None, 0, Gtk.MessageType.INFO, Gtk.ButtonsType.OK_CANCEL, msg)
@@ -134,7 +162,39 @@ class PythonConsolePlugin(GObject.Object, Peas.Activatable):
 
 			GLib.idle_add(start_debugger, password)
 		dialog.destroy()
+		return False
 	
+	def enable_debugpy(self, action, parameter, shell):
+		if have_debugpy is False:
+			self.missing_python_module("debugpy", "debugpy")
+			self.debugpy_action.set_enabled(False)
+			return False
+		else:
+			try:
+				host, port = debugpy.listen(DEBUG_PORT)
+				msgtype = Gtk.MessageType.INFO
+				msg = _("Rhythmbox is now listening for Debug Adapter Protocol connections on port %d. You can now attach to it using a compatible debugger such as vimspector, nvim-dap or Visual Studio Code.") % port
+				self.debugpy_action.set_enabled(False)
+			except Exception as e:
+				msgtype = Gtk.MessageType.ERROR
+				msg = _("Unable to start Debug Adapter Protocol listener: %s") % str(e)
+
+		self.message_dialog(msg, msgtype)
+		return False
+
+	def missing_python_module(self, module, debugger):
+		msg = _("The %s Python module is not available. Install the module and then restart Rhythmbox to enable debugging with %s.") % (module, debugger)
+		self.message_dialog(msg, Gtk.MessageType.ERROR)
+
+	def message_dialog(self, msg, msgtype=Gtk.MessageType.INFO):
+		dialog = Gtk.MessageDialog(None, 0, msgtype, Gtk.ButtonsType.OK, msg)
+		dialog.connect("response", self.message_dialog_response)
+		dialog.show()
+
+
+	def message_dialog_response(self, dialog, rsp):
+		dialog.destroy()
+
 	def destroy_console(self, *args):
 		self.window.destroy()
 		self.window = None
