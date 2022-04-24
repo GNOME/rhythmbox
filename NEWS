@@ -1,3 +1,146 @@
+Overview of changes in Rhythmbox 3.4.5
+======================================
+
+* Bug fix release for 3.4
+* Switched to Meson build system
+* Rewritten podcast downloader with better resume and retry
+* Uses podcast episode GUIDs to handle episode URL changes
+* Preserves original order of episodes in podcasts even if episodes
+   have the same publication date
+* Soundcloud plugin removed (no longer works due to API restrictions)
+* mmkeys plugin removed (no longer useful)
+* DAAP plugin now supports libdmapsharing 4 API
+* Crossfading player backend works much better with network streams now
+* Better reporting of progress when transferring to Android or MTP devices
+
+Issues fixed:
+
+1634 - Opus files are encoded allways in hard-CBR
+1690 - Unhelpful error message for podcast feeds with no episodes
+1743 - Error transfering track: Target file already exists - while syncing with Android
+1744 - Transcoding WAV -> MP3 creates files outside "Music" dir during android sync
+1746 - Magnatune doesn't support buying individual albums
+1749 - Broken icon in 3.4.4 "About" dialog
+1750 - Remove reference to Miroguide search in code
+1751 - Replace www.rhythmbox.org with updated wiki.gnome.org links
+1758 - webremote plugin missing icons in 3.4.4
+1759 - webremote plugin not displaying icons / album art in Google chrome
+1760 - Rhythmbox crashed on plugging in iPhone 11 Pro with iOS 13.3
+1762 - RBAsyncCopy: Use G_FILE_COPY_OVERWRITE for g_file_copy_async()
+1763 - Magnatune: Rhythmbox crashes when download album is pressed more than once
+1764 - Magnatune: Albums download keeps repeating if album already exists
+1767 - Magnatune: Album art doesn't load properly
+1769 - Insufficent checking to determine whether files are under library directories
+1771 - podcast feed description is empty
+1772 - podcast album art doesn't work
+1773 - Rating not updated when updating using keyboard
+1775 - Missing icon in notifications
+1780 - podcast: cancel download doesn't work for slow connections
+1781 - podcast: "Finished downloading podcast" notification for cancelled downloads
+1782 - podcast: cancel download while download is in progress doesn't always work
+1787 - Song Position slider View preference not remembered after restart
+1795 - rhythmbox compile failed with gcc9
+1796 - 32 bit build failure
+1803 - 3.4.4: build fails with latest check 1.5.x
+1822 - podcast: download progress starts at 1 percent
+1829 - WinampCN lyric site is not responding
+1844 - podcast download error caused by delayed database entry changes
+1845 - podcast: Download cancellation doesn't cancel when cancelled at 0%
+1846 - podcast: crashes with SIGSEGV during podcast search
+1849 - podcast: subscribing feed has partial episode list in view
+1876 - podcast: cancelled downloads cannot play
+1883 - Build fails with CFLAGS="-O0": implicit declaration of function ‘setlocale’
+1909 - Import job gets cancelled while processing symlinks
+1923 - test-uri-dialog - The resource at “/org/gnome/Rhythmbox/ui/uri-new.ui” does not exist
+1934 - build warning: function declaration isn’t a prototype [-Wstrict-prototypes]
+1944 - artsearch fails if local search encounters an error
+1963 - application icons not found if not installed to default search path
+
+
+Merge requests:
+
+12 - Port DAAP plugin to libdmapsharing-4.0 API
+43 - Fix mapping of GStreamer album volume count
+45 - Fix Soundcloud plugin issues
+48 - metadata: Enable UTF-8 support in metadata scanner
+50 - Song info ui fixes
+57 - Update application ID to org.gnome.Rhythmbox3
+58 - listenbrainz: Add listening_from to submitted data
+65 - fix podcast episode download stuck in 'Waiting' state
+66 - podcast download should not fail when local file is empty
+68 - Podcast property view issues
+69 - remove invalid itunes detection browser plugin notice message
+77 - Use tabular figures for text with numeric data
+86 - Build using Meson
+88 - rhythmbox-client: flush dbus connection to send the 'quit' message before process exit
+93 - data: Add "provides" for the old desktop filename
+94 - Fix keyboard shortcuts not working sometimes
+98 - Podcast refcount issues
+103 - update .gitignore
+106 - rhythmdb: wait for changes to be processed before committing
+107 - add rb_uri_is_descendant
+110 - Fix "too many open files" error during track transfer to device
+111 - encoder: update completion status only once on cancellation
+114 - Setlocale Build Fail Fixed..
+115 - file-helpers: propagate error to caller from rb_uri_mkstemp
+116 - remove totem-pl-parser obsolete code
+122 - header: make header buttons have uniform dimensions
+127 - Some random cleanups
+128 - build: Remove autotools
+129 - Remove running from an uninstalled directory
+130 - mpid: Remove more HAL related code
+131 - Use gettext to translate all the plugin definitions and desktop files
+132 - Remove gnome-settings-daemon MediaKeys plugin
+133 - Remove "sanity check" verbiage
+136 - Update POTFILES.in and POTFILES.skip 211117
+137 - build: add glib preset to i18n.gettext
+138 - Rename desktop.plugin.in files to plugin.desktop.in
+139 - add ITS rule for playlists.xml and use gettext
+140 - tests: Disable libcheck timeout
+142 - Add tdb to pkgconfig dependencies
+
+
+Translation updates:
+
+- as, courtesy of Amitakhya Phukan
+- ca, courtesy of Assumpta, 2021
+- ca, courtesy of Jordi Mas
+- cs, courtesy of Marek Černocký
+- da, courtesy of Alan Mortensen
+- da, courtesy of scootergrisen
+- de, courtesy of Christian Kirbach
+- de, courtesy of Philipp Kiemle
+- es, courtesy of Daniel Mustieles
+- eu, courtesy of Asier Sarasua Garmendia
+- fa, courtesy of eshagh
+- fi, courtesy of Jiri Grönroos
+- fr, courtesy of Claude Paroz
+- fur, courtesy of Fabio Tomat
+- hi, courtesy of karthik
+- hr, courtesy of gogo
+- hu, courtesy of Balázs Úr
+- id, courtesy of Kukuh Syafaat
+- it, courtesy of Milo Casagrande
+- ja, courtesy of sicklylife
+- lt, courtesy of Aurimas Černius
+- nl, courtesy of Nathan Follens
+- oc, courtesy of Quentin PAGÈS
+- pl, courtesy of Piotr Drąg
+- pt_BR, courtesy of Matheus Barbosa
+- pt, courtesy of Hugo Carvalho
+- ro, courtesy of Florentina Mușat
+- ru, courtesy of Ser82-png
+- sk, courtesy of Dušan Kazik
+- sr, courtesy of Мирослав Николић
+- sv, courtesy of Anders Jonsson
+- tr, courtesy of Sabri Ünal
+- uk, courtesy of Yuri Chornoivan
+- vi, courtesy of Trần Ngọc Quân
+- zh_CN, courtesy of lumingzh
+- zh_TW, courtesy of Cheng-Chia Tseng
+
+
+
 Overview of changes in Rhythmbox 3.4.4
 ======================================
 
