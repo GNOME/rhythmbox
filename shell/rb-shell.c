@@ -128,7 +128,6 @@ static gboolean rb_shell_key_press_event_cb (GtkWidget *win,
 					     RBShell *shell);
 static void rb_shell_sync_window_state (RBShell *shell, gboolean dont_maximise);
 static void rb_shell_sync_paned (RBShell *shell);
-static void rb_shell_sync_party_mode (RBShell *shell);
 static void rb_shell_select_page (RBShell *shell, RBDisplayPage *display_page);
 static void display_page_selected_cb (RBDisplayPageTree *display_page_tree,
 				      RBDisplayPage *page,
@@ -172,7 +171,6 @@ static void paned_size_allocate_cb (GtkWidget *widget,
 
 static void jump_to_playing_action_cb (GSimpleAction *, GVariant *, gpointer);
 static void add_music_action_cb (GAction *action, GVariant *parameter, RBShell *shell);
-static void view_party_mode_changed_cb (GAction *action, GVariant *parameter, RBShell *shell);
 
 static gboolean rb_shell_visibility_changing (RBShell *shell, gboolean initial, gboolean visible);
 
@@ -287,8 +285,6 @@ struct _RBShellPrivate
 
 	char *cached_title;
 	gboolean cached_playing;
-
-	gboolean party_mode;
 
 	GSettings *settings;
 
@@ -1708,12 +1704,6 @@ rb_shell_constructed (GObject *object)
 	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
 	g_signal_connect (shell->priv->settings, "changed", G_CALLBACK (rb_shell_settings_changed_cb), shell);
 
-	action = G_ACTION (g_simple_action_new_stateful ("party-mode",
-							 NULL,
-							 g_variant_new_boolean (FALSE)));
-	g_action_map_add_action (G_ACTION_MAP (shell->priv->window), action);
-	g_signal_connect (action, "change-state", G_CALLBACK (view_party_mode_changed_cb), shell);
-
 	action = G_ACTION (g_simple_action_new ("library-import", NULL));
 	g_signal_connect (action, "activate", G_CALLBACK (add_music_action_cb), shell);
 	g_action_map_add_action (G_ACTION_MAP (app), action);
@@ -1737,7 +1727,6 @@ rb_shell_constructed (GObject *object)
 	construct_plugins (shell);
 
 	rb_shell_sync_window_state (shell, FALSE);
-	rb_shell_sync_party_mode (shell);
 
 	rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
 
@@ -1931,12 +1920,7 @@ rb_shell_window_delete_cb (GtkWidget *win,
 			   GdkEventAny *event,
 			   RBShell *shell)
 {
-	if (shell->priv->party_mode) {
-		return TRUE;
-	}
-
 	rb_shell_quit (shell, NULL);
-
 	return TRUE;
 }
 
@@ -2397,14 +2381,6 @@ rb_shell_set_window_title (RBShell *shell,
 }
 
 static void
-view_party_mode_changed_cb (GAction *action, GVariant *parameter, RBShell *shell)
-{
-	shell->priv->party_mode = g_variant_get_boolean (parameter);
-	g_simple_action_set_state (G_SIMPLE_ACTION (action), parameter);
-	rb_shell_sync_party_mode (shell);
-}
-
-static void
 add_music_action_cb (GAction *action, GVariant *parameter, RBShell *shell)
 {
 	rb_shell_select_page (shell, RB_DISPLAY_PAGE (shell->priv->library_source));
@@ -2525,53 +2501,6 @@ rb_shell_load_complete_cb (RhythmDB *db,
 			   RBShell *shell)
 {
 	g_idle_add ((GSourceFunc) idle_handle_load_complete, shell);
-}
-
-static gboolean
-window_state_event_cb (GtkWidget           *widget,
-		       GdkEventWindowState *event,
-		       RBShell             *shell)
-{
-	if (event->changed_mask & GDK_WINDOW_STATE_ICONIFIED) {
-		rb_shell_present (shell, gtk_get_current_event_time (), NULL);
-	}
-
-	return TRUE;
-}
-
-static void
-rb_shell_sync_party_mode (RBShell *shell)
-{
-	GAction *action;
-
-	/* party mode does not use gsettings as a model since it
-	   should not be persistent */
-
-	/* disable/enable quit action */
-	action = g_action_map_lookup_action (G_ACTION_MAP (shell->priv->application), "quit");
-	g_simple_action_set_enabled (G_SIMPLE_ACTION (action), !shell->priv->party_mode);
-
-	/* show/hide queue as sidebar ? */
-
-	g_object_set (shell->priv->player_shell, "queue-only", shell->priv->party_mode, NULL);
-
-	/* Set playlist manager source to the current source to update properties */
-	if (shell->priv->selected_page && RB_IS_SOURCE (shell->priv->selected_page)) {
-		RBSource *source = RB_SOURCE (shell->priv->selected_page);
-		g_object_set (shell->priv->playlist_manager, "source", source, NULL);
-		rb_shell_clipboard_set_source (shell->priv->clipboard_shell, source);
-	}
-
-	gtk_window_set_keep_above (GTK_WINDOW (shell->priv->window), shell->priv->party_mode);
-	if (shell->priv->party_mode) {
-		gtk_window_fullscreen (GTK_WINDOW (shell->priv->window));
-		gtk_window_stick (GTK_WINDOW (shell->priv->window));
-		g_signal_connect (shell->priv->window, "window-state-event", G_CALLBACK (window_state_event_cb), shell);
-	} else {
-		gtk_window_unstick (GTK_WINDOW (shell->priv->window));
-		gtk_window_unfullscreen (GTK_WINDOW (shell->priv->window));
-		g_signal_handlers_disconnect_by_func (shell->priv->window, window_state_event_cb, shell);
-	}
 }
 
 static void
@@ -3024,20 +2953,6 @@ rb_shell_load_uri (RBShell *shell,
 	}
 
 	return TRUE;
-}
-
-/**
- * rb_shell_get_party_mode:
- * @shell: the #RBShell
- *
- * Returns %TRUE if the shell is in party mode
- *
- * Return value: %TRUE if the shell is in party mode
- */
-gboolean
-rb_shell_get_party_mode (RBShell *shell)
-{
-	return shell->priv->party_mode;
 }
 
 /**

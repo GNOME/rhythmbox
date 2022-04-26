@@ -1729,7 +1729,6 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 	GApplication *app;
 	gboolean playlist_active;
 	gboolean playlist_local = FALSE;
-	gboolean party_mode;
 	gboolean can_save;
 	gboolean can_edit;
 	gboolean can_rename;
@@ -1737,8 +1736,6 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 	GAction *gaction;
 
 	app = g_application_get_default ();
-
-	party_mode = rb_shell_get_party_mode (mgr->priv->shell);
 
 	if (mgr->priv->selected_source != NULL) {
 		g_object_unref (mgr->priv->selected_source);
@@ -1750,12 +1747,11 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr,
 		g_object_get (mgr->priv->selected_source, "is-local", &playlist_local, NULL);
 	}
 
-	can_save = playlist_local && !party_mode;
+	can_save = playlist_local;
 	gaction = g_action_map_lookup_action (G_ACTION_MAP (app), "playlist-save");
 	g_object_set (gaction, "enabled", can_save, NULL);
 
-	can_edit = (playlist_local && RB_IS_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source) &&
-		    !party_mode);
+	can_edit = (playlist_local && RB_IS_AUTO_PLAYLIST_SOURCE (mgr->priv->selected_source));
 	gaction = g_action_map_lookup_action (G_ACTION_MAP (app), "playlist-edit");
 	g_object_set (gaction, "enabled", can_edit, NULL);
 

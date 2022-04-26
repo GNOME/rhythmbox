@@ -718,19 +718,6 @@ default_can_rename (RBSource *source)
 	return FALSE;
 }
 
-static gboolean
-is_party_mode (RBSource *source)
-{
-	gboolean result = FALSE;
-	RBShell *shell;
-
-	g_object_get (source, "shell", &shell, NULL);
-	result = rb_shell_get_party_mode (shell);
-	g_object_unref (shell);
-
-	return result;
-}
-
 /**
  * rb_source_can_rename:
  * @source: a #RBSource.
@@ -743,12 +730,7 @@ gboolean
 rb_source_can_rename (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	if (is_party_mode (source)) {
-		return FALSE;
-	} else {
-		return klass->can_rename (source);
-	}
+	return klass->can_rename (source);
 }
 
 /**
@@ -822,11 +804,7 @@ gboolean
 rb_source_can_delete (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-	if (is_party_mode (source)) {
-		return FALSE;
-	} else {
-		return klass->can_delete (source);
-	}
+	return klass->can_delete (source);
 }
 
 /**
@@ -842,11 +820,7 @@ gboolean
 rb_source_can_move_to_trash (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-	if (is_party_mode (source)) {
-		return FALSE;
-	} else {
-		return klass->can_move_to_trash (source);
-	}
+	return klass->can_move_to_trash (source);
 }
 
 /**

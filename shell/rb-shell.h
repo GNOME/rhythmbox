@@ -158,8 +158,6 @@ void            rb_shell_register_entry_type_for_source (RBShell *shell,
 RBSource * rb_shell_get_source_by_entry_type (RBShell *shell,
 					      RhythmDBEntryType *type);
 
-gboolean        rb_shell_get_party_mode (RBShell *shell);
-
 void 		rb_shell_append_display_page (RBShell *shell, RBDisplayPage *page, RBDisplayPage *parent);
 
 void 		rb_shell_add_widget (RBShell *shell, GtkWidget *widget, RBShellUILocation location, gboolean expand, gboolean fill);
