@@ -301,8 +301,6 @@ sourcesinc = include_directories('sources')
 sourcessyncinc = include_directories('sources/sync')
 widgetsinc = include_directories('widgets')
 
-rpath = '@0@/@1@'.format(get_option('prefix'), get_option('libdir'))
-
 subdir('data')
 
 subdir('lib')
