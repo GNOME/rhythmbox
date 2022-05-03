@@ -20,7 +20,7 @@ foreach desktop_file : desktop_files
 endforeach
 
 service_conf = configuration_data()
-service_conf.set('bindir', get_option('bindir'))
+service_conf.set('bindir', get_option('prefix') / get_option('bindir'))
 
 service = 'org.gnome.Rhythmbox3.service'
 
