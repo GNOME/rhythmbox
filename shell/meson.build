@@ -148,6 +148,7 @@ endif
 
 executable('rhythmbox', 'main.c',
   dependencies: rhythmbox_dependencies,
+  c_args: shell_c_args,
   include_directories: [ pluginsinc ],
   install: true,
   install_rpath: rpath
