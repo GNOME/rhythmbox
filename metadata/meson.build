@@ -56,6 +56,7 @@ rbmetadata_dep = declare_dependency(
 # service
 
 executable('rhythmbox-metadata', metadata_service_sources,
+  c_args: metadata_c_args,
   link_with: rbmetadata_lib,
   dependencies: [librb_dep, rbmetadata_dep],
   install: true,
