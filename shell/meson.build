@@ -147,7 +147,8 @@ if enable_python
 endif
 
 executable('rhythmbox', 'main.c',
-  dependencies: rhythmbox_dependencies,
+  dependencies: [ rhythmbox_dependencies, intl ],
+  c_args: shell_c_args,
   include_directories: [ pluginsinc ],
   install: true,
   install_rpath: rpath

@@ -9,7 +9,7 @@ client_c_args = [
 executable('rhythmbox-client',
     'rb-client.c',
     c_args: client_c_args,
-    dependencies: librb_dep,
+    dependencies: [librb_dep, intl],
     install: true,
     install_rpath: rpath
 )
