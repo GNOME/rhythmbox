@@ -47,6 +47,7 @@ cdata.set('GLIB_VERSION_MAX_ALLOWED', 'GLIB_VERSION_2_56')
 
 gstreamer_required = '1.4.0'
 
+intl = dependency('intl', required: true)
 cairo = dependency('cairo', required: true)
 gdk_pixbuf = dependency('gdk-pixbuf-2.0', version: '>= 2.18.0')
 gio = dependency('gio-2.0', version: '>=' + glib_required, required: true)
