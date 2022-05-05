@@ -1033,12 +1033,11 @@ main (int argc, char **argv)
 	gboolean scanned;
 	GVariant *state;
 
-#ifdef ENABLE_NLS
 	/* initialize i18n */
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
-#endif
+
 	/* setup */
 	setlocale (LC_ALL, "");
 	g_set_prgname ("rhythmbox-client");

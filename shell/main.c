@@ -64,13 +64,11 @@ main (int argc, char **argv)
 
 	setlocale (LC_ALL, "");
 
-#ifdef ENABLE_NLS
 	/* initialize i18n */
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
 	textdomain (GETTEXT_PACKAGE);
-#endif
 
 	g_set_application_name (_("Rhythmbox"));
 	gtk_window_set_default_icon_name (RB_APP_ICON);

@@ -360,12 +360,11 @@ main (int argc, char **argv)
 
 	setlocale (LC_ALL, "");
 
-#ifdef ENABLE_NLS
 	/* initialize i18n */
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
-#endif
+
 	gst_init (NULL, NULL);
 	g_set_prgname ("rhythmbox-metadata");
 
