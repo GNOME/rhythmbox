@@ -270,6 +270,12 @@ pkg.generate(
   ]
 )
 
+gnome.post_install(
+  glib_compile_schemas: true,
+  gtk_update_icon_cache: true,
+  update_desktop_database: true
+)
+
 configure_file(input : 'config.h.meson',
   output : 'config.h',
 configuration : cdata)
