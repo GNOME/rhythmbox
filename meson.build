@@ -77,28 +77,6 @@ if gudev.found()
   cdata.set('HAVE_GUDEV', 1)
 endif
 
-use_ipod = false
-libgpod = dependency('libgpod-1.0', version: '>= 0.7.92', required: get_option('ipod'))
-if libgpod.found()
-  use_ipod = true
-endif
-
-use_mtp = false
-libmtp = dependency('libmtp', version: '>= 0.3.0', required: get_option('mtp'))
-if libmtp.found()
-  if use_gudev
-    use_mtp = true
-  elif get_option('mtp').enabled()
-    error('MTP explicitly requested but GUdev is not available')
-  endif
-endif
-
-use_notify = false
-libnotify = dependency('libnotify', version: '>= 0.7.0', required: get_option('libnotify'))
-if libnotify.found()
-  use_notify = true
-endif
-
 use_libsecret = false
 libsecret = dependency('libsecret-1', version: '>= 0.18', required: get_option('libsecret'))
 if libsecret.found()
@@ -106,18 +84,6 @@ if libsecret.found()
 endif
 cdata.set('PY_LIBSECRET_ENABLED', use_libsecret)
 cdata.set('WITH_LIBSECRET', use_libsecret)
-
-use_lirc = false
-lirc = dependency('lirc', required: get_option('lirc'))
-if lirc.found()
-  use_lirc = true
-endif
-
-have_libbrasero_media = false
-brasero_media = dependency('libbrasero-media3', version: '>= 2.31.5', required: get_option('brasero'))
-if brasero_media.found()
-  have_libbrasero_media = true
-endif
 
 have_gnu_fwrite_unlocked = false
 if cc.has_function('fwrite_unlocked')
@@ -164,11 +130,10 @@ pkgdatadir = datadir / 'rhythmbox'
 # Plugin support
 
 plugindir = libdir / 'rhythmbox' / 'plugins'
-cdata.set('PLUGINDIR', plugindir)
-
 plugindatadir = datadir / 'rhythmbox' / 'plugins'
-cdata.set('PLUGINDATADIR',  plugindatadir)
-cdata.set('SAMPLEPLUGINDIR', libdir / 'rhythmbox' / 'sample-plugins')
+
+sampleplugindir = libdir / 'rhythmbox' / 'sample-plugins'
+sampleplugindatadir = datadir / 'rhythmbox' / 'sample-plugins'
 
 enable_python = false
 python_install = python.find_installation('python3', required: get_option('plugins_python'))
@@ -185,36 +150,109 @@ if vala_found
   add_project_arguments(['--vapidir', vapi_dir], language: 'vala')
 endif
 
+plugin_headers = ['plugins/rb-plugin-macros.h']
+install_headers(plugin_headers, subdir: 'rhythmbox/plugins')
+
+po_dir = meson.project_source_root() / 'po'
+# FIXME: Move custom_target to i18n.merge_file when gettext acquires plugin support.
+#        http://lists.gnu.org/archive/html/bug-gettext/2017-06/msg00001.html
+msgfmt_plugin_cmd = [
+  find_program('msgfmt'),
+  '--desktop',
+  '--keyword=Name',
+  '--keyword=Description',
+  '--template=@INPUT@',
+  '-d', po_dir,
+  '--output=@OUTPUT@'
+]
+
 ##########
 # Plugins
 
-enable_fm_radio = false
+plugins = [
+  'audiocd',
+  'audioscrobbler',
+  'dbus-media-server',
+  'generic-player',
+  'iradio',
+  'mpris',
+  'power-manager'
+]
+
+if enable_python
+  plugins += [
+    'rb',
+
+    'artsearch',
+    'im-status',
+    'listenbrainz',
+    'lyrics',
+    'magnatune',
+    'pythonconsole',
+    'rbzeitgeist',
+    'replaygain',
+    'webremote',
+
+    # 'context'
+  ]
+endif
+
+libgpod = dependency('libgpod-1.0', version: '>= 0.7.92', required: get_option('ipod'))
+if libgpod.found()
+  plugins += 'ipod'
+endif
+
+libmtp = dependency('libmtp', version: '>= 0.3.0', required: get_option('mtp'))
+if libmtp.found()
+  if use_gudev
+    plugins += 'mtpdevice'
+  elif get_option('mtp').enabled()
+    error('MTP explicitly requested but GUdev is not available')
+  endif
+endif
+if use_gudev
+  plugins += 'android'
+endif
+
+libnotify = dependency('libnotify', version: '>= 0.7.0', required: get_option('libnotify'))
+if libnotify.found()
+  plugins += 'notification'
+endif
+
+lirc = dependency('lirc', required: get_option('lirc'))
+if lirc.found()
+  plugins += 'lirc'
+endif
+
+brasero_media = dependency('libbrasero-media3', version: '>= 2.31.5', required: get_option('brasero'))
+if brasero_media.found()
+  plugins += 'brasero-disc-recorder'
+endif
+
 if get_option('fm_radio').allowed()
   if cc.has_header('linux/videodev2.h')
-    enable_fm_radio = true
+    plugins += 'fmradio'
   elif get_option('fm_radio').enabled()
     error('FM radio plugin explicitly requested, but cannot be built')
   endif
 endif
 
-have_libdmapsharing = false
 if get_option('daap').allowed()
   libdmapsharing4 = dependency('libdmapsharing-4.0', version: '>= 3.9.4', required: false)
 
   if libdmapsharing4.found()
-    have_libdmapsharing = true
+    plugins += 'daap'
   else
     libdmapsharing = dependency('libdmapsharing-3.0', version: '>= 2.9.19', required: get_option('daap'))
     if libdmapsharing.found()
-      have_libdmapsharing = true
+      plugins += 'daap'
     endif
   endif
 endif
 
-enable_grilo = false
 grilo = dependency('grilo-0.3', version: '>= 0.3.1', required: get_option('grilo'))
 if grilo.found()
-  enable_grilo = true
+  plugins += 'grilo'
 endif
 
 enable_check = false
@@ -246,21 +284,27 @@ configure_file(input : 'config.h.meson',
   output : 'config.h',
 configuration : cdata)
 
-summary({'Tests': enable_check},
-        section: 'General')
-summary({'iPod integration': use_ipod,
-         'MTP integration': use_mtp,
-         'CD burning support': have_libbrasero_media,
-         'DAAP (music sharing) support': have_libdmapsharing,
-         'libnotify support': use_notify,
+summary({'Tests': enable_check,
+         'Help': get_option('help'),
+         'API documentation': get_option('gtk_doc'),
+        },
+        section: 'General',
+        bool_yn: true)
+summary({'iPod integration': plugins.contains('ipod'),
+         'MTP integration': plugins.contains('mtpdevice'),
+         'CD burning support': plugins.contains('brasero-disc-recorder'),
+         'DAAP (music sharing) support': plugins.contains('daap'),
+         'libnotify support': plugins.contains('notification'),
          'GUdev support': use_gudev,
          'Python plugin support': enable_python,
          'Vala plugin support': enable_vala,
          'Libsecret keyring support': use_libsecret,
-         'FM radio support': enable_fm_radio,
-         'Grilo support': enable_grilo,
+         'FM radio support': plugins.contains('fmradio'),
+         'Grilo support': plugins.contains('grilo'),
+         'Sample plugins': get_option('sample-plugins'),
         },
-        section: 'Plugins')
+        section: 'Plugins',
+        bool_yn: true)
 
 configinc = include_directories('.')
 libinc = include_directories('lib')
@@ -284,9 +328,19 @@ subdir('podcast')
 subdir('sources')
 subdir('widgets')
 subdir('shell')
-subdir('plugins')
+
+foreach p : plugins
+  subdir('plugins' / p)
+endforeach
 if get_option('sample-plugins')
-  subdir('sample-plugins')
+
+  subdir('sample-plugins/sample')
+  if enable_python
+    subdir('sample-plugins/sample-python')
+  endif
+  if enable_vala
+    subdir('sample-plugins/sample-vala')
+  endif
 endif
 subdir('remote')
 
