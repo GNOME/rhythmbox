@@ -37,19 +37,17 @@ if use_no_strict_aliasing
   metadata_c_args += ['-fno-strict-aliasing']
 endif
 
-metadata_deps = [tdb, gstreamer, gstreamer_pbutils, gstreamer_tag]
-
 # client library
 
 rbmetadata_lib = static_library('rbmetadata', metadata_sources,
   c_args: metadata_c_args,
-  dependencies: [metadata_deps, librb_dep],
+  dependencies: [common_deps, librb_dep],
   install: false,
 )
 
 rbmetadata_dep = declare_dependency(
   link_with: rbmetadata_lib,
-  dependencies: metadata_deps,
+  dependencies: common_deps,
   include_directories: include_directories('.'),
 )
 

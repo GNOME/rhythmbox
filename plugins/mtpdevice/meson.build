@@ -14,12 +14,7 @@ mtpdevice_sources = [
   'rb-mtp-thread.c',
 ]
 
-mtpdevice_dependencies = [rhythmbox_core_dep, libmtp]
-if use_gudev
-  mtpdevice_dependencies += gudev
-else
-  mtpdevice_dependencies += hal
-endif
+mtpdevice_dependencies = [rhythmbox_core_dep, libmtp, gudev]
 
 shared_module('mtpdevice',
   mtpdevice_sources,

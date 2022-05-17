@@ -53,7 +53,7 @@ widgets_c_args = [
   '-DG_LOG_DOMAIN="Rhythmbox"',
 ]
 
-widgets_dependencies = [libnotify, gtk, gdk_pixbuf, cairo, pango, gstreamer_pbutils]
+widgets_dependencies = [gtk, gdk_pixbuf, cairo, pango, gstreamer_pbutils, libsoup]
 
 rbwidgets_lib = static_library('rbwidgets',
   widgets_sources,

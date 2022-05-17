@@ -24,17 +24,15 @@ backends_c_args = [
   '-DG_LOG_DOMAIN="Rhythmbox"',
 ]
 
-backends_dependencies = [gstreamer_base, gstreamer_controller, gstreamer_plugins_base, gstreamer_tag]
-
 rbbackends_lib = static_library('rbbackends',
   backends_sources,
-  dependencies: [backends_dependencies, librb_dep, rhythmdb_dep],
+  dependencies: [common_deps, librb_dep, rhythmdb_dep],
   c_args: backends_c_args,
   include_directories: backendsinc,
 )
 
 rbbackends_dep = declare_dependency(
   link_with: rbbackends_lib,
-  dependencies: backends_dependencies,
+  dependencies: common_deps,
   include_directories: backendsinc,
 )
