@@ -40,15 +40,13 @@ if use_no_strict_aliasing
   c_args += ['-fno-strict-aliasing']
 endif
 
-rhythmdb_dependencies = [libmath]
-
 librhythmdb = static_library('rhythmdb', rhythmdb_sources,
   c_args: c_args,
-  dependencies: [rhythmdb_dependencies, librb_dep],
+  dependencies: [common_deps, librb_dep],
   include_directories: [podcastinc, widgetsinc])
 
 rhythmdb_dep = declare_dependency(
   link_with: librhythmdb,
   include_directories: include_directories('.'),
-  dependencies: rhythmdb_dependencies,
+  dependencies: common_deps,
 )

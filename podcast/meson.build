@@ -30,18 +30,16 @@ podcast_c_args = [
   '-DG_LOG_DOMAIN="RhythmBox"'
 ]
 
-podcast_dependencies = [ json_glib, libsoup, totem_plparser, gdk_pixbuf ]
-
 rbpodcast_lib = static_library('rbpodcast', podcast_sources,
   c_args: lib_c_args,
   include_directories: [configinc, shellinc, sourcesinc, widgetsinc],
-  dependencies: [podcast_dependencies, librb_dep, rhythmdb_dep, rbmetadata_dep],
+  dependencies: [common_deps, librb_dep, rhythmdb_dep, rbmetadata_dep],
   install: false,
 )
 
 rbpodcast_dep = declare_dependency(
   link_with: rbpodcast_lib,
-  dependencies: podcast_dependencies,
+  dependencies: common_deps,
   include_directories: [configinc, include_directories('.')],
 )
 

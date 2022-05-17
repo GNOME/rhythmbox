@@ -81,11 +81,6 @@ shell_c_args = [
   '-DLIBDIR="' + libdir + '"',
 ]
 
-rhythmbox_core_dependencies = [gobject_introspection, libpeas]
-if gdk_targets.contains('x11')
-  rhythmbox_core_dependencies += [x11]
-endif
-
 rhythmbox_core_include_directories = [
   configinc, libinc, mpidinc, metadatainc, rhythmdbinc, backendsinc, pluginsinc,
   podcastinc, sourcesinc, widgetsinc, include_directories('.'),
@@ -95,25 +90,21 @@ librhythmbox_core = shared_library('rhythmbox-core',
   shell_sources,
   c_args: shell_c_args,
   include_directories: rhythmbox_core_include_directories,
-  dependencies: [rhythmbox_core_dependencies,  mediaplayerid_dep, rhythmdb_dep,
+  dependencies: [common_deps, mediaplayerid_dep, librb_dep, rhythmdb_dep,
     rbbackends_dep, rbmetadata_dep, rbpodcast_dep, rbwidgets_dep, sources_dep],
   install: 'true',
   link_whole: [librb, rbwidgets_lib, sources_lib],
   version: '@0@.@1@.@2@'.format(RHYTHMBOX_CORE_CURRENT, RHYTHMBOX_CORE_REVISION, RHYTHMBOX_CORE_AGE)
 )
 
-# We can't use the _dep objects from the helper libraries here
-# as we need to avoid linking the static helper libraries to the
-# plugins.
 rhythmbox_core_dep = declare_dependency(
   link_with: librhythmbox_core,
-  dependencies: [mpid_dependencies, lib_dependencies, rhythmdb_dependencies,
-    backends_dependencies, podcast_dependencies, widgets_dependencies, sources_dependencies],
+  dependencies: common_deps,
   include_directories: rhythmbox_core_include_directories,
 )
 
 rb_gir = gnome.generate_gir(librhythmbox_core,
-  dependencies: [rhythmbox_core_dependencies],
+  dependencies: common_deps,
   link_with: [],
   extra_args: [ '--accept-unprefixed'],
   sources: lib_headers + lib_sources + 
@@ -133,19 +124,13 @@ rb_gir = gnome.generate_gir(librhythmbox_core,
   install: true,
 )
 
-rhythmbox_dependencies = [rhythmbox_core_dep, gobject_introspection,
-  gio, gio_unix, libsoup, tdb, json_glib]
-
-if gdk_targets.contains('x11')
-  rhythmbox_dependencies += [x11]
-endif
-
+rhythmbox_dependencies = [rhythmbox_core_dep]
 if enable_python
   rhythmbox_dependencies += [pygobject]
 endif
 
 executable('rhythmbox', 'main.c',
-  dependencies: [ rhythmbox_dependencies, intl ],
+  dependencies: [ rhythmbox_dependencies ],
   c_args: shell_c_args,
   include_directories: [ pluginsinc ],
   install: true

@@ -44,20 +44,15 @@ lib_c_args = [
   '-DDATADIR="' + datadir + '"'
 ]
 
-lib_dependencies = [
-   gio, gio_unix, glib, gmodule_export, gobject, gstreamer, gstreamer_pbutils, gtk,
-   gdk_pixbuf, libpeas, libpeas_gtk, libxml, pango
-]
-
 librb = static_library('rb', lib_sources,
   c_args: lib_c_args,
   include_directories: [configinc],
-  dependencies: lib_dependencies,
+  dependencies: common_deps,
   install: false,
 )
 
 librb_dep = declare_dependency(
   link_with: librb,
-  dependencies: lib_dependencies,
+  dependencies: common_deps,
   include_directories: [configinc, include_directories('.')],
 )

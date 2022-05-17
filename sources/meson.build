@@ -58,7 +58,7 @@ if use_no_strict_aliasing
   sources_c_args += ['-fno-strict-aliasing']
 endif
 
-sources_dependencies = [totem_plparser, gstreamer_pbutils, gtk]
+sources_dependencies = [totem_plparser, gstreamer_pbutils, libxml, gtk]
 
 sources_lib = static_library('sources', sources_sources,
   c_args: sources_c_args,
