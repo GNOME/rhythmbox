@@ -60,8 +60,7 @@ executable('rhythmbox-metadata', metadata_service_sources,
   link_with: rbmetadata_lib,
   dependencies: [librb_dep, rbmetadata_dep, intl],
   install: true,
-  install_dir: get_option('libexecdir'),
-  install_rpath: rpath
+  install_dir: get_option('libexecdir')
 )
 
 # test program
