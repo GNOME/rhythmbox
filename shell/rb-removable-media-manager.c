@@ -945,7 +945,8 @@ rb_removable_media_manager_device_is_android (RBRemovableMediaManager *manager, 
 		"motorola",
 		"OnePlus",
 		"Google",
-		"bq"
+		"bq",
+		"HMD_Global"
 	};
 
 	match = FALSE;
