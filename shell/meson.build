@@ -108,8 +108,7 @@ librhythmbox_core = shared_library('rhythmbox-core',
 rhythmbox_core_dep = declare_dependency(
   link_with: librhythmbox_core,
   dependencies: [mpid_dependencies, lib_dependencies, rhythmdb_dependencies,
-    gstreamer_backend_dependencies, backends_dependencies,
-    podcast_dependencies, widgets_dependencies, sources_dependencies],
+    backends_dependencies, podcast_dependencies, widgets_dependencies, sources_dependencies],
   include_directories: rhythmbox_core_include_directories,
 )
 
@@ -119,7 +118,6 @@ rb_gir = gnome.generate_gir(librhythmbox_core,
   extra_args: [ '--accept-unprefixed'],
   sources: lib_headers + lib_sources + 
     backends_sources + backends_headers +
-    gstreamer_backend_sources + gstreamer_backend_headers +
     metadata_sources + metadata_headers +
     podcast_sources + podcast_headers +
     rhythmdb_sources + rhythmdb_headers +
