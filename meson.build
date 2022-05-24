@@ -6,6 +6,7 @@ project('rhythmbox', 'c',
 gnome = import('gnome')
 i18n = import('i18n')
 pkg = import('pkgconfig')
+python = import('python')
 
 # plugin API versioning
 # Increment on interface addition, reset on removal
@@ -170,10 +171,9 @@ cdata.set('PLUGINDATADIR',  plugindatadir)
 cdata.set('SAMPLEPLUGINDIR', libdir / 'rhythmbox' / 'sample-plugins')
 
 enable_python = false
-python = find_program('python3', required: get_option('plugins_python'))
+python_install = python.find_installation('python3', required: get_option('plugins_python'))
 pygobject = dependency('pygobject-3.0', version: '>= 3.0.0', required: get_option('plugins_python'))
-pyoverridesdir = run_command([python, '-c', '''import gi; print(gi._overridesdir)'''], check: true).stdout().strip()
-if python.found() and pygobject.found()
+if python_install.found() and pygobject.found()
   enable_python = true
 endif
 
