@@ -88,7 +88,7 @@ endif
 
 rhythmbox_core_include_directories = [
   configinc, libinc, mpidinc, metadatainc, rhythmdbinc, backendsinc, pluginsinc,
-  podcastinc, sourcesinc, sourcessyncinc, widgetsinc, include_directories('.'),
+  podcastinc, sourcesinc, widgetsinc, include_directories('.'),
 ]
 
 librhythmbox_core = shared_library('rhythmbox-core',

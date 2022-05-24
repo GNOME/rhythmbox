@@ -59,7 +59,7 @@ rbwidgets_lib = static_library('rbwidgets',
   widgets_sources,
   dependencies: widgets_dependencies + [librb_dep, rhythmdb_dep, rbmetadata_dep,
   rbbackends_dep, rbpodcast_dep, sources_dep],
-  include_directories: [pluginsinc, shellinc, sourcessyncinc, widgetsinc])
+  include_directories: [pluginsinc, shellinc, widgetsinc])
 
 rbwidgets_dep = declare_dependency(
   link_with: rbwidgets_lib,
