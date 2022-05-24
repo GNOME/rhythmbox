@@ -1,5 +1,3 @@
-subdir('sync')
-
 sources_headers = files(
   'rb-auto-playlist-source.h',
   'rb-browser-source.h',
@@ -41,7 +39,11 @@ sources_sources = files(
   'rb-source.c',
   'rb-static-playlist-source.c',
   'rb-streaming-source.c',
-  'rb-transfer-target.c'
+  'rb-transfer-target.c',
+  'sync/rb-sync-settings.c',
+  'sync/rb-sync-settings-ui.c',
+  'sync/rb-sync-state.c',
+  'sync/rb-sync-state-ui.c',
 )
 
 sources_c_args = [
@@ -60,9 +62,9 @@ sources_dependencies = [totem_plparser, gstreamer_pbutils, gtk]
 
 sources_lib = static_library('sources', sources_sources,
   c_args: sources_c_args,
-  include_directories: [configinc, shellinc, sourcesinc, widgetsinc],
+  include_directories: [configinc, shellinc, sourcesinc, widgetsinc, include_directories('sync')],
   dependencies: sources_dependencies + [librb_dep, rhythmdb_dep,
-    rbbackends_dep, rbmetadata_dep, sourcesync_dep],
+    rbbackends_dep, rbmetadata_dep, rbpodcast_dep],
   install: false,
 )
 
