@@ -160,16 +160,8 @@ have_pthread_getname_np = cc.links('''
   }''', name: 'pthread_getname_np')
 cdata.set('HAVE_PTHREAD_GETNAME_NP', have_pthread_getname_np)
 
-
-
-totem_plparser_uselibcamel = run_command(['pkg-config', '--variable', 'uselibcamel', 'totem-plparser'], check: true).stdout().strip()
-
 if gdk_targets.contains('x11')
   x11 = dependency('x11', required: true)
-endif
-
-if totem_plparser_uselibcamel == 'no'
-  error('totem playlist parsing library has Podcast parsing disabled')
 endif
 
 cdata.set('GETTEXT_PACKAGE', '"rhythmbox"')
