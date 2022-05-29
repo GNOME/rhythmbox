@@ -338,9 +338,11 @@ if get_option('sample-plugins')
     subdir('sample-plugins/sample-vala')
   endif
 endif
-subdir('remote')
+subdir('remote/dbus')
 
-subdir('bindings')
+if enable_vala
+  subdir('bindings/vala')
+endif
 if check.found()
   subdir('tests')
 endif
