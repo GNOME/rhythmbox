@@ -29,7 +29,7 @@ ipod_plugin_descriptor = custom_target('ipod-plugin-descriptor',
   install: true,
   install_dir: ipod_plugin_dir)
 
-if enable_check
+if check.found()
     test('test-ipod',
     executable('test-ipod',
       ['test-ipod.c', 'rb-ipod-helpers.c'],

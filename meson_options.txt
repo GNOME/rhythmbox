@@ -29,5 +29,5 @@ option('help', type: 'boolean', value: 'true',
        description: 'Install user documentation')
 option('gtk_doc', type: 'boolean', value: 'false',
        description: 'Use gtk-doc to build documentation')
-option('tests', type: 'boolean', value: 'false',
+option('tests', type: 'feature', value: 'auto',
        description: 'Build tests')
