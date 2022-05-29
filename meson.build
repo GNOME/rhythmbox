@@ -70,6 +70,8 @@ pango = dependency('pango', required: true)
 tdb = dependency('tdb', version: '>= 1.2.6', required: true)
 totem_plparser = dependency('totem-plparser', version: '>= 3.2.0', required: true)
 
+check = dependency('check', required: get_option('tests'))
+
 use_gudev = false
 gudev = dependency('gudev-1.0', version: '>= 143', required: get_option('gudev'))
 if gudev.found()
@@ -255,15 +257,6 @@ if grilo.found()
   plugins += 'grilo'
 endif
 
-enable_check = false
-if get_option('tests') == true
-  check = dependency('check', required: false)
-
-  if check.found()
-    enable_check = true
-  endif
-endif
-
 pkg.generate(
   name: 'rhythmbox',
   description: 'plugin API for rhythmbox',
@@ -284,7 +277,7 @@ configure_file(input : 'config.h.meson',
   output : 'config.h',
 configuration : cdata)
 
-summary({'Tests': enable_check,
+summary({'Tests': check.found(),
          'Help': get_option('help'),
          'API documentation': get_option('gtk_doc'),
         },
@@ -345,7 +338,9 @@ endif
 subdir('remote')
 
 subdir('bindings')
-subdir('tests')
+if check.found()
+  subdir('tests')
+endif
 subdir('po')
 if get_option('gtk_doc')
   subdir('doc/reference')
