@@ -315,8 +315,10 @@ sourcesinc = include_directories('sources', 'sources/sync')
 widgetsinc = include_directories('widgets')
 
 subdir('data')
+subdir('data/icons')
 
 subdir('lib')
+subdir('lib/libmediaplayerid')
 subdir('metadata')
 subdir('rhythmdb')
 subdir('backends')
