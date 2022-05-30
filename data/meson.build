@@ -1,5 +1,3 @@
-subdir('icons')
-
 po_dir = meson.project_source_root() / 'po'
 
 desktop_files = [ 'org.gnome.Rhythmbox3.desktop', 'org.gnome.Rhythmbox3.device.desktop' ]

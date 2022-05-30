@@ -1,5 +1,3 @@
-subdir('libmediaplayerid')
-
 lib_headers = files(
   'rb-async-copy.h',
   'rb-builder-helpers.h',
