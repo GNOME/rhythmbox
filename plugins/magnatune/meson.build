@@ -27,4 +27,6 @@ install_data([
   'magnatune_logo_color_tiny.png'],
   install_dir: magnatune_plugin_data_dir)
 
-subdir('icons/hicolor/scalable/places/')
+install_data('magnatune-symbolic.svg',
+  install_dir: magnatune_plugin_data_dir / 'icons' / 'hicolor' /
+               'scalable' / 'places')
