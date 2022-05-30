@@ -31,7 +31,7 @@ audioscrobbler_plugin_descriptor = custom_target('audioscrobbler-plugin-descript
   install_dir: audioscrobbler_plugin_dir)
 
 install_data(
-  'icons/hicolor/scalable/places/Last.fm-symbolic.svg',
+  'Last.fm-symbolic.svg',
   install_dir: audioscrobbler_plugin_data_dir + '/icons/hicolor/scalable/places')
 
 install_data(
