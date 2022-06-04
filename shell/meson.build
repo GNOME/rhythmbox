@@ -129,9 +129,21 @@ if enable_python
   rhythmbox_dependencies += [pygobject]
 endif
 
+# set rpath on the rhythmbox binary if we're installing inside
+# the source dir, ensuring it loads librhythmbox-core from this
+# build rather than a package installed on the system.
+# if installing elsewhere, getting the library search path right
+# is the user's responsibility.
+rpath = ''
+if get_option('prefix').startswith(meson.project_source_root())
+  rpath = get_option('prefix') / get_option('libdir')
+endif
+
 executable('rhythmbox', 'main.c',
   dependencies: [ rhythmbox_dependencies ],
   c_args: shell_c_args,
   include_directories: [ pluginsinc ],
-  install: true
+  install: true,
+
+  install_rpath: rpath
 )
