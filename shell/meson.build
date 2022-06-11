@@ -135,8 +135,18 @@ endif
 # if installing elsewhere, getting the library search path right
 # is the user's responsibility.
 rpath = ''
-if get_option('prefix').startswith(meson.project_source_root())
-  rpath = get_option('prefix') / get_option('libdir')
+
+# try to use realpath(1) to resolve symlinks in the prefix path,
+# since meson.project_source_root() is a resolved path.
+real_prefix = get_option('prefix')
+realpath = find_program('realpath', required: false)
+if realpath.found()
+  realpath_result = run_command([realpath, real_prefix], check: false)
+  real_prefix = realpath_result.stdout().strip()
+endif
+
+if real_prefix.startswith(meson.project_source_root())
+  rpath = real_prefix / get_option('libdir')
 endif
 
 executable('rhythmbox', 'main.c',
