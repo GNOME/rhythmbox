@@ -1089,11 +1089,15 @@ rb_podcast_manager_save_metadata (RBPodcastManager *pd, RhythmDBEntry *entry)
 	}
 
 	if (error != NULL) {
-		/* this probably isn't an audio enclosure. or some other error */
-		g_value_init (&val, G_TYPE_ULONG);
-		g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
-		rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
-		g_value_unset (&val);
+		gulong status;
+
+		status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
+		if (status != RHYTHMDB_PODCAST_STATUS_COMPLETE) {
+			g_value_init (&val, G_TYPE_ULONG);
+			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_ERROR);
+			rhythmdb_entry_set (pd->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
+			g_value_unset (&val);
+		}
 
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, error->message);
