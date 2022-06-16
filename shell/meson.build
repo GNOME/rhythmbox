@@ -142,7 +142,9 @@ real_prefix = get_option('prefix')
 realpath = find_program('realpath', required: false)
 if realpath.found()
   realpath_result = run_command([realpath, real_prefix], check: false)
-  real_prefix = realpath_result.stdout().strip()
+  if realpath_result.returncode() == 0
+    real_prefix = realpath_result.stdout().strip()
+  endif
 endif
 
 if real_prefix.startswith(meson.project_source_root())
