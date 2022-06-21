@@ -1,3 +1,35 @@
+Overview of changes in Rhythmbox 3.4.6
+======================================
+
+* Bug fix release for 3.4
+* Translations actually work this time
+* Assorted build system improvements
+* DAAP plugin no longer enabled by default
+
+Issues fixed:
+
+1972 - meson configure fails with -Dlibnotify=disabled
+1974 - rhythmbox: dmap_control_share_stop_lookup(): rhythmbox killed by SIGABRT
+1988 - rb-podcast-parse.c:208:parse_cb: code should not be reached
+1985 - podcast: Episode state changes from "Downloaded" to "Waiting" ( forever )
+
+Merge requests:
+
+146 - build: Do not set install_rpath
+148 - data: Fix executable path in D-Bus service definition
+150 - build: Update icon cache and schemas on install
+151 - build: Allow all versions of meson
+152 - build: Fix translations not working
+
+Translation updates:
+
+- de, courtesy of Philipp Kiemle
+- fr, courtesy of Claude Paroz
+- oc, courtesy of Quentin PAGÈS
+- tr, courtesy of Sabri Ünal
+- vi, courtesy of Trần Ngọc Quân
+
+
 Overview of changes in Rhythmbox 3.4.5
 ======================================
 
