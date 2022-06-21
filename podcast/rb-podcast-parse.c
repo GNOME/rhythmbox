@@ -170,9 +170,21 @@ parse_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 	RBPodcastParseData *data = user_data;
 	RBPodcastChannel *channel = data->channel;
 	GError *error = NULL;
+	int result;
 
 	channel->status = RB_PODCAST_PARSE_STATUS_ERROR;
-	switch (totem_pl_parser_parse_finish (TOTEM_PL_PARSER (source_object), res, &error)) {
+	result = totem_pl_parser_parse_finish (TOTEM_PL_PARSER (source_object), res, &error);
+
+	switch (result) {
+	case -1:		/* some versions of totem-pl-parser return this when cancelled */
+	case TOTEM_PL_PARSER_RESULT_CANCELLED:
+		rb_debug ("parsing of %s cancelled", channel->url);
+
+		/* ensure we have a G_IO_ERROR_CANCELLED error */
+		g_clear_error (&error);
+		g_set_error (&error, G_IO_ERROR, G_IO_ERROR_CANCELLED, " ");
+		break;
+
 	case TOTEM_PL_PARSER_RESULT_ERROR:
 	case TOTEM_PL_PARSER_RESULT_IGNORED:
 	case TOTEM_PL_PARSER_RESULT_UNHANDLED:
