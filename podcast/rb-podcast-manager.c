@@ -1537,23 +1537,24 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 			if (status == RB_PODCAST_FEED_UPDATE_UNCHANGED) {
 				status = RB_PODCAST_FEED_UPDATE_UPDATED;
 			}
+
+			if (item->pub_date >= new_last_post) {
+				switch (download_mode) {
+				case DOWNLOAD_NEWEST:
+					if (item->pub_date > new_last_post) {
+						g_list_free (download_entries);
+						download_entries = NULL;
+					}
+					new_last_post = item->pub_date;
+					break;
+				case DOWNLOAD_NONE:
+				case DOWNLOAD_NEW:
+					break;
+				}
+				download_entries = g_list_prepend (download_entries, post_entry);
+			}
 		}
 
-                if (post_entry && item->pub_date >= new_last_post) {
-			switch (download_mode) {
-			case DOWNLOAD_NEWEST:
-				if (item->pub_date > new_last_post) {
-					g_list_free (download_entries);
-					download_entries = NULL;
-				}
-				new_last_post = item->pub_date;
-				break;
-			case DOWNLOAD_NONE:
-			case DOWNLOAD_NEW:
-				break;
-			}
-			download_entries = g_list_prepend (download_entries, post_entry);
-                }
 	}
 
 	if (download_mode != DOWNLOAD_NONE) {
