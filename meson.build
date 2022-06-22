@@ -260,6 +260,14 @@ if grilo.found()
   plugins += 'grilo'
 endif
 
+meson.add_dist_script(
+  find_program('check-news.sh').full_path(),
+  '@0@'.format(meson.project_version()),
+  'NEWS',
+  'README',
+  'data/org.gnome.Rhythmbox3.appdata.xml.in'
+)
+
 pkg.generate(
   name: 'rhythmbox',
   description: 'plugin API for rhythmbox',
