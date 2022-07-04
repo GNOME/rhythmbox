@@ -71,7 +71,7 @@ test:
     - cd _build
     - meson .. $MESON_ARGS
     - ninja
-    - G_MESSAGES_DEBUG=all GSETTINGS_BACKEND=memory GSETTINGS_SCHEMA_DIR=${CI_PROJECT_DIR}/_build/data/ xvfb-run -a -s "-screen 0 1024x768x24" meson test
+    - G_MESSAGES_DEBUG=all xvfb-run -a -s "-screen 0 1024x768x24" meson test
     - ninja install
   artifacts:
     when: always
