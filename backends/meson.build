@@ -2,7 +2,9 @@ backends_headers = files(
   'rb-encoder.h',
   'rb-player.h',
   'rb-player-gst-filter.h',
-  'rb-player-gst-tee.h'
+  'rb-player-gst-tee.h',
+
+  'gstreamer/rb-player-gst-helper.h',
 )
 
 install_headers(backends_headers, subdir: 'rhythmbox/backends')
