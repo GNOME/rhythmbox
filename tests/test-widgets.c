@@ -153,7 +153,7 @@ START_TEST (test_query_creator_load_query_multiple)
 	query = rhythmdb_query_parse (db,
 				      RHYTHMDB_QUERY_PROP_LIKE, RHYTHMDB_PROP_ARTIST_FOLDED, "bar",
 				      RHYTHMDB_QUERY_PROP_PREFIX, RHYTHMDB_PROP_ARTIST_FOLDED, "bar",
-				      RHYTHMDB_QUERY_PROP_LESS, RHYTHMDB_PROP_DURATION, 47,
+				      RHYTHMDB_QUERY_PROP_LESS, RHYTHMDB_PROP_DURATION, 47UL,
 				      RHYTHMDB_QUERY_END);
 	query_creator_test_load_query (db,
 				       query,
