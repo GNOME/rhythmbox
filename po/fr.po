@@ -25,8 +25,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2022-04-05 22:07+0000\n"
-"PO-Revision-Date: 2022-04-25 12:30+0200\n"
+"POT-Creation-Date: 2022-07-23 14:20+0000\n"
+"PO-Revision-Date: 2022-08-07 19:59+0200\n"
 "Last-Translator: Claude Paroz <claude@2xlibre.net>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "Language: fr\n"
@@ -129,7 +129,7 @@ msgstr "Mon top"
 
 #: data/org.gnome.Rhythmbox3.appdata.xml.in:8
 #: data/org.gnome.Rhythmbox3.desktop.in.in:3
-#: data/org.gnome.Rhythmbox3.device.desktop.in.in:3 shell/main.c:75
+#: data/org.gnome.Rhythmbox3.device.desktop.in.in:3 shell/main.c:73
 #: shell/rb-shell.c:505 shell/rb-shell.c:2368
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
@@ -177,11 +177,6 @@ msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
 "Audio;chanson;musique;MP3;CD;Podcast;MTP;iPod;liste de lecture;Last.fm;UPnP;"
 "DLNA;radio;"
-
-#: data/org.gnome.Rhythmbox3.desktop.in.in:11
-#: data/org.gnome.Rhythmbox3.device.desktop.in.in:11
-msgid "org.gnome.Rhythmbox3"
-msgstr "org.gnome.Rhythmbox3"
 
 #: data/ui/app-menu.ui:6
 msgid "_View"
@@ -1865,15 +1860,15 @@ msgstr "Vous ne pouvez pas contrôler Rhythmbox avec cette télécommande"
 msgid "Disconnect"
 msgstr "Se déconnecter"
 
-#: plugins/daap/rb-daap-plugin.c:193
+#: plugins/daap/rb-daap-plugin.c:194
 msgid "Connect to DAAP share..."
 msgstr "Se connecter à un partage DAAP…"
 
-#: plugins/daap/rb-daap-plugin.c:503
+#: plugins/daap/rb-daap-plugin.c:510
 msgid "New DAAP share"
 msgstr "Nouveau partage DAAP"
 
-#: plugins/daap/rb-daap-plugin.c:503
+#: plugins/daap/rb-daap-plugin.c:510
 msgid "Host:port of DAAP share:"
 msgstr "Hôte:port du partage DAAP :"
 
@@ -2720,7 +2715,7 @@ msgid "Playing"
 msgstr "En cours de lecture"
 
 #: plugins/pythonconsole/pythonconsole.plugin.desktop.in:6
-#: plugins/pythonconsole/pythonconsole.py:71
+#: plugins/pythonconsole/pythonconsole.py:72
 msgid "Python Console"
 msgstr "Console Python"
 
@@ -2728,16 +2723,16 @@ msgstr "Console Python"
 msgid "Interactive python console"
 msgstr "Console Python interactive"
 
-#: plugins/pythonconsole/pythonconsole.py:81
+#: plugins/pythonconsole/pythonconsole.py:82
 msgid "Python Debugger"
 msgstr "Débogueur Python"
 
-#: plugins/pythonconsole/pythonconsole.py:106
+#: plugins/pythonconsole/pythonconsole.py:107
 msgid "You can access the main window through the 'shell' variable :"
 msgstr ""
 "Vous pouvez contrôler la fenêtre principale via la variable « shell » :"
 
-#: plugins/pythonconsole/pythonconsole.py:121
+#: plugins/pythonconsole/pythonconsole.py:122
 #, python-format
 msgid ""
 "After you press OK, Rhythmbox will wait until you connect to it with winpdb "
@@ -2828,7 +2823,7 @@ msgstr "Port d’écoute :"
 
 #: plugins/webremote/webremote-config.ui:46
 msgid "Access key:"
-msgstr "Touche d’accès :"
+msgstr "Clé d’accès :"
 
 #: plugins/webremote/webremote-config.ui:79
 msgid "0"
@@ -2842,7 +2837,7 @@ msgstr "Contrôle à distance par le Web"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Contrôler Rhythmbox à partir d’un navigateur Web"
 
-#: plugins/webremote/webremote.py:584
+#: plugins/webremote/webremote.py:597
 msgid "Launch web remote control"
 msgstr "Lancer le contrôle à distance par le Web"
 
@@ -2949,12 +2944,12 @@ msgstr ""
 msgid "Podcast"
 msgstr "Podcast"
 
-#: podcast/rb-podcast-parse.c:185
+#: podcast/rb-podcast-parse.c:197
 #, c-format
 msgid "Unable to parse the feed contents"
 msgstr "Impossible d’analyser le contenu du flux"
 
-#: podcast/rb-podcast-parse.c:200
+#: podcast/rb-podcast-parse.c:212
 #, c-format
 msgid "The feed does not contain any downloadable items"
 msgstr "Le flux ne contient aucun élément téléchargeable"
@@ -3281,7 +3276,7 @@ msgstr "Le volume est actuellement à %.02f"
 msgid "Press 'h' for help."
 msgstr "Appuyer sur « h » pour l’aide."
 
-#: remote/dbus/rb-client.c:1412
+#: remote/dbus/rb-client.c:1411
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Le volume de lecture est %f.\n"
@@ -4638,6 +4633,9 @@ msgstr "Sur le bureau"
 #: widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Emplacement inconnu"
+
+#~ msgid "org.gnome.Rhythmbox3"
+#~ msgstr "org.gnome.Rhythmbox3"
 
 #~ msgid "WinampCN (www.winampcn.com)"
 #~ msgstr "WinampCN (www.winampcn.com)"
