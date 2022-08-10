@@ -261,9 +261,6 @@ playlist_load_started_cb (TotemPlParser *parser, const char *uri, GHashTable *me
 	rb_debug ("loading new playlist %s", uri);
 
 	title = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_TITLE);
-	if (title == NULL)
-		title = _("Unnamed playlist");
-
 	mgr->priv->loading_playlist =
 			RB_STATIC_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, title, FALSE));
 }
