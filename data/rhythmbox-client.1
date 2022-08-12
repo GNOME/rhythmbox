@@ -13,7 +13,7 @@
 .\"You should have received a copy of the GNU General Public License along
 .\"with this program; if not, write to the Free Software Foundation, Inc.,
 .\"51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-.TH rhythmbox 1 "2007\-06\-28" "GNOME"
+.TH RHYTHMBOX-CLIENT 1 "June 28, 2007" "GNOME"
 .SH NAME
 rhythmbox-client \- controls a running instance of rhythmbox
 .SH SYNOPSIS
@@ -22,11 +22,11 @@ rhythmbox-client \- controls a running instance of rhythmbox
 .SH DESCRIPTION
 .B rhythmbox-client
 is a tool for controlling an already running instance of
-.B rhythmbox. 
+.B rhythmbox.
 It's useful for remote control scripting, adding specific files to the library
-from the shell, or printing details of what's playing. It also has an interactive
-mode, useful for controlling playback remotely via ssh. Any files specified after
-the option arguments will be added to the library.  If the
+from the shell, or printing details of what's playing. It also has an
+interactive mode, useful for controlling playback remotely via ssh. Any files
+specified after the option arguments will be added to the library.  If the
 .B \-\-enqueue
 option is given, the files will also be added to the play queue.
 .SH OPTIONS
@@ -100,10 +100,12 @@ Print the current playback volume
 Select the source corresponding to a URI (device or mount point)
 .TP
 .BI "\-\-activate-source="URI
-Select the source corresponding to a URI (device or mount point) and start playing from it if not already playing.
+Select the source corresponding to a URI (device or mount point) and start
+playing from it if not already playing.
 .TP
 .BI "\-\-play-source="URI
-Select the source corresponding to a URI (device or mount point) and start playing from it.
+Select the source corresponding to a URI (device or mount point) and start
+playing from it.
 .SH FORMAT OPTIONS
 .TP
 %at
@@ -166,7 +168,8 @@ track duration
 %te
 track elapsed time
 .TP
-Variables can be combined using quotes. For example "%tn %aa %tt", will print the track number followed by the artist and the title of the track.
+Variables can be combined using quotes. For example "%tn %aa %tt", will print
+the track number followed by the artist and the title of the track.
 .SH AUTHOR
 This manual page was written by Sven Arvidsson <sa@whiz.se>,
 for the Debian system (but may be used by others).
