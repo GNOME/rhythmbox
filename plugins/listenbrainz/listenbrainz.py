@@ -180,12 +180,15 @@ def _entry_to_track(entry):
     mb_track_id = entry.get_string(RB.RhythmDBPropType.MB_TRACKID)
     mb_album_id = entry.get_string(RB.RhythmDBPropType.MB_ALBUMID)
     mb_artist_id = entry.get_string(RB.RhythmDBPropType.MB_ARTISTID)
+    duration = entry.get_ulong(RB.RhythmDBPropType.DURATION)
+
     additional_info = {
         "listening_from": "Rhythmbox",
         "release_mbid": _validate_mbid(mb_album_id),
         "recording_mbid": _validate_mbid(mb_track_id),
         "artist_mbids": [mb_artist_id] if _validate_mbid(mb_artist_id) else [],
-        "tracknumber": track_number or None
+        "tracknumber": track_number or None,
+        "duration": duration,
     }
 
     entry_type = entry.get_entry_type().get_name()
