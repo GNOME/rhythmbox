@@ -37,7 +37,6 @@ class ListenBrainzQueue:
         self.__queue = []
 
     def activate(self):
-        self.submit_batch()
         self.__timeout_id = GLib.timeout_add_seconds(30, self.submit_batch)
 
     def deactivate(self):
