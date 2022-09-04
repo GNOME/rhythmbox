@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Philipp Wolfer <ph.wolfer@gmail.com>
+# Copyright (c) 2018, 2022 Philipp Wolfer <ph.wolfer@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -34,7 +34,7 @@ class Track:
     """
     Represents a single track to submit.
 
-    See https://listenbrainz.readthedocs.io/en/latest/dev/json.html
+    See https://listenbrainz.readthedocs.io/en/latest/users/json.html
     """
     def __init__(self, artist_name, track_name,
                  release_name=None, additional_info={}):
@@ -75,13 +75,14 @@ class ListenBrainzClient:
     """
     Submit listens to ListenBrainz.org.
 
-    See https://listenbrainz.readthedocs.io/en/latest/dev/api.html
+    See https://listenbrainz.readthedocs.io/en/latest/users/api/index.html
     """
 
-    def __init__(self, logger=logging.getLogger(__name__)):
+    def __init__(self, logger=logging.getLogger(__name__), timeout=30):
         self.__next_request_time = 0
         self.user_token = None
         self.logger = logger
+        self._timeout = timeout
 
     def listen(self, listened_at, track):
         """
@@ -120,7 +121,7 @@ class ListenBrainzClient:
             "Content-Type": "application/json"
         }
         body = json.dumps(data)
-        conn = HTTPSConnection(HOST_NAME, context=SSL_CONTEXT)
+        conn = HTTPSConnection(HOST_NAME, context=SSL_CONTEXT, timeout=self._timeout)
         conn.request("POST", PATH_SUBMIT, body, headers)
         response = conn.getresponse()
         response_text = response.read()
