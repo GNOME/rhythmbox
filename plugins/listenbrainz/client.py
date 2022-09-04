@@ -122,9 +122,13 @@ class ListenBrainzClient:
         }
         body = json.dumps(data)
         conn = HTTPSConnection(HOST_NAME, context=SSL_CONTEXT, timeout=self._timeout)
-        conn.request("POST", PATH_SUBMIT, body, headers)
-        response = conn.getresponse()
-        response_text = response.read()
+        try:
+            conn.request("POST", PATH_SUBMIT, body, headers)
+            response = conn.getresponse()
+            response_text = response.read()
+        finally:
+            conn.close()
+
         try:
             response_data = json.loads(response_text)
         except json.decoder.JSONDecodeError:
