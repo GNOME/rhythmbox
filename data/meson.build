@@ -2,13 +2,8 @@ po_dir = meson.project_source_root() / 'po'
 
 desktop_files = [ 'org.gnome.Rhythmbox3.desktop', 'org.gnome.Rhythmbox3.device.desktop' ]
 foreach desktop_file : desktop_files
-  desktop_in_file = configure_file(
-    input: desktop_file + '.in.in',
-    output: desktop_file + '.in',
-    configuration: cdata
-  )
   desktop_file = i18n.merge_file(
-    input: desktop_in_file,
+    input: desktop_file + '.in',
     output: desktop_file,
     install: true,
     install_dir: datadir / 'applications',
