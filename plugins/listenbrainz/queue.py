@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2019 Philipp Wolfer <ph.wolfer@gmail.com>
+# Copyright (c) 2018-2019, 2022 Philipp Wolfer <ph.wolfer@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -25,7 +25,8 @@ import os
 from gi.repository import GLib
 from client import Track
 
-MAX_TRACKS_PER_IMPORT = 10
+MAX_TRACKS_PER_IMPORT = 100
+SUBMISSION_INTERVAL_SECONDS = 120
 
 logger = logging.getLogger("listenbrainz")
 
@@ -37,8 +38,8 @@ class ListenBrainzQueue:
         self.__queue = []
 
     def activate(self):
-        self.submit_batch()
-        self.__timeout_id = GLib.timeout_add_seconds(30, self.submit_batch)
+        self.__timeout_id = GLib.timeout_add_seconds(
+            SUBMISSION_INTERVAL_SECONDS, self.submit_batch)
 
     def deactivate(self):
         GLib.source_remove(self.__timeout_id)
