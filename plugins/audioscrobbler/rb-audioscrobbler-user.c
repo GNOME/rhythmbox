@@ -45,7 +45,6 @@
 #define TOP_TRACKS_LIFETIME 86400            /* 24 hours */
 #define LOVED_TRACKS_LIFETIME 86400          /* 24 hours */
 #define TOP_ARTISTS_LIFETIME 86400           /* 24 hours */
-#define RECOMMENDED_ARTISTS_LIFETIME 86400   /* 24 hours */
 
 static RBAudioscrobblerUserData *
 rb_audioscrobbler_user_data_new (void)
@@ -129,7 +128,6 @@ struct _RBAudioscrobblerUserPrivate {
 	GPtrArray *top_tracks;
 	GPtrArray *loved_tracks;
 	GPtrArray *top_artists;
-	GPtrArray *recommended_artists;
 
 	/* for image downloads */
 	GHashTable *file_to_data_queue_map;
@@ -204,14 +202,6 @@ static void top_artists_response_cb (SoupSession *session,
 static GPtrArray * parse_top_artists (RBAudioscrobblerUser *user,
                                       const char *data);
 
-static void load_cached_recommended_artists (RBAudioscrobblerUser *user);
-static void request_recommended_artists (RBAudioscrobblerUser *user, int limit);
-static void recommended_artists_response_cb (SoupSession *session,
-                                             SoupMessage *msg,
-                                             gpointer user_data);
-static GPtrArray * parse_recommended_artists (RBAudioscrobblerUser *user,
-                                              const char *data);
-
 static char * calculate_cached_image_path (RBAudioscrobblerUser *user,
                                            RBAudioscrobblerUserData *data);
 static void download_image (RBAudioscrobblerUser *user,
@@ -238,7 +228,6 @@ enum {
 	TOP_TRACKS_UPDATED,
 	LOVED_TRACKS_UPDATED,
 	TOP_ARTISTS_UPDATED,
-	RECOMMENDED_ARTISTS_UPDATED,
 	LAST_SIGNAL
 };
 
@@ -329,17 +318,6 @@ rb_audioscrobbler_user_class_init (RBAudioscrobblerUserClass *klass)
 		              1,
 		              G_TYPE_PTR_ARRAY);
 
-	rb_audioscrobbler_user_signals[RECOMMENDED_ARTISTS_UPDATED] =
-		g_signal_new ("recommended-artists-updated",
-		              G_OBJECT_CLASS_TYPE (object_class),
-		              G_SIGNAL_RUN_LAST,
-		              0,
-		              NULL, NULL,
-		              NULL,
-		              G_TYPE_NONE,
-		              1,
-		              G_TYPE_PTR_ARRAY);
-
 	g_type_class_add_private (klass, sizeof (RBAudioscrobblerUserPrivate));
 }
 
@@ -412,11 +390,6 @@ rb_audioscrobbler_user_dispose (GObject* object)
 	if (user->priv->top_artists != NULL) {
 		g_ptr_array_unref (user->priv->top_artists);
 		user->priv->top_artists = NULL;
-	}
-
-	if (user->priv->recommended_artists != NULL) {
-		g_ptr_array_unref (user->priv->recommended_artists);
-		user->priv->recommended_artists = NULL;
 	}
 
 	/* free this map first because file_to_data_queue_map owns the file reference */
@@ -537,14 +510,6 @@ rb_audioscrobbler_user_update (RBAudioscrobblerUser *user)
 		} else {
 			rb_debug ("cached top artists is still valid, not updating");
 		}
-
-		if (is_cached_response_expired (user, "recommended_artists", RECOMMENDED_ARTISTS_LIFETIME)) {
-			rb_debug ("cached recommended artists response is expired, updating");
-			request_recommended_artists (user, 15);
-		} else {
-			rb_debug ("cached recommended artists response is still valid, not updating");
-		}
-
 	}
 }
 
@@ -558,7 +523,6 @@ rb_audioscrobbler_user_force_update (RBAudioscrobblerUser *user)
 		request_top_tracks (user, 15);
 		request_loved_tracks (user, 15);
 		request_top_artists (user, 15);
-		request_recommended_artists (user, 15);
 	}
 }
 
@@ -591,11 +555,6 @@ load_from_cache (RBAudioscrobblerUser *user)
 		user->priv->top_artists = NULL;
 	}
 
-	if (user->priv->recommended_artists != NULL) {
-		g_ptr_array_unref (user->priv->recommended_artists);
-		user->priv->recommended_artists = NULL;
-	}
-
 	/* if a username is set then attempt to load cached data */
 	if (user->priv->username != NULL) {
 		load_cached_user_info (user);
@@ -603,7 +562,6 @@ load_from_cache (RBAudioscrobblerUser *user)
 		load_cached_top_tracks (user);
 		load_cached_loved_tracks (user);
 		load_cached_top_artists (user);
-		load_cached_recommended_artists (user);
 	}
 }
 
@@ -682,7 +640,6 @@ save_response_to_cache (RBAudioscrobblerUser *user, const char *request_name, co
 	g_free (file_uri);
 }
 
-/* general parsing functions (to be used by parse_recent_tracks, parse_recommended artists etc */
 static GPtrArray *
 parse_track_array (RBAudioscrobblerUser *user, JsonArray *track_array)
 {
@@ -1365,134 +1322,6 @@ parse_top_artists (RBAudioscrobblerUser *user, const char *data)
 	return top_artists;
 }
 
-/* recommended artists */
-static void
-load_cached_recommended_artists (RBAudioscrobblerUser *user)
-{
-	char *filename;
-	char *data;
-
-	filename = calculate_cached_response_path (user, "recommended_artists");
-
-	/* delete old data */
-	if (user->priv->recommended_artists != NULL) {
-		g_ptr_array_unref (user->priv->recommended_artists);
-		user->priv->recommended_artists = NULL;
-	}
-
-	/* load cached data if it exists */
-	if (g_file_get_contents (filename, &data, NULL, NULL) == TRUE) {
-		rb_debug ("loading cached recommended artists");
-		user->priv->recommended_artists = parse_recommended_artists (user, data);
-	}
-
-	/* emit updated signal */
-	g_signal_emit (user, rb_audioscrobbler_user_signals[RECOMMENDED_ARTISTS_UPDATED],
-	               0, user->priv->recommended_artists);
-
-	g_free (filename);
-	g_free (data);
-}
-
-static void
-request_recommended_artists (RBAudioscrobblerUser *user, int limit)
-{
-	char *sig_arg;
-	char *sig;
-	char *msg_url;
-	SoupMessage *msg;
-
-	rb_debug ("requesting recommended artists");
-
-	sig_arg = g_strdup_printf ("api_key%slimit%imethoduser.getRecommendedArtistssk%s%s",
-	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
-	                           limit,
-	                           user->priv->session_key,
-	                           rb_audioscrobbler_service_get_api_secret (user->priv->service));
-	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
-
-	msg_url = g_strdup_printf ("%s?method=user.getRecommendedArtists&api_key=%s&api_sig=%s&sk=%s&limit=%i&format=json",
-	                           rb_audioscrobbler_service_get_api_url (user->priv->service),
-	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
-	                           sig,
-	                           user->priv->session_key,
-	                           limit);
-
-	msg = soup_message_new ("GET", msg_url);
-	soup_session_queue_message (user->priv->soup_session,
-	                            msg,
-	                            recommended_artists_response_cb,
-	                            user);
-
-	g_free (sig_arg);
-	g_free (sig);
-	g_free (msg_url);
-}
-
-static void
-recommended_artists_response_cb (SoupSession *session,
-                                 SoupMessage *msg,
-                                 gpointer user_data)
-{
-	RBAudioscrobblerUser *user;
-	GPtrArray *recommended_artists;
-
-	user = RB_AUDIOSCROBBLER_USER (user_data);
-	recommended_artists = parse_recommended_artists (user, msg->response_body->data);
-
-	if (recommended_artists != NULL) {
-		rb_debug ("recommended artists request was successful");
-
-		if (user->priv->recommended_artists != NULL) {
-			g_ptr_array_unref (user->priv->recommended_artists);
-		}
-		user->priv->recommended_artists = recommended_artists;
-
-		save_response_to_cache (user, "recommended_artists", msg->response_body->data);
-
-		g_signal_emit (user, rb_audioscrobbler_user_signals[RECOMMENDED_ARTISTS_UPDATED],
-		               0, user->priv->recommended_artists);
-	} else {
-		rb_debug ("invalid response from recommended artists request");
-	}
-}
-
-static GPtrArray *
-parse_recommended_artists (RBAudioscrobblerUser *user, const char *data)
-{
-	GPtrArray *recommended_artists;
-	JsonParser *parser;
-
-	recommended_artists = NULL;
-
-	parser = json_parser_new ();
-	if (data != NULL && json_parser_load_from_data (parser, data, -1, NULL)) {
-		JsonObject *root_object;
-		root_object = json_node_get_object (json_parser_get_root (parser));
-
-		if (json_object_has_member (root_object, "recommendations")) {
-			JsonObject *recommended_artists_object;
-			recommended_artists_object = json_object_get_object_member (root_object, "recommendations");
-
-			if (json_object_has_member (recommended_artists_object, "artist") == TRUE) {
-				JsonArray *artist_array;
-
-				artist_array = json_object_get_array_member (recommended_artists_object, "artist");
-				recommended_artists = parse_artist_array (user, artist_array);
-			}
-		} else {
-			rb_debug ("error parsing recommended artists response: no recommendations object exists");
-			rb_debug ("probably due to authentication error");
-		}
-	} else {
-		rb_debug ("error parsing recommended artists response: empty or invalid response");
-	}
-
-	g_object_unref (parser);
-
-	return recommended_artists;
-}
-
 static char *
 calculate_cached_image_path (RBAudioscrobblerUser *user, RBAudioscrobblerUserData *data)
 {
@@ -1715,14 +1544,6 @@ image_download_cb (GObject *source_object, GAsyncResult *res, gpointer user_data
 						if (g_ptr_array_index (user->priv->top_artists, i) == data) {
 							g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_ARTISTS_UPDATED],
 							               0, user->priv->top_artists);
-						}
-					}
-				}
-				if (user->priv->recommended_artists != NULL) {
-					for (i = 0; i < user->priv->recommended_artists->len; i++) {
-						if (g_ptr_array_index (user->priv->recommended_artists, i) == data) {
-							g_signal_emit (user, rb_audioscrobbler_user_signals[RECOMMENDED_ARTISTS_UPDATED],
-							               0, user->priv->recommended_artists);
 						}
 					}
 				}

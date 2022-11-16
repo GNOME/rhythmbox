@@ -102,8 +102,6 @@ struct _RBAudioscrobblerProfilePagePrivate {
 	GtkWidget *loved_tracks_wrap_box;
 	GtkWidget *top_artists_area;
 	GtkWidget *top_artists_wrap_box;
-	GtkWidget *recommended_artists_area;
-	GtkWidget *recommended_artists_wrap_box;
 
 	GHashTable *button_to_popup_menu_map;
 	GHashTable *popup_menu_to_data_map;
@@ -199,9 +197,6 @@ static void loved_tracks_updated_cb (RBAudioscrobblerUser *user,
 static void top_artists_updated_cb (RBAudioscrobblerUser *user,
                                     GPtrArray *top_artists,
                                     RBAudioscrobblerProfilePage *page);
-static void recommended_artists_updated_cb (RBAudioscrobblerUser *user,
-                                            GPtrArray *recommended_artists,
-                                            RBAudioscrobblerProfilePage *page);
 
 /* UI creation for profile data lists, eg top artists, loved tracks */
 static void set_user_list (RBAudioscrobblerProfilePage *page,
@@ -373,10 +368,6 @@ rb_audioscrobbler_profile_page_constructed (GObject *object)
 	g_signal_connect (page->priv->user,
 	                  "top-artists-updated",
 	                  G_CALLBACK (top_artists_updated_cb),
-	                  page);
-	g_signal_connect (page->priv->user,
-	                  "recommended-artists-updated",
-	                  G_CALLBACK (recommended_artists_updated_cb),
 	                  page);
 
 	/* create the account */
@@ -604,15 +595,6 @@ init_profile_ui (RBAudioscrobblerProfilePage *page)
 	                                                     2, 2);
 	gtk_box_pack_end (GTK_BOX (page->priv->top_artists_area),
 	                  page->priv->top_artists_wrap_box,
-	                  TRUE, TRUE, 0);
-
-	page->priv->recommended_artists_area = GTK_WIDGET (gtk_builder_get_object (builder, "recommended_artists_area"));
-	page->priv->recommended_artists_wrap_box = egg_wrap_box_new (EGG_WRAP_ALLOCATE_HOMOGENEOUS,
-	                                                             EGG_WRAP_BOX_SPREAD_EXPAND,
-	                                                             EGG_WRAP_BOX_SPREAD_START,
-	                                                             2, 2);
-	gtk_box_pack_end (GTK_BOX (page->priv->recommended_artists_area),
-	                  page->priv->recommended_artists_wrap_box,
 	                  TRUE, TRUE, 0);
 
 	/* pack profile into main vbox */
@@ -1488,22 +1470,8 @@ top_artists_updated_cb (RBAudioscrobblerUser *user,
 	}
 }
 
-static void
-recommended_artists_updated_cb (RBAudioscrobblerUser *user,
-                                GPtrArray *recommended_artists,
-                                RBAudioscrobblerProfilePage *page)
-{
-	set_user_list (page, page->priv->recommended_artists_wrap_box, recommended_artists);
-
-	if (recommended_artists != NULL && recommended_artists->len != 0) {
-		gtk_widget_show_all (page->priv->recommended_artists_area);
-	} else {
-		gtk_widget_hide (page->priv->recommended_artists_area);
-	}
-}
-
 /* Creates a list of buttons packed in a wrap box for a list of data
- * eg user's top tracks or recommended artists
+ * eg user's top tracks or top artists
  */
 static void
 set_user_list (RBAudioscrobblerProfilePage *page,
