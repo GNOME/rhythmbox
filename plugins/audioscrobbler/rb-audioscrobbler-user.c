@@ -1057,7 +1057,7 @@ request_top_tracks (RBAudioscrobblerUser *user, int limit)
 
 	rb_debug ("requesting top tracks");
 
-	msg_url = g_strdup_printf ("%s?method=library.getTracks&user=%s&api_key=%s&limit=%i&format=json",
+	msg_url = g_strdup_printf ("%s?method=user.getTopTracks&user=%s&api_key=%s&limit=%i&format=json",
 	                           rb_audioscrobbler_service_get_api_url (user->priv->service),
 	                           user->priv->username,
 	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
@@ -1113,9 +1113,9 @@ parse_top_tracks (RBAudioscrobblerUser *user, const char *data)
 		JsonObject *root_object;
 		root_object = json_node_get_object (json_parser_get_root (parser));
 
-		if (json_object_has_member (root_object, "tracks")) {
+		if (json_object_has_member (root_object, "toptracks")) {
 			JsonObject *top_tracks_object;
-			top_tracks_object = json_object_get_object_member (root_object, "tracks");
+			top_tracks_object = json_object_get_object_member (root_object, "toptracks");
 
 			if (json_object_has_member (top_tracks_object, "track") == TRUE) {
 				JsonArray *track_array;
@@ -1124,7 +1124,7 @@ parse_top_tracks (RBAudioscrobblerUser *user, const char *data)
 				top_tracks = parse_track_array (user, track_array);
 			}
 		} else {
-			rb_debug ("error parsing top tracks response: no tracks object exists");
+			rb_debug ("error parsing top tracks response: no toptracks object exists");
 		}
 	} else {
 		rb_debug ("error parsing top tracks response: empty or invalid response");
