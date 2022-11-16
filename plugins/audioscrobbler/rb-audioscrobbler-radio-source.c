@@ -759,6 +759,8 @@ tune_response_cb (SoupSession *session,
 		display_error_info_bar(source, _("Error tuning station: invalid response"));
 		source->priv->is_busy = FALSE;
 	}
+
+	g_object_unref (parser);
 }
 
 static void
