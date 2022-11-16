@@ -1287,7 +1287,7 @@ request_top_artists (RBAudioscrobblerUser *user, int limit)
 
 	rb_debug ("requesting top artists");
 
-	msg_url = g_strdup_printf ("%s?method=library.getArtists&user=%s&api_key=%s&limit=%i&format=json",
+	msg_url = g_strdup_printf ("%s?method=user.getTopArtists&user=%s&api_key=%s&limit=%i&format=json",
 	                           rb_audioscrobbler_service_get_api_url (user->priv->service),
 	                           user->priv->username,
 	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
@@ -1343,9 +1343,9 @@ parse_top_artists (RBAudioscrobblerUser *user, const char *data)
 		JsonObject *root_object;
 		root_object = json_node_get_object (json_parser_get_root (parser));
 
-		if (json_object_has_member (root_object, "artists")) {
+		if (json_object_has_member (root_object, "topartists")) {
 			JsonObject *top_artists_object;
-			top_artists_object = json_object_get_object_member (root_object, "artists");
+			top_artists_object = json_object_get_object_member (root_object, "topartists");
 
 			if (json_object_has_member (top_artists_object, "artist") == TRUE) {
 				JsonArray *artist_array;
@@ -1354,7 +1354,7 @@ parse_top_artists (RBAudioscrobblerUser *user, const char *data)
 				top_artists = parse_artist_array (user, artist_array);
 			}
 		} else {
-			rb_debug ("error parsing top artists response: no artists object exists");
+			rb_debug ("error parsing top artists response: no topartists object exists");
 		}
 	} else {
 		rb_debug ("error parsing top artists response: empty or invalid response");
