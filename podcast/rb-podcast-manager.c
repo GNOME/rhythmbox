@@ -1968,6 +1968,57 @@ retry_on_error (GError *error)
 	}
 }
 
+static char *
+disambiguate_download_uri (RBPodcastManager *pd, RBPodcastDownload *download, const char *dl_uri)
+{
+	GFile *file;
+	GFile *parent;
+	char *filename;
+	char *extension;
+	char *tryname;
+	char *tryuri;
+	int suffix = 1;
+
+	file = g_file_new_for_uri (dl_uri);
+	filename = g_file_get_basename (file);
+	g_assert (filename != NULL);
+
+	tryname = strrchr (filename, '.');
+	if (tryname != NULL) {
+		extension = g_strdup (tryname);
+		*tryname = '\0';
+	} else {
+		extension = g_strdup ("");
+	}
+
+	parent = g_file_get_parent (file);
+	g_assert (parent != NULL);
+	g_object_unref (file);
+
+	tryuri = NULL;
+	do {
+		g_free (tryuri);
+
+		/*
+		 * If you somehow have 2^31 episodes of a single podcast that all have
+		 * the same filename downloaded into a single directory, congratulations.
+		 * This loop will run forever to celebrate your achievement.
+		 */
+
+		tryname = g_strdup_printf ("%s_%d%s", filename, suffix++, extension);
+		file = g_file_get_child (parent, tryname);
+		g_free (tryname);
+
+		tryuri = g_file_get_uri (file);
+		g_object_unref (file);
+	} while (rhythmdb_entry_lookup_by_location (pd->priv->db, tryuri) != NULL);
+
+	g_object_unref (parent);
+	g_free (extension);
+	g_free (filename);
+	return tryuri;
+}
+
 static void
 download_task (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancel)
 {
@@ -2048,6 +2099,8 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 	/*
 	 * if we've previously attempted to download this item, and now our
 	 * idea of the local uri is different, delete the old file.
+	 * otherwise, if there's already an entry with this local uri, find
+	 * a new one.
 	 */
 	local_file_uri = get_download_location (download->entry);
 	if (local_file_uri != NULL) {
@@ -2059,6 +2112,15 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 			g_file_delete (del, download->cancel, NULL);
 			g_object_unref (del);
 		}
+	} else if (rhythmdb_entry_lookup_by_location (pd->priv->db, sane_dl_uri) != NULL) {
+		char *dl_uri;
+
+		rb_debug ("existing entry found with this download location");
+		dl_uri = disambiguate_download_uri (pd, download, sane_dl_uri);
+		g_free (sane_dl_uri);
+		sane_dl_uri = dl_uri;
+
+		rb_debug ("disambiguated download location: %s", sane_dl_uri);
 	}
 
 	/* set the download location for the episode, set progress to 0% */
