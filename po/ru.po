@@ -18,8 +18,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox trunk\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2022-08-14 14:38+0000\n"
-"PO-Revision-Date: 2022-08-18 08:10+1000\n"
+"POT-Creation-Date: 2022-08-22 11:35+0000\n"
+"PO-Revision-Date: 2022-11-27 14:25+1000\n"
 "Last-Translator: Ser82-png <asvmail.as@gmail.com>\n"
 "Language-Team: Русский <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
@@ -85,14 +85,14 @@ msgstr "Не удалось открыть устройство вывода"
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 "Не удалось создать элемент GStreamer; проверьте правильность установки "
-"программы"
+"приложения"
 
 #: backends/gstreamer/rb-player-gst-xfade.c:3365
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 "Не удалось создать элемент аудио-вывода; проверьте правильность установки "
-"программы"
+"приложения"
 
 #: backends/gstreamer/rb-player-gst-xfade.c:3399
 #: backends/gstreamer/rb-player-gst-xfade.c:3452
@@ -103,7 +103,7 @@ msgstr ""
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 "Не удалось соединить конвейер GStreamer; проверьте правильность установки "
-"программы"
+"приложения"
 
 #: backends/gstreamer/rb-player-gst-xfade.c:3594
 #, c-format
@@ -133,7 +133,8 @@ msgstr "Rhythmbox"
 #: data/org.gnome.Rhythmbox3.desktop.in.in:6
 #: data/org.gnome.Rhythmbox3.device.desktop.in.in:6
 msgid "Play and organize your music collection"
-msgstr "Программа воспроизведения и управления вашей музыкальной коллекцией"
+msgstr ""
+"Приложение для воспроизведения и управления вашей музыкальной коллекцией"
 
 #: data/org.gnome.Rhythmbox3.appdata.xml.in:11
 msgid ""
@@ -142,9 +143,9 @@ msgid ""
 "network shares, podcasts, radio streams, portable music devices (including "
 "phones), and internet music services such as Last.fm and Magnatune."
 msgstr ""
-"Rhythmbox программа для управления музыкой, разработанная для работы в среде "
-"GNOME. В дополнение к музыке, хранящейся на Вашем компьютере, она "
-"поддерживает работу по сети, подкасты, радио, портативные устройства "
+"Rhythmbox — это приложение для управления музыкой, предназначенное для "
+"работы в среде GNOME. В дополнение к музыке, хранящейся на вашем компьютере, "
+"оно поддерживает работу по сети, подкасты, радио, портативные устройства "
 "(включая телефоны), а также музыкальные интернет сервисы, такие как Last.fm "
 "и Magnatune."
 
@@ -153,8 +154,8 @@ msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
 msgstr ""
-"Rhythmbox свободное ПО, основанное на GTK+ и GStreamer, и расширяемое с "
-"помощью плагинов написанных на Python или C."
+"Rhythmbox — это свободное программное обеспечение, основанное на GTK+ и "
+"GStreamer, и расширяемое с помощью модулей написанных на Python или C."
 
 #: data/org.gnome.Rhythmbox3.desktop.in.in:4
 #: data/org.gnome.Rhythmbox3.device.desktop.in.in:4
@@ -1051,14 +1052,15 @@ msgstr "%d:%02d:%02d из %d:%02d:%02d"
 #: metadata/rb-metadata-gst.c:509
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
-msgstr "Нельзя записать тэги в этот файл, т. к. он содержит несколько потоков"
+msgstr "Нельзя записать в этот файл метки, т.к. он содержит несколько потоков"
 
 #: metadata/rb-metadata-gst.c:549
 #, c-format
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
 msgstr ""
-"Нельзя записать тэги в этот файл, т. к. закодирован в неподдерживаемый формат"
+"Нельзя записать в этот файл метки, т.к. он закодирован в неподдерживаемый "
+"формат"
 
 #: metadata/rb-metadata-gst.c:681
 #, c-format
@@ -2278,7 +2280,7 @@ msgstr "Jetlyrics (jetlyrics.com)"
 
 #: plugins/magnatune/magnatune-loading.ui:35
 msgid "Magnatune online music store"
-msgstr "Музыкальный онлайн-магазин Magnatune"
+msgstr "Музыкальный интернет-магазин Magnatune"
 
 #: plugins/magnatune/magnatune-loading.ui:52
 msgid "Magnatune is an online record label that is not evil.\n"
@@ -2720,9 +2722,9 @@ msgid ""
 "or rpdb2. If you have not set a debugger password in the file %s, it will "
 "use the default password ('rhythmbox')."
 msgstr ""
-"После нажатия кнопки OK Rhythmbox будет ожидать подключения к нему с помощью "
-"winpdb или rpdb2. Если пароль для отладчика в файле %s не установлен, будет "
-"использован пароль по умолчанию («rhythmbox»)."
+"После нажатия кнопки «OK» Rhythmbox будет ожидать подключения к нему с "
+"помощью winpdb или rpdb2. Если пароль для отладчика в файле %s не "
+"установлен, будет использован пароль по умолчанию («rhythmbox»)."
 
 #: plugins/pythonconsole/pythonconsole.py:176
 #, python-format
@@ -2934,7 +2936,7 @@ msgstr ""
 #. added as something else, probably iradio
 #: podcast/rb-podcast-manager.c:856
 msgid "URL already added"
-msgstr "Ресурс уже добавлен"
+msgstr "URL уже добавлен"
 
 #: podcast/rb-podcast-manager.c:857
 #, c-format
@@ -3056,7 +3058,7 @@ msgstr "Найти эпизоды подкастов"
 
 #: remote/dbus/rb-client.c:95 shell/rb-application.c:558
 msgid "Show the version of the program"
-msgstr "Показать версию программы"
+msgstr "Показать версию приложения"
 
 #: remote/dbus/rb-client.c:97
 msgid "Don't start a new instance of Rhythmbox"
@@ -3394,8 +3396,8 @@ msgid ""
 "The database was created by a later version of Rhythmbox.  This version of "
 "Rhythmbox cannot read the database."
 msgstr ""
-"База данных была создана более поздней версией программы Rhythmbox. Текущая "
-"версия Rhythmbox не может прочитать базу данных."
+"База данных была создана более поздней версией Rhythmbox. Текущая версия "
+"Rhythmbox не может прочитать базу данных."
 
 #: sample-plugins/sample-python/sample-python.plugin.desktop.in:6
 msgid "Python Sample Plugin"
@@ -3487,7 +3489,7 @@ msgstr "Свой вклад внесли:"
 
 #: shell/rb-application.c:192
 msgid "Music management and playback software for GNOME."
-msgstr "Программа воспроизведения и управления музыкой для GNOME."
+msgstr "Приложение для воспроизведения и управления музыкой в среде GNOME."
 
 #: shell/rb-application.c:202
 msgid "Rhythmbox Website"
@@ -3993,7 +3995,7 @@ msgstr ""
 #: sources/rb-media-player-source.c:885
 #, c-format
 msgid "%s Sync Settings"
-msgstr "Параметры синхронизации %s"
+msgstr "Настройки синхронизации %s"
 
 #: sources/rb-media-player-source.c:890
 msgid "Sync with the device"
@@ -4125,7 +4127,7 @@ msgstr "Ограниченный переменный битрейт"
 
 #: widgets/rb-encoding-settings.c:404
 msgid "Default settings"
-msgstr "Параметры по умолчанию"
+msgstr "Настройки по умолчанию"
 
 #: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1539
 #: widgets/rb-song-info.c:1232
