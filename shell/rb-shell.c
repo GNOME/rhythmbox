@@ -2727,6 +2727,7 @@ typedef struct {
 	RBSource *playlist_source;
 	gboolean can_use_playlist;
 	gboolean source_is_entry;
+	gboolean fake_playlist;
 } PlaylistParseData;
 
 static void
@@ -2736,6 +2737,13 @@ handle_playlist_entry_cb (TotemPlParser *playlist,
 			  PlaylistParseData *data)
 {
 	RBSource *source;
+
+	/*
+	 * If we get a fake playlist (single entry containing the input uri),
+	 * we should pretend the file wasn't parsed as a playlist at all.
+	 */
+	if (g_str_equal (uri, data->uri) == FALSE)
+		data->fake_playlist = FALSE;
 
 	/*
 	 * Track whether the same playlist-handling source
@@ -2818,7 +2826,7 @@ load_uri_parser_finished_cb (GObject *parser, GAsyncResult *res, PlaylistParseDa
 		rb_debug ("%s ignored", data->uri);
 	}
 
-	if (result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
+	if (result == TOTEM_PL_PARSER_RESULT_SUCCESS && data->fake_playlist == FALSE) {
 
 		if (data->can_use_playlist && data->playlist_source) {
 			rb_debug ("adding playlist %s to source", data->uri);
@@ -2930,6 +2938,7 @@ rb_shell_load_uri (RBShell *shell,
 		data->play = play;
 		data->can_use_playlist = TRUE;
 		data->source_is_entry = FALSE;
+		data->fake_playlist = TRUE;
 		data->playlist_source = NULL;
 
 		rb_debug ("adding uri %s, play %d", uri, play);
