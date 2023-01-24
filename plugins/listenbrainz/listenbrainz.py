@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2019, 2022 Philipp Wolfer <ph.wolfer@gmail.com>
+# Copyright (c) 2018-2019, 2022-2023 Philipp Wolfer <ph.wolfer@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -119,7 +119,7 @@ class ListenBrainzPlugin(GObject.Object, Peas.Activatable):
                             RB.RhythmDBPropType.DURATION)
             elapsed = self.__current_elapsed
             logger.debug("Elapsed: %s / %s", elapsed, duration)
-            if elapsed >= 240 or elapsed >= duration / 2:
+            if elapsed >= 240 or (duration and elapsed >= duration / 2):
                 track = _entry_to_track(self.__current_entry)
                 threading.Thread(
                     target=self._run_in_thread,
