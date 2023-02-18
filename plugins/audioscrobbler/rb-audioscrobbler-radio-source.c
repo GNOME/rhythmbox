@@ -199,12 +199,18 @@ static void playing_song_changed_cb (RBShellPlayer *player,
 /* last.fm api requests */
 static void tune (RBAudioscrobblerRadioSource *source);
 static void tune_response_cb (SoupSession *session,
-                              SoupMessage *msg,
-                              gpointer user_data);
+                              GAsyncResult *result,
+                              RBAudioscrobblerRadioSource *source);
+static void parse_tune_response (RBAudioscrobblerRadioSource *source,
+                                 const char *data,
+                                 gsize data_size);
 static void fetch_playlist (RBAudioscrobblerRadioSource *source);
 static void fetch_playlist_response_cb (SoupSession *session,
-                                        SoupMessage *msg,
-                                        gpointer user_data);
+                                        GAsyncResult *result,
+                                        RBAudioscrobblerRadioSource *source);
+static void parse_playlist_response (RBAudioscrobblerRadioSource *source,
+                                     const char *data,
+                                     gsize data_size);
 static void xspf_entry_parsed (TotemPlParser *parser,
                                const char *uri,
                                GHashTable *metadata,
@@ -368,10 +374,7 @@ rb_audioscrobbler_radio_source_init (RBAudioscrobblerRadioSource *source)
 {
 	source->priv = RB_AUDIOSCROBBLER_RADIO_SOURCE_GET_PRIVATE (source);
 
-	source->priv->soup_session =
-		soup_session_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-					       SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
-					       NULL);
+	source->priv->soup_session = soup_session_new ();
 }
 
 static void
@@ -623,12 +626,15 @@ playing_song_changed_cb (RBShellPlayer *player,
 static void
 tune (RBAudioscrobblerRadioSource *source)
 {
+	const char *api_key;
+	const char *api_sec;
+	const char *api_url;
 	char *sig_arg;
 	char *sig;
-	char *escaped_station_url;
-	char *request;
-	char *msg_url;
+	char *query;
+	char *url;
 	SoupMessage *msg;
+	SoupMessageHeaders *hdrs;
 
 	/* only go through the tune + get playlist process once at a time */
 	if (source->priv->is_busy == TRUE) {
@@ -638,62 +644,86 @@ tune (RBAudioscrobblerRadioSource *source)
 	source->priv->is_busy = TRUE;
 	gtk_widget_hide (source->priv->error_info_bar);
 
+	api_key = rb_audioscrobbler_service_get_api_key (source->priv->service);
+	api_sec = rb_audioscrobbler_service_get_api_secret (source->priv->service);
+	api_url = rb_audioscrobbler_service_get_api_url (source->priv->service);
+
 	sig_arg = g_strdup_printf ("api_key%smethodradio.tunesk%sstation%s%s",
-	                           rb_audioscrobbler_service_get_api_key (source->priv->service),
+	                           api_key,
 	                           source->priv->session_key,
 	                           source->priv->station_url,
-	                           rb_audioscrobbler_service_get_api_secret (source->priv->service));
+	                           api_sec);
 
 	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 
-	escaped_station_url = g_uri_escape_string (source->priv->station_url, NULL, FALSE);
-
-	request = g_strdup_printf ("method=radio.tune&station=%s&api_key=%s&api_sig=%s&sk=%s",
-	                           escaped_station_url,
-	                           rb_audioscrobbler_service_get_api_key (source->priv->service),
-	                           sig,
-	                           source->priv->session_key);
+	query = soup_form_encode ("method", "radio.tune",
+				  "station", source->priv->station_url,
+				  "api_key", api_key,
+				  "api_sig", sig,
+				  "sk", source->priv->session_key,
+				  NULL);
 
 	/* The format parameter needs to go here instead of in the request body */
-	msg_url = g_strdup_printf ("%s?format=json",
-	                           rb_audioscrobbler_service_get_api_url (source->priv->service));
+	url = g_strdup_printf ("%s?format=json", api_url);
 
-	rb_debug ("sending tune request: %s", request);
-	msg = soup_message_new ("POST", msg_url);
-	soup_message_set_request (msg,
-	                          "application/x-www-form-urlencoded",
-	                          SOUP_MEMORY_COPY,
-	                          request,
-	                          strlen (request));
-	soup_session_queue_message (source->priv->soup_session,
-	                            msg,
-	                            tune_response_cb,
-	                            source);
+	rb_debug ("sending tune request: %s", query);
+	msg = soup_message_new_from_encoded_form (SOUP_METHOD_POST, url, query);
+	g_return_if_fail (msg != NULL);
 
-	g_free (escaped_station_url);
+	hdrs = soup_message_get_request_headers (msg);
+	soup_message_headers_set_content_type (hdrs, "application/x-www-form-urlencoded", NULL);
+
+	soup_session_send_and_read_async (source->priv->soup_session,
+					  msg,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  (GAsyncReadyCallback) tune_response_cb,
+					  source);
+
 	g_free (sig_arg);
 	g_free (sig);
-	g_free (request);
-	g_free (msg_url);
+	g_free (url);
 }
 
 static void
 tune_response_cb (SoupSession *session,
-                  SoupMessage *msg,
-                  gpointer user_data)
+                  GAsyncResult *result,
+                  RBAudioscrobblerRadioSource *source)
 {
-	RBAudioscrobblerRadioSource *source;
+	GBytes *bytes;
+	const char *body;
+	gsize size;
+
+	bytes = soup_session_send_and_read_finish (session, result, NULL);
+	if (bytes != NULL) {
+		body = g_bytes_get_data (bytes, &size);
+	} else {
+		body = NULL;
+		size = 0;
+	}
+
+	parse_tune_response (source, body, size);
+
+	if (bytes != NULL) {
+		g_bytes_unref (bytes);
+	}
+}
+
+static void
+parse_tune_response (RBAudioscrobblerRadioSource *source,
+                     const char *body,
+                     gsize body_size)
+{
 	JsonParser *parser;
 
-	source = RB_AUDIOSCROBBLER_RADIO_SOURCE (user_data);
 	parser = json_parser_new ();
 
-	if (msg->response_body->data == NULL) {
+	if (body == NULL) {
 		rb_debug ("no response from tune request");
 		display_error_info_bar (source, _("Error tuning station: no response"));
 		source->priv->is_busy = FALSE;
 
-	} else if (json_parser_load_from_data (parser, msg->response_body->data, msg->response_body->length, NULL)) {
+	} else if (json_parser_load_from_data (parser, body, (gssize)body_size, NULL)) {
 		JsonObject *root_object;
 		root_object = json_node_get_object (json_parser_get_root (parser));
 
@@ -750,12 +780,12 @@ tune_response_cb (SoupSession *session,
 
 			source->priv->is_busy = FALSE;
 		} else {
-			rb_debug ("unexpected response from tune request: %s", msg->response_body->data);
+			rb_debug ("unexpected response from tune request: %s", body);
 			display_error_info_bar(source, _("Error tuning station: unexpected response"));
 			source->priv->is_busy = FALSE;
 		}
 	} else {
-		rb_debug ("invalid response from tune request: %s", msg->response_body->data);
+		rb_debug ("invalid response from tune request: %s", body);
 		display_error_info_bar(source, _("Error tuning station: invalid response"));
 		source->priv->is_busy = FALSE;
 	}
@@ -766,46 +796,80 @@ tune_response_cb (SoupSession *session,
 static void
 fetch_playlist (RBAudioscrobblerRadioSource *source)
 {
+	const char *api_key;
+	const char *api_sec;
+	const char *api_url;
 	char *sig_arg;
 	char *sig;
-	char *request;
+	char *query;
 	SoupMessage *msg;
+	SoupMessageHeaders *hdrs;
+
+	api_key = rb_audioscrobbler_service_get_api_key (source->priv->service);
+	api_sec = rb_audioscrobbler_service_get_api_secret (source->priv->service);
+	api_url = rb_audioscrobbler_service_get_api_url (source->priv->service);
 
 	sig_arg = g_strdup_printf ("api_key%smethodradio.getPlaylistrawtruesk%s%s",
-	                           rb_audioscrobbler_service_get_api_key (source->priv->service),
+	                           api_key,
 	                           source->priv->session_key,
-	                           rb_audioscrobbler_service_get_api_secret (source->priv->service));
+	                           api_sec);
 
 	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 
-	request = g_strdup_printf ("method=radio.getPlaylist&api_key=%s&api_sig=%s&sk=%s&raw=true",
-	                           rb_audioscrobbler_service_get_api_key (source->priv->service),
-	                           sig,
-	                           source->priv->session_key);
+	query = soup_form_encode ("method", "radio.getPlaylist",
+				  "api_key", api_key,
+				  "api_sig", sig,
+				  "sk", source->priv->session_key,
+				  "raw", "true",
+				  NULL);
 
-	rb_debug ("sending playlist request: %s", request);
-	msg = soup_message_new ("POST", rb_audioscrobbler_service_get_api_url (source->priv->service));
-	soup_message_set_request (msg,
-	                          "application/x-www-form-urlencoded",
-	                          SOUP_MEMORY_COPY,
-	                          request,
-	                          strlen (request));
-	soup_session_queue_message (source->priv->soup_session,
-	                            msg,
-	                            fetch_playlist_response_cb,
-	                            source);
+	rb_debug ("sending playlist request: %s", query);
+	msg = soup_message_new_from_encoded_form (SOUP_METHOD_POST, api_url, query);
+	g_return_if_fail (msg != NULL);
+
+	hdrs = soup_message_get_request_headers (msg);
+	soup_message_headers_set_content_type (hdrs, "application/x-www-form-urlencoded", NULL);
+
+	soup_session_send_and_read_async (source->priv->soup_session,
+					  msg,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  (GAsyncReadyCallback) fetch_playlist_response_cb,
+					  source);
 
 	g_free (sig_arg);
 	g_free (sig);
-	g_free (request);
 }
 
 static void
 fetch_playlist_response_cb (SoupSession *session,
-                            SoupMessage *msg,
-                            gpointer user_data)
+                            GAsyncResult *result,
+                            RBAudioscrobblerRadioSource *source)
 {
-	RBAudioscrobblerRadioSource *source;
+	GBytes *bytes;
+	const char *body;
+	gsize size;
+
+	bytes = soup_session_send_and_read_finish (session, result, NULL);
+	if (bytes != NULL) {
+		body = g_bytes_get_data (bytes, &size);
+	} else {
+		body = NULL;
+		size = 0;
+	}
+
+	parse_playlist_response (source, body, size);
+
+	if (bytes != NULL) {
+		g_bytes_unref (bytes);
+	}
+}
+
+static void
+parse_playlist_response (RBAudioscrobblerRadioSource *source,
+                         const char *body,
+                         gsize body_size)
+{
 	int tmp_fd;
 	char *tmp_name;
 	char *tmp_uri = NULL;
@@ -814,11 +878,9 @@ fetch_playlist_response_cb (SoupSession *session,
 	TotemPlParserResult result;
 	GError *error = NULL;
 
-	source = RB_AUDIOSCROBBLER_RADIO_SOURCE (user_data);
-
 	source->priv->is_busy = FALSE;
 
-	if (msg->response_body->data == NULL) {
+	if (body == NULL) {
 		rb_debug ("no response from get playlist request");
 		return;
 	}
@@ -834,7 +896,7 @@ fetch_playlist_response_cb (SoupSession *session,
 	}
 
 	channel = g_io_channel_unix_new (tmp_fd);
-	g_io_channel_write_chars (channel, msg->response_body->data, msg->response_body->length, NULL, &error);
+	g_io_channel_write_chars (channel, body, (gssize)body_size, NULL, &error);
 	if (error != NULL) {
 		rb_debug ("unable to save playlist: %s", error->message);
 		goto cleanup;

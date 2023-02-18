@@ -33,8 +33,6 @@ G_BEGIN_DECLS
 #include "rhythmdb.h"
 #include "rb-audioscrobbler-service.h"
 
-#define EXTRA_URI_ENCODE_CHARS	"&+"
-
 typedef struct
 {
 	gchar *artist;

@@ -25,7 +25,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import gi
-gi.require_version('Soup', '2.4')
+gi.require_version('Soup', '3.0')
 from gi.repository import GObject, GLib, Gio, Soup
 import sys
 
@@ -45,15 +45,20 @@ class Loader(object):
 		global loader_session
 		if loader_session is None:
 			loader_session = Soup.Session()
-			loader_session.props.user_agent = "Rhythmbox/" + rhythmbox_version
+			loader_session.set_user_agent("Rhythmbox/" + rhythmbox_version)
 		self._cancel = Gio.Cancellable()
 
-	def _message_cb(self, session, message, data):
-		status = message.props.status_code
-		if status == 200:
-			call_callback(self.callback, message.props.response_body_data.get_data(), self.args)
-		else:
-			call_callback(self.callback, None, self.args)
+	def _message_cb(self, session, result, _data):
+		message = session.get_async_result_message(result)
+		status = message.get_status()
+		body = None
+		try:
+			if status == 200:
+				bytes = session.send_and_read_finish(result)
+				if bytes:
+					body = bytes.get_data()
+		finally:
+			call_callback(self.callback, body, self.args)
 
 	def get_url (self, url, callback, *args):
 		self.url = url
@@ -62,8 +67,9 @@ class Loader(object):
 		try:
 			global loader_session
 			req = Soup.Message.new("GET", url)
-			headers = req.props.request_headers
-			loader_session.queue_message(req, self._message_cb, None)
+			loader_session.send_and_read_async(
+				req, GLib.PRIORITY_DEFAULT, self._cancel,
+				self._message_cb, None)
 		except Exception as e:
 			sys.excepthook(*sys.exc_info())
 			callback(None, *args)

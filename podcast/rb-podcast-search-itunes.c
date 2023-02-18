@@ -98,31 +98,45 @@ process_results (RBPodcastSearchITunes *search, JsonParser *parser)
 }
 
 static void
-search_response_cb (SoupSession *session, SoupMessage *msg, RBPodcastSearchITunes *search)
+search_response_cb (GObject *source, GAsyncResult *result, RBPodcastSearchITunes *search)
 {
+	SoupSession *session = SOUP_SESSION (source);
+	SoupMessage *message;
+	GBytes *bytes;
+	const char *body;
+	size_t size;
 	JsonParser *parser;
 	GError *error = NULL;
-	int code;
 
-	g_object_get (msg, SOUP_MESSAGE_STATUS_CODE, &code, NULL);
-	if (code != 200) {
-		char *reason;
-
-		g_object_get (msg, SOUP_MESSAGE_REASON_PHRASE, &reason, NULL);
-		rb_debug ("search request failed: %s", reason);
-		g_free (reason);
+	bytes = soup_session_send_and_read_finish (session, result, &error);
+	if (error != NULL) {
+		rb_debug ("search request failed: %s", error->message);
+		g_error_free (error);
 		rb_podcast_search_finished (RB_PODCAST_SEARCH (search), FALSE);
 		return;
 	}
 
-	if (msg->response_body->data == NULL) {
-		rb_debug ("no response data");
-		rb_podcast_search_finished (RB_PODCAST_SEARCH (search), TRUE);
+	message = soup_session_get_async_result_message (session, result);
+	if (soup_message_get_status (message) != SOUP_STATUS_OK) {
+		const char *reason;
+
+		reason = soup_message_get_reason_phrase (message);
+		rb_debug ("search request bad status: %s", reason);
+		rb_podcast_search_finished (RB_PODCAST_SEARCH (search), FALSE);
 		return;
 	}
 
+	body = g_bytes_get_data (bytes, &size);
+	if (size == 0) {
+		rb_debug ("no response data");
+		rb_podcast_search_finished (RB_PODCAST_SEARCH (search), TRUE);
+		g_bytes_unref (bytes);
+		return;
+	}
+	g_assert (body != NULL);
+
 	parser = json_parser_new ();
-	if (json_parser_load_from_data (parser, msg->response_body->data, msg->response_body->length, &error)) {
+	if (json_parser_load_from_data (parser, body, size, &error)) {
 		process_results (search, parser);
 	} else {
 		rb_debug ("unable to parse response data: %s", error->message);
@@ -131,36 +145,41 @@ search_response_cb (SoupSession *session, SoupMessage *msg, RBPodcastSearchITune
 
 	g_object_unref (parser);
 	rb_podcast_search_finished (RB_PODCAST_SEARCH (search), TRUE);
+	g_bytes_unref (bytes);
 }
 
 static void
 impl_start (RBPodcastSearch *bsearch, const char *text, int max_results)
 {
-	SoupURI *uri;
+	RBPodcastSearchITunes *search = RB_PODCAST_SEARCH_ITUNES (bsearch);
 	SoupMessage *message;
 	char *limit;
-	RBPodcastSearchITunes *search = RB_PODCAST_SEARCH_ITUNES (bsearch);
+	char *query;
 
-	search->session = soup_session_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-							 SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
-							 NULL);
+	search->session = soup_session_new ();
 
-	uri = soup_uri_new (ITUNES_SEARCH_URI);
 	limit = g_strdup_printf ("%d", max_results);
-	soup_uri_set_query_from_fields (uri,
-					"term", text,
-					"media", "podcast",
-					"entity", "podcast",
-					"limit", limit,
-					"version", "2",
-					"output", "json",
-					NULL);
+
+	query = soup_form_encode ("term", text,
+				  "media", "podcast",
+				  "entity", "podcast",
+				  "limit", limit,
+				  "version", "2",
+				  "output", "json",
+				  NULL);
+
+	message = soup_message_new_from_encoded_form (SOUP_METHOD_GET,
+						      ITUNES_SEARCH_URI,
+						      query);
+
+	soup_session_send_and_read_async (search->session,
+					  message,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  (GAsyncReadyCallback) search_response_cb,
+					  search);
+
 	g_free (limit);
-
-	message = soup_message_new_from_uri (SOUP_METHOD_GET, uri);
-	soup_uri_free (uri);
-
-	soup_session_queue_message (search->session, message, (SoupSessionCallback) search_response_cb, search);
 }
 
 static void

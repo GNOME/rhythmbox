@@ -149,6 +149,8 @@ static void podcast_settings_changed_cb			(GSettings *settings,
 							 RBPodcastManager *mgr);
 
 /* internal functions */
+static gboolean retry_on_http_status			(SoupStatus status);
+static gboolean retry_on_error                          (GError *error);
 static void download_task				(GTask *task,
 							 gpointer source_object,
 							 gpointer task_data,
@@ -275,9 +277,8 @@ rb_podcast_manager_constructed (GObject *object)
 
 	pd->priv->art_store = rb_ext_db_new ("album-art");
 
-	pd->priv->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
-								PACKAGE "/" VERSION,
-								NULL);
+	pd->priv->soup_session = soup_session_new ();
+	soup_session_set_user_agent (pd->priv->soup_session, PACKAGE "/" VERSION);
 
 	pd->priv->update_cancel = g_cancellable_new ();
 
@@ -1837,6 +1838,7 @@ download_progress (RBPodcastDownload *data, guint64 downloaded, guint64 total)
 static char *
 get_local_download_uri (RBPodcastManager *pd, RBPodcastDownload *download)
 {
+	SoupMessageHeaders *request_hdrs;
 	char *local_file_name = NULL;
 	char *esc_local_file_name;
 	char *local_file_uri;
@@ -1845,7 +1847,8 @@ get_local_download_uri (RBPodcastManager *pd, RBPodcastDownload *download)
 	const char *query_string;
 	GHashTable *params;
 
-	if (soup_message_headers_get_content_disposition (download->request->response_headers, NULL, &params)) {
+	request_hdrs = soup_message_get_response_headers (download->request);
+	if (soup_message_headers_get_content_disposition (request_hdrs, NULL, &params)) {
 		const char *name = g_hash_table_lookup (params, "filename");
 		if (name) {
 			local_file_name = g_strdup (name);
@@ -1856,12 +1859,12 @@ get_local_download_uri (RBPodcastManager *pd, RBPodcastDownload *download)
 	}
 	if (local_file_name == NULL) {
 		GFile *source;
-		SoupURI *remote_uri;
+		GUri *remote_uri;
 
 		remote_uri = soup_message_get_uri (download->request);
-		rb_debug ("download uri path %s", soup_uri_get_path (remote_uri));
+		rb_debug ("download uri path %s", g_uri_get_path (remote_uri));
 
-		source = g_file_new_for_path (soup_uri_get_path (remote_uri));
+		source = g_file_new_for_path (g_uri_get_path (remote_uri));
 		local_file_name = g_file_get_basename (source);
 		g_object_unref (source);
 		rb_debug ("got local filename from uri: %s", local_file_name);
@@ -1925,45 +1928,49 @@ finish_download (RBPodcastManager *pd, RBPodcastDownload *download, guint64 remo
 }
 
 static gboolean
+retry_on_http_status (SoupStatus status)
+{
+	switch (status) {
+	case SOUP_STATUS_REQUEST_TIMEOUT:
+	case SOUP_STATUS_INTERNAL_SERVER_ERROR:
+	case SOUP_STATUS_BAD_GATEWAY:
+	case SOUP_STATUS_SERVICE_UNAVAILABLE:
+	case SOUP_STATUS_GATEWAY_TIMEOUT:
+		rb_debug ("retrying on http status %d", status);
+		return TRUE;
+	default:
+		rb_debug ("not retrying on http status %d", status);
+		return FALSE;
+	}
+}
+
+static gboolean
 retry_on_error (GError *error)
 {
-	rb_debug ("retry on error %s/%d (%s)", g_quark_to_string (error->domain), error->code, error->message);
 	if (error->domain == G_IO_ERROR) {
 		switch (error->code) {
 			case G_IO_ERROR_CLOSED:
 			case G_IO_ERROR_CONNECTION_CLOSED:
 			case G_IO_ERROR_TIMED_OUT:
 			case G_IO_ERROR_NOT_CONNECTED:
+				rb_debug ("retrying on io error %s (%d)", error->message, error->code);
 				return TRUE;
 
 			default:
+				rb_debug ("not retrying on io error %s (%d)", error->message, error->code);
 				return FALSE;
 		}
 	} else if (error->domain == G_RESOLVER_ERROR) {
 		switch (error->code) {
 		case G_RESOLVER_ERROR_TEMPORARY_FAILURE:
+			rb_debug ("retrying on resolver error %s (%d)", error->message, error->code);
 			return TRUE;
 		default:
-			return FALSE;
-		}
-	} else if (error->domain == SOUP_HTTP_ERROR) {
-		switch (error->code) {
-		case SOUP_STATUS_CANT_RESOLVE:
-		case SOUP_STATUS_CANT_RESOLVE_PROXY:
-		case SOUP_STATUS_CANT_CONNECT:
-		case SOUP_STATUS_CANT_CONNECT_PROXY:
-		case SOUP_STATUS_SSL_FAILED:
-		case SOUP_STATUS_IO_ERROR:
-		case SOUP_STATUS_REQUEST_TIMEOUT:
-		case SOUP_STATUS_INTERNAL_SERVER_ERROR:
-		case SOUP_STATUS_BAD_GATEWAY:
-		case SOUP_STATUS_SERVICE_UNAVAILABLE:
-		case SOUP_STATUS_GATEWAY_TIMEOUT:
-			return TRUE;
-		default:
+			rb_debug ("not retrying on resolver error %s (%d)", error->message, error->code);
 			return FALSE;
 		}
 	} else {
+		rb_debug ("not retrying on error %s (%d)", error->message, error->code);
 		return FALSE;
 	}
 }
@@ -2024,6 +2031,9 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 {
 	RBPodcastManager *pd = RB_PODCAST_MANAGER (source_object);
 	RBPodcastDownload *download = task_data;
+	SoupMessageHeaders *request_hdrs;
+	SoupMessageHeaders *response_hdrs;
+	SoupStatus status;
 	GError *error = NULL;
 	gssize remote_size;
 	const char *local_file_uri;
@@ -2054,27 +2064,40 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 		g_clear_object (&download->request);
 		g_clear_error (&error);
 
-		download->request = soup_message_new ("GET", get_remote_location (download->entry));
-		soup_message_headers_set_range (download->request->request_headers, 0, 0);
+		download->request = soup_message_new (SOUP_METHOD_GET, get_remote_location (download->entry));
+
+		request_hdrs = soup_message_get_request_headers (download->request);
+		soup_message_headers_set_range (request_hdrs, 0, 0);
+
 		download->in_stream = soup_session_send (pd->priv->soup_session, download->request, download->cancel, &error);
-		if (error == NULL && !SOUP_STATUS_IS_SUCCESSFUL (download->request->status_code)) {
-			error = g_error_new (SOUP_HTTP_ERROR, download->request->status_code, "%s", download->request->reason_phrase);
-		}
 
+		status = soup_message_get_status (download->request);
 		if (error == NULL) {
-			if (soup_message_headers_get_content_range (download->request->response_headers, &start, &end, &total)) {
-				remote_size = total;
+			if (SOUP_STATUS_IS_SUCCESSFUL (status)) {
+				response_hdrs = soup_message_get_response_headers (download->request);
+				if (soup_message_headers_get_content_range (response_hdrs, &start, &end, &total)) {
+					remote_size = total;
+				} else {
+					remote_size = soup_message_headers_get_content_length (response_hdrs);
+				}
+				rb_debug ("remote file size %" G_GSSIZE_FORMAT, remote_size);
+				break;
+			} else if (!retry_on_http_status (status)) {
+				error = g_error_new (G_IO_ERROR, G_IO_ERROR_FAILED, "%s", soup_message_get_reason_phrase (download->request));
+				rb_debug ("giving up after http status %d (%s)", status, error->message);
+				break;
 			} else {
-				remote_size = soup_message_headers_get_content_length (download->request->response_headers);
+				rb_debug ("retrying after http status %d (%s)", status, soup_message_get_reason_phrase (download->request));
 			}
-			rb_debug ("remote file size %" G_GSSIZE_FORMAT, remote_size);
-			break;
-		} else if (retry_on_error (error) == FALSE) {
-			rb_debug ("giving up after error from http request: %s", error->message);
-			break;
+		} else {
+			if (retry_on_error (error)) {
+				rb_debug ("retrying after error from http request: %s", error->message);
+			} else {
+				rb_debug ("giving up after error from http request: %s", error->message);
+				break;
+			}
 		}
 
-		rb_debug ("retrying after error from http request: %s", error->message);
 		g_usleep (DOWNLOAD_RETRY_DELAY * G_USEC_PER_SEC);
 	}
 
@@ -2183,35 +2206,41 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 		retry = FALSE;
 		eof = FALSE;
 
-		download->request = soup_message_new ("GET", get_remote_location (download->entry));
-		if (downloaded != 0)
-			soup_message_headers_set_range (download->request->request_headers, downloaded, -1);
-		download->in_stream = soup_session_send (pd->priv->soup_session, download->request, download->cancel, &error);
-		if (error == NULL && !SOUP_STATUS_IS_SUCCESSFUL (download->request->status_code)) {
-			if (download->request->status_code == SOUP_STATUS_REQUESTED_RANGE_NOT_SATISFIABLE) {
-				rb_debug ("got requested range not satisfiable, disabling resume and retrying");
-				range_request = FALSE;
-				downloaded = 0;
-				continue;
-			}
-			error = g_error_new (SOUP_HTTP_ERROR, download->request->status_code, "%s", download->request->reason_phrase);
+		download->request = soup_message_new (SOUP_METHOD_GET, get_remote_location (download->entry));
+		if (downloaded != 0) {
+			request_hdrs = soup_message_get_request_headers (download->request);
+			soup_message_headers_set_range (request_hdrs, downloaded, -1);
 		}
 
+		download->in_stream = soup_session_send (pd->priv->soup_session, download->request, download->cancel, &error);
+
+		status = soup_message_get_status (download->request);
+		if (status == SOUP_STATUS_REQUESTED_RANGE_NOT_SATISFIABLE) {
+			rb_debug ("got requested range not satisfiable, disabling resume and retrying");
+			range_request = FALSE;
+			downloaded = 0;
+			continue;
+		}
+
+		if (error == NULL && !SOUP_STATUS_IS_SUCCESSFUL (status)) {
+			error = g_error_new (G_IO_ERROR, G_IO_ERROR_FAILED, "%s", soup_message_get_reason_phrase (download->request));
+		}
 		if (error != NULL) {
 			if (retry_on_error (error)) {
-				rb_debug ("retrying after error from http request: %s", error->message);
+				rb_debug ("retrying after error from http request: %s", error ? error->message : "something");
 				g_usleep (DOWNLOAD_RETRY_DELAY * G_USEC_PER_SEC);
 				continue;
 			}
 
-			rb_debug ("giving up after error from http request: %s", error->message);
+			rb_debug ("giving up after error from http request: %s", error ? error->message : "something");
 			g_task_return_error (task, error);
 			return;
 		}
 
 		/* check that the server actually honoured our range request */
 		if (downloaded != 0) {
-			if (soup_message_headers_get_content_range (download->request->response_headers, &start, &end, &total)) {
+			response_hdrs = soup_message_get_response_headers (download->request);
+			if (soup_message_headers_get_content_range (response_hdrs, &start, &end, &total)) {
 				if (start != downloaded) {
 					rb_debug ("range request mismatched, redownloading from start");
 					downloaded = 0;
@@ -2222,7 +2251,7 @@ download_task (GTask *task, gpointer source_object, gpointer task_data, GCancell
 			} else {
 				range_request = FALSE;
 				downloaded = 0;
-				remote_size = soup_message_headers_get_content_length (download->request->response_headers);
+				remote_size = soup_message_headers_get_content_length (response_hdrs);
 				rb_debug ("server didn't honour range request, starting again, total %" G_GSSIZE_FORMAT, remote_size);
 			}
 		}

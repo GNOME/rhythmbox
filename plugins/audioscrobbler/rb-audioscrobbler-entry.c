@@ -36,7 +36,6 @@
 
 #include "rb-debug.h"
 #include "rhythmdb.h"
-#include <libsoup/soup.h>
 
 #include "rb-audioscrobbler-entry.h"
 #include "rb-audioscrobbler-radio-track-entry-type.h"
@@ -135,12 +134,12 @@ rb_audioscrobbler_entry_encode (AudioscrobblerEntry *entry)
 
 	encoded = g_new0 (AudioscrobblerEncodedEntry, 1);
 	
-	encoded->artist = soup_uri_encode (entry->artist, EXTRA_URI_ENCODE_CHARS);
-	encoded->title = soup_uri_encode (entry->title, EXTRA_URI_ENCODE_CHARS);
-	encoded->album = soup_uri_encode (entry->album, EXTRA_URI_ENCODE_CHARS);
+	encoded->artist = g_uri_escape_string (entry->artist, NULL, FALSE);
+	encoded->title = g_uri_escape_string (entry->title, NULL, FALSE);
+	encoded->album = g_uri_escape_string (entry->album, NULL, FALSE);
 	encoded->track = g_strdup_printf ("%lu", entry->track);
 
-	encoded->mbid = soup_uri_encode (entry->mbid, EXTRA_URI_ENCODE_CHARS);
+	encoded->mbid = g_uri_escape_string (entry->mbid, NULL, FALSE);
 
 	encoded->timestamp = g_strdup_printf("%ld", (long)entry->play_time);
 	encoded->length = entry->length;
@@ -167,19 +166,19 @@ rb_audioscrobbler_entry_load_from_string (const char *string)
 		if (breaks2[0] != NULL && breaks2[1] != NULL) {
 			if (g_str_has_prefix (breaks2[0], "a")) {
 				g_free (entry->artist);
-				entry->artist = soup_uri_decode (breaks2[1]);
+				entry->artist = g_uri_unescape_string (breaks2[1], NULL);
 			}
 			if (g_str_has_prefix (breaks2[0], "t")) {
 				g_free (entry->title);
-				entry->title = soup_uri_decode (breaks2[1]);
+				entry->title = g_uri_unescape_string (breaks2[1], NULL);
 			}
 			if (g_str_has_prefix (breaks2[0], "b")) {
 				g_free (entry->album);
-				entry->album = soup_uri_decode (breaks2[1]);
+				entry->album = g_uri_unescape_string (breaks2[1], NULL);
 			}
 			if (g_str_has_prefix (breaks2[0], "m")) {
 				g_free (entry->mbid);
-				entry->mbid = soup_uri_decode (breaks2[1]);
+				entry->mbid = g_uri_unescape_string (breaks2[1], NULL);
 			}
 			if (g_str_has_prefix (breaks2[0], "l")) {
 				entry->length = atoi (breaks2[1]);
