@@ -1,7 +1,7 @@
 test_env = environment()
 test_env.set('G_TEST_SRCDIR', meson.current_source_dir())
 test_env.set('G_TEST_BUILDDIR', meson.current_build_dir())
-test_env.set('GSETTINGS_SCHEMA_DIR', join_paths(meson.build_root(), 'data'))
+test_env.set('GSETTINGS_SCHEMA_DIR', join_paths(meson.project_build_root(), 'data'))
 test_env.set('GSETTINGS_BACKEND', 'memory')
 test_env.set('CK_DEFAULT_TIMEOUT', '0')
 
