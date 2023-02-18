@@ -63,7 +63,7 @@ gtk = dependency('gtk+-3.0', version: '>= 3.16.0', required: true)
 json_glib = dependency('json-glib-1.0', required: true)
 libpeas = dependency('libpeas-1.0', version: '>= 0.7.3', required: true)
 libpeas_gtk = dependency('libpeas-gtk-1.0', version: '>= 0.7.3', required: true)
-libsoup = dependency('libsoup-2.4', version: '>= 2.42.0', required: true)
+libsoup = dependency('libsoup-3.0', version: '>= 3.0.7', required: true)
 libxml = dependency('libxml-2.0', version: '>= 2.7.8', required: true)
 pango = dependency('pango', required: true)
 tdb = dependency('tdb', version: '>= 1.2.6', required: true)
@@ -243,25 +243,19 @@ if get_option('fm_radio').allowed()
 endif
 
 if get_option('daap').allowed()
-  libdmapsharing4 = dependency('libdmapsharing-4.0', version: ['>= 3.9.4', '< 3.9.11'], required: false)
-
+  libdmapsharing4 = dependency('libdmapsharing-4.0', version: '>= 3.9.11', required: get_option('daap'))
   if libdmapsharing4.found()
     plugins += 'daap'
-  else
-    libdmapsharing = dependency('libdmapsharing-3.0', version: '>= 2.9.19', required: get_option('daap'))
-    if libdmapsharing.found()
-      plugins += 'daap'
-    endif
   endif
 endif
 
 grilo = dependency('grilo-0.3', version: '>= 0.3.1', required: get_option('grilo'))
 if grilo.found()
   grilonet = dependency('grilo-net-0.3', required: get_option('grilo'))
-  if grilonet.get_variable(pkgconfig: 'soupapiversion', default_value: '2.4') == '2.4'
+  if grilonet.get_variable(pkgconfig: 'soupapiversion', default_value: '3.0') == '3.0'
     plugins += 'grilo'
   elif get_option('grilo').enabled()
-    error('grilo plugin explicitly requested, but grilo is not built against libsoup 2.4')
+    error('grilo plugin explicitly requested, but grilo is not built against libsoup 3.0')
   endif
 endif
 

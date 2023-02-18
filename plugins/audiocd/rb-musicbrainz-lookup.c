@@ -396,43 +396,54 @@ rb_musicbrainz_data_get_attr_values (RBMusicBrainzData *data, const char *attr)
 
 
 static void
-lookup_cb (SoupSession *session, SoupMessage *msg, GSimpleAsyncResult *result)
+lookup_cb (SoupSession *session,
+           GAsyncResult *soup_result,
+           GSimpleAsyncResult *result)
 {
+	GBytes *bytes;
+	const char *body;
+	size_t body_size;
+	SoupMessage *message;
+	SoupStatus code;
 	RBMusicBrainzData *data;
-	int code;
 	GError *error = NULL;
 
-	g_object_get (msg, SOUP_MESSAGE_STATUS_CODE, &code, NULL);
-	if (code == SOUP_STATUS_NOT_FOUND || code == SOUP_STATUS_BAD_REQUEST)  {
-		g_simple_async_result_set_error (result,
-						 RB_MUSICBRAINZ_ERROR,
-						 RB_MUSICBRAINZ_ERROR_NOT_FOUND,
-						 _("Not found"));
-	} else if (code < 100) {
-		g_simple_async_result_set_error (result,
-						 RB_MUSICBRAINZ_ERROR,
-						 RB_MUSICBRAINZ_ERROR_NETWORK,
-						 _("Unable to connect to Musicbrainz server"));
-	} else if (code != SOUP_STATUS_OK || msg->response_body->data == NULL) {
+	bytes = soup_session_send_and_read_finish (session, soup_result, NULL);
+	if (bytes == NULL) {
 		g_simple_async_result_set_error (result,
 						 RB_MUSICBRAINZ_ERROR,
 						 RB_MUSICBRAINZ_ERROR_SERVER,
-						 _("Musicbrainz server error"));
+						 _("Unable to connect to Musicbrainz server"));
 	} else {
-		data = rb_musicbrainz_data_parse (msg->response_body->data,
-						  msg->response_body->length,
-						  &error);
-		if (data == NULL) {
-			g_simple_async_result_set_from_error (result, error);
-			g_clear_error (&error);
+		body = g_bytes_get_data (bytes, &body_size);
+		message = soup_session_get_async_result_message (session, soup_result);
+		code = soup_message_get_status (message);
+
+		if (code == SOUP_STATUS_NOT_FOUND || code == SOUP_STATUS_BAD_REQUEST)  {
+			g_simple_async_result_set_error (result,
+							 RB_MUSICBRAINZ_ERROR,
+							 RB_MUSICBRAINZ_ERROR_NOT_FOUND,
+							 _("Not found"));
+		} else if (code != SOUP_STATUS_OK || body_size == 0) {
+			g_simple_async_result_set_error (result,
+							 RB_MUSICBRAINZ_ERROR,
+							 RB_MUSICBRAINZ_ERROR_SERVER,
+							 _("Musicbrainz server error"));
 		} else {
-			g_simple_async_result_set_op_res_gpointer (result, data, NULL);
+			data = rb_musicbrainz_data_parse (body, (gssize)body_size, &error);
+			if (data == NULL) {
+				g_simple_async_result_set_from_error (result, error);
+				g_clear_error (&error);
+			} else {
+				g_simple_async_result_set_op_res_gpointer (result, data, NULL);
+			}
 		}
+
+		g_bytes_unref (bytes);
 	}
 
 	g_simple_async_result_complete (result);
 	g_object_unref (result);
-	g_object_unref (session);
 }
 
 void
@@ -444,11 +455,9 @@ rb_musicbrainz_lookup (const char *entity,
 		       gpointer user_data)
 {
 	GSimpleAsyncResult *result;
-	SoupURI *uri;
 	SoupMessage *message;
 	SoupSession *session;
 	char *uri_str;
-	char *inc;
 
 	result = g_simple_async_result_new (NULL,
 					    callback,
@@ -456,28 +465,33 @@ rb_musicbrainz_lookup (const char *entity,
 					    rb_musicbrainz_lookup);
 	g_simple_async_result_set_check_cancellable (result, cancellable);
 
-	session = soup_session_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-						 SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
-						 SOUP_SESSION_USER_AGENT,
-						 "Rhythmbox/" VERSION " ",
-						 NULL);
-	uri_str = g_strdup_printf ("https://musicbrainz.org/ws/2/%s/%s", entity, entity_id);
-	uri = soup_uri_new (uri_str);
-	g_free (uri_str);
+	session = soup_session_new ();
+	soup_session_set_user_agent (session, "Rhythmbox/" VERSION);
 
-	if (includes != NULL) {
+	uri_str = g_strdup_printf ("https://musicbrainz.org/ws/2/%s/%s", entity, entity_id);
+
+	if (includes == NULL) {
+		message = soup_message_new (SOUP_METHOD_GET, uri_str);
+	} else {
+		char *inc;
+		char *query;
+
 		inc = g_strjoinv ("+", (char **)includes);
-		soup_uri_set_query_from_fields (uri, "inc", inc, NULL);
+		query = soup_form_encode ("inc", inc, NULL);
 		g_free (inc);
+
+		message = soup_message_new_from_encoded_form (SOUP_METHOD_GET, uri_str, query);
 	}
 
-	message = soup_message_new_from_uri (SOUP_METHOD_GET, uri);
-	soup_uri_free (uri);
+	g_free (uri_str);
+	g_return_if_fail (message != NULL);
 
-	soup_session_queue_message (session,
-				    message,
-				    (SoupSessionCallback) lookup_cb,
-				    result);
+	soup_session_send_and_read_async (session,
+					  message,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  (GAsyncReadyCallback) lookup_cb,
+					  result);
 }
 
 RBMusicBrainzData *

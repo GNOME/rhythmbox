@@ -290,20 +290,24 @@ static void
 rb_uri_dialog_clipboard_yank_url (GtkClipboard *clipboard, const char *text, gpointer data)
 {
 	RBURIDialog *dialog = RB_URI_DIALOG (data);
-	SoupURI *uri;
+	GUri *uri;
+	const char *scheme;
 
 	if (text == NULL) {
 		return;
 	}
 
-	uri = soup_uri_new (text);
-	if (SOUP_URI_VALID_FOR_HTTP (uri)) {
-		gtk_entry_set_text (GTK_ENTRY (dialog->priv->url),
-				    soup_uri_to_string (uri, FALSE));
+	uri = g_uri_parse (text, SOUP_HTTP_URI_FLAGS, NULL);
+	if (uri == NULL) {
+		rb_debug ("did not autofill from clipboard: not a valid URL");
+		return;
+	}
+
+	scheme = g_uri_get_scheme (uri);
+	if ((g_strcmp0 (scheme, "http") == 0) || (g_strcmp0 (scheme, "https") == 0)) {
+		gtk_entry_set_text (GTK_ENTRY (dialog->priv->url), text);
 		gtk_editable_select_region (GTK_EDITABLE (dialog->priv->url), 0, -1);
 	}
 
-	if (uri != NULL) {
-		soup_uri_free (uri);
-	}
+	g_uri_unref (uri);
 }

@@ -146,17 +146,28 @@ static void	     rb_audioscrobbler_finalize (GObject *object);
 static void	     rb_audioscrobbler_add_timeout (RBAudioscrobbler *audioscrobbler);
 static gboolean	     rb_audioscrobbler_timeout_cb (RBAudioscrobbler *audioscrobbler);
 
-static void	     rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage *msg, gboolean handshake);
+static void          rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler,
+                                                       SoupMessage *msg,
+						       const char *body,
+						       gboolean handshake);
 
 static void	     rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler);
 static void	     rb_audioscrobbler_submit_queue (RBAudioscrobbler *audioscrobbler);
 static void	     rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
-						char *url,
-						char *post_data,
-						SoupSessionCallback response_handler);
-static void	     rb_audioscrobbler_do_handshake_cb (SoupSession *session, SoupMessage *msg, gpointer user_data);
-static void	     rb_audioscrobbler_submit_queue_cb (SoupSession *session, SoupMessage *msg, gpointer user_data);
-static void	     rb_audioscrobbler_nowplaying_cb (SoupSession *session, SoupMessage *msg, gpointer user_data);
+                                                const char *url,
+                                                const char *method,
+                                                char *query,
+                                                GAsyncReadyCallback response_handler);
+
+static void	     rb_audioscrobbler_do_handshake_cb (SoupSession *session,
+                                                        GAsyncResult *result,
+                                                        RBAudioscrobbler *audioscrobbler);
+static void	     rb_audioscrobbler_submit_queue_cb (SoupSession *session,
+                                                        GAsyncResult *result,
+                                                        RBAudioscrobbler *audioscrobbler);
+static void	     rb_audioscrobbler_nowplaying_cb (SoupSession *session,
+                                                      GAsyncResult *result,
+                                                      RBAudioscrobbler *audioscrobbler);
 
 static void	     rb_audioscrobbler_song_changed_cb (RBShellPlayer *player,
 							RhythmDBEntry *entry,
@@ -698,20 +709,16 @@ rb_audioscrobbler_offline_play_notify_cb (RhythmDB *db,
 }
 
 static void
-rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage *msg, gboolean handshake)
+rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage *msg, const char *body, gboolean handshake)
 {
-	gboolean successful;
+	rb_debug ("Parsing response, status=%d Reason: %s",
+                  soup_message_get_status (msg),
+		  soup_message_get_reason_phrase (msg));
 
-	rb_debug ("Parsing response, status=%d Reason: %s", msg->status_code, msg->reason_phrase);
-
-	successful = FALSE;
-	if (SOUP_STATUS_IS_SUCCESSFUL (msg->status_code) && msg->response_body->length != 0)
-		successful = TRUE;
-
-	if (successful) {
+	if ((soup_message_get_status (msg) == SOUP_STATUS_OK) && (body != NULL)) {
 		gchar **breaks;
 
-		breaks = g_strsplit (msg->response_body->data, "\n", 0);
+		breaks = g_strsplit (body, "\n", 0);
 
 		g_free (audioscrobbler->priv->status_msg);
 		audioscrobbler->priv->status = STATUS_OK;
@@ -722,7 +729,7 @@ rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage 
 			if (handshake) {
 				if (g_strv_length (breaks) < 4) {
 					g_warning ("Unexpectedly short successful last.fm handshake response:\n%s",
-						   msg->response_body->data);
+						   body);
 					audioscrobbler->priv->status = REQUEST_FAILED;
 				} else {
 					g_free (audioscrobbler->priv->sessionid);
@@ -753,15 +760,14 @@ rb_audioscrobbler_parse_response (RBAudioscrobbler *audioscrobbler, SoupMessage 
 				audioscrobbler->priv->status_msg = g_strdup (breaks[0] + strlen ("FAILED "));
 			}
 		} else {
-			g_warning ("Unexpected last.fm response:\n%s",
-				   msg->response_body->data);
+			g_warning ("Unexpected last.fm response:\n%s", body);
 			audioscrobbler->priv->status = REQUEST_FAILED;
 		}
 
 		g_strfreev (breaks);
 	} else {
 		audioscrobbler->priv->status = REQUEST_FAILED;
-		audioscrobbler->priv->status_msg = g_strdup (msg->reason_phrase);
+		audioscrobbler->priv->status_msg = g_strdup (soup_message_get_reason_phrase (msg));
 	}
 }
 
@@ -778,37 +784,32 @@ idle_unref_cb (GObject *object)
  */
 static void
 rb_audioscrobbler_perform (RBAudioscrobbler *audioscrobbler,
-			   char *url,
-			   char *post_data,
-			   SoupSessionCallback response_handler)
+                           const char *url,
+                           const char *method,
+                           char *query,
+                           GAsyncReadyCallback response_handler)
 {
 	SoupMessage *msg;
+	SoupMessageHeaders *hdrs;
 
-	msg = soup_message_new (post_data == NULL ? "GET" : "POST", url);
-	soup_message_headers_append (msg->request_headers, "User-Agent", USER_AGENT);
+	msg = soup_message_new_from_encoded_form (method, url, query);
+	g_return_if_fail (msg != NULL);
 
-	if (post_data != NULL) {
-		rb_debug ("Submitting to Audioscrobbler: %s", post_data);
-		soup_message_set_request (msg,
-					  "application/x-www-form-urlencoded",
-					  SOUP_MEMORY_TAKE,
-					  post_data,
-					  strlen (post_data));
-	}
+	hdrs = soup_message_get_request_headers (msg);
+	soup_message_headers_set_content_type (hdrs, "application/x-www-form-urlencoded", NULL);
+	soup_message_headers_append (hdrs, "User-Agent", USER_AGENT);
 
 	/* create soup session, if we haven't got one yet */
 	if (!audioscrobbler->priv->soup_session) {
-		audioscrobbler->priv->soup_session =
-			soup_session_new_with_options (
-					SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-					SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
-					NULL);
+		audioscrobbler->priv->soup_session = soup_session_new ();
 	}
 
-	soup_session_queue_message (audioscrobbler->priv->soup_session,
-				    msg,
-				    response_handler,
-				    g_object_ref (audioscrobbler));
+	soup_session_send_and_read_async (audioscrobbler->priv->soup_session,
+					  msg,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  response_handler,
+					  g_object_ref (audioscrobbler));
 }
 
 static gboolean
@@ -850,16 +851,17 @@ static void
 rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 {
 	gchar *username;
-	gchar *url;
 	gchar *auth;
 	gchar *autharg;
+	gchar *query;
+	const char *scrobble_url = rb_audioscrobbler_service_get_scrobbler_url (audioscrobbler->priv->service);
 	guint timestamp;
 
 	if (!rb_audioscrobbler_should_handshake (audioscrobbler)) {
 		return;
 	}
 
-	username = soup_uri_encode (audioscrobbler->priv->username, EXTRA_URI_ENCODE_CHARS);
+	username = g_uri_escape_string (audioscrobbler->priv->username, NULL, FALSE);
 	timestamp = time (NULL);
 
 	autharg = g_strdup_printf ("%s%d",
@@ -867,42 +869,52 @@ rb_audioscrobbler_do_handshake (RBAudioscrobbler *audioscrobbler)
 		                   timestamp);
 	auth = g_compute_checksum_for_string (G_CHECKSUM_MD5, autharg, -1);
 
-	url = g_strdup_printf ("%s?hs=true&p=%s&c=%s&v=%s&u=%s&t=%d&a=%s&api_key=%s&sk=%s",
-			       rb_audioscrobbler_service_get_scrobbler_url (audioscrobbler->priv->service),
-			       SCROBBLER_VERSION,
-			       CLIENT_ID,
-			       CLIENT_VERSION,
-			       username,
-			       timestamp,
-			       auth,
-		               rb_audioscrobbler_service_get_api_key (audioscrobbler->priv->service),
-		               audioscrobbler->priv->session_key);
+	query = g_strdup_printf ("hs=true&p=%s&c=%s&v=%s&u=%s&t=%d&a=%s&api_key=%s&sk=%s",
+				 SCROBBLER_VERSION,
+				 CLIENT_ID,
+				 CLIENT_VERSION,
+				 username,
+				 timestamp,
+				 auth,
+				 rb_audioscrobbler_service_get_api_key (audioscrobbler->priv->service),
+				 audioscrobbler->priv->session_key);
 
 	g_free (auth);
 	g_free (autharg);
 	g_free (username);
 
-	rb_debug ("Performing handshake with Audioscrobbler server: %s", url);
+	rb_debug ("Performing handshake with Audioscrobbler server: %s", query);
 
 	audioscrobbler->priv->status = HANDSHAKING;
 	rb_audioscrobbler_statistics_changed (audioscrobbler);
 
 	rb_audioscrobbler_perform (audioscrobbler,
-				   url,
-				   NULL,
-				   rb_audioscrobbler_do_handshake_cb);
-
-	g_free (url);
+                                   scrobble_url,
+                                   SOUP_METHOD_GET,
+                                   query,
+                                   (GAsyncReadyCallback) rb_audioscrobbler_do_handshake_cb);
 }
 
 
 static void
-rb_audioscrobbler_do_handshake_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
+rb_audioscrobbler_do_handshake_cb (SoupSession *session,
+                                   GAsyncResult *result,
+                                   RBAudioscrobbler *audioscrobbler)
 {
-	RBAudioscrobbler *audioscrobbler = RB_AUDIOSCROBBLER(user_data);
+	SoupMessage *message;
+	GBytes *bytes;
+	const char *body;
 
 	rb_debug ("Handshake response");
-	rb_audioscrobbler_parse_response (audioscrobbler, msg, TRUE);
+
+	bytes = soup_session_send_and_read_finish (session, result, NULL);
+	if (bytes != NULL) {
+		body = g_bytes_get_data (bytes, NULL);
+		message = soup_session_get_async_result_message (session, result);
+		rb_audioscrobbler_parse_response (audioscrobbler, message, body, TRUE);
+		g_bytes_unref (bytes);
+	}
+
 	rb_audioscrobbler_statistics_changed (audioscrobbler);
 
 	switch (audioscrobbler->priv->status) {
@@ -979,8 +991,9 @@ rb_audioscrobbler_submit_queue (RBAudioscrobbler *audioscrobbler)
 
 		rb_audioscrobbler_perform (audioscrobbler,
 					   audioscrobbler->priv->submit_url,
+					   SOUP_METHOD_POST,
 					   post_data,
-					   rb_audioscrobbler_submit_queue_cb);
+					   (GAsyncReadyCallback) rb_audioscrobbler_submit_queue_cb);
 		 /* libsoup will free post_data when the request is finished */
 	}
 }
@@ -997,12 +1010,23 @@ rb_g_queue_concat (GQueue *q1, GQueue *q2)
 }
 
 static void
-rb_audioscrobbler_submit_queue_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
+rb_audioscrobbler_submit_queue_cb (SoupSession *session,
+                                   GAsyncResult *result,
+                                   RBAudioscrobbler *audioscrobbler)
 {
-	RBAudioscrobbler *audioscrobbler = RB_AUDIOSCROBBLER (user_data);
+	SoupMessage *message;
+	GBytes *bytes;
+	const char *body;
 
 	rb_debug ("Submission response");
-	rb_audioscrobbler_parse_response (audioscrobbler, msg, FALSE);
+
+	bytes = soup_session_send_and_read_finish (session, result, NULL);
+	if (bytes != NULL) {
+		body = g_bytes_get_data (bytes, NULL);
+		message = soup_session_get_async_result_message (session, result);
+		rb_audioscrobbler_parse_response (audioscrobbler, message, body, FALSE);
+		g_bytes_unref (bytes);
+	}
 
 	if (audioscrobbler->priv->status == STATUS_OK) {
 		rb_debug ("Queue submitted successfully");
@@ -1273,19 +1297,32 @@ rb_audioscrobbler_nowplaying (RBAudioscrobbler *audioscrobbler, AudioscrobblerEn
 
 		rb_audioscrobbler_perform (audioscrobbler,
 					   audioscrobbler->priv->nowplaying_url,
+					   SOUP_METHOD_POST,
 					   post_data,
-					   rb_audioscrobbler_nowplaying_cb);
+					   (GAsyncReadyCallback) rb_audioscrobbler_nowplaying_cb);
 
 		rb_audioscrobbler_encoded_entry_free (encoded);
 	}
 }
 
 static void
-rb_audioscrobbler_nowplaying_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
+rb_audioscrobbler_nowplaying_cb (SoupSession *session,
+                                 GAsyncResult *result,
+                                 RBAudioscrobbler *audioscrobbler)
 {
-	RBAudioscrobbler *audioscrobbler = RB_AUDIOSCROBBLER (user_data);
+	SoupMessage *message;
+	GBytes *bytes;
+	const char *body;
+
 	rb_debug ("Now playing response");
-	rb_audioscrobbler_parse_response (audioscrobbler, msg, FALSE);
+
+	bytes = soup_session_send_and_read_finish (session, result, NULL);
+	if (bytes != NULL) {
+		body = g_bytes_get_data (bytes, NULL);
+		message = soup_session_get_async_result_message (session, result);
+		rb_audioscrobbler_parse_response (audioscrobbler, message, body, FALSE);
+		g_bytes_unref (bytes);
+	}
 
 	if (audioscrobbler->priv->status == STATUS_OK) {
 		rb_debug("Submission success!");

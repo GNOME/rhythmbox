@@ -90,12 +90,19 @@ static void          save_session_settings (RBAudioscrobblerAccount *account);
 static void          cancel_session (RBAudioscrobblerAccount *account);
 static void          request_token (RBAudioscrobblerAccount *account);
 static void          got_token_cb (SoupSession *session,
-                                   SoupMessage *msg,
-                                   gpointer user_data);
+                                   GAsyncResult *result,
+                                   RBAudioscrobblerAccount *account);
+static void          parse_token (RBAudioscrobblerAccount *account,
+                                  const char *body,
+                                  gsize body_size);
 static gboolean      request_session_key_timeout_cb (gpointer user_data);
 static void          got_session_key_cb (SoupSession *session,
-                                         SoupMessage *msg,
-                                         gpointer user_data);
+                                         GAsyncResult *result,
+                                         RBAudioscrobblerAccount *account);
+static void          parse_session_key (RBAudioscrobblerAccount *account,
+                                        const char *body,
+                                        gsize body_size);
+
 enum
 {
 	PROP_0,
@@ -490,62 +497,85 @@ request_token (RBAudioscrobblerAccount *account)
 	/* requests an authentication token
 	 * first stage of the authentication process
 	 */
+	const char *api_key;
+	const char *api_sec;
+	const char *api_url;
 	char *sig_arg;
 	char *sig;
-	char *url;
+	char *query;
 	SoupMessage *msg;
 
 	/* create the soup session, if we haven't got one yet */
 	if (account->priv->soup_session == NULL) {
-		account->priv->soup_session =
-			soup_session_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-						       SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
-						       NULL);
+		account->priv->soup_session = soup_session_new ();
 	}
 
-	/* create the request */
-	sig_arg = g_strdup_printf ("api_key%smethodauth.getToken%s",
-	                           rb_audioscrobbler_service_get_api_key (account->priv->service),
-	                           rb_audioscrobbler_service_get_api_secret (account->priv->service));
-	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
-	url = g_strdup_printf ("%s?method=auth.getToken&api_key=%s&api_sig=%s&format=json",
-			       rb_audioscrobbler_service_get_api_url (account->priv->service),
-	                       rb_audioscrobbler_service_get_api_key (account->priv->service),
-	                       sig);
+	api_key = rb_audioscrobbler_service_get_api_key (account->priv->service);
+	api_sec = rb_audioscrobbler_service_get_api_secret (account->priv->service);
+	api_url = rb_audioscrobbler_service_get_api_url (account->priv->service);
 
-	msg = soup_message_new ("GET", url);
+	/* create the request */
+	sig_arg = g_strdup_printf ("api_key%smethodauth.getToken%s", api_key, api_sec);
+	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
+
+	query = soup_form_encode ("method", "auth.getToken",
+				  "api_key", api_key,
+				  "api_sig", sig,
+				  "format", "json",
+				  NULL);
+
+	g_free (sig_arg);
+	g_free (sig);
+
+	msg = soup_message_new_from_encoded_form (SOUP_METHOD_GET, api_url, query);
+	g_return_if_fail (msg != NULL);
 
 	/* send the request */
 	rb_debug ("requesting authorisation token");
-	soup_session_queue_message (account->priv->soup_session,
-			            msg,
-			            got_token_cb,
-			            account);
+
+	soup_session_send_and_read_async (account->priv->soup_session,
+					  msg,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  (GAsyncReadyCallback) got_token_cb,
+					  account);
 
 	/* update status */
 	account->priv->login_status = RB_AUDIOSCROBBLER_ACCOUNT_LOGIN_STATUS_LOGGING_IN;
 	g_signal_emit (account, rb_audioscrobbler_account_signals[LOGIN_STATUS_CHANGED],
 	               0, account->priv->login_status);
-
-	g_free (sig_arg);
-	g_free (sig);
-	g_free (url);
 }
 
 static void
-got_token_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
+got_token_cb (SoupSession *session, GAsyncResult *result, RBAudioscrobblerAccount *account)
 {
-	/* parses the authentication token from the response
-	 */
-	RBAudioscrobblerAccount *account;
-	JsonParser *parser;
+	GBytes *bytes;
+	const char *body;
+	gsize size;
 
-	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
+	bytes = soup_session_send_and_read_finish (session, result, NULL);
+	if (bytes != NULL) {
+		body = g_bytes_get_data (bytes, &size);
+	} else {
+		body = NULL;
+		size = 0;
+	}
+
+	parse_token (account, body, size);
+
+	if (bytes != NULL) {
+		g_bytes_unref (bytes);
+	}
+}
+
+static void
+parse_token (RBAudioscrobblerAccount *account, const char *body, gsize body_size)
+{
+	JsonParser *parser;
 
 	parser = json_parser_new ();
 
-	if (msg->response_body->data != NULL &&
-	    json_parser_load_from_data (parser, msg->response_body->data, msg->response_body->length, NULL)) {
+	if (body != NULL && json_parser_load_from_data (parser, body, (gssize)body_size, NULL)) {
 		JsonObject *root_object;
 
 		root_object = json_node_get_object (json_parser_get_root (parser));
@@ -596,44 +626,78 @@ request_session_key_timeout_cb (gpointer user_data)
 {
 	/* Periodically sends a request for the session key */
 	RBAudioscrobblerAccount *account;
+	const char *api_key;
+	const char *api_sec;
+	const char *api_url;
 	char *sig_arg;
 	char *sig;
-	char *url;
+	char *query;
 	SoupMessage *msg;
 
 	g_assert (RB_IS_AUDIOSCROBBLER_ACCOUNT (user_data));
 	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
 
+	api_key = rb_audioscrobbler_service_get_api_key (account->priv->service);
+	api_sec = rb_audioscrobbler_service_get_api_secret (account->priv->service);
+	api_url = rb_audioscrobbler_service_get_api_url (account->priv->service);
+
 	/* create the request */
 	sig_arg = g_strdup_printf ("api_key%smethodauth.getSessiontoken%s%s",
-	                           rb_audioscrobbler_service_get_api_key (account->priv->service),
+	                           api_key,
 	                           account->priv->auth_token,
-	                           rb_audioscrobbler_service_get_api_secret (account->priv->service));
+	                           api_sec);
 	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
-	url = g_strdup_printf ("%s?method=auth.getSession&api_key=%s&token=%s&api_sig=%s&format=json",
-	                       rb_audioscrobbler_service_get_api_url (account->priv->service),
-	                       rb_audioscrobbler_service_get_api_key (account->priv->service),
-	                       account->priv->auth_token,
-	                       sig);
 
-	msg = soup_message_new ("GET", url);
-
-	/* send the request */
-	rb_debug ("requesting session key");
-	soup_session_queue_message (account->priv->soup_session,
-	                            msg,
-	                            got_session_key_cb,
-	                            account);
+	query = soup_form_encode ("method", "auth.getSession",
+				  "api_key", api_key,
+				  "token", account->priv->auth_token,
+				  "api_sig", sig,
+				  "format", "json",
+				  NULL);
 
 	g_free (sig_arg);
 	g_free (sig);
-	g_free (url);
+
+	msg = soup_message_new_from_encoded_form (SOUP_METHOD_GET, api_url, query);
+	g_return_val_if_fail (msg != NULL, FALSE);
+
+	/* send the request */
+	rb_debug ("requesting session key");
+
+	soup_session_send_and_read_async (account->priv->soup_session,
+					  msg,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  (GAsyncReadyCallback) got_session_key_cb,
+					  account);
 
 	return TRUE;
 }
 
 static void
-got_session_key_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
+got_session_key_cb (SoupSession *session, GAsyncResult *result, RBAudioscrobblerAccount *account)
+{
+	GBytes *bytes;
+	const char *body;
+	gsize size;
+
+	bytes = soup_session_send_and_read_finish (session, result, NULL);
+	if (bytes != NULL) {
+		body = g_bytes_get_data (bytes, &size);
+	} else {
+		body = NULL;
+		size = 0;
+	}
+
+	parse_session_key (account, body, size);
+
+	if (bytes != NULL) {
+		g_bytes_unref (bytes);
+	}
+}
+
+static void
+parse_session_key (RBAudioscrobblerAccount *account, const char *body, gsize body_size)
 {
 	/* parses the session details from the response.
 	 * if successful then authentication is complete.
@@ -641,16 +705,11 @@ got_session_key_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
 	 * then keep trying.
 	 * on other errors stop trying and go to logged out state.
 	 */
-	RBAudioscrobblerAccount *account;
 	JsonParser *parser;
-
-	g_assert (RB_IS_AUDIOSCROBBLER_ACCOUNT (user_data));
-	account = RB_AUDIOSCROBBLER_ACCOUNT (user_data);
 
 	parser = json_parser_new ();
 
-	if (msg->response_body->data != NULL &&
-	    json_parser_load_from_data (parser, msg->response_body->data, msg->response_body->length, NULL)) {
+	if (body != NULL && json_parser_load_from_data (parser, body, (gssize)body_size, NULL)) {
 		JsonObject *root_object;
 
 		root_object = json_node_get_object (json_parser_get_root (parser));

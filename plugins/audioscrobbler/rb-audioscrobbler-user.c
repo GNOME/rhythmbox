@@ -165,40 +165,40 @@ static GPtrArray * parse_artist_array (RBAudioscrobblerUser *user, JsonArray *tr
 static void load_cached_user_info (RBAudioscrobblerUser *user);
 static void request_user_info (RBAudioscrobblerUser *user);
 static void user_info_response_cb (SoupSession *session,
-                                   SoupMessage *msg,
-                                   gpointer user_data);
+                                   GAsyncResult *result,
+				   RBAudioscrobblerUser *user);
 static RBAudioscrobblerUserData * parse_user_info (RBAudioscrobblerUser *user,
                                                    const char *data);
 
 static void load_cached_recent_tracks (RBAudioscrobblerUser *user);
 static void request_recent_tracks (RBAudioscrobblerUser *user, int limit);
 static void recent_tracks_response_cb (SoupSession *session,
-                                       SoupMessage *msg,
-                                       gpointer user_data);
+                                       GAsyncResult *result,
+                                       RBAudioscrobblerUser *user);
 static GPtrArray * parse_recent_tracks (RBAudioscrobblerUser *user,
                                         const char *data);
 
 static void load_cached_top_tracks (RBAudioscrobblerUser *user);
 static void request_top_tracks (RBAudioscrobblerUser *user, int limit);
 static void top_tracks_response_cb (SoupSession *session,
-                                    SoupMessage *msg,
-                                    gpointer user_data);
+                                    GAsyncResult *result,
+				    RBAudioscrobblerUser *user);
 static GPtrArray * parse_top_tracks (RBAudioscrobblerUser *user,
                                      const char *data);
 
 static void load_cached_loved_tracks (RBAudioscrobblerUser *user);
 static void request_loved_tracks (RBAudioscrobblerUser *user, int limit);
 static void loved_tracks_response_cb (SoupSession *session,
-                                      SoupMessage *msg,
-                                      gpointer user_data);
+                                      GAsyncResult *result,
+				      RBAudioscrobblerUser *user);
 static GPtrArray * parse_loved_tracks (RBAudioscrobblerUser *user,
                                        const char *data);
 
 static void load_cached_top_artists (RBAudioscrobblerUser *user);
 static void request_top_artists (RBAudioscrobblerUser *user, int limit);
 static void top_artists_response_cb (SoupSession *session,
-                                     SoupMessage *msg,
-                                     gpointer user_data);
+                                     GAsyncResult *result,
+				     RBAudioscrobblerUser *user);
 static GPtrArray * parse_top_artists (RBAudioscrobblerUser *user,
                                       const char *data);
 
@@ -210,13 +210,13 @@ static void download_image (RBAudioscrobblerUser *user,
 static void image_download_cb (GObject *source_object,
                                GAsyncResult *res,
                                gpointer user_data);
-
 static void love_track_response_cb (SoupSession *session,
-                                    SoupMessage *msg,
-                                    gpointer user_data);
+                                    GAsyncResult *result,
+                                    RBAudioscrobblerUser *user);
 static void ban_track_response_cb (SoupSession *session,
-                                   SoupMessage *msg,
-                                   gpointer user_data);
+                                   GAsyncResult *result,
+                                   RBAudioscrobblerUser *user);
+
 enum {
 	PROP_0,
 	PROP_SERVICE
@@ -331,11 +331,7 @@ rb_audioscrobbler_user_init (RBAudioscrobblerUser *user)
 {
 	user->priv = RB_AUDIOSCROBBLER_USER_GET_PRIVATE (user);
 
-	user->priv->soup_session =
-		soup_session_new_with_options (SOUP_SESSION_ADD_FEATURE_BY_TYPE,
-					       SOUP_TYPE_PROXY_RESOLVER_DEFAULT,
-					       NULL);
-
+	user->priv->soup_session = soup_session_new ();
 	user->priv->file_to_data_queue_map = g_hash_table_new_full (g_file_hash,
 	                                                            (GEqualFunc) g_file_equal,
 	                                                            g_object_unref,
@@ -766,50 +762,66 @@ load_cached_user_info (RBAudioscrobblerUser *user)
 static void
 request_user_info (RBAudioscrobblerUser *user)
 {
-	char *msg_url;
+	const char *api_key;
+	const char *api_url;
+	char *query;
 	SoupMessage *msg;
 
 	rb_debug ("requesting user info");
 
-	msg_url = g_strdup_printf ("%s?method=user.getInfo&user=%s&api_key=%s&format=json",
-	                           rb_audioscrobbler_service_get_api_url (user->priv->service),
-	                           user->priv->username,
-	                           rb_audioscrobbler_service_get_api_key (user->priv->service));
+	api_key = rb_audioscrobbler_service_get_api_key (user->priv->service);
+	api_url = rb_audioscrobbler_service_get_api_url (user->priv->service);
 
-	msg = soup_message_new ("GET", msg_url);
-	soup_session_queue_message (user->priv->soup_session,
-	                            msg,
-	                            user_info_response_cb,
-	                            user);
+	query = soup_form_encode ("method", "user.getInfo",
+				  "user", user->priv->username,
+				  "api_key", api_key,
+				  "format", "json",
+				  NULL);
 
-	g_free (msg_url);
+	msg = soup_message_new_from_encoded_form (SOUP_METHOD_GET, api_url, query);
+	g_return_if_fail (msg != NULL);
+
+	soup_session_send_and_read_async (user->priv->soup_session,
+					  msg,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  (GAsyncReadyCallback) user_info_response_cb,
+					  user);
 }
 
 static void
 user_info_response_cb (SoupSession *session,
-                       SoupMessage *msg,
-                       gpointer user_data)
+                       GAsyncResult *result,
+                       RBAudioscrobblerUser *user)
 {
-	RBAudioscrobblerUser *user;
+	GBytes *bytes;
+	const char *body;
 	RBAudioscrobblerUserData *user_info;
 
-	user = RB_AUDIOSCROBBLER_USER (user_data);
-	user_info = parse_user_info (user, msg->response_body->data);
+	bytes = soup_session_send_and_read_finish (session, result, NULL);
+	if (bytes != NULL) {
+		body = g_bytes_get_data (bytes, NULL);
+		user_info = parse_user_info (user, body);
 
-	if (user_info != NULL) {
-		rb_debug ("user info request was successful");
+		if (user_info != NULL) {
+			rb_debug ("user info request was successful");
 
-		if (user->priv->user_info != NULL) {
-			rb_audioscrobbler_user_data_unref (user->priv->user_info);
+			if (user->priv->user_info != NULL) {
+				rb_audioscrobbler_user_data_unref (user->priv->user_info);
+			}
+			user->priv->user_info = user_info;
+
+			save_response_to_cache (user, "user_info", body);
+
+			g_signal_emit (user, rb_audioscrobbler_user_signals[USER_INFO_UPDATED],
+			               0, user->priv->user_info);
+		} else {
+			rb_debug ("invalid response from user info request");
 		}
-		user->priv->user_info = user_info;
 
-		save_response_to_cache (user, "user_info", msg->response_body->data);
-
-		g_signal_emit (user, rb_audioscrobbler_user_signals[USER_INFO_UPDATED],
-		               0, user->priv->user_info);
+		g_bytes_unref (bytes);
 	} else {
-		rb_debug ("invalid response from user info request");
+		rb_debug ("error sending user info request");
 	}
 }
 
@@ -894,51 +906,72 @@ load_cached_recent_tracks (RBAudioscrobblerUser *user)
 static void
 request_recent_tracks (RBAudioscrobblerUser *user, int limit)
 {
-	char *msg_url;
+	const char *api_key;
+	const char *api_url;
+	char *limit_str;
+	char *query;
 	SoupMessage *msg;
 
 	rb_debug ("requesting recent tracks");
 
-	msg_url = g_strdup_printf ("%s?method=user.getRecentTracks&user=%s&api_key=%s&limit=%i&format=json",
-	                           rb_audioscrobbler_service_get_api_url (user->priv->service),
-	                           user->priv->username,
-	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
-	                           limit);
+	api_key = rb_audioscrobbler_service_get_api_key (user->priv->service);
+	api_url = rb_audioscrobbler_service_get_api_url (user->priv->service);
 
-	msg = soup_message_new ("GET", msg_url);
-	soup_session_queue_message (user->priv->soup_session,
-	                            msg,
-	                            recent_tracks_response_cb,
-	                            user);
+	limit_str = g_strdup_printf ("%d", limit);
 
-	g_free (msg_url);
+	query = soup_form_encode ("method", "user.getRecentTracks",
+				  "user", user->priv->username,
+				  "api_key", api_key,
+				  "limit", limit_str,
+				  "format", "json",
+				  NULL);
+
+	g_free (limit_str);
+
+	msg = soup_message_new_from_encoded_form (SOUP_METHOD_GET, api_url, query);
+	g_return_if_fail (msg != NULL);
+
+	soup_session_send_and_read_async (user->priv->soup_session,
+					  msg,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  (GAsyncReadyCallback) recent_tracks_response_cb,
+					  user);
 }
 
 static void
 recent_tracks_response_cb (SoupSession *session,
-                           SoupMessage *msg,
-                           gpointer user_data)
+                           GAsyncResult *result,
+                           RBAudioscrobblerUser *user)
 {
-	RBAudioscrobblerUser *user;
+	GBytes *bytes;
+	const char *body;
 	GPtrArray *recent_tracks;
 
-	user = RB_AUDIOSCROBBLER_USER (user_data);
-	recent_tracks = parse_recent_tracks (user, msg->response_body->data);
+	bytes = soup_session_send_and_read_finish (session, result, NULL);
+	if (bytes != NULL) {
+		body = g_bytes_get_data (bytes, NULL);
+		recent_tracks = parse_recent_tracks (user, body);
 
-	if (recent_tracks != NULL) {
-		rb_debug ("recent tracks request was successful");
+		if (recent_tracks != NULL) {
+			rb_debug ("recent tracks request was successful");
 
-		if (user->priv->recent_tracks != NULL) {
-			g_ptr_array_unref (user->priv->recent_tracks);
+			if (user->priv->recent_tracks != NULL) {
+				g_ptr_array_unref (user->priv->recent_tracks);
+			}
+			user->priv->recent_tracks = recent_tracks;
+
+			save_response_to_cache (user, "recent_tracks", body);
+
+			g_signal_emit (user, rb_audioscrobbler_user_signals[RECENT_TRACKS_UPDATED],
+			               0, user->priv->recent_tracks);
+		} else {
+			rb_debug ("invalid response from recent tracks request");
 		}
-		user->priv->recent_tracks = recent_tracks;
 
-		save_response_to_cache (user, "recent_tracks", msg->response_body->data);
-
-		g_signal_emit (user, rb_audioscrobbler_user_signals[RECENT_TRACKS_UPDATED],
-		               0, user->priv->recent_tracks);
+		g_bytes_unref (bytes);
 	} else {
-		rb_debug ("invalid response from recent tracks request");
+		rb_debug ("error sending recent tracks request");
 	}
 }
 
@@ -1009,51 +1042,71 @@ load_cached_top_tracks (RBAudioscrobblerUser *user)
 static void
 request_top_tracks (RBAudioscrobblerUser *user, int limit)
 {
-	char *msg_url;
+	const char *api_key;
+	const char *api_url;
+	char *limit_str;
+	char *query;
 	SoupMessage *msg;
 
 	rb_debug ("requesting top tracks");
 
-	msg_url = g_strdup_printf ("%s?method=user.getTopTracks&user=%s&api_key=%s&limit=%i&format=json",
-	                           rb_audioscrobbler_service_get_api_url (user->priv->service),
-	                           user->priv->username,
-	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
-	                           limit);
+	api_url = rb_audioscrobbler_service_get_api_url (user->priv->service);
+	api_key = rb_audioscrobbler_service_get_api_key (user->priv->service);
 
-	msg = soup_message_new ("GET", msg_url);
-	soup_session_queue_message (user->priv->soup_session,
-	                            msg,
-	                            top_tracks_response_cb,
-	                            user);
+	limit_str = g_strdup_printf ("%d", limit);
 
-	g_free (msg_url);
+	query = soup_form_encode ("method", "library.getTracks",
+				  "user", user->priv->username,
+				  "api_key", api_key,
+				  "limit", limit_str,
+				  "format", "json",
+				  NULL);
+	g_free (limit_str);
+
+	msg = soup_message_new_from_encoded_form (SOUP_METHOD_GET, api_url, query);
+	g_return_if_fail (msg != NULL);
+
+	soup_session_send_and_read_async (user->priv->soup_session,
+					  msg,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  (GAsyncReadyCallback) top_tracks_response_cb,
+					  user);
 }
 
 static void
 top_tracks_response_cb (SoupSession *session,
-                        SoupMessage *msg,
-                        gpointer user_data)
+                        GAsyncResult *result,
+			RBAudioscrobblerUser *user)
 {
-	RBAudioscrobblerUser *user;
+	GBytes *bytes;
+	const char *body;
 	GPtrArray *top_tracks;
 
-	user = RB_AUDIOSCROBBLER_USER (user_data);
-	top_tracks = parse_top_tracks (user, msg->response_body->data);
+	bytes = soup_session_send_and_read_finish (session, result, NULL);
+	if (bytes != NULL) {
+		body = g_bytes_get_data (bytes, NULL);
+		top_tracks = parse_top_tracks (user, body);
 
-	if (top_tracks != NULL) {
-		rb_debug ("top tracks request was successful");
+		if (top_tracks != NULL) {
+			rb_debug ("top tracks request was successful");
 
-		if (user->priv->top_tracks != NULL) {
-			g_ptr_array_unref (user->priv->top_tracks);
+			if (user->priv->top_tracks != NULL) {
+				g_ptr_array_unref (user->priv->top_tracks);
+			}
+			user->priv->top_tracks = top_tracks;
+
+			save_response_to_cache (user, "top_tracks", body);
+
+			g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_TRACKS_UPDATED],
+				       0, user->priv->top_tracks);
+		} else {
+			rb_debug ("invalid response from top tracks request");
 		}
-		user->priv->top_tracks = top_tracks;
 
-		save_response_to_cache (user, "top_tracks", msg->response_body->data);
-
-		g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_TRACKS_UPDATED],
-		               0, user->priv->top_tracks);
+		g_bytes_unref (bytes);
 	} else {
-		rb_debug ("invalid response from top tracks request");
+		rb_debug ("error sending top tracks request");
 	}
 }
 
@@ -1124,51 +1177,72 @@ load_cached_loved_tracks (RBAudioscrobblerUser *user)
 static void
 request_loved_tracks (RBAudioscrobblerUser *user, int limit)
 {
-	char *msg_url;
+	const char *api_key;
+	const char *api_url;
+	char *limit_str;
+	char *query;
 	SoupMessage *msg;
 
 	rb_debug ("requesting loved tracks");
 
-	msg_url = g_strdup_printf ("%s?method=user.getLovedTracks&user=%s&api_key=%s&limit=%i&format=json",
-	                           rb_audioscrobbler_service_get_api_url (user->priv->service),
-	                           user->priv->username,
-	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
-	                           limit);
+	api_key = rb_audioscrobbler_service_get_api_key (user->priv->service);
+	api_url = rb_audioscrobbler_service_get_api_url (user->priv->service);
 
-	msg = soup_message_new ("GET", msg_url);
-	soup_session_queue_message (user->priv->soup_session,
-	                            msg,
-	                            loved_tracks_response_cb,
-	                            user);
+	limit_str = g_strdup_printf ("%d", limit);
 
-	g_free (msg_url);
+	query = soup_form_encode ("method", "user.getLovedTracks",
+				  "user", user->priv->username,
+				  "api_key", api_key,
+				  "limit", limit_str,
+				  "format", "json",
+				  NULL);
+
+	g_free (limit_str);
+
+	msg = soup_message_new_from_encoded_form (SOUP_METHOD_GET, api_url, query);
+	g_return_if_fail (msg != NULL);
+
+	soup_session_send_and_read_async (user->priv->soup_session,
+					  msg,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  (GAsyncReadyCallback) loved_tracks_response_cb,
+					  user);
 }
 
 static void
 loved_tracks_response_cb (SoupSession *session,
-                          SoupMessage *msg,
-                          gpointer user_data)
+                          GAsyncResult *result,
+                          RBAudioscrobblerUser *user)
 {
-	RBAudioscrobblerUser *user;
+	GBytes *bytes;
+	const char *body;
 	GPtrArray *loved_tracks;
 
-	user = RB_AUDIOSCROBBLER_USER (user_data);
-	loved_tracks = parse_loved_tracks (user, msg->response_body->data);
+	bytes = soup_session_send_and_read_finish (session, result, NULL);
+	if (bytes != NULL) {
+		body = g_bytes_get_data (bytes, NULL);
+		loved_tracks = parse_loved_tracks (user, body);
 
-	if (loved_tracks != NULL) {
-		rb_debug ("loved tracks request was successful");
+		if (loved_tracks != NULL) {
+			rb_debug ("loved tracks request was successful");
 
-		if (user->priv->loved_tracks != NULL) {
-			g_ptr_array_unref (user->priv->loved_tracks);
+			if (user->priv->loved_tracks != NULL) {
+				g_ptr_array_unref (user->priv->loved_tracks);
+			}
+			user->priv->loved_tracks = loved_tracks;
+
+			save_response_to_cache (user, "loved_tracks", body);
+
+			g_signal_emit (user, rb_audioscrobbler_user_signals[LOVED_TRACKS_UPDATED],
+				       0, user->priv->loved_tracks);
+		} else {
+			rb_debug ("invalid response from loved tracks request");
 		}
-		user->priv->loved_tracks = loved_tracks;
 
-		save_response_to_cache (user, "loved_tracks", msg->response_body->data);
-
-		g_signal_emit (user, rb_audioscrobbler_user_signals[LOVED_TRACKS_UPDATED],
-		               0, user->priv->loved_tracks);
+		g_bytes_unref (bytes);
 	} else {
-		rb_debug ("invalid response from loved tracks request");
+		rb_debug ("error sending loved tracks request");
 	}
 }
 
@@ -1239,51 +1313,68 @@ load_cached_top_artists (RBAudioscrobblerUser *user)
 static void
 request_top_artists (RBAudioscrobblerUser *user, int limit)
 {
-	char *msg_url;
+	const char *api_key;
+	const char *api_url;
+	char *limit_str;
+	char *query;
 	SoupMessage *msg;
 
 	rb_debug ("requesting top artists");
 
-	msg_url = g_strdup_printf ("%s?method=user.getTopArtists&user=%s&api_key=%s&limit=%i&format=json",
-	                           rb_audioscrobbler_service_get_api_url (user->priv->service),
-	                           user->priv->username,
-	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
-	                           limit);
+	api_url = rb_audioscrobbler_service_get_api_url (user->priv->service);
+	api_key = rb_audioscrobbler_service_get_api_key (user->priv->service);
 
-	msg = soup_message_new ("GET", msg_url);
-	soup_session_queue_message (user->priv->soup_session,
-	                            msg,
-	                            top_artists_response_cb,
-	                            user);
+	limit_str = g_strdup_printf ("%d", limit);
+	query = soup_form_encode ("method", "library.getArtists",
+				  "user", user->priv->username,
+				  "api_key", api_key,
+				  "limit", limit_str,
+				  "format", "json",
+				  NULL);
+	g_free (limit_str);
 
-	g_free (msg_url);
+	msg = soup_message_new_from_encoded_form (SOUP_METHOD_GET, api_url, query);
+	g_return_if_fail (msg != NULL);
+
+	soup_session_send_and_read_async (user->priv->soup_session,
+					  msg,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  (GAsyncReadyCallback) top_artists_response_cb,
+					  user);
 }
 
 static void
 top_artists_response_cb (SoupSession *session,
-                         SoupMessage *msg,
-                         gpointer user_data)
+                         GAsyncResult *result,
+			 RBAudioscrobblerUser *user)
 {
-	RBAudioscrobblerUser *user;
+	GBytes *bytes;
+	const char *body;
 	GPtrArray *top_artists;
 
-	user = RB_AUDIOSCROBBLER_USER (user_data);
-	top_artists = parse_top_artists (user, msg->response_body->data);
+	bytes = soup_session_send_and_read_finish (session, result, NULL);
+	if (bytes != NULL) {
+		body = g_bytes_get_data (bytes, NULL);
+		top_artists = parse_top_artists (user, body);
 
-	if (top_artists != NULL) {
-		rb_debug ("top artists request was successful");
+		if (top_artists != NULL) {
+			rb_debug ("top artists request was successful");
 
-		if (user->priv->top_artists != NULL) {
-			g_ptr_array_unref (user->priv->top_artists);
+			if (user->priv->top_artists != NULL) {
+				g_ptr_array_unref (user->priv->top_artists);
+			}
+			user->priv->top_artists = top_artists;
+
+			save_response_to_cache (user, "top_artists", body);
+
+			g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_ARTISTS_UPDATED],
+				       0, user->priv->top_artists);
+		} else {
+			rb_debug ("invalid response from top artists request");
 		}
-		user->priv->top_artists = top_artists;
-
-		save_response_to_cache (user, "top_artists", msg->response_body->data);
-
-		g_signal_emit (user, rb_audioscrobbler_user_signals[TOP_ARTISTS_UPDATED],
-		               0, user->priv->top_artists);
 	} else {
-		rb_debug ("invalid response from top artists request");
+		rb_debug ("error sending top artists request");
 	}
 }
 
@@ -1563,56 +1654,55 @@ rb_audioscrobbler_user_love_track (RBAudioscrobblerUser *user,
                                    const char *title,
                                    const char *artist)
 {
+	const char *api_key;
+	const char *api_sec;
+	const char *api_url;
 	char *sig_arg;
 	char *sig;
-	char *escaped_title;
-	char *escaped_artist;
-	char *request;
+	char *query;
 	SoupMessage *msg;
 
 	rb_debug ("loving track %s - %s", artist, title);
 
+	api_key = rb_audioscrobbler_service_get_api_key (user->priv->service);
+	api_sec = rb_audioscrobbler_service_get_api_secret (user->priv->service);
+	api_url = rb_audioscrobbler_service_get_api_url (user->priv->service);
+
 	sig_arg = g_strdup_printf ("api_key%sartist%smethodtrack.lovesk%strack%s%s",
-	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
+	                           api_key,
 	                           artist,
 	                           user->priv->session_key,
 	                           title,
-	                           rb_audioscrobbler_service_get_api_secret (user->priv->service));
+				   api_sec);
 
 	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 
-	escaped_title = g_uri_escape_string (title, NULL, FALSE);
-	escaped_artist = g_uri_escape_string (artist, NULL, FALSE);
-
-	request = g_strdup_printf ("method=track.love&track=%s&artist=%s&api_key=%s&api_sig=%s&sk=%s",
-	                           escaped_title,
-	                           escaped_artist,
-	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
-	                           sig,
-	                           user->priv->session_key);
-
-	msg = soup_message_new ("POST", rb_audioscrobbler_service_get_api_url (user->priv->service));
-	soup_message_set_request (msg,
-	                          "application/x-www-form-urlencoded",
-	                          SOUP_MEMORY_COPY,
-	                          request,
-	                          strlen (request));
-	soup_session_queue_message (user->priv->soup_session,
-	                            msg,
-	                            love_track_response_cb,
-	                            user);
+	query = soup_form_encode ("method", "track.love",
+				  "track", title,
+				  "artist", artist,
+				  "api_key", api_key,
+				  "api_sig", sig,
+				  "sk", user->priv->session_key,
+				  NULL);
 
 	g_free (sig_arg);
 	g_free (sig);
-	g_free (escaped_title);
-	g_free (escaped_artist);
-	g_free (request);
+
+	msg = soup_message_new_from_encoded_form (SOUP_METHOD_POST, api_url, query);
+	g_return_if_fail (msg != NULL);
+
+	soup_session_send_and_read_async (user->priv->soup_session,
+					  msg,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  (GAsyncReadyCallback) love_track_response_cb,
+					  user);
 }
 
 static void
 love_track_response_cb (SoupSession *session,
-                        SoupMessage *msg,
-                        gpointer user_data)
+                        GAsyncResult *result,
+                        RBAudioscrobblerUser *user)
 {
 	/* Don't know if there's anything to do here,
 	 * might want a debug message indicating success or failure?
@@ -1624,56 +1714,55 @@ rb_audioscrobbler_user_ban_track (RBAudioscrobblerUser *user,
                                   const char *title,
                                   const char *artist)
 {
+	const char *api_key;
+	const char *api_sec;
+	const char *api_url;
 	char *sig_arg;
 	char *sig;
-	char *escaped_title;
-	char *escaped_artist;
-	char *request;
+	char *query;
 	SoupMessage *msg;
 
 	rb_debug ("banning track %s - %s", artist, title);
 
-	sig_arg = g_strdup_printf ("api_key%sartist%smethodtrack.bansk%strack%s%s",
-	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
+	api_key = rb_audioscrobbler_service_get_api_key (user->priv->service);
+	api_sec = rb_audioscrobbler_service_get_api_secret (user->priv->service);
+	api_url = rb_audioscrobbler_service_get_api_url (user->priv->service);
+
+	sig_arg = g_strdup_printf ("api_key%sartist%smethodtrack.ban%strack%s%s",
+	                           api_key,
 	                           artist,
 	                           user->priv->session_key,
 	                           title,
-	                           rb_audioscrobbler_service_get_api_secret (user->priv->service));
+				   api_sec);
 
 	sig = g_compute_checksum_for_string (G_CHECKSUM_MD5, sig_arg, -1);
 
-	escaped_title = g_uri_escape_string (title, NULL, FALSE);
-	escaped_artist = g_uri_escape_string (artist, NULL, FALSE);
-
-	request = g_strdup_printf ("method=track.ban&track=%s&artist=%s&api_key=%s&api_sig=%s&sk=%s",
-	                           escaped_title,
-	                           escaped_artist,
-	                           rb_audioscrobbler_service_get_api_key (user->priv->service),
-	                           sig,
-	                           user->priv->session_key);
-
-	msg = soup_message_new ("POST", rb_audioscrobbler_service_get_api_url (user->priv->service));
-	soup_message_set_request (msg,
-	                          "application/x-www-form-urlencoded",
-	                          SOUP_MEMORY_COPY,
-	                          request,
-	                          strlen (request));
-	soup_session_queue_message (user->priv->soup_session,
-	                            msg,
-	                            ban_track_response_cb,
-	                            user);
+	query = soup_form_encode ("method", "track.ban",
+				  "track", title,
+				  "artist", artist,
+				  "api_key", api_key,
+				  "api_sig", sig,
+				  "sk", user->priv->session_key,
+				  NULL);
 
 	g_free (sig_arg);
 	g_free (sig);
-	g_free (escaped_title);
-	g_free (escaped_artist);
-	g_free (request);
+
+	msg = soup_message_new_from_encoded_form (SOUP_METHOD_POST, api_url, query);
+	g_return_if_fail (msg != NULL);
+
+	soup_session_send_and_read_async (user->priv->soup_session,
+					  msg,
+					  G_PRIORITY_DEFAULT,
+					  NULL,
+					  (GAsyncReadyCallback) ban_track_response_cb,
+					  user);
 }
 
 static void
 ban_track_response_cb (SoupSession *session,
-                       SoupMessage *msg,
-                       gpointer user_data)
+                       GAsyncResult *result,
+                       RBAudioscrobblerUser *user)
 {
 	/* Don't know if there's anything to do here,
 	 * might want a debug message indicating success or failure?

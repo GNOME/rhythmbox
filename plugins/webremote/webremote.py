@@ -25,7 +25,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import gi
-gi.require_version('Soup', '2.4')
+gi.require_version('Soup', '3.0')
 from gi.repository import GLib, GObject, Gio, Peas, PeasGtk, Soup, Gtk
 from gi.repository import RB
 import rb
@@ -60,13 +60,12 @@ def get_host_name():
 
 class ClientSession(object):
 
-	def __init__(self, plugin, connection, client, connid):
+	def __init__(self, plugin, connection, connid):
 		print("new connection attached")
 		self.connid = connid
 		self.conn = connection 
 		self.conn.connect("message", self.message_cb)
 		self.conn.connect("closed", self.closed_cb)
-		self.client = client
 		self.plugin = plugin
 		self.actions = {
 			'status': self.plugin.client_status,
@@ -268,13 +267,13 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 		u = msg.get_uri()
 		return self.check_http_signature(u.get_path(), u.get_query())
 
-	def player_websocket_cb(self, server, conn, path, client):
+	def player_websocket_cb(self, server, msg, path, conn):
 		(upath, query) = path.split(":", 1)
 		if self.check_http_signature(upath, query) is False:
 			conn.close(403, "whatever")
 			return
 
-		cs = ClientSession(self, conn, client, self.next_connid)
+		cs = ClientSession(self, conn, self.next_connid)
 		self.connections[self.next_connid] = cs
 		self.next_connid = self.next_connid + 1
 
@@ -409,7 +408,7 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 		else:
 			return "image/jpeg"
 
-	def http_track_cb(self, server, msg, path, query, client):
+	def http_track_cb(self, server, msg, path, query):
 
 		if self.check_http_msg_signature(msg) is False:
 			msg.set_status(403)
@@ -430,12 +429,12 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 			msg.set_status(500)
 
 
-	def http_art_cb(self, server, msg, path, query, client):
+	def http_art_cb(self, server, msg, path, query):
 		if self.check_http_msg_signature(msg) is False:
 			msg.set_status(403)
 			return
 
-		if msg.method != "GET":
+		if msg.get_method() != "GET":
 			msg.set_status(404)
 			return
 
@@ -450,8 +449,8 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 
 		self.send_file_response(msg, artpath, self.image_content_type)
 
-	def http_icon_cb(self, server, msg, path, query, client):
-		if msg.method != "GET":
+	def http_icon_cb(self, server, msg, path, query):
+		if msg.get_method() != "GET":
 			msg.set_status(404)
 			return
 
@@ -494,7 +493,7 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 
 		relpath = path[len(ssubdir):]
 
-		if msg.method != "GET" or relpath.find("/") != -1:
+		if msg.get_method() != "GET" or relpath.find("/") != -1:
 			msg.set_status(403)
 			return
 
@@ -506,13 +505,13 @@ class WebRemotePlugin(GObject.Object, Peas.Activatable):
 		self.send_file_response(msg, f, content_type)
 
 
-	def http_static_css_cb(self, server, msg, path, query, client):
+	def http_static_css_cb(self, server, msg, path, query):
 		self.serve_static(msg, path, "css", "text/css")
 
-	def http_static_js_cb(self, server, msg, path, query, client):
+	def http_static_js_cb(self, server, msg, path, query):
 		self.serve_static(msg, path, "js", "text/javascript")
 
-	def http_root_cb(self, server, msg, path, query, client):
+	def http_root_cb(self, server, msg, path, query):
 		self.serve_static(msg, '/webremote.html', '', 'text/html')
 
 	def settings_changed_cb(self, settings, key):

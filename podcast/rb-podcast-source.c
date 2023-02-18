@@ -351,20 +351,24 @@ podcast_add_dialog_closed_cb (RBPodcastAddDialog *dialog, RBPodcastSource *sourc
 static void
 yank_clipboard_url (GtkClipboard *clipboard, const char *text, RBPodcastSource *source)
 {
-	SoupURI *uri;
+	GUri *uri;
+	const char *scheme;
 
 	if (text == NULL) {
 		return;
 	}
 
-	uri = soup_uri_new (text);
-	if (SOUP_URI_VALID_FOR_HTTP (uri)) {
+	uri = g_uri_parse (text, SOUP_HTTP_URI_FLAGS, NULL);
+	if (uri == NULL) {
+		return;
+	}
+
+	scheme = g_uri_get_scheme (uri);
+	if ((g_strcmp0 (scheme, "http") == 0) || (g_strcmp0 (scheme, "https") == 0)) {
 		rb_podcast_add_dialog_reset (RB_PODCAST_ADD_DIALOG (source->priv->add_dialog), text, FALSE);
 	}
 
-	if (uri != NULL) {
-		soup_uri_free (uri);
-	}
+	g_uri_unref (uri);
 }
 
 static void

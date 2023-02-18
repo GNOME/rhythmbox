@@ -35,7 +35,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <gpod/itdb.h>
-#include <libsoup/soup.h>
 
 #include "rb-ipod-helpers.h"
 #include "rb-util.h"
@@ -329,18 +328,19 @@ rb_ipod_helpers_mount_has_ipod_db (GMount *mount)
 AfcUriStatus
 rb_ipod_helpers_afc_uri_parse (const gchar *uri_str)
 {
-	g_autoptr(SoupURI) uri = NULL;
-	guint port;
+	GUri *uri;
+	gint port;
 
-	uri = soup_uri_new (uri_str);
-	if (!uri) {
+	uri = g_uri_parse (uri_str, G_URI_FLAGS_NONE, NULL);
+	if (uri == NULL) {
 		rb_debug ("Invalid afc uri: '%s'", uri_str);
 		return AFC_URI_INVALID;
 	}
 	/* Skip scheme check, as it's done in the caller */
-	port = soup_uri_get_port (uri);
+	port = g_uri_get_port (uri);
+	g_uri_unref (uri);
 
-	if (port == 0) {
+	if (port == -1) {
 		rb_debug ("afc uri '%s' is an ipod", uri_str);
 		return AFC_URI_IS_IPOD;
 	} else if (port >= VIRTUAL_PORT_MIN && port <= VIRTUAL_PORT_MAX) {
