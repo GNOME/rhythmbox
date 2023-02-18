@@ -38,9 +38,9 @@ add_project_arguments(common_cflags, language: 'c')
 
 libmath = cc.find_library('m')
 
-glib_required = '2.56.0'
-cdata.set('GLIB_VERSION_MIN_REQUIRED', 'GLIB_VERSION_2_56')
-cdata.set('GLIB_VERSION_MAX_ALLOWED', 'GLIB_VERSION_2_56')
+glib_required = '2.66.0'
+cdata.set('GLIB_VERSION_MIN_REQUIRED', 'GLIB_VERSION_2_66')
+cdata.set('GLIB_VERSION_MAX_ALLOWED', 'GLIB_VERSION_2_66')
 
 gstreamer_required = '1.4.0'
 
