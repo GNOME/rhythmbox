@@ -243,7 +243,7 @@ if get_option('fm_radio').allowed()
 endif
 
 if get_option('daap').allowed()
-  libdmapsharing4 = dependency('libdmapsharing-4.0', version: '>= 3.9.4', required: false)
+  libdmapsharing4 = dependency('libdmapsharing-4.0', version: ['>= 3.9.4', '< 3.9.11'], required: false)
 
   if libdmapsharing4.found()
     plugins += 'daap'
