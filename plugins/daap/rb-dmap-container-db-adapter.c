@@ -90,15 +90,9 @@ foreach_adapter (RBPlaylistSource *entry, gpointer data)
 	record = DMAP_CONTAINER_RECORD (rb_daap_container_record_new (name, entry));
 	id = rb_daap_container_record_get_id (record);
 
-#ifdef LIBDMAPSHARING_COMPAT
-	foreach_adapter_data->func (GINT_TO_POINTER(id),
-				    record,
-				    foreach_adapter_data->data);
-#else
 	foreach_adapter_data->func (id,
 				    record,
 				    foreach_adapter_data->data);
-#endif
 
 	g_object_unref (record);
 }

@@ -65,7 +65,7 @@ rb_daap_record_factory_interface_init (gpointer iface, gpointer data)
 
 	g_assert (G_TYPE_FROM_INTERFACE (factory) == DMAP_TYPE_RECORD_FACTORY);
 
-	factory->create = rb_daap_record_factory_create_compat;
+	factory->create = rb_daap_record_factory_create;
 }
 
 G_DEFINE_DYNAMIC_TYPE_EXTENDED (RBDAAPRecordFactory,

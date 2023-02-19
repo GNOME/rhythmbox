@@ -79,15 +79,9 @@ foreach_adapter (RhythmDBEntry *entry, gpointer data)
 	foreach_adapter_data = data;
 	record = DMAP_RECORD (rb_daap_record_new (entry));
 
-#ifdef LIBDMAPSHARING_COMPAT
-	foreach_adapter_data->func (GUINT_TO_POINTER(id),
-				    record,
-				    foreach_adapter_data->data);
-#else
 	foreach_adapter_data->func (id,
 				    record,
 				    foreach_adapter_data->data);
-#endif
 
 	g_free (playback_uri);
 	g_object_unref (record);
@@ -144,7 +138,7 @@ entry_set_string_prop (RhythmDB        *db,
         g_value_unset (&value);
 }
 
-guint
+static guint
 rb_rhythmdb_dmap_db_adapter_add (DmapDb *db, DmapRecord *record, GError **error)
 {
 	gchar *uri = NULL;
@@ -273,7 +267,7 @@ rb_rhythmdb_dmap_db_adapter_interface_init (gpointer iface, gpointer data)
 
 	g_assert (G_TYPE_FROM_INTERFACE (dmap_db) == DMAP_TYPE_DB);
 
-	dmap_db->add = rb_rhythmdb_dmap_db_adapter_add_compat;
+	dmap_db->add = rb_rhythmdb_dmap_db_adapter_add;
 	dmap_db->lookup_by_id = rb_rhythmdb_dmap_db_adapter_lookup_by_id;
 	dmap_db->foreach = rb_rhythmdb_dmap_db_adapter_foreach;
 	dmap_db->count = rb_rhythmdb_dmap_db_adapter_count;

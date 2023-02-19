@@ -32,7 +32,6 @@
 
 #include <libdmapsharing/dmap.h>
 
-#include "rb-daap-compat.h"
 #include "rb-playlist-source.h"
 
 G_BEGIN_DECLS

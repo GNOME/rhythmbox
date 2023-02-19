@@ -32,8 +32,6 @@
 
 #include <libdmapsharing/dmap.h>
 
-#include "rb-daap-compat.h"
-
 G_BEGIN_DECLS
 
 #define RB_TYPE_DAAP_RECORD         (rb_daap_record_get_type ())

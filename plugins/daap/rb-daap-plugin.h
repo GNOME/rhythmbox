@@ -31,7 +31,6 @@
 #include <libpeas/peas.h>
 #include <libdmapsharing/dmap.h>
 
-#include "rb-daap-compat.h"
 #include "rb-daap-source.h"
 
 G_BEGIN_DECLS
