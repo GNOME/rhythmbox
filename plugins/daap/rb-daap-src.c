@@ -276,7 +276,7 @@ rb_daap_src_change_state (GstElement *element, GstStateChange transition)
 			if (gst_headers == NULL) {
 				return GST_STATE_CHANGE_FAILURE;
 			}
-			soup_message_headers_free (headers);
+			soup_message_headers_unref (headers);
 
 			g_object_set (src->souphttpsrc, "extra-headers", gst_headers, NULL);
 			gst_structure_free (gst_headers);

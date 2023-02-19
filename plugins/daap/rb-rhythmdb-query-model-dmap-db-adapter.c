@@ -71,15 +71,9 @@ foreach_adapter (GtkTreeModel *model,
 	foreach_adapter_data = data;
 	record = DMAP_RECORD (rb_daap_record_new (entry));
 
-#ifdef LIBDMAPSHARING_COMPAT
-	foreach_adapter_data->func (GUINT_TO_POINTER(id),
-				    record,
-				    foreach_adapter_data->data);
-#else
 	foreach_adapter_data->func (id,
 				    record,
 				    foreach_adapter_data->data);
-#endif
 
 	g_object_unref (record);
 	rhythmdb_entry_unref (entry);
@@ -115,7 +109,7 @@ rb_rhythmdb_query_model_dmap_db_adapter_count (const DmapDb *db)
 		GTK_TREE_MODEL (RB_RHYTHMDB_QUERY_MODEL_DMAP_DB_ADAPTER (db)->priv->model), NULL);
 }
 
-guint
+static guint
 rb_rhythmdb_query_model_dmap_db_adapter_add (DmapDb *db, DmapRecord *record, GError **error)
 {
 	g_error ("Not implemented");
@@ -146,7 +140,7 @@ rb_rhythmdb_query_model_dmap_db_adapter_interface_init (gpointer iface, gpointer
 
 	g_assert (G_TYPE_FROM_INTERFACE (dmap_db) == DMAP_TYPE_DB);
 
-	dmap_db->add = rb_rhythmdb_query_model_dmap_db_adapter_add_compat;
+	dmap_db->add = rb_rhythmdb_query_model_dmap_db_adapter_add;
 	dmap_db->lookup_by_id = rb_rhythmdb_query_model_dmap_db_adapter_lookup_by_id;
 	dmap_db->foreach = rb_rhythmdb_query_model_dmap_db_adapter_foreach;
 	dmap_db->count = rb_rhythmdb_query_model_dmap_db_adapter_count;

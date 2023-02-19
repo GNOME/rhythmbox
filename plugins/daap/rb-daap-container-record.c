@@ -159,7 +159,7 @@ rb_daap_container_record_daap_iface_init (gpointer iface, gpointer data)
 	g_assert (G_TYPE_FROM_INTERFACE (dmap_container_record) == DMAP_TYPE_CONTAINER_RECORD);
 
 	dmap_container_record->get_id = rb_daap_container_record_get_id;
-	dmap_container_record->add_entry = rb_daap_container_record_add_entry_compat;
+	dmap_container_record->add_entry = rb_daap_container_record_add_entry;
 	dmap_container_record->get_entry_count = rb_daap_container_record_get_entry_count;
 	dmap_container_record->get_entries = rb_daap_container_record_get_entries;
 }

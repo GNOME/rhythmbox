@@ -32,7 +32,6 @@
 
 #include <libdmapsharing/dmap.h>
 
-#include "rb-dacp-compat.h"
 #include "rb-shell.h"
 #include "rb-display-page.h"
 

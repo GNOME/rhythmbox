@@ -91,7 +91,7 @@ rb_dacp_player_iface_init (gpointer iface, gpointer data)
 	g_assert (G_TYPE_FROM_INTERFACE (dacp_player) == DMAP_TYPE_CONTROL_PLAYER);
 
 	dacp_player->now_playing_record  = rb_dacp_player_now_playing_record;
-	dacp_player->now_playing_artwork = rb_dacp_player_now_playing_artwork_compat;
+	dacp_player->now_playing_artwork = rb_dacp_player_now_playing_artwork;
 	dacp_player->play_pause          = rb_dacp_player_play_pause;
 	dacp_player->pause               = rb_dacp_player_pause;
 	dacp_player->next_item           = rb_dacp_player_next_item;
