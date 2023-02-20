@@ -101,8 +101,8 @@ cdata.set('HAVE_GNU_FWRITE_UNLOCKED', have_gnu_fwrite_unlocked)
 have_cfmakeraw = cc.has_function('cfmakeraw', prefix: '#include <termios.h>')
 cdata.set('HAVE_CFMAKERAW', have_cfmakeraw)
 
-gdk_targets = run_command(['pkg-config', '--variable', 'targets', 'gdk-3.0'], check: true).stdout().strip()
-if gdk_targets.contains('x11')
+gtk_targets = gtk.get_variable(pkgconfig: 'targets').split()
+if gtk_targets.contains('x11')
   common_deps += dependency('x11', required: true)
 endif
 
