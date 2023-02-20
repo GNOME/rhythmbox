@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2019 Philipp Wolfer <ph.wolfer@gmail.com>
+# Copyright (c) 2018-2019, 2022-2023 Philipp Wolfer <ph.wolfer@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -119,7 +119,7 @@ class ListenBrainzPlugin(GObject.Object, Peas.Activatable):
                             RB.RhythmDBPropType.DURATION)
             elapsed = self.__current_elapsed
             logger.debug("Elapsed: %s / %s", elapsed, duration)
-            if elapsed >= 240 or elapsed >= duration / 2:
+            if elapsed >= 240 or (duration and elapsed >= duration / 2):
                 track = _entry_to_track(self.__current_entry)
                 threading.Thread(
                     target=self._run_in_thread,
@@ -180,17 +180,21 @@ def _entry_to_track(entry):
     mb_track_id = entry.get_string(RB.RhythmDBPropType.MB_TRACKID)
     mb_album_id = entry.get_string(RB.RhythmDBPropType.MB_ALBUMID)
     mb_artist_id = entry.get_string(RB.RhythmDBPropType.MB_ARTISTID)
+    duration = entry.get_ulong(RB.RhythmDBPropType.DURATION)
+
     additional_info = {
-        "listening_from": "Rhythmbox",
         "release_mbid": _validate_mbid(mb_album_id),
         "recording_mbid": _validate_mbid(mb_track_id),
         "artist_mbids": [mb_artist_id] if _validate_mbid(mb_artist_id) else [],
-        "tracknumber": track_number or None
+        "tracknumber": track_number or None,
+        "duration": duration,
+        "media_player": "Rhythmbox",
+        "submission_client": "ListenBrainz plugin",
     }
 
     entry_type = entry.get_entry_type().get_name()
     if entry_type != "song" and not entry_type.startswith("audiocd"):
-        additional_info["source"] = _cleanup_source(entry_type)
+        additional_info["music_service_name"] = _cleanup_source(entry_type)
 
     return Track(artist, title, album, additional_info)
 
