@@ -257,7 +257,12 @@ endif
 
 grilo = dependency('grilo-0.3', version: '>= 0.3.1', required: get_option('grilo'))
 if grilo.found()
-  plugins += 'grilo'
+  grilonet = dependency('grilo-net-0.3', required: get_option('grilo'))
+  if grilonet.get_variable(pkgconfig: 'soupapiversion', default_value: '2.4') == '2.4'
+    plugins += 'grilo'
+  elif get_option('grilo').enabled()
+    error('grilo plugin explicitly requested, but grilo is not built against libsoup 2.4')
+  endif
 endif
 
 meson.add_dist_script(
