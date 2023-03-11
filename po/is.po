@@ -1,1490 +1,5666 @@
-# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Gunnar Steinn Magnússon  <gsm@modernus.is>, 2004.
+# Sveinn í Felli <sv1@fellsnet.is>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2004-05-18 21:51+0000\n"
-"PO-Revision-Date: 2004-05-18 21:55-0000\n"
-"Last-Translator: Samuel Jon Gunnarsson <sammi@techattack.nu>\n"
-"Language-Team: Icelandic <is@li.org>\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
+"POT-Creation-Date: 2023-01-25 21:50+0000\n"
+"PO-Revision-Date: 2023-03-11 15:49+0000\n"
+"Last-Translator: Sveinn í Felli <sv1@fellsnet.is>\n"
+"Language-Team: Icelandic\n"
 "Language: is\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 21.12.3\n"
 
-#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
-msgid "Add to Music Library"
-msgstr "Bæta við tónlistarsafn"
-
-#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
-msgid "Nautilus context menu extension for Rhythmbox"
+#: backends/gstreamer/rb-encoder-gst.c:652
+#, c-format
+msgid "Could not create a temporary file to write to: %s"
 msgstr ""
 
-#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
-msgid "Rhythmbox Nautilus Context Menu Item"
-msgstr ""
-
-#: data/GNOME_Rhythmbox.server.in.h:1
-msgid "Rhythmbox shell"
-msgstr "Rhythmbox skel"
-
-#: data/GNOME_Rhythmbox.server.in.h:2
-msgid "Rhythmbox shell factory"
-msgstr "Rhythmbox skeljar verksmiðja"
-
-#: data/glade/create-playlist.glade.h:1
-#: data/glade/druid.glade.h:1
-#: data/glade/song-info.glade.h:1
-#: data/glade/song-info-multiple.glade.h:1
-#: data/glade/station-new.glade.h:1
-#: data/glade/station-properties.glade.h:1
-#: data/glade/uri.glade.h:1
-msgid "*"
-msgstr "*"
-
-#: data/glade/create-playlist.glade.h:2
-msgid "Add if any criteria are matched"
-msgstr "Bæta við ef einhver regla er uppfyllt"
-
-#: data/glade/create-playlist.glade.h:3
-msgid "Create automatically updating playlist where:"
-msgstr "Búa til sjálfvirkt uppfærðan lagalista þar sem:"
-
-#: data/glade/create-playlist.glade.h:4
-msgid "GB"
-msgstr "GB"
-
-#: data/glade/create-playlist.glade.h:5
-msgid "MB"
-msgstr "MB"
-
-#: data/glade/create-playlist.glade.h:6
-msgid "_Limit to: "
-msgstr "Takmarka við:"
-
-#: data/glade/create-playlist.glade.h:7
-msgid "songs"
-msgstr "lög"
-
-#: data/glade/druid.glade.h:2
-msgid ""
-"Rhythmbox manages all of your music in a central music \"library\", so you can easily view, search, and organize it.\n"
-"In order to use this feature, you need to tell Rhythmbox where to find your music.  You may choose to skip this step; instead, you can add music to your library at any point later.\n"
-"Please choose one of the options below:"
-msgstr ""
-"Rhythmbox sér um alla tónlistina þína í einu \"tónlistarsafni\", svo þú getir auðveldlega skoðað, leitað og skipulagt það.\n"
-"Vinsamlegast veldu einn af eftirfarandi möguleikum:"
-
-#: data/glade/druid.glade.h:5
-msgid "_Browse..."
-msgstr "Vafra..."
-
-#: data/glade/druid.glade.h:6
-msgid "_Enter location manually:"
-msgstr "Bæta við staðsetningu handvirkt:"
-
-#: data/glade/druid.glade.h:7
-msgid "_Path:"
-msgstr "Slóð:"
-
-#: data/glade/druid.glade.h:8
-msgid "_Skip this step"
-msgstr "Sleppa þessu skrefi"
-
-#: data/glade/general-prefs.glade.h:1
-#: widgets/rb-entry-view.c:1231
-msgid "A_lbum"
-msgstr "Plata"
-
-#: data/glade/general-prefs.glade.h:2
-msgid "Track _number"
-msgstr "Númer lags"
-
-#: data/glade/general-prefs.glade.h:3
-msgid "Visible Columns"
-msgstr "Sýnilegir Dálkar"
-
-#: data/glade/general-prefs.glade.h:4
-msgid "_Artist"
-msgstr "Flytjandi"
-
-#: data/glade/general-prefs.glade.h:5
-msgid "_Duration"
-msgstr "Tími"
-
-#: data/glade/general-prefs.glade.h:6
-msgid "_Genre"
-msgstr "Stíll"
-
-#: data/glade/general-prefs.glade.h:7
-msgid "_Last played"
-msgstr "Síðast spilað"
-
-#: data/glade/general-prefs.glade.h:8
-msgid "_Play count"
-msgstr "Fjöldi spilanna"
-
-#: data/glade/general-prefs.glade.h:9
-#: widgets/rb-entry-view.c:1182
-msgid "_Rating"
-msgstr "Stjörnugjöf"
-
-#: data/glade/library-prefs.glade.h:1
-msgid "Artists and albums"
-msgstr "Flytjendur og plötur"
-
-#: data/glade/library-prefs.glade.h:2
-msgid "Browser Views"
-msgstr "Vafra sýn"
-
-#: data/glade/library-prefs.glade.h:3
-msgid "Genres and artists"
-msgstr "Tónlistastílar og flytjendur"
-
-#: data/glade/library-prefs.glade.h:4
-msgid "Genres, artists and albums"
-msgstr "Tónlistastílar, flytjendur og plötur"
-
-#: data/glade/load-failure.glade.h:1
-msgid "The following files couldn't be loaded:"
-msgstr "Gat ekki hlaðið inn eftirfarandi skrám:"
-
-#: data/glade/song-info.glade.h:2
-#: data/glade/song-info-multiple.glade.h:2
-msgid "Automatically rate:"
-msgstr "Sjálfvirk einkunnagjöf:"
-
-#: data/glade/song-info.glade.h:3
-msgid "Basic"
-msgstr "Grunn"
-
-#: data/glade/song-info.glade.h:4
-#: data/glade/station-properties.glade.h:2
-msgid "Bitrate:"
-msgstr ""
-
-#: data/glade/song-info.glade.h:5
-msgid "Details"
-msgstr "Nánar"
-
-#: data/glade/song-info.glade.h:6
-msgid "Duration:"
-msgstr "Tími:"
-
-#: data/glade/song-info.glade.h:7
-msgid "File name:"
-msgstr "Skráarnafn:"
-
-#: data/glade/song-info.glade.h:8
-msgid "Last played:"
-msgstr "Síðast spilað:"
-
-#: data/glade/song-info.glade.h:9
-msgid "Location:"
-msgstr "Staðsetning:"
-
-#: data/glade/song-info.glade.h:10
-msgid "Play count:"
-msgstr "Fjöldi spilanna:"
-
-#: data/glade/song-info.glade.h:11
-#: data/glade/song-info-multiple.glade.h:3
-msgid "_Album:"
-msgstr "Plata:"
-
-#: data/glade/song-info.glade.h:12
-#: data/glade/song-info-multiple.glade.h:4
-msgid "_Artist:"
-msgstr "Flytjandi:"
-
-#: data/glade/song-info.glade.h:13
-#: data/glade/song-info-multiple.glade.h:5
-#: data/glade/station-new.glade.h:2
-#: data/glade/station-properties.glade.h:6
-msgid "_Genre:"
-msgstr "Stíll:"
-
-#: data/glade/song-info.glade.h:14
-#: data/glade/song-info-multiple.glade.h:6
-#: data/glade/station-properties.glade.h:8
-msgid "_Rating:"
-msgstr "Stjörnugjöf:"
-
-#: data/glade/song-info.glade.h:15
-#: data/glade/station-new.glade.h:4
-#: data/glade/station-properties.glade.h:9
-msgid "_Title:"
-msgstr "Titill:"
-
-#: data/glade/song-info.glade.h:16
-msgid "_Track number:"
-msgstr "Númer lags:"
-
-#: data/glade/station-new.glade.h:3
-msgid "_Location:"
-msgstr "Staðsetning:"
-
-#: data/glade/station-properties.glade.h:3
-msgid "L_ocation:"
-msgstr "Staðsetning:"
-
-#: data/glade/station-properties.glade.h:4
-msgid "Play Count:"
-msgstr "Fjöldi Spilana:"
-
-#: data/glade/station-properties.glade.h:5
-msgid "Wed, Jan 01, 1970 00:00:00 -0500"
-msgstr "Mið, 1. Jan, 1970 00:00:00 -0500"
-
-#: data/glade/station-properties.glade.h:7
-msgid "_Last Played:"
-msgstr "Síðast Spilað:"
-
-#: data/glade/uri.glade.h:2
-msgid "Enter the _location (URI) of the file you would like to add:"
-msgstr "Skrifaðu staðsetningu (URI) skráarinnar sem þú vilt bæta við:"
-
-#: data/glade/uri.glade.h:3
-msgid "Open from URI"
-msgstr "Opna URI"
-
-#: data/rhythmbox.desktop.in.h:1
-#: shell/rb-shell.c:1216
-#: shell/rb-shell.c:1884
-msgid "Music Player"
-msgstr "Tónlistarspilari"
-
-#: data/rhythmbox.desktop.in.h:2
-msgid "Play and organize your music collection"
-msgstr "Spila og sjá um tónlistarsafnið þitt"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:1
-#: data/ui/rhythmbox-ui.xml.h:21
-msgid "Deselect all songs"
-msgstr "Afvelja öll lög"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:2
-msgid "Eject Audio-CD"
-msgstr "Opna geislaspilarann"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3
-#: data/ui/rhythmbox-ui.xml.h:41
-msgid "Scroll the view to the currently playing song"
-msgstr "Hoppa í núverandi lag"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4
-#: data/ui/rhythmbox-ui.xml.h:42
-msgid "Select _All"
-msgstr "Velja Allt"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5
-#: data/ui/rhythmbox-ui.xml.h:43
-msgid "Select all songs"
-msgstr "Velja öll lög"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6
-#: data/ui/rhythmbox-ui.xml.h:62
-msgid "_Edit"
-msgstr "Sýsl"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:7
-msgid "_Eject Audio-CD..."
-msgstr "Opna Geislaspilara"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8
-#: data/ui/rhythmbox-ui.xml.h:65
-msgid "_Jump to Playing Song"
-msgstr "Fara í spilandi lag"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9
-#: data/ui/rhythmbox-ui.xml.h:79
-msgid "_View"
-msgstr "Sýn"
-
-#: data/ui/rhythmbox-ui.xml.h:1
-msgid "Add Lo_cation..."
-msgstr "Bæta við staðsetningu..."
-
-#: data/ui/rhythmbox-ui.xml.h:2
-msgid "Browse this album"
-msgstr "Skoða þessa plötu"
-
-#: data/ui/rhythmbox-ui.xml.h:3
-msgid "Browse this artist"
-msgstr "Skoða þennan flytjanda"
-
-#: data/ui/rhythmbox-ui.xml.h:4
-msgid "Browse this genre"
-msgstr "Skoða þennan tónlistarstíl"
-
-#: data/ui/rhythmbox-ui.xml.h:5
-msgid "Change the visibility of the browser"
-msgstr "Breyta sýnileika vafra"
-
-#: data/ui/rhythmbox-ui.xml.h:6
-msgid "Change the visibility of the main window"
-msgstr "Breyta sýnileika aðal gluggans"
-
-#: data/ui/rhythmbox-ui.xml.h:7
-msgid "Change the visibility of the source list"
-msgstr "Breyta sýnileika inntaks lista"
-
-#: data/ui/rhythmbox-ui.xml.h:8
-msgid "Change the visibility of the statusbar"
-msgstr "Breyta sýnileika stöðu"
-
-#: data/ui/rhythmbox-ui.xml.h:9
-msgid "Change this automatic playlist"
-msgstr "Breyta þessum sjálfvirka lagalista"
-
-#: data/ui/rhythmbox-ui.xml.h:10
-msgid "Choose a location (URI) to be added to the library"
-msgstr "Velja staðsetningu (URI) til að bæta við safnið"
-
-#: data/ui/rhythmbox-ui.xml.h:11
-msgid "Choose a playlist to be loaded"
-msgstr "Veldu lagalista til að opna"
-
-#: data/ui/rhythmbox-ui.xml.h:12
-msgid "Choose files or a directory to be added to the library"
-msgstr "Veldu skrár eða skráarsafn til að bæta við tónlistarsafnið"
-
-#: data/ui/rhythmbox-ui.xml.h:13
-msgid "Copy selection"
-msgstr "Afrita valið"
-
-#: data/ui/rhythmbox-ui.xml.h:14
-msgid "Create a new Internet Radio station"
-msgstr "Búa til nýja vef-útvarpsstöð"
-
-#: data/ui/rhythmbox-ui.xml.h:15
-msgid "Create a new automatically updating playlist"
-msgstr "Búa til nýjan sjálfvirkt uppfærðan lagalista"
-
-#: data/ui/rhythmbox-ui.xml.h:16
-msgid "Create a new playlist"
-msgstr "Búa til nýjan lagalista"
-
-#: data/ui/rhythmbox-ui.xml.h:17
-msgid "Cu_t"
-msgstr "Klippa"
-
-#: data/ui/rhythmbox-ui.xml.h:18
-msgid "Cut selection"
-msgstr "Klippa valið"
-
-#: data/ui/rhythmbox-ui.xml.h:19
-msgid "D_eselect All"
-msgstr "Afvelja allt"
-
-#: data/ui/rhythmbox-ui.xml.h:20
-msgid "Delete selection"
-msgstr "Eyða völdu"
-
-#: data/ui/rhythmbox-ui.xml.h:22
-msgid "Display music player help"
-msgstr "Birta hjálp spilarans"
-
-#: data/ui/rhythmbox-ui.xml.h:23
-msgid "Edit music player preferences"
-msgstr "Breyta eiginleikum spilara"
-
-#: data/ui/rhythmbox-ui.xml.h:24
-msgid "Extract and import songs from a CD"
-msgstr "Afrita lög af geisladisk"
-
-#: data/ui/rhythmbox-ui.xml.h:25
-msgid "Import Lo_cation..."
-msgstr "Bæta við staðsetningu..."
-
-#: data/ui/rhythmbox-ui.xml.h:26
-msgid "Import _Audio CD..."
-msgstr "Bæta við af geisladisk..."
-
-#: data/ui/rhythmbox-ui.xml.h:27
-msgid "Make the main window smaller"
-msgstr "Gera forrits gluggann minni"
-
-#: data/ui/rhythmbox-ui.xml.h:28
-msgid "New _Automatic Playlist..."
-msgstr "Nýr sjálfvirkur lagalisti..."
-
-#: data/ui/rhythmbox-ui.xml.h:29
-msgid "New _Internet Radio Station"
-msgstr "Ný vef-útvarpsstöð"
-
-#: data/ui/rhythmbox-ui.xml.h:30
-msgid "P_laylist"
-msgstr "Lagalisti"
-
-#: data/ui/rhythmbox-ui.xml.h:31
-msgid "P_revious"
-msgstr "Fyrra"
-
-#: data/ui/rhythmbox-ui.xml.h:32
-msgid "Paste selection"
-msgstr "Líma valið"
-
-#: data/ui/rhythmbox-ui.xml.h:33
-msgid "Pause playing"
-msgstr "Stöðva spilun"
-
-#: data/ui/rhythmbox-ui.xml.h:34
-#: shell/rb-statusbar.c:238
-msgid "Play first song again after all songs are played"
-msgstr "Spila fyrsta lag aftur eftir að öll lög hafa verið spiluð"
-
-#: data/ui/rhythmbox-ui.xml.h:35
-#: shell/rb-statusbar.c:233
-msgid "Play songs in a random order"
-msgstr "Spila lög í stokkaðri röð"
-
-#: data/ui/rhythmbox-ui.xml.h:36
-msgid "Prefere_nces"
-msgstr "Eiginleikar"
-
-#: data/ui/rhythmbox-ui.xml.h:37
-msgid "Quit the music player"
-msgstr "Hætta í tónlistarspilaranum"
-
-#: data/ui/rhythmbox-ui.xml.h:38
-msgid "Repea_t"
-msgstr "Endurtaka"
-
-#: data/ui/rhythmbox-ui.xml.h:39
-msgid "S_tatusbar"
-msgstr ""
-
-#: data/ui/rhythmbox-ui.xml.h:40
-msgid "Save a playlist to a file"
-msgstr "Vista lagalista í skrá"
-
-#: data/ui/rhythmbox-ui.xml.h:44
-msgid "Set the browser to view only this album"
-msgstr "Láta vafra aðeins sýna þessa plötu"
-
-#: data/ui/rhythmbox-ui.xml.h:45
-msgid "Set the browser to view only this artist"
-msgstr "Láta vafra aðeins sýna þennan flytjanda"
-
-#: data/ui/rhythmbox-ui.xml.h:46
-msgid "Set the browser to view only this genre"
-msgstr "Láta vafra aðeins sýna þennan stíl"
-
-#: data/ui/rhythmbox-ui.xml.h:47
-msgid "Show information about the music player"
-msgstr "Skoða upplýsingar um tónlistarspilarann"
-
-#: data/ui/rhythmbox-ui.xml.h:48
-msgid "Show information on the selected song"
-msgstr "Skoða upplýsingar um valið lag"
-
-#: data/ui/rhythmbox-ui.xml.h:49
-msgid "Source _List"
-msgstr "Inntaks Listi"
-
-#: data/ui/rhythmbox-ui.xml.h:50
-#: shell/rb-shell-player.c:1537
-msgid "Start playing"
-msgstr "Hefja spilun"
-
-#: data/ui/rhythmbox-ui.xml.h:51
-msgid "Start playing the next song"
-msgstr "Spila næsta lag"
-
-#: data/ui/rhythmbox-ui.xml.h:52
-msgid "Start playing the previous song"
-msgstr "Spila fyrra lag"
-
-#: data/ui/rhythmbox-ui.xml.h:53
-msgid "Stop playing"
-msgstr "Stöðva spilun"
-
-#: data/ui/rhythmbox-ui.xml.h:54
-msgid "_About"
-msgstr "Um"
-
-#: data/ui/rhythmbox-ui.xml.h:55
-msgid "_Add to Library..."
-msgstr "Bæta við safn"
-
-#: data/ui/rhythmbox-ui.xml.h:56
-msgid "_Browser"
-msgstr "Vafri"
-
-#: data/ui/rhythmbox-ui.xml.h:57
-msgid "_Contents"
-msgstr "Innihald"
-
-#: data/ui/rhythmbox-ui.xml.h:58
-msgid "_Control"
-msgstr "Stjórna"
-
-#: data/ui/rhythmbox-ui.xml.h:59
-msgid "_Copy"
-msgstr "Afrita"
-
-#: data/ui/rhythmbox-ui.xml.h:60
-msgid "_Cut"
-msgstr "Klippa"
-
-#: data/ui/rhythmbox-ui.xml.h:61
-msgid "_Delete"
-msgstr "Eyða"
-
-#: data/ui/rhythmbox-ui.xml.h:63
-msgid "_Help"
-msgstr "Hjálp"
-
-#: data/ui/rhythmbox-ui.xml.h:64
-msgid "_Import Folder..."
-msgstr "Bæta við skráarsafni..."
-
-#: data/ui/rhythmbox-ui.xml.h:66
-msgid "_Load from file..."
-msgstr "Opna skrá..."
-
-#: data/ui/rhythmbox-ui.xml.h:67
-msgid "_Music"
-msgstr "Tónlist"
-
-#: data/ui/rhythmbox-ui.xml.h:68
-msgid "_New Playlist..."
-msgstr "Nýr lagalisti"
-
-#: data/ui/rhythmbox-ui.xml.h:69
-msgid "_Next"
-msgstr "Næsta"
-
-#: data/ui/rhythmbox-ui.xml.h:70
-msgid "_Paste"
-msgstr "Líma"
-
-#: data/ui/rhythmbox-ui.xml.h:71
-#: shell/rb-shell-player.c:1538
-msgid "_Play"
-msgstr "Spila"
-
-#: data/ui/rhythmbox-ui.xml.h:72
-msgid "_Properties"
-msgstr "Eiginleikar"
-
-#: data/ui/rhythmbox-ui.xml.h:73
-msgid "_Quit"
-msgstr "Hætta"
-
-#: data/ui/rhythmbox-ui.xml.h:74
-msgid "_Remove"
-msgstr "Fjarlægja"
-
-#: data/ui/rhythmbox-ui.xml.h:75
-msgid "_Save to file..."
-msgstr "Vista í skrá..."
-
-#: data/ui/rhythmbox-ui.xml.h:76
-msgid "_Show Window"
-msgstr "Sýna glugga"
-
-#: data/ui/rhythmbox-ui.xml.h:77
-#: shell/rb-statusbar.c:230
-msgid "_Shuffle"
-msgstr "Stokka"
-
-#: data/ui/rhythmbox-ui.xml.h:78
-msgid "_Small Display"
-msgstr "Lítil sýn"
-
-#: iradio/rb-new-station-dialog.c:144
-msgid "New Internet Radio Station"
-msgstr "Ný vef-útvarpsstöð"
-
-#: iradio/rb-new-station-dialog.c:182
-#: iradio/rb-station-properties-dialog.c:460
-#: metadata/monkey-media/monkey-media-stream-info.c:404
-#: metadata/monkey-media/monkey-media-stream-info.c:420
-#: metadata/monkey-media/monkey-media-stream-info.c:667
-#: rhythmdb/rhythmdb.c:767
-#: sources/rb-ipod-source.c:175
-#: sources/rb-iradio-source.c:266
-#: sources/rb-iradio-source.c:267
-#: sources/rb-iradio-source.c:268
-#: sources/rb-playlist-source.c:394
-#: widgets/rb-entry-view.c:964
-#: widgets/rb-entry-view.c:991
-#: widgets/rb-song-info.c:801
-msgid "Unknown"
-msgstr "Óþekkt"
-
-#: iradio/rb-new-station-dialog.c:309
-#: rhythmdb/rhythmdb-property-model.c:372
-msgid "All"
-msgstr "Allt"
-
-#: iradio/rb-station-properties-dialog.c:173
-#: widgets/rb-song-info.c:751
-#, c-format
-msgid "%s Properties"
-msgstr "%s Eiginleikar"
-
-#: iradio/rb-station-properties-dialog.c:358
-#, c-format
-msgid "Properties for %s"
-msgstr "Eiginleikar fyrir %s"
-
-#: lib/disclosure-widget.c:300
-msgid "Expander Size"
-msgstr "Stærð Stækkara"
-
-#: lib/disclosure-widget.c:301
-msgid "Size of the expander arrow"
-msgstr "Stærð örvar stækkarans"
-
-#: lib/eel-gconf-extensions.c:67
-#, c-format
-msgid ""
-"GConf error:\n"
-"  %s"
-msgstr ""
-"GConf villa:\n"
-"%s"
-
-#: lib/eggtrayicon.c:120
-msgid "Orientation"
-msgstr "Snið"
-
-#: lib/eggtrayicon.c:121
-msgid "The orientation of the tray."
-msgstr ""
-
-#: lib/rb-file-helpers.c:77
-#, c-format
-msgid "Failed to find %s"
-msgstr "Fann ekki %s"
-
-#: lib/rb-file-helpers.c:102
-#, c-format
-msgid "%s exists, please move it out of the way."
-msgstr "%s er þegar til, vinsamlegast færðu annað."
-
-#: lib/rb-file-helpers.c:105
-#, c-format
-msgid "Failed to create directory %s."
-msgstr "Gat ekki búið til skráarsafnið %s."
-
-#: lib/rb-playlist.c:217
-#, c-format
-msgid "Couldn't write playlist: %s"
-msgstr "Gat ekki skrifað lagalista: %s"
-
-#: lib/rb-playlist.c:250
-#, c-format
-msgid "Couldn't open playlist: %s"
-msgstr "Gat ekki opnað lagalista: %s"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:310
-#, c-format
-msgid "Unsupported MIME type %s"
-msgstr "óþekkt MIME gerð %s"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:315
-msgid "Unknown file type"
-msgstr "Óþekkt skráargerð"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:386
-#, c-format
-msgid "Track %.2d"
-msgstr "Númer %.2d"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:751
-#: metadata/monkey-media/monkey-media-stream-info.c:816
-msgid "No TRM ID for this song"
-msgstr "Ekkert TRM ID fyrir þetta lag"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:767
-#: metadata/monkey-media/monkey-media-stream-info.c:831
-msgid "No information for this song found"
-msgstr "Engar upplýsingar um þetta lag fundust"
-
-#: metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c:166
-msgid "Invalid track number"
-msgstr "Ógilt númer lags"
-
-#: metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c:270
-msgid "Audio CD track"
-msgstr "Lag af geisladisk"
-
-#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:197
-#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:266
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:172
-#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:167
-msgid "Failed to open file for reading"
-msgstr "Gat ekki opnað skrá fyrir lestur"
-
-#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:249
-msgid "Error decoding FLAC file"
-msgstr "Villa við afkóðun FLAC skráar"
-
-#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:759
-msgid "FLAC"
-msgstr "FLAC"
-
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:183
-msgid "Failed to gather information about the file"
-msgstr "Gat ekki sótt upplýsingar um skrána"
-
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:588
-#, c-format
-msgid "MPEG %d Layer III"
-msgstr "MPEG %d Layer III"
-
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:590
-msgid "MPEG 2.5 Layer III"
-msgstr "MPEG 2.5 Layer III"
-
-#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:163
-msgid "Failed to recognise filetype"
-msgstr "Gat ekki fundið skráartegund"
-
-#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:201
-msgid "Failed to find an audio track"
-msgstr "Fann ekki hljóðskrá"
-
-#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:438
-msgid "MPEG-4 audio (MPEG-4 AAC)"
-msgstr "MPEG-4 hljóð (MPEG-4 AAC)"
-
-#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:180
-msgid "Failed to seek file"
-msgstr "Gat ekki hoppað í skrá"
-
-#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:194
-msgid "Failed to open file as Ogg Vorbis"
-msgstr "Gat ekki opnað skrá sem Ogg Vorbis"
-
-#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:546
-msgid "Ogg Vorbis"
-msgstr "Ogg Vorbis"
-
-#: metadata/rb-metadata-gst.c:340
-#, c-format
-msgid "There is no plugin installed to handle a %s file."
-msgstr ""
-
-#: metadata/rb-metadata-gst.c:575
-#: metadata/rb-metadata-gst.c:696
-#: player/rb-player-gst.c:580
-#, c-format
-msgid "Failed to create %s element; check your installation"
-msgstr "Gat ekki búið til %s; athugaðu uppsetningu tölvunnar"
-
-#: metadata/rb-metadata-mm.c:219
-msgid "Operation not supported"
-msgstr "Aðgerð ekki stutt"
-
-#: player/rb-player-gst.c:426
-#: player/rb-player-gst.c:638
-#: player/rb-player-gst.c:648
-msgid "Could not start pipeline playing"
-msgstr "Gat ekki hafið spilun með pípun"
-
-#: player/rb-player-gst.c:546
-msgid "Could not create audio output element; check your settings"
-msgstr "Gat ekki búið til úttak; athugaðu stillingar"
-
-#: player/rb-player-gst.c:603
-msgid "Couldn't initialize scheduler.  Did you run gst-register?"
-msgstr "Gat ekki upphafsstillt verkraðara. Hefurðu keyrt gst-register?"
-
-#: player/rb-player-gst.c:675
-msgid "Could not pause playback"
-msgstr "Gat ekki stöðvað spilun"
-
-#: player/rb-player-gst.c:685
-msgid "Could not close output sink"
-msgstr "Gat ekki lokað úttaks síu"
-
-#: player/rb-player-gst.c:731
-msgid "No AudioCD support; check your settings"
-msgstr "Enginn stuðningur við geisladiska, athugaðu stillingar þínar"
-
-#: player/rb-player-gst.c:790
-msgid "Failed to close audio output sink"
+#: backends/gstreamer/rb-encoder-gst.c:705
+#, fuzzy, c-format
+msgid "Could not create a GStreamer sink element to write to %s"
+msgstr "Gat ekki búið til GStreamer gagnaþega til að skrifa í %s"
+
+#. Translators: the parameter here is an error message
+#. ?
+#. Translators: the parameter here is an error message
+#: backends/gstreamer/rb-player-gst.c:520
+#: backends/gstreamer/rb-player-gst-xfade.c:3023
+#, fuzzy, c-format
+#| msgid "Failed to close audio output sink"
+msgid "Failed to open output device: %s"
 msgstr "Gat ekki lokað hljóð úttaks síu"
 
-#: player/rb-player-xine.c:354
-msgid "Failed to set up an audio driver; check your installation"
-msgstr "Gat ekki sett up hljóð rekil; athugaðu uppsetningu"
+#: backends/gstreamer/rb-player-gst.c:669
+#, fuzzy, c-format
+#| msgid "Failed to create %s element; check your installation"
+msgid "Failed to create playbin element; check your GStreamer installation"
+msgstr "Gat ekki búið til %s; athugaðu uppsetningu tölvunnar"
 
-#: player/rb-player-xine.c:454
-#, c-format
-msgid "No input plugin available for %s; check your installation."
-msgstr ""
+#: backends/gstreamer/rb-player-gst.c:700
+#, fuzzy, c-format
+#| msgid "Failed to create %s element; check your installation"
+msgid "Failed to create %s element; check your GStreamer installation"
+msgstr "Gat ekki búið til %s; athugaðu uppsetningu tölvunnar"
 
-#: player/rb-player-xine.c:463
-#, c-format
-msgid "No demux plugin available for %s; check your installation."
-msgstr ""
+#: backends/gstreamer/rb-player-gst-xfade.c:1142
+#: backends/gstreamer/rb-player-gst-xfade.c:1157
+#, fuzzy, c-format
+msgid "Failed to link new stream into GStreamer pipeline"
+msgstr "Það tókst ekki að tengja nýjan straum inn í GStreamer pípu"
 
-#: player/rb-player-xine.c:472
-#, c-format
-msgid "Demuxing for %s failed; check your installation."
-msgstr ""
+#: backends/gstreamer/rb-player-gst-xfade.c:1193
+#, fuzzy, c-format
+#| msgid "Failed to seek file"
+msgid "Failed to start new stream"
+msgstr "Gat ekki hoppað í skrá"
 
-#: player/rb-player-xine.c:480
-msgid "Internal error; check your installation."
-msgstr "Forrits villa; athugaðu uppsetningu"
+#. ?
+#: backends/gstreamer/rb-player-gst-xfade.c:2936
+#, fuzzy, c-format
+#| msgid "Failed to close audio output sink"
+msgid "Failed to open output device"
+msgstr "Gat ekki lokað hljóð úttaks síu"
 
-#: player/rb-player-xine.c:488
-#, c-format
-msgid "Audio of %s not handled; check your installation."
-msgstr "Get ekki höndlað hljóð %s; athugaðu uppsetningu þína"
+#: backends/gstreamer/rb-player-gst-xfade.c:3356
+#: backends/gstreamer/rb-player-gst-xfade.c:3435
+#, fuzzy, c-format
+#| msgid "Failed to create %s element; check your installation"
+msgid "Failed to create GStreamer element; check your installation"
+msgstr "Gat ekki búið til %s; athugaðu uppsetningu tölvunnar"
 
-#: rhythmdb/rhythmdb.c:845
-msgid "<invalid filename>"
-msgstr "<ólöglegt skráarnafn>"
+#: backends/gstreamer/rb-player-gst-xfade.c:3365
+#, fuzzy, c-format
+#| msgid "Failed to create %s element; check your installation"
+msgid "Failed to create audio output element; check your installation"
+msgstr "Gat ekki búið til %s; athugaðu uppsetningu tölvunnar"
 
-#: rhythmdb/rhythmdb.c:1462
-#: widgets/rb-entry-view.c:930
-#: widgets/rb-song-info.c:774
-#: widgets/rb-song-info.c:954
-msgid "Never"
-msgstr "Aldrei"
+#: backends/gstreamer/rb-player-gst-xfade.c:3399
+#: backends/gstreamer/rb-player-gst-xfade.c:3452
+#: backends/gstreamer/rb-player-gst-xfade.c:3479
+#: backends/gstreamer/rb-player-gst-xfade.c:3489
+#: backends/gstreamer/rb-player-gst-xfade.c:3499
+#, fuzzy, c-format
+#| msgid "Failed to create %s element; check your installation"
+msgid "Failed to link GStreamer pipeline; check your installation"
+msgstr "Gat ekki búið til %s; athugaðu uppsetningu tölvunnar"
 
-#: rhythmdb/rhythmdb.c:1464
-msgid "%Y-%m-%d %H:%M"
-msgstr "%d-%m-%Y %H:%M"
+#: backends/gstreamer/rb-player-gst-xfade.c:3594
+#, fuzzy, c-format
+#| msgid "Failed to create the player: %s"
+msgid "Failed to create GStreamer pipeline to play %s"
+msgstr "Gat ekki búið til spilara: %s"
 
-#: rhythmdb/rhythmdb.c:2191
-msgid "Loading songs..."
-msgstr "Hleð inn lög..."
+#: data/playlists.xml.in:4
+#, fuzzy
+msgid "Recently Added"
+msgstr "Nýlega bætt við"
 
-#: rhythmdb/rhythmdb.c:2193
-msgid "Refreshing songs..."
-msgstr "Uppfæri lög..."
+#: data/playlists.xml.in:15
+#, fuzzy
+msgid "Recently Played"
+msgstr "Nýlega spilað"
 
-#. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2210
-#: rhythmdb/rhythmdb.c:2217
-#: rhythmdb/rhythmdb.c:2218
-#: rhythmdb/rhythmdb.c:2228
-#: rhythmdb/rhythmdb.c:2219
-#: rhythmdb/rhythmdb.c:2223
-#, c-format
-msgid "%s, %s and %s"
-msgstr "%s, %s og %s"
+#: data/playlists.xml.in:26
+#, fuzzy
+msgid "My Top Rated"
+msgstr "Mín uppáhalds lög"
 
-#. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2231
-#, c-format
-msgid "%s and %s"
-msgstr "%s og %s"
-
-#: shell/main.c:91
-msgid "Print the playing song and exit"
-msgstr "Prenta út núverandi lag og hætta"
-
-#: shell/main.c:92
-msgid "Print the playing song URI and exit"
-msgstr "Prenta út URI núverandi lags og hætta"
-
-#: shell/main.c:94
-msgid "Print the playing song length in seconds and exit"
-msgstr "Prenta út lengd núverandi lags og hætta"
-
-#: shell/main.c:95
-msgid "Print the current elapsed time of playing song and exit"
-msgstr "Prenta út tímasetningu núverandi lags og hætta"
-
-#: shell/main.c:96
-msgid "Seek to the specified time in playing song if possible and exit"
-msgstr "Hoppa í ákveðinn tíma í núverandi lagi (ef mögulegt) og hætta"
-
-#: shell/main.c:98
-msgid "Toggle play/pause mode"
-msgstr "Skipta á spilun á pásu"
-
-#: shell/main.c:99
-msgid "Focus the running player"
-msgstr "Virkja keyrandi spilara"
-
-#: shell/main.c:100
-msgid "Jump to previous song"
-msgstr "Hoppa í fyrra lag"
-
-#: shell/main.c:101
-msgid "Jump to next song"
-msgstr "Hoppa í næsta lag"
-
-#: shell/main.c:103
-msgid "Toggle shuffling"
-msgstr "Skipta stokkun"
-
-#: shell/main.c:105
-msgid "Enable debugging code"
-msgstr "Virkja aflúsunarham"
-
-#: shell/main.c:106
-msgid "Do not update the library"
-msgstr "Ekki uppfæra tónlistarsafn"
-
-#: shell/main.c:107
-msgid "Do not register the shell"
-msgstr "Ekki skrá skelina"
-
-#: shell/main.c:108
-msgid "Don't save any data permanently (implies --no-registration)"
-msgstr "Ekki vista gögn til frambúðar (sama og --no-registration)"
-
-#: shell/main.c:109
-msgid "Path for database file to use"
-msgstr "Slóð í gagnagrunnsskrá í notkun"
-
-#: shell/main.c:110
-msgid "Quit Rhythmbox"
-msgstr "Slökkva á Rhythmbox"
-
-#: shell/main.c:125
-#: widgets/rb-druid.c:218
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:8
+#: data/org.gnome.Rhythmbox3.desktop.in:3
+#: data/org.gnome.Rhythmbox3.device.desktop.in:3 shell/main.c:73
+#: shell/rb-shell.c:501 shell/rb-shell.c:2352
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:238
-#: shell/main.c:247
-#, c-format
-msgid "An exception occured '%s'"
-msgstr "Villa kom upp '%s'"
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:9
+#: data/org.gnome.Rhythmbox3.desktop.in:6
+#: data/org.gnome.Rhythmbox3.device.desktop.in:6
+msgid "Play and organize your music collection"
+msgstr "Spila og sjá um tónlistarsafnið þitt"
 
-#: shell/main.c:311
-#, c-format
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:11
 msgid ""
-"Failed to activate the shell:\n"
-"%s"
-msgstr ""
-"Gat ekki opnað skel:\n"
-"%s"
-
-#: shell/rb-play-order.c:228
-msgid "Linear"
-msgstr "Línuleg"
-
-#: shell/rb-play-order.c:229
-msgid "Linear looping"
-msgstr "Línuleg röðun"
-
-#: shell/rb-play-order.c:230
-msgid "Shuffle"
-msgstr "Stokka"
-
-#: shell/rb-play-order.c:231
-msgid "Random with equal weights"
-msgstr "Stokka með jafnan forgang"
-
-#: shell/rb-play-order.c:232
-msgid "Random by time since last play"
-msgstr "Stokka eftir tíma frá síðustu spilun"
-
-#: shell/rb-play-order.c:233
-msgid "Random by rating"
-msgstr "Stokka eftir stjörnugjöf"
-
-#: shell/rb-play-order.c:234
-msgid "Random by time since last play and rating"
-msgstr "Stokka eftir tíma frá síðustu spilun og stjörnugjöf"
-
-#: shell/rb-playlist-manager.c:476
-#: shell/rb-shell-player.c:868
-msgid "Couldn't parse playlist"
-msgstr "Gat ekki lesið lagalista"
-
-#: shell/rb-playlist-manager.c:773
-msgid "Load playlist"
-msgstr "Opna lagalista"
-
-#: shell/rb-playlist-manager.c:814
-msgid "Save playlist"
-msgstr "Vista lagalista"
-
-#: shell/rb-shell-player.c:443
-#, c-format
-msgid "Failed to create the player: %s"
-msgstr "Gat ekki búið til spilara: %s"
-
-#: shell/rb-shell-player.c:511
-msgid "Play previous song"
-msgstr "Spila fyrra lag"
-
-#: shell/rb-shell-player.c:540
-msgid "Play next song"
-msgstr "Spila næsta lag"
-
-#: shell/rb-shell-player.c:559
-msgid "Change the music volume"
-msgstr "Breyta hljóðstyrk"
-
-#: shell/rb-shell-player.c:841
-#, c-format
-msgid "Opening %s..."
-msgstr "Opna %s..."
-
-#: shell/rb-shell-player.c:1529
-msgid "Pause playback"
-msgstr "Stöðva spilun"
-
-#: shell/rb-shell-player.c:1530
-msgid "_Pause"
-msgstr "Stöðva"
-
-#: shell/rb-shell-player.c:1545
-msgid "Stop playback"
-msgstr "Stöðva spilun"
-
-#: shell/rb-shell-player.c:1546
-msgid "_Stop"
-msgstr "Stöðva"
-
-#: shell/rb-shell-player.c:1874
-msgid "Unexpected end of stream!"
+"Rhythmbox is a music management application, designed to work well under the "
+"GNOME desktop. In addition to music stored on your computer, it supports "
+"network shares, podcasts, radio streams, portable music devices (including "
+"phones), and internet music services such as Last.fm and Magnatune."
 msgstr ""
 
-#: shell/rb-shell-preferences.c:177
-msgid "Music Player Preferences"
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:17
+msgid ""
+"Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
+"via plugins written in Python or C."
+msgstr ""
+
+#: data/org.gnome.Rhythmbox3.desktop.in:4
+#: data/org.gnome.Rhythmbox3.device.desktop.in:4
+msgid "Music Player"
+msgstr "Tónlistarspilari"
+
+#: data/org.gnome.Rhythmbox3.desktop.in:5
+#: data/org.gnome.Rhythmbox3.device.desktop.in:5
+#, fuzzy
+#| msgid "Music Player"
+msgid "Rhythmbox Music Player"
+msgstr "Tónlistarspilari"
+
+#: data/org.gnome.Rhythmbox3.desktop.in:7
+msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
+msgstr "Hljóð;Lag:MP3;CD;Hlaðvarp;MTP;iPod;Lagalisti,Last.fm;UPnP;DLNA;Útvarp;"
+
+#: data/ui/app-menu.ui:6
+msgid "_View"
+msgstr "Sýn"
+
+#: data/ui/app-menu.ui:9
+msgid "Side Pane"
+msgstr "Hliðarspjald"
+
+#: data/ui/app-menu.ui:14
+msgid "Play Queue in Side Pane"
+msgstr "Biðröð á hliðarspjaldi"
+
+#: data/ui/app-menu.ui:19
+msgid "Song Position Slider"
+msgstr ""
+
+#: data/ui/app-menu.ui:23 plugins/artsearch/songinfo.py:64
+#, fuzzy
+#| msgid "Album"
+msgid "Album Art"
+msgstr "Plata"
+
+#: data/ui/app-menu.ui:27
+#, fuzzy
+#| msgid "Now Playing"
+msgid "Follow Playing Track"
+msgstr "Nú spilandi"
+
+#: data/ui/app-menu.ui:36
+#, fuzzy
+msgid "_Tools"
+msgstr "_Verkfæri"
+
+#: data/ui/app-menu.ui:42
+#, fuzzy
+#| msgid "Prefere_nces"
+msgid "_Preferences"
+msgstr "_Kjörstillingar"
+
+#: data/ui/app-menu.ui:48 shell/rb-shell-preferences.c:195
+msgid "_Help"
+msgstr "Hjálp"
+
+#: data/ui/app-menu.ui:53
+#, fuzzy
+#| msgid "Quit Rhythmbox"
+msgid "_About Rhythmbox"
+msgstr "Slökkva á Rhythmbox"
+
+#: data/ui/browser-popup.ui:6 data/ui/playlist-popup.ui:6
+#: data/ui/podcast-popups.ui:51 plugins/magnatune/magnatune-popup.ui:6
+msgid "Add to Queue"
+msgstr ""
+
+#: data/ui/browser-popup.ui:10 data/ui/edit-menu.ui:39
+#: data/ui/playlist-popup.ui:10
+#, fuzzy
+#| msgid "Playlist"
+msgid "Add to Playlist"
+msgstr "Bæta við spilunarlista"
+
+#: data/ui/browser-popup.ui:16 data/ui/playlist-popup.ui:16
+#, fuzzy
+#| msgid "_Copy"
+msgid "Copy"
+msgstr "Afrita"
+
+#: data/ui/browser-popup.ui:20 data/ui/playlist-popup.ui:20
+#, fuzzy
+#| msgid "Cu_t"
+msgid "Cut"
+msgstr "Klippa"
+
+#: data/ui/browser-popup.ui:29 data/ui/edit-menu.ui:55
+#, fuzzy
+#: data/ui/import-errors-popup.ui:10 data/ui/playlist-popup.ui:29
+msgid "_Move to Trash"
+msgstr "_Henda í ruslið"
+
+#: data/ui/browser-popup.ui:35 data/ui/playlist-popup.ui:35
+#: plugins/magnatune/magnatune-popup.ui:20
+#, fuzzy
+#| msgid "Browse this genre"
+msgid "Browse this Genre"
+msgstr "Skoða þennan tónlistarstíl"
+
+#: data/ui/browser-popup.ui:39 data/ui/playlist-popup.ui:39
+#: plugins/magnatune/magnatune-popup.ui:24
+#, fuzzy
+#| msgid "Browse this artist"
+msgid "Browse this Artist"
+msgstr "Skoða þennan flytjanda"
+
+#: data/ui/browser-popup.ui:43 data/ui/playlist-popup.ui:43
+#: plugins/magnatune/magnatune-popup.ui:28
+#, fuzzy
+#| msgid "Browse this album"
+msgid "Browse this Album"
+msgstr "Skoða þessa plötu"
+
+#: data/ui/browser-popup.ui:52 data/ui/edit-menu.ui:45
+#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:23
+#: data/ui/queue-popups.ui:52 plugins/magnatune/magnatune-popup.ui:34
+#, fuzzy
+#| msgid "_Properties"
+msgid "Pr_operties"
+msgstr "Eiginleikar"
+
+#: data/ui/create-playlist.ui:19
+msgid "songs"
+msgstr "lög"
+
+#: data/ui/create-playlist.ui:22
+msgid "MB"
+msgstr "MB"
+
+#: data/ui/create-playlist.ui:25
+msgid "GB"
+msgstr "GB"
+
+#: data/ui/create-playlist.ui:28
+#, fuzzy
+msgid "Minutes"
+msgstr "Mínútur"
+
+#: data/ui/create-playlist.ui:59
+msgid "Create automatically updating playlist where:"
+msgstr "Búa til sjálfvirkt uppfærðan lagalista þar sem:"
+
+#: data/ui/create-playlist.ui:103
+#, fuzzy
+#| msgid "Add if any criteria are matched"
+msgid "A_dd if any criteria are matched"
+msgstr "Bæta við ef einhver regla er uppfyllt"
+
+#: data/ui/create-playlist.ui:118 widgets/rb-uri-dialog.c:161
+#, fuzzy
+msgid "_Add"
+msgstr "_Bæta við"
+
+#: data/ui/create-playlist.ui:145
+msgid "_Limit to: "
+msgstr "Takmarka við:"
+
+#: data/ui/create-playlist.ui:207
+#, fuzzy
+msgid "_When sorted by:"
+msgstr "_Þegar raðað er eftir:"
+
+#: data/ui/display-page-add-menu.ui:6
+#, fuzzy
+#| msgid "_New Playlist..."
+msgid "_New Playlist"
+msgstr "Nýr lagalisti"
+
+#: data/ui/display-page-add-menu.ui:10
+#, fuzzy
+#| msgid "New _Automatic Playlist..."
+msgid "New _Automatic Playlist"
+msgstr "Nýr sjálfvirkur lagalisti..."
+
+#: data/ui/display-page-add-menu.ui:14
+#, fuzzy
+#| msgid "_Load from file..."
+msgid "_Load from File"
+msgstr "Opna skrá..."
+
+#: data/ui/display-page-add-menu.ui:23
+msgid "_Check for New Devices"
+msgstr ""
+
+#: data/ui/edit-menu.ui:6
+msgid "Cu_t"
+msgstr "Klippa"
+
+#: data/ui/edit-menu.ui:11
+msgid "_Copy"
+msgstr "Afrita"
+
+#: data/ui/edit-menu.ui:16
+msgid "_Paste"
+msgstr "Líma"
+
+#: data/ui/edit-menu.ui:23
+msgid "Select _All"
+msgstr "Velja Allt"
+
+#: data/ui/edit-menu.ui:28
+msgid "D_eselect All"
+msgstr "Afvelja allt"
+
+#: data/ui/edit-menu.ui:35
+#, fuzzy
+msgid "Add to Play Queue"
+msgstr "Bæta við spilunarröð"
+
+#: data/ui/encoding-settings.ui:33
+#, fuzzy
+msgid "_Install additional software required to use this format"
+msgstr "Setja _upp viðbótarhugbúnað sem þarf til að spila þetta snið"
+
+#: data/ui/encoding-settings.ui:88
+msgid "Transcode lossless files into this format"
+msgstr ""
+
+#: data/ui/general-prefs.ui:23
+msgid "Browser Views"
+msgstr "Vafra sýn"
+
+#: data/ui/general-prefs.ui:71
+#, fuzzy
+#| msgid "Artists and albums"
+msgid "_Artists and albums"
+msgstr "Flytjendur og plötur"
+
+#: data/ui/general-prefs.ui:90
+#, fuzzy
+#| msgid "Genres and artists"
+msgid "_Genres and artists"
+msgstr "Tónlistastílar og flytjendur"
+
+#: data/ui/general-prefs.ui:109
+#, fuzzy
+#| msgid "Genres, artists and albums"
+msgid "G_enres, artists and albums"
+msgstr "Tónlistastílar, flytjendur og plötur"
+
+#: data/ui/general-prefs.ui:171
+msgid "Visible Columns"
+msgstr "Sýnilegir Dálkar"
+
+#: data/ui/general-prefs.ui:225
+msgid "Track _number"
+msgstr "Númer lags"
+
+#: data/ui/general-prefs.ui:242
+msgid "_Last played"
+msgstr "Síðast spilað"
+
+#: data/ui/general-prefs.ui:259
+msgid "_Artist"
+msgstr "Flytjandi"
+
+#: data/ui/general-prefs.ui:276
+msgid "_Composer"
+msgstr "_Tónskáld"
+
+#: data/ui/general-prefs.ui:293
+msgid "A_lbum"
+msgstr "Plata"
+
+#: data/ui/general-prefs.ui:310
+msgid "_Year"
+msgstr "Á_r"
+
+#: data/ui/general-prefs.ui:327
+msgid "_Quality"
+msgstr "Gæði"
+
+#: data/ui/general-prefs.ui:344
+#, fuzzy
+#| msgid "Location:"
+msgid "Lo_cation"
+msgstr "Staðsetning:"
+
+#: data/ui/general-prefs.ui:361
+msgid "Ti_me"
+msgstr "Tími"
+
+#: data/ui/general-prefs.ui:378
+msgid "_Rating"
+msgstr "Stjörnugjöf"
+
+#: data/ui/general-prefs.ui:395
+msgid "_BPM"
+msgstr "_BPM"
+
+#: data/ui/general-prefs.ui:412
+msgid "C_omment"
+msgstr "At_hugasemd"
+
+#: data/ui/general-prefs.ui:429
+msgid "_Play count"
+msgstr "Fjöldi spilanna"
+
+#: data/ui/general-prefs.ui:446
+msgid "Da_te added"
+msgstr "_Bætt við þann"
+
+#: data/ui/general-prefs.ui:463
+msgid "_Genre"
+msgstr "Stíll"
+
+#: data/ui/import-dialog.ui:20
+msgid "Select a location containing music to add to your library:"
+msgstr ""
+
+#: data/ui/import-dialog.ui:54 data/ui/library-toolbar.ui:20
+#, fuzzy
+msgid "Import"
+msgstr "Flytja inn"
+
+#: data/ui/import-dialog.ui:66 data/ui/podcast-add-dialog.ui:45
+#, fuzzy
+msgid "Close"
+msgstr "Loka"
+
+#: data/ui/import-dialog.ui:78
+msgid "Copy files that are outside the music library"
+msgstr ""
+
+#: data/ui/import-errors-popup.ui:6 data/ui/missing-files-popup.ui:6
+msgid "_Remove"
+msgstr "Fjarlægja"
+
+#: data/ui/library-prefs.ui:22
+#, fuzzy
+#| msgid "Add Location"
+msgid "Library Location"
+msgstr "Bæta við Slóð"
+
+#: data/ui/library-prefs.ui:63
+#, fuzzy
+msgid "_Music files are placed in:"
+msgstr "_Tónlistarskrár fara í:"
+
+#: data/ui/library-prefs.ui:118
+msgid "_Browse..."
+msgstr "Vafra..."
+
+#: data/ui/library-prefs.ui:147
+#, fuzzy
+msgid "_Watch my library for new files"
+msgstr "_Vakta safnið mitt og fylgjast með nýjum skrám"
+
+#: data/ui/library-prefs.ui:193
+msgid "Library Structure"
+msgstr "Uppbygging tónlistarsafns"
+
+#: data/ui/library-prefs.ui:232
+msgid "F_older hierarchy:"
+msgstr "Sti_gskipun á möppum:"
+
+#: data/ui/library-prefs.ui:246
+#, fuzzy
+#| msgid "File name:"
+msgid "_File name:"
+msgstr "Skráar_heiti"
+
+#: data/ui/library-prefs.ui:260
+msgid "_Preferred format:"
+msgstr "Um_beðið snið:"
+
+#: data/ui/library-prefs.ui:274
+msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
+msgstr "Flytjandi/flytjandi - plata/flytjandi (plata) - 01 - Lagaheiti.ogg"
+
+#: data/ui/library-toolbar.ui:6 data/ui/playlist-toolbar.ui:6
+#: data/ui/podcast-toolbar.ui:6 data/ui/queue-toolbar.ui:6
+#: plugins/android/android-toolbar.ui:6 plugins/audiocd/audiocd-toolbar.ui:6
+#: plugins/daap/daap-toolbar.ui:6 plugins/fmradio/fmradio-toolbar.ui:6
+#: plugins/generic-player/generic-player-toolbar.ui:6
+#: plugins/ipod/ipod-toolbar.ui:6 plugins/iradio/iradio-toolbar.ui:6
+#: plugins/magnatune/magnatune-toolbar.ui:6 plugins/mtpdevice/mtp-toolbar.ui:6
+#, fuzzy
+#| msgid "_Edit"
+msgid "Edit"
+msgstr "Breyta"
+
+#: data/ui/library-toolbar.ui:11 data/ui/playlist-toolbar.ui:11
+#: data/ui/podcast-toolbar.ui:11 plugins/android/android-toolbar.ui:11
+#: plugins/daap/daap-toolbar.ui:11
+#: plugins/generic-player/generic-player-toolbar.ui:11
+#: plugins/grilo/rb-grilo-source.c:364 plugins/ipod/ipod-toolbar.ui:11
+#: plugins/iradio/iradio-toolbar.ui:11
+#: plugins/magnatune/magnatune-toolbar.ui:11
+#: plugins/mtpdevice/mtp-toolbar.ui:11
+#, fuzzy
+#| msgid "_Browser"
+msgid "Browse"
+msgstr "Fletta"
+
+#: data/ui/library-toolbar.ui:16 data/ui/playlist-toolbar.ui:16
+#: data/ui/podcast-toolbar.ui:16 plugins/android/android-toolbar.ui:16
+#: plugins/daap/daap-toolbar.ui:16
+#: plugins/generic-player/generic-player-toolbar.ui:16
+#: plugins/ipod/ipod-toolbar.ui:16 plugins/iradio/iradio-toolbar.ui:16
+#: plugins/mtpdevice/mtp-toolbar.ui:16
+#, fuzzy
+#| msgid "_View"
+msgid "View All"
+msgstr "Birta allt"
+
+#: data/ui/media-player-properties.ui:8
+#, fuzzy
+#| msgid "Music Player Preferences"
+msgid "Media Player Properties"
 msgstr "Eiginleikar Tónlistaspilara"
 
-#: shell/rb-shell-preferences.c:225
-msgid "General"
-msgstr "Almennt"
+#: data/ui/media-player-properties.ui:22 plugins/daap/daap-prefs.ui:388
+#, fuzzy
+#: plugins/iradio/rb-station-properties-dialog.c:182
+#: podcast/rb-feed-podcast-properties-dialog.c:130
+#: podcast/rb-podcast-properties-dialog.c:320 shell/rb-shell-preferences.c:192
+#: widgets/rb-alert-dialog.c:377 widgets/rb-query-creator.c:198
+#: widgets/rb-song-info.c:627
+msgid "_Close"
+msgstr "_Loka"
 
-#: shell/rb-shell.c:838
-#, c-format
-msgid "Unable to parse URI \"%s\"\n"
-msgstr "Gat ekki lesið URI \"%s\"\n"
+#: data/ui/media-player-properties.ui:75
+#, fuzzy
+#| msgid "_Duration"
+msgid "Information"
+msgstr "Upplýsingar"
 
-#: shell/rb-shell.c:1062
-msgid "Whether the main window is visible"
-msgstr "Hvort aðal glugginn sé sýnilegur"
-
-#: shell/rb-shell.c:1067
-msgid "Whether shuffle is enabled"
-msgstr "Hvort stokkun sé virk"
-
-#: shell/rb-shell.c:1071
-msgid "Properties for the current song"
-msgstr "Eiginleikar núverandi lags"
-
-#: shell/rb-shell.c:1484
-#, c-format
-msgid ""
-"Failed to register the shell: %s\n"
-"This probably means that you installed Rhythmbox in a different prefix than bonobo-activation; this warning is harmless, but IPC will not work."
+#. Translators: This refers to the usage of media space
+#: data/ui/media-player-properties.ui:121
+msgid "Volume usage"
 msgstr ""
 
-#: shell/rb-shell.c:1859
-#: shell/rb-tray-icon.c:227
-#: widgets/rb-header.c:581
-msgid "Not playing"
-msgstr "Ekkert í spilun"
-
-#  Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1862
-#, c-format
-msgid ""
-"%s\n"
-"Paused, %s"
+#: data/ui/media-player-properties.ui:156
+msgid "Preferred format"
 msgstr ""
-"%s\n"
-"Stöðvað, %s"
 
-#  Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1866
-#, c-format
-msgid ""
-"%s\n"
-"%s"
+#: data/ui/media-player-properties.ui:177
+#: data/ui/podcast-feed-properties.ui:206 data/ui/podcast-properties.ui:174
+#: data/ui/song-info-multiple.ui:285 data/ui/song-info.ui:452
+#: plugins/iradio/station-properties.ui:129
+msgid "Basic"
+msgstr "Grunn"
+
+#: data/ui/media-player-properties.ui:223 data/ui/sync-dialog.ui:43
+#, fuzzy
+#| msgid "Prefere_nces"
+msgid "Sync Preferences"
+msgstr "Eiginleikar"
+
+#: data/ui/media-player-properties.ui:262 data/ui/sync-dialog.ui:82
+msgid "Sync Preview"
 msgstr ""
-"%s\n"
-"%s"
 
-#  Translators: %s is the song name
-#. Translators: %s is the song name
-#: shell/rb-shell.c:1900
-#, c-format
-msgid "%s (Paused)"
-msgstr "%s (Stöðvað)"
+#: data/ui/media-player-properties.ui:284 plugins/android/android-toolbar.ui:24
+#, fuzzy
+#: plugins/generic-player/generic-player-toolbar.ui:28
+#: plugins/ipod/ipod-toolbar.ui:28 plugins/mtpdevice/mtp-toolbar.ui:28
+msgid "Sync"
+msgstr "Samstilling"
 
-#: shell/rb-shell.c:1968
-msgid "translator_credits"
+#: data/ui/missing-files-popup.ui:10
+msgid "_Properties"
+msgstr "Eiginleikar"
+
+#: data/ui/playback-prefs.ui:28
+msgid "Player Backend"
+msgstr "Bakendi spilara"
+
+#: data/ui/playback-prefs.ui:54
+msgid "_Crossfade between tracks"
 msgstr ""
-"Gunnar Steinn Magnússon\n"
-"<gsm@modernus.is>"
 
-#: shell/rb-shell.c:1977
-msgid "Maintainers:"
-msgstr "Umsjónarmenn:"
+#: data/ui/playback-prefs.ui:93
+#, fuzzy
+msgid "Crossfade Duration (Seconds)"
+msgstr "Hve lengi blöndunin varir (í sekúndum)"
 
-#: shell/rb-shell.c:1980
-msgid "Former Maintainers:"
-msgstr "Fyrrum Umsjónarmenn:"
+#: data/ui/playlist-menu.ui:6
+#, fuzzy
+#| msgid "_Edit"
+msgid "_Edit..."
+msgstr "Br_eyta"
 
-#: shell/rb-shell.c:1983
-msgid "Contributors:"
-msgstr "Skrifað af:"
+#: data/ui/playlist-menu.ui:10
+#, fuzzy
+msgid "_Rename"
+msgstr "Endu_rnefna"
 
-#: shell/rb-shell.c:1985
-msgid "Music management and playback software for GNOME."
-msgstr "Tónlistar umsjónar og spilunar hugbúnaður fyrir GNOME"
+#: data/ui/playlist-menu.ui:16
+msgid "_Queue All Tracks"
+msgstr "Setja öll lög í _biðröð"
 
-#: shell/rb-shell.c:2166
-msgid "Choose Files or Directory"
-msgstr "Veldu Skrár eða Skráarsafn"
+#: data/ui/playlist-menu.ui:20
+#, fuzzy
+#| msgid "_New Playlist..."
+msgid "_Shuffle Playlist"
+msgstr "Nýr lagalisti"
 
-#: shell/rb-shell.c:2212
-msgid "To extract CDs you must install the Sound Juicer package."
-msgstr "Til að bæta við geisladiskum verðurðu að setja upp Sound Juicer forritið."
+#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:14
+#: data/ui/queue-popups.ui:43
+#, fuzzy
+#| msgid "_Save to file..."
+msgid "_Save to File..."
+msgstr "Vista í skrá..."
 
-#: shell/rb-shell.c:2219
-#, c-format
-msgid "Couldn't run sound-juicer: %s"
-msgstr "Gat ekki keyrt sound-juicer: %s"
+#: data/ui/playlist-save.ui:12
+#, fuzzy
+msgid "By extension"
+msgstr "Eftir skráarendingu"
 
-#: shell/rb-source-header.c:183
-msgid "Filter music display by genre, artist, album, or title"
-msgstr "Sía tónlist eftir tónlistastíl, flytjanda, plötu eða titli"
+#: data/ui/playlist-save.ui:19
+#, fuzzy
+#| msgid "Save playlist"
+msgid "Save Playlist"
+msgstr "Vista spilunarlista"
 
-#: shell/rb-source-header.c:190
-msgid "Show _Browser"
-msgstr "Sýna Vafra"
+#: data/ui/playlist-save.ui:38 plugins/artsearch/songinfo.py:135
+#, fuzzy
+#: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:532
+#: podcast/rb-podcast-source.c:1106 shell/rb-track-transfer-queue.c:187
+#: widgets/rb-alert-dialog.c:384 widgets/rb-alert-dialog.c:401
+#: widgets/rb-dialog.c:131 widgets/rb-dialog.c:139
+#: widgets/rb-query-creator.c:191 widgets/rb-uri-dialog.c:158
+msgid "_Cancel"
+msgstr "_Hætta við"
 
-#: shell/rb-source-header.c:191
-msgid "Hide _Browser"
-msgstr "Fela Vafra"
+#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:267
+#, fuzzy
+#: widgets/rb-dialog.c:140
+msgid "_Save"
+msgstr "_Vista"
 
-#: shell/rb-statusbar.c:235
-msgid "_Repeat"
-msgstr "Endurtaka"
+#: data/ui/playlist-save.ui:95
+#, fuzzy
+#| msgid "Save playlist"
+msgid "Select playlist format:"
+msgstr "Vista lagalista"
 
-#: shell/rb-statusbar.c:442
-msgid "Buffering..."
-msgstr "Sæki gögn..."
+#: data/ui/playlist-save.ui:129
+#, fuzzy
+#| msgid "Playlist"
+msgid "Playlist format"
+msgstr "Lagalisti"
 
-#: sources/itunesdb.c:447
-msgid "Master-PL"
-msgstr "Aðal-Lagalisti"
-
-#: sources/itunesdb.c:449
+#: data/ui/playlist-toolbar.ui:20 data/ui/queue-toolbar.ui:19
 msgid "Playlist"
 msgstr "Lagalisti"
 
-#: sources/itunesdb.c:801
-#, c-format
-msgid "Error reading \"%s\".\n"
-msgstr "Villa við lestur \"%s\".\n"
-
-#: sources/itunesdb.c:809
-#, c-format
-msgid "\"%s\" is not a valid iPod database.\n"
-msgstr "\"%s\" er ekki löglegur iPod gagnagrunnur.\n"
-
-#: sources/itunesdb.c:1049
-#: sources/itunesdb.c:1704
-#, c-format
-msgid "Could not open \"%s\" file for reading.\n"
-msgstr "Gat ekki lesið skrána \"%s\".\n"
-
-#: sources/itunesdb.c:1556
-#: sources/itunesdb.c:1711
-#, c-format
-msgid "Could not open \"%s\" file for writing.\n"
-msgstr "Gat ekki skrifað í skrána \"%s\".\n"
-
-#. an error occured
-#: sources/itunesdb.c:1568
-#, c-format
-msgid "Error renaming '%s' to '%s' (%s).\n"
-msgstr "Villa við endurskíringu '%s' í '%s' (%s).\n"
-
-#. error -- not end of file!
-#: sources/itunesdb.c:1724
-#, c-format
-msgid "Error reading file \"%s\".\n"
-msgstr "Gat ekki lesið skrána \"%s\".\n"
-
-#: sources/itunesdb.c:1736
-#, c-format
-msgid "Error writing PC file \"%s\".\n"
-msgstr "Gat ekki skrifað PC skrána \"%s\".\n"
-
-#: sources/rb-ipod-source.c:117
-msgid "iPod"
-msgstr "iPod"
-
-#: sources/rb-iradio-source.c:340
-#: sources/rb-library-source.c:513
-#: widgets/rb-query-creator.c:56
-msgid "Genre"
-msgstr "Stíll"
-
-#: sources/rb-iradio-source.c:421
-msgid "Radio"
-msgstr "Útvarp"
-
-#: sources/rb-iradio-source.c:590
-#: sources/rb-library-source.c:527
-#: widgets/rb-query-creator.c:54
-#, c-format
-msgid "Artist"
-msgstr "Flytjandi"
-
-#: sources/rb-library-source.c:541
-#: widgets/rb-query-creator.c:55
-msgid "Album"
-msgstr "Plata"
-
-#: sources/rb-library-source.c:649
-msgid "Library"
-msgstr "Tónlistarsafn"
-
-#: sources/rb-library-source.c:1192
-msgid "Add Location"
-msgstr "Bæta við Slóð"
-
-#: sources/rb-playlist-source.c:271
-#: widgets/rb-entry-view.c:1200
-msgid "Tra_ck"
-msgstr "Númer"
-
-#: sources/rb-source.c:528
-msgid "No properties available."
-msgstr "Engir eiginleikar tiltækir."
-
-#: sources/rb-source.c:611
-msgid "This source does not support drag and drop."
-msgstr ""
-
-#: sources/rb-sourcelist.c:194
-msgid "_Source"
-msgstr "Inntak"
-
-#: widgets/rb-cell-renderer-pixbuf.c:109
-msgid "Pixbuf Object"
-msgstr "Pixbuf Object"
-
-#: widgets/rb-cell-renderer-pixbuf.c:110
-msgid "The pixbuf to render."
-msgstr ""
-
-#: widgets/rb-druid.c:239
-msgid "Welcome to Rhythmbox"
-msgstr "Velkominn í Rhythmbox"
-
-#: widgets/rb-druid.c:243
+#: data/ui/podcast-add-dialog.ui:13
 msgid ""
-"Rhythmbox is the GNOME music player that lets you do everything: play your music files, listen to Internet Radio, import music from CDs, and much more.\n"
-"\n"
-"This assistant will help you get started by asking you some simple questions."
-msgstr ""
-"Rhythmbox er GNOME tónlistarspilari sem leyfir þér allt: spila tónlistina þína, hlusta á vef-útvarp, afrita tónlist frá geisladiskum og mikið meira.\n"
-"\n"
-"Þessi leiðbeinandi mun spyrja þig nokkura einfaldra spurninga til að koma þér í gang."
-
-#: widgets/rb-druid.c:249
-msgid "Music library setup"
-msgstr "Uppsetning tónlistarsafns"
-
-#: widgets/rb-druid.c:258
-msgid "Finish"
-msgstr "Ljúka"
-
-#: widgets/rb-druid.c:260
-msgid ""
-"You are now ready to start Rhythmbox.\n"
-"\n"
-"Remember that you may add music to the library using \"Music\" then \"Import Folder\", or by importing it from CDs."
+"Search for podcasts in the iTunes Store, or enter a podcast feed URL.\n"
+"Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
 
-#: widgets/rb-druid.c:318
-#, c-format
-msgid "Error reading filename: %s"
-msgstr "Gat ekki lesið skráarnafn: %s"
+#: data/ui/podcast-add-dialog.ui:58
+#, fuzzy
+msgid "Subscribe"
+msgstr "Gerast áskrifandi"
 
-#: widgets/rb-druid.c:333
-msgid "Choose a directory"
-msgstr "Veldu skráarsafn"
+#: data/ui/podcast-feed-properties.ui:23 data/ui/podcast-properties.ui:22
+#, fuzzy
+#| msgid "_Title:"
+msgid "Title:"
+msgstr "Titill:"
 
-#: widgets/rb-entry-view.c:966
-#: widgets/rb-header.c:873
+#: data/ui/podcast-feed-properties.ui:37
+#, fuzzy
+msgid "Author:"
+msgstr "Höfundur:"
+
+#: data/ui/podcast-feed-properties.ui:85
+#, fuzzy
+#| msgid "Last played:"
+msgid "Last updated:"
+msgstr "Síðast uppfært:"
+
+#: data/ui/podcast-feed-properties.ui:127 data/ui/podcast-properties.ui:123
+#, fuzzy
+#| msgid "Duration:"
+msgid "Description:"
+msgstr "Lýsing:"
+
+#: data/ui/podcast-feed-properties.ui:175
+#, fuzzy
+#| msgid "Last played:"
+msgid "Last episode:"
+msgstr "Síðast spilað:"
+
+#: data/ui/podcast-feed-properties.ui:226 data/ui/podcast-properties.ui:193
+#, fuzzy
+#| msgid "_Source"
+msgid "Source:"
+msgstr "Uppruni:"
+
+#: data/ui/podcast-feed-properties.ui:239
+#, fuzzy
+msgid "Language:"
+msgstr "Tungumál:"
+
+#: data/ui/podcast-feed-properties.ui:255
+#, fuzzy
+msgid "Copyright:"
+msgstr "Höfundarréttur:"
+
+#: data/ui/podcast-feed-properties.ui:322 data/ui/podcast-properties.ui:421
+#: data/ui/song-info.ui:884 plugins/iradio/station-properties.ui:304
+msgid "Details"
+msgstr "Nánar"
+
+#: data/ui/podcast-popups.ui:6
+#, fuzzy
+#| msgid "_New Playlist..."
+msgid "New Podcast Feed..."
+msgstr "Nýr lagalisti"
+
+#: data/ui/podcast-popups.ui:10
+msgid "Update All Feeds"
+msgstr ""
+
+#: data/ui/podcast-popups.ui:16
+msgid "Update Podcast Feed"
+msgstr ""
+
+#: data/ui/podcast-popups.ui:20
+msgid "Delete Podcast Feed"
+msgstr ""
+
+#: data/ui/podcast-popups.ui:29 data/ui/podcast-popups.ui:60
+#: plugins/android/android-toolbar.ui:20 plugins/fmradio/fmradio-popup.ui:12
+#: plugins/generic-player/generic-player-toolbar.ui:20
+#: plugins/ipod/ipod-toolbar.ui:20 plugins/iradio/iradio-popup.ui:12
+#: plugins/mtpdevice/mtp-toolbar.ui:20
+#, fuzzy
+#| msgid "_Properties"
+msgid "Properties"
+msgstr "Eiginleikar"
+
+#: data/ui/podcast-popups.ui:37
+msgid "Download Episode"
+msgstr ""
+
+#: data/ui/podcast-popups.ui:41
+#, fuzzy
+msgid "Cancel Download"
+msgstr "Hætta við niðurhal"
+
+#: data/ui/podcast-popups.ui:45 plugins/fmradio/fmradio-popup.ui:6
+#: podcast/rb-podcast-source.c:1258 sources/rb-media-player-source.c:1104
+#, fuzzy
+#| msgid "_Delete"
+msgid "Delete"
+msgstr "Eyða"
+
+#: data/ui/podcast-prefs.ui:14
+#, fuzzy
+msgid "Every hour"
+msgstr "Á klukkustundar fresti"
+
+#: data/ui/podcast-prefs.ui:18
+#, fuzzy
+msgid "Every day"
+msgstr "Hvern dag"
+
+#: data/ui/podcast-prefs.ui:22
+#, fuzzy
+msgid "Every week"
+msgstr "Vikulega"
+
+#: data/ui/podcast-prefs.ui:26
+#, fuzzy
+msgid "Manually"
+msgstr "Handvirkt"
+
+#: data/ui/podcast-prefs.ui:49
+msgid "Podcast Downloads"
+msgstr "Niðurhal á hlaðvörpum"
+
+#: data/ui/podcast-prefs.ui:104
+msgid "Check for _new episodes:"
+msgstr "Leita að _nýjum þáttum:"
+
+#: data/ui/podcast-prefs.ui:136
+#, fuzzy
+#| msgid "_Location:"
+msgid "_Download location:"
+msgstr "Staðsetning:"
+
+#: data/ui/podcast-prefs.ui:158
+#, fuzzy
+msgid "Select Folder For Podcasts"
+msgstr "Veldu möppu fyrir Podcast"
+
+#: data/ui/podcast-properties.ui:36
+#, fuzzy
+msgid "Feed:"
+msgstr "Streymi:"
+
+#: data/ui/podcast-properties.ui:52
+#, fuzzy
+msgid "Date:"
+msgstr "Dagsetning:"
+
+#: data/ui/podcast-properties.ui:222 data/ui/song-info-multiple.ui:102
+#: data/ui/song-info.ui:762 plugins/iradio/station-properties.ui:266
+msgid "_Rating:"
+msgstr "Stjörnugjöf:"
+
+#: data/ui/podcast-properties.ui:237 data/ui/song-info.ui:699
+#: plugins/iradio/station-properties.ui:236
+msgid "Play count:"
+msgstr "Fjöldi spilanna:"
+
+#: data/ui/podcast-properties.ui:252 data/ui/song-info.ui:674
+#: plugins/iradio/station-properties.ui:205
+msgid "Last played:"
+msgstr "Síðast spilað:"
+
+#: data/ui/podcast-properties.ui:268 data/ui/song-info.ui:625
+#, fuzzy
+#: plugins/iradio/station-properties.ui:175
+msgid "Bitrate:"
+msgstr "Bitahraði:"
+
+#: data/ui/podcast-properties.ui:283 data/ui/song-info.ui:800
+msgid "Duration:"
+msgstr "Tími:"
+
+#: data/ui/podcast-properties.ui:348
+#, fuzzy
+#| msgid "Add Location"
+msgid "Download location:"
+msgstr "<b>Staðsetning niðurhals</b>"
+
+#: data/ui/podcast-toolbar.ui:20 plugins/iradio/iradio-toolbar.ui:21
+#, fuzzy
+msgid "Add"
+msgstr "Bæta við"
+
+#: data/ui/podcast-toolbar.ui:24
+#, fuzzy
+msgid "Update"
+msgstr "Uppfæra"
+
+#: data/ui/queue-popups.ui:6 data/ui/queue-popups.ui:31
+msgid "Remove from Play Queue"
+msgstr ""
+
+#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
+msgid "Shuffle Play Queue"
+msgstr ""
+
+#: data/ui/queue-popups.ui:35
+msgid "Clear Play Queue"
+msgstr ""
+
+#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3291
+msgid "Shuffle"
+msgstr "Stokka"
+
+#: data/ui/queue-toolbar.ui:15 plugins/artsearch/songinfo.py:52
+#, fuzzy
+msgid "Clear"
+msgstr "Hreinsa"
+
+#: data/ui/song-info-multiple.ui:47 data/ui/song-info.ui:75
+#, fuzzy
+#| msgid "_Album:"
+msgid "Albu_m:"
+msgstr "Plata:"
+
+#: data/ui/song-info-multiple.ui:61 data/ui/song-info.ui:165
+#: plugins/audiocd/album-info.ui:30
+msgid "_Artist:"
+msgstr "Flytjandi:"
+
+#: data/ui/song-info-multiple.ui:75 data/ui/song-info.ui:117
+#: plugins/audiocd/album-info.ui:58 plugins/iradio/station-properties.ui:55
+msgid "_Genre:"
+msgstr "Stíll:"
+
+#: data/ui/song-info-multiple.ui:132 data/ui/song-info.ui:226
+#: plugins/audiocd/album-info.ui:128
+msgid "_Year:"
+msgstr "Á_r:"
+
+#: data/ui/song-info-multiple.ui:159 data/ui/song-info.ui:179
+#, fuzzy
+#| msgid "_Track number:"
+msgid "_Disc number:"
+msgstr "Númer lags:"
+
+#: data/ui/song-info-multiple.ui:185 data/ui/song-info.ui:305
+#, fuzzy
+#| msgid "_Artist:"
+msgid "Album a_rtist:"
+msgstr "Flytjandi:"
+
+#: data/ui/song-info-multiple.ui:211 data/ui/song-info.ui:331
+msgid "_Composer:"
+msgstr "_Tónskáld:"
+
+#. To translators: part of a phrase, for example, track 1 of 10
+#. To translators: part of a phrase, for example, disc 1 of 2
+#: data/ui/song-info-multiple.ui:237 data/ui/song-info.ui:357
+#, fuzzy
+#: data/ui/song-info.ui:368
+msgid "of"
+msgstr "af"
+
+#: data/ui/song-info-multiple.ui:258
+#, fuzzy
+#| msgid "Play count:"
+msgid "_Track count:"
+msgstr "Fjöldi spilanna:"
+
+#: data/ui/song-info-multiple.ui:328 data/ui/song-info.ui:501
+msgid "Albu_m sort order:"
+msgstr ""
+
+#: data/ui/song-info-multiple.ui:342 data/ui/song-info.ui:515
+msgid "_Artist sort order:"
+msgstr ""
+
+#: data/ui/song-info-multiple.ui:356 data/ui/song-info.ui:529
+msgid "Album a_rtist sort order:"
+msgstr ""
+
+#: data/ui/song-info-multiple.ui:381 data/ui/song-info.ui:553
+msgid "_Composer sort order:"
+msgstr "Röðun _tónskálda:"
+
+#: data/ui/song-info-multiple.ui:411 data/ui/song-info.ui:582
+#, fuzzy
+#| msgid "Rating"
+msgid "Sorting"
+msgstr "Röðun"
+
+#: data/ui/song-info.ui:89 plugins/iradio/station-properties.ui:28
+msgid "_Title:"
+msgstr "Titill:"
+
+#: data/ui/song-info.ui:103
+#, fuzzy
+#| msgid "Track _number"
+msgid "Track _number:"
+msgstr "Númer lags"
+
+#: data/ui/song-info.ui:256
+msgid "_BPM:"
+msgstr "_BPM:"
+
+#: data/ui/song-info.ui:270
+#, fuzzy
+msgid "Comm_ent:"
+msgstr "At_hugasemd:"
+
+#: data/ui/song-info.ui:430 plugins/iradio/station-properties.ui:106
+#, fuzzy
+msgid "Error message"
+msgstr "Villuskilaboð"
+
+#: data/ui/song-info.ui:600
+msgid "File name:"
+msgstr "Skráarnafn:"
+
+#: data/ui/song-info.ui:650
+msgid "Location:"
+msgstr "Staðsetning:"
+
+#: data/ui/song-info.ui:828
+#, fuzzy
+#| msgid "File name:"
+msgid "File size:"
+msgstr "Skráarstærð"
+
+#: data/ui/song-info.ui:853
+#, fuzzy
+msgid "Date added:"
+msgstr "Bætt við þann"
+
+#: data/ui/sync-state.ui:16
+#, fuzzy
+#| msgid "_Contents"
+msgid "Current contents"
+msgstr "Innihald"
+
+#: data/ui/sync-state.ui:45
+msgid "Contents after sync"
+msgstr ""
+
+#: data/ui/sync-state.ui:79
+msgid "Added files:"
+msgstr ""
+
+#: data/ui/sync-state.ui:91
+msgid "Removed files:"
+msgstr "Fjarlægðar skrár:"
+
+#: lib/rb-cut-and-paste-code.c:94
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:235
+#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3849
+#: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1574
+#: widgets/rb-entry-view.c:1588 widgets/rb-song-info.c:1545
+msgid "Never"
+msgstr "Aldrei"
+
+#. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
+#: lib/rb-cut-and-paste-code.c:105
+msgid "Today %I:%M %p"
+msgstr "Í dag %H:%M"
+
+#. Translators: "friendly time" string for the previous day,
+#. * strftime format. e.g. "Yesterday 12:34 am"
+#.
+#: lib/rb-cut-and-paste-code.c:116
+msgid "Yesterday %I:%M %p"
+msgstr "Í gær klukkan %H:%M"
+
+#. Translators: "friendly time" string for a day in the current week,
+#. * strftime format. e.g. "Wed 12:34 am"
+#.
+#: lib/rb-cut-and-paste-code.c:130
+msgid "%a %I:%M %p"
+msgstr "%a %H:%M"
+
+#. Translators: "friendly time" string for a day in the current year,
+#. * strftime format. e.g. "Feb 12 12:34 am"
+#.
+#: lib/rb-cut-and-paste-code.c:143
+msgid "%b %d %I:%M %p"
+msgstr "%d. %b %H:%M"
+
+#. Translators: "friendly time" string for a day in a different year,
+#. * strftime format. e.g. "Feb 12 1997"
+#.
+#: lib/rb-cut-and-paste-code.c:148
+msgid "%b %d %Y"
+msgstr "%d. %b %Y"
+
+#. impossible time or broken locale settings
+#. we really do need to fix this so untagged entries actually have NULL rather than
+#. * a translated string.
+#.
+#. don't search for 'unknown' when we don't have the artist or title information
+#. Translators: unknown track title
+#: lib/rb-cut-and-paste-code.c:158 lib/rb-util.c:581
+#: plugins/android/rb-android-source.c:727 plugins/artsearch/lastfm.py:163
+#: plugins/artsearch/lastfm.py:164 plugins/artsearch/songinfo.py:93
+#: plugins/audiocd/rb-audiocd-source.c:526
+#: plugins/audioscrobbler/rb-audioscrobbler.c:585
+#: plugins/audioscrobbler/rb-audioscrobbler.c:589
+#: plugins/audioscrobbler/rb-audioscrobbler-entry.c:93
+#: plugins/audioscrobbler/rb-audioscrobbler-entry.c:100
+#: plugins/daap/rb-rhythmdb-dmap-db-adapter.c:136
+#: plugins/generic-player/rb-generic-player-source.c:1031
+#: plugins/ipod/rb-ipod-source.c:651 plugins/iradio/rb-iradio-source.c:525
+#: plugins/iradio/rb-iradio-source.c:1044
+#: plugins/iradio/rb-station-properties-dialog.c:485
+#: plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
+#: plugins/mtpdevice/rb-mtp-source.c:650 plugins/mtpdevice/rb-mtp-source.c:1140
+#: plugins/mtpdevice/rb-mtp-source.c:1471
+#: plugins/notification/rb-notification-plugin.c:508
+#: podcast/rb-feed-podcast-properties-dialog.c:335
+#: podcast/rb-podcast-add-dialog.c:646 podcast/rb-podcast-manager.c:1306
+#: podcast/rb-podcast-manager.c:1420 podcast/rb-podcast-properties-dialog.c:636
+#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:792
+#: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
+#: rhythmdb/rhythmdb.c:2093 rhythmdb/rhythmdb.c:2099 rhythmdb/rhythmdb.c:2114
+#: rhythmdb/rhythmdb.c:2148 rhythmdb/rhythmdb.c:5615 rhythmdb/rhythmdb.c:5621
+#: rhythmdb/rhythmdb.c:5626 rhythmdb/rhythmdb.c:5637 rhythmdb/rhythmdb.c:5641
+#: rhythmdb/rhythmdb-entry-type.c:301 rhythmdb/rhythmdb-metadata-cache.c:308
+#: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
+#: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
+#: shell/rb-shell-player.c:869 shell/rb-shell-player.c:2714
+#: shell/rb-shell-player.c:2716 widgets/rb-entry-view.c:996
+#: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
+#: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
+#: widgets/rb-header.c:1279 widgets/rb-header.c:1305 widgets/rb-song-info.c:950
+#: widgets/rb-song-info.c:962 widgets/rb-song-info.c:1234
+#: widgets/rb-song-info.c:1572
+msgid "Unknown"
+msgstr "Óþekkt"
+
+#: lib/rb-file-helpers.c:457
+#, fuzzy, c-format
+msgid "Too many symlinks"
+msgstr "Það eru of margir táknrænir tenglar"
+
+#: lib/rb-file-helpers.c:1292
+#, fuzzy, c-format
+msgid "Cannot get free space at %s: %s"
+msgstr "Gat ekki fengið laust pláss á %s: %s"
+
+#: lib/rb-util.c:562 plugins/context/tmpl/album-tmpl.html:21
+#: remote/dbus/rb-client.c:220
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:993
-msgid "Very Low"
-msgstr "Mjög Léleg"
-
-#: widgets/rb-entry-view.c:995
-msgid "Low"
-msgstr "Léleg"
-
-#: widgets/rb-entry-view.c:997
-msgid "Regular"
-msgstr "Venjuleg"
-
-#: widgets/rb-entry-view.c:999
-msgid "High"
-msgstr "Góð"
-
-#: widgets/rb-entry-view.c:1001
-msgid "Very High"
-msgstr "Mjög Góð"
-
-#: widgets/rb-entry-view.c:1003
-msgid "Perfect"
-msgstr "Fullkomin"
-
-#: widgets/rb-entry-view.c:1209
-msgid "_Title"
-msgstr "Titill"
-
-#: widgets/rb-entry-view.c:1220
-msgid "Art_ist"
-msgstr "Flytjandi"
-
-#: widgets/rb-entry-view.c:1242
-msgid "Ge_nre"
-msgstr "Stíll"
-
-#: widgets/rb-entry-view.c:1252
-msgid "Ti_me"
-msgstr "Tími"
-
-#: widgets/rb-entry-view.c:1261
-msgid "_Quality"
-msgstr "Gæði"
-
-#: widgets/rb-entry-view.c:1271
-msgid "_Play Count"
-msgstr "Fjöldi Spilana"
-
-#: widgets/rb-entry-view.c:1280
-msgid "L_ast Played"
-msgstr "Síðast Spilað"
-
-#: widgets/rb-entry-view.c:1425
-msgid "Now Playing"
-msgstr "Nú spilandi"
-
-#: widgets/rb-header.c:278
-msgid "Listening to "
-msgstr "Hlusta á "
-
-#: widgets/rb-header.c:541
-msgid "Get information on this album from the web"
-msgstr "Sækja upplýsingar um þessa plötu af vefnum"
-
-#: widgets/rb-header.c:560
-msgid "Get information on this artist from the web"
-msgstr "Sækja upplýsingar um þennan flytjanda af vefnum"
-
-#: widgets/rb-header.c:588
-msgid "Get information on this station from the web"
-msgstr "Sækja upplýsingar um þessa stöð af vefnum"
-
-#: widgets/rb-header.c:862
-#, c-format
-msgid "%d:%02d of %d:%02d"
+#: lib/rb-util.c:564 plugins/context/tmpl/album-tmpl.html:19
+#: remote/dbus/rb-client.c:222
+#, fuzzy, c-format
+#| msgid "%d:%02d of %d:%02d"
+msgid "%d:%02d:%02d"
 msgstr "%d:%02d af %d:%02d"
 
-#: widgets/rb-header.c:870
+#: lib/rb-util.c:628
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d af %d:%02d eftir"
 
-#: widgets/rb-load-failure-dialog.c:119
-msgid "Error loading files into library"
-msgstr "Gat ekki hlaðið skrár inn í safn"
+#: lib/rb-util.c:632
+#, fuzzy, c-format
+#| msgid "%d:%02d of %d:%02d remaining"
+msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
+msgstr "%d:%02d af %d:%02d eftir"
 
-#: widgets/rb-load-failure-dialog.c:136
-msgid "_Error"
+#: lib/rb-util.c:637
+#, c-format
+msgid "%d:%02d of %d:%02d"
+msgstr "%d:%02d af %d:%02d"
+
+#: lib/rb-util.c:641
+#, fuzzy, c-format
+#| msgid "%d:%02d of %d:%02d"
+msgid "%d:%02d:%02d of %d:%02d:%02d"
+msgstr "%d:%02d af %d:%02d"
+
+#: metadata/rb-metadata-gst.c:509
+#, c-format
+msgid "Unable to write tags to this file as it contains multiple streams"
+msgstr ""
+
+#: metadata/rb-metadata-gst.c:549
+#, c-format
+msgid ""
+"Unable to write tags to this file as it is not encoded in a supported format"
+msgstr ""
+
+#: metadata/rb-metadata-gst.c:681
+#, fuzzy, c-format
+#| msgid "Failed to create %s element; check your installation"
+msgid "Failed to create a source element; check your installation"
+msgstr "Gat ekki búið til %s; athugaðu uppsetningu tölvunnar"
+
+#: metadata/rb-metadata-gst.c:691
+#, fuzzy, c-format
+#| msgid "Failed to create %s element; check your installation"
+msgid ""
+"Failed to create the 'decodebin' element; check your GStreamer installation"
+msgstr "Gat ekki búið til %s; athugaðu uppsetningu tölvunnar"
+
+#: metadata/rb-metadata-gst.c:700
+#, fuzzy, c-format
+#| msgid "Failed to create %s element; check your installation"
+msgid ""
+"Failed to create the 'giostreamsink' element; check your GStreamer "
+"installation"
+msgstr "Gat ekki búið til %s; athugaðu uppsetningu tölvunnar"
+
+#: metadata/rb-metadata-gst.c:783
+#, fuzzy, c-format
+msgid "File corrupted during write"
+msgstr "Skrá skemmdist við skrif"
+
+#: plugins/android/android.plugin.desktop.in:6
+msgid "Android devices"
+msgstr ""
+
+#: plugins/android/android.plugin.desktop.in:7
+msgid "Support for Android 4.0+ devices (via MTP)"
+msgstr ""
+
+#: plugins/android/android-info.ui:40
+#, fuzzy
+#: plugins/generic-player/generic-player-info.ui:40
+#: plugins/ipod/ipod-info.ui:250 plugins/mtpdevice/mtp-info.ui:40
+msgid "Model:"
+msgstr "Tegund:"
+
+#: plugins/android/android-info.ui:68
+#: plugins/generic-player/generic-player-info.ui:68
+#: plugins/ipod/ipod-info.ui:224 plugins/mtpdevice/mtp-info.ui:67
+#, fuzzy
+#| msgid "_Track number:"
+msgid "Serial number:"
+msgstr "Raðnúmer:"
+
+#: plugins/android/android-info.ui:82
+#, fuzzy
+#: plugins/generic-player/generic-player-info.ui:82
+#: plugins/mtpdevice/mtp-info.ui:109
+msgid "Manufacturer:"
+msgstr "Framleiðandi"
+
+#: plugins/android/android-info.ui:107
+#: plugins/generic-player/generic-player-info.ui:107
+#: plugins/ipod/ipod-info.ui:277 plugins/mtpdevice/mtp-info.ui:134
+msgid "Audio formats:"
+msgstr ""
+
+#: plugins/android/android-info.ui:136
+#, fuzzy
+#: plugins/generic-player/generic-player-info.ui:136
+#: plugins/ipod/ipod-info.ui:304 plugins/mtpdevice/mtp-info.ui:162
+msgid "System"
+msgstr "Kerfi"
+
+#: plugins/android/android-info.ui:168
+#: plugins/generic-player/generic-player-info.ui:168
+#: plugins/mtpdevice/mtp-info.ui:194
+#, fuzzy
+#| msgid "File name:"
+msgid "Device _name:"
+msgstr "Skráarnafn:"
+
+#: plugins/android/android-info.ui:182
+#, fuzzy
+#: plugins/generic-player/generic-player-info.ui:182
+#: plugins/ipod/ipod-info.ui:41 plugins/mtpdevice/mtp-info.ui:208
+msgid "Tracks:"
+msgstr "Hljóðspor:"
+
+#: plugins/android/android-info.ui:195
+#: plugins/generic-player/generic-player-info.ui:195
+#: plugins/ipod/ipod-info.ui:63 plugins/mtpdevice/mtp-info.ui:232
+#, fuzzy
+#| msgid "Playlist"
+msgid "Playlists:"
+msgstr "Spilunarlistar"
+
+#: plugins/android/rb-android-source.c:201
+msgid ""
+"No storage areas found on this device. You may need to unlock it and enable "
+"MTP."
+msgstr ""
+
+#: plugins/android/rb-android-source.c:403
+#: plugins/generic-player/rb-generic-player-source.c:563
+#, c-format
+msgid "Scanning %s"
+msgstr ""
+
+#: plugins/android/rb-android-source.c:426
+msgid "Error mounting Android device"
+msgstr ""
+
+#: plugins/artsearch/artsearch.plugin.desktop.in:7
+#, fuzzy
+msgid "Cover art search"
+msgstr "Finna plötuumslag"
+
+#: plugins/artsearch/artsearch.plugin.desktop.in:8
+#, fuzzy
+msgid "Fetch album covers from the Internet"
+msgstr "Sækja plötuumslög af netinu"
+
+#: plugins/artsearch/songinfo.py:56
+msgid "_Fetch"
+msgstr "Sæ_kja"
+
+#: plugins/artsearch/songinfo.py:60
+#, fuzzy
+#| msgid "_Browser"
+msgid "_Browse"
+msgstr "_Finna..."
+
+#: plugins/artsearch/songinfo.py:134
+msgid "Select new artwork"
+msgstr ""
+
+#: plugins/artsearch/songinfo.py:136
+#, fuzzy
+#| msgid "Select _All"
+msgid "_Select"
+msgstr "_Velja"
+
+#: plugins/audiocd/album-info.ui:16
+#, fuzzy
+#| msgid "A_lbum"
+msgid "A_lbum:"
+msgstr "Plata"
+
+#: plugins/audiocd/album-info.ui:44
+#, fuzzy
+msgid "Artist s_ort order:"
+msgstr "Listamaður, _röð:"
+
+#: plugins/audiocd/album-info.ui:161
+msgid "_Disc:"
+msgstr "_Diskur:"
+
+#: plugins/audiocd/audiocd.plugin.desktop.in:6
+#, fuzzy
+#| msgid "Audio CD track"
+msgid "Audio CD Player"
+msgstr "Lag af geisladisk"
+
+#: plugins/audiocd/audiocd.plugin.desktop.in:7
+#, fuzzy
+msgid "Support for playing of audio CDs as music source"
+msgstr "Stuðningur við að nota tónlistardiska sem tónlistarkeldu"
+
+#: plugins/audiocd/audiocd-toolbar.ui:11
+#, fuzzy
+msgid "Extract"
+msgstr "Afþjappa"
+
+#: plugins/audiocd/audiocd-toolbar.ui:15
+#, fuzzy
+#: plugins/generic-player/generic-player-toolbar.ui:24
+#: plugins/ipod/ipod-toolbar.ui:24 plugins/mtpdevice/mtp-toolbar.ui:24
+msgid "Eject"
+msgstr "Spýta út"
+
+#: plugins/audiocd/audiocd-toolbar.ui:19
+#, fuzzy
+msgid "Reload"
+msgstr "Endurnýja"
+
+#: plugins/audiocd/rb-audiocd-info.c:57
+msgid "Could not find a GStreamer CD source plugin"
+msgstr ""
+
+#: plugins/audiocd/rb-audiocd-source.c:386
+#, fuzzy
+msgid "Select tracks to be extracted"
+msgstr "Veldu lögin sem þú vilt afrita"
+
+#: plugins/audiocd/rb-audiocd-source.c:532
+#, fuzzy
+#| msgid "<invalid filename>"
+msgid "<Invalid unicode>"
+msgstr "<ólöglegt skráarnafn>"
+
+#: plugins/audiocd/rb-audiocd-source.c:595
+#, fuzzy
+#| msgid "_Album:"
+msgid "S_ubmit Album"
+msgstr "Plata:"
+
+#: plugins/audiocd/rb-audiocd-source.c:596
+#: plugins/audiocd/rb-audiocd-source.c:634
+#: plugins/audiocd/rb-audiocd-source.c:672
+msgid "H_ide"
+msgstr "_Fela"
+
+#: plugins/audiocd/rb-audiocd-source.c:599
+#, fuzzy
+msgid "Could not find this album on MusicBrainz."
+msgstr "Þessi plata fannst ekki á MusicBrainz."
+
+#: plugins/audiocd/rb-audiocd-source.c:600
+#, fuzzy
+msgid "You can improve the MusicBrainz database by adding this album."
+msgstr ""
+"Þú getur bætt MusicBrainz gagnagrunninn með því að bæta þessari plötu við."
+
+#: plugins/audiocd/rb-audiocd-source.c:633
+#, fuzzy
+#: plugins/audiocd/rb-audiocd-source.c:671
+msgid "_Retry"
+msgstr "_Reyna aftur"
+
+#: plugins/audiocd/rb-audiocd-source.c:637
+msgid "Could not search MusicBrainz for album details."
+msgstr ""
+
+#: plugins/audiocd/rb-audiocd-source.c:675
+msgid "Could not read the CD device."
+msgstr ""
+
+#: plugins/audiocd/rb-audiocd-source.c:879
+msgid "This disc matches multiple albums. Select the correct album."
+msgstr ""
+
+#: plugins/audiocd/rb-audiocd-source.c:1087
+#, fuzzy, c-format
+#| msgid "Track %.2d"
+msgid "Track %u"
+msgstr "Númer %.2d"
+
+#: plugins/audiocd/rb-musicbrainz-lookup.c:410
+#, fuzzy
+msgid "Not found"
+msgstr "Fannst ekki"
+
+#: plugins/audiocd/rb-musicbrainz-lookup.c:415
+msgid "Unable to connect to Musicbrainz server"
+msgstr ""
+
+#: plugins/audiocd/rb-musicbrainz-lookup.c:420
+msgid "Musicbrainz server error"
+msgstr ""
+
+#: plugins/audioscrobbler/audioscrobbler.plugin.desktop.in:5
+#, fuzzy
+#: plugins/audioscrobbler/audioscrobbler-preferences.ui:57
+msgid "Last.fm"
+msgstr "Last.fm"
+
+#: plugins/audioscrobbler/audioscrobbler.plugin.desktop.in:6
+#, fuzzy
+msgid "Submits song information to Last.fm and plays Last.fm radio streams"
+msgstr "Sendir upplýsingar um lög til Last.fm og spilar tónlist frá Last.fm"
+
+#: plugins/audioscrobbler/audioscrobbler-preferences.ui:24
+msgid "Which Audioscrobbler services do you wish to use?"
+msgstr ""
+
+#: plugins/audioscrobbler/audioscrobbler-preferences.ui:73
+msgid "Libre.fm"
+msgstr ""
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:78
+#, fuzzy
+msgid "Logout"
+msgstr "Útskráning"
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:126
+msgid "View your profile"
+msgstr ""
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:149
+msgid "Submit listening data"
+msgstr ""
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:181
+#, fuzzy
+msgid "Status:"
+msgstr "Staða:"
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:193
+#, fuzzy
+msgid "Queued tracks:"
+msgstr "Lög í biðröð:"
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:207
+#, fuzzy
+#| msgid "_Track number:"
+msgid "Tracks submitted:"
+msgstr "Númer lags:"
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:221
+#, fuzzy
+msgid "Last submission time:"
+msgstr "Síðasti innsendingartími:"
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:251
+#, fuzzy
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:858
+msgid "Disabled"
+msgstr "Óvirkt"
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:299
+msgid "Submission statistics"
+msgstr ""
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:352
+#, fuzzy
+#| msgid "Create a new Internet Radio station"
+msgid "Create a Radio Station"
+msgstr "Búa til nýja vef-útvarpsstöð"
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:373
+#, fuzzy
+msgid "Type:"
+msgstr "Tegund:"
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:411
+#, fuzzy
+#| msgid "greater than"
+msgid "Create Station"
+msgstr "stærra en"
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:461
+msgid "Recently Listened Tracks"
+msgstr ""
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:505
+#, fuzzy
+#| msgid "Artist"
+msgid "Top Artists"
+msgstr "Flytjandi"
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:549
+msgid "Top Tracks"
+msgstr ""
+
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:593
+#, fuzzy
+msgid "Loved Tracks"
+msgstr "Uppáhaldslög"
+
+#: plugins/audioscrobbler/rb-audioscrobbler.c:494
+#, fuzzy
+msgid "OK"
+msgstr "Í lagi"
+
+#: plugins/audioscrobbler/rb-audioscrobbler.c:497
+#, fuzzy
+msgid "Logging in"
+msgstr "Innskráning í gangi"
+
+#: plugins/audioscrobbler/rb-audioscrobbler.c:500
+#, fuzzy
+msgid "Request failed"
+msgstr "Beiðni mistókst"
+
+#: plugins/audioscrobbler/rb-audioscrobbler.c:503
+#, fuzzy
+msgid "Authentication error"
+msgstr "Auðkenningarvilla"
+
+#: plugins/audioscrobbler/rb-audioscrobbler.c:506
+#, fuzzy
+msgid "Clock is not set correctly"
+msgstr "Klukkan er rangt stillt"
+
+#: plugins/audioscrobbler/rb-audioscrobbler.c:509
+msgid "This version of Rhythmbox has been banned."
+msgstr ""
+
+#: plugins/audioscrobbler/rb-audioscrobbler.c:512
+#, fuzzy
+msgid "Track submission failed too many times"
+msgstr "Innsending laga mistókst of oft"
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:669
+#, fuzzy
+msgid "Love"
+msgstr "Elska"
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:673
+#, fuzzy
+msgid "Ban"
+msgstr "Banna"
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:677
+#, fuzzy
+#: plugins/magnatune/magnatune-toolbar.ui:16
+msgid "Download"
+msgstr "Sækja"
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:775
+msgid "You are not currently logged in."
+msgstr ""
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:776
+#, fuzzy
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:794
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:801
+msgid "Log in"
+msgstr "Skrá inn"
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:782
+#, fuzzy
+msgid "Waiting for authentication..."
+msgstr "Býð eftir auðkenningu..."
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:783
+#, fuzzy
+msgid "Cancel"
+msgstr "Hætta við"
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:793
+msgid "Authentication error. Please try logging in again."
+msgstr ""
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:800
+msgid "Connection error. Please try logging in again."
+msgstr ""
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1210
+#, fuzzy
+#| msgid "Library"
+msgid "My Library"
+msgstr "Safnið mitt"
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1218
+#, fuzzy
+msgid "My Recommendations"
+msgstr "Ég mæli með"
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1226
+msgid "My Neighbourhood"
+msgstr ""
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1393
+#, fuzzy, c-format
+#| msgid "_Last played"
+msgid "%s plays"
+msgstr "Síðast spilað"
+
+#. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+#. * This is the label for menu item which when activated will take the user to the
+#. * artist/track's page on the service's website.
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1636
+#, fuzzy, c-format
+#| msgid "_View"
+msgid "_View on %s"
+msgstr "Sýn"
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1653
+msgid "Listen to _Similar Artists Radio"
+msgstr ""
+
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1667
+msgid "Listen to _Top Fans Radio"
+msgstr ""
+
+#. Translators: describes a radio stream playing tracks similar to those by an artist.
+#. * Followed by a text entry box for the artist name.
+#.
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:55
+msgid "Similar to Artist:"
+msgstr ""
+
+#. Translators: describes a radio stream playing tracks listened to by the top fans of
+#. * a particular artist.  Followed by a text entry box for the artist name.
+#.
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:59
+msgid "Top Fans of Artist:"
+msgstr ""
+
+#. Translators: describes a radio stream playing tracks from the library of a particular
+#. * user.  Followed by a text entry box for the user name.
+#.
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:63
+#, fuzzy
+#| msgid "Library"
+msgid "Library of User:"
+msgstr "Tónlistarsafn"
+
+#. Translators: describes a radio stream playing tracks played by users similar to a
+#. * particular user.  Followed by a text entry box for the user name.
+#.
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:67
+msgid "Neighbourhood of User:"
+msgstr ""
+
+#. Translators: describes a radio stream playing tracks that a particular user has marked
+#. * as loved.  Followed by a text entry box for the user name.
+#.
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:71
+msgid "Tracks Loved by User:"
+msgstr ""
+
+#. Translators: describes a radio stream playing tracks recommended to a particular user.
+#. * Followed by a text entry box for the user name.
+#.
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:75
+msgid "Recommendations for User:"
+msgstr ""
+
+#. Translators: a type of station named "Mix Radio" by Last.fm.
+#. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for a description of it.
+#. * Followed by a text entry box for the user name.
+#.
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:80
+msgid "Mix Radio for User:"
+msgstr ""
+
+#. Translators: describes a radio stream playing tracks tagged with a particular tag.
+#. * Followed by a text entry box for the tag.
+#.
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:84
+msgid "Tracks Tagged with:"
+msgstr ""
+
+#. Translators: describes a radio stream playing tracks often listened to by members of
+#. * a particular group. Followed by a text entry box for the group name.
+#.
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:88
+msgid "Listened by Group:"
+msgstr ""
+
+#. Translators: I have chosen these names for the radio stations based upon
+#. * what last.fm's website uses or what I thought to be sensible.
+#.
+#. Translators: station is built from artists similar to the artist %s
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:123
+#, fuzzy, c-format
+#| msgid "Radio"
+msgid "%s Radio"
+msgstr "Útvarp"
+
+#. Translators: station is built from the artist %s's top fans
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:125
+#, c-format
+msgid "%s Fan Radio"
+msgstr ""
+
+#. Translators: station is built from the library of the user %s
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:127
+#, fuzzy, c-format
+#| msgid "Library"
+msgid "%s's Library"
+msgstr "Tónlistarsafn"
+
+#. Translators: station is built from the "neighbourhood" of the user %s.
+#. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:130
+#, c-format
+msgid "%s's Neighbourhood"
+msgstr ""
+
+#. Translators: station is built from the tracks which have been "loved" by the user %s
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:132
+#, fuzzy, c-format
+msgid "%s's Loved Tracks"
+msgstr "Uppáhalds lög %s"
+
+#. Translators: station is built from the tracks which are recommended to the user %s
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:134
+#, c-format
+msgid "%s's Recommended Radio"
+msgstr ""
+
+#. Translators: station is the "Mix Radio" for the user %s.
+#. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for description.
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:137
+#, c-format
+msgid "%s's Mix Radio"
+msgstr ""
+
+#. Translators: station is built from the tracks which have been "tagged" with %s.
+#. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
+#. * but nationalities, record labels, decades and very random words are also common
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:141
+#, c-format
+msgid "%s Tag Radio"
+msgstr ""
+
+#. Translators: station is built from the library of the group %s
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:143
+#, fuzzy, c-format
+msgid "%s Group Radio"
+msgstr "Hópútvarp %s"
+
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:693
+msgid "Error tuning station: no response"
+msgstr ""
+
+#. Invalid station url
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:725
+msgid "Invalid station URL"
+msgstr ""
+
+#. Subscriber only station
+#. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+#. * This message indicates that to listen to this radio station the user needs to be
+#. * a paying subscriber to the service.
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:731
+#, c-format
+msgid "This station is only available to %s subscribers"
+msgstr ""
+
+#. Not enough content
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:735
+msgid "Not enough content to play station"
+msgstr ""
+
+#. Deprecated station
+#. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
+#. * This message indicates that the service has deprecated this type of station.
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:740
+#, c-format
+msgid "%s no longer supports this type of station"
+msgstr ""
+
+#. Other error
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:744
+#, fuzzy, c-format
+#| msgid "Error renaming '%s' to '%s' (%s).\n"
+msgid "Error tuning station: %i - %s"
+msgstr "Villa við endurskíringu '%s' í '%s' (%s).\n"
+
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:754
+msgid "Error tuning station: unexpected response"
+msgstr ""
+
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:759
+msgid "Error tuning station: invalid response"
+msgstr ""
+
+#: plugins/brasero-disc-recorder/cd-recorder.plugin.desktop.in:5
+#, fuzzy
+#| msgid "Audio CD track"
+msgid "Audio CD Recorder"
+msgstr "Lag af geisladisk"
+
+#: plugins/brasero-disc-recorder/cd-recorder.plugin.desktop.in:6
+#, fuzzy
+msgid "Record audio CDs from playlists and duplicate audio CDs"
+msgstr "Brenna tónlistardiska frá lagalistum og fjölfalda tónlistardiska"
+
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:159
+#, fuzzy
+msgid "Rhythmbox could not duplicate the disc"
+msgstr "Rhythmbox gat ekki afritað þennan disk"
+
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:164
+#, fuzzy
+msgid "Rhythmbox could not record the audio disc"
+msgstr "Rhythmbox gat ekki brennt tónlistardisk"
+
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:195
+#, fuzzy, c-format
+#| msgid "Failed to find an audio track"
+msgid "Unable to build an audio track list"
+msgstr "Fann ekki hljóðskrá"
+
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:206
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:398
+#, fuzzy, c-format
+msgid "Unable to write audio project file %s: %s"
+msgstr "Það tókst ekki að skrifa tónlistarverkefnið %s: %s"
+
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:224
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:405
+#, fuzzy, c-format
+msgid "Unable to write audio project"
+msgstr "Það tókst ekki að skrifa tónlistarverkefnið"
+
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:445
+#, fuzzy
+#| msgid "Failed to create directory %s."
+msgid "Unable to create audio CD project"
+msgstr "Gat ekki búið til skráarsafnið %s."
+
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:648
+#, fuzzy
+#| msgid "Import _Audio CD..."
+msgid "Create Audio CD..."
+msgstr "Bæta við af geisladisk..."
+
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:654
+#, fuzzy
+#| msgid "Import _Audio CD..."
+msgid "Duplicate Audio CD..."
+msgstr "Bæta við af geisladisk..."
+
+#: plugins/context/AlbumTab.py:57
+#: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2395
+#, fuzzy
+#| msgid "Album"
+msgid "Albums"
+msgstr "Albúm"
+
+#. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
+#: plugins/context/AlbumTab.py:120
+#, python-format
+msgid "Loading top albums for %s"
+msgstr ""
+
+#: plugins/context/ArtistTab.py:59 plugins/magnatune/magnatune-toolbar.ui:20
+#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1457
+#: widgets/rb-library-browser.c:135
+msgid "Artist"
+msgstr "Flytjandi"
+
+#: plugins/context/ArtistTab.py:119
+#, python-format
+msgid "Loading biography for %s"
+msgstr ""
+
+#: plugins/context/context.plugin.desktop.in:7
+#: plugins/context/ContextView.py:90
+msgid "Context Pane"
+msgstr ""
+
+#: plugins/context/context.plugin.desktop.in:8
+#, fuzzy
+#| msgid "Scroll the view to the currently playing song"
+msgid "Show information related to the currently playing artist and song."
+msgstr "Hoppa í núverandi lag"
+
+#: plugins/context/LastFM.py:42
+msgid ""
+"This information is only available to Last.fm users. Ensure the Last.fm "
+"plugin is enabled, select Last.fm in the side pane, and log in."
+msgstr ""
+
+#: plugins/context/LinksTab.py:55
+#, fuzzy
+msgid "Links"
+msgstr "Tenglar"
+
+#: plugins/context/LinksTab.py:183
+msgid "No artist specified."
+msgstr ""
+
+#: plugins/context/LyricsTab.py:53 plugins/lyrics/lyrics.py:306
+#, fuzzy
+#: plugins/lyrics/lyrics.py:391
+msgid "Lyrics"
+msgstr "Lagatextar"
+
+#: plugins/context/LyricsTab.py:104
+#, python-format
+msgid "Loading lyrics for %s by %s"
+msgstr ""
+
+#: plugins/context/LyricsTab.py:120
+#, fuzzy
+msgid "Lyrics not found"
+msgstr "Texti fannst ekki"
+
+#: plugins/context/tmpl/album-tmpl.html:46
+#, fuzzy
+msgid "Hide all tracks"
+msgstr "Fela öll lög"
+
+#: plugins/context/tmpl/album-tmpl.html:47
+#, fuzzy
+#: plugins/context/tmpl/album-tmpl.html:80
+msgid "Show all tracks"
+msgstr "Sýna öll lög"
+
+#: plugins/context/tmpl/album-tmpl.html:57
+#, c-format
+msgid "Top albums by %s"
+msgstr ""
+
+#: plugins/context/tmpl/album-tmpl.html:74
+#, c-format
+msgid "%s (%d track)"
+msgid_plural "%s (%d tracks)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/context/tmpl/album-tmpl.html:93
+msgid "Track list not available"
+msgstr ""
+
+#: plugins/context/tmpl/album-tmpl.html:99
+msgid "Unable to retrieve album information:"
+msgstr ""
+
+#: plugins/context/tmpl/artist-tmpl.html:9
+#, fuzzy
+#| msgid "No properties available."
+msgid "No information available"
+msgstr "Engar upplýsingar tiltækar"
+
+#: plugins/context/tmpl/artist-tmpl.html:29
+msgid "Unable to retrieve artist information:"
+msgstr ""
+
+#: plugins/daap/daap.plugin.desktop.in:5
+#, fuzzy
+msgid "DAAP Music Sharing"
+msgstr "DAAP tónlistarsamnýting"
+
+#: plugins/daap/daap.plugin.desktop.in:6
+#, fuzzy
+msgid "Share music and play shared music on your local network"
+msgstr "Samnýta tónlist og spila samnýtta tónlist á staðværa netkerfinu þínu"
+
+#: plugins/daap/daap-prefs.ui:24
+#, fuzzy
+msgid "Sharing"
+msgstr "Deiling"
+
+#: plugins/daap/daap-prefs.ui:81
+msgid "_Look for touch Remotes"
+msgstr ""
+
+#: plugins/daap/daap-prefs.ui:98
+#, fuzzy
+msgid "_Share my music"
+msgstr "_Deila tónlistinni minni"
+
+#: plugins/daap/daap-prefs.ui:128
+#, fuzzy
+#| msgid "Library"
+msgid "Library _name:"
+msgstr "Tónlistarsafn"
+
+#: plugins/daap/daap-prefs.ui:139
+msgid "Forget known Remotes"
+msgstr ""
+
+#: plugins/daap/daap-prefs.ui:154
+#, fuzzy
+msgid "Require _password:"
+msgstr "Krefjast _lykilorðs:"
+
+#: plugins/daap/daap-prefs.ui:224
+msgid "Add Remote"
+msgstr ""
+
+#: plugins/daap/daap-prefs.ui:252
+msgid "Please enter the passcode displayed on your device."
+msgstr ""
+
+#: plugins/daap/daap-prefs.ui:344
+msgid "Could not pair with this Remote"
+msgstr ""
+
+#: plugins/daap/daap-prefs.ui:378
+msgid "You can now control Rhythmbox through your Remote"
+msgstr ""
+
+#: plugins/daap/daap-toolbar.ui:20
+#, fuzzy
+msgid "Disconnect"
+msgstr "Aftengjast"
+
+#: plugins/daap/rb-daap-plugin.c:194
+msgid "Connect to DAAP share..."
+msgstr ""
+
+#: plugins/daap/rb-daap-plugin.c:510
+#, fuzzy
+msgid "New DAAP share"
+msgstr "Ný DAAP samnýting"
+
+#: plugins/daap/rb-daap-plugin.c:510
+#, fuzzy
+msgid "Host:port of DAAP share:"
+msgstr "Hýsitölva:tengi DAAP samnýtingar:"
+
+#: plugins/daap/rb-daap-sharing.c:61
+#, fuzzy, c-format
+#| msgid "_Music"
+msgid "%s's Music"
+msgstr "Tónlist"
+
+#: plugins/daap/rb-daap-source.c:476
+#, fuzzy, c-format
+msgid "The music share '%s' requires a password to connect"
+msgstr "Deiling á tónslist '%s' krefst lykilorðs til að tengjast"
+
+#: plugins/daap/rb-daap-source.c:542
+#, fuzzy
+msgid "Retrieving songs from music share"
+msgstr "Sæki lög frá tónlistarsamnýtingu"
+
+#: plugins/daap/rb-daap-source.c:625
+#, fuzzy
+#| msgid "Could not close output sink"
+msgid "Could not connect to shared music"
+msgstr "Gat ekki lokað úttaks síu"
+
+#: plugins/daap/rb-daap-source.c:692
+#, fuzzy
+msgid "Connecting to music share"
+msgstr "Tengist tónlistarsamnýtingu"
+
+#: plugins/daap/rb-dacp-pairing-page.c:389
+#, fuzzy
+msgid "Connecting..."
+msgstr "Tengist..."
+
+#: plugins/daap/rb-dacp-pairing-page.c:391
+msgid "Could not pair with this Remote."
+msgstr ""
+
+#: plugins/daap/rb-dacp-pairing-page.c:609
+#, fuzzy
+#| msgid "_Remove"
+msgid "Remotes"
+msgstr "Fjarlægja"
+
+#: plugins/dbus-media-server/dbus-media-server.plugin.desktop.in:5
+msgid "MediaServer2 D-Bus interface"
+msgstr ""
+
+#: plugins/dbus-media-server/dbus-media-server.plugin.desktop.in:6
+msgid ""
+"Provides an implementation of the MediaServer2 D-Bus interface specification"
+msgstr ""
+
+#: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1246
+#: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1378
+msgid "All Tracks"
+msgstr ""
+
+#: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2394
+#, fuzzy
+#| msgid "Artist"
+msgid "Artists"
+msgstr "Flytjendur"
+
+#: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2396
+#, fuzzy
+#| msgid "Genre"
+msgid "Genres"
+msgstr "Flokkar"
+
+#: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2405
+#: shell/rb-playlist-manager.c:1072 sources/rb-display-page-group.c:92
+#, fuzzy
+#| msgid "Playlist"
+msgid "Playlists"
+msgstr "Spilunarlistar"
+
+#: plugins/fmradio/fmradio.plugin.desktop.in:5
+#: plugins/fmradio/rb-fm-radio-source.c:243
+#, fuzzy
+#| msgid "Radio"
+msgid "FM Radio"
+msgstr "FM útvarp"
+
+#: plugins/fmradio/fmradio.plugin.desktop.in:6
+#, fuzzy
+msgid "Support for FM radio broadcasting services"
+msgstr "Stuðningur við FM útvarpsþjónustu"
+
+#: plugins/fmradio/fmradio-toolbar.ui:11
+#, fuzzy
+msgid "New"
+msgstr "Nýtt"
+
+#: plugins/fmradio/rb-fm-radio-source.c:403
+#, fuzzy
+#| msgid "New Internet Radio Station"
+msgid "New FM Radio Station"
+msgstr "Ný vef-útvarpsstöð"
+
+#: plugins/fmradio/rb-fm-radio-source.c:404
+#, fuzzy
+msgid "Frequency of radio station"
+msgstr "Tíðni útvarpsstöðvarinnar"
+
+#: plugins/generic-player/generic-player.plugin.desktop.in:6
+#, fuzzy
+msgid "Portable Players"
+msgstr "Tónhlöður"
+
+#: plugins/generic-player/generic-player.plugin.desktop.in:7
+#, fuzzy
+msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
+msgstr "Stuðningur við almenn tónhlöðutæki (auk PSP og Nokia 770)"
+
+#: plugins/generic-player/rb-generic-player-source.c:292
+#: plugins/ipod/rb-ipod-source.c:333
+#, fuzzy, c-format
+#| msgid "_New Playlist..."
+msgid "New Playlist on %s"
+msgstr "Nýr lagalisti"
+
+#: plugins/generic-player/rb-generic-player-source.c:336
+#: sources/rb-library-source.c:375
+#, fuzzy
+#| msgid "_New Playlist..."
+msgid "Add to New Playlist"
+msgstr "Nýr lagalisti"
+
+#: plugins/generic-player/rb-generic-player-source.c:1368
+#, fuzzy
+#: plugins/ipod/rb-ipod-source.c:2045 plugins/mtpdevice/rb-mtp-source.c:1551
+msgid "Advanced"
+msgstr "Meira"
+
+#: plugins/grilo/grilo.plugin.desktop.in:5
+msgid "Grilo media browser"
+msgstr ""
+
+#: plugins/grilo/grilo.plugin.desktop.in:6
+msgid "Browse various local and Internet media sources"
+msgstr ""
+
+#: plugins/grilo/rb-grilo-source.c:407
+msgid "Fetch more tracks"
+msgstr ""
+
+#: plugins/grilo/rb-grilo-source.c:938
+#, c-format
+msgid "Only showing %d result"
+msgid_plural "Only showing %d results"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugins/im-status/im-status.plugin.desktop.in:7
+#, fuzzy
+msgid "IM Status"
+msgstr "Staða í snarskilaboðsforritum"
+
+#: plugins/im-status/im-status.plugin.desktop.in:8
+msgid ""
+"Updates IM status according to the current song (works with Empathy and "
+"Pidgin)"
+msgstr ""
+
+#. Translators: do not translate %(artist)s or %(title)s, they are
+#. string substitution markers (like %s) for the artist and title of
+#. the current playing song.  They can be reordered if necessary.
+#: plugins/im-status/im-status.py:171
+#, python-format
+msgid "♫ %(artist)s - %(title)s ♫"
+msgstr "♫ %(artist)s - %(title)s ♫"
+
+#. Translators: do not translate %(artist)s or %(album)s, they are
+#. string substitution markers (like %s) for the artist and album name
+#. of the current playing song.  They can be reordered if necessary.
+#: plugins/im-status/im-status.py:176
+#, python-format
+msgid "♫ %(artist)s - %(album)s ♫"
+msgstr "♫ %(artist)s - %(album)s ♫"
+
+#. Translators: do not translate %(album)s, it is a string substitution
+#. marker (like %s) for the album name of the current playing song.
+#: plugins/im-status/im-status.py:180
+#, python-format
+msgid "♫ %(album)s ♫"
+msgstr "♫ %(album)s ♫"
+
+#. Translators: do not translate %(title)s, it is a string substitution
+#. marker (like %s) for the title of the current playing song.
+#: plugins/im-status/im-status.py:184
+#, python-format
+msgid "♫ %(title)s ♫"
+msgstr "♫ %(title)s ♫"
+
+#: plugins/im-status/im-status.py:186
+#, fuzzy
+#| msgid "Listening to "
+msgid "♫ Listening to music... ♫"
+msgstr "Hlusta á "
+
+#: plugins/ipod/ipod-info.ui:28
+#, fuzzy
+#| msgid "File name:"
+msgid "iPod _name:"
+msgstr "Skráarnafn:"
+
+#: plugins/ipod/ipod-info.ui:52 plugins/mtpdevice/mtp-info.ui:220
+#, fuzzy
+msgid "Podcasts:"
+msgstr "Pod sendingar"
+
+#: plugins/ipod/ipod-info.ui:148
+msgid "Device node:"
+msgstr ""
+
+#: plugins/ipod/ipod-info.ui:161
+#, fuzzy
+msgid "Mount point:"
+msgstr "Tengipunktur:"
+
+#: plugins/ipod/ipod-info.ui:172
+msgid "Database version:"
+msgstr ""
+
+#: plugins/ipod/ipod-info.ui:198 plugins/mtpdevice/mtp-info.ui:81
+msgid "Firmware version:"
+msgstr ""
+
+#: plugins/ipod/ipod-init.ui:7
+msgid "iPod detected"
+msgstr "iPod fannst"
+
+#: plugins/ipod/ipod-init.ui:36
+msgid "_Initialize"
+msgstr "_Frumstilla"
+
+#: plugins/ipod/ipod-init.ui:101
+#, fuzzy
+msgid "_Name:"
+msgstr "_Heiti:"
+
+#: plugins/ipod/ipod-init.ui:117
+msgid "_Model:"
+msgstr "_Gerð:"
+
+#: plugins/ipod/ipod-init.ui:134
+msgid ""
+"Rhythmbox has detected a device that is probably an uninitialized or "
+"corrupted iPod. It must be initialized before Rhythmbox can use it, but this "
+"will destroy any song metadata already present. If you wish Rhythmbox to "
+"initialize the iPod, please fill in the information below. If the device is "
+"not an iPod, or you do not wish to initialize it, please click cancel."
+msgstr ""
+
+#: plugins/ipod/ipod-init.ui:151
+msgid "Do you want to initialize your iPod?"
+msgstr ""
+
+#: plugins/ipod/ipod.plugin.desktop.in:5
+msgid "Portable Players - iPod"
+msgstr "Tónhlöður - iPod"
+
+#: plugins/ipod/ipod.plugin.desktop.in:6
+msgid "Support for Apple iPod devices (show the content, play from device)"
+msgstr "Stuðningur við Apple iPod tæki (sjá innihaldið, spila af tækinu)"
+
+#: plugins/ipod/rb-ipod-source.c:317
+#, fuzzy
+#| msgid "Save playlist"
+msgid "New playlist"
+msgstr "Nýr lagalisti"
+
+#: plugins/ipod/rb-ipod-source.c:461
+#, fuzzy
+msgid "Unable to initialize new iPod"
+msgstr "Gat ekki frumstillt nýja iPodinn"
+
+#: plugins/ipod/rb-ipod-source.c:1492 podcast/rb-podcast-main-source.c:77
+#, fuzzy
+#: sources/sync/rb-sync-settings-ui.c:263
+#: sources/sync/rb-sync-settings-ui.c:264 sources/sync/rb-sync-state-ui.c:78
+msgid "Podcasts"
+msgstr "Pod sendingar"
+
+#: plugins/iradio/iradio.plugin.desktop.in:6
+#, fuzzy
+#| msgid "New Internet Radio Station"
+msgid "Internet Radio"
+msgstr "Ný vef-útvarpsstöð"
+
+#: plugins/iradio/iradio.plugin.desktop.in:7
+#, fuzzy
+msgid "Support for broadcasting services transmitted via the Internet"
+msgstr "Stuðningur við útvarpsþjónustur sendar yfir netið"
+
+#: plugins/iradio/iradio-popup.ui:6 shell/rb-shell-clipboard.c:258
+#: sources/rb-source.c:1204 widgets/rb-query-creator.c:802
+#, fuzzy
+#| msgid "_Remove"
+msgid "Remove"
+msgstr "Fjarlægja"
+
+#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1487
+#: widgets/rb-library-browser.c:134
+msgid "Genre"
+msgstr "Stíll"
+
+#: plugins/iradio/rb-iradio-source.c:352
+#, fuzzy
+#| msgid "New Internet Radio Station"
+msgid "Search your internet radio stations"
+msgstr "Ný vef-útvarpsstöð"
+
+#: plugins/iradio/rb-iradio-source.c:448
+msgid "Radio"
+msgstr "Útvarp"
+
+#: plugins/iradio/rb-iradio-source.c:588
+#, fuzzy, c-format
+#| msgid "Add Location"
+msgid "%d station"
+msgid_plural "%d stations"
+msgstr[0] "Bæta við Slóð"
+msgstr[1] "Bæta við Slóð"
+
+#. should prevent multiple dialogs?  going to kill this nonsense anyway soon..
+#: plugins/iradio/rb-iradio-source.c:958
+#: plugins/iradio/rb-station-properties-dialog.c:399
+msgid "New Internet Radio Station"
+msgstr "Ný vef-útvarpsstöð"
+
+#: plugins/iradio/rb-iradio-source.c:958
+#, fuzzy
+#| msgid "New Internet Radio Station"
+msgid "URL of internet radio station:"
+msgstr "Ný vef-útvarpsstöð"
+
+#: plugins/iradio/rb-station-properties-dialog.c:395
+#: podcast/rb-feed-podcast-properties-dialog.c:215
+#: podcast/rb-podcast-properties-dialog.c:521
+#: sources/rb-media-player-source.c:567 widgets/rb-song-info.c:1151
+#, c-format
+msgid "%s Properties"
+msgstr "%s Eiginleikar"
+
+#: plugins/iradio/rb-station-properties-dialog.c:487
+#: podcast/rb-podcast-properties-dialog.c:634 widgets/rb-entry-view.c:1022
+#: widgets/rb-song-info.c:1236
+#, fuzzy, c-format
+#| msgid "%d kbps"
+msgid "%lu kbps"
+msgstr "%d kbps"
+
+#: plugins/iradio/rb-station-properties-dialog.c:578
+#, fuzzy
+msgid "Unable to change station property"
+msgstr "Gat ekki breytt eigindum stöðvarinnar"
+
+#: plugins/iradio/rb-station-properties-dialog.c:578
+#, fuzzy, c-format
+msgid "Unable to change station URI to %s, as that station already exists"
+msgstr "Gat ekki breytt slóð stövarðinnar í %s þar sem að stöðin er þegar til"
+
+#: plugins/iradio/station-properties.ui:148
+msgid "L_ocation:"
+msgstr "Staðsetning:"
+
+#: plugins/lirc/rblirc.plugin.desktop.in:5
+msgid "LIRC"
+msgstr ""
+
+#: plugins/lirc/rblirc.plugin.desktop.in:6
+#, fuzzy
+msgid "Control Rhythmbox using an infrared remote control"
+msgstr "Stjórna Rhythmbox með fjarstýringu sem notar innrautt ljós"
+
+#: plugins/listenbrainz/listenbrainz.plugin.desktop.in:7
+#, fuzzy
+#| msgid "Listening to "
+msgid "ListenBrainz"
+msgstr "Hlusta á "
+
+#: plugins/listenbrainz/listenbrainz.plugin.desktop.in:8
+msgid "Submit your listens to ListenBrainz"
+msgstr ""
+
+#: plugins/listenbrainz/settings.ui:29
+#, fuzzy
+msgid "User token:"
+msgstr "Leynistrengur notanda"
+
+#: plugins/listenbrainz/settings.ui:40
+msgid ""
+"To submit your listens to ListenBrainz, enter your ListenBrainz user token "
+"below. You can see your user token in your <a href=\"https://listenbrainz."
+"org/profile/\">user profile</a>."
+msgstr ""
+
+#: plugins/lyrics/LyricsConfigureDialog.py:103
+#, fuzzy
+#| msgid "Choose a playlist to be loaded"
+msgid "Choose lyrics folder..."
+msgstr "Veldu lagalista til að opna"
+
+#: plugins/lyrics/lyrics.plugin.desktop.in:7 plugins/lyrics/lyrics.py:414
+#, fuzzy
+#| msgid "Song Properties"
+msgid "Song Lyrics"
+msgstr "Eiginleikar lags"
+
+#: plugins/lyrics/lyrics.plugin.desktop.in:8
+#, fuzzy
+msgid "Fetch song lyrics from the Internet"
+msgstr "Sækja lagatexta af netinu"
+
+#: plugins/lyrics/lyrics-prefs.ui:39
+#, fuzzy
+msgid "Search engines"
+msgstr "Leitarvélar"
+
+#: plugins/lyrics/lyrics-prefs.ui:114
+#, fuzzy
+#| msgid "_Browse..."
+msgid "Browse..."
+msgstr "Fletta..."
+
+#: plugins/lyrics/lyrics-prefs.ui:142
+msgid "Lyrics Folder"
+msgstr ""
+
+#: plugins/lyrics/lyrics.py:169 plugins/lyrics/lyrics.py:217
+#, fuzzy
+#: plugins/lyrics/lyrics.py:227
+msgid "No lyrics found"
+msgstr "Engir lagatextar fundust"
+
+#: plugins/lyrics/lyrics.py:272 plugins/lyrics/lyrics.py:285
+msgid "_Edit"
+msgstr "Sýsl"
+
+#: plugins/lyrics/lyrics.py:287
+#, fuzzy
+#| msgid "_Search:"
+msgid "_Search again"
+msgstr "Leita:"
+
+#: plugins/lyrics/lyrics.py:346
+msgid "Searching for lyrics..."
+msgstr "Leita að lagatextum..."
+
+#. { 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
+#. { 'id': 'winampcn.com', 	'class': WinampcnParser, 	'name': _("WinampCN (www.winampcn.com)") 	},
+#: plugins/lyrics/LyricsSites.py:43
+msgid "TerraBrasil (terra.com.br)"
+msgstr "TerraBrasil (terra.com.br)"
+
+#: plugins/lyrics/LyricsSites.py:44
+msgid "Dark Lyrics (darklyrics.com)"
+msgstr ""
+
+#: plugins/lyrics/LyricsSites.py:45
+msgid "Jlyric (j-lyric.net)"
+msgstr ""
+
+#: plugins/lyrics/LyricsSites.py:46
+msgid "Jetlyrics (jetlyrics.com)"
+msgstr ""
+
+#: plugins/magnatune/magnatune-loading.ui:35
+msgid "Magnatune online music store"
+msgstr ""
+
+#: plugins/magnatune/magnatune-loading.ui:52
+msgid "Magnatune is an online record label that is not evil.\n"
+msgstr ""
+
+#: plugins/magnatune/magnatune-loading.ui:71
+msgid "    * Free listening of all songs"
+msgstr "    * Frjáls hlustun á öllum lögum"
+
+#: plugins/magnatune/magnatune-loading.ui:83
+msgid ""
+"    * Paid members get totally unlimited downloading of the entire catalog "
+"(no other service allows that)"
+msgstr ""
+
+#: plugins/magnatune/magnatune-loading.ui:97
+#, python-format
+msgid ""
+"    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's "
+"worth joining"
+msgstr ""
+
+#: plugins/magnatune/magnatune-loading.ui:111
+msgid ""
+"    * Open-Source friendly file formats: MP3s and WAVs, but also OGG and "
+"FLAC files."
+msgstr ""
+
+#: plugins/magnatune/magnatune-loading.ui:125
+msgid "    * All albums and artists hand-picked"
+msgstr "    * Allar plötur og flytjendur eru handvalið"
+
+#: plugins/magnatune/magnatune-loading.ui:145
+msgid "You can find more information at "
+msgstr ""
+
+#: plugins/magnatune/magnatune-loading.ui:155
+msgid "http://www.magnatune.com/"
+msgstr "http://www.magnatune.com/"
+
+#: plugins/magnatune/magnatune-popup.ui:10
+#, fuzzy
+msgid "Download Album"
+msgstr "Hala niður plötu"
+
+#: plugins/magnatune/magnatune-popup.ui:14
+#, fuzzy
+#| msgid "Artist"
+msgid "Artist Info"
+msgstr "Upplýsingar um höfund"
+
+#: plugins/magnatune/magnatune.plugin.desktop.in:7
+#, fuzzy
+msgid "Magnatune Store"
+msgstr "Magnatune verslun"
+
+#: plugins/magnatune/magnatune.plugin.desktop.in:8
+msgid ""
+"Adds support to Rhythmbox for playing and purchasing from the Magnatune "
+"online music store"
+msgstr ""
+"Bætir við stuðningi í Rhythmbox fyrir afspilun og kaup af Magnatune"
+" netversluninni"
+
+#: plugins/magnatune/magnatune-prefs.ui:12
+#, fuzzy
+msgid "January (01)"
+msgstr "janúar"
+
+#: plugins/magnatune/magnatune-prefs.ui:15
+#, fuzzy
+msgid "February (02)"
+msgstr "febrúar"
+
+#: plugins/magnatune/magnatune-prefs.ui:18
+#, fuzzy
+msgid "March (03)"
+msgstr "mars"
+
+#: plugins/magnatune/magnatune-prefs.ui:21
+#, fuzzy
+msgid "April (04)"
+msgstr "apríl"
+
+#: plugins/magnatune/magnatune-prefs.ui:24
+#, fuzzy
+msgid "May (05)"
+msgstr "maí"
+
+#: plugins/magnatune/magnatune-prefs.ui:27
+#, fuzzy
+msgid "June (06)"
+msgstr "júní"
+
+#: plugins/magnatune/magnatune-prefs.ui:30
+#, fuzzy
+msgid "July (07)"
+msgstr "júlí"
+
+#: plugins/magnatune/magnatune-prefs.ui:33
+#, fuzzy
+msgid "August (08)"
+msgstr "ágúst"
+
+#: plugins/magnatune/magnatune-prefs.ui:36
+#, fuzzy
+msgid "September (09)"
+msgstr "september"
+
+#: plugins/magnatune/magnatune-prefs.ui:39
+#, fuzzy
+msgid "October (10)"
+msgstr "október"
+
+#: plugins/magnatune/magnatune-prefs.ui:42
+#, fuzzy
+msgid "November (11)"
+msgstr "nóvember"
+
+#: plugins/magnatune/magnatune-prefs.ui:45
+#, fuzzy
+msgid "December (12)"
+msgstr "desember"
+
+#: plugins/magnatune/magnatune-prefs.ui:56
+msgid "$5 US"
+msgstr "$5 US"
+
+#: plugins/magnatune/magnatune-prefs.ui:59
+msgid "$6 US"
+msgstr "$6 US"
+
+#: plugins/magnatune/magnatune-prefs.ui:62
+msgid "$7 US"
+msgstr "$7 US"
+
+#: plugins/magnatune/magnatune-prefs.ui:65
+msgid "$8 US (typical)"
+msgstr "$8 dalir (venjulegt)"
+
+#: plugins/magnatune/magnatune-prefs.ui:68
+msgid "$9 US"
+msgstr "$9 US"
+
+#: plugins/magnatune/magnatune-prefs.ui:71
+msgid "$10 US (better than average)"
+msgstr "$10 dalir (vel gert)"
+
+#: plugins/magnatune/magnatune-prefs.ui:74
+msgid "$11 US"
+msgstr "$11 US"
+
+#: plugins/magnatune/magnatune-prefs.ui:77
+msgid "$12 US (generous)"
+msgstr "$12 dalir (mjög rausnarlegt)"
+
+#: plugins/magnatune/magnatune-prefs.ui:80
+msgid "$13 US"
+msgstr "$13 US"
+
+#: plugins/magnatune/magnatune-prefs.ui:83
+msgid "$14 US"
+msgstr "$14 US"
+
+#: plugins/magnatune/magnatune-prefs.ui:86
+msgid "$15 US (VERY generous!)"
+msgstr "$15 dalir (öðlingur!)"
+
+#: plugins/magnatune/magnatune-prefs.ui:89
+msgid "$16 US"
+msgstr "$16 US"
+
+#: plugins/magnatune/magnatune-prefs.ui:92
+msgid "$17 US"
+msgstr "$17 US"
+
+#: plugins/magnatune/magnatune-prefs.ui:95
+msgid "$18 US (We love you!)"
+msgstr "$18 dalir (við elskum þig!)"
+
+#: plugins/magnatune/magnatune-prefs.ui:106
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: plugins/magnatune/magnatune-prefs.ui:109
+msgid "FLAC"
+msgstr "FLAC"
+
+#: plugins/magnatune/magnatune-prefs.ui:112
+msgid "WAV"
+msgstr "WAV"
+
+#: plugins/magnatune/magnatune-prefs.ui:115
+msgid "VBR MP3"
+msgstr "VBR MP3"
+
+#: plugins/magnatune/magnatune-prefs.ui:118
+msgid "128K MP3"
+msgstr "128K MP3"
+
+#: plugins/magnatune/magnatune-prefs.ui:150
+msgid "Magnatune Information"
+msgstr "Upplýsingar um Magnatune"
+
+#: plugins/magnatune/magnatune-prefs.ui:166
+msgid "I don't have a Magnatune account"
+msgstr ""
+
+#: plugins/magnatune/magnatune-prefs.ui:184
+msgid "I have a streaming account"
+msgstr ""
+
+#: plugins/magnatune/magnatune-prefs.ui:202
+msgid "I have a download account"
+msgstr ""
+
+#: plugins/magnatune/magnatune-prefs.ui:228
+#, fuzzy
+#| msgid "File name:"
+msgid "Username:"
+msgstr "Notandanafn:"
+
+#: plugins/magnatune/magnatune-prefs.ui:235
+#, fuzzy
+msgid "Password:"
+msgstr "Lykilorð:"
+
+#: plugins/magnatune/magnatune-prefs.ui:298
+#, fuzzy
+msgid "Preferred audio _format:"
+msgstr "_Snið fyrir tónlistina:"
+
+#: plugins/magnatune/magnatune-prefs.ui:347
+msgid "Get an account at "
+msgstr ""
+
+#: plugins/magnatune/magnatune-prefs.ui:357
+msgid "http://magnatune.com/compare_plans"
+msgstr ""
+
+#: plugins/magnatune/magnatune-prefs.ui:386
+#, fuzzy
+msgid "Find out about Magnatune at "
+msgstr "Kynnast betur Magnatune á "
+
+#: plugins/magnatune/magnatune-prefs.ui:398
+#, fuzzy
+msgid "http://www.magnatune.com/info/"
+msgstr "http://www.magnatune.com/info/"
+
+#: plugins/magnatune/magnatune.py:121
+#, fuzzy
+msgid "Magnatune"
+msgstr "Magnatune"
+
+#: plugins/magnatune/MagnatuneSource.py:190
+msgid "Couldn't download album"
+msgstr ""
+
+#: plugins/magnatune/MagnatuneSource.py:191
+msgid "You must have a library location set to download an album."
+msgstr ""
+
+#: plugins/magnatune/MagnatuneSource.py:253
+#, fuzzy
+msgid "Unable to load catalog"
+msgstr "Gat ekki hlaðið inn efnisskránni"
+
+#: plugins/magnatune/MagnatuneSource.py:254
+#, fuzzy
+msgid ""
+"Rhythmbox could not understand the Magnatune catalog, please file a bug."
+msgstr ""
+"Rhythmbox gat ekki hlaðið inn Magnatune efnisskránni, tilkynntu þetta sem "
+"villu."
+
+#: plugins/magnatune/MagnatuneSource.py:275
+#, fuzzy
+#: plugins/magnatune/MagnatuneSource.py:332
+msgid "Loading Magnatune catalog"
+msgstr "Hleð inn Magnatune efnisskránni"
+
+#: plugins/magnatune/MagnatuneSource.py:404
+#, fuzzy
+msgid "Download Error"
+msgstr "Villa við að sækja gögn"
+
+#: plugins/magnatune/MagnatuneSource.py:405
+#, python-format
+msgid ""
+"An error occurred while trying to authorize the download.\n"
+"The Magnatune server returned:\n"
+"%s"
+msgstr ""
+
+#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1639
+#, fuzzy
+#| msgid "_Error"
+msgid "Error"
 msgstr "Villa"
 
-#: widgets/rb-load-failure-dialog.c:144
-msgid "_File"
-msgstr "Skrá"
+#: plugins/magnatune/MagnatuneSource.py:409
+#, python-format
+msgid ""
+"An error occurred while trying to download the album.\n"
+"The error text is:\n"
+"%s"
+msgstr ""
 
-#: widgets/rb-query-creator.c:53
+#: plugins/magnatune/MagnatuneSource.py:492
+msgid "Downloading from Magnatune"
+msgstr ""
+
+#: plugins/mpris/mpris.plugin.desktop.in:6
+msgid "MPRIS D-Bus interface"
+msgstr ""
+
+#: plugins/mpris/mpris.plugin.desktop.in:7
+msgid "Provides an implementation of the MPRIS D-Bus interface specification"
+msgstr ""
+
+#: plugins/mtpdevice/mtpdevice.plugin.desktop.in:5
+#, fuzzy
+msgid "Portable Players - MTP"
+msgstr "Tónhlöður - MTP"
+
+#: plugins/mtpdevice/mtpdevice.plugin.desktop.in:6
+#, fuzzy
+msgid "Support for MTP devices (show the content, transfer, play from device)"
+msgstr ""
+"Stuðningur við MTP tæki (sýna innihald, flutningur, afspilun af tækinu)"
+
+#: plugins/mtpdevice/rb-mtp-source.c:604
+#, fuzzy
+#| msgid "Music Player"
+msgid "Media Player"
+msgstr "Margmiðlunarspilari"
+
+#: plugins/mtpdevice/rb-mtp-source.c:884
+#, fuzzy
+msgid "Media player device error"
+msgstr "Villa kom i spilaranum"
+
+#. Translators: first %s is the device manufacturer,
+#. * second is the product name.
+#.
+#: plugins/mtpdevice/rb-mtp-source.c:888
+#, c-format
+msgid "Unable to open the %s %s device"
+msgstr ""
+
+#: plugins/mtpdevice/rb-mtp-source.c:932
+#, fuzzy
+msgid "Digital Audio Player"
+msgstr "Stafrænn hljóðspilari"
+
+#: plugins/mtpdevice/rb-mtp-thread.c:443 plugins/mtpdevice/rb-mtp-thread.c:501
+#: plugins/mtpdevice/rb-mtp-thread.c:519
+#, fuzzy, c-format
+msgid "Unable to copy file from MTP device: %s"
+msgstr "Ekki tókst að afrita skrá frá MTP-tækinu: %s"
+
+#: plugins/mtpdevice/rb-mtp-thread.c:464
+#, fuzzy, c-format
+msgid "Not enough space in %s"
+msgstr "Ekki nægilega mikið pláss á %s"
+
+#: plugins/mtpdevice/rb-mtp-thread.c:488
+#, fuzzy, c-format
+msgid "Unable to open temporary file: %s"
+msgstr "Gat ekki opnað tímabundna skrá: %s"
+
+#: plugins/mtpdevice/rb-mtp-thread.c:552
+#, c-format
+msgid "No space left on MTP device"
+msgstr ""
+
+#: plugins/mtpdevice/rb-mtp-thread.c:555
+#, c-format
+msgid "Unable to send file to MTP device: %s"
+msgstr ""
+
+#: plugins/notification/notification.plugin.desktop.in:5
+#, fuzzy
+#| msgid "Location:"
+msgid "Notification"
+msgstr "Tilkynning"
+
+#: plugins/notification/notification.plugin.desktop.in:6
+msgid "Notification popups"
+msgstr ""
+
+#: plugins/notification/rb-notification-plugin.c:221
+#, fuzzy
+#| msgid "P_revious"
+msgid "Previous"
+msgstr "Fyrra"
+
+#: plugins/notification/rb-notification-plugin.c:227
+#, fuzzy
+#| msgid "_Pause"
+msgid "Pause"
+msgstr "Bið"
+
+#: plugins/notification/rb-notification-plugin.c:227
+#, fuzzy
+#| msgid "_Play"
+msgid "Play"
+msgstr "Spila"
+
+#: plugins/notification/rb-notification-plugin.c:236
+#, fuzzy
+#| msgid "_Next"
+msgid "Next"
+msgstr "Næsta"
+
+#. Translators: by Artist
+#: plugins/notification/rb-notification-plugin.c:330
+#, fuzzy, c-format
+msgid "by <i>%s</i>"
+msgstr "Eftir %1$s"
+
+#. Translators: from Album
+#: plugins/notification/rb-notification-plugin.c:332
+#, fuzzy, c-format
+msgid "from <i>%s</i>"
+msgstr "Frá %1$s"
+
+#: plugins/notification/rb-notification-plugin.c:412 widgets/rb-header.c:367
+#, fuzzy
+#| msgid "Now Playing"
+msgid "Not Playing"
+msgstr "Nú spilandi"
+
+#: plugins/power-manager/power-manager.plugin.desktop.in:6
+#, fuzzy
+#| msgid "Former Maintainers:"
+msgid "Power Manager"
+msgstr "Aflstjórnun"
+
+#: plugins/power-manager/power-manager.plugin.desktop.in:7
+#, fuzzy
+msgid "Inhibit Power Manager from suspending the machine while playing"
+msgstr ""
+"Hindra aflstjórnanda frá því að hvíla tölvuna á meðan spilun er í gangi"
+
+#: plugins/power-manager/rb-power-manager-plugin.c:93
+#: remote/dbus/rb-client.c:823 remote/dbus/rb-client.c:913
+#, fuzzy
+#| msgid "Now Playing"
+msgid "Playing"
+msgstr "Spila"
+
+#: plugins/pythonconsole/pythonconsole.plugin.desktop.in:6
+#, fuzzy
+#: plugins/pythonconsole/pythonconsole.py:81
+msgid "Python Console"
+msgstr "Python stjórnskjár"
+
+#: plugins/pythonconsole/pythonconsole.plugin.desktop.in:7
+#, fuzzy
+msgid "Interactive python console"
+msgstr "Gagnvirkur python-gluggi"
+
+#: plugins/pythonconsole/pythonconsole.py:90
+msgid "Python Debugger (winpdb)"
+msgstr ""
+
+#: plugins/pythonconsole/pythonconsole.py:99
+msgid "Python Debugger (debugpy)"
+msgstr ""
+
+#: plugins/pythonconsole/pythonconsole.py:130
+#, fuzzy
+msgid "You can access the main window through the 'shell' variable :"
+msgstr "Þú getur komist í aðalgluggann í gegnum skeljarbreytuna:"
+
+#: plugins/pythonconsole/pythonconsole.py:150
+#, python-format
+msgid ""
+"After you press OK, Rhythmbox will wait until you connect to it with winpdb "
+"or rpdb2. If you have not set a debugger password in the file %s, it will "
+"use the default password ('rhythmbox')."
+msgstr ""
+
+#: plugins/pythonconsole/pythonconsole.py:176
+#, python-format
+msgid ""
+"Rhythmbox is now listening for Debug Adapter Protocol connections on port "
+"%d. You can now attach to it using a compatible debugger such as vimspector, "
+"nvim-dap or Visual Studio Code."
+msgstr ""
+
+#: plugins/pythonconsole/pythonconsole.py:180
+#, python-format
+msgid "Unable to start Debug Adapter Protocol listener: %s"
+msgstr ""
+
+#: plugins/pythonconsole/pythonconsole.py:186
+#, python-format
+msgid ""
+"The %s Python module is not available. Install the module and then restart "
+"Rhythmbox to enable debugging with %s."
+msgstr ""
+
+#: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:7
+msgid "Zeitgeist"
+msgstr ""
+
+#: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:8
+msgid "Inform Zeitgeist about your activity"
+msgstr ""
+
+#: plugins/replaygain/config.py:64
+msgid "-15.0 dB"
+msgstr "-15.0 dB"
+
+#: plugins/replaygain/config.py:65
+msgid "0.0 dB"
+msgstr "0.0 dB"
+
+#: plugins/replaygain/config.py:66
+msgid "15.0 dB"
+msgstr "15.0 dB"
+
+#: plugins/replaygain/player.py:52
+#, python-format
+msgid ""
+"The GStreamer elements required for ReplayGain processing are not available. "
+"The missing elements are: %s"
+msgstr ""
+
+#: plugins/replaygain/player.py:53
+msgid "ReplayGain GStreamer plugins not available"
+msgstr ""
+
+#: plugins/replaygain/replaygain.plugin.desktop.in:7
+#, fuzzy
+#| msgid "Pause playing"
+msgid "ReplayGain"
+msgstr "ReplayGain styrkjöfnun"
+
+#: plugins/replaygain/replaygain.plugin.desktop.in:8
+msgid "Use ReplayGain to provide a consistent playback volume"
+msgstr ""
+
+#: plugins/replaygain/replaygain-prefs.ui:21
+msgid "Radio (equal loudness for all tracks)"
+msgstr ""
+
+#: plugins/replaygain/replaygain-prefs.ui:25
+msgid "Album (ideal loudness for all tracks)"
+msgstr ""
+
+#: plugins/replaygain/replaygain-prefs.ui:39
+#, fuzzy
+#| msgid "Edit music player preferences"
+msgid "ReplayGain preferences"
+msgstr "Breyta eiginleikum spilara"
+
+#: plugins/replaygain/replaygain-prefs.ui:63
+msgid "ReplayGain _mode:"
+msgstr ""
+
+#: plugins/replaygain/replaygain-prefs.ui:76
+msgid "_Pre-amp:"
+msgstr ""
+
+#: plugins/replaygain/replaygain-prefs.ui:87
+msgid "_Apply compression to prevent clipping"
+msgstr ""
+
+#: plugins/replaygain/replaygain-prefs.ui:139
+msgid "Learn more about ReplayGain"
+msgstr ""
+
+#: plugins/webremote/webremote-config.ui:18
+msgid "Web remote control preferences"
+msgstr ""
+
+#: plugins/webremote/webremote-config.ui:35
+#, fuzzy
+#| msgid "Listening to "
+msgid "Listening port:"
+msgstr "Hlustunargátt:"
+
+#: plugins/webremote/webremote-config.ui:46
+msgid "Access key:"
+msgstr ""
+
+#: plugins/webremote/webremote-config.ui:79
+msgid "0"
+msgstr ""
+
+#: plugins/webremote/webremote.plugin.desktop.in:6
+msgid "Web remote control"
+msgstr ""
+
+#: plugins/webremote/webremote.plugin.desktop.in:7
+msgid "Control Rhythmbox from a web browser"
+msgstr ""
+
+#: plugins/webremote/webremote.py:597
+msgid "Launch web remote control"
+msgstr ""
+
+#: podcast/rb-podcast-add-dialog.c:278 podcast/rb-podcast-source.c:733
+#, fuzzy, c-format
+msgid "%d feed"
+msgid_plural "%d feeds"
+msgstr[0] "%d veita"
+msgstr[1] "%d veita"
+
+#: podcast/rb-podcast-add-dialog.c:337
+msgid "Unable to load the feed. Check your network connection."
+msgstr ""
+
+#: podcast/rb-podcast-add-dialog.c:461
+msgid "Unable to search for podcasts. Check your network connection."
+msgstr ""
+
+#: podcast/rb-podcast-add-dialog.c:786 sources/rb-library-source.c:134
+#: widgets/rb-entry-view.c:1447
 msgid "Title"
 msgstr "Titill"
 
-#: widgets/rb-query-creator.c:57
-msgid "Rating"
-msgstr "Stjörnugjöf"
+#: podcast/rb-podcast-add-dialog.c:797
+#, fuzzy
+msgid "Author"
+msgstr "Höfundur"
 
-#: widgets/rb-query-creator.c:62
-msgid "contains"
-msgstr "inniheldur"
+#: podcast/rb-podcast-add-dialog.c:802 podcast/rb-podcast-add-dialog.c:805
+#, fuzzy
+msgid "Episodes"
+msgstr "Þættir"
 
-#: widgets/rb-query-creator.c:63
-msgid "does not contain"
-msgstr "inniheldur ekki"
+#: podcast/rb-podcast-add-dialog.c:839 podcast/rb-podcast-add-dialog.c:850
+#, fuzzy
+#: podcast/rb-podcast-source.c:1378 podcast/rb-podcast-source.c:1389
+msgid "Date"
+msgstr "Dagsetning"
 
-#: widgets/rb-query-creator.c:64
-#: widgets/rb-query-creator.c:69
-msgid "equals"
-msgstr "jafnt og"
+#: podcast/rb-podcast-main-source.c:126
+msgid "New Episodes"
+msgstr ""
 
-#: widgets/rb-query-creator.c:70
-msgid "greater than"
-msgstr "stærra en"
+#: podcast/rb-podcast-main-source.c:144
+msgid "New Downloads"
+msgstr ""
 
-#: widgets/rb-query-creator.c:71
-msgid "less than"
-msgstr "minna en"
+#: podcast/rb-podcast-main-source.c:165
+#, fuzzy
+msgid "Downloading podcast"
+msgstr "Næ í hlaðvarp (podcast) \"%1\""
 
-#: widgets/rb-query-creator.c:243
-msgid "Create Automatic Playlist"
-msgstr "Búa til sjálfvirkan lagalista"
+#: podcast/rb-podcast-main-source.c:186
+msgid "Error downloading podcast"
+msgstr ""
 
-#. this string can only be so long, or there wont be a search entry :)
-#: widgets/rb-search-entry.c:118
-msgid "_Search:"
-msgstr "Leita:"
+#: podcast/rb-podcast-main-source.c:189
+#, fuzzy
+msgid "Finished downloading podcast"
+msgstr "Búinn að sækja podcast"
 
-#: widgets/rb-song-display-box.c:113
-msgid "from"
-msgstr "af"
+#: podcast/rb-podcast-main-source.c:242
+#, fuzzy
+msgid "Error in podcast"
+msgstr "Villa í podcasti"
 
-#: widgets/rb-song-display-box.c:115
+#: podcast/rb-podcast-main-source.c:244
+#, fuzzy, c-format
+msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
+msgstr "Villa kom upp við að bæta við Podcasti: %s. Athugaðu veffangið: %s"
+
+#: podcast/rb-podcast-main-source.c:250
+#, fuzzy, c-format
+msgid "%s. Would you like to add the podcast feed anyway?"
+msgstr "%s. Viltu bæta samt bæta Podcast flæðinu við?"
+
+#: podcast/rb-podcast-main-source.c:267
+#, fuzzy
+#| msgid "No properties available."
+msgid "New updates available from"
+msgstr "Engir eiginleikar tiltækir."
+
+#: podcast/rb-podcast-manager.c:801
+#, fuzzy, c-format
+msgid ""
+"The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
+"or the feed may be broken. Would you like Rhythmbox to attempt to use it "
+"anyway?"
+msgstr ""
+"Slóðin „%s“ virðist ekki vera hlaðvarpsveita. Þetta gæti verið rangt netfang "
+"eða veitan getur verið biluð. Viltu að Rhythmbox reyni að nota hana samt sem "
+"áður?"
+
+#. added as something else, probably iradio
+#: podcast/rb-podcast-manager.c:856
+#, fuzzy
+msgid "URL already added"
+msgstr "Þegar búið að bæta slóðinni"
+
+#: podcast/rb-podcast-manager.c:857
+#, fuzzy, c-format
+msgid ""
+"The URL \"%s\" has already been added as a radio station. If this is a "
+"podcast feed, please remove the radio station."
+msgstr ""
+"Slóðinni „%s“ hefur þegar verið bætt við sem útvarpstöð. Ef þetta er podcast "
+"flæði fjarlægið það sem útvarpstöð."
+
+#: podcast/rb-podcast-manager.c:939
+#, fuzzy
+msgid "Podcast"
+msgstr "Hlaðvarp (podcast)"
+
+#: podcast/rb-podcast-parse.c:197
+#, fuzzy, c-format
+#| msgid "Unable to parse URI \"%s\"\n"
+msgid "Unable to parse the feed contents"
+msgstr "Gat ekki lesið URI \"%s\"\n"
+
+#: podcast/rb-podcast-parse.c:212
+#, fuzzy, c-format
+msgid "The feed does not contain any downloadable items"
+msgstr "Inniheldur ekki neina hluti sem þú getur sótt"
+
+#: podcast/rb-podcast-properties-dialog.c:584
+#, fuzzy
+msgid "Not Downloaded"
+msgstr "Ósótt"
+
+#: podcast/rb-podcast-source.c:519
+#, fuzzy
+msgid "Delete the podcast feed and downloaded files?"
+msgstr "Eyða podcast flæði og sóttri skrá?"
+
+#: podcast/rb-podcast-source.c:522
+#, fuzzy
+msgid ""
+"If you choose to delete the feed and files, they will be permanently lost.  "
+"Please note that you can delete the feed but keep the downloaded files by "
+"choosing to delete the feed only."
+msgstr ""
+"Ef þú velur að eyða flæði og skrá munu þau vera eytt varanlega. Vinsamlegast "
+"takið eftir að þú getur eytt flæði en haldið sóttum skrám með því að velja "
+"að eyða aðeins flæði."
+
+#: podcast/rb-podcast-source.c:530
+#, fuzzy
+#| msgid "Delete selection"
+msgid "Delete _Feed Only"
+msgstr "Eyða völdu"
+
+#: podcast/rb-podcast-source.c:537
+#, fuzzy
+msgid "_Delete Feed And Files"
+msgstr "_Eyða flæði og skrá"
+
+#: podcast/rb-podcast-source.c:618 podcast/rb-podcast-source.c:1432
+#, fuzzy
+msgid "Downloaded"
+msgstr "Niðurhalað"
+
+#: podcast/rb-podcast-source.c:622 podcast/rb-podcast-source.c:1434
+#, fuzzy
+msgid "Failed"
+msgstr "Mistókst"
+
+#: podcast/rb-podcast-source.c:626 podcast/rb-podcast-source.c:1433
+#, fuzzy
+#| msgid "Rating"
+msgid "Waiting"
+msgstr "Bíð…"
+
+#: podcast/rb-podcast-source.c:962
+#, fuzzy
+msgid "Podcast Error"
+msgstr "Hlaðvarpsvilla"
+
+#: podcast/rb-podcast-source.c:1093
+#, fuzzy
+msgid "Delete the podcast episode and downloaded file?"
+msgstr "Viltu eyða podcast þætti og sóttri skrá?"
+
+#: podcast/rb-podcast-source.c:1096
+#, fuzzy
+msgid ""
+"If you choose to delete the episode and file, they will be permanently "
+"lost.  Please note that you can delete the episode but keep the downloaded "
+"file by choosing to delete the episode only."
+msgstr ""
+"Ef þú hefur valið að eyða þætti og skrá munu þau vera eytt varanlega. "
+"Vinsamlegast takið eftir að þú getur eytt þættinum og haldið sóttri skrá með "
+"því að velja að eyða aðeins þættinum."
+
+#: podcast/rb-podcast-source.c:1104
+#, fuzzy
+msgid "Delete _Episode Only"
+msgstr "Eyða aðeins _þættinum"
+
+#: podcast/rb-podcast-source.c:1110
+#, fuzzy
+msgid "_Delete Episode And File"
+msgstr "_Eyða þætti og skrá"
+
+#: podcast/rb-podcast-source.c:1216
+#, fuzzy, c-format
+msgid "%d episode"
+msgid_plural "%d episodes"
+msgstr[0] "%d þáttur"
+msgstr[1] "%d þáttur"
+
+#: podcast/rb-podcast-source.c:1411 podcast/rb-podcast-source.c:1466
+#, fuzzy
+#: podcast/rb-podcast-source.c:1505
+msgid "Feed"
+msgstr "Fóður"
+
+#: podcast/rb-podcast-source.c:1431 podcast/rb-podcast-source.c:1449
+#, fuzzy
+msgid "Status"
+msgstr "Staða"
+
+#. ensure search instances exist
+#: podcast/rb-podcast-source.c:1551 sources/rb-auto-playlist-source.c:253
+#, fuzzy
+#: sources/rb-browser-source.c:314 sources/rb-browser-source.c:332
+#: sources/rb-static-playlist-source.c:295
+msgid "Search all fields"
+msgstr "Leita í öllum reitum"
+
+#: podcast/rb-podcast-source.c:1552
+#, fuzzy
+msgid "Search podcast feeds"
+msgstr "Leita í hlaðvarpsveitum"
+
+#: podcast/rb-podcast-source.c:1553
+#, fuzzy
+msgid "Search podcast episodes"
+msgstr "Leita í hlaðvarpsþáttum"
+
+#: remote/dbus/rb-client.c:95 shell/rb-application.c:558
+#, fuzzy
+msgid "Show the version of the program"
+msgstr "Sýna útgáfu forrits."
+
+#: remote/dbus/rb-client.c:97
+#, fuzzy
+msgid "Don't start a new instance of Rhythmbox"
+msgstr "Ekki setja í gang nýtt tilvik af Rhythmbox"
+
+#: remote/dbus/rb-client.c:98
+msgid "Quit Rhythmbox"
+msgstr "Slökkva á Rhythmbox"
+
+#: remote/dbus/rb-client.c:99
+msgid "Check if Rhythmbox is already running"
+msgstr ""
+
+#: remote/dbus/rb-client.c:101
+#, fuzzy
+msgid "Don't present an existing Rhythmbox window"
+msgstr "Ekki sýna núverandi Rhythmbox glugga"
+
+#: remote/dbus/rb-client.c:103
+msgid "Jump to next song"
+msgstr "Hoppa í næsta lag"
+
+#: remote/dbus/rb-client.c:104
+msgid "Jump to previous song"
+msgstr "Hoppa í fyrra lag"
+
+#: remote/dbus/rb-client.c:105
+msgid "Seek in current track"
+msgstr ""
+
+#: remote/dbus/rb-client.c:107
+#, fuzzy
+msgid "Resume playback if currently paused"
+msgstr "Halda áfram að spila"
+
+#: remote/dbus/rb-client.c:108
+#, fuzzy
+msgid "Pause playback if currently playing"
+msgstr "Hætta að spila"
+
+#: remote/dbus/rb-client.c:109
+msgid "Toggle play/pause mode"
+msgstr "Skipta á spilun á pásu"
+
+#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2258
+msgid "Stop playback"
+msgstr "Stöðva spilun"
+
+#: remote/dbus/rb-client.c:112
+#, fuzzy
+msgid "Play a specified URI, importing it if necessary"
+msgstr "Spila sérstaka vefslóð, flytja hana inn ef nauðsynlegt"
+
+#: remote/dbus/rb-client.c:112
+#, fuzzy
+#| msgid "Stop playing"
+msgid "URI to play"
+msgstr "Stöðva spilun"
+
+#: remote/dbus/rb-client.c:113
+#, fuzzy
+msgid "Add specified tracks to the play queue"
+msgstr "Bæta tilteknum lögum við biðröðina"
+
+#: remote/dbus/rb-client.c:114
+#, fuzzy
+msgid "Empty the play queue before adding new tracks"
+msgstr "Tæma biðröðina áður en nýjum lögum er bætt við"
+
+#: remote/dbus/rb-client.c:116
+#, fuzzy
+#| msgid "Print the current elapsed time of playing song and exit"
+msgid "Print the title and artist of the playing song"
+msgstr "Prenta út tímasetningu núverandi lags og hætta"
+
+#: remote/dbus/rb-client.c:117
+#, fuzzy
+msgid "Print formatted details of the song"
+msgstr "Birta sérsniðnar upplýsingar fyrir lagið"
+
+#: remote/dbus/rb-client.c:118
+msgid "Select the source matching the specified URI"
+msgstr ""
+
+#: remote/dbus/rb-client.c:118
+#, fuzzy
+#| msgid "Source _List"
+msgid "Source to select"
+msgstr "Inntaks Listi"
+
+#: remote/dbus/rb-client.c:119
+msgid "Activate the source matching the specified URI"
+msgstr ""
+
+#: remote/dbus/rb-client.c:119
+#, fuzzy
+#| msgid "Source _List"
+msgid "Source to activate"
+msgstr "Inntaks Listi"
+
+#: remote/dbus/rb-client.c:120
+msgid "Play from the source matching the specified URI"
+msgstr ""
+
+#: remote/dbus/rb-client.c:120
+msgid "Source to play from"
+msgstr ""
+
+#: remote/dbus/rb-client.c:122
+msgid "Enable repeat playback order"
+msgstr ""
+
+#: remote/dbus/rb-client.c:123
+msgid "Disable repeat playback order"
+msgstr ""
+
+#: remote/dbus/rb-client.c:124
+msgid "Enable shuffle playback order"
+msgstr ""
+
+#: remote/dbus/rb-client.c:125
+msgid "Disable shuffle playback order"
+msgstr ""
+
+#: remote/dbus/rb-client.c:127
+#, fuzzy
+#| msgid "Stop playback"
+msgid "Set the playback volume"
+msgstr "Stöðva spilun"
+
+#: remote/dbus/rb-client.c:128
+#, fuzzy
+msgid "Increase the playback volume"
+msgstr "Auka hljóðstyrk afspilunar"
+
+#: remote/dbus/rb-client.c:129
+#, fuzzy
+msgid "Decrease the playback volume"
+msgstr "Draga úr hljóðstyrk afspilunar"
+
+#: remote/dbus/rb-client.c:130
+#, fuzzy
+msgid "Print the current playback volume"
+msgstr "Birta núverandi hljóðstyrk afspilunar"
+
+#. { "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
+#. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
+#: remote/dbus/rb-client.c:133
+#, fuzzy
+#| msgid "Properties for the current song"
+msgid "Set the rating of the current song"
+msgstr "Eiginleikar núverandi lags"
+
+#: remote/dbus/rb-client.c:134
+msgid "Start interactive mode"
+msgstr ""
+
+#: remote/dbus/rb-client.c:166
+msgid "n - Next track"
+msgstr ""
+
+#: remote/dbus/rb-client.c:167
+msgid "p - Previous track"
+msgstr ""
+
+#: remote/dbus/rb-client.c:168
+msgid "space - Play/pause"
+msgstr ""
+
+#: remote/dbus/rb-client.c:169
+msgid "s - Show playing track details"
+msgstr ""
+
+#: remote/dbus/rb-client.c:170
+msgid "v - Decrease volume"
+msgstr ""
+
+#: remote/dbus/rb-client.c:171
+msgid "V - Increase volume"
+msgstr ""
+
+#: remote/dbus/rb-client.c:173
+msgid "h/? - Help"
+msgstr ""
+
+#: remote/dbus/rb-client.c:174
+#, fuzzy
+#| msgid "_Quit"
+msgid "q - Quit"
+msgstr "Hætta"
+
+#: remote/dbus/rb-client.c:549 remote/dbus/rb-client.c:575
+#: remote/dbus/rb-client.c:800 remote/dbus/rb-client.c:884
+msgid "Not playing"
+msgstr "Ekkert í spilun"
+
+#. Translators: title by artist from album
+#: remote/dbus/rb-client.c:750
+msgid "%tt by %ta from %at"
+msgstr ""
+
+#. Translators: title by artist
+#: remote/dbus/rb-client.c:753
+msgid "%tt by %ta"
+msgstr ""
+
+#. Translators: title from album
+#: remote/dbus/rb-client.c:756
+msgid "%tt from %ta"
+msgstr ""
+
+#. Translators: %te is replaced with elapsed time, %td is replaced with track duration
+#: remote/dbus/rb-client.c:767
+#, c-format
+msgid "[%te of %td]"
+msgstr ""
+
+#: remote/dbus/rb-client.c:823 remote/dbus/rb-client.c:915
+#, fuzzy
+#| msgid "_Pause"
+msgid "Paused"
+msgstr "Í bið"
+
+#: remote/dbus/rb-client.c:867
+#, c-format
+msgid "Seeked to %s"
+msgstr ""
+
+#: remote/dbus/rb-client.c:901
+#, fuzzy, c-format
+#| msgid "Not playing"
+msgid "Now playing: %s %s"
+msgstr "Ekkert í spilun"
+
+#: remote/dbus/rb-client.c:917
+#, c-format
+msgid "Unknown playback state: %s"
+msgstr ""
+
+#: remote/dbus/rb-client.c:927
+#, c-format
+msgid "Volume is now %.02f"
+msgstr ""
+
+#. should print this before dbus setup, really
+#: remote/dbus/rb-client.c:965
+msgid "Press 'h' for help."
+msgstr ""
+
+#: remote/dbus/rb-client.c:1411
+#, fuzzy, c-format
+msgid "Playback volume is %f.\n"
+msgstr "Hljóðstyrkur afspilunar er %f.\n"
+
+#: rhythmdb/rhythmdb.c:790
+#, fuzzy, c-format
+#| msgid "Couldn't open playlist: %s"
+msgid "Couldn't access %s: %s"
+msgstr "Gat ekki opnað lagalista: %s"
+
+#. Translators: this is an example artist name.  It should
+#. * not be translated literally, but could be replaced with
+#. * a local artist name if desired.  Ensure the album name
+#. * and song title are also replaced in this case.
+#.
+#: rhythmdb/rhythmdb.c:1844
+#, fuzzy
+msgid "The Beatles"
+msgstr "Í svörtum fötum"
+
+#. Translators: this is an example album name.  If the
+#. * example artist name is localised, this should be replaced
+#. * with the name of an album by that artist.
+#.
+#: rhythmdb/rhythmdb.c:1850
+#, fuzzy
+#| msgid "_Help"
+msgid "Help!"
+msgstr "Hjálp"
+
+#. Translators: this is an example song title.  If the example
+#. * artist and album names are localised, this should be replaced
+#. * with the name of the seventh song from the localised album.
+#.
+#: rhythmdb/rhythmdb.c:1856
+#, fuzzy
+msgid "Ticket To Ride"
+msgstr "Engill"
+
+#. Translators: the parameter here is a list of GStreamer plugins.
+#. * The plugin names are already translated.
+#.
+#: rhythmdb/rhythmdb.c:2401
+#, fuzzy, c-format
+msgid "Additional GStreamer plugins are required to play this file: %s"
+msgstr "Þú þarft fleiri GStreamer viðbætur til að spila þessa skrá: %s"
+
+#: rhythmdb/rhythmdb.c:2433
+#, fuzzy
+msgid "invalid unicode in error message"
+msgstr "Ógildur unicode-stafur í villuskilaboðum"
+
+#: rhythmdb/rhythmdb.c:2556
+#, fuzzy, c-format
+msgid "Empty file"
+msgstr "Tóm skrá..."
+
+#: rhythmdb/rhythmdb.c:3265
+#, fuzzy
+msgid "Could not load the music database:"
+msgstr "Gat ekki hlaðið inn tónlistargagnagrunninum:"
+
+#: rhythmdb/rhythmdb.c:4703
+#, fuzzy, c-format
+msgid "%ld minute"
+msgid_plural "%ld minutes"
+msgstr[0] "%ld mínúta"
+msgstr[1] "%ld mínúta"
+
+#: rhythmdb/rhythmdb.c:4704
+#, fuzzy, c-format
+msgid "%ld hour"
+msgid_plural "%ld hours"
+msgstr[0] "%ld klukkutími"
+msgstr[1] "%ld klukkutími"
+
+#: rhythmdb/rhythmdb.c:4705
+#, fuzzy, c-format
+msgid "%ld day"
+msgid_plural "%ld days"
+msgstr[0] "%ld dagur"
+msgstr[1] "%ld dagur"
+
+#. Translators: the format is "X days, X hours and X minutes"
+#: rhythmdb/rhythmdb.c:4711
+#, c-format
+msgid "%s, %s and %s"
+msgstr "%s, %s og %s"
+
+#. Translators: the format is "X days and X hours"
+#. Translators: the format is "X days and X minutes"
+#. Translators: the format is "X hours and X minutes"
+#: rhythmdb/rhythmdb.c:4717 rhythmdb/rhythmdb.c:4725 rhythmdb/rhythmdb.c:4736
+#, c-format
+msgid "%s and %s"
+msgstr "%s og %s"
+
+#: rhythmdb/rhythmdb-import-job.c:704
+#, fuzzy
+msgid "Scanning"
+msgstr "Skönnun"
+
+#: rhythmdb/rhythmdb-import-job.c:707 shell/rb-track-transfer-batch.c:984
+#, fuzzy, c-format
+#| msgid "%d:%02d of %d:%02d"
+msgid "%d of %d"
+msgstr "%d af %d"
+
+#: rhythmdb/rhythmdb-property-model.c:511
+msgid "All"
+msgstr "Allt"
+
+#: rhythmdb/rhythmdb-tree.c:414
+#, fuzzy, c-format
+msgid ""
+"The database was created by a later version of Rhythmbox.  This version of "
+"Rhythmbox cannot read the database."
+msgstr ""
+"Gagngrunni var bætt við síðari útgáfu af Rhythmbox. Þessi útgáfa getur ekki "
+"lesið gagnagrunninn."
+
+#: sample-plugins/sample-python/sample-python.plugin.desktop.in:6
+#, fuzzy
+msgid "Python Sample Plugin"
+msgstr "Python dæmi-viðbót"
+
+#: sample-plugins/sample-python/sample-python.plugin.desktop.in:7
+#, fuzzy
+msgid "A sample plugin in Python with no features"
+msgstr "Sýniíbót í Python með engum sérkennum"
+
+#: sample-plugins/sample-python/sample-python.py:20
+#, fuzzy
+#| msgid "_Source"
+msgid "Python Source"
+msgstr "Inntak"
+
+#: sample-plugins/sample/rb-sample-plugin.c:80
+#, fuzzy
+#: sample-plugins/sample/rb-sample-plugin.c:87
+#: sample-plugins/sample/sample.plugin.desktop.in:5
+msgid "Sample Plugin"
+msgstr "Dæmi-viðbót"
+
+#: sample-plugins/sample/sample.plugin.desktop.in:6
+#, fuzzy
+msgid "A sample plugin in C with no features"
+msgstr "Dæmi-viðbót í C með engum sérkennum"
+
+#: sample-plugins/sample-vala/sample-vala.plugin.desktop.in:5
+#, fuzzy
+msgid "Vala Sample Plugin"
+msgstr "Vala dæmi-viðbót"
+
+#: sample-plugins/sample-vala/sample-vala.plugin.desktop.in:6
+#, fuzzy
+msgid "A sample plugin in Vala with no features"
+msgstr "Dæmi-viðbót í Vala með engum sérkennum"
+
+#: shell/rb-application.c:166
+#, fuzzy
+#| msgid "translator_credits"
+msgid "translator-credits"
+msgstr "Sveinn í Felli (sv1@fellsnet.is), 2014-2015"
+
+#: shell/rb-application.c:169
+#, fuzzy
+msgid ""
+"Rhythmbox is free software; you can redistribute it and/or modify\n"
+"it under the terms of the GNU General Public License as published by\n"
+"the Free Software Foundation; either version 2 of the License, or\n"
+"(at your option) any later version.\n"
+msgstr ""
+"Rhytmbox er frjáls hugbúnaður; þú getur dreyft því og breytt\n"
+"það er undir GNU General Public Licence leyfi útgefið af\n"
+"the Free Software Foundation; annaðhvort útgáfa 2 af þessu leyfi eða (af "
+"þínu vali) önnur síðari útgáfa.\n"
+
+#: shell/rb-application.c:173
+#, fuzzy
+msgid ""
+"Rhythmbox is distributed in the hope that it will be useful,\n"
+"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+"GNU General Public License for more details.\n"
+msgstr ""
+"Rhytmbox er dreyft í þeirri von að það sé gagnlegt,\n"
+"en ÁN ALLRAR ÁBYRÐAR; án jafnvel vots af ábyrðar útaf\n"
+"SELJANLEIKA eða HEILBRIGÐI AÐ EINHVERJU LEITI. Sjáðu\n"
+"GNU General Public License fyrir frekari upplýsingar.\n"
+
+#: shell/rb-application.c:177
+#, fuzzy
+msgid ""
+"You should have received a copy of the GNU General Public License\n"
+"along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
+"51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
+msgstr ""
+"Þú ættir að hafa fengið afrit af GNU almenningsleyfinu (GPL)\n"
+"ásamt Rhythmbox. Ef ekki skrifaðu þá til Frjálsu hugbúnaðarstofnunina:\n"
+"Free Software Foundation Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-"
+"1301 USA\n"
+
+#: shell/rb-application.c:184
+msgid "Maintainers:"
+msgstr "Umsjónarmenn:"
+
+#: shell/rb-application.c:187
+msgid "Former Maintainers:"
+msgstr "Fyrrum Umsjónarmenn:"
+
+#: shell/rb-application.c:190
+msgid "Contributors:"
+msgstr "Skrifað af:"
+
+#: shell/rb-application.c:192
+msgid "Music management and playback software for GNOME."
+msgstr "Tónlistar umsjónar og spilunar hugbúnaður fyrir GNOME"
+
+#: shell/rb-application.c:202
+#, fuzzy
+#| msgid "Rhythmbox shell"
+msgid "Rhythmbox Website"
+msgstr "Rhythmbox skel"
+
+#: shell/rb-application.c:230 shell/rb-shell-preferences.c:163
+#, fuzzy
+#| msgid "Couldn't parse playlist"
+msgid "Couldn't display help"
+msgstr "Gat ekki lesið lagalista"
+
+#: shell/rb-application.c:550
+#, fuzzy
+#| msgid "Enable debugging code"
+msgid "Enable debug output"
+msgstr "Virkja aflúsunarúttak"
+
+#: shell/rb-application.c:551
+#, fuzzy
+msgid "Enable debug output matching a specified string"
+msgstr "Byrja að aflúsa og leita að ákveðinum streng"
+
+#: shell/rb-application.c:552
+#, fuzzy
+#| msgid "Do not update the library"
+msgid "Do not update the library with file changes"
+msgstr "Ekki uppfæra tónlistarsafn"
+
+#: shell/rb-application.c:553
+msgid "Do not register the shell"
+msgstr "Ekki skrá skelina"
+
+#: shell/rb-application.c:554
+msgid "Don't save any data permanently (implies --no-registration)"
+msgstr "Ekki vista gögn til frambúðar (sama og --no-registration)"
+
+#: shell/rb-application.c:555
+msgid "Disable loading of plugins"
+msgstr ""
+
+#: shell/rb-application.c:556
+msgid "Path for database file to use"
+msgstr "Slóð í gagnagrunnsskrá í notkun"
+
+#: shell/rb-application.c:557
+#, fuzzy
+#| msgid "Path for database file to use"
+msgid "Path for playlists file to use"
+msgstr "Slóð í gagnagrunnsskrá í notkun"
+
+#: shell/rb-application.c:570
+#, fuzzy, c-format
+msgid ""
+"%s\n"
+"Run '%s --help' to see a full list of available command line options.\n"
+msgstr ""
+"%s\n"
+"Keyrðu '%s --help' til að sjá lista með öllum mögulegum valkostum "
+"skipanalínunnar.\n"
+
+#: shell/rb-playlist-manager.c:166
+#, fuzzy
+msgid "MPEG Version 3.0 URL"
+msgstr "MPEG útgáfa 3.0 vefslóð"
+
+#: shell/rb-playlist-manager.c:167
+#, fuzzy
+#| msgid "Load playlist"
+msgid "Shoutcast playlist"
+msgstr "Opna lagalista"
+
+#: shell/rb-playlist-manager.c:168
+#, fuzzy
+msgid "XML Shareable Playlist Format"
+msgstr "XML deilanlegt lagalistasnið"
+
+#: shell/rb-playlist-manager.c:305
+#, fuzzy
+msgid "The playlist file may be in an unknown format or corrupted."
+msgstr "Lagalistinn gæti verið í óþekktu sniði eða gallaður."
+
+#: shell/rb-playlist-manager.c:764
+#, fuzzy
+#| msgid "Playlist"
+msgid "Untitled Playlist"
+msgstr "Lagalisti"
+
+#: shell/rb-playlist-manager.c:808 shell/rb-playlist-manager.c:851
+#, fuzzy
+#| msgid "_New Playlist..."
+msgid "New Playlist"
+msgstr "NÝR SPILUNARLISTI"
+
+#: shell/rb-playlist-manager.c:1052
+#, fuzzy
+#| msgid "Couldn't parse playlist"
+msgid "Couldn't read playlist"
+msgstr "Gat ekki lesið lagalista"
+
+#: shell/rb-playlist-manager.c:1078
+#, fuzzy
+msgid "All Files"
+msgstr "Allar skrár"
+
+#: shell/rb-playlist-manager.c:1083
+#, fuzzy
+#| msgid "Load playlist"
+msgid "Load Playlist"
+msgstr "Hlaða inn spilunarlista"
+
+#: shell/rb-playlist-manager.c:1139 sources/rb-playlist-source.c:665
+#, fuzzy
+#| msgid "Couldn't parse playlist"
+msgid "Couldn't save playlist"
+msgstr "Gat ekki lesið lagalista"
+
+#: shell/rb-playlist-manager.c:1139
+#, fuzzy
+msgid "Unsupported file extension given."
+msgstr "Óstudd skráarending uppgefin"
+
+#: shell/rb-playlist-manager.c:1472
+#, fuzzy, c-format
+msgid "Playlist %s already exists"
+msgstr "Lagalistinn %s er nú þegar til"
+
+#: shell/rb-playlist-manager.c:1502 shell/rb-playlist-manager.c:1535
+#: shell/rb-playlist-manager.c:1575 shell/rb-playlist-manager.c:1618
+#, fuzzy, c-format
+#| msgid "Couldn't open playlist: %s"
+msgid "Unknown playlist: %s"
+msgstr "Gat ekki opnað lagalista: %s"
+
+#: shell/rb-playlist-manager.c:1543 shell/rb-playlist-manager.c:1583
+#, fuzzy, c-format
+#| msgid "Change this automatic playlist"
+msgid "Playlist %s is an automatic playlist"
+msgstr "Breyta þessum sjálfvirka lagalista"
+
+#: shell/rb-shell.c:2051
+#, fuzzy
+msgid "Error while saving song information"
+msgstr "Villa við að vista upplýsingar um lag"
+
+#: shell/rb-shell.c:2255
+msgid "Pause playback"
+msgstr "Stöðva spilun"
+
+#: shell/rb-shell.c:2262
+#, fuzzy
+#| msgid "Stop playback"
+msgid "Start playback"
+msgstr "hefja spilun"
+
+#  Translators: %s is the song name
+#. Translators: %s is the song name
+#: shell/rb-shell.c:2372
+#, c-format
+msgid "%s (Paused)"
+msgstr "%s (Stöðvað)"
+
+#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:664
+#, fuzzy, c-format
+msgid "No registered source can handle URI %s"
+msgstr "Engin skráð kelda getur séð um vefslóðina %s"
+
+#: shell/rb-shell.c:3038
+#, c-format
+msgid "No registered source matches URI %s"
+msgstr ""
+
+#: shell/rb-shell.c:3071 shell/rb-shell.c:3114
+#, fuzzy, c-format
+msgid "Unknown song URI: %s"
+msgstr "Óþekkt laga URI: %s"
+
+#: shell/rb-shell.c:3123
+#, fuzzy, c-format
+#| msgid "Unknown file type"
+msgid "Unknown property %s"
+msgstr "Óþekkt skráargerð"
+
+#: shell/rb-shell.c:3137
+#, fuzzy, c-format
+msgid "Invalid property type %s for property %s"
+msgstr "Ólöglegur eiginleiki af %s gerðar fyrir eiginleika %s"
+
+#: shell/rb-shell-player.c:389
+#, fuzzy
+msgid "Stream error"
+msgstr "Streymis villa"
+
+#: shell/rb-shell-player.c:390
+#, fuzzy
+msgid "Unexpected end of stream!"
+msgstr "Óvæntur endir á straumi!"
+
+#: shell/rb-shell-player.c:676
+#, fuzzy, c-format
+#| msgid "Playlist"
+msgid "Playlist was empty"
+msgstr "Lagalisti"
+
+#: shell/rb-shell-player.c:1109
+#, fuzzy, c-format
+#| msgid "Not playing"
+msgid "Not currently playing"
+msgstr "Ekkert í spilun"
+
+#: shell/rb-shell-player.c:1166
+#, fuzzy, c-format
+#| msgid "Play previous song"
+msgid "No previous song"
+msgstr "Spila fyrra lag"
+
+#: shell/rb-shell-player.c:1265
+#, fuzzy, c-format
+#| msgid "Play next song"
+msgid "No next song"
+msgstr "Spila næsta lag"
+
+#: shell/rb-shell-player.c:2124
+#, fuzzy
+#| msgid "Could not pause playback"
+msgid "Couldn't stop playback"
+msgstr "Gat ekki stöðvað spilun"
+
+#: shell/rb-shell-player.c:2243
+#, fuzzy, c-format
+msgid "Playback position not available"
+msgstr "Staðsetning afspilunar ekki aðgengileg"
+
+#: shell/rb-shell-player.c:2275 shell/rb-shell-player.c:2309
+#, fuzzy, c-format
+msgid "Current song is not seekable"
+msgstr "Það er ekki hægt að leita í núverandi lagi"
+
+#: shell/rb-shell-player.c:2465 shell/rb-shell-player.c:2776
+#, fuzzy
+#| msgid "Could not pause playback"
+msgid "Couldn't start playback"
+msgstr "Gat ekki stöðvað spilun"
+
+#: shell/rb-shell-player.c:3287
+msgid "Linear"
+msgstr "Línuleg"
+
+#: shell/rb-shell-player.c:3289
+msgid "Linear looping"
+msgstr "Línuleg röðun"
+
+#: shell/rb-shell-player.c:3293
+msgid "Random with equal weights"
+msgstr "Stokka með jafnan forgang"
+
+#: shell/rb-shell-player.c:3295
+msgid "Random by time since last play"
+msgstr "Stokka eftir tíma frá síðustu spilun"
+
+#: shell/rb-shell-player.c:3297
+msgid "Random by rating"
+msgstr "Stokka eftir stjörnugjöf"
+
+#: shell/rb-shell-player.c:3299
+msgid "Random by time since last play and rating"
+msgstr "Stokka eftir tíma frá síðustu spilun og stjörnugjöf"
+
+#: shell/rb-shell-player.c:3301
+#, fuzzy
+msgid "Linear, removing entries once played"
+msgstr "Linulegt, taka út lög þegar það er búið að spila þau"
+
+#: shell/rb-shell-player.c:3311
+#, c-format
+msgid "Failed to create the player: %s"
+msgstr "Gat ekki búið til spilara: %s"
+
+#: shell/rb-shell-preferences.c:202
+#, fuzzy
+#| msgid "Prefere_nces"
+msgid "Rhythmbox Preferences"
+msgstr "Eiginleikar"
+
+#: shell/rb-shell-preferences.c:248
+msgid "General"
+msgstr "Almennt"
+
+#: shell/rb-shell-preferences.c:312
+#, fuzzy
+#| msgid "Pause playback"
+msgid "Playback"
+msgstr "Afspilun"
+
+#: shell/rb-shell-preferences.c:428
+#, fuzzy
+msgid "Plugins"
+msgstr "Viðbætur"
+
+#: shell/rb-track-transfer-queue.c:174
+#, c-format
+msgid "The file \"%s\" already exists. Do you want to replace it?"
+msgstr ""
+
+#: shell/rb-track-transfer-queue.c:188
+#, fuzzy
+msgid "_Skip"
+msgstr "_Sleppa"
+
+#: shell/rb-track-transfer-queue.c:189
+#, fuzzy
+#| msgid "_Repeat"
+msgid "_Replace"
+msgstr "_Skipta út"
+
+#: shell/rb-track-transfer-queue.c:190
+#, fuzzy
+msgid "S_kip All"
+msgstr "S_leppa öllu"
+
+#: shell/rb-track-transfer-queue.c:191
+#, fuzzy
+#| msgid "Select _All"
+msgid "Replace _All"
+msgstr "Skipt_a út öllu"
+
+#: shell/rb-track-transfer-queue.c:438
+#, c-format
+msgid ""
+"%d file cannot be transferred as it must be converted into a format "
+"supported by the target device but no suitable encoding profiles are "
+"available"
+msgid_plural ""
+"%d files cannot be transferred as they must be converted into a format "
+"supported by the target device but no suitable encoding profiles are "
+"available"
+msgstr[0] ""
+msgstr[1] ""
+
+#. XXX should provide the option of picking a different format?
+#: shell/rb-track-transfer-queue.c:462
+#, c-format
+msgid ""
+"Additional software is required to encode media in your preferred format:\n"
+"%s"
+msgstr ""
+
+#: shell/rb-track-transfer-queue.c:466
+#, c-format
+msgid ""
+"Additional software is required to convert %d file into a format supported "
+"by the target device:\n"
+"%s"
+msgid_plural ""
+"Additional software is required to convert %d files into a format supported "
+"by the target device:\n"
+"%s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: shell/rb-track-transfer-queue.c:483
+#, fuzzy
+#| msgid "Unable to parse URI \"%s\"\n"
+msgid "Unable to transfer tracks"
+msgstr "Gat ekki lesið URI \"%s\"\n"
+
+#: shell/rb-track-transfer-queue.c:488
+msgid "_Cancel the transfer"
+msgstr ""
+
+#: shell/rb-track-transfer-queue.c:490
+#, fuzzy
+#| msgid "_Skip this step"
+msgid "_Skip these files"
+msgstr "Sleppa þessu skrefi"
+
+#: shell/rb-track-transfer-queue.c:493
+#, fuzzy
+msgid "_Install"
+msgstr "_Setja upp"
+
+#: sources/rb-auto-playlist-source.c:254 sources/rb-browser-source.c:315
+#: sources/rb-static-playlist-source.c:296
+#, fuzzy
+#| msgid "Genres and artists"
+msgid "Search artists"
+msgstr "Tónlistastílar og flytjendur"
+
+#: sources/rb-auto-playlist-source.c:255 sources/rb-browser-source.c:316
+#: sources/rb-static-playlist-source.c:297
+msgid "Search composers"
+msgstr "Leita að tónskáldum"
+
+#: sources/rb-auto-playlist-source.c:256 sources/rb-browser-source.c:317
+#, fuzzy
+#: sources/rb-static-playlist-source.c:298
+msgid "Search albums"
+msgstr "Leita í plötum"
+
+#: sources/rb-auto-playlist-source.c:257 sources/rb-browser-source.c:318
+#, fuzzy
+#: sources/rb-static-playlist-source.c:299
+msgid "Search titles"
+msgstr "Leita í lagaheitum"
+
+#: sources/rb-auto-playlist-source.c:258 sources/rb-browser-source.c:319
+#: sources/rb-static-playlist-source.c:300
+msgid "Search genres"
+msgstr ""
+
+#: sources/rb-device-source.c:105
+#, fuzzy
+msgid "Unable to eject"
+msgstr "Það tókst ekki að taka út"
+
+#: sources/rb-device-source.c:123
+#, fuzzy
+msgid "Unable to unmount"
+msgstr "Tókst ekki að aftengjast"
+
+#: sources/rb-display-page-group.c:86
+msgid "Library"
+msgstr "Tónlistarsafn"
+
+#: sources/rb-display-page-group.c:89
+#, fuzzy
+msgid "Stores"
+msgstr "Verslanir"
+
+#: sources/rb-display-page-group.c:95
+#, fuzzy
+msgid "Devices"
+msgstr "Tæki"
+
+#: sources/rb-display-page-group.c:99
+#, fuzzy
+msgid "Shared"
+msgstr "Sameiginlegt"
+
+#. set up info bar for triggering codec installation
+#: sources/rb-import-errors-source.c:233
+msgid "Install Additional Software"
+msgstr ""
+
+#: sources/rb-import-errors-source.c:239
+msgid "Additional software is required to play some of these files."
+msgstr ""
+
+#: sources/rb-import-errors-source.c:346
+#, fuzzy
+#| msgid "_Import Folder..."
+msgid "Import Errors"
+msgstr "Bæta við skráarsafni..."
+
+#: sources/rb-import-errors-source.c:383
+#, c-format
+msgid "%d import error"
+msgid_plural "%d import errors"
+msgstr[0] ""
+msgstr[1] ""
+
+#: sources/rb-library-source.c:121
+#, fuzzy
+#| msgid "Artists and albums"
+msgid "Artist/Artist - Album"
+msgstr "Flytjendur og plötur"
+
+#: sources/rb-library-source.c:122
+#, fuzzy
+#| msgid "Artists and albums"
+msgid "Artist/Album"
+msgstr "Flytjandi - plata"
+
+#: sources/rb-library-source.c:123
+#, fuzzy
+#| msgid "Artists and albums"
+msgid "Artist - Album"
+msgstr "Flytjandi - plata"
+
+#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1477
+#: widgets/rb-library-browser.c:136
+msgid "Album"
+msgstr "Plata"
+
+#: sources/rb-library-source.c:130
+#, fuzzy
+msgid "Number - Title"
+msgstr "Númer - Lagaheiti"
+
+#: sources/rb-library-source.c:131
+#, fuzzy
+#| msgid "Artist"
+msgid "Artist - Title"
+msgstr "Flytjandi"
+
+#: sources/rb-library-source.c:132
+#, fuzzy
+msgid "Artist - Number - Title"
+msgstr "Flytjandi - Númer - Lagaheiti"
+
+#: sources/rb-library-source.c:133
+#, fuzzy
+msgid "Artist (Album) - Number - Title"
+msgstr "Flytjandi (Plata) - Númer - Lagaheiti"
+
+#: sources/rb-library-source.c:135
+#, fuzzy
+msgid "Number. Artist - Title"
+msgstr "Númer. Flytjandi - Lagaheiti"
+
+#: sources/rb-library-source.c:416 sources/sync/rb-sync-settings-ui.c:217
+#: sources/sync/rb-sync-settings-ui.c:218 sources/sync/rb-sync-state-ui.c:77
+#, fuzzy
+#| msgid "_Music"
+msgid "Music"
+msgstr "Tónlist"
+
+#: sources/rb-library-source.c:469
+#, fuzzy
+msgid "Choose Library Location"
+msgstr "Velja staðsetningu safns"
+
+#: sources/rb-library-source.c:508
+#, fuzzy
+#| msgid "Multiple Song Properties"
+msgid "Multiple locations set"
+msgstr "Eiginleikar laga"
+
+#: sources/rb-library-source.c:1044
+#, fuzzy
+msgid "Example Path:"
+msgstr "Dæmi um slóð:"
+
+#: sources/rb-library-source.c:1198 sources/rb-library-source.c:1202
+#, fuzzy
+#: sources/rb-transfer-target.c:234
+msgid "Error transferring track"
+msgstr "Villa kom upp við að færa lagið"
+
+#: sources/rb-library-source.c:1284
+#, fuzzy
+#| msgid "Do not update the library"
+msgid "Copying tracks to the library"
+msgstr "Ekki uppfæra tónlistarsafn"
+
+#: sources/rb-library-source.c:1358
+#, fuzzy
+#| msgid "Do not update the library"
+msgid "Adding tracks to the library"
+msgstr "Ekki uppfæra tónlistarsafn"
+
+#: sources/rb-media-player-source.c:773
+#, c-format
+msgid "Syncing tracks to %s"
+msgstr ""
+
+#: sources/rb-media-player-source.c:829
+#, fuzzy
+msgid ""
+"You have not selected any music, playlists, or podcasts to transfer to this "
+"device."
+msgstr ""
+"Þú hefur ekki valið neina tónlist, afspilunarlista eða hlaðvarp til að "
+"flytja yfir á þetta tæki."
+
+#: sources/rb-media-player-source.c:834
+#, fuzzy
+msgid ""
+"There is not enough space on the device to transfer the selected music, "
+"playlists and podcasts."
+msgstr ""
+"Það er ekki nógu mikið pláss eftir á tækinu til að flytja tónlistina, "
+"afspilunarlistana og hlaðvörpin sem þú valdir."
+
+#: sources/rb-media-player-source.c:885
+#, c-format
+msgid "%s Sync Settings"
+msgstr ""
+
+#: sources/rb-media-player-source.c:890
+msgid "Sync with the device"
+msgstr ""
+
+#: sources/rb-media-player-source.c:892
+msgid "Don't sync"
+msgstr ""
+
+#: sources/rb-missing-files-source.c:274
+#, fuzzy
+msgid "Missing Files"
+msgstr "Skrár finnast ekki"
+
+#: sources/rb-missing-files-source.c:362
+#, fuzzy, c-format
+msgid "%d missing file"
+msgid_plural "%d missing files"
+msgstr[0] "%d skrá finnst ekki"
+msgstr[1] "%d skrá finnst ekki"
+
+#: sources/rb-playlist-source.c:1148
+#, fuzzy
+#| msgid "Create Automatic Playlist"
+msgid "Remove from Playlist"
+msgstr "Fjarlægja úr lagalista"
+
+#: sources/rb-play-queue-source.c:297 sources/rb-play-queue-source.c:399
+#, fuzzy
+#: sources/rb-play-queue-source.c:508
+msgid "Play Queue"
+msgstr "Spilunarröð"
+
+#. Translators: format is "<title> by <artist> from <album>"
+#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:929
 msgid "by"
 msgstr "með"
 
-#: widgets/rb-song-info.c:267
+#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:930
+msgid "from"
+msgstr "af"
+
+#: sources/rb-source.c:604 widgets/rb-import-dialog.c:480
+#, fuzzy, c-format
+#| msgid "songs"
+msgid "%d song"
+msgid_plural "%d songs"
+msgstr[0] "lög"
+msgstr[1] "lög"
+
+#: sources/rb-streaming-source.c:217
+#, fuzzy
+msgid "Connecting"
+msgstr "Tengist"
+
+#: sources/rb-streaming-source.c:221
+#, fuzzy
+#| msgid "Buffering..."
+msgid "Buffering"
+msgstr "Hleð í biðminni"
+
+#: sources/rb-transfer-target.c:535
+#, c-format
+msgid "Transferring tracks to %s"
+msgstr ""
+
+#: sources/sync/rb-sync-settings-ui.c:229
+#, fuzzy
+#| msgid "_Music"
+msgid "All Music"
+msgstr "Tónlist"
+
+#: sources/sync/rb-sync-state-ui.c:79
+#, fuzzy
+msgid "Other"
+msgstr "Annað"
+
+#: sources/sync/rb-sync-state-ui.c:80
+#, fuzzy
+msgid "Available"
+msgstr "Tiltækt"
+
+#: widgets/rb-alert-dialog.c:86
+#, fuzzy
+msgid "Image/label border"
+msgstr "Rammi í kringum myndir eða texta"
+
+#: widgets/rb-alert-dialog.c:87
+#, fuzzy
+msgid "Width of border around the label and image in the alert dialog"
+msgstr "Breidd rammans í kringum texta eða myndir í viðvörunarglugga"
+
+#: widgets/rb-alert-dialog.c:96
+#, fuzzy
+msgid "Alert Type"
+msgstr "Tegund Viðvörunar"
+
+#: widgets/rb-alert-dialog.c:97
+#, fuzzy
+msgid "The type of alert"
+msgstr "Tegund viðvörunarinnar"
+
+#: widgets/rb-alert-dialog.c:105
+#, fuzzy
+msgid "Alert Buttons"
+msgstr "Viðvörunar Takki"
+
+#: widgets/rb-alert-dialog.c:106
+#, fuzzy
+msgid "The buttons shown in the alert dialog"
+msgstr "Takkinn sem er sýndur í viðvörunarglugga"
+
+#: widgets/rb-alert-dialog.c:175
+#, fuzzy
+msgid "Show more _details"
+msgstr "Sýna frekari _upplýsingar"
+
+#: widgets/rb-alert-dialog.c:370 widgets/rb-alert-dialog.c:404
+#, fuzzy
+msgid "_OK"
+msgstr "Í _lagi"
+
+#: widgets/rb-alert-dialog.c:391
+#, fuzzy
+msgid "_No"
+msgstr "_Nei"
+
+#: widgets/rb-alert-dialog.c:394
+#, fuzzy
+msgid "_Yes"
+msgstr "_Já"
+
+#: widgets/rb-dialog.c:132
+#, fuzzy
+msgid "_Open"
+msgstr "_Opna"
+
+#: widgets/rb-encoding-settings.c:55
+msgid "Constant bit rate"
+msgstr "Fastur bitahraði"
+
+#: widgets/rb-encoding-settings.c:56
+msgid "Variable bit rate"
+msgstr ""
+
+#: widgets/rb-encoding-settings.c:57
+msgid "Constrained Variable bit rate"
+msgstr ""
+
+#: widgets/rb-encoding-settings.c:404
+#, fuzzy
+msgid "Default settings"
+msgstr "Sjálfgefnar stillingar"
+
+#: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1539
+#, fuzzy
+#: widgets/rb-song-info.c:1232
+msgid "Lossless"
+msgstr "Taplaust"
+
+#: widgets/rb-entry-view.c:1436
+#, fuzzy
+#| msgid "Track %.2d"
+msgid "Track"
+msgstr "Slóð"
+
+#: widgets/rb-entry-view.c:1467
+msgid "Composer"
+msgstr "Tónskáld"
+
+#: widgets/rb-entry-view.c:1497
+#, fuzzy
+msgid "Comment"
+msgstr "Athugasemd"
+
+#: widgets/rb-entry-view.c:1508
+#, fuzzy
+msgid "Time"
+msgstr "Tími"
+
+#: widgets/rb-entry-view.c:1521
+#, fuzzy
+msgid "Year"
+msgstr "ár"
+
+#: widgets/rb-entry-view.c:1534
+#, fuzzy
+#| msgid "_Quality"
+msgid "Quality"
+msgstr "Gæði"
+
+#: widgets/rb-entry-view.c:1537
+#, fuzzy
+#| msgid "%d kbps"
+msgid "000 kbps"
+msgstr "kbps"
+
+#: widgets/rb-entry-view.c:1548
+msgid "Rating"
+msgstr "Stjörnugjöf"
+
+#: widgets/rb-entry-view.c:1571
+#, fuzzy
+#| msgid "Play Count:"
+msgid "Play Count"
+msgstr "Afspilunartalning"
+
+#: widgets/rb-entry-view.c:1584
+#, fuzzy
+#| msgid "L_ast Played"
+msgid "Last Played"
+msgstr "Seinasta spilun"
+
+#: widgets/rb-entry-view.c:1597
+#, fuzzy
+msgid "Date Added"
+msgstr "Bætt við þann"
+
+#: widgets/rb-entry-view.c:1609
+#, fuzzy
+msgid "Last Seen"
+msgstr "Sást síðast"
+
+#: widgets/rb-entry-view.c:1620
+#, fuzzy
+#| msgid "Location:"
+msgid "Location"
+msgstr "Staðsetning"
+
+#: widgets/rb-entry-view.c:1630
+#, fuzzy
+msgid "BPM"
+msgstr "BPM"
+
+#: widgets/rb-entry-view.c:1918
+msgid "Now Playing"
+msgstr "Nú spilandi"
+
+#: widgets/rb-entry-view.c:1983
+#, fuzzy
+msgid "Playback Error"
+msgstr "Afspilunar villa"
+
+#: widgets/rb-fading-image.c:301
+#, fuzzy
+msgid "Drop artwork here"
+msgstr "Dragðu myndir hingað"
+
+#. Translators: remaining time / total time
+#: widgets/rb-header.c:1219
+#, c-format
+msgid "-%s / %s"
+msgstr ""
+
+#. Translators: elapsed time / total time
+#: widgets/rb-header.c:1230
+#, fuzzy, c-format
+msgid "%s / %s"
+msgstr "%1$s • %2$s"
+
+#: widgets/rb-import-dialog.c:342
+msgid "Examining files"
+msgstr "Skoða skrár"
+
+#. this isn't a terribly helpful message.
+#: widgets/rb-import-dialog.c:412
+#, c-format
+msgid "The location you have selected is on the device %s."
+msgstr ""
+
+#: widgets/rb-import-dialog.c:418
+#, fuzzy, c-format
+#| msgid "Show _Browser"
+msgid "Show %s"
+msgstr "Sýna %1$s"
+
+#: widgets/rb-import-dialog.c:466
+#, c-format
+msgid "Import %d selected track"
+msgid_plural "Import %d selected tracks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: widgets/rb-import-dialog.c:469
+#, c-format
+msgid "Import %d listed track"
+msgid_plural "Import %d listed tracks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: widgets/rb-property-view.c:663
+#, fuzzy, c-format
+msgid "%d artist (%d)"
+msgid_plural "All %d artists (%d)"
+msgstr[0] "%d flytjandi (%d)"
+msgstr[1] "%d flytjandi (%d)"
+
+#: widgets/rb-property-view.c:666
+#, fuzzy, c-format
+msgid "%d album (%d)"
+msgid_plural "All %d albums (%d)"
+msgstr[0] "%d plata (%d)"
+msgstr[1] "%d plata (%d)"
+
+#: widgets/rb-property-view.c:669
+#, fuzzy, c-format
+msgid "%d genre (%d)"
+msgid_plural "All %d genres (%d)"
+msgstr[0] "%d tónlistarstíll (%d)"
+msgstr[1] "%d tónlistarstíll (%d)"
+
+#: widgets/rb-property-view.c:672
+#, fuzzy, c-format
+msgid "%d (%d)"
+msgid_plural "All %d (%d)"
+msgstr[0] "%d (%d)"
+msgstr[1] "%d (%d)"
+
+#  Translators: %s is the song name
+#: widgets/rb-property-view.c:678
+#, fuzzy, c-format
+#| msgid "%s (Paused)"
+msgid "%s (%d)"
+msgstr "%s (%d)"
+
+#: widgets/rb-query-creator.c:194
+#, fuzzy
+msgid "_New"
+msgstr "_Nýtt"
+
+#: widgets/rb-query-creator.c:210
+msgid "Create Automatic Playlist"
+msgstr "Búa til sjálfvirkan lagalista"
+
+#: widgets/rb-query-creator.c:212
+#, fuzzy
+#| msgid "Create Automatic Playlist"
+msgid "Edit Automatic Playlist"
+msgstr "Búa til sjálfvirkan lagalista"
+
+#: widgets/rb-query-creator-properties.c:77
+#, fuzzy
+#| msgid "Title"
+msgctxt "query-criteria"
+msgid "Title"
+msgstr "Titill"
+
+#: widgets/rb-query-creator-properties.c:78
+#, fuzzy
+#| msgid "Artist"
+msgctxt "query-criteria"
+msgid "Artist"
+msgstr "Flytjandi"
+
+#: widgets/rb-query-creator-properties.c:79
+msgctxt "query-criteria"
+msgid "Composer"
+msgstr "Tónskáld"
+
+#: widgets/rb-query-creator-properties.c:80
+#, fuzzy
+#| msgid "Album"
+msgctxt "query-criteria"
+msgid "Album"
+msgstr "Albúm"
+
+#: widgets/rb-query-creator-properties.c:81
+#, fuzzy
+#| msgid "Artist"
+msgctxt "query-criteria"
+msgid "Album Artist"
+msgstr "Listamaður á hljómplötu"
+
+#: widgets/rb-query-creator-properties.c:82
+#, fuzzy
+#| msgid "Genre"
+msgctxt "query-criteria"
+msgid "Genre"
+msgstr "Stíll"
+
+#: widgets/rb-query-creator-properties.c:83
+msgctxt "query-criteria"
+msgid "Year"
+msgstr "ár"
+
+#: widgets/rb-query-creator-properties.c:84
+#, fuzzy
+#| msgid "Rating"
+msgctxt "query-criteria"
+msgid "Rating"
+msgstr "Einkunn"
+
+#: widgets/rb-query-creator-properties.c:85
+#, fuzzy
+#| msgid "_Path:"
+msgctxt "query-criteria"
+msgid "Path"
+msgstr "Slóð"
+
+#: widgets/rb-query-creator-properties.c:86
+msgctxt "query-criteria"
+msgid "Comment"
+msgstr "Athugasemd"
+
+#: widgets/rb-query-creator-properties.c:88
+#, fuzzy
+#| msgid "Play Count:"
+msgctxt "query-criteria"
+msgid "Play Count"
+msgstr "Afspilunartalning"
+
+#: widgets/rb-query-creator-properties.c:89
+#, fuzzy
+#| msgid "Track _number"
+msgctxt "query-criteria"
+msgid "Track Number"
+msgstr "Spor númer"
+
+#: widgets/rb-query-creator-properties.c:90
+msgctxt "query-criteria"
+msgid "Disc Number"
+msgstr "Diskur númer"
+
+#: widgets/rb-query-creator-properties.c:91
+msgctxt "query-criteria"
+msgid "Bitrate"
+msgstr "Bitahraði"
+
+#: widgets/rb-query-creator-properties.c:93
+#, fuzzy
+#| msgid "_Duration"
+msgctxt "query-criteria"
+msgid "Duration"
+msgstr "Tímalengd"
+
+#: widgets/rb-query-creator-properties.c:94
+msgctxt "query-criteria"
+msgid "Beats Per Minute"
+msgstr "Taktar á mínútu"
+
+#: widgets/rb-query-creator-properties.c:95
+#, fuzzy
+#| msgid "L_ast Played"
+msgctxt "query-criteria"
+msgid "Time of Last Play"
+msgstr "Síðast Spilað"
+
+#: widgets/rb-query-creator-properties.c:96
+#, fuzzy
+#| msgid "_Add to Library..."
+msgctxt "query-criteria"
+msgid "Time Added to Library"
+msgstr "Bæta við safn"
+
+#: widgets/rb-query-creator-properties.c:107
+#, fuzzy
+#| msgid "Artist"
+msgctxt "query-sort"
+msgid "Artist"
+msgstr "Flytjandi"
+
+#: widgets/rb-query-creator-properties.c:107
+#, fuzzy
+#: widgets/rb-query-creator-properties.c:108
+#: widgets/rb-query-creator-properties.c:109
+#: widgets/rb-query-creator-properties.c:110
+#: widgets/rb-query-creator-properties.c:111
+#: widgets/rb-query-creator-properties.c:112
+#: widgets/rb-query-creator-properties.c:120
+msgid "_In reverse alphabetical order"
+msgstr "Í _öfugri stafrófsröð"
+
+#: widgets/rb-query-creator-properties.c:108
+msgctxt "query-sort"
+msgid "Composer"
+msgstr "Tónskáld"
+
+#: widgets/rb-query-creator-properties.c:109
+#, fuzzy
+#| msgid "Album"
+msgctxt "query-sort"
+msgid "Album"
+msgstr "Albúm"
+
+#: widgets/rb-query-creator-properties.c:110
+#, fuzzy
+#| msgid "Artist"
+msgctxt "query-sort"
+msgid "Album Artist"
+msgstr "Listamaður á hljómplötu"
+
+#: widgets/rb-query-creator-properties.c:111
+#, fuzzy
+#| msgid "Genre"
+msgctxt "query-sort"
+msgid "Genre"
+msgstr "Stíll"
+
+#: widgets/rb-query-creator-properties.c:112
+#, fuzzy
+#| msgid "Title"
+msgctxt "query-sort"
+msgid "Title"
+msgstr "Titill"
+
+#: widgets/rb-query-creator-properties.c:113
+#, fuzzy
+#| msgid "Rating"
+msgctxt "query-sort"
+msgid "Rating"
+msgstr "Einkunn"
+
+#: widgets/rb-query-creator-properties.c:113
+#, fuzzy
+msgid "W_ith more highly rated tracks first"
+msgstr "Þar sem _vinsælli lög eru fyrst"
+
+#: widgets/rb-query-creator-properties.c:114
+#, fuzzy
+#| msgid "Play Count:"
+msgctxt "query-sort"
+msgid "Play Count"
+msgstr "Afspilunartalning"
+
+#: widgets/rb-query-creator-properties.c:114
+#, fuzzy
+msgid "W_ith more often played songs first"
+msgstr "Þar sem _oftar spiluð lög eru á undan"
+
+#: widgets/rb-query-creator-properties.c:115
+msgctxt "query-sort"
+msgid "Year"
+msgstr "ár"
+
+#: widgets/rb-query-creator-properties.c:115
+#, fuzzy
+msgid "W_ith newer tracks first"
+msgstr "Þar sem _nýrri lög eru á undan"
+
+#: widgets/rb-query-creator-properties.c:116
+#, fuzzy
+#| msgid "_Duration"
+msgctxt "query-sort"
+msgid "Duration"
+msgstr "Tímalengd"
+
+#: widgets/rb-query-creator-properties.c:116
+#, fuzzy
+msgid "W_ith longer tracks first"
+msgstr "Þar sem _lengri lög eru á undan"
+
+#: widgets/rb-query-creator-properties.c:117
+#, fuzzy
+#| msgid "Track _number"
+msgctxt "query-sort"
+msgid "Track Number"
+msgstr "Spor númer"
+
+#: widgets/rb-query-creator-properties.c:117
+#, fuzzy
+msgid "_In decreasing order"
+msgstr "Í _venjulegri röð"
+
+#: widgets/rb-query-creator-properties.c:118
+#, fuzzy
+#| msgid "L_ast Played"
+msgctxt "query-sort"
+msgid "Last Played"
+msgstr "Seinasta spilun"
+
+#: widgets/rb-query-creator-properties.c:118
+#, fuzzy
+msgid "W_ith more recently played tracks first"
+msgstr "Þar sem _nýlega spiluð lög eru á undan"
+
+#: widgets/rb-query-creator-properties.c:119
+msgctxt "query-sort"
+msgid "Date Added"
+msgstr "Bætt við þann"
+
+#: widgets/rb-query-creator-properties.c:119
+#, fuzzy
+msgid "W_ith more recently added tracks first"
+msgstr "Þar sem _lögum sem var nýlega bætt við eru á undan"
+
+#: widgets/rb-query-creator-properties.c:120
+msgctxt "query-sort"
+msgid "Comment"
+msgstr "Athugasemd"
+
+#: widgets/rb-query-creator-properties.c:121
+msgctxt "query-sort"
+msgid "Beats Per Minute"
+msgstr "Taktar á mínútu"
+
+#: widgets/rb-query-creator-properties.c:121
+msgid "W_ith faster tempo tracks first"
+msgstr ""
+
+#: widgets/rb-query-creator-properties.c:134
+msgid "contains"
+msgstr "inniheldur"
+
+#: widgets/rb-query-creator-properties.c:135
+msgid "does not contain"
+msgstr "inniheldur ekki"
+
+#: widgets/rb-query-creator-properties.c:136
+#: widgets/rb-query-creator-properties.c:166
+msgid "equals"
+msgstr "jafnt og"
+
+#: widgets/rb-query-creator-properties.c:137
+#: widgets/rb-query-creator-properties.c:167
+msgid "not equal to"
+msgstr "ekki jafnt og"
+
+#: widgets/rb-query-creator-properties.c:138
+msgid "starts with"
+msgstr "byrjar á"
+
+#: widgets/rb-query-creator-properties.c:139
+msgid "ends with"
+msgstr "endar á"
+
+#: widgets/rb-query-creator-properties.c:168
+msgid "at least"
+msgstr "að minnsta kosti"
+
+#. matches if A >= B
+#: widgets/rb-query-creator-properties.c:169
+msgid "at most"
+msgstr "í mesta lagi"
+
+#. Translators: this matches songs within 1-Jan-YEAR to 31-Dec-YEAR
+#: widgets/rb-query-creator-properties.c:179
+msgid "in"
+msgstr "er í"
+
+#. Translators: this matches songs before 1-Jan-YEAR or after 31-Dec-YEAR
+#: widgets/rb-query-creator-properties.c:181
+msgid "not in"
+msgstr "er ekki í"
+
+#. Translators: this matches songs after 31-Dec-YEAR
+#: widgets/rb-query-creator-properties.c:183
+msgid "after"
+msgstr "eftir"
+
+#. Translators: this matches songs before 1-Jan-YEAR
+#: widgets/rb-query-creator-properties.c:185
+msgid "before"
+msgstr "fyrir"
+
+#.
+#. * Translators: this will match when within <value> of the current time
+#. * e.g. "in the last" "7 days" will match if within 7 days of the current time
+#.
+#: widgets/rb-query-creator-properties.c:249
+#, fuzzy
+#| msgid "on the desktop"
+msgid "in the last"
+msgstr "er í seinustu"
+
+#.
+#. * Translators: this is the opposite of the above, and will match if not
+#. * within <value> of the current time
+#.
+#: widgets/rb-query-creator-properties.c:255
+#, fuzzy
+#| msgid "on the desktop"
+msgid "not in the last"
+msgstr "er ekki í seinustu"
+
+#: widgets/rb-query-creator-properties.c:269
+msgid "seconds"
+msgstr "sekúndur"
+
+#: widgets/rb-query-creator-properties.c:270
+msgid "minutes"
+msgstr "mínútur"
+
+#: widgets/rb-query-creator-properties.c:271
+msgid "hours"
+msgstr "klukkustundir"
+
+#: widgets/rb-query-creator-properties.c:272
+msgid "days"
+msgstr "dagar"
+
+#: widgets/rb-query-creator-properties.c:273
+msgid "weeks"
+msgstr "vikur"
+
+#: widgets/rb-rating-helper.c:295
+#, fuzzy
+msgid "No Stars"
+msgstr "Engar stjörnur"
+
+#: widgets/rb-rating-helper.c:297
+#, fuzzy, c-format
+msgid "%d Star"
+msgid_plural "%d Stars"
+msgstr[0] "%d stjarna"
+msgstr[1] "%d stjarna"
+
+#: widgets/rb-search-entry.c:227
+#, fuzzy
+msgid "Clear the search text"
+msgstr "Hreinsa leitartextann"
+
+#: widgets/rb-search-entry.c:234
+msgid "Select the search type"
+msgstr ""
+
+#: widgets/rb-search-entry.c:252
+#, fuzzy
+#| msgid "_Search:"
+msgid "Search"
+msgstr "Leita"
+
+#: widgets/rb-search-entry.c:550
+msgid "_Search:"
+msgstr "Leita:"
+
+#: widgets/rb-song-info.c:354
+msgid "_Back"
+msgstr "_Til baka"
+
+#: widgets/rb-song-info.c:363
+msgid "_Forward"
+msgstr "Á_fram"
+
+#: widgets/rb-song-info.c:371
 msgid "Song Properties"
 msgstr "Eiginleikar lags"
 
-#: widgets/rb-song-info.c:359
+#: widgets/rb-song-info.c:428
 msgid "Multiple Song Properties"
 msgstr "Eiginleikar laga"
 
-#: widgets/rb-song-info.c:799
-#, c-format
-msgid "%d kbps"
-msgstr "%d kbps"
+#: widgets/rb-song-info.c:1294
+#, fuzzy
+#| msgid "Unknown file type"
+msgid "Unknown file name"
+msgstr "Óþekkt skráargerð"
 
-#: widgets/rb-song-info.c:862
-msgid "on the desktop"
+#: widgets/rb-song-info.c:1316
+#, fuzzy
+#| msgid "on the desktop"
+msgid "On the desktop"
 msgstr "á skjáborðinu"
 
-#. Translators - The + and - refer to increasing and decreasing the volume.
-#. ** I don't know if there are sensible alternatives in other languages
-#: widgets/rb-volume.c:234
-msgid "+"
-msgstr "+"
+#: widgets/rb-song-info.c:1339
+#, fuzzy
+#| msgid "Unknown"
+msgid "Unknown location"
+msgstr "Óþekkt"
 
-#: widgets/rb-volume.c:235
-msgid "-"
-msgstr "-"
+#~ msgid "Add to Music Library"
+#~ msgstr "Bæta við tónlistarsafn"
 
+#~ msgid "Rhythmbox shell factory"
+#~ msgstr "Rhythmbox skeljar verksmiðja"
+
+#~ msgid "*"
+#~ msgstr "*"
+
+#~ msgid ""
+#~ "Rhythmbox manages all of your music in a central music \"library\", so "
+#~ "you can easily view, search, and organize it.\n"
+#~ "In order to use this feature, you need to tell Rhythmbox where to find "
+#~ "your music.  You may choose to skip this step; instead, you can add music "
+#~ "to your library at any point later.\n"
+#~ "Please choose one of the options below:"
+#~ msgstr ""
+#~ "Rhythmbox sér um alla tónlistina þína í einu \"tónlistarsafni\", svo þú "
+#~ "getir auðveldlega skoðað, leitað og skipulagt það.\n"
+#~ "Vinsamlegast veldu einn af eftirfarandi möguleikum:"
+
+#~ msgid "_Enter location manually:"
+#~ msgstr "Bæta við staðsetningu handvirkt:"
+
+#~ msgid "The following files couldn't be loaded:"
+#~ msgstr "Gat ekki hlaðið inn eftirfarandi skrám:"
+
+#~ msgid "Automatically rate:"
+#~ msgstr "Sjálfvirk einkunnagjöf:"
+
+#~ msgid "Wed, Jan 01, 1970 00:00:00 -0500"
+#~ msgstr "Mið, 1. Jan, 1970 00:00:00 -0500"
+
+#~ msgid "_Last Played:"
+#~ msgstr "Síðast Spilað:"
+
+#~ msgid "Enter the _location (URI) of the file you would like to add:"
+#~ msgstr "Skrifaðu staðsetningu (URI) skráarinnar sem þú vilt bæta við:"
+
+#~ msgid "Open from URI"
+#~ msgstr "Opna URI"
+
+#~ msgid "Deselect all songs"
+#~ msgstr "Afvelja öll lög"
+
+#~ msgid "Eject Audio-CD"
+#~ msgstr "Opna geislaspilarann"
+
+#~ msgid "Select all songs"
+#~ msgstr "Velja öll lög"
+
+#~ msgid "_Eject Audio-CD..."
+#~ msgstr "Opna Geislaspilara"
+
+#~ msgid "_Jump to Playing Song"
+#~ msgstr "Fara í spilandi lag"
+
+#~ msgid "Add Lo_cation..."
+#~ msgstr "Bæta við staðsetningu..."
+
+#~ msgid "Change the visibility of the browser"
+#~ msgstr "Breyta sýnileika vafra"
+
+#~ msgid "Change the visibility of the main window"
+#~ msgstr "Breyta sýnileika aðal gluggans"
+
+#~ msgid "Change the visibility of the source list"
+#~ msgstr "Breyta sýnileika inntaks lista"
+
+#~ msgid "Change the visibility of the statusbar"
+#~ msgstr "Breyta sýnileika stöðu"
+
+#~ msgid "Choose a location (URI) to be added to the library"
+#~ msgstr "Velja staðsetningu (URI) til að bæta við safnið"
+
+#~ msgid "Choose files or a directory to be added to the library"
+#~ msgstr "Veldu skrár eða skráarsafn til að bæta við tónlistarsafnið"
+
+#~ msgid "Copy selection"
+#~ msgstr "Afrita valið"
+
+#~ msgid "Create a new automatically updating playlist"
+#~ msgstr "Búa til nýjan sjálfvirkt uppfærðan lagalista"
+
+#~ msgid "Create a new playlist"
+#~ msgstr "Búa til nýjan lagalista"
+
+#~ msgid "Cut selection"
+#~ msgstr "Klippa valið"
+
+#~ msgid "Display music player help"
+#~ msgstr "Birta hjálp spilarans"
+
+#~ msgid "Extract and import songs from a CD"
+#~ msgstr "Afrita lög af geisladisk"
+
+#~ msgid "Import Lo_cation..."
+#~ msgstr "Bæta við staðsetningu..."
+
+#~ msgid "Make the main window smaller"
+#~ msgstr "Gera forrits gluggann minni"
+
+#~ msgid "New _Internet Radio Station"
+#~ msgstr "Ný vef-útvarpsstöð"
+
+#~ msgid "P_laylist"
+#~ msgstr "Lagalisti"
+
+#~ msgid "Paste selection"
+#~ msgstr "Líma valið"
+
+#~ msgid "Play first song again after all songs are played"
+#~ msgstr "Spila fyrsta lag aftur eftir að öll lög hafa verið spiluð"
+
+#~ msgid "Play songs in a random order"
+#~ msgstr "Spila lög í stokkaðri röð"
+
+#~ msgid "Quit the music player"
+#~ msgstr "Hætta í tónlistarspilaranum"
+
+#~ msgid "Repea_t"
+#~ msgstr "Endurtaka"
+
+#~ msgid "Save a playlist to a file"
+#~ msgstr "Vista lagalista í skrá"
+
+#~ msgid "Set the browser to view only this album"
+#~ msgstr "Láta vafra aðeins sýna þessa plötu"
+
+#~ msgid "Set the browser to view only this artist"
+#~ msgstr "Láta vafra aðeins sýna þennan flytjanda"
+
+#~ msgid "Set the browser to view only this genre"
+#~ msgstr "Láta vafra aðeins sýna þennan stíl"
+
+#~ msgid "Show information about the music player"
+#~ msgstr "Skoða upplýsingar um tónlistarspilarann"
+
+#~ msgid "Show information on the selected song"
+#~ msgstr "Skoða upplýsingar um valið lag"
+
+#~ msgid "Start playing"
+#~ msgstr "Hefja spilun"
+
+#~ msgid "Start playing the next song"
+#~ msgstr "Spila næsta lag"
+
+#~ msgid "Start playing the previous song"
+#~ msgstr "Spila fyrra lag"
+
+#~ msgid "_About"
+#~ msgstr "Um"
+
+#~ msgid "_Control"
+#~ msgstr "Stjórna"
+
+#~ msgid "_Cut"
+#~ msgstr "Klippa"
+
+#~ msgid "_Show Window"
+#~ msgstr "Sýna glugga"
+
+#~ msgid "_Shuffle"
+#~ msgstr "Stokka"
+
+#~ msgid "_Small Display"
+#~ msgstr "Lítil sýn"
+
+#, c-format
+#~ msgid "Properties for %s"
+#~ msgstr "Eiginleikar fyrir %s"
+
+#~ msgid "Expander Size"
+#~ msgstr "Stærð Stækkara"
+
+#~ msgid "Size of the expander arrow"
+#~ msgstr "Stærð örvar stækkarans"
+
+#, c-format
+#~ msgid ""
+#~ "GConf error:\n"
+#~ "  %s"
+#~ msgstr ""
+#~ "GConf villa:\n"
+#~ "%s"
+
+#~ msgid "Orientation"
+#~ msgstr "Snið"
+
+#, c-format
+#~ msgid "Failed to find %s"
+#~ msgstr "Fann ekki %s"
+
+#, c-format
+#~ msgid "%s exists, please move it out of the way."
+#~ msgstr "%s er þegar til, vinsamlegast færðu annað."
+
+#, c-format
+#~ msgid "Couldn't write playlist: %s"
+#~ msgstr "Gat ekki skrifað lagalista: %s"
+
+#, c-format
+#~ msgid "Unsupported MIME type %s"
+#~ msgstr "óþekkt MIME gerð %s"
+
+#~ msgid "No TRM ID for this song"
+#~ msgstr "Ekkert TRM ID fyrir þetta lag"
+
+#~ msgid "No information for this song found"
+#~ msgstr "Engar upplýsingar um þetta lag fundust"
+
+#~ msgid "Invalid track number"
+#~ msgstr "Ógilt númer lags"
+
+#~ msgid "Failed to open file for reading"
+#~ msgstr "Gat ekki opnað skrá fyrir lestur"
+
+#~ msgid "Error decoding FLAC file"
+#~ msgstr "Villa við afkóðun FLAC skráar"
+
+#~ msgid "Failed to gather information about the file"
+#~ msgstr "Gat ekki sótt upplýsingar um skrána"
+
+#, c-format
+#~ msgid "MPEG %d Layer III"
+#~ msgstr "MPEG %d Layer III"
+
+#~ msgid "MPEG 2.5 Layer III"
+#~ msgstr "MPEG 2.5 Layer III"
+
+#~ msgid "Failed to recognise filetype"
+#~ msgstr "Gat ekki fundið skráartegund"
+
+#~ msgid "MPEG-4 audio (MPEG-4 AAC)"
+#~ msgstr "MPEG-4 hljóð (MPEG-4 AAC)"
+
+#~ msgid "Failed to open file as Ogg Vorbis"
+#~ msgstr "Gat ekki opnað skrá sem Ogg Vorbis"
+
+#~ msgid "Operation not supported"
+#~ msgstr "Aðgerð ekki stutt"
+
+#~ msgid "Could not start pipeline playing"
+#~ msgstr "Gat ekki hafið spilun með pípun"
+
+#~ msgid "Could not create audio output element; check your settings"
+#~ msgstr "Gat ekki búið til úttak; athugaðu stillingar"
+
+#~ msgid "Couldn't initialize scheduler.  Did you run gst-register?"
+#~ msgstr "Gat ekki upphafsstillt verkraðara. Hefurðu keyrt gst-register?"
+
+#~ msgid "No AudioCD support; check your settings"
+#~ msgstr "Enginn stuðningur við geisladiska, athugaðu stillingar þínar"
+
+#~ msgid "Failed to set up an audio driver; check your installation"
+#~ msgstr "Gat ekki sett up hljóð rekil; athugaðu uppsetningu"
+
+#~ msgid "Internal error; check your installation."
+#~ msgstr "Forrits villa; athugaðu uppsetningu"
+
+#, c-format
+#~ msgid "Audio of %s not handled; check your installation."
+#~ msgstr "Get ekki höndlað hljóð %s; athugaðu uppsetningu þína"
+
+#~ msgid "%Y-%m-%d %H:%M"
+#~ msgstr "%d-%m-%Y %H:%M"
+
+#~ msgid "Loading songs..."
+#~ msgstr "Hleð inn lög..."
+
+#~ msgid "Refreshing songs..."
+#~ msgstr "Uppfæri lög..."
+
+#~ msgid "Print the playing song and exit"
+#~ msgstr "Prenta út núverandi lag og hætta"
+
+#~ msgid "Print the playing song URI and exit"
+#~ msgstr "Prenta út URI núverandi lags og hætta"
+
+#~ msgid "Print the playing song length in seconds and exit"
+#~ msgstr "Prenta út lengd núverandi lags og hætta"
+
+#~ msgid "Seek to the specified time in playing song if possible and exit"
+#~ msgstr "Hoppa í ákveðinn tíma í núverandi lagi (ef mögulegt) og hætta"
+
+#~ msgid "Focus the running player"
+#~ msgstr "Virkja keyrandi spilara"
+
+#~ msgid "Toggle shuffling"
+#~ msgstr "Skipta stokkun"
+
+#, c-format
+#~ msgid "An exception occured '%s'"
+#~ msgstr "Villa kom upp '%s'"
+
+#, c-format
+#~ msgid ""
+#~ "Failed to activate the shell:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Gat ekki opnað skel:\n"
+#~ "%s"
+
+#~ msgid "Change the music volume"
+#~ msgstr "Breyta hljóðstyrk"
+
+#, c-format
+#~ msgid "Opening %s..."
+#~ msgstr "Opna %s..."
+
+#~ msgid "_Stop"
+#~ msgstr "Stöðva"
+
+#~ msgid "Whether the main window is visible"
+#~ msgstr "Hvort aðal glugginn sé sýnilegur"
+
+#~ msgid "Whether shuffle is enabled"
+#~ msgstr "Hvort stokkun sé virk"
+
+#  Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
+#, c-format
+#~ msgid ""
+#~ "%s\n"
+#~ "Paused, %s"
+#~ msgstr ""
+#~ "%s\n"
+#~ "Stöðvað, %s"
+
+#  Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
+#, c-format
+#~ msgid ""
+#~ "%s\n"
+#~ "%s"
+#~ msgstr ""
+#~ "%s\n"
+#~ "%s"
+
+#~ msgid "Choose Files or Directory"
+#~ msgstr "Veldu Skrár eða Skráarsafn"
+
+#~ msgid "To extract CDs you must install the Sound Juicer package."
+#~ msgstr ""
+#~ "Til að bæta við geisladiskum verðurðu að setja upp Sound Juicer forritið."
+
+#, c-format
+#~ msgid "Couldn't run sound-juicer: %s"
+#~ msgstr "Gat ekki keyrt sound-juicer: %s"
+
+#~ msgid "Filter music display by genre, artist, album, or title"
+#~ msgstr "Sía tónlist eftir tónlistastíl, flytjanda, plötu eða titli"
+
+#~ msgid "Hide _Browser"
+#~ msgstr "Fela Vafra"
+
+#~ msgid "Master-PL"
+#~ msgstr "Aðal-Lagalisti"
+
+#, c-format
+#~ msgid "Error reading \"%s\".\n"
+#~ msgstr "Villa við lestur \"%s\".\n"
+
+#, c-format
+#~ msgid "\"%s\" is not a valid iPod database.\n"
+#~ msgstr "\"%s\" er ekki löglegur iPod gagnagrunnur.\n"
+
+#, c-format
+#~ msgid "Could not open \"%s\" file for reading.\n"
+#~ msgstr "Gat ekki lesið skrána \"%s\".\n"
+
+#, c-format
+#~ msgid "Could not open \"%s\" file for writing.\n"
+#~ msgstr "Gat ekki skrifað í skrána \"%s\".\n"
+
+#, c-format
+#~ msgid "Error reading file \"%s\".\n"
+#~ msgstr "Gat ekki lesið skrána \"%s\".\n"
+
+#, c-format
+#~ msgid "Error writing PC file \"%s\".\n"
+#~ msgstr "Gat ekki skrifað PC skrána \"%s\".\n"
+
+#~ msgid "iPod"
+#~ msgstr "iPod"
+
+#~ msgid "Tra_ck"
+#~ msgstr "Númer"
+
+#~ msgid "Pixbuf Object"
+#~ msgstr "Pixbuf Object"
+
+#~ msgid "Welcome to Rhythmbox"
+#~ msgstr "Velkominn í Rhythmbox"
+
+#~ msgid ""
+#~ "Rhythmbox is the GNOME music player that lets you do everything: play "
+#~ "your music files, listen to Internet Radio, import music from CDs, and "
+#~ "much more.\n"
+#~ "\n"
+#~ "This assistant will help you get started by asking you some simple "
+#~ "questions."
+#~ msgstr ""
+#~ "Rhythmbox er GNOME tónlistarspilari sem leyfir þér allt: spila tónlistina "
+#~ "þína, hlusta á vef-útvarp, afrita tónlist frá geisladiskum og mikið "
+#~ "meira.\n"
+#~ "\n"
+#~ "Þessi leiðbeinandi mun spyrja þig nokkura einfaldra spurninga til að koma "
+#~ "þér í gang."
+
+#~ msgid "Music library setup"
+#~ msgstr "Uppsetning tónlistarsafns"
+
+#~ msgid "Finish"
+#~ msgstr "Ljúka"
+
+#, c-format
+#~ msgid "Error reading filename: %s"
+#~ msgstr "Gat ekki lesið skráarnafn: %s"
+
+#~ msgid "Choose a directory"
+#~ msgstr "Veldu skráarsafn"
+
+#~ msgid "Very Low"
+#~ msgstr "Mjög Léleg"
+
+#~ msgid "Low"
+#~ msgstr "Léleg"
+
+#~ msgid "Regular"
+#~ msgstr "Venjuleg"
+
+#~ msgid "High"
+#~ msgstr "Góð"
+
+#~ msgid "Very High"
+#~ msgstr "Mjög Góð"
+
+#~ msgid "Perfect"
+#~ msgstr "Fullkomin"
+
+#~ msgid "_Title"
+#~ msgstr "Titill"
+
+#~ msgid "Art_ist"
+#~ msgstr "Flytjandi"
+
+#~ msgid "Ge_nre"
+#~ msgstr "Stíll"
+
+#~ msgid "_Play Count"
+#~ msgstr "Fjöldi Spilana"
+
+#~ msgid "Get information on this album from the web"
+#~ msgstr "Sækja upplýsingar um þessa plötu af vefnum"
+
+#~ msgid "Get information on this artist from the web"
+#~ msgstr "Sækja upplýsingar um þennan flytjanda af vefnum"
+
+#~ msgid "Get information on this station from the web"
+#~ msgstr "Sækja upplýsingar um þessa stöð af vefnum"
+
+#~ msgid "Error loading files into library"
+#~ msgstr "Gat ekki hlaðið skrár inn í safn"
+
+#~ msgid "_File"
+#~ msgstr "Skrá"
+
+#~ msgid "less than"
+#~ msgstr "minna en"
+
+#~ msgid "+"
+#~ msgstr "+"
+
+#~ msgid "-"
+#~ msgstr "-"
