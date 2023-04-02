@@ -2917,6 +2917,17 @@ add_bus_watch (RBPlayerGstXFade *player)
 	gst_object_unref (bus);
 }
 
+static void
+remove_bus_watch (RBPlayerGstXFade *player)
+{
+	GstBus *bus;
+
+	bus = gst_element_get_bus (GST_ELEMENT (player->priv->pipeline));
+	gst_bus_remove_watch (bus);
+	player->priv->bus_watch_id = 0;
+	gst_object_unref (bus);
+}
+
 static gboolean
 start_sink_locked (RBPlayerGstXFade *player, GList **messages, GError **error)
 {
@@ -3178,7 +3189,7 @@ start_sink (RBPlayerGstXFade *player, GError **error)
 
 	case SINK_STOPPED:
 		/* prevent messages from being processed by the main thread while we're starting the sink */
-		g_source_remove (player->priv->bus_watch_id);
+		remove_bus_watch (player);
 		ret = start_sink_locked (player, &messages, error);
 
 		player->priv->idle_messages = g_list_concat (player->priv->idle_messages, messages);
