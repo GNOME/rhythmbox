@@ -159,6 +159,13 @@ test_rhythmdb_setup (void)
 	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc)rb_null_function;
 }
 
+static gboolean
+idle_unref (gpointer data)
+{
+	g_object_unref (data);
+	return FALSE;
+}
+
 void
 test_rhythmdb_shutdown (void)
 {
@@ -167,7 +174,7 @@ test_rhythmdb_shutdown (void)
 
 	/* release the reference, and wait until after finalisation */
 	g_object_weak_ref (G_OBJECT (db), (GWeakNotify)gtk_main_quit, NULL);
-	g_idle_add ((GSourceFunc)g_object_unref, db);
+	g_idle_add (idle_unref, db);
 	gtk_main ();
 	db = NULL;
 }
