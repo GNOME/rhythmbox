@@ -1056,6 +1056,8 @@ rhythmdb_shutdown (RhythmDB *db)
 	db->priv->outstanding_stats = NULL;
 	g_mutex_unlock (&db->priv->stat_mutex);
 
+	g_clear_handle_id (&db->priv->sync_library_id, g_source_remove);
+
 	rb_debug ("%d outstanding threads", g_atomic_int_get (&db->priv->outstanding_threads));
 	while (g_atomic_int_get (&db->priv->outstanding_threads) > 0) {
 		result = g_async_queue_pop (db->priv->event_queue);
@@ -3254,7 +3256,7 @@ static gboolean
 rhythmdb_sync_library_idle (RhythmDB *db)
 {
 	rhythmdb_sync_library_location (db);
-	g_object_unref (db);
+	db->priv->sync_library_id = 0;
 	return FALSE;
 }
 
@@ -3292,8 +3294,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 	rb_list_deep_free (db->priv->active_mounts);
 	db->priv->active_mounts = NULL;
 
-	g_object_ref (db);
-	g_timeout_add_seconds (10, (GSourceFunc) rhythmdb_sync_library_idle, db);
+	db->priv->sync_library_id = g_timeout_add_seconds (10, (GSourceFunc) rhythmdb_sync_library_idle, db);
 
 	rb_debug ("queuing db load complete signal");
 	result = g_slice_new0 (RhythmDBEvent);

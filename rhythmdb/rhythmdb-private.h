@@ -171,6 +171,7 @@ struct _RhythmDBPrivate
 	guint event_queue_watch_id;
 	guint commit_timeout_id;
 	guint save_timeout_id;
+	guint sync_library_id;
 
 	guint emit_entry_signals_id;
 	GList *added_entries_to_emit;
