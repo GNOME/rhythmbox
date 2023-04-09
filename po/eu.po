@@ -6,13 +6,13 @@
 # Alberto Fernández Benito <afernn@euskalnet.net>, 2004.
 # Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>, 2004, 2005, 2006, 2008, 2009, 2010.
 # Iñaki Larrañaga Murgoitio <dooteo@zundan.com>, 2007.
-# Asier Sarasua Garmendia <asiersarasua@ni.eus>, 2019, 2020, 2022.
+# Asier Sarasua Garmendia <asiersarasua@ni.eus>, 2019, 2020, 2022, 2023.
 #
 msgid ""
 msgstr "Project-Id-Version: eu\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2022-04-05 22:07+0000\n"
-"PO-Revision-Date: 2022-04-10 10:00+0100\n"
+"POT-Creation-Date: 2023-01-25 21:50+0000\n"
+"PO-Revision-Date: 2023-04-09 10:00+0100\n"
 "Last-Translator: Asier Sarasua Garmendia <asiersarasua@ni.eus>\n"
 "Language-Team: Basque <librezale@librezale.eus>\n"
 "Language: eu\n"
@@ -106,15 +106,15 @@ msgid "My Top Rated"
 msgstr "Gogokoenak"
 
 #: data/org.gnome.Rhythmbox3.appdata.xml.in:8
-#: data/org.gnome.Rhythmbox3.desktop.in.in:3
-#: data/org.gnome.Rhythmbox3.device.desktop.in.in:3 shell/main.c:75
-#: shell/rb-shell.c:505 shell/rb-shell.c:2368
+#: data/org.gnome.Rhythmbox3.desktop.in:3
+#: data/org.gnome.Rhythmbox3.device.desktop.in:3 shell/main.c:73
+#: shell/rb-shell.c:501 shell/rb-shell.c:2352
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
 #: data/org.gnome.Rhythmbox3.appdata.xml.in:9
-#: data/org.gnome.Rhythmbox3.desktop.in.in:6
-#: data/org.gnome.Rhythmbox3.device.desktop.in.in:6
+#: data/org.gnome.Rhythmbox3.desktop.in:6
+#: data/org.gnome.Rhythmbox3.device.desktop.in:6
 msgid "Play and organize your music collection"
 msgstr "Erreproduzitu eta antolatu zure musika-bilduma"
 
@@ -132,66 +132,57 @@ msgid ""
 "via plugins written in Python or C."
 msgstr "Rhythmbox software librea da, GTK+ eta GStreamer programetan oinarritua, eta Python edo C lengoaietan idatzitako pluginen bidez hedatu daiteke."
 
-#: data/org.gnome.Rhythmbox3.desktop.in.in:4
-#: data/org.gnome.Rhythmbox3.device.desktop.in.in:4
+#: data/org.gnome.Rhythmbox3.desktop.in:4
+#: data/org.gnome.Rhythmbox3.device.desktop.in:4
 msgid "Music Player"
 msgstr "Musika-erreproduzitzailea"
 
-#: data/org.gnome.Rhythmbox3.desktop.in.in:5
-#: data/org.gnome.Rhythmbox3.device.desktop.in.in:5
+#: data/org.gnome.Rhythmbox3.desktop.in:5
+#: data/org.gnome.Rhythmbox3.device.desktop.in:5
 msgid "Rhythmbox Music Player"
 msgstr "Rhythmbox musika erreproduzitzailea"
 
-#: data/org.gnome.Rhythmbox3.desktop.in.in:7
+#: data/org.gnome.Rhythmbox3.desktop.in:7
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr "Audioa;Abestia;MP3;CD;Podcast-a;MTP;iPod;Erreprodukzio-zerrenda;Last.fm;UPnP;DLNA;Irratia;"
-
-#: data/org.gnome.Rhythmbox3.desktop.in.in:11
-#: data/org.gnome.Rhythmbox3.device.desktop.in.in:11
-msgid "org.gnome.Rhythmbox3"
-msgstr "org.gnome.Rhythmbox3"
 
 #: data/ui/app-menu.ui:6
 msgid "_View"
 msgstr "_Ikusi"
 
 #: data/ui/app-menu.ui:9
-msgid "P_arty Mode"
-msgstr "_Jai modua"
-
-#: data/ui/app-menu.ui:14
 msgid "Side Pane"
 msgstr "Alboko panela"
 
-#: data/ui/app-menu.ui:19
+#: data/ui/app-menu.ui:14
 msgid "Play Queue in Side Pane"
 msgstr "Erreproduzitu ilara alboko panelean"
 
-#: data/ui/app-menu.ui:24
+#: data/ui/app-menu.ui:19
 msgid "Song Position Slider"
 msgstr "Kanta-kokapenaren graduatzailea"
 
-#: data/ui/app-menu.ui:28 plugins/artsearch/songinfo.py:64
+#: data/ui/app-menu.ui:23 plugins/artsearch/songinfo.py:64
 msgid "Album Art"
 msgstr "Albumaren diseinua"
 
-#: data/ui/app-menu.ui:32
+#: data/ui/app-menu.ui:27
 msgid "Follow Playing Track"
 msgstr "Jarraitu pista erreproduzitzen"
 
-#: data/ui/app-menu.ui:41
+#: data/ui/app-menu.ui:36
 msgid "_Tools"
 msgstr "_Tresnak"
 
-#: data/ui/app-menu.ui:47
+#: data/ui/app-menu.ui:42
 msgid "_Preferences"
 msgstr "_Hobespenak"
 
-#: data/ui/app-menu.ui:53 shell/rb-shell-preferences.c:195
+#: data/ui/app-menu.ui:48 shell/rb-shell-preferences.c:195
 msgid "_Help"
 msgstr "_Laguntza"
 
-#: data/ui/app-menu.ui:58
+#: data/ui/app-menu.ui:53
 msgid "_About Rhythmbox"
 msgstr "Rhythmbox aplikazioari _buruz"
 
@@ -967,8 +958,8 @@ msgstr "%Y %b %d"
 #: plugins/mtpdevice/rb-mtp-source.c:1471
 #: plugins/notification/rb-notification-plugin.c:508
 #: podcast/rb-feed-podcast-properties-dialog.c:335
-#: podcast/rb-podcast-add-dialog.c:645 podcast/rb-podcast-manager.c:1302
-#: podcast/rb-podcast-manager.c:1416 podcast/rb-podcast-properties-dialog.c:636
+#: podcast/rb-podcast-add-dialog.c:646 podcast/rb-podcast-manager.c:1306
+#: podcast/rb-podcast-manager.c:1420 podcast/rb-podcast-properties-dialog.c:636
 #: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:792
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
 #: rhythmdb/rhythmdb.c:2093 rhythmdb/rhythmdb.c:2099 rhythmdb/rhythmdb.c:2114
@@ -1303,7 +1294,7 @@ msgid "Last submission time:"
 msgstr "Azken bidaltze-data:"
 
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:251
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:876
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:858
 msgid "Disabled"
 msgstr "Desgaituta"
 
@@ -1332,14 +1323,10 @@ msgid "Top Artists"
 msgstr "Goreneko artistak"
 
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:549
-msgid "Recommendations"
-msgstr "Gomendioak"
-
-#: plugins/audioscrobbler/audioscrobbler-profile.ui:593
 msgid "Top Tracks"
 msgstr "Goreneko pistak"
 
-#: plugins/audioscrobbler/audioscrobbler-profile.ui:637
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:593
 msgid "Loved Tracks"
 msgstr "Gogoko pistak"
 
@@ -1371,58 +1358,58 @@ msgstr "Rhythombox-en bertsio hau debekatua izan da."
 msgid "Track submission failed too many times"
 msgstr "Pista bidaltzeak hainbat aldiz huts egin du"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:687
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:669
 msgid "Love"
 msgstr "Gogokoena"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:691
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:673
 msgid "Ban"
 msgstr "Debekatu"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:695
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:677
 #: plugins/magnatune/magnatune-toolbar.ui:16
 msgid "Download"
 msgstr "Deskargatu"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:793
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:775
 msgid "You are not currently logged in."
 msgstr "Ez duzu saioa hasi."
 
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:776
 #: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:794
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:812
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:819
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:801
 msgid "Log in"
 msgstr "Hasi saioa"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:800
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:782
 msgid "Waiting for authentication..."
 msgstr "Autentifikazioaren zain…"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:801
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:783
 msgid "Cancel"
 msgstr "Utzi"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:811
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:793
 msgid "Authentication error. Please try logging in again."
 msgstr "Autentifikazio-errorea. Saiatu berriro saioa hasten."
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:818
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:800
 msgid "Connection error. Please try logging in again."
 msgstr "Konexio-errorea. Saiatu berriro saioa hasten."
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1228
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1210
 msgid "My Library"
 msgstr "Nire liburutegia"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1236
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1218
 msgid "My Recommendations"
 msgstr "Nire gomendioak"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1244
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1226
 msgid "My Neighbourhood"
 msgstr "Nire auzokoa"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1411
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1393
 #, c-format
 msgid "%s plays"
 msgstr "%s erreprodukzio"
@@ -1430,16 +1417,16 @@ msgstr "%s erreprodukzio"
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This is the label for menu item which when activated will take the user to the
 #. * artist/track's page on the service's website.
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1668
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1636
 #, c-format
 msgid "_View on %s"
 msgstr "_Ikusi hemen: %s"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1685
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1653
 msgid "Listen to _Similar Artists Radio"
 msgstr "Entzun _antzeko artisten irratia"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1699
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1667
 msgid "Listen to _Top Fans Radio"
 msgstr "Entzun _zale gorenen irratia"
 
@@ -1806,15 +1793,15 @@ msgstr "Orain zure urrunekoaren bidez kontrolatu dezakzeu Rhythmbox"
 msgid "Disconnect"
 msgstr "Deskonektatu"
 
-#: plugins/daap/rb-daap-plugin.c:193
+#: plugins/daap/rb-daap-plugin.c:194
 msgid "Connect to DAAP share..."
 msgstr "Connect to DAAP share…"
 
-#: plugins/daap/rb-daap-plugin.c:503
+#: plugins/daap/rb-daap-plugin.c:510
 msgid "New DAAP share"
 msgstr "Partekatutako DAAP berria"
 
-#: plugins/daap/rb-daap-plugin.c:503
+#: plugins/daap/rb-daap-plugin.c:510
 msgid "Host:port of DAAP share:"
 msgstr "Partekatutako DAAPeren ostalaria:ataka:"
 
@@ -1875,7 +1862,7 @@ msgid "Genres"
 msgstr "Generoak"
 
 #: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2405
-#: shell/rb-playlist-manager.c:1075 sources/rb-display-page-group.c:92
+#: shell/rb-playlist-manager.c:1072 sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "Erreprodukzio-zerrendak"
 
@@ -2071,7 +2058,7 @@ msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "Zerbitzuak internet bidez igortzeko euskarria"
 
 #: plugins/iradio/iradio-popup.ui:6 shell/rb-shell-clipboard.c:258
-#: sources/rb-source.c:1230 widgets/rb-query-creator.c:802
+#: sources/rb-source.c:1204 widgets/rb-query-creator.c:802
 msgid "Remove"
 msgstr "Kendu"
 
@@ -2622,7 +2609,7 @@ msgid "Playing"
 msgstr "Erreproduzitzen"
 
 #: plugins/pythonconsole/pythonconsole.plugin.desktop.in:6
-#: plugins/pythonconsole/pythonconsole.py:71
+#: plugins/pythonconsole/pythonconsole.py:81
 msgid "Python Console"
 msgstr "Python kontsola"
 
@@ -2630,21 +2617,45 @@ msgstr "Python kontsola"
 msgid "Interactive python console"
 msgstr "Python-en kontsola interaktiboa"
 
-#: plugins/pythonconsole/pythonconsole.py:81
-msgid "Python Debugger"
-msgstr "Python-en araztailea"
+#: plugins/pythonconsole/pythonconsole.py:90
+msgid "Python Debugger (winpdb)"
+msgstr "Python araztailea (winpdb)"
 
-#: plugins/pythonconsole/pythonconsole.py:106
+#: plugins/pythonconsole/pythonconsole.py:99
+msgid "Python Debugger (debugpy)"
+msgstr "Python araztailea (debugpy)"
+
+#: plugins/pythonconsole/pythonconsole.py:130
 msgid "You can access the main window through the 'shell' variable :"
 msgstr "Leiho nagusira joan zaitezke 'shell' aldagaiaren bidez:"
 
-#: plugins/pythonconsole/pythonconsole.py:121
+#: plugins/pythonconsole/pythonconsole.py:150
 #, python-format
 msgid ""
 "After you press OK, Rhythmbox will wait until you connect to it with winpdb "
 "or rpdb2. If you have not set a debugger password in the file %s, it will "
 "use the default password ('rhythmbox')."
 msgstr "'Ados' sakatu ondoren, Rhythmbox zain egongo da winpdb edo rpdb2-rekin konektatzen zaren arte. Ez baduzu araztailearen pasahitzik zehaztu %s fitxategian, pasahitz lehenetsia erabiliko da (“rhythmbox“)."
+
+#: plugins/pythonconsole/pythonconsole.py:176
+#, python-format
+msgid ""
+"Rhythmbox is now listening for Debug Adapter Protocol connections on port "
+"%d. You can now attach to it using a compatible debugger such as vimspector, "
+"nvim-dap or Visual Studio Code."
+msgstr "Rhythmbox aplikazioak orain Debug Adapter Protocol konexioak entzuten ditu %d atakan. Ataka horrekin lotu zaitezke araztaile bateragarri baten bidez (adibidez, vimspector, nvim-dap edo Visual Studio Code)."
+
+#: plugins/pythonconsole/pythonconsole.py:180
+#, python-format
+msgid "Unable to start Debug Adapter Protocol listener: %s"
+msgstr "Ezin da Debug Adapter Protocol entzulea abiarazi: %s"
+
+#: plugins/pythonconsole/pythonconsole.py:186
+#, python-format
+msgid ""
+"The %s Python module is not available. Install the module and then restart "
+"Rhythmbox to enable debugging with %s."
+msgstr "%s Python modulua ez dago erabilgarri. Instalatu hura eta berrabiarazi Rhythmbox %s bidezko araztea gaitzeko."
 
 #: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:7
 msgid "Zeitgeist"
@@ -2737,7 +2748,7 @@ msgstr "Web bidezko urruneko kontrola"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Kontrolatu Rhythmbox web arakatzaile batetik"
 
-#: plugins/webremote/webremote.py:584
+#: plugins/webremote/webremote.py:597
 msgid "Launch web remote control"
 msgstr "Abiarazi web bidezko urruneko kontrola"
 
@@ -2756,20 +2767,20 @@ msgstr "Ezin izan da jarioa kargatu. Egiaztatu zure sareko konexioa."
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Ezin izan dira podcast-ak bilatu. Egiaztatu zure sareko konexioa."
 
-#: podcast/rb-podcast-add-dialog.c:785 sources/rb-library-source.c:134
+#: podcast/rb-podcast-add-dialog.c:786 sources/rb-library-source.c:134
 #: widgets/rb-entry-view.c:1447
 msgid "Title"
 msgstr "Titulua"
 
-#: podcast/rb-podcast-add-dialog.c:796
+#: podcast/rb-podcast-add-dialog.c:797
 msgid "Author"
 msgstr "Egilea"
 
-#: podcast/rb-podcast-add-dialog.c:801 podcast/rb-podcast-add-dialog.c:804
+#: podcast/rb-podcast-add-dialog.c:802 podcast/rb-podcast-add-dialog.c:805
 msgid "Episodes"
 msgstr "Pasarteak"
 
-#: podcast/rb-podcast-add-dialog.c:838 podcast/rb-podcast-add-dialog.c:849
+#: podcast/rb-podcast-add-dialog.c:839 podcast/rb-podcast-add-dialog.c:850
 #: podcast/rb-podcast-source.c:1378 podcast/rb-podcast-source.c:1389
 msgid "Date"
 msgstr "Data"
@@ -2836,12 +2847,12 @@ msgstr "“%s” URLa jadanik irrati gisa gehituta dago. Podcast baten jarioa ba
 msgid "Podcast"
 msgstr "Podcast"
 
-#: podcast/rb-podcast-parse.c:185
+#: podcast/rb-podcast-parse.c:197
 #, c-format
 msgid "Unable to parse the feed contents"
 msgstr "Ezin da jarioaren edukia analizatu"
 
-#: podcast/rb-podcast-parse.c:200
+#: podcast/rb-podcast-parse.c:212
 #, c-format
 msgid "The feed does not contain any downloadable items"
 msgstr "Iturriak ez dauka elementu deskargarririk"
@@ -2979,7 +2990,7 @@ msgstr "Pausatu erreprodukzioa unean erreproduzitzen ari bada"
 msgid "Toggle play/pause mode"
 msgstr "Txandakatu erreprodukzio/pausa modua"
 
-#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2274
+#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2258
 msgid "Stop playback"
 msgstr "Gelditu erreprodukzioa"
 
@@ -3160,7 +3171,7 @@ msgstr "Bolumena orain: %.02f"
 msgid "Press 'h' for help."
 msgstr "Skatu 'h' laguntzarako."
 
-#: remote/dbus/rb-client.c:1412
+#: remote/dbus/rb-client.c:1411
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "Erreprodukzio-bolumena: %f.\n"
@@ -3411,97 +3422,93 @@ msgstr "Shoutcast-eko zerrenda"
 msgid "XML Shareable Playlist Format"
 msgstr "XML erreprodukzio-formatu partekagarria"
 
-#: shell/rb-playlist-manager.c:265
-msgid "Unnamed playlist"
-msgstr "Izenik gabeko erreprodukzio-zerrenda"
-
-#: shell/rb-playlist-manager.c:308
+#: shell/rb-playlist-manager.c:305
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr "Erreprodukzio-zerrenda formatu ezezagun batean edo apurtua dago."
 
-#: shell/rb-playlist-manager.c:767
+#: shell/rb-playlist-manager.c:764
 msgid "Untitled Playlist"
 msgstr "Titulurik gabeko erreprodukzio-zerrenda"
 
-#: shell/rb-playlist-manager.c:811 shell/rb-playlist-manager.c:854
+#: shell/rb-playlist-manager.c:808 shell/rb-playlist-manager.c:851
 msgid "New Playlist"
 msgstr "Erreprodukzio-zerrenda berria"
 
-#: shell/rb-playlist-manager.c:1055
+#: shell/rb-playlist-manager.c:1052
 msgid "Couldn't read playlist"
 msgstr "Ezin izan da erreprodukzio-zerrenda irakurri"
 
-#: shell/rb-playlist-manager.c:1081
+#: shell/rb-playlist-manager.c:1078
 msgid "All Files"
 msgstr "Fitxategi guztiak"
 
-#: shell/rb-playlist-manager.c:1086
+#: shell/rb-playlist-manager.c:1083
 msgid "Load Playlist"
 msgstr "Kargatu erreprodukzio-zerrenda"
 
-#: shell/rb-playlist-manager.c:1142 sources/rb-playlist-source.c:665
+#: shell/rb-playlist-manager.c:1139 sources/rb-playlist-source.c:665
 msgid "Couldn't save playlist"
 msgstr "Ezin izan da erreprodukzio-zerrenda gorde"
 
-#: shell/rb-playlist-manager.c:1142
+#: shell/rb-playlist-manager.c:1139
 msgid "Unsupported file extension given."
 msgstr "Onartu gabeko fitxategi-luzapena eman da."
 
-#: shell/rb-playlist-manager.c:1475
+#: shell/rb-playlist-manager.c:1472
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "%s erreprodukzio-zerrenda jadanik badago"
 
-#: shell/rb-playlist-manager.c:1505 shell/rb-playlist-manager.c:1538
-#: shell/rb-playlist-manager.c:1578 shell/rb-playlist-manager.c:1621
+#: shell/rb-playlist-manager.c:1502 shell/rb-playlist-manager.c:1535
+#: shell/rb-playlist-manager.c:1575 shell/rb-playlist-manager.c:1618
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "Erreprodukzio-zerrenda ezezaguna: %s"
 
-#: shell/rb-playlist-manager.c:1546 shell/rb-playlist-manager.c:1586
+#: shell/rb-playlist-manager.c:1543 shell/rb-playlist-manager.c:1583
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "%s erreprodukzio-zerrenda automatiko da"
 
-#: shell/rb-shell.c:2067
+#: shell/rb-shell.c:2051
 msgid "Error while saving song information"
 msgstr "Errorea kantaren informazioa gordetzean"
 
-#: shell/rb-shell.c:2271
+#: shell/rb-shell.c:2255
 msgid "Pause playback"
 msgstr "Pausarazi erreprodukzioa"
 
-#: shell/rb-shell.c:2278
+#: shell/rb-shell.c:2262
 msgid "Start playback"
 msgstr "Hasi erreprodukzioa"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:2388
+#: shell/rb-shell.c:2372
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausatua)"
 
-#: shell/rb-shell.c:2785 sources/rb-play-queue-source.c:664
+#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ez dago %s URIa kudeatu dezakeen iturburu erregistraturik"
 
-#: shell/rb-shell.c:3114
+#: shell/rb-shell.c:3038
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Ez dago %s URIarekin bat datorren iturburu erregistraturik"
 
-#: shell/rb-shell.c:3147 shell/rb-shell.c:3190
+#: shell/rb-shell.c:3071 shell/rb-shell.c:3114
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Kantaren URI ezezaguna: %s"
 
-#: shell/rb-shell.c:3199
+#: shell/rb-shell.c:3123
 #, c-format
 msgid "Unknown property %s"
 msgstr "%s propietate ezezaguna"
 
-#: shell/rb-shell.c:3213
+#: shell/rb-shell.c:3137
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "%2$s propietatearen %1$s mota baliogabea"
@@ -4473,6 +4480,18 @@ msgstr "Mahaigainean"
 #: widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Kokaleku ezezaguna"
+
+#~ msgid "org.gnome.Rhythmbox3"
+#~ msgstr "org.gnome.Rhythmbox3"
+
+#~ msgid "P_arty Mode"
+#~ msgstr "_Jai modua"
+
+#~ msgid "Recommendations"
+#~ msgstr "Gomendioak"
+
+#~ msgid "Unnamed playlist"
+#~ msgstr "Izenik gabeko erreprodukzio-zerrenda"
 
 #~ msgid "WinampCN (www.winampcn.com)"
 #~ msgstr "WinampCN (www.winampcn.com)"
