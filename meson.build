@@ -1,5 +1,5 @@
 project('rhythmbox', 'c',
-  version: '3.4.6',
+  version: '3.4.7',
   meson_version: '>= 0.59.0',
   default_options: ['c_std=gnu89'])
 

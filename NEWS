@@ -1,3 +1,34 @@
+Overview of changes in Rhythmbox 3.4.7
+======================================
+
+* Bug fix release for 3.4
+* Requires libsoup 3
+* Party mode removed
+* debugpy support for Python plugin debugging
+
+Issues fixed:
+1591 - 'Import playlist from file' does not retain playlist file name
+1818 - ListenBrainz: Rhythmbox hangs when blocked by firewall
+1824 - Listenbrainz: ResourceWarning: unclosed <ssl.SSLSocket>
+1983 - podcast: Crashes with SIGSEGV during podcast subscribe
+1992 - AttributeError: 'gi.repository.RB' object has no attribute 'gst_process_embedded_image'
+1993 - test-widgets fails on arm64
+1996 - Port to libsoup3
+2021 - rhythmbox does not support WMA format audio files playing immediately
+2043 - test_rhythmdb_thread_barrier failing in current Ubuntu serie
+
+
+Merge requests:
+149 - data: Update appdata screenshot to an existing one
+155 - podcast: do not set metadata errors on download status if download is complete
+156 - build: Check that appdata and NEWS get updated on release
+157 - tests: Allow running tests without installed gsettings schemas
+165 - listenbrainz: use LB defined fields for client and source info
+166 - desktop: Remove obsolete Bugzilla entries
+170 - Fix JSON parser leak in audioscrobbler plugin
+173 - build: Use get_variable function instead of running pkg-config
+
+
 Overview of changes in Rhythmbox 3.4.6
 ======================================
 
