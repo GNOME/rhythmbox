@@ -202,6 +202,8 @@ rb_rating_class_init (RBRatingClass *klass)
 static void
 rb_rating_init (RBRating *rating)
 {
+		AtkObject *atk_obj;
+
 	rating->priv = RB_RATING_GET_PRIVATE (rating);
 
 	/* create the needed icons */
@@ -211,6 +213,8 @@ rb_rating_init (RBRating *rating)
 
 	gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (rating)),
 				     GTK_STYLE_CLASS_ENTRY);
+	atk_obj = gtk_widget_get_accessible (GTK_WIDGET (rating));
+	atk_object_set_role (atk_obj, ATK_ROLE_RATING);
 }
 
 static void
