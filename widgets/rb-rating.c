@@ -202,14 +202,14 @@ rb_rating_class_init (RBRatingClass *klass)
 static void
 rb_rating_init (RBRating *rating)
 {
-		AtkObject *atk_obj;
+	AtkObject *atk_obj;
 
 	rating->priv = RB_RATING_GET_PRIVATE (rating);
 
 	/* create the needed icons */
 	rating->priv->pixbufs = rb_rating_pixbufs_load ();
 	
-	rb_rating_set_accessible_name (GTK_WIDGET (rating), 0.0);
+	rb_rating_set_accessible_description (GTK_WIDGET (rating), 0.0);
 
 	gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET (rating)),
 				     GTK_STYLE_CLASS_ENTRY);
@@ -262,7 +262,7 @@ rb_rating_set_rating (RBRating *rating, gdouble value)
 	rating->priv->rating = value;
 
 	/* update accessible object name */
-	rb_rating_set_accessible_name (GTK_WIDGET (rating), value);
+	rb_rating_set_accessible_description (GTK_WIDGET (rating), value);
 
 	gtk_widget_queue_draw (GTK_WIDGET (rating));
 }

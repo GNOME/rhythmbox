@@ -274,30 +274,32 @@ rb_rating_get_rating_from_widget (GtkWidget *widget,
 }
 
 /**
- * rb_rating_set_accessible_name:
+ * rb_rating_set_accessible_description:
  * @widget: a #GtkWidget for which to set the accessible name
  * @rating: the rating value to set
  *
- * Sets the accessible object name for the specified widget to reflect the
+ * Sets the accessible object description for the specified widget to reflect the
  * rating.
+ *
+ * We use the description instead of the name because the name might be set
+ * indirectly from a relation, so it would be ignored anyway.
  */
 void
-rb_rating_set_accessible_name (GtkWidget *widget, gdouble rating)
+rb_rating_set_accessible_description (GtkWidget *widget, gdouble rating)
 {
 	AtkObject *aobj;
 	int stars;
-	char *aname;
+	g_autofree gchar *adescription;
 
 	aobj = gtk_widget_get_accessible (widget);
 
 	stars = floor (rating);
 	if (stars == 0) {
-		aname = g_strdup (_("No Stars"));		/* is this really necessary */
+		adescription = g_strdup (_("No Stars"));
 	} else {
-		aname = g_strdup_printf (ngettext ("%d Star", "%d Stars", stars), stars);
+		adescription = g_strdup_printf (ngettext ("%d Star", "%d Stars", stars), stars);
 	}
 
-	atk_object_set_name (aobj, aname);
-	g_free (aname);
+	atk_object_set_description (aobj, adescription);
 }
 

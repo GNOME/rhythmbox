@@ -50,6 +50,6 @@ void             rb_rating_pixbufs_free (RBRatingPixbufs *pixbufs);
 
 void   rb_rating_install_rating_property (GObjectClass *klass, gulong prop);
 
-void	rb_rating_set_accessible_name (GtkWidget *widget, gdouble rating);
+void	rb_rating_set_accessible_description (GtkWidget *widget, gdouble rating);
 
 #endif
