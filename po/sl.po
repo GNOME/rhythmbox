@@ -10,18 +10,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2023-01-25 21:50+0000\n"
-"PO-Revision-Date: 2023-02-12 18:14+0100\n"
+"POT-Creation-Date: 2023-02-12 17:15+0000\n"
+"PO-Revision-Date: 2023-09-05 22:37+0200\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || "
-"n%100==4 ? 3 : 0);\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n"
+"%100==4 ? 3 : 0);\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 2.2.1\n"
 
 #: backends/gstreamer/rb-encoder-gst.c:652
 #, c-format
@@ -122,7 +122,6 @@ msgid "Play and organize your music collection"
 msgstr "Predvajajte in organizirajte glasbeno zbirko"
 
 #: data/org.gnome.Rhythmbox3.appdata.xml.in:11
-#, fuzzy
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -324,7 +323,6 @@ msgid "_Install additional software required to use this format"
 msgstr "_Namesti dodaten program, ki je zahtevan za uporabo te vrste"
 
 #: data/ui/encoding-settings.ui:88
-#, fuzzy
 msgid "Transcode lossless files into this format"
 msgstr "Prekodirajte datoteke brez izgube v to obliko zapisa"
 
@@ -831,14 +829,12 @@ msgstr "_Skladatelj:"
 #. To translators: part of a phrase, for example, disc 1 of 2
 #: data/ui/song-info-multiple.ui:237 data/ui/song-info.ui:357
 #: data/ui/song-info.ui:368
-#, fuzzy
 msgid "of"
 msgstr "od"
 
 #: data/ui/song-info-multiple.ui:258
-#, fuzzy
 msgid "_Track count:"
-msgstr "_Števec predvajanj:"
+msgstr "_Števec stez:"
 
 #: data/ui/song-info-multiple.ui:328 data/ui/song-info.ui:501
 msgid "Albu_m sort order:"
@@ -1134,12 +1130,11 @@ msgid "Playlists:"
 msgstr "Seznami predvajanja:"
 
 #: plugins/android/rb-android-source.c:201
-#, fuzzy
 msgid ""
 "No storage areas found on this device. You may need to unlock it and enable "
 "MTP."
 msgstr ""
-"Na tej napravi ni najdenih nobenih področij za shranjevanje. Morda jo boste "
+"Na tej napravi ni najdenih nobenih območij za shranjevanje. Morda jo boste "
 "morali odkleniti in omogočiti MTP."
 
 #: plugins/android/rb-android-source.c:403
@@ -1169,7 +1164,6 @@ msgid "_Browse"
 msgstr "Pre_brskaj"
 
 #: plugins/artsearch/songinfo.py:134
-#, fuzzy
 msgid "Select new artwork"
 msgstr "Izberite novo naslovnico albuma"
 
@@ -1973,16 +1967,12 @@ msgid "IM Status"
 msgstr "Stanje hipnega sporočanja"
 
 #: plugins/im-status/im-status.plugin.desktop.in:8
-#, fuzzy
-#| msgid ""
-#| "Updates IM status according to the current song (works with Empathy, "
-#| "Gossip, and Pidgin)"
 msgid ""
 "Updates IM status according to the current song (works with Empathy and "
 "Pidgin)"
 msgstr ""
 "Posodobi stanje hipnega sporočanja glede na trenutno skladbo (deluje z "
-"Empathy, Gossip in Pidgin)"
+"Empathy in Pidgin)"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
@@ -2186,17 +2176,14 @@ msgid "ListenBrainz"
 msgstr "ListenBrainz"
 
 #: plugins/listenbrainz/listenbrainz.plugin.desktop.in:8
-#, fuzzy
 msgid "Submit your listens to ListenBrainz"
 msgstr "Pošljite svoja poslušanja na ListenBrainz"
 
 #: plugins/listenbrainz/settings.ui:29
-#, fuzzy
 msgid "User token:"
 msgstr "Uporabniški žeton:"
 
 #: plugins/listenbrainz/settings.ui:40
-#, fuzzy
 msgid ""
 "To submit your listens to ListenBrainz, enter your ListenBrainz user token "
 "below. You can see your user token in your <a href=\"https://listenbrainz."
@@ -2286,13 +2273,13 @@ msgstr ""
 "katalogov predstavnih datotek, česar ne ponuja nobeda druga storitev."
 
 #: plugins/magnatune/magnatune-loading.ui:97
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's "
 "worth joining"
 msgstr ""
-"    * 10 odstotkov vaše članarine za Magnatune gre razvijalcem programa "
-"Rhythmbox/GNOME - splača se pridružiti"
+"    * 10 % od vaše članarine za Magnatune gre razvijalcem programa Rhythmbox/"
+"GNOME - splača se pridružiti"
 
 #: plugins/magnatune/magnatune-loading.ui:111
 msgid ""
@@ -2711,30 +2698,30 @@ msgstr ""
 "razhroščevalnika, bo uporabljeno privzeto geslo ('rhythmbox') ."
 
 #: plugins/pythonconsole/pythonconsole.py:176
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Rhythmbox is now listening for Debug Adapter Protocol connections on port "
 "%d. You can now attach to it using a compatible debugger such as vimspector, "
 "nvim-dap or Visual Studio Code."
 msgstr ""
 "Rhythmbox zdaj posluša povezave protokola »Debug Adapter Protocol« na vratih "
-"%d. Zdaj nanja lahko pripnete združljiv razhroščevalnik, kot so vimspector, "
+"%d. Zdaj nanje lahko pripnete združljiv razhroščevalnik, kot so vimspector, "
 "nvim-dap ali Visual Studio Code."
 
 #: plugins/pythonconsole/pythonconsole.py:180
-#, fuzzy, python-format
+#, python-format
 msgid "Unable to start Debug Adapter Protocol listener: %s"
 msgstr ""
 "Ni mogoče zagnati poslušalca protokola vmesnika za odpravljanje napak: %s"
 
 #: plugins/pythonconsole/pythonconsole.py:186
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "The %s Python module is not available. Install the module and then restart "
 "Rhythmbox to enable debugging with %s."
 msgstr ""
-"Modul %s Python ni na voljo. Namestite modul in znova zaženite Rhythmbox, da "
-"omogočite odpravljanje napak z %s."
+"Modul %s Pythona ni na voljo. Namestite modul in znova zaženite Rhythmbox, "
+"da omogočite odpravljanje napak s/z %s."
 
 #: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:7
 msgid "Zeitgeist"
@@ -3218,21 +3205,18 @@ msgstr "Ni predvajanja"
 
 #. Translators: title by artist from album
 #: remote/dbus/rb-client.c:750
-#, fuzzy
 msgid "%tt by %ta from %at"
-msgstr "%tt izvajalca %ta z %at"
+msgstr "%tt izvajalca %ta s/z %at"
 
 #. Translators: title by artist
 #: remote/dbus/rb-client.c:753
-#, fuzzy
 msgid "%tt by %ta"
 msgstr "%tt izvajalca %ta"
 
 #. Translators: title from album
 #: remote/dbus/rb-client.c:756
-#, fuzzy
 msgid "%tt from %ta"
-msgstr "%tt z %ta"
+msgstr "%tt s/z %ta"
 
 #. Translators: %te is replaced with elapsed time, %td is replaced with track duration
 #: remote/dbus/rb-client.c:767
@@ -3245,14 +3229,14 @@ msgid "Paused"
 msgstr "V premoru"
 
 #: remote/dbus/rb-client.c:867
-#, fuzzy, c-format
+#, c-format
 msgid "Seeked to %s"
 msgstr "Iskano do %s"
 
 #: remote/dbus/rb-client.c:901
-#, fuzzy, c-format
+#, c-format
 msgid "Now playing: %s %s"
-msgstr "Trenutno predvajanje: %s %s"
+msgstr "Trenutno v predvajanju: %s %s"
 
 #: remote/dbus/rb-client.c:917
 #, c-format
