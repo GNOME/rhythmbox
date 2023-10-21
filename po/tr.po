@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
-"POT-Creation-Date: 2023-03-06 18:15+0000\n"
-"PO-Revision-Date: 2023-03-06 16:34+0300\n"
+"POT-Creation-Date: 2023-05-26 23:09+0000\n"
+"PO-Revision-Date: 2023-10-17 17:24+0300\n"
 "Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <gnometurk@gnome.org>\n"
 "Language: tr\n"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.4\n"
 "X-POOTLE-MTIME: 1425298884.000000\n"
 
 #: backends/gstreamer/rb-encoder-gst.c:652
@@ -42,7 +42,7 @@ msgstr "%s üzerine yazmak için GStreamer alıcı ögesi oluşturulamadı"
 #. ?
 #. Translators: the parameter here is an error message
 #: backends/gstreamer/rb-player-gst.c:520
-#: backends/gstreamer/rb-player-gst-xfade.c:3023
+#: backends/gstreamer/rb-player-gst-xfade.c:3034
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "Çıkış aygıtı açılamadı: %s"
@@ -69,32 +69,32 @@ msgid "Failed to start new stream"
 msgstr "Yeni akış başlatılamadı"
 
 #. ?
-#: backends/gstreamer/rb-player-gst-xfade.c:2936
+#: backends/gstreamer/rb-player-gst-xfade.c:2947
 #, c-format
 msgid "Failed to open output device"
 msgstr "Çıkış aygıtı açılamadı"
 
-#: backends/gstreamer/rb-player-gst-xfade.c:3356
-#: backends/gstreamer/rb-player-gst-xfade.c:3435
+#: backends/gstreamer/rb-player-gst-xfade.c:3367
+#: backends/gstreamer/rb-player-gst-xfade.c:3446
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "GStreamer ögesi oluşturulamadı; kurulumunuzu denetleyin"
 
-#: backends/gstreamer/rb-player-gst-xfade.c:3365
+#: backends/gstreamer/rb-player-gst-xfade.c:3376
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "Ses çıkış ögesi oluşturulamadı; kurulumunuzu denetleyin"
 
-#: backends/gstreamer/rb-player-gst-xfade.c:3399
-#: backends/gstreamer/rb-player-gst-xfade.c:3452
-#: backends/gstreamer/rb-player-gst-xfade.c:3479
-#: backends/gstreamer/rb-player-gst-xfade.c:3489
-#: backends/gstreamer/rb-player-gst-xfade.c:3499
+#: backends/gstreamer/rb-player-gst-xfade.c:3410
+#: backends/gstreamer/rb-player-gst-xfade.c:3463
+#: backends/gstreamer/rb-player-gst-xfade.c:3490
+#: backends/gstreamer/rb-player-gst-xfade.c:3500
+#: backends/gstreamer/rb-player-gst-xfade.c:3510
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "GStreamer iletişim hattına bağlanılamadı; kurulumunuzu denetleyin"
 
-#: backends/gstreamer/rb-player-gst-xfade.c:3594
+#: backends/gstreamer/rb-player-gst-xfade.c:3605
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "%s çalmak için GStreamer iletişim hattı oluşturulamadı"
@@ -588,13 +588,13 @@ msgid "Save Playlist"
 msgstr "Çalma Listesini Kaydet"
 
 #: data/ui/playlist-save.ui:38 plugins/artsearch/songinfo.py:135
-#: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:532
-#: podcast/rb-podcast-source.c:1106 shell/rb-track-transfer-queue.c:187
+#: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:536
+#: podcast/rb-podcast-source.c:1110 shell/rb-track-transfer-queue.c:187
 #: widgets/rb-alert-dialog.c:384 widgets/rb-alert-dialog.c:401
 #: widgets/rb-dialog.c:131 widgets/rb-dialog.c:139
 #: widgets/rb-query-creator.c:191 widgets/rb-uri-dialog.c:158
 msgid "_Cancel"
-msgstr "_İptal"
+msgstr "İ_ptal"
 
 #: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:267
 #: widgets/rb-dialog.c:140
@@ -695,7 +695,7 @@ msgid "Cancel Download"
 msgstr "İndirmeyi İptal Et"
 
 #: data/ui/podcast-popups.ui:45 plugins/fmradio/fmradio-popup.ui:6
-#: podcast/rb-podcast-source.c:1258 sources/rb-media-player-source.c:1104
+#: podcast/rb-podcast-source.c:1262 sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Sil"
 
@@ -911,7 +911,7 @@ msgstr "Silinen dosyalar:"
 
 #: lib/rb-cut-and-paste-code.c:94
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:235
-#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3849
+#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3850
 #: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1574
 #: widgets/rb-entry-view.c:1588 widgets/rb-song-info.c:1545
 msgid "Never"
@@ -960,11 +960,11 @@ msgstr "%d %b %Y"
 #: plugins/android/rb-android-source.c:727 plugins/artsearch/lastfm.py:163
 #: plugins/artsearch/lastfm.py:164 plugins/artsearch/songinfo.py:93
 #: plugins/audiocd/rb-audiocd-source.c:526
-#: plugins/audioscrobbler/rb-audioscrobbler.c:585
-#: plugins/audioscrobbler/rb-audioscrobbler.c:589
-#: plugins/audioscrobbler/rb-audioscrobbler-entry.c:93
-#: plugins/audioscrobbler/rb-audioscrobbler-entry.c:100
-#: plugins/daap/rb-rhythmdb-dmap-db-adapter.c:136
+#: plugins/audioscrobbler/rb-audioscrobbler.c:596
+#: plugins/audioscrobbler/rb-audioscrobbler.c:600
+#: plugins/audioscrobbler/rb-audioscrobbler-entry.c:92
+#: plugins/audioscrobbler/rb-audioscrobbler-entry.c:99
+#: plugins/daap/rb-rhythmdb-dmap-db-adapter.c:130
 #: plugins/generic-player/rb-generic-player-source.c:1031
 #: plugins/ipod/rb-ipod-source.c:651 plugins/iradio/rb-iradio-source.c:525
 #: plugins/iradio/rb-iradio-source.c:1044
@@ -974,13 +974,13 @@ msgstr "%d %b %Y"
 #: plugins/mtpdevice/rb-mtp-source.c:1471
 #: plugins/notification/rb-notification-plugin.c:508
 #: podcast/rb-feed-podcast-properties-dialog.c:335
-#: podcast/rb-podcast-add-dialog.c:646 podcast/rb-podcast-manager.c:1306
-#: podcast/rb-podcast-manager.c:1420 podcast/rb-podcast-properties-dialog.c:636
-#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:792
+#: podcast/rb-podcast-add-dialog.c:646 podcast/rb-podcast-manager.c:1307
+#: podcast/rb-podcast-manager.c:1421 podcast/rb-podcast-properties-dialog.c:636
+#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:796
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
-#: rhythmdb/rhythmdb.c:2093 rhythmdb/rhythmdb.c:2099 rhythmdb/rhythmdb.c:2114
-#: rhythmdb/rhythmdb.c:2148 rhythmdb/rhythmdb.c:5615 rhythmdb/rhythmdb.c:5621
-#: rhythmdb/rhythmdb.c:5626 rhythmdb/rhythmdb.c:5637 rhythmdb/rhythmdb.c:5641
+#: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
+#: rhythmdb/rhythmdb.c:2150 rhythmdb/rhythmdb.c:5616 rhythmdb/rhythmdb.c:5622
+#: rhythmdb/rhythmdb.c:5627 rhythmdb/rhythmdb.c:5638 rhythmdb/rhythmdb.c:5642
 #: rhythmdb/rhythmdb-entry-type.c:301 rhythmdb/rhythmdb-metadata-cache.c:308
 #: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
 #: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
@@ -1255,15 +1255,15 @@ msgstr "Bu disk birden çok albümle eşleşiyor. Lütfen doğru albümü seçin
 msgid "Track %u"
 msgstr "Parça %u"
 
-#: plugins/audiocd/rb-musicbrainz-lookup.c:410
-msgid "Not found"
-msgstr "Bulunamadı"
-
-#: plugins/audiocd/rb-musicbrainz-lookup.c:415
+#: plugins/audiocd/rb-musicbrainz-lookup.c:416
 msgid "Unable to connect to Musicbrainz server"
 msgstr "Musicbrainz sunucusuna bağlanılamadı"
 
-#: plugins/audiocd/rb-musicbrainz-lookup.c:420
+#: plugins/audiocd/rb-musicbrainz-lookup.c:426
+msgid "Not found"
+msgstr "Bulunamadı"
+
+#: plugins/audiocd/rb-musicbrainz-lookup.c:431
 msgid "Musicbrainz server error"
 msgstr "Musicbrainz sunucu hatası"
 
@@ -1349,31 +1349,31 @@ msgstr "Gözde Parçalar"
 msgid "Loved Tracks"
 msgstr "Sevilen Parçalar"
 
-#: plugins/audioscrobbler/rb-audioscrobbler.c:494
+#: plugins/audioscrobbler/rb-audioscrobbler.c:505
 msgid "OK"
 msgstr "Tamam"
 
-#: plugins/audioscrobbler/rb-audioscrobbler.c:497
+#: plugins/audioscrobbler/rb-audioscrobbler.c:508
 msgid "Logging in"
 msgstr "Giriş yapılıyor"
 
-#: plugins/audioscrobbler/rb-audioscrobbler.c:500
+#: plugins/audioscrobbler/rb-audioscrobbler.c:511
 msgid "Request failed"
 msgstr "İstek başarısız oldu"
 
-#: plugins/audioscrobbler/rb-audioscrobbler.c:503
+#: plugins/audioscrobbler/rb-audioscrobbler.c:514
 msgid "Authentication error"
 msgstr "Kimlik doğrulama hatası"
 
-#: plugins/audioscrobbler/rb-audioscrobbler.c:506
+#: plugins/audioscrobbler/rb-audioscrobbler.c:517
 msgid "Clock is not set correctly"
 msgstr "Saat doğru ayarlanmamış"
 
-#: plugins/audioscrobbler/rb-audioscrobbler.c:509
+#: plugins/audioscrobbler/rb-audioscrobbler.c:520
 msgid "This version of Rhythmbox has been banned."
 msgstr "Rhythmbox’ın bu sürümü yasaklandı."
 
-#: plugins/audioscrobbler/rb-audioscrobbler.c:512
+#: plugins/audioscrobbler/rb-audioscrobbler.c:523
 msgid "Track submission failed too many times"
 msgstr "Parça gönderme birçok kez başarısız oldu"
 
@@ -1574,12 +1574,12 @@ msgstr "%s Etiketi Radyosu"
 msgid "%s Group Radio"
 msgstr "%s Grup Radyosu"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:693
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:723
 msgid "Error tuning station: no response"
 msgstr "İstasyon ayarlanırken hata oluştu: yanıt yok"
 
 #. Invalid station url
-#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:725
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:755
 msgid "Invalid station URL"
 msgstr "Geçersiz istasyon URL’si"
 
@@ -1587,35 +1587,35 @@ msgstr "Geçersiz istasyon URL’si"
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This message indicates that to listen to this radio station the user needs to be
 #. * a paying subscriber to the service.
-#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:731
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:761
 #, c-format
 msgid "This station is only available to %s subscribers"
 msgstr "Bu istasyon yalnızca %s abonelerine açıktır"
 
 #. Not enough content
-#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:735
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:765
 msgid "Not enough content to play station"
 msgstr "İstasyonu çalmak için yeterli içerik yok"
 
 #. Deprecated station
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This message indicates that the service has deprecated this type of station.
-#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:740
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:770
 #, c-format
 msgid "%s no longer supports this type of station"
 msgstr "%s artık bu tür istasyonları desteklemiyor"
 
 #. Other error
-#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:744
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:774
 #, c-format
 msgid "Error tuning station: %i - %s"
 msgstr "İstasyon ayarlanırken hata oluştu: %i - %s"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:754
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:784
 msgid "Error tuning station: unexpected response"
 msgstr "İstasyon ayarlanırken hata oluştu: beklenmeyen yanıt"
 
-#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:759
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:789
 msgid "Error tuning station: invalid response"
 msgstr "İstasyon ayarlanırken hata oluştu: geçersiz yanıt"
 
@@ -1818,11 +1818,11 @@ msgstr "Bağlantıyı Kes"
 msgid "Connect to DAAP share..."
 msgstr "DAAP paylaşımına bağlan..."
 
-#: plugins/daap/rb-daap-plugin.c:510
+#: plugins/daap/rb-daap-plugin.c:512
 msgid "New DAAP share"
 msgstr "Yeni DAAP paylaşımı"
 
-#: plugins/daap/rb-daap-plugin.c:510
+#: plugins/daap/rb-daap-plugin.c:512
 msgid "Host:port of DAAP share:"
 msgstr "DAAP paylaşımının makine-adı:port bilgisi:"
 
@@ -2258,7 +2258,6 @@ msgstr ""
 
 # Python string uyarısı verdiği için bu şekilde saçma bir yüzde yazımı tercih edildi.
 #: plugins/magnatune/magnatune-loading.ui:97
-#, python-format
 msgid ""
 "    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's "
 "worth joining"
@@ -2802,11 +2801,11 @@ msgstr "Web uzaktan denetim"
 msgid "Control Rhythmbox from a web browser"
 msgstr "Rhythmbox’ı web tarayıcısından denetle"
 
-#: plugins/webremote/webremote.py:597
+#: plugins/webremote/webremote.py:596
 msgid "Launch web remote control"
 msgstr "Web uzaktan denetimi başlat"
 
-#: podcast/rb-podcast-add-dialog.c:278 podcast/rb-podcast-source.c:733
+#: podcast/rb-podcast-add-dialog.c:278 podcast/rb-podcast-source.c:737
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
@@ -2834,7 +2833,7 @@ msgid "Episodes"
 msgstr "Bölümler"
 
 #: podcast/rb-podcast-add-dialog.c:839 podcast/rb-podcast-add-dialog.c:850
-#: podcast/rb-podcast-source.c:1378 podcast/rb-podcast-source.c:1389
+#: podcast/rb-podcast-source.c:1382 podcast/rb-podcast-source.c:1393
 msgid "Date"
 msgstr "Tarih"
 
@@ -2878,7 +2877,7 @@ msgstr "%s. Ortam akışı kaynağını yine de eklemek istiyor musunuz?"
 msgid "New updates available from"
 msgstr "Yeni güncellemeler hazır:"
 
-#: podcast/rb-podcast-manager.c:801
+#: podcast/rb-podcast-manager.c:802
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2890,11 +2889,11 @@ msgstr ""
 "ister misiniz?"
 
 #. added as something else, probably iradio
-#: podcast/rb-podcast-manager.c:856
+#: podcast/rb-podcast-manager.c:857
 msgid "URL already added"
 msgstr "URL zaten eklenmiş"
 
-#: podcast/rb-podcast-manager.c:857
+#: podcast/rb-podcast-manager.c:858
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2903,7 +2902,7 @@ msgstr ""
 "\"%s\" adresi zaten radyo istasyonu olarak eklenmiş. Eğer bu bir ortam akışı "
 "ise lütfen radyo istasyonunu kaldırın."
 
-#: podcast/rb-podcast-manager.c:939
+#: podcast/rb-podcast-manager.c:940
 msgid "Podcast"
 msgstr "Ortam akışı"
 
@@ -2921,11 +2920,11 @@ msgstr "Bu besleme, indirilebilir herhangi bir öge içermiyor"
 msgid "Not Downloaded"
 msgstr "İndirilmedi"
 
-#: podcast/rb-podcast-source.c:519
+#: podcast/rb-podcast-source.c:523
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Ortam akışı beslemesi ve indirilen dosyalar silinsin mi?"
 
-#: podcast/rb-podcast-source.c:522
+#: podcast/rb-podcast-source.c:526
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -2935,35 +2934,35 @@ msgstr ""
 "Yalnızca beslemeyi silmeyi seçerek, beslemeyi silip indirilen dosyaları "
 "saklayabileceğinizi unutmayınız."
 
-#: podcast/rb-podcast-source.c:530
+#: podcast/rb-podcast-source.c:534
 msgid "Delete _Feed Only"
 msgstr "Yalnızca _Beslemeyi Sil"
 
-#: podcast/rb-podcast-source.c:537
+#: podcast/rb-podcast-source.c:541
 msgid "_Delete Feed And Files"
 msgstr "Beslemeyi ve Dosyaları _Sil"
 
-#: podcast/rb-podcast-source.c:618 podcast/rb-podcast-source.c:1432
+#: podcast/rb-podcast-source.c:622 podcast/rb-podcast-source.c:1436
 msgid "Downloaded"
 msgstr "İndirildi"
 
-#: podcast/rb-podcast-source.c:622 podcast/rb-podcast-source.c:1434
+#: podcast/rb-podcast-source.c:626 podcast/rb-podcast-source.c:1438
 msgid "Failed"
 msgstr "Başarısız oldu"
 
-#: podcast/rb-podcast-source.c:626 podcast/rb-podcast-source.c:1433
+#: podcast/rb-podcast-source.c:630 podcast/rb-podcast-source.c:1437
 msgid "Waiting"
 msgstr "Bekliyor"
 
-#: podcast/rb-podcast-source.c:962
+#: podcast/rb-podcast-source.c:966
 msgid "Podcast Error"
 msgstr "Ortam Akışı Hatası"
 
-#: podcast/rb-podcast-source.c:1093
+#: podcast/rb-podcast-source.c:1097
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Ortam akışı bölümü indirilen dosya silinsin mi?"
 
-#: podcast/rb-podcast-source.c:1096
+#: podcast/rb-podcast-source.c:1100
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -2973,41 +2972,41 @@ msgstr ""
 "Yalnızca bölümü silmeyi seçerek, bölümü silip indirilen dosyaları "
 "saklayabileceğinizi unutmayınız."
 
-#: podcast/rb-podcast-source.c:1104
+#: podcast/rb-podcast-source.c:1108
 msgid "Delete _Episode Only"
 msgstr "Y_alnızca Bölümü Sil"
 
-#: podcast/rb-podcast-source.c:1110
+#: podcast/rb-podcast-source.c:1114
 msgid "_Delete Episode And File"
 msgstr "Bölümü ve _Dosyayı Sil"
 
-#: podcast/rb-podcast-source.c:1216
+#: podcast/rb-podcast-source.c:1220
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d bölüm"
 
-#: podcast/rb-podcast-source.c:1411 podcast/rb-podcast-source.c:1466
-#: podcast/rb-podcast-source.c:1505
+#: podcast/rb-podcast-source.c:1415 podcast/rb-podcast-source.c:1470
+#: podcast/rb-podcast-source.c:1509
 msgid "Feed"
 msgstr "Besleme"
 
-#: podcast/rb-podcast-source.c:1431 podcast/rb-podcast-source.c:1449
+#: podcast/rb-podcast-source.c:1435 podcast/rb-podcast-source.c:1453
 msgid "Status"
 msgstr "Durum"
 
 #. ensure search instances exist
-#: podcast/rb-podcast-source.c:1551 sources/rb-auto-playlist-source.c:253
+#: podcast/rb-podcast-source.c:1555 sources/rb-auto-playlist-source.c:253
 #: sources/rb-browser-source.c:314 sources/rb-browser-source.c:332
 #: sources/rb-static-playlist-source.c:295
 msgid "Search all fields"
 msgstr "Tüm alanlarda ara"
 
-#: podcast/rb-podcast-source.c:1552
+#: podcast/rb-podcast-source.c:1556
 msgid "Search podcast feeds"
 msgstr "Ortam akışı beslemeleri ara"
 
-#: podcast/rb-podcast-source.c:1553
+#: podcast/rb-podcast-source.c:1557
 msgid "Search podcast episodes"
 msgstr "Ortam akışı bölümleri ara"
 
@@ -3251,7 +3250,7 @@ msgstr "%s’e erişilemedi: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: rhythmdb/rhythmdb.c:1844
+#: rhythmdb/rhythmdb.c:1846
 msgid "The Beatles"
 msgstr "Barış Manço"
 
@@ -3259,7 +3258,7 @@ msgstr "Barış Manço"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: rhythmdb/rhythmdb.c:1850
+#: rhythmdb/rhythmdb.c:1852
 msgid "Help!"
 msgstr "Yardım!"
 
@@ -3267,51 +3266,51 @@ msgstr "Yardım!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: rhythmdb/rhythmdb.c:1856
+#: rhythmdb/rhythmdb.c:1858
 msgid "Ticket To Ride"
 msgstr "Kol Düğmeleri"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: rhythmdb/rhythmdb.c:2401
+#: rhythmdb/rhythmdb.c:2403
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "Bu dosyayı çalmak için ek GStreamer eklentileri gereklidir: %s"
 
-#: rhythmdb/rhythmdb.c:2433
+#: rhythmdb/rhythmdb.c:2435
 msgid "invalid unicode in error message"
 msgstr "hata iletisinde geçersiz unikod"
 
-#: rhythmdb/rhythmdb.c:2556
+#: rhythmdb/rhythmdb.c:2558
 #, c-format
 msgid "Empty file"
 msgstr "Boş dosya"
 
-#: rhythmdb/rhythmdb.c:3265
+#: rhythmdb/rhythmdb.c:3267
 msgid "Could not load the music database:"
 msgstr "Müzik veri tabanı yüklenemedi:"
 
-#: rhythmdb/rhythmdb.c:4703
+#: rhythmdb/rhythmdb.c:4704
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld dakika"
 
-#: rhythmdb/rhythmdb.c:4704
+#: rhythmdb/rhythmdb.c:4705
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld saat"
 
-#: rhythmdb/rhythmdb.c:4705
+#: rhythmdb/rhythmdb.c:4706
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld gün"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4711
+#: rhythmdb/rhythmdb.c:4712
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s ve %s"
@@ -3319,7 +3318,7 @@ msgstr "%s, %s ve %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4717 rhythmdb/rhythmdb.c:4725 rhythmdb/rhythmdb.c:4736
+#: rhythmdb/rhythmdb.c:4718 rhythmdb/rhythmdb.c:4726 rhythmdb/rhythmdb.c:4737
 #, c-format
 msgid "%s and %s"
 msgstr "%s ve %s"
