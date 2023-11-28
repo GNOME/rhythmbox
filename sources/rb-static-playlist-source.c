@@ -46,6 +46,7 @@
 
 #include <string.h>
 
+#include <libxml/entities.h>
 #include <libxml/tree.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
