@@ -49,10 +49,10 @@ API_URL = 'https://ws.audioscrobbler.com/2.0/'
 # LASTFM_TOOLTIP = (LASTFM_LOGO, _("Image provided by Last.fm"))
 
 DISC_NUMBER_REGEXS = (
-	"\(disc *[0-9]+\)",
-	"\(cd *[0-9]+\)",
-	"\[disc *[0-9]+\]",
-	"\[cd *[0-9]+\]",
+	"\\(disc *[0-9]+\\)",
+	"\\(cd *[0-9]+\\)",
+	"\\[disc *[0-9]+\\]",
+	"\\[cd *[0-9]+\\]",
 	" - disc *[0-9]+$",
 	" - cd *[0-9]+$",
 	" disc *[0-9]+$",
