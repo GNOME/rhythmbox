@@ -30,17 +30,18 @@
 
 #include "config.h"
 
+#if defined(HAVE_PRCTL)
+#include <sys/prctl.h>
+#elif defined(HAVE_PTHREAD_GETNAME_NP)
+#define _GNU_SOURCE
+#include <pthread.h>
+#endif
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <signal.h>
 #include <time.h>
-#if defined(HAVE_PRCTL)
-#include <sys/prctl.h>
-#elif defined(HAVE_PTHREAD_GETNAME_NP)
-#include <pthread.h>
-#endif
 
 #include <glib.h>
 

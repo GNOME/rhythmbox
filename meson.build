@@ -110,6 +110,7 @@ have_prctl = cc.has_function('prctl', prefix: '#include <sys/prctl.h>')
 cdata.set('HAVE_PRCTL', have_prctl)
 
 have_pthread_getname_np = cc.links('''
+  #define _GNU_SOURCE
   #include <pthread.h>
   int main() {
     char nm[17];
