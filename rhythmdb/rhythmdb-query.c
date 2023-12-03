@@ -30,6 +30,7 @@
 
 #include <string.h>
 
+#include <libxml/entities.h>
 #include <glib.h>
 #include <glib-object.h>
 #include <gobject/gvaluecollector.h>

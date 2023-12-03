@@ -41,6 +41,7 @@
 #include <stdio.h>      /* rename() */
 #include <unistd.h>     /* unlink() */
 
+#include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
