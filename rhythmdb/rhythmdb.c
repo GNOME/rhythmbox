@@ -167,6 +167,8 @@ static const RhythmDBPropertyDef rhythmdb_properties[] = {
 	PROP_ENTRY(TITLE_SORTNAME_SORT_KEY, G_TYPE_STRING, "title-sortname-sort-key"),
 	PROP_ENTRY(TITLE_SORTNAME_FOLDED, G_TYPE_STRING, "title-sortname-folded"),
 
+	PROP_ENTRY(LOCATION_FOLDED, G_TYPE_STRING, "location-folded"),
+
 	{ 0, 0, 0, 0 }
 };
 
@@ -5053,6 +5055,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get_folded (entry->composer_sortname);
 	case RHYTHMDB_PROP_LOCATION:
 		return rb_refstring_get (entry->location);
+	case RHYTHMDB_PROP_LOCATION_FOLDED:
+		return rb_refstring_get_uri_unescaped_folded (entry->location);
 	case RHYTHMDB_PROP_MOUNTPOINT:
 		return rb_refstring_get (entry->mountpoint);
 	case RHYTHMDB_PROP_LAST_PLAYED_STR:
