@@ -47,6 +47,7 @@ void		rb_refstring_unref (RBRefString *val);
 const char *	rb_refstring_get (const RBRefString *val);
 const char *	rb_refstring_get_folded (RBRefString *val);
 const char *	rb_refstring_get_sort_key (RBRefString *val);
+const char *	rb_refstring_get_uri_unescaped_folded (RBRefString *val);
 
 guint rb_refstring_hash (gconstpointer p);
 gboolean rb_refstring_equal (gconstpointer ap, gconstpointer bp);

@@ -246,6 +246,51 @@ rb_refstring_get_folded (RBRefString *val)
 }
 
 /**
+ * rb_refstring_get_uri_unescaped_folded:
+ * @val: an #RBRefString
+ *
+ * Returns a URI-unescaped and case-folded version of the string
+ * underlying @val.
+ * The case-folded string is cached inside the #RBRefString for
+ * speed.  See @rb_search_fold for information on case-folding
+ * strings.
+ *
+ * Return value: case-folded string, must not be freed
+ */
+const char *
+rb_refstring_get_uri_unescaped_folded (RBRefString *val)
+{
+	gpointer *ptr;
+	const char *string;
+
+	if (val == NULL)
+		return NULL;
+
+	ptr = &val->folded;
+	string = (const char*)g_atomic_pointer_get (ptr);
+	if (string == NULL) {
+
+		g_autofree char *unescaped = NULL;
+		g_autofree char *utf8ised = NULL;
+		char *newstring;
+
+		/* make sure the URI is valid utf8 */
+		unescaped = g_uri_unescape_string (rb_refstring_get (val), NULL);
+		utf8ised = rb_make_valid_utf8 (unescaped, '?');
+		newstring = rb_search_fold (utf8ised);
+		if (g_atomic_pointer_compare_and_exchange (ptr, NULL, newstring)) {
+			string = newstring;
+		} else {
+			g_free (newstring);
+			string = (const char *)g_atomic_pointer_get (ptr);
+			g_assert (string);
+		}
+	}
+
+	return string;
+}
+
+/**
  * rb_refstring_get_sort_key:
  * @val: an #RBRefString
  *
