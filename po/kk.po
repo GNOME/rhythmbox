@@ -6,10 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-02-24 21:00+0000\n"
-"PO-Revision-Date: 2015-03-18 11:28+0500\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
+"POT-Creation-Date: 2024-02-08 15:58+0000\n"
+"PO-Revision-Date: 2024-03-08 10:58+0500\n"
 "Last-Translator: Baurzhan Muftakhidinov <baurthefirst@gmail.com>\n"
 "Language-Team: Kazakh <kk_KZ@googlegroups.com>\n"
 "Language: kk\n"
@@ -17,85 +16,109 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 1.7.4\n"
+"X-Generator: Poedit 3.4.2\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:512
+#: backends/gstreamer/rb-encoder-gst.c:652
+#, c-format
+msgid "Could not create a temporary file to write to: %s"
+msgstr ""
+
+#: backends/gstreamer/rb-encoder-gst.c:705
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr ""
 
+#. Translators: the parameter here is an error message
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:528
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2900
+#. Translators: the parameter here is an error message
+#: backends/gstreamer/rb-player-gst.c:520
+#: backends/gstreamer/rb-player-gst-xfade.c:3034
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst.c:676
+#: backends/gstreamer/rb-player-gst.c:669
 #, c-format
 msgid "Failed to create playbin element; check your GStreamer installation"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst.c:717
+#: backends/gstreamer/rb-player-gst.c:700
 #, c-format
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1112
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1126
+#: backends/gstreamer/rb-player-gst-xfade.c:1142
+#: backends/gstreamer/rb-player-gst-xfade.c:1157
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1170
+#: backends/gstreamer/rb-player-gst-xfade.c:1193
 #, c-format
 msgid "Failed to start new stream"
 msgstr ""
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2827
+#: backends/gstreamer/rb-player-gst-xfade.c:2947
 #, c-format
 msgid "Failed to open output device"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3176
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3250
+#: backends/gstreamer/rb-player-gst-xfade.c:3367
+#: backends/gstreamer/rb-player-gst-xfade.c:3446
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3190
+#: backends/gstreamer/rb-player-gst-xfade.c:3376
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3224
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3267
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3294
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3304
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3314
+#: backends/gstreamer/rb-player-gst-xfade.c:3410
+#: backends/gstreamer/rb-player-gst-xfade.c:3463
+#: backends/gstreamer/rb-player-gst-xfade.c:3490
+#: backends/gstreamer/rb-player-gst-xfade.c:3500
+#: backends/gstreamer/rb-player-gst-xfade.c:3510
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr ""
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3409
+#: backends/gstreamer/rb-player-gst-xfade.c:3605
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr ""
 
-#: ../data/playlists.xml.in.h:1
+#: data/playlists.xml.in:4
 msgid "Recently Added"
-msgstr ""
+msgstr "Жақында қосылған"
 
-#: ../data/playlists.xml.in.h:2
+#: data/playlists.xml.in:15
 msgid "Recently Played"
-msgstr ""
+msgstr "Жақында ойналған"
 
-#: ../data/playlists.xml.in.h:3
+#: data/playlists.xml.in:26
 msgid "My Top Rated"
 msgstr ""
 
-#: ../data/rhythmbox.appdata.xml.in.h:1
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:8
+#: data/org.gnome.Rhythmbox3.desktop.in:3
+#: data/org.gnome.Rhythmbox3.device.desktop.in:3 shell/main.c:73
+#: shell/rb-shell.c:501 shell/rb-shell.c:2352
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:9
+#| msgid "Play and organize your music collection"
+msgid "Play and organize all your music"
+msgstr ""
+
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:10
+#| msgid "Rhythmbox Preferences"
+msgid "The Rhythmbox developers"
+msgstr ""
+
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:12
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -103,816 +126,822 @@ msgid ""
 "phones), and internet music services such as Last.fm and Magnatune."
 msgstr ""
 
-#: ../data/rhythmbox.appdata.xml.in.h:2
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:18
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
 msgstr ""
 
-#: ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
-#: ../shell/rb-shell.c:493 ../shell/rb-shell.c:2372
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:30
+msgid "Main Window"
+msgstr "Басты терезе"
 
-#: ../data/rhythmbox.desktop.in.in.h:2
-#: ../data/rhythmbox-device.desktop.in.in.h:2
+#: data/org.gnome.Rhythmbox3.desktop.in:4
+#: data/org.gnome.Rhythmbox3.device.desktop.in:4
 msgid "Music Player"
 msgstr "Музыка ойнатқышы"
 
-#: ../data/rhythmbox.desktop.in.in.h:3
-#: ../data/rhythmbox-device.desktop.in.in.h:3
+#: data/org.gnome.Rhythmbox3.desktop.in:5
+#: data/org.gnome.Rhythmbox3.device.desktop.in:5
 msgid "Rhythmbox Music Player"
 msgstr "Rhythmbox музыка плеері"
 
-#: ../data/rhythmbox.desktop.in.in.h:4
-#: ../data/rhythmbox-device.desktop.in.in.h:4
+#: data/org.gnome.Rhythmbox3.desktop.in:6
+#: data/org.gnome.Rhythmbox3.device.desktop.in:6
 msgid "Play and organize your music collection"
 msgstr "Музыкалық жинағыңызды ойнау және реттеу"
 
-#: ../data/rhythmbox.desktop.in.in.h:5
+#: data/org.gnome.Rhythmbox3.desktop.in:7
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
 
-#: ../data/ui/app-menu.ui.h:1
-msgid "_Add Music"
-msgstr ""
-
-#: ../data/ui/app-menu.ui.h:2
+#: data/ui/app-menu.ui:6
 msgid "_View"
 msgstr "Тү_рі"
 
-#: ../data/ui/app-menu.ui.h:3
-msgid "P_arty Mode"
-msgstr ""
-
-#: ../data/ui/app-menu.ui.h:4
+#: data/ui/app-menu.ui:9
 msgid "Side Pane"
 msgstr "Бүйір панелі"
 
-#: ../data/ui/app-menu.ui.h:5
+#: data/ui/app-menu.ui:14
 msgid "Play Queue in Side Pane"
 msgstr ""
 
-#: ../data/ui/app-menu.ui.h:6
-msgid "Status Bar"
-msgstr "Қалып-күй жолағы"
-
-#: ../data/ui/app-menu.ui.h:7
+#: data/ui/app-menu.ui:19
 msgid "Song Position Slider"
 msgstr ""
 
-#: ../data/ui/app-menu.ui.h:8 ../plugins/artsearch/songinfo.py:64
+#: data/ui/app-menu.ui:23 plugins/artsearch/songinfo.py:64
 msgid "Album Art"
 msgstr ""
 
-#: ../data/ui/app-menu.ui.h:9
+#: data/ui/app-menu.ui:27
 msgid "Follow Playing Track"
 msgstr ""
 
-#: ../data/ui/app-menu.ui.h:10
+#: data/ui/app-menu.ui:36
 msgid "_Tools"
 msgstr "Са_ймандар"
 
-#: ../data/ui/app-menu.ui.h:11
-msgid "P_lugins"
-msgstr ""
-
-#: ../data/ui/app-menu.ui.h:12
+#: data/ui/app-menu.ui:42
 msgid "_Preferences"
 msgstr "_Баптаулар"
 
-#: ../data/ui/app-menu.ui.h:13 ../shell/rb-shell-preferences.c:195
+#: data/ui/app-menu.ui:48 shell/rb-shell-preferences.c:195
 msgid "_Help"
 msgstr "_Көмек"
 
-#: ../data/ui/app-menu.ui.h:14
-msgid "_About"
-msgstr "О_сы туралы"
+#: data/ui/app-menu.ui:53
+#| msgid "Quit Rhythmbox"
+msgid "_About Rhythmbox"
+msgstr "Rhythmbox тур_алы"
 
-#: ../data/ui/app-menu.ui.h:15
-msgid "_Quit"
-msgstr "_Шығу"
-
-#: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
-#: ../data/ui/podcast-popups.ui.h:9
-#: ../plugins/magnatune/magnatune-popup.ui.h:1
+#: data/ui/browser-popup.ui:6 data/ui/playlist-popup.ui:6
+#: data/ui/podcast-popups.ui:51 plugins/magnatune/magnatune-popup.ui:6
 msgid "Add to Queue"
 msgstr ""
 
-#: ../data/ui/browser-popup.ui.h:2 ../data/ui/edit-menu.ui.h:7
-#: ../data/ui/playlist-popup.ui.h:2
+#: data/ui/browser-popup.ui:10 data/ui/edit-menu.ui:39
+#: data/ui/playlist-popup.ui:10
 msgid "Add to Playlist"
 msgstr "Ойнату тізіміне қосу"
 
-#: ../data/ui/browser-popup.ui.h:3 ../data/ui/playlist-popup.ui.h:3
+#: data/ui/browser-popup.ui:16 data/ui/playlist-popup.ui:16
 msgid "Copy"
 msgstr "Көшіру"
 
-#: ../data/ui/browser-popup.ui.h:4 ../data/ui/playlist-popup.ui.h:4
+#: data/ui/browser-popup.ui:20 data/ui/playlist-popup.ui:20
 msgid "Cut"
 msgstr "Қиып алу"
 
-#: ../data/ui/browser-popup.ui.h:5 ../data/ui/edit-menu.ui.h:9
-#: ../data/ui/import-errors-popup.ui.h:2 ../data/ui/playlist-popup.ui.h:5
+#: data/ui/browser-popup.ui:29 data/ui/edit-menu.ui:55
+#: data/ui/import-errors-popup.ui:10 data/ui/playlist-popup.ui:29
 msgid "_Move to Trash"
 msgstr "Қоқы_с шелегіне тастау"
 
-#: ../data/ui/browser-popup.ui.h:6 ../data/ui/playlist-popup.ui.h:6
-#: ../plugins/magnatune/magnatune-popup.ui.h:4
+#: data/ui/browser-popup.ui:35 data/ui/playlist-popup.ui:35
+#: plugins/magnatune/magnatune-popup.ui:20
 msgid "Browse this Genre"
 msgstr ""
 
-#: ../data/ui/browser-popup.ui.h:7 ../data/ui/playlist-popup.ui.h:7
-#: ../plugins/magnatune/magnatune-popup.ui.h:5
+#: data/ui/browser-popup.ui:39 data/ui/playlist-popup.ui:39
+#: plugins/magnatune/magnatune-popup.ui:24
 msgid "Browse this Artist"
 msgstr ""
 
-#: ../data/ui/browser-popup.ui.h:8 ../data/ui/playlist-popup.ui.h:8
-#: ../plugins/magnatune/magnatune-popup.ui.h:6
+#: data/ui/browser-popup.ui:43 data/ui/playlist-popup.ui:43
+#: plugins/magnatune/magnatune-popup.ui:28
 msgid "Browse this Album"
 msgstr ""
 
-#: ../data/ui/browser-popup.ui.h:9 ../data/ui/edit-menu.ui.h:8
-#: ../data/ui/playlist-popup.ui.h:9 ../data/ui/queue-popups.ui.h:4
-#: ../plugins/magnatune/magnatune-popup.ui.h:7
+#: data/ui/browser-popup.ui:52 data/ui/edit-menu.ui:45
+#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:23
+#: data/ui/queue-popups.ui:52 plugins/magnatune/magnatune-popup.ui:34
 msgid "Pr_operties"
 msgstr ""
 
-#: ../data/ui/create-playlist.ui.h:1
+#: data/ui/create-playlist.ui:19
 msgid "songs"
 msgstr "өлеңдер"
 
-#: ../data/ui/create-playlist.ui.h:2
+#: data/ui/create-playlist.ui:22
 msgid "MB"
 msgstr "МБ"
 
-#: ../data/ui/create-playlist.ui.h:3
+#: data/ui/create-playlist.ui:25
 msgid "GB"
 msgstr "ГБ"
 
-#: ../data/ui/create-playlist.ui.h:4
+#: data/ui/create-playlist.ui:28
 msgid "Minutes"
 msgstr "Минут"
 
-#: ../data/ui/create-playlist.ui.h:5
+#: data/ui/create-playlist.ui:59
 msgid "Create automatically updating playlist where:"
 msgstr ""
 
-#: ../data/ui/create-playlist.ui.h:6
+#: data/ui/create-playlist.ui:103
 msgid "A_dd if any criteria are matched"
 msgstr ""
 
-#: ../data/ui/create-playlist.ui.h:7
+#: data/ui/create-playlist.ui:118 widgets/rb-uri-dialog.c:161
+msgid "_Add"
+msgstr "Қ_осу"
+
+#: data/ui/create-playlist.ui:145
 msgid "_Limit to: "
 msgstr ""
 
-#: ../data/ui/create-playlist.ui.h:8
+#: data/ui/create-playlist.ui:207
 msgid "_When sorted by:"
 msgstr ""
 
-#: ../data/ui/display-page-add-menu.ui.h:1
+#: data/ui/display-page-add-menu.ui:6
 msgid "_New Playlist"
 msgstr "_Жаңа ойнату тізімі"
 
-#: ../data/ui/display-page-add-menu.ui.h:2
+#: data/ui/display-page-add-menu.ui:10
 msgid "New _Automatic Playlist"
 msgstr ""
 
-#: ../data/ui/display-page-add-menu.ui.h:3
+#: data/ui/display-page-add-menu.ui:14
 msgid "_Load from File"
 msgstr ""
 
-#: ../data/ui/display-page-add-menu.ui.h:4
+#: data/ui/display-page-add-menu.ui:23
 msgid "_Check for New Devices"
 msgstr ""
 
-#: ../data/ui/edit-menu.ui.h:1
+#: data/ui/edit-menu.ui:6
 msgid "Cu_t"
 msgstr "Қ_иып алу"
 
-#: ../data/ui/edit-menu.ui.h:2
+#: data/ui/edit-menu.ui:11
 msgid "_Copy"
 msgstr "_Көшіру"
 
-#: ../data/ui/edit-menu.ui.h:3
+#: data/ui/edit-menu.ui:16
 msgid "_Paste"
 msgstr "Кірі_стіру"
 
-#: ../data/ui/edit-menu.ui.h:4
+#: data/ui/edit-menu.ui:23
 msgid "Select _All"
 msgstr "Б_арлығын таңдау"
 
-#: ../data/ui/edit-menu.ui.h:5
+#: data/ui/edit-menu.ui:28
 msgid "D_eselect All"
 msgstr "Ере_кшелеуді алып тастау"
 
-#: ../data/ui/edit-menu.ui.h:6
+#: data/ui/edit-menu.ui:35
 msgid "Add to Play Queue"
 msgstr ""
 
-#: ../data/ui/general-prefs.ui.h:1
-msgid "Browser Views"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:2
-msgid "_Artists and albums"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:3
-msgid "_Genres and artists"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:4
-msgid "G_enres, artists and albums"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:5
-msgid "Visible Columns"
-msgstr "Көрінетін бағандар"
-
-#: ../data/ui/general-prefs.ui.h:6
-msgid "Track _number"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:7
-msgid "_Last played"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:8
-msgid "_Artist"
-msgstr "Әр_тіс"
-
-#: ../data/ui/general-prefs.ui.h:9
-msgid "_Composer"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:10
-msgid "A_lbum"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:11
-msgid "_Year"
-msgstr "Ж_ыл"
-
-#: ../data/ui/general-prefs.ui.h:12
-msgid "_Quality"
-msgstr "_Сапасы"
-
-#: ../data/ui/general-prefs.ui.h:13
-msgid "Lo_cation"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:14
-msgid "Ti_me"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:15
-msgid "_Rating"
-msgstr "_Рейтинг"
-
-#: ../data/ui/general-prefs.ui.h:16
-msgid "_BPM"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:17
-msgid "C_omment"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:18
-msgid "_Play count"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:19
-msgid "Da_te added"
-msgstr ""
-
-#: ../data/ui/general-prefs.ui.h:20
-msgid "_Genre"
-msgstr "_Жанры"
-
-#: ../data/ui/import-dialog.ui.h:1
-msgid "Select a location containing music to add to your library:"
-msgstr ""
-
-#: ../data/ui/import-dialog.ui.h:2 ../data/ui/library-toolbar.ui.h:4
-msgid "Import"
-msgstr "Импорттау"
-
-#: ../data/ui/import-dialog.ui.h:3 ../data/ui/podcast-add-dialog.ui.h:3
-msgid "Close"
-msgstr "Жабу"
-
-#: ../data/ui/import-dialog.ui.h:4
-msgid "Copy files that are outside the music library"
-msgstr ""
-
-#: ../data/ui/import-errors-popup.ui.h:1 ../data/ui/missing-files-popup.ui.h:1
-msgid "_Remove"
-msgstr "Ө_шіру"
-
-#: ../data/ui/library-prefs.ui.h:1
-msgid "Library Location"
-msgstr "Жинақтың орналасуы"
-
-#: ../data/ui/library-prefs.ui.h:2
-msgid "_Music files are placed in:"
-msgstr ""
-
-#: ../data/ui/library-prefs.ui.h:3
-msgid "_Browse..."
-msgstr "Қара_п шығу..."
-
-#: ../data/ui/library-prefs.ui.h:4
-msgid "_Watch my library for new files"
-msgstr ""
-
-#: ../data/ui/library-prefs.ui.h:5
-msgid "Library Structure"
-msgstr ""
-
-#: ../data/ui/library-prefs.ui.h:6
-msgid "F_older hierarchy:"
-msgstr ""
-
-#: ../data/ui/library-prefs.ui.h:7
-msgid "_File name:"
-msgstr "_Файл аты:"
-
-#: ../data/ui/library-prefs.ui.h:8
-msgid "_Preferred format:"
-msgstr ""
-
-#: ../data/ui/library-prefs.ui.h:9
-msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
-msgstr ""
-
-#: ../data/ui/library-prefs.ui.h:10
-msgid "Format settings:"
-msgstr ""
-
-#: ../data/ui/library-prefs.ui.h:11
+#: data/ui/encoding-settings.ui:33
 msgid "_Install additional software required to use this format"
 msgstr ""
 
-#: ../data/ui/library-toolbar.ui.h:1 ../data/ui/playlist-toolbar.ui.h:1
-#: ../data/ui/podcast-toolbar.ui.h:1 ../data/ui/queue-toolbar.ui.h:1
-#: ../plugins/audiocd/audiocd-toolbar.ui.h:1
-#: ../plugins/daap/daap-toolbar.ui.h:1
-#: ../plugins/fmradio/fmradio-toolbar.ui.h:1
-#: ../plugins/generic-player/generic-player-toolbar.ui.h:1
-#: ../plugins/ipod/ipod-toolbar.ui.h:1 ../plugins/iradio/iradio-toolbar.ui.h:1
-#: ../plugins/magnatune/magnatune-toolbar.ui.h:1
-#: ../plugins/mtpdevice/mtp-toolbar.ui.h:1
+#: data/ui/encoding-settings.ui:88
+msgid "Transcode lossless files into this format"
+msgstr ""
+
+#: data/ui/general-prefs.ui:23
+msgid "Browser Views"
+msgstr ""
+
+#: data/ui/general-prefs.ui:71
+msgid "_Artists and albums"
+msgstr ""
+
+#: data/ui/general-prefs.ui:90
+msgid "_Genres and artists"
+msgstr ""
+
+#: data/ui/general-prefs.ui:109
+msgid "G_enres, artists and albums"
+msgstr ""
+
+#: data/ui/general-prefs.ui:171
+msgid "Visible Columns"
+msgstr "Көрінетін бағандар"
+
+#: data/ui/general-prefs.ui:225
+msgid "Track _number"
+msgstr ""
+
+#: data/ui/general-prefs.ui:242
+msgid "_Last played"
+msgstr ""
+
+#: data/ui/general-prefs.ui:259
+msgid "_Artist"
+msgstr "Әр_тіс"
+
+#: data/ui/general-prefs.ui:276
+msgid "_Composer"
+msgstr ""
+
+#: data/ui/general-prefs.ui:293
+msgid "A_lbum"
+msgstr ""
+
+#: data/ui/general-prefs.ui:310
+msgid "_Year"
+msgstr "Ж_ыл"
+
+#: data/ui/general-prefs.ui:327
+msgid "_Quality"
+msgstr "_Сапасы"
+
+#: data/ui/general-prefs.ui:344
+msgid "Lo_cation"
+msgstr ""
+
+#: data/ui/general-prefs.ui:361
+msgid "Ti_me"
+msgstr ""
+
+#: data/ui/general-prefs.ui:378
+msgid "_Rating"
+msgstr "_Рейтинг"
+
+#: data/ui/general-prefs.ui:395
+msgid "_BPM"
+msgstr "_BPM"
+
+#: data/ui/general-prefs.ui:412
+msgid "C_omment"
+msgstr ""
+
+#: data/ui/general-prefs.ui:429
+msgid "_Play count"
+msgstr ""
+
+#: data/ui/general-prefs.ui:446
+msgid "Da_te added"
+msgstr ""
+
+#: data/ui/general-prefs.ui:463
+msgid "_Genre"
+msgstr "_Жанры"
+
+#: data/ui/import-dialog.ui:20
+msgid "Select a location containing music to add to your library:"
+msgstr ""
+
+#: data/ui/import-dialog.ui:54 data/ui/library-toolbar.ui:20
+msgid "Import"
+msgstr "Импорттау"
+
+#: data/ui/import-dialog.ui:66 data/ui/podcast-add-dialog.ui:45
+msgid "Close"
+msgstr "Жабу"
+
+#: data/ui/import-dialog.ui:78
+msgid "Copy files that are outside the music library"
+msgstr ""
+
+#: data/ui/import-errors-popup.ui:6 data/ui/missing-files-popup.ui:6
+msgid "_Remove"
+msgstr "Ө_шіру"
+
+#: data/ui/library-prefs.ui:22
+msgid "Library Location"
+msgstr "Жинақтың орналасуы"
+
+#: data/ui/library-prefs.ui:63
+msgid "_Music files are placed in:"
+msgstr ""
+
+#: data/ui/library-prefs.ui:118
+msgid "_Browse..."
+msgstr "Қара_п шығу..."
+
+#: data/ui/library-prefs.ui:147
+msgid "_Watch my library for new files"
+msgstr ""
+
+#: data/ui/library-prefs.ui:193
+msgid "Library Structure"
+msgstr ""
+
+#: data/ui/library-prefs.ui:232
+msgid "F_older hierarchy:"
+msgstr ""
+
+#: data/ui/library-prefs.ui:246
+msgid "_File name:"
+msgstr "_Файл аты:"
+
+#: data/ui/library-prefs.ui:260
+msgid "_Preferred format:"
+msgstr ""
+
+#: data/ui/library-prefs.ui:274
+msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
+msgstr ""
+
+#: data/ui/library-toolbar.ui:6 data/ui/playlist-toolbar.ui:6
+#: data/ui/podcast-toolbar.ui:6 data/ui/queue-toolbar.ui:6
+#: plugins/android/android-toolbar.ui:6 plugins/audiocd/audiocd-toolbar.ui:6
+#: plugins/daap/daap-toolbar.ui:6 plugins/fmradio/fmradio-toolbar.ui:6
+#: plugins/generic-player/generic-player-toolbar.ui:6
+#: plugins/ipod/ipod-toolbar.ui:6 plugins/iradio/iradio-toolbar.ui:6
+#: plugins/magnatune/magnatune-toolbar.ui:6 plugins/mtpdevice/mtp-toolbar.ui:6
 msgid "Edit"
 msgstr "Түзету"
 
-#: ../data/ui/library-toolbar.ui.h:2 ../data/ui/playlist-toolbar.ui.h:2
-#: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/daap/daap-toolbar.ui.h:2
-#: ../plugins/generic-player/generic-player-toolbar.ui.h:2
-#: ../plugins/grilo/rb-grilo-source.c:346 ../plugins/ipod/ipod-toolbar.ui.h:2
-#: ../plugins/iradio/iradio-toolbar.ui.h:2
-#: ../plugins/magnatune/magnatune-toolbar.ui.h:2
-#: ../plugins/mtpdevice/mtp-toolbar.ui.h:2
+#: data/ui/library-toolbar.ui:11 data/ui/playlist-toolbar.ui:11
+#: data/ui/podcast-toolbar.ui:11 plugins/android/android-toolbar.ui:11
+#: plugins/daap/daap-toolbar.ui:11
+#: plugins/generic-player/generic-player-toolbar.ui:11
+#: plugins/grilo/rb-grilo-source.c:364 plugins/ipod/ipod-toolbar.ui:11
+#: plugins/iradio/iradio-toolbar.ui:11
+#: plugins/magnatune/magnatune-toolbar.ui:11
+#: plugins/mtpdevice/mtp-toolbar.ui:11
 msgid "Browse"
 msgstr "Шолу"
 
-#: ../data/ui/library-toolbar.ui.h:3 ../data/ui/playlist-toolbar.ui.h:3
-#: ../data/ui/podcast-toolbar.ui.h:3 ../plugins/daap/daap-toolbar.ui.h:3
-#: ../plugins/generic-player/generic-player-toolbar.ui.h:3
-#: ../plugins/ipod/ipod-toolbar.ui.h:3 ../plugins/iradio/iradio-toolbar.ui.h:3
-#: ../plugins/mtpdevice/mtp-toolbar.ui.h:3
+#: data/ui/library-toolbar.ui:16 data/ui/playlist-toolbar.ui:16
+#: data/ui/podcast-toolbar.ui:16 plugins/android/android-toolbar.ui:16
+#: plugins/daap/daap-toolbar.ui:16
+#: plugins/generic-player/generic-player-toolbar.ui:16
+#: plugins/ipod/ipod-toolbar.ui:16 plugins/iradio/iradio-toolbar.ui:16
+#: plugins/mtpdevice/mtp-toolbar.ui:16
 msgid "View All"
-msgstr ""
+msgstr "Барлығын қарау"
 
-#: ../data/ui/media-player-properties.ui.h:1
+#: data/ui/media-player-properties.ui:8
 msgid "Media Player Properties"
 msgstr ""
 
-#: ../data/ui/media-player-properties.ui.h:2
+#: data/ui/media-player-properties.ui:22 plugins/daap/daap-prefs.ui:388
+#: plugins/iradio/rb-station-properties-dialog.c:182
+#: podcast/rb-feed-podcast-properties-dialog.c:130
+#: podcast/rb-podcast-properties-dialog.c:320 shell/rb-shell-preferences.c:192
+#: widgets/rb-alert-dialog.c:377 widgets/rb-query-creator.c:198
+#: widgets/rb-song-info.c:627
+msgid "_Close"
+msgstr "_Жабу"
+
+#: data/ui/media-player-properties.ui:75
 msgid "Information"
 msgstr "Ақпарат"
 
 #. Translators: This refers to the usage of media space
-#: ../data/ui/media-player-properties.ui.h:4
+#: data/ui/media-player-properties.ui:121
 msgid "Volume usage"
 msgstr ""
 
-#: ../data/ui/media-player-properties.ui.h:5
-#: ../data/ui/podcast-feed-properties.ui.h:6
-#: ../data/ui/podcast-properties.ui.h:5 ../data/ui/song-info-multiple.ui.h:11
-#: ../data/ui/song-info.ui.h:15 ../plugins/iradio/station-properties.ui.h:4
+#: data/ui/media-player-properties.ui:156
+msgid "Preferred format"
+msgstr ""
+
+#: data/ui/media-player-properties.ui:177
+#: data/ui/podcast-feed-properties.ui:206 data/ui/podcast-properties.ui:174
+#: data/ui/song-info-multiple.ui:285 data/ui/song-info.ui:452
+#: plugins/iradio/station-properties.ui:129
 msgid "Basic"
 msgstr "Қарапайым"
 
-#: ../data/ui/media-player-properties.ui.h:6 ../data/ui/sync-dialog.ui.h:1
+#: data/ui/media-player-properties.ui:223 data/ui/sync-dialog.ui:43
 msgid "Sync Preferences"
 msgstr ""
 
-#: ../data/ui/media-player-properties.ui.h:7 ../data/ui/sync-dialog.ui.h:2
+#: data/ui/media-player-properties.ui:262 data/ui/sync-dialog.ui:82
 msgid "Sync Preview"
 msgstr ""
 
-#: ../data/ui/media-player-properties.ui.h:8
-#: ../plugins/generic-player/generic-player-toolbar.ui.h:6
-#: ../plugins/ipod/ipod-toolbar.ui.h:6 ../plugins/mtpdevice/mtp-toolbar.ui.h:6
+#: data/ui/media-player-properties.ui:284 plugins/android/android-toolbar.ui:24
+#: plugins/generic-player/generic-player-toolbar.ui:28
+#: plugins/ipod/ipod-toolbar.ui:28 plugins/mtpdevice/mtp-toolbar.ui:28
 msgid "Sync"
 msgstr ""
 
-#: ../data/ui/missing-files-popup.ui.h:2
+#: data/ui/missing-files-popup.ui:10
 msgid "_Properties"
 msgstr "Қас_иеттері"
 
-#: ../data/ui/playback-prefs.ui.h:1
+#: data/ui/playback-prefs.ui:28
 msgid "Player Backend"
 msgstr ""
 
-#: ../data/ui/playback-prefs.ui.h:2
+#: data/ui/playback-prefs.ui:54
 msgid "_Crossfade between tracks"
 msgstr ""
 
-#: ../data/ui/playback-prefs.ui.h:3
+#: data/ui/playback-prefs.ui:93
 msgid "Crossfade Duration (Seconds)"
 msgstr ""
 
-#: ../data/ui/playlist-menu.ui.h:1
+#: data/ui/playlist-menu.ui:6
 msgid "_Edit..."
 msgstr "Тү_зету..."
 
-#: ../data/ui/playlist-menu.ui.h:2
+#: data/ui/playlist-menu.ui:10
 msgid "_Rename"
 msgstr "Атын ауысты_ру"
 
-#: ../data/ui/playlist-menu.ui.h:3
+#: data/ui/playlist-menu.ui:16
 msgid "_Queue All Tracks"
 msgstr ""
 
-#: ../data/ui/playlist-menu.ui.h:4
+#: data/ui/playlist-menu.ui:20
 msgid "_Shuffle Playlist"
 msgstr ""
 
-#: ../data/ui/playlist-menu.ui.h:5 ../data/ui/queue-popups.ui.h:3
+#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:14
+#: data/ui/queue-popups.ui:43
 msgid "_Save to File..."
 msgstr ""
 
-#: ../data/ui/playlist-save.ui.h:1
+#: data/ui/playlist-save.ui:12
 msgid "By extension"
 msgstr "Кеңейтуі бойынша"
 
-#: ../data/ui/playlist-save.ui.h:2
+#: data/ui/playlist-save.ui:19
 msgid "Save Playlist"
 msgstr "Ойнату тізімін сақтау"
 
-#: ../data/ui/playlist-save.ui.h:3
+#: data/ui/playlist-save.ui:38 plugins/artsearch/songinfo.py:135
+#: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:536
+#: podcast/rb-podcast-source.c:1110 shell/rb-track-transfer-queue.c:187
+#: widgets/rb-alert-dialog.c:384 widgets/rb-alert-dialog.c:401
+#: widgets/rb-dialog.c:131 widgets/rb-dialog.c:139
+#: widgets/rb-query-creator.c:191 widgets/rb-uri-dialog.c:158
+msgid "_Cancel"
+msgstr "Ба_с тарту"
+
+#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:267
+#: widgets/rb-dialog.c:140
+msgid "_Save"
+msgstr "_Сақтау"
+
+#: data/ui/playlist-save.ui:95
 msgid "Select playlist format:"
 msgstr ""
 
-#: ../data/ui/playlist-save.ui.h:4
+#: data/ui/playlist-save.ui:129
 msgid "Playlist format"
 msgstr ""
 
-#: ../data/ui/playlist-toolbar.ui.h:4 ../data/ui/queue-toolbar.ui.h:4
+#: data/ui/playlist-toolbar.ui:20 data/ui/queue-toolbar.ui:19
 msgid "Playlist"
 msgstr ""
 
-#: ../data/ui/podcast-add-dialog.ui.h:1
+#: data/ui/podcast-add-dialog.ui:13
 msgid ""
-"Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
-"podcast feed URL.\n"
+"Search for podcasts in the iTunes Store, or enter a podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
 
-#: ../data/ui/podcast-add-dialog.ui.h:4
+#: data/ui/podcast-add-dialog.ui:58
 msgid "Subscribe"
 msgstr "Жазылу"
 
-#: ../data/ui/podcast-feed-properties.ui.h:1
-#: ../data/ui/podcast-properties.ui.h:1
+#: data/ui/podcast-feed-properties.ui:23 data/ui/podcast-properties.ui:22
 msgid "Title:"
 msgstr "Атауы:"
 
-#: ../data/ui/podcast-feed-properties.ui.h:2
+#: data/ui/podcast-feed-properties.ui:37
 msgid "Author:"
 msgstr "Авторы:"
 
-#: ../data/ui/podcast-feed-properties.ui.h:3
+#: data/ui/podcast-feed-properties.ui:85
 msgid "Last updated:"
 msgstr "Соңғы жаңартылған:"
 
-#: ../data/ui/podcast-feed-properties.ui.h:4
-#: ../data/ui/podcast-properties.ui.h:4
+#: data/ui/podcast-feed-properties.ui:127 data/ui/podcast-properties.ui:123
 msgid "Description:"
 msgstr "Анықтамасы:"
 
-#: ../data/ui/podcast-feed-properties.ui.h:5
+#: data/ui/podcast-feed-properties.ui:175
 msgid "Last episode:"
 msgstr ""
 
-#: ../data/ui/podcast-feed-properties.ui.h:7
-#: ../data/ui/podcast-properties.ui.h:6
+#: data/ui/podcast-feed-properties.ui:226 data/ui/podcast-properties.ui:193
 msgid "Source:"
 msgstr "Қайнар көзі:"
 
-#: ../data/ui/podcast-feed-properties.ui.h:8
+#: data/ui/podcast-feed-properties.ui:239
 msgid "Language:"
 msgstr "Тіл:"
 
-#: ../data/ui/podcast-feed-properties.ui.h:9
+#: data/ui/podcast-feed-properties.ui:255
 msgid "Copyright:"
 msgstr "Copyright:"
 
-#: ../data/ui/podcast-feed-properties.ui.h:10
-#: ../data/ui/podcast-properties.ui.h:13 ../data/ui/song-info.ui.h:30
-#: ../plugins/iradio/station-properties.ui.h:10
+#: data/ui/podcast-feed-properties.ui:322 data/ui/podcast-properties.ui:421
+#: data/ui/song-info.ui:884 plugins/iradio/station-properties.ui:304
 msgid "Details"
 msgstr "Көбірек білу"
 
-#: ../data/ui/podcast-popups.ui.h:1
+#: data/ui/podcast-popups.ui:6
 msgid "New Podcast Feed..."
 msgstr ""
 
-#: ../data/ui/podcast-popups.ui.h:2
+#: data/ui/podcast-popups.ui:10
 msgid "Update All Feeds"
 msgstr ""
 
-#: ../data/ui/podcast-popups.ui.h:3
+#: data/ui/podcast-popups.ui:16
 msgid "Update Podcast Feed"
 msgstr ""
 
-#: ../data/ui/podcast-popups.ui.h:4
+#: data/ui/podcast-popups.ui:20
 msgid "Delete Podcast Feed"
 msgstr ""
 
-#: ../data/ui/podcast-popups.ui.h:5 ../plugins/fmradio/fmradio-popup.ui.h:2
-#: ../plugins/generic-player/generic-player-toolbar.ui.h:4
-#: ../plugins/ipod/ipod-toolbar.ui.h:4 ../plugins/iradio/iradio-popup.ui.h:2
-#: ../plugins/mtpdevice/mtp-toolbar.ui.h:4
+#: data/ui/podcast-popups.ui:29 data/ui/podcast-popups.ui:60
+#: plugins/android/android-toolbar.ui:20 plugins/fmradio/fmradio-popup.ui:12
+#: plugins/generic-player/generic-player-toolbar.ui:20
+#: plugins/ipod/ipod-toolbar.ui:20 plugins/iradio/iradio-popup.ui:12
+#: plugins/mtpdevice/mtp-toolbar.ui:20
 msgid "Properties"
 msgstr "Қасиеттері"
 
-#: ../data/ui/podcast-popups.ui.h:6
+#: data/ui/podcast-popups.ui:37
 msgid "Download Episode"
 msgstr ""
 
-#: ../data/ui/podcast-popups.ui.h:7
+#: data/ui/podcast-popups.ui:41
 msgid "Cancel Download"
-msgstr ""
+msgstr "Жүктеп алудан бас тарту"
 
-#: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1227 ../sources/rb-media-player-source.c:933
+#: data/ui/podcast-popups.ui:45 plugins/fmradio/fmradio-popup.ui:6
+#: podcast/rb-podcast-source.c:1262 sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Өшіру"
 
-#: ../data/ui/podcast-prefs.ui.h:1
+#: data/ui/podcast-prefs.ui:14
 msgid "Every hour"
 msgstr ""
 
-#: ../data/ui/podcast-prefs.ui.h:2
+#: data/ui/podcast-prefs.ui:18
 msgid "Every day"
 msgstr "Күнде"
 
-#: ../data/ui/podcast-prefs.ui.h:3
+#: data/ui/podcast-prefs.ui:22
 msgid "Every week"
 msgstr ""
 
-#: ../data/ui/podcast-prefs.ui.h:4
+#: data/ui/podcast-prefs.ui:26
 msgid "Manually"
 msgstr "Қолмен"
 
-#: ../data/ui/podcast-prefs.ui.h:5
+#: data/ui/podcast-prefs.ui:49
 msgid "Podcast Downloads"
 msgstr ""
 
-#: ../data/ui/podcast-prefs.ui.h:6
+#: data/ui/podcast-prefs.ui:104
 msgid "Check for _new episodes:"
 msgstr ""
 
-#: ../data/ui/podcast-prefs.ui.h:7
+#: data/ui/podcast-prefs.ui:136
 msgid "_Download location:"
 msgstr ""
 
-#: ../data/ui/podcast-prefs.ui.h:8
+#: data/ui/podcast-prefs.ui:158
 msgid "Select Folder For Podcasts"
 msgstr ""
 
-#: ../data/ui/podcast-properties.ui.h:2
+#: data/ui/podcast-properties.ui:36
 msgid "Feed:"
 msgstr ""
 
-#: ../data/ui/podcast-properties.ui.h:3
+#: data/ui/podcast-properties.ui:52
 msgid "Date:"
 msgstr "Күні:"
 
-#: ../data/ui/podcast-properties.ui.h:7 ../data/ui/song-info-multiple.ui.h:4
-#: ../data/ui/song-info.ui.h:26 ../plugins/iradio/station-properties.ui.h:9
+#: data/ui/podcast-properties.ui:222 data/ui/song-info-multiple.ui:102
+#: data/ui/song-info.ui:762 plugins/iradio/station-properties.ui:266
 msgid "_Rating:"
 msgstr "_Рейтинг:"
 
-#: ../data/ui/podcast-properties.ui.h:8 ../data/ui/song-info.ui.h:25
-#: ../plugins/iradio/station-properties.ui.h:8
+#: data/ui/podcast-properties.ui:237 data/ui/song-info.ui:699
+#: plugins/iradio/station-properties.ui:236
 msgid "Play count:"
-msgstr ""
+msgstr "Ойнату саны:"
 
-#: ../data/ui/podcast-properties.ui.h:9 ../data/ui/song-info.ui.h:24
-#: ../plugins/iradio/station-properties.ui.h:7
+#: data/ui/podcast-properties.ui:252 data/ui/song-info.ui:674
+#: plugins/iradio/station-properties.ui:205
 msgid "Last played:"
 msgstr ""
 
-#: ../data/ui/podcast-properties.ui.h:10 ../data/ui/song-info.ui.h:22
-#: ../plugins/iradio/station-properties.ui.h:6
+#: data/ui/podcast-properties.ui:268 data/ui/song-info.ui:625
+#: plugins/iradio/station-properties.ui:175
 msgid "Bitrate:"
 msgstr "Битрейт:"
 
-#: ../data/ui/podcast-properties.ui.h:11 ../data/ui/song-info.ui.h:27
+#: data/ui/podcast-properties.ui:283 data/ui/song-info.ui:800
 msgid "Duration:"
 msgstr "Ұзақтығы:"
 
-#: ../data/ui/podcast-properties.ui.h:12
+#: data/ui/podcast-properties.ui:348
 msgid "Download location:"
 msgstr ""
 
-#: ../data/ui/podcast-toolbar.ui.h:4 ../plugins/iradio/iradio-toolbar.ui.h:4
+#: data/ui/podcast-toolbar.ui:20 plugins/iradio/iradio-toolbar.ui:21
 msgid "Add"
 msgstr "Қосу"
 
-#: ../data/ui/podcast-toolbar.ui.h:5
+#: data/ui/podcast-toolbar.ui:24
 msgid "Update"
 msgstr "Жаңарту"
 
-#: ../data/ui/queue-popups.ui.h:1
+#: data/ui/queue-popups.ui:6 data/ui/queue-popups.ui:31
 msgid "Remove from Play Queue"
 msgstr ""
 
-#: ../data/ui/queue-popups.ui.h:2
+#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
 msgid "Shuffle Play Queue"
 msgstr ""
 
-#: ../data/ui/queue-popups.ui.h:5
+#: data/ui/queue-popups.ui:35
 msgid "Clear Play Queue"
 msgstr ""
 
-#: ../data/ui/queue-toolbar.ui.h:2 ../shell/rb-shell-player.c:3279
+#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3291
 msgid "Shuffle"
 msgstr "Араластыру"
 
-#: ../data/ui/queue-toolbar.ui.h:3 ../plugins/artsearch/songinfo.py:52
+#: data/ui/queue-toolbar.ui:15 plugins/artsearch/songinfo.py:52
 msgid "Clear"
 msgstr "Тазарту"
 
-#: ../data/ui/song-info-multiple.ui.h:1 ../data/ui/song-info.ui.h:1
+#: data/ui/song-info-multiple.ui:47 data/ui/song-info.ui:75
 msgid "Albu_m:"
 msgstr ""
 
-#: ../data/ui/song-info-multiple.ui.h:2 ../data/ui/song-info.ui.h:5
-#: ../plugins/audiocd/album-info.ui.h:2
+#: data/ui/song-info-multiple.ui:61 data/ui/song-info.ui:165
+#: plugins/audiocd/album-info.ui:30
 msgid "_Artist:"
 msgstr "Ә_ртіс:"
 
-#: ../data/ui/song-info-multiple.ui.h:3 ../data/ui/song-info.ui.h:4
-#: ../plugins/audiocd/album-info.ui.h:4
-#: ../plugins/iradio/station-properties.ui.h:2
+#: data/ui/song-info-multiple.ui:75 data/ui/song-info.ui:117
+#: plugins/audiocd/album-info.ui:58 plugins/iradio/station-properties.ui:55
 msgid "_Genre:"
 msgstr "_Жанры:"
 
-#: ../data/ui/song-info-multiple.ui.h:5 ../data/ui/song-info.ui.h:7
-#: ../plugins/audiocd/album-info.ui.h:5
+#: data/ui/song-info-multiple.ui:132 data/ui/song-info.ui:226
+#: plugins/audiocd/album-info.ui:128
 msgid "_Year:"
 msgstr "Ж_ыл:"
 
-#: ../data/ui/song-info-multiple.ui.h:6 ../data/ui/song-info.ui.h:6
+#: data/ui/song-info-multiple.ui:159 data/ui/song-info.ui:179
 msgid "_Disc number:"
-msgstr ""
+msgstr "_Диск нөмірі:"
 
-#: ../data/ui/song-info-multiple.ui.h:7 ../data/ui/song-info.ui.h:10
+#: data/ui/song-info-multiple.ui:185 data/ui/song-info.ui:305
 msgid "Album a_rtist:"
 msgstr ""
 
-#: ../data/ui/song-info-multiple.ui.h:8 ../data/ui/song-info.ui.h:11
+#: data/ui/song-info-multiple.ui:211 data/ui/song-info.ui:331
 msgid "_Composer:"
 msgstr ""
 
-#. To translators: the context is 'disc 1 of 2'
-#: ../data/ui/song-info-multiple.ui.h:9 ../data/ui/song-info.ui.h:13
+#. To translators: part of a phrase, for example, track 1 of 10
+#. To translators: part of a phrase, for example, disc 1 of 2
+#: data/ui/song-info-multiple.ui:237 data/ui/song-info.ui:357
+#: data/ui/song-info.ui:368
 msgid "of"
 msgstr ""
 
-#: ../data/ui/song-info-multiple.ui.h:10
+#: data/ui/song-info-multiple.ui:258
 msgid "_Track count:"
 msgstr ""
 
-#: ../data/ui/song-info-multiple.ui.h:12 ../data/ui/song-info.ui.h:16
+#: data/ui/song-info-multiple.ui:328 data/ui/song-info.ui:501
 msgid "Albu_m sort order:"
 msgstr ""
 
-#: ../data/ui/song-info-multiple.ui.h:13 ../data/ui/song-info.ui.h:17
+#: data/ui/song-info-multiple.ui:342 data/ui/song-info.ui:515
 msgid "_Artist sort order:"
 msgstr ""
 
-#: ../data/ui/song-info-multiple.ui.h:14 ../data/ui/song-info.ui.h:18
+#: data/ui/song-info-multiple.ui:356 data/ui/song-info.ui:529
 msgid "Album a_rtist sort order:"
 msgstr ""
 
-#: ../data/ui/song-info-multiple.ui.h:15 ../data/ui/song-info.ui.h:19
+#: data/ui/song-info-multiple.ui:381 data/ui/song-info.ui:553
 msgid "_Composer sort order:"
 msgstr ""
 
-#: ../data/ui/song-info-multiple.ui.h:16 ../data/ui/song-info.ui.h:20
+#: data/ui/song-info-multiple.ui:411 data/ui/song-info.ui:582
 msgid "Sorting"
 msgstr ""
 
-#: ../data/ui/song-info.ui.h:2 ../plugins/iradio/station-properties.ui.h:1
+#: data/ui/song-info.ui:89 plugins/iradio/station-properties.ui:28
 msgid "_Title:"
 msgstr "А_тауы:"
 
-#: ../data/ui/song-info.ui.h:3
+#: data/ui/song-info.ui:103
 msgid "Track _number:"
 msgstr ""
 
-#: ../data/ui/song-info.ui.h:8
+#: data/ui/song-info.ui:256
 msgid "_BPM:"
-msgstr ""
+msgstr "_BPM:"
 
-#: ../data/ui/song-info.ui.h:9
+#: data/ui/song-info.ui:270
 msgid "Comm_ent:"
 msgstr "Түсі_ндірме:"
 
-#: ../data/ui/song-info.ui.h:14 ../plugins/iradio/station-properties.ui.h:3
+#: data/ui/song-info.ui:430 plugins/iradio/station-properties.ui:106
 msgid "Error message"
 msgstr "Қате хабарламасы"
 
-#: ../data/ui/song-info.ui.h:21
+#: data/ui/song-info.ui:600
 msgid "File name:"
 msgstr "Файл аты:"
 
-#: ../data/ui/song-info.ui.h:23
+#: data/ui/song-info.ui:650
 msgid "Location:"
 msgstr "Орналасуы:"
 
-#: ../data/ui/song-info.ui.h:28
+#: data/ui/song-info.ui:828
 msgid "File size:"
 msgstr "Файл өлшемі:"
 
-#: ../data/ui/song-info.ui.h:29
+#: data/ui/song-info.ui:853
 msgid "Date added:"
 msgstr ""
 
-#: ../data/ui/sync-state.ui.h:1
+#: data/ui/sync-state.ui:16
 msgid "Current contents"
 msgstr ""
 
-#: ../data/ui/sync-state.ui.h:2
+#: data/ui/sync-state.ui:45
 msgid "Contents after sync"
 msgstr ""
 
-#: ../data/ui/sync-state.ui.h:3
+#: data/ui/sync-state.ui:79
 msgid "Added files:"
 msgstr ""
 
-#: ../data/ui/sync-state.ui.h:4
+#: data/ui/sync-state.ui:91
 msgid "Removed files:"
 msgstr ""
 
-#: ../lib/rb-cut-and-paste-code.c:94
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
-#: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3661 ../widgets/rb-entry-view.c:940
-#: ../widgets/rb-entry-view.c:1564 ../widgets/rb-entry-view.c:1577
-#: ../widgets/rb-song-info.c:1545
+#: lib/rb-cut-and-paste-code.c:94
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:235
+#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3850
+#: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1574
+#: widgets/rb-entry-view.c:1588 widgets/rb-song-info.c:1545
 msgid "Never"
 msgstr "Ешқашан"
 
 #. Translators: "friendly time" string for the current day, strftime format. like "Today 12:34 am"
-#: ../lib/rb-cut-and-paste-code.c:105
+#: lib/rb-cut-and-paste-code.c:105
 msgid "Today %I:%M %p"
 msgstr ""
 
 #. Translators: "friendly time" string for the previous day,
 #. * strftime format. e.g. "Yesterday 12:34 am"
 #.
-#: ../lib/rb-cut-and-paste-code.c:116
+#: lib/rb-cut-and-paste-code.c:116
 msgid "Yesterday %I:%M %p"
 msgstr ""
 
 #. Translators: "friendly time" string for a day in the current week,
 #. * strftime format. e.g. "Wed 12:34 am"
 #.
-#: ../lib/rb-cut-and-paste-code.c:130
+#: lib/rb-cut-and-paste-code.c:130
 msgid "%a %I:%M %p"
 msgstr ""
 
 #. Translators: "friendly time" string for a day in the current year,
 #. * strftime format. e.g. "Feb 12 12:34 am"
 #.
-#: ../lib/rb-cut-and-paste-code.c:143
+#: lib/rb-cut-and-paste-code.c:143
 msgid "%b %d %I:%M %p"
 msgstr ""
 
 #. Translators: "friendly time" string for a day in a different year,
 #. * strftime format. e.g. "Feb 12 1997"
 #.
-#: ../lib/rb-cut-and-paste-code.c:148
+#: lib/rb-cut-and-paste-code.c:148
 msgid "%b %d %Y"
-msgstr ""
+msgstr "%b %d %Y"
 
 #. impossible time or broken locale settings
 #. we really do need to fix this so untagged entries actually have NULL rather than
@@ -920,420 +949,476 @@ msgstr ""
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:585
-#: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
-#: ../plugins/artsearch/songinfo.py:93
-#: ../plugins/audiocd/rb-audiocd-source.c:526
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:587
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:591
-#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
-#: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
-#: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
-#: ../plugins/generic-player/rb-generic-player-source.c:1157
-#: ../plugins/ipod/rb-ipod-source.c:657
-#: ../plugins/iradio/rb-iradio-source.c:539
-#: ../plugins/iradio/rb-iradio-source.c:1060
-#: ../plugins/iradio/rb-station-properties-dialog.c:489
-#: ../plugins/lyrics/lyrics.py:69 ../plugins/lyrics/lyrics.py:71
-#: ../plugins/mtpdevice/rb-mtp-source.c:649
-#: ../plugins/mtpdevice/rb-mtp-source.c:1132
-#: ../plugins/mtpdevice/rb-mtp-source.c:1518
-#: ../plugins/notification/rb-notification-plugin.c:510
-#: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:585 ../podcast/rb-podcast-manager.c:1892
-#: ../podcast/rb-podcast-manager.c:1991
-#: ../podcast/rb-podcast-properties-dialog.c:622
-#: ../podcast/rb-podcast-properties-dialog.c:717
-#: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:202
-#: ../remote/dbus/rb-client.c:715 ../rhythmdb/rhythmdb.c:2049
-#: ../rhythmdb/rhythmdb.c:2055 ../rhythmdb/rhythmdb.c:2070
-#: ../rhythmdb/rhythmdb.c:2104 ../rhythmdb/rhythmdb.c:5425
-#: ../rhythmdb/rhythmdb.c:5431 ../rhythmdb/rhythmdb.c:5436
-#: ../rhythmdb/rhythmdb.c:5447 ../rhythmdb/rhythmdb.c:5451
-#: ../rhythmdb/rhythmdb-tree.c:1360 ../rhythmdb/rhythmdb-tree.c:1364
-#: ../rhythmdb/rhythmdb-tree.c:1368 ../rhythmdb/rhythmdb-tree.c:1372
-#: ../shell/rb-shell-player.c:870 ../shell/rb-shell-player.c:2717
-#: ../shell/rb-shell-player.c:2719 ../widgets/rb-entry-view.c:992
-#: ../widgets/rb-entry-view.c:1014 ../widgets/rb-entry-view.c:1505
-#: ../widgets/rb-entry-view.c:1517 ../widgets/rb-entry-view.c:1529
-#: ../widgets/rb-header.c:1282 ../widgets/rb-header.c:1308
-#: ../widgets/rb-song-info.c:949 ../widgets/rb-song-info.c:961
-#: ../widgets/rb-song-info.c:1233 ../widgets/rb-song-info.c:1572
+#: lib/rb-cut-and-paste-code.c:158 lib/rb-util.c:581
+#: plugins/android/rb-android-source.c:727 plugins/artsearch/lastfm.py:163
+#: plugins/artsearch/lastfm.py:164 plugins/artsearch/songinfo.py:93
+#: plugins/audiocd/rb-audiocd-source.c:526
+#: plugins/audioscrobbler/rb-audioscrobbler.c:596
+#: plugins/audioscrobbler/rb-audioscrobbler.c:600
+#: plugins/audioscrobbler/rb-audioscrobbler-entry.c:92
+#: plugins/audioscrobbler/rb-audioscrobbler-entry.c:99
+#: plugins/daap/rb-rhythmdb-dmap-db-adapter.c:130
+#: plugins/generic-player/rb-generic-player-source.c:1031
+#: plugins/ipod/rb-ipod-source.c:651 plugins/iradio/rb-iradio-source.c:525
+#: plugins/iradio/rb-iradio-source.c:1044
+#: plugins/iradio/rb-station-properties-dialog.c:485
+#: plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
+#: plugins/mtpdevice/rb-mtp-source.c:650 plugins/mtpdevice/rb-mtp-source.c:1140
+#: plugins/mtpdevice/rb-mtp-source.c:1471
+#: plugins/notification/rb-notification-plugin.c:508
+#: podcast/rb-feed-podcast-properties-dialog.c:335
+#: podcast/rb-podcast-add-dialog.c:646 podcast/rb-podcast-manager.c:1307
+#: podcast/rb-podcast-manager.c:1421 podcast/rb-podcast-properties-dialog.c:636
+#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:796
+#: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
+#: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
+#: rhythmdb/rhythmdb.c:2150 rhythmdb/rhythmdb.c:5616 rhythmdb/rhythmdb.c:5622
+#: rhythmdb/rhythmdb.c:5627 rhythmdb/rhythmdb.c:5638 rhythmdb/rhythmdb.c:5642
+#: rhythmdb/rhythmdb-entry-type.c:301 rhythmdb/rhythmdb-metadata-cache.c:308
+#: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
+#: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
+#: shell/rb-shell-player.c:869 shell/rb-shell-player.c:2714
+#: shell/rb-shell-player.c:2716 widgets/rb-entry-view.c:996
+#: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
+#: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
+#: widgets/rb-header.c:1279 widgets/rb-header.c:1305 widgets/rb-song-info.c:950
+#: widgets/rb-song-info.c:962 widgets/rb-song-info.c:1234
+#: widgets/rb-song-info.c:1572
 msgid "Unknown"
 msgstr "Белгісіз"
 
-#: ../lib/rb-file-helpers.c:447
+#: lib/rb-file-helpers.c:457
 #, c-format
 msgid "Too many symlinks"
 msgstr ""
 
-#: ../lib/rb-file-helpers.c:1281
+#: lib/rb-file-helpers.c:1292
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr ""
 
-#: ../lib/rb-util.c:566 ../plugins/context/tmpl/album-tmpl.html:21
-#: ../remote/dbus/rb-client.c:204
+#: lib/rb-util.c:562 plugins/context/tmpl/album-tmpl.html:21
+#: remote/dbus/rb-client.c:220
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:568 ../plugins/context/tmpl/album-tmpl.html:19
-#: ../remote/dbus/rb-client.c:206
+#: lib/rb-util.c:564 plugins/context/tmpl/album-tmpl.html:19
+#: remote/dbus/rb-client.c:222
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:632
+#: lib/rb-util.c:628
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr ""
 
-#: ../lib/rb-util.c:636
+#: lib/rb-util.c:632
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr ""
 
-#: ../lib/rb-util.c:641
+#: lib/rb-util.c:637
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d, барлығы %d:%02d"
 
-#: ../lib/rb-util.c:645
+#: lib/rb-util.c:641
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d, барлығы %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:499
+#: metadata/rb-metadata-gst.c:509
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:539
+#: metadata/rb-metadata-gst.c:549
 #, c-format
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:671
+#: metadata/rb-metadata-gst.c:681
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:681
+#: metadata/rb-metadata-gst.c:691
 #, c-format
 msgid ""
 "Failed to create the 'decodebin' element; check your GStreamer installation"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:690
+#: metadata/rb-metadata-gst.c:700
 #, c-format
 msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
 "installation"
 msgstr ""
 
-#: ../metadata/rb-metadata-gst.c:773
+#: metadata/rb-metadata-gst.c:783
 #, c-format
 msgid "File corrupted during write"
 msgstr ""
 
-#: ../plugins/artsearch/artsearch.plugin.in.h:1
+#: plugins/android/android.plugin.desktop.in:6
+msgid "Android devices"
+msgstr ""
+
+#: plugins/android/android.plugin.desktop.in:7
+msgid "Support for Android 4.0+ devices (via MTP)"
+msgstr ""
+
+#: plugins/android/android-info.ui:40
+#: plugins/generic-player/generic-player-info.ui:40
+#: plugins/ipod/ipod-info.ui:250 plugins/mtpdevice/mtp-info.ui:40
+msgid "Model:"
+msgstr "Модель:"
+
+#: plugins/android/android-info.ui:68
+#: plugins/generic-player/generic-player-info.ui:68
+#: plugins/ipod/ipod-info.ui:224 plugins/mtpdevice/mtp-info.ui:67
+msgid "Serial number:"
+msgstr "Сериялық нөмірі:"
+
+#: plugins/android/android-info.ui:82
+#: plugins/generic-player/generic-player-info.ui:82
+#: plugins/mtpdevice/mtp-info.ui:109
+msgid "Manufacturer:"
+msgstr "Шығарушы:"
+
+#: plugins/android/android-info.ui:107
+#: plugins/generic-player/generic-player-info.ui:107
+#: plugins/ipod/ipod-info.ui:277 plugins/mtpdevice/mtp-info.ui:134
+msgid "Audio formats:"
+msgstr ""
+
+#: plugins/android/android-info.ui:136
+#: plugins/generic-player/generic-player-info.ui:136
+#: plugins/ipod/ipod-info.ui:304 plugins/mtpdevice/mtp-info.ui:162
+msgid "System"
+msgstr "Жүйелік"
+
+#: plugins/android/android-info.ui:168
+#: plugins/generic-player/generic-player-info.ui:168
+#: plugins/mtpdevice/mtp-info.ui:194
+msgid "Device _name:"
+msgstr "Құрылғы а_ты:"
+
+#: plugins/android/android-info.ui:182
+#: plugins/generic-player/generic-player-info.ui:182
+#: plugins/ipod/ipod-info.ui:41 plugins/mtpdevice/mtp-info.ui:208
+msgid "Tracks:"
+msgstr "Тректер:"
+
+#: plugins/android/android-info.ui:195
+#: plugins/generic-player/generic-player-info.ui:195
+#: plugins/ipod/ipod-info.ui:63 plugins/mtpdevice/mtp-info.ui:232
+msgid "Playlists:"
+msgstr "Ойнату тізімдері:"
+
+#: plugins/android/rb-android-source.c:201
+msgid ""
+"No storage areas found on this device. You may need to unlock it and enable "
+"MTP."
+msgstr ""
+
+#: plugins/android/rb-android-source.c:403
+#: plugins/generic-player/rb-generic-player-source.c:563
+#, c-format
+msgid "Scanning %s"
+msgstr ""
+
+#: plugins/android/rb-android-source.c:426
+msgid "Error mounting Android device"
+msgstr ""
+
+#: plugins/artsearch/artsearch.plugin.desktop.in:7
 msgid "Cover art search"
 msgstr ""
 
-#: ../plugins/artsearch/artsearch.plugin.in.h:2
+#: plugins/artsearch/artsearch.plugin.desktop.in:8
 msgid "Fetch album covers from the Internet"
 msgstr ""
 
-#: ../plugins/artsearch/songinfo.py:56
+#: plugins/artsearch/songinfo.py:56
 msgid "_Fetch"
 msgstr ""
 
-#: ../plugins/artsearch/songinfo.py:60
+#: plugins/artsearch/songinfo.py:60
 msgid "_Browse"
 msgstr "Ш_олу"
 
-#: ../plugins/artsearch/songinfo.py:134
+#: plugins/artsearch/songinfo.py:134
 msgid "Select new artwork"
 msgstr ""
 
-#: ../plugins/artsearch/songinfo.py:135 ../podcast/rb-podcast-source.c:534
-#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:188
-#: ../widgets/rb-alert-dialog.c:380 ../widgets/rb-alert-dialog.c:397
-#: ../widgets/rb-dialog.c:133 ../widgets/rb-dialog.c:141
-#: ../widgets/rb-query-creator.c:191 ../widgets/rb-uri-dialog.c:158
-msgid "_Cancel"
-msgstr "Ба_с тарту"
-
-#: ../plugins/artsearch/songinfo.py:136
+#: plugins/artsearch/songinfo.py:136
 msgid "_Select"
 msgstr "_Таңдау"
 
-#: ../plugins/audiocd/album-info.ui.h:1
+#: plugins/audiocd/album-info.ui:16
 msgid "A_lbum:"
 msgstr ""
 
-#: ../plugins/audiocd/album-info.ui.h:3
+#: plugins/audiocd/album-info.ui:44
 msgid "Artist s_ort order:"
 msgstr ""
 
-#: ../plugins/audiocd/album-info.ui.h:6
+#: plugins/audiocd/album-info.ui:161
 msgid "_Disc:"
 msgstr "_Диск:"
 
-#: ../plugins/audiocd/audiocd.plugin.in.h:1
+#: plugins/audiocd/audiocd.plugin.desktop.in:6
 msgid "Audio CD Player"
 msgstr ""
 
-#: ../plugins/audiocd/audiocd.plugin.in.h:2
+#: plugins/audiocd/audiocd.plugin.desktop.in:7
 msgid "Support for playing of audio CDs as music source"
 msgstr ""
 
-#: ../plugins/audiocd/audiocd-toolbar.ui.h:2
+#: plugins/audiocd/audiocd-toolbar.ui:11
 msgid "Extract"
-msgstr ""
+msgstr "Тарқату"
 
-#: ../plugins/audiocd/audiocd-toolbar.ui.h:3
-#: ../plugins/generic-player/generic-player-toolbar.ui.h:5
-#: ../plugins/ipod/ipod-toolbar.ui.h:5 ../plugins/mtpdevice/mtp-toolbar.ui.h:5
+#: plugins/audiocd/audiocd-toolbar.ui:15
+#: plugins/generic-player/generic-player-toolbar.ui:24
+#: plugins/ipod/ipod-toolbar.ui:24 plugins/mtpdevice/mtp-toolbar.ui:24
 msgid "Eject"
 msgstr "Шығару"
 
-#: ../plugins/audiocd/audiocd-toolbar.ui.h:4
+#: plugins/audiocd/audiocd-toolbar.ui:19
 msgid "Reload"
 msgstr "Қайта жүктеу"
 
-#: ../plugins/audiocd/rb-audiocd-info.c:57
+#: plugins/audiocd/rb-audiocd-info.c:57
 msgid "Could not find a GStreamer CD source plugin"
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:386
+#: plugins/audiocd/rb-audiocd-source.c:386
 msgid "Select tracks to be extracted"
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:532
+#: plugins/audiocd/rb-audiocd-source.c:532
 msgid "<Invalid unicode>"
 msgstr "<қате Unicode>"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:595
+#: plugins/audiocd/rb-audiocd-source.c:595
 msgid "S_ubmit Album"
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:596
-#: ../plugins/audiocd/rb-audiocd-source.c:634
-#: ../plugins/audiocd/rb-audiocd-source.c:672
+#: plugins/audiocd/rb-audiocd-source.c:596
+#: plugins/audiocd/rb-audiocd-source.c:634
+#: plugins/audiocd/rb-audiocd-source.c:672
 msgid "H_ide"
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:599
+#: plugins/audiocd/rb-audiocd-source.c:599
 msgid "Could not find this album on MusicBrainz."
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:600
+#: plugins/audiocd/rb-audiocd-source.c:600
 msgid "You can improve the MusicBrainz database by adding this album."
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:633
-#: ../plugins/audiocd/rb-audiocd-source.c:671
+#: plugins/audiocd/rb-audiocd-source.c:633
+#: plugins/audiocd/rb-audiocd-source.c:671
 msgid "_Retry"
 msgstr "Қа_йталау"
 
-#: ../plugins/audiocd/rb-audiocd-source.c:637
+#: plugins/audiocd/rb-audiocd-source.c:637
 msgid "Could not search MusicBrainz for album details."
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:675
+#: plugins/audiocd/rb-audiocd-source.c:675
 msgid "Could not read the CD device."
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:879
+#: plugins/audiocd/rb-audiocd-source.c:879
 msgid "This disc matches multiple albums. Select the correct album."
 msgstr ""
 
-#: ../plugins/audiocd/rb-audiocd-source.c:1087
+#: plugins/audiocd/rb-audiocd-source.c:1087
 #, c-format
 msgid "Track %u"
 msgstr ""
 
-#: ../plugins/audiocd/rb-musicbrainz-lookup.c:406
-msgid "Not found"
-msgstr "Табылмады"
-
-#: ../plugins/audiocd/rb-musicbrainz-lookup.c:411
+#: plugins/audiocd/rb-musicbrainz-lookup.c:416
 msgid "Unable to connect to Musicbrainz server"
 msgstr ""
 
-#: ../plugins/audiocd/rb-musicbrainz-lookup.c:416
+#: plugins/audiocd/rb-musicbrainz-lookup.c:426
+msgid "Not found"
+msgstr "Табылмады"
+
+#: plugins/audiocd/rb-musicbrainz-lookup.c:431
 msgid "Musicbrainz server error"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:1
-#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:2
+#: plugins/audioscrobbler/audioscrobbler.plugin.desktop.in:5
+#: plugins/audioscrobbler/audioscrobbler-preferences.ui:57
 msgid "Last.fm"
 msgstr "Last.fm"
 
-#: ../plugins/audioscrobbler/audioscrobbler.plugin.in.h:2
+#: plugins/audioscrobbler/audioscrobbler.plugin.desktop.in:6
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:1
+#: plugins/audioscrobbler/audioscrobbler-preferences.ui:24
 msgid "Which Audioscrobbler services do you wish to use?"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-preferences.ui.h:3
+#: plugins/audioscrobbler/audioscrobbler-preferences.ui:73
 msgid "Libre.fm"
 msgstr "Libre.fm"
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:1
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:78
 msgid "Logout"
 msgstr "Шығу"
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:2
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:126
 msgid "View your profile"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:3
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:149
 msgid "Submit listening data"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:4
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:181
 msgid "Status:"
 msgstr "Күйі:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:5
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:193
 msgid "Queued tracks:"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:6
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:207
 msgid "Tracks submitted:"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:7
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:221
 msgid "Last submission time:"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:871
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:251
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:858
 msgid "Disabled"
 msgstr "Сөндірулі"
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:10
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:299
 msgid "Submission statistics"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:11
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:352
 msgid "Create a Radio Station"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:12
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:373
 msgid "Type:"
 msgstr "Түрі:"
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:13
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:411
 msgid "Create Station"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:14
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:461
 msgid "Recently Listened Tracks"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:15
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:505
 msgid "Top Artists"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:16
-msgid "Recommendations"
-msgstr ""
-
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:17
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:549
 msgid "Top Tracks"
 msgstr ""
 
-#: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:18
+#: plugins/audioscrobbler/audioscrobbler-profile.ui:593
 msgid "Loved Tracks"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:496
+#: plugins/audioscrobbler/rb-audioscrobbler.c:505
 msgid "OK"
 msgstr "ОК"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:499
+#: plugins/audioscrobbler/rb-audioscrobbler.c:508
 msgid "Logging in"
 msgstr "Кіру"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:502
+#: plugins/audioscrobbler/rb-audioscrobbler.c:511
 msgid "Request failed"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:505
+#: plugins/audioscrobbler/rb-audioscrobbler.c:514
 msgid "Authentication error"
 msgstr "Аутентификация қатесі"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:508
+#: plugins/audioscrobbler/rb-audioscrobbler.c:517
 msgid "Clock is not set correctly"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:511
+#: plugins/audioscrobbler/rb-audioscrobbler.c:520
 msgid "This version of Rhythmbox has been banned."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
+#: plugins/audioscrobbler/rb-audioscrobbler.c:523
 msgid "Track submission failed too many times"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:682
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:669
 msgid "Love"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:686
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:673
 msgid "Ban"
-msgstr ""
+msgstr "Банға салу"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:690
-#: ../plugins/magnatune/magnatune-toolbar.ui.h:3
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:677
+#: plugins/magnatune/magnatune-toolbar.ui:16
 msgid "Download"
 msgstr "Жүктеп алу"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:788
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:775
 msgid "You are not currently logged in."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:789
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:807
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:814
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:776
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:794
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:801
 msgid "Log in"
 msgstr "Кіру"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:795
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:782
 msgid "Waiting for authentication..."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:796
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:783
 msgid "Cancel"
 msgstr "Бас тарту"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:806
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:793
 msgid "Authentication error. Please try logging in again."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:813
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:800
 msgid "Connection error. Please try logging in again."
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1223
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1210
 msgid "My Library"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1231
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1218
 msgid "My Recommendations"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1239
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1226
 msgid "My Neighbourhood"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1406
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1393
 #, c-format
 msgid "%s plays"
 msgstr ""
@@ -1341,58 +1426,58 @@ msgstr ""
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This is the label for menu item which when activated will take the user to the
 #. * artist/track's page on the service's website.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1663
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1636
 #, c-format
 msgid "_View on %s"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1680
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1653
 msgid "Listen to _Similar Artists Radio"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1694
+#: plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1667
 msgid "Listen to _Top Fans Radio"
 msgstr ""
 
 #. Translators: describes a radio stream playing tracks similar to those by an artist.
 #. * Followed by a text entry box for the artist name.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:55
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:55
 msgid "Similar to Artist:"
 msgstr ""
 
 #. Translators: describes a radio stream playing tracks listened to by the top fans of
 #. * a particular artist.  Followed by a text entry box for the artist name.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:59
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:59
 msgid "Top Fans of Artist:"
 msgstr ""
 
 #. Translators: describes a radio stream playing tracks from the library of a particular
 #. * user.  Followed by a text entry box for the user name.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:63
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:63
 msgid "Library of User:"
 msgstr ""
 
 #. Translators: describes a radio stream playing tracks played by users similar to a
 #. * particular user.  Followed by a text entry box for the user name.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:67
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:67
 msgid "Neighbourhood of User:"
 msgstr ""
 
 #. Translators: describes a radio stream playing tracks that a particular user has marked
 #. * as loved.  Followed by a text entry box for the user name.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:71
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:71
 msgid "Tracks Loved by User:"
 msgstr ""
 
 #. Translators: describes a radio stream playing tracks recommended to a particular user.
 #. * Followed by a text entry box for the user name.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:75
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:75
 msgid "Recommendations for User:"
 msgstr ""
 
@@ -1400,88 +1485,91 @@ msgstr ""
 #. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for a description of it.
 #. * Followed by a text entry box for the user name.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:80
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:80
 msgid "Mix Radio for User:"
 msgstr ""
 
 #. Translators: describes a radio stream playing tracks tagged with a particular tag.
 #. * Followed by a text entry box for the tag.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:84
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:84
 msgid "Tracks Tagged with:"
 msgstr ""
 
 #. Translators: describes a radio stream playing tracks often listened to by members of
 #. * a particular group. Followed by a text entry box for the group name.
 #.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:88
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:88
 msgid "Listened by Group:"
 msgstr ""
 
+#. Translators: I have chosen these names for the radio stations based upon
+#. * what last.fm's website uses or what I thought to be sensible.
+#.
 #. Translators: station is built from artists similar to the artist %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:123
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:123
 #, c-format
 msgid "%s Radio"
 msgstr "%s радиосы"
 
 #. Translators: station is built from the artist %s's top fans
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:125
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:125
 #, c-format
 msgid "%s Fan Radio"
 msgstr ""
 
 #. Translators: station is built from the library of the user %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:127
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:127
 #, c-format
 msgid "%s's Library"
 msgstr "%s жинағы"
 
 #. Translators: station is built from the "neighbourhood" of the user %s.
 #. * Last.fm uses "neighbourhood" to mean other users with similar music tastes
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:130
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:130
 #, c-format
 msgid "%s's Neighbourhood"
 msgstr ""
 
 #. Translators: station is built from the tracks which have been "loved" by the user %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:132
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:132
 #, c-format
 msgid "%s's Loved Tracks"
 msgstr ""
 
 #. Translators: station is built from the tracks which are recommended to the user %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:134
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:134
 #, c-format
 msgid "%s's Recommended Radio"
 msgstr ""
 
 #. Translators: station is the "Mix Radio" for the user %s.
 #. * See http://blog.last.fm/2010/10/29/mix-radio-a-new-radio-station for description.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:137
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:137
 #, c-format
 msgid "%s's Mix Radio"
 msgstr ""
 
 #. Translators: station is built from the tracks which have been "tagged" with %s.
 #. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
-#. * but nationalities, record labels, decades and very random words are also commmon
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:141
+#. * but nationalities, record labels, decades and very random words are also common
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:141
 #, c-format
 msgid "%s Tag Radio"
 msgstr ""
 
 #. Translators: station is built from the library of the group %s
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:143
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:143
 #, c-format
 msgid "%s Group Radio"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:695
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:723
 msgid "Error tuning station: no response"
 msgstr ""
 
 #. Invalid station url
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:727
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:755
 msgid "Invalid station URL"
 msgstr ""
 
@@ -1489,435 +1577,380 @@ msgstr ""
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This message indicates that to listen to this radio station the user needs to be
 #. * a paying subscriber to the service.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:733
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:761
 #, c-format
 msgid "This station is only available to %s subscribers"
 msgstr ""
 
 #. Not enough content
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:737
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:765
 msgid "Not enough content to play station"
 msgstr ""
 
 #. Deprecated station
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This message indicates that the service has deprecated this type of station.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:742
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:770
 #, c-format
 msgid "%s no longer supports this type of station"
 msgstr ""
 
 #. Other error
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:746
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:774
 #, c-format
 msgid "Error tuning station: %i - %s"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:756
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:784
 msgid "Error tuning station: unexpected response"
 msgstr ""
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:761
+#: plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:789
 msgid "Error tuning station: invalid response"
 msgstr ""
 
-#. We could be calling either radio.tune or radio.getPlaylist methods.
-#. * "Tuning station" seems like a user friendly message to display for both cases.
-#.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1024
-msgid "Tuning station"
-msgstr ""
-
-#: ../plugins/brasero-disc-recorder/cd-recorder.plugin.in.h:1
+#: plugins/brasero-disc-recorder/cd-recorder.plugin.desktop.in:5
 msgid "Audio CD Recorder"
 msgstr ""
 
-#: ../plugins/brasero-disc-recorder/cd-recorder.plugin.in.h:2
+#: plugins/brasero-disc-recorder/cd-recorder.plugin.desktop.in:6
 msgid "Record audio CDs from playlists and duplicate audio CDs"
 msgstr ""
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:165
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:159
 msgid "Rhythmbox could not duplicate the disc"
 msgstr ""
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:170
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:164
 msgid "Rhythmbox could not record the audio disc"
 msgstr ""
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:201
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:195
 #, c-format
 msgid "Unable to build an audio track list"
 msgstr ""
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:212
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:404
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:206
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:398
 #, c-format
 msgid "Unable to write audio project file %s: %s"
 msgstr ""
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:230
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:411
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:224
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:405
 #, c-format
 msgid "Unable to write audio project"
 msgstr ""
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:451
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:445
 msgid "Unable to create audio CD project"
 msgstr ""
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:654
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:648
 msgid "Create Audio CD..."
 msgstr ""
 
-#: ../plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:660
+#: plugins/brasero-disc-recorder/rb-disc-recorder-plugin.c:654
 msgid "Duplicate Audio CD..."
 msgstr ""
 
-#: ../plugins/context/AlbumTab.py:57
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2399
+#: plugins/context/AlbumTab.py:57
+#: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2395
 msgid "Albums"
 msgstr "Альбомдар"
 
 #. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
-#: ../plugins/context/AlbumTab.py:120
+#: plugins/context/AlbumTab.py:120
 #, python-format
 msgid "Loading top albums for %s"
 msgstr ""
 
-#: ../plugins/context/ArtistTab.py:59
-#: ../plugins/magnatune/magnatune-toolbar.ui.h:4
-#: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1451
-#: ../widgets/rb-library-browser.c:135
+#: plugins/context/ArtistTab.py:59 plugins/magnatune/magnatune-toolbar.ui:20
+#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1457
+#: widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Әртіс"
 
-#: ../plugins/context/ArtistTab.py:119
+#: plugins/context/ArtistTab.py:119
 #, python-format
 msgid "Loading biography for %s"
 msgstr ""
 
-#: ../plugins/context/context.plugin.in.h:1
-#: ../plugins/context/ContextView.py:90
+#: plugins/context/context.plugin.desktop.in:7
+#: plugins/context/ContextView.py:90
 msgid "Context Pane"
 msgstr ""
 
-#: ../plugins/context/context.plugin.in.h:2
+#: plugins/context/context.plugin.desktop.in:8
 msgid "Show information related to the currently playing artist and song."
 msgstr ""
 
-#: ../plugins/context/LastFM.py:42
+#: plugins/context/LastFM.py:42
 msgid ""
 "This information is only available to Last.fm users. Ensure the Last.fm "
 "plugin is enabled, select Last.fm in the side pane, and log in."
 msgstr ""
 
-#: ../plugins/context/LinksTab.py:55
+#: plugins/context/LinksTab.py:55
 msgid "Links"
-msgstr ""
+msgstr "Сілтемелер"
 
-#: ../plugins/context/LinksTab.py:183
+#: plugins/context/LinksTab.py:183
 msgid "No artist specified."
 msgstr ""
 
-#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:241
-#: ../plugins/lyrics/lyrics.py:326
+#: plugins/context/LyricsTab.py:53 plugins/lyrics/lyrics.py:306
+#: plugins/lyrics/lyrics.py:391
 msgid "Lyrics"
 msgstr ""
 
-#: ../plugins/context/LyricsTab.py:104
+#: plugins/context/LyricsTab.py:104
 #, python-format
 msgid "Loading lyrics for %s by %s"
 msgstr ""
 
-#: ../plugins/context/LyricsTab.py:120
+#: plugins/context/LyricsTab.py:120
 msgid "Lyrics not found"
 msgstr ""
 
-#: ../plugins/context/tmpl/album-tmpl.html:46
+#: plugins/context/tmpl/album-tmpl.html:46
 msgid "Hide all tracks"
 msgstr ""
 
-#: ../plugins/context/tmpl/album-tmpl.html:47
-#: ../plugins/context/tmpl/album-tmpl.html:80
+#: plugins/context/tmpl/album-tmpl.html:47
+#: plugins/context/tmpl/album-tmpl.html:80
 msgid "Show all tracks"
 msgstr ""
 
-#: ../plugins/context/tmpl/album-tmpl.html:57
+#: plugins/context/tmpl/album-tmpl.html:57
 #, c-format
 msgid "Top albums by %s"
 msgstr ""
 
-#: ../plugins/context/tmpl/album-tmpl.html:74
+#: plugins/context/tmpl/album-tmpl.html:74
 #, c-format
 msgid "%s (%d track)"
 msgid_plural "%s (%d tracks)"
 msgstr[0] "%s (%d трек)"
 
-#: ../plugins/context/tmpl/album-tmpl.html:93
+#: plugins/context/tmpl/album-tmpl.html:93
 msgid "Track list not available"
 msgstr ""
 
-#: ../plugins/context/tmpl/album-tmpl.html:99
+#: plugins/context/tmpl/album-tmpl.html:99
 msgid "Unable to retrieve album information:"
 msgstr ""
 
-#: ../plugins/context/tmpl/artist-tmpl.html:9
+#: plugins/context/tmpl/artist-tmpl.html:9
 msgid "No information available"
 msgstr ""
 
-#: ../plugins/context/tmpl/artist-tmpl.html:29
+#: plugins/context/tmpl/artist-tmpl.html:29
 msgid "Unable to retrieve artist information:"
 msgstr ""
 
-#: ../plugins/daap/daap.plugin.in.h:1
+#: plugins/daap/daap.plugin.desktop.in:5
 msgid "DAAP Music Sharing"
 msgstr ""
 
-#: ../plugins/daap/daap.plugin.in.h:2
+#: plugins/daap/daap.plugin.desktop.in:6
 msgid "Share music and play shared music on your local network"
 msgstr ""
 
-#: ../plugins/daap/daap-prefs.ui.h:1
+#: plugins/daap/daap-prefs.ui:24
 msgid "Sharing"
 msgstr "Бөлісу"
 
-#: ../plugins/daap/daap-prefs.ui.h:2
+#: plugins/daap/daap-prefs.ui:81
 msgid "_Look for touch Remotes"
 msgstr ""
 
-#: ../plugins/daap/daap-prefs.ui.h:3
+#: plugins/daap/daap-prefs.ui:98
 msgid "_Share my music"
 msgstr ""
 
-#: ../plugins/daap/daap-prefs.ui.h:4
+#: plugins/daap/daap-prefs.ui:128
 msgid "Library _name:"
 msgstr ""
 
-#: ../plugins/daap/daap-prefs.ui.h:5
+#: plugins/daap/daap-prefs.ui:139
 msgid "Forget known Remotes"
 msgstr ""
 
-#: ../plugins/daap/daap-prefs.ui.h:6
+#: plugins/daap/daap-prefs.ui:154
 msgid "Require _password:"
 msgstr "_Парольді талап ету:"
 
-#: ../plugins/daap/daap-prefs.ui.h:7
+#: plugins/daap/daap-prefs.ui:224
 msgid "Add Remote"
 msgstr ""
 
-#: ../plugins/daap/daap-prefs.ui.h:8
+#: plugins/daap/daap-prefs.ui:252
 msgid "Please enter the passcode displayed on your device."
 msgstr ""
 
-#: ../plugins/daap/daap-prefs.ui.h:9
+#: plugins/daap/daap-prefs.ui:344
 msgid "Could not pair with this Remote"
 msgstr ""
 
-#: ../plugins/daap/daap-prefs.ui.h:10
+#: plugins/daap/daap-prefs.ui:378
 msgid "You can now control Rhythmbox through your Remote"
 msgstr ""
 
-#: ../plugins/daap/daap-toolbar.ui.h:4
+#: plugins/daap/daap-toolbar.ui:20
 msgid "Disconnect"
 msgstr "Байланысты үзу"
 
-#: ../plugins/daap/rb-daap-plugin.c:196
+#: plugins/daap/rb-daap-plugin.c:194
 msgid "Connect to DAAP share..."
 msgstr ""
 
-#: ../plugins/daap/rb-daap-plugin.c:521
+#: plugins/daap/rb-daap-plugin.c:512
 msgid "New DAAP share"
 msgstr ""
 
-#: ../plugins/daap/rb-daap-plugin.c:521
+#: plugins/daap/rb-daap-plugin.c:512
 msgid "Host:port of DAAP share:"
 msgstr ""
 
-#: ../plugins/daap/rb-daap-sharing.c:61
+#: plugins/daap/rb-daap-sharing.c:61
 #, c-format
 msgid "%s's Music"
 msgstr "%s музыкасы"
 
-#: ../plugins/daap/rb-daap-source.c:476
+#: plugins/daap/rb-daap-source.c:476
 #, c-format
 msgid "The music share '%s' requires a password to connect"
 msgstr ""
 
-#: ../plugins/daap/rb-daap-source.c:542
+#: plugins/daap/rb-daap-source.c:542
 msgid "Retrieving songs from music share"
 msgstr ""
 
-#: ../plugins/daap/rb-daap-source.c:625
+#: plugins/daap/rb-daap-source.c:625
 msgid "Could not connect to shared music"
 msgstr ""
 
-#: ../plugins/daap/rb-daap-source.c:692
+#: plugins/daap/rb-daap-source.c:692
 msgid "Connecting to music share"
 msgstr ""
 
-#: ../plugins/daap/rb-dacp-pairing-page.c:397
+#: plugins/daap/rb-dacp-pairing-page.c:389
 msgid "Connecting..."
 msgstr "Байланысты орнату..."
 
-#: ../plugins/daap/rb-dacp-pairing-page.c:399
+#: plugins/daap/rb-dacp-pairing-page.c:391
 msgid "Could not pair with this Remote."
 msgstr ""
 
-#: ../plugins/daap/rb-dacp-pairing-page.c:617
+#: plugins/daap/rb-dacp-pairing-page.c:609
 msgid "Remotes"
-msgstr ""
+msgstr "Қайнар көздер"
 
-#: ../plugins/dbus-media-server/dbus-media-server.plugin.in.h:1
+#: plugins/dbus-media-server/dbus-media-server.plugin.desktop.in:5
 msgid "MediaServer2 D-Bus interface"
 msgstr ""
 
-#: ../plugins/dbus-media-server/dbus-media-server.plugin.in.h:2
+#: plugins/dbus-media-server/dbus-media-server.plugin.desktop.in:6
 msgid ""
 "Provides an implementation of the MediaServer2 D-Bus interface specification"
 msgstr ""
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1250
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1382
+#: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1246
+#: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:1378
 msgid "All Tracks"
 msgstr "Барлық тректер"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2398
+#: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2394
 msgid "Artists"
 msgstr "Әртістер"
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2400
+#: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2396
 msgid "Genres"
 msgstr ""
 
-#: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2409
-#: ../shell/rb-playlist-manager.c:1081 ../sources/rb-display-page-group.c:92
+#: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2405
+#: shell/rb-playlist-manager.c:1073 sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "Ойнату тізімдері"
 
-#: ../plugins/fmradio/fmradio.plugin.in.h:1
-#: ../plugins/fmradio/rb-fm-radio-source.c:243
+#: plugins/fmradio/fmradio.plugin.desktop.in:5
+#: plugins/fmradio/rb-fm-radio-source.c:243
 msgid "FM Radio"
 msgstr "FM радиосы"
 
-#: ../plugins/fmradio/fmradio.plugin.in.h:2
+#: plugins/fmradio/fmradio.plugin.desktop.in:6
 msgid "Support for FM radio broadcasting services"
 msgstr ""
 
-#: ../plugins/fmradio/fmradio-toolbar.ui.h:2
+#: plugins/fmradio/fmradio-toolbar.ui:11
 msgid "New"
 msgstr "Жаңа"
 
-#: ../plugins/fmradio/rb-fm-radio-source.c:403
+#: plugins/fmradio/rb-fm-radio-source.c:403
 msgid "New FM Radio Station"
-msgstr ""
+msgstr "Жаңа FM радиостанциясы"
 
-#: ../plugins/fmradio/rb-fm-radio-source.c:404
+#: plugins/fmradio/rb-fm-radio-source.c:404
 msgid "Frequency of radio station"
 msgstr ""
 
-#: ../plugins/generic-player/generic-player-info.ui.h:1
-#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:1
-msgid "Model:"
-msgstr "Модель:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:2
-#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:2
-msgid "Serial number:"
-msgstr "Сериялық нөмірі:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:3
-#: ../plugins/mtpdevice/mtp-info.ui.h:4
-msgid "Manufacturer:"
-msgstr "Шығарушы:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:4
-#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:5
-msgid "Audio formats:"
-msgstr ""
-
-#: ../plugins/generic-player/generic-player-info.ui.h:5
-#: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:6
-msgid "System"
-msgstr "Жүйелік"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:6
-#: ../plugins/mtpdevice/mtp-info.ui.h:7
-msgid "Device _name:"
-msgstr "Құрылғы а_ты:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:7
-#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:8
-msgid "Tracks:"
-msgstr "Тректер:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:8
-#: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:10
-msgid "Playlists:"
-msgstr "Ойнату тізімдері:"
-
-#: ../plugins/generic-player/generic-player.plugin.in.h:1
+#: plugins/generic-player/generic-player.plugin.desktop.in:6
 msgid "Portable Players"
 msgstr ""
 
-#: ../plugins/generic-player/generic-player.plugin.in.h:2
+#: plugins/generic-player/generic-player.plugin.desktop.in:7
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr ""
 
-#: ../plugins/generic-player/rb-generic-player-source.c:295
-#: ../plugins/ipod/rb-ipod-source.c:333
+#: plugins/generic-player/rb-generic-player-source.c:292
+#: plugins/ipod/rb-ipod-source.c:333
 #, c-format
 msgid "New Playlist on %s"
 msgstr ""
 
-#: ../plugins/generic-player/rb-generic-player-source.c:339
-#: ../sources/rb-library-source.c:407
+#: plugins/generic-player/rb-generic-player-source.c:336
+#: sources/rb-library-source.c:375
 msgid "Add to New Playlist"
 msgstr ""
 
-#: ../plugins/generic-player/rb-generic-player-source.c:640
-#, c-format
-msgid "Scanning %s"
-msgstr ""
-
-#: ../plugins/generic-player/rb-generic-player-source.c:1446
-#: ../plugins/ipod/rb-ipod-source.c:2070
-#: ../plugins/mtpdevice/rb-mtp-source.c:1612
+#: plugins/generic-player/rb-generic-player-source.c:1368
+#: plugins/ipod/rb-ipod-source.c:2045 plugins/mtpdevice/rb-mtp-source.c:1551
 msgid "Advanced"
 msgstr "Кеңейтілген"
 
-#: ../plugins/grilo/grilo.plugin.in.h:1
+#: plugins/grilo/grilo.plugin.desktop.in:5
 msgid "Grilo media browser"
 msgstr ""
 
-#: ../plugins/grilo/grilo.plugin.in.h:2
+#: plugins/grilo/grilo.plugin.desktop.in:6
 msgid "Browse various local and Internet media sources"
 msgstr ""
 
-#: ../plugins/grilo/rb-grilo-source.c:389
+#: plugins/grilo/rb-grilo-source.c:407
 msgid "Fetch more tracks"
 msgstr ""
 
-#: ../plugins/grilo/rb-grilo-source.c:891
+#: plugins/grilo/rb-grilo-source.c:938
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
 msgstr[0] ""
-msgstr[1] ""
 
-#: ../plugins/im-status/im-status.plugin.in.h:1
+#: plugins/im-status/im-status.plugin.desktop.in:7
 msgid "IM Status"
 msgstr ""
 
-#: ../plugins/im-status/im-status.plugin.in.h:2
+#: plugins/im-status/im-status.plugin.desktop.in:8
 msgid ""
-"Updates IM status according to the current song (works with Empathy, Gossip, "
-"and Pidgin)"
+"Updates IM status according to the current song (works with Empathy and "
+"Pidgin)"
 msgstr ""
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
 #. the current playing song.  They can be reordered if necessary.
-#: ../plugins/im-status/im-status.py:171
+#: plugins/im-status/im-status.py:171
 #, python-format
 msgid "♫ %(artist)s - %(title)s ♫"
 msgstr "♫ %(artist)s - %(title)s ♫"
@@ -1925,70 +1958,70 @@ msgstr "♫ %(artist)s - %(title)s ♫"
 #. Translators: do not translate %(artist)s or %(album)s, they are
 #. string substitution markers (like %s) for the artist and album name
 #. of the current playing song.  They can be reordered if necessary.
-#: ../plugins/im-status/im-status.py:176
+#: plugins/im-status/im-status.py:176
 #, python-format
 msgid "♫ %(artist)s - %(album)s ♫"
 msgstr "♫ %(artist)s - %(album)s ♫"
 
 #. Translators: do not translate %(album)s, it is a string substitution
 #. marker (like %s) for the album name of the current playing song.
-#: ../plugins/im-status/im-status.py:180
+#: plugins/im-status/im-status.py:180
 #, python-format
 msgid "♫ %(album)s ♫"
 msgstr "♫ %(album)s ♫"
 
 #. Translators: do not translate %(title)s, it is a string substitution
 #. marker (like %s) for the title of the current playing song.
-#: ../plugins/im-status/im-status.py:184
+#: plugins/im-status/im-status.py:184
 #, python-format
 msgid "♫ %(title)s ♫"
 msgstr "♫ %(title)s ♫"
 
-#: ../plugins/im-status/im-status.py:186
+#: plugins/im-status/im-status.py:186
 msgid "♫ Listening to music... ♫"
 msgstr "♫ Музыканы тыңдау... ♫"
 
-#: ../plugins/ipod/ipod-info.ui.h:1
+#: plugins/ipod/ipod-info.ui:28
 msgid "iPod _name:"
 msgstr "iPod _аты:"
 
-#: ../plugins/ipod/ipod-info.ui.h:3 ../plugins/mtpdevice/mtp-info.ui.h:9
+#: plugins/ipod/ipod-info.ui:52 plugins/mtpdevice/mtp-info.ui:220
 msgid "Podcasts:"
 msgstr "Подкасттар:"
 
-#: ../plugins/ipod/ipod-info.ui.h:5
+#: plugins/ipod/ipod-info.ui:148
 msgid "Device node:"
 msgstr ""
 
-#: ../plugins/ipod/ipod-info.ui.h:6
+#: plugins/ipod/ipod-info.ui:161
 msgid "Mount point:"
 msgstr "Тіркеу нүктесі:"
 
-#: ../plugins/ipod/ipod-info.ui.h:7
+#: plugins/ipod/ipod-info.ui:172
 msgid "Database version:"
 msgstr "Дерекқор нұсқасы:"
 
-#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:3
+#: plugins/ipod/ipod-info.ui:198 plugins/mtpdevice/mtp-info.ui:81
 msgid "Firmware version:"
 msgstr ""
 
-#: ../plugins/ipod/ipod-init.ui.h:1
+#: plugins/ipod/ipod-init.ui:7
 msgid "iPod detected"
 msgstr "iPod анықталды"
 
-#: ../plugins/ipod/ipod-init.ui.h:2
+#: plugins/ipod/ipod-init.ui:36
 msgid "_Initialize"
 msgstr ""
 
-#: ../plugins/ipod/ipod-init.ui.h:3
+#: plugins/ipod/ipod-init.ui:101
 msgid "_Name:"
 msgstr "_Аты:"
 
-#: ../plugins/ipod/ipod-init.ui.h:4
+#: plugins/ipod/ipod-init.ui:117
 msgid "_Model:"
 msgstr "_Модель:"
 
-#: ../plugins/ipod/ipod-init.ui.h:5
+#: plugins/ipod/ipod-init.ui:134
 msgid ""
 "Rhythmbox has detected a device that is probably an uninitialized or "
 "corrupted iPod. It must be initialized before Rhythmbox can use it, but this "
@@ -1997,447 +2030,448 @@ msgid ""
 "not an iPod, or you do not wish to initialize it, please click cancel."
 msgstr ""
 
-#: ../plugins/ipod/ipod-init.ui.h:6
+#: plugins/ipod/ipod-init.ui:151
 msgid "Do you want to initialize your iPod?"
 msgstr ""
 
-#: ../plugins/ipod/ipod.plugin.in.h:1
+#: plugins/ipod/ipod.plugin.desktop.in:5
 msgid "Portable Players - iPod"
 msgstr ""
 
-#: ../plugins/ipod/ipod.plugin.in.h:2
+#: plugins/ipod/ipod.plugin.desktop.in:6
 msgid "Support for Apple iPod devices (show the content, play from device)"
 msgstr ""
 
-#: ../plugins/ipod/rb-ipod-source.c:317
+#: plugins/ipod/rb-ipod-source.c:317
 msgid "New playlist"
 msgstr "Жаңа ойнату тізімі"
 
-#: ../plugins/ipod/rb-ipod-source.c:460
+#: plugins/ipod/rb-ipod-source.c:461
 msgid "Unable to initialize new iPod"
 msgstr ""
 
-#: ../plugins/ipod/rb-ipod-source.c:1503
-#: ../podcast/rb-podcast-main-source.c:76
-#: ../sources/sync/rb-sync-settings-ui.c:263
-#: ../sources/sync/rb-sync-settings-ui.c:264
-#: ../sources/sync/rb-sync-state-ui.c:78
+#: plugins/ipod/rb-ipod-source.c:1492 podcast/rb-podcast-main-source.c:77
+#: sources/sync/rb-sync-settings-ui.c:263
+#: sources/sync/rb-sync-settings-ui.c:264 sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
 msgstr "Подкасттар"
 
-#: ../plugins/iradio/iradio.plugin.in.h:1
+#: plugins/iradio/iradio.plugin.desktop.in:6
 msgid "Internet Radio"
 msgstr ""
 
-#: ../plugins/iradio/iradio.plugin.in.h:2
+#: plugins/iradio/iradio.plugin.desktop.in:7
 msgid "Support for broadcasting services transmitted via the Internet"
 msgstr ""
 
-#: ../plugins/iradio/iradio-popup.ui.h:1 ../shell/rb-shell-clipboard.c:258
-#: ../sources/rb-source.c:1216 ../widgets/rb-query-creator.c:802
+#: plugins/iradio/iradio-popup.ui:6 shell/rb-shell-clipboard.c:258
+#: sources/rb-source.c:1204 widgets/rb-query-creator.c:802
 msgid "Remove"
 msgstr "Өшіру"
 
-#: ../plugins/iradio/rb-iradio-source.c:346 ../widgets/rb-entry-view.c:1481
-#: ../widgets/rb-library-browser.c:134
+#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1487
+#: widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Жанры"
 
-#: ../plugins/iradio/rb-iradio-source.c:366
+#: plugins/iradio/rb-iradio-source.c:352
 msgid "Search your internet radio stations"
 msgstr ""
 
-#: ../plugins/iradio/rb-iradio-source.c:462
+#: plugins/iradio/rb-iradio-source.c:448
 msgid "Radio"
 msgstr "Радио"
 
-#: ../plugins/iradio/rb-iradio-source.c:603
+#: plugins/iradio/rb-iradio-source.c:588
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] ""
-msgstr[1] ""
 
 #. should prevent multiple dialogs?  going to kill this nonsense anyway soon..
-#: ../plugins/iradio/rb-iradio-source.c:974
-#: ../plugins/iradio/rb-station-properties-dialog.c:403
+#: plugins/iradio/rb-iradio-source.c:958
+#: plugins/iradio/rb-station-properties-dialog.c:399
 msgid "New Internet Radio Station"
-msgstr ""
+msgstr "Жаңа Интернет радиостанциясы"
 
-#: ../plugins/iradio/rb-iradio-source.c:974
+#: plugins/iradio/rb-iradio-source.c:958
 msgid "URL of internet radio station:"
 msgstr ""
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:186
-#: ../podcast/rb-feed-podcast-properties-dialog.c:130
-#: ../podcast/rb-podcast-properties-dialog.c:276 ../shell/rb-application.c:144
-#: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:373
-#: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
-msgid "_Close"
-msgstr "_Жабу"
-
-#: ../plugins/iradio/rb-station-properties-dialog.c:399
-#: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:507
-#: ../sources/rb-media-player-source.c:420 ../widgets/rb-song-info.c:1150
+#: plugins/iradio/rb-station-properties-dialog.c:395
+#: podcast/rb-feed-podcast-properties-dialog.c:215
+#: podcast/rb-podcast-properties-dialog.c:521
+#: sources/rb-media-player-source.c:567 widgets/rb-song-info.c:1151
 #, c-format
 msgid "%s Properties"
 msgstr "%s қасиеттері"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:491
-#: ../podcast/rb-podcast-properties-dialog.c:620
-#: ../widgets/rb-entry-view.c:1018 ../widgets/rb-song-info.c:1235
+#: plugins/iradio/rb-station-properties-dialog.c:487
+#: podcast/rb-podcast-properties-dialog.c:634 widgets/rb-entry-view.c:1022
+#: widgets/rb-song-info.c:1236
 #, c-format
 msgid "%lu kbps"
 msgstr ""
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:582
+#: plugins/iradio/rb-station-properties-dialog.c:578
 msgid "Unable to change station property"
 msgstr ""
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:582
+#: plugins/iradio/rb-station-properties-dialog.c:578
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
 msgstr ""
 
-#: ../plugins/iradio/station-properties.ui.h:5
+#: plugins/iradio/station-properties.ui:148
 msgid "L_ocation:"
 msgstr ""
 
-#: ../plugins/lirc/rblirc.plugin.in.h:1
+#: plugins/lirc/rblirc.plugin.desktop.in:5
 msgid "LIRC"
 msgstr "LIRC"
 
-#: ../plugins/lirc/rblirc.plugin.in.h:2
+#: plugins/lirc/rblirc.plugin.desktop.in:6
 msgid "Control Rhythmbox using an infrared remote control"
 msgstr ""
 
-#: ../plugins/lyrics/LyricsConfigureDialog.py:103
+#: plugins/listenbrainz/listenbrainz.plugin.desktop.in:7
+msgid "ListenBrainz"
+msgstr ""
+
+#: plugins/listenbrainz/listenbrainz.plugin.desktop.in:8
+msgid "Submit your listens to ListenBrainz"
+msgstr ""
+
+#: plugins/listenbrainz/settings.ui:29
+#| msgid "Username:"
+msgid "User token:"
+msgstr "Пайдаланушы токені:"
+
+#: plugins/listenbrainz/settings.ui:40
+msgid ""
+"To submit your listens to ListenBrainz, enter your ListenBrainz user token "
+"below. You can see your user token in your <a href=\"https://listenbrainz."
+"org/profile/\">user profile</a>."
+msgstr ""
+
+#: plugins/lyrics/LyricsConfigureDialog.py:103
 msgid "Choose lyrics folder..."
 msgstr ""
 
-#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:349
+#: plugins/lyrics/lyrics.plugin.desktop.in:7 plugins/lyrics/lyrics.py:414
 msgid "Song Lyrics"
 msgstr ""
 
-#: ../plugins/lyrics/lyrics.plugin.in.h:2
+#: plugins/lyrics/lyrics.plugin.desktop.in:8
 msgid "Fetch song lyrics from the Internet"
 msgstr ""
 
-#: ../plugins/lyrics/lyrics-prefs.ui.h:1
+#: plugins/lyrics/lyrics-prefs.ui:39
 msgid "Search engines"
 msgstr ""
 
-#: ../plugins/lyrics/lyrics-prefs.ui.h:2
+#: plugins/lyrics/lyrics-prefs.ui:114
 msgid "Browse..."
 msgstr "Шолу..."
 
-#: ../plugins/lyrics/lyrics-prefs.ui.h:3
+#: plugins/lyrics/lyrics-prefs.ui:142
 msgid "Lyrics Folder"
 msgstr ""
 
-#: ../plugins/lyrics/lyrics.py:157 ../plugins/lyrics/lyrics.py:159
-#: ../plugins/lyrics/lyrics.py:168
+#: plugins/lyrics/lyrics.py:169 plugins/lyrics/lyrics.py:217
+#: plugins/lyrics/lyrics.py:227
 msgid "No lyrics found"
 msgstr ""
 
-#: ../plugins/lyrics/lyrics.py:202 ../widgets/rb-dialog.c:142
-msgid "_Save"
-msgstr "_Сақтау"
-
-#: ../plugins/lyrics/lyrics.py:207 ../plugins/lyrics/lyrics.py:220
+#: plugins/lyrics/lyrics.py:272 plugins/lyrics/lyrics.py:285
 msgid "_Edit"
 msgstr "Тү_зету"
 
-#: ../plugins/lyrics/lyrics.py:222
+#: plugins/lyrics/lyrics.py:287
 msgid "_Search again"
 msgstr ""
 
-#: ../plugins/lyrics/lyrics.py:281
+#: plugins/lyrics/lyrics.py:346
 msgid "Searching for lyrics..."
 msgstr ""
 
 #. { 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
-#: ../plugins/lyrics/LyricsSites.py:42
-msgid "WinampCN (www.winampcn.com)"
-msgstr "WinampCN (www.winampcn.com)"
-
-#: ../plugins/lyrics/LyricsSites.py:43
+#. { 'id': 'winampcn.com', 	'class': WinampcnParser, 	'name': _("WinampCN (www.winampcn.com)") 	},
+#: plugins/lyrics/LyricsSites.py:43
 msgid "TerraBrasil (terra.com.br)"
 msgstr "TerraBrasil (terra.com.br)"
 
-#: ../plugins/lyrics/LyricsSites.py:44
+#: plugins/lyrics/LyricsSites.py:44
 msgid "Dark Lyrics (darklyrics.com)"
 msgstr "Dark Lyrics (darklyrics.com)"
 
-#: ../plugins/lyrics/LyricsSites.py:45
+#: plugins/lyrics/LyricsSites.py:45
 msgid "Jlyric (j-lyric.net)"
 msgstr "Jlyric (j-lyric.net)"
 
-#: ../plugins/lyrics/LyricsSites.py:46
+#: plugins/lyrics/LyricsSites.py:46
 msgid "Jetlyrics (jetlyrics.com)"
 msgstr "Jetlyrics (jetlyrics.com)"
 
-#: ../plugins/magnatune/magnatune-loading.ui.h:1
+#: plugins/magnatune/magnatune-loading.ui:35
 msgid "Magnatune online music store"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-loading.ui.h:2
+#: plugins/magnatune/magnatune-loading.ui:52
 msgid "Magnatune is an online record label that is not evil.\n"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-loading.ui.h:4
+#: plugins/magnatune/magnatune-loading.ui:71
 msgid "    * Free listening of all songs"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-loading.ui.h:5
+#: plugins/magnatune/magnatune-loading.ui:83
 msgid ""
 "    * Paid members get totally unlimited downloading of the entire catalog "
 "(no other service allows that)"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-loading.ui.h:7
-#, no-c-format
+#: plugins/magnatune/magnatune-loading.ui:97
 msgid ""
 "    * 10% of your Magnatune membership fees goes to Rhythmbox/GNOME - it's "
 "worth joining"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-loading.ui.h:8
+#: plugins/magnatune/magnatune-loading.ui:111
 msgid ""
 "    * Open-Source friendly file formats: MP3s and WAVs, but also OGG and "
 "FLAC files."
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-loading.ui.h:9
+#: plugins/magnatune/magnatune-loading.ui:125
 msgid "    * All albums and artists hand-picked"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-loading.ui.h:10
+#: plugins/magnatune/magnatune-loading.ui:145
 msgid "You can find more information at "
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-loading.ui.h:11
+#: plugins/magnatune/magnatune-loading.ui:155
 msgid "http://www.magnatune.com/"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-popup.ui.h:2
+#: plugins/magnatune/magnatune-popup.ui:10
 msgid "Download Album"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-popup.ui.h:3
+#: plugins/magnatune/magnatune-popup.ui:14
 msgid "Artist Info"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune.plugin.in.h:1
+#: plugins/magnatune/magnatune.plugin.desktop.in:7
 msgid "Magnatune Store"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune.plugin.in.h:2
+#: plugins/magnatune/magnatune.plugin.desktop.in:8
 msgid ""
 "Adds support to Rhythmbox for playing and purchasing from the Magnatune "
 "online music store"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:1
+#: plugins/magnatune/magnatune-prefs.ui:12
 msgid "January (01)"
 msgstr "Қаңтар (01)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:2
+#: plugins/magnatune/magnatune-prefs.ui:15
 msgid "February (02)"
 msgstr "Ақпан (02)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:3
+#: plugins/magnatune/magnatune-prefs.ui:18
 msgid "March (03)"
 msgstr "Наурыз (03)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:4
+#: plugins/magnatune/magnatune-prefs.ui:21
 msgid "April (04)"
 msgstr "Сәуір (04)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:5
+#: plugins/magnatune/magnatune-prefs.ui:24
 msgid "May (05)"
 msgstr "Мамыр (05)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:6
+#: plugins/magnatune/magnatune-prefs.ui:27
 msgid "June (06)"
 msgstr "Маусым (06)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:7
+#: plugins/magnatune/magnatune-prefs.ui:30
 msgid "July (07)"
 msgstr "Шілде (07)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:8
+#: plugins/magnatune/magnatune-prefs.ui:33
 msgid "August (08)"
 msgstr "Тамыз (08)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:9
+#: plugins/magnatune/magnatune-prefs.ui:36
 msgid "September (09)"
 msgstr "Қыркүйек (09)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:10
+#: plugins/magnatune/magnatune-prefs.ui:39
 msgid "October (10)"
 msgstr "Қазан (10)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:11
+#: plugins/magnatune/magnatune-prefs.ui:42
 msgid "November (11)"
 msgstr "Қараша (11)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:12
+#: plugins/magnatune/magnatune-prefs.ui:45
 msgid "December (12)"
 msgstr "Желтоқсан (12)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:13
+#: plugins/magnatune/magnatune-prefs.ui:56
 msgid "$5 US"
 msgstr "$5 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:14
+#: plugins/magnatune/magnatune-prefs.ui:59
 msgid "$6 US"
 msgstr "$6 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:15
+#: plugins/magnatune/magnatune-prefs.ui:62
 msgid "$7 US"
 msgstr "$7 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:16
+#: plugins/magnatune/magnatune-prefs.ui:65
 msgid "$8 US (typical)"
 msgstr "$8 US (қалыпты)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:17
+#: plugins/magnatune/magnatune-prefs.ui:68
 msgid "$9 US"
 msgstr "$9 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:18
+#: plugins/magnatune/magnatune-prefs.ui:71
 msgid "$10 US (better than average)"
 msgstr "$10 US (орташадан үлкен)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:19
+#: plugins/magnatune/magnatune-prefs.ui:74
 msgid "$11 US"
 msgstr "$11 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:20
+#: plugins/magnatune/magnatune-prefs.ui:77
 msgid "$12 US (generous)"
 msgstr "$12 US (жомарт)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:21
+#: plugins/magnatune/magnatune-prefs.ui:80
 msgid "$13 US"
 msgstr "$13 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:22
+#: plugins/magnatune/magnatune-prefs.ui:83
 msgid "$14 US"
 msgstr "$14 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:23
+#: plugins/magnatune/magnatune-prefs.ui:86
 msgid "$15 US (VERY generous!)"
 msgstr "$15 US (ӨТЕ жомарт!)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:24
+#: plugins/magnatune/magnatune-prefs.ui:89
 msgid "$16 US"
 msgstr "$16 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:25
+#: plugins/magnatune/magnatune-prefs.ui:92
 msgid "$17 US"
 msgstr "$17 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:26
+#: plugins/magnatune/magnatune-prefs.ui:95
 msgid "$18 US (We love you!)"
 msgstr "$18 US (Біз сізді жақсы көреміз!)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:27
+#: plugins/magnatune/magnatune-prefs.ui:106
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:28
+#: plugins/magnatune/magnatune-prefs.ui:109
 msgid "FLAC"
 msgstr "FLAC"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:29
+#: plugins/magnatune/magnatune-prefs.ui:112
 msgid "WAV"
 msgstr "WAV"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:30
+#: plugins/magnatune/magnatune-prefs.ui:115
 msgid "VBR MP3"
 msgstr "VBR MP3"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:31
+#: plugins/magnatune/magnatune-prefs.ui:118
 msgid "128K MP3"
 msgstr "128K MP3"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:32
+#: plugins/magnatune/magnatune-prefs.ui:150
 msgid "Magnatune Information"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:33
+#: plugins/magnatune/magnatune-prefs.ui:166
 msgid "I don't have a Magnatune account"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:34
+#: plugins/magnatune/magnatune-prefs.ui:184
 msgid "I have a streaming account"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:35
+#: plugins/magnatune/magnatune-prefs.ui:202
 msgid "I have a download account"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:36
+#: plugins/magnatune/magnatune-prefs.ui:228
 msgid "Username:"
 msgstr "Пайдаланушы аты:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:37
+#: plugins/magnatune/magnatune-prefs.ui:235
 msgid "Password:"
 msgstr "Пароль:"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:38
+#: plugins/magnatune/magnatune-prefs.ui:298
 msgid "Preferred audio _format:"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:39
+#: plugins/magnatune/magnatune-prefs.ui:347
 msgid "Get an account at "
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:40
+#: plugins/magnatune/magnatune-prefs.ui:357
 msgid "http://magnatune.com/compare_plans"
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:41
+#: plugins/magnatune/magnatune-prefs.ui:386
 msgid "Find out about Magnatune at "
 msgstr ""
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:42
+#: plugins/magnatune/magnatune-prefs.ui:398
 msgid "http://www.magnatune.com/info/"
 msgstr "http://www.magnatune.com/info/"
 
-#: ../plugins/magnatune/magnatune.py:121
+#: plugins/magnatune/magnatune.py:121
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:192
+#: plugins/magnatune/MagnatuneSource.py:190
 msgid "Couldn't download album"
 msgstr ""
 
-#: ../plugins/magnatune/MagnatuneSource.py:193
+#: plugins/magnatune/MagnatuneSource.py:191
 msgid "You must have a library location set to download an album."
 msgstr ""
 
-#: ../plugins/magnatune/MagnatuneSource.py:255
+#: plugins/magnatune/MagnatuneSource.py:253
 msgid "Unable to load catalog"
 msgstr ""
 
-#: ../plugins/magnatune/MagnatuneSource.py:256
+#: plugins/magnatune/MagnatuneSource.py:254
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr ""
 
-#: ../plugins/magnatune/MagnatuneSource.py:277
-#: ../plugins/magnatune/MagnatuneSource.py:334
+#: plugins/magnatune/MagnatuneSource.py:275
+#: plugins/magnatune/MagnatuneSource.py:332
 msgid "Loading Magnatune catalog"
 msgstr ""
 
-#: ../plugins/magnatune/MagnatuneSource.py:406
+#: plugins/magnatune/MagnatuneSource.py:404
 msgid "Download Error"
 msgstr ""
 
-#: ../plugins/magnatune/MagnatuneSource.py:407
+#: plugins/magnatune/MagnatuneSource.py:405
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2445,11 +2479,11 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1625
+#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1639
 msgid "Error"
 msgstr "Қате"
 
-#: ../plugins/magnatune/MagnatuneSource.py:411
+#: plugins/magnatune/MagnatuneSource.py:409
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -2457,159 +2491,149 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../plugins/magnatune/MagnatuneSource.py:499
+#: plugins/magnatune/MagnatuneSource.py:492
 msgid "Downloading from Magnatune"
 msgstr ""
 
-#: ../plugins/mmkeys/mmkeys.plugin.in.h:1
-msgid "Media Player Keys"
-msgstr ""
-
-#: ../plugins/mmkeys/mmkeys.plugin.in.h:2
-msgid "Control Rhythmbox using key shortcuts"
-msgstr ""
-
-#: ../plugins/mpris/mpris.plugin.in.h:1
+#: plugins/mpris/mpris.plugin.desktop.in:6
 msgid "MPRIS D-Bus interface"
 msgstr ""
 
-#: ../plugins/mpris/mpris.plugin.in.h:2
+#: plugins/mpris/mpris.plugin.desktop.in:7
 msgid "Provides an implementation of the MPRIS D-Bus interface specification"
 msgstr ""
 
-#: ../plugins/mtpdevice/mtpdevice.plugin.in.h:1
+#: plugins/mtpdevice/mtpdevice.plugin.desktop.in:5
 msgid "Portable Players - MTP"
 msgstr ""
 
-#: ../plugins/mtpdevice/mtpdevice.plugin.in.h:2
+#: plugins/mtpdevice/mtpdevice.plugin.desktop.in:6
 msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr ""
 
-#: ../plugins/mtpdevice/rb-mtp-gst-sink.c:127
-#: ../plugins/mtpdevice/rb-mtp-thread.c:488
-#, c-format
-msgid "Unable to open temporary file: %s"
-msgstr ""
-
-#: ../plugins/mtpdevice/rb-mtp-source.c:603
+#: plugins/mtpdevice/rb-mtp-source.c:604
 msgid "Media Player"
 msgstr "Медиа плеері"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:883
+#: plugins/mtpdevice/rb-mtp-source.c:884
 msgid "Media player device error"
 msgstr ""
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:887
+#: plugins/mtpdevice/rb-mtp-source.c:888
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr ""
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:931
+#: plugins/mtpdevice/rb-mtp-source.c:932
 msgid "Digital Audio Player"
 msgstr ""
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:443
-#: ../plugins/mtpdevice/rb-mtp-thread.c:501
-#: ../plugins/mtpdevice/rb-mtp-thread.c:519
+#: plugins/mtpdevice/rb-mtp-thread.c:443 plugins/mtpdevice/rb-mtp-thread.c:501
+#: plugins/mtpdevice/rb-mtp-thread.c:519
 #, c-format
 msgid "Unable to copy file from MTP device: %s"
 msgstr ""
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:464
+#: plugins/mtpdevice/rb-mtp-thread.c:464
 #, c-format
 msgid "Not enough space in %s"
 msgstr ""
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:545
+#: plugins/mtpdevice/rb-mtp-thread.c:488
+#, c-format
+msgid "Unable to open temporary file: %s"
+msgstr ""
+
+#: plugins/mtpdevice/rb-mtp-thread.c:552
 #, c-format
 msgid "No space left on MTP device"
 msgstr ""
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:548
+#: plugins/mtpdevice/rb-mtp-thread.c:555
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr ""
 
-#: ../plugins/notification/notification.plugin.in.h:1
+#: plugins/notification/notification.plugin.desktop.in:5
 msgid "Notification"
 msgstr "Ескерту"
 
-#: ../plugins/notification/notification.plugin.in.h:2
+#: plugins/notification/notification.plugin.desktop.in:6
 msgid "Notification popups"
 msgstr ""
 
-#: ../plugins/notification/rb-notification-plugin.c:225
+#: plugins/notification/rb-notification-plugin.c:221
 msgid "Previous"
 msgstr "Алдыңғы"
 
-#: ../plugins/notification/rb-notification-plugin.c:231
+#: plugins/notification/rb-notification-plugin.c:227
 msgid "Pause"
 msgstr "Аялдату"
 
-#: ../plugins/notification/rb-notification-plugin.c:231
+#: plugins/notification/rb-notification-plugin.c:227
 msgid "Play"
 msgstr "Ойнату"
 
-#: ../plugins/notification/rb-notification-plugin.c:240
+#: plugins/notification/rb-notification-plugin.c:236
 msgid "Next"
 msgstr "Келесі"
 
 #. Translators: by Artist
-#: ../plugins/notification/rb-notification-plugin.c:332
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:148
+#: plugins/notification/rb-notification-plugin.c:330
 #, c-format
 msgid "by <i>%s</i>"
 msgstr ""
 
 #. Translators: from Album
-#: ../plugins/notification/rb-notification-plugin.c:334
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:150
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:213
+#: plugins/notification/rb-notification-plugin.c:332
 #, c-format
 msgid "from <i>%s</i>"
 msgstr ""
 
-#: ../plugins/notification/rb-notification-plugin.c:414
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
-#: ../widgets/rb-header.c:364
+#: plugins/notification/rb-notification-plugin.c:412 widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "Ойнап тұрған жоқ"
 
-#: ../plugins/power-manager/power-manager.plugin.in.h:1
+#: plugins/power-manager/power-manager.plugin.desktop.in:6
 msgid "Power Manager"
 msgstr ""
 
-#: ../plugins/power-manager/power-manager.plugin.in.h:2
+#: plugins/power-manager/power-manager.plugin.desktop.in:7
 msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr ""
 
-#: ../plugins/power-manager/rb-power-manager-plugin.c:97
-#: ../remote/dbus/rb-client.c:801 ../remote/dbus/rb-client.c:891
-#, c-format
+#: plugins/power-manager/rb-power-manager-plugin.c:93
+#: remote/dbus/rb-client.c:823 remote/dbus/rb-client.c:913
 msgid "Playing"
 msgstr "Ойналуда"
 
-#: ../plugins/pythonconsole/pythonconsole.plugin.in.h:1
-#: ../plugins/pythonconsole/pythonconsole.py:71
+#: plugins/pythonconsole/pythonconsole.plugin.desktop.in:6
+#: plugins/pythonconsole/pythonconsole.py:81
 msgid "Python Console"
 msgstr "Python консолі"
 
-#: ../plugins/pythonconsole/pythonconsole.plugin.in.h:2
+#: plugins/pythonconsole/pythonconsole.plugin.desktop.in:7
 msgid "Interactive python console"
 msgstr ""
 
-#: ../plugins/pythonconsole/pythonconsole.py:81
-msgid "Python Debugger"
-msgstr "Python жөндеушісі"
+#: plugins/pythonconsole/pythonconsole.py:90
+#| msgid "Python Debugger"
+msgid "Python Debugger (winpdb)"
+msgstr ""
 
-#: ../plugins/pythonconsole/pythonconsole.py:106
+#: plugins/pythonconsole/pythonconsole.py:99
+#| msgid "Python Debugger"
+msgid "Python Debugger (debugpy)"
+msgstr ""
+
+#: plugins/pythonconsole/pythonconsole.py:130
 msgid "You can access the main window through the 'shell' variable :"
 msgstr ""
 
-#: ../plugins/pythonconsole/pythonconsole.py:121
+#: plugins/pythonconsole/pythonconsole.py:150
 #, python-format
 msgid ""
 "After you press OK, Rhythmbox will wait until you connect to it with winpdb "
@@ -2617,279 +2641,194 @@ msgid ""
 "use the default password ('rhythmbox')."
 msgstr ""
 
-#. ex:noet:ts=8:
-#: ../plugins/rbzeitgeist/rbzeitgeist.plugin.in.h:1
+#: plugins/pythonconsole/pythonconsole.py:176
+#, python-format
+msgid ""
+"Rhythmbox is now listening for Debug Adapter Protocol connections on port "
+"%d. You can now attach to it using a compatible debugger such as vimspector, "
+"nvim-dap or Visual Studio Code."
+msgstr ""
+
+#: plugins/pythonconsole/pythonconsole.py:180
+#, python-format
+msgid "Unable to start Debug Adapter Protocol listener: %s"
+msgstr ""
+
+#: plugins/pythonconsole/pythonconsole.py:186
+#, python-format
+msgid ""
+"The %s Python module is not available. Install the module and then restart "
+"Rhythmbox to enable debugging with %s."
+msgstr ""
+
+#: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:7
 msgid "Zeitgeist"
 msgstr "Zeitgeist"
 
-#: ../plugins/rbzeitgeist/rbzeitgeist.plugin.in.h:2
+#: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:8
 msgid "Inform Zeitgeist about your activity"
 msgstr ""
 
-#: ../plugins/replaygain/config.py:68
+#: plugins/replaygain/config.py:64
 msgid "-15.0 dB"
 msgstr "-15.0 дБ"
 
-#: ../plugins/replaygain/config.py:69
+#: plugins/replaygain/config.py:65
 msgid "0.0 dB"
 msgstr "0.0 дБ"
 
-#: ../plugins/replaygain/config.py:70
+#: plugins/replaygain/config.py:66
 msgid "15.0 dB"
 msgstr "15.0 дБ"
 
-#: ../plugins/replaygain/player.py:52
+#: plugins/replaygain/player.py:52
 #, python-format
 msgid ""
 "The GStreamer elements required for ReplayGain processing are not available. "
 "The missing elements are: %s"
 msgstr ""
 
-#: ../plugins/replaygain/player.py:53
+#: plugins/replaygain/player.py:53
 msgid "ReplayGain GStreamer plugins not available"
 msgstr ""
 
-#: ../plugins/replaygain/replaygain.plugin.in.h:1
+#: plugins/replaygain/replaygain.plugin.desktop.in:7
 msgid "ReplayGain"
 msgstr "ReplayGain"
 
-#: ../plugins/replaygain/replaygain.plugin.in.h:2
+#: plugins/replaygain/replaygain.plugin.desktop.in:8
 msgid "Use ReplayGain to provide a consistent playback volume"
 msgstr ""
 
-#: ../plugins/replaygain/replaygain-prefs.ui.h:1
+#: plugins/replaygain/replaygain-prefs.ui:21
 msgid "Radio (equal loudness for all tracks)"
 msgstr ""
 
-#: ../plugins/replaygain/replaygain-prefs.ui.h:2
+#: plugins/replaygain/replaygain-prefs.ui:25
 msgid "Album (ideal loudness for all tracks)"
 msgstr ""
 
-#: ../plugins/replaygain/replaygain-prefs.ui.h:3
+#: plugins/replaygain/replaygain-prefs.ui:39
 msgid "ReplayGain preferences"
 msgstr ""
 
-#: ../plugins/replaygain/replaygain-prefs.ui.h:4
+#: plugins/replaygain/replaygain-prefs.ui:63
 msgid "ReplayGain _mode:"
 msgstr ""
 
-#: ../plugins/replaygain/replaygain-prefs.ui.h:5
+#: plugins/replaygain/replaygain-prefs.ui:76
 msgid "_Pre-amp:"
 msgstr ""
 
-#: ../plugins/replaygain/replaygain-prefs.ui.h:6
+#: plugins/replaygain/replaygain-prefs.ui:87
 msgid "_Apply compression to prevent clipping"
 msgstr ""
 
-#: ../plugins/replaygain/replaygain-prefs.ui.h:7
-msgid "Learn more about ReplayGain at replaygain.org"
+#: plugins/replaygain/replaygain-prefs.ui:139
+msgid "Learn more about ReplayGain"
 msgstr ""
 
-#: ../plugins/sendto/sendto.plugin.in.h:1
-msgid "Send tracks"
+#: plugins/webremote/webremote-config.ui:18
+msgid "Web remote control preferences"
 msgstr ""
 
-#: ../plugins/sendto/sendto.plugin.in.h:2
-msgid "Send selected tracks by email or instant message"
+#: plugins/webremote/webremote-config.ui:35
+msgid "Listening port:"
 msgstr ""
 
-#: ../plugins/sendto/sendto.py:51
-msgid "Send to..."
-msgstr "Қайда жіберу..."
-
-#: ../plugins/soundcloud/soundcloud.plugin.in.h:1
-#: ../plugins/soundcloud/soundcloud.py:72
-msgid "SoundCloud"
+#: plugins/webremote/webremote-config.ui:46
+msgid "Access key:"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.plugin.in.h:2
-msgid "Browse and play sounds from SoundCloud®"
+#: plugins/webremote/webremote-config.ui:79
+msgid "0"
+msgstr "0"
+
+#: plugins/webremote/webremote.plugin.desktop.in:6
+msgid "Web remote control"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:94
-msgid "Search tracks"
+#: plugins/webremote/webremote.plugin.desktop.in:7
+msgid "Control Rhythmbox from a web browser"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:95
-msgid "Search tracks on SoundCloud"
+#: plugins/webremote/webremote.py:596
+msgid "Launch web remote control"
 msgstr ""
 
-#: ../plugins/soundcloud/soundcloud.py:101
-msgid "Search sets"
-msgstr ""
+#: podcast/rb-podcast-add-dialog.c:278 podcast/rb-podcast-source.c:737
+#, c-format
+#| msgid "%d feed"
+#| msgid_plural "All %d feeds"
+msgid "%d feed"
+msgid_plural "%d feeds"
+msgstr[0] ""
 
-#: ../plugins/soundcloud/soundcloud.py:102
-msgid "Search sets on SoundCloud"
-msgstr ""
-
-#: ../plugins/soundcloud/soundcloud.py:103
-msgid "SoundCloud Sets"
-msgstr ""
-
-#: ../plugins/soundcloud/soundcloud.py:108
-msgid "Search users"
-msgstr ""
-
-#: ../plugins/soundcloud/soundcloud.py:109
-msgid "Search users on SoundCloud"
-msgstr ""
-
-#: ../plugins/soundcloud/soundcloud.py:110
-msgid "SoundCloud Users"
-msgstr ""
-
-#: ../plugins/soundcloud/soundcloud.py:115
-msgid "Search groups"
-msgstr ""
-
-#: ../plugins/soundcloud/soundcloud.py:116
-msgid "Search groups on SoundCloud"
-msgstr ""
-
-#: ../plugins/soundcloud/soundcloud.py:117
-msgid "SoundCloud Groups"
-msgstr ""
-
-#: ../plugins/soundcloud/soundcloud.py:374
-#: ../plugins/soundcloud/soundcloud.py:382
-#, python-format
-msgid "View '%(title)s' on SoundCloud"
-msgstr ""
-
-#: ../plugins/soundcloud/soundcloud.py:390
-#, python-format
-msgid "View '%(container)s' on SoundCloud"
-msgstr ""
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:39
-msgid "Low quality"
-msgstr "Төмен сапалы"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:40
-msgid "Normal quality"
-msgstr ""
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:41
-msgid "High quality"
-msgstr "Жоғары сапалы"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:78
-msgid "Fullscreen"
-msgstr "Толық экранға"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:89
-#: ../widgets/rb-entry-view.c:1525
-msgid "Quality"
-msgstr "Сапасы"
-
-#: ../plugins/visualizer/rb-visualizer-menu.c:114
-msgid "Visual Effect"
-msgstr ""
-
-#: ../plugins/visualizer/rb-visualizer-page.c:69
-msgid "Visual Effects"
-msgstr ""
-
-#: ../plugins/visualizer/rb-visualizer-plugin.c:392
-msgid "Display"
-msgstr ""
-
-#: ../plugins/visualizer/visualizer.plugin.in.h:1
-msgid "Visualization"
-msgstr ""
-
-#: ../plugins/visualizer/visualizer.plugin.in.h:2
-msgid "Displays visualizations"
-msgstr ""
-
-#: ../podcast/rb-podcast-add-dialog.c:286
+#: podcast/rb-podcast-add-dialog.c:337
 msgid "Unable to load the feed. Check your network connection."
 msgstr ""
 
-#: ../podcast/rb-podcast-add-dialog.c:408
+#: podcast/rb-podcast-add-dialog.c:461
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr ""
 
-#: ../podcast/rb-podcast-add-dialog.c:720 ../sources/rb-library-source.c:142
-#: ../widgets/rb-entry-view.c:1441
+#: podcast/rb-podcast-add-dialog.c:786 sources/rb-library-source.c:134
+#: widgets/rb-entry-view.c:1447
 msgid "Title"
 msgstr "Атауы"
 
-#: ../podcast/rb-podcast-add-dialog.c:731
+#: podcast/rb-podcast-add-dialog.c:797
 msgid "Author"
 msgstr "Авторы"
 
-#: ../podcast/rb-podcast-add-dialog.c:736
-#: ../podcast/rb-podcast-add-dialog.c:739
+#: podcast/rb-podcast-add-dialog.c:802 podcast/rb-podcast-add-dialog.c:805
 msgid "Episodes"
 msgstr ""
 
-#: ../podcast/rb-podcast-add-dialog.c:767
-#: ../podcast/rb-podcast-add-dialog.c:778 ../podcast/rb-podcast-source.c:1342
-#: ../podcast/rb-podcast-source.c:1353
+#: podcast/rb-podcast-add-dialog.c:839 podcast/rb-podcast-add-dialog.c:850
+#: podcast/rb-podcast-source.c:1382 podcast/rb-podcast-source.c:1393
 msgid "Date"
 msgstr "Күн"
 
-#: ../podcast/rb-podcast-main-source.c:125
+#: podcast/rb-podcast-main-source.c:126
 msgid "New Episodes"
-msgstr ""
+msgstr "Жаңа эпизодтар"
 
-#: ../podcast/rb-podcast-main-source.c:143
+#: podcast/rb-podcast-main-source.c:144
 msgid "New Downloads"
-msgstr ""
+msgstr "Жаңа жүктемелер"
 
-#: ../podcast/rb-podcast-main-source.c:164
+#: podcast/rb-podcast-main-source.c:165
 msgid "Downloading podcast"
 msgstr ""
 
-#: ../podcast/rb-podcast-main-source.c:181
+#: podcast/rb-podcast-main-source.c:186
+msgid "Error downloading podcast"
+msgstr ""
+
+#: podcast/rb-podcast-main-source.c:189
 msgid "Finished downloading podcast"
 msgstr ""
 
-#: ../podcast/rb-podcast-main-source.c:198
-msgid "New updates available from"
-msgstr ""
-
-#: ../podcast/rb-podcast-main-source.c:237
+#: podcast/rb-podcast-main-source.c:242
 msgid "Error in podcast"
 msgstr ""
 
-#: ../podcast/rb-podcast-main-source.c:244
+#: podcast/rb-podcast-main-source.c:244
+#, c-format
+msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
+msgstr ""
+
+#: podcast/rb-podcast-main-source.c:250
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:897
-msgid "Error creating podcast download directory"
+#: podcast/rb-podcast-main-source.c:267
+msgid "New updates available from"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:898
-#, c-format
-msgid "Unable to create the download directory for %s: %s"
-msgstr ""
-
-#: ../podcast/rb-podcast-manager.c:1017
-msgid "Invalid URL"
-msgstr "Сілтеме қате"
-
-#: ../podcast/rb-podcast-manager.c:1018
-#, c-format
-msgid "The URL \"%s\" is not valid, please check it."
-msgstr ""
-
-#. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1029
-msgid "URL already added"
-msgstr ""
-
-#: ../podcast/rb-podcast-manager.c:1030
-#, c-format
-msgid ""
-"The URL \"%s\" has already been added as a radio station. If this is a "
-"podcast feed, please remove the radio station."
-msgstr ""
-
-#: ../podcast/rb-podcast-manager.c:1109
+#: podcast/rb-podcast-manager.c:802
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2897,364 +2836,351 @@ msgid ""
 "anyway?"
 msgstr ""
 
-#: ../podcast/rb-podcast-manager.c:1240
+#. added as something else, probably iradio
+#: podcast/rb-podcast-manager.c:857
+msgid "URL already added"
+msgstr ""
+
+#: podcast/rb-podcast-manager.c:858
+#, c-format
+msgid ""
+"The URL \"%s\" has already been added as a radio station. If this is a "
+"podcast feed, please remove the radio station."
+msgstr ""
+
+#: podcast/rb-podcast-manager.c:940
 msgid "Podcast"
 msgstr "Подкаст"
 
-#: ../podcast/rb-podcast-manager.c:2206
-#, c-format
-msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
-msgstr ""
-
-#: ../podcast/rb-podcast-parse.c:181
-#, c-format
-msgid "Unable to check file type: %s"
-msgstr ""
-
-#: ../podcast/rb-podcast-parse.c:200
-#, c-format
-msgid "Unexpected file type: %s"
-msgstr ""
-
-#: ../podcast/rb-podcast-parse.c:223
+#: podcast/rb-podcast-parse.c:197
 #, c-format
 msgid "Unable to parse the feed contents"
 msgstr ""
 
-#: ../podcast/rb-podcast-parse.c:237
+#: podcast/rb-podcast-parse.c:212
 #, c-format
 msgid "The feed does not contain any downloadable items"
 msgstr ""
 
-#: ../podcast/rb-podcast-properties-dialog.c:195
-msgid "Unable to display requested URI"
-msgstr ""
-
-#: ../podcast/rb-podcast-properties-dialog.c:570
+#: podcast/rb-podcast-properties-dialog.c:584
 msgid "Not Downloaded"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:521
+#: podcast/rb-podcast-source.c:523
 msgid "Delete the podcast feed and downloaded files?"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:524
+#: podcast/rb-podcast-source.c:526
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
 "choosing to delete the feed only."
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:532
+#: podcast/rb-podcast-source.c:534
 msgid "Delete _Feed Only"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:539
+#: podcast/rb-podcast-source.c:541
 msgid "_Delete Feed And Files"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1396
+#: podcast/rb-podcast-source.c:622 podcast/rb-podcast-source.c:1436
 msgid "Downloaded"
 msgstr "Жүктелген"
 
-#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1398
+#: podcast/rb-podcast-source.c:626 podcast/rb-podcast-source.c:1438
 msgid "Failed"
 msgstr "Сәтсіз"
 
-#: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1397
+#: podcast/rb-podcast-source.c:630 podcast/rb-podcast-source.c:1437
 msgid "Waiting"
 msgstr "Күту"
 
-#: ../podcast/rb-podcast-source.c:735
-#, c-format
-msgid "%d feed"
-msgid_plural "All %d feeds"
-msgstr[0] "%d таспа"
-
-#: ../podcast/rb-podcast-source.c:957
+#: podcast/rb-podcast-source.c:966
 msgid "Podcast Error"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1091
+#: podcast/rb-podcast-source.c:1097
 msgid "Delete the podcast episode and downloaded file?"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1094
+#: podcast/rb-podcast-source.c:1100
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
 "file by choosing to delete the episode only."
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1102
+#: podcast/rb-podcast-source.c:1108
 msgid "Delete _Episode Only"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1108
+#: podcast/rb-podcast-source.c:1114
 msgid "_Delete Episode And File"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1206
+#: podcast/rb-podcast-source.c:1220
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d эпизод"
 
-#: ../podcast/rb-podcast-source.c:1375 ../podcast/rb-podcast-source.c:1430
-#: ../podcast/rb-podcast-source.c:1469
+#: podcast/rb-podcast-source.c:1415 podcast/rb-podcast-source.c:1470
+#: podcast/rb-podcast-source.c:1509
 msgid "Feed"
 msgstr "Таспа"
 
-#: ../podcast/rb-podcast-source.c:1395 ../podcast/rb-podcast-source.c:1413
+#: podcast/rb-podcast-source.c:1435 podcast/rb-podcast-source.c:1453
 msgid "Status"
 msgstr "Күйі"
 
 #. ensure search instances exist
-#: ../podcast/rb-podcast-source.c:1515
-#: ../sources/rb-auto-playlist-source.c:253 ../sources/rb-browser-source.c:314
-#: ../sources/rb-browser-source.c:332
-#: ../sources/rb-static-playlist-source.c:295
+#: podcast/rb-podcast-source.c:1555 sources/rb-auto-playlist-source.c:253
+#: sources/rb-browser-source.c:314 sources/rb-browser-source.c:332
+#: sources/rb-static-playlist-source.c:296
 msgid "Search all fields"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1516
+#: podcast/rb-podcast-source.c:1556
 msgid "Search podcast feeds"
 msgstr ""
 
-#: ../podcast/rb-podcast-source.c:1517
+#: podcast/rb-podcast-source.c:1557
 msgid "Search podcast episodes"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:94
+#: remote/dbus/rb-client.c:95 shell/rb-application.c:558
+msgid "Show the version of the program"
+msgstr "Бағдарлама нұсқасын көрсету"
+
+#: remote/dbus/rb-client.c:97
 msgid "Don't start a new instance of Rhythmbox"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:95
+#: remote/dbus/rb-client.c:98
 msgid "Quit Rhythmbox"
 msgstr "Rhythmbox жұмысын аяқтау"
 
-#: ../remote/dbus/rb-client.c:96
+#: remote/dbus/rb-client.c:99
 msgid "Check if Rhythmbox is already running"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:98
+#: remote/dbus/rb-client.c:101
 msgid "Don't present an existing Rhythmbox window"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:100
+#: remote/dbus/rb-client.c:103
 msgid "Jump to next song"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:101
+#: remote/dbus/rb-client.c:104
 msgid "Jump to previous song"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:102
+#: remote/dbus/rb-client.c:105
 msgid "Seek in current track"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:104
+#: remote/dbus/rb-client.c:107
 msgid "Resume playback if currently paused"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:105
+#: remote/dbus/rb-client.c:108
 msgid "Pause playback if currently playing"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:106
+#: remote/dbus/rb-client.c:109
 msgid "Toggle play/pause mode"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:107 ../shell/rb-shell.c:2273
+#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2258
 msgid "Stop playback"
 msgstr "Ойнатуды тоқтату"
 
-#: ../remote/dbus/rb-client.c:109
+#: remote/dbus/rb-client.c:112
 msgid "Play a specified URI, importing it if necessary"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:109
+#: remote/dbus/rb-client.c:112
 msgid "URI to play"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:110
+#: remote/dbus/rb-client.c:113
 msgid "Add specified tracks to the play queue"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:111
+#: remote/dbus/rb-client.c:114
 msgid "Empty the play queue before adding new tracks"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:113
+#: remote/dbus/rb-client.c:116
 msgid "Print the title and artist of the playing song"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:114
+#: remote/dbus/rb-client.c:117
 msgid "Print formatted details of the song"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:115
+#: remote/dbus/rb-client.c:118
 msgid "Select the source matching the specified URI"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:115
+#: remote/dbus/rb-client.c:118
 msgid "Source to select"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:116
+#: remote/dbus/rb-client.c:119
 msgid "Activate the source matching the specified URI"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:116
+#: remote/dbus/rb-client.c:119
 msgid "Source to activate"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:117
+#: remote/dbus/rb-client.c:120
 msgid "Play from the source matching the specified URI"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:117
+#: remote/dbus/rb-client.c:120
 msgid "Source to play from"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:119
+#: remote/dbus/rb-client.c:122
 msgid "Enable repeat playback order"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:120
+#: remote/dbus/rb-client.c:123
 msgid "Disable repeat playback order"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:121
+#: remote/dbus/rb-client.c:124
 msgid "Enable shuffle playback order"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:122
+#: remote/dbus/rb-client.c:125
 msgid "Disable shuffle playback order"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:124
+#: remote/dbus/rb-client.c:127
 msgid "Set the playback volume"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:125
+#: remote/dbus/rb-client.c:128
 msgid "Increase the playback volume"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:126
+#: remote/dbus/rb-client.c:129
 msgid "Decrease the playback volume"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:127
+#: remote/dbus/rb-client.c:130
 msgid "Print the current playback volume"
 msgstr ""
 
 #. { "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
 #. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
-#: ../remote/dbus/rb-client.c:130
+#: remote/dbus/rb-client.c:133
 msgid "Set the rating of the current song"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:131
+#: remote/dbus/rb-client.c:134
 msgid "Start interactive mode"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:161
+#: remote/dbus/rb-client.c:166
 msgid "n - Next track"
 msgstr "n - келесі трек"
 
-#: ../remote/dbus/rb-client.c:162
+#: remote/dbus/rb-client.c:167
 msgid "p - Previous track"
 msgstr "p - алдыңғы трек"
 
-#: ../remote/dbus/rb-client.c:163
+#: remote/dbus/rb-client.c:168
 msgid "space - Play/pause"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:164
+#: remote/dbus/rb-client.c:169
 msgid "s - Show playing track details"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:165
+#: remote/dbus/rb-client.c:170
 msgid "v - Decrease volume"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:166
+#: remote/dbus/rb-client.c:171
 msgid "V - Increase volume"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:168
+#: remote/dbus/rb-client.c:173
 msgid "h/? - Help"
 msgstr "h/? - көмек"
 
-#: ../remote/dbus/rb-client.c:169
+#: remote/dbus/rb-client.c:174
 msgid "q - Quit"
 msgstr "q - шығу"
 
-#: ../remote/dbus/rb-client.c:529 ../remote/dbus/rb-client.c:555
-#: ../remote/dbus/rb-client.c:778 ../remote/dbus/rb-client.c:862
-#, c-format
+#: remote/dbus/rb-client.c:549 remote/dbus/rb-client.c:575
+#: remote/dbus/rb-client.c:800 remote/dbus/rb-client.c:884
 msgid "Not playing"
 msgstr "Ойнап тұрған жоқ"
 
 #. Translators: title by artist from album
-#: ../remote/dbus/rb-client.c:728
+#: remote/dbus/rb-client.c:750
 msgid "%tt by %ta from %at"
 msgstr ""
 
 #. Translators: title by artist
-#: ../remote/dbus/rb-client.c:731
+#: remote/dbus/rb-client.c:753
 msgid "%tt by %ta"
 msgstr ""
 
 #. Translators: title from album
-#: ../remote/dbus/rb-client.c:734
+#: remote/dbus/rb-client.c:756
 msgid "%tt from %ta"
 msgstr ""
 
 #. Translators: %te is replaced with elapsed time, %td is replaced with track duration
-#: ../remote/dbus/rb-client.c:745
+#: remote/dbus/rb-client.c:767
 #, c-format
 msgid "[%te of %td]"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:801 ../remote/dbus/rb-client.c:893
-#, c-format
+#: remote/dbus/rb-client.c:823 remote/dbus/rb-client.c:915
 msgid "Paused"
 msgstr "Аялдатылған"
 
-#: ../remote/dbus/rb-client.c:845
+#: remote/dbus/rb-client.c:867
 #, c-format
 msgid "Seeked to %s"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:879
+#: remote/dbus/rb-client.c:901
 #, c-format
 msgid "Now playing: %s %s"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:895
+#: remote/dbus/rb-client.c:917
 #, c-format
 msgid "Unknown playback state: %s"
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:905
+#: remote/dbus/rb-client.c:927
 #, c-format
 msgid "Volume is now %.02f"
 msgstr ""
 
 #. should print this before dbus setup, really
-#: ../remote/dbus/rb-client.c:943
-#, c-format
+#: remote/dbus/rb-client.c:965
 msgid "Press 'h' for help."
 msgstr ""
 
-#: ../remote/dbus/rb-client.c:1384
+#: remote/dbus/rb-client.c:1411
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr ""
 
-#: ../rhythmdb/rhythmdb.c:789
+#: rhythmdb/rhythmdb.c:790
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr ""
@@ -3264,7 +3190,7 @@ msgstr ""
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1802
+#: rhythmdb/rhythmdb.c:1846
 msgid "The Beatles"
 msgstr ""
 
@@ -3272,7 +3198,7 @@ msgstr ""
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1808
+#: rhythmdb/rhythmdb.c:1852
 msgid "Help!"
 msgstr "Көмек!"
 
@@ -3280,124 +3206,118 @@ msgstr "Көмек!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1814
+#: rhythmdb/rhythmdb.c:1858
 msgid "Ticket To Ride"
 msgstr ""
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2314
+#: rhythmdb/rhythmdb.c:2403
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 
-#: ../rhythmdb/rhythmdb.c:2346
+#: rhythmdb/rhythmdb.c:2435
 msgid "invalid unicode in error message"
 msgstr ""
 
-#: ../rhythmdb/rhythmdb.c:2413
+#: rhythmdb/rhythmdb.c:2558
 #, c-format
 msgid "Empty file"
 msgstr "Бос файл"
 
-#: ../rhythmdb/rhythmdb.c:3088
+#: rhythmdb/rhythmdb.c:3267
 msgid "Could not load the music database:"
 msgstr ""
 
-#: ../rhythmdb/rhythmdb.c:4515
+#: rhythmdb/rhythmdb.c:4704
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld минут"
 
-#: ../rhythmdb/rhythmdb.c:4516
+#: rhythmdb/rhythmdb.c:4705
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld сағат"
 
-#: ../rhythmdb/rhythmdb.c:4517
+#: rhythmdb/rhythmdb.c:4706
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld күн"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4523
+#: rhythmdb/rhythmdb.c:4712
 #, c-format
 msgid "%s, %s and %s"
-msgstr ""
+msgstr "%s, %s және %s"
 
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4529 ../rhythmdb/rhythmdb.c:4537
-#: ../rhythmdb/rhythmdb.c:4548
+#: rhythmdb/rhythmdb.c:4718 rhythmdb/rhythmdb.c:4726 rhythmdb/rhythmdb.c:4737
 #, c-format
 msgid "%s and %s"
 msgstr "%s and %s"
 
-#: ../rhythmdb/rhythmdb-import-job.c:665
+#: rhythmdb/rhythmdb-import-job.c:704
 msgid "Scanning"
 msgstr "Сканерлеу"
 
-#: ../rhythmdb/rhythmdb-import-job.c:668
-#: ../shell/rb-track-transfer-batch.c:819
+#: rhythmdb/rhythmdb-import-job.c:707 shell/rb-track-transfer-batch.c:984
 #, c-format
 msgid "%d of %d"
 msgstr "%d, барлығы %d"
 
-#: ../rhythmdb/rhythmdb-property-model.c:511
+#: rhythmdb/rhythmdb-property-model.c:511
 msgid "All"
 msgstr "Барлығы"
 
-#: ../rhythmdb/rhythmdb-tree.c:414
+#: rhythmdb/rhythmdb-tree.c:414
 #, c-format
 msgid ""
 "The database was created by a later version of Rhythmbox.  This version of "
 "Rhythmbox cannot read the database."
 msgstr ""
 
-#: ../sample-plugins/sample-python/sample-python.plugin.in.h:1
+#: sample-plugins/sample-python/sample-python.plugin.desktop.in:6
 msgid "Python Sample Plugin"
 msgstr ""
 
-#: ../sample-plugins/sample-python/sample-python.plugin.in.h:2
+#: sample-plugins/sample-python/sample-python.plugin.desktop.in:7
 msgid "A sample plugin in Python with no features"
 msgstr ""
 
-#: ../sample-plugins/sample-python/sample-python.py:20
+#: sample-plugins/sample-python/sample-python.py:20
 msgid "Python Source"
 msgstr ""
 
-#: ../sample-plugins/sample/rb-sample-plugin.c:82
-#: ../sample-plugins/sample/rb-sample-plugin.c:89
-#: ../sample-plugins/sample/sample.plugin.in.h:1
+#: sample-plugins/sample/rb-sample-plugin.c:80
+#: sample-plugins/sample/rb-sample-plugin.c:87
+#: sample-plugins/sample/sample.plugin.desktop.in:5
 msgid "Sample Plugin"
 msgstr ""
 
-#: ../sample-plugins/sample/sample.plugin.in.h:2
+#: sample-plugins/sample/sample.plugin.desktop.in:6
 msgid "A sample plugin in C with no features"
 msgstr ""
 
-#: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:1
+#: sample-plugins/sample-vala/sample-vala.plugin.desktop.in:5
 msgid "Vala Sample Plugin"
 msgstr ""
 
-#: ../sample-plugins/sample-vala/sample-vala.plugin.in.h:2
+#: sample-plugins/sample-vala/sample-vala.plugin.desktop.in:6
 msgid "A sample plugin in Vala with no features"
 msgstr ""
 
-#: ../shell/rb-application.c:141
-msgid "Configure Plugins"
-msgstr "Плагиндерді баптау"
-
-#: ../shell/rb-application.c:208
+#: shell/rb-application.c:166
 msgid "translator-credits"
 msgstr "Baurzhan Muftakhidinov <baurthefirst@gmail.com>"
 
-#: ../shell/rb-application.c:211
+#: shell/rb-application.c:169
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3405,7 +3325,7 @@ msgid ""
 "(at your option) any later version.\n"
 msgstr ""
 
-#: ../shell/rb-application.c:215
+#: shell/rb-application.c:173
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3413,70 +3333,70 @@ msgid ""
 "GNU General Public License for more details.\n"
 msgstr ""
 
-#: ../shell/rb-application.c:219
+#: shell/rb-application.c:177
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
 "51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA\n"
 msgstr ""
 
-#: ../shell/rb-application.c:226
+#: shell/rb-application.c:184
 msgid "Maintainers:"
 msgstr ""
 
-#: ../shell/rb-application.c:229
+#: shell/rb-application.c:187
 msgid "Former Maintainers:"
 msgstr ""
 
-#: ../shell/rb-application.c:232
+#: shell/rb-application.c:190
 msgid "Contributors:"
 msgstr "Үлесін қосқандар:"
 
-#: ../shell/rb-application.c:234
+#: shell/rb-application.c:192
 msgid "Music management and playback software for GNOME."
 msgstr ""
 
-#: ../shell/rb-application.c:244
+#: shell/rb-application.c:202
 msgid "Rhythmbox Website"
 msgstr "Rhythmbox вебсайты"
 
-#: ../shell/rb-application.c:272 ../shell/rb-shell-preferences.c:163
+#: shell/rb-application.c:230 shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "Көмекті көрсету мүмкін емес"
 
-#: ../shell/rb-application.c:612
+#: shell/rb-application.c:550
 msgid "Enable debug output"
 msgstr ""
 
-#: ../shell/rb-application.c:613
+#: shell/rb-application.c:551
 msgid "Enable debug output matching a specified string"
 msgstr ""
 
-#: ../shell/rb-application.c:614
+#: shell/rb-application.c:552
 msgid "Do not update the library with file changes"
 msgstr ""
 
-#: ../shell/rb-application.c:615
+#: shell/rb-application.c:553
 msgid "Do not register the shell"
 msgstr ""
 
-#: ../shell/rb-application.c:616
+#: shell/rb-application.c:554
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr ""
 
-#: ../shell/rb-application.c:617
+#: shell/rb-application.c:555
 msgid "Disable loading of plugins"
 msgstr ""
 
-#: ../shell/rb-application.c:618
+#: shell/rb-application.c:556
 msgid "Path for database file to use"
 msgstr ""
 
-#: ../shell/rb-application.c:619
+#: shell/rb-application.c:557
 msgid "Path for playlists file to use"
 msgstr ""
 
-#: ../shell/rb-application.c:631
+#: shell/rb-application.c:570
 #, c-format
 msgid ""
 "%s\n"
@@ -3485,226 +3405,226 @@ msgstr ""
 "%s\n"
 "Командалық жолдың барлық опцияларын қарау үшін '%s --help' енгізіңіз.\n"
 
-#: ../shell/rb-playlist-manager.c:166
+#: shell/rb-playlist-manager.c:167
 msgid "MPEG Version 3.0 URL"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:167
+#: shell/rb-playlist-manager.c:168
 msgid "Shoutcast playlist"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:168
+#: shell/rb-playlist-manager.c:169
 msgid "XML Shareable Playlist Format"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:265
-msgid "Unnamed playlist"
-msgstr ""
-
-#: ../shell/rb-playlist-manager.c:308
+#: shell/rb-playlist-manager.c:306
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:773
+#: shell/rb-playlist-manager.c:765
 msgid "Untitled Playlist"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:817 ../shell/rb-playlist-manager.c:860
+#: shell/rb-playlist-manager.c:809 shell/rb-playlist-manager.c:852
 msgid "New Playlist"
 msgstr "Жаңа ойнату тізімі"
 
-#: ../shell/rb-playlist-manager.c:1061
+#: shell/rb-playlist-manager.c:1053
 msgid "Couldn't read playlist"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1087
+#: shell/rb-playlist-manager.c:1079
 msgid "All Files"
 msgstr "Барлық файлдар"
 
-#: ../shell/rb-playlist-manager.c:1092
+#: shell/rb-playlist-manager.c:1084
 msgid "Load Playlist"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1148 ../sources/rb-playlist-source.c:708
+#: shell/rb-playlist-manager.c:1140 sources/rb-playlist-source.c:665
 msgid "Couldn't save playlist"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1148
+#: shell/rb-playlist-manager.c:1140
 msgid "Unsupported file extension given."
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1481
+#: shell/rb-playlist-manager.c:1473
 #, c-format
 msgid "Playlist %s already exists"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1511 ../shell/rb-playlist-manager.c:1544
-#: ../shell/rb-playlist-manager.c:1584 ../shell/rb-playlist-manager.c:1627
+#: shell/rb-playlist-manager.c:1503 shell/rb-playlist-manager.c:1536
+#: shell/rb-playlist-manager.c:1576 shell/rb-playlist-manager.c:1619
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr ""
 
-#: ../shell/rb-playlist-manager.c:1552 ../shell/rb-playlist-manager.c:1592
+#: shell/rb-playlist-manager.c:1544 shell/rb-playlist-manager.c:1584
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr ""
 
-#: ../shell/rb-shell.c:2066
+#: shell/rb-shell.c:2051
 msgid "Error while saving song information"
 msgstr ""
 
-#: ../shell/rb-shell.c:2270
+#: shell/rb-shell.c:2255
 msgid "Pause playback"
 msgstr "Ойнатуды аялдату"
 
-#: ../shell/rb-shell.c:2281
+#: shell/rb-shell.c:2262
 msgid "Start playback"
 msgstr ""
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2392
+#: shell/rb-shell.c:2372
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Аялдатылған)"
 
-#: ../shell/rb-shell.c:2795 ../sources/rb-play-queue-source.c:659
+#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr ""
 
-#: ../shell/rb-shell.c:3124
+#: shell/rb-shell.c:3038
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr ""
 
-#: ../shell/rb-shell.c:3157 ../shell/rb-shell.c:3200
+#: shell/rb-shell.c:3071 shell/rb-shell.c:3114
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr ""
 
-#: ../shell/rb-shell.c:3209
+#: shell/rb-shell.c:3123
 #, c-format
 msgid "Unknown property %s"
 msgstr ""
 
-#: ../shell/rb-shell.c:3223
+#: shell/rb-shell.c:3137
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:390
+#: shell/rb-shell-player.c:389
 msgid "Stream error"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:391
+#: shell/rb-shell-player.c:390
 msgid "Unexpected end of stream!"
 msgstr "Күтілмеген ағын соңы!"
 
-#: ../shell/rb-shell-player.c:677
+#: shell/rb-shell-player.c:676
 #, c-format
 msgid "Playlist was empty"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:1110
+#: shell/rb-shell-player.c:1109
 #, c-format
 msgid "Not currently playing"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:1167
+#: shell/rb-shell-player.c:1166
 #, c-format
 msgid "No previous song"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:1266
+#: shell/rb-shell-player.c:1265
 #, c-format
 msgid "No next song"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:2127
+#: shell/rb-shell-player.c:2124
 msgid "Couldn't stop playback"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:2246
+#: shell/rb-shell-player.c:2243
 #, c-format
 msgid "Playback position not available"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:2278 ../shell/rb-shell-player.c:2312
+#: shell/rb-shell-player.c:2275 shell/rb-shell-player.c:2309
 #, c-format
 msgid "Current song is not seekable"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:2468 ../shell/rb-shell-player.c:2779
+#: shell/rb-shell-player.c:2465 shell/rb-shell-player.c:2776
 msgid "Couldn't start playback"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:3275
+#: shell/rb-shell-player.c:3287
 msgid "Linear"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:3277
+#: shell/rb-shell-player.c:3289
 msgid "Linear looping"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:3281
+#: shell/rb-shell-player.c:3293
 msgid "Random with equal weights"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:3283
+#: shell/rb-shell-player.c:3295
 msgid "Random by time since last play"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:3285
+#: shell/rb-shell-player.c:3297
 msgid "Random by rating"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:3287
+#: shell/rb-shell-player.c:3299
 msgid "Random by time since last play and rating"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:3289
+#: shell/rb-shell-player.c:3301
 msgid "Linear, removing entries once played"
 msgstr ""
 
-#: ../shell/rb-shell-player.c:3299
+#: shell/rb-shell-player.c:3311
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr ""
 
-#: ../shell/rb-shell-preferences.c:202
+#: shell/rb-shell-preferences.c:202
 msgid "Rhythmbox Preferences"
 msgstr "Rhythmbox баптаулары"
 
-#: ../shell/rb-shell-preferences.c:248
+#: shell/rb-shell-preferences.c:248
 msgid "General"
 msgstr "Жалпы"
 
-#: ../shell/rb-shell-preferences.c:312
+#: shell/rb-shell-preferences.c:312
 msgid "Playback"
 msgstr "Ойнату"
 
-#: ../shell/rb-track-transfer-queue.c:175
+#: shell/rb-shell-preferences.c:428
+msgid "Plugins"
+msgstr "Плагиндер"
+
+#: shell/rb-track-transfer-queue.c:174
 #, c-format
 msgid "The file \"%s\" already exists. Do you want to replace it?"
 msgstr ""
 
-#: ../shell/rb-track-transfer-queue.c:189
+#: shell/rb-track-transfer-queue.c:188
 msgid "_Skip"
 msgstr "А_ттап кету"
 
-#: ../shell/rb-track-transfer-queue.c:190
+#: shell/rb-track-transfer-queue.c:189
 msgid "_Replace"
 msgstr "А_лмастыру"
 
-#: ../shell/rb-track-transfer-queue.c:191
+#: shell/rb-track-transfer-queue.c:190
 msgid "S_kip All"
 msgstr "Бар_лығын аттап кету"
 
-#: ../shell/rb-track-transfer-queue.c:192
+#: shell/rb-track-transfer-queue.c:191
 msgid "Replace _All"
 msgstr "Барл_ығын алмастыру"
 
-#: ../shell/rb-track-transfer-queue.c:439
+#: shell/rb-track-transfer-queue.c:438
 #, c-format
 msgid ""
 "%d file cannot be transferred as it must be converted into a format "
@@ -3715,17 +3635,16 @@ msgid_plural ""
 "supported by the target device but no suitable encoding profiles are "
 "available"
 msgstr[0] ""
-msgstr[1] ""
 
 #. XXX should provide the option of picking a different format?
-#: ../shell/rb-track-transfer-queue.c:463
+#: shell/rb-track-transfer-queue.c:462
 #, c-format
 msgid ""
 "Additional software is required to encode media in your preferred format:\n"
 "%s"
 msgstr ""
 
-#: ../shell/rb-track-transfer-queue.c:467
+#: shell/rb-track-transfer-queue.c:466
 #, c-format
 msgid ""
 "Additional software is required to convert %d file into a format supported "
@@ -3736,718 +3655,719 @@ msgid_plural ""
 "by the target device:\n"
 "%s"
 msgstr[0] ""
-msgstr[1] ""
 
-#: ../shell/rb-track-transfer-queue.c:484
+#: shell/rb-track-transfer-queue.c:483
 msgid "Unable to transfer tracks"
 msgstr ""
 
-#: ../shell/rb-track-transfer-queue.c:489
+#: shell/rb-track-transfer-queue.c:488
 msgid "_Cancel the transfer"
 msgstr ""
 
-#: ../shell/rb-track-transfer-queue.c:491
+#: shell/rb-track-transfer-queue.c:490
 msgid "_Skip these files"
 msgstr ""
 
-#: ../shell/rb-track-transfer-queue.c:494
+#: shell/rb-track-transfer-queue.c:493
 msgid "_Install"
 msgstr "Ор_нату"
 
-#: ../sources/rb-auto-playlist-source.c:254 ../sources/rb-browser-source.c:315
-#: ../sources/rb-static-playlist-source.c:296
+#: sources/rb-auto-playlist-source.c:254 sources/rb-browser-source.c:315
+#: sources/rb-static-playlist-source.c:297
 msgid "Search artists"
 msgstr ""
 
-#: ../sources/rb-auto-playlist-source.c:255 ../sources/rb-browser-source.c:316
-#: ../sources/rb-static-playlist-source.c:297
+#: sources/rb-auto-playlist-source.c:255 sources/rb-browser-source.c:316
+#: sources/rb-static-playlist-source.c:298
 msgid "Search composers"
 msgstr ""
 
-#: ../sources/rb-auto-playlist-source.c:256 ../sources/rb-browser-source.c:317
-#: ../sources/rb-static-playlist-source.c:298
+#: sources/rb-auto-playlist-source.c:256 sources/rb-browser-source.c:317
+#: sources/rb-static-playlist-source.c:299
 msgid "Search albums"
 msgstr ""
 
-#: ../sources/rb-auto-playlist-source.c:257 ../sources/rb-browser-source.c:318
-#: ../sources/rb-static-playlist-source.c:299
+#: sources/rb-auto-playlist-source.c:257 sources/rb-browser-source.c:318
+#: sources/rb-static-playlist-source.c:300
 msgid "Search titles"
 msgstr ""
 
-#: ../sources/rb-auto-playlist-source.c:258 ../sources/rb-browser-source.c:319
-#: ../sources/rb-static-playlist-source.c:300
+#: sources/rb-auto-playlist-source.c:258 sources/rb-browser-source.c:319
+#: sources/rb-static-playlist-source.c:301
 msgid "Search genres"
 msgstr ""
 
-#: ../sources/rb-device-source.c:105
+#: sources/rb-device-source.c:105
 msgid "Unable to eject"
 msgstr "Шығару мүмкін емес"
 
-#: ../sources/rb-device-source.c:123
+#: sources/rb-device-source.c:123
 msgid "Unable to unmount"
 msgstr "Тіркеуден босату мүмкін емес"
 
-#: ../sources/rb-display-page-group.c:86
+#: sources/rb-display-page-group.c:86
 msgid "Library"
 msgstr "Жинақ"
 
-#: ../sources/rb-display-page-group.c:89
+#: sources/rb-display-page-group.c:89
 msgid "Stores"
 msgstr ""
 
-#: ../sources/rb-display-page-group.c:95
+#: sources/rb-display-page-group.c:95
 msgid "Devices"
 msgstr "Құрылғылар"
 
-#: ../sources/rb-display-page-group.c:99
+#: sources/rb-display-page-group.c:99
 msgid "Shared"
-msgstr ""
+msgstr "Бөлісетін"
 
 #. set up info bar for triggering codec installation
-#: ../sources/rb-import-errors-source.c:235
+#: sources/rb-import-errors-source.c:233
 msgid "Install Additional Software"
 msgstr ""
 
-#: ../sources/rb-import-errors-source.c:241
+#: sources/rb-import-errors-source.c:239
 msgid "Additional software is required to play some of these files."
 msgstr ""
 
-#: ../sources/rb-import-errors-source.c:346
+#: sources/rb-import-errors-source.c:346
 msgid "Import Errors"
 msgstr ""
 
-#: ../sources/rb-import-errors-source.c:383
+#: sources/rb-import-errors-source.c:383
 #, c-format
 msgid "%d import error"
 msgid_plural "%d import errors"
 msgstr[0] ""
-msgstr[1] ""
 
-#: ../sources/rb-library-source.c:129
+#: sources/rb-library-source.c:121
 msgid "Artist/Artist - Album"
 msgstr ""
 
-#: ../sources/rb-library-source.c:130
+#: sources/rb-library-source.c:122
 msgid "Artist/Album"
 msgstr ""
 
-#: ../sources/rb-library-source.c:131
+#: sources/rb-library-source.c:123
 msgid "Artist - Album"
 msgstr ""
 
-#: ../sources/rb-library-source.c:132 ../widgets/rb-entry-view.c:1471
-#: ../widgets/rb-library-browser.c:136
+#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1477
+#: widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Альбом"
 
-#: ../sources/rb-library-source.c:138
+#: sources/rb-library-source.c:130
 msgid "Number - Title"
 msgstr ""
 
-#: ../sources/rb-library-source.c:139
+#: sources/rb-library-source.c:131
 msgid "Artist - Title"
 msgstr ""
 
-#: ../sources/rb-library-source.c:140
+#: sources/rb-library-source.c:132
 msgid "Artist - Number - Title"
 msgstr ""
 
-#: ../sources/rb-library-source.c:141
+#: sources/rb-library-source.c:133
 msgid "Artist (Album) - Number - Title"
 msgstr ""
 
-#: ../sources/rb-library-source.c:143
+#: sources/rb-library-source.c:135
 msgid "Number. Artist - Title"
 msgstr ""
 
-#: ../sources/rb-library-source.c:157
-msgid "Constant bit rate"
-msgstr ""
-
-#: ../sources/rb-library-source.c:158
-msgid "Variable bit rate"
-msgstr ""
-
-#: ../sources/rb-library-source.c:447
-#: ../sources/sync/rb-sync-settings-ui.c:217
-#: ../sources/sync/rb-sync-settings-ui.c:218
-#: ../sources/sync/rb-sync-state-ui.c:77
+#: sources/rb-library-source.c:416 sources/sync/rb-sync-settings-ui.c:217
+#: sources/sync/rb-sync-settings-ui.c:218 sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "Музыка"
 
-#: ../sources/rb-library-source.c:500
+#: sources/rb-library-source.c:469
 msgid "Choose Library Location"
 msgstr ""
 
-#: ../sources/rb-library-source.c:539
+#: sources/rb-library-source.c:508
 msgid "Multiple locations set"
 msgstr ""
 
-#: ../sources/rb-library-source.c:729
-msgid "Default settings"
-msgstr ""
-
-#: ../sources/rb-library-source.c:1509
+#: sources/rb-library-source.c:1044
 msgid "Example Path:"
 msgstr ""
 
-#: ../sources/rb-library-source.c:1682 ../sources/rb-library-source.c:1686
-#: ../sources/rb-transfer-target.c:189
+#: sources/rb-library-source.c:1198 sources/rb-library-source.c:1202
+#: sources/rb-transfer-target.c:234
 msgid "Error transferring track"
 msgstr ""
 
-#: ../sources/rb-library-source.c:1772
+#: sources/rb-library-source.c:1284
 msgid "Copying tracks to the library"
 msgstr ""
 
-#: ../sources/rb-library-source.c:1846
+#: sources/rb-library-source.c:1358
 msgid "Adding tracks to the library"
 msgstr ""
 
-#: ../sources/rb-media-player-source.c:614
+#: sources/rb-media-player-source.c:773
 #, c-format
 msgid "Syncing tracks to %s"
 msgstr ""
 
-#: ../sources/rb-media-player-source.c:670
+#: sources/rb-media-player-source.c:829
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
 msgstr ""
 
-#: ../sources/rb-media-player-source.c:675
+#: sources/rb-media-player-source.c:834
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
 msgstr ""
 
-#: ../sources/rb-media-player-source.c:727
+#: sources/rb-media-player-source.c:885
 #, c-format
 msgid "%s Sync Settings"
 msgstr ""
 
-#: ../sources/rb-media-player-source.c:732
+#: sources/rb-media-player-source.c:890
 msgid "Sync with the device"
 msgstr ""
 
-#: ../sources/rb-media-player-source.c:734
+#: sources/rb-media-player-source.c:892
 msgid "Don't sync"
 msgstr ""
 
-#: ../sources/rb-missing-files-source.c:274
+#: sources/rb-missing-files-source.c:274
 msgid "Missing Files"
 msgstr "Файлдар жоқ"
 
-#: ../sources/rb-missing-files-source.c:362
+#: sources/rb-missing-files-source.c:362
 #, c-format
 msgid "%d missing file"
 msgid_plural "%d missing files"
 msgstr[0] ""
-msgstr[1] ""
 
-#: ../sources/rb-playlist-source.c:1191
+#: sources/rb-playlist-source.c:1148
 msgid "Remove from Playlist"
 msgstr "Ойнату тізімінен өшіру"
 
-#: ../sources/rb-play-queue-source.c:292 ../sources/rb-play-queue-source.c:394
-#: ../sources/rb-play-queue-source.c:503
+#: sources/rb-play-queue-source.c:297 sources/rb-play-queue-source.c:399
+#: sources/rb-play-queue-source.c:508
 msgid "Play Queue"
 msgstr "Ойнату кезегі"
 
-#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:919
-msgid "from"
-msgstr ""
-
-#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:918
+#. Translators: format is "<title> by <artist> from <album>"
+#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:929
 msgid "by"
 msgstr ""
 
-#: ../sources/rb-source.c:595
+#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:930
+msgid "from"
+msgstr ""
+
+#: sources/rb-source.c:604 widgets/rb-import-dialog.c:480
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d өлең"
 
-#: ../sources/rb-streaming-source.c:217
+#: sources/rb-streaming-source.c:217
 msgid "Connecting"
 msgstr "Байланысу"
 
-#: ../sources/rb-streaming-source.c:221
+#: sources/rb-streaming-source.c:221
 msgid "Buffering"
 msgstr ""
 
-#: ../sources/rb-transfer-target.c:456
+#: sources/rb-transfer-target.c:535
 #, c-format
 msgid "Transferring tracks to %s"
 msgstr ""
 
-#: ../sources/sync/rb-sync-settings-ui.c:229
+#: sources/sync/rb-sync-settings-ui.c:229
 msgid "All Music"
 msgstr "Барлық музыка"
 
-#: ../sources/sync/rb-sync-state-ui.c:79
+#: sources/sync/rb-sync-state-ui.c:79
 msgid "Other"
 msgstr "Басқа"
 
-#: ../sources/sync/rb-sync-state-ui.c:80
+#: sources/sync/rb-sync-state-ui.c:80
 msgid "Available"
 msgstr "Қолжетерлік"
 
-#: ../widgets/rb-alert-dialog.c:86
+#: widgets/rb-alert-dialog.c:86
 msgid "Image/label border"
 msgstr ""
 
-#: ../widgets/rb-alert-dialog.c:87
+#: widgets/rb-alert-dialog.c:87
 msgid "Width of border around the label and image in the alert dialog"
 msgstr ""
 
-#: ../widgets/rb-alert-dialog.c:96
+#: widgets/rb-alert-dialog.c:96
 msgid "Alert Type"
 msgstr ""
 
-#: ../widgets/rb-alert-dialog.c:97
+#: widgets/rb-alert-dialog.c:97
 msgid "The type of alert"
 msgstr ""
 
-#: ../widgets/rb-alert-dialog.c:105
+#: widgets/rb-alert-dialog.c:105
 msgid "Alert Buttons"
 msgstr ""
 
-#: ../widgets/rb-alert-dialog.c:106
+#: widgets/rb-alert-dialog.c:106
 msgid "The buttons shown in the alert dialog"
 msgstr ""
 
-#: ../widgets/rb-alert-dialog.c:171
+#: widgets/rb-alert-dialog.c:175
 msgid "Show more _details"
 msgstr "_Көбірек ақпарат шығару"
 
-#: ../widgets/rb-alert-dialog.c:366 ../widgets/rb-alert-dialog.c:400
+#: widgets/rb-alert-dialog.c:370 widgets/rb-alert-dialog.c:404
 msgid "_OK"
 msgstr "О_К"
 
-#: ../widgets/rb-alert-dialog.c:387
+#: widgets/rb-alert-dialog.c:391
 msgid "_No"
-msgstr ""
+msgstr "_Жоқ"
 
-#: ../widgets/rb-alert-dialog.c:390
+#: widgets/rb-alert-dialog.c:394
 msgid "_Yes"
 msgstr "_Иә"
 
-#: ../widgets/rb-dialog.c:134
+#: widgets/rb-dialog.c:132
 msgid "_Open"
 msgstr "_Ашу"
 
-#: ../widgets/rb-entry-view.c:1012 ../widgets/rb-entry-view.c:1530
-#: ../widgets/rb-song-info.c:1231
+#: widgets/rb-encoding-settings.c:55
+msgid "Constant bit rate"
+msgstr ""
+
+#: widgets/rb-encoding-settings.c:56
+msgid "Variable bit rate"
+msgstr ""
+
+#: widgets/rb-encoding-settings.c:57
+msgid "Constrained Variable bit rate"
+msgstr ""
+
+#: widgets/rb-encoding-settings.c:404
+msgid "Default settings"
+msgstr ""
+
+#: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1539
+#: widgets/rb-song-info.c:1232
 msgid "Lossless"
 msgstr ""
 
-#: ../widgets/rb-entry-view.c:1430
+#: widgets/rb-entry-view.c:1436
 msgid "Track"
 msgstr ""
 
-#: ../widgets/rb-entry-view.c:1461
+#: widgets/rb-entry-view.c:1467
 msgid "Composer"
 msgstr ""
 
-#: ../widgets/rb-entry-view.c:1491
+#: widgets/rb-entry-view.c:1497
 msgid "Comment"
 msgstr "Түсіндірме"
 
-#: ../widgets/rb-entry-view.c:1501
+#: widgets/rb-entry-view.c:1508
 msgid "Time"
 msgstr "Уақыт"
 
-#: ../widgets/rb-entry-view.c:1513
+#: widgets/rb-entry-view.c:1521
 msgid "Year"
 msgstr "Жыл"
 
-#: ../widgets/rb-entry-view.c:1528
+#: widgets/rb-entry-view.c:1534
+msgid "Quality"
+msgstr "Сапасы"
+
+#: widgets/rb-entry-view.c:1537
 msgid "000 kbps"
 msgstr ""
 
-#: ../widgets/rb-entry-view.c:1539
+#: widgets/rb-entry-view.c:1548
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: ../widgets/rb-entry-view.c:1561
+#: widgets/rb-entry-view.c:1571
 msgid "Play Count"
 msgstr ""
 
-#: ../widgets/rb-entry-view.c:1573
+#: widgets/rb-entry-view.c:1584
 msgid "Last Played"
 msgstr ""
 
-#: ../widgets/rb-entry-view.c:1585
+#: widgets/rb-entry-view.c:1597
 msgid "Date Added"
 msgstr ""
 
-#: ../widgets/rb-entry-view.c:1596
+#: widgets/rb-entry-view.c:1609
 msgid "Last Seen"
 msgstr ""
 
-#: ../widgets/rb-entry-view.c:1607
+#: widgets/rb-entry-view.c:1620
 msgid "Location"
 msgstr "Орналасуы"
 
-#: ../widgets/rb-entry-view.c:1616
+#: widgets/rb-entry-view.c:1630
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
-#: ../widgets/rb-entry-view.c:1879
+#: widgets/rb-entry-view.c:1918
 msgid "Now Playing"
 msgstr ""
 
-#: ../widgets/rb-entry-view.c:1938
+#: widgets/rb-entry-view.c:1983
 msgid "Playback Error"
-msgstr ""
+msgstr "Ойнату қатесі"
 
-#: ../widgets/rb-fading-image.c:301
+#: widgets/rb-fading-image.c:301
 msgid "Drop artwork here"
 msgstr ""
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1222
+#: widgets/rb-header.c:1219
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1233
+#: widgets/rb-header.c:1230
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
 
-#: ../widgets/rb-import-dialog.c:339
+#: widgets/rb-import-dialog.c:342
 msgid "Examining files"
 msgstr ""
 
 #. this isn't a terribly helpful message.
-#: ../widgets/rb-import-dialog.c:409
+#: widgets/rb-import-dialog.c:412
 #, c-format
 msgid "The location you have selected is on the device %s."
 msgstr ""
 
-#: ../widgets/rb-import-dialog.c:415
+#: widgets/rb-import-dialog.c:418
 #, c-format
 msgid "Show %s"
 msgstr "%s көрсету"
 
-#: ../widgets/rb-import-dialog.c:463
+#: widgets/rb-import-dialog.c:466
 #, c-format
 msgid "Import %d selected track"
 msgid_plural "Import %d selected tracks"
 msgstr[0] ""
-msgstr[1] ""
 
-#: ../widgets/rb-import-dialog.c:466
+#: widgets/rb-import-dialog.c:469
 #, c-format
 msgid "Import %d listed track"
 msgid_plural "Import %d listed tracks"
 msgstr[0] ""
-msgstr[1] ""
 
-#: ../widgets/rb-property-view.c:661
+#: widgets/rb-property-view.c:663
 #, c-format
 msgid "%d artist (%d)"
 msgid_plural "All %d artists (%d)"
 msgstr[0] "%d әртіс (%d)"
 
-#: ../widgets/rb-property-view.c:664
+#: widgets/rb-property-view.c:666
 #, c-format
 msgid "%d album (%d)"
 msgid_plural "All %d albums (%d)"
 msgstr[0] "%d альбом (%d)"
 
-#: ../widgets/rb-property-view.c:667
+#: widgets/rb-property-view.c:669
 #, c-format
 msgid "%d genre (%d)"
 msgid_plural "All %d genres (%d)"
 msgstr[0] "%d жанр (%d)"
 
-#: ../widgets/rb-property-view.c:670
+#: widgets/rb-property-view.c:672
 #, c-format
 msgid "%d (%d)"
 msgid_plural "All %d (%d)"
 msgstr[0] ""
-msgstr[1] ""
 
-#: ../widgets/rb-property-view.c:676
+#: widgets/rb-property-view.c:678
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
 
-#: ../widgets/rb-query-creator.c:194
+#: widgets/rb-query-creator.c:194
 msgid "_New"
 msgstr "_Жаңа"
 
-#: ../widgets/rb-query-creator.c:210
+#: widgets/rb-query-creator.c:210
 msgid "Create Automatic Playlist"
 msgstr ""
 
-#: ../widgets/rb-query-creator.c:212
+#: widgets/rb-query-creator.c:212
 msgid "Edit Automatic Playlist"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:77
+#: widgets/rb-query-creator-properties.c:77
 msgctxt "query-criteria"
 msgid "Title"
 msgstr "Атауы"
 
-#: ../widgets/rb-query-creator-properties.c:78
+#: widgets/rb-query-creator-properties.c:78
 msgctxt "query-criteria"
 msgid "Artist"
 msgstr "Әртіс"
 
-#: ../widgets/rb-query-creator-properties.c:79
+#: widgets/rb-query-creator-properties.c:79
 msgctxt "query-criteria"
 msgid "Composer"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:80
+#: widgets/rb-query-creator-properties.c:80
 msgctxt "query-criteria"
 msgid "Album"
 msgstr "Альбом"
 
-#: ../widgets/rb-query-creator-properties.c:81
+#: widgets/rb-query-creator-properties.c:81
 msgctxt "query-criteria"
 msgid "Album Artist"
-msgstr ""
+msgstr "Альбом әртісі"
 
-#: ../widgets/rb-query-creator-properties.c:82
+#: widgets/rb-query-creator-properties.c:82
 msgctxt "query-criteria"
 msgid "Genre"
 msgstr "Жанры"
 
-#: ../widgets/rb-query-creator-properties.c:83
+#: widgets/rb-query-creator-properties.c:83
 msgctxt "query-criteria"
 msgid "Year"
 msgstr "Жыл"
 
-#: ../widgets/rb-query-creator-properties.c:84
+#: widgets/rb-query-creator-properties.c:84
 msgctxt "query-criteria"
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: ../widgets/rb-query-creator-properties.c:85
+#: widgets/rb-query-creator-properties.c:85
 msgctxt "query-criteria"
 msgid "Path"
 msgstr "Жол"
 
-#: ../widgets/rb-query-creator-properties.c:86
+#: widgets/rb-query-creator-properties.c:86
 msgctxt "query-criteria"
 msgid "Comment"
 msgstr "Түсіндірме"
 
-#: ../widgets/rb-query-creator-properties.c:88
+#: widgets/rb-query-creator-properties.c:88
 msgctxt "query-criteria"
 msgid "Play Count"
-msgstr ""
+msgstr "Ойнату саны"
 
-#: ../widgets/rb-query-creator-properties.c:89
+#: widgets/rb-query-creator-properties.c:89
 msgctxt "query-criteria"
 msgid "Track Number"
-msgstr ""
+msgstr "Трек нөмірі"
 
-#: ../widgets/rb-query-creator-properties.c:90
+#: widgets/rb-query-creator-properties.c:90
 msgctxt "query-criteria"
 msgid "Disc Number"
-msgstr ""
+msgstr "Диск нөмірі"
 
-#: ../widgets/rb-query-creator-properties.c:91
+#: widgets/rb-query-creator-properties.c:91
 msgctxt "query-criteria"
 msgid "Bitrate"
 msgstr "Битрейт"
 
-#: ../widgets/rb-query-creator-properties.c:93
+#: widgets/rb-query-creator-properties.c:93
 msgctxt "query-criteria"
 msgid "Duration"
 msgstr "Ұзақтығы"
 
-#: ../widgets/rb-query-creator-properties.c:94
+#: widgets/rb-query-creator-properties.c:94
 msgctxt "query-criteria"
 msgid "Beats Per Minute"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:95
+#: widgets/rb-query-creator-properties.c:95
 msgctxt "query-criteria"
 msgid "Time of Last Play"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:96
+#: widgets/rb-query-creator-properties.c:96
 msgctxt "query-criteria"
 msgid "Time Added to Library"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:107
+#: widgets/rb-query-creator-properties.c:107
 msgctxt "query-sort"
 msgid "Artist"
 msgstr "Әртіс"
 
-#: ../widgets/rb-query-creator-properties.c:107
-#: ../widgets/rb-query-creator-properties.c:108
-#: ../widgets/rb-query-creator-properties.c:109
-#: ../widgets/rb-query-creator-properties.c:110
-#: ../widgets/rb-query-creator-properties.c:111
-#: ../widgets/rb-query-creator-properties.c:112
-#: ../widgets/rb-query-creator-properties.c:120
+#: widgets/rb-query-creator-properties.c:107
+#: widgets/rb-query-creator-properties.c:108
+#: widgets/rb-query-creator-properties.c:109
+#: widgets/rb-query-creator-properties.c:110
+#: widgets/rb-query-creator-properties.c:111
+#: widgets/rb-query-creator-properties.c:112
+#: widgets/rb-query-creator-properties.c:120
 msgid "_In reverse alphabetical order"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:108
+#: widgets/rb-query-creator-properties.c:108
 msgctxt "query-sort"
 msgid "Composer"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:109
+#: widgets/rb-query-creator-properties.c:109
 msgctxt "query-sort"
 msgid "Album"
 msgstr "Альбом"
 
-#: ../widgets/rb-query-creator-properties.c:110
+#: widgets/rb-query-creator-properties.c:110
 msgctxt "query-sort"
 msgid "Album Artist"
-msgstr ""
+msgstr "Альбом әртісі"
 
-#: ../widgets/rb-query-creator-properties.c:111
+#: widgets/rb-query-creator-properties.c:111
 msgctxt "query-sort"
 msgid "Genre"
 msgstr "Жанры"
 
-#: ../widgets/rb-query-creator-properties.c:112
+#: widgets/rb-query-creator-properties.c:112
 msgctxt "query-sort"
 msgid "Title"
 msgstr "Атауы"
 
-#: ../widgets/rb-query-creator-properties.c:113
+#: widgets/rb-query-creator-properties.c:113
 msgctxt "query-sort"
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: ../widgets/rb-query-creator-properties.c:113
+#: widgets/rb-query-creator-properties.c:113
 msgid "W_ith more highly rated tracks first"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:114
+#: widgets/rb-query-creator-properties.c:114
 msgctxt "query-sort"
 msgid "Play Count"
-msgstr ""
+msgstr "Ойнату саны"
 
-#: ../widgets/rb-query-creator-properties.c:114
+#: widgets/rb-query-creator-properties.c:114
 msgid "W_ith more often played songs first"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:115
+#: widgets/rb-query-creator-properties.c:115
 msgctxt "query-sort"
 msgid "Year"
 msgstr "Жыл"
 
-#: ../widgets/rb-query-creator-properties.c:115
+#: widgets/rb-query-creator-properties.c:115
 msgid "W_ith newer tracks first"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:116
+#: widgets/rb-query-creator-properties.c:116
 msgctxt "query-sort"
 msgid "Duration"
 msgstr "Ұзақтығы"
 
-#: ../widgets/rb-query-creator-properties.c:116
+#: widgets/rb-query-creator-properties.c:116
 msgid "W_ith longer tracks first"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:117
+#: widgets/rb-query-creator-properties.c:117
 msgctxt "query-sort"
 msgid "Track Number"
-msgstr ""
+msgstr "Трек нөмірі"
 
-#: ../widgets/rb-query-creator-properties.c:117
+#: widgets/rb-query-creator-properties.c:117
 msgid "_In decreasing order"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:118
+#: widgets/rb-query-creator-properties.c:118
 msgctxt "query-sort"
 msgid "Last Played"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:118
+#: widgets/rb-query-creator-properties.c:118
 msgid "W_ith more recently played tracks first"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:119
+#: widgets/rb-query-creator-properties.c:119
 msgctxt "query-sort"
 msgid "Date Added"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:119
+#: widgets/rb-query-creator-properties.c:119
 msgid "W_ith more recently added tracks first"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:120
+#: widgets/rb-query-creator-properties.c:120
 msgctxt "query-sort"
 msgid "Comment"
 msgstr "Түсіндірме"
 
-#: ../widgets/rb-query-creator-properties.c:121
+#: widgets/rb-query-creator-properties.c:121
 msgctxt "query-sort"
 msgid "Beats Per Minute"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:121
+#: widgets/rb-query-creator-properties.c:121
 msgid "W_ith faster tempo tracks first"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:134
+#: widgets/rb-query-creator-properties.c:134
 msgid "contains"
 msgstr "құрамында бар"
 
-#: ../widgets/rb-query-creator-properties.c:135
+#: widgets/rb-query-creator-properties.c:135
 msgid "does not contain"
 msgstr "құрамында жоқ"
 
-#: ../widgets/rb-query-creator-properties.c:136
-#: ../widgets/rb-query-creator-properties.c:166
+#: widgets/rb-query-creator-properties.c:136
+#: widgets/rb-query-creator-properties.c:166
 msgid "equals"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:137
-#: ../widgets/rb-query-creator-properties.c:167
+#: widgets/rb-query-creator-properties.c:137
+#: widgets/rb-query-creator-properties.c:167
 msgid "not equal to"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:138
+#: widgets/rb-query-creator-properties.c:138
 msgid "starts with"
 msgstr "басталады"
 
-#: ../widgets/rb-query-creator-properties.c:139
+#: widgets/rb-query-creator-properties.c:139
 msgid "ends with"
 msgstr "аяқталады"
 
-#: ../widgets/rb-query-creator-properties.c:168
+#: widgets/rb-query-creator-properties.c:168
 msgid "at least"
 msgstr ""
 
 #. matches if A >= B
-#: ../widgets/rb-query-creator-properties.c:169
+#: widgets/rb-query-creator-properties.c:169
 msgid "at most"
 msgstr ""
 
 #. Translators: this matches songs within 1-Jan-YEAR to 31-Dec-YEAR
-#: ../widgets/rb-query-creator-properties.c:179
+#: widgets/rb-query-creator-properties.c:179
 msgid "in"
 msgstr ""
 
 #. Translators: this matches songs before 1-Jan-YEAR or after 31-Dec-YEAR
-#: ../widgets/rb-query-creator-properties.c:181
+#: widgets/rb-query-creator-properties.c:181
 msgid "not in"
 msgstr ""
 
 #. Translators: this matches songs after 31-Dec-YEAR
-#: ../widgets/rb-query-creator-properties.c:183
+#: widgets/rb-query-creator-properties.c:183
 msgid "after"
 msgstr "кейін"
 
 #. Translators: this matches songs before 1-Jan-YEAR
-#: ../widgets/rb-query-creator-properties.c:185
+#: widgets/rb-query-creator-properties.c:185
 msgid "before"
 msgstr "дейін"
 
@@ -4455,7 +4375,7 @@ msgstr "дейін"
 #. * Translators: this will match when within <value> of the current time
 #. * e.g. "in the last" "7 days" will match if within 7 days of the current time
 #.
-#: ../widgets/rb-query-creator-properties.c:249
+#: widgets/rb-query-creator-properties.c:249
 msgid "in the last"
 msgstr ""
 
@@ -4463,84 +4383,110 @@ msgstr ""
 #. * Translators: this is the opposite of the above, and will match if not
 #. * within <value> of the current time
 #.
-#: ../widgets/rb-query-creator-properties.c:255
+#: widgets/rb-query-creator-properties.c:255
 msgid "not in the last"
 msgstr ""
 
-#: ../widgets/rb-query-creator-properties.c:269
+#: widgets/rb-query-creator-properties.c:269
 msgid "seconds"
 msgstr "секунд"
 
-#: ../widgets/rb-query-creator-properties.c:270
+#: widgets/rb-query-creator-properties.c:270
 msgid "minutes"
 msgstr "минут"
 
-#: ../widgets/rb-query-creator-properties.c:271
+#: widgets/rb-query-creator-properties.c:271
 msgid "hours"
 msgstr "сағат"
 
-#: ../widgets/rb-query-creator-properties.c:272
+#: widgets/rb-query-creator-properties.c:272
 msgid "days"
 msgstr "күн"
 
-#: ../widgets/rb-query-creator-properties.c:273
+#: widgets/rb-query-creator-properties.c:273
 msgid "weeks"
-msgstr ""
+msgstr "апта"
 
-#: ../widgets/rb-rating-helper.c:295
+#: widgets/rb-rating-helper.c:295
 msgid "No Stars"
 msgstr ""
 
-#: ../widgets/rb-rating-helper.c:297
+#: widgets/rb-rating-helper.c:297
 #, c-format
 msgid "%d Star"
 msgid_plural "%d Stars"
 msgstr[0] "%d жұлдызша"
 
-#: ../widgets/rb-search-entry.c:228
+#: widgets/rb-search-entry.c:227
 msgid "Clear the search text"
 msgstr ""
 
-#: ../widgets/rb-search-entry.c:235
+#: widgets/rb-search-entry.c:234
 msgid "Select the search type"
 msgstr ""
 
-#: ../widgets/rb-search-entry.c:253
+#: widgets/rb-search-entry.c:252
 msgid "Search"
 msgstr "Іздеу"
 
-#: ../widgets/rb-search-entry.c:551
+#: widgets/rb-search-entry.c:550
 msgid "_Search:"
 msgstr "І_здеу:"
 
-#: ../widgets/rb-song-info.c:354
+#: widgets/rb-song-info.c:354
 msgid "_Back"
 msgstr "Ар_тқа"
 
-#: ../widgets/rb-song-info.c:363
+#: widgets/rb-song-info.c:363
 msgid "_Forward"
 msgstr "А_лға"
 
-#: ../widgets/rb-song-info.c:371
+#: widgets/rb-song-info.c:371
 msgid "Song Properties"
 msgstr ""
 
-#: ../widgets/rb-song-info.c:428
+#: widgets/rb-song-info.c:428
 msgid "Multiple Song Properties"
 msgstr ""
 
-#: ../widgets/rb-song-info.c:1294
+#: widgets/rb-song-info.c:1294
 msgid "Unknown file name"
 msgstr ""
 
-#: ../widgets/rb-song-info.c:1316
+#: widgets/rb-song-info.c:1316
 msgid "On the desktop"
 msgstr "Жұмыс үстелінде"
 
-#: ../widgets/rb-song-info.c:1339
+#: widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr ""
 
-#: ../widgets/rb-uri-dialog.c:161
-msgid "_Add"
-msgstr "Қ_осу"
+#~ msgid "Status Bar"
+#~ msgstr "Қалып-күй жолағы"
+
+#~ msgid "_About"
+#~ msgstr "О_сы туралы"
+
+#~ msgid "_Quit"
+#~ msgstr "_Шығу"
+
+#~ msgid "WinampCN (www.winampcn.com)"
+#~ msgstr "WinampCN (www.winampcn.com)"
+
+#~ msgid "Send to..."
+#~ msgstr "Қайда жіберу..."
+
+#~ msgid "Low quality"
+#~ msgstr "Төмен сапалы"
+
+#~ msgid "High quality"
+#~ msgstr "Жоғары сапалы"
+
+#~ msgid "Fullscreen"
+#~ msgstr "Толық экранға"
+
+#~ msgid "Invalid URL"
+#~ msgstr "Сілтеме қате"
+
+#~ msgid "Configure Plugins"
+#~ msgstr "Плагиндерді баптау"
