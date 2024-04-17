@@ -198,7 +198,7 @@ music_dirs_done (RBAndroidSource *source)
 
 		rb_debug ("no storage areas found");
 		if (gtk_widget_get_visible (priv->info_bar) == FALSE) {
-			label = gtk_label_new (_("No storage areas found on this device. You may need to unlock it and enable MTP."));
+			label = gtk_label_new (_("No storage areas found on this device. You may need to unlock it and change it to File Transfer mode."));
 			gtk_container_add (GTK_CONTAINER (gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->info_bar))), label);
 			gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->info_bar), GTK_MESSAGE_INFO);
 			gtk_widget_show_all (priv->info_bar);
