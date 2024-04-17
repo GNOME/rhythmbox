@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-02-08 15:58+0000\n"
-"PO-Revision-Date: 2024-03-30 21:59+0100\n"
+"POT-Creation-Date: 2024-04-17 12:50+0000\n"
+"PO-Revision-Date: 2024-04-17 15:44+0200\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -119,11 +119,12 @@ msgstr "Rhythmbox"
 msgid "Play and organize all your music"
 msgstr "Predvajajte in organizirajte svojo glasbbeno zbirko"
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:10
+#. developer_name tag deprecated with Appstream 1.0
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:11
 msgid "The Rhythmbox developers"
 msgstr "Razvijalci Rhythmboxa"
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:12
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:16
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -136,7 +137,7 @@ msgstr ""
 "(vključno s telefoni) in internetne glasbene storitve, kot sta Last.fm in "
 "Magnatune."
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:18
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:22
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
@@ -144,7 +145,7 @@ msgstr ""
 "Rhythmbox je prosto programje, ki temelji na GTK+ in GStreamer in ki ga je "
 "moč nadgrajevati z uporabo vstavkov, napisanih v jezikih Python in C."
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:30
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:35
 msgid "Main Window"
 msgstr "Glavno okno"
 
@@ -1142,11 +1143,11 @@ msgstr "Seznami predvajanja:"
 
 #: plugins/android/rb-android-source.c:201
 msgid ""
-"No storage areas found on this device. You may need to unlock it and enable "
-"MTP."
+"No storage areas found on this device. You may need to unlock it and change "
+"it to File Transfer mode."
 msgstr ""
 "Na tej napravi ni najdenih nobenih območij za shranjevanje. Morda jo boste "
-"morali odkleniti in omogočiti MTP."
+"morali odkleniti in spremeniti način prenosa datotek."
 
 #: plugins/android/rb-android-source.c:403
 #: plugins/generic-player/rb-generic-player-source.c:563
@@ -3038,7 +3039,7 @@ msgstr "Išči vire podcasta"
 msgid "Search podcast episodes"
 msgstr "Išči epizode podcasta"
 
-#: remote/dbus/rb-client.c:95 shell/rb-application.c:558
+#: remote/dbus/rb-client.c:95 shell/rb-application.c:556
 msgid "Show the version of the program"
 msgstr "Pokaži različico programa"
 
@@ -3470,47 +3471,43 @@ msgstr "Sodelavci:"
 msgid "Music management and playback software for GNOME."
 msgstr "GNOME program za upravljanje in predvajanje glasbe."
 
-#: shell/rb-application.c:202
-msgid "Rhythmbox Website"
-msgstr "Spletišče Rhythmbox"
-
-#: shell/rb-application.c:230 shell/rb-shell-preferences.c:163
+#: shell/rb-application.c:228 shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "Pomoči ni mogoče prikazati "
 
-#: shell/rb-application.c:550
+#: shell/rb-application.c:548
 msgid "Enable debug output"
 msgstr "Omogoči izhod razhroščevanja"
 
-#: shell/rb-application.c:551
+#: shell/rb-application.c:549
 msgid "Enable debug output matching a specified string"
 msgstr "Omogoči filtriran odvod razhroščevanja"
 
-#: shell/rb-application.c:552
+#: shell/rb-application.c:550
 msgid "Do not update the library with file changes"
 msgstr "Knjižnice ne posodobi s spremembami datotek"
 
-#: shell/rb-application.c:553
+#: shell/rb-application.c:551
 msgid "Do not register the shell"
 msgstr "Ne vpiši lupine"
 
-#: shell/rb-application.c:554
+#: shell/rb-application.c:552
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Podatkov ne shrani trajno (privzame --no-registration)"
 
-#: shell/rb-application.c:555
+#: shell/rb-application.c:553
 msgid "Disable loading of plugins"
 msgstr "Onemogoči nalaganje vstavkov"
 
-#: shell/rb-application.c:556
+#: shell/rb-application.c:554
 msgid "Path for database file to use"
 msgstr "Pot, ki naj jo uporablja datoteka podatkovne zbirke"
 
-#: shell/rb-application.c:557
+#: shell/rb-application.c:555
 msgid "Path for playlists file to use"
 msgstr "Pot, ki naj jo uporablja datoteka seznama predvajanja"
 
-#: shell/rb-application.c:570
+#: shell/rb-application.c:568
 #, c-format
 msgid ""
 "%s\n"
