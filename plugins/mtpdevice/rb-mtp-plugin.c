@@ -210,7 +210,7 @@ create_source_device_cb (RBRemovableMediaManager *rmm, GObject *device_obj, RBMt
 			RBSource *source;
 			RBShell *shell;
 
-			rb_debug ("found libmtp device list entry (model: %s, vendor: %s)",
+			rb_debug ("found libmtp device list entry (vendor: %s, model: %s)",
 				  device_list[i].vendor, device_list[i].product);
 
 			rawdevice.device_entry = device_list[i];
