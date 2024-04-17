@@ -946,7 +946,9 @@ rb_removable_media_manager_device_is_android (RBRemovableMediaManager *manager, 
 		"OnePlus",
 		"Google",
 		"bq",
-		"HMD_Global"
+		"HMD_Global",
+		"LENOVO",
+		"asus",
 	};
 
 	match = FALSE;
