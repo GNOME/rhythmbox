@@ -22,12 +22,12 @@ option('plugins_python', type: 'feature', value: 'auto',
        description: 'Enable Python plugins')
 option('plugins_vala', type: 'feature', value: 'auto',
        description: 'Enable Vala plugins')
-option('sample-plugins', type: 'boolean', value: 'false',
+option('sample-plugins', type: 'boolean', value: false,
        description: 'Whether to install sample plugins')
 
-option('help', type: 'boolean', value: 'true',
+option('help', type: 'boolean', value: true,
        description: 'Install user documentation')
-option('gtk_doc', type: 'boolean', value: 'false',
+option('gtk_doc', type: 'boolean', value: false,
        description: 'Use gtk-doc to build documentation')
 option('tests', type: 'feature', value: 'auto',
        description: 'Build tests')
