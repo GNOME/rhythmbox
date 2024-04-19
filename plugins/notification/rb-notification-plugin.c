@@ -59,6 +59,7 @@ struct _RBNotificationPlugin
 
 	gchar *notify_art_path;
 	RBExtDBKey *notify_art_key;
+	gboolean is_flatpak;
 	NotifyNotification *notification;
 	NotifyNotification *misc_notification;
 	gboolean notify_supports_actions;
@@ -199,7 +200,7 @@ do_notify (RBNotificationPlugin *plugin,
 					      g_variant_new_string (image_uri));
 	}
 
-        if (playback)
+        if (!plugin->is_flatpak && playback)
         	notify_notification_set_category (notification, "x-gnome.music");
         notify_notification_set_hint (notification, "desktop-entry",
                                       g_variant_new_string ("org.gnome.Rhythmbox3"));
@@ -649,8 +650,12 @@ impl_deactivate	(PeasActivatable *bplugin)
 }
 
 static void
-rb_notification_plugin_init (RBNotificationPlugin *plugin)
+rb_notification_plugin_init (RBNotificationPlugin *bplugin)
 {
+	RBNotificationPlugin *plugin;
+
+	plugin = RB_NOTIFICATION_PLUGIN (bplugin);
+	plugin->is_flatpak = g_file_test ("/.flatpak-info", G_FILE_TEST_EXISTS);
 }
 
 G_MODULE_EXPORT void
