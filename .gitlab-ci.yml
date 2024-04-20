@@ -1,7 +1,8 @@
 image: ubuntu:jammy
 
 stages:
-  - test
+  - build
+  - deploy
 
 variables:
   UBUNTU_DEPS:
@@ -51,18 +52,18 @@ variables:
     -Dmtp=enabled
     -Dlirc=enabled
     -Dsample-plugins=true
-    -Dgtk_doc=true
+    -Dapidoc=true
     -Dhelp=true
     -Dtests=enabled
 
-before_script:
-  - export DEBIAN_FRONTEND=noninteractive
-  - apt-get update
-  - apt-get install -y $UBUNTU_DEPS
-  - pip3 install meson
 
-test:
-  stage: test
+build:
+  stage: build
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - apt-get install -y $UBUNTU_DEPS
+    - pip3 install meson gi-docgen
   script:
     - mkdir _build
     - cd _build
@@ -75,4 +76,16 @@ test:
     name: "rhythmbox-${CI_COMMIT_REF_NAME}"
     paths:
       - "${CI_PROJECT_DIR}/_build/meson-logs"
-      - "${CI_PROJECT_DIR}/_build/meson-dist"
+      - _build/doc
+
+pages:
+  stage: deploy
+  dependencies:
+    - build
+  script:
+    - mv _build/doc public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
