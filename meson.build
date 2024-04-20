@@ -358,7 +358,6 @@ if check.found()
 endif
 subdir('po')
 if get_option('gtk_doc')
-  subdir('doc/reference')
 endif
 if get_option('help')
   subdir('help')
