@@ -1,6 +1,6 @@
 project('rhythmbox', 'c',
   version: '3.4.7',
-  meson_version: '>= 0.59.0',
+  meson_version: '>= 0.64.0',
   default_options: ['c_std=gnu89'])
 
 gnome = import('gnome')
@@ -290,7 +290,7 @@ configuration : cdata)
 
 summary({'Tests': check.found(),
          'Help': get_option('help'),
-         'API documentation': get_option('gtk_doc'),
+         'API documentation': get_option('apidoc'),
         },
         section: 'General',
         bool_yn: true)
@@ -357,7 +357,8 @@ if check.found()
   subdir('tests')
 endif
 subdir('po')
-if get_option('gtk_doc')
+if get_option('apidoc')
+  subdir('doc')
 endif
 if get_option('help')
   subdir('help')
