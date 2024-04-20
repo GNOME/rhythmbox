@@ -74,7 +74,7 @@ G_DEFINE_TYPE (RBRating, rb_rating, GTK_TYPE_WIDGET)
 #define RB_RATING_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_RATING, RBRatingPrivate))
 
 /**
- * SECTION:rb-rating
+ * SECTION:rbrating
  * @short_description: widget for displaying song ratings
  *
  * This widget displays a rating (0-5 stars) and allows the user to

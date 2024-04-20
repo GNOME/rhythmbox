@@ -56,7 +56,7 @@ static void rb_list_model_class_init (RBListModelClass *klass);
 static void rb_list_model_init (RBListModel *model);
 
 /**
- * SECTION:rb-list-model
+ * SECTION:rblistmodel
  * @short_description: simple list model
  *
  * Stores a list of items and emits notification signals on changes.

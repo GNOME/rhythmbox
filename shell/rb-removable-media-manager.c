@@ -27,7 +27,7 @@
  */
 
 /**
- * SECTION:rb-removable-media-manager
+ * SECTION:rbremovablemediamanager
  * @short_description: handling of removable media such as audio CDs and DAP devices
  * 
  * The removable media manager maintains the mapping between GIO GVolume and GMount

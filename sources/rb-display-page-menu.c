@@ -49,7 +49,7 @@ struct _RBDisplayPageMenuPrivate
 G_DEFINE_TYPE (RBDisplayPageMenu, rb_display_page_menu, G_TYPE_MENU_MODEL);
 
 /**
- * SECTION:rb-display-page-menu
+ * SECTION:rbdisplaypagemenu
  * @short_description: #GMenu populated with a portion of the display page model
  *
  */

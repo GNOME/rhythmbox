@@ -54,7 +54,7 @@
 #include "rb-application.h"
 
 /**
- * SECTION:rb-display-page-tree
+ * SECTION:rbdisplaypagetree
  * @short_description: widget displaying the tree of #RBDisplayPage instances
  *
  * The display page tree widget is a GtkTreeView backed by a GtkListStore

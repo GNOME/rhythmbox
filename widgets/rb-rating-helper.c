@@ -39,7 +39,7 @@
 
 
 /**
- * SECTION:rb-rating-helper
+ * SECTION:rbratinghelper
  * @short_description: helper functions for displaying song ratings
  *
  * A few helper functions for dealing with ratings.  These are shared

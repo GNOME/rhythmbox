@@ -44,7 +44,7 @@
 #include "rb-static-playlist-source.h"
 
 /**
- * SECTION:rb-display-page-model
+ * SECTION:rbdisplaypagemodel
  * @short_description: models backing the display page tree
  *
  * The #RBDisplayPageTree widget is backed by a #GtkTreeStore containing

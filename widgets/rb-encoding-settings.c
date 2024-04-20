@@ -87,7 +87,7 @@ struct _RBEncodingSettingsPrivate
 G_DEFINE_TYPE (RBEncodingSettings, rb_encoding_settings, GTK_TYPE_BOX);
 
 /**
- * SECTION:rb-encoding-settings
+ * SECTION:rbencodingsettings
  * @short_description: encapsulates widgets for editing encoding settings
  *
  * RBEncodingSettings provides an interface for selecting and configuring

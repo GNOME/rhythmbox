@@ -28,7 +28,7 @@
  */
 
 /**
- * SECTION:rb-static-playlist-source
+ * SECTION:rbstaticplaylistsource
  * @short_description: Manually defined playlist class
  *
  * Static playlists are not defined by a query, but instead by manually selected

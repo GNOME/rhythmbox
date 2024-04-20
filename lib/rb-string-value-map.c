@@ -32,7 +32,7 @@
 #include "rb-util.h"
 
 /**
- * SECTION:rb-string-value-map
+ * SECTION:rbstringvaluemap
  * @short_description: specialized hash table for storing string to GValue mappings
  *
  * Simplifies the use of string:GValue maps with respect to copying of the values

@@ -94,7 +94,7 @@ struct RBPropertyViewPrivate
 #define RB_PROPERTY_VIEW_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PROPERTY_VIEW, RBPropertyViewPrivate))
 
 /**
- * SECTION:rb-property-view
+ * SECTION:rbpropertyview
  * @short_description: a #GtkTreeView backed by a #RhythmDBPropertyModel
  *
  * A simple #GtkTreeView that displays the contents of a #RhythmDBPropertyModel.

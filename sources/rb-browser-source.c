@@ -28,7 +28,7 @@
  */
 
 /**
- * SECTION:rb-browser-source
+ * SECTION:rbbrowsersource
  * @short_description: base class for sources that include genre/artist/album browsers
  *
  * This class simplifies implementation of sources that include genre/artist/album browsers.

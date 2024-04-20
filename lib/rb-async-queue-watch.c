@@ -31,7 +31,7 @@
 #include <rb-async-queue-watch.h>
 
 /**
- * SECTION:rb-async-queue-watch
+ * SECTION:rbasyncqueuewatch
  * @short_description: GSource for watching a GAsyncQueue in the main loop
  *
  * This provides a way to feed work items to the main loop using a #GAsyncQueue

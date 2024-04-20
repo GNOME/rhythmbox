@@ -32,7 +32,7 @@
 G_DEFINE_INTERFACE (RBTaskProgress, rb_task_progress, 0);
 
 /**
- * SECTION:rb-task-progress
+ * SECTION:rbtaskprogress
  * @short_description: interface for objects that report task progress
  *
  */

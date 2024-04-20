@@ -50,7 +50,7 @@
 #define LABEL_SELECT_PADDING	20
 
 /**
- * SECTION:rb-header
+ * SECTION:rbheader
  * @short_description: playback area widgetry
  *
  * The RBHeader widget displays information about the current playing track

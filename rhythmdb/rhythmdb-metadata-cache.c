@@ -100,7 +100,7 @@ G_DEFINE_TYPE (RhythmDBMetadataCache, rhythmdb_metadata_cache, G_TYPE_OBJECT);
 static GHashTable *instances = NULL;
 
 /**
- * SECTION:rhythmdb-metadata-cache
+ * SECTION:rhythmdbmetadatacache
  * @short_description: file metadata cache
  *
  * Metadata caches store the #RhythmDBEntry fields that are directly derived

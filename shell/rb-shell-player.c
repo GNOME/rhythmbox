@@ -28,7 +28,7 @@
  */
 
 /**
- * SECTION:rb-shell-player
+ * SECTION:rbshellplayer
  * @short_description: playback state management
  *
  * The shell player (or player shell, depending on who you're talking to)

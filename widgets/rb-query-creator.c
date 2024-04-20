@@ -103,7 +103,7 @@ G_DEFINE_TYPE (RBQueryCreator, rb_query_creator, GTK_TYPE_DIALOG)
 #define QUERY_CREATOR_GET_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), rb_query_creator_get_type(), RBQueryCreatorPrivate))
 
 /**
- * SECTION:rb-query-creator
+ * SECTION:rbquerycreator
  * @short_description: database query creator widget
  *
  * The query creator is used to create and edit automatic playlists.

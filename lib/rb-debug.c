@@ -48,7 +48,7 @@
 #include "rb-debug.h"
 
 /**
- * SECTION:rb-debug
+ * SECTION:rbdebug
  * @short_description: debugging support functions
  *
  * In addition to a simple debug output system, we have two distinct

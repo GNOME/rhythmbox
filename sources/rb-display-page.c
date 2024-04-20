@@ -36,7 +36,7 @@
 G_DEFINE_ABSTRACT_TYPE (RBDisplayPage, rb_display_page, GTK_TYPE_BOX)
 
 /**
- * SECTION:rb-display-page
+ * SECTION:rbdisplaypage
  * @short_description: base class for items that appear in the display page tree
  *
  * This is the base class for items that appear in the display page tree and can

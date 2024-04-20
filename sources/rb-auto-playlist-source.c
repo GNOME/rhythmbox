@@ -45,7 +45,7 @@
 #include "rb-builder-helpers.h"
 
 /**
- * SECTION:rb-auto-playlist-source
+ * SECTION:rbautoplaylistsource
  * @short_description: automatic playlist source, based on a database query
  *
  * A playlist populated with the results of a database query.

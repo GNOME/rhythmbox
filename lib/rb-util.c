@@ -27,7 +27,7 @@
  */
 
 /**
- * SECTION:rb-util
+ * SECTION:rbutil
  * @short_description: assorted utility functions
  *
  * This is a dumping ground for utility functions that may or may not

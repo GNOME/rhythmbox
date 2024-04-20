@@ -28,7 +28,7 @@
  */
 
 /**
- * SECTION:rb-streaming-source
+ * SECTION:rbstreamingsource
  * @short_description: Base class for streaming sources such as internet radio
  *
  * This class provides handling of buffering signals and streaming song metadata

@@ -47,7 +47,7 @@
  */
 
 /**
- * SECTION:rb-metadata
+ * SECTION:rbmetadata
  * @short_description: metadata reader and writer interface
  *
  * Provides a simple synchronous interface for metadata extraction and updating.

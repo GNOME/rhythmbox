@@ -53,7 +53,7 @@ static void rb_task_progress_simple_task_progress_init (RBTaskProgressInterface 
 
 
 /**
- * SECTION:rb-task-progress-simple
+ * SECTION:rbtaskprogresssimple
  * @short_description: implementation of RBTaskProgress interface
  *
  * This implementation of #RBTaskProgress can be used to represent

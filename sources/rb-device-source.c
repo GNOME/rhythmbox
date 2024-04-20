@@ -38,7 +38,7 @@
 G_DEFINE_INTERFACE (RBDeviceSource, rb_device_source, 0)
 
 /**
- * SECTION:rb-device-source
+ * SECTION:rbdevicesource
  * @short_description: interface for sources based on physical devices
  * @include: rb-device-source.h
  *

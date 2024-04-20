@@ -56,7 +56,7 @@ struct _RBSourceToolbarPrivate
 G_DEFINE_TYPE (RBSourceToolbar, rb_source_toolbar, GTK_TYPE_GRID)
 
 /**
- * SECTION:rb-source-toolbar
+ * SECTION:rbsourcetoolbar
  * @short_description: toolbar+search entry for sources
  *
  * This class combines a toolbar for custom source actions with a

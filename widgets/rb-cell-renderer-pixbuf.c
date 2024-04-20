@@ -48,7 +48,7 @@ enum
 G_DEFINE_TYPE (RBCellRendererPixbuf, rb_cell_renderer_pixbuf, GTK_TYPE_CELL_RENDERER_PIXBUF)
 
 /**
- * SECTION:rb-cell-renderer-pixbuf
+ * SECTION:rbcellrendererpixbuf
  * @short_description: #GtkCellRenderer for displaying pixbufs in tree views
  *
  * This is similar to #GtkCellRendererPixbuf, except that it also emits a signal

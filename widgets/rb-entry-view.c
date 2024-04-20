@@ -27,7 +27,7 @@
  */
 
 /**
- * SECTION:rb-entry-view
+ * SECTION:rbentryview
  * @short_description: a #GtkTreeView for displaying track listings
  *
  * This class provides a predefined set of columns for displaying the

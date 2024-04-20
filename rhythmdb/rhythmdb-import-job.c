@@ -111,7 +111,7 @@ G_DEFINE_TYPE_EXTENDED (RhythmDBImportJob,
 			G_IMPLEMENT_INTERFACE (RB_TYPE_TASK_PROGRESS, rhythmdb_import_job_task_progress_init));
 
 /**
- * SECTION:rhythmdb-import-job
+ * SECTION:rhythmdbimportjob
  * @short_description: batch import job
  *
  * Tracks the addition to the database of files under a set of 

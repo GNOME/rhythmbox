@@ -130,7 +130,7 @@ G_DEFINE_TYPE_EXTENDED (RBTrackTransferBatch,
 			G_IMPLEMENT_INTERFACE (RB_TYPE_TASK_PROGRESS, rb_track_transfer_batch_task_progress_init));
 
 /**
- * SECTION:rb-track-transfer-batch
+ * SECTION:rbtracktransferbatch
  * @short_description: batch track transfer job
  *
  * Manages the transfer of a set of tracks (using #RBEncoder), providing overall

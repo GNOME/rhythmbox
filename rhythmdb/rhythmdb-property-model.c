@@ -210,7 +210,7 @@ enum
 static guint rhythmdb_property_model_signals[LAST_SIGNAL] = { 0 };
 
 /**
- * SECTION:rhythmdb-property-model
+ * SECTION:rhythmdbpropertymodel
  * @short_description:  tree model grouping entries from a query model by property values
  *
  * A RhythmDBPropertyModel groups the entries in a #RhythmDBQueryModel by

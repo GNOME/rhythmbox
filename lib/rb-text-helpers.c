@@ -31,7 +31,7 @@
 #include <rb-text-helpers.h>
 
 /**
- * SECTION:rb-text-helpers
+ * SECTION:rbtexthelpers
  * @short_description: text direction (LTR/RTL) functions
  *
  * Provides some helper functions for constructing strings that

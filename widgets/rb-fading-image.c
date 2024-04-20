@@ -70,7 +70,7 @@ struct _RBFadingImagePrivate
 G_DEFINE_TYPE (RBFadingImage, rb_fading_image, GTK_TYPE_WIDGET)
 
 /**
- * SECTION:rb-fading-image
+ * SECTION:rbfadingimage
  * @short_description: image display widget that fades between two images
  *
  * This widget displays images, performing a simple fade transition between

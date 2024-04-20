@@ -71,7 +71,7 @@ struct _RhythmDBEntryTypePrivate
 G_DEFINE_TYPE (RhythmDBEntryType, rhythmdb_entry_type, G_TYPE_OBJECT)
 
 /**
- * SECTION:rhythmdb-entry-type
+ * SECTION:rhythmdbentrytype
  * @short_description: Database entry type base class
  *
  * This is the base class for database entry type classes, which provide

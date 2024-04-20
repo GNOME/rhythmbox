@@ -35,7 +35,7 @@
 #include "rhythmdb.h"
 
 /**
- * SECTION:rb-history
+ * SECTION:rbhistory
  * @short_description: sequence data structure useful for implementing play orders
  *
  * RBHistory is a GSequence that maintains a "current" pointer and can delete

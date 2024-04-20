@@ -48,7 +48,7 @@
 G_DEFINE_INTERFACE (RBTransferTarget, rb_transfer_target, 0)
 
 /**
- * SECTION:rb-transfer-target
+ * SECTION:rbtransfertarget
  * @short_description: interface for sources that can receive track transfers
  * @include: rb-transfer-target.h
  *

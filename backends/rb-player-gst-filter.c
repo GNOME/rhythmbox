@@ -30,7 +30,7 @@
 #include "rb-player-gst-filter.h"
 
 /**
- * SECTION:rb-player-gst-filter
+ * SECTION:rbplayergstfilter
  * @short_description: player interface for inserting filter elements
  * @include: rb-player-gst-filter.h
  *

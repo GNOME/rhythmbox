@@ -28,7 +28,7 @@
  */
 
 /**
- * SECTION:rb-shell-clipboard
+ * SECTION:rbshellclipboard
  * @short_description: cut and paste handling
  *
  * The clipboard is primarily responsible for handling cut and paste actions,

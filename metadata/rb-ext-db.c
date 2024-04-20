@@ -40,7 +40,7 @@
 #include <lib/rb-util.h>
 
 /**
- * SECTION:rb-ext-db
+ * SECTION:rbextdb
  * @short_description: store for external metadata such as album art
  *
  * This class simplifies searching for and providing external metadata

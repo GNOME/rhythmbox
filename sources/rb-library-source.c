@@ -28,7 +28,7 @@
  */
 
 /**
- * SECTION:rb-library-source
+ * SECTION:rblibrarysource
  * @short_description: main library source, containing all local songs
  *
  * The library source contains all local songs that have been imported
