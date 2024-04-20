@@ -30,7 +30,7 @@
 #include "rb-player-gst-tee.h"
 
 /**
- * SECTION:rb-player-gst-tee
+ * SECTION:rbplayergsttee
  * @short_description: player interface for inserting additional sinks
  * @include: rb-player-gst-tee.h
  *

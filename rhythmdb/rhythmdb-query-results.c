@@ -31,7 +31,7 @@
 #include "rhythmdb-query-results.h"
 
 /**
- * SECTION:rhythmdb-query-results
+ * SECTION:rhythmdbqueryresults
  * @short_description: interface for receiving query results from RhythmDB
  *
  * This is the interface that #RhythmDB uses to report results of database

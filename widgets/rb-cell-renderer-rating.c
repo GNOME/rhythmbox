@@ -80,7 +80,7 @@ G_DEFINE_TYPE (RBCellRendererRating, rb_cell_renderer_rating, GTK_TYPE_CELL_REND
 
 
 /**
- * SECTION:rb-cell-renderer-rating
+ * SECTION:rbcellrendererrating
  * @short_description: a #GtkCellRenderer for displaying song ratings
  *
  * This cell renderer is used to display song ratings in the #RBEntryView,

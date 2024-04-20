@@ -32,7 +32,7 @@
 #include <lib/rb-debug.h>
 
 /**
- * SECTION:rb-async-copy
+ * SECTION:rbasynccopy
  * @short_description: performs asynchronous file copies (like g_file_copy_async)
  *
  */

@@ -42,7 +42,7 @@
 #include "rb-file-helpers.h"
 
 /**
- * SECTION:rb-dialog
+ * SECTION:rbdialog
  * @short_description: helper functions for creating gtk+ dialog windows
  *
  * This provides a couple of shortcuts for creating dialogs.  If you want

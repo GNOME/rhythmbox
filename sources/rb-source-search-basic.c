@@ -27,7 +27,7 @@
  */
 
 /**
- * SECTION:rb-source-search-basic
+ * SECTION:rbsourcesearchbasic
  * @short_description: Simple implementation of #RBSourceSearch
  *
  * This implementation of #RBSourceSearch constructs queries that

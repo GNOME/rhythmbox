@@ -35,7 +35,7 @@
 #include "rb-debug.h"
 
 /**
- * SECTION:rb-ext-db-key
+ * SECTION:rbextdbkey
  * @short_description: key for external metadata lookups
  *
  * An external metadata key consists of one or more required fields (such as

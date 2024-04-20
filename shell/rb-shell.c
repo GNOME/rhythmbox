@@ -28,7 +28,7 @@
  */
 
 /**
- * SECTION:rb-shell
+ * SECTION:rbshell
  * @short_description: holds the Rhythmbox main window and everything else
  *
  * RBShell is the main application class in Rhythmbox.  It creates and holds

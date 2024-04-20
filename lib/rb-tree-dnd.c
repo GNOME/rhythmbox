@@ -31,7 +31,7 @@
 
 
 /**
- * SECTION:rb-tree-dnd
+ * SECTION:rbtreednd
  * @short_description: multi-row drag and drop support for GtkTreeViews
  *
  * Provides support for drag and drop operations to and from GtkTreeView

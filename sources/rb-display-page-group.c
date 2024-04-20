@@ -39,7 +39,7 @@
 #include "rb-display-page-tree.h"
 
 /**
- * SECTION:rb-display-page-group
+ * SECTION:rbdisplaypagegroup
  * @short_description: Display page grouping
  *
  * Page groups define sections of the display page tree.  A page group

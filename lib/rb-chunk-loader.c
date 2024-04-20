@@ -32,7 +32,7 @@
 #include <lib/rb-debug.h>
 
 /**
- * SECTION:rb-chunk-loader
+ * SECTION:rbchunkloader
  * @short_description: simple utility for asynchronously fetching data by URL in chunks
  *
  */

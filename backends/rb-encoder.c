@@ -32,7 +32,7 @@
 #include "rb-encoder-gst.h"
 
 /**
- * SECTION:rb-encoder
+ * SECTION:rbencoder
  * @short_description: audio transcoder interface
  *
  * The RBEncoder interface provides transcoding between audio formats based on

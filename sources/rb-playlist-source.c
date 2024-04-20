@@ -58,7 +58,7 @@
 #include "rb-application.h"
 
 /**
- * SECTION:rb-playlist-source
+ * SECTION:rbplaylistsource
  * @short_description: Base class for playlist sources
  *
  * This class provides some common infrastructure for playlist

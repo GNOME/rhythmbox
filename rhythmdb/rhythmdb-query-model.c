@@ -273,7 +273,7 @@ enum
 static guint rhythmdb_query_model_signals[LAST_SIGNAL] = { 0 };
 
 /**
- * SECTION:rhythmdb-query-model
+ * SECTION:rhythmdbquerymodel
  * @short_description: a #GtkTreeModel containing #RhythmDBEntry items
  *
  * A RhythmDBQueryModel contains an ordered set of #RhythmDBEntry items,

@@ -27,7 +27,7 @@
  */
 
 /**
- * SECTION:rb-playlist-manager
+ * SECTION:rbplaylistmanager
  * @short_description: Playlist management object
  *
  * The playlist manager loads and saves the on-disk playlist file, provides

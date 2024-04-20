@@ -34,7 +34,7 @@
 #include "rb-file-helpers.h"
 
 /**
- * SECTION:rb-builder-helpers
+ * SECTION:rbbuilderhelpers
  * @short_description: helper functions for dealing with GtkBuilder files
  *
  * Some simple helper functions to make it a bit easier to deal with

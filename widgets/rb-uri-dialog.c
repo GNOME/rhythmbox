@@ -41,7 +41,7 @@
 #include "rb-debug.h"
 
 /**
- * SECTION:rb-uri-dialog
+ * SECTION:rburidialog
  * @short_description: simple URI entry dialog
  * @include: rb-uri-dialog.h
  *

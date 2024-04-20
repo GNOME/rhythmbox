@@ -28,7 +28,7 @@
  */
 
 /**
- * SECTION:rb-shell-preferences
+ * SECTION:rbshellpreferences
  * @short_description: preferences dialog
  *
  * The preferences dialog is built around a #GtkNotebook widget, with two built-in

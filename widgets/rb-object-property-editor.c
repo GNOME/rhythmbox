@@ -47,7 +47,7 @@ struct _RBObjectPropertyEditorPrivate
 G_DEFINE_TYPE (RBObjectPropertyEditor, rb_object_property_editor, GTK_TYPE_GRID);
 
 /**
- * SECTION:rb-object-property-editor
+ * SECTION:rbobjectpropertyeditor
  * @short_description: builds widgetry for editing simple GObject properties
  *
  * RBObjectPropertyEditor can be used to provide an interface to edit

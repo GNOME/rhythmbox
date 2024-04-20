@@ -38,7 +38,7 @@
 #include "rb-debug.h"
 
 /**
- * SECTION:rb-play-order
+ * SECTION:rbplayorder
  * @short_description: base class for play order implementations
  *
  * A play order defines an ordering of the entries from a #RhythmDBQueryModel that

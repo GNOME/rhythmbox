@@ -65,7 +65,7 @@ enum {
 static guint signals[LAST_SIGNAL] = { 0 };
 
 /**
- * SECTION:rb-player
+ * SECTION:rbplayer
  * @short_description: playback backend interface
  * @include: rb-player.h
  *

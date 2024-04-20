@@ -85,7 +85,7 @@ struct _RBImportErrorsSourcePrivate
 G_DEFINE_TYPE (RBImportErrorsSource, rb_import_errors_source, RB_TYPE_SOURCE);
 
 /**
- * SECTION:rb-import-errors-source
+ * SECTION:rbimporterrorssource
  * @short_description: source for displaying import errors
  *
  * This source is used to display the names of files that could not

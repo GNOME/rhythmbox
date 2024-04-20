@@ -39,7 +39,7 @@
 #include <widgets/rb-dialog.h>
 
 /**
- * SECTION:rb-application
+ * SECTION:rbapplication
  * @short_description: the rhythmbox subclass of GtkApplication
  *
  * RBApplication contains some interactions with the desktop

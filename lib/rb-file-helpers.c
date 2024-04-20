@@ -26,7 +26,7 @@
  */
 
 /**
- * SECTION:rb-file-helpers
+ * SECTION:rbfilehelpers
  * @short_description: An assortment of file and URI helper functions
  *
  * This is a variety of functions for dealing with files and URIs, including

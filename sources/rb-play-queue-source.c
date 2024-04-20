@@ -43,7 +43,7 @@
 #include "rb-application.h"
 
 /**
- * SECTION:rb-play-queue-source
+ * SECTION:rbplayqueuesource
  * @short_description: source object for the play queue
  *
  * The main interesting thing about this source is that is

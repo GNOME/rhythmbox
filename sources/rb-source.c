@@ -83,7 +83,7 @@ static void rb_source_row_inserted_cb (GtkTreeModel *model,
 G_DEFINE_ABSTRACT_TYPE (RBSource, rb_source, RB_TYPE_DISPLAY_PAGE)
 
 /**
- * SECTION:rb-source
+ * SECTION:rbsource
  * @short_description: base class for sources
  *
  * This class provides methods for requesting information

@@ -27,7 +27,7 @@
  */
 
 /**
- * SECTION:rb-source-search
+ * SECTION:rbsourcesearch
  * @short_description: Base class for source search implementations
  *
  * These translate the text in the search entry box into a

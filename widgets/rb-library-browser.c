@@ -72,7 +72,7 @@ G_DEFINE_TYPE (RBLibraryBrowser, rb_library_browser, GTK_TYPE_BOX)
 #define RB_LIBRARY_BROWSER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_LIBRARY_BROWSER, RBLibraryBrowserPrivate))
 
 /**
- * SECTION:rb-library-browser
+ * SECTION:rblibrarybrowser
  * @short_description: album/artist/genre browser widget
  * @include: rb-library-browser.h
  *

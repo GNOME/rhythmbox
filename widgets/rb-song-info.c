@@ -161,7 +161,7 @@ struct RBSongInfoPrivate
 #define RB_SONG_INFO_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_SONG_INFO, RBSongInfoPrivate))
 
 /**
- * SECTION:rb-song-info
+ * SECTION:rbsonginfo
  * @short_description: song properties dialog
  *
  * Displays song properties and, if we know how to edit tags in the file,

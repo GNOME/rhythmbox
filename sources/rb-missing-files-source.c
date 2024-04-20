@@ -39,7 +39,7 @@
 #include "rb-builder-helpers.h"
 
 /**
- * SECTION:rb-missing-files-source
+ * SECTION:rbmissingfilessource
  * @short_description: source displaying files missing from the library
  *
  * This source displays files that rhythmbox cannot find at the expected

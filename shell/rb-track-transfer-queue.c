@@ -80,7 +80,7 @@ struct _RBTrackTransferQueuePrivate
 G_DEFINE_TYPE (RBTrackTransferQueue, rb_track_transfer_queue, G_TYPE_OBJECT)
 
 /**
- * SECTION:rb-track-transfer-queue
+ * SECTION:rbtracktransferqueue
  * @short_description: track transfer queue and surrounding junk
  *
  */

@@ -27,7 +27,7 @@
  */
 
 /**
- * SECTION:rb-play-order-random
+ * SECTION:rbplayorderrandom
  * @short_description: base class for weighted random play orders
  *
  * Subclasses only need to override get_entry_weight() to return the
