@@ -2,14 +2,15 @@
 version = "@VERSION@"
 description = "Rhythmbox API"
 authors = "Rhythmbox contributors"
-license = "LGPL-2.1-or-later"
+license = "GPL-2-or-later"
 browse_url = "https://gitlab.gnome.org/GNOME/rhythmbox"
 repository_url = "https://gitlab.gnome.org/GNOME/rhythmbox.git"
 logo_url = "../org.gnome.Rhythmbox3.svg"
+website_url = "https://gnome.pages.gitlab.gnome.org/rhythmbox/"
 dependencies = [
-  "GLib-2.0",
   "Gio-2.0",
   "GObject-2.0",
+  "Gst-1.0",
   "Gtk-3.0",
 ]
 devhelp = false
@@ -24,6 +25,11 @@ docs_url = "https://developer.gnome.org/gobject/stable"
 name = "Gio"
 description = "GLib I/O library"
 docs_url = "https://developer.gnome.org/gio/stable"
+
+[dependencies."Gst-1.0"]
+name = "Gst"
+description = "GStreamer media framework"
+docs_url = "https://gstreamer.freedesktop.org/documentation/libs.html"
 
 [dependencies."Gtk-3.0"]
 name = "Gtk"
@@ -42,6 +48,7 @@ file_format = "{filename}#L{line}"
 [extra]
 urlmap_file = "urlmap.js"
 content_files = [
-  "plugin-examples.md",
-  "plugin-guide.md"
+  "internals.md",
+  "plugin-guide.md",
+  "plugin-examples.md"
 ]

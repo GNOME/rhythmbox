@@ -1,3 +1,6 @@
+Title: Rhythmbox internals
+Slug: internals
+
 * Rhythmbox Internals
 
 This document will attempt to gather up some of the bits and pieces

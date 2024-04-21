@@ -1,4 +1,6 @@
 expand_content_md_files = [
+  'internals.md',
+  'plugin-examples.md',
   'plugin-guide.md'
 ]
 
@@ -18,7 +20,7 @@ docs_dir = datadir / 'doc'
 fs = import('fs')
 fs.copyfile(meson.project_source_root() / 'data/icons/hicolor/scalable/apps/org.gnome.Rhythmbox3.svg')
 
-custom_target('rhythmbox-api-doc',
+custom_target('apidoc',
   input: [ rb_toml, rb_gir ],
   output: 'apidoc',
   command: [
