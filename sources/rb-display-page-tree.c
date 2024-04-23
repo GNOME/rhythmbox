@@ -159,6 +159,7 @@ heading_cell_data_func (GtkTreeViewColumn *tree_column,
 		g_free (name);
 	} else {
 		g_object_set (cell,
+			      "text", NULL,
 			      "visible", FALSE,
 			      NULL);
 	}
@@ -180,12 +181,14 @@ padding_cell_data_func (GtkTreeViewColumn *tree_column,
 			    -1);
 	if (RB_IS_DISPLAY_PAGE_GROUP (page)) {
 		g_object_set (cell,
+			      "text", NULL,
 			      "visible", FALSE,
 			      "xpad", 0,
 			      "ypad", 0,
 			      NULL);
 	} else {
 		g_object_set (cell,
+			      "text", NULL,
 			      "visible", TRUE,
 			      "xpad", 3,
 			      "ypad", 3,
@@ -207,12 +210,14 @@ padding2_cell_data_func (GtkTreeViewColumn *tree_column,
 	path = gtk_tree_model_get_path (model, iter);
 	if (gtk_tree_path_get_depth (path) > 2) {
 		g_object_set (cell,
+			      "text", NULL,
 			      "visible", TRUE,
 			      "xpad", 3,
 			      "ypad", 0,
 			      NULL);
 	} else {
 		g_object_set (cell,
+			      "text", NULL,
 			      "visible", FALSE,
 			      "xpad", 0,
 			      "ypad", 0,
@@ -278,7 +283,7 @@ title_cell_data_func (GtkTreeViewColumn *column,
 			    -1);
 
 	if (RB_IS_DISPLAY_PAGE_GROUP (page)) {
-		g_object_set (renderer, "visible", FALSE, NULL);
+		g_object_set (renderer, "visible", FALSE, "text", NULL, NULL);
 	} else {
 		char *name;
 		g_object_get (page, "name", &name, NULL);
