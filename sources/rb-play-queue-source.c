@@ -124,8 +124,8 @@ struct _RBPlayQueueSourcePrivate
 	guint dbus_object_id;
 	GDBusConnection *bus;
 
-	GMenuModel *popup;
-	GMenuModel *sidepane_popup;
+	GMenu *popup;
+	GMenu *sidepane_popup;
 
 	guint update_count_idle_id;
 };
@@ -250,7 +250,7 @@ rb_play_queue_source_constructed (GObject *object)
 	GtkCellRenderer *renderer;
 	GtkBuilder *builder;
 	RhythmDBQueryModel *model;
-	GApplication *app;
+	RBApplication *app;
 	GActionEntry actions[] = {
 		{ "queue-clear", queue_clear_action_cb },
 		{ "queue-shuffle", queue_shuffle_action_cb },
@@ -261,7 +261,7 @@ rb_play_queue_source_constructed (GObject *object)
 
 	RB_CHAIN_GOBJECT_METHOD (rb_play_queue_source_parent_class, constructed, object);
 
-	app = g_application_get_default ();
+	app = RB_APPLICATION (g_application_get_default ());
 	source = RB_PLAY_QUEUE_SOURCE (object);
 	priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
 	db = rb_playlist_source_get_db (RB_PLAYLIST_SOURCE (source));
@@ -319,10 +319,10 @@ rb_play_queue_source_constructed (GObject *object)
 
 	/* load popup menus */
 	builder = rb_builder_load ("queue-popups.ui", NULL);
-	priv->popup = G_MENU_MODEL (gtk_builder_get_object (builder, "queue-source-popup"));
-	priv->sidepane_popup = G_MENU_MODEL (gtk_builder_get_object (builder, "queue-sidepane-popup"));
-	rb_application_link_shared_menus (RB_APPLICATION (app), G_MENU (priv->popup));
-	rb_application_link_shared_menus (RB_APPLICATION (app), G_MENU (priv->sidepane_popup));
+	priv->popup = G_MENU (gtk_builder_get_object (builder, "queue-source-popup"));
+	priv->sidepane_popup = G_MENU (gtk_builder_get_object (builder, "queue-sidepane-popup"));
+	rb_application_link_shared_menus (app, priv->popup);
+	rb_application_link_shared_menus (app, priv->sidepane_popup);
 	g_object_ref (priv->popup);
 	g_object_ref (priv->sidepane_popup);
 	g_object_unref (builder);
@@ -438,12 +438,19 @@ impl_show_entry_view_popup (RBPlaylistSource *source,
 {
 	RBPlayQueueSourcePrivate *priv = RB_PLAY_QUEUE_SOURCE_GET_PRIVATE (source);
 	GtkWidget *menu;
+	GMenu *popup;
+	RBApplication *app;
 
 	if (view == priv->sidebar) {
-		menu = gtk_menu_new_from_model (priv->sidepane_popup);
+		popup = priv->sidepane_popup;
 	} else {
-		menu = gtk_menu_new_from_model (priv->popup);
+		popup = priv->popup;
 	}
+
+	app = RB_APPLICATION (g_application_get_default ());
+	rb_menu_update_link (popup, "rb-playlist-menu-link", rb_application_get_shared_menu (app, "playlist-page-menu"));
+
+	menu = gtk_menu_new_from_model (G_MENU_MODEL (popup));
 	gtk_menu_attach_to_widget (GTK_MENU (menu), GTK_WIDGET (source), NULL);
 	gtk_menu_popup (GTK_MENU (menu),
 			NULL,

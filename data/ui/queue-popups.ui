@@ -2,6 +2,10 @@
 <interface>
   <menu id="queue-source-popup">
     <section>
+      <submenu>
+	<attribute name="label" translatable="yes">Add to Playlist</attribute>
+	<attribute name="rb-playlist-menu-link"></attribute>
+      </submenu>
       <item>
 	<attribute name="label" translatable="yes">Remove from Play Queue</attribute>
 	<attribute name="action">app.clipboard-delete</attribute>
@@ -27,6 +31,10 @@
   </menu>
   <menu id="queue-sidepane-popup">
     <section>
+      <submenu>
+	<attribute name="label" translatable="yes">Add to Playlist</attribute>
+	<attribute name="rb-playlist-menu-link"></attribute>
+      </submenu>
       <item>
 	<attribute name="label" translatable="yes">Remove from Play Queue</attribute>
 	<attribute name="action">app.queue-delete</attribute>
