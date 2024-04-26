@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-04-17 08:37+0000\n"
-"PO-Revision-Date: 2024-04-17 13:09+0300\n"
+"POT-Creation-Date: 2024-04-26 13:07+0000\n"
+"PO-Revision-Date: 2024-04-26 22:41+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian\n"
 "Language: uk\n"
@@ -151,7 +151,7 @@ msgstr ""
 "GStreamer, можливості якого можна розширити за допомогою додатків мовами "
 "Python і C."
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:36
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:35
 msgid "Main Window"
 msgstr "Головне вікно"
 
@@ -223,7 +223,8 @@ msgid "Add to Queue"
 msgstr "Додати до черги відтворення"
 
 #: data/ui/browser-popup.ui:10 data/ui/edit-menu.ui:39
-#: data/ui/playlist-popup.ui:10
+#: data/ui/playlist-popup.ui:10 data/ui/queue-popups.ui:6
+#: data/ui/queue-popups.ui:35
 msgid "Add to Playlist"
 msgstr "Додати до списку композицій"
 
@@ -256,8 +257,8 @@ msgid "Browse this Album"
 msgstr "Показати цей альбом"
 
 #: data/ui/browser-popup.ui:52 data/ui/edit-menu.ui:45
-#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:23
-#: data/ui/queue-popups.ui:52 plugins/magnatune/magnatune-popup.ui:34
+#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:27
+#: data/ui/queue-popups.ui:60 plugins/magnatune/magnatune-popup.ui:34
 msgid "Pr_operties"
 msgstr "В_ластивості"
 
@@ -591,8 +592,8 @@ msgstr "Надіслати _в чергу всі доріжки"
 msgid "_Shuffle Playlist"
 msgstr "Перемішати список _композицій"
 
-#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:14
-#: data/ui/queue-popups.ui:43
+#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:18
+#: data/ui/queue-popups.ui:51
 msgid "_Save to File..."
 msgstr "З_берегти у файл…"
 
@@ -793,15 +794,15 @@ msgstr "Додати"
 msgid "Update"
 msgstr "Оновити"
 
-#: data/ui/queue-popups.ui:6 data/ui/queue-popups.ui:31
+#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
 msgid "Remove from Play Queue"
 msgstr "Вилучити із черги відтворення"
 
-#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
+#: data/ui/queue-popups.ui:14 data/ui/queue-popups.ui:47
 msgid "Shuffle Play Queue"
 msgstr "Перемішати чергу відтворення"
 
-#: data/ui/queue-popups.ui:35
+#: data/ui/queue-popups.ui:43
 msgid "Clear Play Queue"
 msgstr "Спорожнити чергу відтворення"
 
@@ -990,7 +991,7 @@ msgstr "%b %d %Y"
 #: plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
 #: plugins/mtpdevice/rb-mtp-source.c:650 plugins/mtpdevice/rb-mtp-source.c:1140
 #: plugins/mtpdevice/rb-mtp-source.c:1471
-#: plugins/notification/rb-notification-plugin.c:508
+#: plugins/notification/rb-notification-plugin.c:509
 #: podcast/rb-feed-podcast-properties-dialog.c:335
 #: podcast/rb-podcast-add-dialog.c:646 podcast/rb-podcast-manager.c:1307
 #: podcast/rb-podcast-manager.c:1421 podcast/rb-podcast-properties-dialog.c:636
@@ -1153,9 +1154,6 @@ msgid "Playlists:"
 msgstr "Списки композицій:"
 
 #: plugins/android/rb-android-source.c:201
-#| msgid ""
-#| "No storage areas found on this device. You may need to unlock it and "
-#| "enable MTP."
 msgid ""
 "No storage areas found on this device. You may need to unlock it and change "
 "it to File Transfer mode."
@@ -2645,35 +2643,35 @@ msgstr "Сповіщення"
 msgid "Notification popups"
 msgstr "Контекстне сповіщення"
 
-#: plugins/notification/rb-notification-plugin.c:221
+#: plugins/notification/rb-notification-plugin.c:222
 msgid "Previous"
 msgstr "Попередня"
 
-#: plugins/notification/rb-notification-plugin.c:227
+#: plugins/notification/rb-notification-plugin.c:228
 msgid "Pause"
 msgstr "Пауза"
 
-#: plugins/notification/rb-notification-plugin.c:227
+#: plugins/notification/rb-notification-plugin.c:228
 msgid "Play"
 msgstr "Відтворити"
 
-#: plugins/notification/rb-notification-plugin.c:236
+#: plugins/notification/rb-notification-plugin.c:237
 msgid "Next"
 msgstr "Наступна"
 
 #. Translators: by Artist
-#: plugins/notification/rb-notification-plugin.c:330
+#: plugins/notification/rb-notification-plugin.c:331
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "у виконанні <i>%s</i>"
 
 #. Translators: from Album
-#: plugins/notification/rb-notification-plugin.c:332
+#: plugins/notification/rb-notification-plugin.c:333
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "з альбому <i>%s</i>"
 
-#: plugins/notification/rb-notification-plugin.c:412 widgets/rb-header.c:367
+#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "Нічого не відтворюється"
 
@@ -2829,8 +2827,9 @@ msgid "Listening port:"
 msgstr "Порт очікування даних:"
 
 #: plugins/webremote/webremote-config.ui:46
-msgid "Access key:"
-msgstr "Ключ доступу:"
+#| msgid "Password:"
+msgid "Passphrase:"
+msgstr "Пароль:"
 
 #: plugins/webremote/webremote-config.ui:79
 msgid "0"
@@ -3058,7 +3057,7 @@ msgstr "Пошук подкаст-каналів"
 msgid "Search podcast episodes"
 msgstr "Пошук подкаст-епізодів"
 
-#: remote/dbus/rb-client.c:95 shell/rb-application.c:558
+#: remote/dbus/rb-client.c:95 shell/rb-application.c:556
 msgid "Show the version of the program"
 msgstr "Показати версію програми"
 
@@ -3487,47 +3486,43 @@ msgstr "Розробники:"
 msgid "Music management and playback software for GNOME."
 msgstr "Програма керування та відтворення музики для GNOME."
 
-#: shell/rb-application.c:202
-msgid "Rhythmbox Website"
-msgstr "Сайт Rhythmbox"
-
-#: shell/rb-application.c:230 shell/rb-shell-preferences.c:163
+#: shell/rb-application.c:228 shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "Не вдалося показати довідку"
 
-#: shell/rb-application.c:550
+#: shell/rb-application.c:548
 msgid "Enable debug output"
 msgstr "Ввімкнути зневаджувальний вивід"
 
-#: shell/rb-application.c:551
+#: shell/rb-application.c:549
 msgid "Enable debug output matching a specified string"
 msgstr "Ввімкнути зневаджувальний вивід відповідно до заданої послідовності"
 
-#: shell/rb-application.c:552
+#: shell/rb-application.c:550
 msgid "Do not update the library with file changes"
 msgstr "Не поновлювати фонотеку зміненими файлами"
 
-#: shell/rb-application.c:553
+#: shell/rb-application.c:551
 msgid "Do not register the shell"
 msgstr "Не реєструвати оболонку"
 
-#: shell/rb-application.c:554
+#: shell/rb-application.c:552
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Не зберігати жодних постійних даних (враховує --no-registration)"
 
-#: shell/rb-application.c:555
+#: shell/rb-application.c:553
 msgid "Disable loading of plugins"
 msgstr "Вимкнути завантаження додатків"
 
-#: shell/rb-application.c:556
+#: shell/rb-application.c:554
 msgid "Path for database file to use"
 msgstr "Шлях до файла бази даних"
 
-#: shell/rb-application.c:557
+#: shell/rb-application.c:555
 msgid "Path for playlists file to use"
 msgstr "Шлях до файла списків композицій"
 
-#: shell/rb-application.c:570
+#: shell/rb-application.c:568
 #, c-format
 msgid ""
 "%s\n"
@@ -3615,7 +3610,7 @@ msgstr "Запустити відтворення"
 msgid "%s (Paused)"
 msgstr "%s (Призупинено)"
 
-#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:664
+#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:671
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Немає зареєстрованих джерел, які можуть обробити URI %s"
@@ -4013,16 +4008,16 @@ msgid "Remove from Playlist"
 msgstr "Вилучити зі списку"
 
 #: sources/rb-play-queue-source.c:297 sources/rb-play-queue-source.c:399
-#: sources/rb-play-queue-source.c:508
+#: sources/rb-play-queue-source.c:515
 msgid "Play Queue"
 msgstr "Черга відтворення"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:929
+#: sources/rb-play-queue-source.c:485 widgets/rb-header.c:929
 msgid "by"
 msgstr "виконує"
 
-#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:930
+#: sources/rb-play-queue-source.c:485 widgets/rb-header.c:930
 msgid "from"
 msgstr "з альбому"
 
@@ -4582,11 +4577,11 @@ msgstr "днів"
 msgid "weeks"
 msgstr "тижнів"
 
-#: widgets/rb-rating-helper.c:295
+#: widgets/rb-rating-helper.c:298
 msgid "No Stars"
 msgstr "Немає зірок"
 
-#: widgets/rb-rating-helper.c:297
+#: widgets/rb-rating-helper.c:300
 #, c-format
 msgid "%d Star"
 msgid_plural "%d Stars"
@@ -4637,6 +4632,12 @@ msgstr "На стільниці"
 #: widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Невідома адреса"
+
+#~ msgid "Access key:"
+#~ msgstr "Ключ доступу:"
+
+#~ msgid "Rhythmbox Website"
+#~ msgstr "Сайт Rhythmbox"
 
 #~ msgid "Recommendations"
 #~ msgstr "Рекомендації"
