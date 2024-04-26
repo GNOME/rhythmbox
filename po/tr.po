@@ -16,9 +16,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-02-08 15:58+0000\n"
-"PO-Revision-Date: 2024-02-14 01:36+0300\n"
-"Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
+"POT-Creation-Date: 2024-04-17 12:50+0000\n"
+"PO-Revision-Date: 2024-04-18 00:04+0300\n"
+"Last-Translator: Sabri Ünal <yakushabb@gmail.com>\n"
 "Language-Team: Turkish <gnometurk@gnome.org>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
@@ -122,11 +122,12 @@ msgstr "Rhythmbox"
 msgid "Play and organize all your music"
 msgstr "Tüm müziklerinizi çalın ve yönetin"
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:10
+#. developer_name tag deprecated with Appstream 1.0
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:11
 msgid "The Rhythmbox developers"
 msgstr "Rhythmbox geliştiricileri"
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:12
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:16
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -139,7 +140,7 @@ msgstr ""
 "dahil), ve Last.fm ve Magnatune gibi internet müzik hizmetlerini de "
 "destekler."
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:18
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:22
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
@@ -147,7 +148,7 @@ msgstr ""
 "Rhythmbox GTK+ ve GStreamer temelli Özgür yazılımdır, ve Python veya C ile "
 "yazılan eklentilerle geliştirilebilir."
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:30
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:35
 msgid "Main Window"
 msgstr "Ana Pencere"
 
@@ -1140,11 +1141,11 @@ msgstr "Çalma listeleri:"
 
 #: plugins/android/rb-android-source.c:201
 msgid ""
-"No storage areas found on this device. You may need to unlock it and enable "
-"MTP."
+"No storage areas found on this device. You may need to unlock it and change "
+"it to File Transfer mode."
 msgstr ""
-"Bu aygıtta depolama alanı bulunamadı. Kilidini açmanız ve MTP’yi "
-"etkinleştirmeniz gerekebilir."
+"Bu aygıtta depolama alanı bulunamadı. Kilidini açmanız ve Dosya Aktarım "
+"kipini etkinleştirmeniz gerekebilir."
 
 #: plugins/android/rb-android-source.c:403
 #: plugins/generic-player/rb-generic-player-source.c:563
@@ -3021,7 +3022,7 @@ msgstr "Ortam akışı beslemeleri ara"
 msgid "Search podcast episodes"
 msgstr "Ortam akışı bölümleri ara"
 
-#: remote/dbus/rb-client.c:95 shell/rb-application.c:558
+#: remote/dbus/rb-client.c:95 shell/rb-application.c:556
 msgid "Show the version of the program"
 msgstr "Programın sürümünü göster"
 
@@ -3443,47 +3444,43 @@ msgstr "Katkıda bulunanlar:"
 msgid "Music management and playback software for GNOME."
 msgstr "GNOME için müzik çalıcı ve yönetim yazılımı."
 
-#: shell/rb-application.c:202
-msgid "Rhythmbox Website"
-msgstr "Rhythmbox Web Sitesi"
-
-#: shell/rb-application.c:230 shell/rb-shell-preferences.c:163
+#: shell/rb-application.c:228 shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "Yardım görüntülenemedi"
 
-#: shell/rb-application.c:550
+#: shell/rb-application.c:548
 msgid "Enable debug output"
 msgstr "Hata ayıklama çıktısını etkinleştir"
 
-#: shell/rb-application.c:551
+#: shell/rb-application.c:549
 msgid "Enable debug output matching a specified string"
 msgstr "Belirli dizgeyle eşleşen hata ayıklama çıktısını etkinleştir"
 
-#: shell/rb-application.c:552
+#: shell/rb-application.c:550
 msgid "Do not update the library with file changes"
 msgstr "Kütüphaneyi, dosya değişiklikleriyle sakın güncelleme"
 
-#: shell/rb-application.c:553
+#: shell/rb-application.c:551
 msgid "Do not register the shell"
 msgstr "Kabuğu kaydetme"
 
-#: shell/rb-application.c:554
+#: shell/rb-application.c:552
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Hiçbir veriyi kalıcı olarak kaydetme (--no-registration uygular)"
 
-#: shell/rb-application.c:555
+#: shell/rb-application.c:553
 msgid "Disable loading of plugins"
 msgstr "Eklenti yüklenmesini devre dışı bırak"
 
-#: shell/rb-application.c:556
+#: shell/rb-application.c:554
 msgid "Path for database file to use"
 msgstr "Kullanılacak veri tabanı dosyasının yolu"
 
-#: shell/rb-application.c:557
+#: shell/rb-application.c:555
 msgid "Path for playlists file to use"
 msgstr "Kullanılacak çalma listeleri dosyasının yolu"
 
-#: shell/rb-application.c:570
+#: shell/rb-application.c:568
 #, c-format
 msgid ""
 "%s\n"
@@ -4561,3 +4558,6 @@ msgstr "Masaüstünde"
 #: widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Bilinmeyen konum"
+
+#~ msgid "Rhythmbox Website"
+#~ msgstr "Rhythmbox Web Sitesi"
