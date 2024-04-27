@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-04-17 12:50+0000\n"
-"PO-Revision-Date: 2024-04-17 15:44+0200\n"
+"POT-Creation-Date: 2024-04-26 13:07+0000\n"
+"PO-Revision-Date: 2024-04-27 09:01+0200\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -216,7 +216,8 @@ msgid "Add to Queue"
 msgstr "Dodaj v vrsto predvajanja"
 
 #: data/ui/browser-popup.ui:10 data/ui/edit-menu.ui:39
-#: data/ui/playlist-popup.ui:10
+#: data/ui/playlist-popup.ui:10 data/ui/queue-popups.ui:6
+#: data/ui/queue-popups.ui:35
 msgid "Add to Playlist"
 msgstr "Dodaj na seznam predvajanja"
 
@@ -249,8 +250,8 @@ msgid "Browse this Album"
 msgstr "Brskaj po tem albumu"
 
 #: data/ui/browser-popup.ui:52 data/ui/edit-menu.ui:45
-#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:23
-#: data/ui/queue-popups.ui:52 plugins/magnatune/magnatune-popup.ui:34
+#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:27
+#: data/ui/queue-popups.ui:60 plugins/magnatune/magnatune-popup.ui:34
 msgid "Pr_operties"
 msgstr "_Lastnosti"
 
@@ -583,8 +584,8 @@ msgstr "_Dodaj vse posnetke v vrsto"
 msgid "_Shuffle Playlist"
 msgstr "P_remešaj seznam predvajanja"
 
-#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:14
-#: data/ui/queue-popups.ui:43
+#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:18
+#: data/ui/queue-popups.ui:51
 msgid "_Save to File..."
 msgstr "_Shrani v datoteko ..."
 
@@ -786,15 +787,15 @@ msgstr "Dodaj"
 msgid "Update"
 msgstr "Posodobi"
 
-#: data/ui/queue-popups.ui:6 data/ui/queue-popups.ui:31
+#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
 msgid "Remove from Play Queue"
 msgstr "Odstrani iz vrste predvajanja"
 
-#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
+#: data/ui/queue-popups.ui:14 data/ui/queue-popups.ui:47
 msgid "Shuffle Play Queue"
 msgstr "Premešaj vrsto predvajanja"
 
-#: data/ui/queue-popups.ui:35
+#: data/ui/queue-popups.ui:43
 msgid "Clear Play Queue"
 msgstr "Počisti vrsto predvajanja"
 
@@ -983,7 +984,7 @@ msgstr "%d. %b. %Y"
 #: plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
 #: plugins/mtpdevice/rb-mtp-source.c:650 plugins/mtpdevice/rb-mtp-source.c:1140
 #: plugins/mtpdevice/rb-mtp-source.c:1471
-#: plugins/notification/rb-notification-plugin.c:508
+#: plugins/notification/rb-notification-plugin.c:509
 #: podcast/rb-feed-podcast-properties-dialog.c:335
 #: podcast/rb-podcast-add-dialog.c:646 podcast/rb-podcast-manager.c:1307
 #: podcast/rb-podcast-manager.c:1421 podcast/rb-podcast-properties-dialog.c:636
@@ -2631,35 +2632,35 @@ msgstr "Obvestilo"
 msgid "Notification popups"
 msgstr "Pojavna obvestila"
 
-#: plugins/notification/rb-notification-plugin.c:221
+#: plugins/notification/rb-notification-plugin.c:222
 msgid "Previous"
 msgstr "Predhodno"
 
-#: plugins/notification/rb-notification-plugin.c:227
+#: plugins/notification/rb-notification-plugin.c:228
 msgid "Pause"
 msgstr "Premor"
 
-#: plugins/notification/rb-notification-plugin.c:227
+#: plugins/notification/rb-notification-plugin.c:228
 msgid "Play"
 msgstr "Predvajaj"
 
-#: plugins/notification/rb-notification-plugin.c:236
+#: plugins/notification/rb-notification-plugin.c:237
 msgid "Next"
 msgstr "Naslednja"
 
 #. Translators: by Artist
-#: plugins/notification/rb-notification-plugin.c:330
+#: plugins/notification/rb-notification-plugin.c:331
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "od <i>%s</i>"
 
 #. Translators: from Album
-#: plugins/notification/rb-notification-plugin.c:332
+#: plugins/notification/rb-notification-plugin.c:333
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "iz <i>%s</i>"
 
-#: plugins/notification/rb-notification-plugin.c:412 widgets/rb-header.c:367
+#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "Ni predvajanja"
 
@@ -2813,8 +2814,8 @@ msgid "Listening port:"
 msgstr "Vrata za poslušanje:"
 
 #: plugins/webremote/webremote-config.ui:46
-msgid "Access key:"
-msgstr "Ključ za dostop:"
+msgid "Passphrase:"
+msgstr "Šifrirno geslo:"
 
 #: plugins/webremote/webremote-config.ui:79
 msgid "0"
@@ -3595,7 +3596,7 @@ msgstr "Začetek predvajanja"
 msgid "%s (Paused)"
 msgstr "%s (v premoru)"
 
-#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:664
+#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:671
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ni vira za upravljanjem z naslovom URI %s"
@@ -4007,16 +4008,16 @@ msgid "Remove from Playlist"
 msgstr "Odstrani s seznama predvajanja"
 
 #: sources/rb-play-queue-source.c:297 sources/rb-play-queue-source.c:399
-#: sources/rb-play-queue-source.c:508
+#: sources/rb-play-queue-source.c:515
 msgid "Play Queue"
 msgstr "Predvajalna vrsta"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:929
+#: sources/rb-play-queue-source.c:485 widgets/rb-header.c:929
 msgid "by"
 msgstr "od"
 
-#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:930
+#: sources/rb-play-queue-source.c:485 widgets/rb-header.c:930
 msgid "from"
 msgstr "iz"
 
@@ -4583,11 +4584,11 @@ msgstr "dni"
 msgid "weeks"
 msgstr "tednov"
 
-#: widgets/rb-rating-helper.c:295
+#: widgets/rb-rating-helper.c:298
 msgid "No Stars"
 msgstr "Brez zvezd"
 
-#: widgets/rb-rating-helper.c:297
+#: widgets/rb-rating-helper.c:300
 #, c-format
 msgid "%d Star"
 msgid_plural "%d Stars"
