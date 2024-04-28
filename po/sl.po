@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-04-26 13:07+0000\n"
-"PO-Revision-Date: 2024-04-27 09:01+0200\n"
+"POT-Creation-Date: 2024-04-28 08:44+0000\n"
+"PO-Revision-Date: 2024-04-29 00:48+0200\n"
 "Last-Translator: Martin Srebotnjak <miles@filmsi.net>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -799,7 +799,7 @@ msgstr "Premešaj vrsto predvajanja"
 msgid "Clear Play Queue"
 msgstr "Počisti vrsto predvajanja"
 
-#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3291
+#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3295
 msgid "Shuffle"
 msgstr "Mešanje"
 
@@ -996,8 +996,8 @@ msgstr "%d. %b. %Y"
 #: rhythmdb/rhythmdb-entry-type.c:301 rhythmdb/rhythmdb-metadata-cache.c:308
 #: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
 #: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
-#: shell/rb-shell-player.c:869 shell/rb-shell-player.c:2714
-#: shell/rb-shell-player.c:2716 widgets/rb-entry-view.c:996
+#: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
+#: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
 #: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
 #: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
 #: widgets/rb-header.c:1279 widgets/rb-header.c:1305 widgets/rb-song-info.c:950
@@ -3634,68 +3634,73 @@ msgstr "Nepričakovan konec pretoka!"
 msgid "Playlist was empty"
 msgstr "Seznam predvajanja je bil prazen"
 
-#: shell/rb-shell-player.c:1109
+#: shell/rb-shell-player.c:731
+#, c-format
+msgid "This item is not playable"
+msgstr "Tega elementa ni mogoče predvajati"
+
+#: shell/rb-shell-player.c:1113
 #, c-format
 msgid "Not currently playing"
 msgstr "Trenutno ni predvajanja"
 
-#: shell/rb-shell-player.c:1166
+#: shell/rb-shell-player.c:1170
 #, c-format
 msgid "No previous song"
 msgstr "Ni predhodne skladbe"
 
-#: shell/rb-shell-player.c:1265
+#: shell/rb-shell-player.c:1269
 #, c-format
 msgid "No next song"
 msgstr "Ni naslednje skladbe"
 
-#: shell/rb-shell-player.c:2124
+#: shell/rb-shell-player.c:2128
 msgid "Couldn't stop playback"
 msgstr "Predvajanja ni mogoče zaustaviti"
 
-#: shell/rb-shell-player.c:2243
+#: shell/rb-shell-player.c:2247
 #, c-format
 msgid "Playback position not available"
 msgstr "Položaj predvajanja ni dostopen"
 
-#: shell/rb-shell-player.c:2275 shell/rb-shell-player.c:2309
+#: shell/rb-shell-player.c:2279 shell/rb-shell-player.c:2313
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Po trenutni skladbi ni mogoče iskati"
 
-#: shell/rb-shell-player.c:2465 shell/rb-shell-player.c:2776
+#: shell/rb-shell-player.c:2469 shell/rb-shell-player.c:2780
 msgid "Couldn't start playback"
 msgstr "Predvajanja ni mogoče začeti"
 
-#: shell/rb-shell-player.c:3287
+#: shell/rb-shell-player.c:3291
 msgid "Linear"
 msgstr "Zaporedno"
 
-#: shell/rb-shell-player.c:3289
+#: shell/rb-shell-player.c:3293
 msgid "Linear looping"
 msgstr "Zaporedno kroženje"
 
-#: shell/rb-shell-player.c:3293
+#: shell/rb-shell-player.c:3297
 msgid "Random with equal weights"
 msgstr "Naključno z enakimi utežmi"
 
-#: shell/rb-shell-player.c:3295
+#: shell/rb-shell-player.c:3299
 msgid "Random by time since last play"
 msgstr "Naključno po času od zadnjega predvajanja"
 
-#: shell/rb-shell-player.c:3297
+#: shell/rb-shell-player.c:3301
 msgid "Random by rating"
 msgstr "Naključno po oceni"
 
-#: shell/rb-shell-player.c:3299
+#: shell/rb-shell-player.c:3303
 msgid "Random by time since last play and rating"
 msgstr "Naključno po času od zadnjega predvajanja in oceni"
 
-#: shell/rb-shell-player.c:3301
+#: shell/rb-shell-player.c:3305
 msgid "Linear, removing entries once played"
 msgstr "Zaporedno, odstrani vnose po predvajanju"
 
-#: shell/rb-shell-player.c:3311
+#: shell/rb-shell-player.c:3315
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Ustvarjanje predvajalnika je spodletelo: %s"
