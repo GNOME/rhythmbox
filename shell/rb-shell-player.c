@@ -725,6 +725,10 @@ rb_shell_player_open_location (RBShellPlayer *player,
 
 	location = rhythmdb_entry_get_playback_uri (entry);
 	if (location == NULL) {
+		g_set_error (error,
+			     RB_SHELL_PLAYER_ERROR,
+			     RB_SHELL_PLAYER_ERROR_NOT_PLAYABLE,
+			     _("This item is not playable"));
 		return FALSE;
 	}
 
