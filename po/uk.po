@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-04-26 13:07+0000\n"
-"PO-Revision-Date: 2024-04-26 22:41+0300\n"
+"POT-Creation-Date: 2024-04-28 08:44+0000\n"
+"PO-Revision-Date: 2024-04-28 18:16+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian\n"
 "Language: uk\n"
@@ -806,7 +806,7 @@ msgstr "Перемішати чергу відтворення"
 msgid "Clear Play Queue"
 msgstr "Спорожнити чергу відтворення"
 
-#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3291
+#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3295
 msgid "Shuffle"
 msgstr "Перемішане"
 
@@ -1003,8 +1003,8 @@ msgstr "%b %d %Y"
 #: rhythmdb/rhythmdb-entry-type.c:301 rhythmdb/rhythmdb-metadata-cache.c:308
 #: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
 #: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
-#: shell/rb-shell-player.c:869 shell/rb-shell-player.c:2714
-#: shell/rb-shell-player.c:2716 widgets/rb-entry-view.c:996
+#: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
+#: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
 #: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
 #: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
 #: widgets/rb-header.c:1279 widgets/rb-header.c:1305 widgets/rb-song-info.c:950
@@ -2827,7 +2827,6 @@ msgid "Listening port:"
 msgstr "Порт очікування даних:"
 
 #: plugins/webremote/webremote-config.ui:46
-#| msgid "Password:"
 msgid "Passphrase:"
 msgstr "Пароль:"
 
@@ -3648,68 +3647,73 @@ msgstr "Несподіване закінчення потоку!"
 msgid "Playlist was empty"
 msgstr "Список композицій порожній"
 
-#: shell/rb-shell-player.c:1109
+#: shell/rb-shell-player.c:731
+#, c-format
+msgid "This item is not playable"
+msgstr "Ці дані є непридатними до відтворення"
+
+#: shell/rb-shell-player.c:1113
 #, c-format
 msgid "Not currently playing"
 msgstr "Нічого не відтворюється"
 
-#: shell/rb-shell-player.c:1166
+#: shell/rb-shell-player.c:1170
 #, c-format
 msgid "No previous song"
 msgstr "Немає попередньої пісні"
 
-#: shell/rb-shell-player.c:1265
+#: shell/rb-shell-player.c:1269
 #, c-format
 msgid "No next song"
 msgstr "Немає наступної пісні"
 
-#: shell/rb-shell-player.c:2124
+#: shell/rb-shell-player.c:2128
 msgid "Couldn't stop playback"
 msgstr "Не вдалося зупинити відтворення"
 
-#: shell/rb-shell-player.c:2243
+#: shell/rb-shell-player.c:2247
 #, c-format
 msgid "Playback position not available"
 msgstr "Позиція відтворення недоступна"
 
-#: shell/rb-shell-player.c:2275 shell/rb-shell-player.c:2309
+#: shell/rb-shell-player.c:2279 shell/rb-shell-player.c:2313
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Поточну композицію неможливо перемотати"
 
-#: shell/rb-shell-player.c:2465 shell/rb-shell-player.c:2776
+#: shell/rb-shell-player.c:2469 shell/rb-shell-player.c:2780
 msgid "Couldn't start playback"
 msgstr "Не вдалося почати відтворення"
 
-#: shell/rb-shell-player.c:3287
+#: shell/rb-shell-player.c:3291
 msgid "Linear"
 msgstr "Лінійне"
 
-#: shell/rb-shell-player.c:3289
+#: shell/rb-shell-player.c:3293
 msgid "Linear looping"
 msgstr "Лінійне циклічне"
 
-#: shell/rb-shell-player.c:3293
+#: shell/rb-shell-player.c:3297
 msgid "Random with equal weights"
 msgstr "Випадкове з однаковою вагою"
 
-#: shell/rb-shell-player.c:3295
+#: shell/rb-shell-player.c:3299
 msgid "Random by time since last play"
 msgstr "Випадкове за часом останнього відтворення"
 
-#: shell/rb-shell-player.c:3297
+#: shell/rb-shell-player.c:3301
 msgid "Random by rating"
 msgstr "Випадкове за рейтингом"
 
-#: shell/rb-shell-player.c:3299
+#: shell/rb-shell-player.c:3303
 msgid "Random by time since last play and rating"
 msgstr "Випадкове за часом останнього відтворення та рейтингом"
 
-#: shell/rb-shell-player.c:3301
+#: shell/rb-shell-player.c:3305
 msgid "Linear, removing entries once played"
 msgstr "Лінійне, крім вже відтворених композицій"
 
-#: shell/rb-shell-player.c:3311
+#: shell/rb-shell-player.c:3315
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Помилка створення програвача: %s"
