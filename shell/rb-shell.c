@@ -2250,7 +2250,7 @@ rb_shell_playing_changed_cb (RBShellPlayer *player, gboolean playing, RBShell *s
 
 	image = gtk_button_get_image (GTK_BUTTON (shell->priv->play_button));
 	if (playing) {
-		if (rb_source_can_pause (rb_shell_player_get_active_source (shell->priv->player_shell))) {
+		if (rb_source_can_pause (rb_shell_player_get_playing_source (shell->priv->player_shell))) {
 			icon_name = "media-playback-pause-symbolic";
 			tooltip = _("Pause playback");
 		} else {

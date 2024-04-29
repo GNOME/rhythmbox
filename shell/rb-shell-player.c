@@ -1118,7 +1118,7 @@ rb_shell_player_do_previous (RBShellPlayer *player,
 	 * else restart the current one.
 	 */
 	if (player->priv->current_playing_source != NULL
-	    && rb_source_can_pause (player->priv->source)
+	    && rb_source_can_pause (player->priv->current_playing_source)
 	    && rb_player_get_time (player->priv->mmplayer) > (G_GINT64_CONSTANT (3) * RB_PLAYER_SECOND)) {
 		rb_debug ("after 3 second previous, restarting song");
 		rb_player_set_time (player->priv->mmplayer, 0);
@@ -1359,7 +1359,7 @@ rb_shell_player_playpause (RBShellPlayer *player,
 	if (rb_player_playing (player->priv->mmplayer)) {
 		if (player->priv->source == NULL) {
 			rb_debug ("playing source is already NULL");
-		} else if (rb_source_can_pause (player->priv->source)) {
+		} else if (rb_source_can_pause (player->priv->current_playing_source)) {
 			rb_debug ("pausing mm player");
 			if (player->priv->parser_cancellable != NULL) {
 				g_object_unref (player->priv->parser_cancellable);
