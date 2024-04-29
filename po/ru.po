@@ -18,8 +18,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox trunk\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-02-08 15:58+0000\n"
-"PO-Revision-Date: 2024-02-16 21:39+1000\n"
+"POT-Creation-Date: 2024-04-28 22:49+0000\n"
+"PO-Revision-Date: 2024-04-29 10:02+1000\n"
 "Last-Translator: Ser82-png <asvmail.as@gmail.com>\n"
 "Language-Team: Русский <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
@@ -133,11 +133,12 @@ msgstr "Rhythmbox"
 msgid "Play and organize all your music"
 msgstr "Воспроизведение и упорядочение всей вашей музыкальной коллекции"
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:10
+#. developer_name tag deprecated with Appstream 1.0
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:11
 msgid "The Rhythmbox developers"
 msgstr "Разработчики Rhythmbox"
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:12
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:16
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -150,7 +151,7 @@ msgstr ""
 "(включая телефоны), а также музыкальные интернет сервисы, такие как Last.fm "
 "и Magnatune."
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:18
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:22
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
@@ -158,7 +159,7 @@ msgstr ""
 "Rhythmbox — это свободное программное обеспечение, основанное на GTK+ и "
 "GStreamer, и расширяемое с помощью модулей написанных на Python или C."
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:30
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:35
 msgid "Main Window"
 msgstr "Главное окно"
 
@@ -230,7 +231,8 @@ msgid "Add to Queue"
 msgstr "Добавить в очередь воспроизведения"
 
 #: data/ui/browser-popup.ui:10 data/ui/edit-menu.ui:39
-#: data/ui/playlist-popup.ui:10
+#: data/ui/playlist-popup.ui:10 data/ui/queue-popups.ui:6
+#: data/ui/queue-popups.ui:35
 msgid "Add to Playlist"
 msgstr "Добавить в список воспроизведения"
 
@@ -263,8 +265,8 @@ msgid "Browse this Album"
 msgstr "Все композиции из этого альбома"
 
 #: data/ui/browser-popup.ui:52 data/ui/edit-menu.ui:45
-#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:23
-#: data/ui/queue-popups.ui:52 plugins/magnatune/magnatune-popup.ui:34
+#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:27
+#: data/ui/queue-popups.ui:60 plugins/magnatune/magnatune-popup.ui:34
 msgid "Pr_operties"
 msgstr "_Свойства"
 
@@ -598,8 +600,8 @@ msgstr "Поставить _в очередь все дорожки"
 msgid "_Shuffle Playlist"
 msgstr "_Перемешать список воспроизведения"
 
-#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:14
-#: data/ui/queue-popups.ui:43
+#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:18
+#: data/ui/queue-popups.ui:51
 msgid "_Save to File..."
 msgstr "С_охранить в файл..."
 
@@ -799,19 +801,19 @@ msgstr "Добавить"
 msgid "Update"
 msgstr "Обновить"
 
-#: data/ui/queue-popups.ui:6 data/ui/queue-popups.ui:31
+#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
 msgid "Remove from Play Queue"
 msgstr "Удалить из очереди воспроизведения"
 
-#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
+#: data/ui/queue-popups.ui:14 data/ui/queue-popups.ui:47
 msgid "Shuffle Play Queue"
 msgstr "Перемешать очередь воспроизведения"
 
-#: data/ui/queue-popups.ui:35
+#: data/ui/queue-popups.ui:43
 msgid "Clear Play Queue"
 msgstr "Очистить очередь воспроизведения"
 
-#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3291
+#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3295
 msgid "Shuffle"
 msgstr "Случайно"
 
@@ -996,7 +998,7 @@ msgstr "%b %d %Y"
 #: plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
 #: plugins/mtpdevice/rb-mtp-source.c:650 plugins/mtpdevice/rb-mtp-source.c:1140
 #: plugins/mtpdevice/rb-mtp-source.c:1471
-#: plugins/notification/rb-notification-plugin.c:508
+#: plugins/notification/rb-notification-plugin.c:509
 #: podcast/rb-feed-podcast-properties-dialog.c:335
 #: podcast/rb-podcast-add-dialog.c:646 podcast/rb-podcast-manager.c:1307
 #: podcast/rb-podcast-manager.c:1421 podcast/rb-podcast-properties-dialog.c:636
@@ -1008,8 +1010,8 @@ msgstr "%b %d %Y"
 #: rhythmdb/rhythmdb-entry-type.c:301 rhythmdb/rhythmdb-metadata-cache.c:308
 #: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
 #: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
-#: shell/rb-shell-player.c:869 shell/rb-shell-player.c:2714
-#: shell/rb-shell-player.c:2716 widgets/rb-entry-view.c:996
+#: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
+#: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
 #: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
 #: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
 #: widgets/rb-header.c:1279 widgets/rb-header.c:1305 widgets/rb-song-info.c:950
@@ -1160,11 +1162,11 @@ msgstr "Списки воспроизведения:"
 
 #: plugins/android/rb-android-source.c:201
 msgid ""
-"No storage areas found on this device. You may need to unlock it and enable "
-"MTP."
+"No storage areas found on this device. You may need to unlock it and change "
+"it to File Transfer mode."
 msgstr ""
 "На этом устройстве не обнаружено областей хранения данных. Вероятно, вам "
-"следует разблокировать его и включить MTP."
+"следует разблокировать его и включить режим передачи файлов."
 
 #: plugins/android/rb-android-source.c:403
 #: plugins/generic-player/rb-generic-player-source.c:563
@@ -2653,35 +2655,35 @@ msgstr "Уведомление"
 msgid "Notification popups"
 msgstr "Всплывающие уведомления"
 
-#: plugins/notification/rb-notification-plugin.c:221
+#: plugins/notification/rb-notification-plugin.c:222
 msgid "Previous"
 msgstr "Предыдущая"
 
-#: plugins/notification/rb-notification-plugin.c:227
+#: plugins/notification/rb-notification-plugin.c:228
 msgid "Pause"
 msgstr "Приостановить"
 
-#: plugins/notification/rb-notification-plugin.c:227
+#: plugins/notification/rb-notification-plugin.c:228
 msgid "Play"
 msgstr "Воспроизвести"
 
-#: plugins/notification/rb-notification-plugin.c:236
+#: plugins/notification/rb-notification-plugin.c:237
 msgid "Next"
 msgstr "Следующая"
 
 #. Translators: by Artist
-#: plugins/notification/rb-notification-plugin.c:330
+#: plugins/notification/rb-notification-plugin.c:331
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "в исполнении <i>%s</i>"
 
 #. Translators: from Album
-#: plugins/notification/rb-notification-plugin.c:332
+#: plugins/notification/rb-notification-plugin.c:333
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "из альбома <i>%s</i>"
 
-#: plugins/notification/rb-notification-plugin.c:412 widgets/rb-header.c:367
+#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "Ничего не воспроизводится"
 
@@ -2835,8 +2837,8 @@ msgid "Listening port:"
 msgstr "Прослушиваемый порт:"
 
 #: plugins/webremote/webremote-config.ui:46
-msgid "Access key:"
-msgstr "Ключ доступа:"
+msgid "Passphrase:"
+msgstr "Пароль:"
 
 #: plugins/webremote/webremote-config.ui:79
 msgid "0"
@@ -3062,7 +3064,7 @@ msgstr "Найти ленты подкастов"
 msgid "Search podcast episodes"
 msgstr "Найти эпизоды подкастов"
 
-#: remote/dbus/rb-client.c:95 shell/rb-application.c:558
+#: remote/dbus/rb-client.c:95 shell/rb-application.c:556
 msgid "Show the version of the program"
 msgstr "Показать версию приложения"
 
@@ -3497,47 +3499,43 @@ msgstr "Свой вклад внесли:"
 msgid "Music management and playback software for GNOME."
 msgstr "Приложение для воспроизведения и управления музыкой в среде GNOME."
 
-#: shell/rb-application.c:202
-msgid "Rhythmbox Website"
-msgstr "Веб-сайт Rhythmbox"
-
-#: shell/rb-application.c:230 shell/rb-shell-preferences.c:163
+#: shell/rb-application.c:228 shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "Не удалось показать справку"
 
-#: shell/rb-application.c:550
+#: shell/rb-application.c:548
 msgid "Enable debug output"
 msgstr "Включить отладочный вывод"
 
-#: shell/rb-application.c:551
+#: shell/rb-application.c:549
 msgid "Enable debug output matching a specified string"
 msgstr "Включить отладочный вывод по заданной строке"
 
-#: shell/rb-application.c:552
+#: shell/rb-application.c:550
 msgid "Do not update the library with file changes"
 msgstr "Не обновлять фонотеку после изменения её файлов"
 
-#: shell/rb-application.c:553
+#: shell/rb-application.c:551
 msgid "Do not register the shell"
 msgstr "Не создавать оболочку для управления"
 
-#: shell/rb-application.c:554
+#: shell/rb-application.c:552
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Никогда не сохранять данные (включает --no-registration)"
 
-#: shell/rb-application.c:555
+#: shell/rb-application.c:553
 msgid "Disable loading of plugins"
 msgstr "Отключить загрузки модулей"
 
-#: shell/rb-application.c:556
+#: shell/rb-application.c:554
 msgid "Path for database file to use"
 msgstr "Используемый путь к базе данных"
 
-#: shell/rb-application.c:557
+#: shell/rb-application.c:555
 msgid "Path for playlists file to use"
 msgstr "Путь к файлу списков воспроизведения"
 
-#: shell/rb-application.c:570
+#: shell/rb-application.c:568
 #, c-format
 msgid ""
 "%s\n"
@@ -3624,7 +3622,7 @@ msgstr "Начать воспроизведение"
 msgid "%s (Paused)"
 msgstr "%s (Приостановлено)"
 
-#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:664
+#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:671
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ни один из зарегистрированных источников не может обработать URI %s"
@@ -3662,69 +3660,74 @@ msgstr "Неожиданный конец потока!"
 msgid "Playlist was empty"
 msgstr "Список воспроизведения пуст"
 
-#: shell/rb-shell-player.c:1109
+#: shell/rb-shell-player.c:731
+#, c-format
+msgid "This item is not playable"
+msgstr "Этот элемент нельзя воспроизвести"
+
+#: shell/rb-shell-player.c:1113
 #, c-format
 msgid "Not currently playing"
 msgstr "Ничего не воспроизводится"
 
-#: shell/rb-shell-player.c:1166
+#: shell/rb-shell-player.c:1170
 #, c-format
 msgid "No previous song"
 msgstr "Это первая композиция в списке"
 
-#: shell/rb-shell-player.c:1265
+#: shell/rb-shell-player.c:1269
 #, c-format
 msgid "No next song"
 msgstr "Это последняя композиция в списке"
 
-#: shell/rb-shell-player.c:2124
+#: shell/rb-shell-player.c:2128
 msgid "Couldn't stop playback"
 msgstr "Не удалось остановить воспроизведение"
 
-#: shell/rb-shell-player.c:2243
+#: shell/rb-shell-player.c:2247
 #, c-format
 msgid "Playback position not available"
 msgstr "Позиция воспроизведения недоступна"
 
-#: shell/rb-shell-player.c:2275 shell/rb-shell-player.c:2309
+#: shell/rb-shell-player.c:2279 shell/rb-shell-player.c:2313
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Текущую композицию нельзя перемотать"
 
-#: shell/rb-shell-player.c:2465 shell/rb-shell-player.c:2776
+#: shell/rb-shell-player.c:2469 shell/rb-shell-player.c:2780
 msgid "Couldn't start playback"
 msgstr "Не удалось начать воспроизведение"
 
-#: shell/rb-shell-player.c:3287
+#: shell/rb-shell-player.c:3291
 msgid "Linear"
 msgstr "Линейно"
 
-#: shell/rb-shell-player.c:3289
+#: shell/rb-shell-player.c:3293
 msgid "Linear looping"
 msgstr "Линейное проигрывание"
 
-#: shell/rb-shell-player.c:3293
+#: shell/rb-shell-player.c:3297
 msgid "Random with equal weights"
 msgstr "Случайно с учётом одинакового веса"
 
-#: shell/rb-shell-player.c:3295
+#: shell/rb-shell-player.c:3299
 msgid "Random by time since last play"
 msgstr ""
 "Случайно с учётом времени, прошедшего с времени последнего воспроизведения"
 
-#: shell/rb-shell-player.c:3297
+#: shell/rb-shell-player.c:3301
 msgid "Random by rating"
 msgstr "Случайно с учётом оценки"
 
-#: shell/rb-shell-player.c:3299
+#: shell/rb-shell-player.c:3303
 msgid "Random by time since last play and rating"
 msgstr "Случайно с учётом времени последнего воспроизведения и оценки"
 
-#: shell/rb-shell-player.c:3301
+#: shell/rb-shell-player.c:3305
 msgid "Linear, removing entries once played"
 msgstr "Линейно, исключая уже проигранные записи"
 
-#: shell/rb-shell-player.c:3311
+#: shell/rb-shell-player.c:3315
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Не удалось создать проигрыватель: %s"
@@ -4028,16 +4031,16 @@ msgid "Remove from Playlist"
 msgstr "Удалить из списка воспроизведения"
 
 #: sources/rb-play-queue-source.c:297 sources/rb-play-queue-source.c:399
-#: sources/rb-play-queue-source.c:508
+#: sources/rb-play-queue-source.c:515
 msgid "Play Queue"
 msgstr "Очередь воспроизведения"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:929
+#: sources/rb-play-queue-source.c:485 widgets/rb-header.c:929
 msgid "by"
 msgstr "в исполнении"
 
-#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:930
+#: sources/rb-play-queue-source.c:485 widgets/rb-header.c:930
 msgid "from"
 msgstr "из альбома"
 
@@ -4598,11 +4601,11 @@ msgstr "дней"
 msgid "weeks"
 msgstr "недель"
 
-#: widgets/rb-rating-helper.c:295
+#: widgets/rb-rating-helper.c:298
 msgid "No Stars"
 msgstr "Нет звёзд"
 
-#: widgets/rb-rating-helper.c:297
+#: widgets/rb-rating-helper.c:300
 #, c-format
 msgid "%d Star"
 msgid_plural "%d Stars"
@@ -4653,6 +4656,12 @@ msgstr "На рабочем столе"
 #: widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Неизвестное расположение"
+
+#~ msgid "Access key:"
+#~ msgstr "Ключ доступа:"
+
+#~ msgid "Rhythmbox Website"
+#~ msgstr "Веб-сайт Rhythmbox"
 
 #~ msgid "Recommendations"
 #~ msgstr "Рекомендации"
