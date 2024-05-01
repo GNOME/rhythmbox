@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-04-17 12:50+0000\n"
-"PO-Revision-Date: 2024-04-18 00:04+0300\n"
+"POT-Creation-Date: 2024-04-28 08:44+0000\n"
+"PO-Revision-Date: 2024-04-29 02:52+0300\n"
 "Last-Translator: Sabri Ünal <yakushabb@gmail.com>\n"
 "Language-Team: Turkish <gnometurk@gnome.org>\n"
 "Language: tr\n"
@@ -219,7 +219,8 @@ msgid "Add to Queue"
 msgstr "Kuyruğa Ekle"
 
 #: data/ui/browser-popup.ui:10 data/ui/edit-menu.ui:39
-#: data/ui/playlist-popup.ui:10
+#: data/ui/playlist-popup.ui:10 data/ui/queue-popups.ui:6
+#: data/ui/queue-popups.ui:35
 msgid "Add to Playlist"
 msgstr "Çalma Listesine Ekle"
 
@@ -252,8 +253,8 @@ msgid "Browse this Album"
 msgstr "Bu Albüme Göz At"
 
 #: data/ui/browser-popup.ui:52 data/ui/edit-menu.ui:45
-#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:23
-#: data/ui/queue-popups.ui:52 plugins/magnatune/magnatune-popup.ui:34
+#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:27
+#: data/ui/queue-popups.ui:60 plugins/magnatune/magnatune-popup.ui:34
 msgid "Pr_operties"
 msgstr "_Özellikler"
 
@@ -586,8 +587,8 @@ msgstr "Tüm Parçaları _Kuyruğa Al"
 msgid "_Shuffle Playlist"
 msgstr "_Çalma Listesini Karıştır"
 
-#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:14
-#: data/ui/queue-popups.ui:43
+#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:18
+#: data/ui/queue-popups.ui:51
 msgid "_Save to File..."
 msgstr "Dosyaya _Kaydet..."
 
@@ -787,19 +788,19 @@ msgstr "Ekle"
 msgid "Update"
 msgstr "Güncelle"
 
-#: data/ui/queue-popups.ui:6 data/ui/queue-popups.ui:31
+#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
 msgid "Remove from Play Queue"
 msgstr "Çalma Kuyruğundan Kaldır"
 
-#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
+#: data/ui/queue-popups.ui:14 data/ui/queue-popups.ui:47
 msgid "Shuffle Play Queue"
 msgstr "Çalma Kuyruğunu Karıştır"
 
-#: data/ui/queue-popups.ui:35
+#: data/ui/queue-popups.ui:43
 msgid "Clear Play Queue"
 msgstr "Çalma Kuyruğunu Temizle"
 
-#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3291
+#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3295
 msgid "Shuffle"
 msgstr "Karışık"
 
@@ -984,7 +985,7 @@ msgstr "%d %b %Y"
 #: plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
 #: plugins/mtpdevice/rb-mtp-source.c:650 plugins/mtpdevice/rb-mtp-source.c:1140
 #: plugins/mtpdevice/rb-mtp-source.c:1471
-#: plugins/notification/rb-notification-plugin.c:508
+#: plugins/notification/rb-notification-plugin.c:509
 #: podcast/rb-feed-podcast-properties-dialog.c:335
 #: podcast/rb-podcast-add-dialog.c:646 podcast/rb-podcast-manager.c:1307
 #: podcast/rb-podcast-manager.c:1421 podcast/rb-podcast-properties-dialog.c:636
@@ -996,8 +997,8 @@ msgstr "%d %b %Y"
 #: rhythmdb/rhythmdb-entry-type.c:301 rhythmdb/rhythmdb-metadata-cache.c:308
 #: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
 #: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
-#: shell/rb-shell-player.c:869 shell/rb-shell-player.c:2714
-#: shell/rb-shell-player.c:2716 widgets/rb-entry-view.c:996
+#: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
+#: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
 #: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
 #: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
 #: widgets/rb-header.c:1279 widgets/rb-header.c:1305 widgets/rb-song-info.c:950
@@ -2617,35 +2618,35 @@ msgstr "Bildirim"
 msgid "Notification popups"
 msgstr "Bildirim pencereleri"
 
-#: plugins/notification/rb-notification-plugin.c:221
+#: plugins/notification/rb-notification-plugin.c:222
 msgid "Previous"
 msgstr "Önceki"
 
-#: plugins/notification/rb-notification-plugin.c:227
+#: plugins/notification/rb-notification-plugin.c:228
 msgid "Pause"
 msgstr "Duraklat"
 
-#: plugins/notification/rb-notification-plugin.c:227
+#: plugins/notification/rb-notification-plugin.c:228
 msgid "Play"
 msgstr "Oynat"
 
-#: plugins/notification/rb-notification-plugin.c:236
+#: plugins/notification/rb-notification-plugin.c:237
 msgid "Next"
 msgstr "Sonraki"
 
 #. Translators: by Artist
-#: plugins/notification/rb-notification-plugin.c:330
+#: plugins/notification/rb-notification-plugin.c:331
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "<i>%s</i>,"
 
 #. Translators: from Album
-#: plugins/notification/rb-notification-plugin.c:332
+#: plugins/notification/rb-notification-plugin.c:333
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "<i>%s</i> albümünden söylüyor."
 
-#: plugins/notification/rb-notification-plugin.c:412 widgets/rb-header.c:367
+#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "Çalmıyor"
 
@@ -2798,8 +2799,8 @@ msgid "Listening port:"
 msgstr "Dinlenen bağlantı noktası:"
 
 #: plugins/webremote/webremote-config.ui:46
-msgid "Access key:"
-msgstr "Erişim anahtarı:"
+msgid "Passphrase:"
+msgstr "Parola metni:"
 
 #: plugins/webremote/webremote-config.ui:79
 msgid "0"
@@ -3568,7 +3569,7 @@ msgstr "Çalmayı başlat"
 msgid "%s (Paused)"
 msgstr "%s (Duraklatıldı)"
 
-#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:664
+#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:671
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Kayıtlı hiçbir kaynak %s URI’sini işleyemez"
@@ -3606,68 +3607,73 @@ msgstr "Beklenmeyen akan-veri sonu!"
 msgid "Playlist was empty"
 msgstr "Çalma listesi boş"
 
-#: shell/rb-shell-player.c:1109
+#: shell/rb-shell-player.c:731
+#, c-format
+msgid "This item is not playable"
+msgstr "Bu öge oynatılamaz"
+
+#: shell/rb-shell-player.c:1113
 #, c-format
 msgid "Not currently playing"
 msgstr "Şu anda çalınmıyor"
 
-#: shell/rb-shell-player.c:1166
+#: shell/rb-shell-player.c:1170
 #, c-format
 msgid "No previous song"
 msgstr "Önceki parça yok"
 
-#: shell/rb-shell-player.c:1265
+#: shell/rb-shell-player.c:1269
 #, c-format
 msgid "No next song"
 msgstr "Sonraki parça yok"
 
-#: shell/rb-shell-player.c:2124
+#: shell/rb-shell-player.c:2128
 msgid "Couldn't stop playback"
 msgstr "Çalma durdurulamadı"
 
-#: shell/rb-shell-player.c:2243
+#: shell/rb-shell-player.c:2247
 #, c-format
 msgid "Playback position not available"
 msgstr "Çalma konumu kullanılamaz"
 
-#: shell/rb-shell-player.c:2275 shell/rb-shell-player.c:2309
+#: shell/rb-shell-player.c:2279 shell/rb-shell-player.c:2313
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Geçerli şarkı sarılabilir değil"
 
-#: shell/rb-shell-player.c:2465 shell/rb-shell-player.c:2776
+#: shell/rb-shell-player.c:2469 shell/rb-shell-player.c:2780
 msgid "Couldn't start playback"
 msgstr "Çalma başlatılamadı"
 
-#: shell/rb-shell-player.c:3287
+#: shell/rb-shell-player.c:3291
 msgid "Linear"
 msgstr "Düzgün"
 
-#: shell/rb-shell-player.c:3289
+#: shell/rb-shell-player.c:3293
 msgid "Linear looping"
 msgstr "Doğrusal döngü"
 
-#: shell/rb-shell-player.c:3293
+#: shell/rb-shell-player.c:3297
 msgid "Random with equal weights"
 msgstr "Eşit ağırlıkta rastgele"
 
-#: shell/rb-shell-player.c:3295
+#: shell/rb-shell-player.c:3299
 msgid "Random by time since last play"
 msgstr "Son çalmadan sonra geçen süreye göre rastgele"
 
-#: shell/rb-shell-player.c:3297
+#: shell/rb-shell-player.c:3301
 msgid "Random by rating"
 msgstr "Popülerliğe göre rastgele"
 
-#: shell/rb-shell-player.c:3299
+#: shell/rb-shell-player.c:3303
 msgid "Random by time since last play and rating"
 msgstr "Son çalmadan sonra geçen süreye ve popülerliğe göre rastgele"
 
-#: shell/rb-shell-player.c:3301
+#: shell/rb-shell-player.c:3305
 msgid "Linear, removing entries once played"
 msgstr "Doğrusal, bir kez çalınan girdiler çıkarılır"
 
-#: shell/rb-shell-player.c:3311
+#: shell/rb-shell-player.c:3315
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Çalıcı oluşturulamadı: %s"
@@ -3948,16 +3954,16 @@ msgid "Remove from Playlist"
 msgstr "Çalma Listesinden Çıkar"
 
 #: sources/rb-play-queue-source.c:297 sources/rb-play-queue-source.c:399
-#: sources/rb-play-queue-source.c:508
+#: sources/rb-play-queue-source.c:515
 msgid "Play Queue"
 msgstr "Çalma Kuyruğu"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:929
+#: sources/rb-play-queue-source.c:485 widgets/rb-header.c:929
 msgid "by"
 msgstr "tarafından"
 
-#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:930
+#: sources/rb-play-queue-source.c:485 widgets/rb-header.c:930
 msgid "from"
 msgstr "kimden"
 
@@ -4505,11 +4511,11 @@ msgstr "gün"
 msgid "weeks"
 msgstr "hafta"
 
-#: widgets/rb-rating-helper.c:295
+#: widgets/rb-rating-helper.c:298
 msgid "No Stars"
 msgstr "Yıldızsız"
 
-#: widgets/rb-rating-helper.c:297
+#: widgets/rb-rating-helper.c:300
 #, c-format
 msgid "%d Star"
 msgid_plural "%d Stars"
@@ -4558,6 +4564,9 @@ msgstr "Masaüstünde"
 #: widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Bilinmeyen konum"
+
+#~ msgid "Access key:"
+#~ msgstr "Erişim anahtarı:"
 
 #~ msgid "Rhythmbox Website"
 #~ msgstr "Rhythmbox Web Sitesi"
