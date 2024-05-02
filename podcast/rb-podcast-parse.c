@@ -132,6 +132,8 @@ entry_metadata_foreach (const char *key,
 		item->duration = totem_pl_parser_parse_duration (value, FALSE);
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_FILESIZE) == 0) {
 		item->filesize = g_ascii_strtoull (value, NULL, 10);
+	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_IMAGE_URI) == 0) {
+		item->img = g_strdup (value);
 	}
 }
 
@@ -347,6 +349,7 @@ rb_podcast_parse_item_free (RBPodcastItem *item)
 	g_free (item->url);
 	g_free (item->description);
 	g_free (item->author);
+	g_free (item->img);
 
 	g_free (item);
 }

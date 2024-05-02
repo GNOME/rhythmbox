@@ -167,6 +167,7 @@ add_posts_for_feed (RBPodcastAddDialog *dialog, RBPodcastChannel *channel)
 					     item->url,
 					     item->description,
 					     item->guid,
+					     item->img,
 					     (item->pub_date > 0 ? item->pub_date : channel->pub_date),
 					     item->duration,
 					     position++,

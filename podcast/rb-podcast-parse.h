@@ -56,6 +56,7 @@ typedef struct
 	char* description;
 	char* author;
 	char* guid;
+	char* img;
 	guint64 pub_date;
 	gint64 duration;
 	guint64 filesize;

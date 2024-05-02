@@ -896,6 +896,7 @@ rb_podcast_manager_add_post (RhythmDB *db,
 			     const char *uri,
 			     const char *description,
 			     const char *guid,
+			     const char *img,
 			     gulong date,
 			     gint64 duration,
 			     gulong position,
@@ -998,6 +999,13 @@ rb_podcast_manager_add_post (RhythmDB *db,
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, guid);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PODCAST_GUID, &val);
+		g_value_unset (&val);
+	}
+
+	if (img != NULL) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, img);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_IMAGE, &val);
 		g_value_unset (&val);
 	}
 
@@ -1545,6 +1553,7 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 			    item->url,
 			    item->description,
 			    item->guid,
+			    item->img,
 			    item->pub_date > 0 ? item->pub_date : data->pub_date,
 			    item->duration,
 			    position++,
