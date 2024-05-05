@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-02-08 15:58+0000\n"
-"PO-Revision-Date: 2024-02-08 22:27+0100\n"
+"POT-Creation-Date: 2024-04-28 08:44+0000\n"
+"PO-Revision-Date: 2024-04-29 18:14+0200\n"
 "Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
@@ -122,11 +122,12 @@ msgstr "Rhythmbox"
 msgid "Play and organize all your music"
 msgstr "Spela och organisera all din musik"
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:10
+#. developer_name tag deprecated with Appstream 1.0
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:11
 msgid "The Rhythmbox developers"
 msgstr "Rhythmbox-utvecklarna"
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:12
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:16
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -138,7 +139,7 @@ msgstr ""
 "nätverksutdelningar, poddsändningar, radioströmmar, portabla musikenheter "
 "(inklusive mobiler) och musiktjänster på internet som Last.fm och Magnatune."
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:18
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:22
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
@@ -146,7 +147,7 @@ msgstr ""
 "Rhythmbox är fri programvara, baserad på GTK+ och GStreamer, och är "
 "utökningsbar genom insticksmoduler skrivna i Python eller C."
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:30
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:35
 msgid "Main Window"
 msgstr "Huvudfönster"
 
@@ -215,7 +216,8 @@ msgid "Add to Queue"
 msgstr "Lägg till i spelkön"
 
 #: data/ui/browser-popup.ui:10 data/ui/edit-menu.ui:39
-#: data/ui/playlist-popup.ui:10
+#: data/ui/playlist-popup.ui:10 data/ui/queue-popups.ui:6
+#: data/ui/queue-popups.ui:35
 msgid "Add to Playlist"
 msgstr "Lägg till i spellista"
 
@@ -248,8 +250,8 @@ msgid "Browse this Album"
 msgstr "Bläddra i detta album"
 
 #: data/ui/browser-popup.ui:52 data/ui/edit-menu.ui:45
-#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:23
-#: data/ui/queue-popups.ui:52 plugins/magnatune/magnatune-popup.ui:34
+#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:27
+#: data/ui/queue-popups.ui:60 plugins/magnatune/magnatune-popup.ui:34
 msgid "Pr_operties"
 msgstr "E_genskaper"
 
@@ -583,8 +585,8 @@ msgstr "_Köa alla spår"
 msgid "_Shuffle Playlist"
 msgstr "_Blanda spellista"
 
-#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:14
-#: data/ui/queue-popups.ui:43
+#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:18
+#: data/ui/queue-popups.ui:51
 msgid "_Save to File..."
 msgstr "_Spara till fil…"
 
@@ -786,19 +788,19 @@ msgstr "Lägg till"
 msgid "Update"
 msgstr "Uppdatera"
 
-#: data/ui/queue-popups.ui:6 data/ui/queue-popups.ui:31
+#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
 msgid "Remove from Play Queue"
 msgstr "Ta bort från spelkö"
 
-#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
+#: data/ui/queue-popups.ui:14 data/ui/queue-popups.ui:47
 msgid "Shuffle Play Queue"
 msgstr "Blanda spelkö"
 
-#: data/ui/queue-popups.ui:35
+#: data/ui/queue-popups.ui:43
 msgid "Clear Play Queue"
 msgstr "Rensa spelkö"
 
-#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3291
+#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3295
 msgid "Shuffle"
 msgstr "Blanda"
 
@@ -983,7 +985,7 @@ msgstr "%d %b %Y"
 #: plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
 #: plugins/mtpdevice/rb-mtp-source.c:650 plugins/mtpdevice/rb-mtp-source.c:1140
 #: plugins/mtpdevice/rb-mtp-source.c:1471
-#: plugins/notification/rb-notification-plugin.c:508
+#: plugins/notification/rb-notification-plugin.c:509
 #: podcast/rb-feed-podcast-properties-dialog.c:335
 #: podcast/rb-podcast-add-dialog.c:646 podcast/rb-podcast-manager.c:1307
 #: podcast/rb-podcast-manager.c:1421 podcast/rb-podcast-properties-dialog.c:636
@@ -995,8 +997,8 @@ msgstr "%d %b %Y"
 #: rhythmdb/rhythmdb-entry-type.c:301 rhythmdb/rhythmdb-metadata-cache.c:308
 #: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
 #: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
-#: shell/rb-shell-player.c:869 shell/rb-shell-player.c:2714
-#: shell/rb-shell-player.c:2716 widgets/rb-entry-view.c:996
+#: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
+#: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
 #: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
 #: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
 #: widgets/rb-header.c:1279 widgets/rb-header.c:1305 widgets/rb-song-info.c:950
@@ -1147,11 +1149,11 @@ msgstr "Spellistor:"
 
 #: plugins/android/rb-android-source.c:201
 msgid ""
-"No storage areas found on this device. You may need to unlock it and enable "
-"MTP."
+"No storage areas found on this device. You may need to unlock it and change "
+"it to File Transfer mode."
 msgstr ""
 "Inga lagringsområden hittades på denna enhet. Du kan behöva låsa upp den och "
-"aktivera MTP."
+"ändra den till filöverföringsläge."
 
 #: plugins/android/rb-android-source.c:403
 #: plugins/generic-player/rb-generic-player-source.c:563
@@ -2631,35 +2633,35 @@ msgstr "Avisering"
 msgid "Notification popups"
 msgstr "Aviseringsfönster"
 
-#: plugins/notification/rb-notification-plugin.c:221
+#: plugins/notification/rb-notification-plugin.c:222
 msgid "Previous"
 msgstr "Föregående"
 
-#: plugins/notification/rb-notification-plugin.c:227
+#: plugins/notification/rb-notification-plugin.c:228
 msgid "Pause"
 msgstr "Paus"
 
-#: plugins/notification/rb-notification-plugin.c:227
+#: plugins/notification/rb-notification-plugin.c:228
 msgid "Play"
 msgstr "Spela upp"
 
-#: plugins/notification/rb-notification-plugin.c:236
+#: plugins/notification/rb-notification-plugin.c:237
 msgid "Next"
 msgstr "Nästa"
 
 #. Translators: by Artist
-#: plugins/notification/rb-notification-plugin.c:330
+#: plugins/notification/rb-notification-plugin.c:331
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "av <i>%s</i>"
 
 #. Translators: from Album
-#: plugins/notification/rb-notification-plugin.c:332
+#: plugins/notification/rb-notification-plugin.c:333
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "från <i>%s</i>"
 
-#: plugins/notification/rb-notification-plugin.c:412 widgets/rb-header.c:367
+#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "Spelar inte"
 
@@ -2813,8 +2815,8 @@ msgid "Listening port:"
 msgstr "Port att lyssna på:"
 
 #: plugins/webremote/webremote-config.ui:46
-msgid "Access key:"
-msgstr "Åtkomstnyckel:"
+msgid "Passphrase:"
+msgstr "Lösenfras:"
 
 #: plugins/webremote/webremote-config.ui:79
 msgid "0"
@@ -3040,7 +3042,7 @@ msgstr "Sök poddsändningskanaler"
 msgid "Search podcast episodes"
 msgstr "Sök poddsändningsavsnitt"
 
-#: remote/dbus/rb-client.c:95 shell/rb-application.c:558
+#: remote/dbus/rb-client.c:95 shell/rb-application.c:556
 msgid "Show the version of the program"
 msgstr "Visa programversionen"
 
@@ -3472,47 +3474,43 @@ msgstr "Bidragsgivare:"
 msgid "Music management and playback software for GNOME."
 msgstr "Programvara för hantering och uppspelning av musik för GNOME."
 
-#: shell/rb-application.c:202
-msgid "Rhythmbox Website"
-msgstr "Webbplatsen för Rhythmbox"
-
-#: shell/rb-application.c:230 shell/rb-shell-preferences.c:163
+#: shell/rb-application.c:228 shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "Kunde inte visa hjälp"
 
-#: shell/rb-application.c:550
+#: shell/rb-application.c:548
 msgid "Enable debug output"
 msgstr "Aktivera felsökningsutskrifter"
 
-#: shell/rb-application.c:551
+#: shell/rb-application.c:549
 msgid "Enable debug output matching a specified string"
 msgstr "Aktivera felsökningsutskrifter som matchar en speciell sträng"
 
-#: shell/rb-application.c:552
+#: shell/rb-application.c:550
 msgid "Do not update the library with file changes"
 msgstr "Uppdatera inte biblioteket med filändringar"
 
-#: shell/rb-application.c:553
+#: shell/rb-application.c:551
 msgid "Do not register the shell"
 msgstr "Registrera inte skalet"
 
-#: shell/rb-application.c:554
+#: shell/rb-application.c:552
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Spara inte någon data permanent (betyder --no-registration)"
 
-#: shell/rb-application.c:555
+#: shell/rb-application.c:553
 msgid "Disable loading of plugins"
 msgstr "Inaktivera inläsning av insticksmoduler"
 
-#: shell/rb-application.c:556
+#: shell/rb-application.c:554
 msgid "Path for database file to use"
 msgstr "Sökväg till databasfil att använda"
 
-#: shell/rb-application.c:557
+#: shell/rb-application.c:555
 msgid "Path for playlists file to use"
 msgstr "Sökväg till spellistefiler att använda"
 
-#: shell/rb-application.c:570
+#: shell/rb-application.c:568
 #, c-format
 msgid ""
 "%s\n"
@@ -3600,7 +3598,7 @@ msgstr "Börja spela"
 msgid "%s (Paused)"
 msgstr "%s (Pausad)"
 
-#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:664
+#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:671
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ingen registerad källa kan hantera URI %s"
@@ -3638,68 +3636,73 @@ msgstr "Oväntat slut på ström!"
 msgid "Playlist was empty"
 msgstr "Spellistan var tom"
 
-#: shell/rb-shell-player.c:1109
+#: shell/rb-shell-player.c:731
+#, c-format
+msgid "This item is not playable"
+msgstr "Detta objekt är inte spelbart"
+
+#: shell/rb-shell-player.c:1113
 #, c-format
 msgid "Not currently playing"
 msgstr "Spelar inte för tillfället"
 
-#: shell/rb-shell-player.c:1166
+#: shell/rb-shell-player.c:1170
 #, c-format
 msgid "No previous song"
 msgstr "Ingen föregående låt"
 
-#: shell/rb-shell-player.c:1265
+#: shell/rb-shell-player.c:1269
 #, c-format
 msgid "No next song"
 msgstr "Ingen nästa låt"
 
-#: shell/rb-shell-player.c:2124
+#: shell/rb-shell-player.c:2128
 msgid "Couldn't stop playback"
 msgstr "Kunde inte stoppa uppspelning"
 
-#: shell/rb-shell-player.c:2243
+#: shell/rb-shell-player.c:2247
 #, c-format
 msgid "Playback position not available"
 msgstr "Uppspelningsposition inte tillgänglig"
 
-#: shell/rb-shell-player.c:2275 shell/rb-shell-player.c:2309
+#: shell/rb-shell-player.c:2279 shell/rb-shell-player.c:2313
 #, c-format
 msgid "Current song is not seekable"
 msgstr "Det går inte att söka i aktuell låt"
 
-#: shell/rb-shell-player.c:2465 shell/rb-shell-player.c:2776
+#: shell/rb-shell-player.c:2469 shell/rb-shell-player.c:2780
 msgid "Couldn't start playback"
 msgstr "Kunde inte starta uppspelning"
 
-#: shell/rb-shell-player.c:3287
+#: shell/rb-shell-player.c:3291
 msgid "Linear"
 msgstr "Linjär"
 
-#: shell/rb-shell-player.c:3289
+#: shell/rb-shell-player.c:3293
 msgid "Linear looping"
 msgstr "Linjär slinga"
 
-#: shell/rb-shell-player.c:3293
+#: shell/rb-shell-player.c:3297
 msgid "Random with equal weights"
 msgstr "Slumpmässig med lika viktning"
 
-#: shell/rb-shell-player.c:3295
+#: shell/rb-shell-player.c:3299
 msgid "Random by time since last play"
 msgstr "Slumpmässig efter tid sedan senaste uppspelning"
 
-#: shell/rb-shell-player.c:3297
+#: shell/rb-shell-player.c:3301
 msgid "Random by rating"
 msgstr "Slumpmässig efter betyg"
 
-#: shell/rb-shell-player.c:3299
+#: shell/rb-shell-player.c:3303
 msgid "Random by time since last play and rating"
 msgstr "Slumpmässig efter tid sedan senaste uppspelning och betyg"
 
-#: shell/rb-shell-player.c:3301
+#: shell/rb-shell-player.c:3305
 msgid "Linear, removing entries once played"
 msgstr "Linjär, tar bort objekt när de spelats"
 
-#: shell/rb-shell-player.c:3311
+#: shell/rb-shell-player.c:3315
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Misslyckades med att skapa spelaren: %s"
@@ -3990,16 +3993,16 @@ msgid "Remove from Playlist"
 msgstr "Ta bort från spellista"
 
 #: sources/rb-play-queue-source.c:297 sources/rb-play-queue-source.c:399
-#: sources/rb-play-queue-source.c:508
+#: sources/rb-play-queue-source.c:515
 msgid "Play Queue"
 msgstr "Spelkö"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:929
+#: sources/rb-play-queue-source.c:485 widgets/rb-header.c:929
 msgid "by"
 msgstr "av"
 
-#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:930
+#: sources/rb-play-queue-source.c:485 widgets/rb-header.c:930
 msgid "from"
 msgstr "från"
 
@@ -4552,11 +4555,11 @@ msgstr "dygnen"
 msgid "weeks"
 msgstr "veckorna"
 
-#: widgets/rb-rating-helper.c:295
+#: widgets/rb-rating-helper.c:298
 msgid "No Stars"
 msgstr "Inga stjärnor"
 
-#: widgets/rb-rating-helper.c:297
+#: widgets/rb-rating-helper.c:300
 #, c-format
 msgid "%d Star"
 msgid_plural "%d Stars"
@@ -4606,6 +4609,12 @@ msgstr "På skrivbordet"
 #: widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Okänd plats"
+
+#~ msgid "Access key:"
+#~ msgstr "Åtkomstnyckel:"
+
+#~ msgid "Rhythmbox Website"
+#~ msgstr "Webbplatsen för Rhythmbox"
 
 #~ msgid "Recommendations"
 #~ msgstr "Rekommendationer"
