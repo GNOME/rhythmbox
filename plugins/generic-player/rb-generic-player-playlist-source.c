@@ -153,6 +153,7 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 	RhythmDBQueryModel *query_model;
 	char *name;
 	char *temp_path;
+	char *temp_path_uri;
 	GError *error = NULL;
 	RBGenericPlayerPlaylistSourcePrivate *priv = GET_PRIVATE (source);
 	GFile *file;
@@ -207,6 +208,18 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 	}
 
 	temp_path = g_strdup_printf ("%s%06X", priv->playlist_path, g_random_int_range (0, 0xFFFFFF));
+
+	temp_path_uri = g_filename_to_uri (temp_path, NULL, &error);
+	if (error) {
+		g_warning ("Error converting filename to uri: %s", error->message);
+		goto cleanup;
+	}
+
+	if (!rb_uri_create_parent_dirs (temp_path_uri, &error)) {
+		g_warning ("Failed creating parent directory while saving playlist: %s", error->message);
+		goto cleanup;
+	}
+
 	file = g_file_new_for_path (temp_path);
 
 	parser = totem_pl_parser_new ();
@@ -241,12 +254,14 @@ save_playlist (RBGenericPlayerPlaylistSource *source)
 		g_object_unref (dest);
 	}
 
+	g_object_unref (parser);
+	g_object_unref (file);
+cleanup:
 	g_clear_error (&error);
 	g_free (name);
 	g_free (temp_path);
+	g_free (temp_path_uri);
 	g_object_unref (query_model);
-	g_object_unref (parser);
-	g_object_unref (file);
 
 	return FALSE;
 }
