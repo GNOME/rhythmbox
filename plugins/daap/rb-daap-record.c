@@ -253,17 +253,6 @@ rb_daap_record_get_property (GObject *object,
 	}
 }
 
-gboolean
-rb_daap_record_itunes_compat (DmapAvRecord *record)
-{
-	const gchar *format = RB_DAAP_RECORD (record)->priv->real_format;
-
-	if (! strcmp (format, "mp3"))
-		return TRUE;
-	else
-		return FALSE;
-}
-
 GInputStream *
 rb_daap_record_read (DmapAvRecord *record, GError **error)
 {
@@ -357,7 +346,6 @@ rb_daap_record_daap_iface_init (gpointer iface, gpointer data)
 
 	g_assert (G_TYPE_FROM_INTERFACE (daap_record) == DMAP_TYPE_AV_RECORD);
 
-	daap_record->itunes_compat = rb_daap_record_itunes_compat;
 	daap_record->read = rb_daap_record_read;
 }
 
