@@ -1,19 +1,16 @@
-General Information
-===================
+# Rhythmbox
 
-This is Rhythmbox version 3.4.7. Rhythmbox is your one-stop multimedia
-application, supporting a music library, multiple playlists,
-internet radio, and more.
+Rhythmbox is your one-stop multimedia application, supporting
+a music library, multiple playlists, internet radio, and more.
 
 Rhythmbox is free software, licensed under the GNU GPL.
 
-Our IRC channel is #gnome-rhythmbox on Libera Chat (irc.libera.chat).
+Our IRC channel is `#gnome-rhythmbox` on [Libera Chat](irc.libera.chat).
 
-You can also post questions about Rhythmbox to GNOME Discourse
-(https://discourse.gnome.org/) under the Applications category.
+You can also post questions about Rhythmbox under the Applications
+category on [GNOME Discourse](https://discourse.gnome.org/).
 
-Installation
-============
+## Installation
 
 Rhythmbox requires the following packages:
 
@@ -42,44 +39,43 @@ Rhythmbox can also make use of the following packages:
 - gi-docgen (for API documentation)
 
 Many package managers provide a way to install all the build dependencies for
-a package, such as 'dnf builddep' or 'apt-get build-dep', which will install
+a package, such as `dnf builddep` or `apt-get build-dep`, which will install
 almost all of the above.  The requirements may have changed slightly between
 the version packaged in the distribution and the current development version,
 so you might have to install some additional packages.
 
 
-Simple install procedure
-========================
+## Simple install procedure
 
-  % meson _build -Dprefix=$PWD/_install          # prepare the build
+```
+  % meson setup _build -Dprefix=$PWD/_install    # prepare the build
   % ninja -C _build                              # build Rhythmbox
   % ninja -C _build install                      # install Rhythmbox
+```
 
-This installs Rhythmbox to the _install directory under the source tree.
-The executable to run will then be _install/bin/rhythmbox.
+This installs Rhythmbox to the `_install` directory under the source tree.
+The executable to run will then be `_install/bin/rhythmbox`.
 Before you can run it from there, you will also need to set an environment
 variable to load schemas from the install location:
 
+```
   % export GSETTINGS_SCHEMA_DIR=$PWD/_install/share/glib-2.0/schemas
   % _install/bin/rhythmbox
+```
 
 By default, the build will enable optional features if the packages they require
 are installed.  To check which options are available and which are enabled,
-run 'meson configure _build'.
-
-The Details
-===========
+run `meson configure _build`.
 
 More detailed installation instructions can be found in [meson's
 website](https://mesonbuild.com/Quick-guide.html).
 
-How to report bugs
-==================
+## How to report bugs
 
 Bugs should be reported to the GitLab repository.
 (https://gitlab.gnome.org/GNOME/rhythmbox/issues) You will need to
 create an account for yourself.
 
-Please read the GNOME bug reporting guidelines, documented here:
-https://handbook.gnome.org/issues.html
+Please read the GNOME bug reporting guidelines, documented in the
+[GNOME Project Handbook](https://handbook.gnome.org/issues.html)
 
