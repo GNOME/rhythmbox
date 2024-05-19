@@ -358,7 +358,8 @@ uri_recurse_func (GFile *file, GFileInfo *info, RhythmDBImportJob *job)
 	if (g_cancellable_is_cancelled (job->priv->cancel))
 		return FALSE;
 
-	if (g_file_info_get_attribute_boolean (info, G_FILE_ATTRIBUTE_STANDARD_IS_SYMLINK)) {
+	if (g_file_info_get_attribute_boolean (info, G_FILE_ATTRIBUTE_STANDARD_IS_SYMLINK) ||
+	    g_file_info_has_attribute (info, G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET)) {
 		GFile *r;
 		r = rb_file_resolve_symlink (file, NULL);
 		if (r != NULL) {
