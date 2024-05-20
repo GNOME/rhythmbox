@@ -1596,7 +1596,7 @@ prepare_source (RBMtpSource *source, const char *stream_uri, GObject *src)
 	if (entry == NULL)
 		return;
 
-	if (_rb_source_check_entry_type (RB_SOURCE (source), entry) == FALSE) {
+	if (rb_source_check_entry_type (RB_SOURCE (source), entry) == FALSE) {
 		rhythmdb_entry_unref (entry);
 		return;
 	}

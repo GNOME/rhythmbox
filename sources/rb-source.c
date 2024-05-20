@@ -70,6 +70,7 @@ static RBEntryView *default_get_entry_view (RBSource *source);
 static void default_add_to_queue (RBSource *source, RBSource *queue);
 static void default_move_to_trash (RBSource *source);
 static char *default_get_delete_label (RBSource *source);
+static gboolean default_check_entry_type (RBSource *source, RhythmDBEntry *entry);
 
 static void rb_source_status_changed_cb (RBDisplayPage *page);
 static void rb_source_post_entry_deleted_cb (GtkTreeModel *model,
@@ -175,6 +176,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->add_to_queue = default_add_to_queue;
 	klass->get_delete_label = default_get_delete_label;
 	klass->move_to_trash = default_move_to_trash;
+	klass->check_entry_type = default_check_entry_type;
 
 	/**
 	 * RBSource:hidden-when-empty:
@@ -1303,17 +1305,8 @@ rb_source_gather_selected_properties (RBSource *source,
 	return tem;
 }
 
-/**
- * _rb_source_check_entry_type:
- * @source: a #RBSource
- * @entry: a #RhythmDBEntry
- *
- * Checks if a database entry matches the entry type for the source.
- *
- * Return value: %TRUE if the entry matches the source's entry type.
- */
-gboolean
-_rb_source_check_entry_type (RBSource *source, RhythmDBEntry *entry)
+static gboolean
+default_check_entry_type (RBSource *source, RhythmDBEntry *entry)
 {
 	RhythmDBEntryType *entry_type;
 	gboolean ret = TRUE;
@@ -1326,6 +1319,22 @@ _rb_source_check_entry_type (RBSource *source, RhythmDBEntry *entry)
 		g_object_unref (entry_type);
 	}
 	return ret;
+}
+
+/**
+ * rb_source_check_entry_type:
+ * @source: a #RBSource
+ * @entry: a #RhythmDBEntry
+ *
+ * Checks if a database entry matches the entry type for the source.
+ *
+ * Return value: %TRUE if the entry matches the source's entry type.
+ */
+gboolean
+rb_source_check_entry_type (RBSource *source, RhythmDBEntry *entry)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+	return klass->check_entry_type (source, entry);
 }
 
 static gboolean

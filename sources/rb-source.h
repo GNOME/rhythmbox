@@ -124,6 +124,7 @@ struct _RBSourceClass
 						 gpointer data,
 						 GDestroyNotify destroy_data);
 	gboolean	(*uri_is_source)	(RBSource *source, const char *uri);
+	gboolean	(*check_entry_type)	(RBSource *source, RhythmDBEntry *entry);
 
 	gboolean	(*can_pause)		(RBSource *source);
 	RBSourceEOFType	(*handle_eos)		(RBSource *source);
@@ -195,7 +196,7 @@ void		rb_source_get_playback_status	(RBSource *source,
 
 /* Protected methods, should only be used by objects inheriting from RBSource */
 
-gboolean	_rb_source_check_entry_type	(RBSource *source,
+gboolean	rb_source_check_entry_type	(RBSource *source,
 						 RhythmDBEntry *entry);
 
 void		rb_source_bind_settings		(RBSource *source,

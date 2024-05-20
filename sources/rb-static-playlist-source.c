@@ -760,7 +760,7 @@ rb_static_playlist_source_add_location_internal (RBStaticPlaylistSource *source,
 	if (entry) {
 		RBStaticPlaylistSourcePrivate *priv = RB_STATIC_PLAYLIST_SOURCE_GET_PRIVATE (source);
 
-		if (_rb_source_check_entry_type (RB_SOURCE (source), entry)) {
+		if (rb_source_check_entry_type (RB_SOURCE (source), entry)) {
 			rhythmdb_entry_ref (entry);
 			rhythmdb_query_model_add_entry (priv->base_model, entry, index);
 			rhythmdb_entry_unref (entry);
@@ -969,7 +969,7 @@ rb_static_playlist_source_filter_entry_drop (RhythmDBQueryModel *model,
 					     RhythmDBEntry *entry, 
 					     RBStaticPlaylistSource *source)
 {
-	if (_rb_source_check_entry_type (RB_SOURCE (source), entry)) {
+	if (rb_source_check_entry_type (RB_SOURCE (source), entry)) {
 		rb_debug ("allowing drop of entry %s", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
 		return TRUE;
 	}
