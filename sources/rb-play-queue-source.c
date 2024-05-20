@@ -96,6 +96,7 @@ static void impl_show_entry_view_popup (RBPlaylistSource *source,
 static void impl_save_contents_to_xml (RBPlaylistSource *source,
 				       xmlNodePtr node);
 static gboolean impl_can_remove (RBDisplayPage *page);
+static gboolean impl_check_entry_type (RBSource *source, RhythmDBEntry *entry);
 
 static void queue_clear_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
 static void queue_shuffle_action_cb (GSimpleAction *action, GVariant *parameters, gpointer data);
@@ -203,6 +204,7 @@ rb_play_queue_source_class_init (RBPlayQueueSourceClass *klass)
 
 	source_class->can_add_to_queue = (RBSourceFeatureFunc) rb_false_function;
 	source_class->can_rename = (RBSourceFeatureFunc) rb_false_function;
+	source_class->check_entry_type = impl_check_entry_type;
 
 	page_class->can_remove = impl_can_remove;
 
@@ -702,4 +704,10 @@ static gboolean
 impl_can_remove (RBDisplayPage *page)
 {
 	return FALSE;
+}
+
+static gboolean
+impl_check_entry_type (RBSource *source, RhythmDBEntry *entry)
+{
+	return (rhythmdb_entry_get_playback_uri (entry) != NULL);
 }
