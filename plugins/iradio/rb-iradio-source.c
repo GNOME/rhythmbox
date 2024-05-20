@@ -964,20 +964,6 @@ new_station_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data
 	gtk_widget_show_all (dialog);
 }
 
-static gboolean
-check_entry_type (RBIRadioSource *source, RhythmDBEntry *entry)
-{
-	RhythmDBEntryType *entry_type;
-	gboolean matches = FALSE;
-
-	g_object_get (source, "entry-type", &entry_type, NULL);
-	if (entry != NULL && rhythmdb_entry_get_entry_type (entry) == entry_type)
-		matches = TRUE;
-	g_object_unref (entry_type);
-
-	return matches;
-}
-
 static void
 info_available_cb (RBPlayer *backend,
 		   const char *uri,
@@ -997,7 +983,7 @@ info_available_cb (RBPlayer *backend,
 	}
 
 	entry = rb_shell_player_get_playing_entry (source->priv->player);
-	if (check_entry_type (source, entry) == FALSE)
+	if (rb_source_check_entry_type (RB_SOURCE (source), entry) == FALSE)
 		return;
 
 	/* validate the value */
