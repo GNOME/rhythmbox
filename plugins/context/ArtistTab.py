@@ -25,7 +25,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 import re, os
-import cgi
 import urllib.request, urllib.parse
 import xml.dom.minidom as dom
 import json

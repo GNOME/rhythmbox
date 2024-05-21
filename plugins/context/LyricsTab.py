@@ -24,9 +24,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
+from html import escape
 import urllib.request
 import re, os
-import cgi
+
 from mako.template import Template
 
 import rb
@@ -120,7 +121,7 @@ class LyricsView (GObject.GObject):
             lyrics = _("Lyrics not found")
         else:
             lyrics = lyrics.strip()
-            lyrics = cgi.escape (lyrics, True)
+            lyrics = escape (lyrics, True)
             lyrics = lyrics.replace ('\n', '<br />')
 
         # should include data source information here, but the lyrics plugin
