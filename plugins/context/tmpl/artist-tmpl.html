@@ -1,7 +1,6 @@
 <%page args="artist, image, shortbio, fullbio, stylesheet, datasource" />
 <%!
     import re
-    import cgi
     remove_links = re.compile ('</?a[^>]*> ',re.VERBOSE)
     
     def cleanup(text):
