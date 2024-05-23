@@ -68,7 +68,7 @@ rb_sync_state_ui_create_bar (RBSyncBarData *bar, guint64 capacity, GtkWidget *la
 {
 	bar->widget = rb_segmented_bar_new ();
 	bar->capacity = capacity;
-	g_object_set (bar->widget, "show-labels", TRUE, NULL);
+	g_object_set (bar->widget, "show-labels", TRUE, "show-reflection", FALSE, NULL);
 
 	rb_segmented_bar_set_value_formatter (RB_SEGMENTED_BAR (bar->widget),
 					      (RBSegmentedBarValueFormatter) value_formatter,
