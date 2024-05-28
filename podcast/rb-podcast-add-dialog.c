@@ -107,7 +107,6 @@ static const char *podcast_uri_prefixes[] = {
 	"itpc://",
 	"itms://",
 	"itmss://",
-	"www.",
 };
 
 /* number of search results to request from each available search */
