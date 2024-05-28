@@ -495,7 +495,13 @@ search_cb (RBSearchEntry *entry, const char *text, RBPodcastAddDialog *dialog)
 
 	/* not really sure about this one */
 	if (g_path_is_absolute (text)) {
-		parse_search_text (dialog, text);
+		char *uri;
+
+		uri = g_filename_to_uri (text, NULL, NULL);
+		if (uri != NULL) {
+			parse_search_text (dialog, uri);
+			g_free (uri);
+		}
 		return;
 	}
 
