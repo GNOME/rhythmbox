@@ -87,6 +87,10 @@ playlist_metadata_foreach (const char *key,
 	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_COPYRIGHT) == 0) {
 		g_free (channel->copyright);
 		channel->copyright = g_strdup (value);
+	} else if (strcmp (key, TOTEM_PL_PARSER_FIELD_CONTENT_TYPE) == 0) {
+		if (strcmp (value, "text/x-opml+xml") == 0) {
+			channel->is_opml = TRUE;
+		}
 	}
 }
 
