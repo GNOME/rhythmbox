@@ -199,6 +199,8 @@ about_action_cb (GSimpleAction *action, GVariant *parameters, gpointer user_data
 			       "version", VERSION,
 			       "copyright", "Copyright \xc2\xa9 2005 - 2019 The Rhythmbox authors\nCopyright \xc2\xa9 2003 - 2005 Colin Walters\nCopyright \xc2\xa9 2002, 2003 Jorn Baayen",
 			       "license", license_trans,
+			       "website-label", _("Rhythmbox Website"),
+			       "website", "https://gnome.pages.gitlab.gnome.org/rhythmbox/",
 			       "comments", comment->str,
 			       "authors", (const char **) authors,
 			       "documenters", (const char **) documenters,
