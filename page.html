@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}{% endblock %}</title>
+  <meta charset="utf-8" />
+
+  <link id="favicon" rel="icon" type="image/svg" href="org.gnome.Rhythmbox3-symbolic.svg" />
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+  <div id="body-wrapper" tabindex="-1">
+    <nav class="sidebar">
+      <div class="section">
+        <img src="org.gnome.Rhythmbox3.svg" class="logo"/>
+      </div>
+
+      <div class="section">
+        <h5>Contents</h5>
+        <div class="links">
+          <a href="index.html">Main page</a>
+          <a href="plugins.html">Third party plugins</a>
+          <a href="https://gnome.pages.gitlab.gnome.org/rhythmbox/apidoc/">Plugin API reference (release)</a>
+          <a href="https://rb.d14n.org/apidoc">Plugin API reference (dev)</a>
+        </div>
+      </div>
+
+      <div class="section">
+        <h5>Links</h5>
+        <div class="links">
+          <a href="https://gitlab.gnome.org/GNOME/rhythmbox">GitLab</a>
+          <a href="https://discourse.gnome.org/tag/rhythmbox">GNOME Discourse</a>
+          <a href="https://l10n.gnome.org/module/rhythmbox/">Translation status</a>
+        </div>
+      </div>
+
+    </nav>
+
+    {% block content %}
+    <section id="main" class="content">
+    </section>
+    {% endblock %}
+  </div>
+</body>

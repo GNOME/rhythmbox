@@ -1,0 +1,86 @@
+{% extends "page.html" %}
+{% block title %}Rhythmbox{% endblock %}
+{% block content %}
+<section id="main" class="content">
+  <header>
+    <h3>Rhythmbox</h3>
+    <div class="description">
+      <p>
+        Rhythmbox is a music playing application for GNOME using the GStreamer multimedia framework.
+      </p>
+      <p>
+        If your packaging system includes GNOME, it likely also includes Rhythmbox.
+        It's also included in the default installation in some Linux distributions.
+      </p>
+    </div>
+  </header>
+
+  <section>
+    <h4 id="development">Development</h4>
+    <p>
+      Rhythmbox is developed on the <a href="https://gitlab.gnome.org/GNOME/rhythmbox">GNOME GitLab</a>
+      platform and is translated by <a href="https://l10n.gnome.org/">GNOME translation teams</a>.
+      You can build the current development version of Rhythmbox on any recent operating system that
+      includes GNOME development libraries and tools.
+      A brief overview of the <a href="https://gitlab.gnome.org/GNOME/rhythmbox#installation">installation 
+      requirements</a> is included with the source code.
+    </p>
+  </section>
+
+  <section>
+    <h4 id="contact">Contact</h4>
+    <p>
+      Bug reports and feature requests are managed using <a href="https://gitlab.gnome.org/GNOME/rhythmbox/-/issues">GitLab issues</a>.
+      For other types of questions and discussions, use the 'rhythmbox' tag under the 'Applications' category in
+      <a href="https://discourse.gnome.org/">GNOME Discourse</a>, or join <code>#gnome-rhythmbox</code> on the
+      <a href="https://libera.chat/">Libera.Chat</a> IRC network.
+    </p>
+  </section>
+
+  <section>
+    <h4 id="plugins">Plugins</h4>
+    <p>
+      Rhythmbox can be extended through its plugin system, which loads plugins written in Python and C.
+      Many optional features of the application are built as plugins, and there are many
+      <a href="plugins.html">third party plugins</a> available.
+    </p>
+  </section>
+
+  <section>
+    <h4 id="news">Latest releases</h4>
+    <ul>
+      {% for n in news %}
+      <li><h5>{{ n.version }}</h5>
+          <h6>Highlights:</h6>
+          <ul>
+            {% for i in n.summary %}<li>{{ i }}</li>{% endfor %}
+          </ul>
+        {% if n.issues %}
+          <h6>Issues fixed:</h6>
+          <ul>
+            {% for i in n.issues %}
+	      <li><a href="https://gitlab.gnome.org/GNOME/rhythmbox/-/issues/{{ i.number }}">{{ i.number }}</a>: {{ i.title }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        {% if n.merges %}
+          <h6>Merge requests:</h6>
+          <ul>
+            {% for m in n.merges %}
+	      <li><a href="https://gitlab.gnome.org/GNOME/rhythmbox/-/merge_requests/{{ m.number }}">{{ m.number }}</a>: {{ m.title }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        {% if n.translations %}
+          <h6>Translation updates:</h6>
+          <ul>
+            {% for t in n.translations %}<li>{{ t }}</li>{% endfor %}
+          </ul>
+         {% endif %}
+      </li>
+      <p/>
+      {% endfor %}
+    </ul>
+  </section>
+</section>
+{% endblock %}

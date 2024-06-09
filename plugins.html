@@ -1,0 +1,40 @@
+{% extends "page.html" %}
+{% block title %}Rhythmbox - Third Party Plugins{% endblock %}
+{% block content %}
+<section id="main" class="content">
+  <header>
+    <h3>Third Party Rhythmbox Plugins</h3>
+    <div class="description">
+      <p>
+        This page gives links to plugins developed outside of the Rhythmbox project itself,
+	by developers who are generally not directly involved in the project.
+	Users should be careful when installing third party plugins such as these
+	as there are no restrictions on what plugins can do.
+      </p>
+      <p>
+        If you've written a plugin that you'd like to have added to this list, submit a
+        <a href="https://gitlab.gnome.org/GNOME/rhythmbox/-/merge_requests">merge request</a>
+        in GitLab that adds your <code>.plugin</code> file under
+	<code>third-party-plugins</code> in the <code>website</code> branch.
+	Entries in the list can also be updated via a merge request.
+    </div>
+  </header>
+
+  <section>
+    <table>
+      <tr>
+        <th>Plugin name</th>
+        <th>Author</th>
+        <th>Description</th>
+      </tr>
+{% for p in plugins %}
+      <tr>
+        <td><a href="{{ p.website }}">{{ p.name }}</a></td>
+        <td>{{ p.authors }}</td>
+        <td>{{ p.desc }}</td>
+      </tr>
+{% endfor %}
+    </table>
+  </section>
+</section>
+{% endblock %}
