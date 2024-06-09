@@ -2,7 +2,6 @@ image: ubuntu:jammy
 
 stages:
   - build
-  - deploy
 
 variables:
   UBUNTU_DEPS:
@@ -78,14 +77,3 @@ build:
       - "${CI_PROJECT_DIR}/_build/meson-logs"
       - _build/doc
 
-pages:
-  stage: deploy
-  dependencies:
-    - build
-  script:
-    - mv _build/doc public
-  artifacts:
-    paths:
-      - public
-  only:
-    - master
