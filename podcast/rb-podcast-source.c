@@ -68,6 +68,8 @@
 #include "rb-builder-helpers.h"
 #include "rb-application.h"
 
+#define RESPONSE_REMOVEFILEONLY 1
+
 static void podcast_add_action_cb (GSimpleAction *, GVariant *, gpointer);
 static void podcast_download_action_cb (GSimpleAction *, GVariant *, gpointer);
 static void podcast_download_cancel_action_cb (GSimpleAction *, GVariant *, gpointer);
@@ -75,7 +77,6 @@ static void podcast_feed_properties_action_cb (GSimpleAction *, GVariant *, gpoi
 static void podcast_feed_update_action_cb (GSimpleAction *, GVariant *, gpointer);
 static void podcast_feed_update_all_action_cb (GSimpleAction *, GVariant *, gpointer);
 static void podcast_feed_delete_action_cb (GSimpleAction *, GVariant *, gpointer);
-
 
 struct _RBPodcastSourcePrivate
 {
@@ -1055,18 +1056,31 @@ delete_response_cb (GtkDialog *dialog, int response, RBPodcastSource *source)
 		RhythmDBEntry *entry = l->data;
 
 		rb_podcast_manager_cancel_download (source->priv->podcast_mgr, entry);
-		if (response == GTK_RESPONSE_YES) {
+		if (response == GTK_RESPONSE_YES || response == RESPONSE_REMOVEFILEONLY) {
 			rb_podcast_manager_delete_download (source->priv->podcast_mgr, entry);
 		}
 
-		/* set podcast entries to invisible instead of deleted so they will
-		 * not reappear after the podcast has been updated
-		 */
-		GValue v = {0,};
-		g_value_init (&v, G_TYPE_BOOLEAN);
-		g_value_set_boolean (&v, TRUE);
-		rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_HIDDEN, &v);
-		g_value_unset (&v);
+		if (response == RESPONSE_REMOVEFILEONLY) {
+			/* set podcast entries download status to paused so that
+			 * they no longer appear as Downloaded and can then be
+			 * redownloaded if desired
+			 */
+			GValue v = {0,};
+			g_value_init (&v, G_TYPE_ULONG);
+			g_value_set_ulong (&v, RHYTHMDB_PODCAST_STATUS_PAUSED);
+			rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &v);
+			g_value_unset (&v);
+		} else {
+			/* set podcast entries to invisible instead of deleted
+			 * so they will not reappear after the podcast has been
+			 * updated
+			 */
+			GValue v = {0,};
+			g_value_init (&v, G_TYPE_BOOLEAN);
+			g_value_set_boolean (&v, TRUE);
+			rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_HIDDEN, &v);
+			g_value_unset (&v);
+		}
 	}
 
 	g_list_foreach (entries, (GFunc)rhythmdb_entry_unref, NULL);
@@ -1100,15 +1114,19 @@ impl_delete_selected (RBSource *asource)
 	                                          _("If you choose to delete the episode and file, "
 						    "they will be permanently lost.  Please note that "
 						    "you can delete the episode but keep the downloaded "
-						    "file by choosing to delete the episode only."));
+						    "file by choosing to delete the episode only, or "
+						    "delete the downloaded file but keep the episode "
+						    "by choosing to delete the file only."));
 
 	gtk_window_set_title (GTK_WINDOW (dialog), "");
 
 	gtk_dialog_add_buttons (GTK_DIALOG (dialog),
-	                        _("Delete _Episode Only"),
-	                        GTK_RESPONSE_NO,
 	                        _("_Cancel"),
 	                        GTK_RESPONSE_CANCEL,
+	                        _("Delete _Episode Only"),
+	                        GTK_RESPONSE_NO,
+				_("Delete _File Only"),
+	                        RESPONSE_REMOVEFILEONLY,
 	                        NULL);
 	button = gtk_dialog_add_button (GTK_DIALOG (dialog),
 	                                _("_Delete Episode And File"),
