@@ -33,10 +33,13 @@
 #include <gio/gio.h>
 
 #include <rhythmdb/rhythmdb-entry.h>
+#include <metadata/rb-ext-db-key.h>
 
 G_BEGIN_DECLS
 
 /* entry type category */
+
+typedef enum _RhythmDBPropType RhythmDBPropType;
 
 GType rhythmdb_entry_category_get_type (void);
 #define RHYTHMDB_TYPE_ENTRY_CATEGORY (rhythmdb_entry_category_get_type ())
@@ -97,6 +100,7 @@ struct _RhythmDBEntryTypeClass {
 	char *		(*uri_to_cache_key) (RhythmDBEntryType *etype, const char *uri);
 	char *		(*cache_key_to_uri) (RhythmDBEntryType *etype, const char *key);
 
+	RBExtDBKey *	(*create_ext_db_key) (RhythmDBEntryType *etype, RhythmDBEntry *entry, RhythmDBPropType prop);
 };
 
 GType		rhythmdb_entry_type_get_type (void);
@@ -115,6 +119,8 @@ void		rhythmdb_entry_cache_metadata (RhythmDBEntry *entry);
 void		rhythmdb_entry_apply_cached_metadata (RhythmDBEntry *entry, GArray *metadata);
 
 void		rhythmdb_entry_type_purge_metadata_cache (RhythmDBEntryType *etype, const char *prefix, guint64 max_age);
+
+RBExtDBKey *	rhythmdb_entry_create_ext_db_key (RhythmDBEntry *entry, RhythmDBPropType prop);
 
 /* predefined entry types -- these mostly need to die */
 

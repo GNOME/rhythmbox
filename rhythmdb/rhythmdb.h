@@ -90,7 +90,7 @@ typedef enum
 } RhythmDBQueryType;
 
 /* If you modify this enum, don't forget to modify rhythmdb_prop_get_type */
-typedef enum
+typedef enum _RhythmDBPropType
 {
 	RHYTHMDB_PROP_TYPE = 0,
 	RHYTHMDB_PROP_ENTRY_ID,
@@ -393,8 +393,6 @@ void		rhythmdb_entry_write_metadata_changes (RhythmDB *db,
 						 GSList *changes,
 						 GError **error);
 
-RBExtDBKey *	rhythmdb_entry_create_ext_db_key (RhythmDBEntry *entry,
-						 RhythmDBPropType prop);
 gboolean	rhythmdb_entry_matches_ext_db_key (RhythmDB *db,
 						 RhythmDBEntry *entry,
 						 RBExtDBKey *key);
