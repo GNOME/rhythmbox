@@ -97,6 +97,34 @@ podcast_data_destroy (RhythmDBEntryType *entry_type, RhythmDBEntry *entry)
 		rb_refstring_unref (podcast->guid);
 }
 
+static RBExtDBKey *
+podcast_feed_create_ext_db_key (RhythmDBEntryType *etype, RhythmDBEntry *entry, RhythmDBPropType prop)
+{
+	RBExtDBKey *key;
+	const char *uri;
+
+	/* match on feed url */
+	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	key = rb_ext_db_key_create_lookup ("subtitle", uri);
+
+	rb_ext_db_key_add_info (key, "location", uri);
+	return key;
+}
+
+static RBExtDBKey *
+podcast_post_create_ext_db_key (RhythmDBEntryType *etype, RhythmDBEntry *entry, RhythmDBPropType prop)
+{
+	RBExtDBKey *key;
+
+	/* match on feed url and optionally the entry guid */
+	key = rb_ext_db_key_create_lookup ("subtitle", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_SUBTITLE));
+	rb_ext_db_key_add_field (key, "podcast-guid", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PODCAST_GUID));
+	rb_ext_db_key_add_field (key, "podcast-guid", NULL);
+
+	rb_ext_db_key_add_info (key, "location", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION));
+	return key;
+}
+
 /**
  * rb_podcast_get_post_entry_type:
  *
@@ -119,6 +147,7 @@ rb_podcast_post_entry_type_class_init (RBPodcastPostEntryTypeClass *klass)
 	etype_class->destroy_entry = podcast_data_destroy;
 	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
 	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
+	etype_class->create_ext_db_key = podcast_post_create_ext_db_key;
 }
 
 static void
@@ -149,6 +178,7 @@ rb_podcast_feed_entry_type_class_init (RBPodcastFeedEntryTypeClass *klass)
 	etype_class->get_playback_uri = (RhythmDBEntryTypeStringFunc) rb_null_function;
 	etype_class->can_sync_metadata = (RhythmDBEntryTypeBooleanFunc) rb_true_function;
 	etype_class->sync_metadata = (RhythmDBEntryTypeSyncFunc) rb_null_function;
+	etype_class->create_ext_db_key = podcast_feed_create_ext_db_key;
 }
 
 static void
