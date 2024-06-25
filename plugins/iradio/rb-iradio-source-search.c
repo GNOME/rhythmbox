@@ -69,7 +69,7 @@ rb_iradio_source_search_init (RBIRadioSourceSearch *search)
 
 
 RBSourceSearch *
-rb_iradio_source_search_new ()
+rb_iradio_source_search_new (void)
 {
 	return g_object_new (RB_TYPE_IRADIO_SOURCE_SEARCH, NULL);
 }

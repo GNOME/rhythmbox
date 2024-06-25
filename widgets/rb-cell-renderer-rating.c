@@ -214,7 +214,7 @@ rb_cell_renderer_rating_set_property (GObject *object,
  * Return value: the new cell renderer
  **/
 GtkCellRenderer *
-rb_cell_renderer_rating_new ()
+rb_cell_renderer_rating_new (void)
 {
 	return GTK_CELL_RENDERER (g_object_new (rb_cell_renderer_rating_get_type (), NULL, NULL));
 }

@@ -61,7 +61,7 @@ rb_refstring_free (RBRefString *refstr)
  * Sets up the refstring system.  Called on startup.
  */
 void
-rb_refstring_system_init ()
+rb_refstring_system_init (void)
 {
 	rb_refstrings = g_hash_table_new_full (g_str_hash, g_str_equal,
 					       NULL, (GDestroyNotify) rb_refstring_free);

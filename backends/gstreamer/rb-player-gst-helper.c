@@ -422,7 +422,7 @@ pipeline_op (GObject *player,
  * Return value: (transfer full): filter bin
  */
 GstElement *
-rb_gst_create_filter_bin ()
+rb_gst_create_filter_bin (void)
 {
 	GstElement *bin;
 	GstElement *audioconvert;

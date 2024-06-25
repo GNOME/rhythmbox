@@ -49,7 +49,7 @@ static DmapAvShare *share = NULL;
 static GSettings *settings = NULL;
 
 char *
-rb_daap_sharing_default_share_name ()
+rb_daap_sharing_default_share_name (void)
 {
 	const gchar *real_name;
 

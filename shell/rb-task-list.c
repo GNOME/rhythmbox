@@ -210,7 +210,7 @@ rb_task_list_remove_task (RBTaskList *list, RBTaskProgress *task)
 }
 
 RBTaskList *
-rb_task_list_new ()
+rb_task_list_new (void)
 {
 	return RB_TASK_LIST (g_object_new (RB_TYPE_TASK_LIST, NULL));
 }
