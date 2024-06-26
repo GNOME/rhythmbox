@@ -294,7 +294,7 @@ rb_rating_set_property (GObject *object,
  * Return value: a new #RBRating widget.
  */
 RBRating *
-rb_rating_new ()
+rb_rating_new (void)
 {
 	RBRating *rating;
 

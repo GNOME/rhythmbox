@@ -186,7 +186,7 @@ rb_encoder_get_type (void)
  * Return value: (transfer none): the #RBEncoderFactory
  */
 RBEncoderFactory *
-rb_encoder_factory_get ()
+rb_encoder_factory_get (void)
 {
 	if (g_once_init_enter (&encoder_factory_init)) {
 		the_encoder_factory = g_object_new (RB_TYPE_ENCODER_FACTORY, NULL);

@@ -312,7 +312,7 @@ plugin_init (GstPlugin *plugin)
 
 
 gboolean
-rb_register_gst_plugin ()
+rb_register_gst_plugin (void)
 {
 	gboolean ret = gst_plugin_register_static (GST_VERSION_MAJOR,
 				    GST_VERSION_MINOR,
