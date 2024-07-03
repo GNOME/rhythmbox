@@ -47,7 +47,7 @@ class JetlyricsParser (object):
 			return
 		result = result.decode('utf-8')
 
-		m = re.search('<a href=\'(http://jetlyrics\.com/viewlyrics\.php\?id=[0-9]*)\'>', result)
+		m = re.search('<a href=\'(http://jetlyrics\\.com/viewlyrics\\.php\\?id=[0-9]*)\'>', result)
 		if m is None:
 			callback (None, *data)
 			return

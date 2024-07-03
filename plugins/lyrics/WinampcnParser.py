@@ -84,7 +84,7 @@ class WinampcnParser(object):
 		# transform it into plain text
 		lrcplaintext = lyrics.decode('gbk')
 		try:
-			lrcplaintext = re.sub('\[.*?\]', '', lrcplaintext)
+			lrcplaintext = re.sub(r'\[.*?\]', '', lrcplaintext)
 		except:
 			print("unable to decode lyrics")
 			callback (None, *data)
