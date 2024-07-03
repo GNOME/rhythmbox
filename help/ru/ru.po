@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox trunk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-09 15:27+0000\n"
-"PO-Revision-Date: 2023-03-18 23:37+1000\n"
+"POT-Creation-Date: 2024-06-17 23:16+0000\n"
+"PO-Revision-Date: 2024-06-30 00:26+1000\n"
 "Last-Translator: Ser82-png <asvmail.as@gmail.com>\n"
 "Language-Team: Russian <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
@@ -418,7 +418,7 @@ msgid "Rhythmbox Music Player Window"
 msgstr "Окно музыкального проигрывателя Rhythmbox"
 
 #. (itstool) path: sect2/title
-#: C/index.docbook:308 C/index.docbook:1156
+#: C/index.docbook:308 C/index.docbook:1158
 msgid "Overview"
 msgstr "Обзор"
 
@@ -790,10 +790,6 @@ msgstr "Следующая/Воспроизведение/Предыдущая"
 #. update your localized copy. The msgstr is not used at all. Set it to
 #. whatever you like once you have updated your copy of the file.
 #: C/index.docbook:471
-#| msgctxt "_"
-#| msgid ""
-#| "external ref='figures/rb-toolbar-prevplaynext.png' "
-#| "md5='9c3cb4121a51142de111c7d69853ceb4'"
 msgctxt "_"
 msgid ""
 "external ref='figures/rb-toolbar-prevplaynext.png' "
@@ -854,10 +850,6 @@ msgstr ""
 #. update your localized copy. The msgstr is not used at all. Set it to
 #. whatever you like once you have updated your copy of the file.
 #: C/index.docbook:491
-#| msgctxt "_"
-#| msgid ""
-#| "external ref='figures/rb-toolbar-repeat.png' "
-#| "md5='5fe7646c445f3ad26033a896940452ad'"
 msgctxt "_"
 msgid ""
 "external ref='figures/rb-toolbar-repeat.png' "
@@ -907,10 +899,6 @@ msgstr ""
 #. update your localized copy. The msgstr is not used at all. Set it to
 #. whatever you like once you have updated your copy of the file.
 #: C/index.docbook:509
-#| msgctxt "_"
-#| msgid ""
-#| "external ref='figures/rb-toolbar-shuffle.png' "
-#| "md5='6a3b648900f181d6a7853525dbed3989'"
 msgctxt "_"
 msgid ""
 "external ref='figures/rb-toolbar-shuffle.png' "
@@ -951,10 +939,6 @@ msgstr "Управление громкостью"
 #. update your localized copy. The msgstr is not used at all. Set it to
 #. whatever you like once you have updated your copy of the file.
 #: C/index.docbook:525
-#| msgctxt "_"
-#| msgid ""
-#| "external ref='figures/rb-volume-changer.png' "
-#| "md5='5eaf8bb85a8c7d613def9b6124578f6d'"
 msgctxt "_"
 msgid ""
 "external ref='figures/rb-volume-changer.png' "
@@ -1595,19 +1579,24 @@ msgid ""
 "To delete an episode from a podcast, right-click on the episode, and choose "
 "<menuchoice><guimenuitem>Delete</guimenuitem></menuchoice>, then choose "
 "<menuchoice><guimenuitem>Delete Episode Only</guimenuitem></menuchoice> if "
-"you to keep the episode file on your disk, or choose <guibutton>Delete "
-"Episode And File</guibutton> if you want to remove the episode from the list "
-"and delete the file from your disk."
+"you want to keep the episode file on your disk, "
+"<menuchoice><guimenuitem>Delete File Only</guimenuitem></menuchoice> if you "
+"want to keep the episode in the list but remove the corresponding downloaded "
+"podcast file, or choose <guibutton>Delete Episode And File</guibutton> if "
+"you want to remove the episode from the list and delete the file from your "
+"disk."
 msgstr ""
-"Чтобы удалить эпизод из подкаст, щёлкните правой кнопкой мыши по эпизоду, и "
+"Чтобы удалить эпизод из подкаста, щёлкните правой кнопкой мыши по эпизоду и "
 "выберите <menuchoice><guimenuitem>Удалить</guimenuitem></menuchoice>, затем "
 "выберите <menuchoice><guimenuitem>Удалить только эпизод</guimenuitem></"
-"menuchoice> если вы хотите оставить файл эпизода на диске, или выберите "
-"<guibutton>Удалить эпизод и файл</guibutton> если вы хотите удалить эпизод "
-"из списка и удалить эпизод с диска."
+"menuchoice> если хотите оставить файл эпизода на диске, "
+"<menuchoice><guimenuitem>Удалить только файл</guimenuitem></menuchoice> если "
+"хотите сохранить эпизод в списке, но удалить соответствующий загруженный "
+"файл подкаста, или выберите <guibutton>Удалить эпизод и файл</guibutton> "
+"если хотите удалить эпизод из списка и файл со своего диска."
 
 #. (itstool) path: warning/para
-#: C/index.docbook:849
+#: C/index.docbook:851
 msgid ""
 "After you delete an episode, it will no longer be available in the list of "
 "episodes, even if you update the podcast."
@@ -1616,12 +1605,12 @@ msgstr ""
 "если вы обновляете подкаст."
 
 #. (itstool) path: sect3/title
-#: C/index.docbook:856
+#: C/index.docbook:858
 msgid "Display Podcast Episode properties"
 msgstr "Отображение свойств эпизода подкаст"
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:861
+#: C/index.docbook:863
 msgid ""
 "On the <guilabel>Basic</guilabel> tab you can view the podcast "
 "<guilabel>Title</guilabel>, <guilabel>Feed</guilabel>, the publication "
@@ -1633,7 +1622,7 @@ msgstr ""
 "guilabel>."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:866
+#: C/index.docbook:868
 msgid ""
 "On the <guilabel>Details</guilabel> tab you can view the podcast "
 "<guilabel>Source</guilabel>, <guilabel>Duration</guilabel>, the "
@@ -1647,7 +1636,7 @@ msgstr ""
 "guilabel> и <guilabel>Рейтинг</guilabel>."
 
 #. (itstool) path: sect3/para
-#: C/index.docbook:857
+#: C/index.docbook:859
 msgid ""
 "To access to the episode properties, right-click on the episode, and choose "
 "<menuchoice><guimenuitem>Properties</guimenuitem></menuchoice>. <_:"
@@ -1658,12 +1647,12 @@ msgstr ""
 "itemizedlist-1/>"
 
 #. (itstool) path: sect1/title
-#: C/index.docbook:878
+#: C/index.docbook:880
 msgid "Play Queue Source"
 msgstr "Источник: очередь воспроизведения"
 
 #. (itstool) path: sect1/para
-#: C/index.docbook:879
+#: C/index.docbook:881
 msgid ""
 "Play queue is a source designed to temporarily store the next tracks you "
 "want to play. When you add a track to the Play Queue, <application>Rhythmbox "
@@ -1676,7 +1665,7 @@ msgstr ""
 "после завершения воспроизведения текущей дорожки."
 
 #. (itstool) path: sect1/para
-#: C/index.docbook:885
+#: C/index.docbook:887
 msgid ""
 "Once a track has been played, it will be automatically removed from the Play "
 "Queue Source. Once the Play Queue is empty, <application>Rhythmbox Music "
@@ -1688,39 +1677,39 @@ msgstr ""
 "воспроизводение дорожек с прежнего источника."
 
 #. (itstool) path: sect2/title
-#: C/index.docbook:892
+#: C/index.docbook:894
 msgid "Add a track to the Play Queue"
 msgstr "Добавление дорожек в очередь воспроизведения"
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:896
+#: C/index.docbook:898
 msgid "Select the track you want to play, in any source."
 msgstr "Выделите дорожку на любом источнике, которую хотите воспроизвести."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:902
+#: C/index.docbook:904
 msgid "Right-click and choose <guimenuitem>Add to Queue</guimenuitem>."
 msgstr ""
 "Щёлкните правой кнопкой мыши и выберите <guimenuitem>Добавить в очередь "
 "воспроизведения</guimenuitem>."
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:893
+#: C/index.docbook:895
 msgid "To add a track: <_:orderedlist-1/>"
 msgstr "Чтобы добавить дорожку: <_:orderedlist-1/>"
 
 #. (itstool) path: sect2/title
-#: C/index.docbook:909
+#: C/index.docbook:911
 msgid "Remove a track in Play Queue"
 msgstr "Убрать дорожку из очереди воспроизведения"
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:913
+#: C/index.docbook:915
 msgid "Select the track you want to remove in Play Queue source."
 msgstr "Выделите дорожку, которую хотите убрать из очереди воспроизведения."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:917
+#: C/index.docbook:919
 msgid ""
 "Right-click and choose <guimenuitem>Remove from Play Queue</guimenuitem>."
 msgstr ""
@@ -1728,17 +1717,17 @@ msgstr ""
 "воспроизведения</guimenuitem>."
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:910
+#: C/index.docbook:912
 msgid "To remove a track stored in Play Queue: <_:orderedlist-1/>"
 msgstr "Удаление дорожки из очереди воспроизведения: <_:orderedlist-1/>"
 
 #. (itstool) path: sect1/title
-#: C/index.docbook:927
+#: C/index.docbook:929
 msgid "Playlists Source"
 msgstr "Источник: списки воспроизведения"
 
 #. (itstool) path: sect1/para
-#: C/index.docbook:928
+#: C/index.docbook:930
 msgid ""
 "Playlists are sources which are created from the tracks available in the "
 "Library source. They enable you to gather tracks following a particular "
@@ -1752,32 +1741,32 @@ msgstr ""
 
 #. (itstool) path: listitem/para
 #. (itstool) path: sect2/title
-#: C/index.docbook:938 C/index.docbook:949
+#: C/index.docbook:940 C/index.docbook:951
 msgid "Static Playlists"
 msgstr "Статические списки воспроизведения"
 
 #. (itstool) path: listitem/para
 #. (itstool) path: sect2/title
-#: C/index.docbook:941 C/index.docbook:1011
+#: C/index.docbook:943 C/index.docbook:1013
 msgid "Smart Playlists"
 msgstr "\"Умные\" списки воспроизведения"
 
 #. (itstool) path: sect1/para
-#: C/index.docbook:934
+#: C/index.docbook:936
 msgid "Rhythmbox Music Player has 2 kinds of playlists: <_:itemizedlist-1/>"
 msgstr ""
 "В музыкальном проигрывателе Rhythmbox существуют 2 вида списков "
 "воспроизведения: <_:itemizedlist-1/>"
 
 #. (itstool) path: sect1/para
-#: C/index.docbook:945
+#: C/index.docbook:947
 msgid "Rhythmbox lets you burn the tracks of your playlists to an Audio CD."
 msgstr ""
 "Rhythmbox позволяет записывать звуковые компакт-диски по спискам "
 "воспроизведения."
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:950
+#: C/index.docbook:952
 msgid ""
 "Static playlists are playlists built from tracks dropped from the Library."
 msgstr ""
@@ -1785,12 +1774,12 @@ msgstr ""
 "на основе дорожек, добавленных из фонотеки вручную."
 
 #. (itstool) path: sect3/title
-#: C/index.docbook:954
+#: C/index.docbook:956
 msgid "Create a static playlist"
 msgstr "Создание статического списка воспроизведения"
 
 #. (itstool) path: sect3/para
-#: C/index.docbook:955
+#: C/index.docbook:957
 msgid ""
 "To create a new playlist, right-click on an item in the library. Select "
 "<menuchoice><guimenu>Add to Playlist</guimenu><guimenuitem>Add to New "
@@ -1806,12 +1795,12 @@ msgstr ""
 "воспроизведения и нажмите <keycombo><keycap>Enter</keycap></keycombo>."
 
 #. (itstool) path: sect3/title
-#: C/index.docbook:964
+#: C/index.docbook:966
 msgid "Add tracks to a playlist"
 msgstr "Добавление дорожек в список воспроизведения"
 
 #. (itstool) path: sect3/para
-#: C/index.docbook:965
+#: C/index.docbook:967
 msgid ""
 "To add tracks to a playlist, select tracks from the track list from the "
 "library and drag and drop your selection over the playlist icon in the side "
@@ -1822,7 +1811,7 @@ msgstr ""
 "боковой панели."
 
 #. (itstool) path: sect3/para
-#: C/index.docbook:970
+#: C/index.docbook:972
 msgid ""
 "You can also drop over a playlist a genre, an artist, or an album name from "
 "the browser, and all the tracks that belongs to the chosen category will be "
@@ -1833,7 +1822,7 @@ msgstr ""
 "будут добавлены в список воспроизведения."
 
 #. (itstool) path: tip/para
-#: C/index.docbook:976
+#: C/index.docbook:978
 msgid ""
 "You can create a playlist with tracks in one action. Select tracks from the "
 "<guilabel>Tracks List</guilabel>, or directly one or more categories from "
@@ -1849,12 +1838,12 @@ msgstr ""
 "список воспроизведения."
 
 #. (itstool) path: sect3/title
-#: C/index.docbook:984
+#: C/index.docbook:986
 msgid "Remove tracks from a playlist"
 msgstr "Удаление дорожек из списка воспроизведение"
 
 #. (itstool) path: sect3/para
-#: C/index.docbook:985
+#: C/index.docbook:987
 msgid ""
 "To remove tracks from a playlist, first select the tracks to remove. Then, "
 "right-click over the selection and choose <guimenuitem>Delete</guimenuitem>. "
@@ -1866,7 +1855,7 @@ msgstr ""
 "списка воспроизведения, но не из фонотеки."
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:1012
+#: C/index.docbook:1014
 msgid ""
 "Smart Playlists are playlists built from criteria, so tracks are added to it "
 "dynamically; all of the tracks matching the criteria will be added to the "
@@ -1877,7 +1866,7 @@ msgstr ""
 "критериями, добавляются в список."
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:1017
+#: C/index.docbook:1019
 msgid ""
 "By default, the playlists <guimenuitem>My Top Rated</guimenuitem>, "
 "<guimenuitem>Recently Added</guimenuitem>, and <guimenuitem>Recently played</"
@@ -1888,12 +1877,12 @@ msgstr ""
 "<guimenuitem>Недавно прослушанные</guimenuitem>."
 
 #. (itstool) path: sect1/title
-#: C/index.docbook:1087
+#: C/index.docbook:1089
 msgid "Audio CD Source"
 msgstr "Источник: звуковой компакт-диск"
 
 #. (itstool) path: sect1/para
-#: C/index.docbook:1088
+#: C/index.docbook:1090
 msgid ""
 "<application>Rhythmbox Music Player</application> can also handle Audio CDs; "
 "it can play CDs and also let you burn your own."
@@ -1903,12 +1892,12 @@ msgstr ""
 "а также позволяет записывать собственные."
 
 #. (itstool) path: sect2/title
-#: C/index.docbook:1091
+#: C/index.docbook:1093
 msgid "Playing"
 msgstr "Воспроизведение"
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:1092
+#: C/index.docbook:1094
 msgid ""
 "When an Audio CD is inserted, it will appear in the side pane, and the "
 "tracks on it can be displayed in <application>Rhythmbox Music Player</"
@@ -1922,7 +1911,7 @@ msgstr ""
 "отображена."
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:1097
+#: C/index.docbook:1099
 msgid ""
 "To play and pause playback, or to skip forward or backwards, use the same "
 "controls as used for playing from the library."
@@ -1931,12 +1920,12 @@ msgstr ""
 "же управление, что и в фонотеке."
 
 #. (itstool) path: sect2/title
-#: C/index.docbook:1102
+#: C/index.docbook:1104
 msgid "Importing Audio CD"
 msgstr "Импортирование звукового компакт-диска"
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:1103
+#: C/index.docbook:1105
 msgid ""
 "If you wish to keep the tracks of your Audio CDs on your computer, you can "
 "import them."
@@ -1945,7 +1934,7 @@ msgstr ""
 "можно импортировать."
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:1105
+#: C/index.docbook:1107
 msgid ""
 "To import Audio CD tracks, choose <guibutton>Extract</guibutton> in the tool "
 "bar."
@@ -1954,12 +1943,12 @@ msgstr ""
 "<guibutton>Копировать</guibutton> на панели инструментов."
 
 #. (itstool) path: sect2/title
-#: C/index.docbook:1109
+#: C/index.docbook:1111
 msgid "Creating Audio CD"
 msgstr "Создание звукового компакт-диска"
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:1110
+#: C/index.docbook:1112
 msgid ""
 "Rhythmbox enables you to create you own Audio CDs with the music stored in "
 "the Rhythmbox Library."
@@ -1968,7 +1957,7 @@ msgstr ""
 "хранящейся в вашей фонотеке."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1112
+#: C/index.docbook:1114
 msgid ""
 "Create a playlist, static or smart (see <xref linkend=\"playlist\"/>) and "
 "add tracks."
@@ -1977,24 +1966,24 @@ msgstr ""
 "linkend=\"playlist\"/>) и добавьте в него дорожки."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1114
+#: C/index.docbook:1116
 msgid "Choose <guibutton>Playlist</guibutton> in the tool bar."
 msgstr ""
 "Выберите <guibutton>Список воспроизведения</guibutton> на панели "
 "инструментов."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1115
+#: C/index.docbook:1117
 msgid "Select <guimenuitem>Create Audio CD</guimenuitem>."
 msgstr "Выберите <guimenuitem>Создать звуковой CD</guimenuitem>."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1116
+#: C/index.docbook:1118
 msgid "Insert a blank CD."
 msgstr "Вставьте чистый компакт-диск."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1117
+#: C/index.docbook:1119
 msgid ""
 "Click the button <guibutton>Create</guibutton>, the burning process starts."
 msgstr ""
@@ -2002,17 +1991,17 @@ msgstr ""
 "записи."
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:1111
+#: C/index.docbook:1113
 msgid "To create an Audio CD: <_:orderedlist-1/>"
 msgstr "Чтобы создать звуковой CD: <_:orderedlist-1/>"
 
 #. (itstool) path: sect1/title
-#: C/index.docbook:1123
+#: C/index.docbook:1125
 msgid "Portable Audio Player Source"
 msgstr "Источник: портативные звуковые проигрыватели"
 
 #. (itstool) path: sect1/para
-#: C/index.docbook:1124
+#: C/index.docbook:1126
 msgid ""
 "<application>Rhythmbox</application> can detect when an portable audio "
 "player is plugged to your computer, and is able to read tracks stored on it. "
@@ -2027,7 +2016,7 @@ msgstr ""
 "MTP-плееры и плееры Mass Storage."
 
 #. (itstool) path: sect1/para
-#: C/index.docbook:1129
+#: C/index.docbook:1131
 msgid ""
 "When you plug in a portable audio player, an icon for the Portable Audio "
 "Player is added to the side pane. This source works in the same way as the "
@@ -2038,7 +2027,7 @@ msgstr ""
 "панель. С этим источником можно будет работать точно также, как фонотекой."
 
 #. (itstool) path: tip/para
-#: C/index.docbook:1132
+#: C/index.docbook:1134
 msgid ""
 "If <application>Rhythmbox Music Player</application> does not detect your "
 "device as a portable audio player, you can create an empty file named "
@@ -2051,12 +2040,12 @@ msgstr ""
 "файловой системы вашего портативного проигрывателя."
 
 #. (itstool) path: sect1/title
-#: C/index.docbook:1138
+#: C/index.docbook:1140
 msgid "DAAP Share Source"
 msgstr "Источник: общий ресурс DAAP"
 
 #. (itstool) path: sect1/para
-#: C/index.docbook:1139
+#: C/index.docbook:1141
 msgid ""
 "DAAP is a network protocol that allows you to share the music stored in "
 "Rhythmbox. DAAP stands for Digital Audio Access Protocol."
@@ -2066,7 +2055,7 @@ msgstr ""
 "цифрового аудио доступа)."
 
 #. (itstool) path: sect1/para
-#: C/index.docbook:1141
+#: C/index.docbook:1143
 msgid ""
 "As DAAP is a standard protocol for music sharing, you can listen and share "
 "music not only with other Rhythmbox users, but also with other users who use "
@@ -2078,7 +2067,7 @@ msgstr ""
 "например, iTunes."
 
 #. (itstool) path: sect1/para
-#: C/index.docbook:1144
+#: C/index.docbook:1146
 msgid ""
 "When you start Rhythmbox, it will look for all DAAP shares published on your "
 "local network (your home or your office, not the whole Internet) by other "
@@ -2095,7 +2084,7 @@ msgstr ""
 "музыку, хранящуюся на компьютерах ваших друзей, как и они могут слушать вашу."
 
 #. (itstool) path: sect1/para
-#: C/index.docbook:1150
+#: C/index.docbook:1152
 msgid ""
 "To disable the Rhythmbox DAAP sharing feature, see <xref linkend=\"prefs-"
 "sharing\"/> in the preferences."
@@ -2104,12 +2093,12 @@ msgstr ""
 "в настройках."
 
 #. (itstool) path: sect1/title
-#: C/index.docbook:1154
+#: C/index.docbook:1156
 msgid "Notification Area"
 msgstr "Область уведомлений"
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:1157
+#: C/index.docbook:1159
 msgid ""
 "The Notification Area allows you to control <application>Rhythmbox Music "
 "Player</application> and receive information when the <application>Rhythmbox "
@@ -2121,7 +2110,7 @@ msgstr ""
 "отображается."
 
 #. (itstool) path: figure/title
-#: C/index.docbook:1162
+#: C/index.docbook:1164
 msgid ""
 "<application>Rhythmbox Music Player</application> in the Notification Area"
 msgstr ""
@@ -2133,11 +2122,7 @@ msgstr ""
 #. the file changes, the md5 hash will change to let you know you need to
 #. update your localized copy. The msgstr is not used at all. Set it to
 #. whatever you like once you have updated your copy of the file.
-#: C/index.docbook:1166
-#| msgctxt "_"
-#| msgid ""
-#| "external ref='figures/rb-notification-zone.png' "
-#| "md5='0ef002d9f2593be5795b118f9b44eda1'"
+#: C/index.docbook:1168
 msgctxt "_"
 msgid ""
 "external ref='figures/rb-notification-zone.png' "
@@ -2147,12 +2132,12 @@ msgstr ""
 "md5='08c77a3c9d8f3d727204bc3273d004e2'"
 
 #. (itstool) path: sect2/title
-#: C/index.docbook:1173
+#: C/index.docbook:1175
 msgid "Control Rhythmbox"
 msgstr "Управление Rhythmbox"
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:1174
+#: C/index.docbook:1176
 msgid ""
 "Using the <application>Rhythmbox Music Player</application> icon in the "
 "notification area, the following commands can be sent to the application:"
@@ -2162,7 +2147,7 @@ msgstr ""
 "приложению:"
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1180
+#: C/index.docbook:1182
 msgid ""
 "<guibutton>Play</guibutton> — If selected, plays the currently selected song."
 msgstr ""
@@ -2170,7 +2155,7 @@ msgstr ""
 "текущую выбранную композицию."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1184
+#: C/index.docbook:1186
 msgid ""
 "<guibutton>Previous</guibutton> — Skip to previous song in the selected "
 "source."
@@ -2179,19 +2164,19 @@ msgstr ""
 "выбранного источника."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1188
+#: C/index.docbook:1190
 msgid "<guibutton>Next</guibutton> — Skip to next song in the selected source."
 msgstr ""
 "<guibutton>Следующая</guibutton> — Перейти к следующей композиции с "
 "выбранного источника."
 
 #. (itstool) path: sect1/title
-#: C/index.docbook:1196
+#: C/index.docbook:1198
 msgid "Customizing Rhythmbox Music Player"
 msgstr "Изменение настроек музыкального проигрывателя Rhythmbox"
 
 #. (itstool) path: sect1/para
-#: C/index.docbook:1197
+#: C/index.docbook:1199
 msgid ""
 "This section describes how to customize <application>Rhythmbox Music Player</"
 "application> to suit your requirements and preferences."
@@ -2201,12 +2186,12 @@ msgstr ""
 "предпочтениями."
 
 #. (itstool) path: sect2/title
-#: C/index.docbook:1202
+#: C/index.docbook:1204
 msgid "Setting Your Preferences"
 msgstr "Изменение настроек"
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:1203
+#: C/index.docbook:1205
 msgid ""
 "Using the <guilabel>Preferences</guilabel> dialog you can customize how you "
 "want <application>Rhythmbox Music Player</application> to look and behave. "
@@ -2221,12 +2206,12 @@ msgstr ""
 "<guimenuitem>Параметры</guimenuitem>."
 
 #. (itstool) path: sect3/title
-#: C/index.docbook:1210
+#: C/index.docbook:1212
 msgid "General"
 msgstr "Общие"
 
 #. (itstool) path: sect3/para
-#: C/index.docbook:1211
+#: C/index.docbook:1213
 msgid ""
 "Choose the way the <guilabel>Browser View</guilabel> will be displayed. You "
 "can choose to use three or two panes and what the panes should display."
@@ -2236,32 +2221,32 @@ msgstr ""
 "возможность их отображения."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1219
+#: C/index.docbook:1221
 msgid "Library"
 msgstr "Фонотека"
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1220
+#: C/index.docbook:1222
 msgid "Audio CD"
 msgstr "Звуковой компакт-диск"
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1221
+#: C/index.docbook:1223
 msgid "Portable Players"
 msgstr "Портативные проигрыватели"
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1222
+#: C/index.docbook:1224
 msgid "Playlists"
 msgstr "Списки воспроизведений"
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1223
+#: C/index.docbook:1225
 msgid "DAAP Music shares"
 msgstr "DAAP-ресурсы"
 
 #. (itstool) path: sect3/para
-#: C/index.docbook:1214
+#: C/index.docbook:1216
 msgid ""
 "Choose the <guilabel>Visible Columns</guilabel> you want to display in "
 "<application>Rhythmbox Music Player</application>. This option affects the "
@@ -2273,12 +2258,12 @@ msgstr ""
 "следующие источники:<_:itemizedlist-1/>"
 
 #. (itstool) path: sect3/title
-#: C/index.docbook:1228
+#: C/index.docbook:1230
 msgid "Music"
 msgstr "Музыка"
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1231
+#: C/index.docbook:1233
 msgid ""
 "The <guilabel>Library Location</guilabel> is a folder that "
 "<application>Rhythmbox Music Player</application> will monitor to find new "
@@ -2295,7 +2280,7 @@ msgstr ""
 "фонотеку."
 
 #. (itstool) path: warning/para
-#: C/index.docbook:1239
+#: C/index.docbook:1241
 msgid ""
 "Avoid to set your <filename class=\"directory\">Home</filename> folder as "
 "library location because this feature is CPU consuming."
@@ -2305,7 +2290,7 @@ msgstr ""
 "компьютера (ЦПУ)."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1244
+#: C/index.docbook:1246
 msgid ""
 "To disable the watch functionality deselect <guilabel>Watch my library for "
 "new files</guilabel>."
@@ -2314,7 +2299,7 @@ msgstr ""
 "появлением новых файлов в фонотеке</guilabel>."
 
 #. (itstool) path: tip/para
-#: C/index.docbook:1249
+#: C/index.docbook:1251
 msgid ""
 "If you want to add more than one folder to watch, use <application>dconf-"
 "editor</application> and add it to the list at /org/gnome/rhythmbox/"
@@ -2325,12 +2310,12 @@ msgstr ""
 "записи в список /org/gnome/rhythmbox/rhythmboxdb/locations"
 
 #. (itstool) path: sect3/title
-#: C/index.docbook:1258
+#: C/index.docbook:1260
 msgid "Podcasts"
 msgstr "Подкасты"
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1261
+#: C/index.docbook:1263
 msgid ""
 "The <guilabel>Download Location</guilabel> of Podcasts is defined by default "
 "to the <filename class=\"directory\">Podcasts/ </filename> folder in your "
@@ -2341,7 +2326,7 @@ msgstr ""
 "домашнем каталоге."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1266
+#: C/index.docbook:1268
 msgid ""
 "If this location doesn't fit your needs, select another folder in the drop-"
 "down list or choose <guilabel>Other</guilabel> to make the File Selector "
@@ -2351,7 +2336,7 @@ msgstr ""
 "выберите <guilabel>Другой</guilabel>."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1273
+#: C/index.docbook:1275
 msgid ""
 "Choose the frequency that <application>Rhythmbox Music Player</application> "
 "will check for new podcast episodes."
@@ -2360,12 +2345,12 @@ msgstr ""
 "application> будет проверять наличие новых эпизодов подкаст."
 
 #. (itstool) path: sect3/title
-#: C/index.docbook:1281
+#: C/index.docbook:1283
 msgid "Sharing"
 msgstr "Обеспечение общего доступа"
 
 #. (itstool) path: sect3/para
-#: C/index.docbook:1282
+#: C/index.docbook:1284
 msgid ""
 "The <application>Rhythmbox Music Player</application> can share your Library "
 "contents over your Local Area Network, to other <application>Rhythmbox Music "
@@ -2376,7 +2361,7 @@ msgstr ""
 "если те используют <application>Rhythmbox</application> или Apple iTunes."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1287
+#: C/index.docbook:1289
 msgid ""
 "Select <guilabel>Share my music</guilabel> to enable the users of your "
 "network to see and read your songs."
@@ -2385,7 +2370,7 @@ msgstr ""
 "пользователям сети просматривать и слушать ваши песни."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1291
+#: C/index.docbook:1293
 msgid ""
 "Enter the name of you want to appear of the network in the field "
 "<guilabel>Shared music name</guilabel>."
@@ -2394,25 +2379,25 @@ msgstr ""
 "доступным другим пользователям сети."
 
 #. (itstool) path: sect3/title
-#: C/index.docbook:1298
+#: C/index.docbook:1300
 msgid "Last.fm and Libre.fm profiles"
 msgstr "Last.fm и Libre.fm профили"
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1306
+#: C/index.docbook:1308
 msgid "consult statistics, such as most played songs or most played artists."
 msgstr ""
 "получить статистику по наиболее популярным по частоте прослушивания "
 "исполнителям и композициям."
 
 #. (itstool) path: listitem/para
-#: C/index.docbook:1309
+#: C/index.docbook:1311
 msgid "receive recommendations about artists that you might like."
 msgstr ""
 "получить рекомендацию о исполнителях, музыка которых возможно вам понравится."
 
 #. (itstool) path: sect3/para
-#: C/index.docbook:1299
+#: C/index.docbook:1301
 msgid ""
 "The Last.fm profile plugin collects information about the songs you listen "
 "to and sends it to the <ulink url=\"https://www.last.fm/\">Last.fm</ulink> "
@@ -2426,7 +2411,7 @@ msgstr ""
 "модуля вы можете: <_:itemizedlist-1/>"
 
 #. (itstool) path: warning/para
-#: C/index.docbook:1314
+#: C/index.docbook:1316
 msgid ""
 "In order to use one of these plugins, you must have an account on one of "
 "these websites. Press the menu button in the top-right corner of the window "
@@ -2448,114 +2433,114 @@ msgstr ""
 
 #. (itstool) path: sect1/title
 #. (itstool) path: row/entry
-#: C/index.docbook:1327 C/index.docbook:1337 C/index.docbook:1429
-#: C/index.docbook:1513 C/index.docbook:1586
+#: C/index.docbook:1329 C/index.docbook:1339 C/index.docbook:1431
+#: C/index.docbook:1515 C/index.docbook:1588
 msgid "Shortcuts"
 msgstr "Быстрые клавиши"
 
 #. (itstool) path: sect2/title
-#: C/index.docbook:1329
+#: C/index.docbook:1331
 msgid "Keyboard Shortcuts"
 msgstr "Клавиатурные сокращения"
 
 #. (itstool) path: table/title
-#: C/index.docbook:1331
+#: C/index.docbook:1333
 msgid "Player Shortcuts"
 msgstr "Клавиатурные сокращения: проигрыватель"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1338 C/index.docbook:1430 C/index.docbook:1514
-#: C/index.docbook:1587
+#: C/index.docbook:1340 C/index.docbook:1432 C/index.docbook:1516
+#: C/index.docbook:1589
 msgid "Actions"
 msgstr "Действия"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1343
+#: C/index.docbook:1345
 msgid "<keycombo> <keycap>Ctrl</keycap> <keycap>P</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Ctrl</keycap> <keycap>P</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1350
+#: C/index.docbook:1352
 msgid "Play / Pause"
 msgstr "Воспроизведение / Пауза"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1354
+#: C/index.docbook:1356
 msgid "<keycombo> <keycap>Ctrl</keycap> <keycap>Left</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Ctrl</keycap> <keycap>Влево</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1361
+#: C/index.docbook:1363
 msgid "Jump to the Previous Track / Back to the beginning of the track"
 msgstr "Перейти к предыдущей дорожке / вернуться к началу дорожки"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1365
+#: C/index.docbook:1367
 msgid "<keycombo> <keycap>Ctrl</keycap> <keycap>Right</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Ctrl</keycap> <keycap>Вправо</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1372
+#: C/index.docbook:1374
 msgid "Jump to the Next Track"
 msgstr "Перейти к следующей дорожке"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1376
+#: C/index.docbook:1378
 msgid "<keycombo> <keycap>Ctrl</keycap> <keycap>Up</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Ctrl</keycap> <keycap>Вверх</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1383
+#: C/index.docbook:1385
 msgid "Increase playback volume"
 msgstr "Увеличить уровень громкости"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1387
+#: C/index.docbook:1389
 msgid "<keycombo> <keycap>Ctrl</keycap> <keycap>Down</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Ctrl</keycap> <keycap>Вниз</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1394
+#: C/index.docbook:1396
 msgid "Decrease playback volume"
 msgstr "Уменьшить уровень громкости"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1398
+#: C/index.docbook:1400
 msgid "<keycombo> <keycap>Ctrl</keycap> <keycap>R</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Ctrl</keycap> <keycap>R</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1405
+#: C/index.docbook:1407
 msgid "Enable / Disable Repeat play"
 msgstr "Включить / выключить повторное воспроизведение"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1409
+#: C/index.docbook:1411
 msgid "<keycombo> <keycap>Ctrl</keycap> <keycap>U</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Ctrl</keycap> <keycap>U</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1416
+#: C/index.docbook:1418
 msgid "Enable / Disable Shuffle play"
 msgstr "Включить / выключить случайное воспроизведение"
 
 #. (itstool) path: table/title
-#: C/index.docbook:1423
+#: C/index.docbook:1425
 msgid "General Shortcuts"
 msgstr "Клавиатурные сокращения: основные"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1435
+#: C/index.docbook:1437
 msgid "<keycombo> <keycap>Ctrl</keycap> <keycap>A</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Ctrl</keycap> <keycap>A</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1442
+#: C/index.docbook:1444
 msgid "Select All"
 msgstr "Выбрать все"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1446
+#: C/index.docbook:1448
 msgid ""
 "<keycombo> <keycap>Shift</keycap> <keycap>Ctrl</keycap> <keycap>A</keycap> </"
 "keycombo>"
@@ -2564,103 +2549,103 @@ msgstr ""
 "keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1454
+#: C/index.docbook:1456
 msgid "Deselect All"
 msgstr "Снять выделение"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1458
+#: C/index.docbook:1460
 msgid "<keycombo> <keycap>Ctrl</keycap> <keycap>J</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Ctrl</keycap> <keycap>J</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1465
+#: C/index.docbook:1467
 msgid "Jump to playing song"
 msgstr "Перейти к воспроизводимой в данный момент дорожке"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1482
+#: C/index.docbook:1484
 msgid "<keycombo> <keycap>Alt</keycap> <keycap>S</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Alt</keycap> <keycap>S</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1489
+#: C/index.docbook:1491
 msgid "Jump to search field"
 msgstr "Перейти к полю поиска"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1493
+#: C/index.docbook:1495
 msgid "<keycombo> <keycap>Alt</keycap> <keycap>Return</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Alt</keycap> <keycap>Return</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1500
+#: C/index.docbook:1502
 msgid "Display the Track Properties"
 msgstr "Показать свойства дорожки"
 
 #. (itstool) path: table/title
-#: C/index.docbook:1507 C/index.docbook:1580 C/index.docbook:1633
+#: C/index.docbook:1509 C/index.docbook:1582 C/index.docbook:1635
 msgid "Window Shortcuts"
 msgstr "Окно клавиатурных сокращений"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1519
+#: C/index.docbook:1521
 msgid "<keycombo> <keycap>Ctrl</keycap> <keycap>Q</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Ctrl</keycap> <keycap>Q</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1526
+#: C/index.docbook:1528
 msgid "Quit the <application>Rhythmbox Music Player</application>"
 msgstr ""
 "Выйти из <application>музыкального проигрывателя Rhythmbox</application>"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1530
+#: C/index.docbook:1532
 msgid "<keycombo> <keycap>Ctrl</keycap> <keycap>B</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Ctrl</keycap> <keycap>B</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1537
+#: C/index.docbook:1539
 msgid "Show / Hide the browser"
 msgstr "Показать / скрыть браузер"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1541
+#: C/index.docbook:1543
 msgid "<keycombo> <keycap>F9</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>F9</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1547
+#: C/index.docbook:1549
 msgid "Show / Hide the side pane"
 msgstr "Показать / скрыть боковую панель"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1551
+#: C/index.docbook:1553
 msgid "<keycombo> <keycap>Ctrl</keycap> <keycap>K</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>Ctrl</keycap> <keycap>K</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1558
+#: C/index.docbook:1560
 msgid "Show / Hide the Queue Sidebar"
 msgstr "Показать / скрыть очередь в боковой панели"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1562
+#: C/index.docbook:1564
 msgid "<keycombo> <keycap>F11</keycap> </keycombo>"
 msgstr "<keycombo> <keycap>F11</keycap> </keycombo>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1568
+#: C/index.docbook:1570
 msgid "Toggle / Untoggle the Full Screen mode"
 msgstr "Включить / выключить полноэкранный режим"
 
 #. (itstool) path: sect2/title
-#: C/index.docbook:1576
+#: C/index.docbook:1578
 msgid "Multimedia Keys"
 msgstr "Мультимедийные клавиши"
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:1577
+#: C/index.docbook:1579
 msgid ""
 "<application>Rhythmbox Music Player</application> supports the keys on "
 "multimedia keyboards, if configured in your desktop environment."
@@ -2670,52 +2655,52 @@ msgstr ""
 "среде рабочего стола."
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1592
+#: C/index.docbook:1594
 msgid "<keycap>Stop</keycap>"
 msgstr "<keycap>Stop</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1596
+#: C/index.docbook:1598
 msgid "Stop"
 msgstr "Стоп"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1600
+#: C/index.docbook:1602
 msgid "<keycap>Pause / Play</keycap>"
 msgstr "<keycap>Pause / Play</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1604
+#: C/index.docbook:1606
 msgid "Pause / Play"
 msgstr "Пауза / Воспроизведение"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1608
+#: C/index.docbook:1610
 msgid "<keycap>Prev</keycap>"
 msgstr "<keycap>Prev</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1612
+#: C/index.docbook:1614
 msgid "Previous Played Track"
 msgstr "Предыдущая дорожка"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1616
+#: C/index.docbook:1618
 msgid "<keycap>Next</keycap>"
 msgstr "<keycap>Next</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1620
+#: C/index.docbook:1622
 msgid "Next Track"
 msgstr "Следующая дорожка"
 
 #. (itstool) path: sect2/title
-#: C/index.docbook:1628
+#: C/index.docbook:1630
 msgid "Linux Infrared Remote Control"
 msgstr "Пульт инфракрасного дистанционного управления Linux"
 
 #. (itstool) path: sect2/para
-#: C/index.docbook:1629
+#: C/index.docbook:1631
 msgid ""
 "The <application>Rhythmbox Music Player</application> includes a plugin for "
 "Linux Infrared Remote Control (LIRC) support. The following command strings "
@@ -2727,132 +2712,132 @@ msgstr ""
 "программы «rhythmbox»:"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1639
+#: C/index.docbook:1641
 msgid "Command string"
 msgstr "Командная строка"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1640
+#: C/index.docbook:1642
 msgid "Action"
 msgstr "Действие"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1645
+#: C/index.docbook:1647
 msgid "<keycap>play</keycap>"
 msgstr "<keycap>play</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1646
+#: C/index.docbook:1648
 msgid "Start playback"
 msgstr "Начать воспроизведение"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1649
+#: C/index.docbook:1651
 msgid "<keycap>pause</keycap>"
 msgstr "<keycap>pause</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1650
+#: C/index.docbook:1652
 msgid "Pause playback"
 msgstr "Приостановить воспроизведение"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1653
+#: C/index.docbook:1655
 msgid "<keycap>playpause</keycap>"
 msgstr "<keycap>playpause</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1654
+#: C/index.docbook:1656
 msgid "Toggle between playing and paused"
 msgstr "Переключение между воспроизведением и приостановкой"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1657
+#: C/index.docbook:1659
 msgid "<keycap>shuffle</keycap>"
 msgstr "<keycap>shuffle</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1658
+#: C/index.docbook:1660
 msgid "Toggle the shuffle play order"
 msgstr "Включить / выключить режим случайного воспроизведения"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1661
+#: C/index.docbook:1663
 msgid "<keycap>repeat</keycap>"
 msgstr "<keycap>repeat</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1662
+#: C/index.docbook:1664
 msgid "Toggle the repeat play order"
 msgstr "Включить / выключить режим повторного воспроизведения"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1665
+#: C/index.docbook:1667
 msgid "<keycap>next</keycap>"
 msgstr "<keycap>next</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1666
+#: C/index.docbook:1668
 msgid "Skip to the next track"
 msgstr "Перейти к следующей дорожке"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1669
+#: C/index.docbook:1671
 msgid "<keycap>previous</keycap>"
 msgstr "<keycap>previous</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1670
+#: C/index.docbook:1672
 msgid "Skip to the previous track"
 msgstr "Перейти к предыдущей дорожке"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1673
+#: C/index.docbook:1675
 msgid "<keycap>seek_forward</keycap>"
 msgstr "<keycap>seek_forward</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1674
+#: C/index.docbook:1676
 msgid "Skip 10 seconds forward in the playing track"
 msgstr "Промотать на 10 секунд вперёд воспроизводимую дорожку"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1677
+#: C/index.docbook:1679
 msgid "<keycap>seek_backward</keycap>"
 msgstr "<keycap>seek_backward</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1678
+#: C/index.docbook:1680
 msgid "Skip 10 seconds backward in the playing track"
 msgstr "Промотать на 10 секунд назад воспроизводимую дорожку"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1681
+#: C/index.docbook:1683
 msgid "<keycap>volume_up</keycap>"
 msgstr "<keycap>volume_up</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1682
+#: C/index.docbook:1684
 msgid "Increase the playback volume by 10%"
 msgstr "Увеличить уровень громкости на 10%"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1685
+#: C/index.docbook:1687
 msgid "<keycap>volume_down</keycap>"
 msgstr "<keycap>volume_down</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1686
+#: C/index.docbook:1688
 msgid "Decrease the playback volume by 10%"
 msgstr "Уменьшить уровень громкости на 10%"
 
 #. (itstool) path: row/entry
-#: C/index.docbook:1689
+#: C/index.docbook:1691
 msgid "<keycap>mute</keycap>"
 msgstr "<keycap>mute</keycap>"
 
 #. (itstool) path: entry/para
-#: C/index.docbook:1690
+#: C/index.docbook:1692
 msgid "Mute the playback"
 msgstr "Приглушить громкость воспроизведения"
 
