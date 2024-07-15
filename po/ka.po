@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-02-08 15:58+0000\n"
-"PO-Revision-Date: 2024-02-09 19:05+0100\n"
+"POT-Creation-Date: 2024-07-01 19:02+0000\n"
+"PO-Revision-Date: 2024-07-15 05:58+0200\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: \n"
 "Language: ka\n"
@@ -104,7 +104,7 @@ msgstr ""
 #: data/org.gnome.Rhythmbox3.appdata.xml.in:8
 #: data/org.gnome.Rhythmbox3.desktop.in:3
 #: data/org.gnome.Rhythmbox3.device.desktop.in:3 shell/main.c:73
-#: shell/rb-shell.c:501 shell/rb-shell.c:2352
+#: shell/rb-shell.c:501 shell/rb-shell.c:2343
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -112,11 +112,12 @@ msgstr "Rhythmbox"
 msgid "Play and organize all your music"
 msgstr "დაუკარით და დააორგანიზეთ თქვენი მუსიკა"
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:10
+#. developer_name tag deprecated with Appstream 1.0
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:11
 msgid "The Rhythmbox developers"
 msgstr ""
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:12
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:16
 msgid ""
 "Rhythmbox is a music management application, designed to work well under the "
 "GNOME desktop. In addition to music stored on your computer, it supports "
@@ -124,13 +125,13 @@ msgid ""
 "phones), and internet music services such as Last.fm and Magnatune."
 msgstr ""
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:18
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:22
 msgid ""
 "Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
 "via plugins written in Python or C."
 msgstr ""
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:30
+#: data/org.gnome.Rhythmbox3.appdata.xml.in:36
 msgid "Main Window"
 msgstr "მთავარი ფანჯარა"
 
@@ -159,7 +160,7 @@ msgstr "ხ_ედი"
 
 #: data/ui/app-menu.ui:9
 msgid "Side Pane"
-msgstr ""
+msgstr "გვერდითი პანელი"
 
 #: data/ui/app-menu.ui:14
 msgid "Play Queue in Side Pane"
@@ -199,7 +200,8 @@ msgid "Add to Queue"
 msgstr "რიგში ჩამატება"
 
 #: data/ui/browser-popup.ui:10 data/ui/edit-menu.ui:39
-#: data/ui/playlist-popup.ui:10
+#: data/ui/playlist-popup.ui:10 data/ui/queue-popups.ui:6
+#: data/ui/queue-popups.ui:35
 msgid "Add to Playlist"
 msgstr "დასაკრავი სიაში დამატება"
 
@@ -232,8 +234,8 @@ msgid "Browse this Album"
 msgstr ""
 
 #: data/ui/browser-popup.ui:52 data/ui/edit-menu.ui:45
-#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:23
-#: data/ui/queue-popups.ui:52 plugins/magnatune/magnatune-popup.ui:34
+#: data/ui/playlist-popup.ui:52 data/ui/queue-popups.ui:27
+#: data/ui/queue-popups.ui:60 plugins/magnatune/magnatune-popup.ui:34
 msgid "Pr_operties"
 msgstr ""
 
@@ -375,7 +377,7 @@ msgstr ""
 
 #: data/ui/general-prefs.ui:361
 msgid "Ti_me"
-msgstr ""
+msgstr "_დრო"
 
 #: data/ui/general-prefs.ui:378
 msgid "_Rating"
@@ -566,8 +568,8 @@ msgstr ""
 msgid "_Shuffle Playlist"
 msgstr ""
 
-#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:14
-#: data/ui/queue-popups.ui:43
+#: data/ui/playlist-menu.ui:26 data/ui/queue-popups.ui:18
+#: data/ui/queue-popups.ui:51
 msgid "_Save to File..."
 msgstr ""
 
@@ -580,8 +582,8 @@ msgid "Save Playlist"
 msgstr "დასაკრავი სიის შენახვა"
 
 #: data/ui/playlist-save.ui:38 plugins/artsearch/songinfo.py:135
-#: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:536
-#: podcast/rb-podcast-source.c:1110 shell/rb-track-transfer-queue.c:187
+#: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:537
+#: podcast/rb-podcast-source.c:1124 shell/rb-track-transfer-queue.c:187
 #: widgets/rb-alert-dialog.c:384 widgets/rb-alert-dialog.c:401
 #: widgets/rb-dialog.c:131 widgets/rb-dialog.c:139
 #: widgets/rb-query-creator.c:191 widgets/rb-uri-dialog.c:158
@@ -658,7 +660,7 @@ msgstr ""
 
 #: data/ui/podcast-popups.ui:10
 msgid "Update All Feeds"
-msgstr ""
+msgstr "ყველა ლენტის განახლება"
 
 #: data/ui/podcast-popups.ui:16
 msgid "Update Podcast Feed"
@@ -685,7 +687,7 @@ msgid "Cancel Download"
 msgstr "გადმოწერის გაუქმება"
 
 #: data/ui/podcast-popups.ui:45 plugins/fmradio/fmradio-popup.ui:6
-#: podcast/rb-podcast-source.c:1262 sources/rb-media-player-source.c:1104
+#: podcast/rb-podcast-source.c:1280 sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "წაშლა"
 
@@ -765,19 +767,19 @@ msgstr "დამატება"
 msgid "Update"
 msgstr "განახლება"
 
-#: data/ui/queue-popups.ui:6 data/ui/queue-popups.ui:31
+#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
 msgid "Remove from Play Queue"
 msgstr ""
 
-#: data/ui/queue-popups.ui:10 data/ui/queue-popups.ui:39
+#: data/ui/queue-popups.ui:14 data/ui/queue-popups.ui:47
 msgid "Shuffle Play Queue"
 msgstr ""
 
-#: data/ui/queue-popups.ui:35
+#: data/ui/queue-popups.ui:43
 msgid "Clear Play Queue"
 msgstr ""
 
-#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3291
+#: data/ui/queue-toolbar.ui:11 shell/rb-shell-player.c:3295
 msgid "Shuffle"
 msgstr "შემთხვევით"
 
@@ -957,16 +959,16 @@ msgstr "%b %d %Y"
 #: plugins/daap/rb-rhythmdb-dmap-db-adapter.c:130
 #: plugins/generic-player/rb-generic-player-source.c:1031
 #: plugins/ipod/rb-ipod-source.c:651 plugins/iradio/rb-iradio-source.c:525
-#: plugins/iradio/rb-iradio-source.c:1044
+#: plugins/iradio/rb-iradio-source.c:1030
 #: plugins/iradio/rb-station-properties-dialog.c:485
 #: plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
 #: plugins/mtpdevice/rb-mtp-source.c:650 plugins/mtpdevice/rb-mtp-source.c:1140
 #: plugins/mtpdevice/rb-mtp-source.c:1471
-#: plugins/notification/rb-notification-plugin.c:508
+#: plugins/notification/rb-notification-plugin.c:509
 #: podcast/rb-feed-podcast-properties-dialog.c:335
-#: podcast/rb-podcast-add-dialog.c:646 podcast/rb-podcast-manager.c:1307
-#: podcast/rb-podcast-manager.c:1421 podcast/rb-podcast-properties-dialog.c:636
-#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:796
+#: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1326
+#: podcast/rb-podcast-manager.c:1440 podcast/rb-podcast-properties-dialog.c:636
+#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:797
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
 #: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
 #: rhythmdb/rhythmdb.c:2150 rhythmdb/rhythmdb.c:5616 rhythmdb/rhythmdb.c:5622
@@ -974,8 +976,8 @@ msgstr "%b %d %Y"
 #: rhythmdb/rhythmdb-entry-type.c:301 rhythmdb/rhythmdb-metadata-cache.c:308
 #: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
 #: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
-#: shell/rb-shell-player.c:869 shell/rb-shell-player.c:2714
-#: shell/rb-shell-player.c:2716 widgets/rb-entry-view.c:996
+#: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
+#: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
 #: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
 #: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
 #: widgets/rb-header.c:1279 widgets/rb-header.c:1305 widgets/rb-song-info.c:950
@@ -984,23 +986,23 @@ msgstr "%b %d %Y"
 msgid "Unknown"
 msgstr "უცნობი"
 
-#: lib/rb-file-helpers.c:457
+#: lib/rb-file-helpers.c:458
 #, c-format
 msgid "Too many symlinks"
 msgstr ""
 
-#: lib/rb-file-helpers.c:1292
+#: lib/rb-file-helpers.c:1293
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr ""
 
-#: lib/rb-util.c:562 plugins/context/tmpl/album-tmpl.html:21
+#: lib/rb-util.c:562 plugins/context/tmpl/album-tmpl.html:23
 #: remote/dbus/rb-client.c:220
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: lib/rb-util.c:564 plugins/context/tmpl/album-tmpl.html:19
+#: lib/rb-util.c:564 plugins/context/tmpl/album-tmpl.html:21
 #: remote/dbus/rb-client.c:222
 #, c-format
 msgid "%d:%02d:%02d"
@@ -1118,8 +1120,8 @@ msgstr ""
 
 #: plugins/android/rb-android-source.c:201
 msgid ""
-"No storage areas found on this device. You may need to unlock it and enable "
-"MTP."
+"No storage areas found on this device. You may need to unlock it and change "
+"it to File Transfer mode."
 msgstr ""
 
 #: plugins/android/rb-android-source.c:403
@@ -1142,7 +1144,7 @@ msgstr ""
 
 #: plugins/artsearch/songinfo.py:56
 msgid "_Fetch"
-msgstr ""
+msgstr "_გამოთხოვა"
 
 #: plugins/artsearch/songinfo.py:60
 msgid "_Browse"
@@ -1651,24 +1653,24 @@ msgstr ""
 msgid "Duplicate Audio CD..."
 msgstr ""
 
-#: plugins/context/AlbumTab.py:57
+#: plugins/context/AlbumTab.py:56
 #: plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2395
 msgid "Albums"
 msgstr "ალბომები"
 
 #. Translators: 'top' here means 'most popular'.  %s is replaced by the artist name.
-#: plugins/context/AlbumTab.py:120
+#: plugins/context/AlbumTab.py:119
 #, python-format
 msgid "Loading top albums for %s"
 msgstr ""
 
-#: plugins/context/ArtistTab.py:59 plugins/magnatune/magnatune-toolbar.ui:20
+#: plugins/context/ArtistTab.py:58 plugins/magnatune/magnatune-toolbar.ui:20
 #: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1457
 #: widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "შემსრულებელი"
 
-#: plugins/context/ArtistTab.py:119
+#: plugins/context/ArtistTab.py:118
 #, python-format
 msgid "Loading biography for %s"
 msgstr ""
@@ -1688,61 +1690,61 @@ msgid ""
 "plugin is enabled, select Last.fm in the side pane, and log in."
 msgstr ""
 
-#: plugins/context/LinksTab.py:55
+#: plugins/context/LinksTab.py:54
 msgid "Links"
 msgstr "ბმულები"
 
-#: plugins/context/LinksTab.py:183
+#: plugins/context/LinksTab.py:182
 msgid "No artist specified."
 msgstr ""
 
-#: plugins/context/LyricsTab.py:53 plugins/lyrics/lyrics.py:306
+#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:306
 #: plugins/lyrics/lyrics.py:391
 msgid "Lyrics"
 msgstr "ლირიკა"
 
-#: plugins/context/LyricsTab.py:104
+#: plugins/context/LyricsTab.py:105
 #, python-format
 msgid "Loading lyrics for %s by %s"
 msgstr ""
 
-#: plugins/context/LyricsTab.py:120
+#: plugins/context/LyricsTab.py:121
 msgid "Lyrics not found"
 msgstr ""
 
-#: plugins/context/tmpl/album-tmpl.html:46
+#: plugins/context/tmpl/album-tmpl.html:48
 msgid "Hide all tracks"
 msgstr ""
 
-#: plugins/context/tmpl/album-tmpl.html:47
-#: plugins/context/tmpl/album-tmpl.html:80
+#: plugins/context/tmpl/album-tmpl.html:49
+#: plugins/context/tmpl/album-tmpl.html:82
 msgid "Show all tracks"
 msgstr ""
 
-#: plugins/context/tmpl/album-tmpl.html:57
+#: plugins/context/tmpl/album-tmpl.html:59
 #, c-format
 msgid "Top albums by %s"
 msgstr ""
 
-#: plugins/context/tmpl/album-tmpl.html:74
+#: plugins/context/tmpl/album-tmpl.html:76
 #, c-format
 msgid "%s (%d track)"
 msgid_plural "%s (%d tracks)"
 msgstr[0] ""
 
-#: plugins/context/tmpl/album-tmpl.html:93
+#: plugins/context/tmpl/album-tmpl.html:95
 msgid "Track list not available"
 msgstr ""
 
-#: plugins/context/tmpl/album-tmpl.html:99
+#: plugins/context/tmpl/album-tmpl.html:101
 msgid "Unable to retrieve album information:"
 msgstr ""
 
-#: plugins/context/tmpl/artist-tmpl.html:9
+#: plugins/context/tmpl/artist-tmpl.html:8
 msgid "No information available"
 msgstr "ინფორმაცია ხელმიუწვდომელია"
 
-#: plugins/context/tmpl/artist-tmpl.html:29
+#: plugins/context/tmpl/artist-tmpl.html:28
 msgid "Unable to retrieve artist information:"
 msgstr ""
 
@@ -1988,7 +1990,7 @@ msgstr ""
 
 #: plugins/ipod/ipod-info.ui:148
 msgid "Device node:"
-msgstr ""
+msgstr "მოწყობილობის კვანძი:"
 
 #: plugins/ipod/ipod-info.ui:161
 msgid "Mount point:"
@@ -2062,7 +2064,7 @@ msgid "Support for broadcasting services transmitted via the Internet"
 msgstr ""
 
 #: plugins/iradio/iradio-popup.ui:6 shell/rb-shell-clipboard.c:258
-#: sources/rb-source.c:1204 widgets/rb-query-creator.c:802
+#: sources/rb-source.c:1206 widgets/rb-query-creator.c:802
 msgid "Remove"
 msgstr "წაშლა"
 
@@ -2089,7 +2091,7 @@ msgstr[0] ""
 #: plugins/iradio/rb-iradio-source.c:958
 #: plugins/iradio/rb-station-properties-dialog.c:399
 msgid "New Internet Radio Station"
-msgstr ""
+msgstr "ახალი ინტერნეტრადიოსადგური"
 
 #: plugins/iradio/rb-iradio-source.c:958
 msgid "URL of internet radio station:"
@@ -2121,7 +2123,7 @@ msgstr ""
 
 #: plugins/iradio/station-properties.ui:148
 msgid "L_ocation:"
-msgstr ""
+msgstr "მდებარე_ობა:"
 
 #: plugins/lirc/rblirc.plugin.desktop.in:5
 msgid "LIRC"
@@ -2561,35 +2563,35 @@ msgstr "გაფრთხილება"
 msgid "Notification popups"
 msgstr ""
 
-#: plugins/notification/rb-notification-plugin.c:221
+#: plugins/notification/rb-notification-plugin.c:222
 msgid "Previous"
 msgstr "წინა"
 
-#: plugins/notification/rb-notification-plugin.c:227
+#: plugins/notification/rb-notification-plugin.c:228
 msgid "Pause"
 msgstr "შეჩერება"
 
-#: plugins/notification/rb-notification-plugin.c:227
+#: plugins/notification/rb-notification-plugin.c:228
 msgid "Play"
 msgstr "დაკვრა"
 
-#: plugins/notification/rb-notification-plugin.c:236
+#: plugins/notification/rb-notification-plugin.c:237
 msgid "Next"
 msgstr "შემდეგი"
 
 #. Translators: by Artist
-#: plugins/notification/rb-notification-plugin.c:330
+#: plugins/notification/rb-notification-plugin.c:331
 #, c-format
 msgid "by <i>%s</i>"
 msgstr ""
 
 #. Translators: from Album
-#: plugins/notification/rb-notification-plugin.c:332
+#: plugins/notification/rb-notification-plugin.c:333
 #, c-format
 msgid "from <i>%s</i>"
 msgstr ""
 
-#: plugins/notification/rb-notification-plugin.c:412 widgets/rb-header.c:367
+#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:367
 msgid "Not Playing"
 msgstr "არ უკრავს"
 
@@ -2731,8 +2733,8 @@ msgid "Listening port:"
 msgstr "ვუსმენ პორტს:"
 
 #: plugins/webremote/webremote-config.ui:46
-msgid "Access key:"
-msgstr ""
+msgid "Passphrase:"
+msgstr "საკვანძო ფრაზა:"
 
 #: plugins/webremote/webremote-config.ui:79
 msgid "0"
@@ -2750,35 +2752,35 @@ msgstr ""
 msgid "Launch web remote control"
 msgstr ""
 
-#: podcast/rb-podcast-add-dialog.c:278 podcast/rb-podcast-source.c:737
+#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:738
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
 msgstr[0] ""
 
-#: podcast/rb-podcast-add-dialog.c:337
+#: podcast/rb-podcast-add-dialog.c:339
 msgid "Unable to load the feed. Check your network connection."
 msgstr ""
 
-#: podcast/rb-podcast-add-dialog.c:461
+#: podcast/rb-podcast-add-dialog.c:463
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr ""
 
-#: podcast/rb-podcast-add-dialog.c:786 sources/rb-library-source.c:134
+#: podcast/rb-podcast-add-dialog.c:794 sources/rb-library-source.c:134
 #: widgets/rb-entry-view.c:1447
 msgid "Title"
 msgstr "სათაური"
 
-#: podcast/rb-podcast-add-dialog.c:797
+#: podcast/rb-podcast-add-dialog.c:805
 msgid "Author"
 msgstr "ავტორი"
 
-#: podcast/rb-podcast-add-dialog.c:802 podcast/rb-podcast-add-dialog.c:805
+#: podcast/rb-podcast-add-dialog.c:810 podcast/rb-podcast-add-dialog.c:813
 msgid "Episodes"
 msgstr "ეპიზოდები"
 
-#: podcast/rb-podcast-add-dialog.c:839 podcast/rb-podcast-add-dialog.c:850
-#: podcast/rb-podcast-source.c:1382 podcast/rb-podcast-source.c:1393
+#: podcast/rb-podcast-add-dialog.c:847 podcast/rb-podcast-add-dialog.c:858
+#: podcast/rb-podcast-source.c:1400 podcast/rb-podcast-source.c:1411
 msgid "Date"
 msgstr "თარიღი"
 
@@ -2840,16 +2842,16 @@ msgid ""
 "podcast feed, please remove the radio station."
 msgstr ""
 
-#: podcast/rb-podcast-manager.c:940
+#: podcast/rb-podcast-manager.c:942
 msgid "Podcast"
 msgstr "პოდკასტი"
 
-#: podcast/rb-podcast-parse.c:197
+#: podcast/rb-podcast-parse.c:203
 #, c-format
 msgid "Unable to parse the feed contents"
 msgstr ""
 
-#: podcast/rb-podcast-parse.c:212
+#: podcast/rb-podcast-parse.c:218
 #, c-format
 msgid "The feed does not contain any downloadable items"
 msgstr ""
@@ -2858,87 +2860,92 @@ msgstr ""
 msgid "Not Downloaded"
 msgstr ""
 
-#: podcast/rb-podcast-source.c:523
+#: podcast/rb-podcast-source.c:524
 msgid "Delete the podcast feed and downloaded files?"
 msgstr ""
 
-#: podcast/rb-podcast-source.c:526
+#: podcast/rb-podcast-source.c:527
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
 "choosing to delete the feed only."
 msgstr ""
 
-#: podcast/rb-podcast-source.c:534
+#: podcast/rb-podcast-source.c:535
 msgid "Delete _Feed Only"
 msgstr ""
 
-#: podcast/rb-podcast-source.c:541
+#: podcast/rb-podcast-source.c:542
 msgid "_Delete Feed And Files"
 msgstr ""
 
-#: podcast/rb-podcast-source.c:622 podcast/rb-podcast-source.c:1436
+#: podcast/rb-podcast-source.c:623 podcast/rb-podcast-source.c:1454
 msgid "Downloaded"
 msgstr "გადმოწერილია"
 
-#: podcast/rb-podcast-source.c:626 podcast/rb-podcast-source.c:1438
+#: podcast/rb-podcast-source.c:627 podcast/rb-podcast-source.c:1456
 msgid "Failed"
 msgstr "შეცდომა"
 
-#: podcast/rb-podcast-source.c:630 podcast/rb-podcast-source.c:1437
+#: podcast/rb-podcast-source.c:631 podcast/rb-podcast-source.c:1455
 msgid "Waiting"
 msgstr "მოლოდინი"
 
-#: podcast/rb-podcast-source.c:966
+#: podcast/rb-podcast-source.c:967
 msgid "Podcast Error"
 msgstr ""
 
-#: podcast/rb-podcast-source.c:1097
+#: podcast/rb-podcast-source.c:1111
 msgid "Delete the podcast episode and downloaded file?"
 msgstr ""
 
-#: podcast/rb-podcast-source.c:1100
+#: podcast/rb-podcast-source.c:1114
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
-"file by choosing to delete the episode only."
+"file by choosing to delete the episode only, or delete the downloaded file "
+"but keep the episode by choosing to delete the file only."
 msgstr ""
 
-#: podcast/rb-podcast-source.c:1108
+#: podcast/rb-podcast-source.c:1126
 msgid "Delete _Episode Only"
 msgstr ""
 
-#: podcast/rb-podcast-source.c:1114
+#: podcast/rb-podcast-source.c:1128
+msgid "Delete _File Only"
+msgstr ""
+
+#: podcast/rb-podcast-source.c:1132
 msgid "_Delete Episode And File"
 msgstr ""
 
-#: podcast/rb-podcast-source.c:1220
+#: podcast/rb-podcast-source.c:1238
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] ""
 
-#: podcast/rb-podcast-source.c:1415 podcast/rb-podcast-source.c:1470
-#: podcast/rb-podcast-source.c:1509
+#: podcast/rb-podcast-source.c:1433 podcast/rb-podcast-source.c:1488
+#: podcast/rb-podcast-source.c:1527
 msgid "Feed"
 msgstr "ლენტა"
 
-#: podcast/rb-podcast-source.c:1435 podcast/rb-podcast-source.c:1453
+#: podcast/rb-podcast-source.c:1453 podcast/rb-podcast-source.c:1471
 msgid "Status"
 msgstr "სტატუსი"
 
 #. ensure search instances exist
-#: podcast/rb-podcast-source.c:1555 sources/rb-auto-playlist-source.c:253
+#: podcast/rb-podcast-source.c:1573 sources/rb-auto-playlist-source.c:253
 #: sources/rb-browser-source.c:314 sources/rb-browser-source.c:332
 #: sources/rb-static-playlist-source.c:296
 msgid "Search all fields"
 msgstr ""
 
-#: podcast/rb-podcast-source.c:1556
+#: podcast/rb-podcast-source.c:1574
 msgid "Search podcast feeds"
 msgstr ""
 
-#: podcast/rb-podcast-source.c:1557
+#: podcast/rb-podcast-source.c:1575
 msgid "Search podcast episodes"
 msgstr ""
 
@@ -2986,7 +2993,7 @@ msgstr ""
 msgid "Toggle play/pause mode"
 msgstr ""
 
-#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2258
+#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2249
 msgid "Stop playback"
 msgstr "დაკვრის გაჩერება"
 
@@ -3134,7 +3141,6 @@ msgstr ""
 
 #. Translators: %te is replaced with elapsed time, %td is replaced with track duration
 #: remote/dbus/rb-client.c:767
-#, c-format
 msgid "[%te of %td]"
 msgstr ""
 
@@ -3255,11 +3261,11 @@ msgstr "%s, %s და %s"
 msgid "%s and %s"
 msgstr "%s და %s"
 
-#: rhythmdb/rhythmdb-import-job.c:704
+#: rhythmdb/rhythmdb-import-job.c:705
 msgid "Scanning"
 msgstr "სკანირება"
 
-#: rhythmdb/rhythmdb-import-job.c:707 shell/rb-track-transfer-batch.c:984
+#: rhythmdb/rhythmdb-import-job.c:708 shell/rb-track-transfer-batch.c:984
 #, c-format
 msgid "%d of %d"
 msgstr "%d-დან %d"
@@ -3458,45 +3464,45 @@ msgstr ""
 msgid "Playlist %s is an automatic playlist"
 msgstr ""
 
-#: shell/rb-shell.c:2051
+#: shell/rb-shell.c:2042
 msgid "Error while saving song information"
 msgstr ""
 
-#: shell/rb-shell.c:2255
+#: shell/rb-shell.c:2246
 msgid "Pause playback"
 msgstr "დაკვრის შეჩერება"
 
-#: shell/rb-shell.c:2262
+#: shell/rb-shell.c:2253
 msgid "Start playback"
 msgstr ""
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:2372
+#: shell/rb-shell.c:2363
 #, c-format
 msgid "%s (Paused)"
 msgstr ""
 
-#: shell/rb-shell.c:2714 sources/rb-play-queue-source.c:664
+#: shell/rb-shell.c:2705 sources/rb-play-queue-source.c:673
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr ""
 
-#: shell/rb-shell.c:3038
+#: shell/rb-shell.c:3029
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr ""
 
-#: shell/rb-shell.c:3071 shell/rb-shell.c:3114
+#: shell/rb-shell.c:3062 shell/rb-shell.c:3105
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr ""
 
-#: shell/rb-shell.c:3123
+#: shell/rb-shell.c:3114
 #, c-format
 msgid "Unknown property %s"
 msgstr ""
 
-#: shell/rb-shell.c:3137
+#: shell/rb-shell.c:3128
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr ""
@@ -3514,68 +3520,73 @@ msgstr ""
 msgid "Playlist was empty"
 msgstr ""
 
-#: shell/rb-shell-player.c:1109
+#: shell/rb-shell-player.c:731
+#, c-format
+msgid "This item is not playable"
+msgstr ""
+
+#: shell/rb-shell-player.c:1113
 #, c-format
 msgid "Not currently playing"
 msgstr ""
 
-#: shell/rb-shell-player.c:1166
+#: shell/rb-shell-player.c:1170
 #, c-format
 msgid "No previous song"
 msgstr ""
 
-#: shell/rb-shell-player.c:1265
+#: shell/rb-shell-player.c:1269
 #, c-format
 msgid "No next song"
 msgstr ""
 
-#: shell/rb-shell-player.c:2124
+#: shell/rb-shell-player.c:2128
 msgid "Couldn't stop playback"
 msgstr ""
 
-#: shell/rb-shell-player.c:2243
+#: shell/rb-shell-player.c:2247
 #, c-format
 msgid "Playback position not available"
 msgstr ""
 
-#: shell/rb-shell-player.c:2275 shell/rb-shell-player.c:2309
+#: shell/rb-shell-player.c:2279 shell/rb-shell-player.c:2313
 #, c-format
 msgid "Current song is not seekable"
 msgstr ""
 
-#: shell/rb-shell-player.c:2465 shell/rb-shell-player.c:2776
+#: shell/rb-shell-player.c:2469 shell/rb-shell-player.c:2780
 msgid "Couldn't start playback"
 msgstr ""
 
-#: shell/rb-shell-player.c:3287
+#: shell/rb-shell-player.c:3291
 msgid "Linear"
 msgstr "ხაზოვანი"
 
-#: shell/rb-shell-player.c:3289
+#: shell/rb-shell-player.c:3293
 msgid "Linear looping"
 msgstr ""
 
-#: shell/rb-shell-player.c:3293
+#: shell/rb-shell-player.c:3297
 msgid "Random with equal weights"
 msgstr ""
 
-#: shell/rb-shell-player.c:3295
+#: shell/rb-shell-player.c:3299
 msgid "Random by time since last play"
 msgstr ""
 
-#: shell/rb-shell-player.c:3297
+#: shell/rb-shell-player.c:3301
 msgid "Random by rating"
 msgstr ""
 
-#: shell/rb-shell-player.c:3299
+#: shell/rb-shell-player.c:3303
 msgid "Random by time since last play and rating"
 msgstr ""
 
-#: shell/rb-shell-player.c:3301
+#: shell/rb-shell-player.c:3305
 msgid "Linear, removing entries once played"
 msgstr ""
 
-#: shell/rb-shell-player.c:3311
+#: shell/rb-shell-player.c:3315
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr ""
@@ -3739,7 +3750,7 @@ msgstr ""
 
 #: sources/rb-library-source.c:122
 msgid "Artist/Album"
-msgstr ""
+msgstr "შემსრულებელი/ალბომი"
 
 #: sources/rb-library-source.c:123
 msgid "Artist - Album"
@@ -3844,21 +3855,21 @@ msgstr[0] ""
 msgid "Remove from Playlist"
 msgstr "დასაკრავი სიიდან წაშლა"
 
-#: sources/rb-play-queue-source.c:297 sources/rb-play-queue-source.c:399
-#: sources/rb-play-queue-source.c:508
+#: sources/rb-play-queue-source.c:299 sources/rb-play-queue-source.c:401
+#: sources/rb-play-queue-source.c:517
 msgid "Play Queue"
 msgstr "დაკვრის რიგი"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:929
+#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:929
 msgid "by"
 msgstr ""
 
-#: sources/rb-play-queue-source.c:478 widgets/rb-header.c:930
+#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:930
 msgid "from"
 msgstr "-დან"
 
-#: sources/rb-source.c:604 widgets/rb-import-dialog.c:480
+#: sources/rb-source.c:606 widgets/rb-import-dialog.c:480
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
@@ -3947,7 +3958,7 @@ msgstr ""
 
 #: widgets/rb-encoding-settings.c:404
 msgid "Default settings"
-msgstr ""
+msgstr "ნაგულისხმევი პარამეტრები"
 
 #: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1539
 #: widgets/rb-song-info.c:1232
@@ -4400,11 +4411,11 @@ msgstr "დღე"
 msgid "weeks"
 msgstr "კვირა"
 
-#: widgets/rb-rating-helper.c:295
+#: widgets/rb-rating-helper.c:298
 msgid "No Stars"
 msgstr ""
 
-#: widgets/rb-rating-helper.c:297
+#: widgets/rb-rating-helper.c:300
 #, c-format
 msgid "%d Star"
 msgid_plural "%d Stars"
