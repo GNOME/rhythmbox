@@ -61,9 +61,9 @@ class AstrawebParser (object):
 			entries.pop(0)
 			print("found %d entries; looking for [%s,%s]" % (len(entries), self.title, self.artist))
 			for entry in entries:
-				url = re.split('(\/display[^"]*)', entry)[1]
+				url = re.split('(/display[^"]*)', entry)[1]
 				artist = re.split('(Artist:.*html">)([^<]*)', entry)[2].strip()
-				title = re.split('(\/display[^>]*)([^<]*)', entry)[2][1:].strip()
+				title = re.split('(/display[^>]*)([^<]*)', entry)[2][1:].strip()
 
 				if self.artist != "":
 					artist_str = rb.string_match(self.artist, artist)
@@ -94,7 +94,7 @@ class AstrawebParser (object):
 		title  = artist_title.split( " - " )[1]
 		
 		title = "%s - %s\n\n" % (artist, title)
-		lyrics = re.split('(<font face=arial size=2>)(.*)(<\/font><br></td><td*)', result)[2]
+		lyrics = re.split('(<font face=arial size=2>)(.*)(</font><br></td><td*)', result)[2]
 		lyrics = title + lyrics
 		lyrics = re.sub('<[Bb][Rr][^>]*>', '\n', lyrics)
 		lyrics += "\n\nLyrics provided by lyrics.astraweb.com"

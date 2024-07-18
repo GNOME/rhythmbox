@@ -41,7 +41,7 @@ import gettext
 gettext.install('rhythmbox', RB.locale_dir())
 
 
-LYRIC_TITLE_STRIP=["\(live[^\)]*\)", "\(acoustic[^\)]*\)", "\([^\)]*mix\)", "\([^\)]*version\)", "\([^\)]*edit\)", "\(feat[^\)]*\)"]
+LYRIC_TITLE_STRIP=["(live[^)]*)", "(acoustic[^)]*)", "([^)]*mix)", "([^)]*version)", "([^)]*edit)", "(feat[^)]*)"]
 LYRIC_TITLE_REPLACE=[("/", "-"), (" & ", " and ")]
 LYRIC_ARTIST_REPLACE=[("/", "-"), (" & ", " and ")]
 STREAM_SONG_TITLE='rb:stream-song-title'

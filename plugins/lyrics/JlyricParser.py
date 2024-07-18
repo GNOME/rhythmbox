@@ -46,7 +46,7 @@ class JlyricParser (object):
 			return
 
 		result = result.decode('utf-8')
-		m = re.search('<div class=\'title\'><a href=\'(/artist/[^\.]*\.html)\'>', result)
+		m = re.search('<div class=\'title\'><a href=\'(/artist/[^.]*\\.html)\'>', result)
 		if m is None:
 			callback (None, *data)
 			return
