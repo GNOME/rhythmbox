@@ -532,15 +532,18 @@ create_store_key (RBExtDBKey *key, int option)
 {
 	RBExtDBKey *skey = NULL;
 	GList *l;
+	int nopt;
 
 	g_assert (key->lookup);
-	if (key->multi_field != NULL &&
-	    option > key->multi_field->values->len &&
-	    key->multi_field->match_null == FALSE) {
-		return NULL;
-	} else if (key->multi_field == NULL && option != 0) {
-		return NULL;
+	if (key->multi_field == NULL) {
+		nopt = 1;
+	} else if (key->multi_field->match_null) {
+		nopt = key->multi_field->values->len + 1;
+	} else {
+		nopt = key->multi_field->values->len;
 	}
+	if (option >= nopt)
+		return NULL;
 
 	for (l = key->fields; l != NULL; l = l->next) {
 		RBExtDBField *f = l->data;
