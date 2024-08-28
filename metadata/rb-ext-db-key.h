@@ -76,6 +76,8 @@ const char *		rb_ext_db_key_get_info		(RBExtDBKey *key,
 
 gboolean		rb_ext_db_key_matches		(RBExtDBKey *a,
 							 RBExtDBKey *b);
+gboolean		rb_ext_db_key_is_null_match	(RBExtDBKey *lookup,
+							 RBExtDBKey *store);
 
 typedef gboolean	(*RBExtDBKeyLookupCallback)	(TDB_DATA data, RBExtDBKey *key, gpointer user_data);
 

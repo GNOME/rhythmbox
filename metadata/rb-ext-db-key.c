@@ -502,6 +502,31 @@ rb_ext_db_key_field_matches (RBExtDBKey *key, const char *field, const char *val
 	return FALSE;
 }
 
+/**
+ * rb_ext_db_key_is_null_match:
+ * @lookup: lookup key to compare against
+ * @store: store key to compare
+ *
+ * Checks whether @store has a null value in an optional
+ * field of @lookup, which means it's not the most specific
+ * possible match for a query.
+ *
+ * Return value: %TRUE if the storage key has a null value for the lookup key's optional field
+ */
+gboolean
+rb_ext_db_key_is_null_match (RBExtDBKey *lookup, RBExtDBKey *store)
+{
+	GPtrArray *values;
+
+	if (lookup->multi_field == NULL)
+		return FALSE;
+	if (lookup->multi_field->match_null == FALSE)
+		return FALSE;
+
+	values = get_list_values (store->fields, lookup->multi_field->name);
+	return (values == NULL || values->len == 0);
+}
+
 static void
 flatten_store_key (RBExtDBKey *key, TDB_DATA *data)
 {
