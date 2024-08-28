@@ -159,6 +159,11 @@ static void download_info_free				(RBPodcastDownload *data);
 static gboolean cancel_download				(RBPodcastDownload *pd);
 static void rb_podcast_manager_start_update_timer 	(RBPodcastManager *pd);
 
+static void podcast_album_art_request_cb		(RBExtDB *db,
+							 RBExtDBKey *key,
+							 guint64 last_time,
+							 RBPodcastManager *pd);
+
 G_DEFINE_TYPE (RBPodcastManager, rb_podcast_manager, G_TYPE_OBJECT)
 
 static void
@@ -276,6 +281,7 @@ rb_podcast_manager_constructed (GObject *object)
 	}
 
 	pd->priv->art_store = rb_ext_db_new ("album-art");
+	g_signal_connect (pd->priv->art_store, "request", G_CALLBACK (podcast_album_art_request_cb), pd);
 
 	pd->priv->soup_session = soup_session_new ();
 	soup_session_set_user_agent (pd->priv->soup_session, PACKAGE "/" VERSION);
@@ -2391,6 +2397,47 @@ cancel_download (RBPodcastDownload *data)
 		data->pd->priv->download_list = g_list_remove (data->pd->priv->download_list, data);
 		download_info_free (data);
 		return FALSE;
+	}
+}
+
+static void
+podcast_album_art_request_cb (RBExtDB *db, RBExtDBKey *key, guint64 last_time, RBPodcastManager *pd)
+{
+	RhythmDBEntry *entry;
+	const char *feed;
+	const char *guid;
+	const char *location;
+	const char *image;
+	const char *feed_image;
+
+	/*
+	 * we only need to answer requests for specific episodes here
+	 * as feed images are stored when the feed is updated
+	 */
+	feed = rb_ext_db_key_get_field (key, "subtitle");
+	guid = rb_ext_db_key_get_field (key, "podcast-guid");
+	location = rb_ext_db_key_get_info (key, "location");
+	if (feed != NULL && guid != NULL && location != NULL) {
+		entry = rhythmdb_entry_lookup_by_location (pd->priv->db, feed);
+		if (entry == NULL)
+			return;
+		feed_image = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_IMAGE);
+
+		entry = rhythmdb_entry_lookup_by_location (pd->priv->db, location);
+		if (entry == NULL)
+			return;
+
+		image = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_IMAGE);
+		if (image != NULL && g_strcmp0 (image, feed_image) != 0) {
+			RBExtDBKey *skey;
+
+			skey = rb_ext_db_key_create_storage ("subtitle", feed);
+			rb_ext_db_key_add_field (skey, "podcast-guid", guid);
+			rb_ext_db_store_uri (db,
+					     skey,
+					     RB_EXT_DB_SOURCE_EMBEDDED, /* sort of */
+					     image);
+		}
 	}
 }
 
