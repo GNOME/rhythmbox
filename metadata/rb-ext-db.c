@@ -548,7 +548,11 @@ lookup_cb (TDB_DATA data, RBExtDBKey *key, gpointer user_data)
 
 	tdbvalue = tdb_fetch (lookup->store->priv->tdb_context, data);
 	if (tdbvalue.dptr == NULL) {
-		rb_debug ("lookup failed");
+		if (rb_debug_here ()) {
+			char *str = rb_ext_db_key_to_string (key);
+			rb_debug ("lookup for key %s failed", str);
+			g_free (str);
+		}
 		return TRUE;
 	}
 
