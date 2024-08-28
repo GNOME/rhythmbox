@@ -706,6 +706,7 @@ rb_ext_db_request (RBExtDB *store,
 	char *filename;
 	GList *l;
 	gboolean emit_request = TRUE;
+	gboolean add_request = TRUE;
 	RBExtDBKey *store_key = NULL;
 
 	rb_debug ("starting metadata request");
@@ -724,29 +725,33 @@ rb_ext_db_request (RBExtDB *store,
 			if (destroy)
 				destroy (user_data);
 			rb_ext_db_key_free (store_key);
+		} else {
+			if (rb_debug_here ()) {
+				char *str = rb_ext_db_key_to_string (store_key);
+				rb_debug ("found cached match %s under key %s", filename, str);
+				g_free (str);
+			}
+			load_op = g_simple_async_result_new (G_OBJECT (store),
+							     (GAsyncReadyCallback) load_request_cb,
+							     NULL,
+							     rb_ext_db_request);
+
+			req = create_request (key, callback, user_data, destroy);
+			req->filename = filename;
+			req->store_key = store_key;
+			g_simple_async_result_set_op_res_gpointer (load_op, req, (GDestroyNotify) free_request);
+
+			g_simple_async_result_run_in_thread (load_op,
+							     do_load_request,
+							     G_PRIORITY_DEFAULT,
+							     NULL);	/* no cancel? */
+		}
+
+		if (rb_ext_db_key_is_null_match (key, store_key) == FALSE)
 			return FALSE;
-		}
 
-		if (rb_debug_here ()) {
-			char *str = rb_ext_db_key_to_string (store_key);
-			rb_debug ("found cached match %s under key %s", filename, str);
-			g_free (str);
-		}
-		load_op = g_simple_async_result_new (G_OBJECT (store),
-						     (GAsyncReadyCallback) load_request_cb,
-						     NULL,
-						     rb_ext_db_request);
-
-		req = create_request (key, callback, user_data, destroy);
-		req->filename = filename;
-		req->store_key = store_key;
-		g_simple_async_result_set_op_res_gpointer (load_op, req, (GDestroyNotify) free_request);
-
-		g_simple_async_result_run_in_thread (load_op,
-						     do_load_request,
-						     G_PRIORITY_DEFAULT,
-						     NULL);	/* no cancel? */
-		return FALSE;
+		rb_debug ("found null match, continuing to issue requests");
+		add_request = FALSE;
 	}
 
 	/* discard duplicate requests, combine equivalent requests */
@@ -780,9 +785,11 @@ rb_ext_db_request (RBExtDB *store,
 	}
 	g_free (tdbkey.dptr);
 
-	/* add stuff to list of outstanding requests */
-	req = create_request (key, callback, user_data, destroy);
-	store->priv->requests = g_list_append (store->priv->requests, req);
+	if (add_request) {
+		/* add stuff to list of outstanding requests */
+		req = create_request (key, callback, user_data, destroy);
+		store->priv->requests = g_list_append (store->priv->requests, req);
+	}
 
 	/* and let metadata providers request it */
 	if (emit_request) {
@@ -792,7 +799,6 @@ rb_ext_db_request (RBExtDB *store,
 		result = TRUE;
 	}
 
-	/* free the request if result == FALSE? */
 	return result;
 }
 
