@@ -4,32 +4,39 @@
 # Isriya Paireepairit <markpeak@gmail.com>, 2005.
 # Theppitak Karoonboonyanan <thep@linux.thai.net>, 2009-2010.
 # Sira Nokyoongtong <gumaraa@gmail.com>, 2010.
-# Kiatkachorn Ratanatharathorn <kratanat@gmail.com>, 2013-2014.
+# Kiatkachorn Ratanatharathorn <kratanat@gmail.com>, 2013-2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox 0.8.99\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=rhythmbox&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-04-06 23:03+0000\n"
-"PO-Revision-Date: 2014-04-09 18:34+0700\n"
+"Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues\n"
+"POT-Creation-Date: 2020-03-22 18:38+0000\n"
+"PO-Revision-Date: 2020-06-14 09:46-0700\n"
 "Last-Translator: Kiatkachorn Ratanatharathorn <kratanat@gmail.com>\n"
 "Language-Team: Thai <thai-l10n@googlegroups.com>\n"
 "Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Gtranslator 2.91.5\n"
-"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"X-Generator: Gtranslator 3.36.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../backends/gstreamer/rb-encoder-gst.c:512
+#: ../backends/gstreamer/rb-encoder-gst.c:649
+#, c-format
+#| msgid "Could not create a GStreamer sink element to write to %s"
+msgid "Could not create a temporary file to write to: %s"
+msgstr "ไม่สามารถสร้างไฟล์ชั่วคราวเพื่อเขียนออกยัง %s"
+
+#: ../backends/gstreamer/rb-encoder-gst.c:703
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "ไม่สามารถสร้างอิลิเมนต์เสียงออกเพื่อเขียนออกยัง %s"
 
+#. Translators: the parameter here is an error message
 #. ?
-#: ../backends/gstreamer/rb-player-gst.c:527
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2850
+#. Translators: the parameter here is an error message
+#: ../backends/gstreamer/rb-player-gst.c:520
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2931
 #, c-format
 msgid "Failed to open output device: %s"
 msgstr "ไม่สามารถเปิดอุปกรณ์ขาออก: %s"
@@ -39,49 +46,49 @@ msgstr "ไม่สามารถเปิดอุปกรณ์ขาออ
 msgid "Failed to create playbin element; check your GStreamer installation"
 msgstr "ไม่สามารถสร้างองค์ประกอบ playbin กรุณาตรวจสอบการติดตั้ง GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst.c:710
+#: ../backends/gstreamer/rb-player-gst.c:700
 #, c-format
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr "ไม่สามารถสร้างองค์ประกอบ %s กรุณาตรวจสอบการติดตั้ง GStreamer"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1100
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1114
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1107
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1121
 #, c-format
 msgid "Failed to link new stream into GStreamer pipeline"
 msgstr "ไม่สามารถเชื่อมต่อสตรีมใหม่เข้ากับไปป์ไลน์ของ GStreamer ได้"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:1158
+#: ../backends/gstreamer/rb-player-gst-xfade.c:1167
 #, c-format
 msgid "Failed to start new stream"
 msgstr "ไม่สามารถเริ่มสตรีมสายใหม่ได้"
 
 #. ?
-#: ../backends/gstreamer/rb-player-gst-xfade.c:2777
+#: ../backends/gstreamer/rb-player-gst-xfade.c:2844
 #, c-format
 msgid "Failed to open output device"
 msgstr "ไม่สามารถเปิดอุปกรณ์ขาออก"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3131
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3205
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3233
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3312
 #, c-format
 msgid "Failed to create GStreamer element; check your installation"
 msgstr "ไม่สามารถสร้างอิลิเมนต์ของ GStreamer กรุณาตรวจสอบการติดตั้ง"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3145
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3242
 #, c-format
 msgid "Failed to create audio output element; check your installation"
 msgstr "ไม่สามารถสร้างอิลิเมนต์เสียงออก กรุณาตรวจสอบการติดตั้ง"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3179
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3222
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3249
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3259
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3269
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3276
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3329
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3356
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3366
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3376
 #, c-format
 msgid "Failed to link GStreamer pipeline; check your installation"
 msgstr "ไม่สามารถเชื่อมต่อไปป์ไลน์ของ GStreamer กรุณาตรวจสอบการติดตั้ง"
 
-#: ../backends/gstreamer/rb-player-gst-xfade.c:3364
+#: ../backends/gstreamer/rb-player-gst-xfade.c:3471
 #, c-format
 msgid "Failed to create GStreamer pipeline to play %s"
 msgstr "ไม่สามารถสร้างไปป์ไลน์ของ GStreamer เพื่อเล่น %s"
@@ -98,11 +105,36 @@ msgstr "เล่นล่าสุด"
 msgid "My Top Rated"
 msgstr "คะแนนสูงสุด"
 
-#: ../data/rhythmbox.desktop.in.in.h:1
-#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:79
-#: ../shell/rb-shell.c:493 ../shell/rb-shell.c:2372
+#: ../data/rhythmbox.appdata.xml.in.h:1 ../data/rhythmbox.desktop.in.in.h:1
+#: ../data/rhythmbox-device.desktop.in.in.h:1 ../shell/main.c:78
+#: ../shell/rb-shell.c:515 ../shell/rb-shell.c:2389
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
+
+#: ../data/rhythmbox.appdata.xml.in.h:2 ../data/rhythmbox.desktop.in.in.h:4
+#: ../data/rhythmbox-device.desktop.in.in.h:4
+msgid "Play and organize your music collection"
+msgstr "เล่นและจัดการกับเพลงของคุณ"
+
+#: ../data/rhythmbox.appdata.xml.in.h:3
+msgid ""
+"Rhythmbox is a music management application, designed to work well under the "
+"GNOME desktop. In addition to music stored on your computer, it supports "
+"network shares, podcasts, radio streams, portable music devices (including "
+"phones), and internet music services such as Last.fm and Magnatune."
+msgstr ""
+"Rhythmbox เป็นโปรแกรมจัดการเพลง และออกแบบมาเพื่อทำงานร่วมกับ GNOME "
+"นอกเหนือจากการจัดเก็บเพลงแล้ว โปรแกรมดังกล่าวยังสนับสนุนการแชร์บนเครือข่าย พอดแคสต์ "
+"วิทยุออนไลน์ รวมไปถึงเครื่องเล่นเพลงแบบพกพา (รวมถึง โทรศัพท์มือถือ) "
+"และบริการเพลงบนอินเตอร์เน็ต อย่างเช่น Last.fm และ Magnatune"
+
+#: ../data/rhythmbox.appdata.xml.in.h:4
+msgid ""
+"Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
+"via plugins written in Python or C."
+msgstr ""
+"Rhythmbox เป็นโปรแกรมฟรี ที่พัฒนาด้วย GTK+ และ GStreamer "
+"และสนับสนุนโปรแกรมเสริมที่พัฒนาโดยภาษา Python หรือ C"
 
 #: ../data/rhythmbox.desktop.in.in.h:2
 #: ../data/rhythmbox-device.desktop.in.in.h:2
@@ -114,78 +146,57 @@ msgstr "โปรแกรมเล่นเพลง"
 msgid "Rhythmbox Music Player"
 msgstr "โปรแกรมเล่นเพลง Rhythmbox"
 
-#: ../data/rhythmbox.desktop.in.in.h:4
-#: ../data/rhythmbox-device.desktop.in.in.h:4
-msgid "Play and organize your music collection"
-msgstr "เล่นและจัดการกับเพลงของคุณ"
-
 #: ../data/rhythmbox.desktop.in.in.h:5
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr "แฟ้มเสียง;เพลง;MP3;ซีดี;พอดแคสต์;MTP;ไอพอด;คิวเพลง;Last.fm;UPnP;DLNA;วิทยุ;"
 
 #: ../data/ui/app-menu.ui.h:1
-msgid "_Add Music"
-msgstr "เ_พิ่มเพลง"
-
-#: ../data/ui/app-menu.ui.h:2
 msgid "_View"
 msgstr "มุ_มมอง"
 
-#: ../data/ui/app-menu.ui.h:3
+#: ../data/ui/app-menu.ui.h:2
 msgid "P_arty Mode"
 msgstr "โหมดงานเ_ลี้ยง"
 
-#: ../data/ui/app-menu.ui.h:4
+#: ../data/ui/app-menu.ui.h:3
 msgid "Side Pane"
 msgstr "ช่องด้านข้าง"
 
-#: ../data/ui/app-menu.ui.h:5
+#: ../data/ui/app-menu.ui.h:4
 msgid "Play Queue in Side Pane"
 msgstr "เล่นเพลงจากคิวเพลงในช่องด้านข้าง"
 
-#: ../data/ui/app-menu.ui.h:6
-msgid "Status Bar"
-msgstr "แถบสถานะ"
-
-#: ../data/ui/app-menu.ui.h:7
+#: ../data/ui/app-menu.ui.h:5
 msgid "Song Position Slider"
 msgstr "ปุ่มรางเลื่อนตำแหน่งในเพลง"
 
-#: ../data/ui/app-menu.ui.h:8
+#: ../data/ui/app-menu.ui.h:6 ../plugins/artsearch/songinfo.py:64
 msgid "Album Art"
 msgstr "ปกอัลบั้ม"
 
-#: ../data/ui/app-menu.ui.h:9
+#: ../data/ui/app-menu.ui.h:7
 msgid "Follow Playing Track"
 msgstr "ติดตามเพลงที่กำลังเล่นอยู่"
 
-#: ../data/ui/app-menu.ui.h:10
+#: ../data/ui/app-menu.ui.h:8
 msgid "_Tools"
 msgstr "เครื่อ_งมือ"
 
-#: ../data/ui/app-menu.ui.h:11
-msgid "P_lugins"
-msgstr "ปลั๊_กอิน"
-
-#: ../data/ui/app-menu.ui.h:12
+#: ../data/ui/app-menu.ui.h:9
 msgid "_Preferences"
 msgstr "_ปรับแต่ง"
 
-#: ../data/ui/app-menu.ui.h:13
+#: ../data/ui/app-menu.ui.h:10 ../shell/rb-shell-preferences.c:195
 msgid "_Help"
 msgstr "_วิธีใช้"
 
-#: ../data/ui/app-menu.ui.h:14
-msgid "_About"
-msgstr "เ_กี่ยวกับ"
-
-#: ../data/ui/app-menu.ui.h:15
-msgid "_Quit"
-msgstr "_ออก"
+#: ../data/ui/app-menu.ui.h:11
+#| msgid "Quit Rhythmbox"
+msgid "_About Rhythmbox"
+msgstr "เ_กี่ยวกับ Rhythmbox"
 
 #: ../data/ui/browser-popup.ui.h:1 ../data/ui/playlist-popup.ui.h:1
-#: ../data/ui/podcast-popups.ui.h:9
-#: ../plugins/magnatune/magnatune-popup.ui.h:1
+#: ../data/ui/podcast-popups.ui.h:9 ../plugins/magnatune/magnatune-popup.ui.h:1
 msgid "Add to Queue"
 msgstr "เพิ่มเข้าในคิวเพลง"
 
@@ -252,11 +263,15 @@ msgstr "สร้างรายการเพลงที่ปรับเป
 msgid "A_dd if any criteria are matched"
 msgstr "เ_พิ่มในรายการ เมื่อตรงเงื่อนไขข้อใดข้อหนึ่ง"
 
-#: ../data/ui/create-playlist.ui.h:7
+#: ../data/ui/create-playlist.ui.h:7 ../widgets/rb-uri-dialog.c:161
+msgid "_Add"
+msgstr "เ_พิ่ม"
+
+#: ../data/ui/create-playlist.ui.h:8
 msgid "_Limit to: "
 msgstr "_จำกัดที่:"
 
-#: ../data/ui/create-playlist.ui.h:8
+#: ../data/ui/create-playlist.ui.h:9
 msgid "_When sorted by:"
 msgstr "เ_รียงลำดับตาม:"
 
@@ -300,6 +315,14 @@ msgstr "เ_ลิกเลือกทั้งหมด"
 msgid "Add to Play Queue"
 msgstr "เพิ่มเข้าในคิวเพลง"
 
+#: ../data/ui/encoding-settings.ui.h:1
+msgid "_Install additional software required to use this format"
+msgstr "_ติดตั้งโปรแกรมที่ต้องใช้เพิ่มเติมสำหรับเล่นฟอร์แมตนี้"
+
+#: ../data/ui/encoding-settings.ui.h:2
+msgid "Transcode lossless files into this format"
+msgstr "เปลี่ยนแปลงไฟล์ lossless เป็นฟอร์แมตนี้"
+
 #: ../data/ui/general-prefs.ui.h:1
 msgid "Browser Views"
 msgstr "มุมมองเบราว์เซอร์"
@@ -325,60 +348,60 @@ msgid "Track _number"
 msgstr "_ลำดับเพลง"
 
 #: ../data/ui/general-prefs.ui.h:7
-msgid "_Artist"
-msgstr "ศิลปิ_น"
-
-#: ../data/ui/general-prefs.ui.h:8
-msgid "_Composer"
-msgstr "ผู้แ_ต่ง"
-
-#: ../data/ui/general-prefs.ui.h:9
-msgid "A_lbum"
-msgstr "_อัลบั้ม"
-
-#: ../data/ui/general-prefs.ui.h:10
-msgid "_Year"
-msgstr "_ปี:"
-
-#: ../data/ui/general-prefs.ui.h:11
 msgid "_Last played"
 msgstr "เล่นครั้งสุด_ท้าย"
 
+#: ../data/ui/general-prefs.ui.h:8
+msgid "_Artist"
+msgstr "ศิลปิ_น"
+
+#: ../data/ui/general-prefs.ui.h:9
+msgid "_Composer"
+msgstr "ผู้แ_ต่ง"
+
+#: ../data/ui/general-prefs.ui.h:10
+msgid "A_lbum"
+msgstr "_อัลบั้ม"
+
+#: ../data/ui/general-prefs.ui.h:11
+msgid "_Year"
+msgstr "_ปี:"
+
 #: ../data/ui/general-prefs.ui.h:12
-msgid "_Genre"
-msgstr "แนวเ_พลง"
+msgid "_Quality"
+msgstr "คุณ_ภาพ"
 
 #: ../data/ui/general-prefs.ui.h:13
-msgid "Da_te added"
-msgstr "วันที่เพิ่_ม"
-
-#: ../data/ui/general-prefs.ui.h:14
-msgid "_Play count"
-msgstr "_จำนวนครั้งที่เล่น"
-
-#: ../data/ui/general-prefs.ui.h:15
-msgid "C_omment"
-msgstr "ความคิดเ_ห็น"
-
-#: ../data/ui/general-prefs.ui.h:16 ../widgets/rb-entry-view.c:1616
-msgid "BPM"
-msgstr "จังหวะ/นาที"
-
-#: ../data/ui/general-prefs.ui.h:17
-msgid "_Rating"
-msgstr "_คะแนน"
-
-#: ../data/ui/general-prefs.ui.h:18
-msgid "Ti_me"
-msgstr "_เวลา"
-
-#: ../data/ui/general-prefs.ui.h:19
 msgid "Lo_cation"
 msgstr "ตำแหน่งเ_ก็บ"
 
+#: ../data/ui/general-prefs.ui.h:14
+msgid "Ti_me"
+msgstr "_เวลา"
+
+#: ../data/ui/general-prefs.ui.h:15
+msgid "_Rating"
+msgstr "_คะแนน"
+
+#: ../data/ui/general-prefs.ui.h:16
+msgid "_BPM"
+msgstr "_จังหวะ/นาที"
+
+#: ../data/ui/general-prefs.ui.h:17
+msgid "C_omment"
+msgstr "ความคิดเ_ห็น"
+
+#: ../data/ui/general-prefs.ui.h:18
+msgid "_Play count"
+msgstr "_จำนวนครั้งที่เล่น"
+
+#: ../data/ui/general-prefs.ui.h:19
+msgid "Da_te added"
+msgstr "วันที่เพิ่_ม"
+
 #: ../data/ui/general-prefs.ui.h:20
-msgid "_Quality"
-msgstr "คุณ_ภาพ"
+msgid "_Genre"
+msgstr "แนวเ_พลง"
 
 #: ../data/ui/import-dialog.ui.h:1
 msgid "Select a location containing music to add to your library:"
@@ -436,16 +459,9 @@ msgstr "ฟอร์แ_มตที่เลือกใช้ก่อน:"
 msgid "Artist/Artist - Album/Artist (Album) - 01 - Title.ogg"
 msgstr "ศิลปิน/ศิลปิน - อัลบั้ม/ศิลปิน (อัลบั้ม) - 01 - ชื่อเพลง.ogg"
 
-#: ../data/ui/library-prefs.ui.h:10
-msgid "Format settings:"
-msgstr "การตั้งค่าฟอร์แมต:"
-
-#: ../data/ui/library-prefs.ui.h:11
-msgid "_Install additional software required to use this format"
-msgstr "_ติดตั้งโปรแกรมที่ต้องใช้เพิ่มเติมสำหรับเล่นฟอร์แมตนี้"
-
 #: ../data/ui/library-toolbar.ui.h:1 ../data/ui/playlist-toolbar.ui.h:1
 #: ../data/ui/podcast-toolbar.ui.h:1 ../data/ui/queue-toolbar.ui.h:1
+#: ../plugins/android/android-toolbar.ui.h:1
 #: ../plugins/audiocd/audiocd-toolbar.ui.h:1
 #: ../plugins/daap/daap-toolbar.ui.h:1
 #: ../plugins/fmradio/fmradio-toolbar.ui.h:1
@@ -457,9 +473,10 @@ msgid "Edit"
 msgstr "แก้ไข"
 
 #: ../data/ui/library-toolbar.ui.h:2 ../data/ui/playlist-toolbar.ui.h:2
-#: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/daap/daap-toolbar.ui.h:2
+#: ../data/ui/podcast-toolbar.ui.h:2 ../plugins/android/android-toolbar.ui.h:2
+#: ../plugins/daap/daap-toolbar.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:2
-#: ../plugins/grilo/rb-grilo-source.c:342 ../plugins/ipod/ipod-toolbar.ui.h:2
+#: ../plugins/grilo/rb-grilo-source.c:360 ../plugins/ipod/ipod-toolbar.ui.h:2
 #: ../plugins/iradio/iradio-toolbar.ui.h:2
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:2
@@ -467,7 +484,8 @@ msgid "Browse"
 msgstr "เรียกดู"
 
 #: ../data/ui/library-toolbar.ui.h:3 ../data/ui/playlist-toolbar.ui.h:3
-#: ../data/ui/podcast-toolbar.ui.h:3 ../plugins/daap/daap-toolbar.ui.h:3
+#: ../data/ui/podcast-toolbar.ui.h:3 ../plugins/android/android-toolbar.ui.h:3
+#: ../plugins/daap/daap-toolbar.ui.h:3
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:3
 #: ../plugins/ipod/ipod-toolbar.ui.h:3 ../plugins/iradio/iradio-toolbar.ui.h:3
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:3
@@ -478,31 +496,47 @@ msgstr "แสดงทั้งหมด"
 msgid "Media Player Properties"
 msgstr "คุณสมบัติของเครื่องเล่นสื่อ"
 
-#: ../data/ui/media-player-properties.ui.h:2
+#: ../data/ui/media-player-properties.ui.h:2 ../plugins/daap/daap-prefs.ui.h:11
+#: ../plugins/iradio/rb-station-properties-dialog.c:182
+#: ../podcast/rb-feed-podcast-properties-dialog.c:130
+#: ../podcast/rb-podcast-properties-dialog.c:320
+#: ../shell/rb-shell-preferences.c:192 ../widgets/rb-alert-dialog.c:377
+#: ../widgets/rb-query-creator.c:198 ../widgets/rb-song-info.c:627
+#| msgid "Close"
+msgid "_Close"
+msgstr "_ปิด"
+
+#: ../data/ui/media-player-properties.ui.h:3
 msgid "Information"
 msgstr "ข้อมูล"
 
 #. Translators: This refers to the usage of media space
-#: ../data/ui/media-player-properties.ui.h:4
+#: ../data/ui/media-player-properties.ui.h:5
 msgid "Volume usage"
 msgstr "การใช้เนื้อที่"
 
-#: ../data/ui/media-player-properties.ui.h:5
+#: ../data/ui/media-player-properties.ui.h:6
+#| msgid "_Preferred format:"
+msgid "Preferred format"
+msgstr "ฟอร์แมตที่เลือกใช้ก่อน"
+
+#: ../data/ui/media-player-properties.ui.h:7
 #: ../data/ui/podcast-feed-properties.ui.h:6
-#: ../data/ui/podcast-properties.ui.h:5 ../data/ui/song-info-multiple.ui.h:9
-#: ../data/ui/song-info.ui.h:13 ../plugins/iradio/station-properties.ui.h:4
+#: ../data/ui/podcast-properties.ui.h:5 ../data/ui/song-info-multiple.ui.h:11
+#: ../data/ui/song-info.ui.h:15 ../plugins/iradio/station-properties.ui.h:4
 msgid "Basic"
 msgstr "ทั่วไป"
 
-#: ../data/ui/media-player-properties.ui.h:6 ../data/ui/sync-dialog.ui.h:1
+#: ../data/ui/media-player-properties.ui.h:8 ../data/ui/sync-dialog.ui.h:1
 msgid "Sync Preferences"
 msgstr "ปรับค่าการ Sync"
 
-#: ../data/ui/media-player-properties.ui.h:7 ../data/ui/sync-dialog.ui.h:2
+#: ../data/ui/media-player-properties.ui.h:9 ../data/ui/sync-dialog.ui.h:2
 msgid "Sync Preview"
 msgstr "ตัวอย่างก่อน Sync"
 
-#: ../data/ui/media-player-properties.ui.h:8
+#: ../data/ui/media-player-properties.ui.h:10
+#: ../plugins/android/android-toolbar.ui.h:5
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:6
 #: ../plugins/ipod/ipod-toolbar.ui.h:6 ../plugins/mtpdevice/mtp-toolbar.ui.h:6
 msgid "Sync"
@@ -552,11 +586,25 @@ msgstr "ตามนามสกุล"
 msgid "Save Playlist"
 msgstr "บันทึกรายการเพลง"
 
-#: ../data/ui/playlist-save.ui.h:3
+#: ../data/ui/playlist-save.ui.h:3 ../plugins/artsearch/songinfo.py:135
+#: ../plugins/ipod/ipod-init.ui.h:2 ../podcast/rb-podcast-source.c:534
+#: ../podcast/rb-podcast-source.c:1104 ../shell/rb-track-transfer-queue.c:187
+#: ../widgets/rb-alert-dialog.c:384 ../widgets/rb-alert-dialog.c:401
+#: ../widgets/rb-dialog.c:131 ../widgets/rb-dialog.c:139
+#: ../widgets/rb-query-creator.c:191 ../widgets/rb-uri-dialog.c:158
+msgid "_Cancel"
+msgstr "_ยกเลิก"
+
+#: ../data/ui/playlist-save.ui.h:4 ../plugins/lyrics/lyrics.py:267
+#: ../widgets/rb-dialog.c:140
+msgid "_Save"
+msgstr "_บันทึก"
+
+#: ../data/ui/playlist-save.ui.h:5
 msgid "Select playlist format:"
 msgstr "เลือกรูปแบบรายการเพลง"
 
-#: ../data/ui/playlist-save.ui.h:4
+#: ../data/ui/playlist-save.ui.h:6
 msgid "Playlist format"
 msgstr "รูปแบบรายการเพลง"
 
@@ -565,13 +613,16 @@ msgid "Playlist"
 msgstr "รายการเพลง"
 
 #: ../data/ui/podcast-add-dialog.ui.h:1
+#| msgid ""
+#| "Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
+#| "podcast feed URL.\n"
+#| "Subscribe to podcasts to download new episodes as they are published."
 msgid ""
-"Search for podcasts in the iTunes Store and on Miroguide.com, or enter a "
-"podcast feed URL.\n"
+"Search for podcasts in the iTunes Store, or enter a podcast feed URL.\n"
 "Subscribe to podcasts to download new episodes as they are published."
 msgstr ""
-"ค้นหาพอดแคสต์ในร้าน iTunes และใน Miroguide.com หรือป้อน URL ข่าวป้อนของพอดแคสต์\n"
-"บอกรับพอดแคสต์ถ้าต้องการดาวน์โหลดตอนใหม่ๆ ที่ออก"
+"ค้นหาพอดแคสต์ในร้าน iTunes หรือป้อน URL ของพอดแคสต์\n"
+"เป็นสมาชิกพอดแคสต์เพื่อดาวน์โหลดเมื่อมีพอดแคสต์ตอนใหม่"
 
 #: ../data/ui/podcast-add-dialog.ui.h:4
 msgid "Subscribe"
@@ -613,7 +664,7 @@ msgid "Copyright:"
 msgstr "ลิขสิทธิ์:"
 
 #: ../data/ui/podcast-feed-properties.ui.h:10
-#: ../data/ui/podcast-properties.ui.h:13 ../data/ui/song-info.ui.h:28
+#: ../data/ui/podcast-properties.ui.h:13 ../data/ui/song-info.ui.h:30
 #: ../plugins/iradio/station-properties.ui.h:10
 msgid "Details"
 msgstr "รายละเอียด"
@@ -634,7 +685,8 @@ msgstr "ปรับข้อมูลแหล่งป้อนพอดแค
 msgid "Delete Podcast Feed"
 msgstr "ลบแหล่งป้อนพอดแคสต์"
 
-#: ../data/ui/podcast-popups.ui.h:5 ../plugins/fmradio/fmradio-popup.ui.h:2
+#: ../data/ui/podcast-popups.ui.h:5 ../plugins/android/android-toolbar.ui.h:4
+#: ../plugins/fmradio/fmradio-popup.ui.h:2
 #: ../plugins/generic-player/generic-player-toolbar.ui.h:4
 #: ../plugins/ipod/ipod-toolbar.ui.h:4 ../plugins/iradio/iradio-popup.ui.h:2
 #: ../plugins/mtpdevice/mtp-toolbar.ui.h:4
@@ -650,41 +702,41 @@ msgid "Cancel Download"
 msgstr "ยกเลิกการดาวน์โหลด"
 
 #: ../data/ui/podcast-popups.ui.h:8 ../plugins/fmradio/fmradio-popup.ui.h:1
-#: ../podcast/rb-podcast-source.c:1279 ../sources/rb-media-player-source.c:929
+#: ../podcast/rb-podcast-source.c:1237 ../sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "ลบ"
 
 #: ../data/ui/podcast-prefs.ui.h:1
-msgid "Podcast Downloads"
-msgstr "การดาวน์โหลดพอดแคสต์"
-
-#: ../data/ui/podcast-prefs.ui.h:2
-msgid "_Download location:"
-msgstr "_ตำแหน่งเก็บแฟ้มดาวน์โหลด"
-
-#: ../data/ui/podcast-prefs.ui.h:3
-msgid "Check for _new episodes:"
-msgstr "ต_รวจสอบว่ามีตอนใหม่:"
-
-#: ../data/ui/podcast-prefs.ui.h:4
-msgid "Select Folder For Podcasts"
-msgstr "เลือกโฟลเดอร์สำหรับเก็บพอดแคสต์"
-
-#: ../data/ui/podcast-prefs.ui.h:5
 msgid "Every hour"
 msgstr "ทุกชั่วโมง"
 
-#: ../data/ui/podcast-prefs.ui.h:6
+#: ../data/ui/podcast-prefs.ui.h:2
 msgid "Every day"
 msgstr "ทุกวัน"
 
-#: ../data/ui/podcast-prefs.ui.h:7
+#: ../data/ui/podcast-prefs.ui.h:3
 msgid "Every week"
 msgstr "ทุกสัปดาห์"
 
-#: ../data/ui/podcast-prefs.ui.h:8
+#: ../data/ui/podcast-prefs.ui.h:4
 msgid "Manually"
 msgstr "ตรวจสอบเอง"
+
+#: ../data/ui/podcast-prefs.ui.h:5
+msgid "Podcast Downloads"
+msgstr "การดาวน์โหลดพอดแคสต์"
+
+#: ../data/ui/podcast-prefs.ui.h:6
+msgid "Check for _new episodes:"
+msgstr "ต_รวจสอบว่ามีตอนใหม่:"
+
+#: ../data/ui/podcast-prefs.ui.h:7
+msgid "_Download location:"
+msgstr "_ตำแหน่งเก็บแฟ้มดาวน์โหลด"
+
+#: ../data/ui/podcast-prefs.ui.h:8
+msgid "Select Folder For Podcasts"
+msgstr "เลือกโฟลเดอร์สำหรับเก็บพอดแคสต์"
 
 #: ../data/ui/podcast-properties.ui.h:2
 msgid "Feed:"
@@ -695,26 +747,26 @@ msgid "Date:"
 msgstr "วันที่:"
 
 #: ../data/ui/podcast-properties.ui.h:7 ../data/ui/song-info-multiple.ui.h:4
-#: ../data/ui/song-info.ui.h:24 ../plugins/iradio/station-properties.ui.h:9
+#: ../data/ui/song-info.ui.h:26 ../plugins/iradio/station-properties.ui.h:9
 msgid "_Rating:"
 msgstr "_คะแนน:"
 
-#: ../data/ui/podcast-properties.ui.h:8 ../data/ui/song-info.ui.h:23
+#: ../data/ui/podcast-properties.ui.h:8 ../data/ui/song-info.ui.h:25
 #: ../plugins/iradio/station-properties.ui.h:8
 msgid "Play count:"
 msgstr "จำนวนครั้งที่เล่น:"
 
-#: ../data/ui/podcast-properties.ui.h:9 ../data/ui/song-info.ui.h:22
+#: ../data/ui/podcast-properties.ui.h:9 ../data/ui/song-info.ui.h:24
 #: ../plugins/iradio/station-properties.ui.h:7
 msgid "Last played:"
 msgstr "เล่นครั้งล่าสุด:"
 
-#: ../data/ui/podcast-properties.ui.h:10 ../data/ui/song-info.ui.h:20
+#: ../data/ui/podcast-properties.ui.h:10 ../data/ui/song-info.ui.h:22
 #: ../plugins/iradio/station-properties.ui.h:6
 msgid "Bitrate:"
 msgstr "อัตราบิต:"
 
-#: ../data/ui/podcast-properties.ui.h:11 ../data/ui/song-info.ui.h:25
+#: ../data/ui/podcast-properties.ui.h:11 ../data/ui/song-info.ui.h:27
 msgid "Duration:"
 msgstr "ความยาว:"
 
@@ -742,11 +794,11 @@ msgstr "สุ่มลำดับในคิวเพลง"
 msgid "Clear Play Queue"
 msgstr "ล้างคิวเพลง"
 
-#: ../data/ui/queue-toolbar.ui.h:2 ../shell/rb-shell-player.c:3279
+#: ../data/ui/queue-toolbar.ui.h:2 ../shell/rb-shell-player.c:3291
 msgid "Shuffle"
 msgstr "สุ่ม"
 
-#: ../data/ui/queue-toolbar.ui.h:3
+#: ../data/ui/queue-toolbar.ui.h:3 ../plugins/artsearch/songinfo.py:52
 msgid "Clear"
 msgstr "ล้าง"
 
@@ -782,23 +834,33 @@ msgstr "ศิลปิ_นของอัลบั้ม:"
 msgid "_Composer:"
 msgstr "ผู้แ_ต่ง:"
 
-#: ../data/ui/song-info-multiple.ui.h:10 ../data/ui/song-info.ui.h:14
+#. To translators: part of a phrase, for example, disc 1 of 2
+#: ../data/ui/song-info-multiple.ui.h:9 ../data/ui/song-info.ui.h:13
+msgid "of"
+msgstr "จาก"
+
+#: ../data/ui/song-info-multiple.ui.h:10
+#| msgid "Play count:"
+msgid "_Track count:"
+msgstr "_จำนวนครั้งที่เล่น:"
+
+#: ../data/ui/song-info-multiple.ui.h:12 ../data/ui/song-info.ui.h:16
 msgid "Albu_m sort order:"
 msgstr "ลำดับการเรียง_อัลบั้ม:"
 
-#: ../data/ui/song-info-multiple.ui.h:11 ../data/ui/song-info.ui.h:15
+#: ../data/ui/song-info-multiple.ui.h:13 ../data/ui/song-info.ui.h:17
 msgid "_Artist sort order:"
 msgstr "ลำดับการเรียงชื่อศิ_ลปิน:"
 
-#: ../data/ui/song-info-multiple.ui.h:12 ../data/ui/song-info.ui.h:16
+#: ../data/ui/song-info-multiple.ui.h:14 ../data/ui/song-info.ui.h:18
 msgid "Album a_rtist sort order:"
 msgstr "ลำดับการเรียงชื่อศิลปิ_นของอัลบั้ม:"
 
-#: ../data/ui/song-info-multiple.ui.h:13 ../data/ui/song-info.ui.h:17
+#: ../data/ui/song-info-multiple.ui.h:15 ../data/ui/song-info.ui.h:19
 msgid "_Composer sort order:"
 msgstr "ลำดับการเรียง_ชื่อผู้แต่ง:"
 
-#: ../data/ui/song-info-multiple.ui.h:14 ../data/ui/song-info.ui.h:18
+#: ../data/ui/song-info-multiple.ui.h:16 ../data/ui/song-info.ui.h:20
 msgid "Sorting"
 msgstr "การเรียงลำดับ"
 
@@ -811,30 +873,32 @@ msgid "Track _number:"
 msgstr "ลำ_ดับเพลง:"
 
 #: ../data/ui/song-info.ui.h:8
-msgid "BPM:"
-msgstr "จังหวะ/นาที:"
+#| msgid "BPM:"
+msgid "_BPM:"
+msgstr "_จังหวะ/นาที:"
 
 #: ../data/ui/song-info.ui.h:9
-msgid "_Comment:"
+#| msgid "_Comment:"
+msgid "Comm_ent:"
 msgstr "ความคิดเ_ห็น:"
 
-#: ../data/ui/song-info.ui.h:12 ../plugins/iradio/station-properties.ui.h:3
+#: ../data/ui/song-info.ui.h:14 ../plugins/iradio/station-properties.ui.h:3
 msgid "Error message"
 msgstr "ข้อความแสดงข้อผิดพลาด"
 
-#: ../data/ui/song-info.ui.h:19
+#: ../data/ui/song-info.ui.h:21
 msgid "File name:"
 msgstr "ชื่อแฟ้ม:"
 
-#: ../data/ui/song-info.ui.h:21
+#: ../data/ui/song-info.ui.h:23
 msgid "Location:"
 msgstr "ตำแหน่งที่ตั้ง:"
 
-#: ../data/ui/song-info.ui.h:26
+#: ../data/ui/song-info.ui.h:28
 msgid "File size:"
 msgstr "ขนาดแฟ้ม:"
 
-#: ../data/ui/song-info.ui.h:27
+#: ../data/ui/song-info.ui.h:29
 msgid "Date added:"
 msgstr "วันที่เพิ่ม:"
 
@@ -856,10 +920,10 @@ msgstr "แฟ้มที่ลบ:"
 
 #: ../lib/rb-cut-and-paste-code.c:94
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:8
-#: ../plugins/iradio/rb-station-properties-dialog.c:500
-#: ../rhythmdb/rhythmdb.c:3625 ../widgets/rb-entry-view.c:940
-#: ../widgets/rb-entry-view.c:1564 ../widgets/rb-entry-view.c:1577
-#: ../widgets/rb-song-info.c:1504
+#: ../plugins/iradio/rb-station-properties-dialog.c:496
+#: ../rhythmdb/rhythmdb.c:3809 ../widgets/rb-entry-view.c:943
+#: ../widgets/rb-entry-view.c:1567 ../widgets/rb-entry-view.c:1580
+#: ../widgets/rb-song-info.c:1546
 msgid "Never"
 msgstr "ไม่เคย"
 
@@ -902,120 +966,206 @@ msgstr "%d %b %Ey"
 #.
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
-#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:669
+#: ../lib/rb-cut-and-paste-code.c:158 ../lib/rb-util.c:581
+#: ../plugins/android/rb-android-source.c:715
 #: ../plugins/artsearch/lastfm.py:163 ../plugins/artsearch/lastfm.py:164
+#: ../plugins/artsearch/songinfo.py:93
 #: ../plugins/audiocd/rb-audiocd-source.c:526
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:588
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:592
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:587
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:591
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:95
 #: ../plugins/audioscrobbler/rb-audioscrobbler-entry.c:102
-#: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:123
-#: ../plugins/generic-player/rb-generic-player-source.c:1157
-#: ../plugins/ipod/rb-ipod-source.c:657
-#: ../plugins/iradio/rb-iradio-source.c:539
-#: ../plugins/iradio/rb-iradio-source.c:1060
-#: ../plugins/iradio/rb-station-properties-dialog.c:489
-#: ../plugins/lyrics/lyrics.py:69 ../plugins/lyrics/lyrics.py:71
-#: ../plugins/mtpdevice/rb-mtp-source.c:649
-#: ../plugins/mtpdevice/rb-mtp-source.c:1132
-#: ../plugins/mtpdevice/rb-mtp-source.c:1518
-#: ../plugins/notification/rb-notification-plugin.c:496
+#: ../plugins/daap/rb-rhythmdb-dmap-db-adapter.c:132
+#: ../plugins/generic-player/rb-generic-player-source.c:1033
+#: ../plugins/ipod/rb-ipod-source.c:651
+#: ../plugins/iradio/rb-iradio-source.c:525
+#: ../plugins/iradio/rb-iradio-source.c:1044
+#: ../plugins/iradio/rb-station-properties-dialog.c:485
+#: ../plugins/lyrics/lyrics.py:70 ../plugins/lyrics/lyrics.py:72
+#: ../plugins/mtpdevice/rb-mtp-source.c:645
+#: ../plugins/mtpdevice/rb-mtp-source.c:1144
+#: ../plugins/mtpdevice/rb-mtp-source.c:1450
+#: ../plugins/notification/rb-notification-plugin.c:512
 #: ../podcast/rb-feed-podcast-properties-dialog.c:339
-#: ../podcast/rb-podcast-add-dialog.c:572 ../podcast/rb-podcast-manager.c:1891
-#: ../podcast/rb-podcast-manager.c:1990
-#: ../podcast/rb-podcast-properties-dialog.c:622
-#: ../podcast/rb-podcast-properties-dialog.c:717
-#: ../podcast/rb-podcast-source.c:797 ../remote/dbus/rb-client.c:156
-#: ../rhythmdb/rhythmdb.c:2019 ../rhythmdb/rhythmdb.c:2025
-#: ../rhythmdb/rhythmdb.c:2040 ../rhythmdb/rhythmdb.c:2074
-#: ../rhythmdb/rhythmdb.c:5389 ../rhythmdb/rhythmdb.c:5394
-#: ../rhythmdb/rhythmdb-tree.c:1351 ../rhythmdb/rhythmdb-tree.c:1355
-#: ../rhythmdb/rhythmdb-tree.c:1359 ../rhythmdb/rhythmdb-tree.c:1363
-#: ../shell/rb-shell-player.c:870 ../shell/rb-shell-player.c:2717
-#: ../shell/rb-shell-player.c:2719 ../widgets/rb-entry-view.c:992
-#: ../widgets/rb-entry-view.c:1014 ../widgets/rb-entry-view.c:1505
-#: ../widgets/rb-entry-view.c:1517 ../widgets/rb-entry-view.c:1529
-#: ../widgets/rb-header.c:1262 ../widgets/rb-header.c:1288
-#: ../widgets/rb-song-info.c:933 ../widgets/rb-song-info.c:945
-#: ../widgets/rb-song-info.c:1192 ../widgets/rb-song-info.c:1531
+#: ../podcast/rb-podcast-add-dialog.c:609 ../podcast/rb-podcast-manager.c:1925
+#: ../podcast/rb-podcast-manager.c:2024
+#: ../podcast/rb-podcast-properties-dialog.c:641
+#: ../podcast/rb-podcast-properties-dialog.c:705
+#: ../podcast/rb-podcast-source.c:794 ../remote/dbus/rb-client.c:215
+#: ../remote/dbus/rb-client.c:732 ../rhythmdb/rhythmdb.c:2068
+#: ../rhythmdb/rhythmdb.c:2074 ../rhythmdb/rhythmdb.c:2089
+#: ../rhythmdb/rhythmdb.c:2123 ../rhythmdb/rhythmdb.c:5573
+#: ../rhythmdb/rhythmdb.c:5579 ../rhythmdb/rhythmdb.c:5584
+#: ../rhythmdb/rhythmdb.c:5595 ../rhythmdb/rhythmdb.c:5599
+#: ../rhythmdb/rhythmdb-entry-type.c:301
+#: ../rhythmdb/rhythmdb-metadata-cache.c:308 ../rhythmdb/rhythmdb-tree.c:1360
+#: ../rhythmdb/rhythmdb-tree.c:1364 ../rhythmdb/rhythmdb-tree.c:1368
+#: ../rhythmdb/rhythmdb-tree.c:1372 ../shell/rb-shell-player.c:869
+#: ../shell/rb-shell-player.c:2714 ../shell/rb-shell-player.c:2716
+#: ../widgets/rb-entry-view.c:995 ../widgets/rb-entry-view.c:1017
+#: ../widgets/rb-entry-view.c:1508 ../widgets/rb-entry-view.c:1520
+#: ../widgets/rb-entry-view.c:1532 ../widgets/rb-header.c:1274
+#: ../widgets/rb-header.c:1300 ../widgets/rb-song-info.c:950
+#: ../widgets/rb-song-info.c:962 ../widgets/rb-song-info.c:1234
+#: ../widgets/rb-song-info.c:1573
 msgid "Unknown"
 msgstr "ไม่ทราบ"
 
-#: ../lib/rb-file-helpers.c:420
+#: ../lib/rb-file-helpers.c:471
 #, c-format
 msgid "Too many symlinks"
 msgstr "symlink เยอะเกินไป"
 
-#: ../lib/rb-file-helpers.c:1254
+#: ../lib/rb-file-helpers.c:1305
 #, c-format
 msgid "Cannot get free space at %s: %s"
 msgstr "ไม่สามารถขอเนื้อที่ว่างที่ %s: %s"
 
-#: ../lib/rb-util.c:650 ../plugins/context/tmpl/album-tmpl.html:21
-#: ../remote/dbus/rb-client.c:158
+#: ../lib/rb-util.c:562 ../plugins/context/tmpl/album-tmpl.html:21
+#: ../remote/dbus/rb-client.c:217
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: ../lib/rb-util.c:652 ../plugins/context/tmpl/album-tmpl.html:19
-#: ../remote/dbus/rb-client.c:160
+#: ../lib/rb-util.c:564 ../plugins/context/tmpl/album-tmpl.html:19
+#: ../remote/dbus/rb-client.c:219
 #, c-format
 msgid "%d:%02d:%02d"
 msgstr "%d:%02d:%02d"
 
-#: ../lib/rb-util.c:716
+#: ../lib/rb-util.c:628
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "เหลืออีก %d:%02d จาก %d:%02d"
 
-#: ../lib/rb-util.c:720
+#: ../lib/rb-util.c:632
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d remaining"
 msgstr "เหลืออีก %d:%02d:%02d จาก %d:%02d:%02d"
 
-#: ../lib/rb-util.c:725
+#: ../lib/rb-util.c:637
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d จาก %d:%02d"
 
-#: ../lib/rb-util.c:729
+#: ../lib/rb-util.c:641
 #, c-format
 msgid "%d:%02d:%02d of %d:%02d:%02d"
 msgstr "%d:%02d:%02d จาก %d:%02d:%02d"
 
-#: ../metadata/rb-metadata-gst.c:499
+#: ../metadata/rb-metadata-gst.c:509
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
 msgstr "ไม่สามารถเขียนแท็กลงในแฟ้มนี้ได้ เนื่องจากแฟ้มมีสตรีมหลายสตรีม"
 
-#: ../metadata/rb-metadata-gst.c:539
+#: ../metadata/rb-metadata-gst.c:549
 #, c-format
 msgid ""
 "Unable to write tags to this file as it is not encoded in a supported format"
 msgstr "ไม่สามารถเขียนแท็กลงในแฟ้มนี้ได้ เนื่องจากแฟ้มไม่ใช่ฟอร์แมตที่โปรแกรมรองรับ"
 
-#: ../metadata/rb-metadata-gst.c:671
+#: ../metadata/rb-metadata-gst.c:681
 #, c-format
 msgid "Failed to create a source element; check your installation"
 msgstr "ไม่สามารถสร้างองค์ประกอบ source กรุณาตรวจสอบการติดตั้ง"
 
-#: ../metadata/rb-metadata-gst.c:681
+#: ../metadata/rb-metadata-gst.c:691
 #, c-format
 msgid ""
 "Failed to create the 'decodebin' element; check your GStreamer installation"
 msgstr "ไม่สามารถสร้างองค์ประกอบ 'decodebin' กรุณาตรวจสอบการติดตั้ง GStreamer"
 
-#: ../metadata/rb-metadata-gst.c:690
+#: ../metadata/rb-metadata-gst.c:700
 #, c-format
 msgid ""
 "Failed to create the 'giostreamsink' element; check your GStreamer "
 "installation"
 msgstr "ไม่สามารถสร้างองค์ประกอบ 'giostreamsink' กรุณาตรวจสอบการติดตั้ง GStreamer"
 
-#: ../metadata/rb-metadata-gst.c:773
+#: ../metadata/rb-metadata-gst.c:783
 #, c-format
 msgid "File corrupted during write"
 msgstr "แฟ้มเสียหายขณะเขียน"
+
+#: ../plugins/android/android.plugin.in.h:1
+#| msgid "Invalid writer device: %s"
+msgid "Android devices"
+msgstr "อุปกรณ์แอนดรอยด์"
+
+#: ../plugins/android/android.plugin.in.h:2
+msgid "Support for Android 4.0+ devices (via MTP)"
+msgstr "สนับสนุนระบบปฎิบัติการแอนดรอยด์ตั้งแต่เวอร์ชั่น 4.0 (ผ่าน MTP)"
+
+#: ../plugins/android/android-info.ui.h:1
+#: ../plugins/generic-player/generic-player-info.ui.h:1
+#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:1
+msgid "Model:"
+msgstr "รุ่น:"
+
+#: ../plugins/android/android-info.ui.h:2
+#: ../plugins/generic-player/generic-player-info.ui.h:2
+#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:2
+msgid "Serial number:"
+msgstr "หมายเลขลำดับผลิตภัณฑ์:"
+
+#: ../plugins/android/android-info.ui.h:3
+#: ../plugins/generic-player/generic-player-info.ui.h:3
+#: ../plugins/mtpdevice/mtp-info.ui.h:4
+msgid "Manufacturer:"
+msgstr "ผู้ผลิต:"
+
+#: ../plugins/android/android-info.ui.h:4
+#: ../plugins/generic-player/generic-player-info.ui.h:4
+#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:5
+msgid "Audio formats:"
+msgstr "รูปแบบแฟ้มเสียง:"
+
+#: ../plugins/android/android-info.ui.h:5
+#: ../plugins/generic-player/generic-player-info.ui.h:5
+#: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:6
+msgid "System"
+msgstr "ระบบ"
+
+#: ../plugins/android/android-info.ui.h:6
+#: ../plugins/generic-player/generic-player-info.ui.h:6
+#: ../plugins/mtpdevice/mtp-info.ui.h:7
+msgid "Device _name:"
+msgstr "_ชื่ออุปกรณ์:"
+
+#: ../plugins/android/android-info.ui.h:7
+#: ../plugins/generic-player/generic-player-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:8
+msgid "Tracks:"
+msgstr "เพลง:"
+
+#: ../plugins/android/android-info.ui.h:8
+#: ../plugins/generic-player/generic-player-info.ui.h:8
+#: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:10
+msgid "Playlists:"
+msgstr "รายการเพลง:"
+
+#: ../plugins/android/rb-android-source.c:203
+msgid ""
+"No storage areas found on this device. You may need to unlock it and enable "
+"MTP."
+msgstr "ไม่พบส่วนจัดเก็บข้อมูลบนอุปกรณ์ คุณอาจจะต้องปลดล็อกอุปกรณ์ และเปิดความสามารถ MTP"
+
+#: ../plugins/android/rb-android-source.c:391
+#: ../plugins/generic-player/rb-generic-player-source.c:565
+#, c-format
+msgid "Scanning %s"
+msgstr "กำลังสำรวจ %s"
+
+#: ../plugins/android/rb-android-source.c:414
+msgid "Error mounting Android device"
+msgstr "เกิดข้อผิดพลาดขณะเชื่อมต่ออุปกรณ์แอนดรอยด์"
+
+#: ../plugins/android/rb-android-source.c:809
+#: ../plugins/mtpdevice/rb-mtp-source.c:1138
+#: ../sources/rb-library-source.c:1198 ../sources/rb-library-source.c:1202
+#: ../sources/rb-transfer-target.c:182
+msgid "Error transferring track"
+msgstr "เกิดข้อผิดพลาดขณะถ่ายโอนเพลง"
 
 #: ../plugins/artsearch/artsearch.plugin.in.h:1
 msgid "Cover art search"
@@ -1024,6 +1174,24 @@ msgstr "ค้นหาภาพปก"
 #: ../plugins/artsearch/artsearch.plugin.in.h:2
 msgid "Fetch album covers from the Internet"
 msgstr "ดึงภาพปกอัลบั้มจากอินเทอร์เน็ต"
+
+#: ../plugins/artsearch/songinfo.py:56
+msgid "_Fetch"
+msgstr "_ดึง"
+
+#: ../plugins/artsearch/songinfo.py:60
+msgid "_Browse"
+msgstr "เ_รียกดู"
+
+#: ../plugins/artsearch/songinfo.py:134
+#| msgid "Select A Folder"
+msgid "Select new artwork"
+msgstr "เลือกภาพปกใหม่"
+
+#: ../plugins/artsearch/songinfo.py:136
+#| msgid "Select _All"
+msgid "_Select"
+msgstr "เ_ลือก"
 
 #: ../plugins/audiocd/album-info.ui.h:1
 msgid "A_lbum:"
@@ -1111,15 +1279,15 @@ msgstr "มีข้อมูลอัลบั้มหลายอัลบั
 msgid "Track %u"
 msgstr "เพลงที่ %u"
 
-#: ../plugins/audiocd/rb-musicbrainz-lookup.c:406
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:410
 msgid "Not found"
 msgstr "ไม่พบ"
 
-#: ../plugins/audiocd/rb-musicbrainz-lookup.c:411
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:415
 msgid "Unable to connect to Musicbrainz server"
 msgstr "ไม่สามารถเชื่อมต่อไปยังแม่ข่าย Musicbrainz"
 
-#: ../plugins/audiocd/rb-musicbrainz-lookup.c:416
+#: ../plugins/audiocd/rb-musicbrainz-lookup.c:420
 msgid "Musicbrainz server error"
 msgstr "เกิดข้อผิดพลาดที่แม่ข่าย Musicbrainz"
 
@@ -1169,7 +1337,7 @@ msgid "Last submission time:"
 msgstr "เวลาที่ส่งข้อมูลล่าสุด:"
 
 #: ../plugins/audioscrobbler/audioscrobbler-profile.ui.h:9
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:875
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:878
 msgid "Disabled"
 msgstr "ปิดใช้งาน"
 
@@ -1209,86 +1377,86 @@ msgstr "อันดับเพลง"
 msgid "Loved Tracks"
 msgstr "เพลงโปรด"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:497
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:496
 msgid "OK"
 msgstr "เรียบร้อย"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:500
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:499
 msgid "Logging in"
 msgstr "กำลังเข้าระบบ"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:503
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:502
 msgid "Request failed"
 msgstr "การร้องขอผิดพลาด"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:506
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:505
 msgid "Authentication error"
 msgstr "ยืนยันตัวบุคคลผิดพลาด"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:509
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:508
 msgid "Clock is not set correctly"
 msgstr "นาฬิกาตั้งเวลาไม่ถูกต้อง"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:512
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:511
 msgid "This version of Rhythmbox has been banned."
 msgstr "Rhythmbox รุ่นนี้ถูกห้ามไม่ให้เข้า"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler.c:515
+#: ../plugins/audioscrobbler/rb-audioscrobbler.c:514
 msgid "Track submission failed too many times"
 msgstr "ส่งเพลงไม่สำเร็จเป็นจำนวนครั้งมากเกินไป"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:686
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:689
 msgid "Love"
 msgstr "โปรด"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:690
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:693
 msgid "Ban"
 msgstr "ห้าม"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:694
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:697
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:3
 msgid "Download"
 msgstr "ดาวน์โหลด"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:792
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:795
 msgid "You are not currently logged in."
 msgstr "คุณยังไม่ได้เข้าระบบ"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:793
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:811
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:818
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:796
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:814
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:821
 msgid "Log in"
 msgstr "เข้าระบบ"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:799
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:802
 msgid "Waiting for authentication..."
 msgstr "กำลังรอยืนยันตัวบุคคล..."
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:800
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:803
 msgid "Cancel"
 msgstr "ยกเลิก"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:810
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:813
 msgid "Authentication error. Please try logging in again."
 msgstr "การยืนยันตัวบุคคลผิดพลาด กรุณาลองใหม่อีกครั้ง"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:817
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:820
 msgid "Connection error. Please try logging in again."
 msgstr "เกิดข้อผิดพลาดขณะเชื่อมต่อ กรุณาลองเข้าระบบใหม่อีกครั้ง"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1227
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1230
 msgid "My Library"
 msgstr "คลังเพลงของฉัน"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1235
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1238
 msgid "My Recommendations"
 msgstr "เพลงแนะนำของฉัน"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1243
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1246
 msgid "My Neighbourhood"
 msgstr "เพื่อนบ้านของฉัน"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1410
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1413
 #, c-format
 msgid "%s plays"
 msgstr "เล่น %s ครั้ง"
@@ -1296,16 +1464,16 @@ msgstr "เล่น %s ครั้ง"
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This is the label for menu item which when activated will take the user to the
 #. * artist/track's page on the service's website.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1667
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1670
 #, c-format
 msgid "_View on %s"
 msgstr "ดูใ_น %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1684
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1687
 msgid "Listen to _Similar Artists Radio"
 msgstr "ฟังวิทยุของศิลปินที่_คล้ายกัน"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1698
+#: ../plugins/audioscrobbler/rb-audioscrobbler-profile-page.c:1701
 msgid "Listen to _Top Fans Radio"
 msgstr "ฟังวิทยุของแ_ฟนเพลงอันดับต้น"
 
@@ -1373,6 +1541,9 @@ msgstr "แท็กของเพลง:"
 msgid "Listened by Group:"
 msgstr "ฟังโดยกลุ่ม:"
 
+#. Translators: I have chosen these names for the radio stations based upon
+#. * what last.fm's website uses or what I thought to be sensible.
+#.
 #. Translators: station is built from artists similar to the artist %s
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:123
 #, c-format
@@ -1419,7 +1590,7 @@ msgstr "วิทยุผสมของ %s"
 
 #. Translators: station is built from the tracks which have been "tagged" with %s.
 #. * Last.fm lets users "tag" songs with any string they wish. Tags are usually genres,
-#. * but nationalities, record labels, decades and very random words are also commmon
+#. * but nationalities, record labels, decades and very random words are also common
 #: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:141
 #, c-format
 msgid "%s Tag Radio"
@@ -1431,12 +1602,12 @@ msgstr "วิทยุสำหรับแท็ก %s"
 msgid "%s Group Radio"
 msgstr "วิทยุของกลุ่ม %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:695
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:693
 msgid "Error tuning station: no response"
 msgstr "เกิดข้อผิดพลาดขณะเปลี่ยนสถานี: ไม่ได้รับการตอบรับ"
 
 #. Invalid station url
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:727
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:725
 msgid "Invalid station URL"
 msgstr "URL ของสถานีไม่ถูกต้อง"
 
@@ -1444,44 +1615,37 @@ msgstr "URL ของสถานีไม่ถูกต้อง"
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This message indicates that to listen to this radio station the user needs to be
 #. * a paying subscriber to the service.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:733
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:731
 #, c-format
 msgid "This station is only available to %s subscribers"
 msgstr "สถานีนี้ฟังได้เฉพาะสมาชิก %s เท่านั้น"
 
 #. Not enough content
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:737
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:735
 msgid "Not enough content to play station"
 msgstr "มีเนื้อหาไม่เพียงพอที่จะเล่นจากสถานีนี้"
 
 #. Deprecated station
 #. Translators: %s is the name of the audioscrobbler service, for example "Last.fm".
 #. * This message indicates that the service has deprecated this type of station.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:742
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:740
 #, c-format
 msgid "%s no longer supports this type of station"
 msgstr "%s ไม่รองรับสถานีประเภทนี้อีกต่อไป"
 
 #. Other error
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:746
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:744
 #, c-format
 msgid "Error tuning station: %i - %s"
 msgstr "เกิดข้อผิดพลาดขณะเปลี่ยนสถานี: %i - %s"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:756
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:754
 msgid "Error tuning station: unexpected response"
 msgstr "เกิดข้อผิดพลาดขณะเปลี่ยนสถานี: ไม่เข้าใจข้อมูลที่ได้รับ"
 
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:761
+#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:759
 msgid "Error tuning station: invalid response"
 msgstr "เกิดข้อผิดพลาดขณะเปลี่ยนสถานี: ได้รับคำตอบที่ผิดพลาดใช้การไม่ได้"
-
-#. We could be calling either radio.tune or radio.getPlaylist methods.
-#. * "Tuning station" seems like a user friendly message to display for both cases.
-#.
-#: ../plugins/audioscrobbler/rb-audioscrobbler-radio-source.c:1024
-msgid "Tuning station"
-msgstr "กำลังเปลี่ยนสถานี"
 
 #: ../plugins/brasero-disc-recorder/cd-recorder.plugin.in.h:1
 msgid "Audio CD Recorder"
@@ -1541,7 +1705,7 @@ msgstr "กำลังโหลดอัลบั้มยอดนิยมข
 
 #: ../plugins/context/ArtistTab.py:59
 #: ../plugins/magnatune/magnatune-toolbar.ui.h:4
-#: ../sources/rb-library-source.c:133 ../widgets/rb-entry-view.c:1451
+#: ../sources/rb-library-source.c:125 ../widgets/rb-entry-view.c:1454
 #: ../widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "ศิลปิน"
@@ -1576,8 +1740,8 @@ msgstr "ลิงก์"
 msgid "No artist specified."
 msgstr "ไม่ระบุศิลปิน"
 
-#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:240
-#: ../plugins/lyrics/lyrics.py:325
+#: ../plugins/context/LyricsTab.py:53 ../plugins/lyrics/lyrics.py:306
+#: ../plugins/lyrics/lyrics.py:391
 msgid "Lyrics"
 msgstr "เนื้อเพลง"
 
@@ -1683,11 +1847,11 @@ msgstr "ยกเลิกการเชื่อมต่อ"
 msgid "Connect to DAAP share..."
 msgstr "เชื่อมต่อไปยังแหล่งใช้ร่วม DAAP..."
 
-#: ../plugins/daap/rb-daap-plugin.c:521
+#: ../plugins/daap/rb-daap-plugin.c:511
 msgid "New DAAP share"
 msgstr "แหล่งใช้ร่วม DAAP แหล่งใหม่"
 
-#: ../plugins/daap/rb-daap-plugin.c:521
+#: ../plugins/daap/rb-daap-plugin.c:511
 msgid "Host:port of DAAP share:"
 msgstr "โฮสต์:พอร์ต ของแหล่งใช้ร่วม DAAP"
 
@@ -1713,15 +1877,15 @@ msgstr "ไม่สามารถเชื่อมต่อไปยังแ
 msgid "Connecting to music share"
 msgstr "กำลังเชื่อมต่อไปยังแหล่งเพลงใช้ร่วม"
 
-#: ../plugins/daap/rb-dacp-pairing-page.c:397
+#: ../plugins/daap/rb-dacp-pairing-page.c:392
 msgid "Connecting..."
 msgstr "กำลังเชื่อมต่อ..."
 
-#: ../plugins/daap/rb-dacp-pairing-page.c:399
+#: ../plugins/daap/rb-dacp-pairing-page.c:394
 msgid "Could not pair with this Remote."
 msgstr "ไม่สามารถจับคู่กับเครื่องปลายทางนี้ได้"
 
-#: ../plugins/daap/rb-dacp-pairing-page.c:617
+#: ../plugins/daap/rb-dacp-pairing-page.c:612
 msgid "Remotes"
 msgstr "เครื่องปลายทาง"
 
@@ -1748,7 +1912,7 @@ msgid "Genres"
 msgstr "แนวเพลง"
 
 #: ../plugins/dbus-media-server/rb-dbus-media-server-plugin.c:2409
-#: ../shell/rb-playlist-manager.c:1081 ../sources/rb-display-page-group.c:92
+#: ../shell/rb-playlist-manager.c:1075 ../sources/rb-display-page-group.c:92
 msgid "Playlists"
 msgstr "รายการเพลง"
 
@@ -1773,46 +1937,6 @@ msgstr "เพิ่มสถานีวิทยุ FM"
 msgid "Frequency of radio station"
 msgstr "ความถี่ของสถานีวิทยุ"
 
-#: ../plugins/generic-player/generic-player-info.ui.h:1
-#: ../plugins/mtpdevice/mtp-info.ui.h:1
-msgid "Device _name:"
-msgstr "_ชื่ออุปกรณ์:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:2
-#: ../plugins/ipod/ipod-info.ui.h:2 ../plugins/mtpdevice/mtp-info.ui.h:2
-msgid "Tracks:"
-msgstr "เพลง:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:3
-#: ../plugins/ipod/ipod-info.ui.h:4 ../plugins/mtpdevice/mtp-info.ui.h:4
-msgid "Playlists:"
-msgstr "รายการเพลง:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:4
-#: ../plugins/ipod/ipod-info.ui.h:10 ../plugins/mtpdevice/mtp-info.ui.h:5
-msgid "Model:"
-msgstr "รุ่น:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:5
-#: ../plugins/ipod/ipod-info.ui.h:9 ../plugins/mtpdevice/mtp-info.ui.h:6
-msgid "Serial number:"
-msgstr "หมายเลขลำดับผลิตภัณฑ์:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:6
-#: ../plugins/mtpdevice/mtp-info.ui.h:8
-msgid "Manufacturer:"
-msgstr "ผู้ผลิต:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:7
-#: ../plugins/ipod/ipod-info.ui.h:11 ../plugins/mtpdevice/mtp-info.ui.h:9
-msgid "Audio formats:"
-msgstr "รูปแบบแฟ้มเสียง:"
-
-#: ../plugins/generic-player/generic-player-info.ui.h:8
-#: ../plugins/ipod/ipod-info.ui.h:12 ../plugins/mtpdevice/mtp-info.ui.h:10
-msgid "System"
-msgstr "ระบบ"
-
 #: ../plugins/generic-player/generic-player.plugin.in.h:1
 msgid "Portable Players"
 msgstr "เครื่องเล่นพกพา"
@@ -1821,25 +1945,20 @@ msgstr "เครื่องเล่นพกพา"
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "การรองรับอุปกรณ์เล่นเพลงครอบจักรวาล (รวมทั้ง PSP และโนเกีย 770)"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:295
+#: ../plugins/generic-player/rb-generic-player-source.c:294
 #: ../plugins/ipod/rb-ipod-source.c:333
 #, c-format
 msgid "New Playlist on %s"
 msgstr "สร้างรายการเพลงใหม่ใน %s"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:339
-#: ../sources/rb-library-source.c:407
+#: ../plugins/generic-player/rb-generic-player-source.c:338
+#: ../sources/rb-library-source.c:375
 msgid "Add to New Playlist"
 msgstr "เพิ่มเข้าในรายการเพลงใหม่"
 
-#: ../plugins/generic-player/rb-generic-player-source.c:640
-#, c-format
-msgid "Scanning %s"
-msgstr "กำลังสำรวจ %s"
-
-#: ../plugins/generic-player/rb-generic-player-source.c:1446
-#: ../plugins/ipod/rb-ipod-source.c:2070
-#: ../plugins/mtpdevice/rb-mtp-source.c:1612
+#: ../plugins/generic-player/rb-generic-player-source.c:1370
+#: ../plugins/ipod/rb-ipod-source.c:2045
+#: ../plugins/mtpdevice/rb-mtp-source.c:1530
 msgid "Advanced"
 msgstr "ขั้นสูง"
 
@@ -1851,11 +1970,12 @@ msgstr "เครื่องมือท่องดูสื่อ Grilo"
 msgid "Browse various local and Internet media sources"
 msgstr "ท่องดูแหล่งสื่อต่างๆ ภายในเครื่องและบนอินเทอร์เน็ต"
 
-#: ../plugins/grilo/rb-grilo-source.c:385
+#: ../plugins/grilo/rb-grilo-source.c:403
+#: ../plugins/soundcloud/soundcloud.py:492
 msgid "Fetch more tracks"
 msgstr "ดึงเพลงเพิ่ม"
 
-#: ../plugins/grilo/rb-grilo-source.c:859
+#: ../plugins/grilo/rb-grilo-source.c:926
 #, c-format
 msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
@@ -1867,10 +1987,13 @@ msgid "IM Status"
 msgstr "สถานะ IM"
 
 #: ../plugins/im-status/im-status.plugin.in.h:2
+#| msgid ""
+#| "Updates IM status according to the current song (works with Empathy, "
+#| "Gossip, and Pidgin)"
 msgid ""
-"Updates IM status according to the current song (works with Empathy, Gossip, "
-"and Pidgin)"
-msgstr "ปรับข้อมูลสถานะ IM ตามเพลงที่เล่นอยู่ (ใช้ได้กับ Empathy, Gossip และ Pidgin)"
+"Updates IM status according to the current song (works with Empathy and "
+"Pidgin)"
+msgstr "ปรับข้อมูลสถานะ IM ตามเพลงที่เล่นอยู่ (ใช้ได้กับ Empathy และ Pidgin)"
 
 #. Translators: do not translate %(artist)s or %(title)s, they are
 #. string substitution markers (like %s) for the artist and title of
@@ -1910,7 +2033,7 @@ msgstr "♫ กำลังฟังเพลง... ♫"
 msgid "iPod _name:"
 msgstr "_ชื่อไอพอด:"
 
-#: ../plugins/ipod/ipod-info.ui.h:3 ../plugins/mtpdevice/mtp-info.ui.h:3
+#: ../plugins/ipod/ipod-info.ui.h:3 ../plugins/mtpdevice/mtp-info.ui.h:9
 msgid "Podcasts:"
 msgstr "พอดแคสต์:"
 
@@ -1926,7 +2049,7 @@ msgstr "จุดเมานท์:"
 msgid "Database version:"
 msgstr "รุ่นของฐานข้อมูล:"
 
-#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:7
+#: ../plugins/ipod/ipod-info.ui.h:8 ../plugins/mtpdevice/mtp-info.ui.h:3
 msgid "Firmware version:"
 msgstr "รุ่นของเฟิร์มแวร์:"
 
@@ -1934,19 +2057,19 @@ msgstr "รุ่นของเฟิร์มแวร์:"
 msgid "iPod detected"
 msgstr "ตรวจพบไอพอด"
 
-#: ../plugins/ipod/ipod-init.ui.h:2
+#: ../plugins/ipod/ipod-init.ui.h:3
 msgid "_Initialize"
 msgstr "_จัดข้อมูลตั้งต้น"
 
-#: ../plugins/ipod/ipod-init.ui.h:3
+#: ../plugins/ipod/ipod-init.ui.h:4
 msgid "_Name:"
 msgstr "_ชื่อ:"
 
-#: ../plugins/ipod/ipod-init.ui.h:4
+#: ../plugins/ipod/ipod-init.ui.h:5
 msgid "_Model:"
 msgstr "รุ่_น:"
 
-#: ../plugins/ipod/ipod-init.ui.h:5
+#: ../plugins/ipod/ipod-init.ui.h:6
 msgid ""
 "Rhythmbox has detected a device that is probably an uninitialized or "
 "corrupted iPod. It must be initialized before Rhythmbox can use it, but this "
@@ -1960,7 +2083,7 @@ msgstr ""
 "Rhythmbox จัดข้อมูลตั้งต้นให้กับไอพอดนี้ ก็กรุณาป้อนข้อมูลข้างล่างนี้ แต่ถ้าอุปกรณ์นี้ไม่ใช่ไอพอด "
 "หรือถ้าคุณไม่ได้ต้องการจัดข้อมูลตั้งต้นให้กับอุปกรณ์ ก็กรุณากดยกเลิก"
 
-#: ../plugins/ipod/ipod-init.ui.h:6
+#: ../plugins/ipod/ipod-init.ui.h:7
 msgid "Do you want to initialize your iPod?"
 msgstr "ต้องการจัดข้อมูลตั้งต้นให้กับไอพอดของคุณหรือไม่?"
 
@@ -1976,14 +2099,13 @@ msgstr "การรองรับอุปกรณ์ไอพอดของ
 msgid "New playlist"
 msgstr "เพิ่มรายการเพลงใหม่"
 
-#: ../plugins/ipod/rb-ipod-source.c:460
+#: ../plugins/ipod/rb-ipod-source.c:461
 msgid "Unable to initialize new iPod"
 msgstr "ไม่สามารถจัดข้อมูลตั้งต้นให้กับไอพอด"
 
-#: ../plugins/ipod/rb-ipod-source.c:1503
-#: ../podcast/rb-podcast-main-source.c:76
-#: ../sources/sync/rb-sync-settings-ui.c:262
+#: ../plugins/ipod/rb-ipod-source.c:1492 ../podcast/rb-podcast-main-source.c:76
 #: ../sources/sync/rb-sync-settings-ui.c:263
+#: ../sources/sync/rb-sync-settings-ui.c:264
 #: ../sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
 msgstr "พอดแคสต์"
@@ -1997,24 +2119,24 @@ msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "การรองรับสถานีกระจายเสียงที่แพร่สัญญาณผ่านอินเทอร์เน็ต"
 
 #: ../plugins/iradio/iradio-popup.ui.h:1 ../shell/rb-shell-clipboard.c:258
-#: ../sources/rb-source.c:1216
+#: ../sources/rb-source.c:1230 ../widgets/rb-query-creator.c:802
 msgid "Remove"
 msgstr "เอาออก"
 
-#: ../plugins/iradio/rb-iradio-source.c:346 ../widgets/rb-entry-view.c:1481
+#: ../plugins/iradio/rb-iradio-source.c:332 ../widgets/rb-entry-view.c:1484
 #: ../widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "แนวเพลง"
 
-#: ../plugins/iradio/rb-iradio-source.c:366
+#: ../plugins/iradio/rb-iradio-source.c:352
 msgid "Search your internet radio stations"
 msgstr "ค้นหาสถานีวิทยุอินเทอร์เน็ต"
 
-#: ../plugins/iradio/rb-iradio-source.c:462
+#: ../plugins/iradio/rb-iradio-source.c:448
 msgid "Radio"
 msgstr "วิทยุ"
 
-#: ../plugins/iradio/rb-iradio-source.c:603
+#: ../plugins/iradio/rb-iradio-source.c:588
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -2022,35 +2144,35 @@ msgstr[0] "%d สถานี"
 msgstr[1] "%d สถานี"
 
 #. should prevent multiple dialogs?  going to kill this nonsense anyway soon..
-#: ../plugins/iradio/rb-iradio-source.c:974
-#: ../plugins/iradio/rb-station-properties-dialog.c:403
+#: ../plugins/iradio/rb-iradio-source.c:958
+#: ../plugins/iradio/rb-station-properties-dialog.c:399
 msgid "New Internet Radio Station"
 msgstr "เพิ่มสถานีวิทยุอินเทอร์เน็ต"
 
-#: ../plugins/iradio/rb-iradio-source.c:974
+#: ../plugins/iradio/rb-iradio-source.c:958
 msgid "URL of internet radio station:"
 msgstr "URL ของสถานีวิทยุอินเทอร์เน็ต:"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:399
+#: ../plugins/iradio/rb-station-properties-dialog.c:395
 #: ../podcast/rb-feed-podcast-properties-dialog.c:215
-#: ../podcast/rb-podcast-properties-dialog.c:507
-#: ../sources/rb-media-player-source.c:420 ../widgets/rb-song-info.c:1113
+#: ../podcast/rb-podcast-properties-dialog.c:526
+#: ../sources/rb-media-player-source.c:567 ../widgets/rb-song-info.c:1151
 #, c-format
 msgid "%s Properties"
 msgstr "คุณสมบัติของ %s"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:491
-#: ../podcast/rb-podcast-properties-dialog.c:620
-#: ../widgets/rb-entry-view.c:1018 ../widgets/rb-song-info.c:1194
+#: ../plugins/iradio/rb-station-properties-dialog.c:487
+#: ../podcast/rb-podcast-properties-dialog.c:639
+#: ../widgets/rb-entry-view.c:1021 ../widgets/rb-song-info.c:1236
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:582
+#: ../plugins/iradio/rb-station-properties-dialog.c:578
 msgid "Unable to change station property"
 msgstr "ไม่สามารถเปลี่ยนคุณสมบัติของสถานี"
 
-#: ../plugins/iradio/rb-station-properties-dialog.c:582
+#: ../plugins/iradio/rb-station-properties-dialog.c:578
 #, c-format
 msgid "Unable to change station URI to %s, as that station already exists"
 msgstr "ไม่สามารถเปลี่ยน URI ของสถานีเป็น %s เนื่องจากมีสถานีดังกล่าวอยู่ก่อนแล้ว"
@@ -2067,11 +2189,33 @@ msgstr "LIRC"
 msgid "Control Rhythmbox using an infrared remote control"
 msgstr "ควบคุม Rhythmbox โดยใช้รีโมทคอนโทรลแบบอินฟราเรด"
 
+#: ../plugins/listenbrainz/listenbrainz.plugin.in.h:1
+msgid "ListenBrainz"
+msgstr "ListenBrainz"
+
+#: ../plugins/listenbrainz/listenbrainz.plugin.in.h:2
+msgid "Submit your listens to ListenBrainz"
+msgstr "ส่งข้อมูลการฟังเพลงไปที่ ListenBrainz"
+
+#: ../plugins/listenbrainz/settings.ui.h:1
+#| msgid "Username:"
+msgid "User token:"
+msgstr "ชื่อผู้ใช้:"
+
+#: ../plugins/listenbrainz/settings.ui.h:2
+msgid ""
+"To submit your listens to ListenBrainz, enter your ListenBrainz user token "
+"below. You can see your user token in your <a href=\"https://listenbrainz."
+"org/profile/\">user profile</a>."
+msgstr ""
+"ถ้าต้องการส่งข้อมูลการฟังเพลงไปที่ ListenBrainz กรุณากรอกข้อมูลผู้ใช้ของ ListenBrainz "
+"ข้างล่าง คุณสามารถดูข้อมูล<a href=\"https://listenbrainz.org/profile/\">ชื่อผู้ใช้ที่นี่</a>"
+
 #: ../plugins/lyrics/LyricsConfigureDialog.py:103
 msgid "Choose lyrics folder..."
 msgstr "เลือกโฟลเดอร์เนื้อเพลง..."
 
-#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:348
+#: ../plugins/lyrics/lyrics.plugin.in.h:1 ../plugins/lyrics/lyrics.py:414
 msgid "Song Lyrics"
 msgstr "เนื้อเพลง"
 
@@ -2091,24 +2235,20 @@ msgstr "เ_รียกดู..."
 msgid "Lyrics Folder"
 msgstr "โฟลเดอร์เนื้อเพลง"
 
-#: ../plugins/lyrics/lyrics.py:157 ../plugins/lyrics/lyrics.py:159
-#: ../plugins/lyrics/lyrics.py:168
+#: ../plugins/lyrics/lyrics.py:169 ../plugins/lyrics/lyrics.py:217
+#: ../plugins/lyrics/lyrics.py:227
 msgid "No lyrics found"
 msgstr "ไม่พบเนื้อเพลง"
 
-#: ../plugins/lyrics/lyrics.py:202
-msgid "_Save"
-msgstr "_บันทึก"
-
-#: ../plugins/lyrics/lyrics.py:207 ../plugins/lyrics/lyrics.py:220
+#: ../plugins/lyrics/lyrics.py:272 ../plugins/lyrics/lyrics.py:285
 msgid "_Edit"
 msgstr "แ_ก้ไข"
 
-#: ../plugins/lyrics/lyrics.py:222
+#: ../plugins/lyrics/lyrics.py:287
 msgid "_Search again"
 msgstr "_ค้นหาอีกครั้ง"
 
-#: ../plugins/lyrics/lyrics.py:280
+#: ../plugins/lyrics/lyrics.py:346
 msgid "Searching for lyrics..."
 msgstr "กำลังค้นหาเนื้อเพลง..."
 
@@ -2199,204 +2339,204 @@ msgid ""
 msgstr "เพิ่มการรองรับการเล่นและซื้อเพลงจากร้านเพลงออนไลน์ Magnatune ใน Rhythmbox"
 
 #: ../plugins/magnatune/magnatune-prefs.ui.h:1
-msgid "Magnatune Information"
-msgstr "ข้อมูลสำหรับ Magnatune"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:2
-msgid "I don't have a Magnatune account"
-msgstr "ฉันไม่มีบัญชี Magnatune"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:3
-msgid "I have a streaming account"
-msgstr "ฉันมีบัญชีการสตรีม"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:4
-msgid "I have a download account"
-msgstr "ฉันมีบัญชีดาวน์โหลด"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:5
-msgid "Username:"
-msgstr "ชื่อผู้ใช้:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:6
-msgid "Password:"
-msgstr "รหัสผ่าน:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:7
-msgid "Preferred audio _format:"
-msgstr "รูปแ_บบเสียงที่เลือกใช้:"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:8
-msgid "Get an account at "
-msgstr "เปิดบัญชีที่"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:9
-msgid "http://magnatune.com/compare_plans"
-msgstr "http://magnatune.com/compare_plans"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:10
-msgid "Find out about Magnatune at "
-msgstr "ดูรายละเอียดเพิ่มเติมของ Magnatune ที่ "
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:11
-msgid "http://www.magnatune.com/info/"
-msgstr "http://www.magnatune.com/info/"
-
-#: ../plugins/magnatune/magnatune-prefs.ui.h:12
 msgid "January (01)"
 msgstr "มกราคม (01)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:13
+#: ../plugins/magnatune/magnatune-prefs.ui.h:2
 msgid "February (02)"
 msgstr "กุมภาพันธ์ (02)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:14
+#: ../plugins/magnatune/magnatune-prefs.ui.h:3
 msgid "March (03)"
 msgstr "มีนาคม (03)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:15
+#: ../plugins/magnatune/magnatune-prefs.ui.h:4
 msgid "April (04)"
 msgstr "เมษายน (04)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:16
+#: ../plugins/magnatune/magnatune-prefs.ui.h:5
 msgid "May (05)"
 msgstr "พฤษภาคม (05)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:17
+#: ../plugins/magnatune/magnatune-prefs.ui.h:6
 msgid "June (06)"
 msgstr "มิถุนายน (06)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:18
+#: ../plugins/magnatune/magnatune-prefs.ui.h:7
 msgid "July (07)"
 msgstr "กรกฎาคม (07)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:19
+#: ../plugins/magnatune/magnatune-prefs.ui.h:8
 msgid "August (08)"
 msgstr "สิงหาคม (08)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:20
+#: ../plugins/magnatune/magnatune-prefs.ui.h:9
 msgid "September (09)"
 msgstr "กันยายน (09)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:21
+#: ../plugins/magnatune/magnatune-prefs.ui.h:10
 msgid "October (10)"
 msgstr "ตุลาคม (10)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:22
+#: ../plugins/magnatune/magnatune-prefs.ui.h:11
 msgid "November (11)"
 msgstr "พฤศจิกายน (11)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:23
+#: ../plugins/magnatune/magnatune-prefs.ui.h:12
 msgid "December (12)"
 msgstr "ธันวาคม (12)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:24
+#: ../plugins/magnatune/magnatune-prefs.ui.h:13
 msgid "$5 US"
 msgstr "$5 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:25
+#: ../plugins/magnatune/magnatune-prefs.ui.h:14
 msgid "$6 US"
 msgstr "$6 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:26
+#: ../plugins/magnatune/magnatune-prefs.ui.h:15
 msgid "$7 US"
 msgstr "$7 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:27
+#: ../plugins/magnatune/magnatune-prefs.ui.h:16
 msgid "$8 US (typical)"
 msgstr "$8 US (ธรรมดา)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:28
+#: ../plugins/magnatune/magnatune-prefs.ui.h:17
 msgid "$9 US"
 msgstr "$9 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:29
+#: ../plugins/magnatune/magnatune-prefs.ui.h:18
 msgid "$10 US (better than average)"
 msgstr "$10 US (ดีกว่าธรรมดา)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:30
+#: ../plugins/magnatune/magnatune-prefs.ui.h:19
 msgid "$11 US"
 msgstr "$11 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:31
+#: ../plugins/magnatune/magnatune-prefs.ui.h:20
 msgid "$12 US (generous)"
 msgstr "$12 US (เอื้อเฟื้อ)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:32
+#: ../plugins/magnatune/magnatune-prefs.ui.h:21
 msgid "$13 US"
 msgstr "$13 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:33
+#: ../plugins/magnatune/magnatune-prefs.ui.h:22
 msgid "$14 US"
 msgstr "$14 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:34
+#: ../plugins/magnatune/magnatune-prefs.ui.h:23
 msgid "$15 US (VERY generous!)"
 msgstr "$15 US (เอื้อเฟื้อมาก)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:35
+#: ../plugins/magnatune/magnatune-prefs.ui.h:24
 msgid "$16 US"
 msgstr "$16 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:36
+#: ../plugins/magnatune/magnatune-prefs.ui.h:25
 msgid "$17 US"
 msgstr "$17 US"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:37
+#: ../plugins/magnatune/magnatune-prefs.ui.h:26
 msgid "$18 US (We love you!)"
 msgstr "$18 US (เรารักคุณ)"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:38
+#: ../plugins/magnatune/magnatune-prefs.ui.h:27
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:39
+#: ../plugins/magnatune/magnatune-prefs.ui.h:28
 msgid "FLAC"
 msgstr "FLAC"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:40
+#: ../plugins/magnatune/magnatune-prefs.ui.h:29
 msgid "WAV"
 msgstr "WAV"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:41
+#: ../plugins/magnatune/magnatune-prefs.ui.h:30
 msgid "VBR MP3"
 msgstr "MP3 แบบ VBR"
 
-#: ../plugins/magnatune/magnatune-prefs.ui.h:42
+#: ../plugins/magnatune/magnatune-prefs.ui.h:31
 msgid "128K MP3"
 msgstr "MP3 แบบ 128K"
 
-#: ../plugins/magnatune/magnatune.py:120
+#: ../plugins/magnatune/magnatune-prefs.ui.h:32
+msgid "Magnatune Information"
+msgstr "ข้อมูลสำหรับ Magnatune"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:33
+msgid "I don't have a Magnatune account"
+msgstr "ฉันไม่มีบัญชี Magnatune"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:34
+msgid "I have a streaming account"
+msgstr "ฉันมีบัญชีการสตรีม"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:35
+msgid "I have a download account"
+msgstr "ฉันมีบัญชีดาวน์โหลด"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:36
+msgid "Username:"
+msgstr "ชื่อผู้ใช้:"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:37
+msgid "Password:"
+msgstr "รหัสผ่าน:"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:38
+msgid "Preferred audio _format:"
+msgstr "รูปแ_บบเสียงที่เลือกใช้:"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:39
+msgid "Get an account at "
+msgstr "เปิดบัญชีที่"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:40
+msgid "http://magnatune.com/compare_plans"
+msgstr "http://magnatune.com/compare_plans"
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:41
+msgid "Find out about Magnatune at "
+msgstr "ดูรายละเอียดเพิ่มเติมของ Magnatune ที่ "
+
+#: ../plugins/magnatune/magnatune-prefs.ui.h:42
+msgid "http://www.magnatune.com/info/"
+msgstr "http://www.magnatune.com/info/"
+
+#: ../plugins/magnatune/magnatune.py:121
 msgid "Magnatune"
 msgstr "Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:192
+#: ../plugins/magnatune/MagnatuneSource.py:190
 msgid "Couldn't download album"
 msgstr "ไม่สามารถดาวน์โหลดอัลบั้มเพลงได้"
 
-#: ../plugins/magnatune/MagnatuneSource.py:193
+#: ../plugins/magnatune/MagnatuneSource.py:191
 msgid "You must have a library location set to download an album."
 msgstr "คุณต้องกำหนดตำแหน่งของคลังเพลงไว้ จึงจะดาวน์โหลดอัลบั้มเพลงได้"
 
-#: ../plugins/magnatune/MagnatuneSource.py:255
+#: ../plugins/magnatune/MagnatuneSource.py:253
 msgid "Unable to load catalog"
 msgstr "ไม่สามารถอ่านสารบัญเพลง"
 
-#: ../plugins/magnatune/MagnatuneSource.py:256
+#: ../plugins/magnatune/MagnatuneSource.py:254
 msgid ""
 "Rhythmbox could not understand the Magnatune catalog, please file a bug."
 msgstr "Rhythmbox อ่านสารบัญเพลงของ Magnatune ไม่เข้าใจ กรุณารายงานข้อผิดพลาดนี้"
 
-#: ../plugins/magnatune/MagnatuneSource.py:277
-#: ../plugins/magnatune/MagnatuneSource.py:334
+#: ../plugins/magnatune/MagnatuneSource.py:275
+#: ../plugins/magnatune/MagnatuneSource.py:332
 msgid "Loading Magnatune catalog"
 msgstr "กำลังอ่านสารบัญเพลงของ Magnatune"
 
-#: ../plugins/magnatune/MagnatuneSource.py:406
+#: ../plugins/magnatune/MagnatuneSource.py:404
 msgid "Download Error"
 msgstr "ดาวน์โหลดผิดพลาด"
 
-#: ../plugins/magnatune/MagnatuneSource.py:407
+#: ../plugins/magnatune/MagnatuneSource.py:405
 #, python-format
 msgid ""
 "An error occurred while trying to authorize the download.\n"
@@ -2407,11 +2547,11 @@ msgstr ""
 "เซิร์ฟเวอร์ของ Magnatune ตอบกลับมาว่า:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:410 ../widgets/rb-entry-view.c:1625
+#: ../plugins/magnatune/MagnatuneSource.py:408 ../widgets/rb-entry-view.c:1628
 msgid "Error"
 msgstr "ผิดพลาด"
 
-#: ../plugins/magnatune/MagnatuneSource.py:411
+#: ../plugins/magnatune/MagnatuneSource.py:409
 #, python-format
 msgid ""
 "An error occurred while trying to download the album.\n"
@@ -2422,7 +2562,7 @@ msgstr ""
 "ข้อความแจ้งข้อผิดพลาดคือ:\n"
 "%s"
 
-#: ../plugins/magnatune/MagnatuneSource.py:499
+#: ../plugins/magnatune/MagnatuneSource.py:492
 msgid "Downloading from Magnatune"
 msgstr "กำลังดาวน์โหลดจาก Magnatune"
 
@@ -2450,29 +2590,23 @@ msgstr "เครื่องเล่นพกพา - MTP"
 msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr "การรองรับอุปกรณ์ MTP (แสดงเนื้อหา ถ่ายโอน และเล่นเพลงจากอุปกรณ์)"
 
-#: ../plugins/mtpdevice/rb-mtp-gst-sink.c:127
-#: ../plugins/mtpdevice/rb-mtp-thread.c:488
-#, c-format
-msgid "Unable to open temporary file: %s"
-msgstr "ไม่สามารถเปิดแฟ้มชั่วคราวได้: %s"
-
-#: ../plugins/mtpdevice/rb-mtp-source.c:603
+#: ../plugins/mtpdevice/rb-mtp-source.c:599
 msgid "Media Player"
 msgstr "เครื่องเล่นสื่อ"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:883
+#: ../plugins/mtpdevice/rb-mtp-source.c:879
 msgid "Media player device error"
 msgstr "เกิดข้อผิดพลาดเกี่ยวกับอุปกรณ์เล่นสื่อ"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: ../plugins/mtpdevice/rb-mtp-source.c:887
+#: ../plugins/mtpdevice/rb-mtp-source.c:883
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "ไม่สามารถเปิดอุปกรณ์ %s %s"
 
-#: ../plugins/mtpdevice/rb-mtp-source.c:931
+#: ../plugins/mtpdevice/rb-mtp-source.c:927
 msgid "Digital Audio Player"
 msgstr "เครื่องเล่นเพลงดิจิทัล"
 
@@ -2488,12 +2622,17 @@ msgstr "ไม่สามารถคัดลอกแฟ้มจากอุ
 msgid "Not enough space in %s"
 msgstr "ที่ว่างมีไม่พอใน %s"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:545
+#: ../plugins/mtpdevice/rb-mtp-thread.c:488
+#, c-format
+msgid "Unable to open temporary file: %s"
+msgstr "ไม่สามารถเปิดแฟ้มชั่วคราวได้: %s"
+
+#: ../plugins/mtpdevice/rb-mtp-thread.c:552
 #, c-format
 msgid "No space left on MTP device"
 msgstr "ไม่มีที่ว่างเหลือในอุปกรณ์ MTP"
 
-#: ../plugins/mtpdevice/rb-mtp-thread.c:548
+#: ../plugins/mtpdevice/rb-mtp-thread.c:555
 #, c-format
 msgid "Unable to send file to MTP device: %s"
 msgstr "ไม่สามารถส่งแฟ้มไปยังอุปกรณ์ MTP: %s"
@@ -2506,40 +2645,36 @@ msgstr "การแจ้งเหตุ"
 msgid "Notification popups"
 msgstr "การแจ้งเหตุแบบผุดขึ้น"
 
-#: ../plugins/notification/rb-notification-plugin.c:224
+#: ../plugins/notification/rb-notification-plugin.c:225
 msgid "Previous"
 msgstr "ก่อนหน้า"
 
-#: ../plugins/notification/rb-notification-plugin.c:230
+#: ../plugins/notification/rb-notification-plugin.c:231
 msgid "Pause"
 msgstr "พัก"
 
-#: ../plugins/notification/rb-notification-plugin.c:230
+#: ../plugins/notification/rb-notification-plugin.c:231
 msgid "Play"
 msgstr "เล่น"
 
-#: ../plugins/notification/rb-notification-plugin.c:239
+#: ../plugins/notification/rb-notification-plugin.c:240
 msgid "Next"
 msgstr "ถัดไป"
 
 #. Translators: by Artist
-#: ../plugins/notification/rb-notification-plugin.c:331
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:148
+#: ../plugins/notification/rb-notification-plugin.c:334
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "โดย <i>%s</i>"
 
 #. Translators: from Album
-#: ../plugins/notification/rb-notification-plugin.c:333
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:150
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:213
+#: ../plugins/notification/rb-notification-plugin.c:336
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "จาก <i>%s</i>"
 
-#: ../plugins/notification/rb-notification-plugin.c:411
-#: ../plugins/visualizer/rb-visualizer-fullscreen.c:207
-#: ../widgets/rb-header.c:363
+#: ../plugins/notification/rb-notification-plugin.c:416
+#: ../widgets/rb-header.c:366
 msgid "Not Playing"
 msgstr "ไม่ได้เล่น"
 
@@ -2552,6 +2687,8 @@ msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr "ระงับโปรแกรมจัดการพลังงานไม่ให้พักเครื่องขณะเล่น"
 
 #: ../plugins/power-manager/rb-power-manager-plugin.c:97
+#: ../remote/dbus/rb-client.c:818 ../remote/dbus/rb-client.c:908
+#, c-format
 msgid "Playing"
 msgstr "กำลังเล่น"
 
@@ -2592,15 +2729,15 @@ msgstr "Zeitgeist"
 msgid "Inform Zeitgeist about your activity"
 msgstr "ให้ข้อมูลการใช้งานโปรแกรมกับ Zeitgeist"
 
-#: ../plugins/replaygain/config.py:68
+#: ../plugins/replaygain/config.py:64
 msgid "-15.0 dB"
 msgstr "-15.0 dB"
 
-#: ../plugins/replaygain/config.py:69
+#: ../plugins/replaygain/config.py:65
 msgid "0.0 dB"
 msgstr "0.0 dB"
 
-#: ../plugins/replaygain/config.py:70
+#: ../plugins/replaygain/config.py:66
 msgid "15.0 dB"
 msgstr "15.0 dB"
 
@@ -2625,111 +2762,166 @@ msgid "Use ReplayGain to provide a consistent playback volume"
 msgstr "ใช้ปลั๊กอินคุมความดังเพลงเพื่อให้ได้ความดังเพลงที่สม่ำเสมอกัน"
 
 #: ../plugins/replaygain/replaygain-prefs.ui.h:1
-msgid "ReplayGain preferences"
-msgstr "ปรับแต่งปลั๊กอินคุมความดังเพลง"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:2
-msgid "ReplayGain _mode:"
-msgstr "โห_มดคุมความดังเพลง:"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:3
-msgid "_Pre-amp:"
-msgstr "_พรีแอมป์:"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:4
-msgid "_Apply compression to prevent clipping"
-msgstr "ใ_ช้การบีบสัญญาณเพื่อไม่ให้มีการตัดยอดสัญญาณ"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:5
-msgid "Learn more about ReplayGain at replaygain.org"
-msgstr "ศึกษาเพิ่มเติมเกี่ยวกับปลั๊กอินคุมความดังเพลงได้ที่ replaygain.org"
-
-#: ../plugins/replaygain/replaygain-prefs.ui.h:6
 msgid "Radio (equal loudness for all tracks)"
 msgstr "วิทยุ (ความดังเท่ากันทุกเพลง)"
 
-#: ../plugins/replaygain/replaygain-prefs.ui.h:7
+#: ../plugins/replaygain/replaygain-prefs.ui.h:2
 msgid "Album (ideal loudness for all tracks)"
 msgstr "อัลบั้ม (ความดังที่ดีที่สุดสำหรับทุกเพลง)"
 
-#: ../plugins/sendto/sendto.plugin.in.h:1
-msgid "Send tracks"
-msgstr "ส่งเพลง"
+#: ../plugins/replaygain/replaygain-prefs.ui.h:3
+msgid "ReplayGain preferences"
+msgstr "ปรับแต่งปลั๊กอินคุมความดังเพลง"
 
-#: ../plugins/sendto/sendto.plugin.in.h:2
-msgid "Send selected tracks by email or instant message"
-msgstr "ส่งเพลงที่เลือกไปทางอีเมลหรือโปรแกรมข้อความทันใจ"
+#: ../plugins/replaygain/replaygain-prefs.ui.h:4
+msgid "ReplayGain _mode:"
+msgstr "โห_มดคุมความดังเพลง:"
 
-#: ../plugins/sendto/sendto.py:50
-msgid "Send to..."
-msgstr "ส่งไปยัง..."
+#: ../plugins/replaygain/replaygain-prefs.ui.h:5
+msgid "_Pre-amp:"
+msgstr "_พรีแอมป์:"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:39
-msgid "Low quality"
-msgstr "คุณภาพต่ำ"
+#: ../plugins/replaygain/replaygain-prefs.ui.h:6
+msgid "_Apply compression to prevent clipping"
+msgstr "ใ_ช้การบีบสัญญาณเพื่อไม่ให้มีการตัดยอดสัญญาณ"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:40
-msgid "Normal quality"
-msgstr "คุณภาพปกติ"
+#: ../plugins/replaygain/replaygain-prefs.ui.h:7
+#| msgid "Learn more about ReplayGain at replaygain.org"
+msgid "Learn more about ReplayGain"
+msgstr "ศึกษาเพิ่มเติมเกี่ยวกับปลั๊กอินคุมความดังเพลง"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:41
-msgid "High quality"
-msgstr "คุณภาพสูง"
+#: ../plugins/soundcloud/soundcloud.plugin.in.h:1
+#: ../plugins/soundcloud/soundcloud.py:72
+msgid "SoundCloud"
+msgstr "SoundCloud"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:78
-msgid "Fullscreen"
-msgstr "เต็มจอ"
+#: ../plugins/soundcloud/soundcloud.plugin.in.h:2
+msgid "Browse and play sounds from SoundCloud®"
+msgstr "ค้นหาและเล่นเพลงจาก SoundCloud®"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:89
-#: ../widgets/rb-entry-view.c:1525
-msgid "Quality"
-msgstr "คุณภาพ"
+#: ../plugins/soundcloud/soundcloud.py:96
+#| msgid "Send tracks"
+msgid "Search tracks"
+msgstr "ค้นหาเพลง"
 
-#: ../plugins/visualizer/rb-visualizer-menu.c:114
-msgid "Visual Effect"
-msgstr "เอ็ฟเฟ็กต์ภาพ"
+#: ../plugins/soundcloud/soundcloud.py:97
+msgid "Search tracks on SoundCloud"
+msgstr "ค้นหาเพลงบน SoundCloud"
 
-#: ../plugins/visualizer/rb-visualizer-page.c:69
-msgid "Visual Effects"
-msgstr "เอ็ฟเฟ็กต์ภาพ"
+#: ../plugins/soundcloud/soundcloud.py:103
+#| msgid "Search artists"
+msgid "Search sets"
+msgstr "ค้นหาเซ็ต"
 
-#: ../plugins/visualizer/rb-visualizer-plugin.c:392
-msgid "Display"
-msgstr "แสดง"
+#: ../plugins/soundcloud/soundcloud.py:104
+msgid "Search sets on SoundCloud"
+msgstr "ค้นหาเซ็ตบน SoundCloud"
 
-#: ../plugins/visualizer/visualizer.plugin.in.h:1
-msgid "Visualization"
-msgstr "ภาพเอ็ฟเฟ็กต์เสียง"
+#: ../plugins/soundcloud/soundcloud.py:105
+msgid "SoundCloud Sets"
+msgstr "เซ็ต SoundCloud"
 
-#: ../plugins/visualizer/visualizer.plugin.in.h:2
-msgid "Displays visualizations"
-msgstr "แสดงภาพเอ็ฟเฟ็กต์เสียง"
+#: ../plugins/soundcloud/soundcloud.py:110
+#| msgid "Search genres"
+msgid "Search users"
+msgstr "ค้นหาผู้ใช้งาน"
 
-#: ../podcast/rb-podcast-add-dialog.c:274
+#: ../plugins/soundcloud/soundcloud.py:111
+msgid "Search users on SoundCloud"
+msgstr "ค้นหาผู้ใช้งานบน SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:112
+msgid "SoundCloud Users"
+msgstr "ผู้ใช้งาน SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:117
+#| msgid "Search genres"
+msgid "Search groups"
+msgstr "ค้นหากลุ่ม"
+
+#: ../plugins/soundcloud/soundcloud.py:118
+msgid "Search groups on SoundCloud"
+msgstr "ค้นหากลุ่มบน SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:119
+msgid "SoundCloud Groups"
+msgstr "กลุ่ม SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:442
+#: ../plugins/soundcloud/soundcloud.py:450
+#, python-format
+msgid "View '%(title)s' on SoundCloud"
+msgstr "แสดง %(title)s บน SoundCloud"
+
+#: ../plugins/soundcloud/soundcloud.py:458
+#, python-format
+msgid "View '%(container)s' on SoundCloud"
+msgstr "แสดง %(container)s บน SoundCloud"
+
+#: ../plugins/webremote/webremote-config.ui.h:1
+#| msgid "Status icon preferences"
+msgid "Web remote control preferences"
+msgstr "ปรับแต่งการควบคุมระยะไกลผ่านเว็บ"
+
+#: ../plugins/webremote/webremote-config.ui.h:2
+msgid "Listening port:"
+msgstr "พอร์ตรับข้อมูล:"
+
+#: ../plugins/webremote/webremote-config.ui.h:3
+msgid "Access key:"
+msgstr "รหัสเข้าถึง:"
+
+#: ../plugins/webremote/webremote-config.ui.h:4
+msgid "0"
+msgstr "0"
+
+#: ../plugins/webremote/webremote.plugin.in.h:1
+msgid "Web remote control"
+msgstr "การควบคุมระยะไกลผ่านเว็บ"
+
+#: ../plugins/webremote/webremote.plugin.in.h:2
+#| msgid "Control Rhythmbox using key shortcuts"
+msgid "Control Rhythmbox from a web browser"
+msgstr "ควบคุม Rhythmbox ผ่านเว็บเบราเซอร์"
+
+#: ../plugins/webremote/webremote.py:584
+msgid "Launch web remote control"
+msgstr "เรียกใช้การควบคุมระยะไกลผ่านเว็บ"
+
+#: ../podcast/rb-podcast-add-dialog.c:271 ../podcast/rb-podcast-source.c:735
+#, c-format
+#| msgid "%d feed"
+#| msgid_plural "All %d feeds"
+msgid "%d feed"
+msgid_plural "%d feeds"
+msgstr[0] "%d รายการ"
+msgstr[1] "%d รายการทั้งหมด"
+
+#: ../podcast/rb-podcast-add-dialog.c:306
 msgid "Unable to load the feed. Check your network connection."
 msgstr "ไม่สามารถโหลดรายการป้อน กรุณาตรวจสอบการเชื่อมต่อเครือข่ายของคุณ"
 
-#: ../podcast/rb-podcast-add-dialog.c:395
+#: ../podcast/rb-podcast-add-dialog.c:431
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "ไม่สามารถค้นหาพอดแคสต์ กรุณาตรวจสอบการเชื่อมต่อเครือข่ายของคุณ"
 
-#: ../podcast/rb-podcast-add-dialog.c:707 ../sources/rb-library-source.c:142
-#: ../widgets/rb-entry-view.c:1441
+#: ../podcast/rb-podcast-add-dialog.c:744 ../sources/rb-library-source.c:134
+#: ../widgets/rb-entry-view.c:1444
 msgid "Title"
 msgstr "ชื่อ"
 
-#: ../podcast/rb-podcast-add-dialog.c:718
+#: ../podcast/rb-podcast-add-dialog.c:755
 msgid "Author"
 msgstr "ผู้สร้าง"
 
-#: ../podcast/rb-podcast-add-dialog.c:723
-#: ../podcast/rb-podcast-add-dialog.c:726
+#: ../podcast/rb-podcast-add-dialog.c:760
+#: ../podcast/rb-podcast-add-dialog.c:763
 msgid "Episodes"
 msgstr "ตอน"
 
-#: ../podcast/rb-podcast-add-dialog.c:754
-#: ../podcast/rb-podcast-add-dialog.c:765 ../podcast/rb-podcast-source.c:1397
-#: ../podcast/rb-podcast-source.c:1408
+#: ../podcast/rb-podcast-add-dialog.c:797
+#: ../podcast/rb-podcast-add-dialog.c:808 ../podcast/rb-podcast-source.c:1357
+#: ../podcast/rb-podcast-source.c:1368
 msgid "Date"
 msgstr "วันที่"
 
@@ -2762,30 +2954,30 @@ msgstr "เกิดข้อผิดพลาดในพอดแคสต์
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s คุณยังคงต้องการเพิ่มการป้อนของพอดแคสต์อยู่หรือไม่?"
 
-#: ../podcast/rb-podcast-manager.c:896
+#: ../podcast/rb-podcast-manager.c:924
 msgid "Error creating podcast download directory"
 msgstr "เกิดข้อผิดพลาดขณะสร้างไดเรกทอรีดาวน์โหลดสำหรับพอดแคสต์"
 
-#: ../podcast/rb-podcast-manager.c:897
+#: ../podcast/rb-podcast-manager.c:925
 #, c-format
 msgid "Unable to create the download directory for %s: %s"
 msgstr "ไม่สามารถสร้างไดเรกทอรีดาวน์โหลดสำหรับ %s: %s"
 
-#: ../podcast/rb-podcast-manager.c:1016
+#: ../podcast/rb-podcast-manager.c:1044
 msgid "Invalid URL"
 msgstr "URL ไม่ถูกต้อง"
 
-#: ../podcast/rb-podcast-manager.c:1017
+#: ../podcast/rb-podcast-manager.c:1045
 #, c-format
 msgid "The URL \"%s\" is not valid, please check it."
 msgstr "URL \"%s\" ไม่ถูกต้อง กรุณาตรวจสอบ"
 
 #. added as something else, probably iradio
-#: ../podcast/rb-podcast-manager.c:1028
+#: ../podcast/rb-podcast-manager.c:1056
 msgid "URL already added"
 msgstr "ได้เพิ่ม URL ไปแล้ว"
 
-#: ../podcast/rb-podcast-manager.c:1029
+#: ../podcast/rb-podcast-manager.c:1057
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2794,7 +2986,7 @@ msgstr ""
 "URL \"%s\" ถูกเพิ่มเป็นสถานีวิทยุไปแล้ว ถ้าคุณต้องการเพิ่มการป้อนของพอดแคสต์ "
 "กรุณาลบสถานีวิทยุดังกล่าวเสียก่อน"
 
-#: ../podcast/rb-podcast-manager.c:1108
+#: ../podcast/rb-podcast-manager.c:1157
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2804,11 +2996,11 @@ msgstr ""
 "URL '%s' ดูเหมือนจะไม่ใช่การป้อนของพอดแคสต์ โดยอาจจะเป็น URL ที่ไม่ถูกต้อง "
 "หรือการป้อนอาจจะเสีย คุณยังต้องการให้ Rhythmbox พยายามใช้ URL ดังกล่าวต่อไปหรือไม่?"
 
-#: ../podcast/rb-podcast-manager.c:1239
+#: ../podcast/rb-podcast-manager.c:1273
 msgid "Podcast"
 msgstr "พอดแคสต์"
 
-#: ../podcast/rb-podcast-manager.c:2205
+#: ../podcast/rb-podcast-manager.c:2239
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "เกิดปัญหาขณะเพิ่มพอดแคสต์นี้: %s กรุณาตรวจสอบ URL: %s"
@@ -2833,19 +3025,15 @@ msgstr "ไม่สามารถแจงเนื้อหาของกา
 msgid "The feed does not contain any downloadable items"
 msgstr "การป้อนไม่มีรายการใดที่ดาวน์โหลดได้"
 
-#: ../podcast/rb-podcast-properties-dialog.c:195
-msgid "Unable to display requested URI"
-msgstr "ไม่สามารถแสดง URI ที่ร้องขอได้"
-
-#: ../podcast/rb-podcast-properties-dialog.c:570
+#: ../podcast/rb-podcast-properties-dialog.c:589
 msgid "Not Downloaded"
 msgstr "ไม่ได้ดาวน์โหลด"
 
-#: ../podcast/rb-podcast-source.c:524
+#: ../podcast/rb-podcast-source.c:521
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "คุณต้องการลบการป้อนของพอดแคสต์และแฟ้มที่ดาวน์โหลดมาหรือไม่?"
 
-#: ../podcast/rb-podcast-source.c:527
+#: ../podcast/rb-podcast-source.c:524
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -2854,42 +3042,35 @@ msgstr ""
 "ถ้าคุณเลือกที่จะลบการป้อนและแฟ้มดังกล่าว ข้อมูลดังกล่าวจะสูญหายอย่างถาวร โปรดสังเกตว่า "
 "คุณสามารถลบการป้อนโดยคงแฟ้มที่ดาวน์โหลดมาไว้ได้ โดยเลือกลบเฉพาะการป้อนเท่านั้น"
 
-#: ../podcast/rb-podcast-source.c:535
+#: ../podcast/rb-podcast-source.c:532
 msgid "Delete _Feed Only"
 msgstr "ลบเฉพาะการ_ป้อน"
 
-#: ../podcast/rb-podcast-source.c:542
+#: ../podcast/rb-podcast-source.c:539
 msgid "_Delete Feed And Files"
 msgstr "ลบ_ทั้งการป้อนและแฟ้ม"
 
-#: ../podcast/rb-podcast-source.c:623 ../podcast/rb-podcast-source.c:1451
+#: ../podcast/rb-podcast-source.c:620 ../podcast/rb-podcast-source.c:1411
 msgid "Downloaded"
 msgstr "ดาวน์โหลดแล้ว"
 
-#: ../podcast/rb-podcast-source.c:627 ../podcast/rb-podcast-source.c:1453
+#: ../podcast/rb-podcast-source.c:624 ../podcast/rb-podcast-source.c:1413
 msgid "Failed"
 msgstr "ล้มเหลว"
 
-#: ../podcast/rb-podcast-source.c:631 ../podcast/rb-podcast-source.c:1452
+#: ../podcast/rb-podcast-source.c:628 ../podcast/rb-podcast-source.c:1412
 msgid "Waiting"
 msgstr "กำลังรอ"
 
-#: ../podcast/rb-podcast-source.c:738
-#, c-format
-msgid "%d feed"
-msgid_plural "All %d feeds"
-msgstr[0] "การป้อน %d รายการ"
-msgstr[1] "การป้อนทั้งหมด %d รายการ"
-
-#: ../podcast/rb-podcast-source.c:981
+#: ../podcast/rb-podcast-source.c:957
 msgid "Podcast Error"
 msgstr "เกิดข้อผิดพลาดเกี่ยวกับพอดแคสต์"
 
-#: ../podcast/rb-podcast-source.c:1143
+#: ../podcast/rb-podcast-source.c:1091
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "ลบตอนของพอดแคสต์และแฟ้มที่ดาวน์โหลดมาแล้วหรือไม่?"
 
-#: ../podcast/rb-podcast-source.c:1146
+#: ../podcast/rb-podcast-source.c:1094
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -2898,183 +3079,290 @@ msgstr ""
 "ถ้าคุณเลือกที่จะลบรายการตอนและแฟ้มดังกล่าว ข้อมูลดังกล่าวจะสูญหายอย่างถาวร โปรดสังเกตว่า "
 "คุณสามารถลบรายการตอนโดยคงแฟ้มที่ดาวน์โหลดมาไว้ได้ โดยเลือกลบเฉพาะตอนเท่านั้น"
 
-#: ../podcast/rb-podcast-source.c:1154
+#: ../podcast/rb-podcast-source.c:1102
 msgid "Delete _Episode Only"
 msgstr "ลบเฉพาะ_รายการตอน"
 
-#: ../podcast/rb-podcast-source.c:1160
+#: ../podcast/rb-podcast-source.c:1108
 msgid "_Delete Episode And File"
 msgstr "ลบ_ทั้งรายการและแฟ้ม"
 
-#: ../podcast/rb-podcast-source.c:1258
+#: ../podcast/rb-podcast-source.c:1214
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d ตอน"
 msgstr[1] "%d ตอน"
 
-#: ../podcast/rb-podcast-source.c:1430 ../podcast/rb-podcast-source.c:1485
-#: ../podcast/rb-podcast-source.c:1523
+#: ../podcast/rb-podcast-source.c:1390 ../podcast/rb-podcast-source.c:1445
+#: ../podcast/rb-podcast-source.c:1484
 msgid "Feed"
 msgstr "การป้อน"
 
-#: ../podcast/rb-podcast-source.c:1450 ../podcast/rb-podcast-source.c:1468
+#: ../podcast/rb-podcast-source.c:1410 ../podcast/rb-podcast-source.c:1428
 msgid "Status"
 msgstr "สถานะ"
 
 #. ensure search instances exist
-#: ../podcast/rb-podcast-source.c:1569
-#: ../sources/rb-auto-playlist-source.c:253 ../sources/rb-browser-source.c:314
-#: ../sources/rb-browser-source.c:332
+#: ../podcast/rb-podcast-source.c:1530 ../sources/rb-auto-playlist-source.c:253
+#: ../sources/rb-browser-source.c:314 ../sources/rb-browser-source.c:332
 #: ../sources/rb-static-playlist-source.c:295
 msgid "Search all fields"
 msgstr "ค้นหาทุกเขตข้อมูล"
 
-#: ../podcast/rb-podcast-source.c:1570
+#: ../podcast/rb-podcast-source.c:1531
 msgid "Search podcast feeds"
 msgstr "ค้นหาการป้อนของพอดแคสต์"
 
-#: ../podcast/rb-podcast-source.c:1571
+#: ../podcast/rb-podcast-source.c:1532
 msgid "Search podcast episodes"
 msgstr "ค้นหาตอนของพอดแคสต์"
 
-#: ../remote/dbus/rb-client.c:88
+#: ../remote/dbus/rb-client.c:95 ../shell/rb-application.c:563
+#| msgid "Set the rating of the current song"
+msgid "Show the version of the program"
+msgstr "แสดงรุ่นของโปรแกรม"
+
+#: ../remote/dbus/rb-client.c:97
 msgid "Don't start a new instance of Rhythmbox"
 msgstr "ไม่ต้องเปิด Rhythmbox ตัวใหม่"
 
-#: ../remote/dbus/rb-client.c:89
+#: ../remote/dbus/rb-client.c:98
 msgid "Quit Rhythmbox"
 msgstr "ออกจาก Rhythmbox"
 
-#: ../remote/dbus/rb-client.c:90
+#: ../remote/dbus/rb-client.c:99
 msgid "Check if Rhythmbox is already running"
 msgstr "ตรวจสอบว่า Rhythmbox กำลังทำงานอยู่หรือไม่"
 
-#: ../remote/dbus/rb-client.c:92
+#: ../remote/dbus/rb-client.c:101
 msgid "Don't present an existing Rhythmbox window"
 msgstr "ไม่ต้องแสดงหน้าต่าง Rhythmbox ที่เปิดอยู่"
 
-#: ../remote/dbus/rb-client.c:94
+#: ../remote/dbus/rb-client.c:103
 msgid "Jump to next song"
 msgstr "กระโดดไปที่เพลงถัดไป"
 
-#: ../remote/dbus/rb-client.c:95
+#: ../remote/dbus/rb-client.c:104
 msgid "Jump to previous song"
 msgstr "กระโดดไปที่เพลงก่อนหน้า"
 
-#: ../remote/dbus/rb-client.c:96
+#: ../remote/dbus/rb-client.c:105
 msgid "Seek in current track"
 msgstr "เลื่อนตำแหน่งเล่นในเพลงปัจจุบัน"
 
-#: ../remote/dbus/rb-client.c:98
+#: ../remote/dbus/rb-client.c:107
 msgid "Resume playback if currently paused"
 msgstr "เล่นเพลงต่อถ้าพักอยู่"
 
-#: ../remote/dbus/rb-client.c:99
+#: ../remote/dbus/rb-client.c:108
 msgid "Pause playback if currently playing"
 msgstr "พักเพลงถ้ากำลังเล่นอยู่"
 
-#: ../remote/dbus/rb-client.c:100
+#: ../remote/dbus/rb-client.c:109
 msgid "Toggle play/pause mode"
 msgstr "สลับสถานะการเล่น/พัก"
 
-#. { "stop", 0, 0, G_OPTION_ARG_NONE, &stop, N_("Stop playback"), NULL },
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:110 ../shell/rb-shell.c:2295
+msgid "Stop playback"
+msgstr "หยุดเล่น"
+
+#: ../remote/dbus/rb-client.c:112
 msgid "Play a specified URI, importing it if necessary"
 msgstr "เล่น URI ที่กำหนด โดยนำเข้าถ้าจำเป็น"
 
-#: ../remote/dbus/rb-client.c:103
+#: ../remote/dbus/rb-client.c:112
 msgid "URI to play"
 msgstr "URI ที่จะเล่น"
 
-#: ../remote/dbus/rb-client.c:104
+#: ../remote/dbus/rb-client.c:113
 msgid "Add specified tracks to the play queue"
 msgstr "เพิ่มเพลงที่กำหนดลงในคิวเล่นเพลง"
 
-#: ../remote/dbus/rb-client.c:105
+#: ../remote/dbus/rb-client.c:114
 msgid "Empty the play queue before adding new tracks"
 msgstr "ล้างคิวเล่นเพลงก่อนที่จะเพิ่มเพลงใหม่"
 
-#: ../remote/dbus/rb-client.c:107
+#: ../remote/dbus/rb-client.c:116
 msgid "Print the title and artist of the playing song"
 msgstr "พิมพ์ชื่อเพลงและศิลปินของเพลงที่เล่นอยู่"
 
-#: ../remote/dbus/rb-client.c:108
+#: ../remote/dbus/rb-client.c:117
 msgid "Print formatted details of the song"
 msgstr "พิมพ์รายละเอียดของเพลงโดยจัดรูปแบบด้วย"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:118
 msgid "Select the source matching the specified URI"
 msgstr "เลือกแหล่งที่ตรงกับ URI ที่กำหนด"
 
-#: ../remote/dbus/rb-client.c:109
+#: ../remote/dbus/rb-client.c:118
 msgid "Source to select"
 msgstr "แหล่งที่เลือก"
 
-#: ../remote/dbus/rb-client.c:110
+#: ../remote/dbus/rb-client.c:119
 msgid "Activate the source matching the specified URI"
 msgstr "เรียกใช้แหล่งที่ตรงกับ URI ที่กำหนด"
 
-#: ../remote/dbus/rb-client.c:110
+#: ../remote/dbus/rb-client.c:119
 msgid "Source to activate"
 msgstr "แหล่งที่จะเรียกใช้"
 
-#: ../remote/dbus/rb-client.c:111
+#: ../remote/dbus/rb-client.c:120
 msgid "Play from the source matching the specified URI"
 msgstr "เล่นจากแหล่งที่ตรงกับ URI ที่กำหนด"
 
-#: ../remote/dbus/rb-client.c:111
+#: ../remote/dbus/rb-client.c:120
 msgid "Source to play from"
 msgstr "แหล่งที่จะเล่น"
 
-#: ../remote/dbus/rb-client.c:113
+#: ../remote/dbus/rb-client.c:122
 msgid "Enable repeat playback order"
 msgstr "เปิดการเล่นเพลงแบบซ้ำลำดับ"
 
-#: ../remote/dbus/rb-client.c:114
+#: ../remote/dbus/rb-client.c:123
 msgid "Disable repeat playback order"
 msgstr "ปิดการเล่นเพลงแบบซ้ำลำดับ"
 
-#: ../remote/dbus/rb-client.c:115
+#: ../remote/dbus/rb-client.c:124
 msgid "Enable shuffle playback order"
 msgstr "เปิดการเล่นเพลงแบบสุ่มลำดับ"
 
-#: ../remote/dbus/rb-client.c:116
+#: ../remote/dbus/rb-client.c:125
 msgid "Disable shuffle playback order"
 msgstr "ปิดการเล่นเพลงแบบสุ่มลำดับ"
 
-#: ../remote/dbus/rb-client.c:118
+#: ../remote/dbus/rb-client.c:127
 msgid "Set the playback volume"
 msgstr "ตั้งความดังเสียง"
 
-#: ../remote/dbus/rb-client.c:119
+#: ../remote/dbus/rb-client.c:128
 msgid "Increase the playback volume"
 msgstr "เพิ่มความดังเสียง"
 
-#: ../remote/dbus/rb-client.c:120
+#: ../remote/dbus/rb-client.c:129
 msgid "Decrease the playback volume"
 msgstr "ลดความดังเสียง"
 
-#: ../remote/dbus/rb-client.c:121
+#: ../remote/dbus/rb-client.c:130
 msgid "Print the current playback volume"
 msgstr "พิมพ์ความดังเสียงปัจจุบัน"
 
 #. { "mute", 0, 0, G_OPTION_ARG_NONE, &mute, N_("Mute playback"), NULL },
 #. { "unmute", 0, 0, G_OPTION_ARG_NONE, &unmute, N_("Unmute playback"), NULL },
-#: ../remote/dbus/rb-client.c:124
+#: ../remote/dbus/rb-client.c:133
 msgid "Set the rating of the current song"
 msgstr "ให้คะแนนเพลงที่กำลังเล่น"
 
-#: ../remote/dbus/rb-client.c:471 ../remote/dbus/rb-client.c:495
+#: ../remote/dbus/rb-client.c:134
+msgid "Start interactive mode"
+msgstr "เริ่มระบบโต้ตอบ"
+
+#: ../remote/dbus/rb-client.c:164
+msgid "n - Next track"
+msgstr "n - เพลงถัดไป"
+
+#: ../remote/dbus/rb-client.c:165
+#| msgid "Previous"
+msgid "p - Previous track"
+msgstr "p - เพลงก่อนหน้า"
+
+#: ../remote/dbus/rb-client.c:166
+msgid "space - Play/pause"
+msgstr "space - เล่น/พัก"
+
+#: ../remote/dbus/rb-client.c:167
+msgid "s - Show playing track details"
+msgstr "s - แสดงข้อมูลเพิ่มเติมของเพลง"
+
+#: ../remote/dbus/rb-client.c:168
+#| msgid "_Decrease Volume"
+msgid "v - Decrease volume"
+msgstr "v - ลดความดัง"
+
+#: ../remote/dbus/rb-client.c:169
+#| msgid "_Increase Volume"
+msgid "V - Increase volume"
+msgstr "V - เพิ่มความดัง"
+
+#: ../remote/dbus/rb-client.c:171
+msgid "h/? - Help"
+msgstr "h/? - ช่วยเหลือ"
+
+#: ../remote/dbus/rb-client.c:172
+#| msgid "_Quit"
+msgid "q - Quit"
+msgstr "q - ออก"
+
+#: ../remote/dbus/rb-client.c:546 ../remote/dbus/rb-client.c:572
+#: ../remote/dbus/rb-client.c:795 ../remote/dbus/rb-client.c:879
+#, c-format
 msgid "Not playing"
 msgstr "ไม่ได้เล่น"
 
-#: ../remote/dbus/rb-client.c:959
+#. Translators: title by artist from album
+#: ../remote/dbus/rb-client.c:745
+#| msgid "by %s from %s"
+msgid "%tt by %ta from %at"
+msgstr "เพลง  %tt ศิลปิน %ta จากอัลบั้ม %at"
+
+#. Translators: title by artist
+#: ../remote/dbus/rb-client.c:748
+msgid "%tt by %ta"
+msgstr "เพลง %tt ศิลปิน %ta"
+
+#. Translators: title from album
+#: ../remote/dbus/rb-client.c:751
+#| msgid "by %s from %s"
+msgid "%tt from %ta"
+msgstr "เพลง %tt จากอัลบั้ม %ta"
+
+#. Translators: %te is replaced with elapsed time, %td is replaced with track duration
+#: ../remote/dbus/rb-client.c:762
+#, c-format
+#| msgid "%d of %d"
+msgid "[%te of %td]"
+msgstr "[%te จาก %td]"
+
+#: ../remote/dbus/rb-client.c:818 ../remote/dbus/rb-client.c:910
+#, c-format
+#| msgid "Pause"
+msgid "Paused"
+msgstr "พัก"
+
+#: ../remote/dbus/rb-client.c:862
+#, c-format
+msgid "Seeked to %s"
+msgstr "ค้นหาไปที่ %s"
+
+#: ../remote/dbus/rb-client.c:896
+#, c-format
+#| msgid "Not playing"
+msgid "Now playing: %s %s"
+msgstr "เพลงที่เล่นขณะนี้: %s %s"
+
+#: ../remote/dbus/rb-client.c:912
+#, c-format
+#| msgid "Unknown playlist: %s"
+msgid "Unknown playback state: %s"
+msgstr "ไม่รู้จักสถานะการเล่น: %s"
+
+#: ../remote/dbus/rb-client.c:922
+#, c-format
+msgid "Volume is now %.02f"
+msgstr "ความดังเสียงขณะนี้อยู่ที่ %.02f"
+
+#. should print this before dbus setup, really
+#: ../remote/dbus/rb-client.c:960
+#, c-format
+msgid "Press 'h' for help."
+msgstr "กด h สำหรับขอความช่วยเหลือ"
+
+#: ../remote/dbus/rb-client.c:1400
 #, c-format
 msgid "Playback volume is %f.\n"
 msgstr "ความดังเสียงคือ %f\n"
 
-#: ../rhythmdb/rhythmdb.c:781
+#: ../rhythmdb/rhythmdb.c:789
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "ไม่สามารถเข้าใช้ %s: %s"
@@ -3084,7 +3372,7 @@ msgstr "ไม่สามารถเข้าใช้ %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: ../rhythmdb/rhythmdb.c:1794
+#: ../rhythmdb/rhythmdb.c:1819
 msgid "The Beatles"
 msgstr "ธงไชย แมคอินไตย์"
 
@@ -3092,54 +3380,54 @@ msgstr "ธงไชย แมคอินไตย์"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: ../rhythmdb/rhythmdb.c:1800
+#: ../rhythmdb/rhythmdb.c:1825
 msgid "Help!"
-msgstr "รับแขก"
+msgstr "หาดทราย สายลม สองเรา"
 
 #. Translators: this is an example song title.  If the example
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: ../rhythmdb/rhythmdb.c:1806
+#: ../rhythmdb/rhythmdb.c:1831
 msgid "Ticket To Ride"
 msgstr "แฟนจ๋า"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: ../rhythmdb/rhythmdb.c:2284
+#: ../rhythmdb/rhythmdb.c:2376
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "ต้องการปลั๊กอินของ GStreamer เพิ่มเติมเพื่อเล่นแฟ้มนี้: %s"
 
-#: ../rhythmdb/rhythmdb.c:2316
+#: ../rhythmdb/rhythmdb.c:2408
 msgid "invalid unicode in error message"
 msgstr "รหัสยูนิโค้ดไม่ถูกต้องในข้อความแจ้งข้อผิดพลาด"
 
-#: ../rhythmdb/rhythmdb.c:2383
+#: ../rhythmdb/rhythmdb.c:2531
 #, c-format
 msgid "Empty file"
 msgstr "แฟ้มว่างเปล่า"
 
-#: ../rhythmdb/rhythmdb.c:3058
+#: ../rhythmdb/rhythmdb.c:3229
 msgid "Could not load the music database:"
 msgstr "ไม่สามารถอ่านฐานข้อมูลเพลง:"
 
-#: ../rhythmdb/rhythmdb.c:4479
+#: ../rhythmdb/rhythmdb.c:4663
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld นาที"
 msgstr[1] "%ld นาที"
 
-#: ../rhythmdb/rhythmdb.c:4480
+#: ../rhythmdb/rhythmdb.c:4664
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld ชั่วโมง"
 msgstr[1] "%ld ชั่วโมง"
 
-#: ../rhythmdb/rhythmdb.c:4481
+#: ../rhythmdb/rhythmdb.c:4665
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3147,7 +3435,7 @@ msgstr[0] "%ld วัน"
 msgstr[1] "%ld วัน"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4487
+#: ../rhythmdb/rhythmdb.c:4671
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s %s %s"
@@ -3155,18 +3443,17 @@ msgstr "%s %s %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: ../rhythmdb/rhythmdb.c:4493 ../rhythmdb/rhythmdb.c:4501
-#: ../rhythmdb/rhythmdb.c:4512
+#: ../rhythmdb/rhythmdb.c:4677 ../rhythmdb/rhythmdb.c:4685
+#: ../rhythmdb/rhythmdb.c:4696
 #, c-format
 msgid "%s and %s"
 msgstr "%s %s"
 
-#: ../rhythmdb/rhythmdb-import-job.c:654
+#: ../rhythmdb/rhythmdb-import-job.c:664
 msgid "Scanning"
 msgstr "กำลังค้นหา"
 
-#: ../rhythmdb/rhythmdb-import-job.c:657
-#: ../shell/rb-track-transfer-batch.c:819
+#: ../rhythmdb/rhythmdb-import-job.c:667 ../shell/rb-track-transfer-batch.c:917
 #, c-format
 msgid "%d of %d"
 msgstr "%d จาก %d"
@@ -3175,7 +3462,7 @@ msgstr "%d จาก %d"
 msgid "All"
 msgstr "ทั้งหมด"
 
-#: ../rhythmdb/rhythmdb-tree.c:411
+#: ../rhythmdb/rhythmdb-tree.c:414
 #, c-format
 msgid ""
 "The database was created by a later version of Rhythmbox.  This version of "
@@ -3213,17 +3500,13 @@ msgstr "ปลั๊กอิน Vala ตัวอย่าง"
 msgid "A sample plugin in Vala with no features"
 msgstr "ปลั๊กอินตัวอย่างในภาษา Vala โดยไม่ทำอะไร"
 
-#: ../shell/rb-application.c:141
-msgid "Configure Plugins"
-msgstr "ตั้งค่าปลั๊กอิน"
-
-#: ../shell/rb-application.c:208
+#: ../shell/rb-application.c:166
 msgid "translator-credits"
 msgstr ""
 "Isriya Paireepairit <markpeak@gmail.com>\n"
 "Theppitak Karoonboonyanan <thep@linux.thai.net>"
 
-#: ../shell/rb-application.c:211
+#: ../shell/rb-application.c:169
 msgid ""
 "Rhythmbox is free software; you can redistribute it and/or modify\n"
 "it under the terms of the GNU General Public License as published by\n"
@@ -3234,7 +3517,7 @@ msgstr ""
 "ภายใต้เงื่อนไขของ GNU General Public License ที่เผยแพร่โดยมูลนิธิซอฟต์แวร์เสรี\n"
 "ไม่ว่าจะเป็นสัญญาอนุญาตรุ่นที่ 2 หรือรุ่นถัดมา (ตามแต่คุณจะเลือก)\n"
 
-#: ../shell/rb-application.c:215
+#: ../shell/rb-application.c:173
 msgid ""
 "Rhythmbox is distributed in the hope that it will be useful,\n"
 "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -3246,7 +3529,7 @@ msgstr ""
 "หรือ *ความเหมาะสมสำหรับวัตถุประสงค์เฉพาะกิจใดๆ*\n"
 "กรุณาอ่าน GNU General Public License เพื่อดูรายละเอียดเพิ่มเติม\n"
 
-#: ../shell/rb-application.c:219
+#: ../shell/rb-application.c:177
 msgid ""
 "You should have received a copy of the GNU General Public License\n"
 "along with Rhythmbox; if not, write to the Free Software Foundation, Inc.,\n"
@@ -3256,63 +3539,63 @@ msgstr ""
 "ถ้าคุณไม่ได้รับ กรุณาติดต่อไปที่ Free Software Foundation, Inc., 59 Temple Place,\n"
 "Suite 330, Boston, MA  02111-1307  USA\n"
 
-#: ../shell/rb-application.c:226
+#: ../shell/rb-application.c:184
 msgid "Maintainers:"
 msgstr "ผู้ดูแล:"
 
-#: ../shell/rb-application.c:229
+#: ../shell/rb-application.c:187
 msgid "Former Maintainers:"
 msgstr "ผู้ดูแลในอดีต:"
 
-#: ../shell/rb-application.c:232
+#: ../shell/rb-application.c:190
 msgid "Contributors:"
 msgstr "ผู้ร่วมสมทบ:"
 
-#: ../shell/rb-application.c:234
+#: ../shell/rb-application.c:192
 msgid "Music management and playback software for GNOME."
 msgstr "โปรแกรมจัดการและเล่นเพลงของ GNOME"
 
-#: ../shell/rb-application.c:244
+#: ../shell/rb-application.c:202
 msgid "Rhythmbox Website"
 msgstr "เว็บไซต์ Rhythmbox"
 
-#: ../shell/rb-application.c:272 ../shell/rb-shell-preferences.c:163
+#: ../shell/rb-application.c:230 ../shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "ไม่สามารถแสดงวิธีใช้"
 
-#: ../shell/rb-application.c:612
+#: ../shell/rb-application.c:555
 msgid "Enable debug output"
 msgstr "เปิดข้อความดีบั๊ก"
 
-#: ../shell/rb-application.c:613
+#: ../shell/rb-application.c:556
 msgid "Enable debug output matching a specified string"
 msgstr "เปิดข้อความดีบั๊กที่มีรูปแบบตรงกับที่กำหนด"
 
-#: ../shell/rb-application.c:614
+#: ../shell/rb-application.c:557
 msgid "Do not update the library with file changes"
 msgstr "ไม่ต้องปรับข้อมูลคลังเพลงตามการเปลี่ยนแปลงของแฟ้ม"
 
-#: ../shell/rb-application.c:615
+#: ../shell/rb-application.c:558
 msgid "Do not register the shell"
 msgstr "ไม่ต้องลงทะเบียนเชลล์"
 
-#: ../shell/rb-application.c:616
+#: ../shell/rb-application.c:559
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "ไม่ต้องบันทึกข้อมูลใดๆ ในแบบถาวร (เปิดใช้ --no-registration โดยอัตโนมัติ)"
 
-#: ../shell/rb-application.c:617
+#: ../shell/rb-application.c:560
 msgid "Disable loading of plugins"
 msgstr "ปิดการโหลดปลั๊กอินต่างๆ"
 
-#: ../shell/rb-application.c:618
+#: ../shell/rb-application.c:561
 msgid "Path for database file to use"
 msgstr "พาธของแฟ้มฐานข้อมูลที่ใช้"
 
-#: ../shell/rb-application.c:619
+#: ../shell/rb-application.c:562
 msgid "Path for playlists file to use"
 msgstr "พาธของแฟ้มรายการเพลงที่ใช้"
 
-#: ../shell/rb-application.c:631
+#: ../shell/rb-application.c:575
 #, c-format
 msgid ""
 "%s\n"
@@ -3327,7 +3610,7 @@ msgstr "URL ของ MPEG รุ่น 3.0"
 
 #: ../shell/rb-playlist-manager.c:167
 msgid "Shoutcast playlist"
-msgstr "รายการเพลงของ Shoutcast"
+msgstr "รายการเพลง Shoutcast"
 
 #: ../shell/rb-playlist-manager.c:168
 msgid "XML Shareable Playlist Format"
@@ -3341,172 +3624,168 @@ msgstr "รายการเพลงไม่มีชื่อ"
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr "แฟ้มรายการเพลงอยู่ในรูปแบบที่ไม่รู้จักหรืออาจจะเสีย"
 
-#: ../shell/rb-playlist-manager.c:773
+#: ../shell/rb-playlist-manager.c:767
 msgid "Untitled Playlist"
 msgstr "รายการเพลงไม่มีชื่อ"
 
-#: ../shell/rb-playlist-manager.c:817 ../shell/rb-playlist-manager.c:860
+#: ../shell/rb-playlist-manager.c:811 ../shell/rb-playlist-manager.c:854
 msgid "New Playlist"
 msgstr "สร้างรายการเพลงใหม่"
 
-#: ../shell/rb-playlist-manager.c:1061
+#: ../shell/rb-playlist-manager.c:1055
 msgid "Couldn't read playlist"
 msgstr "ไม่สามารถอ่านรายการเพลง"
 
-#: ../shell/rb-playlist-manager.c:1087
+#: ../shell/rb-playlist-manager.c:1081
 msgid "All Files"
 msgstr "ทุกแฟ้ม"
 
-#: ../shell/rb-playlist-manager.c:1092
+#: ../shell/rb-playlist-manager.c:1086
 msgid "Load Playlist"
 msgstr "อ่านรายการเพลง"
 
-#: ../shell/rb-playlist-manager.c:1148 ../sources/rb-playlist-source.c:707
+#: ../shell/rb-playlist-manager.c:1142 ../sources/rb-playlist-source.c:708
 msgid "Couldn't save playlist"
 msgstr "ไม่สามารถบันทึกรายการเพลง"
 
-#: ../shell/rb-playlist-manager.c:1148
+#: ../shell/rb-playlist-manager.c:1142
 msgid "Unsupported file extension given."
 msgstr "ระบุนามสกุลแฟ้มที่ไม่รองรับ"
 
-#: ../shell/rb-playlist-manager.c:1481
+#: ../shell/rb-playlist-manager.c:1475
 #, c-format
 msgid "Playlist %s already exists"
 msgstr "มีรายการเพลง %s อยู่ก่อนแล้ว"
 
-#: ../shell/rb-playlist-manager.c:1511 ../shell/rb-playlist-manager.c:1544
-#: ../shell/rb-playlist-manager.c:1584 ../shell/rb-playlist-manager.c:1627
+#: ../shell/rb-playlist-manager.c:1505 ../shell/rb-playlist-manager.c:1538
+#: ../shell/rb-playlist-manager.c:1578 ../shell/rb-playlist-manager.c:1621
 #, c-format
 msgid "Unknown playlist: %s"
 msgstr "รายการเพลงไม่รู้จัก: %s"
 
-#: ../shell/rb-playlist-manager.c:1552 ../shell/rb-playlist-manager.c:1592
+#: ../shell/rb-playlist-manager.c:1546 ../shell/rb-playlist-manager.c:1586
 #, c-format
 msgid "Playlist %s is an automatic playlist"
 msgstr "รายการเพลง %s เป็นรายการเพลงอัตโนมัติ"
 
-#: ../shell/rb-shell.c:2066
+#: ../shell/rb-shell.c:2088
 msgid "Error while saving song information"
 msgstr "เกิดข้อผิดพลาดในการบันทึกข้อมูลเพลง"
 
-#: ../shell/rb-shell.c:2270
+#: ../shell/rb-shell.c:2292
 msgid "Pause playback"
 msgstr "พักเพลง"
 
-#: ../shell/rb-shell.c:2273
-msgid "Stop playback"
-msgstr "หยุดเล่น"
-
-#: ../shell/rb-shell.c:2281
+#: ../shell/rb-shell.c:2299
 msgid "Start playback"
 msgstr "เริ่มการเล่น"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:2392
+#: ../shell/rb-shell.c:2409
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (หยุดพัก)"
 
-#: ../shell/rb-shell.c:2789 ../sources/rb-play-queue-source.c:659
+#: ../shell/rb-shell.c:2806 ../sources/rb-play-queue-source.c:664
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "ไม่มีตัวจัดการแหล่งที่ลงทะเบียนไว้ที่สามารถจัดการ URI %s"
 
-#: ../shell/rb-shell.c:3118
+#: ../shell/rb-shell.c:3135
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "ไม่มีแหล่งที่ลงทะเบียนไว้ที่ตรงกับ URI %s"
 
-#: ../shell/rb-shell.c:3151 ../shell/rb-shell.c:3194
+#: ../shell/rb-shell.c:3168 ../shell/rb-shell.c:3211
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "ไม่รู้จัก URI ของเพลง: %s"
 
-#: ../shell/rb-shell.c:3203
+#: ../shell/rb-shell.c:3220
 #, c-format
 msgid "Unknown property %s"
 msgstr "ไม่รู้จักคุณสมบัติ %s"
 
-#: ../shell/rb-shell.c:3217
+#: ../shell/rb-shell.c:3234
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "ชนิดคุณสมบัติ %s ไม่ถูกต้องสำหรับคุณสมบัติ %s"
 
-#: ../shell/rb-shell-player.c:390
+#: ../shell/rb-shell-player.c:389
 msgid "Stream error"
 msgstr "สตรีมผิดพลาด"
 
-#: ../shell/rb-shell-player.c:391
+#: ../shell/rb-shell-player.c:390
 msgid "Unexpected end of stream!"
 msgstr "พบจุดจบของสตรีมก่อนกำหนด!"
 
-#: ../shell/rb-shell-player.c:677
+#: ../shell/rb-shell-player.c:676
 #, c-format
 msgid "Playlist was empty"
 msgstr "รายการเพลงว่างเปล่า"
 
-#: ../shell/rb-shell-player.c:1110
+#: ../shell/rb-shell-player.c:1109
 #, c-format
 msgid "Not currently playing"
 msgstr "ไม่ได้เล่นเพลงอยู่"
 
-#: ../shell/rb-shell-player.c:1167
+#: ../shell/rb-shell-player.c:1166
 #, c-format
 msgid "No previous song"
 msgstr "ไม่มีเพลงก่อนหน้า"
 
-#: ../shell/rb-shell-player.c:1266
+#: ../shell/rb-shell-player.c:1265
 #, c-format
 msgid "No next song"
 msgstr "ไม่มีเพลงถัดไป"
 
-#: ../shell/rb-shell-player.c:2127
+#: ../shell/rb-shell-player.c:2124
 msgid "Couldn't stop playback"
 msgstr "ไม่สามารถหยุดเล่นได้"
 
-#: ../shell/rb-shell-player.c:2246
+#: ../shell/rb-shell-player.c:2243
 #, c-format
 msgid "Playback position not available"
 msgstr "ไม่มีข้อมูลตำแหน่งการเล่นเพลง"
 
-#: ../shell/rb-shell-player.c:2278 ../shell/rb-shell-player.c:2312
+#: ../shell/rb-shell-player.c:2275 ../shell/rb-shell-player.c:2309
 #, c-format
 msgid "Current song is not seekable"
 msgstr "เพลงปัจจุบันไม่สามารถเปลี่ยนตำแหน่งได้"
 
-#: ../shell/rb-shell-player.c:2468 ../shell/rb-shell-player.c:2779
+#: ../shell/rb-shell-player.c:2465 ../shell/rb-shell-player.c:2776
 msgid "Couldn't start playback"
 msgstr "ไม่สามารถเริ่มเล่นได้"
 
-#: ../shell/rb-shell-player.c:3275
+#: ../shell/rb-shell-player.c:3287
 msgid "Linear"
 msgstr "ตามลำดับ"
 
-#: ../shell/rb-shell-player.c:3277
+#: ../shell/rb-shell-player.c:3289
 msgid "Linear looping"
 msgstr "วนซ้ำแบบเรียงลำดับ"
 
-#: ../shell/rb-shell-player.c:3281
+#: ../shell/rb-shell-player.c:3293
 msgid "Random with equal weights"
 msgstr "สุ่มเล่นแบบเท่าเทียมกันหมด"
 
-#: ../shell/rb-shell-player.c:3283
+#: ../shell/rb-shell-player.c:3295
 msgid "Random by time since last play"
 msgstr "สุ่มเล่นตามเวลาตั้งแต่เล่นครั้งล่าสุด"
 
-#: ../shell/rb-shell-player.c:3285
+#: ../shell/rb-shell-player.c:3297
 msgid "Random by rating"
 msgstr "สุ่มเล่นตามคะแนน"
 
-#: ../shell/rb-shell-player.c:3287
+#: ../shell/rb-shell-player.c:3299
 msgid "Random by time since last play and rating"
 msgstr "สุ่มเล่นตามเวลาตั้งแต่เล่นครั้งล่าสุด และตามคะแนน"
 
-#: ../shell/rb-shell-player.c:3289
+#: ../shell/rb-shell-player.c:3301
 msgid "Linear, removing entries once played"
 msgstr "ตามลำดับ โดยลบรายการที่เล่นแล้วออก"
 
-#: ../shell/rb-shell-player.c:3299
+#: ../shell/rb-shell-player.c:3311
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "ไม่สามารถสร้างตัวเล่น: %s"
@@ -3523,32 +3802,33 @@ msgstr "ทั่วไป"
 msgid "Playback"
 msgstr "การเล่น"
 
-#: ../shell/rb-track-transfer-queue.c:175
+#: ../shell/rb-shell-preferences.c:428
+#| msgid "P_lugins"
+msgid "Plugins"
+msgstr "ปลั๊กอิน"
+
+#: ../shell/rb-track-transfer-queue.c:174
 #, c-format
 msgid "The file \"%s\" already exists. Do you want to replace it?"
 msgstr "มีแฟ้ม \"%s\" อยู่ก่อนแล้ว คุณต้องการจะเขียนทับหรือไม่?"
 
 #: ../shell/rb-track-transfer-queue.c:188
-msgid "_Cancel"
-msgstr "_ยกเลิก"
-
-#: ../shell/rb-track-transfer-queue.c:189
 msgid "_Skip"
 msgstr "_ข้าม"
 
-#: ../shell/rb-track-transfer-queue.c:190
+#: ../shell/rb-track-transfer-queue.c:189
 msgid "_Replace"
 msgstr "เขียน_ทับ"
 
-#: ../shell/rb-track-transfer-queue.c:191
+#: ../shell/rb-track-transfer-queue.c:190
 msgid "S_kip All"
 msgstr "ข้า_มทั้งหมด"
 
-#: ../shell/rb-track-transfer-queue.c:192
+#: ../shell/rb-track-transfer-queue.c:191
 msgid "Replace _All"
 msgstr "เขียนทั_บทั้งหมด"
 
-#: ../shell/rb-track-transfer-queue.c:439
+#: ../shell/rb-track-transfer-queue.c:438
 #, c-format
 msgid ""
 "%d file cannot be transferred as it must be converted into a format "
@@ -3566,7 +3846,7 @@ msgstr[1] ""
 "แต่ไม่มีตัวลงรหัสที่เหมาะสม"
 
 #. XXX should provide the option of picking a different format?
-#: ../shell/rb-track-transfer-queue.c:463
+#: ../shell/rb-track-transfer-queue.c:462
 #, c-format
 msgid ""
 "Additional software is required to encode media in your preferred format:\n"
@@ -3575,7 +3855,7 @@ msgstr ""
 "ต้องการโปรแกรมเพิ่มเติมเพื่อใช้แปลงข้อมูลไปเป็นรูปแบบที่คุณต้องการ:\n"
 "%s"
 
-#: ../shell/rb-track-transfer-queue.c:467
+#: ../shell/rb-track-transfer-queue.c:466
 #, c-format
 msgid ""
 "Additional software is required to convert %d file into a format supported "
@@ -3592,19 +3872,19 @@ msgstr[1] ""
 "ต้องการโปรแกรมเพิ่มเติมเพื่อใช้แปลงแฟ้มจำนวน %d แฟ้มให้เป็นรูปแบบที่อุปกรณ์ปลายทางรองรับ:\n"
 "%s"
 
-#: ../shell/rb-track-transfer-queue.c:484
+#: ../shell/rb-track-transfer-queue.c:483
 msgid "Unable to transfer tracks"
 msgstr "ไม่สามารถถ่ายโอนเพลง"
 
-#: ../shell/rb-track-transfer-queue.c:489
+#: ../shell/rb-track-transfer-queue.c:488
 msgid "_Cancel the transfer"
 msgstr "_ยกเลิกการถ่ายโอน"
 
-#: ../shell/rb-track-transfer-queue.c:491
+#: ../shell/rb-track-transfer-queue.c:490
 msgid "_Skip these files"
 msgstr "_ข้ามแฟ้มเหล่านี้ไป"
 
-#: ../shell/rb-track-transfer-queue.c:494
+#: ../shell/rb-track-transfer-queue.c:493
 msgid "_Install"
 msgstr "_ติดตั้ง"
 
@@ -3658,11 +3938,11 @@ msgid "Shared"
 msgstr "รายการใช้ร่วม"
 
 #. set up info bar for triggering codec installation
-#: ../sources/rb-import-errors-source.c:235
+#: ../sources/rb-import-errors-source.c:233
 msgid "Install Additional Software"
 msgstr "ติดตั้งโปรแกรมเพิ่มเติม"
 
-#: ../sources/rb-import-errors-source.c:241
+#: ../sources/rb-import-errors-source.c:239
 msgid "Additional software is required to play some of these files."
 msgstr "ต้องการโปรแกรมเพิ่มเติมเพื่อใช้เล่นแฟ้มบางแฟ้ม"
 
@@ -3677,114 +3957,96 @@ msgid_plural "%d import errors"
 msgstr[0] "ข้อผิดพลาดขณะนำเข้า %d รายการ"
 msgstr[1] "ข้อผิดพลาดขณะนำเข้า %d รายการ"
 
-#: ../sources/rb-library-source.c:129
+#: ../sources/rb-library-source.c:121
 msgid "Artist/Artist - Album"
 msgstr "ศิลปิน/ศิลปิน - อัลบั้ม"
 
-#: ../sources/rb-library-source.c:130
+#: ../sources/rb-library-source.c:122
 msgid "Artist/Album"
 msgstr "ศิลปิน/อัลบั้ม"
 
-#: ../sources/rb-library-source.c:131
+#: ../sources/rb-library-source.c:123
 msgid "Artist - Album"
 msgstr "ศิลปิน - อัลบั้ม"
 
-#: ../sources/rb-library-source.c:132 ../widgets/rb-entry-view.c:1471
+#: ../sources/rb-library-source.c:124 ../widgets/rb-entry-view.c:1474
 #: ../widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "อัลบั้ม"
 
-#: ../sources/rb-library-source.c:138
+#: ../sources/rb-library-source.c:130
 msgid "Number - Title"
 msgstr "ลำดับ - ชื่อ"
 
-#: ../sources/rb-library-source.c:139
+#: ../sources/rb-library-source.c:131
 msgid "Artist - Title"
 msgstr "ศิลปิน - ชื่อ"
 
-#: ../sources/rb-library-source.c:140
+#: ../sources/rb-library-source.c:132
 msgid "Artist - Number - Title"
 msgstr "ศิลปิน - ลำดับ - ชื่อ"
 
-#: ../sources/rb-library-source.c:141
+#: ../sources/rb-library-source.c:133
 msgid "Artist (Album) - Number - Title"
 msgstr "ศิลปิน (อัลบั้ม) - ลำดับ - ชื่อ"
 
-#: ../sources/rb-library-source.c:143
+#: ../sources/rb-library-source.c:135
 msgid "Number. Artist - Title"
 msgstr "ลำดับ. ศิลปิน - ชื่อ"
 
-#: ../sources/rb-library-source.c:157
-msgid "Constant bit rate"
-msgstr "อัตราบิตคงที่"
-
-#: ../sources/rb-library-source.c:158
-msgid "Variable bit rate"
-msgstr "อัตราบิตไม่คงที่"
-
-#: ../sources/rb-library-source.c:447
-#: ../sources/sync/rb-sync-settings-ui.c:216
-#: ../sources/sync/rb-sync-settings-ui.c:217
+#: ../sources/rb-library-source.c:416 ../sources/sync/rb-sync-settings-ui.c:217
+#: ../sources/sync/rb-sync-settings-ui.c:218
 #: ../sources/sync/rb-sync-state-ui.c:77
 msgid "Music"
 msgstr "เพลง"
 
-#: ../sources/rb-library-source.c:500
+#: ../sources/rb-library-source.c:469
 msgid "Choose Library Location"
 msgstr "เลือกตำแหน่งคลังเพลง"
 
-#: ../sources/rb-library-source.c:539
+#: ../sources/rb-library-source.c:508
 msgid "Multiple locations set"
 msgstr "ชุดตำแหน่งเพลงหลายเพลง"
 
-#: ../sources/rb-library-source.c:729
-msgid "Default settings"
-msgstr "ค่าตั้งปกติ"
-
-#: ../sources/rb-library-source.c:1509
+#: ../sources/rb-library-source.c:1044
 msgid "Example Path:"
 msgstr "ตัวอย่างพาธ:"
 
-#: ../sources/rb-library-source.c:1682 ../sources/rb-library-source.c:1686
-#: ../sources/rb-transfer-target.c:189
-msgid "Error transferring track"
-msgstr "เกิดข้อผิดพลาดขณะถ่ายโอนเพลง"
-
-#: ../sources/rb-library-source.c:1772
+#: ../sources/rb-library-source.c:1284
 msgid "Copying tracks to the library"
 msgstr "กำลังคัดลอกเพลงเข้าคลังเพลง"
 
-#: ../sources/rb-library-source.c:1846
+#: ../sources/rb-library-source.c:1358
 msgid "Adding tracks to the library"
 msgstr "กำลังเพิ่มเพลงเข้าคลังเพลง"
 
-#: ../sources/rb-media-player-source.c:614
+#: ../sources/rb-media-player-source.c:773
 #, c-format
 msgid "Syncing tracks to %s"
 msgstr "กำลัง sync เพลงไปยัง %s"
 
-#: ../sources/rb-media-player-source.c:668
+#: ../sources/rb-media-player-source.c:829
 msgid ""
 "You have not selected any music, playlists, or podcasts to transfer to this "
 "device."
 msgstr "คุณยังไม่ได้เลือกเพลง รายการเพลง หรือพอดแคสต์ใดๆ ที่จะถ่ายโอนมายังอุปกรณ์นี้เลย"
 
-#: ../sources/rb-media-player-source.c:672
+#: ../sources/rb-media-player-source.c:834
 msgid ""
 "There is not enough space on the device to transfer the selected music, "
 "playlists and podcasts."
 msgstr "เหลือเนื้อที่ในอุปกรณ์ไม่พอสำหรับถ่ายโอนเพลง รายการเพลง และพอดแคสต์ที่เลือก"
 
-#: ../sources/rb-media-player-source.c:723
+#: ../sources/rb-media-player-source.c:885
 #, c-format
 msgid "%s Sync Settings"
 msgstr "ตั้งค่าการ Sync %s"
 
-#: ../sources/rb-media-player-source.c:728
+#: ../sources/rb-media-player-source.c:890
 msgid "Sync with the device"
 msgstr "sync กับอุปกรณ์"
 
-#: ../sources/rb-media-player-source.c:730
+#: ../sources/rb-media-player-source.c:892
 msgid "Don't sync"
 msgstr "ไม่ต้อง sync"
 
@@ -3799,24 +4061,25 @@ msgid_plural "%d missing files"
 msgstr[0] "แฟ้มขาดหาย %d แฟ้ม"
 msgstr[1] "แฟ้มขาดหาย %d แฟ้ม"
 
-#: ../sources/rb-playlist-source.c:1190
+#: ../sources/rb-playlist-source.c:1191
 msgid "Remove from Playlist"
 msgstr "ลบออกจากรายการเพลง"
 
-#: ../sources/rb-play-queue-source.c:292 ../sources/rb-play-queue-source.c:394
-#: ../sources/rb-play-queue-source.c:503
+#: ../sources/rb-play-queue-source.c:297 ../sources/rb-play-queue-source.c:399
+#: ../sources/rb-play-queue-source.c:508
 msgid "Play Queue"
 msgstr "คิวเพลง"
 
-#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:906
-msgid "from"
-msgstr "จาก"
-
-#: ../sources/rb-play-queue-source.c:473 ../widgets/rb-header.c:905
+#. Translators: format is "<title> by <artist> from <album>"
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:924
 msgid "by"
 msgstr "โดย"
 
-#: ../sources/rb-source.c:595
+#: ../sources/rb-play-queue-source.c:478 ../widgets/rb-header.c:925
+msgid "from"
+msgstr "จาก"
+
+#: ../sources/rb-source.c:604 ../widgets/rb-import-dialog.c:476
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
@@ -3831,12 +4094,12 @@ msgstr "กำลังเชื่อมต่อ"
 msgid "Buffering"
 msgstr "กำลังทำบัฟเฟอร์"
 
-#: ../sources/rb-transfer-target.c:456
+#: ../sources/rb-transfer-target.c:450
 #, c-format
 msgid "Transferring tracks to %s"
 msgstr "กำลังถ่ายโอนเพลงไปที่ %s"
 
-#: ../sources/sync/rb-sync-settings-ui.c:228
+#: ../sources/sync/rb-sync-settings-ui.c:229
 msgid "All Music"
 msgstr "เพลงทั้งหมด"
 
@@ -3872,148 +4135,191 @@ msgstr "ปุ่มในการแจ้งเตือน"
 msgid "The buttons shown in the alert dialog"
 msgstr "ปุ่มที่แสดงในกล่องโต้ตอบแจ้งเตือน"
 
-#: ../widgets/rb-alert-dialog.c:171
+#: ../widgets/rb-alert-dialog.c:175
 msgid "Show more _details"
 msgstr "แสดง_ข้อมูลเพิ่มเติม"
 
-#: ../widgets/rb-entry-view.c:1012 ../widgets/rb-entry-view.c:1530
-#: ../widgets/rb-song-info.c:1190
+#: ../widgets/rb-alert-dialog.c:370 ../widgets/rb-alert-dialog.c:404
+#| msgid "OK"
+msgid "_OK"
+msgstr "เ_รียบร้อย"
+
+#: ../widgets/rb-alert-dialog.c:391
+msgid "_No"
+msgstr "ไ_ม่ใช่"
+
+#: ../widgets/rb-alert-dialog.c:394
+msgid "_Yes"
+msgstr "ใ_ช่"
+
+#: ../widgets/rb-dialog.c:132
+msgid "_Open"
+msgstr "เ_ปิด"
+
+#: ../widgets/rb-encoding-settings.c:54
+msgid "Constant bit rate"
+msgstr "อัตราบิตคงที่"
+
+#: ../widgets/rb-encoding-settings.c:55
+msgid "Variable bit rate"
+msgstr "อัตราบิตไม่คงที่"
+
+#: ../widgets/rb-encoding-settings.c:402
+msgid "Default settings"
+msgstr "ค่าตั้งปกติ"
+
+#: ../widgets/rb-entry-view.c:1015 ../widgets/rb-entry-view.c:1533
+#: ../widgets/rb-song-info.c:1232
 msgid "Lossless"
 msgstr "ไม่เสียรายละเอียด"
 
-#: ../widgets/rb-entry-view.c:1430
+#: ../widgets/rb-entry-view.c:1433
 msgid "Track"
 msgstr "ลำดับ"
 
-#: ../widgets/rb-entry-view.c:1461
+#: ../widgets/rb-entry-view.c:1464
 msgid "Composer"
 msgstr "ผู้แต่ง"
 
-#: ../widgets/rb-entry-view.c:1491
+#: ../widgets/rb-entry-view.c:1494
 msgid "Comment"
 msgstr "ความคิดเห็น"
 
-#: ../widgets/rb-entry-view.c:1501
+#: ../widgets/rb-entry-view.c:1504
 msgid "Time"
 msgstr "เวลา"
 
-#: ../widgets/rb-entry-view.c:1513
+#: ../widgets/rb-entry-view.c:1516
 msgid "Year"
 msgstr "ปี"
 
 #: ../widgets/rb-entry-view.c:1528
+msgid "Quality"
+msgstr "คุณภาพ"
+
+#: ../widgets/rb-entry-view.c:1531
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: ../widgets/rb-entry-view.c:1539
+#: ../widgets/rb-entry-view.c:1542
 msgid "Rating"
 msgstr "คะแนน"
 
-#: ../widgets/rb-entry-view.c:1561
+#: ../widgets/rb-entry-view.c:1564
 msgid "Play Count"
 msgstr "จำนวนครั้งที่เล่น"
 
-#: ../widgets/rb-entry-view.c:1573
+#: ../widgets/rb-entry-view.c:1576
 msgid "Last Played"
 msgstr "เล่นล่าสุด"
 
-#: ../widgets/rb-entry-view.c:1585
+#: ../widgets/rb-entry-view.c:1588
 msgid "Date Added"
 msgstr "วันที่เพิ่ม"
 
-#: ../widgets/rb-entry-view.c:1596
+#: ../widgets/rb-entry-view.c:1599
 msgid "Last Seen"
 msgstr "เห็นครั้งล่าสุด"
 
-#: ../widgets/rb-entry-view.c:1607
+#: ../widgets/rb-entry-view.c:1610
 msgid "Location"
 msgstr "ที่อยู่"
 
-#: ../widgets/rb-entry-view.c:1879
+#: ../widgets/rb-entry-view.c:1619
+msgid "BPM"
+msgstr "จังหวะ/นาที"
+
+#: ../widgets/rb-entry-view.c:1896
 msgid "Now Playing"
 msgstr "กำลังเล่น"
 
-#: ../widgets/rb-entry-view.c:1938
+#: ../widgets/rb-entry-view.c:1961
 msgid "Playback Error"
 msgstr "การเล่นเพลงผิดพลาด"
 
-#: ../widgets/rb-fading-image.c:295
+#: ../widgets/rb-fading-image.c:301
 msgid "Drop artwork here"
 msgstr "วางรูปภาพที่นี่"
 
 #. Translators: remaining time / total time
-#: ../widgets/rb-header.c:1202
+#: ../widgets/rb-header.c:1214
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: ../widgets/rb-header.c:1213
+#: ../widgets/rb-header.c:1225
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
 
-#: ../widgets/rb-import-dialog.c:339
-msgid "Importing tracks"
-msgstr "กำลังนำเข้าเพลง"
+#: ../widgets/rb-import-dialog.c:341
+#| msgid "%d missing file"
+#| msgid_plural "%d missing files"
+msgid "Examining files"
+msgstr "กำลังตรวจสอบแฟ้ม"
 
 #. this isn't a terribly helpful message.
-#: ../widgets/rb-import-dialog.c:409
+#: ../widgets/rb-import-dialog.c:411
 #, c-format
 msgid "The location you have selected is on the device %s."
 msgstr "ตำแหน่งที่คุณเลือกอยู่ในอุปกรณ์ %s"
 
-#: ../widgets/rb-import-dialog.c:415
+#: ../widgets/rb-import-dialog.c:417
 #, c-format
 msgid "Show %s"
 msgstr "แสดง %s"
 
-#: ../widgets/rb-import-dialog.c:463
+#: ../widgets/rb-import-dialog.c:465
 #, c-format
 msgid "Import %d selected track"
 msgid_plural "Import %d selected tracks"
 msgstr[0] "นำเข้าเพลง %d เพลงที่เลือกไว้"
 msgstr[1] "นำเข้าเพลง %d เพลงที่เลือกไว้"
 
-#: ../widgets/rb-import-dialog.c:466
+#: ../widgets/rb-import-dialog.c:468
 #, c-format
 msgid "Import %d listed track"
 msgid_plural "Import %d listed tracks"
 msgstr[0] "นำเข้าเพลง %d เพลงที่แสดงอยู่"
 msgstr[1] "นำเข้าเพลง %d เพลงที่แสดงอยู่"
 
-#: ../widgets/rb-property-view.c:660
+#: ../widgets/rb-property-view.c:661
 #, c-format
 msgid "%d artist (%d)"
 msgid_plural "All %d artists (%d)"
 msgstr[0] "ศิลปิน %d ชื่อ (%d)"
 msgstr[1] "ศิลปินทั้งหมด %d ชื่อ (%d)"
 
-#: ../widgets/rb-property-view.c:663
+#: ../widgets/rb-property-view.c:664
 #, c-format
 msgid "%d album (%d)"
 msgid_plural "All %d albums (%d)"
 msgstr[0] "อัลบั้ม %d อัลบั้ม (%d)"
 msgstr[1] "อัลบั้มทั้งหมด %d อัลบั้ม (%d)"
 
-#: ../widgets/rb-property-view.c:666
+#: ../widgets/rb-property-view.c:667
 #, c-format
 msgid "%d genre (%d)"
 msgid_plural "All %d genres (%d)"
 msgstr[0] "แนวเพลง %d แนว (%d)"
 msgstr[1] "แนวเพลงทั้งหมด %d แนว (%d)"
 
-#: ../widgets/rb-property-view.c:669
+#: ../widgets/rb-property-view.c:670
 #, c-format
 msgid "%d (%d)"
 msgid_plural "All %d (%d)"
 msgstr[0] "%d รายการ (%d)"
 msgstr[1] "ทั้งหมด %d รายการ (%d)"
 
-#: ../widgets/rb-property-view.c:675
+#: ../widgets/rb-property-view.c:676
 #, c-format
 msgid "%s (%d)"
 msgstr "%s (%d)"
+
+#: ../widgets/rb-query-creator.c:194
+msgid "_New"
+msgstr "ใ_หม่"
 
 #: ../widgets/rb-query-creator.c:210
 msgid "Create Automatic Playlist"
@@ -4321,11 +4627,11 @@ msgstr "วัน"
 msgid "weeks"
 msgstr "สัปดาห์"
 
-#: ../widgets/rb-rating-helper.c:304
+#: ../widgets/rb-rating-helper.c:295
 msgid "No Stars"
 msgstr "ไม่มีดาว"
 
-#: ../widgets/rb-rating-helper.c:306
+#: ../widgets/rb-rating-helper.c:297
 #, c-format
 msgid "%d Star"
 msgid_plural "%d Stars"
@@ -4340,33 +4646,99 @@ msgstr "ล้างคำค้น"
 msgid "Select the search type"
 msgstr "เลือกประเภทการค้นหา"
 
-#: ../widgets/rb-search-entry.c:256
+#: ../widgets/rb-search-entry.c:252
 msgid "Search"
 msgstr "ค้นหา"
 
-#: ../widgets/rb-search-entry.c:565
+#: ../widgets/rb-search-entry.c:550
 msgid "_Search:"
 msgstr "_ค้นหา:"
 
-#: ../widgets/rb-song-info.c:369
+#: ../widgets/rb-song-info.c:354
+msgid "_Back"
+msgstr "_ก่อนหน้า"
+
+#: ../widgets/rb-song-info.c:363
+#| msgid "_Format:"
+msgid "_Forward"
+msgstr "_ต่อไป"
+
+#: ../widgets/rb-song-info.c:371
 msgid "Song Properties"
 msgstr "คุณสมบัติเพลง"
 
-#: ../widgets/rb-song-info.c:426
+#: ../widgets/rb-song-info.c:428
 msgid "Multiple Song Properties"
 msgstr "คุณสมบัติเพลงแบบหลายเพลง"
 
-#: ../widgets/rb-song-info.c:1253
+#: ../widgets/rb-song-info.c:1295
 msgid "Unknown file name"
 msgstr "ไม่ทราบชื่อแฟ้ม"
 
-#: ../widgets/rb-song-info.c:1275
+#: ../widgets/rb-song-info.c:1317
 msgid "On the desktop"
 msgstr "บนพื้นโต๊ะ"
 
-#: ../widgets/rb-song-info.c:1298
+#: ../widgets/rb-song-info.c:1340
 msgid "Unknown location"
 msgstr "ไม่ทราบตำแหน่ง"
+
+#~ msgid "_Add Music"
+#~ msgstr "เ_พิ่มเพลง"
+
+#~ msgid "Status Bar"
+#~ msgstr "แถบสถานะ"
+
+#~ msgid "_About"
+#~ msgstr "เ_กี่ยวกับ"
+
+#~ msgid "Format settings:"
+#~ msgstr "การตั้งค่าฟอร์แมต:"
+
+#~ msgid "Tuning station"
+#~ msgstr "กำลังเปลี่ยนสถานี"
+
+#~ msgid "Send selected tracks by email or instant message"
+#~ msgstr "ส่งเพลงที่เลือกไปทางอีเมลหรือโปรแกรมข้อความทันใจ"
+
+#~ msgid "Send to..."
+#~ msgstr "ส่งไปยัง..."
+
+#~ msgid "Low quality"
+#~ msgstr "คุณภาพต่ำ"
+
+#~ msgid "Normal quality"
+#~ msgstr "คุณภาพปกติ"
+
+#~ msgid "High quality"
+#~ msgstr "คุณภาพสูง"
+
+#~ msgid "Fullscreen"
+#~ msgstr "เต็มจอ"
+
+#~ msgid "Visual Effect"
+#~ msgstr "เอ็ฟเฟ็กต์ภาพ"
+
+#~ msgid "Visual Effects"
+#~ msgstr "เอ็ฟเฟ็กต์ภาพ"
+
+#~ msgid "Display"
+#~ msgstr "แสดง"
+
+#~ msgid "Visualization"
+#~ msgstr "ภาพเอ็ฟเฟ็กต์เสียง"
+
+#~ msgid "Displays visualizations"
+#~ msgstr "แสดงภาพเอ็ฟเฟ็กต์เสียง"
+
+#~ msgid "Unable to display requested URI"
+#~ msgstr "ไม่สามารถแสดง URI ที่ร้องขอได้"
+
+#~ msgid "Configure Plugins"
+#~ msgstr "ตั้งค่าปลั๊กอิน"
+
+#~ msgid "Importing tracks"
+#~ msgstr "กำลังนำเข้าเพลง"
 
 #~ msgid "Add Tracks"
 #~ msgstr "เพิ่มเพลง"
@@ -4725,9 +5097,6 @@ msgstr "ไม่ทราบตำแหน่ง"
 #~ msgid "Change the visibility of the album art display"
 #~ msgstr "ซ่อนหรือแสดงปกอัลบั้ม"
 
-#~ msgid "_Browse"
-#~ msgstr "เ_รียกดู"
-
 #~ msgid "Change the visibility of the browser"
 #~ msgstr "ซ่อนหรือแสดงเบราว์เซอร์"
 
@@ -4776,14 +5145,8 @@ msgstr "ไม่ทราบตำแหน่ง"
 #~ msgid "_Next"
 #~ msgstr "_ถัดไป"
 
-#~ msgid "_Increase Volume"
-#~ msgstr "เ_พิ่มความดัง"
-
 #~ msgid "Increase playback volume"
 #~ msgstr "เพิ่มความดังเสียง"
-
-#~ msgid "_Decrease Volume"
-#~ msgstr "_ลดความดัง"
 
 #~ msgid "Decrease playback volume"
 #~ msgstr "ลดความดังเสียง"
@@ -5295,9 +5658,6 @@ msgstr "ไม่ทราบตำแหน่ง"
 #~ msgid "Maximum possible"
 #~ msgstr "สูงที่สุดเท่าที่เป็นไปได้"
 
-#~ msgid "Invalid writer device: %s"
-#~ msgstr "อุปกรณ์เขียนใช้การไม่ได้: %s"
-
 #~ msgid "%d hour"
 #~ msgid_plural "%d hours"
 #~ msgstr[0] "%d ชั่วโมง"
@@ -5494,9 +5854,6 @@ msgstr "ไม่ทราบตำแหน่ง"
 #~ msgid "Visit Jamendo at "
 #~ msgstr "เข้าชม Jamendo ที่ "
 
-#~ msgid "_Format:"
-#~ msgstr "รูปแ_บบ:"
-
 #~ msgid ""
 #~ "     * A legal framework protecting the artists (thanks to the Creative "
 #~ "Commons licenses)."
@@ -5642,9 +5999,6 @@ msgstr "ไม่ทราบตำแหน่ง"
 
 #~ msgid "Shown when the main window is hidden"
 #~ msgstr "แสดงเมื่อหน้าต่างหลักถูกซ่อนไว้"
-
-#~ msgid "Status icon preferences"
-#~ msgstr "ปรับแต่งไอคอนสถานะ"
 
 #~ msgid "Visible with notifications"
 #~ msgstr "แสดงพร้อมกรอบแจ้งเหตุ"
@@ -6185,9 +6539,6 @@ msgstr "ไม่ทราบตำแหน่ง"
 #~ msgid "P_lugins..."
 #~ msgstr "ป_ลั๊กอิน..."
 
-#~ msgid "by %s from %s"
-#~ msgstr "โดย %s จาก %s"
-
 #~ msgid "Add Location"
 #~ msgstr "เพิ่มตำแหน่ง"
 
@@ -6289,9 +6640,6 @@ msgstr "ไม่ทราบตำแหน่ง"
 
 #~ msgid "Get information on this album from the web"
 #~ msgstr "หาข้อมูลของอัลบั้มนี้จากเว็บ"
-
-#~ msgid "Select A Folder"
-#~ msgstr "เลือกโฟลเดอร์"
 
 #~ msgid "The following files couldn't be loaded:"
 #~ msgstr "ไม่สามารถเรียกแฟ้มต่อไปนี้:"
