@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-05-29 21:36+0000\n"
-"PO-Revision-Date: 2024-06-28 17:15+0200\n"
+"POT-Creation-Date: 2024-07-01 19:02+0000\n"
+"PO-Revision-Date: 2024-09-09 13:10+0200\n"
 "Last-Translator: Balázs Úr <ur.balazs at fsf dot hu>\n"
 "Language-Team: Hungarian <openscope at fsf dot hu>\n"
 "Language: hu\n"
@@ -598,8 +598,8 @@ msgid "Save Playlist"
 msgstr "Lejátszólista mentése"
 
 #: data/ui/playlist-save.ui:38 plugins/artsearch/songinfo.py:135
-#: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:536
-#: podcast/rb-podcast-source.c:1110 shell/rb-track-transfer-queue.c:187
+#: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:537
+#: podcast/rb-podcast-source.c:1124 shell/rb-track-transfer-queue.c:187
 #: widgets/rb-alert-dialog.c:384 widgets/rb-alert-dialog.c:401
 #: widgets/rb-dialog.c:131 widgets/rb-dialog.c:139
 #: widgets/rb-query-creator.c:191 widgets/rb-uri-dialog.c:158
@@ -706,7 +706,7 @@ msgid "Cancel Download"
 msgstr "Letöltés megszakítása"
 
 #: data/ui/podcast-popups.ui:45 plugins/fmradio/fmradio-popup.ui:6
-#: podcast/rb-podcast-source.c:1262 sources/rb-media-player-source.c:1104
+#: podcast/rb-podcast-source.c:1280 sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Törlés"
 
@@ -987,7 +987,7 @@ msgstr "%Y %b %e"
 #: podcast/rb-feed-podcast-properties-dialog.c:335
 #: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1326
 #: podcast/rb-podcast-manager.c:1440 podcast/rb-podcast-properties-dialog.c:636
-#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:796
+#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:797
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
 #: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
 #: rhythmdb/rhythmdb.c:2150 rhythmdb/rhythmdb.c:5616 rhythmdb/rhythmdb.c:5622
@@ -1143,15 +1143,12 @@ msgid "Playlists:"
 msgstr "Lejátszólisták:"
 
 #: plugins/android/rb-android-source.c:201
-#| msgid ""
-#| "No storage areas found on this device. You may need to unlock it and "
-#| "enable MTP."
 msgid ""
 "No storage areas found on this device. You may need to unlock it and change "
 "it to File Transfer mode."
 msgstr ""
-"Nem találhatók tárolóterületek ezen az eszközön. Talán fel kell oldani azt,"
-" és meg kell változtatnia fájlátviteli módra."
+"Nem találhatók tárolóterületek ezen az eszközön. Talán fel kell oldani azt, "
+"és meg kell változtatnia fájlátviteli módra."
 
 #: plugins/android/rb-android-source.c:403
 #: plugins/generic-player/rb-generic-player-source.c:563
@@ -2813,7 +2810,6 @@ msgid "Listening port:"
 msgstr "Figyelő port:"
 
 #: plugins/webremote/webremote-config.ui:46
-#| msgid "Password:"
 msgid "Passphrase:"
 msgstr "Jelmondat:"
 
@@ -2833,7 +2829,7 @@ msgstr "A Rhythmbox irányítása webböngészőből"
 msgid "Launch web remote control"
 msgstr "Webes távirányítás elindítása"
 
-#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:737
+#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:738
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
@@ -2862,7 +2858,7 @@ msgid "Episodes"
 msgstr "Epizódok"
 
 #: podcast/rb-podcast-add-dialog.c:847 podcast/rb-podcast-add-dialog.c:858
-#: podcast/rb-podcast-source.c:1382 podcast/rb-podcast-source.c:1393
+#: podcast/rb-podcast-source.c:1400 podcast/rb-podcast-source.c:1411
 msgid "Date"
 msgstr "Dátum"
 
@@ -2948,11 +2944,11 @@ msgstr "Ez a hírforrás nem tartalmaz letölthető elemeket"
 msgid "Not Downloaded"
 msgstr "Nincs letöltve"
 
-#: podcast/rb-podcast-source.c:523
+#: podcast/rb-podcast-source.c:524
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Törli a podcast-forrást és a letöltött fájlokat?"
 
-#: podcast/rb-podcast-source.c:526
+#: podcast/rb-podcast-source.c:527
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -2962,84 +2958,95 @@ msgstr ""
 "Ne feledje, hogy törölheti a forrást a letöltött fájlok megtartása mellett, "
 "ha csak a forrás törlését választja."
 
-#: podcast/rb-podcast-source.c:534
+#: podcast/rb-podcast-source.c:535
 msgid "Delete _Feed Only"
 msgstr "_Csak a forrás törlése"
 
-#: podcast/rb-podcast-source.c:541
+#: podcast/rb-podcast-source.c:542
 msgid "_Delete Feed And Files"
 msgstr "A f_orrás és a fájlok törlése"
 
-#: podcast/rb-podcast-source.c:622 podcast/rb-podcast-source.c:1436
+#: podcast/rb-podcast-source.c:623 podcast/rb-podcast-source.c:1454
 msgid "Downloaded"
 msgstr "Letöltve"
 
-#: podcast/rb-podcast-source.c:626 podcast/rb-podcast-source.c:1438
+#: podcast/rb-podcast-source.c:627 podcast/rb-podcast-source.c:1456
 msgid "Failed"
 msgstr "Sikertelen"
 
-#: podcast/rb-podcast-source.c:630 podcast/rb-podcast-source.c:1437
+#: podcast/rb-podcast-source.c:631 podcast/rb-podcast-source.c:1455
 msgid "Waiting"
 msgstr "Várakozás"
 
-#: podcast/rb-podcast-source.c:966
+#: podcast/rb-podcast-source.c:967
 msgid "Podcast Error"
 msgstr "Podcasthiba"
 
-#: podcast/rb-podcast-source.c:1097
+#: podcast/rb-podcast-source.c:1111
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Törli ezt a podcast epizódot és a letöltött fájlt?"
 
-#: podcast/rb-podcast-source.c:1100
+#: podcast/rb-podcast-source.c:1114
+#| msgid ""
+#| "If you choose to delete the episode and file, they will be permanently "
+#| "lost.  Please note that you can delete the episode but keep the "
+#| "downloaded file by choosing to delete the episode only."
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
-"file by choosing to delete the episode only."
+"file by choosing to delete the episode only, or delete the downloaded file "
+"but keep the episode by choosing to delete the file only."
 msgstr ""
-"Ha az epizód és fájl törlését választja, akkor azok véglegesen elvesznek. Ne "
-"feledje, hogy törölheti az epizódot a letöltött fájl megtartása mellett, ha "
-"csak az epizód törlését választja."
+"Ha az epizód és fájl törlését választja, akkor azok véglegesen elvesznek. Ne"
+" feledje, hogy törölheti az epizódot a letöltött fájl megtartása mellett, ha"
+" csak az epizód törlését választja, vagy törölheti a letöltött fájlt az"
+" epizód megtartása mellett, ha csak a fájl törlését választja."
 
-#: podcast/rb-podcast-source.c:1108
+#: podcast/rb-podcast-source.c:1126
 msgid "Delete _Episode Only"
 msgstr "Csak az _epizód törlése"
 
-#: podcast/rb-podcast-source.c:1114
+#: podcast/rb-podcast-source.c:1128
+#| msgid "Delete _Feed Only"
+msgid "Delete _File Only"
+msgstr "Csak a _fájl törlése"
+
+#: podcast/rb-podcast-source.c:1132
 msgid "_Delete Episode And File"
 msgstr "Az epizód és a _fájl törlése"
 
-#: podcast/rb-podcast-source.c:1220
+#: podcast/rb-podcast-source.c:1238
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d epizód"
 msgstr[1] "%d epizód"
 
-#: podcast/rb-podcast-source.c:1415 podcast/rb-podcast-source.c:1470
-#: podcast/rb-podcast-source.c:1509
+#: podcast/rb-podcast-source.c:1433 podcast/rb-podcast-source.c:1488
+#: podcast/rb-podcast-source.c:1527
 msgid "Feed"
 msgstr "Forrás"
 
-#: podcast/rb-podcast-source.c:1435 podcast/rb-podcast-source.c:1453
+#: podcast/rb-podcast-source.c:1453 podcast/rb-podcast-source.c:1471
 msgid "Status"
 msgstr "Állapot"
 
 #. ensure search instances exist
-#: podcast/rb-podcast-source.c:1555 sources/rb-auto-playlist-source.c:253
+#: podcast/rb-podcast-source.c:1573 sources/rb-auto-playlist-source.c:253
 #: sources/rb-browser-source.c:314 sources/rb-browser-source.c:332
 #: sources/rb-static-playlist-source.c:296
 msgid "Search all fields"
 msgstr "Keresés az összes mezőben"
 
-#: podcast/rb-podcast-source.c:1556
+#: podcast/rb-podcast-source.c:1574
 msgid "Search podcast feeds"
 msgstr "Podcast-források keresése"
 
-#: podcast/rb-podcast-source.c:1557
+#: podcast/rb-podcast-source.c:1575
 msgid "Search podcast episodes"
 msgstr "Podcast epizódok keresése"
 
-#: remote/dbus/rb-client.c:95 shell/rb-application.c:556
+#: remote/dbus/rb-client.c:95 shell/rb-application.c:558
 msgid "Show the version of the program"
 msgstr "A program verziószámának megjelenítése"
 
@@ -3231,7 +3238,6 @@ msgstr "%tt – %ta"
 
 #. Translators: %te is replaced with elapsed time, %td is replaced with track duration
 #: remote/dbus/rb-client.c:767
-#, c-format
 msgid "[%te of %td]"
 msgstr "[%te / %td]"
 
@@ -3463,45 +3469,50 @@ msgstr "Hozzájárultak:"
 msgid "Music management and playback software for GNOME."
 msgstr "Zenekezelő és -lejátszó szoftver a GNOME-hoz."
 
-#: shell/rb-application.c:228 shell/rb-shell-preferences.c:163
+#: shell/rb-application.c:202
+#| msgid "Rhythmbox"
+msgid "Rhythmbox Website"
+msgstr "A Rhythmbox webhelye"
+
+#: shell/rb-application.c:230 shell/rb-shell-preferences.c:163
 msgid "Couldn't display help"
 msgstr "Nem jeleníthető meg a súgó"
 
-#: shell/rb-application.c:548
+#: shell/rb-application.c:550
 msgid "Enable debug output"
 msgstr "Hibakeresési kimenet engedélyezése"
 
-#: shell/rb-application.c:549
+#: shell/rb-application.c:551
 msgid "Enable debug output matching a specified string"
 msgstr "Egy adott karakterláncra illeszkedő hibakeresési kimenet engedélyezése"
 
-#: shell/rb-application.c:550
+#: shell/rb-application.c:552
 msgid "Do not update the library with file changes"
 msgstr "Ne frissítse a gyűjteményt a fájlváltozásokkal"
 
-#: shell/rb-application.c:551
+#: shell/rb-application.c:553
 msgid "Do not register the shell"
 msgstr "Ne regisztrálja a héjat"
 
-#: shell/rb-application.c:552
+#: shell/rb-application.c:554
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr ""
 "Nem mentsen adatokat folyamatosan (maga után vonja a --no-registration "
 "kapcsolót)"
 
-#: shell/rb-application.c:553
+#: shell/rb-application.c:555
 msgid "Disable loading of plugins"
 msgstr "Bővítmények betöltésének letiltása"
 
-#: shell/rb-application.c:554
+#: shell/rb-application.c:556
 msgid "Path for database file to use"
 msgstr "A használandó adatbázisfájl útvonala"
 
-#: shell/rb-application.c:555
+#: shell/rb-application.c:557
 msgid "Path for playlists file to use"
 msgstr "A használandó lejátszólistafájlok útvonala"
 
-#: shell/rb-application.c:568
+#: shell/rb-application.c:570
 #, c-format
 msgid ""
 "%s\n"
@@ -4601,3 +4612,4 @@ msgstr "Az asztalon"
 #: widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Ismeretlen hely"
+
