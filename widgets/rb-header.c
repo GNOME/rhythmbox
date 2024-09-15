@@ -399,10 +399,10 @@ rb_header_constructed (GObject *object)
 
 	/* image display */
 	header->priv->art_store = rb_ext_db_new ("album-art");
-	g_signal_connect (header->priv->art_store,
-			  "added",
-			  G_CALLBACK (art_added_cb),
-			  header);
+	g_signal_connect_object (header->priv->art_store,
+				 "added",
+				 G_CALLBACK (art_added_cb),
+				 header, 0);
 	header->priv->image = GTK_WIDGET (g_object_new (RB_TYPE_FADING_IMAGE,
 							"fallback", RB_STOCK_MISSING_ARTWORK,
 							NULL));
