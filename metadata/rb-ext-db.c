@@ -83,6 +83,7 @@ struct _RBExtDBPrivate
 	struct tdb_context *tdb_context;
 
 	GList *requests;
+	GList *load_requests;
 	GAsyncQueue *store_queue;
 	GSimpleAsyncResult *store_op;
 };
@@ -628,6 +629,7 @@ load_request_cb (RBExtDB *store, GAsyncResult *result, gpointer data)
 	rb_debug ("finished loading %s", req->filename);
 	req->callback (req->key, req->store_key, req->filename, req->data, req->user_data);
 
+	store->priv->load_requests = g_list_remove (store->priv->load_requests, req);
 	g_object_unref (result);
 }
 
@@ -740,6 +742,7 @@ rb_ext_db_request (RBExtDB *store,
 			req->filename = filename;
 			req->store_key = store_key;
 			g_simple_async_result_set_op_res_gpointer (load_op, req, (GDestroyNotify) free_request);
+			store->priv->load_requests = g_list_append (store->priv->load_requests, req);
 
 			g_simple_async_result_run_in_thread (load_op,
 							     do_load_request,
