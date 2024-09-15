@@ -103,6 +103,9 @@ gboolean		rb_ext_db_request		(RBExtDB *store,
 							 RBExtDBRequestCallback callback,
 							 gpointer user_data,
 							 GDestroyNotify destroy);
+void			rb_ext_db_cancel_requests	(RBExtDB *store,
+							 RBExtDBRequestCallback callback,
+							 gpointer user_data);
 
 /* for providers */
 void			rb_ext_db_store_uri		(RBExtDB *store,

@@ -627,7 +627,8 @@ load_request_cb (RBExtDB *store, GAsyncResult *result, gpointer data)
 	req = g_simple_async_result_get_op_res_gpointer (G_SIMPLE_ASYNC_RESULT (result));
 
 	rb_debug ("finished loading %s", req->filename);
-	req->callback (req->key, req->store_key, req->filename, req->data, req->user_data);
+	if (req->callback)
+		req->callback (req->key, req->store_key, req->filename, req->data, req->user_data);
 
 	store->priv->load_requests = g_list_remove (store->priv->load_requests, req);
 	g_object_unref (result);
@@ -803,6 +804,54 @@ rb_ext_db_request (RBExtDB *store,
 	}
 
 	return result;
+}
+
+/**
+ * rb_ext_db_cancel_requests:
+ * @store: metadata store instance
+ * @callback: callback function
+ * @user_data: user data
+ *
+ * Cancels all outstanding requests matching the specified callback and user data.
+ * In cases where the user data for a request is an object, this should be called
+ * early in object's dispose function to ensure that the callback is not called
+ * on a partly or fully disposed object.
+ */
+void
+rb_ext_db_cancel_requests (RBExtDB *store, RBExtDBRequestCallback callback, gpointer user_data)
+{
+	GList *l;
+
+	l = store->priv->requests;
+	while (l != NULL) {
+		RBExtDBRequest *req = l->data;
+		if (req->callback == callback && req->user_data == user_data) {
+			char *str = rb_ext_db_key_to_string (req->key);
+			rb_debug ("cancelling a search request: %s", str);
+			g_free (str);
+			free_request (req);
+			store->priv->requests = g_list_delete_link (store->priv->requests, l);
+		} else {
+			l = l->next;
+		}
+	}
+
+	l = store->priv->load_requests;
+	while (l != NULL) {
+		RBExtDBRequest *req = l->data;
+		if (req->callback == callback && req->user_data == user_data) {
+			char *str = rb_ext_db_key_to_string (req->key);
+			rb_debug ("cancelling a load request: %s", str);
+			g_free (str);
+			if (req->destroy_notify)
+				req->destroy_notify (req->user_data);
+			req->callback = NULL;
+			req->user_data = NULL;
+			req->destroy_notify = NULL;
+		} else {
+			l = l->next;
+		}
+	}
 }
 
 static void
