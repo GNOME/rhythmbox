@@ -121,6 +121,11 @@ static void prepare_encoder_source_cb (RBEncoderFactory *factory,
 				       const char *stream_uri,
 				       GObject *src,
 				       RBMtpSource *source);
+static void art_request_cb (RBExtDBKey *key,
+			    RBExtDBKey *store_key,
+			    const char *filename,
+			    GValue *data,
+			    RBMtpSource *source);
 #if defined(HAVE_GUDEV)
 static GMount *find_mount_for_device (GUdevDevice *device);
 #endif
@@ -513,8 +518,8 @@ rb_mtp_source_dispose (GObject *object)
 	}
 #endif
 	if (priv->art_store != NULL) {
-		g_object_unref (priv->art_store);
-		priv->art_store = NULL;
+		rb_ext_db_cancel_requests (priv->art_store, (RBExtDBRequestCallback) art_request_cb, source);
+		g_clear_object (&priv->art_store);
 	}
 
 	db = get_db_for_source (source);

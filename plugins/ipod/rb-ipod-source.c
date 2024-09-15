@@ -112,6 +112,12 @@ static RBIpodStaticPlaylistSource *add_rb_playlist (RBiPodSource *source, Itdb_P
 
 static RhythmDB *get_db_for_source (RBiPodSource *source);
 
+static void art_request_cb (RBExtDBKey *key,
+			    RBExtDBKey *store_key,
+			    const char *filename,
+			    GValue *data,
+			    RBiPodSource *source);
+
 struct _PlayedEntry {
 	RhythmDBEntry *entry;
 	guint play_count;
@@ -551,6 +557,11 @@ rb_ipod_source_dispose (GObject *object)
 		g_clear_object (&priv->new_playlist_action);
 	}
 
+	if (priv->art_store) {
+		rb_ext_db_cancel_requests (priv->art_store, (RBExtDBRequestCallback) art_request_cb, object);
+		g_clear_object (&priv->art_store);
+	}
+
 	g_clear_object (&priv->ipod_db);
 
 	if (priv->entry_map) {
@@ -571,7 +582,6 @@ rb_ipod_source_dispose (GObject *object)
 	}
 
 	g_clear_object (&priv->mount);
-	g_clear_object (&priv->art_store);
 
 	if (priv->init_dialog) {
 		gtk_widget_destroy (priv->init_dialog);

@@ -632,8 +632,10 @@ impl_deactivate	(PeasActivatable *bplugin)
 	g_signal_handlers_disconnect_by_func (shell, shell_notify_playing_cb, plugin);
 	g_signal_handlers_disconnect_by_func (shell, shell_notify_custom_cb, plugin);
 
-	g_object_unref (plugin->art_store);
-	plugin->art_store = NULL;
+	if (plugin->art_store) {
+		rb_ext_db_cancel_requests (plugin->art_store, (RBExtDBRequestCallback) art_cb, plugin);
+		g_clear_object (&plugin->art_store);
+	}
 
 	/* forget what's playing */
 	if (plugin->notify_art_key)
