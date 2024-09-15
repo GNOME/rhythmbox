@@ -96,6 +96,7 @@ static void rb_header_extra_metadata_cb (RhythmDB *db, RhythmDBEntry *entry, con
 static void rb_header_sync (RBHeader *header);
 static void rb_header_sync_time (RBHeader *header);
 
+static void art_cb (RBExtDBKey *key, RBExtDBKey *store_key, const char *filename, GValue *data, RBHeader *header);
 static void uri_dropped_cb (RBFadingImage *image, const char *uri, RBHeader *header);
 static void pixbuf_dropped_cb (RBFadingImage *image, GdkPixbuf *pixbuf, RBHeader *header);
 static void image_button_press_cb (GtkWidget *widget, GdkEvent *event, RBHeader *header);
@@ -457,6 +458,7 @@ rb_header_dispose (GObject *object)
 	}
 
 	if (header->priv->art_store != NULL) {
+		rb_ext_db_cancel_requests (header->priv->art_store, (RBExtDBRequestCallback) art_cb, header);
 		g_object_unref (header->priv->art_store);
 		header->priv->art_store = NULL;
 	}
