@@ -549,19 +549,20 @@ rb_header_playing_song_changed_cb (RBShellPlayer *player, RhythmDBEntry *entry, 
 		header->priv->duration = rhythmdb_entry_get_ulong (header->priv->entry,
 								   RHYTHMDB_PROP_DURATION);
 
+		key = rhythmdb_entry_create_ext_db_key (entry, RHYTHMDB_PROP_ALBUM);
 		if (header->priv->art_key == NULL ||
-		    rhythmdb_entry_matches_ext_db_key (header->priv->db, entry, header->priv->art_key) == FALSE) {
+		    rhythmdb_entry_matches_ext_db_key (header->priv->db, entry, header->priv->art_key) == FALSE ||
+		    rb_ext_db_key_is_null_match (key, header->priv->art_key)) {
 			rb_fading_image_start (RB_FADING_IMAGE (header->priv->image), 2000);
-			key = rhythmdb_entry_create_ext_db_key (entry, RHYTHMDB_PROP_ALBUM);
 			rb_ext_db_request (header->priv->art_store,
 					   key,
 					   (RBExtDBRequestCallback) art_cb,
 					   g_object_ref (header),
 					   g_object_unref);
-			rb_ext_db_key_free (key);
 		} else {
 			rb_debug ("existing art matches new entry");
 		}
+		rb_ext_db_key_free (key);
 
 		header->priv->playing_source = rb_shell_player_get_playing_source (player);
 		header->priv->status_changed_id =
