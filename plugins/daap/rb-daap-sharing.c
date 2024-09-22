@@ -85,6 +85,7 @@ create_share (RBShell *shell)
 	char *name;
 	char *password;
 	gboolean require_password;
+	GError *error = NULL;
 
 	g_assert (share == NULL);
 	rb_debug ("initialize daap sharing");
@@ -118,6 +119,15 @@ create_share (RBShell *shell)
 	if (g_settings_get_boolean (settings, "require-password")) {
 		g_settings_bind (settings, "share-password", share, "password", G_SETTINGS_BIND_DEFAULT);
 	}
+
+	dmap_share_serve (DMAP_SHARE (share), &error);
+	if (error == NULL)
+		dmap_share_publish (DMAP_SHARE (share), &error);
+
+	if (error != NULL)
+		g_warning ("Unable to start DAAP sharing: %s", error->message);
+
+	g_clear_error (&error);
 
 	g_object_unref (db);
 	g_object_unref (container_db);
