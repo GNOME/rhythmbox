@@ -30,10 +30,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-07-01 19:02+0000\n"
+"POT-Creation-Date: 2024-09-23 12:49+0000\n"
 "PO-Revision-Date: 2024-09-23 09:47-0300\n"
 "Last-Translator: Juliano de Souza Camargo <julianosc@pm.me>\n"
-"Language-Team: Brazilian Portuguese <https://br.gnome.org/traducao>>\n"
+"Language-Team: Brazilian Portuguese <https://br.gnome.org/traducao>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -999,29 +999,30 @@ msgstr "%d de %b de %Y"
 #: plugins/audioscrobbler/rb-audioscrobbler-entry.c:99
 #: plugins/daap/rb-rhythmdb-dmap-db-adapter.c:130
 #: plugins/generic-player/rb-generic-player-source.c:1031
-#: plugins/ipod/rb-ipod-source.c:651 plugins/iradio/rb-iradio-source.c:525
+#: plugins/ipod/rb-ipod-source.c:661 plugins/iradio/rb-iradio-source.c:525
 #: plugins/iradio/rb-iradio-source.c:1030
 #: plugins/iradio/rb-station-properties-dialog.c:485
 #: plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
-#: plugins/mtpdevice/rb-mtp-source.c:650 plugins/mtpdevice/rb-mtp-source.c:1140
-#: plugins/mtpdevice/rb-mtp-source.c:1471
+#: plugins/mtpdevice/rb-mtp-source.c:655 plugins/mtpdevice/rb-mtp-source.c:1145
+#: plugins/mtpdevice/rb-mtp-source.c:1476
 #: plugins/notification/rb-notification-plugin.c:509
 #: podcast/rb-feed-podcast-properties-dialog.c:335
-#: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1326
-#: podcast/rb-podcast-manager.c:1440 podcast/rb-podcast-properties-dialog.c:636
+#: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1332
+#: podcast/rb-podcast-manager.c:1446 podcast/rb-podcast-properties-dialog.c:636
 #: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:797
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
 #: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
-#: rhythmdb/rhythmdb.c:2150 rhythmdb/rhythmdb.c:5616 rhythmdb/rhythmdb.c:5622
-#: rhythmdb/rhythmdb.c:5627 rhythmdb/rhythmdb.c:5638 rhythmdb/rhythmdb.c:5642
-#: rhythmdb/rhythmdb-entry-type.c:301 rhythmdb/rhythmdb-metadata-cache.c:308
+#: rhythmdb/rhythmdb.c:2150 rhythmdb/rhythmdb-entry-type.c:303
+#: rhythmdb/rhythmdb-entry-type.c:381 rhythmdb/rhythmdb-entry-type.c:387
+#: rhythmdb/rhythmdb-entry-type.c:392 rhythmdb/rhythmdb-entry-type.c:403
+#: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:308
 #: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
 #: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
 #: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
 #: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
 #: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
 #: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
-#: widgets/rb-header.c:1279 widgets/rb-header.c:1305 widgets/rb-song-info.c:950
+#: widgets/rb-header.c:1282 widgets/rb-header.c:1308 widgets/rb-song-info.c:950
 #: widgets/rb-song-info.c:962 widgets/rb-song-info.c:1234
 #: widgets/rb-song-info.c:1572
 msgid "Unknown"
@@ -1967,7 +1968,7 @@ msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "Suporte para dispositivos de áudio comuns (incluindo PSP e Nokia 770)"
 
 #: plugins/generic-player/rb-generic-player-source.c:292
-#: plugins/ipod/rb-ipod-source.c:333
+#: plugins/ipod/rb-ipod-source.c:339
 #, c-format
 msgid "New Playlist on %s"
 msgstr "Nova lista de reprodução em %s"
@@ -1978,7 +1979,7 @@ msgid "Add to New Playlist"
 msgstr "Adicionar à nova lista de reprodução"
 
 #: plugins/generic-player/rb-generic-player-source.c:1368
-#: plugins/ipod/rb-ipod-source.c:2045 plugins/mtpdevice/rb-mtp-source.c:1551
+#: plugins/ipod/rb-ipod-source.c:2055 plugins/mtpdevice/rb-mtp-source.c:1556
 msgid "Advanced"
 msgstr "Avançado"
 
@@ -2118,15 +2119,15 @@ msgstr ""
 "Suporte para dispositivos iPod da Apple (mostra o conteúdo e reproduz do "
 "dispositivo)"
 
-#: plugins/ipod/rb-ipod-source.c:317
+#: plugins/ipod/rb-ipod-source.c:323
 msgid "New playlist"
 msgstr "Nova lista de reprodução"
 
-#: plugins/ipod/rb-ipod-source.c:461
+#: plugins/ipod/rb-ipod-source.c:467
 msgid "Unable to initialize new iPod"
 msgstr "Não foi possível inicializar o novo iPod"
 
-#: plugins/ipod/rb-ipod-source.c:1492 podcast/rb-podcast-main-source.c:77
+#: plugins/ipod/rb-ipod-source.c:1502 podcast/rb-podcast-main-source.c:77
 #: sources/sync/rb-sync-settings-ui.c:263
 #: sources/sync/rb-sync-settings-ui.c:264 sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
@@ -2610,23 +2611,23 @@ msgstr ""
 "Suporte para dispositivos MTP (mostrar o conteúdo, transferir e reproduzir "
 "do dispositivo)"
 
-#: plugins/mtpdevice/rb-mtp-source.c:604
+#: plugins/mtpdevice/rb-mtp-source.c:609
 msgid "Media Player"
 msgstr "Reprodutor de mídia"
 
-#: plugins/mtpdevice/rb-mtp-source.c:884
+#: plugins/mtpdevice/rb-mtp-source.c:889
 msgid "Media player device error"
 msgstr "Erro de dispositivo reprodutor de mídia"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: plugins/mtpdevice/rb-mtp-source.c:888
+#: plugins/mtpdevice/rb-mtp-source.c:893
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Não foi possível abrir o dispositivo %s %s"
 
-#: plugins/mtpdevice/rb-mtp-source.c:932
+#: plugins/mtpdevice/rb-mtp-source.c:937
 msgid "Digital Audio Player"
 msgstr "Reprodutor de áudio digital"
 
@@ -2692,7 +2693,7 @@ msgstr "por <i>%s</i>"
 msgid "from <i>%s</i>"
 msgstr "de <i>%s</i>"
 
-#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:367
+#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:368
 msgid "Not Playing"
 msgstr "Nada sendo reproduzido"
 
@@ -2940,7 +2941,7 @@ msgstr "%s. Você gostaria de adicionar a fonte do podcast mesmo assim?"
 msgid "New updates available from"
 msgstr "Novas atualizações disponíveis de"
 
-#: podcast/rb-podcast-manager.c:802
+#: podcast/rb-podcast-manager.c:808
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2952,11 +2953,11 @@ msgstr ""
 "usá-la mesmo assim?"
 
 #. added as something else, probably iradio
-#: podcast/rb-podcast-manager.c:857
+#: podcast/rb-podcast-manager.c:863
 msgid "URL already added"
 msgstr "URL já adicionado"
 
-#: podcast/rb-podcast-manager.c:858
+#: podcast/rb-podcast-manager.c:864
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2965,7 +2966,7 @@ msgstr ""
 "O URL “%s” já foi adicionado como uma estação de rádio. Se isso é uma fonte "
 "(“feed”) de podcast, por favor remova a estação de rádio."
 
-#: podcast/rb-podcast-manager.c:942
+#: podcast/rb-podcast-manager.c:948
 msgid "Podcast"
 msgstr "Podcast"
 
@@ -4059,11 +4060,11 @@ msgid "Play Queue"
 msgstr "Fila de reprodução"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:929
+#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:932
 msgid "by"
 msgstr "por"
 
-#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:930
+#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:933
 msgid "from"
 msgstr "de"
 
@@ -4233,13 +4234,13 @@ msgid "Drop artwork here"
 msgstr "Adicione a arte de capa aqui"
 
 #. Translators: remaining time / total time
-#: widgets/rb-header.c:1219
+#: widgets/rb-header.c:1222
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: widgets/rb-header.c:1230
+#: widgets/rb-header.c:1233
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
