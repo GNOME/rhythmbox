@@ -210,6 +210,7 @@ endif
 
 libmtp = dependency('libmtp', version: '>= 0.3.0', required: get_option('mtp'))
 if libmtp.found()
+  cdata.set('WITH_LIBMTP', 1)
   if gudev.found()
     plugins += 'mtpdevice'
   elif get_option('mtp').enabled()
