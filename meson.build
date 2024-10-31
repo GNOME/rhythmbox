@@ -265,7 +265,6 @@ meson.add_dist_script(
   find_program('check-news.sh').full_path(),
   '@0@'.format(meson.project_version()),
   'NEWS',
-  'README',
   'data/org.gnome.Rhythmbox3.appdata.xml.in'
 )
 
