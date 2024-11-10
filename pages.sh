@@ -23,11 +23,9 @@ done
 
 python3 ../pages.py .. NEWS ../third-party-plugins $HTML
 
-# get last tagged version; no docs from 3.4.7 or before
+# get last tagged version
 LATEST_TAG=$( git show-ref --tags | tail -1 | sed 's/^.*\///' )
 echo "latest tag $LATEST_TAG"
-echo "but there are no releases with docs yet, using $BRANCH"
-LATEST_TAG=$BRANCH
 
 curl --output apidoc.zip https://gitlab.gnome.org/api/v4/projects/$PROJECT_ID/jobs/artifacts/$LATEST_TAG/download?job=$CI_JOB
 unzip apidoc.zip
