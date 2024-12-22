@@ -22,7 +22,7 @@ fs.copyfile(meson.project_source_root() / 'data/icons/hicolor/scalable/apps/org.
 
 custom_target('apidoc',
   input: [ rb_toml, rb_gir ],
-  output: 'apidoc',
+  output: 'rhythmbox',
   command: [
     gidocgen,
     'generate',
@@ -36,4 +36,6 @@ custom_target('apidoc',
   ],
   depend_files: [ expand_content_md_files ],
   build_by_default: true,
+  install: true,
+  install_dir: docs_dir
 )
