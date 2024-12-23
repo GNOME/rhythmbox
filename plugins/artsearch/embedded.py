@@ -63,6 +63,11 @@ class EmbeddedSearch(object):
 			callback(args)
 			return
 
+		if key.get_field("album") is None:
+			print("not searching, we don't have an album name")
+			callback(args)
+			return
+
 		if location.startswith("file://") is False:
 			print("not searching in non-local file %s" % location)
 			callback(args)
