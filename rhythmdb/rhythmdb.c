@@ -1405,10 +1405,6 @@ process_added_entries_cb (RhythmDBEntry *entry,
 			return TRUE;
 
 		/*
-		 * hmm, do we really need to take the stat mutex to check if the action thread is running?
-		 * maybe it should be atomicised?
-		 */
-		/*
 		 * current plan:
 		 * - only stat things with mountpoint == NULL here
 		 * - collect other mountpoints
@@ -1417,10 +1413,10 @@ process_added_entries_cb (RhythmDBEntry *entry,
 		 * - for local mountpoints that are mounted, add to stat list
 		 * - for everything else, hide entries on those mountpoints
 		 */
-		g_mutex_lock (&db->priv->stat_mutex);
-		if (db->priv->action_thread_running == FALSE) {
+		if (thread == db->priv->load_thread) {
 			const char *mountpoint;
 
+			g_mutex_lock (&db->priv->stat_mutex);
 			mountpoint = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
 			if (mountpoint == NULL) {
 				/* entry is on a core filesystem, always check it */
@@ -1448,8 +1444,8 @@ process_added_entries_cb (RhythmDBEntry *entry,
 					db->priv->mount_list = g_list_prepend (db->priv->mount_list, g_strdup (mountpoint));
 				}
 			}
+			g_mutex_unlock (&db->priv->stat_mutex);
 		}
-		g_mutex_unlock (&db->priv->stat_mutex);
 	}
 
 	g_assert ((entry->flags & RHYTHMDB_ENTRY_INSERTED) == 0);
