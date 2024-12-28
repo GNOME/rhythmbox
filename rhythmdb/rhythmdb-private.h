@@ -134,6 +134,7 @@ struct _RhythmDBPrivate
 	GAsyncQueue *restored_queue;
 	GAsyncQueue *delayed_write_queue;
 	GThreadPool *query_thread_pool;
+	GThread *load_thread;
 
 	GList *stat_list;
 	GList *outstanding_stats;

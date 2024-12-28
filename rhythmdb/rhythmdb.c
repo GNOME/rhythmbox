@@ -261,10 +261,9 @@ static void rhythmdb_get_property (GObject *object,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *pspec);
-static void rhythmdb_thread_create (RhythmDB *db,
-				    GThreadPool *pool,
-				    GThreadFunc func,
-				    gpointer data);
+static GThread * rhythmdb_thread_create (RhythmDB *db,
+					 GThreadFunc func,
+					 gpointer data);
 static void rhythmdb_read_enter (RhythmDB *db);
 static void rhythmdb_read_leave (RhythmDB *db);
 static void rhythmdb_process_one_event (RhythmDBEvent *event, RhythmDB *db);
@@ -936,7 +935,7 @@ rhythmdb_start_action_thread (RhythmDB *db)
 {
 	g_mutex_lock (&db->priv->stat_mutex);
 	db->priv->action_thread_running = TRUE;
-	rhythmdb_thread_create (db, NULL, (GThreadFunc) action_thread_main, db);
+	rhythmdb_thread_create (db, (GThreadFunc) action_thread_main, db);
 
 	if (db->priv->stat_list != NULL) {
 		RhythmDBStatThreadData *data;
@@ -946,7 +945,7 @@ rhythmdb_start_action_thread (RhythmDB *db)
 		db->priv->stat_list = NULL;
 
 		db->priv->stat_thread_running = TRUE;
-		rhythmdb_thread_create (db, NULL, (GThreadFunc) stat_thread_main, data);
+		rhythmdb_thread_create (db, (GThreadFunc) stat_thread_main, data);
 	}
 
 	perform_next_mount (db);
@@ -1220,9 +1219,8 @@ rhythmdb_get_property (GObject *object,
 	}
 }
 
-static void
+static GThread *
 rhythmdb_thread_create (RhythmDB *db,
-			GThreadPool *pool,
 			GThreadFunc func,
 			gpointer data)
 {
@@ -1231,10 +1229,7 @@ rhythmdb_thread_create (RhythmDB *db,
 	g_async_queue_ref (db->priv->action_queue);
 	g_async_queue_ref (db->priv->event_queue);
 
-	if (pool)
-		g_thread_pool_push (pool, data, NULL);
-	else
-		g_thread_new ("rhythmdb-thread", (GThreadFunc) func, data);
+	return g_thread_new ("rhythmdb-thread", (GThreadFunc) func, data);
 }
 
 static gboolean
@@ -3294,6 +3289,8 @@ rhythmdb_load_thread_main (RhythmDB *db)
 	rb_list_deep_free (db->priv->active_mounts);
 	db->priv->active_mounts = NULL;
 
+	db->priv->load_thread = NULL;
+
 	db->priv->sync_library_id = g_timeout_add_seconds (10, (GSourceFunc) rhythmdb_sync_library_idle, db);
 
 	rb_debug ("queuing db load complete signal");
@@ -3318,7 +3315,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 void
 rhythmdb_load (RhythmDB *db)
 {
-	rhythmdb_thread_create (db, NULL, (GThreadFunc) rhythmdb_load_thread_main, db);
+	db->priv->load_thread = rhythmdb_thread_create (db, (GThreadFunc) rhythmdb_load_thread_main, db);
 }
 
 static gpointer
@@ -3383,7 +3380,7 @@ rhythmdb_save_async (RhythmDB *db)
 
 	rhythmdb_read_enter (db);
 
-	rhythmdb_thread_create (db, NULL, (GThreadFunc) rhythmdb_save_thread_main, db);
+	rhythmdb_thread_create (db, (GThreadFunc) rhythmdb_save_thread_main, db);
 }
 
 /**
