@@ -46,7 +46,16 @@
 #include <glib/gi18n.h>
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
+
+#ifdef USE_GIREPOSITORY2
+#include <girepository/girepository.h>
+#define g_irepository_require_private	gi_repository_require_private
+#define g_irepository_require		gi_repository_require
+/* who cares about reference counts for a global singleton */
+#define g_irepository_get_default	gi_repository_dup_default
+#else
 #include <girepository.h>
+#endif
 
 #include <libpeas/peas.h>
 #include <libpeas-gtk/peas-gtk.h>

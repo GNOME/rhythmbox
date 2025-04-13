@@ -39,8 +39,6 @@
 #include <X11/Xlib.h>
 #endif
 
-#include <girepository.h>
-
 #include "rb-shell.h"
 #include "rb-util.h"
 #include "rb-debug.h"

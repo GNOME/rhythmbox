@@ -51,6 +51,7 @@ gio = dependency('gio-2.0', version: '>=' + glib_required, required: true)
 gio_unix = dependency('gio-unix-2.0', version: '>=' + glib_required, required: true)
 glib = dependency('glib-2.0', version: '>=' + glib_required, required: true)
 gobject = dependency('gobject-2.0', version: '>=' + glib_required, required: true)
+girepository = dependency('girepository-2.0', version: '>=' + glib_required, required: false)
 gobject_introspection = dependency('gobject-introspection-1.0', version: '>= 0.10.0', required: true)
 gstreamer = dependency('gstreamer-1.0', version: '>= ' + gstreamer_required, required: true)
 gstreamer_audio = dependency('gstreamer-audio-1.0', version: '>= ' + gstreamer_required, required: true)
@@ -74,9 +75,10 @@ if gudev.found()
   cdata.set('HAVE_GUDEV', 1)
 endif
 
+
 common_deps = [
   libmath,
-  intl, glib, gobject, gio, gio_unix, gobject_introspection,
+  intl, glib, gobject, gio, gio_unix,
   cairo, pango, gdk_pixbuf, gtk,
   gstreamer, gstreamer_audio, gstreamer_base, gstreamer_controller, gstreamer_plugins_base, gstreamer_pbutils, gstreamer_tag,
   json_glib, libsoup, libxml, tdb, totem_plparser,
@@ -132,6 +134,8 @@ datadir = get_option('prefix') / get_option('datadir')
 libdir = get_option('prefix') / get_option('libdir')
 pkgdatadir = datadir / 'rhythmbox'
 
+cdata.set('TYPELIB_PATH', libdir / 'girepository-1.0')
+
 #################
 # Plugin support
 
@@ -142,11 +146,26 @@ sampleplugindir = libdir / 'rhythmbox' / 'sample-plugins'
 sampleplugindatadir = datadir / 'rhythmbox' / 'sample-plugins'
 
 enable_python = false
+enable_gir2 = false
 python_install = python.find_installation('python3', required: get_option('plugins_python'))
 pygobject = dependency('pygobject-3.0', version: '>= 3.0.0', required: get_option('plugins_python'))
 if python_install.found() and pygobject.found()
   enable_python = true
+
+  if pygobject.version() >= '3.53.0'
+    # must have girepository-2.0 and a compatible version of libpeas for this to work
+    if girepository.found() and libpeas.version() > '1.36'
+      enable_gir2 = true
+      cdata.set('USE_GIREPOSITORY2', 1)
+    else
+      error('cannot mix girepository 1.0 (via libpeas) and 2.0 (via pygobject)')
+    endif
+  elif pygobject.version() >= '3.52.0'
+    error('rhythmbox cannot be used with pygobject 3.52 due to girepository clashes')
+  endif
 endif
+
+
 
 enable_vala = false
 vala_found = add_languages('vala', required: get_option('plugins_vala'), native: false)
@@ -301,6 +320,7 @@ summary({'iPod integration': plugins.contains('ipod'),
          'libnotify support': plugins.contains('notification'),
          'GUdev support': gudev.found(),
          'Python plugin support': enable_python,
+         'Use girepository 2.0': enable_gir2,
          'Vala plugin support': enable_vala,
          'Libsecret keyring support': libsecret.found(),
          'FM radio support': plugins.contains('fmradio'),
