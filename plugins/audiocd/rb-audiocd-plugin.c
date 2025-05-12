@@ -150,6 +150,9 @@ rb_audiocd_plugin_prepare_player_source_cb (RBPlayer *player,
 					    GstElement *source,
 					    RBAudioCdPlugin *plugin)
 {
+	if (g_str_has_prefix (stream_uri, "cdda://") == FALSE)
+		return;
+
 	set_source_properties (source, stream_uri, TRUE);
 }
 
@@ -159,6 +162,9 @@ rb_audiocd_plugin_prepare_encoder_source_cb (RBEncoderFactory *factory,
 					     GObject *source,
 					     RBAudioCdPlugin *plugin)
 {
+	if (g_str_has_prefix (stream_uri, "cdda://") == FALSE)
+		return;
+
 	set_source_properties (GST_ELEMENT (source), stream_uri, FALSE);
 }
 
