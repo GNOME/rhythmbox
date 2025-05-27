@@ -637,7 +637,7 @@ rb_ipod_source_new (GObject *plugin,
 					       "mount", mount,
 					       "shell", shell,
 					       "device-info", device_info,
-					       "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
+					       "load-status", RB_SOURCE_LOAD_STATUS_NOT_LOADED,
 					       "settings", g_settings_get_child (settings, "source"),
 					       "encoding-settings", g_settings_get_child (settings, "encoding"),
 					       "toolbar-menu", toolbar,
@@ -1905,6 +1905,7 @@ ensure_loaded (RBiPodSource *source)
 	RBSourceLoadStatus status;
 	
 	if (priv->ipod_db == NULL) {
+		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADING, NULL);
 		rb_ipod_load_songs (source);
 		rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
 		return FALSE;
