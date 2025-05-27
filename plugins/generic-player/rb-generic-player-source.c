@@ -497,6 +497,7 @@ ensure_loaded (RBGenericPlayerSource *source)
 		return (status == RB_SOURCE_LOAD_STATUS_LOADED);
 	} else {
 		priv->loaded = TRUE;
+		g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADING, NULL);
 		rb_media_player_source_load (RB_MEDIA_PLAYER_SOURCE (source));
 		load_songs (source);
 		return FALSE;
