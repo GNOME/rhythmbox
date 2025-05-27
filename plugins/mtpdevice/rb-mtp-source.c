@@ -295,6 +295,7 @@ open_device (RBMtpSource *source)
 	RBMtpSourcePrivate *priv = MTP_SOURCE_GET_PRIVATE (source);
 
 	rb_debug ("actually opening device");
+	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADING, NULL);
 	priv->device_thread = rb_mtp_thread_new ();
 	rb_mtp_thread_open_device (priv->device_thread,
 				   &priv->raw_device,
@@ -602,7 +603,7 @@ rb_mtp_source_new (RBShell *shell,
 #else
 					      "udi", udi,
 #endif
-					      "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
+					      "load-status", RB_SOURCE_LOAD_STATUS_NOT_LOADED,
 					      "settings", g_settings_get_child (settings, "source"),
 					      "encoding-settings", g_settings_get_child (settings, "encoding"),
 					      "toolbar-menu", toolbar,
