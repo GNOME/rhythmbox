@@ -202,6 +202,9 @@ music_dirs_done (RBAndroidSource *source)
 			gtk_container_add (GTK_CONTAINER (gtk_info_bar_get_content_area (GTK_INFO_BAR (priv->info_bar))), label);
 			gtk_info_bar_set_message_type (GTK_INFO_BAR (priv->info_bar), GTK_MESSAGE_INFO);
 			gtk_widget_show_all (priv->info_bar);
+
+			/* more or less */
+			g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADED, NULL);
 		}
 		if (priv->rescan_id == 0)
 			priv->rescan_id = g_timeout_add_seconds (5, (GSourceFunc) rescan_music_dirs, source);
@@ -439,6 +442,8 @@ ensure_loaded (RBAndroidSource *source)
 		g_object_get (source, "load-status", &status, NULL);
 		return (status == RB_SOURCE_LOAD_STATUS_LOADED);
 	}
+
+	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_LOADING, NULL);
 
 	mount = g_volume_get_mount (priv->volume);
 	if (mount != NULL) {

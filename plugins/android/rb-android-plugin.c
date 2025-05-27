@@ -185,7 +185,7 @@ create_source_cb (RBRemovableMediaManager *rmm, GVolume *volume, RBAndroidPlugin
 					  "mount-root", root,
 					  "shell", shell,
 					  "device-info", device_info,
-					  "load-status", RB_SOURCE_LOAD_STATUS_LOADING,
+					  "load-status", RB_SOURCE_LOAD_STATUS_NOT_LOADED,
 					  "settings", g_settings_get_child (settings, "source"),
 					  "encoding-settings", g_settings_get_child (settings, "encoding"),
 					  "toolbar-menu", toolbar,
