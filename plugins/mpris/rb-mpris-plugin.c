@@ -559,6 +559,7 @@ build_track_metadata (RBMprisPlugin *plugin,
 	/* would be nice to have mpris: names for these. */
 	add_string_property (builder, entry, RHYTHMDB_PROP_ARTIST_SORTNAME, "rhythmbox:artistSortname", FALSE);
 	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_SORTNAME, "rhythmbox:albumSortname", FALSE);
+	add_string_property (builder, entry, RHYTHMDB_PROP_TITLE_SORTNAME, "rhythmbox:titleSortname", FALSE);
 	add_string_property (builder, entry, RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME, "rhythmbox:albumArtistSortname", FALSE);
 
 	/* if we have a streaming song title, provide the stream name too */

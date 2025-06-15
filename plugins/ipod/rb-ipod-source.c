@@ -779,6 +779,8 @@ create_ipod_song_from_entry (RhythmDBEntry *entry, guint64 filesize, const char 
 	                                                RHYTHMDB_PROP_COMPOSER_SORTNAME);
 	track->sort_album = rhythmdb_entry_dup_string (entry,
 	                                                RHYTHMDB_PROP_ALBUM_SORTNAME);
+	track->sort_title = rhythmdb_entry_dup_string (entry,
+	                                                RHYTHMDB_PROP_TITLE_SORTNAME);
 	track->sort_albumartist = rhythmdb_entry_dup_string (entry,
 	                                       	       	     RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME);
 	track->genre = rhythmdb_entry_dup_string (entry, RHYTHMDB_PROP_GENRE);
@@ -1018,6 +1020,12 @@ add_ipod_song_to_db (RBiPodSource *source, RhythmDB *db, Itdb_Track *song)
                                        RHYTHMDB_PROP_ALBUM_SORTNAME,
                                        song->sort_album);
         }
+
+	if (song->sort_title != NULL) {
+		entry_set_string_prop (RHYTHMDB (db), entry,
+				       RHYTHMDB_PROP_TITLE_SORTNAME,
+				       song->sort_title);
+	}
 
 	if (song->sort_albumartist != NULL) {
                 entry_set_string_prop (RHYTHMDB (db), entry,

@@ -138,6 +138,7 @@ struct RBSongInfoPrivate
 	GtkWidget   *playback_error_label;
 	GtkWidget   *bpm;
 
+	GtkWidget   *title_sortname;
 	GtkWidget   *artist_sortname;
 	GtkWidget   *album_sortname;
 	GtkWidget   *album_artist_sortname;
@@ -507,6 +508,7 @@ rb_song_info_constructed (GObject *object)
 	song_info->priv->disc_cur = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_disc_cur"));
 	song_info->priv->disc_total = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_disc_total"));
 
+	song_info->priv->title_sortname = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_title_sortname"));
 	song_info->priv->artist_sortname = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_artist_sortname"));
 	song_info->priv->album_sortname = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_album_sortname"));
 	song_info->priv->album_artist_sortname = GTK_WIDGET (gtk_builder_get_object (builder, "song_info_album_artist_sortname"));
@@ -526,6 +528,7 @@ rb_song_info_constructed (GObject *object)
 	rb_builder_boldify_label (builder, "track_total_label");
 	rb_builder_boldify_label (builder, "discn_label");
 	rb_builder_boldify_label (builder, "disc_total_label");
+	rb_builder_boldify_label (builder, "title_sortname_label");
 	rb_builder_boldify_label (builder, "artist_sortname_label");
 	rb_builder_boldify_label (builder, "album_sortname_label");
 	rb_builder_boldify_label (builder, "album_artist_sortname_label");
@@ -564,6 +567,10 @@ rb_song_info_constructed (GObject *object)
 				 G_CALLBACK (rb_song_info_mnemonic_cb),
 				 NULL, 0);
 	g_signal_connect_object (G_OBJECT (song_info->priv->disc_total),
+				 "mnemonic-activate",
+				 G_CALLBACK (rb_song_info_mnemonic_cb),
+				 NULL, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->title_sortname),
 				 "mnemonic-activate",
 				 G_CALLBACK (rb_song_info_mnemonic_cb),
 				 NULL, 0);
@@ -1187,6 +1194,8 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	rb_song_info_update_year (song_info);
 	rb_song_info_update_playback_error (song_info);
 
+	text = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_TITLE_SORTNAME);
+	gtk_entry_set_text (GTK_ENTRY (song_info->priv->title_sortname), text);
 	text = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_ARTIST_SORTNAME);
 	gtk_entry_set_text (GTK_ENTRY (song_info->priv->artist_sortname), text);
 	text = rhythmdb_entry_get_string (song_info->priv->current_entry, RHYTHMDB_PROP_ALBUM_SORTNAME);
@@ -1759,6 +1768,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	const char *album_artist;
 	const char *composer;
 	const char *year_str;
+	const char *title_sortname;
 	const char *artist_sortname;
 	const char *album_sortname;
 	const char *album_artist_sortname;
@@ -1783,6 +1793,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	album_artist = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album_artist));
 	composer = gtk_entry_get_text (GTK_ENTRY (dialog->priv->composer));
 	year_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->year));
+	title_sortname = gtk_entry_get_text (GTK_ENTRY (dialog->priv->title_sortname));
 	artist_sortname = gtk_entry_get_text (GTK_ENTRY (dialog->priv->artist_sortname));
 	album_sortname = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album_sortname));
 	album_artist_sortname = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album_artist_sortname));
@@ -1861,6 +1872,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_ALBUM_ARTIST, album_artist);
 	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_COMPOSER, composer);
 	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_GENRE, genre);
+	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_TITLE_SORTNAME, title_sortname);
 	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_ARTIST_SORTNAME, artist_sortname);
 	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_ALBUM_SORTNAME, album_sortname);
 	changed |= sync_property_string_single (dialog, entry, RHYTHMDB_PROP_COMMENT, comment);

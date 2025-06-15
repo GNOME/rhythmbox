@@ -327,6 +327,7 @@ add_tags_from_entry (RBEncoderGst *encoder, RhythmDBEntry *entry)
 	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_MUSICBRAINZ_ALBUMARTISTID, entry, RHYTHMDB_PROP_MUSICBRAINZ_ALBUMARTISTID);
 	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_ARTIST_SORTNAME, entry, RHYTHMDB_PROP_ARTIST_SORTNAME);
 	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_ALBUM_SORTNAME, entry, RHYTHMDB_PROP_ALBUM_SORTNAME);
+	add_string_tag (tags, GST_TAG_MERGE_APPEND, GST_TAG_TITLE_SORTNAME, entry, RHYTHMDB_PROP_TITLE_SORTNAME);
 
 	/* is zero a valid BPM? */
 	bpm = rhythmdb_entry_get_double (entry, RHYTHMDB_PROP_BPM);

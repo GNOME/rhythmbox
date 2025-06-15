@@ -431,6 +431,7 @@ rhythmdb_property_model_set_property (GObject *object,
 			break;
 		case RHYTHMDB_PROP_TITLE:
 		case RHYTHMDB_PROP_LOCATION:
+			append_sort_property (model, RHYTHMDB_PROP_TITLE_SORTNAME);
 			append_sort_property (model, RHYTHMDB_PROP_TITLE);
 			break;
 		case RHYTHMDB_PROP_COMPOSER:

@@ -104,6 +104,8 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return RB_METADATA_FIELD_ARTIST_SORTNAME;
 	else if (!strcmp (tag, GST_TAG_ALBUM_SORTNAME))
 		return RB_METADATA_FIELD_ALBUM_SORTNAME;
+	else if (!strcmp (tag, GST_TAG_TITLE_SORTNAME))
+		return RB_METADATA_FIELD_TITLE_SORTNAME;
 	else if (!strcmp (tag, GST_TAG_ALBUM_ARTIST))
 		return RB_METADATA_FIELD_ALBUM_ARTIST;
 	else if (!strcmp (tag, GST_TAG_ALBUM_ARTIST_SORTNAME))
@@ -185,6 +187,8 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 		return GST_TAG_ARTIST_SORTNAME;
 	case RB_METADATA_FIELD_ALBUM_SORTNAME:
 		return GST_TAG_ALBUM_SORTNAME;
+	case RB_METADATA_FIELD_TITLE_SORTNAME:
+		return GST_TAG_TITLE_SORTNAME;
 	case RB_METADATA_FIELD_ALBUM_ARTIST:
 		return GST_TAG_ALBUM_ARTIST;
 	case RB_METADATA_FIELD_ALBUM_ARTIST_SORTNAME:

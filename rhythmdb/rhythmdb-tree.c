@@ -1037,6 +1037,9 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_ALBUM_SORTNAME:
 			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->album_sortname));
 			break;
+		case RHYTHMDB_PROP_TITLE_SORTNAME:
+			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->title_sortname));
+			break;
 		case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME:
 			save_entry_string_if_set (ctx, elt_name, rb_refstring_get (entry->album_artist_sortname));
 			break;
@@ -1161,6 +1164,7 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_ARTIST_SORTNAME_SORT_KEY:
 		case RHYTHMDB_PROP_COMPOSER_SORTNAME_SORT_KEY:
 		case RHYTHMDB_PROP_ALBUM_SORTNAME_SORT_KEY:
+		case RHYTHMDB_PROP_TITLE_SORTNAME_SORT_KEY:
 		case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_SORT_KEY:
 		case RHYTHMDB_PROP_TITLE_FOLDED:
 		case RHYTHMDB_PROP_GENRE_FOLDED:
@@ -1171,6 +1175,7 @@ save_entry (RhythmDBTree *db,
 		case RHYTHMDB_PROP_ARTIST_SORTNAME_FOLDED:
 		case RHYTHMDB_PROP_COMPOSER_SORTNAME_FOLDED:
 		case RHYTHMDB_PROP_ALBUM_SORTNAME_FOLDED:
+		case RHYTHMDB_PROP_TITLE_SORTNAME_FOLDED:
 		case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_FOLDED:
 		case RHYTHMDB_PROP_LAST_PLAYED_STR:
 		case RHYTHMDB_PROP_PLAYBACK_ERROR:

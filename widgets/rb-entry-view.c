@@ -1364,6 +1364,7 @@ rb_entry_view_cell_edited_cb (GtkCellRendererText *renderer,
 	case RHYTHMDB_PROP_COMMENT:
 	case RHYTHMDB_PROP_ARTIST_SORTNAME:
 	case RHYTHMDB_PROP_ALBUM_SORTNAME:
+	case RHYTHMDB_PROP_TITLE_SORTNAME:
 		break;
 
 	default:
@@ -1443,7 +1444,7 @@ rb_entry_view_append_column (RBEntryView *view,
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;
 		sort_propid = RHYTHMDB_PROP_TITLE_SORT_KEY;
-		sort_func = (GCompareDataFunc) rhythmdb_query_model_string_sort_func;
+		sort_func = (GCompareDataFunc) rhythmdb_query_model_title_sort_func;
 		title = _("Title");
 		key = "Title";
 		ellipsize = TRUE;

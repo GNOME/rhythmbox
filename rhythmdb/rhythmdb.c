@@ -163,6 +163,10 @@ static const RhythmDBPropertyDef rhythmdb_properties[] = {
 	PROP_ENTRY(COMPOSER_SORTNAME_SORT_KEY, G_TYPE_STRING, "composer-sortname-sort-key"),
 	PROP_ENTRY(COMPOSER_SORTNAME_FOLDED, G_TYPE_STRING, "composer-sortname-folded"),
 
+	PROP_ENTRY(TITLE_SORTNAME, G_TYPE_STRING, "title-sortname"),
+	PROP_ENTRY(TITLE_SORTNAME_SORT_KEY, G_TYPE_STRING, "title-sortname-sort-key"),
+	PROP_ENTRY(TITLE_SORTNAME_FOLDED, G_TYPE_STRING, "title-sortname-folded"),
+
 	{ 0, 0, 0, 0 }
 };
 
@@ -680,6 +684,9 @@ metadata_field_from_prop (RhythmDBPropType prop,
 		return TRUE;
 	case RHYTHMDB_PROP_ALBUM_SORTNAME:
 		*field = RB_METADATA_FIELD_ALBUM_SORTNAME;
+		return TRUE;
+	case RHYTHMDB_PROP_TITLE_SORTNAME:
+		*field = RB_METADATA_FIELD_TITLE_SORTNAME;
 		return TRUE;
 	case RHYTHMDB_PROP_ALBUM_ARTIST:
 		*field = RB_METADATA_FIELD_ALBUM_ARTIST;
@@ -1695,6 +1702,7 @@ rhythmdb_entry_allocate (RhythmDB *db,
 	ret->artist_sortname = rb_refstring_ref (db->priv->empty_string);
 	ret->composer_sortname = rb_refstring_ref (db->priv->empty_string);
 	ret->album_sortname = rb_refstring_ref (db->priv->empty_string);
+	ret->title_sortname = rb_refstring_ref (db->priv->empty_string);
 	ret->album_artist_sortname = rb_refstring_ref (db->priv->empty_string);
 	ret->media_type = rb_refstring_ref (db->priv->octet_stream_str);
 
@@ -1893,6 +1901,7 @@ rhythmdb_entry_finalize (RhythmDBEntry *entry)
 	rb_refstring_unref (entry->artist_sortname);
 	rb_refstring_unref (entry->composer_sortname);
 	rb_refstring_unref (entry->album_sortname);
+	rb_refstring_unref (entry->title_sortname);
 	rb_refstring_unref (entry->media_type);
 
 	g_free (entry);
@@ -2115,6 +2124,12 @@ set_props_from_metadata (RhythmDB *db,
 	set_metadata_string_with_default (db, metadata, entry,
 					  RB_METADATA_FIELD_ALBUM_SORTNAME,
 					  RHYTHMDB_PROP_ALBUM_SORTNAME,
+					  "");
+
+	/* title sortname */
+	set_metadata_string_with_default (db, metadata, entry,
+					  RB_METADATA_FIELD_TITLE_SORTNAME,
+					  RHYTHMDB_PROP_TITLE_SORTNAME,
 					  "");
 
 	/* comment */
@@ -3734,6 +3749,10 @@ rhythmdb_entry_set_internal (RhythmDB *db,
 			rb_refstring_unref (entry->album_sortname);
 			entry->album_sortname = rb_refstring_new (g_value_get_string (value));
 			break;
+		case RHYTHMDB_PROP_TITLE_SORTNAME:
+			rb_refstring_unref (entry->title_sortname);
+			entry->title_sortname = rb_refstring_new (g_value_get_string (value));
+			break;
 		case RHYTHMDB_PROP_ALBUM_ARTIST:
 			rb_refstring_unref (entry->album_artist);
 			entry->album_artist = rb_refstring_new (g_value_get_string (value));
@@ -4976,6 +4995,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get (entry->artist_sortname);
 	case RHYTHMDB_PROP_ALBUM_SORTNAME:
 		return rb_refstring_get (entry->album_sortname);
+	case RHYTHMDB_PROP_TITLE_SORTNAME:
+		return rb_refstring_get (entry->title_sortname);
 	case RHYTHMDB_PROP_ALBUM_ARTIST:
 		return rb_refstring_get (entry->album_artist);
 	case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME:
@@ -4998,6 +5019,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get_sort_key (entry->artist_sortname);
 	case RHYTHMDB_PROP_ALBUM_SORTNAME_SORT_KEY:
 		return rb_refstring_get_sort_key (entry->album_sortname);
+	case RHYTHMDB_PROP_TITLE_SORTNAME_SORT_KEY:
+		return rb_refstring_get_sort_key (entry->title_sortname);
 	case RHYTHMDB_PROP_ALBUM_ARTIST_SORT_KEY:
 		return rb_refstring_get_sort_key (entry->album_artist);
 	case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_SORT_KEY:
@@ -5018,6 +5041,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry,
 		return rb_refstring_get_folded (entry->artist_sortname);
 	case RHYTHMDB_PROP_ALBUM_SORTNAME_FOLDED:
 		return rb_refstring_get_folded (entry->album_sortname);
+	case RHYTHMDB_PROP_TITLE_SORTNAME_FOLDED:
+		return rb_refstring_get_folded (entry->title_sortname);
 	case RHYTHMDB_PROP_ALBUM_ARTIST_FOLDED:
 		return rb_refstring_get_folded (entry->album_artist);
 	case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME_FOLDED:
@@ -5130,6 +5155,8 @@ rhythmdb_entry_get_refstring (RhythmDBEntry *entry,
 		return rb_refstring_ref (entry->artist_sortname);
 	case RHYTHMDB_PROP_ALBUM_SORTNAME:
 		return rb_refstring_ref (entry->album_sortname);
+	case RHYTHMDB_PROP_TITLE_SORTNAME:
+		return rb_refstring_ref (entry->title_sortname);
 	case RHYTHMDB_PROP_ALBUM_ARTIST_SORTNAME:
 		return rb_refstring_ref (entry->album_artist_sortname);
 	case RHYTHMDB_PROP_COMPOSER_SORTNAME:

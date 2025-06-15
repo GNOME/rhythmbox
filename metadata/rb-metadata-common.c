@@ -65,6 +65,7 @@
  * @RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID: MusicBrainz album artist ID
  * @RB_METADATA_FIELD_ARTIST_SORTNAME: Person(s) responsible for the recording, as used for sorting
  * @RB_METADATA_FIELD_ALBUM_SORTNAME: Album containing the recording, as used for sorting
+ * @RB_METADATA_FIELD_TITLE_SORTNAME: Title of the recording, as used for sorting
  * @RB_METADATA_FIELD_ALBUM_ARTIST: The artist of the entire album
  * @RB_METADATA_FIELD_ALBUM_ARTIST_SORTNAME: The artist of the entire album, as it should be sorted
  * @RB_METADATA_FIELD_COMPOSER: The composer of the recording
@@ -107,6 +108,7 @@ rb_metadata_get_field_type (RBMetaDataField field)
 	case RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID:
 	case RB_METADATA_FIELD_ARTIST_SORTNAME:
 	case RB_METADATA_FIELD_ALBUM_SORTNAME:
+	case RB_METADATA_FIELD_TITLE_SORTNAME:
 	case RB_METADATA_FIELD_ALBUM_ARTIST:
 	case RB_METADATA_FIELD_ALBUM_ARTIST_SORTNAME:
 	case RB_METADATA_FIELD_COMPOSER:
@@ -211,6 +213,7 @@ rb_metadata_field_get_type (void)
 			ENUM_ENTRY (RB_METADATA_FIELD_MUSICBRAINZ_ALBUMARTISTID, "musicbrainz-albumartistid"),
 			ENUM_ENTRY (RB_METADATA_FIELD_ARTIST_SORTNAME, "musicbrainz-sortname"),
 			ENUM_ENTRY (RB_METADATA_FIELD_ALBUM_SORTNAME, "album-sortname"),
+			ENUM_ENTRY (RB_METADATA_FIELD_TITLE_SORTNAME, "title-sortname"),
 			ENUM_ENTRY (RB_METADATA_FIELD_ALBUM_ARTIST, "album-artist"),
 			ENUM_ENTRY (RB_METADATA_FIELD_ALBUM_ARTIST_SORTNAME, "album-artist-sortname"),
 			ENUM_ENTRY (RB_METADATA_FIELD_COMPOSER, "composer"),

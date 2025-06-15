@@ -2916,8 +2916,14 @@ rhythmdb_query_model_title_sort_func (RhythmDBEntry *a,
 	const char *b_val;
 	gint ret;
 
-	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE_SORT_KEY);
-	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_TITLE_SORT_KEY);
+	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE_SORTNAME_SORT_KEY);
+	if (a_val[0] == '\0') {
+		a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE_SORT_KEY);
+	}
+	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_TITLE_SORTNAME_SORT_KEY);
+	if (b_val[0] == '\0') {
+		b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_TITLE_SORT_KEY);
+	}
 
 	if (a_val == NULL) {
 		if (b_val == NULL)
@@ -2995,8 +3001,14 @@ rhythmdb_query_model_album_sort_func (RhythmDBEntry *a,
 		return (a_num < b_num ? -1 : 1);
 
 	/*  by title */
-	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE_SORT_KEY);
-	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_TITLE_SORT_KEY);
+	a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE_SORTNAME_SORT_KEY);
+	if (a_val[0] == '\0') {
+		a_val = rhythmdb_entry_get_string (a, RHYTHMDB_PROP_TITLE_SORT_KEY);
+	}
+	b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_TITLE_SORTNAME_SORT_KEY);
+	if (b_val[0] == '\0') {
+		b_val = rhythmdb_entry_get_string (b, RHYTHMDB_PROP_TITLE_SORT_KEY);
+	}
 
 	if (a_val == NULL) {
 		if (b_val == NULL)
