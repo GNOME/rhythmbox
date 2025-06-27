@@ -29,7 +29,7 @@
 
 #include "rb-player.h"
 #include "rb-player-gst.h"
-#include "rb-player-gst-xfade.h"
+#include "rb-player-gst-multi.h"
 #include "rb-util.h"
 
 /**
@@ -580,7 +580,7 @@ RBPlayer*
 rb_player_new (gboolean want_crossfade, GError **error)
 {
 	if (want_crossfade)
-		return rb_player_gst_xfade_new (error);
+		return rb_player_gst_multi_new (error);
 	else
 		return rb_player_gst_new (error);
 }

@@ -18,7 +18,7 @@ backends_sources = files(
   'gstreamer/rb-encoder-gst.c',
   'gstreamer/rb-player-gst-helper.c',
   'gstreamer/rb-player-gst.c',
-  'gstreamer/rb-player-gst-xfade.c',
+  'gstreamer/rb-player-gst-multi.c',
 )
 
 backends_c_args = [
