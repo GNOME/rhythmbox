@@ -70,6 +70,7 @@ main (int argc, char **argv)
 
 	textdomain (GETTEXT_PACKAGE);
 
+	g_set_prgname (RB_APP_ICON);
 	g_set_application_name (_("Rhythmbox"));
 	gtk_window_set_default_icon_name (RB_APP_ICON);
 
