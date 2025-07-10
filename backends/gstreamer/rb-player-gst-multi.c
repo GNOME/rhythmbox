@@ -35,11 +35,11 @@
  * operating on the assumption that the platform sound mechanism (usually a sound
  * server such as pipewire) will mix them appropriately.
  *
- * Each stream is a uridecodebin3 connected to a filter bin and a volume element
- * (used for crossfading and fade in/out on pause/unpause) then an audio sink.
- * The tee interface may not be supported.
- *
- *
+ * Each stream is a uridecodebin3 connected to any per-stream filters created
+ * by plugins, then a volume element (used for crossfading and fade in/out on
+ * pause/unpause) then an audio sink.  The RBPlayerGstFilter and
+ * RBPlayerGstTee interfaces are not supported as they require the elements
+ * added to the pipeline to persist, which isn't possible here.
  */
 
 #include <config.h>
@@ -63,12 +63,10 @@
 #include "rb-player-gst-helper.h"
 
 static void rb_player_init (RBPlayerIface *iface);
-/*static void rb_player_gst_filter_init (RBPlayerGstFilterIface *iface);*/
 
 
 G_DEFINE_TYPE_WITH_CODE(RBPlayerGstMulti, rb_player_gst_multi, G_TYPE_OBJECT,
 			G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER, rb_player_init)
-			/*G_IMPLEMENT_INTERFACE(RB_TYPE_PLAYER_GST_FILTER, rb_player_gst_filter_init)*/
 			)
 
 #define RB_PLAYER_GST_TICK_HZ 5
@@ -91,6 +89,7 @@ enum
 	CAN_REUSE_STREAM,
 	REUSE_STREAM,
 	MISSING_PLUGINS,
+	GET_STREAM_FILTERS,
 	LAST_SIGNAL
 };
 
@@ -122,12 +121,10 @@ typedef struct _RBPlayerGstMultiStream
 
 	GstElement *pipeline;
 	GstElement *uridecodebin;
-	GstElement *filterbin;
 	GstElement *volume;
 	GstElement *stream_sync;
 	GstElement *audioconvert;
 	GstElement *audio_sink;
-	GList *waiting_filters; /* in reverse order */
 
 	GMutex eos_lock;
 	GCond eos_cond;
@@ -183,7 +180,6 @@ destroy_stream (RBPlayerGstMultiStream *stream)
 	}
 
 	g_list_free_full (stream->tags, (GDestroyNotify) gst_tag_list_unref);
-	g_list_free_full (stream->waiting_filters, (GDestroyNotify) gst_object_ref_sink);
 
 	if (stream->stream_data && stream->stream_data_destroy) {
 		stream->stream_data_destroy (stream->stream_data);
@@ -1011,6 +1007,9 @@ stream_pad_added_cb (GstElement *decoder, GstPad *pad, RBPlayerGstMultiStream *s
 static gboolean
 construct_pipeline (RBPlayerGstMultiStream *stream, GError **error)
 {
+	GstElement *tail;
+	GArray *stream_filters = NULL;
+
 	rb_debug ("creating new stream for %s", stream->uri);
 
 	stream->pipeline = gst_pipeline_new (NULL);
@@ -1116,20 +1115,28 @@ construct_pipeline (RBPlayerGstMultiStream *stream, GError **error)
 			  stream->audio_sink,
 			  NULL);
 	gst_element_link (stream->audioconvert, stream->volume);
-	gst_element_link (stream->volume, stream->audio_sink);
 
-#if 0
-	/* setup filterbin */
-	stream->filterbin = rb_gst_create_filter_bin ();
-	g_object_set (stream->playbin, "audio-filter", stream->filterbin, NULL);
+	/* link in any per-stream filters */
+	tail = stream->volume;
+	g_signal_emit (stream->player, signals[GET_STREAM_FILTERS], 0, stream->uri, &stream_filters);
+	if (stream_filters != NULL) {
+		int i;
+		for (i = 0; i < stream_filters->len; i++) {
+			GValue *v = &g_array_index (stream_filters, GValue, i);
+			GstElement *filter;
+			GstElement *audioconvert;
 
-	/* add any filters that have already been added */
-	for (l = stream->waiting_filters; l != NULL; l = g_list_next (l)) {
-		rb_player_gst_filter_add_filter (RB_PLAYER_GST_FILTER(stream), GST_ELEMENT (l->data));
+			audioconvert = gst_element_factory_make ("audioconvert", NULL);
+			filter = GST_ELEMENT (g_value_get_object (v));
+
+			gst_bin_add_many (GST_BIN (stream->pipeline), audioconvert, filter, NULL);
+			gst_element_link_many (tail, audioconvert, filter, NULL);
+			tail = filter;
+		}
+
+		g_array_unref (stream_filters);
 	}
-	g_list_free (stream->waiting_filters);
-	stream->waiting_filters = NULL;
-#endif
+	gst_element_link (tail, stream->audio_sink);
 
 	rb_debug ("pipeline construction complete");
 	return TRUE;
@@ -1405,47 +1412,6 @@ impl_get_time (RBPlayer *rbp)
 	}
 }
 
-#if 0
-static gboolean
-need_pad_blocking (RBPlayerGst *mp)
-{
-	return (mp->priv->playing || (mp->priv->uri != NULL));
-}
-
-static gboolean
-impl_add_filter (RBPlayerGstFilter *player, GstElement *element)
-{
-	RBPlayerGst *mp = RB_PLAYER_GST_MULTI (player);
-
-	if (mp->priv->filterbin == NULL) {
-		mp->priv->waiting_filters = g_list_prepend (mp->priv->waiting_filters, element);
-		return TRUE;
-	}
-	return rb_gst_add_filter (RB_PLAYER (mp), mp->priv->filterbin, element, need_pad_blocking (mp));
-}
-
-static gboolean
-impl_remove_filter (RBPlayerGstFilter *player, GstElement *element)
-{
-	RBPlayerGst *mp = RB_PLAYER_GST_MULTI (player);
-
-	if (mp->priv->filterbin == NULL) {
-		gst_object_ref_sink (element);
-		mp->priv->waiting_filters = g_list_remove (mp->priv->waiting_filters, element);
-		return TRUE;
-	}
-
-	return rb_gst_remove_filter (RB_PLAYER (mp), mp->priv->filterbin, element, need_pad_blocking (mp));
-}
-
-static void
-rb_player_gst_filter_init (RBPlayerGstFilterIface *iface)
-{
-	iface->add_filter = impl_add_filter;
-	iface->remove_filter = impl_remove_filter;
-}
-#endif
-
 
 RBPlayer *
 rb_player_gst_multi_new (GError **error)
@@ -1597,6 +1563,16 @@ rb_player_gst_multi_class_init (RBPlayerGstMultiClass *klass)
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_POINTER, G_TYPE_STRV, G_TYPE_STRV);
+	signals[GET_STREAM_FILTERS] =
+		g_signal_new ("get-stream-filters",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      0,
+			      rb_signal_accumulator_value_array, NULL,
+			      NULL,
+			      G_TYPE_ARRAY,
+			      1,
+			      G_TYPE_STRING);
 
 	g_type_class_add_private (klass, sizeof (RBPlayerGstMultiPrivate));
 }
