@@ -65,8 +65,8 @@ class ReplayGainPlayer(object):
 		# we use different means to hook into the playback pipeline depending on
 		# the playback backend in use
 		if GObject.signal_lookup("get-stream-filters", self.player):
-			self.setup_xfade_mode()
-			self.deactivate_backend = self.deactivate_xfade_mode
+			self.setup_multi_mode()
+			self.deactivate_backend = self.deactivate_multi_mode
 		else:
 			self.setup_playbin_mode()
 			self.deactivate_backend = self.deactivate_playbin_mode
@@ -147,19 +147,24 @@ class ReplayGainPlayer(object):
 		self.rgfilter = None
 
 
-	### xfade mode (rgvolume as stream filter, rglimiter as global filter)
+	### multistream mode (rgvolume and rglimiter as stream filters)
 
-	def xfade_target_gain_cb(self, rgvolume, pspec):
-		if self.update_fallback_gain(rgvolume) is  True:
+	def multi_target_gain_cb(self, rgvolume, pspec):
+		if self.update_fallback_gain(rgvolume) is True:
 			# we don't want any further notifications from this stream
-			rgvolume.disconnect_by_func(self.xfade_target_gain_cb)
+			rgvolume.disconnect_by_func(self.multi_target_gain_cb)
 
 	def create_stream_filter_cb(self, player, uri):
 		print("creating rgvolume instance for stream %s" % uri)
 		rgvolume = Gst.ElementFactory.make("rgvolume", None)
-		rgvolume.connect("notify::target-gain", self.xfade_target_gain_cb)
+		rgvolume.connect("notify::target-gain", self.multi_target_gain_cb)
 		self.set_rgvolume(rgvolume)
-		return [rgvolume]
+
+		print("creating rglimiter instance for stream %s" % uri)
+		self.rglimiter = Gst.ElementFactory.make("rglimiter", None)
+		self.rglimiter.props.enabled = self.settings['limiter']
+
+		return [rgvolume, self.rglimiter]
 
 	def limiter_changed_cb(self, settings, key):
 		if self.rglimiter is not None:
@@ -167,16 +172,10 @@ class ReplayGainPlayer(object):
 			print("limiter setting is now %s" % str(limiter))
 			self.rglimiter.props.enabled = limiter
 
-	def setup_xfade_mode(self):
-		print("using per-stream filter for rgvolume")
+	def setup_multi_mode(self):
+		print("using per-stream filter for rgvolume and rglimiter")
 		self.stream_filter_id = self.player.connect("get-stream-filters", self.create_stream_filter_cb)
 
-		# and add rglimiter as an output filter
-		self.rglimiter = Gst.ElementFactory.make("rglimiter", None)
-		self.player.add_filter(self.rglimiter)
-
-	def deactivate_xfade_mode(self):
+	def deactivate_multi_mode(self):
 		self.player.disconnect(self.stream_filter_id)
 		self.stream_filter_id = None
-		self.player.remove_filter(self.rglimiter)
-		self.rglimiter = None
