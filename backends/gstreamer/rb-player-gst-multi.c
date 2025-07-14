@@ -1203,14 +1203,27 @@ impl_play (RBPlayer *rbp, RBPlayerPlayType play_type, gint64 crossfade, GError *
 	RBPlayerGstMulti *player = RB_PLAYER_GST_MULTI (rbp);
 	RBPlayerGstMultiStream *current, *next;
 
+	current = player->priv->current;
 	if (player->priv->next == NULL) {
-		rb_debug ("no stream change pending, just restarting playback");
-		start_state_change (player->priv->current, GST_STATE_PLAYING, PAUSE_FADE_IN);
+		if (current->fading) {
+			gdouble startvol;
+			gint64 fadetime;
+
+			g_object_get (current->volume, "volume", &startvol, NULL);
+			fadetime = (gint64)(((double) PAUSE_FADE_DURATION) * startvol);
+
+			rb_debug ("no stream change pending, reversing fade out and continuing");
+			current->playing = TRUE;
+			start_stream_fade (current, startvol, 1.0, fadetime, DO_NOTHING);
+			_rb_player_emit_playing_stream (RB_PLAYER (player), current->stream_data);
+		} else {
+			rb_debug ("no stream change pending, just restarting playback");
+			start_state_change (current, GST_STATE_PLAYING, PAUSE_FADE_IN);
+		}
 
 		return TRUE;
 	}
 
-	current = player->priv->current;
 	next = player->priv->next;
 	next->playing = TRUE;
 
