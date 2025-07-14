@@ -53,23 +53,23 @@ mans = [
 
 install_man(mans)
 
-appdata = 'org.gnome.Rhythmbox3.appdata.xml'
+metainfo = 'org.gnome.Rhythmbox3.metainfo.xml'
 
-appdata_file = i18n.merge_file(
-  input: appdata + '.in',
-  output: appdata,
+metainfo_file = i18n.merge_file(
+  input: metainfo + '.in',
+  output: metainfo,
   install: true,
   install_dir: datadir / 'metainfo',
   po_dir: po_dir,
   type: 'xml',
 )
 
-# Validate Appdata
+# Validate AppStream metadata
 appstream_util = find_program('appstream-util', required: false)
 if appstream_util.found()
   test(
-      'validate-appdata', appstream_util,
-      depends: appdata_file,
-      args: ['validate', '--nonet', appdata_file.full_path()]
+      'validate-metainfo', appstream_util,
+      depends: metainfo_file,
+      args: ['validate', '--nonet', metainfo_file.full_path()]
       )
 endif
