@@ -1158,6 +1158,7 @@ impl_close (RBPlayer *rbp, const char *uri, GError **error)
 	if (stream != NULL) {
 		stream->playing = FALSE;
 		stop_and_destroy_stream (stream);
+		player->priv->current = NULL;
 	}
 	return TRUE;
 }
