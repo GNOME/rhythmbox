@@ -526,6 +526,9 @@ start_state_change (RBPlayerGstMultiStream *stream, GstState state, enum StateCh
 	scr = gst_element_set_state (stream->pipeline, state);
 	if (scr == GST_STATE_CHANGE_SUCCESS) {
 		rb_debug ("state change succeeded synchronously");
+		if (state == GST_STATE_NULL) {
+			state_change_finished (stream, NULL);
+		}
 	}
 }
 
