@@ -175,6 +175,8 @@ destroy_stream (RBPlayerGstMultiStream *stream)
 
 	/* pipeline should already be in NULL state */
 
+	g_clear_object (&stream->fader);
+
 	if (stream->pipeline != NULL) {
 		g_object_unref (stream->pipeline);
 	}
