@@ -1014,6 +1014,7 @@ construct_pipeline (RBPlayerGstMultiStream *stream, GError **error)
 {
 	GstElement *tail;
 	GArray *stream_filters = NULL;
+	GstBus *bus;
 
 	rb_debug ("creating new stream for %s", stream->uri);
 
@@ -1054,9 +1055,9 @@ construct_pipeline (RBPlayerGstMultiStream *stream, GError **error)
 		      "use-buffering", TRUE,
 		      NULL);
 
-	gst_bus_add_watch (gst_element_get_bus (stream->pipeline),
-			   (GstBusFunc) bus_cb,
-			   stream);
+	bus = gst_element_get_bus (stream->pipeline);
+	gst_bus_add_watch (bus, (GstBusFunc) bus_cb, stream);
+	gst_object_unref (bus);
 
 	stream->audio_sink = rb_player_gst_try_audio_sink ("autoaudiosink", NULL);
 	if (stream->audio_sink == NULL) {
