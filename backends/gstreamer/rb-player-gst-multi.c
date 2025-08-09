@@ -553,12 +553,14 @@ stream_volume_changed_cb (GObject *object, GParamSpec *pspec, RBPlayerGstMultiSt
 
 		rb_debug ("stream %s: posting fade-done message", stream->uri);
 		s = gst_structure_new_empty (FADE_DONE_MESSAGE);
-		msg = gst_message_new_application (GST_OBJECT (object), s);
+		msg = gst_message_new_application (NULL, s);
 
 		event = gst_event_new_sink_message (FADE_DONE_MESSAGE, msg);
 		gst_element_send_event (stream->volume, event);
 
 		gst_timed_value_control_source_unset_all (stream->fader);
+
+		gst_message_unref (msg);
 	}
 }
 
