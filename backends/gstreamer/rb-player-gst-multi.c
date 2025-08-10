@@ -178,6 +178,12 @@ destroy_stream (RBPlayerGstMultiStream *stream)
 	g_clear_object (&stream->fader);
 
 	if (stream->pipeline != NULL) {
+		GstBus *bus;
+
+		bus = gst_element_get_bus (stream->pipeline);
+		gst_bus_remove_watch (bus);
+		gst_object_unref (bus);
+
 		g_object_unref (stream->pipeline);
 	}
 
