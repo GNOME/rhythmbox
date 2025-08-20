@@ -1621,15 +1621,19 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 
 		if (rb_podcast_manager_entry_downloaded (entry) == FALSE) {
 			RBExtDBKey *key;
+			const char *guid;
 
 			rb_debug ("entry %s is no longer present in the feed and has not been downloaded",
 				  get_remote_location (entry));
 
 			/* delete episode image, if we've downloaded it */
-			key = rb_ext_db_key_create_storage ("subtitle", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_SUBTITLE));
-			rb_ext_db_key_add_field (key, "podcast-guid", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PODCAST_GUID));
-			rb_ext_db_delete (pd->priv->art_store, key);
-			rb_ext_db_key_free (key);
+			guid = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PODCAST_GUID);
+			if (guid != NULL) {
+				key = rb_ext_db_key_create_storage ("subtitle", rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_SUBTITLE));
+				rb_ext_db_key_add_field (key, "podcast-guid", guid);
+				rb_ext_db_delete (pd->priv->art_store, key);
+				rb_ext_db_key_free (key);
+			}
 
 			rhythmdb_entry_delete (db, entry);
 		} else {
