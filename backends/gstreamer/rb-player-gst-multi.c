@@ -284,6 +284,10 @@ about_to_finish_cb (GstElement *uridecodebin, RBPlayerGstMultiStream *stream)
 	stream->finishing = TRUE;
 
 	if (stream->next_uri == NULL) {
+		if (stream->target_state != GST_STATE_VOID_PENDING) {
+			rb_debug ("got about-to-finish for %s already being shut down", stream->uri);
+			return;
+		}
 		rb_debug ("got about-to-finish for %s with no next uri", stream->uri);
 		g_mutex_lock (&stream->eos_lock);
 		g_idle_add_full (G_PRIORITY_HIGH, (GSourceFunc) about_to_finish_idle, stream, NULL);
