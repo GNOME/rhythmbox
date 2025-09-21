@@ -210,7 +210,8 @@ enum
 	PROP_TRACK_TRANSFER_QUEUE,
 	PROP_AUTOSTARTED,
 	PROP_DISABLE_PLUGINS,
-	PROP_TASK_LIST
+	PROP_TASK_LIST,
+	PROP_PODCAST_MANAGER
 };
 
 enum
@@ -1268,6 +1269,18 @@ rb_shell_class_init (RBShellClass *klass)
 							      "task list",
 							      RB_TYPE_TASK_LIST,
 							      G_PARAM_READABLE));
+	/**
+	 * RBShell:podcast-manager:
+	 *
+	 * The #RBPodcastManager instance
+	 */
+	g_object_class_install_property (object_class,
+					 PROP_PODCAST_MANAGER,
+					 g_param_spec_object ("podcast-manager",
+							      "podcast manager",
+							      "podcast manager",
+							      RB_TYPE_PODCAST_MANAGER,
+							      G_PARAM_READABLE));
 
 	/**
 	 * RBShell::visibility-changed:
@@ -1516,6 +1529,9 @@ rb_shell_get_property (GObject *object,
 		break;
 	case PROP_TASK_LIST:
 		g_value_set_object (value, shell->priv->task_list);
+		break;
+	case PROP_PODCAST_MANAGER:
+		g_value_set_object (value, shell->priv->podcast_manager);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
