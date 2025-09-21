@@ -134,8 +134,6 @@ datadir = get_option('prefix') / get_option('datadir')
 libdir = get_option('prefix') / get_option('libdir')
 pkgdatadir = datadir / 'rhythmbox'
 
-cdata.set('TYPELIB_PATH', libdir / 'girepository-1.0')
-
 #################
 # Plugin support
 
