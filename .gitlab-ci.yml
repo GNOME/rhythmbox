@@ -76,7 +76,7 @@ build:
     - meson setup ${MESON_BUILD_DIR} ${MESON_ARGS}
     - cd ${MESON_BUILD_DIR}
     - ninja
-    - G_MESSAGES_DEBUG=all xvfb-run -a -s "-screen 0 1024x768x24" meson test
+    - G_MESSAGES_DEBUG=all xvfb-run -a -s "-screen 0 1024x768x24 -noreset" meson test
     - ninja install
   artifacts:
     when: always
@@ -99,7 +99,7 @@ release-tarball:
   script:
     - meson setup ${MESON_BUILD_DIR} ${MESON_ARGS}
     - cd ${MESON_BUILD_DIR}
-    - xvfb-run -a -s "-screen 0 1024x768x24" meson dist
+    - xvfb-run -a -s "-screen 0 1024x768x24 -noreset" meson dist
     - cp -r meson-dist/ "${CI_PROJECT_DIR}/public-dist/"
   artifacts:
     name: "${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
