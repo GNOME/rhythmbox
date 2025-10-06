@@ -1,7 +1,14 @@
-image: ubuntu:jammy
+include:
+  - component: "gitlab.gnome.org/GNOME/citemplates/release-service@master"
+    inputs:
+      job-stage: release
+      dist-job-name: release-tarball
+
+image: ubuntu:noble
 
 stages:
   - build
+  - release
 
 variables:
   UBUNTU_DEPS:
@@ -26,7 +33,7 @@ variables:
     libpeas-dev
     yelp-tools
     x11proto-core-dev
-    liblircclient-dev
+    liblirc-dev
     python3-dev
     python-gi-dev
     libjson-glib-dev
@@ -58,15 +65,16 @@ variables:
 
 build:
   stage: build
+  variables:
+    MESON_BUILD_DIR: "_build"
   before_script:
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update
     - apt-get install -y $UBUNTU_DEPS
-    - pip3 install meson gi-docgen
+    - pip3 install --break-system-packages meson gi-docgen
   script:
-    - mkdir _build
-    - cd _build
-    - meson .. $MESON_ARGS
+    - meson setup ${MESON_BUILD_DIR} ${MESON_ARGS}
+    - cd ${MESON_BUILD_DIR}
     - ninja
     - G_MESSAGES_DEBUG=all xvfb-run -a -s "-screen 0 1024x768x24" meson test
     - ninja install
@@ -75,5 +83,26 @@ build:
     name: "rhythmbox-${CI_COMMIT_REF_NAME}"
     paths:
       - "${CI_PROJECT_DIR}/_build/meson-logs"
-      - _build/doc
+      - "${MESON_BUILD_DIR}/doc"
 
+release-tarball:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_TAG || $CI_COMMIT_BRANCH == "prerelease"
+  variables:
+    MESON_BUILD_DIR: "_build"
+  before_script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - apt-get install -y $UBUNTU_DEPS git
+    - pip3 install --break-system-packages meson gi-docgen
+  script:
+    - meson setup ${MESON_BUILD_DIR} ${MESON_ARGS}
+    - cd ${MESON_BUILD_DIR}
+    - xvfb-run -a -s "-screen 0 1024x768x24" meson dist
+    - cp -r meson-dist/ "${CI_PROJECT_DIR}/public-dist/"
+  artifacts:
+    name: "${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}"
+    when: always
+    paths:
+      - "public-dist"
