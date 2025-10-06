@@ -654,17 +654,16 @@ do_load_request (GSimpleAsyncResult *result, GObject *object, GCancellable *canc
 
 		/* probably need to delete the item from the db */
 	} else {
-		GString *s;
+		GBytes *b;
 		GValue d = G_VALUE_INIT;
 
 		/* convert the encoded data into a useful object */
 		rb_debug ("converting %" G_GSIZE_FORMAT " bytes of file data", file_data_size);
-		s = g_slice_new0 (GString);
-		s->str = file_data;
-		s->len = file_data_size;
-		s->allocated_len = file_data_size;
-		g_value_init (&d, G_TYPE_GSTRING);
-		g_value_take_boxed (&d, s);
+
+		b = g_bytes_new_take (file_data, file_data_size);
+		g_value_init (&d, G_TYPE_BYTES);
+		g_value_take_boxed (&d, b);
+
 		req->data = NULL;
 		g_signal_emit (object, signals[LOAD], 0, &d, &req->data);
 		g_value_unset (&d);
@@ -987,12 +986,12 @@ do_store_request (GSimpleAsyncResult *result, GObject *object, GCancellable *can
 			g_clear_error (&error);
 			/* leave req->data alone so we fall into the failure branch? */
 		} else {
-			GString *s;
+			GBytes *b;
 			rb_debug ("got %" G_GSIZE_FORMAT " bytes from uri %s", data_size, req->uri);
-			s = g_string_new_len (data, data_size);
+			b = g_bytes_new_take (data, data_size);
 			req->data = g_new0 (GValue, 1);
-			g_value_init (req->data, G_TYPE_GSTRING);
-			g_value_take_boxed (req->data, s);
+			g_value_init (req->data, G_TYPE_BYTES);
+			g_value_take_boxed (req->data, b);
 		}
 
 		g_object_unref (f);

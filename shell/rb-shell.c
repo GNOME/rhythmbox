@@ -403,7 +403,7 @@ store_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
 	char *data;
 	gsize data_size;
 	GError *error = NULL;
-	GString *s;
+	GBytes *b;
 	GValue *v;
 
 	if (G_VALUE_HOLDS (value, GDK_TYPE_PIXBUF) == FALSE) {
@@ -433,13 +433,10 @@ store_external_art_cb (RBExtDB *store, GValue *value, RBShell *shell)
 		return NULL;
 	}
 
-	s = g_slice_new0 (GString);
-	s->str = data;
-	s->len = data_size;
-	s->allocated_len = data_size;
+	b = g_bytes_new_take (data, data_size);
 	v = g_new0 (GValue, 1);
-	g_value_init (v, G_TYPE_GSTRING);
-	g_value_take_boxed (v, s);
+	g_value_init (v, G_TYPE_BYTES);
+	g_value_take_boxed (v, b);
 	return v;
 }
 
