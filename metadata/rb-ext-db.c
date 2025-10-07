@@ -825,11 +825,13 @@ rb_ext_db_cancel_requests (RBExtDB *store, RBExtDBRequestCallback callback, gpoi
 	while (l != NULL) {
 		RBExtDBRequest *req = l->data;
 		if (req->callback == callback && req->user_data == user_data) {
+			GList *n = l->next;
 			char *str = rb_ext_db_key_to_string (req->key);
 			rb_debug ("cancelling a search request: %s", str);
 			g_free (str);
 			free_request (req);
 			store->priv->requests = g_list_delete_link (store->priv->requests, l);
+			l = n;
 		} else {
 			l = l->next;
 		}
