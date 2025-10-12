@@ -1,3 +1,37 @@
+Overview of changes in Rhythmbox 3.4.9
+======================================
+
+* Python plugin loader now works with new pygobject/libpeas
+* New playback backend, replacing the old crossfading backend
+
+Issues fixed:
+2009 - apidoc not installed
+2111 - Error activate plugins: libpeas: Could not load plugin loader 'python3'
+2112 - Constant CPU usage and wakeups while idle with an Android device plugged in
+2118 - GLib2 changed the way g_values copy GStrings. This breaks rhythmbox
+
+
+Merge requests:
+192 - Add CUE plugin to Third Party Plugins list
+198 - main: Fix window not being matched to application
+200 - Update POTFILES.in
+
+
+Translation updates:
+- ca, courtesy of Assumpta, 2021
+- ca, courtesy of Jordi Mas i Hernàndez
+- da, courtesy of Alan Mortensen
+- fr, courtesy of Jean-Marc Tissières
+- id, courtesy of Andika Triwidada
+- it, courtesy of Milo Casagrande
+- ja, courtesy of Makoto Sakaguchi
+- lt, courtesy of Aurimas Černius
+- nl, courtesy of Nathan Follens
+- ru, courtesy of Ser82-png
+- sv, courtesy of Anders Jonsson
+- uk, courtesy of Yuri Chornoivan
+
+
 Overview of changes in Rhythmbox 3.4.8
 ======================================
 
