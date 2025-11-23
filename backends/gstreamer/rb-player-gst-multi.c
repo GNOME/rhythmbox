@@ -303,6 +303,7 @@ about_to_finish_cb (GstElement *uridecodebin, RBPlayerGstMultiStream *stream)
 		g_free (stream->uri);
 		stream->uri = stream->next_uri;
 		stream->next_uri = NULL;
+		stream->finishing = FALSE;
 
 		g_object_set (uridecodebin, "uri", stream->uri, NULL);
 
@@ -819,6 +820,7 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstMultiStream *stream)
 			old_uri = stream->uri;
 			stream->uri = stream->next_uri;
 			stream->next_uri = NULL;
+			stream->finishing = FALSE;
 
 			g_signal_emit (player, signals[CAN_REUSE_STREAM], 0, stream->uri, old_uri, GST_ELEMENT (stream->pipeline), &reused);
 			if (reused) {
