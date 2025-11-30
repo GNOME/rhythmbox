@@ -2,6 +2,7 @@ lyrics_plugin_dir = plugindir + '/lyrics'
 lyrics_plugin_data_dir = plugindatadir + '/lyrics'
 
 lyrics_plugin_files = [
+  'LrclibParser.py',
   'LyricsParse.py',
   'LyricsSites.py',
   'LyricsConfigureDialog.py',
