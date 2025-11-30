@@ -36,7 +36,7 @@ class JlyricParser (object):
 	def search (self, callback, *data):
 		artist = urllib.parse.quote_plus(self.artist)
 		title = urllib.parse.quote_plus(self.title)
-		url = 'http://j-lyric.net/index.php?kt=%s&ka=%s' % (title, artist)
+		url = 'https://j-lyric.net/index.php?kt=%s&ka=%s' % (title, artist)
 		loader = rb.Loader()
 		loader.get_url (url, self.got_results, callback, *data)
 
@@ -52,7 +52,7 @@ class JlyricParser (object):
 			return
 
 		loader = rb.Loader()
-		loader.get_url ('http://j-lyric.net' + m.group(1), self.parse_lyrics, callback, *data)
+		loader.get_url ('https://j-lyric.net' + m.group(1), self.parse_lyrics, callback, *data)
 
 	def parse_lyrics (self, result, callback, *data):
 		if result is None:

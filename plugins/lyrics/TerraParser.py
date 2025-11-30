@@ -65,7 +65,7 @@ class TerraParser (object):
 		self.title = title
 
 	def search(self, callback, *data):
-		path = 'http://letras.mus.br/'
+		path = 'https://letras.mus.br/'
 
 		artist = urllib.parse.quote(self.artist)
 		title = urllib.parse.quote(self.title)
@@ -112,5 +112,5 @@ class TerraParser (object):
 		artistitle = unspace(untag(" - ".join(bits)))
 
 		lyrics = unescape_entities(artistitle) + "\n" + unescape_entities(untag(source[3]))
-		lyrics += "\n\nEsta letra foi disponibilizada pelo site\nhttp://letras.mus.br"
+		lyrics += "\n\nEsta letra foi disponibilizada pelo site\nhttps://letras.mus.br"
 		return lyrics
