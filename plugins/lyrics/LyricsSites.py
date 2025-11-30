@@ -25,12 +25,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA.
 
 
-#from AstrawebParser import AstrawebParser
-#from WinampcnParser import WinampcnParser
 from TerraParser import TerraParser
 from DarkLyricsParser import DarkLyricsParser
 from JlyricParser import JlyricParser
-from JetlyricsParser import JetlyricsParser
 
 from gi.repository import RB
 
@@ -38,11 +35,8 @@ import gettext
 gettext.install('rhythmbox', RB.locale_dir())
 
 lyrics_sites = [
-	#{ 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
-	#{ 'id': 'winampcn.com', 	'class': WinampcnParser, 	'name': _("WinampCN (www.winampcn.com)") 	},
 	{ 'id': 'terra.com.br',		'class': TerraParser,		'name': _("TerraBrasil (terra.com.br)")		},
 	{ 'id': 'darklyrics.com',	'class': DarkLyricsParser,	'name': _("Dark Lyrics (darklyrics.com)")	},
 	{ 'id': 'j-lyric.net', 		'class': JlyricParser, 		'name': _("Jlyric (j-lyric.net)") 		},
-	{ 'id': 'jetlyrics.com', 	'class': JetlyricsParser, 	'name': _("Jetlyrics (jetlyrics.com)") 		}
 ]
 

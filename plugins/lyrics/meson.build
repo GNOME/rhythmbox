@@ -6,13 +6,9 @@ lyrics_plugin_files = [
   'LyricsSites.py',
   'LyricsConfigureDialog.py',
   'lyrics.py',
-  'AstrawebParser.py',
-  'LyricWikiParser.py',
-  'WinampcnParser.py',
   'TerraParser.py',
   'DarkLyricsParser.py',
-  'JlyricParser.py',
-  'JetlyricsParser.py']
+  'JlyricParser.py']
 
 install_data(lyrics_plugin_files,
   install_dir: lyrics_plugin_dir)
