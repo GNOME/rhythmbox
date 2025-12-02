@@ -14,14 +14,14 @@
 # Cheng Lu <chenglu1990@gmail.com>, 2012.
 # Dingzhong Chen <wsxy162@gmail.com>, 2017, 2019.
 # Liu Tao <lyuutau@outlook.com>, 2021.
-# lumingzh <lumingzh@qq.com>, 2022-2024.
+# lumingzh <lumingzh@qq.com>, 2022-2025.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-07-01 19:02+0000\n"
-"PO-Revision-Date: 2024-09-27 08:10+0800\n"
+"POT-Creation-Date: 2025-12-02 22:30+0000\n"
+"PO-Revision-Date: 2025-12-03 07:51+0800\n"
 "Last-Translator: lumingzh <lumingzh@qq.com>\n"
 "Language-Team: Chinese (China) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -30,7 +30,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Launchpad-Export-Date: 2016-03-22 12:26+0000\n"
-"X-Generator: Gtranslator 46.1\n"
+"X-Generator: Gtranslator 49.0\n"
 "X-DL-Team: zh_CN\n"
 "X-DL-Module: rhythmbox\n"
 "X-DL-Branch: master\n"
@@ -51,6 +51,7 @@ msgstr "无法创建 GStreamer sink 元素以写入 %s"
 #. ?
 #. Translators: the parameter here is an error message
 #: backends/gstreamer/rb-player-gst.c:520
+#: backends/gstreamer/rb-player-gst-multi.c:784
 #: backends/gstreamer/rb-player-gst-xfade.c:3034
 #, c-format
 msgid "Failed to open output device: %s"
@@ -62,6 +63,12 @@ msgid "Failed to create playbin element; check your GStreamer installation"
 msgstr "创建 playbin 元素失败；请检查您的 GStreamer 安装"
 
 #: backends/gstreamer/rb-player-gst.c:700
+#: backends/gstreamer/rb-player-gst-multi.c:1040
+#: backends/gstreamer/rb-player-gst-multi.c:1050
+#: backends/gstreamer/rb-player-gst-multi.c:1081
+#: backends/gstreamer/rb-player-gst-multi.c:1095
+#: backends/gstreamer/rb-player-gst-multi.c:1105
+#: backends/gstreamer/rb-player-gst-multi.c:1115
 #, c-format
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr "创建 %s 元素失败；请检查您的 GStreamer 安装"
@@ -121,9 +128,9 @@ msgid "My Top Rated"
 msgstr "评级最高"
 
 #: data/org.gnome.Rhythmbox3.appdata.xml.in:8
-#: data/org.gnome.Rhythmbox3.desktop.in:3
-#: data/org.gnome.Rhythmbox3.device.desktop.in:3 shell/main.c:73
-#: shell/rb-shell.c:501 shell/rb-shell.c:2343
+#: data/org.gnome.Rhythmbox3.desktop.in:2
+#: data/org.gnome.Rhythmbox3.device.desktop.in:2 shell/main.c:72
+#: shell/rb-shell.c:507 shell/rb-shell.c:2349
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -159,22 +166,22 @@ msgstr ""
 msgid "Main Window"
 msgstr "主窗口"
 
-#: data/org.gnome.Rhythmbox3.desktop.in:4
-#: data/org.gnome.Rhythmbox3.device.desktop.in:4
+#: data/org.gnome.Rhythmbox3.desktop.in:3
+#: data/org.gnome.Rhythmbox3.device.desktop.in:3
 msgid "Music Player"
 msgstr "音乐播放器"
 
-#: data/org.gnome.Rhythmbox3.desktop.in:5
-#: data/org.gnome.Rhythmbox3.device.desktop.in:5
+#: data/org.gnome.Rhythmbox3.desktop.in:4
+#: data/org.gnome.Rhythmbox3.device.desktop.in:4
 msgid "Rhythmbox Music Player"
 msgstr "Rhythmbox 音乐播放器"
 
-#: data/org.gnome.Rhythmbox3.desktop.in:6
-#: data/org.gnome.Rhythmbox3.device.desktop.in:6
+#: data/org.gnome.Rhythmbox3.desktop.in:5
+#: data/org.gnome.Rhythmbox3.device.desktop.in:5
 msgid "Play and organize your music collection"
 msgstr "播放并组织您的音乐收藏"
 
-#: data/org.gnome.Rhythmbox3.desktop.in:7
+#: data/org.gnome.Rhythmbox3.desktop.in:6
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
 "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;音频;音"
@@ -931,7 +938,7 @@ msgstr "已删除文件："
 
 #: lib/rb-cut-and-paste-code.c:94
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:235
-#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3850
+#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3843
 #: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1574
 #: widgets/rb-entry-view.c:1588 widgets/rb-song-info.c:1545
 msgid "Never"
@@ -977,7 +984,7 @@ msgstr "%Y年%-m月%-d日"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: lib/rb-cut-and-paste-code.c:158 lib/rb-util.c:581
-#: plugins/android/rb-android-source.c:727 plugins/artsearch/lastfm.py:163
+#: plugins/android/rb-android-source.c:732 plugins/artsearch/lastfm.py:163
 #: plugins/artsearch/lastfm.py:164 plugins/artsearch/songinfo.py:93
 #: plugins/audiocd/rb-audiocd-source.c:526
 #: plugins/audioscrobbler/rb-audioscrobbler.c:596
@@ -985,30 +992,31 @@ msgstr "%Y年%-m月%-d日"
 #: plugins/audioscrobbler/rb-audioscrobbler-entry.c:92
 #: plugins/audioscrobbler/rb-audioscrobbler-entry.c:99
 #: plugins/daap/rb-rhythmdb-dmap-db-adapter.c:130
-#: plugins/generic-player/rb-generic-player-source.c:1031
-#: plugins/ipod/rb-ipod-source.c:651 plugins/iradio/rb-iradio-source.c:525
+#: plugins/generic-player/rb-generic-player-source.c:1032
+#: plugins/ipod/rb-ipod-source.c:661 plugins/iradio/rb-iradio-source.c:525
 #: plugins/iradio/rb-iradio-source.c:1030
 #: plugins/iradio/rb-station-properties-dialog.c:485
 #: plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
-#: plugins/mtpdevice/rb-mtp-source.c:650 plugins/mtpdevice/rb-mtp-source.c:1140
-#: plugins/mtpdevice/rb-mtp-source.c:1471
+#: plugins/mtpdevice/rb-mtp-source.c:656 plugins/mtpdevice/rb-mtp-source.c:1146
+#: plugins/mtpdevice/rb-mtp-source.c:1477
 #: plugins/notification/rb-notification-plugin.c:509
 #: podcast/rb-feed-podcast-properties-dialog.c:335
-#: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1326
-#: podcast/rb-podcast-manager.c:1440 podcast/rb-podcast-properties-dialog.c:636
+#: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1332
+#: podcast/rb-podcast-manager.c:1446 podcast/rb-podcast-properties-dialog.c:636
 #: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:797
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
-#: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
-#: rhythmdb/rhythmdb.c:2150 rhythmdb/rhythmdb.c:5616 rhythmdb/rhythmdb.c:5622
-#: rhythmdb/rhythmdb.c:5627 rhythmdb/rhythmdb.c:5638 rhythmdb/rhythmdb.c:5642
-#: rhythmdb/rhythmdb-entry-type.c:301 rhythmdb/rhythmdb-metadata-cache.c:308
+#: rhythmdb/rhythmdb.c:2086 rhythmdb/rhythmdb.c:2092 rhythmdb/rhythmdb.c:2107
+#: rhythmdb/rhythmdb.c:2141 rhythmdb/rhythmdb-entry-type.c:303
+#: rhythmdb/rhythmdb-entry-type.c:381 rhythmdb/rhythmdb-entry-type.c:387
+#: rhythmdb/rhythmdb-entry-type.c:392 rhythmdb/rhythmdb-entry-type.c:403
+#: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:308
 #: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
 #: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
 #: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
 #: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
 #: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
 #: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
-#: widgets/rb-header.c:1279 widgets/rb-header.c:1305 widgets/rb-song-info.c:950
+#: widgets/rb-header.c:1282 widgets/rb-header.c:1308 widgets/rb-song-info.c:950
 #: widgets/rb-song-info.c:962 widgets/rb-song-info.c:1234
 #: widgets/rb-song-info.c:1572
 msgid "Unknown"
@@ -1090,11 +1098,11 @@ msgstr "未能创建 'giostreamsink' 元素；请检查 GStreamer 是否正确�
 msgid "File corrupted during write"
 msgstr "写入时文件损坏"
 
-#: plugins/android/android.plugin.desktop.in:6
+#: plugins/android/android.plugin.desktop.in:5
 msgid "Android devices"
 msgstr "Android 设备"
 
-#: plugins/android/android.plugin.desktop.in:7
+#: plugins/android/android.plugin.desktop.in:6
 msgid "Support for Android 4.0+ devices (via MTP)"
 msgstr "支持 Android 4.0+ 设备（通过 MTP）"
 
@@ -1152,21 +1160,21 @@ msgid ""
 "it to File Transfer mode."
 msgstr "未能在此设备上找到存储区域。您可能需要解锁设备并将其改为文件传输模式。"
 
-#: plugins/android/rb-android-source.c:403
-#: plugins/generic-player/rb-generic-player-source.c:563
+#: plugins/android/rb-android-source.c:406
+#: plugins/generic-player/rb-generic-player-source.c:564
 #, c-format
 msgid "Scanning %s"
 msgstr "正在扫描 %s"
 
-#: plugins/android/rb-android-source.c:426
+#: plugins/android/rb-android-source.c:429
 msgid "Error mounting Android device"
 msgstr "挂载 Android 设备时出错"
 
-#: plugins/artsearch/artsearch.plugin.desktop.in:7
+#: plugins/artsearch/artsearch.plugin.desktop.in:6
 msgid "Cover art search"
 msgstr "封面搜索"
 
-#: plugins/artsearch/artsearch.plugin.desktop.in:8
+#: plugins/artsearch/artsearch.plugin.desktop.in:7
 msgid "Fetch album covers from the Internet"
 msgstr "从互联网上获取专辑封面"
 
@@ -1198,11 +1206,11 @@ msgstr "按艺人排序(_O)："
 msgid "_Disc:"
 msgstr "盘片(_D)："
 
-#: plugins/audiocd/audiocd.plugin.desktop.in:6
+#: plugins/audiocd/audiocd.plugin.desktop.in:5
 msgid "Audio CD Player"
 msgstr "音频 CD 播放器"
 
-#: plugins/audiocd/audiocd.plugin.desktop.in:7
+#: plugins/audiocd/audiocd.plugin.desktop.in:6
 msgid "Support for playing of audio CDs as music source"
 msgstr "支持以音乐源的方式播放音频 CD"
 
@@ -1284,12 +1292,12 @@ msgstr "未找到"
 msgid "Musicbrainz server error"
 msgstr "Musicbrainz 服务器错误"
 
-#: plugins/audioscrobbler/audioscrobbler.plugin.desktop.in:5
+#: plugins/audioscrobbler/audioscrobbler.plugin.desktop.in:4
 #: plugins/audioscrobbler/audioscrobbler-preferences.ui:57
 msgid "Last.fm"
 msgstr "Last.fm"
 
-#: plugins/audioscrobbler/audioscrobbler.plugin.desktop.in:6
+#: plugins/audioscrobbler/audioscrobbler.plugin.desktop.in:5
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
 msgstr "将歌曲信息提交到 Last.fm，并播放 Last.fm 电台流媒体"
 
@@ -1636,11 +1644,11 @@ msgstr "换台出错：异常响应"
 msgid "Error tuning station: invalid response"
 msgstr "换台出错：无效响应"
 
-#: plugins/brasero-disc-recorder/cd-recorder.plugin.desktop.in:5
+#: plugins/brasero-disc-recorder/cd-recorder.plugin.desktop.in:4
 msgid "Audio CD Recorder"
 msgstr "音频 CD 录音机"
 
-#: plugins/brasero-disc-recorder/cd-recorder.plugin.desktop.in:6
+#: plugins/brasero-disc-recorder/cd-recorder.plugin.desktop.in:5
 msgid "Record audio CDs from playlists and duplicate audio CDs"
 msgstr "根据播放列表录制音频 CD 以及复制音频 CD"
 
@@ -1703,12 +1711,12 @@ msgstr "艺人"
 msgid "Loading biography for %s"
 msgstr "正在加载 %s 的简介"
 
-#: plugins/context/context.plugin.desktop.in:7
+#: plugins/context/context.plugin.desktop.in:6
 #: plugins/context/ContextView.py:90
 msgid "Context Pane"
 msgstr "内容窗格"
 
-#: plugins/context/context.plugin.desktop.in:8
+#: plugins/context/context.plugin.desktop.in:7
 msgid "Show information related to the currently playing artist and song."
 msgstr "显示当前播放的艺人及曲目的相关信息。"
 
@@ -1717,8 +1725,8 @@ msgid ""
 "This information is only available to Last.fm users. Ensure the Last.fm "
 "plugin is enabled, select Last.fm in the side pane, and log in."
 msgstr ""
-"此信息只对 last.fm 用户可用。请确认打开 last.fm 插件，并在的侧边栏选中 Last."
-"fm，然后登录。"
+"此信息只对 last.fm 用户可用。请确认打开 last.fm 插件，并在的侧边栏选中 "
+"Last.fm，然后登录。"
 
 #: plugins/context/LinksTab.py:54
 msgid "Links"
@@ -1778,11 +1786,11 @@ msgstr "没有可用信息"
 msgid "Unable to retrieve artist information:"
 msgstr "无法检索艺人信息："
 
-#: plugins/daap/daap.plugin.desktop.in:5
+#: plugins/daap/daap.plugin.desktop.in:4
 msgid "DAAP Music Sharing"
 msgstr "DAAP 音乐共享"
 
-#: plugins/daap/daap.plugin.desktop.in:6
+#: plugins/daap/daap.plugin.desktop.in:5
 msgid "Share music and play shared music on your local network"
 msgstr "在局域网中共享音乐及播放共享的音乐"
 
@@ -1876,11 +1884,11 @@ msgstr "无法与此远程主机配对。"
 msgid "Remotes"
 msgstr "远程主机"
 
-#: plugins/dbus-media-server/dbus-media-server.plugin.desktop.in:5
+#: plugins/dbus-media-server/dbus-media-server.plugin.desktop.in:4
 msgid "MediaServer2 D-Bus interface"
 msgstr "MediaServer2 D-Bus 接口"
 
-#: plugins/dbus-media-server/dbus-media-server.plugin.desktop.in:6
+#: plugins/dbus-media-server/dbus-media-server.plugin.desktop.in:5
 msgid ""
 "Provides an implementation of the MediaServer2 D-Bus interface specification"
 msgstr "提供了 MediaServer2 D-Bus 接口规范的一个实现"
@@ -1903,12 +1911,12 @@ msgstr "流派"
 msgid "Playlists"
 msgstr "播放列表"
 
-#: plugins/fmradio/fmradio.plugin.desktop.in:5
+#: plugins/fmradio/fmradio.plugin.desktop.in:4
 #: plugins/fmradio/rb-fm-radio-source.c:243
 msgid "FM Radio"
 msgstr "FM 调频电台"
 
-#: plugins/fmradio/fmradio.plugin.desktop.in:6
+#: plugins/fmradio/fmradio.plugin.desktop.in:5
 msgid "Support for FM radio broadcasting services"
 msgstr "支持 FM 调频电台广播服务"
 
@@ -1924,16 +1932,16 @@ msgstr "新建 FM 调频电台"
 msgid "Frequency of radio station"
 msgstr "电台频率"
 
-#: plugins/generic-player/generic-player.plugin.desktop.in:6
+#: plugins/generic-player/generic-player.plugin.desktop.in:5
 msgid "Portable Players"
 msgstr "便携播放器"
 
-#: plugins/generic-player/generic-player.plugin.desktop.in:7
+#: plugins/generic-player/generic-player.plugin.desktop.in:6
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "支持通用的音乐播放器设备（此外也支持 PSP 和 Nokia 770）"
 
 #: plugins/generic-player/rb-generic-player-source.c:292
-#: plugins/ipod/rb-ipod-source.c:333
+#: plugins/ipod/rb-ipod-source.c:339
 #, c-format
 msgid "New Playlist on %s"
 msgstr "在 %s 上新建播放列表"
@@ -1943,16 +1951,16 @@ msgstr "在 %s 上新建播放列表"
 msgid "Add to New Playlist"
 msgstr "添加到新播放列表"
 
-#: plugins/generic-player/rb-generic-player-source.c:1368
-#: plugins/ipod/rb-ipod-source.c:2045 plugins/mtpdevice/rb-mtp-source.c:1551
+#: plugins/generic-player/rb-generic-player-source.c:1369
+#: plugins/ipod/rb-ipod-source.c:2056 plugins/mtpdevice/rb-mtp-source.c:1557
 msgid "Advanced"
 msgstr "高级"
 
-#: plugins/grilo/grilo.plugin.desktop.in:5
+#: plugins/grilo/grilo.plugin.desktop.in:4
 msgid "Grilo media browser"
 msgstr "Grilo 媒体浏览器"
 
-#: plugins/grilo/grilo.plugin.desktop.in:6
+#: plugins/grilo/grilo.plugin.desktop.in:5
 msgid "Browse various local and Internet media sources"
 msgstr "浏览各种本地和因特网媒体源"
 
@@ -1966,11 +1974,11 @@ msgid "Only showing %d result"
 msgid_plural "Only showing %d results"
 msgstr[0] "仅显示出了 %d 个结果"
 
-#: plugins/im-status/im-status.plugin.desktop.in:7
+#: plugins/im-status/im-status.plugin.desktop.in:6
 msgid "IM Status"
 msgstr "IM 状态"
 
-#: plugins/im-status/im-status.plugin.desktop.in:8
+#: plugins/im-status/im-status.plugin.desktop.in:7
 msgid ""
 "Updates IM status according to the current song (works with Empathy and "
 "Pidgin)"
@@ -2067,33 +2075,33 @@ msgstr ""
 msgid "Do you want to initialize your iPod?"
 msgstr "您想初始化您的 iPod 吗？"
 
-#: plugins/ipod/ipod.plugin.desktop.in:5
+#: plugins/ipod/ipod.plugin.desktop.in:4
 msgid "Portable Players - iPod"
 msgstr "便携播放器 - iPod"
 
-#: plugins/ipod/ipod.plugin.desktop.in:6
+#: plugins/ipod/ipod.plugin.desktop.in:5
 msgid "Support for Apple iPod devices (show the content, play from device)"
 msgstr "支持苹果 iPod 设备（显示内容，从设备进行播放）"
 
-#: plugins/ipod/rb-ipod-source.c:317
+#: plugins/ipod/rb-ipod-source.c:323
 msgid "New playlist"
 msgstr "新建播放列表"
 
-#: plugins/ipod/rb-ipod-source.c:461
+#: plugins/ipod/rb-ipod-source.c:467
 msgid "Unable to initialize new iPod"
 msgstr "无法初始化新 iPod"
 
-#: plugins/ipod/rb-ipod-source.c:1492 podcast/rb-podcast-main-source.c:77
+#: plugins/ipod/rb-ipod-source.c:1502 podcast/rb-podcast-main-source.c:77
 #: sources/sync/rb-sync-settings-ui.c:263
 #: sources/sync/rb-sync-settings-ui.c:264 sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
 msgstr "播客"
 
-#: plugins/iradio/iradio.plugin.desktop.in:6
+#: plugins/iradio/iradio.plugin.desktop.in:5
 msgid "Internet Radio"
 msgstr "Internet 电台"
 
-#: plugins/iradio/iradio.plugin.desktop.in:7
+#: plugins/iradio/iradio.plugin.desktop.in:6
 msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "支持 Internet 上传送的广播服务"
 
@@ -2159,19 +2167,19 @@ msgstr "无法改变电台 URI 地址到 %s，因为该电台已经存在"
 msgid "L_ocation:"
 msgstr "位置(_O)："
 
-#: plugins/lirc/rblirc.plugin.desktop.in:5
+#: plugins/lirc/rblirc.plugin.desktop.in:4
 msgid "LIRC"
 msgstr "LIRC"
 
-#: plugins/lirc/rblirc.plugin.desktop.in:6
+#: plugins/lirc/rblirc.plugin.desktop.in:5
 msgid "Control Rhythmbox using an infrared remote control"
 msgstr "使用红外遥控器控制 Rhythmbox"
 
-#: plugins/listenbrainz/listenbrainz.plugin.desktop.in:7
+#: plugins/listenbrainz/listenbrainz.plugin.desktop.in:6
 msgid "ListenBrainz"
 msgstr "ListenBrainz"
 
-#: plugins/listenbrainz/listenbrainz.plugin.desktop.in:8
+#: plugins/listenbrainz/listenbrainz.plugin.desktop.in:7
 msgid "Submit your listens to ListenBrainz"
 msgstr "将您的收听记录提交到 ListenBrainz"
 
@@ -2182,8 +2190,8 @@ msgstr "用户令牌："
 #: plugins/listenbrainz/settings.ui:40
 msgid ""
 "To submit your listens to ListenBrainz, enter your ListenBrainz user token "
-"below. You can see your user token in your <a href=\"https://listenbrainz."
-"org/profile/\">user profile</a>."
+"below. You can see your user token in your <a href=\"https://"
+"listenbrainz.org/profile/\">user profile</a>."
 msgstr ""
 "要将您的收听记录提交到 ListenBrainz，请在下方输入您的 ListenBrainz 用户令牌。"
 "您可以在您的<a href=\"https://listenbrainz.org/profile/\">用户配置</a>中查看"
@@ -2193,11 +2201,11 @@ msgstr ""
 msgid "Choose lyrics folder..."
 msgstr "选择歌词文件夹…"
 
-#: plugins/lyrics/lyrics.plugin.desktop.in:7 plugins/lyrics/lyrics.py:414
+#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:414
 msgid "Song Lyrics"
 msgstr "歌词"
 
-#: plugins/lyrics/lyrics.plugin.desktop.in:8
+#: plugins/lyrics/lyrics.plugin.desktop.in:7
 msgid "Fetch song lyrics from the Internet"
 msgstr "从网络上获取歌词"
 
@@ -2230,23 +2238,21 @@ msgstr "再次搜索(_S)"
 msgid "Searching for lyrics..."
 msgstr "正在搜索歌词…"
 
-#. { 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
-#. { 'id': 'winampcn.com', 	'class': WinampcnParser, 	'name': _("WinampCN (www.winampcn.com)") 	},
-#: plugins/lyrics/LyricsSites.py:43
+#: plugins/lyrics/LyricsSites.py:39
+msgid "LRCLIB (lrclib.net)"
+msgstr "LRCLIB（lrclib.net）"
+
+#: plugins/lyrics/LyricsSites.py:40
 msgid "TerraBrasil (terra.com.br)"
 msgstr "TerraBrasil（terra.com.br）"
 
-#: plugins/lyrics/LyricsSites.py:44
+#: plugins/lyrics/LyricsSites.py:41
 msgid "Dark Lyrics (darklyrics.com)"
 msgstr "Dark Lyrics（darklyrics.com）"
 
-#: plugins/lyrics/LyricsSites.py:45
+#: plugins/lyrics/LyricsSites.py:42
 msgid "Jlyric (j-lyric.net)"
 msgstr "Jlyric（j-lyric.net）"
-
-#: plugins/lyrics/LyricsSites.py:46
-msgid "Jetlyrics (jetlyrics.com)"
-msgstr "Jetlyrics（jetlyrics.com）"
 
 #: plugins/magnatune/magnatune-loading.ui:35
 msgid "Magnatune online music store"
@@ -2298,11 +2304,11 @@ msgstr "下载专辑"
 msgid "Artist Info"
 msgstr "艺人信息"
 
-#: plugins/magnatune/magnatune.plugin.desktop.in:7
+#: plugins/magnatune/magnatune.plugin.desktop.in:6
 msgid "Magnatune Store"
 msgstr "Magnatune 商店"
 
-#: plugins/magnatune/magnatune.plugin.desktop.in:8
+#: plugins/magnatune/magnatune.plugin.desktop.in:7
 msgid ""
 "Adds support to Rhythmbox for playing and purchasing from the Magnatune "
 "online music store"
@@ -2536,39 +2542,39 @@ msgstr ""
 msgid "Downloading from Magnatune"
 msgstr "正在从 Magnatune 下载"
 
-#: plugins/mpris/mpris.plugin.desktop.in:6
+#: plugins/mpris/mpris.plugin.desktop.in:5
 msgid "MPRIS D-Bus interface"
 msgstr "MPRIS D-Bus 接口"
 
-#: plugins/mpris/mpris.plugin.desktop.in:7
+#: plugins/mpris/mpris.plugin.desktop.in:6
 msgid "Provides an implementation of the MPRIS D-Bus interface specification"
 msgstr "提供了 MPRIS D-Bus 接口规范的一个实现"
 
-#: plugins/mtpdevice/mtpdevice.plugin.desktop.in:5
+#: plugins/mtpdevice/mtpdevice.plugin.desktop.in:4
 msgid "Portable Players - MTP"
 msgstr "便携播放器 - MTP"
 
-#: plugins/mtpdevice/mtpdevice.plugin.desktop.in:6
+#: plugins/mtpdevice/mtpdevice.plugin.desktop.in:5
 msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr "支持 MTP 设备（显示内容，传输及从设备进行播放）"
 
-#: plugins/mtpdevice/rb-mtp-source.c:604
+#: plugins/mtpdevice/rb-mtp-source.c:610
 msgid "Media Player"
 msgstr "媒体播放器"
 
-#: plugins/mtpdevice/rb-mtp-source.c:884
+#: plugins/mtpdevice/rb-mtp-source.c:890
 msgid "Media player device error"
 msgstr "媒体播放设备出错"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: plugins/mtpdevice/rb-mtp-source.c:888
+#: plugins/mtpdevice/rb-mtp-source.c:894
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "无法打开 %s %s 设备"
 
-#: plugins/mtpdevice/rb-mtp-source.c:932
+#: plugins/mtpdevice/rb-mtp-source.c:938
 msgid "Digital Audio Player"
 msgstr "数码音乐播放器"
 
@@ -2598,11 +2604,11 @@ msgstr "MTP 设备上没有剩余的空间"
 msgid "Unable to send file to MTP device: %s"
 msgstr "无法发送文件到 MTP 设备： %s"
 
-#: plugins/notification/notification.plugin.desktop.in:5
+#: plugins/notification/notification.plugin.desktop.in:4
 msgid "Notification"
 msgstr "通知"
 
-#: plugins/notification/notification.plugin.desktop.in:6
+#: plugins/notification/notification.plugin.desktop.in:5
 msgid "Notification popups"
 msgstr "弹出通知"
 
@@ -2634,29 +2640,30 @@ msgstr "艺人 <i>%s</i>"
 msgid "from <i>%s</i>"
 msgstr "专辑 <i>%s</i>"
 
-#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:367
+#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:368
 msgid "Not Playing"
 msgstr "没有播放"
 
-#: plugins/power-manager/power-manager.plugin.desktop.in:6
+#: plugins/power-manager/power-manager.plugin.desktop.in:5
 msgid "Power Manager"
 msgstr "电源管理器"
 
-#: plugins/power-manager/power-manager.plugin.desktop.in:7
+#: plugins/power-manager/power-manager.plugin.desktop.in:6
 msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr "播放期间禁止电源管理器挂起机器"
 
 #: plugins/power-manager/rb-power-manager-plugin.c:93
 #: remote/dbus/rb-client.c:823 remote/dbus/rb-client.c:913
+#, c-format
 msgid "Playing"
 msgstr "播放中"
 
-#: plugins/pythonconsole/pythonconsole.plugin.desktop.in:6
+#: plugins/pythonconsole/pythonconsole.plugin.desktop.in:5
 #: plugins/pythonconsole/pythonconsole.py:81
 msgid "Python Console"
 msgstr "Python 终端"
 
-#: plugins/pythonconsole/pythonconsole.plugin.desktop.in:7
+#: plugins/pythonconsole/pythonconsole.plugin.desktop.in:6
 msgid "Interactive python console"
 msgstr "交互式 python 控制台"
 
@@ -2704,11 +2711,11 @@ msgid ""
 "Rhythmbox to enable debugging with %s."
 msgstr "Python 模块 %s 不可用。安装该模块后重启 Rhythmbox 以使用 %s 启用调试。"
 
-#: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:7
+#: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:6
 msgid "Zeitgeist"
 msgstr "Zeitgeist"
 
-#: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:8
+#: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:7
 msgid "Inform Zeitgeist about your activity"
 msgstr "向 Zeitgeist 报告您的活动"
 
@@ -2735,11 +2742,11 @@ msgstr "回放增益处理要求的 GStreamer 元素不可用。丢失的元素�
 msgid "ReplayGain GStreamer plugins not available"
 msgstr "回放增益 GStreamer 插件不可用"
 
-#: plugins/replaygain/replaygain.plugin.desktop.in:7
+#: plugins/replaygain/replaygain.plugin.desktop.in:6
 msgid "ReplayGain"
 msgstr "回放增益"
 
-#: plugins/replaygain/replaygain.plugin.desktop.in:8
+#: plugins/replaygain/replaygain.plugin.desktop.in:7
 msgid "Use ReplayGain to provide a consistent playback volume"
 msgstr "使用回放增益提供一致的播放音量"
 
@@ -2787,11 +2794,11 @@ msgstr "密码："
 msgid "0"
 msgstr "0"
 
-#: plugins/webremote/webremote.plugin.desktop.in:6
+#: plugins/webremote/webremote.plugin.desktop.in:5
 msgid "Web remote control"
 msgstr "Web 远程控制"
 
-#: plugins/webremote/webremote.plugin.desktop.in:7
+#: plugins/webremote/webremote.plugin.desktop.in:6
 msgid "Control Rhythmbox from a web browser"
 msgstr "从 Web 浏览器控制 Rhythmbox"
 
@@ -2869,7 +2876,7 @@ msgstr "%s。您真的想添加这个播客订阅源吗？"
 msgid "New updates available from"
 msgstr "新更新可用在"
 
-#: podcast/rb-podcast-manager.c:802
+#: podcast/rb-podcast-manager.c:808
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2880,18 +2887,18 @@ msgstr ""
 "Rhythmbox 无论如何都试着使用它吗？"
 
 #. added as something else, probably iradio
-#: podcast/rb-podcast-manager.c:857
+#: podcast/rb-podcast-manager.c:863
 msgid "URL already added"
 msgstr "URL 已添加过"
 
-#: podcast/rb-podcast-manager.c:858
+#: podcast/rb-podcast-manager.c:864
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
 "podcast feed, please remove the radio station."
 msgstr "URL “%s” 已添加为电台，如果这是个播客订阅源，请删除原电台。"
 
-#: podcast/rb-podcast-manager.c:942
+#: podcast/rb-podcast-manager.c:948
 msgid "Podcast"
 msgstr "播客"
 
@@ -3046,7 +3053,7 @@ msgstr "如果正在播放中则暂停回放"
 msgid "Toggle play/pause mode"
 msgstr "切换播放/暂停模式"
 
-#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2249
+#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2255
 msgid "Stop playback"
 msgstr "停止回放"
 
@@ -3174,6 +3181,7 @@ msgstr "q - 退出"
 
 #: remote/dbus/rb-client.c:549 remote/dbus/rb-client.c:575
 #: remote/dbus/rb-client.c:800 remote/dbus/rb-client.c:884
+#, c-format
 msgid "Not playing"
 msgstr "没有播放"
 
@@ -3198,6 +3206,7 @@ msgid "[%te of %td]"
 msgstr "[%te/%td]"
 
 #: remote/dbus/rb-client.c:823 remote/dbus/rb-client.c:915
+#, c-format
 msgid "Paused"
 msgstr "已暂停"
 
@@ -3223,6 +3232,7 @@ msgstr "现在音量是%.02f"
 
 #. should print this before dbus setup, really
 #: remote/dbus/rb-client.c:965
+#, c-format
 msgid "Press 'h' for help."
 msgstr "按 “h” 键获取帮助。"
 
@@ -3231,7 +3241,7 @@ msgstr "按 “h” 键获取帮助。"
 msgid "Playback volume is %f.\n"
 msgstr "播放音量是 %f。\n"
 
-#: rhythmdb/rhythmdb.c:790
+#: rhythmdb/rhythmdb.c:789
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "无法访问 %s：%s"
@@ -3241,7 +3251,7 @@ msgstr "无法访问 %s：%s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: rhythmdb/rhythmdb.c:1846
+#: rhythmdb/rhythmdb.c:1837
 msgid "The Beatles"
 msgstr "甲壳虫乐队"
 
@@ -3249,7 +3259,7 @@ msgstr "甲壳虫乐队"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: rhythmdb/rhythmdb.c:1852
+#: rhythmdb/rhythmdb.c:1843
 msgid "Help!"
 msgstr "Help!"
 
@@ -3257,51 +3267,51 @@ msgstr "Help!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: rhythmdb/rhythmdb.c:1858
+#: rhythmdb/rhythmdb.c:1849
 msgid "Ticket To Ride"
 msgstr "Ticket To Ride"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: rhythmdb/rhythmdb.c:2403
+#: rhythmdb/rhythmdb.c:2394
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "播放该文件需要附加 GStreamer 插件：%s"
 
-#: rhythmdb/rhythmdb.c:2435
+#: rhythmdb/rhythmdb.c:2426
 msgid "invalid unicode in error message"
 msgstr "错误信息中含有无效的 unicode"
 
-#: rhythmdb/rhythmdb.c:2558
+#: rhythmdb/rhythmdb.c:2549
 #, c-format
 msgid "Empty file"
 msgstr "空文件"
 
-#: rhythmdb/rhythmdb.c:3267
+#: rhythmdb/rhythmdb.c:3258
 msgid "Could not load the music database:"
 msgstr "无法载入音乐数据库："
 
-#: rhythmdb/rhythmdb.c:4704
+#: rhythmdb/rhythmdb.c:4697
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld 分钟"
 
-#: rhythmdb/rhythmdb.c:4705
+#: rhythmdb/rhythmdb.c:4698
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld 小时"
 
-#: rhythmdb/rhythmdb.c:4706
+#: rhythmdb/rhythmdb.c:4699
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld 天"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4712
+#: rhythmdb/rhythmdb.c:4705
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s %s %s"
@@ -3309,7 +3319,7 @@ msgstr "%s %s %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4718 rhythmdb/rhythmdb.c:4726 rhythmdb/rhythmdb.c:4737
+#: rhythmdb/rhythmdb.c:4711 rhythmdb/rhythmdb.c:4719 rhythmdb/rhythmdb.c:4730
 #, c-format
 msgid "%s and %s"
 msgstr "%s %s"
@@ -3335,11 +3345,11 @@ msgid ""
 msgstr ""
 "该数据库由较新版本的 Rhythmbox 创建。本版本的 Rhythmbox 无法读取该数据库。"
 
-#: sample-plugins/sample-python/sample-python.plugin.desktop.in:6
+#: sample-plugins/sample-python/sample-python.plugin.desktop.in:5
 msgid "Python Sample Plugin"
 msgstr "Python 示例插件"
 
-#: sample-plugins/sample-python/sample-python.plugin.desktop.in:7
+#: sample-plugins/sample-python/sample-python.plugin.desktop.in:6
 msgid "A sample plugin in Python with no features"
 msgstr "一个无功能的 Python 语言写的示例插件"
 
@@ -3349,19 +3359,19 @@ msgstr "Python 源"
 
 #: sample-plugins/sample/rb-sample-plugin.c:80
 #: sample-plugins/sample/rb-sample-plugin.c:87
-#: sample-plugins/sample/sample.plugin.desktop.in:5
+#: sample-plugins/sample/sample.plugin.desktop.in:4
 msgid "Sample Plugin"
 msgstr "插件示例"
 
-#: sample-plugins/sample/sample.plugin.desktop.in:6
+#: sample-plugins/sample/sample.plugin.desktop.in:5
 msgid "A sample plugin in C with no features"
 msgstr "一个无功能的 C 语言写的示例插件"
 
-#: sample-plugins/sample-vala/sample-vala.plugin.desktop.in:5
+#: sample-plugins/sample-vala/sample-vala.plugin.desktop.in:4
 msgid "Vala Sample Plugin"
 msgstr "Vala 示例插件"
 
-#: sample-plugins/sample-vala/sample-vala.plugin.desktop.in:6
+#: sample-plugins/sample-vala/sample-vala.plugin.desktop.in:5
 msgid "A sample plugin in Vala with no features"
 msgstr "一个无功能的 Vala 语言写的示例插件"
 
@@ -3584,45 +3594,45 @@ msgstr "未知播放列表：%s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "播放列表 %s 是自动播放列表"
 
-#: shell/rb-shell.c:2042
+#: shell/rb-shell.c:2048
 msgid "Error while saving song information"
 msgstr "保存曲目信息时出错"
 
-#: shell/rb-shell.c:2246
+#: shell/rb-shell.c:2252
 msgid "Pause playback"
 msgstr "暂停播放"
 
-#: shell/rb-shell.c:2253
+#: shell/rb-shell.c:2259
 msgid "Start playback"
 msgstr "开始回放"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:2363
+#: shell/rb-shell.c:2369
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s（已暂停）"
 
-#: shell/rb-shell.c:2705 sources/rb-play-queue-source.c:673
+#: shell/rb-shell.c:2711 sources/rb-play-queue-source.c:673
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "没有已注册源能够处理 URI %s"
 
-#: shell/rb-shell.c:3029
+#: shell/rb-shell.c:3035
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "没有已注册源能够匹配 URI %s"
 
-#: shell/rb-shell.c:3062 shell/rb-shell.c:3105
+#: shell/rb-shell.c:3068 shell/rb-shell.c:3111
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "未知的曲目 URI：%s"
 
-#: shell/rb-shell.c:3114
+#: shell/rb-shell.c:3120
 #, c-format
 msgid "Unknown property %s"
 msgstr "未知属性 %s"
 
-#: shell/rb-shell.c:3128
+#: shell/rb-shell.c:3134
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "无效的属性类型 %s 为属性 %s"
@@ -3987,11 +3997,11 @@ msgid "Play Queue"
 msgstr "播放队列"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:929
+#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:932
 msgid "by"
 msgstr "艺人"
 
-#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:930
+#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:933
 msgid "from"
 msgstr "专辑"
 
@@ -4160,13 +4170,13 @@ msgid "Drop artwork here"
 msgstr "将专辑封面拖到此处"
 
 #. Translators: remaining time / total time
-#: widgets/rb-header.c:1219
+#: widgets/rb-header.c:1222
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: widgets/rb-header.c:1230
+#: widgets/rb-header.c:1233
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
@@ -4590,6 +4600,9 @@ msgstr "位于桌面"
 #: widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "未知位置"
+
+#~ msgid "Jetlyrics (jetlyrics.com)"
+#~ msgstr "Jetlyrics（jetlyrics.com）"
 
 #~| msgid "Rhythmbox"
 #~ msgid "org.gnome.Rhythmbox3"
