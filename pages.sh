@@ -24,7 +24,7 @@ done
 python3 ../pages.py .. NEWS ../third-party-plugins $HTML
 
 # get last tagged version
-LATEST_TAG=$( git show-ref --tags | tail -1 | sed 's/^.*\///' )
+LATEST_TAG=$( git show-ref --tags | grep tags/[0-9] | tail -1 | sed 's/^.*\///' )
 echo "latest tag $LATEST_TAG"
 
 curl --output apidoc.zip https://gitlab.gnome.org/api/v4/projects/$PROJECT_ID/jobs/artifacts/$LATEST_TAG/download?job=$CI_JOB
