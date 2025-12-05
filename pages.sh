@@ -29,6 +29,6 @@ echo "latest tag $LATEST_TAG"
 
 curl --output apidoc.zip https://gitlab.gnome.org/api/v4/projects/$PROJECT_ID/jobs/artifacts/$LATEST_TAG/download?job=$CI_JOB
 unzip apidoc.zip
-mv _build/doc/apidoc .
+mv _build/doc/rhythmbox apidoc
 rm -r _build
 rm apidoc.zip
