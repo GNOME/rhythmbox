@@ -1,17 +1,17 @@
 # Swedish messages for rhythmbox.
-# Copyright © 2002-2024 Free Software Foundation, Inc.
+# Copyright © 2002-2025 Free Software Foundation, Inc.
 # Fredrik Tuomas <fredrik@jpl.se>, 2005, 2006, 2007.
 # Christian Rose <menthos@menthos.com>, 2002, 2003, 2004.
 # Daniel Nylander <po@danielnylander.se>, 2006, 2007, 2008, 2009, 2010, 2011, 2012.
-# Anders Jonsson <anders.jonsson@norsjovallen.se>, 2014, 2015, 2016, 2018, 2019, 2020, 2021, 2022, 2024.
+# Anders Jonsson <anders.jonsson@norsjovallen.se>, 2014, 2015, 2016, 2018, 2019, 2020, 2021, 2022, 2024, 2025.
 # Luna Jernberg <droidbittin@gmail.com>, 2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2024-07-01 19:02+0000\n"
-"PO-Revision-Date: 2024-07-01 21:05+0200\n"
+"POT-Creation-Date: 2025-12-02 22:30+0000\n"
+"PO-Revision-Date: 2025-12-02 23:43+0100\n"
 "Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.4.2\n"
+"X-Generator: Poedit 3.8\n"
 
 #: backends/gstreamer/rb-encoder-gst.c:652
 #, c-format
@@ -35,6 +35,7 @@ msgstr "Kunde inte skapa ett GStreamer-sinkelement för att skriva till %s"
 #. ?
 #. Translators: the parameter here is an error message
 #: backends/gstreamer/rb-player-gst.c:520
+#: backends/gstreamer/rb-player-gst-multi.c:784
 #: backends/gstreamer/rb-player-gst-xfade.c:3034
 #, c-format
 msgid "Failed to open output device: %s"
@@ -48,6 +49,12 @@ msgstr ""
 "installation"
 
 #: backends/gstreamer/rb-player-gst.c:700
+#: backends/gstreamer/rb-player-gst-multi.c:1040
+#: backends/gstreamer/rb-player-gst-multi.c:1050
+#: backends/gstreamer/rb-player-gst-multi.c:1081
+#: backends/gstreamer/rb-player-gst-multi.c:1095
+#: backends/gstreamer/rb-player-gst-multi.c:1105
+#: backends/gstreamer/rb-player-gst-multi.c:1115
 #, c-format
 msgid "Failed to create %s element; check your GStreamer installation"
 msgstr ""
@@ -112,9 +119,9 @@ msgid "My Top Rated"
 msgstr "Mina högst rankade"
 
 #: data/org.gnome.Rhythmbox3.appdata.xml.in:8
-#: data/org.gnome.Rhythmbox3.desktop.in:3
-#: data/org.gnome.Rhythmbox3.device.desktop.in:3 shell/main.c:73
-#: shell/rb-shell.c:501 shell/rb-shell.c:2343
+#: data/org.gnome.Rhythmbox3.desktop.in:2
+#: data/org.gnome.Rhythmbox3.device.desktop.in:2 shell/main.c:72
+#: shell/rb-shell.c:507 shell/rb-shell.c:2349
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -151,22 +158,22 @@ msgstr ""
 msgid "Main Window"
 msgstr "Huvudfönster"
 
-#: data/org.gnome.Rhythmbox3.desktop.in:4
-#: data/org.gnome.Rhythmbox3.device.desktop.in:4
+#: data/org.gnome.Rhythmbox3.desktop.in:3
+#: data/org.gnome.Rhythmbox3.device.desktop.in:3
 msgid "Music Player"
 msgstr "Musikspelare"
 
-#: data/org.gnome.Rhythmbox3.desktop.in:5
-#: data/org.gnome.Rhythmbox3.device.desktop.in:5
+#: data/org.gnome.Rhythmbox3.desktop.in:4
+#: data/org.gnome.Rhythmbox3.device.desktop.in:4
 msgid "Rhythmbox Music Player"
 msgstr "Rhythmbox musikspelare"
 
-#: data/org.gnome.Rhythmbox3.desktop.in:6
-#: data/org.gnome.Rhythmbox3.device.desktop.in:6
+#: data/org.gnome.Rhythmbox3.desktop.in:5
+#: data/org.gnome.Rhythmbox3.device.desktop.in:5
 msgid "Play and organize your music collection"
 msgstr "Spela och organisera din musiksamling"
 
-#: data/org.gnome.Rhythmbox3.desktop.in:7
+#: data/org.gnome.Rhythmbox3.desktop.in:6
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr "Ljud;Låt;MP3;CD;Podcast;MTP;iPod;Spellista;Last.fm;UPnP;DLNA;Radio;"
 
@@ -924,7 +931,7 @@ msgstr "Borttagna filer:"
 
 #: lib/rb-cut-and-paste-code.c:94
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:235
-#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3850
+#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3843
 #: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1574
 #: widgets/rb-entry-view.c:1588 widgets/rb-song-info.c:1545
 msgid "Never"
@@ -970,7 +977,7 @@ msgstr "%d %b %Y"
 #. don't search for 'unknown' when we don't have the artist or title information
 #. Translators: unknown track title
 #: lib/rb-cut-and-paste-code.c:158 lib/rb-util.c:581
-#: plugins/android/rb-android-source.c:727 plugins/artsearch/lastfm.py:163
+#: plugins/android/rb-android-source.c:732 plugins/artsearch/lastfm.py:163
 #: plugins/artsearch/lastfm.py:164 plugins/artsearch/songinfo.py:93
 #: plugins/audiocd/rb-audiocd-source.c:526
 #: plugins/audioscrobbler/rb-audioscrobbler.c:596
@@ -978,30 +985,31 @@ msgstr "%d %b %Y"
 #: plugins/audioscrobbler/rb-audioscrobbler-entry.c:92
 #: plugins/audioscrobbler/rb-audioscrobbler-entry.c:99
 #: plugins/daap/rb-rhythmdb-dmap-db-adapter.c:130
-#: plugins/generic-player/rb-generic-player-source.c:1031
-#: plugins/ipod/rb-ipod-source.c:651 plugins/iradio/rb-iradio-source.c:525
+#: plugins/generic-player/rb-generic-player-source.c:1032
+#: plugins/ipod/rb-ipod-source.c:661 plugins/iradio/rb-iradio-source.c:525
 #: plugins/iradio/rb-iradio-source.c:1030
 #: plugins/iradio/rb-station-properties-dialog.c:485
 #: plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
-#: plugins/mtpdevice/rb-mtp-source.c:650 plugins/mtpdevice/rb-mtp-source.c:1140
-#: plugins/mtpdevice/rb-mtp-source.c:1471
+#: plugins/mtpdevice/rb-mtp-source.c:656 plugins/mtpdevice/rb-mtp-source.c:1146
+#: plugins/mtpdevice/rb-mtp-source.c:1477
 #: plugins/notification/rb-notification-plugin.c:509
 #: podcast/rb-feed-podcast-properties-dialog.c:335
-#: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1326
-#: podcast/rb-podcast-manager.c:1440 podcast/rb-podcast-properties-dialog.c:636
+#: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1332
+#: podcast/rb-podcast-manager.c:1446 podcast/rb-podcast-properties-dialog.c:636
 #: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:797
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
-#: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
-#: rhythmdb/rhythmdb.c:2150 rhythmdb/rhythmdb.c:5616 rhythmdb/rhythmdb.c:5622
-#: rhythmdb/rhythmdb.c:5627 rhythmdb/rhythmdb.c:5638 rhythmdb/rhythmdb.c:5642
-#: rhythmdb/rhythmdb-entry-type.c:301 rhythmdb/rhythmdb-metadata-cache.c:308
+#: rhythmdb/rhythmdb.c:2086 rhythmdb/rhythmdb.c:2092 rhythmdb/rhythmdb.c:2107
+#: rhythmdb/rhythmdb.c:2141 rhythmdb/rhythmdb-entry-type.c:303
+#: rhythmdb/rhythmdb-entry-type.c:381 rhythmdb/rhythmdb-entry-type.c:387
+#: rhythmdb/rhythmdb-entry-type.c:392 rhythmdb/rhythmdb-entry-type.c:403
+#: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:308
 #: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
 #: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
 #: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
 #: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
 #: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
 #: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
-#: widgets/rb-header.c:1279 widgets/rb-header.c:1305 widgets/rb-song-info.c:950
+#: widgets/rb-header.c:1282 widgets/rb-header.c:1308 widgets/rb-song-info.c:950
 #: widgets/rb-song-info.c:962 widgets/rb-song-info.c:1234
 #: widgets/rb-song-info.c:1572
 msgid "Unknown"
@@ -1091,11 +1099,11 @@ msgstr ""
 msgid "File corrupted during write"
 msgstr "Filen förstörd under skrivning"
 
-#: plugins/android/android.plugin.desktop.in:6
+#: plugins/android/android.plugin.desktop.in:5
 msgid "Android devices"
 msgstr "Android-enheter"
 
-#: plugins/android/android.plugin.desktop.in:7
+#: plugins/android/android.plugin.desktop.in:6
 msgid "Support for Android 4.0+ devices (via MTP)"
 msgstr "Stöd för Android 4.0+-enheter (via MTP)"
 
@@ -1155,21 +1163,21 @@ msgstr ""
 "Inga lagringsområden hittades på denna enhet. Du kan behöva låsa upp den och "
 "ändra den till filöverföringsläge."
 
-#: plugins/android/rb-android-source.c:403
-#: plugins/generic-player/rb-generic-player-source.c:563
+#: plugins/android/rb-android-source.c:406
+#: plugins/generic-player/rb-generic-player-source.c:564
 #, c-format
 msgid "Scanning %s"
 msgstr "Söker igenom %s"
 
-#: plugins/android/rb-android-source.c:426
+#: plugins/android/rb-android-source.c:429
 msgid "Error mounting Android device"
 msgstr "Fel vid montering av Android-enhet"
 
-#: plugins/artsearch/artsearch.plugin.desktop.in:7
+#: plugins/artsearch/artsearch.plugin.desktop.in:6
 msgid "Cover art search"
 msgstr "Sök efter omslagsgrafik"
 
-#: plugins/artsearch/artsearch.plugin.desktop.in:8
+#: plugins/artsearch/artsearch.plugin.desktop.in:7
 msgid "Fetch album covers from the Internet"
 msgstr "Hämta omslagsgrafik från internet"
 
@@ -1201,11 +1209,11 @@ msgstr "S_orteringsordning för artist:"
 msgid "_Disc:"
 msgstr "_Skiva:"
 
-#: plugins/audiocd/audiocd.plugin.desktop.in:6
+#: plugins/audiocd/audiocd.plugin.desktop.in:5
 msgid "Audio CD Player"
 msgstr "Ljud-cdspelare"
 
-#: plugins/audiocd/audiocd.plugin.desktop.in:7
+#: plugins/audiocd/audiocd.plugin.desktop.in:6
 msgid "Support for playing of audio CDs as music source"
 msgstr "Stöd för att spela ljud-cd som musikkälla"
 
@@ -1288,12 +1296,12 @@ msgstr "Hittades inte"
 msgid "Musicbrainz server error"
 msgstr "Serverfel för Musicbrainz"
 
-#: plugins/audioscrobbler/audioscrobbler.plugin.desktop.in:5
+#: plugins/audioscrobbler/audioscrobbler.plugin.desktop.in:4
 #: plugins/audioscrobbler/audioscrobbler-preferences.ui:57
 msgid "Last.fm"
 msgstr "Last.fm"
 
-#: plugins/audioscrobbler/audioscrobbler.plugin.desktop.in:6
+#: plugins/audioscrobbler/audioscrobbler.plugin.desktop.in:5
 msgid "Submits song information to Last.fm and plays Last.fm radio streams"
 msgstr ""
 "Skickar in låtinformation till Last.fm och spelar radioströmmar från Last.fm"
@@ -1641,11 +1649,11 @@ msgstr "Fel när stationen rattades in: oväntat svar"
 msgid "Error tuning station: invalid response"
 msgstr "Fel när stationen rattades in: ogiltigt svar"
 
-#: plugins/brasero-disc-recorder/cd-recorder.plugin.desktop.in:5
+#: plugins/brasero-disc-recorder/cd-recorder.plugin.desktop.in:4
 msgid "Audio CD Recorder"
 msgstr "Ljud-cd-inspelare"
 
-#: plugins/brasero-disc-recorder/cd-recorder.plugin.desktop.in:6
+#: plugins/brasero-disc-recorder/cd-recorder.plugin.desktop.in:5
 msgid "Record audio CDs from playlists and duplicate audio CDs"
 msgstr "Spela in ljud-cd-skivor från spellistor och kopiera ljud-cd-skivor"
 
@@ -1708,12 +1716,12 @@ msgstr "Artist"
 msgid "Loading biography for %s"
 msgstr "Läser biografi för %s"
 
-#: plugins/context/context.plugin.desktop.in:7
+#: plugins/context/context.plugin.desktop.in:6
 #: plugins/context/ContextView.py:90
 msgid "Context Pane"
 msgstr "Sammanhangspanel"
 
-#: plugins/context/context.plugin.desktop.in:8
+#: plugins/context/context.plugin.desktop.in:7
 msgid "Show information related to the currently playing artist and song."
 msgstr "Visa information relaterad till den låt och artist som spelas upp."
 
@@ -1785,11 +1793,11 @@ msgstr "Ingen information tillgänglig"
 msgid "Unable to retrieve artist information:"
 msgstr "Kunde inte hämta artistinformation:"
 
-#: plugins/daap/daap.plugin.desktop.in:5
+#: plugins/daap/daap.plugin.desktop.in:4
 msgid "DAAP Music Sharing"
 msgstr "DAAP-musikutdelning"
 
-#: plugins/daap/daap.plugin.desktop.in:6
+#: plugins/daap/daap.plugin.desktop.in:5
 msgid "Share music and play shared music on your local network"
 msgstr "Dela ut musik och spela utdelad musik på ditt lokala nätverk"
 
@@ -1883,11 +1891,11 @@ msgstr "Kunde inte para ihop med denna fjärrkontroll."
 msgid "Remotes"
 msgstr "Fjärrkontroller"
 
-#: plugins/dbus-media-server/dbus-media-server.plugin.desktop.in:5
+#: plugins/dbus-media-server/dbus-media-server.plugin.desktop.in:4
 msgid "MediaServer2 D-Bus interface"
 msgstr "D-Bus-gränssnitt för MediaServer2"
 
-#: plugins/dbus-media-server/dbus-media-server.plugin.desktop.in:6
+#: plugins/dbus-media-server/dbus-media-server.plugin.desktop.in:5
 msgid ""
 "Provides an implementation of the MediaServer2 D-Bus interface specification"
 msgstr ""
@@ -1912,12 +1920,12 @@ msgstr "Genrer"
 msgid "Playlists"
 msgstr "Spellistor"
 
-#: plugins/fmradio/fmradio.plugin.desktop.in:5
+#: plugins/fmradio/fmradio.plugin.desktop.in:4
 #: plugins/fmradio/rb-fm-radio-source.c:243
 msgid "FM Radio"
 msgstr "FM-radio"
 
-#: plugins/fmradio/fmradio.plugin.desktop.in:6
+#: plugins/fmradio/fmradio.plugin.desktop.in:5
 msgid "Support for FM radio broadcasting services"
 msgstr "Stöd för FM-radiosändningar"
 
@@ -1933,16 +1941,16 @@ msgstr "Ny FM-radiokanal"
 msgid "Frequency of radio station"
 msgstr "Frekvens för radiokanal"
 
-#: plugins/generic-player/generic-player.plugin.desktop.in:6
+#: plugins/generic-player/generic-player.plugin.desktop.in:5
 msgid "Portable Players"
 msgstr "Bärbara spelare"
 
-#: plugins/generic-player/generic-player.plugin.desktop.in:7
+#: plugins/generic-player/generic-player.plugin.desktop.in:6
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
 msgstr "Stöd för generiska ljudspelarenheter (plus PSP och Nokia 770)"
 
 #: plugins/generic-player/rb-generic-player-source.c:292
-#: plugins/ipod/rb-ipod-source.c:333
+#: plugins/ipod/rb-ipod-source.c:339
 #, c-format
 msgid "New Playlist on %s"
 msgstr "Ny spellista på %s"
@@ -1952,16 +1960,16 @@ msgstr "Ny spellista på %s"
 msgid "Add to New Playlist"
 msgstr "Lägg till i ny spellista"
 
-#: plugins/generic-player/rb-generic-player-source.c:1368
-#: plugins/ipod/rb-ipod-source.c:2045 plugins/mtpdevice/rb-mtp-source.c:1551
+#: plugins/generic-player/rb-generic-player-source.c:1369
+#: plugins/ipod/rb-ipod-source.c:2056 plugins/mtpdevice/rb-mtp-source.c:1557
 msgid "Advanced"
 msgstr "Avancerat"
 
-#: plugins/grilo/grilo.plugin.desktop.in:5
+#: plugins/grilo/grilo.plugin.desktop.in:4
 msgid "Grilo media browser"
 msgstr "Mediabläddraren Grilo"
 
-#: plugins/grilo/grilo.plugin.desktop.in:6
+#: plugins/grilo/grilo.plugin.desktop.in:5
 msgid "Browse various local and Internet media sources"
 msgstr "Bläddra i olika lokala mediakällor samt på internet"
 
@@ -1976,11 +1984,11 @@ msgid_plural "Only showing %d results"
 msgstr[0] "Visar endast %d resultat"
 msgstr[1] "Visar endast %d resultat"
 
-#: plugins/im-status/im-status.plugin.desktop.in:7
+#: plugins/im-status/im-status.plugin.desktop.in:6
 msgid "IM Status"
 msgstr "IM-status"
 
-#: plugins/im-status/im-status.plugin.desktop.in:8
+#: plugins/im-status/im-status.plugin.desktop.in:7
 msgid ""
 "Updates IM status according to the current song (works with Empathy and "
 "Pidgin)"
@@ -2080,33 +2088,33 @@ msgstr ""
 msgid "Do you want to initialize your iPod?"
 msgstr "Vill du initiera din iPod?"
 
-#: plugins/ipod/ipod.plugin.desktop.in:5
+#: plugins/ipod/ipod.plugin.desktop.in:4
 msgid "Portable Players - iPod"
 msgstr "Bärbara spelare - iPod"
 
-#: plugins/ipod/ipod.plugin.desktop.in:6
+#: plugins/ipod/ipod.plugin.desktop.in:5
 msgid "Support for Apple iPod devices (show the content, play from device)"
 msgstr "Stöd för Apple iPod-enheter (visa innehållet, spela från enhet)"
 
-#: plugins/ipod/rb-ipod-source.c:317
+#: plugins/ipod/rb-ipod-source.c:323
 msgid "New playlist"
 msgstr "Ny spellista"
 
-#: plugins/ipod/rb-ipod-source.c:461
+#: plugins/ipod/rb-ipod-source.c:467
 msgid "Unable to initialize new iPod"
 msgstr "Kunde inte initiera ny iPod"
 
-#: plugins/ipod/rb-ipod-source.c:1492 podcast/rb-podcast-main-source.c:77
+#: plugins/ipod/rb-ipod-source.c:1502 podcast/rb-podcast-main-source.c:77
 #: sources/sync/rb-sync-settings-ui.c:263
 #: sources/sync/rb-sync-settings-ui.c:264 sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
 msgstr "Poddsändningar"
 
-#: plugins/iradio/iradio.plugin.desktop.in:6
+#: plugins/iradio/iradio.plugin.desktop.in:5
 msgid "Internet Radio"
 msgstr "Internetradio"
 
-#: plugins/iradio/iradio.plugin.desktop.in:7
+#: plugins/iradio/iradio.plugin.desktop.in:6
 msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "Stöd för sändningar överförda via internet"
 
@@ -2174,19 +2182,19 @@ msgstr ""
 msgid "L_ocation:"
 msgstr "P_lats:"
 
-#: plugins/lirc/rblirc.plugin.desktop.in:5
+#: plugins/lirc/rblirc.plugin.desktop.in:4
 msgid "LIRC"
 msgstr "LIRC"
 
-#: plugins/lirc/rblirc.plugin.desktop.in:6
+#: plugins/lirc/rblirc.plugin.desktop.in:5
 msgid "Control Rhythmbox using an infrared remote control"
 msgstr "Styr Rhythmbox med en infraröd fjärrkontroll"
 
-#: plugins/listenbrainz/listenbrainz.plugin.desktop.in:7
+#: plugins/listenbrainz/listenbrainz.plugin.desktop.in:6
 msgid "ListenBrainz"
 msgstr "ListenBrainz"
 
-#: plugins/listenbrainz/listenbrainz.plugin.desktop.in:8
+#: plugins/listenbrainz/listenbrainz.plugin.desktop.in:7
 msgid "Submit your listens to ListenBrainz"
 msgstr "Skicka in dina lyssningar till ListenBrainz"
 
@@ -2197,8 +2205,8 @@ msgstr "Användartoken:"
 #: plugins/listenbrainz/settings.ui:40
 msgid ""
 "To submit your listens to ListenBrainz, enter your ListenBrainz user token "
-"below. You can see your user token in your <a href=\"https://listenbrainz."
-"org/profile/\">user profile</a>."
+"below. You can see your user token in your <a href=\"https://"
+"listenbrainz.org/profile/\">user profile</a>."
 msgstr ""
 "För att skicka in dina lyssningar till ListenBrainz anger du din "
 "användartoken för ListenBrainz nedan. Du kan se din användartoken i din <a "
@@ -2208,11 +2216,11 @@ msgstr ""
 msgid "Choose lyrics folder..."
 msgstr "Välj låttextmapp…"
 
-#: plugins/lyrics/lyrics.plugin.desktop.in:7 plugins/lyrics/lyrics.py:414
+#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:414
 msgid "Song Lyrics"
 msgstr "Låttexter"
 
-#: plugins/lyrics/lyrics.plugin.desktop.in:8
+#: plugins/lyrics/lyrics.plugin.desktop.in:7
 msgid "Fetch song lyrics from the Internet"
 msgstr "Hämta låttexter från internet"
 
@@ -2245,23 +2253,21 @@ msgstr "_Sök igen"
 msgid "Searching for lyrics..."
 msgstr "Söker efter låttext…"
 
-#. { 'id': 'astraweb.com', 	'class': AstrawebParser, 	'name': _("Astraweb (www.astraweb.com)") 	},
-#. { 'id': 'winampcn.com', 	'class': WinampcnParser, 	'name': _("WinampCN (www.winampcn.com)") 	},
-#: plugins/lyrics/LyricsSites.py:43
+#: plugins/lyrics/LyricsSites.py:39
+msgid "LRCLIB (lrclib.net)"
+msgstr "LRCLIB (lrclib.net)"
+
+#: plugins/lyrics/LyricsSites.py:40
 msgid "TerraBrasil (terra.com.br)"
 msgstr "TerraBrasil (terra.com.br)"
 
-#: plugins/lyrics/LyricsSites.py:44
+#: plugins/lyrics/LyricsSites.py:41
 msgid "Dark Lyrics (darklyrics.com)"
 msgstr "Dark Lyrics (darklyrics.com)"
 
-#: plugins/lyrics/LyricsSites.py:45
+#: plugins/lyrics/LyricsSites.py:42
 msgid "Jlyric (j-lyric.net)"
 msgstr "Jlyric (j-lyric.net)"
-
-#: plugins/lyrics/LyricsSites.py:46
-msgid "Jetlyrics (jetlyrics.com)"
-msgstr "Jetlyrics (jetlyrics.com)"
 
 #: plugins/magnatune/magnatune-loading.ui:35
 msgid "Magnatune online music store"
@@ -2320,11 +2326,11 @@ msgstr "Hämta album"
 msgid "Artist Info"
 msgstr "Artistinformation"
 
-#: plugins/magnatune/magnatune.plugin.desktop.in:7
+#: plugins/magnatune/magnatune.plugin.desktop.in:6
 msgid "Magnatune Store"
 msgstr "Magnatune-butik"
 
-#: plugins/magnatune/magnatune.plugin.desktop.in:8
+#: plugins/magnatune/magnatune.plugin.desktop.in:7
 msgid ""
 "Adds support to Rhythmbox for playing and purchasing from the Magnatune "
 "online music store"
@@ -2561,41 +2567,41 @@ msgstr ""
 msgid "Downloading from Magnatune"
 msgstr "Hämtar från Magnatune"
 
-#: plugins/mpris/mpris.plugin.desktop.in:6
+#: plugins/mpris/mpris.plugin.desktop.in:5
 msgid "MPRIS D-Bus interface"
 msgstr "D-Bus-gränssnitt för MPRIS"
 
-#: plugins/mpris/mpris.plugin.desktop.in:7
+#: plugins/mpris/mpris.plugin.desktop.in:6
 msgid "Provides an implementation of the MPRIS D-Bus interface specification"
 msgstr ""
 "Tillhandahåller en implementation av D-Bus-gränssnitt för MPRIS-"
 "specifikationen"
 
-#: plugins/mtpdevice/mtpdevice.plugin.desktop.in:5
+#: plugins/mtpdevice/mtpdevice.plugin.desktop.in:4
 msgid "Portable Players - MTP"
 msgstr "Bärbara spelare - MTP"
 
-#: plugins/mtpdevice/mtpdevice.plugin.desktop.in:6
+#: plugins/mtpdevice/mtpdevice.plugin.desktop.in:5
 msgid "Support for MTP devices (show the content, transfer, play from device)"
 msgstr "Stöd för MTP-enheter (visa innehållet, överföra, spela upp från enhet)"
 
-#: plugins/mtpdevice/rb-mtp-source.c:604
+#: plugins/mtpdevice/rb-mtp-source.c:610
 msgid "Media Player"
 msgstr "Mediaspelare"
 
-#: plugins/mtpdevice/rb-mtp-source.c:884
+#: plugins/mtpdevice/rb-mtp-source.c:890
 msgid "Media player device error"
 msgstr "Enhetsfel i mediaspelare"
 
 #. Translators: first %s is the device manufacturer,
 #. * second is the product name.
 #.
-#: plugins/mtpdevice/rb-mtp-source.c:888
+#: plugins/mtpdevice/rb-mtp-source.c:894
 #, c-format
 msgid "Unable to open the %s %s device"
 msgstr "Kunde inte öppna %s %s-enheten"
 
-#: plugins/mtpdevice/rb-mtp-source.c:932
+#: plugins/mtpdevice/rb-mtp-source.c:938
 msgid "Digital Audio Player"
 msgstr "Digital ljudspelare"
 
@@ -2625,11 +2631,11 @@ msgstr "Inget utrymme kvar på MTP-enheten"
 msgid "Unable to send file to MTP device: %s"
 msgstr "Kunde inte skicka fil till MTP-enhet: %s"
 
-#: plugins/notification/notification.plugin.desktop.in:5
+#: plugins/notification/notification.plugin.desktop.in:4
 msgid "Notification"
 msgstr "Avisering"
 
-#: plugins/notification/notification.plugin.desktop.in:6
+#: plugins/notification/notification.plugin.desktop.in:5
 msgid "Notification popups"
 msgstr "Aviseringsfönster"
 
@@ -2661,29 +2667,30 @@ msgstr "av <i>%s</i>"
 msgid "from <i>%s</i>"
 msgstr "från <i>%s</i>"
 
-#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:367
+#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:368
 msgid "Not Playing"
 msgstr "Spelar inte"
 
-#: plugins/power-manager/power-manager.plugin.desktop.in:6
+#: plugins/power-manager/power-manager.plugin.desktop.in:5
 msgid "Power Manager"
 msgstr "Strömhanterare"
 
-#: plugins/power-manager/power-manager.plugin.desktop.in:7
+#: plugins/power-manager/power-manager.plugin.desktop.in:6
 msgid "Inhibit Power Manager from suspending the machine while playing"
 msgstr "Låt inte strömhanteraren försätta datorn i viloläge under spelning"
 
 #: plugins/power-manager/rb-power-manager-plugin.c:93
 #: remote/dbus/rb-client.c:823 remote/dbus/rb-client.c:913
+#, c-format
 msgid "Playing"
 msgstr "Spelar"
 
-#: plugins/pythonconsole/pythonconsole.plugin.desktop.in:6
+#: plugins/pythonconsole/pythonconsole.plugin.desktop.in:5
 #: plugins/pythonconsole/pythonconsole.py:81
 msgid "Python Console"
 msgstr "Python-konsol"
 
-#: plugins/pythonconsole/pythonconsole.plugin.desktop.in:7
+#: plugins/pythonconsole/pythonconsole.plugin.desktop.in:6
 msgid "Interactive python console"
 msgstr "Interaktiv python-konsol"
 
@@ -2736,11 +2743,11 @@ msgstr ""
 "Python-modulen %s är inte tillgänglig. Installera modulen och starta sedan "
 "om Rhythmbox för att aktivera felsökning med %s."
 
-#: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:7
+#: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:6
 msgid "Zeitgeist"
 msgstr "Zeitgeist"
 
-#: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:8
+#: plugins/rbzeitgeist/rbzeitgeist.plugin.desktop.in:7
 msgid "Inform Zeitgeist about your activity"
 msgstr "Informera Zeitgeist om din aktivitet"
 
@@ -2769,11 +2776,11 @@ msgstr ""
 msgid "ReplayGain GStreamer plugins not available"
 msgstr "GStreamer-instick för ReplayGain finns inte tillgängliga"
 
-#: plugins/replaygain/replaygain.plugin.desktop.in:7
+#: plugins/replaygain/replaygain.plugin.desktop.in:6
 msgid "ReplayGain"
 msgstr "ReplayGain"
 
-#: plugins/replaygain/replaygain.plugin.desktop.in:8
+#: plugins/replaygain/replaygain.plugin.desktop.in:7
 msgid "Use ReplayGain to provide a consistent playback volume"
 msgstr ""
 "Använd ReplayGain för att tillhandahålla en konsekvent uppspelningsvolym"
@@ -2822,11 +2829,11 @@ msgstr "Lösenfras:"
 msgid "0"
 msgstr "0"
 
-#: plugins/webremote/webremote.plugin.desktop.in:6
+#: plugins/webremote/webremote.plugin.desktop.in:5
 msgid "Web remote control"
 msgstr "Webbfjärrkontroll"
 
-#: plugins/webremote/webremote.plugin.desktop.in:7
+#: plugins/webremote/webremote.plugin.desktop.in:6
 msgid "Control Rhythmbox from a web browser"
 msgstr "Styr Rhythmbox från en webbläsare"
 
@@ -2908,7 +2915,7 @@ msgstr "%s. Vill du lägga till poddsändningskanalen ändå?"
 msgid "New updates available from"
 msgstr "Nya uppdateringar tillgängliga från"
 
-#: podcast/rb-podcast-manager.c:802
+#: podcast/rb-podcast-manager.c:808
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2920,11 +2927,11 @@ msgstr ""
 "den ändå?"
 
 #. added as something else, probably iradio
-#: podcast/rb-podcast-manager.c:857
+#: podcast/rb-podcast-manager.c:863
 msgid "URL already added"
 msgstr "URL:en är redan tillagd"
 
-#: podcast/rb-podcast-manager.c:858
+#: podcast/rb-podcast-manager.c:864
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2933,7 +2940,7 @@ msgstr ""
 "”%s” har redan lagts till som en radiostation. Om det är en "
 "poddsändningskanal, ta bort radiostationen."
 
-#: podcast/rb-podcast-manager.c:942
+#: podcast/rb-podcast-manager.c:948
 msgid "Podcast"
 msgstr "Poddsändning"
 
@@ -3092,7 +3099,7 @@ msgstr "Pausa i uppspelning om uppspelning sker"
 msgid "Toggle play/pause mode"
 msgstr "Växla uppspelnings-/pausläge"
 
-#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2249
+#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2255
 msgid "Stop playback"
 msgstr "Stoppa uppspelning"
 
@@ -3220,6 +3227,7 @@ msgstr "q - Avsluta"
 
 #: remote/dbus/rb-client.c:549 remote/dbus/rb-client.c:575
 #: remote/dbus/rb-client.c:800 remote/dbus/rb-client.c:884
+#, c-format
 msgid "Not playing"
 msgstr "Spelar inte"
 
@@ -3244,6 +3252,7 @@ msgid "[%te of %td]"
 msgstr "[%te av %td]"
 
 #: remote/dbus/rb-client.c:823 remote/dbus/rb-client.c:915
+#, c-format
 msgid "Paused"
 msgstr "Pausad"
 
@@ -3269,6 +3278,7 @@ msgstr "Volym är nu %.02f"
 
 #. should print this before dbus setup, really
 #: remote/dbus/rb-client.c:965
+#, c-format
 msgid "Press 'h' for help."
 msgstr "Tryck ”h” för hjälp."
 
@@ -3277,7 +3287,7 @@ msgstr "Tryck ”h” för hjälp."
 msgid "Playback volume is %f.\n"
 msgstr "Uppspelningsvolym är %f.\n"
 
-#: rhythmdb/rhythmdb.c:790
+#: rhythmdb/rhythmdb.c:789
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Kunde inte komma åt %s: %s"
@@ -3287,7 +3297,7 @@ msgstr "Kunde inte komma åt %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: rhythmdb/rhythmdb.c:1846
+#: rhythmdb/rhythmdb.c:1837
 msgid "The Beatles"
 msgstr "ABBA"
 
@@ -3295,7 +3305,7 @@ msgstr "ABBA"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: rhythmdb/rhythmdb.c:1852
+#: rhythmdb/rhythmdb.c:1843
 msgid "Help!"
 msgstr "Waterloo"
 
@@ -3303,47 +3313,47 @@ msgstr "Waterloo"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: rhythmdb/rhythmdb.c:1858
+#: rhythmdb/rhythmdb.c:1849
 msgid "Ticket To Ride"
 msgstr "Honey, Honey"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: rhythmdb/rhythmdb.c:2403
+#: rhythmdb/rhythmdb.c:2394
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 "Ytterligare GStreamer-insticksmoduler krävs för att spela upp denna fil: %s"
 
-#: rhythmdb/rhythmdb.c:2435
+#: rhythmdb/rhythmdb.c:2426
 msgid "invalid unicode in error message"
 msgstr "ogiltig unicode i felmeddelande"
 
-#: rhythmdb/rhythmdb.c:2558
+#: rhythmdb/rhythmdb.c:2549
 #, c-format
 msgid "Empty file"
 msgstr "Tom fil"
 
-#: rhythmdb/rhythmdb.c:3267
+#: rhythmdb/rhythmdb.c:3258
 msgid "Could not load the music database:"
 msgstr "Kunde inte läsa in musikdatabasen:"
 
-#: rhythmdb/rhythmdb.c:4704
+#: rhythmdb/rhythmdb.c:4697
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minut"
 msgstr[1] "%ld minuter"
 
-#: rhythmdb/rhythmdb.c:4705
+#: rhythmdb/rhythmdb.c:4698
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld timme"
 msgstr[1] "%ld timmar"
 
-#: rhythmdb/rhythmdb.c:4706
+#: rhythmdb/rhythmdb.c:4699
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3351,7 +3361,7 @@ msgstr[0] "%ld dygn"
 msgstr[1] "%ld dygn"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4712
+#: rhythmdb/rhythmdb.c:4705
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s och %s"
@@ -3359,7 +3369,7 @@ msgstr "%s, %s och %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4718 rhythmdb/rhythmdb.c:4726 rhythmdb/rhythmdb.c:4737
+#: rhythmdb/rhythmdb.c:4711 rhythmdb/rhythmdb.c:4719 rhythmdb/rhythmdb.c:4730
 #, c-format
 msgid "%s and %s"
 msgstr "%s och %s"
@@ -3386,11 +3396,11 @@ msgstr ""
 "Databasen skapades av en senare version av Rhythmbox. Denna version av "
 "Rhythmbox kan inte läsa databasen."
 
-#: sample-plugins/sample-python/sample-python.plugin.desktop.in:6
+#: sample-plugins/sample-python/sample-python.plugin.desktop.in:5
 msgid "Python Sample Plugin"
 msgstr "Exempelinsticksmodul för python"
 
-#: sample-plugins/sample-python/sample-python.plugin.desktop.in:7
+#: sample-plugins/sample-python/sample-python.plugin.desktop.in:6
 msgid "A sample plugin in Python with no features"
 msgstr "En exempelinsticksmodul i Python utan funktioner"
 
@@ -3400,19 +3410,19 @@ msgstr "Pythonkälla"
 
 #: sample-plugins/sample/rb-sample-plugin.c:80
 #: sample-plugins/sample/rb-sample-plugin.c:87
-#: sample-plugins/sample/sample.plugin.desktop.in:5
+#: sample-plugins/sample/sample.plugin.desktop.in:4
 msgid "Sample Plugin"
 msgstr "Exempelinsticksmodul"
 
-#: sample-plugins/sample/sample.plugin.desktop.in:6
+#: sample-plugins/sample/sample.plugin.desktop.in:5
 msgid "A sample plugin in C with no features"
 msgstr "En exempelinsticksmodul i C utan funktioner"
 
-#: sample-plugins/sample-vala/sample-vala.plugin.desktop.in:5
+#: sample-plugins/sample-vala/sample-vala.plugin.desktop.in:4
 msgid "Vala Sample Plugin"
 msgstr "Exempelinsticksmodul för Vala"
 
-#: sample-plugins/sample-vala/sample-vala.plugin.desktop.in:6
+#: sample-plugins/sample-vala/sample-vala.plugin.desktop.in:5
 msgid "A sample plugin in Vala with no features"
 msgstr "En exempelinsticksmodul i Vala utan funktioner"
 
@@ -3589,45 +3599,45 @@ msgstr "Okänd spellista: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "Spellistan %s är en automatisk spellista"
 
-#: shell/rb-shell.c:2042
+#: shell/rb-shell.c:2048
 msgid "Error while saving song information"
 msgstr "Kunde inte spara låtinformation"
 
-#: shell/rb-shell.c:2246
+#: shell/rb-shell.c:2252
 msgid "Pause playback"
 msgstr "Pausa uppspelningen"
 
-#: shell/rb-shell.c:2253
+#: shell/rb-shell.c:2259
 msgid "Start playback"
 msgstr "Börja spela"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:2363
+#: shell/rb-shell.c:2369
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausad)"
 
-#: shell/rb-shell.c:2705 sources/rb-play-queue-source.c:673
+#: shell/rb-shell.c:2711 sources/rb-play-queue-source.c:673
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ingen registerad källa kan hantera URI %s"
 
-#: shell/rb-shell.c:3029
+#: shell/rb-shell.c:3035
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Ingen registerad källa matchar URI:n %s"
 
-#: shell/rb-shell.c:3062 shell/rb-shell.c:3105
+#: shell/rb-shell.c:3068 shell/rb-shell.c:3111
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Okänd URI för låt: %s"
 
-#: shell/rb-shell.c:3114
+#: shell/rb-shell.c:3120
 #, c-format
 msgid "Unknown property %s"
 msgstr "Okänd egenskap %s"
 
-#: shell/rb-shell.c:3128
+#: shell/rb-shell.c:3134
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Okänd egenskapstyp %s för egenskap %s"
@@ -4007,11 +4017,11 @@ msgid "Play Queue"
 msgstr "Spelkö"
 
 #. Translators: format is "<title> by <artist> from <album>"
-#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:929
+#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:932
 msgid "by"
 msgstr "av"
 
-#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:930
+#: sources/rb-play-queue-source.c:487 widgets/rb-header.c:933
 msgid "from"
 msgstr "från"
 
@@ -4181,13 +4191,13 @@ msgid "Drop artwork here"
 msgstr "Släpp bildmaterial här"
 
 #. Translators: remaining time / total time
-#: widgets/rb-header.c:1219
+#: widgets/rb-header.c:1222
 #, c-format
 msgid "-%s / %s"
 msgstr "-%s / %s"
 
 #. Translators: elapsed time / total time
-#: widgets/rb-header.c:1230
+#: widgets/rb-header.c:1233
 #, c-format
 msgid "%s / %s"
 msgstr "%s / %s"
@@ -4618,6 +4628,9 @@ msgstr "På skrivbordet"
 #: widgets/rb-song-info.c:1339
 msgid "Unknown location"
 msgstr "Okänd plats"
+
+#~ msgid "Jetlyrics (jetlyrics.com)"
+#~ msgstr "Jetlyrics (jetlyrics.com)"
 
 #~ msgid "Access key:"
 #~ msgstr "Åtkomstnyckel:"
