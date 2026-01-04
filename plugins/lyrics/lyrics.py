@@ -30,7 +30,7 @@ import os, re
 import urllib.request
 
 import rb
-from gi.repository import Gtk, Gio, GObject, Peas
+from gi.repository import GLib, Gtk, Gio, GObject, Peas
 from gi.repository import RB
 from gi.repository import Gst, GstPbutils
 
@@ -138,7 +138,8 @@ class LyricGrabber(object):
 
 	1. Local cache file
 	2. Lyric tags in file meta data
-	3. Online services
+	3. Sidecar .lrc file
+	4. Online services
 	"""
 	def __init__(self, db, entry):
 		self.db = db
@@ -155,7 +156,7 @@ class LyricGrabber(object):
 		"""
 		Fetch lyrics from cache.
 
-		If no cache file exist, tag extraction is tried next.
+		If no cache file exists, tag extraction is tried next, then sidecar file, finally falls back to online services.
 		"""
 		self.callback = callback
 
@@ -186,14 +187,14 @@ class LyricGrabber(object):
 		"""
 		Extract lyrics from the file meta data (tags).
 
-		If no lyrics tags are found, online services are tried next.
+		If no lyrics tags are found, sidecar files are tried next.
 
 		Supported file formats and lyrics tags:
 		- ogg/vorbis files with "LYRICS" and "SYNCLYRICS" tag
 		"""
 		tags = info.get_tags()
 		if tags is None:
-			self.search_online()
+			self.search_sidecar()
 			return
 
 		#since gstreamer 1.25.90
@@ -214,6 +215,29 @@ class LyricGrabber(object):
 				text = value.replace("SYNCLYRICS=", "")
 				self.lyrics_found(text)
 				return
+
+		self.search_sidecar()
+
+	def search_sidecar(self):
+		"""
+		Look for a sidecar .lrc file in the same directory as the audio file.
+
+		If no sidecar file is found, online services are tried next.
+		"""
+		location = self.entry.get_string(RB.RhythmDBPropType.LOCATION)
+		if location:
+			try:
+				lrc_uri = os.path.splitext(location)[0] + ".lrc"
+				lrc_file = Gio.File.new_for_uri(lrc_uri)
+				success, contents, etag = lrc_file.load_contents(None)
+				if success:
+					text = contents.decode('utf-8', errors='replace')
+					#self.lyrics_found(text) # don't cache sidecar files, to prevent them from becoming stale
+					self.callback(text)
+					print("Found sidecar lyrics file: " + lrc_uri)
+					return
+			except GLib.Error:
+				pass
 
 		self.search_online()
 
