@@ -196,9 +196,15 @@ class LyricGrabber(object):
 			self.search_online()
 			return
 
+		#since gstreamer 1.25.90
+		(exists, value) = tags.get_string_index(Gst.TAG_LYRICS, 0)
+		if exists:
+			self.lyrics_found(value)
+			return
+
 		for i in range(tags.get_tag_size("extended-comment")):
 			(exists, value) = tags.get_string_index("extended-comment", i)
-			#ogg/vorbis unsynchronized lyrics
+			#ogg/vorbis unsynchronized lyrics - before gstreamer 1.25.90
 			if exists and value.startswith("LYRICS"):
 				text = value.replace("LYRICS=", "")
 				self.lyrics_found(text)
