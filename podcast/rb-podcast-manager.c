@@ -96,11 +96,13 @@ typedef struct
 {
 	RBPodcastManager *pd;
 	gboolean automatic;
+	gboolean resolved;
 	RBPodcastChannel *channel;
 	RhythmDBEntry *entry;
 	GError *error;
 	enum {
 		RB_PODCAST_UPDATE_PROCESS_START = 0,
+		RB_PODCAST_UPDATE_PROCESS_RESOLVE,
 		RB_PODCAST_UPDATE_PROCESS_MIME_TYPE,
 		RB_PODCAST_UPDATE_PROCESS_MIME_TYPE_CONFIRM,
 		RB_PODCAST_UPDATE_PROCESS_PARSE,
@@ -817,6 +819,31 @@ mime_type_check_cb (GObject *source_object, GAsyncResult *res, gpointer user_dat
 	process_feed_update (update);
 }
 
+static void
+feed_url_resolve_cb (GObject *source_object, GAsyncResult *result, gpointer data)
+{
+	RBPodcastSearch *search = RB_PODCAST_SEARCH (source_object);
+	RBPodcastUpdate *update = (RBPodcastUpdate *)data;
+	const char *orig_url = NULL;
+	char *url;
+
+	url = rb_podcast_search_resolve_finish (search, result, &orig_url, &update->error);
+	if (update->error != NULL) {
+		rb_debug ("resolving url %s failed: %s", orig_url, update->error->message);
+		update->state = RB_PODCAST_UPDATE_PROCESS_ERROR;
+	} else if (url == NULL) {
+		rb_debug ("resolver didn't resolve feed url %s", orig_url);
+		update->state = RB_PODCAST_UPDATE_PROCESS_PARSE;
+	} else {
+		rb_debug ("resolved url %s to feed url %s", orig_url, url);
+		update->channel->resolved_url = url;
+		update->state = RB_PODCAST_UPDATE_PROCESS_PARSE;
+	}
+
+	update->resolved = TRUE;
+	process_feed_update (update);
+}
+
 void
 process_feed_update (RBPodcastUpdate *update)
 {
@@ -826,6 +853,7 @@ process_feed_update (RBPodcastUpdate *update)
 		DONE
 	} step = RUNNING;
 	GtkWidget *dialog;
+	GList *searches, *s;
 
 	while (step == RUNNING) {
 		switch (update->state) {
@@ -846,8 +874,12 @@ process_feed_update (RBPodcastUpdate *update)
 
 					update->state = RB_PODCAST_UPDATE_PROCESS_ERROR;
 					update->status = RB_PODCAST_FEED_UPDATE_ERROR;
+				} else if (g_str_equal (rhythmdb_entry_get_string (update->entry, RHYTHMDB_PROP_SUBTITLE), "")) {
+					rb_debug ("will try to resolve feed %s", update->channel->url);
+					update->state = RB_PODCAST_UPDATE_PROCESS_RESOLVE;
 				} else {
-					rb_debug ("updating existing feed %s", update->channel->url);
+					update->channel->resolved_url = rhythmdb_entry_dup_string (update->entry, RHYTHMDB_PROP_SUBTITLE);
+					rb_debug ("updating existing feed %s using resolved url %s", update->channel->url, update->channel->resolved_url);
 					update->state = RB_PODCAST_UPDATE_PROCESS_PARSE;
 				}
 			} else {
@@ -859,28 +891,48 @@ process_feed_update (RBPodcastUpdate *update)
 					update->channel->url = tmp;
 				}
 
-				if (rb_uri_could_be_podcast (update->channel->url, NULL)) {
-					rb_debug ("not checking mime type for %s", update->channel->url);
-					update->state = RB_PODCAST_UPDATE_PROCESS_PARSE;
-				} else if (update->automatic) {
-					rb_debug ("skipping mime type check for automatically added feed  %s", update->channel->url);
-					update->state = RB_PODCAST_UPDATE_PROCESS_PARSE;
-				} else {
-					rb_debug ("checking mime type for new feed url %s", update->channel->url);
-					update->state = RB_PODCAST_UPDATE_PROCESS_MIME_TYPE;
+				update->state = RB_PODCAST_UPDATE_PROCESS_RESOLVE;
+			}
+			break;
+
+		case RB_PODCAST_UPDATE_PROCESS_RESOLVE:
+			searches = rb_podcast_manager_get_searches (update->pd);
+			for (s = searches; s != NULL; s = s->next) {
+				RBPodcastSearch *search = s->data;
+
+				if (rb_podcast_search_can_resolve (search, update->channel->url)) {
+					rb_debug ("resolving feed url %s", update->channel->url);
+					rb_podcast_search_resolve (search, update->channel->url, feed_url_resolve_cb, update);
+					step = WAITING;
+					break;
 				}
+			}
+			g_list_free_full (searches, g_object_unref);
+
+			if (step == RUNNING) {
+				rb_debug ("no resolver found for feed url %s", update->channel->url);
+				update->state = RB_PODCAST_UPDATE_PROCESS_MIME_TYPE;
 			}
 			break;
 
 		case RB_PODCAST_UPDATE_PROCESS_MIME_TYPE:
-			g_file_query_info_async (g_file_new_for_uri (update->channel->url),
-						 G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
-						 0,
-						 G_PRIORITY_DEFAULT,
-						 update->pd->priv->update_cancel,
-						 mime_type_check_cb,
-						 update);
-			step = WAITING;
+			if (rb_uri_could_be_podcast (update->channel->url, NULL)) {
+				rb_debug ("not checking mime type for %s", update->channel->url);
+				update->state = RB_PODCAST_UPDATE_PROCESS_PARSE;
+			} else if (update->automatic) {
+				rb_debug ("skipping mime type check for automatically added feed  %s", update->channel->url);
+				update->state = RB_PODCAST_UPDATE_PROCESS_PARSE;
+			} else {
+				rb_debug ("checking mime type for new feed url %s", update->channel->url);
+				g_file_query_info_async (g_file_new_for_uri (update->channel->url),
+							 G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+							 0,
+							 G_PRIORITY_DEFAULT,
+							 update->pd->priv->update_cancel,
+							 mime_type_check_cb,
+							 update);
+				step = WAITING;
+			}
 			break;
 
 		case RB_PODCAST_UPDATE_PROCESS_MIME_TYPE_CONFIRM:
@@ -897,7 +949,11 @@ process_feed_update (RBPodcastUpdate *update)
 			break;
 
 		case RB_PODCAST_UPDATE_PROCESS_PARSE:
-			rb_debug ("parsing podcast feed %s", update->channel->url);
+			if (update->channel->resolved_url != NULL) {
+				rb_debug ("parsing podcast feed resolved url %s", update->channel->resolved_url);
+			} else {
+				rb_debug ("parsing podcast feed %s", update->channel->url);
+			}
 			rb_podcast_parse_load_feed (update->channel, update->pd->priv->update_cancel, feed_parse_cb, update);
 			step = WAITING;
 			break;
@@ -922,6 +978,13 @@ process_feed_update (RBPodcastUpdate *update)
 			break;
 
 		case RB_PODCAST_UPDATE_PROCESS_ERROR:
+			if ((update->resolved == FALSE) && (update->channel->resolved_url != NULL)) {
+				g_clear_error (&update->error);
+				rb_debug ("re-resolving feed %s", update->channel->url);
+				update->state = RB_PODCAST_UPDATE_PROCESS_RESOLVE;
+				break;
+			}
+
 			if (update->automatic)
 				update->status = RB_PODCAST_FEED_UPDATE_ERROR_BG;
 			else
@@ -1557,6 +1620,13 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 				     key,
 				     RB_EXT_DB_SOURCE_SEARCH,	/* sort of */
 				     data->img);
+	}
+
+	if (data->resolved_url) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, (gchar *) data->resolved_url);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_SUBTITLE, &val);
+		g_value_unset (&val);
 	}
 
 	/* clear any error that might have been set earlier */
