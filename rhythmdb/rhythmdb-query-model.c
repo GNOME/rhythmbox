@@ -391,8 +391,8 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 	 * @model: the #RhythmDBQueryModel
 	 * @entry: the #RhythmDBEntry that changed
 	 * @prop: the #RhythmDBPropType that was changed
-	 * @old: the previous value for the property
-	 * @new_value: the new value for the property
+	 * @old: (type GObject.Value) (transfer none): the previous value for the property
+	 * @new_value: (type GObject.Value) (transfer none): the new value for the property
 	 *
 	 * Emitted when an entry in the query model is changed.  When multiple
 	 * properties are changed, the entry-prop-changed signals will be emitted
