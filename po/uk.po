@@ -5,13 +5,13 @@
 # Maxim Dziumanenko <dziumanenko@gmail.com>, 2004.
 # Sergiy Gavrylov <sergiovana@bigmir.net>, 2011.
 # Korostil Daniel <ted.korostiled@gmail.com>, 2012.
-# Yuri Chornoivan <yurchor@ukr.net>, 2020, 2021, 2022, 2024, 2025.
+# Yuri Chornoivan <yurchor@ukr.net>, 2020, 2021, 2022, 2024, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2025-12-02 23:53+0000\n"
-"PO-Revision-Date: 2025-12-03 16:51+0200\n"
+"POT-Creation-Date: 2026-02-22 03:38+0000\n"
+"PO-Revision-Date: 2026-02-22 12:48+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -22,12 +22,12 @@ msgstr ""
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 23.04.3\n"
 
-#: backends/gstreamer/rb-encoder-gst.c:652
+#: backends/gstreamer/rb-encoder-gst.c:653
 #, c-format
 msgid "Could not create a temporary file to write to: %s"
 msgstr "Не вдалося створити тимчасовий файл для запису до нього даних: %s"
 
-#: backends/gstreamer/rb-encoder-gst.c:705
+#: backends/gstreamer/rb-encoder-gst.c:706
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Не вдалося створити елемент приймання GStreamer для запису в %s"
@@ -119,48 +119,12 @@ msgstr "Нещодавно відтворені"
 msgid "My Top Rated"
 msgstr "Мої улюблені композиції"
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:8
 #: data/org.gnome.Rhythmbox3.desktop.in:2
-#: data/org.gnome.Rhythmbox3.device.desktop.in:2 shell/main.c:72
+#: data/org.gnome.Rhythmbox3.device.desktop.in:2
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:8 shell/main.c:72
 #: shell/rb-shell.c:507 shell/rb-shell.c:2349
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
-
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:9
-msgid "Play and organize all your music"
-msgstr "Відтворення та упорядкування усіх ваших музичних творів"
-
-#. developer_name tag deprecated with Appstream 1.0
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:11
-msgid "The Rhythmbox developers"
-msgstr "Розробники Rhythmbox"
-
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:16
-msgid ""
-"Rhythmbox is a music management application, designed to work well under the "
-"GNOME desktop. In addition to music stored on your computer, it supports "
-"network shares, podcasts, radio streams, portable music devices (including "
-"phones), and internet music services such as Last.fm and Magnatune."
-msgstr ""
-"Rhythmbox — програма для керування музичними даними, яку тісно інтегровано "
-"до стільниці GNOME. Окрім роботи із музичними файлами, які зберігаються на "
-"вашому комп'ютері, у програмі передбачено підтримку роботи зі спільними "
-"ресурсами у мережі, подкастами, потоками радіотрансляцій, портативними "
-"музичними пристроями (включно із телефонами) та музичними службами у "
-"інтернеті, зокрема Last.fm і Magnatune."
-
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:22
-msgid ""
-"Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
-"via plugins written in Python or C."
-msgstr ""
-"Rhythmbox є вільним програмним забезпеченням, заснованим на GTK+ і "
-"GStreamer, можливості якого можна розширити за допомогою додатків мовами "
-"Python і C."
-
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:36
-msgid "Main Window"
-msgstr "Головне вікно"
 
 #: data/org.gnome.Rhythmbox3.desktop.in:3
 #: data/org.gnome.Rhythmbox3.device.desktop.in:3
@@ -183,6 +147,42 @@ msgstr ""
 "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;звук;пісн"
 "я;пісні;мп3;подкаст;іпод;список "
 "відтворення;відтворення;ласт.фм;длна;радіо;"
+
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:9
+msgid "Play and organize all your music"
+msgstr "Відтворення та упорядкування усіх ваших музичних творів"
+
+#. developer_name tag deprecated with Appstream 1.0
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:11
+msgid "The Rhythmbox developers"
+msgstr "Розробники Rhythmbox"
+
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:16
+msgid ""
+"Rhythmbox is a music management application, designed to work well under the "
+"GNOME desktop. In addition to music stored on your computer, it supports "
+"network shares, podcasts, radio streams, portable music devices (including "
+"phones), and internet music services such as Last.fm and Magnatune."
+msgstr ""
+"Rhythmbox — програма для керування музичними даними, яку тісно інтегровано "
+"до стільниці GNOME. Окрім роботи із музичними файлами, які зберігаються на "
+"вашому комп'ютері, у програмі передбачено підтримку роботи зі спільними "
+"ресурсами у мережі, подкастами, потоками радіотрансляцій, портативними "
+"музичними пристроями (включно із телефонами) та музичними службами у "
+"інтернеті, зокрема Last.fm і Magnatune."
+
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:22
+msgid ""
+"Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
+"via plugins written in Python or C."
+msgstr ""
+"Rhythmbox є вільним програмним забезпеченням, заснованим на GTK+ і "
+"GStreamer, можливості якого можна розширити за допомогою додатків мовами "
+"Python і C."
+
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:35
+msgid "Main Window"
+msgstr "Головне вікно"
 
 #: data/ui/app-menu.ui:6
 msgid "_View"
@@ -529,7 +529,7 @@ msgstr "Властивості програвача"
 #: podcast/rb-feed-podcast-properties-dialog.c:130
 #: podcast/rb-podcast-properties-dialog.c:320 shell/rb-shell-preferences.c:192
 #: widgets/rb-alert-dialog.c:377 widgets/rb-query-creator.c:198
-#: widgets/rb-song-info.c:627
+#: widgets/rb-song-info.c:634
 msgid "_Close"
 msgstr "_Закрити"
 
@@ -621,7 +621,7 @@ msgstr "Зберегти список відтворення"
 msgid "_Cancel"
 msgstr "_Скасувати"
 
-#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:267
+#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:273
 #: widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "_Зберегти"
@@ -684,7 +684,7 @@ msgid "Copyright:"
 msgstr "Авторське право:"
 
 #: data/ui/podcast-feed-properties.ui:322 data/ui/podcast-properties.ui:421
-#: data/ui/song-info.ui:884 plugins/iradio/station-properties.ui:304
+#: data/ui/song-info.ui:914 plugins/iradio/station-properties.ui:304
 msgid "Details"
 msgstr "Подробиці"
 
@@ -766,26 +766,26 @@ msgid "Date:"
 msgstr "Дата:"
 
 #: data/ui/podcast-properties.ui:222 data/ui/song-info-multiple.ui:102
-#: data/ui/song-info.ui:762 plugins/iradio/station-properties.ui:266
+#: data/ui/song-info.ui:792 plugins/iradio/station-properties.ui:266
 msgid "_Rating:"
 msgstr "_Рейтинг:"
 
-#: data/ui/podcast-properties.ui:237 data/ui/song-info.ui:699
+#: data/ui/podcast-properties.ui:237 data/ui/song-info.ui:729
 #: plugins/iradio/station-properties.ui:236
 msgid "Play count:"
 msgstr "Кількість відтворень:"
 
-#: data/ui/podcast-properties.ui:252 data/ui/song-info.ui:674
+#: data/ui/podcast-properties.ui:252 data/ui/song-info.ui:704
 #: plugins/iradio/station-properties.ui:205
 msgid "Last played:"
 msgstr "Востаннє відтворено:"
 
-#: data/ui/podcast-properties.ui:268 data/ui/song-info.ui:625
+#: data/ui/podcast-properties.ui:268 data/ui/song-info.ui:655
 #: plugins/iradio/station-properties.ui:175
 msgid "Bitrate:"
 msgstr "Щільність потоку:"
 
-#: data/ui/podcast-properties.ui:283 data/ui/song-info.ui:800
+#: data/ui/podcast-properties.ui:283 data/ui/song-info.ui:830
 msgid "Duration:"
 msgstr "Тривалість:"
 
@@ -863,23 +863,23 @@ msgstr "з"
 msgid "_Track count:"
 msgstr "Кі_лькість композицій:"
 
-#: data/ui/song-info-multiple.ui:328 data/ui/song-info.ui:501
+#: data/ui/song-info-multiple.ui:328 data/ui/song-info.ui:502
 msgid "Albu_m sort order:"
 msgstr "Порядок с_ортування альбомів:"
 
-#: data/ui/song-info-multiple.ui:342 data/ui/song-info.ui:515
+#: data/ui/song-info-multiple.ui:342 data/ui/song-info.ui:516
 msgid "_Artist sort order:"
 msgstr "Пор_ядок сортування виконавців:"
 
-#: data/ui/song-info-multiple.ui:356 data/ui/song-info.ui:529
+#: data/ui/song-info-multiple.ui:356 data/ui/song-info.ui:530
 msgid "Album a_rtist sort order:"
 msgstr "Впорядкування — альбом, ви_конавець:"
 
-#: data/ui/song-info-multiple.ui:381 data/ui/song-info.ui:553
+#: data/ui/song-info-multiple.ui:381 data/ui/song-info.ui:554
 msgid "_Composer sort order:"
 msgstr "Порядок с_ортування композиторів:"
 
-#: data/ui/song-info-multiple.ui:411 data/ui/song-info.ui:582
+#: data/ui/song-info-multiple.ui:411 data/ui/song-info.ui:612
 msgid "Sorting"
 msgstr "Впорядкування"
 
@@ -903,19 +903,24 @@ msgstr "_Коментар:"
 msgid "Error message"
 msgstr "Повідомлення про помилку"
 
-#: data/ui/song-info.ui:600
+#: data/ui/song-info.ui:594
+#| msgid "_Artist sort order:"
+msgid "_Title sort order:"
+msgstr "Пор_ядок сортування заголовків:"
+
+#: data/ui/song-info.ui:630
 msgid "File name:"
 msgstr "Назва файла:"
 
-#: data/ui/song-info.ui:650
+#: data/ui/song-info.ui:680
 msgid "Location:"
 msgstr "Адреса:"
 
-#: data/ui/song-info.ui:828
+#: data/ui/song-info.ui:858
 msgid "File size:"
 msgstr "Розмір файла:"
 
-#: data/ui/song-info.ui:853
+#: data/ui/song-info.ui:883
 msgid "Date added:"
 msgstr "Додано:"
 
@@ -937,9 +942,9 @@ msgstr "Вилучені файли:"
 
 #: lib/rb-cut-and-paste-code.c:94
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:235
-#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3843
-#: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1574
-#: widgets/rb-entry-view.c:1588 widgets/rb-song-info.c:1545
+#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3862
+#: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1575
+#: widgets/rb-entry-view.c:1589 widgets/rb-song-info.c:1554
 msgid "Never"
 msgstr "Ніколи"
 
@@ -1004,20 +1009,20 @@ msgstr "%b %d %Y"
 #: podcast/rb-podcast-manager.c:1446 podcast/rb-podcast-properties-dialog.c:636
 #: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:797
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
-#: rhythmdb/rhythmdb.c:2086 rhythmdb/rhythmdb.c:2092 rhythmdb/rhythmdb.c:2107
-#: rhythmdb/rhythmdb.c:2141 rhythmdb/rhythmdb-entry-type.c:303
+#: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
+#: rhythmdb/rhythmdb.c:2156 rhythmdb/rhythmdb-entry-type.c:303
 #: rhythmdb/rhythmdb-entry-type.c:381 rhythmdb/rhythmdb-entry-type.c:387
 #: rhythmdb/rhythmdb-entry-type.c:392 rhythmdb/rhythmdb-entry-type.c:403
-#: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:308
-#: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
-#: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
+#: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:309
+#: rhythmdb/rhythmdb-tree.c:1368 rhythmdb/rhythmdb-tree.c:1372
+#: rhythmdb/rhythmdb-tree.c:1376 rhythmdb/rhythmdb-tree.c:1380
 #: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
 #: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
-#: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
-#: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
-#: widgets/rb-header.c:1282 widgets/rb-header.c:1308 widgets/rb-song-info.c:950
-#: widgets/rb-song-info.c:962 widgets/rb-song-info.c:1234
-#: widgets/rb-song-info.c:1572
+#: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1513
+#: widgets/rb-entry-view.c:1526 widgets/rb-entry-view.c:1539
+#: widgets/rb-header.c:1282 widgets/rb-header.c:1308 widgets/rb-song-info.c:957
+#: widgets/rb-song-info.c:969 widgets/rb-song-info.c:1243
+#: widgets/rb-song-info.c:1581
 msgid "Unknown"
 msgstr "Невідомо"
 
@@ -1712,7 +1717,7 @@ msgid "Loading top albums for %s"
 msgstr "Завантаження провідних альбомів %s"
 
 #: plugins/context/ArtistTab.py:58 plugins/magnatune/magnatune-toolbar.ui:20
-#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1457
+#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1458
 #: widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Виконавець"
@@ -1748,8 +1753,8 @@ msgstr "Посилання"
 msgid "No artist specified."
 msgstr "Не вказаний виконавець."
 
-#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:306
-#: plugins/lyrics/lyrics.py:391
+#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:312
+#: plugins/lyrics/lyrics.py:397
 msgid "Lyrics"
 msgstr "Тексти пісень"
 
@@ -1967,7 +1972,7 @@ msgid "Add to New Playlist"
 msgstr "Додати до нового списку композицій"
 
 #: plugins/generic-player/rb-generic-player-source.c:1369
-#: plugins/ipod/rb-ipod-source.c:2056 plugins/mtpdevice/rb-mtp-source.c:1557
+#: plugins/ipod/rb-ipod-source.c:2064 plugins/mtpdevice/rb-mtp-source.c:1557
 msgid "Advanced"
 msgstr "Додатково"
 
@@ -2113,7 +2118,7 @@ msgstr "Новий список композицій"
 msgid "Unable to initialize new iPod"
 msgstr "Не вдалося запустити новий iPod"
 
-#: plugins/ipod/rb-ipod-source.c:1502 podcast/rb-podcast-main-source.c:77
+#: plugins/ipod/rb-ipod-source.c:1510 podcast/rb-podcast-main-source.c:77
 #: sources/sync/rb-sync-settings-ui.c:263
 #: sources/sync/rb-sync-settings-ui.c:264 sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
@@ -2132,7 +2137,7 @@ msgstr "Підтримування служб мовлення, які надс�
 msgid "Remove"
 msgstr "Вилучити"
 
-#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1487
+#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1488
 #: widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Жанр"
@@ -2166,14 +2171,14 @@ msgstr "URL інтернет-радіостанції:"
 #: plugins/iradio/rb-station-properties-dialog.c:395
 #: podcast/rb-feed-podcast-properties-dialog.c:215
 #: podcast/rb-podcast-properties-dialog.c:521
-#: sources/rb-media-player-source.c:567 widgets/rb-song-info.c:1151
+#: sources/rb-media-player-source.c:567 widgets/rb-song-info.c:1158
 #, c-format
 msgid "%s Properties"
 msgstr "Параметри %s"
 
 #: plugins/iradio/rb-station-properties-dialog.c:487
 #: podcast/rb-podcast-properties-dialog.c:634 widgets/rb-entry-view.c:1022
-#: widgets/rb-song-info.c:1236
+#: widgets/rb-song-info.c:1245
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu кбіт/с"
@@ -2228,7 +2233,7 @@ msgstr ""
 msgid "Choose lyrics folder..."
 msgstr "Вибрати теку зі словами пісень…"
 
-#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:414
+#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:420
 msgid "Song Lyrics"
 msgstr "Слова пісні"
 
@@ -2248,20 +2253,20 @@ msgstr "Огляд…"
 msgid "Lyrics Folder"
 msgstr "Тека зі словами пісень"
 
-#: plugins/lyrics/lyrics.py:169 plugins/lyrics/lyrics.py:217
-#: plugins/lyrics/lyrics.py:227
+#: plugins/lyrics/lyrics.py:169 plugins/lyrics/lyrics.py:223
+#: plugins/lyrics/lyrics.py:233
 msgid "No lyrics found"
 msgstr "Слова не знайдено"
 
-#: plugins/lyrics/lyrics.py:272 plugins/lyrics/lyrics.py:285
+#: plugins/lyrics/lyrics.py:278 plugins/lyrics/lyrics.py:291
 msgid "_Edit"
 msgstr "З_міни"
 
-#: plugins/lyrics/lyrics.py:287
+#: plugins/lyrics/lyrics.py:293
 msgid "_Search again"
 msgstr "_Шукати знову"
 
-#: plugins/lyrics/lyrics.py:346
+#: plugins/lyrics/lyrics.py:352
 msgid "Searching for lyrics..."
 msgstr "Пошук слів…"
 
@@ -2558,7 +2563,7 @@ msgstr ""
 "Сервер Magnatune повернув:\n"
 "%s"
 
-#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1639
+#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1640
 msgid "Error"
 msgstr "Помилка"
 
@@ -2873,7 +2878,7 @@ msgstr ""
 "з'єднання."
 
 #: podcast/rb-podcast-add-dialog.c:794 sources/rb-library-source.c:134
-#: widgets/rb-entry-view.c:1447
+#: widgets/rb-entry-view.c:1448
 msgid "Title"
 msgstr "Назва"
 
@@ -3301,7 +3306,7 @@ msgstr "Натисніть «h», щоб отримати довідку."
 msgid "Playback volume is %f.\n"
 msgstr "Гучність відтворення %f.\n"
 
-#: rhythmdb/rhythmdb.c:789
+#: rhythmdb/rhythmdb.c:796
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Не вдалося отримати доступ до %s: %s"
@@ -3311,7 +3316,7 @@ msgstr "Не вдалося отримати доступ до %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: rhythmdb/rhythmdb.c:1837
+#: rhythmdb/rhythmdb.c:1845
 msgid "The Beatles"
 msgstr "Океан Ельзи"
 
@@ -3319,7 +3324,7 @@ msgstr "Океан Ельзи"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: rhythmdb/rhythmdb.c:1843
+#: rhythmdb/rhythmdb.c:1851
 msgid "Help!"
 msgstr "Там, де нас нема"
 
@@ -3327,32 +3332,32 @@ msgstr "Там, де нас нема"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: rhythmdb/rhythmdb.c:1849
+#: rhythmdb/rhythmdb.c:1857
 msgid "Ticket To Ride"
 msgstr "Сумна мелодія"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: rhythmdb/rhythmdb.c:2394
+#: rhythmdb/rhythmdb.c:2409
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "Потрібні додаткові модулі GStreamer, щоб відтворити цей файл: %s"
 
-#: rhythmdb/rhythmdb.c:2426
+#: rhythmdb/rhythmdb.c:2441
 msgid "invalid unicode in error message"
 msgstr "неправильне кодування в повідомленні про помилку"
 
-#: rhythmdb/rhythmdb.c:2549
+#: rhythmdb/rhythmdb.c:2564
 #, c-format
 msgid "Empty file"
 msgstr "Порожній файл"
 
-#: rhythmdb/rhythmdb.c:3258
+#: rhythmdb/rhythmdb.c:3273
 msgid "Could not load the music database:"
 msgstr "Не вдалося завантажити базу даних музики:"
 
-#: rhythmdb/rhythmdb.c:4697
+#: rhythmdb/rhythmdb.c:4716
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3360,7 +3365,7 @@ msgstr[0] "%ld хвилина"
 msgstr[1] "%ld хвилини"
 msgstr[2] "%ld хвилин"
 
-#: rhythmdb/rhythmdb.c:4698
+#: rhythmdb/rhythmdb.c:4717
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3368,7 +3373,7 @@ msgstr[0] "%ld година"
 msgstr[1] "%ld години"
 msgstr[2] "%ld годин"
 
-#: rhythmdb/rhythmdb.c:4699
+#: rhythmdb/rhythmdb.c:4718
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3377,7 +3382,7 @@ msgstr[1] "%ld дні"
 msgstr[2] "%ld днів"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4705
+#: rhythmdb/rhythmdb.c:4724
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s і %s"
@@ -3385,7 +3390,7 @@ msgstr "%s, %s і %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4711 rhythmdb/rhythmdb.c:4719 rhythmdb/rhythmdb.c:4730
+#: rhythmdb/rhythmdb.c:4730 rhythmdb/rhythmdb.c:4738 rhythmdb/rhythmdb.c:4749
 #, c-format
 msgid "%s and %s"
 msgstr "%s і %s"
@@ -3399,7 +3404,7 @@ msgstr "Сканування"
 msgid "%d of %d"
 msgstr "%d з %d"
 
-#: rhythmdb/rhythmdb-property-model.c:511
+#: rhythmdb/rhythmdb-property-model.c:512
 msgid "All"
 msgstr "Все"
 
@@ -3925,7 +3930,7 @@ msgstr "Виконавець/Альбом"
 msgid "Artist - Album"
 msgstr "Виконавець — Альбом"
 
-#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1477
+#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1478
 #: widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Альбом"
@@ -4137,72 +4142,72 @@ msgstr "Обмежена змінна бітова швидкість"
 msgid "Default settings"
 msgstr "Типові параметри"
 
-#: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1539
-#: widgets/rb-song-info.c:1232
+#: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1540
+#: widgets/rb-song-info.c:1241
 msgid "Lossless"
 msgstr "Стиснення без втрат"
 
-#: widgets/rb-entry-view.c:1436
+#: widgets/rb-entry-view.c:1437
 msgid "Track"
 msgstr "Доріжка"
 
-#: widgets/rb-entry-view.c:1467
+#: widgets/rb-entry-view.c:1468
 msgid "Composer"
 msgstr "Композитор"
 
-#: widgets/rb-entry-view.c:1497
+#: widgets/rb-entry-view.c:1498
 msgid "Comment"
 msgstr "Коментар"
 
-#: widgets/rb-entry-view.c:1508
+#: widgets/rb-entry-view.c:1509
 msgid "Time"
 msgstr "Час"
 
-#: widgets/rb-entry-view.c:1521
+#: widgets/rb-entry-view.c:1522
 msgid "Year"
 msgstr "Рік"
 
-#: widgets/rb-entry-view.c:1534
+#: widgets/rb-entry-view.c:1535
 msgid "Quality"
 msgstr "Якість"
 
-#: widgets/rb-entry-view.c:1537
+#: widgets/rb-entry-view.c:1538
 msgid "000 kbps"
 msgstr "000 кбіт/с"
 
-#: widgets/rb-entry-view.c:1548
+#: widgets/rb-entry-view.c:1549
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: widgets/rb-entry-view.c:1571
+#: widgets/rb-entry-view.c:1572
 msgid "Play Count"
 msgstr "Кількість відтворень"
 
-#: widgets/rb-entry-view.c:1584
+#: widgets/rb-entry-view.c:1585
 msgid "Last Played"
 msgstr "Останнє відтворення"
 
-#: widgets/rb-entry-view.c:1597
+#: widgets/rb-entry-view.c:1598
 msgid "Date Added"
 msgstr "Додано"
 
-#: widgets/rb-entry-view.c:1609
+#: widgets/rb-entry-view.c:1610
 msgid "Last Seen"
 msgstr "Останнє відвідування"
 
-#: widgets/rb-entry-view.c:1620
+#: widgets/rb-entry-view.c:1621
 msgid "Location"
 msgstr "Адреса"
 
-#: widgets/rb-entry-view.c:1630
+#: widgets/rb-entry-view.c:1631
 msgid "BPM"
 msgstr "BPM"
 
-#: widgets/rb-entry-view.c:1918
+#: widgets/rb-entry-view.c:1919
 msgid "Now Playing"
 msgstr "Зараз відтворюється"
 
-#: widgets/rb-entry-view.c:1983
+#: widgets/rb-entry-view.c:1984
 msgid "Playback Error"
 msgstr "Помилка відтворення"
 
@@ -4628,31 +4633,31 @@ msgstr "Пошук"
 msgid "_Search:"
 msgstr "По_шук:"
 
-#: widgets/rb-song-info.c:354
+#: widgets/rb-song-info.c:355
 msgid "_Back"
 msgstr "_Назад"
 
-#: widgets/rb-song-info.c:363
+#: widgets/rb-song-info.c:364
 msgid "_Forward"
 msgstr "_Далі"
 
-#: widgets/rb-song-info.c:371
+#: widgets/rb-song-info.c:372
 msgid "Song Properties"
 msgstr "Властивості пісні"
 
-#: widgets/rb-song-info.c:428
+#: widgets/rb-song-info.c:429
 msgid "Multiple Song Properties"
 msgstr "Властивості кількох пісень"
 
-#: widgets/rb-song-info.c:1294
+#: widgets/rb-song-info.c:1303
 msgid "Unknown file name"
 msgstr "Невідома назва файла"
 
-#: widgets/rb-song-info.c:1316
+#: widgets/rb-song-info.c:1325
 msgid "On the desktop"
 msgstr "На стільниці"
 
-#: widgets/rb-song-info.c:1339
+#: widgets/rb-song-info.c:1348
 msgid "Unknown location"
 msgstr "Невідома адреса"
 
