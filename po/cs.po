@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2025-12-02 22:29+0000\n"
-"PO-Revision-Date: 2026-02-09 18:12+0100\n"
+"POT-Creation-Date: 2026-02-22 03:38+0000\n"
+"PO-Revision-Date: 2026-02-23 15:30+0100\n"
 "Last-Translator: Daniel Rusek <mail@asciiwolf.com>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -27,12 +27,12 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Poedit 3.8\n"
 
-#: backends/gstreamer/rb-encoder-gst.c:652
+#: backends/gstreamer/rb-encoder-gst.c:653
 #, c-format
 msgid "Could not create a temporary file to write to: %s"
 msgstr "Nezdařilo se vytvořit dočasný soubor k zápisu do: %s"
 
-#: backends/gstreamer/rb-encoder-gst.c:705
+#: backends/gstreamer/rb-encoder-gst.c:706
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "Nezdařilo se vytvořit cílový prvek GStreamer k zápisu do %s"
@@ -122,45 +122,12 @@ msgstr "Nedávno přehrané"
 msgid "My Top Rated"
 msgstr "Mé nejlépe hodnocené"
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:8
 #: data/org.gnome.Rhythmbox3.desktop.in:2
-#: data/org.gnome.Rhythmbox3.device.desktop.in:2 shell/main.c:72
+#: data/org.gnome.Rhythmbox3.device.desktop.in:2
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:8 shell/main.c:72
 #: shell/rb-shell.c:507 shell/rb-shell.c:2349
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
-
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:9
-msgid "Play and organize all your music"
-msgstr "Přehrávejte si a organizujte veškerou svoji hudbu"
-
-#. developer_name tag deprecated with Appstream 1.0
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:11
-msgid "The Rhythmbox developers"
-msgstr "Vývojáři aplikace Rhythmbox"
-
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:16
-msgid ""
-"Rhythmbox is a music management application, designed to work well under the "
-"GNOME desktop. In addition to music stored on your computer, it supports "
-"network shares, podcasts, radio streams, portable music devices (including "
-"phones), and internet music services such as Last.fm and Magnatune."
-msgstr ""
-"Rhythmbox je aplikace sloužící ke správě hudby a je navržena pro pracovní "
-"prostředí GNOME. Mimo hudby uložené ve vašem počítači podporuje také síťové "
-"sdílení, podcasty, vysílání rádií, přenosné přehrávače (včetně mobilních "
-"telefonů) a internetové hudební služby, jako je Last.fm a Magnatune."
-
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:22
-msgid ""
-"Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
-"via plugins written in Python or C."
-msgstr ""
-"Rhythmbox je svobodný software používající GTK+ a GStreamer a je "
-"rozšiřitelný pomocí zásuvných modulů psaných v jazycích Python nebo C."
-
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:36
-msgid "Main Window"
-msgstr "Hlavní okno"
 
 #: data/org.gnome.Rhythmbox3.desktop.in:3
 #: data/org.gnome.Rhythmbox3.device.desktop.in:3
@@ -182,6 +149,39 @@ msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
 "audio;zvuk;skladba;hudba;písnička;MP3;CD;podcast;MTP;přenosný "
 "přehrávač;iPod;seznam skladeb;Last.fm;UPnP;DLNA;rádio;"
+
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:9
+msgid "Play and organize all your music"
+msgstr "Přehrávejte si a organizujte veškerou svoji hudbu"
+
+#. developer_name tag deprecated with Appstream 1.0
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:11
+msgid "The Rhythmbox developers"
+msgstr "Vývojáři aplikace Rhythmbox"
+
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:16
+msgid ""
+"Rhythmbox is a music management application, designed to work well under the "
+"GNOME desktop. In addition to music stored on your computer, it supports "
+"network shares, podcasts, radio streams, portable music devices (including "
+"phones), and internet music services such as Last.fm and Magnatune."
+msgstr ""
+"Rhythmbox je aplikace sloužící ke správě hudby a je navržena pro pracovní "
+"prostředí GNOME. Mimo hudby uložené ve vašem počítači podporuje také síťové "
+"sdílení, podcasty, vysílání rádií, přenosné přehrávače (včetně mobilních "
+"telefonů) a internetové hudební služby, jako je Last.fm a Magnatune."
+
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:22
+msgid ""
+"Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
+"via plugins written in Python or C."
+msgstr ""
+"Rhythmbox je svobodný software používající GTK+ a GStreamer a je "
+"rozšiřitelný pomocí zásuvných modulů psaných v jazycích Python nebo C."
+
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:35
+msgid "Main Window"
+msgstr "Hlavní okno"
 
 #: data/ui/app-menu.ui:6
 msgid "_View"
@@ -527,7 +527,7 @@ msgstr "Vlastnosti přehrávače médií"
 #: podcast/rb-feed-podcast-properties-dialog.c:130
 #: podcast/rb-podcast-properties-dialog.c:320 shell/rb-shell-preferences.c:192
 #: widgets/rb-alert-dialog.c:377 widgets/rb-query-creator.c:198
-#: widgets/rb-song-info.c:627
+#: widgets/rb-song-info.c:634
 msgid "_Close"
 msgstr "_Zavřít"
 
@@ -620,7 +620,7 @@ msgstr "Uložit seznam skladeb"
 msgid "_Cancel"
 msgstr "_Zrušit"
 
-#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:267
+#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:273
 #: widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "_Uložit"
@@ -682,7 +682,7 @@ msgid "Copyright:"
 msgstr "Autorská práva:"
 
 #: data/ui/podcast-feed-properties.ui:322 data/ui/podcast-properties.ui:421
-#: data/ui/song-info.ui:884 plugins/iradio/station-properties.ui:304
+#: data/ui/song-info.ui:914 plugins/iradio/station-properties.ui:304
 msgid "Details"
 msgstr "Podrobnosti"
 
@@ -764,26 +764,26 @@ msgid "Date:"
 msgstr "Datum:"
 
 #: data/ui/podcast-properties.ui:222 data/ui/song-info-multiple.ui:102
-#: data/ui/song-info.ui:762 plugins/iradio/station-properties.ui:266
+#: data/ui/song-info.ui:792 plugins/iradio/station-properties.ui:266
 msgid "_Rating:"
 msgstr "_Hodnocení:"
 
-#: data/ui/podcast-properties.ui:237 data/ui/song-info.ui:699
+#: data/ui/podcast-properties.ui:237 data/ui/song-info.ui:729
 #: plugins/iradio/station-properties.ui:236
 msgid "Play count:"
 msgstr "Počet přehrání:"
 
-#: data/ui/podcast-properties.ui:252 data/ui/song-info.ui:674
+#: data/ui/podcast-properties.ui:252 data/ui/song-info.ui:704
 #: plugins/iradio/station-properties.ui:205
 msgid "Last played:"
 msgstr "Naposledy přehráno:"
 
-#: data/ui/podcast-properties.ui:268 data/ui/song-info.ui:625
+#: data/ui/podcast-properties.ui:268 data/ui/song-info.ui:655
 #: plugins/iradio/station-properties.ui:175
 msgid "Bitrate:"
 msgstr "Datový tok:"
 
-#: data/ui/podcast-properties.ui:283 data/ui/song-info.ui:800
+#: data/ui/podcast-properties.ui:283 data/ui/song-info.ui:830
 msgid "Duration:"
 msgstr "Délka:"
 
@@ -861,23 +861,23 @@ msgstr "z"
 msgid "_Track count:"
 msgstr "Počet s_top:"
 
-#: data/ui/song-info-multiple.ui:328 data/ui/song-info.ui:501
+#: data/ui/song-info-multiple.ui:328 data/ui/song-info.ui:502
 msgid "Albu_m sort order:"
 msgstr "Řazení al_b:"
 
-#: data/ui/song-info-multiple.ui:342 data/ui/song-info.ui:515
+#: data/ui/song-info-multiple.ui:342 data/ui/song-info.ui:516
 msgid "_Artist sort order:"
 msgstr "Řazení _umělců:"
 
-#: data/ui/song-info-multiple.ui:356 data/ui/song-info.ui:529
+#: data/ui/song-info-multiple.ui:356 data/ui/song-info.ui:530
 msgid "Album a_rtist sort order:"
 msgstr "Řazení _umělců alba:"
 
-#: data/ui/song-info-multiple.ui:381 data/ui/song-info.ui:553
+#: data/ui/song-info-multiple.ui:381 data/ui/song-info.ui:554
 msgid "_Composer sort order:"
 msgstr "Řazení _skladatelů:"
 
-#: data/ui/song-info-multiple.ui:411 data/ui/song-info.ui:582
+#: data/ui/song-info-multiple.ui:411 data/ui/song-info.ui:612
 msgid "Sorting"
 msgstr "Řazení"
 
@@ -901,19 +901,23 @@ msgstr "Kom_entář:"
 msgid "Error message"
 msgstr "Chybová zpráva"
 
-#: data/ui/song-info.ui:600
+#: data/ui/song-info.ui:594
+msgid "_Title sort order:"
+msgstr "Řazení _názvů:"
+
+#: data/ui/song-info.ui:630
 msgid "File name:"
 msgstr "Název souboru:"
 
-#: data/ui/song-info.ui:650
+#: data/ui/song-info.ui:680
 msgid "Location:"
 msgstr "Umístění:"
 
-#: data/ui/song-info.ui:828
+#: data/ui/song-info.ui:858
 msgid "File size:"
 msgstr "Velikost souboru:"
 
-#: data/ui/song-info.ui:853
+#: data/ui/song-info.ui:883
 msgid "Date added:"
 msgstr "Datum přidání:"
 
@@ -935,9 +939,9 @@ msgstr "Odebrané soubory:"
 
 #: lib/rb-cut-and-paste-code.c:94
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:235
-#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3843
-#: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1574
-#: widgets/rb-entry-view.c:1588 widgets/rb-song-info.c:1545
+#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3862
+#: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1575
+#: widgets/rb-entry-view.c:1589 widgets/rb-song-info.c:1554
 msgid "Never"
 msgstr "Nikdy"
 
@@ -1002,20 +1006,20 @@ msgstr "%e. %b %Y"
 #: podcast/rb-podcast-manager.c:1446 podcast/rb-podcast-properties-dialog.c:636
 #: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:797
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
-#: rhythmdb/rhythmdb.c:2086 rhythmdb/rhythmdb.c:2092 rhythmdb/rhythmdb.c:2107
-#: rhythmdb/rhythmdb.c:2141 rhythmdb/rhythmdb-entry-type.c:303
+#: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
+#: rhythmdb/rhythmdb.c:2156 rhythmdb/rhythmdb-entry-type.c:303
 #: rhythmdb/rhythmdb-entry-type.c:381 rhythmdb/rhythmdb-entry-type.c:387
 #: rhythmdb/rhythmdb-entry-type.c:392 rhythmdb/rhythmdb-entry-type.c:403
-#: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:308
-#: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
-#: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
+#: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:309
+#: rhythmdb/rhythmdb-tree.c:1368 rhythmdb/rhythmdb-tree.c:1372
+#: rhythmdb/rhythmdb-tree.c:1376 rhythmdb/rhythmdb-tree.c:1380
 #: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
 #: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
-#: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
-#: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
-#: widgets/rb-header.c:1282 widgets/rb-header.c:1308 widgets/rb-song-info.c:950
-#: widgets/rb-song-info.c:962 widgets/rb-song-info.c:1234
-#: widgets/rb-song-info.c:1572
+#: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1513
+#: widgets/rb-entry-view.c:1526 widgets/rb-entry-view.c:1539
+#: widgets/rb-header.c:1282 widgets/rb-header.c:1308 widgets/rb-song-info.c:957
+#: widgets/rb-song-info.c:969 widgets/rb-song-info.c:1243
+#: widgets/rb-song-info.c:1581
 msgid "Unknown"
 msgstr "Neznámo"
 
@@ -1710,7 +1714,7 @@ msgid "Loading top albums for %s"
 msgstr "Načítají se nejlepší alba umělce %s"
 
 #: plugins/context/ArtistTab.py:58 plugins/magnatune/magnatune-toolbar.ui:20
-#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1457
+#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1458
 #: widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Umělec"
@@ -1746,8 +1750,8 @@ msgstr "Odkazy"
 msgid "No artist specified."
 msgstr "Neuveden žádný umělec."
 
-#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:306
-#: plugins/lyrics/lyrics.py:391
+#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:312
+#: plugins/lyrics/lyrics.py:397
 msgid "Lyrics"
 msgstr "Text"
 
@@ -1965,7 +1969,7 @@ msgid "Add to New Playlist"
 msgstr "Přidat do nového seznamu skladeb"
 
 #: plugins/generic-player/rb-generic-player-source.c:1369
-#: plugins/ipod/rb-ipod-source.c:2056 plugins/mtpdevice/rb-mtp-source.c:1557
+#: plugins/ipod/rb-ipod-source.c:2064 plugins/mtpdevice/rb-mtp-source.c:1557
 msgid "Advanced"
 msgstr "Pokročilé"
 
@@ -2111,7 +2115,7 @@ msgstr "Nový seznam skladeb"
 msgid "Unable to initialize new iPod"
 msgstr "Nelze inicializovat nové zařízení iPod"
 
-#: plugins/ipod/rb-ipod-source.c:1502 podcast/rb-podcast-main-source.c:77
+#: plugins/ipod/rb-ipod-source.c:1510 podcast/rb-podcast-main-source.c:77
 #: sources/sync/rb-sync-settings-ui.c:263
 #: sources/sync/rb-sync-settings-ui.c:264 sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
@@ -2130,7 +2134,7 @@ msgstr "Podpora pro služby vysílání přenášené přes Internet"
 msgid "Remove"
 msgstr "Odebrat"
 
-#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1487
+#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1488
 #: widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Žánr"
@@ -2164,14 +2168,14 @@ msgstr "URL stanice internetového rádia:"
 #: plugins/iradio/rb-station-properties-dialog.c:395
 #: podcast/rb-feed-podcast-properties-dialog.c:215
 #: podcast/rb-podcast-properties-dialog.c:521
-#: sources/rb-media-player-source.c:567 widgets/rb-song-info.c:1151
+#: sources/rb-media-player-source.c:567 widgets/rb-song-info.c:1158
 #, c-format
 msgid "%s Properties"
 msgstr "Vlastnosti %s"
 
 #: plugins/iradio/rb-station-properties-dialog.c:487
 #: podcast/rb-podcast-properties-dialog.c:634 widgets/rb-entry-view.c:1022
-#: widgets/rb-song-info.c:1236
+#: widgets/rb-song-info.c:1245
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kb/s"
@@ -2223,7 +2227,7 @@ msgstr ""
 msgid "Choose lyrics folder..."
 msgstr "Vybrat složku textů…"
 
-#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:414
+#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:420
 msgid "Song Lyrics"
 msgstr "Text skladby"
 
@@ -2243,20 +2247,20 @@ msgstr "Procházet…"
 msgid "Lyrics Folder"
 msgstr "Složka textů"
 
-#: plugins/lyrics/lyrics.py:169 plugins/lyrics/lyrics.py:217
-#: plugins/lyrics/lyrics.py:227
+#: plugins/lyrics/lyrics.py:169 plugins/lyrics/lyrics.py:223
+#: plugins/lyrics/lyrics.py:233
 msgid "No lyrics found"
 msgstr "Žádné texty nenalezeny"
 
-#: plugins/lyrics/lyrics.py:272 plugins/lyrics/lyrics.py:285
+#: plugins/lyrics/lyrics.py:278 plugins/lyrics/lyrics.py:291
 msgid "_Edit"
 msgstr "U_pravit"
 
-#: plugins/lyrics/lyrics.py:287
+#: plugins/lyrics/lyrics.py:293
 msgid "_Search again"
 msgstr "_Hledat znovu"
 
-#: plugins/lyrics/lyrics.py:346
+#: plugins/lyrics/lyrics.py:352
 msgid "Searching for lyrics..."
 msgstr "Vyhledává se text…"
 
@@ -2550,7 +2554,7 @@ msgstr ""
 "Server Magnatune vrátil:\n"
 "%s"
 
-#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1639
+#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1640
 msgid "Error"
 msgstr "Chyba"
 
@@ -2858,7 +2862,7 @@ msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Nelze najít podcast. Zkontrolujte své připojení k internetu."
 
 #: podcast/rb-podcast-add-dialog.c:794 sources/rb-library-source.c:134
-#: widgets/rb-entry-view.c:1447
+#: widgets/rb-entry-view.c:1448
 msgid "Title"
 msgstr "Název"
 
@@ -3288,7 +3292,7 @@ msgstr "Pro nápovědu zmáčkněte „h“."
 msgid "Playback volume is %f.\n"
 msgstr "Hlasitost přehrávání je %f.\n"
 
-#: rhythmdb/rhythmdb.c:789
+#: rhythmdb/rhythmdb.c:796
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Nepodařilo se přistoupit k %s: %s"
@@ -3298,7 +3302,7 @@ msgstr "Nepodařilo se přistoupit k %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: rhythmdb/rhythmdb.c:1837
+#: rhythmdb/rhythmdb.c:1845
 msgid "The Beatles"
 msgstr "Karel Gott"
 
@@ -3306,7 +3310,7 @@ msgstr "Karel Gott"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: rhythmdb/rhythmdb.c:1843
+#: rhythmdb/rhythmdb.c:1851
 msgid "Help!"
 msgstr "Hudba není zlá"
 
@@ -3314,34 +3318,34 @@ msgstr "Hudba není zlá"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: rhythmdb/rhythmdb.c:1849
+#: rhythmdb/rhythmdb.c:1857
 msgid "Ticket To Ride"
 msgstr "Kdepak, ty ptáčku, hnízdo máš"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: rhythmdb/rhythmdb.c:2394
+#: rhythmdb/rhythmdb.c:2409
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 "K přehrávání tohoto souboru jsou zapotřebí dodatečné zásuvné moduly "
 "GStreamer: %s"
 
-#: rhythmdb/rhythmdb.c:2426
+#: rhythmdb/rhythmdb.c:2441
 msgid "invalid unicode in error message"
 msgstr "neplatné Unicode v chybové zprávě"
 
-#: rhythmdb/rhythmdb.c:2549
+#: rhythmdb/rhythmdb.c:2564
 #, c-format
 msgid "Empty file"
 msgstr "Prázdný soubor"
 
-#: rhythmdb/rhythmdb.c:3258
+#: rhythmdb/rhythmdb.c:3273
 msgid "Could not load the music database:"
 msgstr "Nepodařilo se načíst hudební databázi:"
 
-#: rhythmdb/rhythmdb.c:4697
+#: rhythmdb/rhythmdb.c:4716
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3349,7 +3353,7 @@ msgstr[0] "%ld minuta"
 msgstr[1] "%ld minuty"
 msgstr[2] "%ld minut"
 
-#: rhythmdb/rhythmdb.c:4698
+#: rhythmdb/rhythmdb.c:4717
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3357,7 +3361,7 @@ msgstr[0] "%ld hodina"
 msgstr[1] "%ld hodiny"
 msgstr[2] "%ld hodin"
 
-#: rhythmdb/rhythmdb.c:4699
+#: rhythmdb/rhythmdb.c:4718
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3366,7 +3370,7 @@ msgstr[1] "%ld dny"
 msgstr[2] "%ld dnů"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4705
+#: rhythmdb/rhythmdb.c:4724
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s a %s"
@@ -3374,7 +3378,7 @@ msgstr "%s, %s a %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4711 rhythmdb/rhythmdb.c:4719 rhythmdb/rhythmdb.c:4730
+#: rhythmdb/rhythmdb.c:4730 rhythmdb/rhythmdb.c:4738 rhythmdb/rhythmdb.c:4749
 #, c-format
 msgid "%s and %s"
 msgstr "%s a %s"
@@ -3388,7 +3392,7 @@ msgstr "Prochází se"
 msgid "%d of %d"
 msgstr "%d z %d"
 
-#: rhythmdb/rhythmdb-property-model.c:511
+#: rhythmdb/rhythmdb-property-model.c:512
 msgid "All"
 msgstr "Vše"
 
@@ -3919,7 +3923,7 @@ msgstr "Umělec/Album"
 msgid "Artist - Album"
 msgstr "Umělec – Album"
 
-#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1477
+#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1478
 #: widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Album"
@@ -4131,72 +4135,72 @@ msgstr "Omezený variabilní datový tok"
 msgid "Default settings"
 msgstr "Výchozí nastavení"
 
-#: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1539
-#: widgets/rb-song-info.c:1232
+#: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1540
+#: widgets/rb-song-info.c:1241
 msgid "Lossless"
 msgstr "Bezeztrátový"
 
-#: widgets/rb-entry-view.c:1436
+#: widgets/rb-entry-view.c:1437
 msgid "Track"
 msgstr "Skladba"
 
-#: widgets/rb-entry-view.c:1467
+#: widgets/rb-entry-view.c:1468
 msgid "Composer"
 msgstr "Skladatel"
 
-#: widgets/rb-entry-view.c:1497
+#: widgets/rb-entry-view.c:1498
 msgid "Comment"
 msgstr "Komentář"
 
-#: widgets/rb-entry-view.c:1508
+#: widgets/rb-entry-view.c:1509
 msgid "Time"
 msgstr "Čas"
 
-#: widgets/rb-entry-view.c:1521
+#: widgets/rb-entry-view.c:1522
 msgid "Year"
 msgstr "Rok"
 
-#: widgets/rb-entry-view.c:1534
+#: widgets/rb-entry-view.c:1535
 msgid "Quality"
 msgstr "Kvalita"
 
-#: widgets/rb-entry-view.c:1537
+#: widgets/rb-entry-view.c:1538
 msgid "000 kbps"
 msgstr "000 kb/s"
 
-#: widgets/rb-entry-view.c:1548
+#: widgets/rb-entry-view.c:1549
 msgid "Rating"
 msgstr "Hodnocení"
 
-#: widgets/rb-entry-view.c:1571
+#: widgets/rb-entry-view.c:1572
 msgid "Play Count"
 msgstr "Počet přehrání"
 
-#: widgets/rb-entry-view.c:1584
+#: widgets/rb-entry-view.c:1585
 msgid "Last Played"
 msgstr "Naposledy přehrané"
 
-#: widgets/rb-entry-view.c:1597
+#: widgets/rb-entry-view.c:1598
 msgid "Date Added"
 msgstr "Datum přidání"
 
-#: widgets/rb-entry-view.c:1609
+#: widgets/rb-entry-view.c:1610
 msgid "Last Seen"
 msgstr "Naposledy viděno"
 
-#: widgets/rb-entry-view.c:1620
+#: widgets/rb-entry-view.c:1621
 msgid "Location"
 msgstr "Umístění"
 
-#: widgets/rb-entry-view.c:1630
+#: widgets/rb-entry-view.c:1631
 msgid "BPM"
 msgstr "Tempo"
 
-#: widgets/rb-entry-view.c:1918
+#: widgets/rb-entry-view.c:1919
 msgid "Now Playing"
 msgstr "Právě se přehrává"
 
-#: widgets/rb-entry-view.c:1983
+#: widgets/rb-entry-view.c:1984
 msgid "Playback Error"
 msgstr "Chyba při přehrávání"
 
@@ -4622,31 +4626,31 @@ msgstr "Hledat"
 msgid "_Search:"
 msgstr "_Hledat:"
 
-#: widgets/rb-song-info.c:354
+#: widgets/rb-song-info.c:355
 msgid "_Back"
 msgstr "_Zpět"
 
-#: widgets/rb-song-info.c:363
+#: widgets/rb-song-info.c:364
 msgid "_Forward"
 msgstr "_Vpřed"
 
-#: widgets/rb-song-info.c:371
+#: widgets/rb-song-info.c:372
 msgid "Song Properties"
 msgstr "Vlastnosti skladby"
 
-#: widgets/rb-song-info.c:428
+#: widgets/rb-song-info.c:429
 msgid "Multiple Song Properties"
 msgstr "Vlastnosti více skladeb"
 
-#: widgets/rb-song-info.c:1294
+#: widgets/rb-song-info.c:1303
 msgid "Unknown file name"
 msgstr "Neznámý název souboru"
 
-#: widgets/rb-song-info.c:1316
+#: widgets/rb-song-info.c:1325
 msgid "On the desktop"
 msgstr "Na ploše"
 
-#: widgets/rb-song-info.c:1339
+#: widgets/rb-song-info.c:1348
 msgid "Unknown location"
 msgstr "Neznámé umístění"
 
