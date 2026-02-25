@@ -66,10 +66,7 @@ enum
 
 enum
 {
-	START_DOWNLOAD,
-	FINISH_DOWNLOAD,
 	FEED_UPDATE_STATUS,
-
 	LAST_SIGNAL
 };
 
@@ -206,29 +203,6 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 							       "updating",
 							       FALSE,
 							       G_PARAM_READABLE));
-
-	rb_podcast_manager_signals[START_DOWNLOAD] =
-	       g_signal_new ("start_download",
-		       		G_OBJECT_CLASS_TYPE (object_class),
-		 		G_SIGNAL_RUN_LAST,
-				0,
-				NULL, NULL,
-				NULL,
-				G_TYPE_NONE,
-				1,
-				RHYTHMDB_TYPE_ENTRY);
-
-	rb_podcast_manager_signals[FINISH_DOWNLOAD] =
-	       g_signal_new ("finish_download",
-		       		G_OBJECT_CLASS_TYPE (object_class),
-		 		G_SIGNAL_RUN_LAST,
-				0,
-				NULL, NULL,
-				NULL,
-				G_TYPE_NONE,
-				2,
-				RHYTHMDB_TYPE_ENTRY,
-				G_TYPE_ERROR);
 
 	rb_podcast_manager_signals[FEED_UPDATE_STATUS] =
 		g_signal_new ("feed-update-status",
@@ -1874,7 +1848,6 @@ podcast_download_cb (GObject *source_object, GAsyncResult *res, gpointer data)
 	GError *error = NULL;
 	GTask *task = G_TASK (res);
 	GValue val = {0,};
-	gboolean notify_user = TRUE;
 
 	download = g_task_get_task_data (task);
 	rb_debug ("cleaning up download of %s",
@@ -1902,9 +1875,6 @@ podcast_download_cb (GObject *source_object, GAsyncResult *res, gpointer data)
 			rhythmdb_entry_set (pd->priv->db, download->entry, RHYTHMDB_PROP_PLAYBACK_ERROR, &val);
 			g_value_unset (&val);
 		} else {
-			/* no need to notify for cancellations */
-			notify_user = FALSE;
-
 			rb_debug ("download of %s was cancelled", get_remote_location (download->entry));
 			g_value_init (&val, G_TYPE_ULONG);
 			g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_PAUSED);
@@ -1915,11 +1885,6 @@ podcast_download_cb (GObject *source_object, GAsyncResult *res, gpointer data)
 		unset_download_location (pd->priv->db, download->entry);
 
 		rhythmdb_commit (pd->priv->db);
-	}
-
-	if (notify_user) {
-		g_signal_emit (pd, rb_podcast_manager_signals[FINISH_DOWNLOAD],
-			       0, download->entry, error);
 	}
 
 	g_clear_error (&error);

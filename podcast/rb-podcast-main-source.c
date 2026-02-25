@@ -152,52 +152,6 @@ rb_podcast_main_source_add_subsources (RBPodcastMainSource *source)
 }
 
 static void
-start_download_cb (RBPodcastManager *pd,
-		   RhythmDBEntry *entry,
-		   RBPodcastMainSource *source)
-{
-	RBShell *shell;
-	char *podcast_name;
-
-	podcast_name = g_markup_escape_text (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), -1);
-
-	g_object_get (source, "shell", &shell, NULL);
-	rb_shell_notify_custom (shell, 4000, _("Downloading podcast"), podcast_name, NULL, FALSE);
-	g_object_unref (shell);
-
-	g_free (podcast_name);
-}
-
-static void
-finish_download_cb (RBPodcastManager *pd,
-		    RhythmDBEntry *entry,
-		    GError *error,
-		    RBPodcastMainSource *source)
-{
-	RBShell *shell;
-	char *podcast_name;
-	char *primary, *secondary;
-
-	podcast_name = g_markup_escape_text (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), -1);
-
-	g_object_get (source, "shell", &shell, NULL);
-
-	if (error) {
-		primary = _("Error downloading podcast");
-		secondary = g_strdup_printf ("%s\n\n%s", podcast_name, error->message);
-	} else {
-		primary = _("Finished downloading podcast");
-		secondary = g_strdup_printf ("%s", podcast_name);
-	}
-
-	rb_shell_notify_custom (shell, 4000, primary, secondary, NULL, FALSE);
-	g_object_unref (shell);
-
-	g_free (podcast_name);
-	g_free (secondary);
-}
-
-static void
 error_dialog_response_cb (GtkDialog *dialog, int response, RBPodcastMainSource *source)
 {
 	const char *url = g_object_get_data (G_OBJECT (dialog), "feed-url");
@@ -218,7 +172,6 @@ feed_update_status_cb (RBPodcastManager *mgr, const char *url, RBPodcastFeedUpda
 	RBPodcastSource *source;
 	RhythmDBEntry *entry;
 	RBShell *shell;
-	char *podcast_name;
 	char *nice_error;
 	GtkWidget *dialog;
 	RhythmDB *db;
@@ -262,11 +215,6 @@ feed_update_status_cb (RBPodcastManager *mgr, const char *url, RBPodcastFeedUpda
 		break;
 
 	case RB_PODCAST_FEED_UPDATE_UPDATED:
-		podcast_name = g_markup_escape_text (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_TITLE), -1);
-
-		rb_shell_notify_custom (shell, 4000, _("New updates available from"), podcast_name, NULL, FALSE);
-
-		g_free (podcast_name);
 		break;
 
 	default:
@@ -387,16 +335,6 @@ impl_constructed (GObject *object)
 	source = RB_PODCAST_MAIN_SOURCE (object);
 
 	g_object_get (source, "podcast-manager", &podcast_mgr, NULL);
-
-	g_signal_connect_object (podcast_mgr,
-			        "start_download",
-				G_CALLBACK (start_download_cb),
-				source, 0);
-
-	g_signal_connect_object (podcast_mgr,
-				"finish_download",
-				G_CALLBACK (finish_download_cb),
-				source, 0);
 
 	g_signal_connect_object (podcast_mgr,
 				 "feed-update-status",
