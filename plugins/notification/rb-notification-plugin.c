@@ -271,17 +271,6 @@ notify_playing_entry (RBNotificationPlugin *plugin, gboolean requested)
 }
 
 static void
-notify_custom (RBNotificationPlugin *plugin,
-	       guint timeout,
-	       const char *primary,
-	       const char *secondary,
-	       const char *image_uri,
-	       gboolean requested)
-{
-	do_notify (plugin, timeout, primary, secondary, image_uri, FALSE);
-}
-
-static void
 cleanup_notification (RBNotificationPlugin *plugin)
 {
 	if (plugin->notification != NULL) {
@@ -304,18 +293,6 @@ static void
 shell_notify_playing_cb (RBShell *shell, gboolean requested, RBNotificationPlugin *plugin)
 {
 	notify_playing_entry (plugin, requested);
-}
-
-static void
-shell_notify_custom_cb (RBShell *shell,
-			guint timeout,
-			const char *primary,
-			const char *secondary,
-			const char *image_uri,
-			gboolean requested,
-			RBNotificationPlugin *plugin)
-{
-	notify_custom (plugin, timeout, primary, secondary, image_uri, requested);
 }
 
 static void
@@ -583,7 +560,6 @@ impl_activate (PeasActivatable *bplugin)
 
 	/* connect various things */
 	g_signal_connect_object (shell, "notify-playing-entry", G_CALLBACK (shell_notify_playing_cb), plugin, 0);
-	g_signal_connect_object (shell, "notify-custom", G_CALLBACK (shell_notify_custom_cb), plugin, 0);
 
 	g_signal_connect_object (plugin->shell_player, "playing-song-changed", G_CALLBACK (playing_entry_changed_cb), plugin, 0);
 	g_signal_connect_object (plugin->shell_player, "playing-changed", G_CALLBACK (playing_changed_cb), plugin, 0);
@@ -630,7 +606,6 @@ impl_deactivate	(PeasActivatable *bplugin)
 	}
 
 	g_signal_handlers_disconnect_by_func (shell, shell_notify_playing_cb, plugin);
-	g_signal_handlers_disconnect_by_func (shell, shell_notify_custom_cb, plugin);
 
 	if (plugin->art_store) {
 		rb_ext_db_cancel_requests (plugin->art_store, (RBExtDBRequestCallback) art_cb, plugin);

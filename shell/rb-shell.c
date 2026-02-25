@@ -225,7 +225,6 @@ enum
 	VISIBILITY_CHANGING,
 	CREATE_SONG_INFO,
 	NOTIFY_PLAYING_ENTRY,
-	NOTIFY_CUSTOM,
 	LAST_SIGNAL
 };
 
@@ -1369,27 +1368,6 @@ rb_shell_class_init (RBShellClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
-	/**
-	 * RBShell::notify-custom:
-	 * @shell: the #RBShell
-	 * @timeout: length of time (in seconds) to display the notification
-	 * @primary: main notification text
-	 * @secondary: secondary notification text
-	 * @image_uri: URI for an image to include in the notification (optional)
-	 * @requested: if %TRUE, the notification was triggered by an explicit user action
-	 *
-	 * Emitted when a custom notification should be displayed to the user.
-	 */
-	rb_shell_signals[NOTIFY_CUSTOM] =
-		g_signal_new ("notify-custom",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      0,
-			      NULL, NULL,
-			      NULL,
-			      G_TYPE_NONE,
-			      5,
-			      G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
 	g_type_class_add_private (klass, sizeof (RBShellPrivate));
 }
 
@@ -2656,17 +2634,6 @@ rb_shell_jump_to_current (RBShell *shell, gboolean select_page)
 			rhythmdb_entry_unref (entry);
 		}
 	}
-}
-
-void
-rb_shell_notify_custom (RBShell *shell,
-			guint timeout,
-			const char *primary,
-			const char *secondary,
-			const char *image_uri,
-			gboolean requested)
-{
-	g_signal_emit (shell, rb_shell_signals[NOTIFY_CUSTOM], 0, timeout, primary, secondary, image_uri, requested);
 }
 
 /**

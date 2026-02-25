@@ -142,12 +142,6 @@ gboolean	rb_shell_activate_source (RBShell *shell,
 					  guint play,
 					  GError **error);
 
-void            rb_shell_notify_custom  (RBShell *shell,
-					 guint timeout,
-					 const char *primary,
-					 const char *secondary,
-					 const char *image_uri,
-					 gboolean requested);
 gboolean	rb_shell_do_notify (RBShell *shell,
 				    gboolean requested,
 				    GError **error);
