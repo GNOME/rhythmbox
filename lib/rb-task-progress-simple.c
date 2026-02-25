@@ -43,7 +43,8 @@ struct _RBTaskProgressSimplePrivate
 	char *detail;
 	double progress;
 	RBTaskOutcome outcome;
-	gboolean notify;
+	char *notification;
+	char *notification_body;
 	gboolean cancellable;
 };
 
@@ -73,7 +74,8 @@ enum {
 	PROP_TASK_DETAIL,
 	PROP_TASK_PROGRESS,
 	PROP_TASK_OUTCOME,
-	PROP_TASK_NOTIFY,
+	PROP_TASK_NOTIFICATION,
+	PROP_TASK_NOTIFICATION_BODY,
 	PROP_TASK_CANCELLABLE
 };
 
@@ -105,8 +107,13 @@ impl_set_property (GObject *object,
 	case PROP_TASK_OUTCOME:
 		task->priv->outcome = g_value_get_enum (value);
 		break;
-	case PROP_TASK_NOTIFY:
-		task->priv->notify = g_value_get_boolean (value);
+	case PROP_TASK_NOTIFICATION:
+		g_free (task->priv->notification);
+		task->priv->notification = g_value_dup_string (value);
+		break;
+	case PROP_TASK_NOTIFICATION_BODY:
+		g_free (task->priv->notification_body);
+		task->priv->notification_body = g_value_dup_string (value);
 		break;
 	case PROP_TASK_CANCELLABLE:
 		task->priv->cancellable = g_value_get_boolean (value);
@@ -137,8 +144,11 @@ impl_get_property (GObject *object,
 	case PROP_TASK_OUTCOME:
 		g_value_set_enum (value, task->priv->outcome);
 		break;
-	case PROP_TASK_NOTIFY:
-		g_value_set_boolean (value, task->priv->notify);
+	case PROP_TASK_NOTIFICATION:
+		g_value_set_string (value, task->priv->notification);
+		break;
+	case PROP_TASK_NOTIFICATION_BODY:
+		g_value_set_string (value, task->priv->notification_body);
 		break;
 	case PROP_TASK_CANCELLABLE:
 		g_value_set_boolean (value, task->priv->cancellable);
@@ -156,6 +166,8 @@ impl_finalize (GObject *object)
 
 	g_free (task->priv->label);
 	g_free (task->priv->detail);
+	g_free (task->priv->notification);
+	g_free (task->priv->notification_body);
 
 	G_OBJECT_CLASS (rb_task_progress_simple_parent_class)->finalize (object);
 }
@@ -187,7 +199,8 @@ rb_task_progress_simple_class_init (RBTaskProgressSimpleClass *klass)
 	g_object_class_override_property (gobject_class, PROP_TASK_DETAIL, "task-detail");
 	g_object_class_override_property (gobject_class, PROP_TASK_PROGRESS, "task-progress");
 	g_object_class_override_property (gobject_class, PROP_TASK_OUTCOME, "task-outcome");
-	g_object_class_override_property (gobject_class, PROP_TASK_NOTIFY, "task-notify");
+	g_object_class_override_property (gobject_class, PROP_TASK_NOTIFICATION, "task-notification");
+	g_object_class_override_property (gobject_class, PROP_TASK_NOTIFICATION_BODY, "task-notification-body");
 	g_object_class_override_property (gobject_class, PROP_TASK_CANCELLABLE, "task-cancellable");
 
 	signals[CANCEL_TASK] =

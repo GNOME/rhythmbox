@@ -75,11 +75,17 @@ rb_task_progress_default_init (RBTaskProgressInterface *interface)
 								RB_TASK_OUTCOME_NONE,
 								G_PARAM_READWRITE));
 	g_object_interface_install_property (interface,
-					     g_param_spec_boolean ("task-notify",
-								   "task notify",
-								   "whether to notify on completion",
-								   FALSE,
-								   G_PARAM_READWRITE));
+					     g_param_spec_string ("task-notification",
+								  "task notification",
+								  "text of notification to send on completion",
+								  FALSE,
+								  G_PARAM_READWRITE));
+	g_object_interface_install_property (interface,
+					     g_param_spec_string ("task-notification-body",
+								  "task notification-body",
+								  "body text of notification to send on completion",
+								  FALSE,
+								  G_PARAM_READWRITE));
 	g_object_interface_install_property (interface,
 					     g_param_spec_boolean ("task-cancellable",
 								   "task cancellable",

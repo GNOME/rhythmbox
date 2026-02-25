@@ -57,7 +57,8 @@ enum
 	PROP_TASK_DETAIL,
 	PROP_TASK_PROGRESS,
 	PROP_TASK_OUTCOME,
-	PROP_TASK_NOTIFY,
+	PROP_TASK_NOTIFICATION,
+	PROP_TASK_NOTIFICATION_BODY,
 	PROP_TASK_CANCELLABLE
 };
 
@@ -101,7 +102,7 @@ struct _RhythmDBImportJobPrivate
 	gboolean	complete;
 
 	char		*task_label;
-	gboolean	task_notify;
+	char		*task_notification;
 };
 
 G_DEFINE_TYPE_EXTENDED (RhythmDBImportJob,
@@ -664,8 +665,11 @@ impl_set_property (GObject *object,
 	case PROP_TASK_OUTCOME:
 		/* ignore */
 		break;
-	case PROP_TASK_NOTIFY:
-		job->priv->task_notify = g_value_get_boolean (value);
+	case PROP_TASK_NOTIFICATION:
+		job->priv->task_notification = g_value_dup_string (value);
+		break;
+	case PROP_TASK_NOTIFICATION_BODY:
+		/* ignore */
 		break;
 	case PROP_TASK_CANCELLABLE:
 		/* ignore */
@@ -728,8 +732,11 @@ impl_get_property (GObject *object,
 			g_value_set_enum (value, RB_TASK_OUTCOME_NONE);
 		}
 		break;
-	case PROP_TASK_NOTIFY:
-		g_value_set_boolean (value, job->priv->task_notify);
+	case PROP_TASK_NOTIFICATION:
+		g_value_set_string (value, job->priv->task_notification);
+		break;
+	case PROP_TASK_NOTIFICATION_BODY:
+		g_value_set_string (value, NULL);
 		break;
 	case PROP_TASK_CANCELLABLE:
 		g_value_set_boolean (value, TRUE);
@@ -822,7 +829,8 @@ rhythmdb_import_job_class_init (RhythmDBImportJobClass *klass)
 	g_object_class_override_property (object_class, PROP_TASK_DETAIL, "task-detail");
 	g_object_class_override_property (object_class, PROP_TASK_PROGRESS, "task-progress");
 	g_object_class_override_property (object_class, PROP_TASK_OUTCOME, "task-outcome");
-	g_object_class_override_property (object_class, PROP_TASK_NOTIFY, "task-notify");
+	g_object_class_override_property (object_class, PROP_TASK_NOTIFICATION, "task-notification");
+	g_object_class_override_property (object_class, PROP_TASK_NOTIFICATION_BODY, "task-notification-body");
 	g_object_class_override_property (object_class, PROP_TASK_CANCELLABLE, "task-cancellable");
 
 	/**
