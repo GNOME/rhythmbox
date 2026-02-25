@@ -141,6 +141,11 @@ static void rb_shell_select_page (RBShell *shell, RBDisplayPage *display_page);
 static void display_page_selected_cb (RBDisplayPageTree *display_page_tree,
 				      RBDisplayPage *page,
 				      RBShell *shell);
+static void rb_shell_task_list_changed_cb (RBListModel *model,
+					   int position,
+					   int removed,
+					   int added,
+					   RBShell *shell);
 static void rb_shell_playing_source_changed_cb (RBShellPlayer *player,
 						RBSource *source,
 						RBShell *shell);
@@ -529,6 +534,10 @@ construct_widgets (RBShell *shell)
 	rb_debug ("shell: initializing shell services");
 
 	shell->priv->task_list = rb_task_list_new ();
+	g_signal_connect_object (rb_task_list_get_model (shell->priv->task_list),
+				 "items-changed",
+				 G_CALLBACK (rb_shell_task_list_changed_cb),
+				 shell, 0);
 	shell->priv->task_list_display = rb_task_list_display_new (rb_task_list_get_model (shell->priv->task_list));
 	gtk_widget_show (shell->priv->task_list_display);
 
@@ -2197,6 +2206,51 @@ rb_shell_display_page_deleted_cb (RBDisplayPage *page, RBShell *shell)
 	gtk_notebook_remove_page (GTK_NOTEBOOK (shell->priv->notebook),
 				  gtk_notebook_page_num (GTK_NOTEBOOK (shell->priv->notebook),
 							 GTK_WIDGET (page)));
+}
+
+static void
+rb_shell_task_outcome_cb (GObject *object, GParamSpec *pspec, RBShell *shell)
+{
+	RBTaskOutcome outcome;
+
+	g_object_get (object, "task-outcome", &outcome, NULL);
+	if (outcome == RB_TASK_OUTCOME_COMPLETE) {
+		GNotification *n;
+		char *title = NULL;
+		char *body = NULL;
+
+		g_object_get (object,
+			      "task-notification", &title,
+			      "task-notification-body", &body,
+			      NULL);
+		n = g_notification_new (title);
+		if (body != NULL)
+			g_notification_set_body (n, body);
+		g_free (title);
+		g_free (body);
+
+		g_application_send_notification (G_APPLICATION (shell->priv->application), "task-complete", n);
+	}
+}
+
+static void
+rb_shell_task_list_changed_cb (RBListModel *model, int position, int removed, int added, RBShell *shell)
+{
+	int i;
+	RBTaskProgress *task;
+	char *notification;
+
+	for (i = 0; i < added; i++) {
+		task = RB_TASK_PROGRESS (rb_list_model_get (model, i + position));
+		g_object_get (task, "task-notification", &notification, NULL);
+		if (notification != NULL) {
+			g_signal_connect_object (task,
+						 "notify::task-outcome", G_CALLBACK (rb_shell_task_outcome_cb),
+						 shell, 0);
+		}
+		g_free (notification);
+		notification = NULL;
+	}
 }
 
 static void
