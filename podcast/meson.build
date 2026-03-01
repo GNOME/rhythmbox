@@ -60,3 +60,9 @@ test_podcast_parse = executable('test-podcast-parse',
   c_args: c_args,
   dependencies: [librb_dep, totem_plparser],
   link_with: [librbpodcast_parse])
+
+test_podcast_resolve = executable('test-podcast-resolve',
+  'test-podcast-resolve.c',
+  c_args: c_args,
+  dependencies: [librb_dep],
+  link_with: [librbpodcast_parse])
