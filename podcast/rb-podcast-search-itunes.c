@@ -49,6 +49,7 @@ struct _RBPodcastSearchITunes
 	RBPodcastSearch parent;
 
 	SoupSession *session;
+	char *input;
 };
 
 struct _RBPodcastSearchITunesClass
@@ -62,6 +63,7 @@ static void rb_podcast_search_itunes_init (RBPodcastSearchITunes *search);
 G_DEFINE_TYPE (RBPodcastSearchITunes, rb_podcast_search_itunes, RB_TYPE_PODCAST_SEARCH);
 
 #define ITUNES_SEARCH_URI	"https://itunes.apple.com/search"
+#define ITUNES_LOOKUP_URI	"https://itunes.apple.com/lookup"
 
 static void
 process_results (RBPodcastSearchITunes *search, JsonParser *parser)
@@ -157,6 +159,7 @@ impl_start (RBPodcastSearch *bsearch, const char *text, int max_results)
 	char *query;
 
 	search->session = soup_session_new ();
+	soup_session_set_timeout (search->session, 10);
 
 	limit = g_strdup_printf ("%d", max_results);
 
@@ -180,6 +183,112 @@ impl_start (RBPodcastSearch *bsearch, const char *text, int max_results)
 					  search);
 
 	g_free (limit);
+}
+
+static char *
+impl_resolve (RBPodcastSearch *bsearch, const char *uri, GCancellable *cancellable, GError **error)
+{
+	RBPodcastSearchITunes *search = RB_PODCAST_SEARCH_ITUNES (bsearch);
+	SoupMessage *message = NULL;
+	SoupSession *session = NULL;
+	GBytes *bytes = NULL;
+	JsonParser *parser;
+	JsonObject *container;
+	JsonArray *results;
+	JsonObject *feed;
+	const char *body;
+	size_t size;
+	const char *url;
+	gchar *path, *id, *query;
+
+	if (g_uri_split (uri, G_URI_FLAGS_NONE, NULL, NULL, NULL, NULL, &path, NULL, NULL, error) == FALSE) {
+		rb_debug ("unable to parse podcast uri %s: %s", uri, (*error)->message);
+		return NULL;
+	}
+
+	id = strstr (path, "/id");
+	if (id == NULL) {
+		rb_debug ("unable to find itunes id in path %s", path);
+		return NULL;
+	}
+	id += strlen ("/id");
+
+	query = soup_form_encode ("entity", "podcast",
+				  "id", id,
+				  NULL);
+
+	message = soup_message_new_from_encoded_form (SOUP_METHOD_GET,
+						      ITUNES_LOOKUP_URI,
+						      query);
+
+	session = soup_session_new ();
+	soup_session_set_timeout (session, 10);
+	bytes = soup_session_send_and_read (session,
+					    message,
+					    cancellable,
+					    error);
+	if (bytes == NULL) {
+		rb_debug ("lookup request for %s failed: %s", uri, (*error)->message);
+		goto error;
+	}
+
+	if (soup_message_get_status (message) != SOUP_STATUS_OK) {
+		const char *reason;
+		reason = soup_message_get_reason_phrase (message);
+		rb_debug ("lookup request for %s returned bad status: %s", search->input, reason);
+		g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED, "%s", reason);
+		goto error;
+	}
+
+	body = g_bytes_get_data (bytes, &size);
+	if (size == 0) {
+		rb_debug ("lookup request for %s returned no response data", search->input);
+		goto error;
+	}
+	g_assert (body != NULL);
+
+	parser = json_parser_new ();
+	if (json_parser_load_from_data (parser, body, size, error) == FALSE) {
+		rb_debug ("unable to parse response data: %s", (*error)->message);
+		goto error;
+	}
+
+	container = json_node_get_object (json_parser_get_root (parser));
+	results = json_node_get_array (json_object_get_member (container, "results"));
+
+	if (json_array_get_length (results) == 0) {
+		rb_debug ("lookup request for %s returned no results", search->input);
+		goto error;
+	}
+
+	feed = json_array_get_object_element (results, 0);
+
+	/* check wrapperType==track, kind==podcast ? */
+
+	url = json_object_get_string_member (feed, "feedUrl");
+	rb_debug ("resolved %s to feed url %s", uri, url);
+	return g_strdup (url);
+ error:
+	g_object_unref (message);
+	g_object_unref (session);
+	g_object_unref (parser);
+	g_bytes_unref (bytes);
+	return NULL;
+}
+
+static gboolean
+impl_can_resolve (RBPodcastSearch *search, const char *uri)
+{
+	if (g_str_has_prefix (uri, "https://") == FALSE && g_str_has_prefix (uri, "http://") == FALSE)
+		return FALSE;
+
+	if (strstr (uri, ".apple.com/") == NULL)
+		return FALSE;
+
+	if (strstr (uri, "/podcast/") != NULL || strstr (uri, "viewPodcast") != NULL)
+		return TRUE;
+
+	return FALSE;
 }
 
 static void
@@ -207,6 +316,16 @@ impl_dispose (GObject *object)
 }
 
 static void
+impl_finalize (GObject *object)
+{
+	RBPodcastSearchITunes *search = RB_PODCAST_SEARCH_ITUNES (object);
+
+	g_free (search->input);
+
+	G_OBJECT_CLASS (rb_podcast_search_itunes_parent_class)->finalize (object);
+}
+
+static void
 rb_podcast_search_itunes_init (RBPodcastSearchITunes *search)
 {
 	/* do nothing? */
@@ -219,7 +338,10 @@ rb_podcast_search_itunes_class_init (RBPodcastSearchITunesClass *klass)
 	RBPodcastSearchClass *search_class = RB_PODCAST_SEARCH_CLASS (klass);
 
 	object_class->dispose = impl_dispose;
+	object_class->finalize = impl_finalize;
 
 	search_class->cancel = impl_cancel;
 	search_class->start = impl_start;
+	search_class->can_resolve = impl_can_resolve;
+	search_class->resolve = impl_resolve;
 }
