@@ -67,6 +67,7 @@ typedef struct
 	int refcount;
 
 	char* url;
+	char* resolved_url;
 	char* title;
 	char* lang;
     	char* description;

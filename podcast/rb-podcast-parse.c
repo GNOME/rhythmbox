@@ -240,6 +240,7 @@ rb_podcast_parse_load_feed (RBPodcastChannel *channel,
 {
 	TotemPlParser *plparser;
 	RBPodcastParseData *data;
+	const char *url;
 
 	data = g_new0 (RBPodcastParseData, 1);
 	data->channel = channel;
@@ -252,7 +253,11 @@ rb_podcast_parse_load_feed (RBPodcastChannel *channel,
 	g_signal_connect (plparser, "playlist-started", G_CALLBACK (playlist_started), channel);
 	g_signal_connect (plparser, "playlist-ended", G_CALLBACK (playlist_ended), channel);
 
-	totem_pl_parser_parse_async (plparser, channel->url, FALSE, cancellable, parse_cb, data);
+	url = channel->url;
+	if (channel->resolved_url)
+		url = channel->resolved_url;
+
+	totem_pl_parser_parse_async (plparser, url, FALSE, cancellable, parse_cb, data);
 }
 
 RBPodcastChannel *
@@ -269,6 +274,7 @@ rb_podcast_parse_channel_copy (RBPodcastChannel *data)
 {
 	RBPodcastChannel *copy = rb_podcast_parse_channel_new ();
 	copy->url = g_strdup (data->url);
+	copy->resolved_url = g_strdup (data->resolved_url);
 	copy->title = g_strdup (data->title);
 	copy->lang = g_strdup (data->lang);
 	copy->description = g_strdup (data->description);
@@ -318,6 +324,7 @@ rb_podcast_parse_channel_unref (RBPodcastChannel *data)
 	data->posts = NULL;
 
 	g_free (data->url);
+	g_free (data->resolved_url);
 	g_free (data->title);
 	g_free (data->lang);
 	g_free (data->description);
