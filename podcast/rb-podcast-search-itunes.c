@@ -86,6 +86,7 @@ process_results (RBPodcastSearchITunes *search, JsonParser *parser)
 		channel = rb_podcast_parse_channel_new ();
 
 		channel->url = g_strdup (json_object_get_string_member (feed, "collectionViewUrl"));
+		channel->resolved_url = g_strdup (json_object_get_string_member (feed, "feedUrl"));
 		channel->title = g_strdup (json_object_get_string_member (feed, "collectionName"));
 		channel->author = g_strdup (json_object_get_string_member (feed, "artistName"));
 		channel->img = g_strdup (json_object_get_string_member (feed, "artworkUrl100"));	/* 100? */
