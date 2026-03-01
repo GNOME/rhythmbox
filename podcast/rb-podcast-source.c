@@ -140,16 +140,16 @@ podcast_posts_show_popup_cb (RBEntryView *view,
 			     RBPodcastSource *source)
 {
 	GAction* action;
-	GList *lst;
+	GList *entries, *l;
 	gboolean downloadable = FALSE;
 	gboolean cancellable = FALSE;
 	GtkWidget *menu;
 	GActionMap *map;
 
-	lst = rb_entry_view_get_selected_entries (view);
+	entries = rb_entry_view_get_selected_entries (view);
 
-	while (lst) {
-		RhythmDBEntry *entry = (RhythmDBEntry*) lst->data;
+	for (l = entries; l != NULL; l = l->next) {
+		RhythmDBEntry *entry = (RhythmDBEntry*) l->data;
 		gulong status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
 
 		if (rb_podcast_manager_entry_in_download_queue (source->priv->podcast_mgr, entry)) {
@@ -157,12 +157,9 @@ podcast_posts_show_popup_cb (RBEntryView *view,
 		} else if (status != RHYTHMDB_PODCAST_STATUS_COMPLETE) {
 			downloadable = TRUE;
 		}
-
-		lst = lst->next;
 	}
 
-	g_list_foreach (lst, (GFunc)rhythmdb_entry_unref, NULL);
-	g_list_free (lst);
+	g_list_free_full (entries, (GDestroyNotify)rhythmdb_entry_unref);
 
 	map = G_ACTION_MAP (g_application_get_default ());
 	action = g_action_map_lookup_action (map, "podcast-download");
@@ -410,18 +407,18 @@ static void
 podcast_download_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
 	RBPodcastSource *source = RB_PODCAST_SOURCE (data);
-	GList *lst;
+	GList *entries, *l;
 	GValue val = {0, };
 	RBEntryView *posts;
 
 	rb_debug ("Add to download action");
 	posts = source->priv->posts;
 
-	lst = rb_entry_view_get_selected_entries (posts);
+	entries = rb_entry_view_get_selected_entries (posts);
 	g_value_init (&val, G_TYPE_ULONG);
 
-	while (lst != NULL) {
-		RhythmDBEntry *entry  = (RhythmDBEntry *) lst->data;
+	for (l = entries; l != NULL; l = l->next) {
+		RhythmDBEntry *entry  = (RhythmDBEntry *) l->data;
 		gulong status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
 
 		if (status == RHYTHMDB_PODCAST_STATUS_PAUSED ||
@@ -430,32 +427,29 @@ podcast_download_action_cb (GSimpleAction *action, GVariant *parameter, gpointer
 			rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
 			rb_podcast_manager_download_entry (source->priv->podcast_mgr, entry);
 		}
-
-		lst = lst->next;
 	}
 	g_value_unset (&val);
 	rhythmdb_commit (source->priv->db);
 
-	g_list_foreach (lst, (GFunc)rhythmdb_entry_unref, NULL);
-	g_list_free (lst);
+	g_list_free_full (entries, (GDestroyNotify)rhythmdb_entry_unref);
 }
 
 static void
 podcast_download_cancel_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
 	RBPodcastSource *source = RB_PODCAST_SOURCE (data);
-	GList *lst;
+	GList *entries, *l;
 	GValue val = {0, };
 	RBEntryView *posts;
 
 	posts = source->priv->posts;
 
-	lst = rb_entry_view_get_selected_entries (posts);
+	entries = rb_entry_view_get_selected_entries (posts);
 	g_value_init (&val, G_TYPE_ULONG);
 	g_value_set_ulong (&val, RHYTHMDB_PODCAST_STATUS_PAUSED);
 
-	while (lst != NULL) {
-		RhythmDBEntry *entry  = (RhythmDBEntry *) lst->data;
+	for (l = entries; l != NULL; l = l->next) {
+		RhythmDBEntry *entry  = (RhythmDBEntry *) l->data;
 		gulong status = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
 
 		if (status < RHYTHMDB_PODCAST_STATUS_COMPLETE ||
@@ -464,15 +458,12 @@ podcast_download_cancel_action_cb (GSimpleAction *action, GVariant *parameter, g
 				rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_STATUS, &val);
 			}
 		}
-
-		lst = lst->next;
 	}
 
 	g_value_unset (&val);
 	rhythmdb_commit (source->priv->db);
 
-	g_list_foreach (lst, (GFunc)rhythmdb_entry_unref, NULL);
-	g_list_free (lst);
+	g_list_free_full (entries, (GDestroyNotify)rhythmdb_entry_unref);
 }
 
 static void
@@ -1018,22 +1009,17 @@ static void
 impl_add_to_queue (RBSource *source, RBSource *queue)
 {
 	RBEntryView *songs;
-	GList *selection;
-	GList *iter;
+	GList *entries, *l;
 
 	songs = rb_source_get_entry_view (source);
-	selection = rb_entry_view_get_selected_entries (songs);
+	entries = rb_entry_view_get_selected_entries (songs);
 
-	if (selection == NULL)
-		return;
-
-	for (iter = selection; iter; iter = iter->next) {
-		RhythmDBEntry *entry = (RhythmDBEntry *)iter->data;
+	for (l = entries; l != NULL; l = l->next) {
+		RhythmDBEntry *entry = (RhythmDBEntry *)l->data;
 		rb_static_playlist_source_add_entry (RB_STATIC_PLAYLIST_SOURCE (queue),
 						     entry, -1);
-		rhythmdb_entry_unref (entry);
 	}
-	g_list_free (selection);
+	g_list_free_full (entries, (GDestroyNotify)rhythmdb_entry_unref);
 }
 
 static void
@@ -1080,8 +1066,7 @@ delete_response_cb (GtkDialog *dialog, int response, RBPodcastSource *source)
 		}
 	}
 
-	g_list_foreach (entries, (GFunc)rhythmdb_entry_unref, NULL);
-	g_list_free (entries);
+	g_list_free_full (entries, (GDestroyNotify)rhythmdb_entry_unref);
 
 	rhythmdb_commit (source->priv->db);
 }
