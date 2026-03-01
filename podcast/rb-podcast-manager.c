@@ -128,6 +128,10 @@ struct RBPodcastManagerPrivate
 
 	guint update_feeds_id;
 	GList *updating;
+	RBTaskProgress *parse_progress;
+	int parse_total;
+	int parse_done;
+	int parse_new_episodes;
 
 	GArray *searches;
 	GSettings *settings;
@@ -177,6 +181,7 @@ static gboolean cancel_download				(RBPodcastDownload *pd);
 static void rb_podcast_manager_start_update_timer 	(RBPodcastManager *pd);
 static void update_download_progress			(RBPodcastManager *pd);
 static gboolean update_download_progress_idle		(RBPodcastManager *pd);
+static void update_parse_progress			(RBPodcastManager *pd);
 static void cancel_all_downloads			(RBPodcastManager *pd);
 
 static void podcast_album_art_request_cb		(RBExtDB *db,
@@ -566,6 +571,30 @@ update_download_progress_idle (RBPodcastManager *pd)
 	update_download_progress (pd);
 	pd->priv->update_progress_id = 0;
 	return FALSE;
+}
+
+static void
+update_parse_progress (RBPodcastManager *pd)
+{
+	double progress;
+
+	if (pd->priv->parse_done == pd->priv->parse_total) {
+		char *body;
+		const char *fmt;
+
+		fmt = ngettext ("%d new episode available", "%d new episodes available", pd->priv->parse_new_episodes);
+		body = g_strdup_printf (fmt, pd->priv->parse_new_episodes);
+		g_object_set (pd->priv->parse_progress,
+			      "task-notification-body", body,
+			      "task-outcome", RB_TASK_OUTCOME_COMPLETE,
+			      "task-progress", 1.0,
+			      NULL);
+		g_clear_object (&pd->priv->parse_progress);
+		g_free (body);
+	} else {
+		progress = ((double)pd->priv->parse_done) / pd->priv->parse_total;
+		g_object_set (pd->priv->parse_progress, "task-progress", progress, NULL);
+	}
 }
 
 gboolean
@@ -1038,6 +1067,10 @@ process_feed_update (RBPodcastUpdate *update)
 		if (update->error)
 			msg = update->error->message;
 		emit_feed_update_status (update->pd, update->channel, update->status, msg);
+
+		update->pd->priv->parse_done++;
+		update_parse_progress (update->pd);
+
 		podcast_update_free (update);
 	}
 }
@@ -1046,6 +1079,23 @@ gboolean
 rb_podcast_manager_subscribe_feed (RBPodcastManager *pd, const char *url, gboolean automatic)
 {
 	RBPodcastUpdate *update;
+
+	if (pd->priv->parse_progress == NULL) {
+		pd->priv->parse_progress = rb_task_progress_simple_new ();
+		g_object_set (pd->priv->parse_progress,
+			      "task-label", _("Updating podcast feeds"),
+			      "task-notification", _("Finished updating podcast feeds"),
+			      NULL);
+
+		rb_task_list_add_task (pd->priv->task_list, pd->priv->parse_progress);
+
+		pd->priv->parse_total = 0;
+		pd->priv->parse_done = 0;
+		pd->priv->parse_new_episodes = 0;
+	}
+
+	pd->priv->parse_total++;
+	update_parse_progress (pd);
 
 	update = g_new0 (RBPodcastUpdate, 1);
 	update->pd = g_object_ref (pd);
@@ -1742,6 +1792,8 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 			    item->filesize);
 
 		if (new_entry && (post_entry != NULL)) {
+			pd->priv->parse_new_episodes++;
+
 			if (status == RB_PODCAST_FEED_UPDATE_UNCHANGED) {
 				status = RB_PODCAST_FEED_UPDATE_UPDATED;
 			}
