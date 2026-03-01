@@ -947,7 +947,9 @@ impl_get_property (GObject *object,
 		break;
 	case PROP_TASK_PROGRESS:
 	case PROP_PROGRESS:		/* needed? */
-		{
+		if ((batch->priv->entries == NULL) && (batch->priv->done_entries != NULL)) {
+			g_value_set_double (value, 1.0);
+		} else {
 			double p = batch->priv->total_fraction;
 			if (batch->priv->current != NULL) {
 				p += batch->priv->current_fraction * batch->priv->current_entry_fraction;
