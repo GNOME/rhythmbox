@@ -57,6 +57,54 @@ rb_podcast_search_cancel (RBPodcastSearch *search)
 	klass->cancel (search);
 }
 
+gboolean
+rb_podcast_search_can_resolve (RBPodcastSearch *search, const char *url)
+{
+	RBPodcastSearchClass *klass = RB_PODCAST_SEARCH_GET_CLASS (search);
+	if (klass->can_resolve)
+		return klass->can_resolve (search, url);
+
+	return FALSE;
+}
+
+static void
+resolve_task (GTask *task, gpointer source_object, gpointer task_data, GCancellable *cancellable)
+{
+	RBPodcastSearch *search = RB_PODCAST_SEARCH (source_object);
+	RBPodcastSearchClass *klass = RB_PODCAST_SEARCH_GET_CLASS (search);
+	char *resolved;
+	GError *error = NULL;
+
+	resolved = klass->resolve (search, (const char *)task_data, g_task_get_cancellable (task), &error);
+	if (error != NULL) {
+		g_task_return_error (task, error);
+	} else {
+		g_task_return_pointer (task, resolved, g_free);
+	}
+}
+
+void
+rb_podcast_search_resolve (RBPodcastSearch *search, const char *url, GAsyncReadyCallback callback, gpointer data)
+{
+	RBPodcastSearchClass *klass = RB_PODCAST_SEARCH_GET_CLASS (search);
+	GTask *task;
+
+	g_assert (klass->resolve != NULL);
+
+	task = g_task_new (search, NULL, callback, data);
+	g_task_set_task_data (task, g_strdup (url), g_free);
+	g_task_run_in_thread (task, resolve_task);
+}
+
+char *
+rb_podcast_search_resolve_finish (RBPodcastSearch *search, GAsyncResult *result, const char **orig_url, GError **error)
+{
+	GTask *task = G_TASK (result);
+
+	*orig_url = g_task_get_task_data (task);
+	return g_task_propagate_pointer (task, error);
+}
+
 void
 rb_podcast_search_result (RBPodcastSearch *search, RBPodcastChannel *data)
 {

@@ -55,16 +55,22 @@ struct _RBPodcastSearchClass
 
 	/* methods */
 	void	(*start)	(RBPodcastSearch *search, const char *text, int max_results);
+	gboolean (*can_resolve)	(RBPodcastSearch *search, const char *url);
+	char *	(*resolve)	(RBPodcastSearch *search, const char *url, GCancellable *cancellable, GError **error);
 	void	(*cancel)	(RBPodcastSearch *search);
 };
 
 GType		rb_podcast_search_get_type		(void);
 
 void		rb_podcast_search_start			(RBPodcastSearch *search, const char *text, int max_results);
+gboolean	rb_podcast_search_can_resolve		(RBPodcastSearch *search, const char *url);
+void		rb_podcast_search_resolve		(RBPodcastSearch *search, const char *url, GAsyncReadyCallback callback, gpointer data);
+char *		rb_podcast_search_resolve_finish	(RBPodcastSearch *search, GAsyncResult *result, const char **orig_url, GError **error);
 void		rb_podcast_search_cancel		(RBPodcastSearch *search);
 
 void		rb_podcast_search_result		(RBPodcastSearch *search, RBPodcastChannel *data);
 void		rb_podcast_search_finished		(RBPodcastSearch *search, gboolean successful);
+void		rb_podcast_search_resolved		(RBPodcastSearch *search, const char *orig_uri, const char *uri);
 
 /* built in search types */
 
