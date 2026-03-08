@@ -169,7 +169,7 @@ static gboolean
 electromagnetic_shotgun (gpointer data)
 {
 	ServiceData *c = (ServiceData *)data;
-	GTime now = time(NULL);
+	time_t now = time(NULL);
 	int idle = now - c->last_active;
 
 	/* quit if we haven't done anything for a while */
