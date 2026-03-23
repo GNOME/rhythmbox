@@ -193,7 +193,7 @@ impl_resolve (RBPodcastSearch *bsearch, const char *uri, GCancellable *cancellab
 	SoupMessage *message = NULL;
 	SoupSession *session = NULL;
 	GBytes *bytes = NULL;
-	JsonParser *parser;
+	g_autoptr(JsonParser) parser = NULL;
 	JsonObject *container;
 	JsonArray *results;
 	JsonObject *feed;
@@ -272,7 +272,6 @@ impl_resolve (RBPodcastSearch *bsearch, const char *uri, GCancellable *cancellab
  error:
 	g_object_unref (message);
 	g_object_unref (session);
-	g_object_unref (parser);
 	g_bytes_unref (bytes);
 	return NULL;
 }
