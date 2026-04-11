@@ -834,7 +834,7 @@ bus_cb (GstBus *bus, GstMessage *message, RBPlayerGstMultiStream *stream)
 			emit_playing_stream_and_tags (stream);
 			g_free (old_uri);
 		} else {
-			rb_debug ("ignoring eos for stream %s", stream->uri);
+			_rb_player_emit_eos (RB_PLAYER (stream->player), stream->stream_data, FALSE);
 		}
 
 		/* might need to handle other conditions here? */
