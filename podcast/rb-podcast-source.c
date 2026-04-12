@@ -719,6 +719,16 @@ podcast_feed_pixbuf_cell_data_func (GtkTreeViewColumn *column,
 	g_object_set (renderer, "icon-name", icon, NULL);
 }
 
+static char *
+podcast_get_playing_icon_cb (RBEntryView *view, RhythmDBEntry *entry, const char *current, RBPodcastSource *source)
+{
+	/* indicate episodes that have been played, but don't override playing/paused/error icons */
+	if (current == NULL && rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_PLAY_COUNT) > 0)
+		return g_strdup ("object-select-symbolic");
+
+	return NULL;
+}
+
 static void
 podcast_downloaded_cell_data_func (GtkTreeViewColumn *column,
 				   GtkCellRenderer *renderer,
@@ -1318,13 +1328,13 @@ impl_constructed (GObject *object)
 
 	source->priv->paned = gtk_paned_new (GTK_ORIENTATION_VERTICAL);
 
-
 	/* set up posts view */
 	source->priv->posts = rb_entry_view_new (source->priv->db,
 						 G_OBJECT (shell_player),
 						 TRUE, FALSE);
 	g_object_unref (shell_player);
 
+	g_signal_connect_object (source->priv->posts, "get-playing-icon", G_CALLBACK (podcast_get_playing_icon_cb), source, 0);
 
 	/* downloaded column */
 	column = gtk_tree_view_column_new ();
