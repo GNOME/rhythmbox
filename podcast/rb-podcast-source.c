@@ -101,9 +101,6 @@ struct _RBPodcastSourcePrivate
 
 	RBPodcastManager *podcast_mgr;
 
-	GdkPixbuf *error_pixbuf;
-	GdkPixbuf *refresh_pixbuf;
-
 	GMenuModel *feed_popup;
 	GMenuModel *episode_popup;
 	GMenuModel *search_popup;
@@ -759,7 +756,7 @@ podcast_feed_pixbuf_cell_data_func (GtkTreeViewColumn *column,
 {
 	char *title;
 	RhythmDBEntry *entry = NULL;
-	GdkPixbuf *pixbuf = NULL;
+	const char *icon = NULL;
 
 	gtk_tree_model_get (tree_model, iter,
 			    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &title,
@@ -771,12 +768,12 @@ podcast_feed_pixbuf_cell_data_func (GtkTreeViewColumn *column,
 	if (entry != NULL) {
 		const char *url = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
 		if (rb_podcast_manager_feed_updating (source->priv->podcast_mgr, url)) {
-			pixbuf = source->priv->refresh_pixbuf;
+			icon = "view-refresh-symbolic";
 		} else if (rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_PLAYBACK_ERROR)) {
-			pixbuf = source->priv->error_pixbuf;
+			icon = "dialog-error-symbolic";
 		}
 	}
-	g_object_set (renderer, "pixbuf", pixbuf, NULL);
+	g_object_set (renderer, "icon-name", icon, NULL);
 }
 
 static void
@@ -1498,7 +1495,6 @@ impl_constructed (GObject *object)
 						 (GtkTreeCellDataFunc) podcast_feed_pixbuf_cell_data_func,
 						 source, NULL);
 	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-	gtk_tree_view_column_set_fixed_width (column, gdk_pixbuf_get_width (source->priv->error_pixbuf) + 5);
 	gtk_tree_view_column_set_reorderable (column, FALSE);
 	gtk_tree_view_column_set_visible (column, TRUE);
 	rb_property_view_append_column_custom (source->priv->feeds, column);
@@ -1642,8 +1638,6 @@ impl_dispose (GObject *object)
 	g_clear_pointer (&source->priv->search_query, rhythmdb_query_free);
 	g_clear_object (&source->priv->db);
 	g_clear_object (&source->priv->podcast_mgr);
-	g_clear_object (&source->priv->error_pixbuf);
-	g_clear_object (&source->priv->refresh_pixbuf);
 	g_clear_object (&source->priv->search_action);
 	g_clear_object (&source->priv->search_popup);
 
@@ -1673,24 +1667,11 @@ impl_finalize (GObject *object)
 static void
 rb_podcast_source_init (RBPodcastSource *source)
 {
-	GtkIconTheme *icon_theme;
 	source->priv = G_TYPE_INSTANCE_GET_PRIVATE (source,
 						    RB_TYPE_PODCAST_SOURCE,
 						    RBPodcastSourcePrivate);
 
 	source->priv->selected_feeds = NULL;
-
-	icon_theme = gtk_icon_theme_get_default ();
-	source->priv->error_pixbuf = gtk_icon_theme_load_icon (icon_theme,
-							       "dialog-error-symbolic",
-							       16,
-							       0,
-							       NULL);
-	source->priv->refresh_pixbuf = gtk_icon_theme_load_icon (icon_theme,
-								 "view-refresh-symbolic",
-								 16,
-								 0,
-								 NULL);
 }
 
 static void
