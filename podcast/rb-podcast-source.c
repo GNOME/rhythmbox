@@ -593,54 +593,6 @@ podcast_feed_update_all_action_cb (GSimpleAction *action, GVariant *parameter, g
 }
 
 static void
-podcast_post_status_cell_data_func (GtkTreeViewColumn *column,
-				    GtkCellRenderer *renderer,
-				    GtkTreeModel *tree_model,
-				    GtkTreeIter *iter,
-				    RBPodcastSource *source)
-
-{
-	RhythmDBEntry *entry;
-	guint value;
-	char *s;
-
-	gtk_tree_model_get (tree_model, iter, 0, &entry, -1);
-
-	switch (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS)) {
-	case RHYTHMDB_PODCAST_STATUS_COMPLETE:
-		g_object_set (renderer, "text", _("Downloaded"), NULL);
-		value = 100;
-		break;
-	case RHYTHMDB_PODCAST_STATUS_ERROR:
-		g_object_set (renderer, "text", _("Failed"), NULL);
-		value = 0;
-		break;
-	case RHYTHMDB_PODCAST_STATUS_WAITING:
-		g_object_set (renderer, "text", _("Waiting"), NULL);
-		value = 0;
-		break;
-	case RHYTHMDB_PODCAST_STATUS_PAUSED:
-		g_object_set (renderer, "text", "", NULL);
-		value = 0;
-		break;
-	default:
-		value = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS);
-		s = g_strdup_printf ("%u %%", value);
-
-		g_object_set (renderer, "text", s, NULL);
-		g_free (s);
-		break;
-	}
-
-	g_object_set (renderer, "visible",
-		      rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_STATUS) != RHYTHMDB_PODCAST_STATUS_PAUSED,
-		      "value", value,
-		      NULL);
-
-	rhythmdb_entry_unref (entry);
-}
-
-static void
 podcast_post_feed_cell_data_func (GtkTreeViewColumn *column,
 				  GtkCellRenderer *renderer,
 				  GtkTreeModel *tree_model,
@@ -768,6 +720,29 @@ podcast_feed_pixbuf_cell_data_func (GtkTreeViewColumn *column,
 }
 
 static void
+podcast_downloaded_cell_data_func (GtkTreeViewColumn *column,
+				   GtkCellRenderer *renderer,
+				   GtkTreeModel *tree_model,
+				   GtkTreeIter *iter,
+				   RBPodcastSource *source)
+{
+	RhythmDBEntry *entry;
+	const char *text;
+
+	gtk_tree_model_get (tree_model, iter, 0, &entry, -1);
+	if (rb_podcast_manager_entry_in_download_queue (source->priv->podcast_mgr, entry)) {
+		text = "\xE2\x97\x8B";		/* U+25CB WHITE CIRCLE */
+	} else if (rb_podcast_manager_entry_downloaded (entry)) {
+		text = "\xE2\x97\x8F";		/* U+25CF BLACK CIRCLE */
+	} else {
+		text = NULL;
+	}
+
+	g_object_set (G_OBJECT (renderer), "xalign", 0.5, "text", text, NULL);
+	rhythmdb_entry_unref (entry);
+}
+
+static void
 podcast_post_date_cell_data_func (GtkTreeViewColumn *column,
 				  GtkCellRenderer *renderer,
 				  GtkTreeModel *tree_model,
@@ -857,25 +832,6 @@ podcast_post_date_sort_func (RhythmDBEntry *a,
 		ret = podcast_post_feed_sort_func (a, b, model);
 
         return ret;
-}
-
-static gint
-podcast_post_status_sort_func (RhythmDBEntry *a,
-			       RhythmDBEntry *b,
-			       RhythmDBQueryModel *model)
-{
-	gulong a_val, b_val;
-	gint ret;
-
-	a_val = rhythmdb_entry_get_ulong (a, RHYTHMDB_PROP_STATUS);
-	b_val = rhythmdb_entry_get_ulong (b, RHYTHMDB_PROP_STATUS);
-
-        if (a_val != b_val)
-		ret = (a_val > b_val) ? 1 : -1;
-	else
-		ret = podcast_post_feed_sort_func (a, b, model);
-
-	return ret;
 }
 
 static void
@@ -1324,6 +1280,7 @@ impl_constructed (GObject *object)
 	GtkBuilder *builder;
 	GMenu *section;
 	GApplication *app;
+	GtkWidget *widget;
 	GActionEntry actions[] = {
 		{ "podcast-add", podcast_add_action_cb },
 		{ "podcast-download", podcast_download_action_cb },
@@ -1367,6 +1324,30 @@ impl_constructed (GObject *object)
 						 G_OBJECT (shell_player),
 						 TRUE, FALSE);
 	g_object_unref (shell_player);
+
+
+	/* downloaded column */
+	column = gtk_tree_view_column_new ();
+	renderer = gtk_cell_renderer_text_new ();
+
+	gtk_tree_view_column_pack_start (column, renderer, TRUE);
+	gtk_tree_view_column_set_cell_data_func (column, renderer,
+						 (GtkTreeCellDataFunc) podcast_downloaded_cell_data_func,
+						 source, NULL);
+
+	widget = gtk_image_new_from_icon_name ("folder-download-symbolic", GTK_ICON_SIZE_MENU);
+	gtk_tree_view_column_set_widget (column, widget);
+	gtk_widget_set_tooltip_text (widget, _("Episode downloaded"));
+	gtk_widget_show_all (widget);
+
+	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+	gtk_tree_view_column_set_clickable (column, FALSE);
+	gtk_tree_view_column_set_resizable (column, FALSE);
+
+	rb_entry_view_append_column_custom (source->priv->posts, column,
+					    "", "Downloaded",
+					    (GCompareDataFunc) podcast_post_date_sort_func,
+					    0, NULL);
 
 	/* Podcast date column */
 	column = gtk_tree_view_column_new ();
@@ -1420,39 +1401,6 @@ impl_constructed (GObject *object)
 	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_RATING, FALSE);
 	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_PLAY_COUNT, FALSE);
 	rb_entry_view_append_column (source->priv->posts, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
-
-	/* Status column */
-	column = gtk_tree_view_column_new ();
-	renderer = gtk_cell_renderer_progress_new();
-
-	gtk_tree_view_column_pack_start (column, renderer, TRUE);
-
-	gtk_tree_view_column_set_clickable (column, TRUE);
-	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-
-	{
-		static const char *status_strings[6];
-		status_strings[0] = _("Status");
-		status_strings[1] = _("Downloaded");
-		status_strings[2] = _("Waiting");
-		status_strings[3] = _("Failed");
-		status_strings[4] = "100 %";
-		status_strings[5] = NULL;
-
-		rb_entry_view_set_fixed_column_width (source->priv->posts,
-						      column,
-						      renderer,
-						      status_strings);
-	}
-
-	gtk_tree_view_column_set_cell_data_func (column, renderer,
-						 (GtkTreeCellDataFunc) podcast_post_status_cell_data_func,
-						 source, NULL);
-
-	rb_entry_view_append_column_custom (source->priv->posts, column,
-					    _("Status"), "Status",
-					    (GCompareDataFunc) podcast_post_status_sort_func,
-					    0, NULL);
 
 	g_signal_connect_object (source->priv->posts,
 				 "notify::sort-order",
