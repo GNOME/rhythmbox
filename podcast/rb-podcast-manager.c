@@ -53,6 +53,8 @@
 #include "rb-util.h"
 #include "rb-missing-plugins.h"
 #include "rb-ext-db.h"
+#include "rb-task-list.h"
+#include "rb-task-progress-simple.h"
 
 #define DOWNLOAD_BUFFER_SIZE		65536
 #define DOWNLOAD_RETRY_DELAY		15
@@ -114,10 +116,15 @@ struct RBPodcastManagerPrivate
 {
 	RBShell *shell;
 	RhythmDB *db;
+	RBTaskList *task_list;
 	GList *download_list;
 	RBPodcastDownload *active_download;
 	RBExtDB *art_store;
 	GCancellable *update_cancel;
+
+	RBTaskProgress *download_progress;
+	int total_downloads;
+	guint update_progress_id;
 
 	guint update_feeds_id;
 	GList *updating;
@@ -168,6 +175,9 @@ static void download_task				(GTask *task,
 static void download_info_free				(RBPodcastDownload *data);
 static gboolean cancel_download				(RBPodcastDownload *pd);
 static void rb_podcast_manager_start_update_timer 	(RBPodcastManager *pd);
+static void update_download_progress			(RBPodcastManager *pd);
+static gboolean update_download_progress_idle		(RBPodcastManager *pd);
+static void cancel_all_downloads			(RBPodcastManager *pd);
 
 static void podcast_album_art_request_cb		(RBExtDB *db,
 							 RBExtDBKey *key,
@@ -225,6 +235,7 @@ rb_podcast_manager_init (RBPodcastManager *pd)
 	pd->priv = (G_TYPE_INSTANCE_GET_PRIVATE (pd, RB_TYPE_PODCAST_MANAGER, RBPodcastManagerPrivate));
 
 	pd->priv->update_feeds_id = 0;
+	pd->priv->update_progress_id = 0;
 }
 
 static void
@@ -237,7 +248,10 @@ rb_podcast_manager_constructed (GObject *object)
 
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_manager_parent_class, constructed, object);
 
-	g_object_get (pd->priv->shell, "db", &pd->priv->db, NULL);
+	g_object_get (pd->priv->shell,
+		      "db", &pd->priv->db,
+		      "task-list", &pd->priv->task_list,
+		      NULL);
 	g_signal_connect_object (pd->priv->db,
 				 "entry-added",
 				 G_CALLBACK (rb_podcast_manager_db_entry_added_cb),
@@ -294,6 +308,7 @@ rb_podcast_manager_dispose (GObject *object)
 	g_return_if_fail (pd->priv != NULL);
 
 	g_clear_handle_id (&pd->priv->update_feeds_id, g_source_remove);
+	g_clear_handle_id (&pd->priv->update_progress_id, g_source_remove);
 
 	g_clear_object (&pd->priv->db);
 	g_clear_object (&pd->priv->settings);
@@ -494,8 +509,63 @@ rb_podcast_manager_download_entry (RBPodcastManager *pd,
 		data->entry = rhythmdb_entry_ref (entry);
 
 		pd->priv->download_list = g_list_append (pd->priv->download_list, data);
+		pd->priv->total_downloads++;
 		rb_podcast_manager_next_file (pd);
+
+		update_download_progress (pd);
 	}
+}
+
+static void
+download_progress_cancel_cb (RBTaskProgressSimple *task, RBPodcastManager *pd)
+{
+	g_object_set (task, "task-outcome", RB_TASK_OUTCOME_CANCELLED, NULL);
+	cancel_all_downloads (pd);
+}
+
+static void
+update_download_progress (RBPodcastManager *pd)
+{
+	const char *detail;
+	char *label;
+	int done;
+	double current;
+	double progress;
+
+	if (pd->priv->download_progress == NULL) {
+		pd->priv->download_progress = rb_task_progress_simple_new ();
+		g_signal_connect (pd->priv->download_progress, "cancel-task", G_CALLBACK (download_progress_cancel_cb), pd);
+		g_object_set (pd->priv->download_progress,
+			      "task-cancellable", TRUE,
+			      "task-notification", _("Finished downloading podcast episodes"),
+			      NULL);
+		rb_task_list_add_task (pd->priv->task_list, pd->priv->download_progress);
+	}
+
+	label = g_strdup_printf (ngettext ("Downloading %d podcast episode",
+					   "Downloading %d podcast episodes",
+					   pd->priv->total_downloads),
+				 pd->priv->total_downloads);
+	detail = rhythmdb_entry_get_string (pd->priv->active_download->entry, RHYTHMDB_PROP_TITLE);
+
+	done = pd->priv->total_downloads - g_list_length (pd->priv->download_list);
+	current = ((double)pd->priv->active_download->progress) / 100.0;
+	progress = ((double)done + current) / pd->priv->total_downloads;
+
+	g_object_set (pd->priv->download_progress,
+		      "task-label", label,
+		      "task-detail", detail,
+		      "task-progress", progress,
+		      NULL);
+	g_free (label);
+}
+
+static gboolean
+update_download_progress_idle (RBPodcastManager *pd)
+{
+	update_download_progress (pd);
+	pd->priv->update_progress_id = 0;
+	return FALSE;
 }
 
 gboolean
@@ -1757,14 +1827,10 @@ rb_podcast_manager_add_parsed_feed (RBPodcastManager *pd, RBPodcastChannel *data
 	return status;
 }
 
-void
-rb_podcast_manager_shutdown (RBPodcastManager *pd)
+static void
+cancel_all_downloads (RBPodcastManager *pd)
 {
 	GList *lst, *l;
-
-	g_assert (rb_is_main_thread ());
-
-	g_cancellable_cancel (pd->priv->update_cancel);
 
 	lst = g_list_reverse (g_list_copy (pd->priv->download_list));
 	for (l = lst; l != NULL; l = l->next) {
@@ -1772,6 +1838,14 @@ rb_podcast_manager_shutdown (RBPodcastManager *pd)
 		cancel_download (data);
 	}
 	g_list_free (lst);
+}
+
+void
+rb_podcast_manager_shutdown (RBPodcastManager *pd)
+{
+	g_assert (rb_is_main_thread ());
+	g_cancellable_cancel (pd->priv->update_cancel);
+	cancel_all_downloads (pd);
 }
 
 char *
@@ -1895,12 +1969,26 @@ rb_podcast_manager_next_file (RBPodcastManager *pd)
 
 	if (pd->priv->active_download != NULL) {
 		rb_debug ("already downloading something");
+		update_download_progress (pd);
 		return FALSE;
 	}
 
 	d = g_list_first (pd->priv->download_list);
 	if (d == NULL) {
+		RBTaskOutcome outcome;
+
 		rb_debug ("download queue is empty");
+
+		g_object_get (pd->priv->download_progress, "task-outcome", &outcome, NULL);
+		if (outcome != RB_TASK_OUTCOME_CANCELLED) {
+			g_object_set (pd->priv->download_progress,
+				      "task-outcome", RB_TASK_OUTCOME_COMPLETE,
+				      "task-progress", 1.0,
+				      NULL);
+			g_clear_object (&pd->priv->download_progress);
+			pd->priv->total_downloads = 0;
+		}
+
 		return FALSE;
 	}
 
@@ -1915,6 +2003,8 @@ rb_podcast_manager_next_file (RBPodcastManager *pd)
 	task = g_task_new (pd, download->cancel, podcast_download_cb, NULL);
 	g_task_set_task_data (task, download, NULL);
 	g_task_run_in_thread (task, download_task);
+
+	update_download_progress (pd);
 
 	return FALSE;
 }
@@ -1968,6 +2058,8 @@ download_progress (RBPodcastDownload *data, guint64 downloaded, guint64 total)
 		rhythmdb_commit (data->pd->priv->db);
 
 		data->progress = local_progress;
+		if (data->pd->priv->update_progress_id == 0)
+			data->pd->priv->update_progress_id = g_idle_add ((GSourceFunc) update_download_progress_idle, data->pd);
 	}
 }
 
