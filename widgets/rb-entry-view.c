@@ -220,6 +220,7 @@ enum
 	ENTRY_ACTIVATED,
 	SHOW_POPUP,
 	HAVE_SEL_CHANGED,
+	GET_PLAYING_ICON,
 	LAST_SIGNAL
 };
 
@@ -505,6 +506,28 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
+
+	/**
+	 * RBEntryView::get-playing-icon:
+	 * @view: the #RBEntryView
+	 * @entry: the #RhythmDBEntry to get an icon for
+	 * @current: the current icon name, or NULL if none
+	 *
+	 * Returns the name of an icon to be used in the 'playing' column for a given entry.
+	 * If the standard processing for this column produces an icon name to use, it will
+	 * be provided as the 'current' value, so the handler can choose whether or not to
+	 * override it.
+	 */
+	rb_entry_view_signals[GET_PLAYING_ICON] =
+		g_signal_new ("get-playing-icon",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBEntryViewClass, get_playing_icon),
+			      NULL, NULL,
+			      NULL,
+			      G_TYPE_STRING,
+			      2,
+			      RHYTHMDB_TYPE_ENTRY, G_TYPE_STRING);
 
 	g_type_class_add_private (klass, sizeof (RBEntryViewPrivate));
 
@@ -828,9 +851,9 @@ rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column,
 {
 	RhythmDBEntry *entry;
 	const char *name = NULL;
+	char *sname = NULL;
 
 	entry = rhythmdb_query_model_iter_to_entry (view->priv->model, iter);
-
 	if (entry == NULL) {
 		return;
 	}
@@ -853,7 +876,13 @@ rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column,
 		name = "dialog-error-symbolic";
 	}
 
-	g_object_set (renderer, "icon-name", name, NULL);
+	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[GET_PLAYING_ICON], 0, entry, name, &sname);
+
+	if (sname != NULL) {
+		g_object_set (renderer, "icon-name", sname, NULL);
+		g_free (sname);
+	} else
+		g_object_set (renderer, "icon-name", name, NULL);
 
 	rhythmdb_entry_unref (entry);
 }

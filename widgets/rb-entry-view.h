@@ -102,6 +102,8 @@ struct _RBEntryViewClass
 	void (*selection_changed)       (RBEntryView *view);
 
 	void (*show_popup)             (RBEntryView *view, gboolean over_entry);
+
+	char *(*get_playing_icon) (RBEntryView *view, RhythmDBEntry *entry, const char *name);
 };
 
 GType		rb_entry_view_get_type			(void);
@@ -191,6 +193,8 @@ const char *	rb_entry_view_get_time_date_column_sample (void);
 void		rb_entry_view_resort_model		(RBEntryView *view);
 
 void		rb_entry_view_set_status		(RBEntryView *view, const char *status, gboolean busy);
+
+const char *	rb_entry_view_get_entry_playing_icon	(RBEntryView *view, RhythmDBEntry *entry);
 
 G_END_DECLS
 
