@@ -723,6 +723,11 @@ static void
 rb_browser_source_query_complete_cb (RhythmDBQueryModel *query_model,
 				     RBBrowserSource *source)
 {
+	if (source->priv->query_active == FALSE) {
+		rb_debug ("discarding outdated query");
+		return;
+	}
+
 	rb_library_browser_set_model (source->priv->browser, query_model, FALSE);
 
 	source->priv->query_active = FALSE;
@@ -743,6 +748,7 @@ rb_browser_source_do_query (RBBrowserSource *source, gboolean subset)
 
 	/* use the cached 'all' query to optimise the no-search case */
 	if (source->priv->search_query == NULL) {
+		source->priv->query_active = FALSE;
 		rb_library_browser_set_model (source->priv->browser,
 					      source->priv->cached_all_query,
 					      FALSE);
