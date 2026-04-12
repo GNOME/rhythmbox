@@ -60,7 +60,7 @@
 enum
 {
 	PROP_0,
-	PROP_DB,
+	PROP_SHELL,
 	PROP_UPDATING
 };
 
@@ -112,6 +112,7 @@ typedef struct
 
 struct RBPodcastManagerPrivate
 {
+	RBShell *shell;
 	RhythmDB *db;
 	GList *download_list;
 	RBPodcastDownload *active_download;
@@ -127,8 +128,6 @@ struct RBPodcastManagerPrivate
 
 	SoupSession *soup_session;
 };
-
-#define RB_PODCAST_MANAGER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RB_TYPE_PODCAST_MANAGER, RBPodcastManagerPrivate))
 
 
 static guint rb_podcast_manager_signals[LAST_SIGNAL] = { 0 };
@@ -190,12 +189,12 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
         object_class->get_property = rb_podcast_manager_get_property;
 
 	g_object_class_install_property (object_class,
-                                         PROP_DB,
-                                         g_param_spec_object ("db",
-							      "db",
-							      "database",
-							      RHYTHMDB_TYPE,
-							      G_PARAM_READWRITE));
+                                         PROP_SHELL,
+                                         g_param_spec_object ("shell",
+							      "shell",
+							      "shell",
+							      RB_TYPE_SHELL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_UPDATING,
 					 g_param_spec_boolean ("updating",
@@ -223,10 +222,9 @@ rb_podcast_manager_class_init (RBPodcastManagerClass *klass)
 static void
 rb_podcast_manager_init (RBPodcastManager *pd)
 {
-	pd->priv = RB_PODCAST_MANAGER_GET_PRIVATE (pd);
+	pd->priv = (G_TYPE_INSTANCE_GET_PRIVATE (pd, RB_TYPE_PODCAST_MANAGER, RBPodcastManagerPrivate));
 
 	pd->priv->update_feeds_id = 0;
-	pd->priv->db = NULL;
 }
 
 static void
@@ -238,6 +236,12 @@ rb_podcast_manager_constructed (GObject *object)
 	GError *error = NULL;
 
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_manager_parent_class, constructed, object);
+
+	g_object_get (pd->priv->shell, "db", &pd->priv->db, NULL);
+	g_signal_connect_object (pd->priv->db,
+				 "entry-added",
+				 G_CALLBACK (rb_podcast_manager_db_entry_added_cb),
+				 pd, G_CONNECT_SWAPPED);
 
 	/* add built in search types */
 	pd->priv->searches = g_array_new (FALSE, FALSE, sizeof (GType));
@@ -329,21 +333,8 @@ rb_podcast_manager_set_property (GObject *object,
 	RBPodcastManager *pd = RB_PODCAST_MANAGER (object);
 
 	switch (prop_id) {
-	case PROP_DB:
-		if (pd->priv->db) {
-			g_signal_handlers_disconnect_by_func (pd->priv->db,
-							      G_CALLBACK (rb_podcast_manager_db_entry_added_cb),
-							      pd);
-			g_object_unref (pd->priv->db);
-		}
-
-		pd->priv->db = g_value_get_object (value);
-		g_object_ref (pd->priv->db);
-
-	        g_signal_connect_object (pd->priv->db,
-	                                 "entry-added",
-	                                 G_CALLBACK (rb_podcast_manager_db_entry_added_cb),
-	                                 pd, G_CONNECT_SWAPPED);
+	case PROP_SHELL:
+		pd->priv->shell = g_value_get_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -359,8 +350,8 @@ rb_podcast_manager_get_property (GObject *object,
 	RBPodcastManager *pd = RB_PODCAST_MANAGER (object);
 
 	switch (prop_id) {
-	case PROP_DB:
-		g_value_set_object (value, pd->priv->db);
+	case PROP_SHELL:
+		g_value_set_object (value, pd->priv->shell);
 		break;
 	case PROP_UPDATING:
 		g_value_set_boolean (value, (g_list_length (pd->priv->updating) > 0));
@@ -372,12 +363,9 @@ rb_podcast_manager_get_property (GObject *object,
 }
 
 RBPodcastManager *
-rb_podcast_manager_new (RhythmDB *db)
+rb_podcast_manager_new (RBShell *shell)
 {
-	RBPodcastManager *pd;
-
-	pd = g_object_new (RB_TYPE_PODCAST_MANAGER, "db", db, NULL);
-	return pd;
+	return g_object_new (RB_TYPE_PODCAST_MANAGER, "shell", shell, NULL);
 }
 
 static const char *

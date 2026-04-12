@@ -29,6 +29,7 @@
 #include <glib.h>
 
 #include <rhythmdb/rhythmdb.h>
+#include <shell/rb-shell.h>
 #include <podcast/rb-podcast-parse.h>
 
 #ifndef RB_PODCAST_MANAGER_H
@@ -72,7 +73,7 @@ typedef struct
 } RBPodcastManagerClass;
 
 GType                   rb_podcast_manager_get_type    		(void);
-RBPodcastManager*      	rb_podcast_manager_new         		(RhythmDB *db);
+RBPodcastManager*      	rb_podcast_manager_new         		(RBShell *shell);
 void                    rb_podcast_manager_download_entry  	(RBPodcastManager *pd, RhythmDBEntry *entry);
 gboolean	        rb_podcast_manager_cancel_download	(RBPodcastManager *pd, RhythmDBEntry *entry);
 void 			rb_podcast_manager_update_feeds 	(RBPodcastManager *pd);

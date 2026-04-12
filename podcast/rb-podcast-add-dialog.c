@@ -740,7 +740,7 @@ impl_constructed (GObject *object)
 	RB_CHAIN_GOBJECT_METHOD (rb_podcast_add_dialog_parent_class, constructed, object);
 	dialog = RB_PODCAST_ADD_DIALOG (object);
 
-	g_object_get (dialog->priv->podcast_mgr, "db", &dialog->priv->db, NULL);
+	g_object_get (dialog->priv->shell, "db", &dialog->priv->db, NULL);
 
 	builder = rb_builder_load ("podcast-add-dialog.ui", NULL);
 

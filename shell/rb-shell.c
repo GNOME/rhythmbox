@@ -540,7 +540,7 @@ construct_widgets (RBShell *shell)
 	shell->priv->task_list_display = rb_task_list_display_new (rb_task_list_get_model (shell->priv->task_list));
 	gtk_widget_show (shell->priv->task_list_display);
 
-	shell->priv->podcast_manager = rb_podcast_manager_new (shell->priv->db);
+	shell->priv->podcast_manager = rb_podcast_manager_new (shell);
 	shell->priv->track_transfer_queue = rb_track_transfer_queue_new (shell);
 	shell->priv->accel_group = gtk_accel_group_new ();
 	gtk_window_add_accel_group (win, shell->priv->accel_group);
