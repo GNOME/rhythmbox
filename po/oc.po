@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oc\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2026-03-01 00:34+0000\n"
-"PO-Revision-Date: 2026-03-09 18:15+0100\n"
+"POT-Creation-Date: 2026-04-15 22:33+0000\n"
+"PO-Revision-Date: 2026-04-20 10:38+0200\n"
 "Last-Translator: Quentin PAGÈS\n"
 "Language-Team: Tot en òc (totenoc.eu)\n"
 "Language: oc\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Poedit 3.9\n"
 "X-Launchpad-Export-Date: 2015-05-21 18:05+0000\n"
 "X-Project-Style: gnome\n"
 
@@ -125,7 +125,7 @@ msgstr "Mon top"
 #: data/org.gnome.Rhythmbox3.desktop.in:2
 #: data/org.gnome.Rhythmbox3.device.desktop.in:2
 #: data/org.gnome.Rhythmbox3.metainfo.xml.in:8 shell/main.c:72
-#: shell/rb-shell.c:508 shell/rb-shell.c:2365
+#: shell/rb-shell.c:512 shell/rb-shell.c:2397
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -616,15 +616,15 @@ msgid "Save Playlist"
 msgstr "Enregistrar la lista de lectura"
 
 #: data/ui/playlist-save.ui:38 plugins/artsearch/songinfo.py:135
-#: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:537
-#: podcast/rb-podcast-source.c:1124 shell/rb-track-transfer-queue.c:187
+#: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:525
+#: podcast/rb-podcast-source.c:1106 shell/rb-track-transfer-queue.c:187
 #: widgets/rb-alert-dialog.c:384 widgets/rb-alert-dialog.c:401
 #: widgets/rb-dialog.c:131 widgets/rb-dialog.c:139
 #: widgets/rb-query-creator.c:191 widgets/rb-uri-dialog.c:158
 msgid "_Cancel"
 msgstr "_Anullar"
 
-#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:273
+#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:297
 #: widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "Enregi_strar"
@@ -725,7 +725,7 @@ msgid "Cancel Download"
 msgstr "Anullar lo telecargament"
 
 #: data/ui/podcast-popups.ui:45 plugins/fmradio/fmradio-popup.ui:6
-#: podcast/rb-podcast-source.c:1280 sources/rb-media-player-source.c:1104
+#: podcast/rb-podcast-source.c:1262 sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Suprimir"
 
@@ -1006,11 +1006,11 @@ msgstr "%b %d %Y"
 #: plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
 #: plugins/mtpdevice/rb-mtp-source.c:656 plugins/mtpdevice/rb-mtp-source.c:1146
 #: plugins/mtpdevice/rb-mtp-source.c:1477
-#: plugins/notification/rb-notification-plugin.c:509
+#: plugins/notification/rb-notification-plugin.c:486
 #: podcast/rb-feed-podcast-properties-dialog.c:335
-#: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1472
-#: podcast/rb-podcast-manager.c:1584 podcast/rb-podcast-properties-dialog.c:636
-#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:797
+#: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1554
+#: podcast/rb-podcast-manager.c:1666 podcast/rb-podcast-properties-dialog.c:636
+#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:785
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
 #: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
 #: rhythmdb/rhythmdb.c:2156 rhythmdb/rhythmdb-entry-type.c:303
@@ -1758,8 +1758,8 @@ msgstr "Ligams"
 msgid "No artist specified."
 msgstr "Cap d'artista pas indicat."
 
-#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:312
-#: plugins/lyrics/lyrics.py:397
+#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:336
+#: plugins/lyrics/lyrics.py:421
 msgid "Lyrics"
 msgstr "Paraulas"
 
@@ -2237,7 +2237,7 @@ msgstr ""
 msgid "Choose lyrics folder..."
 msgstr "Causir un dorsièr de paraulas..."
 
-#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:420
+#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:444
 msgid "Song Lyrics"
 msgstr "Paraulas de la cançon"
 
@@ -2257,20 +2257,20 @@ msgstr "Percórrer..."
 msgid "Lyrics Folder"
 msgstr "Dorsièr de paraulas"
 
-#: plugins/lyrics/lyrics.py:169 plugins/lyrics/lyrics.py:223
-#: plugins/lyrics/lyrics.py:233
+#: plugins/lyrics/lyrics.py:170 plugins/lyrics/lyrics.py:247
+#: plugins/lyrics/lyrics.py:257
 msgid "No lyrics found"
 msgstr "Cap de paraula pas trobada"
 
-#: plugins/lyrics/lyrics.py:278 plugins/lyrics/lyrics.py:291
+#: plugins/lyrics/lyrics.py:302 plugins/lyrics/lyrics.py:315
 msgid "_Edit"
 msgstr "_Edicion"
 
-#: plugins/lyrics/lyrics.py:293
+#: plugins/lyrics/lyrics.py:317
 msgid "_Search again"
 msgstr "_Recercar tornamai"
 
-#: plugins/lyrics/lyrics.py:352
+#: plugins/lyrics/lyrics.py:376
 msgid "Searching for lyrics..."
 msgstr "Recèrca de las paraulas..."
 
@@ -2679,18 +2679,18 @@ msgid "Next"
 msgstr "Seguent"
 
 #. Translators: by Artist
-#: plugins/notification/rb-notification-plugin.c:331
+#: plugins/notification/rb-notification-plugin.c:308
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "de <i>%s</i>"
 
 #. Translators: from Album
-#: plugins/notification/rb-notification-plugin.c:333
+#: plugins/notification/rb-notification-plugin.c:310
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "de l'album <i>%s</i>"
 
-#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:368
+#: plugins/notification/rb-notification-plugin.c:390 widgets/rb-header.c:368
 msgid "Not Playing"
 msgstr "Pas de lectura"
 
@@ -2865,7 +2865,7 @@ msgstr "Contrarotlar Rhythmbox d’un navegador web estant"
 msgid "Launch web remote control"
 msgstr "Lançar lo contraròtle a distància"
 
-#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:738
+#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:726
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
@@ -2894,7 +2894,7 @@ msgid "Episodes"
 msgstr "Episòdis"
 
 #: podcast/rb-podcast-add-dialog.c:847 podcast/rb-podcast-add-dialog.c:858
-#: podcast/rb-podcast-source.c:1400 podcast/rb-podcast-source.c:1411
+#: podcast/rb-podcast-source.c:1382 podcast/rb-podcast-source.c:1393
 msgid "Date"
 msgstr "Data"
 
@@ -2906,39 +2906,41 @@ msgstr "Episòdis novèls"
 msgid "New Downloads"
 msgstr "Telecargaments novèls"
 
-#: podcast/rb-podcast-main-source.c:165
-msgid "Downloading podcast"
-msgstr "Telecargament en cors del podcast"
-
-#: podcast/rb-podcast-main-source.c:186
-msgid "Error downloading podcast"
-msgstr "Error de telecargament del podcast"
-
-#: podcast/rb-podcast-main-source.c:189
-msgid "Finished downloading podcast"
-msgstr "Telecargament del podcast acabat"
-
-#: podcast/rb-podcast-main-source.c:242
+#: podcast/rb-podcast-main-source.c:195
 msgid "Error in podcast"
 msgstr "Error dins lo podcast"
 
-#: podcast/rb-podcast-main-source.c:244
+#: podcast/rb-podcast-main-source.c:197
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
 "I a agut un problèma al moment de l'apondon d'aqueste podcast : %s. "
 "Verificatz l'URL : %s"
 
-#: podcast/rb-podcast-main-source.c:250
+#: podcast/rb-podcast-main-source.c:203
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Volètz quitament apondre lo flux podcast ?"
 
-#: podcast/rb-podcast-main-source.c:267
-msgid "New updates available from"
-msgstr "Novèlas mesas a jorn disponiblas de"
+#: podcast/rb-podcast-manager.c:545
+msgid "Finished downloading podcast episodes"
+msgstr "Telecargament dels episòdis del podcast acabat"
 
-#: podcast/rb-podcast-manager.c:871
+#: podcast/rb-podcast-manager.c:550
+#, c-format
+msgid "Downloading %d podcast episode"
+msgid_plural "Downloading %d podcast episodes"
+msgstr[0] "Telecargament en cors de %d episòdi del podcast"
+msgstr[1] "Telecargament en cors de %d episòdis del podcast"
+
+#: podcast/rb-podcast-manager.c:585
+#, c-format
+msgid "%d new episode available"
+msgid_plural "%d new episodes available"
+msgstr[0] "%d episòdi novèl disponible"
+msgstr[1] "%d episòdis novèls disponibles"
+
+#: podcast/rb-podcast-manager.c:932
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a "
@@ -2947,7 +2949,7 @@ msgstr ""
 "L'URL « %s » es estada aponduda ja coma estacion de ràdio. S'es un flux "
 "podcast, suprimissètz l'estacion de ràdio."
 
-#: podcast/rb-podcast-manager.c:942
+#: podcast/rb-podcast-manager.c:1003
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2958,7 +2960,15 @@ msgstr ""
 "siá incorrècta o que lo flux siá pas valid. Volètz que Rhythmbox ensage "
 "quitament de l'utilizar ?"
 
-#: podcast/rb-podcast-manager.c:1088
+#: podcast/rb-podcast-manager.c:1086
+msgid "Updating podcast feeds"
+msgstr "Mesa a jorn del flux del podcast"
+
+#: podcast/rb-podcast-manager.c:1087
+msgid "Finished updating podcast feeds"
+msgstr "Mesa a jorn del flux del podcast acabada"
+
+#: podcast/rb-podcast-manager.c:1170
 msgid "Podcast"
 msgstr "Podcast"
 
@@ -2976,11 +2986,11 @@ msgstr "Lo flux conten pas cap d'element telecargable"
 msgid "Not Downloaded"
 msgstr "Pas telecargat"
 
-#: podcast/rb-podcast-source.c:524
+#: podcast/rb-podcast-source.c:512
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Suprimir lo flux podcast e los fichièrs telecargats ?"
 
-#: podcast/rb-podcast-source.c:527
+#: podcast/rb-podcast-source.c:515
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -2990,35 +3000,35 @@ msgstr ""
 "definitivament. Notatz que podètz suprimir lo flux mas conservar los "
 "fichièrs telecargats en causissent de suprimir sonque lo flux."
 
-#: podcast/rb-podcast-source.c:535
+#: podcast/rb-podcast-source.c:523
 msgid "Delete _Feed Only"
 msgstr "Suprimir sonque lo _flux"
 
-#: podcast/rb-podcast-source.c:542
+#: podcast/rb-podcast-source.c:530
 msgid "_Delete Feed And Files"
 msgstr "_Suprimir lo flux e los fichièrs"
 
-#: podcast/rb-podcast-source.c:623 podcast/rb-podcast-source.c:1454
+#: podcast/rb-podcast-source.c:611 podcast/rb-podcast-source.c:1436
 msgid "Downloaded"
 msgstr "Descargat"
 
-#: podcast/rb-podcast-source.c:627 podcast/rb-podcast-source.c:1456
+#: podcast/rb-podcast-source.c:615 podcast/rb-podcast-source.c:1438
 msgid "Failed"
 msgstr "Error"
 
-#: podcast/rb-podcast-source.c:631 podcast/rb-podcast-source.c:1455
+#: podcast/rb-podcast-source.c:619 podcast/rb-podcast-source.c:1437
 msgid "Waiting"
 msgstr "En espèra"
 
-#: podcast/rb-podcast-source.c:967
+#: podcast/rb-podcast-source.c:955
 msgid "Podcast Error"
 msgstr "Erro de Podcast"
 
-#: podcast/rb-podcast-source.c:1111
+#: podcast/rb-podcast-source.c:1093
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Suprimir l'episòdi de podcast e lo fichièr telecargat ?"
 
-#: podcast/rb-podcast-source.c:1114
+#: podcast/rb-podcast-source.c:1096
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -3030,46 +3040,46 @@ msgstr ""
 "telecargat en causissent de suprimir sonque l'episòdi, o suprimir lo fichièr "
 "telecargat mas gardar l’episòdi en causissent de suprimir sonque lo fichièr."
 
-#: podcast/rb-podcast-source.c:1126
+#: podcast/rb-podcast-source.c:1108
 msgid "Delete _Episode Only"
 msgstr "Suprimir sonque l'_episòdi"
 
-#: podcast/rb-podcast-source.c:1128
+#: podcast/rb-podcast-source.c:1110
 msgid "Delete _File Only"
 msgstr "Suprimir sonque lo _fichièr"
 
-#: podcast/rb-podcast-source.c:1132
+#: podcast/rb-podcast-source.c:1114
 msgid "_Delete Episode And File"
 msgstr "_Suprimir l'episòdi e lo fichièr"
 
-#: podcast/rb-podcast-source.c:1238
+#: podcast/rb-podcast-source.c:1220
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d episòdi"
 msgstr[1] "%d episòdis"
 
-#: podcast/rb-podcast-source.c:1433 podcast/rb-podcast-source.c:1488
-#: podcast/rb-podcast-source.c:1527
+#: podcast/rb-podcast-source.c:1415 podcast/rb-podcast-source.c:1470
+#: podcast/rb-podcast-source.c:1508
 msgid "Feed"
 msgstr "Flux"
 
-#: podcast/rb-podcast-source.c:1453 podcast/rb-podcast-source.c:1471
+#: podcast/rb-podcast-source.c:1435 podcast/rb-podcast-source.c:1453
 msgid "Status"
 msgstr "Estatut"
 
 #. ensure search instances exist
-#: podcast/rb-podcast-source.c:1573 sources/rb-auto-playlist-source.c:253
+#: podcast/rb-podcast-source.c:1554 sources/rb-auto-playlist-source.c:253
 #: sources/rb-browser-source.c:314 sources/rb-browser-source.c:332
 #: sources/rb-static-playlist-source.c:296
 msgid "Search all fields"
 msgstr "Recèrca dins totes los camps"
 
-#: podcast/rb-podcast-source.c:1574
+#: podcast/rb-podcast-source.c:1555
 msgid "Search podcast feeds"
 msgstr "Flux podcast novèl"
 
-#: podcast/rb-podcast-source.c:1575
+#: podcast/rb-podcast-source.c:1556
 msgid "Search podcast episodes"
 msgstr "Recercar los episòdis del podcast"
 
@@ -3117,7 +3127,7 @@ msgstr "Suspen la lectura actuala"
 msgid "Toggle play/pause mode"
 msgstr "Bascuola lo mòde lectura/pausa"
 
-#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2271
+#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2303
 msgid "Stop playback"
 msgstr "Arrèsta la lectura"
 
@@ -3393,11 +3403,11 @@ msgstr "%s, %s e %s"
 msgid "%s and %s"
 msgstr "%s e %s"
 
-#: rhythmdb/rhythmdb-import-job.c:705
+#: rhythmdb/rhythmdb-import-job.c:709
 msgid "Scanning"
 msgstr "Balejatge"
 
-#: rhythmdb/rhythmdb-import-job.c:708 shell/rb-track-transfer-batch.c:984
+#: rhythmdb/rhythmdb-import-job.c:712 shell/rb-track-transfer-batch.c:990
 #, c-format
 msgid "%d of %d"
 msgstr "%d sus %d"
@@ -3621,45 +3631,45 @@ msgstr "Lista de lectura desconeguda : %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "La lista de lectura %s es una lista de lectura intelligenta"
 
-#: shell/rb-shell.c:2064
+#: shell/rb-shell.c:2051
 msgid "Error while saving song information"
 msgstr "Error al moment de l'enregistrament d'informacions de tròces"
 
-#: shell/rb-shell.c:2268
+#: shell/rb-shell.c:2300
 msgid "Pause playback"
 msgstr "Metre en pausa la lectura"
 
-#: shell/rb-shell.c:2275
+#: shell/rb-shell.c:2307
 msgid "Start playback"
 msgstr "Avia la lectura"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:2385
+#: shell/rb-shell.c:2417
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (en pausa)"
 
-#: shell/rb-shell.c:2727 sources/rb-play-queue-source.c:673
+#: shell/rb-shell.c:2748 sources/rb-play-queue-source.c:673
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Cap de font enregistrada pòt pas prene en carga l'URI %s"
 
-#: shell/rb-shell.c:3051
+#: shell/rb-shell.c:3072
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Cap de font enregistrada correspond pas a l'URI %s"
 
-#: shell/rb-shell.c:3084 shell/rb-shell.c:3127
+#: shell/rb-shell.c:3105 shell/rb-shell.c:3148
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "URI del tròç desconegut : %s"
 
-#: shell/rb-shell.c:3136
+#: shell/rb-shell.c:3157
 #, c-format
 msgid "Unknown property %s"
 msgstr "Proprietat %s desconeguda"
 
-#: shell/rb-shell.c:3150
+#: shell/rb-shell.c:3171
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Tipe de proprietat %s invalid per la proprietat %s"
@@ -4655,6 +4665,9 @@ msgstr "Sul burèu"
 #: widgets/rb-song-info.c:1348
 msgid "Unknown location"
 msgstr "Emplaçament desconegut"
+
+#~ msgid "Error downloading podcast"
+#~ msgstr "Error de telecargament del podcast"
 
 #~ msgid "URL already added"
 #~ msgstr "URL ja aponduda"
