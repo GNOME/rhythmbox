@@ -1,6 +1,6 @@
 # Turkish translation of rhythmbox.
 # Copyright (C) 2002-2003, 2004 Free Software Foundation, Inc.
-# Copyright (C) 2005-2024 rhythmbox's COPYRIGHT HOLDER
+# Copyright (C) 2005-2026 rhythmbox's COPYRIGHT HOLDER
 # This file is distributed under the same license as the rhythmbox package.
 #
 # Fatih Demir <kabalak@gtranslator.org>, 2002.
@@ -8,32 +8,32 @@
 # Baris Cicek <baris@teamforce.name.tr>, 2004.
 # Launchpad Contributors, 2013.
 # Simge Sezgin <simgesezgin88@gmail.com>, 2015.
-# Sabri Ünal <libreajans@gmail.com>, 2020, 2022, 2023, 2024
-# Emin Tufan Çetin <etcetin@gmail.com>, 2017, 2018, 2020, 2021, 2022, 2024.
 # Muhammet Kara <muhammetk@gmail.com>, 2011-2025.
+# Emin Tufan Çetin <etcetin@gmail.com>, 2017, 2018, 2020, 2021, 2022, 2024, 2026.
+# Sabri Ünal <yakushabb@gmail.com>, 2020, 2022, 2023, 2024, 2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2025-12-17 13:06+0000\n"
-"PO-Revision-Date: 2025-12-22 03:31+0300\n"
-"Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
+"POT-Creation-Date: 2026-04-15 22:33+0000\n"
+"PO-Revision-Date: 2026-04-17 00:15+0300\n"
+"Last-Translator: Sabri Ünal <yakushabb@gmail.com>\n"
 "Language-Team: Turkish <takim@gnome.org.tr>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Gtranslator 49.0\n"
+"X-Generator: Poedit 3.9\n"
 "X-POOTLE-MTIME: 1425298884.000000\n"
 
-#: backends/gstreamer/rb-encoder-gst.c:652
+#: backends/gstreamer/rb-encoder-gst.c:653
 #, c-format
 msgid "Could not create a temporary file to write to: %s"
 msgstr "Şuna yazmak için geçici dosya oluşturulamadı: %s"
 
-#: backends/gstreamer/rb-encoder-gst.c:705
+#: backends/gstreamer/rb-encoder-gst.c:706
 #, c-format
 msgid "Could not create a GStreamer sink element to write to %s"
 msgstr "%s üzerine yazmak için GStreamer alıcı ögesi oluşturulamadı"
@@ -118,46 +118,12 @@ msgstr "Son Çalınanlar"
 msgid "My Top Rated"
 msgstr "En İyiler"
 
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:8
 #: data/org.gnome.Rhythmbox3.desktop.in:2
-#: data/org.gnome.Rhythmbox3.device.desktop.in:2 shell/main.c:72
-#: shell/rb-shell.c:507 shell/rb-shell.c:2349
+#: data/org.gnome.Rhythmbox3.device.desktop.in:2
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:8 shell/main.c:72
+#: shell/rb-shell.c:512 shell/rb-shell.c:2397
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
-
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:9
-msgid "Play and organize all your music"
-msgstr "Tüm müziklerinizi çalın ve yönetin"
-
-#. developer_name tag deprecated with Appstream 1.0
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:11
-msgid "The Rhythmbox developers"
-msgstr "Rhythmbox geliştiricileri"
-
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:16
-msgid ""
-"Rhythmbox is a music management application, designed to work well under the "
-"GNOME desktop. In addition to music stored on your computer, it supports "
-"network shares, podcasts, radio streams, portable music devices (including "
-"phones), and internet music services such as Last.fm and Magnatune."
-msgstr ""
-"Rhythmbox GNOME masaüstünde iyi çalışmak üzere tasarlanmış müzik yönetim "
-"uygulamasıdır. Bilgisayarınzda kayıtlı müziğe ek olarak, ağ paylaşımlarını, "
-"ortam akışları, radyo akışlarını, taşınabilir müzik aygıtlarını (telefonlar "
-"dahil), ve Last.fm ve Magnatune gibi internet müzik hizmetlerini de "
-"destekler."
-
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:22
-msgid ""
-"Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
-"via plugins written in Python or C."
-msgstr ""
-"Rhythmbox GTK+ ve GStreamer temelli Özgür yazılımdır, ve Python veya C ile "
-"yazılan eklentilerle geliştirilebilir."
-
-#: data/org.gnome.Rhythmbox3.appdata.xml.in:36
-msgid "Main Window"
-msgstr "Ana Pencere"
 
 #: data/org.gnome.Rhythmbox3.desktop.in:3
 #: data/org.gnome.Rhythmbox3.device.desktop.in:3
@@ -179,6 +145,40 @@ msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
 "Ses;Şarkı;Parça;MP3;CD;Podcast;Ortam Akışı;MTP;iPod;Çalma "
 "Listesi;Last.fm;UPnP;DLNA;Radyo;"
+
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:9
+msgid "Play and organize all your music"
+msgstr "Tüm müziklerinizi çalın ve yönetin"
+
+#. developer_name tag deprecated with Appstream 1.0
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:11
+msgid "The Rhythmbox developers"
+msgstr "Rhythmbox geliştiricileri"
+
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:16
+msgid ""
+"Rhythmbox is a music management application, designed to work well under the "
+"GNOME desktop. In addition to music stored on your computer, it supports "
+"network shares, podcasts, radio streams, portable music devices (including "
+"phones), and internet music services such as Last.fm and Magnatune."
+msgstr ""
+"Rhythmbox GNOME masaüstünde iyi çalışmak üzere tasarlanmış müzik yönetim "
+"uygulamasıdır. Bilgisayarınzda kayıtlı müziğe ek olarak, ağ paylaşımlarını, "
+"ortam akışları, radyo akışlarını, taşınabilir müzik aygıtlarını (telefonlar "
+"dahil), ve Last.fm ve Magnatune gibi internet müzik hizmetlerini de "
+"destekler."
+
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:22
+msgid ""
+"Rhythmbox is Free software, based on GTK+ and GStreamer, and is extensible "
+"via plugins written in Python or C."
+msgstr ""
+"Rhythmbox GTK+ ve GStreamer temelli Özgür yazılımdır, ve Python veya C ile "
+"yazılan eklentilerle geliştirilebilir."
+
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:35
+msgid "Main Window"
+msgstr "Ana Pencere"
 
 #: data/ui/app-menu.ui:6
 msgid "_View"
@@ -524,7 +524,7 @@ msgstr "Ortam Oynatıcı Özellikleri"
 #: podcast/rb-feed-podcast-properties-dialog.c:130
 #: podcast/rb-podcast-properties-dialog.c:320 shell/rb-shell-preferences.c:192
 #: widgets/rb-alert-dialog.c:377 widgets/rb-query-creator.c:198
-#: widgets/rb-song-info.c:627
+#: widgets/rb-song-info.c:634
 msgid "_Close"
 msgstr "_Kapat"
 
@@ -608,15 +608,15 @@ msgid "Save Playlist"
 msgstr "Çalma Listesini Kaydet"
 
 #: data/ui/playlist-save.ui:38 plugins/artsearch/songinfo.py:135
-#: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:537
-#: podcast/rb-podcast-source.c:1124 shell/rb-track-transfer-queue.c:187
+#: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:525
+#: podcast/rb-podcast-source.c:1106 shell/rb-track-transfer-queue.c:187
 #: widgets/rb-alert-dialog.c:384 widgets/rb-alert-dialog.c:401
 #: widgets/rb-dialog.c:131 widgets/rb-dialog.c:139
 #: widgets/rb-query-creator.c:191 widgets/rb-uri-dialog.c:158
 msgid "_Cancel"
 msgstr "İ_ptal"
 
-#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:267
+#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:297
 #: widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "_Kaydet"
@@ -678,7 +678,7 @@ msgid "Copyright:"
 msgstr "Telif Hakkı:"
 
 #: data/ui/podcast-feed-properties.ui:322 data/ui/podcast-properties.ui:421
-#: data/ui/song-info.ui:884 plugins/iradio/station-properties.ui:304
+#: data/ui/song-info.ui:914 plugins/iradio/station-properties.ui:304
 msgid "Details"
 msgstr "Ayrıntılar"
 
@@ -715,7 +715,7 @@ msgid "Cancel Download"
 msgstr "İndirmeyi İptal Et"
 
 #: data/ui/podcast-popups.ui:45 plugins/fmradio/fmradio-popup.ui:6
-#: podcast/rb-podcast-source.c:1280 sources/rb-media-player-source.c:1104
+#: podcast/rb-podcast-source.c:1262 sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Sil"
 
@@ -760,26 +760,26 @@ msgid "Date:"
 msgstr "Tarih:"
 
 #: data/ui/podcast-properties.ui:222 data/ui/song-info-multiple.ui:102
-#: data/ui/song-info.ui:762 plugins/iradio/station-properties.ui:266
+#: data/ui/song-info.ui:792 plugins/iradio/station-properties.ui:266
 msgid "_Rating:"
 msgstr "_Popülerlik:"
 
-#: data/ui/podcast-properties.ui:237 data/ui/song-info.ui:699
+#: data/ui/podcast-properties.ui:237 data/ui/song-info.ui:729
 #: plugins/iradio/station-properties.ui:236
 msgid "Play count:"
 msgstr "Çalınma Sayısı:"
 
-#: data/ui/podcast-properties.ui:252 data/ui/song-info.ui:674
+#: data/ui/podcast-properties.ui:252 data/ui/song-info.ui:704
 #: plugins/iradio/station-properties.ui:205
 msgid "Last played:"
 msgstr "Son çalınma:"
 
-#: data/ui/podcast-properties.ui:268 data/ui/song-info.ui:625
+#: data/ui/podcast-properties.ui:268 data/ui/song-info.ui:655
 #: plugins/iradio/station-properties.ui:175
 msgid "Bitrate:"
 msgstr "Bit oranı:"
 
-#: data/ui/podcast-properties.ui:283 data/ui/song-info.ui:800
+#: data/ui/podcast-properties.ui:283 data/ui/song-info.ui:830
 msgid "Duration:"
 msgstr "Süre:"
 
@@ -855,25 +855,25 @@ msgstr "/"
 
 #: data/ui/song-info-multiple.ui:258
 msgid "_Track count:"
-msgstr "_Parça Sayısı:"
+msgstr "_Parça sayısı:"
 
-#: data/ui/song-info-multiple.ui:328 data/ui/song-info.ui:501
+#: data/ui/song-info-multiple.ui:328 data/ui/song-info.ui:502
 msgid "Albu_m sort order:"
 msgstr "Albü_m sıralama düzeni:"
 
-#: data/ui/song-info-multiple.ui:342 data/ui/song-info.ui:515
+#: data/ui/song-info-multiple.ui:342 data/ui/song-info.ui:516
 msgid "_Artist sort order:"
 msgstr "_Sanatçı sıralama düzeni:"
 
-#: data/ui/song-info-multiple.ui:356 data/ui/song-info.ui:529
+#: data/ui/song-info-multiple.ui:356 data/ui/song-info.ui:530
 msgid "Album a_rtist sort order:"
 msgstr "Albüm s_anatçısı sıralama düzeni:"
 
-#: data/ui/song-info-multiple.ui:381 data/ui/song-info.ui:553
+#: data/ui/song-info-multiple.ui:381 data/ui/song-info.ui:554
 msgid "_Composer sort order:"
 msgstr "_Besteci sıralama düzeni:"
 
-#: data/ui/song-info-multiple.ui:411 data/ui/song-info.ui:582
+#: data/ui/song-info-multiple.ui:411 data/ui/song-info.ui:612
 msgid "Sorting"
 msgstr "Sıralama"
 
@@ -897,19 +897,23 @@ msgstr "_Yorum:"
 msgid "Error message"
 msgstr "Hata iletisi"
 
-#: data/ui/song-info.ui:600
+#: data/ui/song-info.ui:594
+msgid "_Title sort order:"
+msgstr "_Başlık sıralama düzeni:"
+
+#: data/ui/song-info.ui:630
 msgid "File name:"
 msgstr "Dosya adı:"
 
-#: data/ui/song-info.ui:650
+#: data/ui/song-info.ui:680
 msgid "Location:"
 msgstr "Konum:"
 
-#: data/ui/song-info.ui:828
+#: data/ui/song-info.ui:858
 msgid "File size:"
 msgstr "Dosya boyutu:"
 
-#: data/ui/song-info.ui:853
+#: data/ui/song-info.ui:883
 msgid "Date added:"
 msgstr "Eklenme tarihi:"
 
@@ -931,9 +935,9 @@ msgstr "Silinen dosyalar:"
 
 #: lib/rb-cut-and-paste-code.c:94
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:235
-#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3843
-#: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1574
-#: widgets/rb-entry-view.c:1588 widgets/rb-song-info.c:1545
+#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3862
+#: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1575
+#: widgets/rb-entry-view.c:1589 widgets/rb-song-info.c:1554
 msgid "Never"
 msgstr "Hiçbir zaman"
 
@@ -992,26 +996,26 @@ msgstr "%d %b %Y"
 #: plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
 #: plugins/mtpdevice/rb-mtp-source.c:656 plugins/mtpdevice/rb-mtp-source.c:1146
 #: plugins/mtpdevice/rb-mtp-source.c:1477
-#: plugins/notification/rb-notification-plugin.c:509
+#: plugins/notification/rb-notification-plugin.c:486
 #: podcast/rb-feed-podcast-properties-dialog.c:335
-#: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1332
-#: podcast/rb-podcast-manager.c:1446 podcast/rb-podcast-properties-dialog.c:636
-#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:797
+#: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1554
+#: podcast/rb-podcast-manager.c:1666 podcast/rb-podcast-properties-dialog.c:636
+#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:785
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
-#: rhythmdb/rhythmdb.c:2086 rhythmdb/rhythmdb.c:2092 rhythmdb/rhythmdb.c:2107
-#: rhythmdb/rhythmdb.c:2141 rhythmdb/rhythmdb-entry-type.c:303
+#: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
+#: rhythmdb/rhythmdb.c:2156 rhythmdb/rhythmdb-entry-type.c:303
 #: rhythmdb/rhythmdb-entry-type.c:381 rhythmdb/rhythmdb-entry-type.c:387
 #: rhythmdb/rhythmdb-entry-type.c:392 rhythmdb/rhythmdb-entry-type.c:403
-#: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:308
-#: rhythmdb/rhythmdb-tree.c:1363 rhythmdb/rhythmdb-tree.c:1367
-#: rhythmdb/rhythmdb-tree.c:1371 rhythmdb/rhythmdb-tree.c:1375
+#: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:309
+#: rhythmdb/rhythmdb-tree.c:1368 rhythmdb/rhythmdb-tree.c:1372
+#: rhythmdb/rhythmdb-tree.c:1376 rhythmdb/rhythmdb-tree.c:1380
 #: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
 #: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
-#: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1512
-#: widgets/rb-entry-view.c:1525 widgets/rb-entry-view.c:1538
-#: widgets/rb-header.c:1282 widgets/rb-header.c:1308 widgets/rb-song-info.c:950
-#: widgets/rb-song-info.c:962 widgets/rb-song-info.c:1234
-#: widgets/rb-song-info.c:1572
+#: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1513
+#: widgets/rb-entry-view.c:1526 widgets/rb-entry-view.c:1539
+#: widgets/rb-header.c:1282 widgets/rb-header.c:1308 widgets/rb-song-info.c:957
+#: widgets/rb-song-info.c:969 widgets/rb-song-info.c:1243
+#: widgets/rb-song-info.c:1581
 msgid "Unknown"
 msgstr "Bilinmeyen"
 
@@ -1697,7 +1701,7 @@ msgid "Loading top albums for %s"
 msgstr "%s’in en gözde albümleri yükleniyor"
 
 #: plugins/context/ArtistTab.py:58 plugins/magnatune/magnatune-toolbar.ui:20
-#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1457
+#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1458
 #: widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Sanatçı"
@@ -1733,8 +1737,8 @@ msgstr "Bağlantılar"
 msgid "No artist specified."
 msgstr "Sanatçı belirtilmedi."
 
-#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:306
-#: plugins/lyrics/lyrics.py:391
+#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:336
+#: plugins/lyrics/lyrics.py:421
 msgid "Lyrics"
 msgstr "Şarkı Sözleri"
 
@@ -1949,7 +1953,7 @@ msgid "Add to New Playlist"
 msgstr "Yeni Çalma Listesine Ekle"
 
 #: plugins/generic-player/rb-generic-player-source.c:1369
-#: plugins/ipod/rb-ipod-source.c:2056 plugins/mtpdevice/rb-mtp-source.c:1557
+#: plugins/ipod/rb-ipod-source.c:2064 plugins/mtpdevice/rb-mtp-source.c:1557
 msgid "Advanced"
 msgstr "Gelişmiş"
 
@@ -2092,7 +2096,7 @@ msgstr "Yeni çalma listesi"
 msgid "Unable to initialize new iPod"
 msgstr "Yeni iPod ilklendirilemedi"
 
-#: plugins/ipod/rb-ipod-source.c:1502 podcast/rb-podcast-main-source.c:77
+#: plugins/ipod/rb-ipod-source.c:1510 podcast/rb-podcast-main-source.c:77
 #: sources/sync/rb-sync-settings-ui.c:263
 #: sources/sync/rb-sync-settings-ui.c:264 sources/sync/rb-sync-state-ui.c:78
 msgid "Podcasts"
@@ -2111,7 +2115,7 @@ msgstr "İnternet üzerinden aktarılan yayın hizmetleri desteği"
 msgid "Remove"
 msgstr "Kaldır"
 
-#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1487
+#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1488
 #: widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Tür"
@@ -2143,14 +2147,14 @@ msgstr "İnternet radyo istasyonu adresi:"
 #: plugins/iradio/rb-station-properties-dialog.c:395
 #: podcast/rb-feed-podcast-properties-dialog.c:215
 #: podcast/rb-podcast-properties-dialog.c:521
-#: sources/rb-media-player-source.c:567 widgets/rb-song-info.c:1151
+#: sources/rb-media-player-source.c:567 widgets/rb-song-info.c:1158
 #, c-format
 msgid "%s Properties"
 msgstr "%s Özellikleri"
 
 #: plugins/iradio/rb-station-properties-dialog.c:487
 #: podcast/rb-podcast-properties-dialog.c:634 widgets/rb-entry-view.c:1022
-#: widgets/rb-song-info.c:1236
+#: widgets/rb-song-info.c:1245
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
@@ -2202,7 +2206,7 @@ msgstr ""
 msgid "Choose lyrics folder..."
 msgstr "Şarkı sözü klasörünü seç..."
 
-#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:414
+#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:444
 msgid "Song Lyrics"
 msgstr "Şarkı Sözleri"
 
@@ -2222,20 +2226,20 @@ msgstr "Göz at..."
 msgid "Lyrics Folder"
 msgstr "Şarkı Sözleri Klasörü"
 
-#: plugins/lyrics/lyrics.py:169 plugins/lyrics/lyrics.py:217
-#: plugins/lyrics/lyrics.py:227
+#: plugins/lyrics/lyrics.py:170 plugins/lyrics/lyrics.py:247
+#: plugins/lyrics/lyrics.py:257
 msgid "No lyrics found"
 msgstr "Şarkı sözü bulunamadı"
 
-#: plugins/lyrics/lyrics.py:272 plugins/lyrics/lyrics.py:285
+#: plugins/lyrics/lyrics.py:302 plugins/lyrics/lyrics.py:315
 msgid "_Edit"
 msgstr "_Düzenle"
 
-#: plugins/lyrics/lyrics.py:287
+#: plugins/lyrics/lyrics.py:317
 msgid "_Search again"
 msgstr "_Yeniden ara"
 
-#: plugins/lyrics/lyrics.py:346
+#: plugins/lyrics/lyrics.py:376
 msgid "Searching for lyrics..."
 msgstr "Şarkı sözleri aranıyor..."
 
@@ -2534,7 +2538,7 @@ msgstr ""
 "Magnatune sunucusu aşağıdaki yanıtı döndürdü:\n"
 "%s"
 
-#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1639
+#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1640
 msgid "Error"
 msgstr "Hata"
 
@@ -2641,18 +2645,18 @@ msgid "Next"
 msgstr "Sonraki"
 
 #. Translators: by Artist
-#: plugins/notification/rb-notification-plugin.c:331
+#: plugins/notification/rb-notification-plugin.c:308
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "<i>%s</i>,"
 
 #. Translators: from Album
-#: plugins/notification/rb-notification-plugin.c:333
+#: plugins/notification/rb-notification-plugin.c:310
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "<i>%s</i> albümünden söylüyor."
 
-#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:368
+#: plugins/notification/rb-notification-plugin.c:390 widgets/rb-header.c:368
 msgid "Not Playing"
 msgstr "Çalmıyor"
 
@@ -2825,7 +2829,7 @@ msgstr "Rhythmbox’ı web tarayıcısından denetle"
 msgid "Launch web remote control"
 msgstr "Web uzaktan denetimi başlat"
 
-#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:738
+#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:726
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
@@ -2840,7 +2844,7 @@ msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Ortam akışları aranamadı. Ağ bağlantınızı denetleyin."
 
 #: podcast/rb-podcast-add-dialog.c:794 sources/rb-library-source.c:134
-#: widgets/rb-entry-view.c:1447
+#: widgets/rb-entry-view.c:1448
 msgid "Title"
 msgstr "Başlık"
 
@@ -2853,7 +2857,7 @@ msgid "Episodes"
 msgstr "Bölümler"
 
 #: podcast/rb-podcast-add-dialog.c:847 podcast/rb-podcast-add-dialog.c:858
-#: podcast/rb-podcast-source.c:1400 podcast/rb-podcast-source.c:1411
+#: podcast/rb-podcast-source.c:1382 podcast/rb-podcast-source.c:1393
 msgid "Date"
 msgstr "Tarih"
 
@@ -2865,39 +2869,50 @@ msgstr "Yeni Bölümler"
 msgid "New Downloads"
 msgstr "Yeni İndirmeler"
 
-#: podcast/rb-podcast-main-source.c:165
-msgid "Downloading podcast"
-msgstr "Ortam akışı indiriliyor"
-
-#: podcast/rb-podcast-main-source.c:186
-msgid "Error downloading podcast"
-msgstr "Ortam akışı indirme hatası"
-
-#: podcast/rb-podcast-main-source.c:189
-msgid "Finished downloading podcast"
-msgstr "Ortam akışı indirme tamamlandı"
-
-#: podcast/rb-podcast-main-source.c:242
+#: podcast/rb-podcast-main-source.c:195
 msgid "Error in podcast"
 msgstr "Ortam akışında hata"
 
-#: podcast/rb-podcast-main-source.c:244
+#: podcast/rb-podcast-main-source.c:197
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr ""
 "Bu ortam akışının eklenmesinde sorun oluştu: %s.  Lütfen URL’yi doğrulayın: "
 "%s"
 
-#: podcast/rb-podcast-main-source.c:250
+#: podcast/rb-podcast-main-source.c:203
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Ortam akışı kaynağını yine de eklemek istiyor musunuz?"
 
-#: podcast/rb-podcast-main-source.c:267
-msgid "New updates available from"
-msgstr "Yeni güncellemeler hazır:"
+#: podcast/rb-podcast-manager.c:545
+msgid "Finished downloading podcast episodes"
+msgstr "Ortam akışı bölümlerinin indirilmesi tamamlandı"
 
-#: podcast/rb-podcast-manager.c:808
+#: podcast/rb-podcast-manager.c:550
+#, c-format
+#| msgid "Downloading podcast"
+msgid "Downloading %d podcast episode"
+msgid_plural "Downloading %d podcast episodes"
+msgstr[0] "%d ortam akışı bölümü indiriliyor"
+
+#: podcast/rb-podcast-manager.c:585
+#, c-format
+#| msgid "New updates available from"
+msgid "%d new episode available"
+msgid_plural "%d new episodes available"
+msgstr[0] "%d yeni bölüm var"
+
+#: podcast/rb-podcast-manager.c:932
+#, c-format
+msgid ""
+"The URL \"%s\" has already been added as a radio station. If this is a "
+"podcast feed, please remove the radio station."
+msgstr ""
+"\"%s\" adresi zaten radyo istasyonu olarak eklenmiş. Eğer bu bir ortam akışı "
+"ise lütfen radyo istasyonunu kaldırın."
+
+#: podcast/rb-podcast-manager.c:1003
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, "
@@ -2908,21 +2923,15 @@ msgstr ""
 "bozuk olabilir. Rhythmbox uygulamasının yine de bunu kullanmayı denemesini "
 "ister misiniz?"
 
-#. added as something else, probably iradio
-#: podcast/rb-podcast-manager.c:863
-msgid "URL already added"
-msgstr "URL zaten eklenmiş"
+#: podcast/rb-podcast-manager.c:1086
+msgid "Updating podcast feeds"
+msgstr "Ortam akışı beklemeleri güncelleniyor"
 
-#: podcast/rb-podcast-manager.c:864
-#, c-format
-msgid ""
-"The URL \"%s\" has already been added as a radio station. If this is a "
-"podcast feed, please remove the radio station."
-msgstr ""
-"\"%s\" adresi zaten radyo istasyonu olarak eklenmiş. Eğer bu bir ortam akışı "
-"ise lütfen radyo istasyonunu kaldırın."
+#: podcast/rb-podcast-manager.c:1087
+msgid "Finished updating podcast feeds"
+msgstr "Ortam akışı güncellemeleri tamamlandı"
 
-#: podcast/rb-podcast-manager.c:948
+#: podcast/rb-podcast-manager.c:1170
 msgid "Podcast"
 msgstr "Ortam akışı"
 
@@ -2940,11 +2949,11 @@ msgstr "Bu besleme, indirilebilir herhangi bir öge içermiyor"
 msgid "Not Downloaded"
 msgstr "İndirilmedi"
 
-#: podcast/rb-podcast-source.c:524
+#: podcast/rb-podcast-source.c:512
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Ortam akışı beslemesi ve indirilen dosyalar silinsin mi?"
 
-#: podcast/rb-podcast-source.c:527
+#: podcast/rb-podcast-source.c:515
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  "
 "Please note that you can delete the feed but keep the downloaded files by "
@@ -2954,35 +2963,35 @@ msgstr ""
 "Yalnızca beslemeyi silmeyi seçerek, beslemeyi silip indirilen dosyaları "
 "saklayabileceğinizi unutmayınız."
 
-#: podcast/rb-podcast-source.c:535
+#: podcast/rb-podcast-source.c:523
 msgid "Delete _Feed Only"
 msgstr "Yalnızca _Beslemeyi Sil"
 
-#: podcast/rb-podcast-source.c:542
+#: podcast/rb-podcast-source.c:530
 msgid "_Delete Feed And Files"
 msgstr "Beslemeyi ve Dosyaları _Sil"
 
-#: podcast/rb-podcast-source.c:623 podcast/rb-podcast-source.c:1454
+#: podcast/rb-podcast-source.c:611 podcast/rb-podcast-source.c:1436
 msgid "Downloaded"
 msgstr "İndirildi"
 
-#: podcast/rb-podcast-source.c:627 podcast/rb-podcast-source.c:1456
+#: podcast/rb-podcast-source.c:615 podcast/rb-podcast-source.c:1438
 msgid "Failed"
 msgstr "Başarısız oldu"
 
-#: podcast/rb-podcast-source.c:631 podcast/rb-podcast-source.c:1455
+#: podcast/rb-podcast-source.c:619 podcast/rb-podcast-source.c:1437
 msgid "Waiting"
 msgstr "Bekliyor"
 
-#: podcast/rb-podcast-source.c:967
+#: podcast/rb-podcast-source.c:955
 msgid "Podcast Error"
 msgstr "Ortam Akışı Hatası"
 
-#: podcast/rb-podcast-source.c:1111
+#: podcast/rb-podcast-source.c:1093
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Ortam akışı bölümü indirilen dosya silinsin mi?"
 
-#: podcast/rb-podcast-source.c:1114
+#: podcast/rb-podcast-source.c:1096
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -2994,45 +3003,45 @@ msgstr ""
 "saklayabileceğinizi ya da yalnızca dosyayı silmeyi seçerek bölümü "
 "saklayabileceğinizi unutmayınız. "
 
-#: podcast/rb-podcast-source.c:1126
+#: podcast/rb-podcast-source.c:1108
 msgid "Delete _Episode Only"
 msgstr "Y_alnızca Bölümü Sil"
 
-#: podcast/rb-podcast-source.c:1128
+#: podcast/rb-podcast-source.c:1110
 msgid "Delete _File Only"
 msgstr "Yalnızca _Dosyayı Sil"
 
-#: podcast/rb-podcast-source.c:1132
+#: podcast/rb-podcast-source.c:1114
 msgid "_Delete Episode And File"
 msgstr "Bölümü ve _Dosyayı Sil"
 
-#: podcast/rb-podcast-source.c:1238
+#: podcast/rb-podcast-source.c:1220
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d bölüm"
 
-#: podcast/rb-podcast-source.c:1433 podcast/rb-podcast-source.c:1488
-#: podcast/rb-podcast-source.c:1527
+#: podcast/rb-podcast-source.c:1415 podcast/rb-podcast-source.c:1470
+#: podcast/rb-podcast-source.c:1508
 msgid "Feed"
 msgstr "Besleme"
 
-#: podcast/rb-podcast-source.c:1453 podcast/rb-podcast-source.c:1471
+#: podcast/rb-podcast-source.c:1435 podcast/rb-podcast-source.c:1453
 msgid "Status"
 msgstr "Durum"
 
 #. ensure search instances exist
-#: podcast/rb-podcast-source.c:1573 sources/rb-auto-playlist-source.c:253
+#: podcast/rb-podcast-source.c:1554 sources/rb-auto-playlist-source.c:253
 #: sources/rb-browser-source.c:314 sources/rb-browser-source.c:332
 #: sources/rb-static-playlist-source.c:296
 msgid "Search all fields"
 msgstr "Tüm alanlarda ara"
 
-#: podcast/rb-podcast-source.c:1574
+#: podcast/rb-podcast-source.c:1555
 msgid "Search podcast feeds"
 msgstr "Ortam akışı beslemeleri ara"
 
-#: podcast/rb-podcast-source.c:1575
+#: podcast/rb-podcast-source.c:1556
 msgid "Search podcast episodes"
 msgstr "Ortam akışı bölümleri ara"
 
@@ -3080,7 +3089,7 @@ msgstr "Oynatılıyorsa oynatmayı duraklat"
 msgid "Toggle play/pause mode"
 msgstr "Çalma/bekleme durumları arasında geçiş yap"
 
-#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2255
+#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2303
 msgid "Stop playback"
 msgstr "Çalmayı durdur"
 
@@ -3268,7 +3277,7 @@ msgstr "Yardım için 'h' tuşuna basın."
 msgid "Playback volume is %f.\n"
 msgstr "Çalma ses düzeyi: %f.\n"
 
-#: rhythmdb/rhythmdb.c:789
+#: rhythmdb/rhythmdb.c:796
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "%s’e erişilemedi: %s"
@@ -3278,7 +3287,7 @@ msgstr "%s’e erişilemedi: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: rhythmdb/rhythmdb.c:1837
+#: rhythmdb/rhythmdb.c:1845
 msgid "The Beatles"
 msgstr "Barış Manço"
 
@@ -3286,7 +3295,7 @@ msgstr "Barış Manço"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: rhythmdb/rhythmdb.c:1843
+#: rhythmdb/rhythmdb.c:1851
 msgid "Help!"
 msgstr "Yardım!"
 
@@ -3294,51 +3303,51 @@ msgstr "Yardım!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: rhythmdb/rhythmdb.c:1849
+#: rhythmdb/rhythmdb.c:1857
 msgid "Ticket To Ride"
 msgstr "Kol Düğmeleri"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: rhythmdb/rhythmdb.c:2394
+#: rhythmdb/rhythmdb.c:2409
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "Bu dosyayı çalmak için ek GStreamer eklentileri gereklidir: %s"
 
-#: rhythmdb/rhythmdb.c:2426
+#: rhythmdb/rhythmdb.c:2441
 msgid "invalid unicode in error message"
 msgstr "hata iletisinde geçersiz unikod"
 
-#: rhythmdb/rhythmdb.c:2549
+#: rhythmdb/rhythmdb.c:2564
 #, c-format
 msgid "Empty file"
 msgstr "Boş dosya"
 
-#: rhythmdb/rhythmdb.c:3258
+#: rhythmdb/rhythmdb.c:3273
 msgid "Could not load the music database:"
 msgstr "Müzik veri tabanı yüklenemedi:"
 
-#: rhythmdb/rhythmdb.c:4697
+#: rhythmdb/rhythmdb.c:4716
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld dakika"
 
-#: rhythmdb/rhythmdb.c:4698
+#: rhythmdb/rhythmdb.c:4717
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld saat"
 
-#: rhythmdb/rhythmdb.c:4699
+#: rhythmdb/rhythmdb.c:4718
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld gün"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4705
+#: rhythmdb/rhythmdb.c:4724
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s ve %s"
@@ -3346,21 +3355,21 @@ msgstr "%s, %s ve %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4711 rhythmdb/rhythmdb.c:4719 rhythmdb/rhythmdb.c:4730
+#: rhythmdb/rhythmdb.c:4730 rhythmdb/rhythmdb.c:4738 rhythmdb/rhythmdb.c:4749
 #, c-format
 msgid "%s and %s"
 msgstr "%s ve %s"
 
-#: rhythmdb/rhythmdb-import-job.c:705
+#: rhythmdb/rhythmdb-import-job.c:709
 msgid "Scanning"
 msgstr "Taranıyor"
 
-#: rhythmdb/rhythmdb-import-job.c:708 shell/rb-track-transfer-batch.c:984
+#: rhythmdb/rhythmdb-import-job.c:712 shell/rb-track-transfer-batch.c:990
 #, c-format
 msgid "%d of %d"
 msgstr "%d / %d"
 
-#: rhythmdb/rhythmdb-property-model.c:511
+#: rhythmdb/rhythmdb-property-model.c:512
 msgid "All"
 msgstr "Tümü"
 
@@ -3570,45 +3579,45 @@ msgstr "Bilinmeyen çalma listesi: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "%s, otomatik çalma listesidir"
 
-#: shell/rb-shell.c:2048
+#: shell/rb-shell.c:2051
 msgid "Error while saving song information"
 msgstr "Parça bilgisi kaydedilirken hata oluştu"
 
-#: shell/rb-shell.c:2252
+#: shell/rb-shell.c:2300
 msgid "Pause playback"
 msgstr "Çalmayı duraklat"
 
-#: shell/rb-shell.c:2259
+#: shell/rb-shell.c:2307
 msgid "Start playback"
 msgstr "Çalmayı başlat"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:2369
+#: shell/rb-shell.c:2417
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Duraklatıldı)"
 
-#: shell/rb-shell.c:2711 sources/rb-play-queue-source.c:673
+#: shell/rb-shell.c:2748 sources/rb-play-queue-source.c:673
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Kayıtlı hiçbir kaynak %s URI’sini işleyemez"
 
-#: shell/rb-shell.c:3035
+#: shell/rb-shell.c:3072
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Kayıtlı hiçbir kaynak URI %s ile eşleşmiyor"
 
-#: shell/rb-shell.c:3068 shell/rb-shell.c:3111
+#: shell/rb-shell.c:3105 shell/rb-shell.c:3148
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Bilinmeyen parça adresi: %s"
 
-#: shell/rb-shell.c:3120
+#: shell/rb-shell.c:3157
 #, c-format
 msgid "Unknown property %s"
 msgstr "Bilinmeyen özellik %s"
 
-#: shell/rb-shell.c:3134
+#: shell/rb-shell.c:3171
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "%s özellik türü %s özelliği için geçersiz"
@@ -3870,7 +3879,7 @@ msgstr "Sanatçı/Albüm"
 msgid "Artist - Album"
 msgstr "Sanatçı - Albüm"
 
-#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1477
+#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1478
 #: widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Albüm"
@@ -4079,72 +4088,72 @@ msgstr "Kısıtlı Değişken bit oranı"
 msgid "Default settings"
 msgstr "Öntanımlı ayarlar"
 
-#: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1539
-#: widgets/rb-song-info.c:1232
+#: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1540
+#: widgets/rb-song-info.c:1241
 msgid "Lossless"
 msgstr "Kayıpsız"
 
-#: widgets/rb-entry-view.c:1436
+#: widgets/rb-entry-view.c:1437
 msgid "Track"
 msgstr "Parça"
 
-#: widgets/rb-entry-view.c:1467
+#: widgets/rb-entry-view.c:1468
 msgid "Composer"
 msgstr "Besteci"
 
-#: widgets/rb-entry-view.c:1497
+#: widgets/rb-entry-view.c:1498
 msgid "Comment"
 msgstr "Yorum"
 
-#: widgets/rb-entry-view.c:1508
+#: widgets/rb-entry-view.c:1509
 msgid "Time"
 msgstr "Süre"
 
-#: widgets/rb-entry-view.c:1521
+#: widgets/rb-entry-view.c:1522
 msgid "Year"
 msgstr "Yıl"
 
-#: widgets/rb-entry-view.c:1534
+#: widgets/rb-entry-view.c:1535
 msgid "Quality"
 msgstr "Kalite"
 
-#: widgets/rb-entry-view.c:1537
+#: widgets/rb-entry-view.c:1538
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: widgets/rb-entry-view.c:1548
+#: widgets/rb-entry-view.c:1549
 msgid "Rating"
 msgstr "Gözdelik"
 
-#: widgets/rb-entry-view.c:1571
+#: widgets/rb-entry-view.c:1572
 msgid "Play Count"
 msgstr "Çalma Sayısı"
 
-#: widgets/rb-entry-view.c:1584
+#: widgets/rb-entry-view.c:1585
 msgid "Last Played"
 msgstr "Son Çalınan"
 
-#: widgets/rb-entry-view.c:1597
+#: widgets/rb-entry-view.c:1598
 msgid "Date Added"
 msgstr "Eklenme Tarihi"
 
-#: widgets/rb-entry-view.c:1609
+#: widgets/rb-entry-view.c:1610
 msgid "Last Seen"
 msgstr "Son Görülme"
 
-#: widgets/rb-entry-view.c:1620
+#: widgets/rb-entry-view.c:1621
 msgid "Location"
 msgstr "Konum"
 
-#: widgets/rb-entry-view.c:1630
+#: widgets/rb-entry-view.c:1631
 msgid "BPM"
 msgstr "BPM"
 
-#: widgets/rb-entry-view.c:1918
+#: widgets/rb-entry-view.c:1919
 msgid "Now Playing"
 msgstr "Çalınıyor"
 
-#: widgets/rb-entry-view.c:1983
+#: widgets/rb-entry-view.c:1984
 msgid "Playback Error"
 msgstr "Çalma Hatası"
 
@@ -4556,36 +4565,30 @@ msgstr "Ara"
 msgid "_Search:"
 msgstr "_Ara:"
 
-#: widgets/rb-song-info.c:354
+#: widgets/rb-song-info.c:355
 msgid "_Back"
 msgstr "_Geri"
 
-#: widgets/rb-song-info.c:363
+#: widgets/rb-song-info.c:364
 msgid "_Forward"
 msgstr "_İleri"
 
-#: widgets/rb-song-info.c:371
+#: widgets/rb-song-info.c:372
 msgid "Song Properties"
 msgstr "Şarkı Özellikleri"
 
-#: widgets/rb-song-info.c:428
+#: widgets/rb-song-info.c:429
 msgid "Multiple Song Properties"
 msgstr "Çoklu Şarkı Özellikleri"
 
-#: widgets/rb-song-info.c:1294
+#: widgets/rb-song-info.c:1303
 msgid "Unknown file name"
 msgstr "Bilinmeyen dosya adı"
 
-#: widgets/rb-song-info.c:1316
+#: widgets/rb-song-info.c:1325
 msgid "On the desktop"
 msgstr "Masaüstünde"
 
-#: widgets/rb-song-info.c:1339
+#: widgets/rb-song-info.c:1348
 msgid "Unknown location"
 msgstr "Bilinmeyen konum"
-
-#~ msgid "Jetlyrics (jetlyrics.com)"
-#~ msgstr "Jetlyrics (jetlyrics.com)"
-
-#~ msgid "Access key:"
-#~ msgstr "Erişim anahtarı:"
