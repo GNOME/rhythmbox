@@ -733,9 +733,8 @@ lookup_row_by_widget (RBQueryCreator *creator,
 	GList *rows = priv->rows;
 	GList *row;
 	GtkWidget *ret = NULL;
-	guint i;
 
-	for (row = rows, i = 0; row; row = row->next, i++) {
+	for (row = rows; row; row = row->next) {
 		GList *columns = gtk_container_get_children (GTK_CONTAINER (row->data));
 		gboolean found = g_list_find (columns, widget) != NULL;
 		g_list_free (columns);
