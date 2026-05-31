@@ -77,7 +77,7 @@ clear_button_bar (RBButtonBar *bar)
 
 	c = gtk_container_get_children (GTK_CONTAINER (bar));
 	for (l = c; l != NULL; l = l->next) {
-		if (!GTK_IS_LABEL (l->data))
+		if (!GTK_IS_LABEL (l->data) && !GTK_IS_SEPARATOR (l->data))
 			gtk_size_group_remove_widget (bar->priv->size_group, l->data);
 		gtk_container_remove (GTK_CONTAINER (bar), l->data);
 	}
