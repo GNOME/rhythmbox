@@ -10,16 +10,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2026-04-15 22:33+0000\n"
-"PO-Revision-Date: 2026-04-16 15:49+0300\n"
+"POT-Creation-Date: 2026-06-01 09:40+0000\n"
+"PO-Revision-Date: 2026-06-02 14:34+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
-"=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 23.04.3\n"
 
 #: backends/gstreamer/rb-encoder-gst.c:653
@@ -144,8 +144,8 @@ msgstr "Відтворення та упорядкування збірки му
 #: data/org.gnome.Rhythmbox3.desktop.in:6
 msgid "Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;"
 msgstr ""
-"Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;звук;пісня"
-";пісні;мп3;подкаст;іпод;список "
+"Audio;Song;MP3;CD;Podcast;MTP;iPod;Playlist;Last.fm;UPnP;DLNA;Radio;звук;пісн"
+"я;пісні;мп3;подкаст;іпод;список "
 "відтворення;відтворення;ласт.фм;длна;радіо;"
 
 #: data/org.gnome.Rhythmbox3.metainfo.xml.in:9
@@ -614,7 +614,7 @@ msgstr "Зберегти список відтворення"
 
 #: data/ui/playlist-save.ui:38 plugins/artsearch/songinfo.py:135
 #: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:525
-#: podcast/rb-podcast-source.c:1106 shell/rb-track-transfer-queue.c:187
+#: podcast/rb-podcast-source.c:1072 shell/rb-track-transfer-queue.c:187
 #: widgets/rb-alert-dialog.c:384 widgets/rb-alert-dialog.c:401
 #: widgets/rb-dialog.c:131 widgets/rb-dialog.c:139
 #: widgets/rb-query-creator.c:191 widgets/rb-uri-dialog.c:158
@@ -721,7 +721,7 @@ msgid "Cancel Download"
 msgstr "Скасувати звантаження"
 
 #: data/ui/podcast-popups.ui:45 plugins/fmradio/fmradio-popup.ui:6
-#: podcast/rb-podcast-source.c:1262 sources/rb-media-player-source.c:1104
+#: podcast/rb-podcast-source.c:1228 sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Вилучити"
 
@@ -942,8 +942,8 @@ msgstr "Вилучені файли:"
 #: lib/rb-cut-and-paste-code.c:94
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:235
 #: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3862
-#: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1575
-#: widgets/rb-entry-view.c:1589 widgets/rb-song-info.c:1554
+#: widgets/rb-entry-view.c:973 widgets/rb-entry-view.c:1604
+#: widgets/rb-entry-view.c:1618 widgets/rb-song-info.c:1554
 msgid "Never"
 msgstr "Ніколи"
 
@@ -1006,7 +1006,7 @@ msgstr "%b %d %Y"
 #: podcast/rb-feed-podcast-properties-dialog.c:335
 #: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1554
 #: podcast/rb-podcast-manager.c:1666 podcast/rb-podcast-properties-dialog.c:636
-#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:785
+#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:770
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
 #: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
 #: rhythmdb/rhythmdb.c:2156 rhythmdb/rhythmdb-entry-type.c:303
@@ -1016,9 +1016,9 @@ msgstr "%b %d %Y"
 #: rhythmdb/rhythmdb-tree.c:1368 rhythmdb/rhythmdb-tree.c:1372
 #: rhythmdb/rhythmdb-tree.c:1376 rhythmdb/rhythmdb-tree.c:1380
 #: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
-#: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
-#: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1513
-#: widgets/rb-entry-view.c:1526 widgets/rb-entry-view.c:1539
+#: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:1025
+#: widgets/rb-entry-view.c:1047 widgets/rb-entry-view.c:1542
+#: widgets/rb-entry-view.c:1555 widgets/rb-entry-view.c:1568
 #: widgets/rb-header.c:1282 widgets/rb-header.c:1308 widgets/rb-song-info.c:957
 #: widgets/rb-song-info.c:969 widgets/rb-song-info.c:1243
 #: widgets/rb-song-info.c:1581
@@ -1070,7 +1070,8 @@ msgstr "%d:%02d:%02d з %d:%02d:%02d"
 #: metadata/rb-metadata-gst.c:509
 #, c-format
 msgid "Unable to write tags to this file as it contains multiple streams"
-msgstr "Неможливо записати мітки до цього файла, бо він містить кілька потоків"
+msgstr ""
+"Неможливо записати мітки до цього файла, бо він містить кілька потоків"
 
 #: metadata/rb-metadata-gst.c:549
 #, c-format
@@ -1715,7 +1716,7 @@ msgid "Loading top albums for %s"
 msgstr "Завантаження провідних альбомів %s"
 
 #: plugins/context/ArtistTab.py:58 plugins/magnatune/magnatune-toolbar.ui:20
-#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1458
+#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1487
 #: widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Виконавець"
@@ -1955,7 +1956,8 @@ msgstr "Портативні аудіопрогравачі"
 
 #: plugins/generic-player/generic-player.plugin.desktop.in:6
 msgid "Support for generic audio player devices (plus PSP and Nokia 770)"
-msgstr "Підтримка поширених портативних аудіопристроїв (плюс PSP та Nokia 770)"
+msgstr ""
+"Підтримка поширених портативних аудіопристроїв (плюс PSP та Nokia 770)"
 
 #: plugins/generic-player/rb-generic-player-source.c:292
 #: plugins/ipod/rb-ipod-source.c:339
@@ -2130,11 +2132,11 @@ msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "Підтримування служб мовлення, які надсилаються через інтернет"
 
 #: plugins/iradio/iradio-popup.ui:6 shell/rb-shell-clipboard.c:258
-#: sources/rb-source.c:1206 widgets/rb-query-creator.c:802
+#: sources/rb-source.c:1206 widgets/rb-query-creator.c:801
 msgid "Remove"
 msgstr "Вилучити"
 
-#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1488
+#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1517
 #: widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Жанр"
@@ -2174,7 +2176,7 @@ msgid "%s Properties"
 msgstr "Параметри %s"
 
 #: plugins/iradio/rb-station-properties-dialog.c:487
-#: podcast/rb-podcast-properties-dialog.c:634 widgets/rb-entry-view.c:1022
+#: podcast/rb-podcast-properties-dialog.c:634 widgets/rb-entry-view.c:1051
 #: widgets/rb-song-info.c:1245
 #, c-format
 msgid "%lu kbps"
@@ -2560,7 +2562,7 @@ msgstr ""
 "Сервер Magnatune повернув:\n"
 "%s"
 
-#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1640
+#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1669
 msgid "Error"
 msgstr "Помилка"
 
@@ -2855,7 +2857,7 @@ msgstr "Керування Rhythmbox за допомогою браузера"
 msgid "Launch web remote control"
 msgstr "Запустити віддалене інтернет-керування"
 
-#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:726
+#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:678
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
@@ -2875,7 +2877,7 @@ msgstr ""
 "з'єднання."
 
 #: podcast/rb-podcast-add-dialog.c:794 sources/rb-library-source.c:134
-#: widgets/rb-entry-view.c:1448
+#: widgets/rb-entry-view.c:1477
 msgid "Title"
 msgstr "Назва"
 
@@ -2888,7 +2890,7 @@ msgid "Episodes"
 msgstr "Епізоди"
 
 #: podcast/rb-podcast-add-dialog.c:847 podcast/rb-podcast-add-dialog.c:858
-#: podcast/rb-podcast-source.c:1382 podcast/rb-podcast-source.c:1393
+#: podcast/rb-podcast-source.c:1373 podcast/rb-podcast-source.c:1384
 msgid "Date"
 msgstr "Дата"
 
@@ -2906,7 +2908,8 @@ msgstr "Помилка в подкасті"
 
 #: podcast/rb-podcast-main-source.c:197
 #, c-format
-msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
+msgid ""
+"There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Під час додавання подкасту виникла помилка: %s.  Перевірте URL: %s"
 
 #: podcast/rb-podcast-main-source.c:203
@@ -2915,13 +2918,11 @@ msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Однаково додати подкаст-канал?"
 
 #: podcast/rb-podcast-manager.c:545
-#| msgid "Finished downloading podcast"
 msgid "Finished downloading podcast episodes"
 msgstr "Отримання епізодів подкаста завершено"
 
 #: podcast/rb-podcast-manager.c:550
 #, c-format
-#| msgid "Downloading podcast"
 msgid "Downloading %d podcast episode"
 msgid_plural "Downloading %d podcast episodes"
 msgstr[0] "Отримуємо %d епізод подкаста"
@@ -2930,7 +2931,6 @@ msgstr[2] "Отримуємо %d епізодів подкаста"
 
 #: podcast/rb-podcast-manager.c:585
 #, c-format
-#| msgid "New updates available from"
 msgid "%d new episode available"
 msgid_plural "%d new episodes available"
 msgstr[0] "Доступний %d новий епізод"
@@ -2957,12 +2957,10 @@ msgstr ""
 "канал не працює. Бажаєте, щоб Rhythmbox однаково використовував його?"
 
 #: podcast/rb-podcast-manager.c:1086
-#| msgid "Update Podcast Feed"
 msgid "Updating podcast feeds"
 msgstr "Оновлення подач подкаста"
 
 #: podcast/rb-podcast-manager.c:1087
-#| msgid "Finished downloading podcast"
 msgid "Finished updating podcast feeds"
 msgstr "Завершено оновлення подач подкаста"
 
@@ -3006,27 +3004,15 @@ msgstr "Вилучити _тільки канал"
 msgid "_Delete Feed And Files"
 msgstr "В_илучити канал і файли"
 
-#: podcast/rb-podcast-source.c:611 podcast/rb-podcast-source.c:1436
-msgid "Downloaded"
-msgstr "Звантажено"
-
-#: podcast/rb-podcast-source.c:615 podcast/rb-podcast-source.c:1438
-msgid "Failed"
-msgstr "Помилка"
-
-#: podcast/rb-podcast-source.c:619 podcast/rb-podcast-source.c:1437
-msgid "Waiting"
-msgstr "Очікування"
-
-#: podcast/rb-podcast-source.c:955
+#: podcast/rb-podcast-source.c:921
 msgid "Podcast Error"
 msgstr "Помилка подкаста"
 
-#: podcast/rb-podcast-source.c:1093
+#: podcast/rb-podcast-source.c:1059
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Вилучити епізод подкаста і звантажений файл?"
 
-#: podcast/rb-podcast-source.c:1096
+#: podcast/rb-podcast-source.c:1062
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -3038,19 +3024,19 @@ msgstr ""
 "звантажений файл, вибравши для вилучення тільки епізод, або вилучити "
 "отриманий файл, але зберегти епізод, вибравши вилучення лише файла."
 
-#: podcast/rb-podcast-source.c:1108
+#: podcast/rb-podcast-source.c:1074
 msgid "Delete _Episode Only"
 msgstr "Вилучити тільки _епізод"
 
-#: podcast/rb-podcast-source.c:1110
+#: podcast/rb-podcast-source.c:1076
 msgid "Delete _File Only"
 msgstr "Вилучити тільки _файл"
 
-#: podcast/rb-podcast-source.c:1114
+#: podcast/rb-podcast-source.c:1080
 msgid "_Delete Episode And File"
 msgstr "Вилучити епізод і _файл"
 
-#: podcast/rb-podcast-source.c:1220
+#: podcast/rb-podcast-source.c:1186
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
@@ -3058,27 +3044,28 @@ msgstr[0] "%d епізод"
 msgstr[1] "%d епізоди"
 msgstr[2] "%d епізодів"
 
-#: podcast/rb-podcast-source.c:1415 podcast/rb-podcast-source.c:1470
-#: podcast/rb-podcast-source.c:1508
+#: podcast/rb-podcast-source.c:1350
+#| msgid "Not Downloaded"
+msgid "Episode downloaded"
+msgstr "Епізод отримано"
+
+#: podcast/rb-podcast-source.c:1406 podcast/rb-podcast-source.c:1428
+#: podcast/rb-podcast-source.c:1466
 msgid "Feed"
 msgstr "Канал"
 
-#: podcast/rb-podcast-source.c:1435 podcast/rb-podcast-source.c:1453
-msgid "Status"
-msgstr "Стан"
-
 #. ensure search instances exist
-#: podcast/rb-podcast-source.c:1554 sources/rb-auto-playlist-source.c:253
+#: podcast/rb-podcast-source.c:1512 sources/rb-auto-playlist-source.c:253
 #: sources/rb-browser-source.c:314 sources/rb-browser-source.c:332
 #: sources/rb-static-playlist-source.c:296
 msgid "Search all fields"
 msgstr "Пошук на всіх полях"
 
-#: podcast/rb-podcast-source.c:1555
+#: podcast/rb-podcast-source.c:1513
 msgid "Search podcast feeds"
 msgstr "Пошук подкаст-каналів"
 
-#: podcast/rb-podcast-source.c:1556
+#: podcast/rb-podcast-source.c:1514
 msgid "Search podcast episodes"
 msgstr "Пошук подкаст-епізодів"
 
@@ -3938,7 +3925,7 @@ msgstr "Виконавець/Альбом"
 msgid "Artist - Album"
 msgstr "Виконавець — Альбом"
 
-#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1478
+#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1507
 #: widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Альбом"
@@ -4150,72 +4137,72 @@ msgstr "Обмежена змінна бітова швидкість"
 msgid "Default settings"
 msgstr "Типові параметри"
 
-#: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1540
+#: widgets/rb-entry-view.c:1045 widgets/rb-entry-view.c:1569
 #: widgets/rb-song-info.c:1241
 msgid "Lossless"
 msgstr "Стиснення без втрат"
 
-#: widgets/rb-entry-view.c:1437
+#: widgets/rb-entry-view.c:1466
 msgid "Track"
 msgstr "Доріжка"
 
-#: widgets/rb-entry-view.c:1468
+#: widgets/rb-entry-view.c:1497
 msgid "Composer"
 msgstr "Композитор"
 
-#: widgets/rb-entry-view.c:1498
+#: widgets/rb-entry-view.c:1527
 msgid "Comment"
 msgstr "Коментар"
 
-#: widgets/rb-entry-view.c:1509
+#: widgets/rb-entry-view.c:1538
 msgid "Time"
 msgstr "Час"
 
-#: widgets/rb-entry-view.c:1522
+#: widgets/rb-entry-view.c:1551
 msgid "Year"
 msgstr "Рік"
 
-#: widgets/rb-entry-view.c:1535
+#: widgets/rb-entry-view.c:1564
 msgid "Quality"
 msgstr "Якість"
 
-#: widgets/rb-entry-view.c:1538
+#: widgets/rb-entry-view.c:1567
 msgid "000 kbps"
 msgstr "000 кбіт/с"
 
-#: widgets/rb-entry-view.c:1549
+#: widgets/rb-entry-view.c:1578
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: widgets/rb-entry-view.c:1572
+#: widgets/rb-entry-view.c:1601
 msgid "Play Count"
 msgstr "Кількість відтворень"
 
-#: widgets/rb-entry-view.c:1585
+#: widgets/rb-entry-view.c:1614
 msgid "Last Played"
 msgstr "Останнє відтворення"
 
-#: widgets/rb-entry-view.c:1598
+#: widgets/rb-entry-view.c:1627
 msgid "Date Added"
 msgstr "Додано"
 
-#: widgets/rb-entry-view.c:1610
+#: widgets/rb-entry-view.c:1639
 msgid "Last Seen"
 msgstr "Останнє відвідування"
 
-#: widgets/rb-entry-view.c:1621
+#: widgets/rb-entry-view.c:1650
 msgid "Location"
 msgstr "Адреса"
 
-#: widgets/rb-entry-view.c:1631
+#: widgets/rb-entry-view.c:1660
 msgid "BPM"
 msgstr "BPM"
 
-#: widgets/rb-entry-view.c:1919
+#: widgets/rb-entry-view.c:1948
 msgid "Now Playing"
 msgstr "Зараз відтворюється"
 
-#: widgets/rb-entry-view.c:1984
+#: widgets/rb-entry-view.c:2013
 msgid "Playback Error"
 msgstr "Помилка відтворення"
 
@@ -4668,6 +4655,18 @@ msgstr "На стільниці"
 #: widgets/rb-song-info.c:1348
 msgid "Unknown location"
 msgstr "Невідома адреса"
+
+#~ msgid "Downloaded"
+#~ msgstr "Звантажено"
+
+#~ msgid "Failed"
+#~ msgstr "Помилка"
+
+#~ msgid "Waiting"
+#~ msgstr "Очікування"
+
+#~ msgid "Status"
+#~ msgstr "Стан"
 
 #~ msgid "Error downloading podcast"
 #~ msgstr "Помилка під час отримання подкасту"
