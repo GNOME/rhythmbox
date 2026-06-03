@@ -20,8 +20,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2026-04-15 22:33+0000\n"
-"PO-Revision-Date: 2026-04-19 09:35+0800\n"
+"POT-Creation-Date: 2026-06-01 09:40+0000\n"
+"PO-Revision-Date: 2026-06-03 13:16+0800\n"
 "Last-Translator: lumingzh <lumingzh@qq.com>\n"
 "Language-Team: Chinese (China) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -616,7 +616,7 @@ msgstr "保存播放列表"
 
 #: data/ui/playlist-save.ui:38 plugins/artsearch/songinfo.py:135
 #: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:525
-#: podcast/rb-podcast-source.c:1106 shell/rb-track-transfer-queue.c:187
+#: podcast/rb-podcast-source.c:1072 shell/rb-track-transfer-queue.c:187
 #: widgets/rb-alert-dialog.c:384 widgets/rb-alert-dialog.c:401
 #: widgets/rb-dialog.c:131 widgets/rb-dialog.c:139
 #: widgets/rb-query-creator.c:191 widgets/rb-uri-dialog.c:158
@@ -722,7 +722,7 @@ msgid "Cancel Download"
 msgstr "取消下载"
 
 #: data/ui/podcast-popups.ui:45 plugins/fmradio/fmradio-popup.ui:6
-#: podcast/rb-podcast-source.c:1262 sources/rb-media-player-source.c:1104
+#: podcast/rb-podcast-source.c:1228 sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "删除"
 
@@ -943,8 +943,8 @@ msgstr "已删除文件："
 #: lib/rb-cut-and-paste-code.c:94
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:235
 #: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3862
-#: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1575
-#: widgets/rb-entry-view.c:1589 widgets/rb-song-info.c:1554
+#: widgets/rb-entry-view.c:973 widgets/rb-entry-view.c:1604
+#: widgets/rb-entry-view.c:1618 widgets/rb-song-info.c:1554
 msgid "Never"
 msgstr "从不"
 
@@ -1007,7 +1007,7 @@ msgstr "%Y年%-m月%-d日"
 #: podcast/rb-feed-podcast-properties-dialog.c:335
 #: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1554
 #: podcast/rb-podcast-manager.c:1666 podcast/rb-podcast-properties-dialog.c:636
-#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:785
+#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:770
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
 #: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
 #: rhythmdb/rhythmdb.c:2156 rhythmdb/rhythmdb-entry-type.c:303
@@ -1017,9 +1017,9 @@ msgstr "%Y年%-m月%-d日"
 #: rhythmdb/rhythmdb-tree.c:1368 rhythmdb/rhythmdb-tree.c:1372
 #: rhythmdb/rhythmdb-tree.c:1376 rhythmdb/rhythmdb-tree.c:1380
 #: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
-#: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
-#: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1513
-#: widgets/rb-entry-view.c:1526 widgets/rb-entry-view.c:1539
+#: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:1025
+#: widgets/rb-entry-view.c:1047 widgets/rb-entry-view.c:1542
+#: widgets/rb-entry-view.c:1555 widgets/rb-entry-view.c:1568
 #: widgets/rb-header.c:1282 widgets/rb-header.c:1308 widgets/rb-song-info.c:957
 #: widgets/rb-song-info.c:969 widgets/rb-song-info.c:1243
 #: widgets/rb-song-info.c:1581
@@ -1705,7 +1705,7 @@ msgid "Loading top albums for %s"
 msgstr "正在加载 %s 的最热专辑"
 
 #: plugins/context/ArtistTab.py:58 plugins/magnatune/magnatune-toolbar.ui:20
-#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1458
+#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1487
 #: widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "艺人"
@@ -2110,11 +2110,11 @@ msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "支持 Internet 上传送的广播服务"
 
 #: plugins/iradio/iradio-popup.ui:6 shell/rb-shell-clipboard.c:258
-#: sources/rb-source.c:1206 widgets/rb-query-creator.c:802
+#: sources/rb-source.c:1206 widgets/rb-query-creator.c:801
 msgid "Remove"
 msgstr "删除"
 
-#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1488
+#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1517
 #: widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "流派"
@@ -2152,7 +2152,7 @@ msgid "%s Properties"
 msgstr "%s 属性"
 
 #: plugins/iradio/rb-station-properties-dialog.c:487
-#: podcast/rb-podcast-properties-dialog.c:634 widgets/rb-entry-view.c:1022
+#: podcast/rb-podcast-properties-dialog.c:634 widgets/rb-entry-view.c:1051
 #: widgets/rb-song-info.c:1245
 #, c-format
 msgid "%lu kbps"
@@ -2527,7 +2527,7 @@ msgstr ""
 "Magnatune 服务器回应：\n"
 "%s"
 
-#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1640
+#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1669
 msgid "Error"
 msgstr "错误"
 
@@ -2810,7 +2810,7 @@ msgstr "从 Web 浏览器控制 Rhythmbox"
 msgid "Launch web remote control"
 msgstr "启动 Web 远程控制"
 
-#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:726
+#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:678
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
@@ -2825,7 +2825,7 @@ msgid "Unable to search for podcasts. Check your network connection."
 msgstr "无法搜索播客。请检查您的网络连接。"
 
 #: podcast/rb-podcast-add-dialog.c:794 sources/rb-library-source.c:134
-#: widgets/rb-entry-view.c:1448
+#: widgets/rb-entry-view.c:1477
 msgid "Title"
 msgstr "标题"
 
@@ -2838,7 +2838,7 @@ msgid "Episodes"
 msgstr "节目"
 
 #: podcast/rb-podcast-add-dialog.c:847 podcast/rb-podcast-add-dialog.c:858
-#: podcast/rb-podcast-source.c:1382 podcast/rb-podcast-source.c:1393
+#: podcast/rb-podcast-source.c:1373 podcast/rb-podcast-source.c:1384
 msgid "Date"
 msgstr "日期"
 
@@ -2944,27 +2944,15 @@ msgstr "仅删除订阅源(_F)"
 msgid "_Delete Feed And Files"
 msgstr "删除订阅源及文件(_D)"
 
-#: podcast/rb-podcast-source.c:611 podcast/rb-podcast-source.c:1436
-msgid "Downloaded"
-msgstr "已下载"
-
-#: podcast/rb-podcast-source.c:615 podcast/rb-podcast-source.c:1438
-msgid "Failed"
-msgstr "已失败"
-
-#: podcast/rb-podcast-source.c:619 podcast/rb-podcast-source.c:1437
-msgid "Waiting"
-msgstr "等待中"
-
-#: podcast/rb-podcast-source.c:955
+#: podcast/rb-podcast-source.c:921
 msgid "Podcast Error"
 msgstr "播客出错"
 
-#: podcast/rb-podcast-source.c:1093
+#: podcast/rb-podcast-source.c:1059
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "删除该播客节目及已下载文件吗？"
 
-#: podcast/rb-podcast-source.c:1096
+#: podcast/rb-podcast-source.c:1062
 msgid ""
 "If you choose to delete the episode and file, they will be permanently "
 "lost.  Please note that you can delete the episode but keep the downloaded "
@@ -2974,45 +2962,45 @@ msgstr ""
 "如果您选择删除该节目及文件，它们将永远丢失。请注意您可以通过选择仅删除节目来"
 "删除节目但保持已下载文件，或选择仅删除文件来删除已下载文件但保持节目。"
 
-#: podcast/rb-podcast-source.c:1108
+#: podcast/rb-podcast-source.c:1074
 msgid "Delete _Episode Only"
 msgstr "仅删除节目(_E)"
 
-#: podcast/rb-podcast-source.c:1110
+#: podcast/rb-podcast-source.c:1076
 msgid "Delete _File Only"
 msgstr "仅删除文件(_F)"
 
-#: podcast/rb-podcast-source.c:1114
+#: podcast/rb-podcast-source.c:1080
 msgid "_Delete Episode And File"
 msgstr "删除节目及文件(_D)"
 
-#: podcast/rb-podcast-source.c:1220
+#: podcast/rb-podcast-source.c:1186
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d 个节目"
 
-#: podcast/rb-podcast-source.c:1415 podcast/rb-podcast-source.c:1470
-#: podcast/rb-podcast-source.c:1508
+#: podcast/rb-podcast-source.c:1350
+msgid "Episode downloaded"
+msgstr "已下载节目"
+
+#: podcast/rb-podcast-source.c:1406 podcast/rb-podcast-source.c:1428
+#: podcast/rb-podcast-source.c:1466
 msgid "Feed"
 msgstr "订阅源"
 
-#: podcast/rb-podcast-source.c:1435 podcast/rb-podcast-source.c:1453
-msgid "Status"
-msgstr "状态"
-
 #. ensure search instances exist
-#: podcast/rb-podcast-source.c:1554 sources/rb-auto-playlist-source.c:253
+#: podcast/rb-podcast-source.c:1512 sources/rb-auto-playlist-source.c:253
 #: sources/rb-browser-source.c:314 sources/rb-browser-source.c:332
 #: sources/rb-static-playlist-source.c:296
 msgid "Search all fields"
 msgstr "搜索全部字段"
 
-#: podcast/rb-podcast-source.c:1555
+#: podcast/rb-podcast-source.c:1513
 msgid "Search podcast feeds"
 msgstr "搜索播客订阅源"
 
-#: podcast/rb-podcast-source.c:1556
+#: podcast/rb-podcast-source.c:1514
 msgid "Search podcast episodes"
 msgstr "搜索播客节目"
 
@@ -3899,7 +3887,7 @@ msgstr "艺人/专辑"
 msgid "Artist - Album"
 msgstr "艺人 - 专辑"
 
-#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1478
+#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1507
 #: widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "专辑"
@@ -4103,72 +4091,72 @@ msgstr "约束可变比特率"
 msgid "Default settings"
 msgstr "默认设置"
 
-#: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1540
+#: widgets/rb-entry-view.c:1045 widgets/rb-entry-view.c:1569
 #: widgets/rb-song-info.c:1241
 msgid "Lossless"
 msgstr "无损"
 
-#: widgets/rb-entry-view.c:1437
+#: widgets/rb-entry-view.c:1466
 msgid "Track"
 msgstr "曲目"
 
-#: widgets/rb-entry-view.c:1468
+#: widgets/rb-entry-view.c:1497
 msgid "Composer"
 msgstr "作曲"
 
-#: widgets/rb-entry-view.c:1498
+#: widgets/rb-entry-view.c:1527
 msgid "Comment"
 msgstr "注释"
 
-#: widgets/rb-entry-view.c:1509
+#: widgets/rb-entry-view.c:1538
 msgid "Time"
 msgstr "时间"
 
-#: widgets/rb-entry-view.c:1522
+#: widgets/rb-entry-view.c:1551
 msgid "Year"
 msgstr "年份"
 
-#: widgets/rb-entry-view.c:1535
+#: widgets/rb-entry-view.c:1564
 msgid "Quality"
 msgstr "质量"
 
-#: widgets/rb-entry-view.c:1538
+#: widgets/rb-entry-view.c:1567
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: widgets/rb-entry-view.c:1549
+#: widgets/rb-entry-view.c:1578
 msgid "Rating"
 msgstr "评分"
 
-#: widgets/rb-entry-view.c:1572
+#: widgets/rb-entry-view.c:1601
 msgid "Play Count"
 msgstr "播放计数"
 
-#: widgets/rb-entry-view.c:1585
+#: widgets/rb-entry-view.c:1614
 msgid "Last Played"
 msgstr "上次播放"
 
-#: widgets/rb-entry-view.c:1598
+#: widgets/rb-entry-view.c:1627
 msgid "Date Added"
 msgstr "添加的日期"
 
-#: widgets/rb-entry-view.c:1610
+#: widgets/rb-entry-view.c:1639
 msgid "Last Seen"
 msgstr "上次看过"
 
-#: widgets/rb-entry-view.c:1621
+#: widgets/rb-entry-view.c:1650
 msgid "Location"
 msgstr "位置"
 
-#: widgets/rb-entry-view.c:1631
+#: widgets/rb-entry-view.c:1660
 msgid "BPM"
 msgstr "BPM"
 
-#: widgets/rb-entry-view.c:1919
+#: widgets/rb-entry-view.c:1948
 msgid "Now Playing"
 msgstr "正在播放"
 
-#: widgets/rb-entry-view.c:1984
+#: widgets/rb-entry-view.c:2013
 msgid "Playback Error"
 msgstr "回放错误"
 
@@ -4607,6 +4595,18 @@ msgstr "位于桌面"
 #: widgets/rb-song-info.c:1348
 msgid "Unknown location"
 msgstr "未知位置"
+
+#~ msgid "Downloaded"
+#~ msgstr "已下载"
+
+#~ msgid "Failed"
+#~ msgstr "已失败"
+
+#~ msgid "Waiting"
+#~ msgstr "等待中"
+
+#~ msgid "Status"
+#~ msgstr "状态"
 
 #~ msgid "Error downloading podcast"
 #~ msgstr "下载播客出错"
