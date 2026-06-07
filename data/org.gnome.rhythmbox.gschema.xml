@@ -434,4 +434,32 @@
       <description>Passphrase for the web remote control interface</description>
     </key>
   </schema>
+
+  <schema id="org.gnome.rhythmbox.plugins.gpodder" path="/org/gnome/rhythmbox/plugins/gpodder/">
+    <key name="mygpo-url" type="s">
+      <default>'https://gpodder.net/'</default>
+      <summary>Root URL for gpodder.net API server</summary>
+      <description>Root URL for gpodder.net API server</description>
+    </key>
+    <key name="device-id" type="s">
+      <default>''</default>
+      <summary>Device ID for gpodder.net API calls</summary>
+      <description>Device ID for gpodder.net API calls</description>
+    </key>
+    <key name="search" type="b">
+      <default>true</default>
+      <summary>Whether to search for podcasts using the gpodder.net API</summary>
+      <description>Whether to search for podcasts using the gpodder.net API</description>
+    </key>
+    <key name="feed-sync" type="b">
+      <default>false</default>
+      <summary>Whether to sync podcast feed subscriptions with the gpodder.net API</summary>
+      <description>Whether to sync podcast feed subscriptions with the gpodder.net API</description>
+    </key>
+    <key name="episode-sync" type="b">
+      <default>false</default>
+      <summary>Whether to sync podcast episode actions with the gpodder.net API</summary>
+      <description>Whether to sync podcast episode actions with the gpodder.net API</description>
+    </key>
+  </schema>
 </schemalist>

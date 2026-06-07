@@ -207,6 +207,7 @@ if enable_python
     'rb',
 
     'artsearch',
+    'gpodder',
     'im-status',
     'listenbrainz',
     'lyrics',
