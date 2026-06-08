@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2026-06-01 09:40+0000\n"
-"PO-Revision-Date: 2026-06-02 14:34+0300\n"
+"POT-Creation-Date: 2026-06-08 09:12+0000\n"
+"PO-Revision-Date: 2026-06-08 18:48+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -443,6 +443,7 @@ msgid "Import"
 msgstr "Імпортувати"
 
 #: data/ui/import-dialog.ui:66 data/ui/podcast-add-dialog.ui:45
+#: plugins/gpodder/gpodder.py:618
 msgid "Close"
 msgstr "Закрити"
 
@@ -563,7 +564,8 @@ msgstr "Попередній перегляд синхронізації"
 
 #: data/ui/media-player-properties.ui:284 plugins/android/android-toolbar.ui:24
 #: plugins/generic-player/generic-player-toolbar.ui:28
-#: plugins/ipod/ipod-toolbar.ui:28 plugins/mtpdevice/mtp-toolbar.ui:28
+#: plugins/gpodder/gpodder.py:307 plugins/ipod/ipod-toolbar.ui:28
+#: plugins/mtpdevice/mtp-toolbar.ui:28
 msgid "Sync"
 msgstr "Синхронізація"
 
@@ -1975,6 +1977,119 @@ msgstr "Додати до нового списку композицій"
 msgid "Advanced"
 msgstr "Додатково"
 
+#: plugins/gpodder/gpodder.plugin.desktop.in:6
+msgid "gpodder.net podcast sync"
+msgstr "Синхронізувати трансляції з gpodder.net"
+
+#: plugins/gpodder/gpodder.plugin.desktop.in:7
+msgid "Podcast syncing using the gpodder.net API"
+msgstr ""
+"Синхронізація трансляцій за допомогою програмного інтерфейсу gpodder.net"
+
+#. Translators: do not translate {hostname} as it is a string substitution
+#. marker (like %s) for the hostname.
+#: plugins/gpodder/gpodder.py:237
+#, python-brace-format
+#| msgid "Rhythmbox Website"
+msgid "Rhythmbox on {hostname}"
+msgstr "Rhythmbox на {hostname}"
+
+#: plugins/gpodder/gpodder.py:285
+msgid "Not synchronized"
+msgstr "Не синхронізовано"
+
+#: plugins/gpodder/gpodder.py:291
+#, python-format
+#| msgid "Last played:"
+msgid "Last synced: %s"
+msgstr "Востаннє синхронізовано: %s"
+
+#: plugins/gpodder/gpodder.py:293
+msgid "Last sync was successful"
+msgstr "Останню синхронізацію було виконано успішно"
+
+#: plugins/gpodder/gpodder.py:295
+#| msgid "Request failed"
+msgid "Last sync failed"
+msgstr "Не вдалося виконати останню синхронізацію"
+
+#: plugins/gpodder/gpodder.py:305
+#| msgid "Sync"
+msgid "Sync Now"
+msgstr "Синхронізувати"
+
+#: plugins/gpodder/gpodder.py:306
+#| msgid "_Preferences"
+msgid "Preferences"
+msgstr "Налаштування"
+
+#: plugins/gpodder/gpodder.py:656
+msgid "Login successful"
+msgstr "Вхід здійснено"
+
+#: plugins/gpodder/gpodder.py:658 plugins/magnatune/MagnatuneSource.py:408
+#: widgets/rb-entry-view.c:1669
+msgid "Error"
+msgstr "Помилка"
+
+#: plugins/gpodder/gpodder.py:660
+msgid "Login failed"
+msgstr "Невдала спроба увійти"
+
+#: plugins/gpodder/gpodder-prefs.ui:18
+msgid "Podcast synchronization settings"
+msgstr "Параметри синхронізації трансляцій"
+
+#: plugins/gpodder/gpodder-prefs.ui:34
+msgid ""
+"Synchronize your podcast subscriptions across devices\n"
+"using a service that implements the gpodder.net API."
+msgstr ""
+"Синхронізувати ваші підписки на трансляції між пристроями\n"
+"за допомогою служби, яка реалізує програмний інтерфейс gpodder.net."
+
+#: plugins/gpodder/gpodder-prefs.ui:46
+msgid "Synchronize subscriptions"
+msgstr "Синхронізувати підписки"
+
+#: plugins/gpodder/gpodder-prefs.ui:50
+msgid ""
+"If enabled, your podcast subscriptions will be synchronized between your "
+"podcast applications"
+msgstr ""
+"Якщо увімкнено, ваші підписки на трансляції буде синхронізовано між вашими"
+" програмами для роботи із трасляціями"
+
+#: plugins/gpodder/gpodder-prefs.ui:61
+msgid "Synchronize episode actions"
+msgstr "Синхронізувати дії з епізодом"
+
+#: plugins/gpodder/gpodder-prefs.ui:65
+msgid ""
+"If enabled, playback and download actions will be synchronized between your "
+"podcast applications"
+msgstr ""
+"Якщо увімкнено, дії з відтворення і отримання буде синхронізовано між вашими"
+" програмами для роботи із трасляціями"
+
+#: plugins/gpodder/gpodder-prefs.ui:124
+msgid "Server URL"
+msgstr "Адреса сервера"
+
+#: plugins/gpodder/gpodder-prefs.ui:137
+#| msgid "Username:"
+msgid "Username"
+msgstr "Користувач"
+
+#: plugins/gpodder/gpodder-prefs.ui:150
+#| msgid "Password:"
+msgid "Password"
+msgstr "Пароль"
+
+#: plugins/gpodder/gpodder-prefs.ui:159
+msgid "Test Login"
+msgstr "Тестовий вхід"
+
 #: plugins/grilo/grilo.plugin.desktop.in:4
 msgid "Grilo media browser"
 msgstr "Оглядач матеріалу Grilo"
@@ -2562,10 +2677,6 @@ msgstr ""
 "Сервер Magnatune повернув:\n"
 "%s"
 
-#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1669
-msgid "Error"
-msgstr "Помилка"
-
 #: plugins/magnatune/MagnatuneSource.py:409
 #, python-format
 msgid ""
@@ -3045,7 +3156,6 @@ msgstr[1] "%d епізоди"
 msgstr[2] "%d епізодів"
 
 #: podcast/rb-podcast-source.c:1350
-#| msgid "Not Downloaded"
 msgid "Episode downloaded"
 msgstr "Епізод отримано"
 
