@@ -518,7 +518,7 @@ class GPodderSync (GObject.Object):
 
 			for d in j.get('remove', []):
 				print("removing podcast feed {}".format(d))
-				self.handler.subscription_removed_cb(a)
+				self.handler.subscription_removed_cb(d)
 
 			self.sync_state["subscription-timestamp"] = j.get("timestamp", "0")
 			self.save_sync_state()
