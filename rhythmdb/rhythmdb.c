@@ -210,6 +210,8 @@ struct media_type_filter {
 	{ "application/", TRUE },
 };
 
+GPrivate is_query_thread;
+
 /*
  * File size below which we will simply ignore files that can't be identified.
  * This is mostly here so we ignore the various text files that are packaged
@@ -1554,9 +1556,13 @@ rhythmdb_commit_internal (RhythmDB *db,
 	 * during normal operation, if committing from a worker thread,
 	 * wait for changes made on the thread to be processed by the main thread.
 	 * this avoids races and ensures the signals emitted are correct.
+	 * this also means you can't commit from a query thread, because changes
+	 * made while a query thread is running are deferred until the query is done.
 	 */
 	if (db->priv->action_thread_running && !rb_is_main_thread ()) {
 		RhythmDBEvent *event;
+
+		g_assert (!rhythmdb_is_query_thread ());
 
 		event = g_slice_new0 (RhythmDBEvent);
 		event->db = db;
@@ -4289,11 +4295,18 @@ rhythmdb_query_internal (RhythmDBQueryThreadData *data)
 	rhythmdb_query_free (data->query);
 }
 
+gboolean
+rhythmdb_is_query_thread (void)
+{
+	return GPOINTER_TO_UINT(g_private_get (&is_query_thread)) == 1;
+}
+
 static gpointer
 query_thread_main (RhythmDBQueryThreadData *data)
 {
 	RhythmDBEvent *result;
 
+	g_private_set (&is_query_thread, GUINT_TO_POINTER (1));
 	rb_debug ("entering query thread");
 
 	rhythmdb_query_internal (data);
@@ -4303,6 +4316,8 @@ query_thread_main (RhythmDBQueryThreadData *data)
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	rhythmdb_push_event (data->db, result);
 	g_free (data);
+
+	g_private_set (&is_query_thread, GUINT_TO_POINTER (0));
 	return NULL;
 }
 

@@ -244,6 +244,8 @@ void rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 void rhythmdb_entry_type_foreach (RhythmDB *db, GHFunc func, gpointer data);
 RhythmDBEntry *	rhythmdb_entry_lookup_by_location_refstring (RhythmDB *db, RBRefString *uri);
 
+gboolean rhythmdb_is_query_thread (void);
+
 /* from rhythmdb-monitor.c */
 void rhythmdb_init_monitoring (RhythmDB *db);
 void rhythmdb_dispose_monitoring (RhythmDB *db);
