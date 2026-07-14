@@ -359,7 +359,7 @@ class GPodderPlugin (GObject.Object, Peas.Activatable):
 		# the feed entry's last-seen time changes after a feed update,
 		# which is a good time to try to apply pending episode actions.
 		if self.settings['episode-sync'] and prop == RB.RhythmDBPropType.LAST_SEEN:
-			self.apply_pending_actions_idle(True)
+			self.apply_pending_actions_idle()
 
 		# if the resolved url changes, delete and readd the feed
 		if self.settings['feed-sync'] and prop == RB.RhythmDBPropType.SUBTITLE:
@@ -469,15 +469,10 @@ class GPodderPlugin (GObject.Object, Peas.Activatable):
 			print("couldn't find missing entry")
 		else:
 			e = res[0]
-			# might need to move this to the main thread?
 			print("found matching entry {}".format(e.get_string(RB.RhythmDBPropType.LOCATION)))
 			self.apply_pending_entry(e, pending)
 
-		# have to use an idle handler here, but we don't want to restart processing
-		if self.apply_pending_iter is not None:
-			self.apply_pending_actions_idle(False)
-		else:
-			print("finished applying pending episode actions")
+		self.apply_pending_actions_step()
 
 	def apply_pending_actions_step(self):
 		while True:
@@ -529,9 +524,8 @@ class GPodderPlugin (GObject.Object, Peas.Activatable):
 			self.apply_pending_actions_step()
 		return GLib.SOURCE_REMOVE
 
-	def apply_pending_actions_idle(self, restart):
-		if restart:
-			self.apply_pending_iter = self.pending_model.get_iter_first()
+	def apply_pending_actions_idle(self):
+		self.apply_pending_iter = self.pending_model.get_iter_first()
 
 		if self.apply_pending_idle == 0:
 			self.apply_pending_idle = GLib.idle_add(self.apply_pending_actions_idle_cb, None)
@@ -603,7 +597,7 @@ class GPodderPlugin (GObject.Object, Peas.Activatable):
 			return
 
 		self.db.commit()
-		self.apply_pending_actions_idle(True)
+		self.apply_pending_actions_idle()
 
 	def sync_prefs_destroy(self, dialog, response):
 		dialog.destroy()
