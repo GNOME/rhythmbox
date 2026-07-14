@@ -36,6 +36,7 @@
 struct _RhythmDBQueryResultListPrivate
 {
 	gboolean complete;
+	guint complete_id;
 	GList *results;
 };
 
@@ -73,6 +74,16 @@ impl_add_results (RhythmDBQueryResults *results, GPtrArray *entries)
 	}
 }
 
+static gboolean
+emit_query_complete (gpointer data)
+{
+	RhythmDBQueryResultList *list = RHYTHMDB_QUERY_RESULT_LIST (data);
+
+	g_signal_emit (G_OBJECT (list), rhythmdb_query_result_list_signals[COMPLETE], 0);
+	list->priv->complete_id = 0;
+	return G_SOURCE_REMOVE;
+}
+
 static void
 impl_query_complete (RhythmDBQueryResults *results)
 {
@@ -81,7 +92,20 @@ impl_query_complete (RhythmDBQueryResults *results)
 	list->priv->results = g_list_reverse (list->priv->results);
 	list->priv->complete = TRUE;
 
-	g_signal_emit (G_OBJECT (results), rhythmdb_query_result_list_signals[COMPLETE], 0);
+	if (rb_is_main_thread())
+		g_signal_emit (G_OBJECT (results), rhythmdb_query_result_list_signals[COMPLETE], 0);
+	else
+		list->priv->complete_id = g_idle_add (emit_query_complete, list);
+}
+
+static void
+impl_dispose (GObject *object)
+{
+	RhythmDBQueryResultList *list = RHYTHMDB_QUERY_RESULT_LIST (object);
+
+	g_clear_handle_id (&list->priv->complete_id, g_source_remove);
+
+	G_OBJECT_CLASS (rhythmdb_query_result_list_parent_class)->dispose (object);
 }
 
 static void
@@ -115,6 +139,7 @@ rhythmdb_query_result_list_class_init (RhythmDBQueryResultListClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->dispose = impl_dispose;
 	object_class->finalize = impl_finalize;
 
 	/**
