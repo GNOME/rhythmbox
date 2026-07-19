@@ -754,6 +754,13 @@ rb_ext_db_request (RBExtDB *store,
 			return FALSE;
 
 		rb_debug ("found null match, continuing to issue requests");
+
+		/*
+		 * we can only create one request per call, as we can only call the
+		 * destroy function once.  to make this work, we don't add this request
+		 * to the outstanding list, relying on the caller to have a handler for
+		 * the added signal to see the new result if one arrives.
+		 */
 		add_request = FALSE;
 	}
 
@@ -797,7 +804,7 @@ rb_ext_db_request (RBExtDB *store,
 	/* and let metadata providers request it */
 	if (emit_request) {
 		result = FALSE;
-		g_signal_emit (store, signals[REQUEST], 0, req->key, (gulong)last_time, &result);
+		g_signal_emit (store, signals[REQUEST], 0, key, (gulong)last_time, &result);
 	} else {
 		result = TRUE;
 	}
