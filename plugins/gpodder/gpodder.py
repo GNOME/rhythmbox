@@ -500,6 +500,8 @@ class GPodderPlugin (GObject.Object, Peas.Activatable):
 			feed_entry = self.find_feed_by_sync_url(feed_url)
 			if feed_entry is None:
 				print("couldn't find feed by url {}".format(feed_url))
+				continue
+
 			feed_url = feed_entry.get_string(RB.RhythmDBPropType.LOCATION)
 
 			self.apply_pending_query = True
