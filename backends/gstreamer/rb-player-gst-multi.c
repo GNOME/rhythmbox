@@ -1250,7 +1250,11 @@ impl_play (RBPlayer *rbp, RBPlayerPlayType play_type, gint64 crossfade, GError *
 
 	switch (play_type) {
 	case RB_PLAYER_PLAY_AFTER_EOS:
-		g_assert (current != NULL);
+		if (current == NULL) {
+			rb_debug ("wanted to reuse current stream, but it's null");
+			break;
+		}
+
 		rb_debug ("will reuse current stream to play %s", next->uri);
 
 		reuse_stream (current, next, TRUE);
