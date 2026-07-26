@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2026-04-15 22:33+0000\n"
-"PO-Revision-Date: 2026-04-16 23:00+0500\n"
+"POT-Creation-Date: 2026-07-23 22:28+0000\n"
+"PO-Revision-Date: 2026-07-26 14:48+0500\n"
 "Last-Translator: Baurzhan Muftakhidinov <baurthefirst@gmail.com>\n"
 "Language-Team: Kazakh <kk_KZ@googlegroups.com>\n"
 "Language: kk\n"
@@ -142,6 +142,7 @@ msgstr "Барлық музыкаңызды ойнату және реттеу"
 
 #. developer_name tag deprecated with Appstream 1.0
 #: data/org.gnome.Rhythmbox3.metainfo.xml.in:11
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:13
 msgid "The Rhythmbox developers"
 msgstr "Rhythmbox әзірлеушілері"
 
@@ -431,6 +432,7 @@ msgid "Import"
 msgstr "Импорттау"
 
 #: data/ui/import-dialog.ui:66 data/ui/podcast-add-dialog.ui:45
+#: plugins/gpodder/gpodder.py:614
 msgid "Close"
 msgstr "Жабу"
 
@@ -549,7 +551,8 @@ msgstr "Синхрондауды алдын ала қарау"
 
 #: data/ui/media-player-properties.ui:284 plugins/android/android-toolbar.ui:24
 #: plugins/generic-player/generic-player-toolbar.ui:28
-#: plugins/ipod/ipod-toolbar.ui:28 plugins/mtpdevice/mtp-toolbar.ui:28
+#: plugins/gpodder/gpodder.py:307 plugins/ipod/ipod-toolbar.ui:28
+#: plugins/mtpdevice/mtp-toolbar.ui:28
 msgid "Sync"
 msgstr "Синхрондау"
 
@@ -600,7 +603,7 @@ msgstr "Ойнату тізімін сақтау"
 
 #: data/ui/playlist-save.ui:38 plugins/artsearch/songinfo.py:135
 #: plugins/ipod/ipod-init.ui:21 podcast/rb-podcast-source.c:525
-#: podcast/rb-podcast-source.c:1106 shell/rb-track-transfer-queue.c:187
+#: podcast/rb-podcast-source.c:1072 shell/rb-track-transfer-queue.c:187
 #: widgets/rb-alert-dialog.c:384 widgets/rb-alert-dialog.c:401
 #: widgets/rb-dialog.c:131 widgets/rb-dialog.c:139
 #: widgets/rb-query-creator.c:191 widgets/rb-uri-dialog.c:158
@@ -707,7 +710,7 @@ msgid "Cancel Download"
 msgstr "Жүктеуден бас тарту"
 
 #: data/ui/podcast-popups.ui:45 plugins/fmradio/fmradio-popup.ui:6
-#: podcast/rb-podcast-source.c:1262 sources/rb-media-player-source.c:1104
+#: podcast/rb-podcast-source.c:1228 sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Өшіру"
 
@@ -927,9 +930,9 @@ msgstr "Өшірілген файлдар:"
 
 #: lib/rb-cut-and-paste-code.c:94
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:235
-#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3862
-#: widgets/rb-entry-view.c:944 widgets/rb-entry-view.c:1575
-#: widgets/rb-entry-view.c:1589 widgets/rb-song-info.c:1554
+#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3868
+#: widgets/rb-entry-view.c:973 widgets/rb-entry-view.c:1604
+#: widgets/rb-entry-view.c:1618 widgets/rb-song-info.c:1554
 msgid "Never"
 msgstr "Ешқашан"
 
@@ -989,19 +992,19 @@ msgstr "%b %d, %Y"
 #: podcast/rb-feed-podcast-properties-dialog.c:335
 #: podcast/rb-podcast-add-dialog.c:654 podcast/rb-podcast-manager.c:1554
 #: podcast/rb-podcast-manager.c:1666 podcast/rb-podcast-properties-dialog.c:636
-#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:785
+#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:770
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
-#: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
-#: rhythmdb/rhythmdb.c:2156 rhythmdb/rhythmdb-entry-type.c:303
+#: rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2107 rhythmdb/rhythmdb.c:2122
+#: rhythmdb/rhythmdb.c:2162 rhythmdb/rhythmdb-entry-type.c:303
 #: rhythmdb/rhythmdb-entry-type.c:381 rhythmdb/rhythmdb-entry-type.c:387
 #: rhythmdb/rhythmdb-entry-type.c:392 rhythmdb/rhythmdb-entry-type.c:403
 #: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:309
 #: rhythmdb/rhythmdb-tree.c:1368 rhythmdb/rhythmdb-tree.c:1372
 #: rhythmdb/rhythmdb-tree.c:1376 rhythmdb/rhythmdb-tree.c:1380
 #: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718
-#: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
-#: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1513
-#: widgets/rb-entry-view.c:1526 widgets/rb-entry-view.c:1539
+#: shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:1025
+#: widgets/rb-entry-view.c:1047 widgets/rb-entry-view.c:1542
+#: widgets/rb-entry-view.c:1555 widgets/rb-entry-view.c:1568
 #: widgets/rb-header.c:1282 widgets/rb-header.c:1308 widgets/rb-song-info.c:957
 #: widgets/rb-song-info.c:969 widgets/rb-song-info.c:1243
 #: widgets/rb-song-info.c:1581
@@ -1711,7 +1714,7 @@ msgid "Loading top albums for %s"
 msgstr "%s үшін үздік альбомдар жүктелуде"
 
 #: plugins/context/ArtistTab.py:58 plugins/magnatune/magnatune-toolbar.ui:20
-#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1458
+#: sources/rb-library-source.c:125 widgets/rb-entry-view.c:1487
 #: widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Орындаушы"
@@ -1966,6 +1969,111 @@ msgstr "Жаңа ойнату тізіміне қосу"
 msgid "Advanced"
 msgstr "Кеңейтілген"
 
+#: plugins/gpodder/gpodder.plugin.desktop.in:6
+msgid "gpodder.net podcast sync"
+msgstr "gpodder.net подкаст синхрондау"
+
+#: plugins/gpodder/gpodder.plugin.desktop.in:7
+msgid "Podcast syncing using the gpodder.net API"
+msgstr "gpodder.net API көмегімен подкасттарды синхрондау"
+
+#. Translators: do not translate {hostname} as it is a string substitution
+#. marker (like %s) for the hostname.
+#: plugins/gpodder/gpodder.py:237
+#, python-brace-format
+msgid "Rhythmbox on {hostname}"
+msgstr "{hostname} хостындағы Rhythmbox"
+
+#: plugins/gpodder/gpodder.py:285
+msgid "Not synchronized"
+msgstr "Синхрондалмаған"
+
+#: plugins/gpodder/gpodder.py:291
+#, python-format
+msgid "Last synced: %s"
+msgstr "Соңғы синхрондау: %s"
+
+#: plugins/gpodder/gpodder.py:293
+msgid "Last sync was successful"
+msgstr "Соңғы синхрондау сәтті аяқталды"
+
+#: plugins/gpodder/gpodder.py:295
+msgid "Last sync failed"
+msgstr "Соңғы синхрондау сәтсіз аяқталды"
+
+#: plugins/gpodder/gpodder.py:305
+msgid "Sync Now"
+msgstr "Қазір синхрондау"
+
+#: plugins/gpodder/gpodder.py:306
+msgid "Preferences"
+msgstr "Баптаулар"
+
+#: plugins/gpodder/gpodder.py:652
+msgid "Login successful"
+msgstr "Кіру сәтті аяқталды"
+
+#: plugins/gpodder/gpodder.py:654 plugins/magnatune/MagnatuneSource.py:408
+#: widgets/rb-entry-view.c:1669
+msgid "Error"
+msgstr "Қате"
+
+#: plugins/gpodder/gpodder.py:656
+msgid "Login failed"
+msgstr "Кіру сәтсіз аяқталды"
+
+#: plugins/gpodder/gpodder-prefs.ui:18
+msgid "Podcast synchronization settings"
+msgstr "Подкасттарды синхрондау баптаулары"
+
+#: plugins/gpodder/gpodder-prefs.ui:34
+msgid ""
+"Synchronize your podcast subscriptions across devices\n"
+"using a service that implements the gpodder.net API."
+msgstr ""
+"gpodder.net API-ін қолданатын қызмет арқылы\n"
+"подкаст жазылымдарыңызды құрылғылар арасында синхрондау."
+
+#: plugins/gpodder/gpodder-prefs.ui:46
+msgid "Synchronize subscriptions"
+msgstr "Жазылымдарды синхрондау"
+
+#: plugins/gpodder/gpodder-prefs.ui:50
+msgid ""
+"If enabled, your podcast subscriptions will be synchronized between your "
+"podcast applications"
+msgstr ""
+"Іске қосылған болса, подкаст жазылымдарыңыз подкаст қолданбаларыңыздың "
+"арасында синхрондалатын болады"
+
+#: plugins/gpodder/gpodder-prefs.ui:61
+msgid "Synchronize episode actions"
+msgstr "Эпизод әрекеттерін синхрондау"
+
+#: plugins/gpodder/gpodder-prefs.ui:65
+msgid ""
+"If enabled, playback and download actions will be synchronized between your "
+"podcast applications"
+msgstr ""
+"Іске қосылған болса, ойнату және жүктеп алу әрекеттері подкаст "
+"қолданбаларыңыздың арасында синхрондалатын болады"
+
+#: plugins/gpodder/gpodder-prefs.ui:124
+msgid "Server URL"
+msgstr "Сервер URL адресі"
+
+#: plugins/gpodder/gpodder-prefs.ui:137
+msgid "Username"
+msgstr "Пайдаланушы аты"
+
+#: plugins/gpodder/gpodder-prefs.ui:150
+msgid "Password"
+msgstr "Пароль"
+
+#: plugins/gpodder/gpodder-prefs.ui:159
+msgid "Test Login"
+msgstr "Кіруді сынау"
+
 #: plugins/grilo/grilo.plugin.desktop.in:4
 msgid "Grilo media browser"
 msgstr "Grilo медиа браузері"
@@ -2119,11 +2227,11 @@ msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "Интернет арқылы берілетін хабар тарату қызметтерін қолдау"
 
 #: plugins/iradio/iradio-popup.ui:6 shell/rb-shell-clipboard.c:258
-#: sources/rb-source.c:1206 widgets/rb-query-creator.c:802
+#: sources/rb-source.c:1206 widgets/rb-query-creator.c:801
 msgid "Remove"
 msgstr "Өшіру"
 
-#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1488
+#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1517
 #: widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Жанр"
@@ -2161,7 +2269,7 @@ msgid "%s Properties"
 msgstr "%s қасиеттері"
 
 #: plugins/iradio/rb-station-properties-dialog.c:487
-#: podcast/rb-podcast-properties-dialog.c:634 widgets/rb-entry-view.c:1022
+#: podcast/rb-podcast-properties-dialog.c:634 widgets/rb-entry-view.c:1051
 #: widgets/rb-song-info.c:1245
 #, c-format
 msgid "%lu kbps"
@@ -2546,10 +2654,6 @@ msgstr ""
 "Magnatune сервері келесі жауапты қайтарды:\n"
 "%s"
 
-#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1640
-msgid "Error"
-msgstr "Қате"
-
 #: plugins/magnatune/MagnatuneSource.py:409
 #, python-format
 msgid ""
@@ -2837,7 +2941,7 @@ msgstr "Rhythmbox-ты веб-браузерден басқару"
 msgid "Launch web remote control"
 msgstr "Веб арқылы қашықтан басқаруды іске қосу"
 
-#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:726
+#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:678
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
@@ -2852,7 +2956,7 @@ msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Подкасттарды іздеу мүмкін емес. Желілік қосылымды тексеріңіз."
 
 #: podcast/rb-podcast-add-dialog.c:794 sources/rb-library-source.c:134
-#: widgets/rb-entry-view.c:1448
+#: widgets/rb-entry-view.c:1477
 msgid "Title"
 msgstr "Атауы"
 
@@ -2865,7 +2969,7 @@ msgid "Episodes"
 msgstr "Бөлімдер"
 
 #: podcast/rb-podcast-add-dialog.c:847 podcast/rb-podcast-add-dialog.c:858
-#: podcast/rb-podcast-source.c:1382 podcast/rb-podcast-source.c:1393
+#: podcast/rb-podcast-source.c:1373 podcast/rb-podcast-source.c:1384
 msgid "Date"
 msgstr "Күні"
 
@@ -2975,27 +3079,15 @@ msgstr "Тек та_спаны өшіру"
 msgid "_Delete Feed And Files"
 msgstr "Таспа мен файлдарды өші_ру"
 
-#: podcast/rb-podcast-source.c:611 podcast/rb-podcast-source.c:1436
-msgid "Downloaded"
-msgstr "Жүктелген"
-
-#: podcast/rb-podcast-source.c:615 podcast/rb-podcast-source.c:1438
-msgid "Failed"
-msgstr "Сәтсіз аяқталды"
-
-#: podcast/rb-podcast-source.c:619 podcast/rb-podcast-source.c:1437
-msgid "Waiting"
-msgstr "Күтуде"
-
-#: podcast/rb-podcast-source.c:955
+#: podcast/rb-podcast-source.c:921
 msgid "Podcast Error"
 msgstr "Подкаст қатесі"
 
-#: podcast/rb-podcast-source.c:1093
+#: podcast/rb-podcast-source.c:1059
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Подкаст бөлімін және жүктелген файлды өшіру керек пе?"
 
-#: podcast/rb-podcast-source.c:1096
+#: podcast/rb-podcast-source.c:1062
 msgid ""
 "If you choose to delete the episode and file, they will be permanently lost.  "
 "Please note that you can delete the episode but keep the downloaded file by "
@@ -3007,45 +3099,45 @@ msgstr ""
 "немесе тек файлды өшіруді таңдау арқылы файлды өшіріп, бөлімді сақтап қалуға "
 "болатынын ескеріңіз."
 
-#: podcast/rb-podcast-source.c:1108
+#: podcast/rb-podcast-source.c:1074
 msgid "Delete _Episode Only"
 msgstr "Тек бөлі_мді өшіру"
 
-#: podcast/rb-podcast-source.c:1110
+#: podcast/rb-podcast-source.c:1076
 msgid "Delete _File Only"
 msgstr "Тек файл_ды өшіру"
 
-#: podcast/rb-podcast-source.c:1114
+#: podcast/rb-podcast-source.c:1080
 msgid "_Delete Episode And File"
 msgstr "Бөлім мен файлды өші_ру"
 
-#: podcast/rb-podcast-source.c:1220
+#: podcast/rb-podcast-source.c:1186
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d бөлім"
 
-#: podcast/rb-podcast-source.c:1415 podcast/rb-podcast-source.c:1470
-#: podcast/rb-podcast-source.c:1508
+#: podcast/rb-podcast-source.c:1350
+msgid "Episode downloaded"
+msgstr "Эпизод жүктеп алынды"
+
+#: podcast/rb-podcast-source.c:1406 podcast/rb-podcast-source.c:1428
+#: podcast/rb-podcast-source.c:1466
 msgid "Feed"
 msgstr "Таспа"
 
-#: podcast/rb-podcast-source.c:1435 podcast/rb-podcast-source.c:1453
-msgid "Status"
-msgstr "Күйі"
-
 #. ensure search instances exist
-#: podcast/rb-podcast-source.c:1554 sources/rb-auto-playlist-source.c:253
+#: podcast/rb-podcast-source.c:1512 sources/rb-auto-playlist-source.c:253
 #: sources/rb-browser-source.c:314 sources/rb-browser-source.c:332
 #: sources/rb-static-playlist-source.c:296
 msgid "Search all fields"
 msgstr "Барлық өрістерден іздеу"
 
-#: podcast/rb-podcast-source.c:1555
+#: podcast/rb-podcast-source.c:1513
 msgid "Search podcast feeds"
 msgstr "Подкаст таспаларын іздеу"
 
-#: podcast/rb-podcast-source.c:1556
+#: podcast/rb-podcast-source.c:1514
 msgid "Search podcast episodes"
 msgstr "Подкаст бөлімдерін іздеу"
 
@@ -3283,7 +3375,7 @@ msgstr "Көмек алу үшін 'h' басыңыз."
 msgid "Playback volume is %f.\n"
 msgstr "Ойнату дыбыс деңгейі: %f.\n"
 
-#: rhythmdb/rhythmdb.c:796
+#: rhythmdb/rhythmdb.c:798
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "%s орнына қол жеткізу мүмкін емес: %s"
@@ -3292,64 +3384,64 @@ msgstr "%s орнына қол жеткізу мүмкін емес: %s"
 #. * not be translated literally, but could be replaced with
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
-#: rhythmdb/rhythmdb.c:1845
+#: rhythmdb/rhythmdb.c:1851
 msgid "The Beatles"
 msgstr "The Beatles"
 
 #. Translators: this is an example album name.  If the
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
-#: rhythmdb/rhythmdb.c:1851
+#: rhythmdb/rhythmdb.c:1857
 msgid "Help!"
 msgstr "Help!"
 
 #. Translators: this is an example song title.  If the example
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
-#: rhythmdb/rhythmdb.c:1857
+#: rhythmdb/rhythmdb.c:1863
 msgid "Ticket To Ride"
 msgstr "Ticket To Ride"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
-#: rhythmdb/rhythmdb.c:2409
+#: rhythmdb/rhythmdb.c:2415
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "Бұл файлды ойнату үшін қосымша GStreamer плагиндері қажет: %s"
 
-#: rhythmdb/rhythmdb.c:2441
+#: rhythmdb/rhythmdb.c:2447
 msgid "invalid unicode in error message"
 msgstr "қате туралы хабарламада жарамсыз unicode"
 
-#: rhythmdb/rhythmdb.c:2564
+#: rhythmdb/rhythmdb.c:2570
 #, c-format
 msgid "Empty file"
 msgstr "Бос файл"
 
-#: rhythmdb/rhythmdb.c:3273
+#: rhythmdb/rhythmdb.c:3279
 msgid "Could not load the music database:"
 msgstr "Музыкалық дерекқорды жүктеу мүмкін болмады:"
 
-#: rhythmdb/rhythmdb.c:4716
+#: rhythmdb/rhythmdb.c:4731
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld минут"
 
-#: rhythmdb/rhythmdb.c:4717
+#: rhythmdb/rhythmdb.c:4732
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld сағат"
 
-#: rhythmdb/rhythmdb.c:4718
+#: rhythmdb/rhythmdb.c:4733
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld күн"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4724
+#: rhythmdb/rhythmdb.c:4739
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s және %s"
@@ -3357,7 +3449,7 @@ msgstr "%s, %s және %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4730 rhythmdb/rhythmdb.c:4738 rhythmdb/rhythmdb.c:4749
+#: rhythmdb/rhythmdb.c:4745 rhythmdb/rhythmdb.c:4753 rhythmdb/rhythmdb.c:4764
 #, c-format
 msgid "%s and %s"
 msgstr "%s және %s"
@@ -3880,7 +3972,7 @@ msgstr "Орындаушы/Альбом"
 msgid "Artist - Album"
 msgstr "Орындаушы - Альбом"
 
-#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1478
+#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1507
 #: widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Альбом"
@@ -4089,72 +4181,72 @@ msgstr "Шектелген айнымалы битрейт"
 msgid "Default settings"
 msgstr "Әдепкі параметрлер"
 
-#: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1540
+#: widgets/rb-entry-view.c:1045 widgets/rb-entry-view.c:1569
 #: widgets/rb-song-info.c:1241
 msgid "Lossless"
 msgstr "Сапаны жоғалтпайтын"
 
-#: widgets/rb-entry-view.c:1437
+#: widgets/rb-entry-view.c:1466
 msgid "Track"
 msgstr "Трек"
 
-#: widgets/rb-entry-view.c:1468
+#: widgets/rb-entry-view.c:1497
 msgid "Composer"
 msgstr "Композитор"
 
-#: widgets/rb-entry-view.c:1498
+#: widgets/rb-entry-view.c:1527
 msgid "Comment"
 msgstr "Түсініктеме"
 
-#: widgets/rb-entry-view.c:1509
+#: widgets/rb-entry-view.c:1538
 msgid "Time"
 msgstr "Уақыт"
 
-#: widgets/rb-entry-view.c:1522
+#: widgets/rb-entry-view.c:1551
 msgid "Year"
 msgstr "Жыл"
 
-#: widgets/rb-entry-view.c:1535
+#: widgets/rb-entry-view.c:1564
 msgid "Quality"
 msgstr "Сапа"
 
-#: widgets/rb-entry-view.c:1538
+#: widgets/rb-entry-view.c:1567
 msgid "000 kbps"
 msgstr "000 кбит/с"
 
-#: widgets/rb-entry-view.c:1549
+#: widgets/rb-entry-view.c:1578
 msgid "Rating"
 msgstr "Рейтинг"
 
-#: widgets/rb-entry-view.c:1572
+#: widgets/rb-entry-view.c:1601
 msgid "Play Count"
 msgstr "Ойнату саны"
 
-#: widgets/rb-entry-view.c:1585
+#: widgets/rb-entry-view.c:1614
 msgid "Last Played"
 msgstr "Соңғы ойнатылған"
 
-#: widgets/rb-entry-view.c:1598
+#: widgets/rb-entry-view.c:1627
 msgid "Date Added"
 msgstr "Қосылған уақыты"
 
-#: widgets/rb-entry-view.c:1610
+#: widgets/rb-entry-view.c:1639
 msgid "Last Seen"
 msgstr "Соңғы рет көрінген"
 
-#: widgets/rb-entry-view.c:1621
+#: widgets/rb-entry-view.c:1650
 msgid "Location"
 msgstr "Орналасуы"
 
-#: widgets/rb-entry-view.c:1631
+#: widgets/rb-entry-view.c:1660
 msgid "BPM"
 msgstr "BPM"
 
-#: widgets/rb-entry-view.c:1919
+#: widgets/rb-entry-view.c:1948
 msgid "Now Playing"
 msgstr "Қазір ойнатылуда"
 
-#: widgets/rb-entry-view.c:1984
+#: widgets/rb-entry-view.c:2013
 msgid "Playback Error"
 msgstr "Ойнату қатесі"
 
@@ -4590,6 +4682,18 @@ msgstr "Жұмыс үстелінде"
 #: widgets/rb-song-info.c:1348
 msgid "Unknown location"
 msgstr "Белгісіз орналасуы"
+
+#~ msgid "Downloaded"
+#~ msgstr "Жүктелген"
+
+#~ msgid "Failed"
+#~ msgstr "Сәтсіз аяқталды"
+
+#~ msgid "Waiting"
+#~ msgstr "Күтуде"
+
+#~ msgid "Status"
+#~ msgstr "Күйі"
 
 #~ msgid "Error downloading podcast"
 #~ msgstr "Подкастты жүктеп алу қатесі"
