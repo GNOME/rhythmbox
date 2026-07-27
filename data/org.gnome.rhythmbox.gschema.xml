@@ -462,4 +462,37 @@
       <description>Whether to sync podcast episode actions with the gpodder.net API</description>
     </key>
   </schema>
+
+  <enum id="org.gnome.rhythmbox.plugins.mpdserver.listen-mode">
+    <value nick="localhost" value="0"/>
+    <value nick="all" value="1"/>
+    <value nick="address" value="2"/>
+  </enum>
+  <schema id="org.gnome.rhythmbox.plugins.mpdserver" path="/org/gnome/rhythmbox/plugins/mpdserver/">
+    <key name="listen-port" type="q">
+      <default>6600</default>
+      <summary>Listening port to use for the MPD server</summary>
+      <description>Listening port to use for the MPD server</description>
+    </key>
+   <key name="listen-mode" enum="org.gnome.rhythmbox.plugins.mpdserver.listen-mode">
+      <default>'localhost'</default>
+      <summary>Listening mode for the MPD server</summary>
+      <description>Listening mode for the MPD server</description>
+    </key>
+    <key name="listen-address" type="s">
+      <default>'127.0.0.1'</default>
+      <summary>Listening address to use for the MPD server</summary>
+      <description>Listening address to use for the MPD server</description>
+    </key>
+    <key name="publish-mdns" type="b">
+      <default>true</default>
+      <summary>Whether to publish MDNS records for the MPD service</summary>
+      <description>Whether to publish MDNS records for the MPD service</description>
+    </key>
+    <key name="mpd-password" type="s">
+      <default>''</default>
+      <summary>Password that MPD clients must provide to gain access</summary>
+      <description>Password that MPD clients must provide to gain access</description>
+    </key>
+  </schema>
 </schemalist>

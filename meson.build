@@ -217,6 +217,7 @@ if enable_python
     'listenbrainz',
     'lyrics',
     'magnatune',
+    'mpdserver',
     'pythonconsole',
     'rbzeitgeist',
     'replaygain',
