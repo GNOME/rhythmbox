@@ -1,3 +1,47 @@
+Overview of changes in Rhythmbox 3.5.0
+======================================
+
+* New playback backend is enabled by default
+* Support for finding lyrics using lrclib.net, in sidecar .lrc files, and
+   embedded in Ogg files
+* Reworked notifications for podcast updates and downloads
+* Redesigned display of podcast episodes, including indication of episodes
+   that have already been played
+* New plugin implementing podcast feed and episode sync using the gPodder.net API
+
+Issues fixed:
+2124 - player backend breaks with crossfade duration set to 0
+2133 - rb-ext-db: ‘req’ may be used uninitialized warning
+
+Merge requests:
+199 - data: Rename appdata to metainfo
+204 - lyrics.py: support sidecar .lrc files
+205 - lyrics: Support embedded lyrics in vorbis files with gstreamer 1.25.90+
+206 - Fix a year-2038-problem
+207 - podcast: Fix uninitialised unref in error path
+
+
+Translation updates:
+- cs, courtesy of Daniel Rusek
+- da, courtesy of Alan Mortensen
+- fr, courtesy of Irénée Thirion
+- fr, courtesy of Jean-Marc Tissières
+- hu, courtesy of Balázs Úr
+- ka, courtesy of Ekaterine Papava
+- kk, courtesy of Baurzhan Muftakhidinov
+- lt, courtesy of Aurimas Černius
+- oc, courtesy of Quentin PAGÈS
+- pt_BR, courtesy of Luiggi R. Cardoso
+- pt, courtesy of Hugo Carvalho
+- ru, courtesy of Артур Беляев
+- sl, courtesy of Martin Srebotnjak
+- sr, courtesy of Марко Костић
+- sv, courtesy of Anders Jonsson
+- tr, courtesy of Sabri Ünal
+- uk, courtesy of Yuri Chornoivan
+- zh_CN, courtesy of lumingzh
+
+
 Overview of changes in Rhythmbox 3.4.9
 ======================================
 
