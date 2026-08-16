@@ -152,7 +152,10 @@ if python_install.found() and pygobject.found()
 
   if pygobject.version() >= '3.53.0'
     # must have girepository-2.0 and a compatible version of libpeas for this to work
-    if girepository.found() and libpeas.version() > '1.36'
+    if girepository.found() and libpeas.version() > '1.37'
+      enable_gir2 = true
+      cdata.set('USE_GIREPOSITORY2', 1)
+    elif girepository.found() and run_command('pkg-config', '--print-requires', 'libpeas-1.0', check: true).stdout().contains('girepository-2')
       enable_gir2 = true
       cdata.set('USE_GIREPOSITORY2', 1)
     else
