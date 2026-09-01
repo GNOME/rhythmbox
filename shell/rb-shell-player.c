@@ -1310,7 +1310,7 @@ rb_shell_player_do_next (RBShellPlayer *player,
  * rb_shell_player_play_entry:
  * @player: the #RBShellPlayer
  * @entry: the #RhythmDBEntry to play
- * @source: the new #RBSource to set as playing (or NULL to use the
+ * @source: (allow-none): the new #RBSource to set as playing (or NULL to use the
  *   selected source)
  *
  * Plays a specified entry.
