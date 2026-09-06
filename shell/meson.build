@@ -93,11 +93,12 @@ rhythmbox_core_deps = [
 
 if enable_python
   rhythmbox_core_deps += [pygobject]
-  if enable_gir2
-    rhythmbox_core_deps += [girepository]
-  else
-    rhythmbox_core_deps += [gobject_introspection]
-  endif
+endif
+
+if enable_gir2
+  rhythmbox_core_deps += [girepository]
+else
+  rhythmbox_core_deps += [gobject_introspection]
 endif
 
 librhythmbox_core = shared_library('rhythmbox-core',

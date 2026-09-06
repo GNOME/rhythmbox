@@ -145,20 +145,22 @@ sampleplugindatadir = datadir / 'rhythmbox' / 'sample-plugins'
 
 enable_python = false
 enable_gir2 = false
+
+if girepository.found() and libpeas.version() > '1.37'
+  enable_gir2 = true
+  cdata.set('USE_GIREPOSITORY2', 1)
+elif girepository.found() and run_command('pkg-config', '--print-requires', 'libpeas-1.0', check: true).stdout().contains('girepository-2')
+  enable_gir2 = true
+  cdata.set('USE_GIREPOSITORY2', 1)
+endif
+
 python_install = python.find_installation('python3', required: get_option('plugins_python'))
 pygobject = dependency('pygobject-3.0', version: '>= 3.0.0', required: get_option('plugins_python'))
 if python_install.found() and pygobject.found()
   enable_python = true
 
   if pygobject.version() >= '3.53.0'
-    # must have girepository-2.0 and a compatible version of libpeas for this to work
-    if girepository.found() and libpeas.version() > '1.37'
-      enable_gir2 = true
-      cdata.set('USE_GIREPOSITORY2', 1)
-    elif girepository.found() and run_command('pkg-config', '--print-requires', 'libpeas-1.0', check: true).stdout().contains('girepository-2')
-      enable_gir2 = true
-      cdata.set('USE_GIREPOSITORY2', 1)
-    else
+    if not enable_gir2
       error('cannot mix girepository 1.0 (via libpeas) and 2.0 (via pygobject)')
     endif
   elif pygobject.version() >= '3.52.0'
