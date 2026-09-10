@@ -30,8 +30,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2026-03-01 00:34+0000\n"
-"PO-Revision-Date: 2026-03-30 19:46+0200\n"
+"POT-Creation-Date: 2026-08-24 10:08+0000\n"
+"PO-Revision-Date: 2026-09-10 19:13+0200\n"
 "Last-Translator: Alan Mortensen <over.tackiness223@passinbox.com>\n"
 "Language-Team: Danish <danskgruppen@groups.io>\n"
 "Language: da\n"
@@ -124,7 +124,7 @@ msgid "My Top Rated"
 msgstr "Mine favoritter"
 
 #: data/org.gnome.Rhythmbox3.desktop.in:2 data/org.gnome.Rhythmbox3.device.desktop.in:2
-#: data/org.gnome.Rhythmbox3.metainfo.xml.in:8 shell/main.c:72 shell/rb-shell.c:508 shell/rb-shell.c:2365
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:8 shell/main.c:72 shell/rb-shell.c:512 shell/rb-shell.c:2397
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -149,7 +149,7 @@ msgid "Play and organize all your music"
 msgstr "Afspil og organisér al din musik"
 
 #. developer_name tag deprecated with Appstream 1.0
-#: data/org.gnome.Rhythmbox3.metainfo.xml.in:11
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:11 data/org.gnome.Rhythmbox3.metainfo.xml.in:13
 msgid "The Rhythmbox developers"
 msgstr "Udviklerne af Rhythmbox"
 
@@ -425,7 +425,7 @@ msgstr "Vælg et sted som indeholder musik, som skal føjes til din samling:"
 msgid "Import"
 msgstr "Importér"
 
-#: data/ui/import-dialog.ui:66 data/ui/podcast-add-dialog.ui:45
+#: data/ui/import-dialog.ui:66 data/ui/podcast-add-dialog.ui:45 plugins/gpodder/gpodder.py:614
 msgid "Close"
 msgstr "Luk"
 
@@ -534,8 +534,8 @@ msgid "Sync Preview"
 msgstr "Forhåndsvisning for synkronisering"
 
 #: data/ui/media-player-properties.ui:284 plugins/android/android-toolbar.ui:24
-#: plugins/generic-player/generic-player-toolbar.ui:28 plugins/ipod/ipod-toolbar.ui:28
-#: plugins/mtpdevice/mtp-toolbar.ui:28
+#: plugins/generic-player/generic-player-toolbar.ui:28 plugins/gpodder/gpodder.py:307
+#: plugins/ipod/ipod-toolbar.ui:28 plugins/mtpdevice/mtp-toolbar.ui:28
 msgid "Sync"
 msgstr "Synkr"
 
@@ -584,13 +584,13 @@ msgid "Save Playlist"
 msgstr "Gem afspilningsliste"
 
 #: data/ui/playlist-save.ui:38 plugins/artsearch/songinfo.py:135 plugins/ipod/ipod-init.ui:21
-#: podcast/rb-podcast-source.c:537 podcast/rb-podcast-source.c:1124 shell/rb-track-transfer-queue.c:187
+#: podcast/rb-podcast-source.c:525 podcast/rb-podcast-source.c:1072 shell/rb-track-transfer-queue.c:187
 #: widgets/rb-alert-dialog.c:384 widgets/rb-alert-dialog.c:401 widgets/rb-dialog.c:131 widgets/rb-dialog.c:139
 #: widgets/rb-query-creator.c:191 widgets/rb-uri-dialog.c:158
 msgid "_Cancel"
 msgstr "_Annullér"
 
-#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:273 widgets/rb-dialog.c:140
+#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:302 widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "_Gem"
 
@@ -685,7 +685,7 @@ msgstr "Hent _afsnit"
 msgid "Cancel Download"
 msgstr "Afbryd download"
 
-#: data/ui/podcast-popups.ui:45 plugins/fmradio/fmradio-popup.ui:6 podcast/rb-podcast-source.c:1280
+#: data/ui/podcast-popups.ui:45 plugins/fmradio/fmradio-popup.ui:6 podcast/rb-podcast-source.c:1228
 #: sources/rb-media-player-source.c:1104
 msgid "Delete"
 msgstr "Slet"
@@ -899,8 +899,8 @@ msgid "Removed files:"
 msgstr "Fjernede filer:"
 
 #: lib/rb-cut-and-paste-code.c:94 plugins/audioscrobbler/audioscrobbler-profile.ui:235
-#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3862 widgets/rb-entry-view.c:944
-#: widgets/rb-entry-view.c:1575 widgets/rb-entry-view.c:1589 widgets/rb-song-info.c:1554
+#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3868 widgets/rb-entry-view.c:973
+#: widgets/rb-entry-view.c:1604 widgets/rb-entry-view.c:1618 widgets/rb-song-info.c:1554
 msgid "Never"
 msgstr "Aldrig"
 
@@ -952,19 +952,19 @@ msgstr "%d. %b %Y"
 #: plugins/iradio/rb-iradio-source.c:525 plugins/iradio/rb-iradio-source.c:1030
 #: plugins/iradio/rb-station-properties-dialog.c:485 plugins/lyrics/lyrics.py:70 plugins/lyrics/lyrics.py:72
 #: plugins/mtpdevice/rb-mtp-source.c:656 plugins/mtpdevice/rb-mtp-source.c:1146
-#: plugins/mtpdevice/rb-mtp-source.c:1477 plugins/notification/rb-notification-plugin.c:509
+#: plugins/mtpdevice/rb-mtp-source.c:1477 plugins/notification/rb-notification-plugin.c:486
 #: podcast/rb-feed-podcast-properties-dialog.c:335 podcast/rb-podcast-add-dialog.c:654
-#: podcast/rb-podcast-manager.c:1472 podcast/rb-podcast-manager.c:1584 podcast/rb-podcast-properties-dialog.c:636
-#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:797 remote/dbus/rb-client.c:218
-#: remote/dbus/rb-client.c:737 rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
-#: rhythmdb/rhythmdb.c:2156 rhythmdb/rhythmdb-entry-type.c:303 rhythmdb/rhythmdb-entry-type.c:381
+#: podcast/rb-podcast-manager.c:1554 podcast/rb-podcast-manager.c:1666 podcast/rb-podcast-properties-dialog.c:636
+#: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:770 remote/dbus/rb-client.c:218
+#: remote/dbus/rb-client.c:737 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2107 rhythmdb/rhythmdb.c:2122
+#: rhythmdb/rhythmdb.c:2162 rhythmdb/rhythmdb-entry-type.c:303 rhythmdb/rhythmdb-entry-type.c:381
 #: rhythmdb/rhythmdb-entry-type.c:387 rhythmdb/rhythmdb-entry-type.c:392 rhythmdb/rhythmdb-entry-type.c:403
 #: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:309 rhythmdb/rhythmdb-tree.c:1368
 #: rhythmdb/rhythmdb-tree.c:1372 rhythmdb/rhythmdb-tree.c:1376 rhythmdb/rhythmdb-tree.c:1380
-#: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718 shell/rb-shell-player.c:2720 widgets/rb-entry-view.c:996
-#: widgets/rb-entry-view.c:1018 widgets/rb-entry-view.c:1513 widgets/rb-entry-view.c:1526
-#: widgets/rb-entry-view.c:1539 widgets/rb-header.c:1282 widgets/rb-header.c:1308 widgets/rb-song-info.c:957
-#: widgets/rb-song-info.c:969 widgets/rb-song-info.c:1243 widgets/rb-song-info.c:1581
+#: shell/rb-shell-player.c:873 shell/rb-shell-player.c:2718 shell/rb-shell-player.c:2720
+#: widgets/rb-entry-view.c:1025 widgets/rb-entry-view.c:1047 widgets/rb-entry-view.c:1542
+#: widgets/rb-entry-view.c:1555 widgets/rb-entry-view.c:1568 widgets/rb-header.c:1282 widgets/rb-header.c:1308
+#: widgets/rb-song-info.c:957 widgets/rb-song-info.c:969 widgets/rb-song-info.c:1243 widgets/rb-song-info.c:1581
 msgid "Unknown"
 msgstr "Ukendt"
 
@@ -1623,7 +1623,7 @@ msgid "Loading top albums for %s"
 msgstr "Indlæser de mest populære albummer af %s"
 
 #: plugins/context/ArtistTab.py:58 plugins/magnatune/magnatune-toolbar.ui:20 sources/rb-library-source.c:125
-#: widgets/rb-entry-view.c:1458 widgets/rb-library-browser.c:135
+#: widgets/rb-entry-view.c:1487 widgets/rb-library-browser.c:135
 msgid "Artist"
 msgstr "Kunstner"
 
@@ -1656,7 +1656,7 @@ msgstr "Lænker"
 msgid "No artist specified."
 msgstr "Ingen kunster angivet."
 
-#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:312 plugins/lyrics/lyrics.py:397
+#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:341 plugins/lyrics/lyrics.py:426
 msgid "Lyrics"
 msgstr "Sangtekster"
 
@@ -1871,6 +1871,102 @@ msgstr "Føj til ny afspilningsliste"
 msgid "Advanced"
 msgstr "Avanceret"
 
+#: plugins/gpodder/gpodder.plugin.desktop.in:6
+msgid "gpodder.net podcast sync"
+msgstr "podcastsynkronisering med gpodder.net"
+
+#: plugins/gpodder/gpodder.plugin.desktop.in:7
+msgid "Podcast syncing using the gpodder.net API"
+msgstr "Podcastsynkronisering med brug af gpodder.net-API'en"
+
+#. Translators: do not translate {hostname} as it is a string substitution
+#. marker (like %s) for the hostname.
+#: plugins/gpodder/gpodder.py:237
+#, python-brace-format
+msgid "Rhythmbox on {hostname}"
+msgstr "Rhythmbox på {hostname}"
+
+#: plugins/gpodder/gpodder.py:285
+msgid "Not synchronized"
+msgstr "Ikke synkroniseret"
+
+#: plugins/gpodder/gpodder.py:291
+#, python-format
+msgid "Last synced: %s"
+msgstr "Sidst synkroniseret: %s"
+
+#: plugins/gpodder/gpodder.py:293
+msgid "Last sync was successful"
+msgstr "Sidste synkronisering blev gennemført"
+
+#: plugins/gpodder/gpodder.py:295
+msgid "Last sync failed"
+msgstr "Sidste synkronisering mislykkedes"
+
+#: plugins/gpodder/gpodder.py:305
+msgid "Sync Now"
+msgstr "Synkronisér nu"
+
+#: plugins/gpodder/gpodder.py:306
+msgid "Preferences"
+msgstr "Indstillinger"
+
+#: plugins/gpodder/gpodder.py:652
+msgid "Login successful"
+msgstr "Login lykkedes"
+
+#: plugins/gpodder/gpodder.py:654 plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1669
+msgid "Error"
+msgstr "Fejl"
+
+#: plugins/gpodder/gpodder.py:656
+msgid "Login failed"
+msgstr "Login mislykkedes"
+
+#: plugins/gpodder/gpodder-prefs.ui:18
+msgid "Podcast synchronization settings"
+msgstr "Indstillinger for podcastsynkronisering"
+
+#: plugins/gpodder/gpodder-prefs.ui:34
+msgid ""
+"Synchronize your podcast subscriptions across devices\n"
+"using a service that implements the gpodder.net API."
+msgstr ""
+"Synkronisér dine podcastabonnementer på tværs af enheder\n"
+"ved hjælp af en tjeneste, der understøtter gpodder.net-API’en."
+
+#: plugins/gpodder/gpodder-prefs.ui:46
+msgid "Synchronize subscriptions"
+msgstr "Synkronisér abonnementer"
+
+#: plugins/gpodder/gpodder-prefs.ui:50
+msgid "If enabled, your podcast subscriptions will be synchronized between your podcast applications"
+msgstr "Hvis denne funktion er aktiveret, synkroniseres dine podcastabonnementer mellem dine podcastprogrammer"
+
+#: plugins/gpodder/gpodder-prefs.ui:61
+msgid "Synchronize episode actions"
+msgstr "Synkronisér episodehandlinger"
+
+#: plugins/gpodder/gpodder-prefs.ui:65
+msgid "If enabled, playback and download actions will be synchronized between your podcast applications"
+msgstr "Hvis denne funktion er aktiveret, synkroniseres afspilning og download mellem dine podcastprogrammer"
+
+#: plugins/gpodder/gpodder-prefs.ui:124
+msgid "Server URL"
+msgstr "Server-URL"
+
+#: plugins/gpodder/gpodder-prefs.ui:137
+msgid "Username"
+msgstr "Brugernavn"
+
+#: plugins/gpodder/gpodder-prefs.ui:150
+msgid "Password"
+msgstr "Adgangskode"
+
+#: plugins/gpodder/gpodder-prefs.ui:159
+msgid "Test Login"
+msgstr "Afprøv login"
+
 #: plugins/grilo/grilo.plugin.desktop.in:4
 msgid "Grilo media browser"
 msgstr "Grilo medie-browser"
@@ -2018,11 +2114,11 @@ msgid "Support for broadcasting services transmitted via the Internet"
 msgstr "Understøttelse af udsendelsestjenester udsendt via internettet"
 
 #: plugins/iradio/iradio-popup.ui:6 shell/rb-shell-clipboard.c:258 sources/rb-source.c:1206
-#: widgets/rb-query-creator.c:802
+#: widgets/rb-query-creator.c:801
 msgid "Remove"
 msgstr "Fjern"
 
-#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1488 widgets/rb-library-browser.c:134
+#: plugins/iradio/rb-iradio-source.c:332 widgets/rb-entry-view.c:1517 widgets/rb-library-browser.c:134
 msgid "Genre"
 msgstr "Genre"
 
@@ -2057,7 +2153,7 @@ msgid "%s Properties"
 msgstr "%s egenskaber"
 
 #: plugins/iradio/rb-station-properties-dialog.c:487 podcast/rb-podcast-properties-dialog.c:634
-#: widgets/rb-entry-view.c:1022 widgets/rb-song-info.c:1245
+#: widgets/rb-entry-view.c:1051 widgets/rb-song-info.c:1245
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
@@ -2107,7 +2203,7 @@ msgstr ""
 msgid "Choose lyrics folder..."
 msgstr "Vælg sangtekst-mappe …"
 
-#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:420
+#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:449
 msgid "Song Lyrics"
 msgstr "Sangtekster"
 
@@ -2127,19 +2223,19 @@ msgstr "Gennemse …"
 msgid "Lyrics Folder"
 msgstr "Sangtekstmappe"
 
-#: plugins/lyrics/lyrics.py:169 plugins/lyrics/lyrics.py:223 plugins/lyrics/lyrics.py:233
+#: plugins/lyrics/lyrics.py:170 plugins/lyrics/lyrics.py:252 plugins/lyrics/lyrics.py:262
 msgid "No lyrics found"
 msgstr "Ingen sangtekster fundet"
 
-#: plugins/lyrics/lyrics.py:278 plugins/lyrics/lyrics.py:291
+#: plugins/lyrics/lyrics.py:307 plugins/lyrics/lyrics.py:320
 msgid "_Edit"
 msgstr "_Redigér"
 
-#: plugins/lyrics/lyrics.py:293
+#: plugins/lyrics/lyrics.py:322
 msgid "_Search again"
 msgstr "_Søg igen"
 
-#: plugins/lyrics/lyrics.py:352
+#: plugins/lyrics/lyrics.py:381
 msgid "Searching for lyrics..."
 msgstr "Søger efter sangtekster …"
 
@@ -2422,10 +2518,6 @@ msgstr ""
 "Magnatune-serveren svarede:\n"
 "%s"
 
-#: plugins/magnatune/MagnatuneSource.py:408 widgets/rb-entry-view.c:1640
-msgid "Error"
-msgstr "Fejl"
-
 #: plugins/magnatune/MagnatuneSource.py:409
 #, python-format
 msgid ""
@@ -2527,18 +2619,18 @@ msgid "Next"
 msgstr "Næste"
 
 #. Translators: by Artist
-#: plugins/notification/rb-notification-plugin.c:331
+#: plugins/notification/rb-notification-plugin.c:308
 #, c-format
 msgid "by <i>%s</i>"
 msgstr "af <i>%s</i>"
 
 #. Translators: from Album
-#: plugins/notification/rb-notification-plugin.c:333
+#: plugins/notification/rb-notification-plugin.c:310
 #, c-format
 msgid "from <i>%s</i>"
 msgstr "fra <i>%s</i>"
 
-#: plugins/notification/rb-notification-plugin.c:413 widgets/rb-header.c:368
+#: plugins/notification/rb-notification-plugin.c:390 widgets/rb-header.c:368
 msgid "Not Playing"
 msgstr "Spiller ikke"
 
@@ -2700,7 +2792,7 @@ msgstr "Kontrollér Rhythmbox fra en webbrowser"
 msgid "Launch web remote control"
 msgstr "Start webfjernbetjening"
 
-#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:738
+#: podcast/rb-podcast-add-dialog.c:280 podcast/rb-podcast-source.c:678
 #, c-format
 msgid "%d feed"
 msgid_plural "%d feeds"
@@ -2715,7 +2807,7 @@ msgstr "Kan ikke indlæse kilden. Kontrollér din netværksforbindelse."
 msgid "Unable to search for podcasts. Check your network connection."
 msgstr "Kan ikke søge efter podcasts. Tjek din netværksforbindelse."
 
-#: podcast/rb-podcast-add-dialog.c:794 sources/rb-library-source.c:134 widgets/rb-entry-view.c:1448
+#: podcast/rb-podcast-add-dialog.c:794 sources/rb-library-source.c:134 widgets/rb-entry-view.c:1477
 msgid "Title"
 msgstr "Titel"
 
@@ -2727,8 +2819,8 @@ msgstr "Forfatter"
 msgid "Episodes"
 msgstr "Episoder"
 
-#: podcast/rb-podcast-add-dialog.c:847 podcast/rb-podcast-add-dialog.c:858 podcast/rb-podcast-source.c:1400
-#: podcast/rb-podcast-source.c:1411
+#: podcast/rb-podcast-add-dialog.c:847 podcast/rb-podcast-add-dialog.c:858 podcast/rb-podcast-source.c:1373
+#: podcast/rb-podcast-source.c:1384
 msgid "Date"
 msgstr "Dato"
 
@@ -2740,37 +2832,39 @@ msgstr "Nye episoder"
 msgid "New Downloads"
 msgstr "Nye downloads"
 
-#: podcast/rb-podcast-main-source.c:165
-msgid "Downloading podcast"
-msgstr "Henter podcast"
-
-#: podcast/rb-podcast-main-source.c:186
-msgid "Error downloading podcast"
-msgstr "Der opstod en fejl under hentning af podcasten"
-
-#: podcast/rb-podcast-main-source.c:189
-msgid "Finished downloading podcast"
-msgstr "Færdig med at hente podcast"
-
-#: podcast/rb-podcast-main-source.c:242
+#: podcast/rb-podcast-main-source.c:195
 msgid "Error in podcast"
 msgstr "Fejl i podcast"
 
-#: podcast/rb-podcast-main-source.c:244
+#: podcast/rb-podcast-main-source.c:197
 #, c-format
 msgid "There was a problem adding this podcast: %s.  Please verify the URL: %s"
 msgstr "Der opstod et problem ved tilføjelse af denne podcast: %s.  Kontrollér venligst adressen: %s"
 
-#: podcast/rb-podcast-main-source.c:250
+#: podcast/rb-podcast-main-source.c:203
 #, c-format
 msgid "%s. Would you like to add the podcast feed anyway?"
 msgstr "%s. Vil du tilføje podcast-kilden alligevel?"
 
-#: podcast/rb-podcast-main-source.c:267
-msgid "New updates available from"
-msgstr "Nye opdateringer tilgængelig fra"
+#: podcast/rb-podcast-manager.c:545
+msgid "Finished downloading podcast episodes"
+msgstr "Færdig med at hente podcastepisoder"
 
-#: podcast/rb-podcast-manager.c:871
+#: podcast/rb-podcast-manager.c:550
+#, c-format
+msgid "Downloading %d podcast episode"
+msgid_plural "Downloading %d podcast episodes"
+msgstr[0] "Henter %d podcastepisode"
+msgstr[1] "Henter %d podcastepisoder"
+
+#: podcast/rb-podcast-manager.c:585
+#, c-format
+msgid "%d new episode available"
+msgid_plural "%d new episodes available"
+msgstr[0] "%d episode tilgængelig"
+msgstr[1] "%d episoder tilgængelige"
+
+#: podcast/rb-podcast-manager.c:932
 #, c-format
 msgid ""
 "The URL \"%s\" has already been added as a radio station. If this is a podcast feed, please remove the radio "
@@ -2779,7 +2873,7 @@ msgstr ""
 "Adressen “%s” er allerede blevet tilføjet som en radiostation. Hvis det er en podcast-kilde, så fjern venligst "
 "radiostationen."
 
-#: podcast/rb-podcast-manager.c:942
+#: podcast/rb-podcast-manager.c:1003
 #, c-format
 msgid ""
 "The URL '%s' does not appear to be a podcast feed. It may be the wrong URL, or the feed may be broken. Would you "
@@ -2788,7 +2882,15 @@ msgstr ""
 "Adressen “%s” lader ikke til at være en podcast-kilde. Det kan være en forkert adresse, eller kilden kan være "
 "ødelagt. Skal Rhythmbox at forsøge at bruge den alligevel?"
 
-#: podcast/rb-podcast-manager.c:1088
+#: podcast/rb-podcast-manager.c:1086
+msgid "Updating podcast feeds"
+msgstr "Opdatér podcastkilder"
+
+#: podcast/rb-podcast-manager.c:1087
+msgid "Finished updating podcast feeds"
+msgstr "Færdig med at opdatere podcastkilder"
+
+#: podcast/rb-podcast-manager.c:1170
 msgid "Podcast"
 msgstr "Podcast"
 
@@ -2806,11 +2908,11 @@ msgstr "Kilden indeholder ingen elementer, som er mulige at hente"
 msgid "Not Downloaded"
 msgstr "Ikke hentet"
 
-#: podcast/rb-podcast-source.c:524
+#: podcast/rb-podcast-source.c:512
 msgid "Delete the podcast feed and downloaded files?"
 msgstr "Slet podcast-kilden og hentede filer?"
 
-#: podcast/rb-podcast-source.c:527
+#: podcast/rb-podcast-source.c:515
 msgid ""
 "If you choose to delete the feed and files, they will be permanently lost.  Please note that you can delete the "
 "feed but keep the downloaded files by choosing to delete the feed only."
@@ -2818,35 +2920,23 @@ msgstr ""
 "Hvis du vælger at slette kilden og filerne, vil de være permanent mistet. Vær opmærksom på. at du kan slette "
 "kilden og samtidigt beholde de hentede filer ved at vælge kun at slette kilden."
 
-#: podcast/rb-podcast-source.c:535
+#: podcast/rb-podcast-source.c:523
 msgid "Delete _Feed Only"
 msgstr "_Slet kun kilde"
 
-#: podcast/rb-podcast-source.c:542
+#: podcast/rb-podcast-source.c:530
 msgid "_Delete Feed And Files"
 msgstr "_Slet kilde og filer"
 
-#: podcast/rb-podcast-source.c:623 podcast/rb-podcast-source.c:1454
-msgid "Downloaded"
-msgstr "Hentet"
-
-#: podcast/rb-podcast-source.c:627 podcast/rb-podcast-source.c:1456
-msgid "Failed"
-msgstr "Fejlede"
-
-#: podcast/rb-podcast-source.c:631 podcast/rb-podcast-source.c:1455
-msgid "Waiting"
-msgstr "Venter"
-
-#: podcast/rb-podcast-source.c:967
+#: podcast/rb-podcast-source.c:921
 msgid "Podcast Error"
 msgstr "Podcast-fejl"
 
-#: podcast/rb-podcast-source.c:1111
+#: podcast/rb-podcast-source.c:1059
 msgid "Delete the podcast episode and downloaded file?"
 msgstr "Slet podcast-episode og hentet fil?"
 
-#: podcast/rb-podcast-source.c:1114
+#: podcast/rb-podcast-source.c:1062
 msgid ""
 "If you choose to delete the episode and file, they will be permanently lost.  Please note that you can delete the "
 "episode but keep the downloaded file by choosing to delete the episode only, or delete the downloaded file but "
@@ -2856,44 +2946,44 @@ msgstr ""
 "episoderne og samtidigt beholde den hentede fil ved at vælge kun at slette episoden, eller slette den hentede "
 "fil, men beholde episoden ved at vælge kun at slette filen."
 
-#: podcast/rb-podcast-source.c:1126
+#: podcast/rb-podcast-source.c:1074
 msgid "Delete _Episode Only"
 msgstr "Slet kun _episode"
 
-#: podcast/rb-podcast-source.c:1128
+#: podcast/rb-podcast-source.c:1076
 msgid "Delete _File Only"
 msgstr "_Slet kun fil"
 
-#: podcast/rb-podcast-source.c:1132
+#: podcast/rb-podcast-source.c:1080
 msgid "_Delete Episode And File"
 msgstr "_Slet episode og fil"
 
-#: podcast/rb-podcast-source.c:1238
+#: podcast/rb-podcast-source.c:1186
 #, c-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d episode"
 msgstr[1] "%d episoder"
 
-#: podcast/rb-podcast-source.c:1433 podcast/rb-podcast-source.c:1488 podcast/rb-podcast-source.c:1527
+#: podcast/rb-podcast-source.c:1350
+msgid "Episode downloaded"
+msgstr "Episode hentet"
+
+#: podcast/rb-podcast-source.c:1406 podcast/rb-podcast-source.c:1428 podcast/rb-podcast-source.c:1466
 msgid "Feed"
 msgstr "Kilde"
 
-#: podcast/rb-podcast-source.c:1453 podcast/rb-podcast-source.c:1471
-msgid "Status"
-msgstr "Status"
-
 #. ensure search instances exist
-#: podcast/rb-podcast-source.c:1573 sources/rb-auto-playlist-source.c:253 sources/rb-browser-source.c:314
+#: podcast/rb-podcast-source.c:1512 sources/rb-auto-playlist-source.c:253 sources/rb-browser-source.c:314
 #: sources/rb-browser-source.c:332 sources/rb-static-playlist-source.c:296
 msgid "Search all fields"
 msgstr "Søg alle felter"
 
-#: podcast/rb-podcast-source.c:1574
+#: podcast/rb-podcast-source.c:1513
 msgid "Search podcast feeds"
 msgstr "Søg podcast-kilder"
 
-#: podcast/rb-podcast-source.c:1575
+#: podcast/rb-podcast-source.c:1514
 msgid "Search podcast episodes"
 msgstr "Søg podcast-episoder"
 
@@ -2941,7 +3031,7 @@ msgstr "Paus afspilning hvis afspiller"
 msgid "Toggle play/pause mode"
 msgstr "Slå afspil/pause til og fra"
 
-#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2271
+#: remote/dbus/rb-client.c:110 shell/rb-shell.c:2303
 msgid "Stop playback"
 msgstr "Stop afspilning"
 
@@ -3128,7 +3218,7 @@ msgstr "Tryk “h” for at få hjælp."
 msgid "Playback volume is %f.\n"
 msgstr "Afspilningslydstyke er %f.\n"
 
-#: rhythmdb/rhythmdb.c:796
+#: rhythmdb/rhythmdb.c:798
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Kunne ikke tilgå %s: %s"
@@ -3138,7 +3228,7 @@ msgstr "Kunne ikke tilgå %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: rhythmdb/rhythmdb.c:1845
+#: rhythmdb/rhythmdb.c:1851
 msgid "The Beatles"
 msgstr "The Beatles"
 
@@ -3146,7 +3236,7 @@ msgstr "The Beatles"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: rhythmdb/rhythmdb.c:1851
+#: rhythmdb/rhythmdb.c:1857
 msgid "Help!"
 msgstr "Help!"
 
@@ -3154,46 +3244,46 @@ msgstr "Help!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: rhythmdb/rhythmdb.c:1857
+#: rhythmdb/rhythmdb.c:1863
 msgid "Ticket To Ride"
 msgstr "Ticket To Ride"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: rhythmdb/rhythmdb.c:2409
+#: rhythmdb/rhythmdb.c:2415
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "Der kræves yderligere udvidelsesmoduler til GStreamer for at afspille denne fil: %s"
 
-#: rhythmdb/rhythmdb.c:2441
+#: rhythmdb/rhythmdb.c:2447
 msgid "invalid unicode in error message"
 msgstr "ugyldig ISO 10646-kode i fejlmeddelelse"
 
-#: rhythmdb/rhythmdb.c:2564
+#: rhythmdb/rhythmdb.c:2570
 #, c-format
 msgid "Empty file"
 msgstr "Tom fil"
 
-#: rhythmdb/rhythmdb.c:3273
+#: rhythmdb/rhythmdb.c:3279
 msgid "Could not load the music database:"
 msgstr "Kunne ikke indlæse musikdatabasen:"
 
-#: rhythmdb/rhythmdb.c:4716
+#: rhythmdb/rhythmdb.c:4731
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minut"
 msgstr[1] "%ld minutter"
 
-#: rhythmdb/rhythmdb.c:4717
+#: rhythmdb/rhythmdb.c:4732
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld time"
 msgstr[1] "%ld timer"
 
-#: rhythmdb/rhythmdb.c:4718
+#: rhythmdb/rhythmdb.c:4733
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3201,7 +3291,7 @@ msgstr[0] "%ld dag"
 msgstr[1] "%ld dage"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4724
+#: rhythmdb/rhythmdb.c:4739
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s og %s"
@@ -3209,16 +3299,16 @@ msgstr "%s, %s og %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4730 rhythmdb/rhythmdb.c:4738 rhythmdb/rhythmdb.c:4749
+#: rhythmdb/rhythmdb.c:4745 rhythmdb/rhythmdb.c:4753 rhythmdb/rhythmdb.c:4764
 #, c-format
 msgid "%s and %s"
 msgstr "%s og %s"
 
-#: rhythmdb/rhythmdb-import-job.c:705
+#: rhythmdb/rhythmdb-import-job.c:709
 msgid "Scanning"
 msgstr "Skanner"
 
-#: rhythmdb/rhythmdb-import-job.c:708 shell/rb-track-transfer-batch.c:984
+#: rhythmdb/rhythmdb-import-job.c:712 shell/rb-track-transfer-batch.c:990
 #, c-format
 msgid "%d of %d"
 msgstr "%d af %d"
@@ -3439,45 +3529,45 @@ msgstr "Ukendt afspilningsliste: %s"
 msgid "Playlist %s is an automatic playlist"
 msgstr "Afspilningslisten %s er en automatisk afspilningsliste"
 
-#: shell/rb-shell.c:2064
+#: shell/rb-shell.c:2051
 msgid "Error while saving song information"
 msgstr "Fejl ved skrivning af sanginformation"
 
-#: shell/rb-shell.c:2268
+#: shell/rb-shell.c:2300
 msgid "Pause playback"
 msgstr "Paus afspilning"
 
-#: shell/rb-shell.c:2275
+#: shell/rb-shell.c:2307
 msgid "Start playback"
 msgstr "Start afspilning"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:2385
+#: shell/rb-shell.c:2417
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pause)"
 
-#: shell/rb-shell.c:2727 sources/rb-play-queue-source.c:673
+#: shell/rb-shell.c:2748 sources/rb-play-queue-source.c:673
 #, c-format
 msgid "No registered source can handle URI %s"
 msgstr "Ingen registreret kilde kan håndtere URI'en %s"
 
-#: shell/rb-shell.c:3051
+#: shell/rb-shell.c:3072
 #, c-format
 msgid "No registered source matches URI %s"
 msgstr "Ingen registreret kilde matcher URI'en %s"
 
-#: shell/rb-shell.c:3084 shell/rb-shell.c:3127
+#: shell/rb-shell.c:3105 shell/rb-shell.c:3148
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Ukendt sangadresse: %s"
 
-#: shell/rb-shell.c:3136
+#: shell/rb-shell.c:3157
 #, c-format
 msgid "Unknown property %s"
 msgstr "Ukendt ejerskab %s"
 
-#: shell/rb-shell.c:3150
+#: shell/rb-shell.c:3171
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Ugyldig egenskabstype %s for egenskab %s"
@@ -3735,7 +3825,7 @@ msgstr "Kunstner/Album"
 msgid "Artist - Album"
 msgstr "Kunstner - Album"
 
-#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1478 widgets/rb-library-browser.c:136
+#: sources/rb-library-source.c:124 widgets/rb-entry-view.c:1507 widgets/rb-library-browser.c:136
 msgid "Album"
 msgstr "Album"
 
@@ -3934,71 +4024,71 @@ msgstr "Begrænset variabel bitrate"
 msgid "Default settings"
 msgstr "Standardindstillinger"
 
-#: widgets/rb-entry-view.c:1016 widgets/rb-entry-view.c:1540 widgets/rb-song-info.c:1241
+#: widgets/rb-entry-view.c:1045 widgets/rb-entry-view.c:1569 widgets/rb-song-info.c:1241
 msgid "Lossless"
 msgstr "Tabsfri"
 
-#: widgets/rb-entry-view.c:1437
+#: widgets/rb-entry-view.c:1466
 msgid "Track"
 msgstr "Spor"
 
-#: widgets/rb-entry-view.c:1468
+#: widgets/rb-entry-view.c:1497
 msgid "Composer"
 msgstr "Komponist"
 
-#: widgets/rb-entry-view.c:1498
+#: widgets/rb-entry-view.c:1527
 msgid "Comment"
 msgstr "Kommentar"
 
-#: widgets/rb-entry-view.c:1509
+#: widgets/rb-entry-view.c:1538
 msgid "Time"
 msgstr "Tid"
 
-#: widgets/rb-entry-view.c:1522
+#: widgets/rb-entry-view.c:1551
 msgid "Year"
 msgstr "År"
 
-#: widgets/rb-entry-view.c:1535
+#: widgets/rb-entry-view.c:1564
 msgid "Quality"
 msgstr "Kvalitet"
 
-#: widgets/rb-entry-view.c:1538
+#: widgets/rb-entry-view.c:1567
 msgid "000 kbps"
 msgstr "000 kbps"
 
-#: widgets/rb-entry-view.c:1549
+#: widgets/rb-entry-view.c:1578
 msgid "Rating"
 msgstr "Vurdering"
 
-#: widgets/rb-entry-view.c:1572
+#: widgets/rb-entry-view.c:1601
 msgid "Play Count"
 msgstr "Antal afspillet"
 
-#: widgets/rb-entry-view.c:1585
+#: widgets/rb-entry-view.c:1614
 msgid "Last Played"
 msgstr "Sidst afspillet"
 
-#: widgets/rb-entry-view.c:1598
+#: widgets/rb-entry-view.c:1627
 msgid "Date Added"
 msgstr "Dato tilføjet"
 
-#: widgets/rb-entry-view.c:1610
+#: widgets/rb-entry-view.c:1639
 msgid "Last Seen"
 msgstr "Sidst set"
 
-#: widgets/rb-entry-view.c:1621
+#: widgets/rb-entry-view.c:1650
 msgid "Location"
 msgstr "Placering"
 
-#: widgets/rb-entry-view.c:1631
+#: widgets/rb-entry-view.c:1660
 msgid "BPM"
 msgstr "BPM"
 
-#: widgets/rb-entry-view.c:1919
+#: widgets/rb-entry-view.c:1948
 msgid "Now Playing"
 msgstr "Spiller nu"
 
-#: widgets/rb-entry-view.c:1984
+#: widgets/rb-entry-view.c:2013
 msgid "Playback Error"
 msgstr "Afspilningsfejl"
 
@@ -4439,6 +4529,21 @@ msgstr "På skrivebordet"
 #: widgets/rb-song-info.c:1348
 msgid "Unknown location"
 msgstr "Ukendt placering"
+
+#~ msgid "Error downloading podcast"
+#~ msgstr "Der opstod en fejl under hentning af podcasten"
+
+#~ msgid "Downloaded"
+#~ msgstr "Hentet"
+
+#~ msgid "Failed"
+#~ msgstr "Fejlede"
+
+#~ msgid "Waiting"
+#~ msgstr "Venter"
+
+#~ msgid "Status"
+#~ msgstr "Status"
 
 #~ msgid "Jetlyrics (jetlyrics.com)"
 #~ msgstr "Jetlyrics (jetlyrics.com)"
