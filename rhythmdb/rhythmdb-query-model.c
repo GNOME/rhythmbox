@@ -1765,6 +1765,13 @@ rhythmdb_query_model_move_entry (RhythmDBQueryModel *model,
 	GSequenceIter *nptr;
 	gint old_pos;
 
+	if (model->priv->base_model) {
+		rhythmdb_query_model_move_entry (model->priv->base_model,
+						 entry,
+						 rhythmdb_query_model_child_index_to_base_index (model, index));
+		return;
+	}
+
 	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 	if (ptr == NULL)
 		return;
