@@ -322,8 +322,8 @@ rb_daap_record_class_init (RBDAAPRecordClass *klass)
 	g_object_class_override_property (gobject_class, PROP_DISC, "disc");
 	g_object_class_override_property (gobject_class, PROP_BITRATE, "bitrate");
 	g_object_class_override_property (gobject_class, PROP_HAS_VIDEO, "has-video");
-	g_object_class_override_property (gobject_class, PROP_ARTIST_SORT_NAME, "sort_artist");
-	g_object_class_override_property (gobject_class, PROP_ALBUM_SORT_NAME, "sort_album");
+	g_object_class_override_property (gobject_class, PROP_ARTIST_SORT_NAME, "sort-artist");
+	g_object_class_override_property (gobject_class, PROP_ALBUM_SORT_NAME, "sort-album");
 	g_object_class_override_property (gobject_class, PROP_ALBUM_ID, "songalbumid");
 
 	g_object_class_install_property (gobject_class, PROP_REAL_FORMAT,
