@@ -47,7 +47,7 @@ enum {
 };
 
 struct RBDAAPContainerRecordPrivate {
-	char *name;
+	gchar *name;
 	RBPlaylistSource *source;
 };
 
@@ -184,7 +184,7 @@ rb_daap_container_record_finalize (GObject *object)
 }
 
 RBDAAPContainerRecord *
-rb_daap_container_record_new (char *name, RBPlaylistSource *source)
+rb_daap_container_record_new (gchar *name, RBPlaylistSource *source)
 {
 	RBDAAPContainerRecord *record;
 

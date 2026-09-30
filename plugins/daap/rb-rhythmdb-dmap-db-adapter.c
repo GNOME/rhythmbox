@@ -66,7 +66,7 @@ foreach_adapter (RhythmDBEntry *entry, gpointer data)
 	gulong id;
 	DmapRecord *record;
 	ForeachAdapterData *foreach_adapter_data;
-	char *playback_uri;
+	gchar *playback_uri;
 
 	if (rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN))
 		return;
@@ -121,7 +121,7 @@ static void
 entry_set_string_prop (RhythmDB        *db,
                        RhythmDBEntry   *entry,
                        RhythmDBPropType propid,
-                       const char      *str)
+                       const gchar     *str)
 {
         GValue value = {0,};
         const gchar *tmp;

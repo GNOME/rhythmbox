@@ -48,7 +48,7 @@
 static DmapAvShare *share = NULL;
 static GSettings *settings = NULL;
 
-char *
+gchar *
 rb_daap_sharing_default_share_name (void)
 {
 	const gchar *real_name;
@@ -64,7 +64,7 @@ rb_daap_sharing_default_share_name (void)
 static gboolean
 share_name_get_mapping (GValue *value, GVariant *variant, gpointer data)
 {
-	const char *name;
+	const gchar *name;
 	name = g_variant_get_string (variant, NULL);
 
 	if (name != NULL || name[0] != '\0') {
@@ -82,8 +82,8 @@ create_share (RBShell *shell)
 	DmapDb *db;
 	DmapContainerDb *container_db;
 	RBPlaylistManager *playlist_manager;
-	char *name;
-	char *password;
+	gchar *name;
+	gchar *password;
 	gboolean require_password;
 	GError *error = NULL;
 
@@ -139,7 +139,7 @@ create_share (RBShell *shell)
 }
 
 static void
-sharing_settings_changed_cb (GSettings *settings, const char *key, RBShell *shell)
+sharing_settings_changed_cb (GSettings *settings, const gchar *key, RBShell *shell)
 {
 	if (g_strcmp0 (key, "enable-sharing") == 0) {
 		gboolean enabled;

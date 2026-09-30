@@ -82,8 +82,8 @@ GType rb_daap_entry_type_get_type (void);
 
 struct RBDAAPSourcePrivate
 {
-	char *service_name;
-	char *host;
+	gchar *service_name;
+	gchar *host;
 	guint port;
 	gboolean password_protected;
 
@@ -109,10 +109,10 @@ G_DEFINE_DYNAMIC_TYPE (RBDAAPSource, rb_daap_source, RB_TYPE_BROWSER_SOURCE);
 
 G_DEFINE_DYNAMIC_TYPE (RBDAAPEntryType, rb_daap_entry_type, RHYTHMDB_TYPE_ENTRY_TYPE);
 
-static char *
+static gchar *
 rb_daap_entry_type_get_playback_uri (RhythmDBEntryType *etype, RhythmDBEntry *entry)
 {
-	const char *location;
+	const gchar *location;
 
 	location = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
 	if (location == NULL) {
@@ -314,9 +314,9 @@ rb_daap_source_constructed (GObject *object)
 RBSource *
 rb_daap_source_new (RBShell *shell,
 		    GObject *plugin,
-		    const char *service_name,
-		    const char *name,
-		    const char *host,
+		    const gchar *service_name,
+		    const gchar *name,
+		    const gchar *host,
 		    guint port,
 		    gboolean password_protected)
 {
@@ -324,7 +324,7 @@ rb_daap_source_new (RBShell *shell,
 	RhythmDBEntryType *entry_type;
 	GIcon *icon;
 	RhythmDB *db;
-	char *entry_type_name;
+	gchar *entry_type_name;
 	GSettings *settings;
 	GtkBuilder *builder;
 	GMenu *toolbar;
@@ -379,7 +379,7 @@ typedef struct {
 	SoupSession *session;
 	SoupMessage *message;
 	SoupAuth *auth;
-	char *name;
+	gchar *name;
 } AuthData;
 
 static void
@@ -387,7 +387,7 @@ mount_op_reply_cb (GMountOperation *op,
 		   GMountOperationResult result,
 		   AuthData *auth_data)
 {
-	const char *password;
+	const gchar *password;
 #ifdef WITH_LIBSECRET
 	gchar *label;
 	gchar *collection = NULL;
@@ -443,7 +443,7 @@ mount_op_reply_cb (GMountOperation *op,
 
 static void
 ask_password (RBDAAPSource *source,
-	      const char *name,
+	      const gchar *name,
 	      SoupSession *session,
 	      SoupMessage *msg,
 	      SoupAuth *auth)
@@ -452,7 +452,7 @@ ask_password (RBDAAPSource *source,
 	GMountOperation *mount_op;
 	GAskPasswordFlags flags;
 	AuthData *auth_data;
-	char *message;
+	gchar *message;
 
 	g_object_set (source, "load-status", RB_SOURCE_LOAD_STATUS_WAITING, NULL);
 	parent = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (source)));
@@ -478,7 +478,7 @@ ask_password (RBDAAPSource *source,
 
 static void
 connection_auth_cb (DmapConnection *connection,
-                    const char     *name,
+                    const gchar     *name,
                     SoupSession    *session,
                     SoupMessage    *msg,
                     SoupAuth       *auth,
@@ -517,7 +517,7 @@ connection_auth_cb (DmapConnection *connection,
 static void
 connection_connecting_cb (DmapConnection       *connection,
 			  DmapConnectionState   state,
-			  float		        progress,
+			  gfloat	        progress,
 			  RBDAAPSource         *source)
 {
 	GIcon *icon;
@@ -597,7 +597,7 @@ release_connection (RBDAAPSource *daap_source)
 }
 
 static void
-_add_location_to_playlist (const char *uri, RBStaticPlaylistSource *source)
+_add_location_to_playlist (const gchar *uri, RBStaticPlaylistSource *source)
 {
 	rb_static_playlist_source_add_location (source, uri, -1);
 }
@@ -605,7 +605,7 @@ _add_location_to_playlist (const char *uri, RBStaticPlaylistSource *source)
 static void
 rb_daap_source_connection_cb (DmapConnection   *connection,
 			      gboolean          result,
-			      const char       *reason,
+			      const gchar       *reason,
 			      RBSource         *source)
 {
 	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
@@ -662,7 +662,7 @@ rb_daap_source_selected (RBDisplayPage *page)
 	DmapRecordFactory *factory;
 	RhythmDB *rdb = NULL;
 	DmapDb *db = NULL;
-	char *name = NULL;
+	gchar *name = NULL;
 	RhythmDBEntryType *entry_type;
 	RBTaskList *tasklist;
 
@@ -727,7 +727,7 @@ rb_daap_source_selected (RBDisplayPage *page)
 static void
 rb_daap_source_disconnect_cb (DmapConnection   *connection,
 			      gboolean          result,
-			      const char       *reason,
+			      const gchar      *reason,
 			      RBSource         *source)
 {
 	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
@@ -768,7 +768,7 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 
 	for (l = daap_source->priv->playlist_sources; l!= NULL; l = l->next) {
 		RBSource *playlist_source = RB_SOURCE (l->data);
-		char *name;
+		gchar *name;
 
 		g_object_get (playlist_source, "name", &name, NULL);
 		rb_debug ("destroying DAAP playlist %s", name);
@@ -816,7 +816,7 @@ disconnect_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 
 SoupMessageHeaders *
 rb_daap_source_get_headers (RBDAAPSource *source,
-			    const char *uri)
+			    const gchar *uri)
 {
 	/* If there is no connection then bail */
 	if (source->priv->connection == NULL) {

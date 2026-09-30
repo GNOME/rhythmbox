@@ -68,7 +68,7 @@ guint64       rb_daap_container_record_get_entry_count (DmapContainerRecord *rec
 
 DmapDb *rb_daap_container_record_get_entries     (DmapContainerRecord *record);
 
-RBDAAPContainerRecord *rb_daap_container_record_new (char *name,
+RBDAAPContainerRecord *rb_daap_container_record_new (gchar *name,
 						     RBPlaylistSource *model);
 
 void          _rb_daap_container_record_register_type   (GTypeModule *module);

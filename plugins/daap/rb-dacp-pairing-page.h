@@ -61,8 +61,8 @@ GType 		rb_dacp_pairing_page_get_type 	(void);
 RBDACPPairingPage *rb_dacp_pairing_page_new 	(GObject *plugin,
 						 RBShell *shell,
 						 DmapControlShare *dacp_share,
-						 const char *display_name,
-						 const char *service_name);
+						 const gchar *display_name,
+						 const gchar *service_name);
 
 void           rb_dacp_pairing_page_remote_found (RBDACPPairingPage *page);
 void           rb_dacp_pairing_page_remote_lost (RBDACPPairingPage *page);

@@ -83,7 +83,7 @@ static void dacp_player_updated (RBDACPPlayer *player, DmapControlShare *share);
 
 struct RBDACPPairingPagePrivate
 {
-	char *service_name;
+	gchar *service_name;
 
 	gboolean done_pairing;
 
@@ -109,7 +109,7 @@ entry_insert_text_cb (GtkWidget *entry, gchar *text, gint len, gint *position, R
 	gchar new_char = text[*position];
 	gint entry_pos = 0;
 	gchar passcode[4];
-	int i;
+	gint i;
 
 	/* Find out which entry the user just entered text */
 	for (entry_pos = 0; entry_pos < 4; entry_pos++) {
@@ -243,7 +243,7 @@ impl_constructed (GObject *object)
 	GtkWidget *close_pairing_button;
 	PangoFontDescription *font;
 	GObject *plugin;
-	int i;
+	gint i;
 
 	g_object_get (page, "plugin", &plugin, NULL);
 
@@ -262,7 +262,7 @@ impl_constructed (GObject *object)
 	font = pango_font_description_from_string ("normal 28");
 
 	for (i = 0; i < 4; i++) {
-		char *entry_name;
+		gchar *entry_name;
 
 		entry_name = g_strdup_printf ("passcode_entry%d", i + 1);
 		page->priv->entries[i] = GTK_WIDGET (gtk_builder_get_object (page->priv->builder, entry_name));
@@ -327,8 +327,8 @@ RBDACPPairingPage *
 rb_dacp_pairing_page_new (GObject *plugin,
 			  RBShell *shell,
 			  DmapControlShare *dacp_share,
-			  const char *display_name,
-			  const char *service_name)
+			  const gchar *display_name,
+			  const gchar *service_name)
 {
 	RBDACPPairingPage *page;
 
@@ -352,7 +352,7 @@ rb_dacp_pairing_page_new (GObject *plugin,
 static void
 rb_dacp_pairing_page_reset_passcode (RBDACPPairingPage *page)
 {
-	int i;
+	gint i;
 
 	for (i = 0; i < 4; i++) {
 		gtk_entry_set_text (GTK_ENTRY (page->priv->entries[i]), "");
@@ -382,7 +382,7 @@ rb_dacp_pairing_page_remote_lost (RBDACPPairingPage *page)
 
 static void
 rb_dacp_pairing_page_connecting (RBDACPPairingPage *page, gboolean connecting) {
-	int i;
+	gint i;
 
 	if (connecting) {
 		gtk_widget_show (page->priv->pairing_status_widget);
@@ -507,7 +507,7 @@ dacp_add_guid (DmapControlShare *share,
 	GVariantBuilder *vb;
 	GVariantIter iter;
 	GVariant *v;
-	const char *g;
+	const gchar *g;
 
 	v = g_settings_get_value (settings, "known-remotes");
 
@@ -529,7 +529,7 @@ dacp_lookup_guid (DmapControlShare *share,
                   gchar *guid,
 		  GSettings *settings)
 {
-	char **guids;
+	gchar **guids;
 	gboolean found;
 
 	guids = g_settings_get_strv (settings, "known-remotes");
@@ -540,7 +540,7 @@ dacp_lookup_guid (DmapControlShare *share,
 }
 
 typedef struct {
-	const char *name;
+	const gchar *name;
 	RBDACPPairingPage *page;
 } FindPage;
 

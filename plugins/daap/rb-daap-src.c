@@ -226,7 +226,7 @@ rb_daap_src_get_property (GObject *object,
 }
 
 static void
-rb_daap_src_set_header (const char *name, const char *value, gpointer headers)
+rb_daap_src_set_header (const gchar *name, const gchar *value, gpointer headers)
 {
 	gst_structure_set (headers, name, G_TYPE_STRING, value, NULL);
 }
@@ -254,8 +254,8 @@ rb_daap_src_change_state (GstElement *element, GstStateChange transition)
 	switch (transition) {
 		case GST_STATE_CHANGE_NULL_TO_READY:
 		{
-			const char *http = "http";
-			char *httpuri;
+			const gchar *http = "http";
+			gchar *httpuri;
 			SoupMessageHeaders *headers;
 			GstStructure *gst_headers;
 			RBDAAPSource *source;

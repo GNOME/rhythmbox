@@ -65,7 +65,7 @@
 #define DAAP_DBUS_PATH	"/org/gnome/Rhythmbox3/DAAP"
 #define DAAP_DBUS_IFACE "org.gnome.Rhythmbox3.DAAP"
 
-static const char *rb_daap_dbus_iface =
+static const gchar *rb_daap_dbus_iface =
 "<node>"
 "  <interface name='org.gnome.Rhythmbox3.DAAP'>"
 "    <method name='AddDAAPSource'>"
@@ -119,14 +119,14 @@ static void new_share_action_cb (GSimpleAction *, GVariant *, gpointer);
 static void start_browsing (RBDaapPlugin *plugin);
 static void stop_browsing (RBDaapPlugin *plugin);
 static void settings_changed_cb (GSettings *settings,
-				 const char *key,
+				 const gchar *key,
 				 RBDaapPlugin *plugin);
 static void dacp_settings_changed_cb (GSettings *settings,
-				      const char *key,
+				      const gchar *key,
 				      RBDaapPlugin *plugin);
-static void libdmapsharing_debug (const char *domain,
+static void libdmapsharing_debug (const gchar *domain,
 				  GLogLevelFlags level,
-				  const char *message,
+				  const gchar *message,
 				  gpointer data);
 
 static void register_daap_dbus_iface (RBDaapPlugin *plugin);
@@ -260,7 +260,7 @@ rb_daap_plugin_get_icon (RBDaapPlugin *plugin,
 
 static RBSource *
 find_source_by_service_name (RBDaapPlugin *plugin,
-			     const char *service_name)
+			     const gchar *service_name)
 {
 	RBSource *source;
 
@@ -329,8 +329,8 @@ mdns_service_added (DmapMdnsBrowser *browser,
 
 static void
 mdns_service_removed (DmapMdnsBrowser *browser,
-		      const char        *service_name,
-		      RBDaapPlugin	*plugin)
+		      const gchar      *service_name,
+		      RBDaapPlugin     *plugin)
 {
 	RBSource *source;
 	source = find_source_by_service_name (plugin, service_name);
@@ -344,7 +344,7 @@ mdns_service_removed (DmapMdnsBrowser *browser,
 static void
 remove_source (RBSource *source)
 {
-	char *service_name;
+	gchar *service_name;
 
 	g_object_get (source, "service-name", &service_name, NULL);
 	rb_debug ("Removing DAAP source: %s", service_name);
@@ -420,7 +420,7 @@ stop_browsing (RBDaapPlugin *plugin)
 }
 
 static void
-dacp_settings_changed_cb (GSettings *settings, const char *key, RBDaapPlugin *plugin)
+dacp_settings_changed_cb (GSettings *settings, const gchar *key, RBDaapPlugin *plugin)
 {
 	if (g_strcmp0 (key, "enable-remote") == 0) {
 		GError *error = NULL;
@@ -437,7 +437,7 @@ dacp_settings_changed_cb (GSettings *settings, const char *key, RBDaapPlugin *pl
 }
 
 static void
-settings_changed_cb (GSettings *settings, const char *key, RBDaapPlugin *plugin)
+settings_changed_cb (GSettings *settings, const gchar *key, RBDaapPlugin *plugin)
 {
 	if (g_strcmp0 (key, "enable-browsing") == 0) {
 		if (g_settings_get_boolean (settings, key)) {
@@ -449,9 +449,9 @@ settings_changed_cb (GSettings *settings, const char *key, RBDaapPlugin *plugin)
 }
 
 static void
-libdmapsharing_debug (const char *domain,
+libdmapsharing_debug (const gchar *domain,
 		      GLogLevelFlags level,
-		      const char *message,
+		      const gchar *message,
 		      gpointer data)
 {
 	if ((level & G_LOG_LEVEL_DEBUG) != 0) {
@@ -463,12 +463,12 @@ libdmapsharing_debug (const char *domain,
 
 static void
 new_daap_share_location_added_cb (RBURIDialog *dialog,
-				  const char *location,
+				  const gchar *location,
 				  RBDaapPlugin *plugin)
 {
-	char *host;
-	char *p;
-	int port = 3689;
+	gchar *host;
+	gchar *p;
+	gint port = 3689;
 	DmapMdnsService *service;
 
 	host = g_strdup (location);
@@ -496,7 +496,7 @@ new_daap_share_location_added_cb (RBURIDialog *dialog,
 }
 
 static void
-new_daap_share_response_cb (GtkDialog *dialog, int response, gpointer meh)
+new_daap_share_response_cb (GtkDialog *dialog, gint response, gpointer meh)
 {
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
@@ -518,13 +518,13 @@ new_share_action_cb (GSimpleAction *action, GVariant *parameter, gpointer data)
 /* daap:// URI -> RBDAAPSource mapping */
 
 static gboolean
-source_host_and_port_find (const char *key,
+source_host_and_port_find (const gchar *key,
 		           RBDAAPSource *source,
-		           const char *host_and_port)
+		           const gchar *host_and_port)
 {
 	guint    source_port          = 0;
-	char    *source_host          = NULL;
-	char    *source_host_and_port = NULL;
+	gchar   *source_host          = NULL;
+	gchar   *source_host_and_port = NULL;
 	gboolean result               = FALSE;
 
 	if (source == NULL || host_and_port == NULL) {
@@ -546,10 +546,10 @@ out:
 }
 
 RBDAAPSource *
-rb_daap_plugin_find_source_for_uri (RBDaapPlugin *plugin, const char *uri)
+rb_daap_plugin_find_source_for_uri (RBDaapPlugin *plugin, const gchar *uri)
 {
-	char         *host_and_port = NULL;
-	char         *s             = NULL;
+	gchar        *host_and_port = NULL;
+	gchar        *s             = NULL;
 	RBDAAPSource *source        = NULL;
 
 	if (NULL == uri) {
@@ -604,7 +604,7 @@ share_name_entry_focus_out_event_cb (GtkEntry *entry,
 	g_autoptr(GSettings) settings = NULL;
 	g_autofree char *old_name = NULL;
 	gboolean    changed;
-	const char *name;
+	const gchar *name;
 
 	settings = g_settings_new ("org.gnome.rhythmbox.sharing");
 	name = gtk_entry_get_text (entry);
@@ -635,7 +635,7 @@ share_password_entry_focus_out_event_cb (GtkEntry *entry,
 	g_autoptr(GSettings) settings = NULL;
 	g_autofree char *old_pw = NULL;
 	gboolean    changed;
-	const char *pw;
+	const gchar *pw;
 
 	pw = gtk_entry_get_text (entry);
 	settings = g_settings_new ("org.gnome.rhythmbox.sharing");
@@ -659,7 +659,7 @@ share_password_entry_focus_out_event_cb (GtkEntry *entry,
 }
 
 static void
-config_settings_changed_cb (GSettings *settings, const char *key, RBDaapPlugin *plugin)
+config_settings_changed_cb (GSettings *settings, const gchar *key, RBDaapPlugin *plugin)
 {
 	if (g_strcmp0 (key, "enable-sharing") == 0) {
 		GtkToggleButton *password_check;
@@ -683,8 +683,8 @@ update_config_widget (RBDaapPlugin *plugin)
 	GtkWidget *password_entry;
 	GtkWidget *password_check;
 	GtkWidget *forget_remotes_button;
-	char *name;
-	char *password;
+	gchar *name;
+	gchar *password;
 
 	check = GTK_WIDGET (gtk_builder_get_object (plugin->builder, "daap_enable_check"));
 	remote_check = GTK_WIDGET (gtk_builder_get_object (plugin->builder, "dacp_enable_check"));
@@ -754,10 +754,10 @@ peas_gtk_configurable_iface_init (PeasGtkConfigurableInterface *iface)
 
 static void
 daap_dbus_method_call (GDBusConnection *connection,
-		       const char *sender,
-		       const char *object_path,
-		       const char *interface_name,
-		       const char *method_name,
+		       const gchar *sender,
+		       const gchar *object_path,
+		       const gchar *interface_name,
+		       const gchar *method_name,
 		       GVariant *parameters,
 		       GDBusMethodInvocation *invocation,
 		       RBDaapPlugin *plugin)
@@ -792,7 +792,7 @@ daap_dbus_method_call (GDBusConnection *connection,
 		g_free(host);
 		g_object_unref (service);
 	} else if (g_strcmp0 (method_name, "RemoveDAAPSource") == 0) {
-		const char *service_name;
+		const gchar *service_name;
 
 		g_variant_get (parameters, "(&s)", &service_name);
 		rb_debug ("removing DAAP source %s", service_name);

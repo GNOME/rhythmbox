@@ -62,9 +62,9 @@ GType			rb_daap_source_get_type		(void);
 
 RBSource *		rb_daap_source_new 		(RBShell *shell,
 							 GObject *plugin,
-							 const char *service_name,
-							 const char *name,
-							 const char *host,
+							 const gchar *service_name,
+							 const gchar *name,
+							 const gchar *host,
 							 guint port,
 							 gboolean password_protected);
 
