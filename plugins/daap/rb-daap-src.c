@@ -178,8 +178,7 @@ rb_daap_src_dispose (GObject *object)
 		src->souphttpsrc = NULL;
 	}
 
-	g_free (src->daap_uri);
-	src->daap_uri = NULL;
+	g_clear_pointer (&src->daap_uri, g_free);
 
 	G_OBJECT_CLASS (rb_daap_src_parent_class)->dispose (object);
 }
@@ -195,10 +194,7 @@ rb_daap_src_set_property (GObject *object,
 	switch (prop_id) {
 		case PROP_LOCATION:
 			/* XXX check stuff */
-			if (src->daap_uri) {
-				g_free (src->daap_uri);
-				src->daap_uri = NULL;
-			}
+			g_clear_pointer (&src->daap_uri, g_free);
 			src->daap_uri = g_strdup (g_value_get_string (value));
 			break;
 		default:

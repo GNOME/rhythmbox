@@ -152,8 +152,7 @@ sharing_settings_changed_cb (GSettings *settings, const gchar *key, RBShell *she
 		} else {
 			if (share != NULL) {
 				rb_debug ("shutting down daap share");
-				g_object_unref (share);
-				share = NULL;
+				g_clear_object (&share);
 			}
 		}
 	} else if (g_strcmp0 (key, "require-password") == 0) {
@@ -189,14 +188,9 @@ rb_daap_sharing_shutdown (RBShell *shell)
 	if (share) {
 		rb_debug ("shutdown daap sharing");
 
-		g_object_unref (share);
-		share = NULL;
+		g_clear_object (&share);
 	}
 
-	if (settings) {
-		g_object_unref (settings);
-		settings = NULL;
-	}
-
+	g_clear_object (&settings);
 	g_object_unref (shell);
 }

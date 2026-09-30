@@ -405,8 +405,7 @@ stop_browsing (RBDaapPlugin *plugin)
 
 	rb_debug ("Destroying DAAP source lookup");
 
-	g_hash_table_destroy (plugin->source_lookup);
-	plugin->source_lookup = NULL;
+	g_clear_pointer (&plugin->source_lookup, g_hash_table_destroy);
 
 	g_signal_handlers_disconnect_by_func (plugin->mdns_browser, mdns_service_added, plugin);
 	g_signal_handlers_disconnect_by_func (plugin->mdns_browser, mdns_service_removed, plugin);

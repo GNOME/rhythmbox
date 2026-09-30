@@ -592,8 +592,7 @@ release_connection (RBDAAPSource *daap_source)
 {
 	rb_debug ("Releasing connection");
 
-	g_object_unref (daap_source->priv->connection);
-	daap_source->priv->connection = NULL;
+	g_clear_object (&daap_source->priv->connection);
 }
 
 static void
@@ -777,8 +776,7 @@ rb_daap_source_disconnect (RBDAAPSource *daap_source)
 		rb_display_page_delete_thyself (RB_DISPLAY_PAGE (playlist_source));
 	}
 
-	g_slist_free (daap_source->priv->playlist_sources);
-	daap_source->priv->playlist_sources = NULL;
+	g_clear_slist (&daap_source->priv->playlist_sources, NULL);
 
 	/* we don't want these firing while we are disconnecting */
 	g_signal_handlers_disconnect_by_func (daap_source->priv->connection,

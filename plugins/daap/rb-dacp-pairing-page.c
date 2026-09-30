@@ -177,15 +177,8 @@ impl_dispose (GObject *object)
 {
 	RBDACPPairingPage *page = RB_DACP_PAIRING_PAGE (object);
 
-	if (page->priv->builder != NULL) {
-		g_object_unref (page->priv->builder);
-		page->priv->builder = NULL;
-	}
-
-	if (page->priv->dacp_share != NULL) {
-		g_object_unref (page->priv->dacp_share);
-		page->priv->dacp_share = NULL;
-	}
+	g_clear_object (&page->priv->builder);
+	g_clear_object (&page->priv->dacp_share);
 
 	G_OBJECT_CLASS (rb_dacp_pairing_page_parent_class)->dispose (object);
 }
