@@ -194,8 +194,7 @@ rb_daap_src_set_property (GObject *object,
 	switch (prop_id) {
 		case PROP_LOCATION:
 			/* XXX check stuff */
-			g_clear_pointer (&src->daap_uri, g_free);
-			src->daap_uri = g_strdup (g_value_get_string (value));
+			g_set_str (&src->daap_uri, g_value_get_string (value));
 			break;
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
