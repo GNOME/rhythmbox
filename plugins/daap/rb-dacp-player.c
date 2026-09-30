@@ -29,19 +29,19 @@
 
 #include "config.h"
 
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-
-#include "rhythmdb.h"
-#include "rb-shell.h"
-#include "rb-shell-player.h"
 #include "rb-dacp-player.h"
+
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+
 #include "rb-daap-record.h"
-#include "rb-playlist-manager.h"
 #include "rb-play-queue-source.h"
+#include "rb-playlist-manager.h"
+#include "rb-shell-player.h"
+#include "rhythmdb.h"
 
 struct _RBDACPPlayerPrivate {
 	RBShell *shell;

@@ -30,36 +30,34 @@
 
 #include "config.h"
 
+#include "rb-daap-source.h"
+
 #include <string.h>
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <libdmapsharing/dmap.h>
+
+#include "rb-application.h"
+#include "rb-builder-helpers.h"
+#include "rb-daap-plugin.h"
+#include "rb-daap-record-factory.h"
+#include "rb-daap-src.h"
+#include "rb-debug.h"
+#include "rb-dialog.h"
+#include "rb-display-page.h"
+#include "rb-file-helpers.h"
+#include "rb-rhythmdb-dmap-db-adapter.h"
+#include "rb-shell.h"
+#include "rb-static-playlist-source.h"
+#include "rb-task-list.h"
+#include "rb-task-progress-simple.h"
+#include "rb-util.h"
+#include "rhythmdb.h"
 
 #ifdef WITH_LIBSECRET
 #include <libsecret/secret.h>
 #endif
-
-#include "rhythmdb.h"
-#include "rb-shell.h"
-#include "rb-daap-source.h"
-#include "rb-debug.h"
-#include "rb-util.h"
-#include "rb-file-helpers.h"
-#include "rb-dialog.h"
-#include "rb-daap-src.h"
-#include "rb-daap-record-factory.h"
-#include "rb-rhythmdb-dmap-db-adapter.h"
-#include "rb-display-page.h"
-#include "rb-builder-helpers.h"
-#include "rb-application.h"
-#include "rb-task-list.h"
-#include "rb-task-progress-simple.h"
-
-#include "rb-daap-plugin.h"
-
-#include "rb-static-playlist-source.h"
-
-#include <libdmapsharing/dmap.h>
 
 typedef struct _RhythmDBEntryType RBDAAPEntryType;
 typedef struct _RhythmDBEntryTypeClass RBDAAPEntryTypeClass;

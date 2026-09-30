@@ -30,20 +30,20 @@
 
 #include "config.h"
 
+#include "rb-daap-sharing.h"
+
 #include <string.h>
 
 #include <gio/gio.h>
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
+#include <libdmapsharing/dmap.h>
 
-#include "rb-daap-sharing.h"
-#include "rb-rhythmdb-dmap-db-adapter.h"
-#include "rb-dmap-container-db-adapter.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
+#include "rb-dmap-container-db-adapter.h"
 #include "rb-playlist-manager.h"
-
-#include <libdmapsharing/dmap.h>
+#include "rb-rhythmdb-dmap-db-adapter.h"
 
 static DmapAvShare *share = NULL;
 static GSettings *settings = NULL;

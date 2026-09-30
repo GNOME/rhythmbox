@@ -29,13 +29,12 @@
 
 #include "config.h"
 
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
-#include "rhythmdb.h"
 #include "rb-daap-record.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
 
 struct RBDAAPRecordPrivate {
 	guint64 filesize;

@@ -30,11 +30,13 @@
 
 #include "config.h"
 
-#include <gst/gst.h>
+#include "rb-daap-src.h"
+
 #include <string.h>
 
+#include <gst/gst.h>
+
 #include "rb-daap-plugin.h"
-#include "rb-daap-src.h"
 
 #define RB_TYPE_DAAP_SRC (rb_daap_src_get_type())
 #define RB_DAAP_SRC(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj),RB_TYPE_DAAP_SRC,RBDAAPSrc))

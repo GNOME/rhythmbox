@@ -32,8 +32,8 @@
 
 #include <libdmapsharing/dmap.h>
 
-#include "rb-shell.h"
 #include "rb-display-page.h"
+#include "rb-shell.h"
 
 G_BEGIN_DECLS
 

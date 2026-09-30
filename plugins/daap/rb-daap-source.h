@@ -34,8 +34,8 @@
 #include <libdmapsharing/dmap.h>
 #include <libsoup/soup.h>
 
-#include "rb-shell.h"
 #include "rb-browser-source.h"
+#include "rb-shell.h"
 
 G_BEGIN_DECLS
 

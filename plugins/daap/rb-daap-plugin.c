@@ -28,41 +28,39 @@
 
 #include <config.h>
 
+#include "rb-daap-plugin.h"
+
 #include <string.h>
+
+#include <gio/gio.h>
 #include <glib.h>
 #include <glib/gi18n-lib.h>
 #include <gmodule.h>
 #include <gtk/gtk.h>
-#include <gio/gio.h>
-
+#include <libdmapsharing/dmap.h>
+#include <libpeas-gtk/peas-gtk.h>
 #include <libsoup/soup.h>
 
-#include <libpeas-gtk/peas-gtk.h>
-
-#include "rb-plugin-macros.h"
-#include "rb-daap-plugin.h"
-#include "rb-debug.h"
-#include "rb-shell.h"
-#include "rb-dialog.h"
-#include "rb-file-helpers.h"
-#include "rb-builder-helpers.h"
-#include "rb-uri-dialog.h"
-#include "rb-display-page-group.h"
 #include "rb-application.h"
-
+#include "rb-builder-helpers.h"
 #include "rb-daap-container-record.h"
 #include "rb-daap-record-factory.h"
 #include "rb-daap-record.h"
-#include "rb-daap-source.h"
 #include "rb-daap-sharing.h"
+#include "rb-daap-source.h"
 #include "rb-daap-src.h"
 #include "rb-dacp-pairing-page.h"
 #include "rb-dacp-player.h"
+#include "rb-debug.h"
+#include "rb-dialog.h"
+#include "rb-display-page-group.h"
 #include "rb-dmap-container-db-adapter.h"
+#include "rb-file-helpers.h"
+#include "rb-plugin-macros.h"
 #include "rb-rhythmdb-dmap-db-adapter.h"
 #include "rb-rhythmdb-query-model-dmap-db-adapter.h"
-
-#include <libdmapsharing/dmap.h>
+#include "rb-shell.h"
+#include "rb-uri-dialog.h"
 
 #define DAAP_DBUS_PATH	"/org/gnome/Rhythmbox3/DAAP"
 #define DAAP_DBUS_IFACE "org.gnome.Rhythmbox3.DAAP"

@@ -32,6 +32,8 @@
 
 #include <libdmapsharing/dmap.h>
 
+#include "rhythmdb.h"
+
 G_BEGIN_DECLS
 
 #define RB_TYPE_DAAP_RECORD         (rb_daap_record_get_type ())

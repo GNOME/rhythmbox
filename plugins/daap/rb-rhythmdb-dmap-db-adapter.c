@@ -29,12 +29,12 @@
 
 #include <config.h>
 
-#include "rhythmdb.h"
 #include "rb-rhythmdb-dmap-db-adapter.h"
-#include "rb-daap-record.h"
 
 #include <glib/gi18n.h>
 #include <libdmapsharing/dmap.h>
+
+#include "rb-daap-record.h"
 
 struct RBRhythmDBDMAPDbAdapterPrivate {
 	RhythmDB *db;

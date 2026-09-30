@@ -30,31 +30,31 @@
 
 #include "config.h"
 
-#include <string.h>
+#include "rb-dacp-pairing-page.h"
+
 #include <ctype.h>
 #include <math.h>
+#include <string.h>
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "rhythmdb.h"
-#include "rb-shell.h"
-#include "rb-display-page-group.h"
-#include "rb-debug.h"
-#include "rb-util.h"
-#include "rb-file-helpers.h"
 #include "rb-builder-helpers.h"
-#include "rb-dialog.h"
-#include "rb-playlist-manager.h"
-#include "rb-shell-player.h"
-#include "rb-display-page-model.h"
-#include "rb-rhythmdb-dmap-db-adapter.h"
-#include "rb-dmap-container-db-adapter.h"
-
-#include "rb-dacp-pairing-page.h"
 #include "rb-daap-plugin.h"
 #include "rb-daap-sharing.h"
 #include "rb-dacp-player.h"
+#include "rb-debug.h"
+#include "rb-dialog.h"
+#include "rb-display-page-group.h"
+#include "rb-display-page-model.h"
+#include "rb-dmap-container-db-adapter.h"
+#include "rb-file-helpers.h"
+#include "rb-playlist-manager.h"
+#include "rb-rhythmdb-dmap-db-adapter.h"
+#include "rb-shell-player.h"
+#include "rb-shell.h"
+#include "rb-util.h"
+#include "rhythmdb.h"
 
 static void impl_constructed (GObject *object);
 static void impl_dispose (GObject *object);
