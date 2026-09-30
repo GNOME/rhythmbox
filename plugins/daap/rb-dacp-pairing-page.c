@@ -118,7 +118,7 @@ entry_insert_text_cb (GtkWidget *entry, gchar *text, gint len, gint *position, R
 		}
 	}
 
-	if (!isdigit (new_char)) {
+	if (!g_ascii_isdigit (new_char)) {
 		/* is this a number? If not, don't let it in */
 		g_signal_stop_emission_by_name (entry, "insert-text");
 		return TRUE;
