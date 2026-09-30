@@ -558,7 +558,7 @@ find_dacp_page_foreach (GtkTreeModel *model,
 	                    -1);
 	if (page && RB_IS_DACP_PAIRING_PAGE (page)) {
 		g_object_get (page, "service-name", &name, NULL);
-		if (strcmp (name, fp->name) == 0) {
+		if (g_strcmp0 (name, fp->name) == 0) {
 			fp->page = RB_DACP_PAIRING_PAGE (page);
 		}
 		g_free (name);

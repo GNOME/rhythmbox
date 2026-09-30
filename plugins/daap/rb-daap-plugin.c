@@ -536,7 +536,7 @@ source_host_and_port_find (const char *key,
 
 	source_host_and_port = g_strdup_printf ("%s:%d", source_host, source_port);
 
-	result = (strcmp (host_and_port, source_host_and_port) == 0);
+	result = (g_strcmp0 (host_and_port, source_host_and_port) == 0);
 
 out:
 	g_free (source_host);
@@ -614,7 +614,7 @@ share_name_entry_focus_out_event_cb (GtkEntry *entry,
 		changed = FALSE;
 	} else if (name == NULL || old_name == NULL) {
 		changed = TRUE;
-	} else if (strcmp (name, old_name) != 0) {
+	} else if (g_strcmp0 (name, old_name) != 0) {
 		changed = TRUE;
 	} else {
 		changed = FALSE;
@@ -645,7 +645,7 @@ share_password_entry_focus_out_event_cb (GtkEntry *entry,
 		changed = FALSE;
 	} else if (pw == NULL || old_pw == NULL) {
 		changed = TRUE;
-	} else if (strcmp (pw, old_pw) != 0) {
+	} else if (g_strcmp0 (pw, old_pw) != 0) {
 		changed = TRUE;
 	} else {
 		changed = FALSE;

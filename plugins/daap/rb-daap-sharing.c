@@ -54,7 +54,7 @@ rb_daap_sharing_default_share_name (void)
 	const gchar *real_name;
 
 	real_name = g_get_real_name ();
-	if (strcmp (real_name, "Unknown") == 0) {
+	if (g_strcmp0 (real_name, "Unknown") == 0) {
 		real_name = g_get_user_name ();
 	}
 
