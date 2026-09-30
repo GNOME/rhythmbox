@@ -205,8 +205,16 @@ impl_activate (PeasActivatable *bplugin)
 	plugin->dacp_share_started = FALSE;
 	if (g_settings_get_boolean (plugin->dacp_settings, "enable-remote")) {
 		GError *error = NULL;
+
 		dmap_control_share_start_lookup (plugin->dacp_share, &error);
-		plugin->dacp_share_started = TRUE;
+		if (error != NULL) {
+			g_warning ("Failed to start DACP remote-control lookup: %s", error->message);
+			plugin->dacp_share_started = FALSE;
+		} else {
+			plugin->dacp_share_started = TRUE;
+		}
+
+		g_clear_error(&error);
 	}
 
 	register_daap_dbus_iface (plugin);
@@ -423,15 +431,26 @@ dacp_settings_changed_cb (GSettings *settings, const gchar *key, RBDaapPlugin *p
 {
 	if (g_strcmp0 (key, "enable-remote") == 0) {
 		GError *error = NULL;
+
 		if (g_settings_get_boolean (settings, key) != plugin->dacp_share_started) {
 			if (plugin->dacp_share_started) {
 				dmap_control_share_stop_lookup (plugin->dacp_share, &error);
-				plugin->dacp_share_started = FALSE;
+				if (error != NULL) {
+					g_warning ("Failed to stop DACP remote-control lookup: %s", error->message);
+				} else {
+					plugin->dacp_share_started = FALSE;
+				}
 			} else {
 				dmap_control_share_start_lookup (plugin->dacp_share, &error);
-				plugin->dacp_share_started = TRUE;
+				if (error != NULL) {
+					g_warning ("Failed to start DACP remote-control lookup: %s", error->message);
+				} else {
+					plugin->dacp_share_started = TRUE;
+				}
 			}
 		}
+
+		g_clear_error(&error);
 	}
 }
 
