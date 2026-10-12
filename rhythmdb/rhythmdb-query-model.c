@@ -1788,6 +1788,10 @@ rhythmdb_query_model_move_entry (RhythmDBQueryModel *model,
 	g_sequence_remove (ptr);
 	g_hash_table_remove (model->priv->reverse_map, entry);
 
+	/* account for the entry we just removed */
+	if (index > old_pos)
+		nptr = g_sequence_iter_next (nptr);
+
 	/* insert into new position */
 	g_sequence_insert_before (nptr, entry);
 	ptr = g_sequence_iter_prev (nptr);
