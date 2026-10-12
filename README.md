@@ -72,9 +72,7 @@ website](https://mesonbuild.com/Quick-guide.html).
 
 ## How to report bugs
 
-Bugs should be reported to the GitLab repository.
-(https://gitlab.gnome.org/GNOME/rhythmbox/issues) You will need to
-create an account for yourself.
+Bugs should be reported to the GitLab repository.  An account is required.
 
 Please read the GNOME bug reporting guidelines, documented in the
 [GNOME Project Handbook](https://handbook.gnome.org/issues.html)
