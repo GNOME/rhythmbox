@@ -5,22 +5,22 @@
 # Maxim Dziumanenko <dziumanenko@gmail.com>, 2004.
 # Sergiy Gavrylov <sergiovana@bigmir.net>, 2011.
 # Korostil Daniel <ted.korostiled@gmail.com>, 2012.
-# Yuri Chornoivan <yurchor@ukr.net>, 2020, 2021, 2022, 2024, 2025, 2026.
+# SPDX-FileCopyrightText: 2020, 2021, 2022, 2024, 2025, 2026 Yuri Chornoivan <yurchor@ukr.net>
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2026-06-08 09:12+0000\n"
-"PO-Revision-Date: 2026-06-08 18:48+0300\n"
+"POT-Creation-Date: 2026-10-18 08:15+0000\n"
+"PO-Revision-Date: 2026-10-18 22:30+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Lokalize 23.04.3\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
+"=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Lokalize 25.12.1\n"
 
 #: backends/gstreamer/rb-encoder-gst.c:653
 #, c-format
@@ -154,6 +154,7 @@ msgstr "Відтворення та упорядкування усіх ваши
 
 #. developer_name tag deprecated with Appstream 1.0
 #: data/org.gnome.Rhythmbox3.metainfo.xml.in:11
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:13
 msgid "The Rhythmbox developers"
 msgstr "Розробники Rhythmbox"
 
@@ -180,7 +181,7 @@ msgstr ""
 "GStreamer, можливості якого можна розширити за допомогою додатків мовами "
 "Python і C."
 
-#: data/org.gnome.Rhythmbox3.metainfo.xml.in:35
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:34
 msgid "Main Window"
 msgstr "Головне вікно"
 
@@ -443,7 +444,7 @@ msgid "Import"
 msgstr "Імпортувати"
 
 #: data/ui/import-dialog.ui:66 data/ui/podcast-add-dialog.ui:45
-#: plugins/gpodder/gpodder.py:618
+#: plugins/gpodder/gpodder.py:614
 msgid "Close"
 msgstr "Закрити"
 
@@ -623,7 +624,7 @@ msgstr "Зберегти список відтворення"
 msgid "_Cancel"
 msgstr "_Скасувати"
 
-#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:297
+#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:302
 #: widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "_Зберегти"
@@ -943,7 +944,7 @@ msgstr "Вилучені файли:"
 
 #: lib/rb-cut-and-paste-code.c:94
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:235
-#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3862
+#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3868
 #: widgets/rb-entry-view.c:973 widgets/rb-entry-view.c:1604
 #: widgets/rb-entry-view.c:1618 widgets/rb-song-info.c:1554
 msgid "Never"
@@ -1010,8 +1011,8 @@ msgstr "%b %d %Y"
 #: podcast/rb-podcast-manager.c:1666 podcast/rb-podcast-properties-dialog.c:636
 #: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:770
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
-#: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
-#: rhythmdb/rhythmdb.c:2156 rhythmdb/rhythmdb-entry-type.c:303
+#: rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2107 rhythmdb/rhythmdb.c:2122
+#: rhythmdb/rhythmdb.c:2162 rhythmdb/rhythmdb-entry-type.c:303
 #: rhythmdb/rhythmdb-entry-type.c:381 rhythmdb/rhythmdb-entry-type.c:387
 #: rhythmdb/rhythmdb-entry-type.c:392 rhythmdb/rhythmdb-entry-type.c:403
 #: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:309
@@ -1754,8 +1755,8 @@ msgstr "Посилання"
 msgid "No artist specified."
 msgstr "Не вказаний виконавець."
 
-#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:336
-#: plugins/lyrics/lyrics.py:421
+#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:341
+#: plugins/lyrics/lyrics.py:426
 msgid "Lyrics"
 msgstr "Тексти пісень"
 
@@ -1990,7 +1991,6 @@ msgstr ""
 #. marker (like %s) for the hostname.
 #: plugins/gpodder/gpodder.py:237
 #, python-brace-format
-#| msgid "Rhythmbox Website"
 msgid "Rhythmbox on {hostname}"
 msgstr "Rhythmbox на {hostname}"
 
@@ -2000,7 +2000,6 @@ msgstr "Не синхронізовано"
 
 #: plugins/gpodder/gpodder.py:291
 #, python-format
-#| msgid "Last played:"
 msgid "Last synced: %s"
 msgstr "Востаннє синхронізовано: %s"
 
@@ -2009,30 +2008,27 @@ msgid "Last sync was successful"
 msgstr "Останню синхронізацію було виконано успішно"
 
 #: plugins/gpodder/gpodder.py:295
-#| msgid "Request failed"
 msgid "Last sync failed"
 msgstr "Не вдалося виконати останню синхронізацію"
 
 #: plugins/gpodder/gpodder.py:305
-#| msgid "Sync"
 msgid "Sync Now"
 msgstr "Синхронізувати"
 
 #: plugins/gpodder/gpodder.py:306
-#| msgid "_Preferences"
 msgid "Preferences"
 msgstr "Налаштування"
 
-#: plugins/gpodder/gpodder.py:656
+#: plugins/gpodder/gpodder.py:652
 msgid "Login successful"
 msgstr "Вхід здійснено"
 
-#: plugins/gpodder/gpodder.py:658 plugins/magnatune/MagnatuneSource.py:408
+#: plugins/gpodder/gpodder.py:654 plugins/magnatune/MagnatuneSource.py:408
 #: widgets/rb-entry-view.c:1669
 msgid "Error"
 msgstr "Помилка"
 
-#: plugins/gpodder/gpodder.py:660
+#: plugins/gpodder/gpodder.py:656
 msgid "Login failed"
 msgstr "Невдала спроба увійти"
 
@@ -2057,8 +2053,8 @@ msgid ""
 "If enabled, your podcast subscriptions will be synchronized between your "
 "podcast applications"
 msgstr ""
-"Якщо увімкнено, ваші підписки на трансляції буде синхронізовано між вашими"
-" програмами для роботи із трасляціями"
+"Якщо увімкнено, ваші підписки на трансляції буде синхронізовано між вашими "
+"програмами для роботи із трасляціями"
 
 #: plugins/gpodder/gpodder-prefs.ui:61
 msgid "Synchronize episode actions"
@@ -2069,20 +2065,18 @@ msgid ""
 "If enabled, playback and download actions will be synchronized between your "
 "podcast applications"
 msgstr ""
-"Якщо увімкнено, дії з відтворення і отримання буде синхронізовано між вашими"
-" програмами для роботи із трасляціями"
+"Якщо увімкнено, дії з відтворення і отримання буде синхронізовано між вашими "
+"програмами для роботи із трасляціями"
 
 #: plugins/gpodder/gpodder-prefs.ui:124
 msgid "Server URL"
 msgstr "Адреса сервера"
 
 #: plugins/gpodder/gpodder-prefs.ui:137
-#| msgid "Username:"
 msgid "Username"
 msgstr "Користувач"
 
 #: plugins/gpodder/gpodder-prefs.ui:150
-#| msgid "Password:"
 msgid "Password"
 msgstr "Пароль"
 
@@ -2347,7 +2341,7 @@ msgstr ""
 msgid "Choose lyrics folder..."
 msgstr "Вибрати теку зі словами пісень…"
 
-#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:444
+#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:449
 msgid "Song Lyrics"
 msgstr "Слова пісні"
 
@@ -2367,20 +2361,20 @@ msgstr "Огляд…"
 msgid "Lyrics Folder"
 msgstr "Тека зі словами пісень"
 
-#: plugins/lyrics/lyrics.py:170 plugins/lyrics/lyrics.py:247
-#: plugins/lyrics/lyrics.py:257
+#: plugins/lyrics/lyrics.py:170 plugins/lyrics/lyrics.py:252
+#: plugins/lyrics/lyrics.py:262
 msgid "No lyrics found"
 msgstr "Слова не знайдено"
 
-#: plugins/lyrics/lyrics.py:302 plugins/lyrics/lyrics.py:315
+#: plugins/lyrics/lyrics.py:307 plugins/lyrics/lyrics.py:320
 msgid "_Edit"
 msgstr "З_міни"
 
-#: plugins/lyrics/lyrics.py:317
+#: plugins/lyrics/lyrics.py:322
 msgid "_Search again"
 msgstr "_Шукати знову"
 
-#: plugins/lyrics/lyrics.py:376
+#: plugins/lyrics/lyrics.py:381
 msgid "Searching for lyrics..."
 msgstr "Пошук слів…"
 
@@ -2692,6 +2686,66 @@ msgstr ""
 msgid "Downloading from Magnatune"
 msgstr "Отримання з Magnatune"
 
+#: plugins/mpdserver/mpdserver-config.ui:19
+#| msgid "Preferences"
+msgid "MPD server preferences"
+msgstr "Налаштування сервера MPD"
+
+#: plugins/mpdserver/mpdserver-config.ui:37
+#: plugins/webremote/webremote-config.ui:35
+msgid "Listening port:"
+msgstr "Порт очікування даних:"
+
+#: plugins/mpdserver/mpdserver-config.ui:49
+#| msgid "Require _password:"
+msgid "MPD client password:"
+msgstr "Пароль до клієнта MPD:"
+
+#: plugins/mpdserver/mpdserver-config.ui:71
+#| msgid "Listening port:"
+msgid "Listening address:"
+msgstr "Адреса очікування даних:"
+
+#: plugins/mpdserver/mpdserver-config.ui:80
+#| msgid "Location"
+msgid "Local host only"
+msgstr "Лише локальний вузол"
+
+#: plugins/mpdserver/mpdserver-config.ui:94
+msgid "All addresses"
+msgstr "Усі адреси"
+
+#: plugins/mpdserver/mpdserver-config.ui:114
+msgid "Specific address:"
+msgstr "Вказана адреса:"
+
+#: plugins/mpdserver/mpdserver-config.ui:149
+msgid ""
+"MPD is not a secure protocol and should only be used on trusted networks."
+msgstr ""
+"MPD не є безпечним протоколом — ним слід користуватися лише у надійних мережа"
+"х."
+
+#: plugins/mpdserver/mpdserver-config.ui:160
+msgid "Enable MDNS discovery"
+msgstr "Увімкнути виявлення MDNS"
+
+#: plugins/mpdserver/mpdserver-config.ui:175
+msgid ""
+"Find MPD clients on the <a href=\"https://musicpd.org/clients\">MPD website</"
+"a>"
+msgstr ""
+"Знайдіть клієнти MPD на <a href=\"https://musicpd.org/clients\">сайті MPD</a>"
+
+#: plugins/mpdserver/mpdserver.plugin.desktop.in:6
+#| msgid "Server URL"
+msgid "MPD Server"
+msgstr "Сервер MPD"
+
+#: plugins/mpdserver/mpdserver.plugin.desktop.in:7
+msgid "Provides access to Rhythmbox through the MPD protocol"
+msgstr "Надає доступ до Rhythmbox за допомогою протоколу MPD"
+
 #: plugins/mpris/mpris.plugin.desktop.in:5
 msgid "MPRIS D-Bus interface"
 msgstr "Інтерфейс MPRIS D-Bus"
@@ -2943,10 +2997,6 @@ msgstr "Дізнатися більше про ReplayGain"
 #: plugins/webremote/webremote-config.ui:18
 msgid "Web remote control preferences"
 msgstr "Параметри віддаленого інтернет-керування"
-
-#: plugins/webremote/webremote-config.ui:35
-msgid "Listening port:"
-msgstr "Порт очікування даних:"
 
 #: plugins/webremote/webremote-config.ui:46
 msgid "Passphrase:"
@@ -3411,7 +3461,7 @@ msgstr "Натисніть «h», щоб отримати довідку."
 msgid "Playback volume is %f.\n"
 msgstr "Гучність відтворення %f.\n"
 
-#: rhythmdb/rhythmdb.c:796
+#: rhythmdb/rhythmdb.c:798
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Не вдалося отримати доступ до %s: %s"
@@ -3421,7 +3471,7 @@ msgstr "Не вдалося отримати доступ до %s: %s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: rhythmdb/rhythmdb.c:1845
+#: rhythmdb/rhythmdb.c:1851
 msgid "The Beatles"
 msgstr "Океан Ельзи"
 
@@ -3429,7 +3479,7 @@ msgstr "Океан Ельзи"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: rhythmdb/rhythmdb.c:1851
+#: rhythmdb/rhythmdb.c:1857
 msgid "Help!"
 msgstr "Там, де нас нема"
 
@@ -3437,32 +3487,32 @@ msgstr "Там, де нас нема"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: rhythmdb/rhythmdb.c:1857
+#: rhythmdb/rhythmdb.c:1863
 msgid "Ticket To Ride"
 msgstr "Сумна мелодія"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: rhythmdb/rhythmdb.c:2409
+#: rhythmdb/rhythmdb.c:2415
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "Потрібні додаткові модулі GStreamer, щоб відтворити цей файл: %s"
 
-#: rhythmdb/rhythmdb.c:2441
+#: rhythmdb/rhythmdb.c:2447
 msgid "invalid unicode in error message"
 msgstr "неправильне кодування в повідомленні про помилку"
 
-#: rhythmdb/rhythmdb.c:2564
+#: rhythmdb/rhythmdb.c:2570
 #, c-format
 msgid "Empty file"
 msgstr "Порожній файл"
 
-#: rhythmdb/rhythmdb.c:3273
+#: rhythmdb/rhythmdb.c:3279
 msgid "Could not load the music database:"
 msgstr "Не вдалося завантажити базу даних музики:"
 
-#: rhythmdb/rhythmdb.c:4716
+#: rhythmdb/rhythmdb.c:4731
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -3470,7 +3520,7 @@ msgstr[0] "%ld хвилина"
 msgstr[1] "%ld хвилини"
 msgstr[2] "%ld хвилин"
 
-#: rhythmdb/rhythmdb.c:4717
+#: rhythmdb/rhythmdb.c:4732
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -3478,7 +3528,7 @@ msgstr[0] "%ld година"
 msgstr[1] "%ld години"
 msgstr[2] "%ld годин"
 
-#: rhythmdb/rhythmdb.c:4718
+#: rhythmdb/rhythmdb.c:4733
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3487,7 +3537,7 @@ msgstr[1] "%ld дні"
 msgstr[2] "%ld днів"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4724
+#: rhythmdb/rhythmdb.c:4739
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s і %s"
@@ -3495,7 +3545,7 @@ msgstr "%s, %s і %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4730 rhythmdb/rhythmdb.c:4738 rhythmdb/rhythmdb.c:4749
+#: rhythmdb/rhythmdb.c:4745 rhythmdb/rhythmdb.c:4753 rhythmdb/rhythmdb.c:4764
 #, c-format
 msgid "%s and %s"
 msgstr "%s і %s"
