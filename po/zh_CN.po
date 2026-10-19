@@ -20,8 +20,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2026-06-08 09:12+0000\n"
-"PO-Revision-Date: 2026-06-11 07:56+0800\n"
+"POT-Creation-Date: 2026-10-18 08:15+0000\n"
+"PO-Revision-Date: 2026-10-19 08:19+0800\n"
 "Last-Translator: lumingzh <lumingzh@qq.com>\n"
 "Language-Team: Chinese (China) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -30,7 +30,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Launchpad-Export-Date: 2016-03-22 12:26+0000\n"
-"X-Generator: Gtranslator 50.0\n"
+"X-Generator: Gtranslator 51.0\n"
 "X-DL-Team: zh_CN\n"
 "X-DL-Module: rhythmbox\n"
 "X-DL-Branch: master\n"
@@ -161,6 +161,7 @@ msgstr "播放和组织您的所有音乐"
 
 #. developer_name tag deprecated with Appstream 1.0
 #: data/org.gnome.Rhythmbox3.metainfo.xml.in:11
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:13
 msgid "The Rhythmbox developers"
 msgstr "Rhythmbox 开发者们"
 
@@ -183,7 +184,7 @@ msgstr ""
 "Rhythmbox 是自由软件，基于 GTK+ 和 GStreamer 框架，可以通过 Python 或 C 插件"
 "扩展。"
 
-#: data/org.gnome.Rhythmbox3.metainfo.xml.in:35
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:34
 msgid "Main Window"
 msgstr "主窗口"
 
@@ -445,7 +446,7 @@ msgid "Import"
 msgstr "导入"
 
 #: data/ui/import-dialog.ui:66 data/ui/podcast-add-dialog.ui:45
-#: plugins/gpodder/gpodder.py:618
+#: plugins/gpodder/gpodder.py:614
 msgid "Close"
 msgstr "关闭"
 
@@ -625,7 +626,7 @@ msgstr "保存播放列表"
 msgid "_Cancel"
 msgstr "取消(_C)"
 
-#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:297
+#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:302
 #: widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "保存(_S)"
@@ -944,7 +945,7 @@ msgstr "已删除文件："
 
 #: lib/rb-cut-and-paste-code.c:94
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:235
-#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3862
+#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3868
 #: widgets/rb-entry-view.c:973 widgets/rb-entry-view.c:1604
 #: widgets/rb-entry-view.c:1618 widgets/rb-song-info.c:1554
 msgid "Never"
@@ -1011,8 +1012,8 @@ msgstr "%Y年%-m月%-d日"
 #: podcast/rb-podcast-manager.c:1666 podcast/rb-podcast-properties-dialog.c:636
 #: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:770
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
-#: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
-#: rhythmdb/rhythmdb.c:2156 rhythmdb/rhythmdb-entry-type.c:303
+#: rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2107 rhythmdb/rhythmdb.c:2122
+#: rhythmdb/rhythmdb.c:2162 rhythmdb/rhythmdb-entry-type.c:303
 #: rhythmdb/rhythmdb-entry-type.c:381 rhythmdb/rhythmdb-entry-type.c:387
 #: rhythmdb/rhythmdb-entry-type.c:392 rhythmdb/rhythmdb-entry-type.c:403
 #: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:309
@@ -1742,8 +1743,8 @@ msgstr "链接"
 msgid "No artist specified."
 msgstr "未指定艺人。"
 
-#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:336
-#: plugins/lyrics/lyrics.py:421
+#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:341
+#: plugins/lyrics/lyrics.py:426
 msgid "Lyrics"
 msgstr "歌词"
 
@@ -2002,16 +2003,16 @@ msgstr "立即同步"
 msgid "Preferences"
 msgstr "首选项"
 
-#: plugins/gpodder/gpodder.py:656
+#: plugins/gpodder/gpodder.py:652
 msgid "Login successful"
 msgstr "登录成功"
 
-#: plugins/gpodder/gpodder.py:658 plugins/magnatune/MagnatuneSource.py:408
+#: plugins/gpodder/gpodder.py:654 plugins/magnatune/MagnatuneSource.py:408
 #: widgets/rb-entry-view.c:1669
 msgid "Error"
 msgstr "错误"
 
-#: plugins/gpodder/gpodder.py:660
+#: plugins/gpodder/gpodder.py:656
 msgid "Login failed"
 msgstr "登录失败"
 
@@ -2308,7 +2309,7 @@ msgstr ""
 msgid "Choose lyrics folder..."
 msgstr "选择歌词文件夹…"
 
-#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:444
+#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:449
 msgid "Song Lyrics"
 msgstr "歌词"
 
@@ -2328,20 +2329,20 @@ msgstr "浏览…"
 msgid "Lyrics Folder"
 msgstr "歌词文件夹"
 
-#: plugins/lyrics/lyrics.py:170 plugins/lyrics/lyrics.py:247
-#: plugins/lyrics/lyrics.py:257
+#: plugins/lyrics/lyrics.py:170 plugins/lyrics/lyrics.py:252
+#: plugins/lyrics/lyrics.py:262
 msgid "No lyrics found"
 msgstr "未找到歌词"
 
-#: plugins/lyrics/lyrics.py:302 plugins/lyrics/lyrics.py:315
+#: plugins/lyrics/lyrics.py:307 plugins/lyrics/lyrics.py:320
 msgid "_Edit"
 msgstr "编辑(_E)"
 
-#: plugins/lyrics/lyrics.py:317
+#: plugins/lyrics/lyrics.py:322
 msgid "_Search again"
 msgstr "再次搜索(_S)"
 
-#: plugins/lyrics/lyrics.py:376
+#: plugins/lyrics/lyrics.py:381
 msgid "Searching for lyrics..."
 msgstr "正在搜索歌词…"
 
@@ -2645,6 +2646,59 @@ msgstr ""
 msgid "Downloading from Magnatune"
 msgstr "正在从 Magnatune 下载"
 
+#: plugins/mpdserver/mpdserver-config.ui:19
+msgid "MPD server preferences"
+msgstr "MPD 服务器首选项"
+
+#: plugins/mpdserver/mpdserver-config.ui:37
+#: plugins/webremote/webremote-config.ui:35
+msgid "Listening port:"
+msgstr "监听端口："
+
+#: plugins/mpdserver/mpdserver-config.ui:49
+msgid "MPD client password:"
+msgstr "MPD 客户端密码："
+
+#: plugins/mpdserver/mpdserver-config.ui:71
+msgid "Listening address:"
+msgstr "监听地址："
+
+#: plugins/mpdserver/mpdserver-config.ui:80
+msgid "Local host only"
+msgstr "仅本地主机"
+
+#: plugins/mpdserver/mpdserver-config.ui:94
+msgid "All addresses"
+msgstr "所有地址"
+
+#: plugins/mpdserver/mpdserver-config.ui:114
+msgid "Specific address:"
+msgstr "指定地址："
+
+#: plugins/mpdserver/mpdserver-config.ui:149
+msgid ""
+"MPD is not a secure protocol and should only be used on trusted networks."
+msgstr "MPD 不是安全的协议因此应仅用于信任的网络。"
+
+#: plugins/mpdserver/mpdserver-config.ui:160
+msgid "Enable MDNS discovery"
+msgstr "启用 MDNS 发现"
+
+#: plugins/mpdserver/mpdserver-config.ui:175
+msgid ""
+"Find MPD clients on the <a href=\"https://musicpd.org/clients\">MPD website</"
+"a>"
+msgstr ""
+"在 <a href=\"https://musicpd.org/clients\">MPD 网站</a>上查找 MPD 客户端"
+
+#: plugins/mpdserver/mpdserver.plugin.desktop.in:6
+msgid "MPD Server"
+msgstr "MPD 服务器"
+
+#: plugins/mpdserver/mpdserver.plugin.desktop.in:7
+msgid "Provides access to Rhythmbox through the MPD protocol"
+msgstr "通过 MPD 协议提供对 Rhythmbox 的访问"
+
 #: plugins/mpris/mpris.plugin.desktop.in:5
 msgid "MPRIS D-Bus interface"
 msgstr "MPRIS D-Bus 接口"
@@ -2884,10 +2938,6 @@ msgstr "了解关于回放增益的更多信息"
 #: plugins/webremote/webremote-config.ui:18
 msgid "Web remote control preferences"
 msgstr "Web 远程控制首选项"
-
-#: plugins/webremote/webremote-config.ui:35
-msgid "Listening port:"
-msgstr "监听端口："
 
 #: plugins/webremote/webremote-config.ui:46
 msgid "Passphrase:"
@@ -3335,7 +3385,7 @@ msgstr "按 “h” 键获取帮助。"
 msgid "Playback volume is %f.\n"
 msgstr "播放音量是 %f。\n"
 
-#: rhythmdb/rhythmdb.c:796
+#: rhythmdb/rhythmdb.c:798
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "无法访问 %s：%s"
@@ -3345,7 +3395,7 @@ msgstr "无法访问 %s：%s"
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: rhythmdb/rhythmdb.c:1845
+#: rhythmdb/rhythmdb.c:1851
 msgid "The Beatles"
 msgstr "甲壳虫乐队"
 
@@ -3353,7 +3403,7 @@ msgstr "甲壳虫乐队"
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: rhythmdb/rhythmdb.c:1851
+#: rhythmdb/rhythmdb.c:1857
 msgid "Help!"
 msgstr "Help!"
 
@@ -3361,51 +3411,51 @@ msgstr "Help!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: rhythmdb/rhythmdb.c:1857
+#: rhythmdb/rhythmdb.c:1863
 msgid "Ticket To Ride"
 msgstr "Ticket To Ride"
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: rhythmdb/rhythmdb.c:2409
+#: rhythmdb/rhythmdb.c:2415
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr "播放该文件需要附加 GStreamer 插件：%s"
 
-#: rhythmdb/rhythmdb.c:2441
+#: rhythmdb/rhythmdb.c:2447
 msgid "invalid unicode in error message"
 msgstr "错误信息中含有无效的 unicode"
 
-#: rhythmdb/rhythmdb.c:2564
+#: rhythmdb/rhythmdb.c:2570
 #, c-format
 msgid "Empty file"
 msgstr "空文件"
 
-#: rhythmdb/rhythmdb.c:3273
+#: rhythmdb/rhythmdb.c:3279
 msgid "Could not load the music database:"
 msgstr "无法载入音乐数据库："
 
-#: rhythmdb/rhythmdb.c:4716
+#: rhythmdb/rhythmdb.c:4731
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld 分钟"
 
-#: rhythmdb/rhythmdb.c:4717
+#: rhythmdb/rhythmdb.c:4732
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld 小时"
 
-#: rhythmdb/rhythmdb.c:4718
+#: rhythmdb/rhythmdb.c:4733
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld 天"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4724
+#: rhythmdb/rhythmdb.c:4739
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s %s %s"
@@ -3413,7 +3463,7 @@ msgstr "%s %s %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4730 rhythmdb/rhythmdb.c:4738 rhythmdb/rhythmdb.c:4749
+#: rhythmdb/rhythmdb.c:4745 rhythmdb/rhythmdb.c:4753 rhythmdb/rhythmdb.c:4764
 #, c-format
 msgid "%s and %s"
 msgstr "%s %s"
