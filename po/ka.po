@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2026-06-08 09:12+0000\n"
-"PO-Revision-Date: 2026-06-13 04:19+0200\n"
+"POT-Creation-Date: 2026-10-18 08:15+0000\n"
+"PO-Revision-Date: 2026-10-20 07:14+0200\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: \n"
 "Language: ka\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.9\n"
+"X-Generator: Poedit 3.10\n"
 
 #: backends/gstreamer/rb-encoder-gst.c:653
 #, c-format
@@ -140,6 +140,7 @@ msgstr "დაუკარით და დააორგანიზეთ თ
 
 #. developer_name tag deprecated with Appstream 1.0
 #: data/org.gnome.Rhythmbox3.metainfo.xml.in:11
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:13
 msgid "The Rhythmbox developers"
 msgstr "Rhythmbox-ის პროგრამისტები"
 
@@ -157,7 +158,7 @@ msgid ""
 "via plugins written in Python or C."
 msgstr ""
 
-#: data/org.gnome.Rhythmbox3.metainfo.xml.in:35
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:34
 msgid "Main Window"
 msgstr "მთავარი ფანჯარა"
 
@@ -419,7 +420,7 @@ msgid "Import"
 msgstr "შემოტანა"
 
 #: data/ui/import-dialog.ui:66 data/ui/podcast-add-dialog.ui:45
-#: plugins/gpodder/gpodder.py:618
+#: plugins/gpodder/gpodder.py:614
 msgid "Close"
 msgstr "დახურვა"
 
@@ -599,7 +600,7 @@ msgstr "დასაკრავი სიის შენახვა"
 msgid "_Cancel"
 msgstr "_გაუქმება"
 
-#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:297
+#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:302
 #: widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "_შენახვა"
@@ -916,7 +917,7 @@ msgstr ""
 
 #: lib/rb-cut-and-paste-code.c:94
 #: plugins/audioscrobbler/audioscrobbler-profile.ui:235
-#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3862
+#: plugins/iradio/rb-station-properties-dialog.c:496 rhythmdb/rhythmdb.c:3868
 #: widgets/rb-entry-view.c:973 widgets/rb-entry-view.c:1604
 #: widgets/rb-entry-view.c:1618 widgets/rb-song-info.c:1554
 msgid "Never"
@@ -983,8 +984,8 @@ msgstr "%b %d %Y"
 #: podcast/rb-podcast-manager.c:1666 podcast/rb-podcast-properties-dialog.c:636
 #: podcast/rb-podcast-properties-dialog.c:700 podcast/rb-podcast-source.c:770
 #: remote/dbus/rb-client.c:218 remote/dbus/rb-client.c:737
-#: rhythmdb/rhythmdb.c:2095 rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2116
-#: rhythmdb/rhythmdb.c:2156 rhythmdb/rhythmdb-entry-type.c:303
+#: rhythmdb/rhythmdb.c:2101 rhythmdb/rhythmdb.c:2107 rhythmdb/rhythmdb.c:2122
+#: rhythmdb/rhythmdb.c:2162 rhythmdb/rhythmdb-entry-type.c:303
 #: rhythmdb/rhythmdb-entry-type.c:381 rhythmdb/rhythmdb-entry-type.c:387
 #: rhythmdb/rhythmdb-entry-type.c:392 rhythmdb/rhythmdb-entry-type.c:403
 #: rhythmdb/rhythmdb-entry-type.c:407 rhythmdb/rhythmdb-metadata-cache.c:309
@@ -1142,7 +1143,7 @@ msgstr ""
 #: plugins/generic-player/rb-generic-player-source.c:564
 #, c-format
 msgid "Scanning %s"
-msgstr ""
+msgstr "%s-ის სკანირება"
 
 #: plugins/android/rb-android-source.c:429
 msgid "Error mounting Android device"
@@ -1712,8 +1713,8 @@ msgstr "ბმულები"
 msgid "No artist specified."
 msgstr ""
 
-#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:336
-#: plugins/lyrics/lyrics.py:421
+#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:341
+#: plugins/lyrics/lyrics.py:426
 msgid "Lyrics"
 msgstr "ლირიკა"
 
@@ -1724,7 +1725,7 @@ msgstr ""
 
 #: plugins/context/LyricsTab.py:121
 msgid "Lyrics not found"
-msgstr ""
+msgstr "ლირიკის პოვნა შეუძლებელია"
 
 #: plugins/context/tmpl/album-tmpl.html:48
 msgid "Hide all tracks"
@@ -1973,16 +1974,16 @@ msgstr "სინქრონიზაცია ახლავე"
 msgid "Preferences"
 msgstr "მორგება"
 
-#: plugins/gpodder/gpodder.py:656
+#: plugins/gpodder/gpodder.py:652
 msgid "Login successful"
 msgstr "შესვლა წარმატებულია"
 
-#: plugins/gpodder/gpodder.py:658 plugins/magnatune/MagnatuneSource.py:408
+#: plugins/gpodder/gpodder.py:654 plugins/magnatune/MagnatuneSource.py:408
 #: widgets/rb-entry-view.c:1669
 msgid "Error"
 msgstr "შეცდომა"
 
-#: plugins/gpodder/gpodder.py:660
+#: plugins/gpodder/gpodder.py:656
 msgid "Login failed"
 msgstr "შესვლა ჩავარდა"
 
@@ -2272,7 +2273,7 @@ msgstr ""
 msgid "Choose lyrics folder..."
 msgstr ""
 
-#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:444
+#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:449
 msgid "Song Lyrics"
 msgstr ""
 
@@ -2292,20 +2293,20 @@ msgstr "არჩევა..."
 msgid "Lyrics Folder"
 msgstr ""
 
-#: plugins/lyrics/lyrics.py:170 plugins/lyrics/lyrics.py:247
-#: plugins/lyrics/lyrics.py:257
+#: plugins/lyrics/lyrics.py:170 plugins/lyrics/lyrics.py:252
+#: plugins/lyrics/lyrics.py:262
 msgid "No lyrics found"
 msgstr "ლირიკის პოვნა შეუძლებელია"
 
-#: plugins/lyrics/lyrics.py:302 plugins/lyrics/lyrics.py:315
+#: plugins/lyrics/lyrics.py:307 plugins/lyrics/lyrics.py:320
 msgid "_Edit"
 msgstr "_დამუშავება"
 
-#: plugins/lyrics/lyrics.py:317
+#: plugins/lyrics/lyrics.py:322
 msgid "_Search again"
 msgstr ""
 
-#: plugins/lyrics/lyrics.py:376
+#: plugins/lyrics/lyrics.py:381
 msgid "Searching for lyrics..."
 msgstr ""
 
@@ -2603,6 +2604,61 @@ msgstr ""
 msgid "Downloading from Magnatune"
 msgstr ""
 
+#: plugins/mpdserver/mpdserver-config.ui:19
+#| msgid "Preferences"
+msgid "MPD server preferences"
+msgstr "MPD სერვერის მორგება"
+
+#: plugins/mpdserver/mpdserver-config.ui:37
+#: plugins/webremote/webremote-config.ui:35
+msgid "Listening port:"
+msgstr "ვუსმენ პორტს:"
+
+#: plugins/mpdserver/mpdserver-config.ui:49
+#| msgid "Password:"
+msgid "MPD client password:"
+msgstr "MPD კლიენტის პაროლი:"
+
+#: plugins/mpdserver/mpdserver-config.ui:71
+msgid "Listening address:"
+msgstr "ვუსმენ მისამართს:"
+
+#: plugins/mpdserver/mpdserver-config.ui:80
+msgid "Local host only"
+msgstr "მხოლოდ ლოკალური ჰოსტი"
+
+#: plugins/mpdserver/mpdserver-config.ui:94
+msgid "All addresses"
+msgstr "ყველა მისამართი"
+
+#: plugins/mpdserver/mpdserver-config.ui:114
+msgid "Specific address:"
+msgstr ""
+
+#: plugins/mpdserver/mpdserver-config.ui:149
+msgid ""
+"MPD is not a secure protocol and should only be used on trusted networks."
+msgstr ""
+
+#: plugins/mpdserver/mpdserver-config.ui:160
+msgid "Enable MDNS discovery"
+msgstr ""
+
+#: plugins/mpdserver/mpdserver-config.ui:175
+msgid ""
+"Find MPD clients on the <a href=\"https://musicpd.org/clients\">MPD website</"
+"a>"
+msgstr ""
+
+#: plugins/mpdserver/mpdserver.plugin.desktop.in:6
+#| msgid "Server URL"
+msgid "MPD Server"
+msgstr "MPD სერვერი"
+
+#: plugins/mpdserver/mpdserver.plugin.desktop.in:7
+msgid "Provides access to Rhythmbox through the MPD protocol"
+msgstr ""
+
 #: plugins/mpris/mpris.plugin.desktop.in:5
 msgid "MPRIS D-Bus interface"
 msgstr ""
@@ -2801,7 +2857,7 @@ msgstr ""
 
 #: plugins/replaygain/replaygain.plugin.desktop.in:6
 msgid "ReplayGain"
-msgstr ""
+msgstr "ხმის გაძლიერების კოეფიციენტი"
 
 #: plugins/replaygain/replaygain.plugin.desktop.in:7
 msgid "Use ReplayGain to provide a consistent playback volume"
@@ -2838,10 +2894,6 @@ msgstr ""
 #: plugins/webremote/webremote-config.ui:18
 msgid "Web remote control preferences"
 msgstr ""
-
-#: plugins/webremote/webremote-config.ui:35
-msgid "Listening port:"
-msgstr "ვუსმენ პორტს:"
 
 #: plugins/webremote/webremote-config.ui:46
 msgid "Passphrase:"
@@ -2975,7 +3027,7 @@ msgstr ""
 
 #: podcast/rb-podcast-properties-dialog.c:584
 msgid "Not Downloaded"
-msgstr ""
+msgstr "არგადმოწერილი"
 
 #: podcast/rb-podcast-source.c:512
 msgid "Delete the podcast feed and downloaded files?"
@@ -3287,7 +3339,7 @@ msgstr ""
 msgid "Playback volume is %f.\n"
 msgstr ""
 
-#: rhythmdb/rhythmdb.c:796
+#: rhythmdb/rhythmdb.c:798
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr ""
@@ -3297,7 +3349,7 @@ msgstr ""
 #. * a local artist name if desired.  Ensure the album name
 #. * and song title are also replaced in this case.
 #.
-#: rhythmdb/rhythmdb.c:1845
+#: rhythmdb/rhythmdb.c:1851
 msgid "The Beatles"
 msgstr ""
 
@@ -3305,7 +3357,7 @@ msgstr ""
 #. * example artist name is localised, this should be replaced
 #. * with the name of an album by that artist.
 #.
-#: rhythmdb/rhythmdb.c:1851
+#: rhythmdb/rhythmdb.c:1857
 msgid "Help!"
 msgstr "დახმარება!"
 
@@ -3313,46 +3365,46 @@ msgstr "დახმარება!"
 #. * artist and album names are localised, this should be replaced
 #. * with the name of the seventh song from the localised album.
 #.
-#: rhythmdb/rhythmdb.c:1857
+#: rhythmdb/rhythmdb.c:1863
 msgid "Ticket To Ride"
 msgstr ""
 
 #. Translators: the parameter here is a list of GStreamer plugins.
 #. * The plugin names are already translated.
 #.
-#: rhythmdb/rhythmdb.c:2409
+#: rhythmdb/rhythmdb.c:2415
 #, c-format
 msgid "Additional GStreamer plugins are required to play this file: %s"
 msgstr ""
 
-#: rhythmdb/rhythmdb.c:2441
+#: rhythmdb/rhythmdb.c:2447
 msgid "invalid unicode in error message"
 msgstr ""
 
-#: rhythmdb/rhythmdb.c:2564
+#: rhythmdb/rhythmdb.c:2570
 #, c-format
 msgid "Empty file"
 msgstr "ცარიელი ფაილი"
 
-#: rhythmdb/rhythmdb.c:3273
+#: rhythmdb/rhythmdb.c:3279
 msgid "Could not load the music database:"
 msgstr ""
 
-#: rhythmdb/rhythmdb.c:4716
+#: rhythmdb/rhythmdb.c:4731
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld წუთი"
 msgstr[1] "%ld წუთი"
 
-#: rhythmdb/rhythmdb.c:4717
+#: rhythmdb/rhythmdb.c:4732
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] ""
 msgstr[1] ""
 
-#: rhythmdb/rhythmdb.c:4718
+#: rhythmdb/rhythmdb.c:4733
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -3360,7 +3412,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4724
+#: rhythmdb/rhythmdb.c:4739
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s და %s"
@@ -3368,7 +3420,7 @@ msgstr "%s, %s და %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:4730 rhythmdb/rhythmdb.c:4738 rhythmdb/rhythmdb.c:4749
+#: rhythmdb/rhythmdb.c:4745 rhythmdb/rhythmdb.c:4753 rhythmdb/rhythmdb.c:4764
 #, c-format
 msgid "%s and %s"
 msgstr "%s და %s"
@@ -3409,7 +3461,7 @@ msgstr ""
 #: sample-plugins/sample/rb-sample-plugin.c:87
 #: sample-plugins/sample/sample.plugin.desktop.in:4
 msgid "Sample Plugin"
-msgstr ""
+msgstr "დამატების მაგალითი"
 
 #: sample-plugins/sample/sample.plugin.desktop.in:5
 msgid "A sample plugin in C with no features"
@@ -3882,7 +3934,7 @@ msgstr ""
 
 #: sources/rb-library-source.c:131
 msgid "Artist - Title"
-msgstr ""
+msgstr "შემსრულებელი - სახელი"
 
 #: sources/rb-library-source.c:132
 msgid "Artist - Number - Title"
