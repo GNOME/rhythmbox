@@ -241,13 +241,20 @@ rb_gst_process_embedded_image (const GstTagList *taglist, const char *tag)
 		return NULL;
 	}
 
+	if (gdk_pixbuf_loader_close (loader, &error) == FALSE) {
+		rb_debug ("pixbuf loader doesn't like the data: %s", error->message);
+		gst_buffer_unmap (gst_sample_get_buffer (sample), &mapinfo);
+		g_error_free (error);
+		g_object_unref (loader);
+		return NULL;
+	}
+
 	pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
 	if (pixbuf != NULL) {
 		g_object_ref (pixbuf);
 	}
 	
 	gst_buffer_unmap (gst_sample_get_buffer (sample), &mapinfo);
-	gdk_pixbuf_loader_close (loader, NULL);
 	g_object_unref (loader);
 
 	if (pixbuf == NULL) {
