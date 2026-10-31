@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2026-08-15 09:40+0000\n"
-"PO-Revision-Date: 2026-08-21 12:22+0300\n"
+"POT-Creation-Date: 2026-10-18 08:15+0000\n"
+"PO-Revision-Date: 2026-10-31 23:36+0300\n"
 "Last-Translator: Yuras Shumovich <shumovichy@gmail.com>\n"
 "Language-Team: Belarussian <i18n-bel-gnome@googlegroups.com>\n"
 "Language: be\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 3.9\n"
+"X-Generator: Poedit 3.10\n"
 
 #: backends/gstreamer/rb-encoder-gst.c:653
 #, c-format
@@ -173,7 +173,7 @@ msgstr ""
 "Rhythmbox — свабоднае праграмнае забеспячэнне, заснаванае на GTK+ і "
 "GStreamer і з магчымасцю падлучэння плагінаў, напісаных на Python або C."
 
-#: data/org.gnome.Rhythmbox3.metainfo.xml.in:35
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:34
 msgid "Main Window"
 msgstr "Галоўнае акно"
 
@@ -2676,6 +2676,61 @@ msgstr ""
 msgid "Downloading from Magnatune"
 msgstr "Спампоўванне з Magnatune"
 
+#: plugins/mpdserver/mpdserver-config.ui:19
+msgid "MPD server preferences"
+msgstr "Налады сервера MPD"
+
+#: plugins/mpdserver/mpdserver-config.ui:37
+#: plugins/webremote/webremote-config.ui:35
+msgid "Listening port:"
+msgstr "Назіранне за портам:"
+
+#: plugins/mpdserver/mpdserver-config.ui:49
+msgid "MPD client password:"
+msgstr "Пароль кліента MPD:"
+
+#: plugins/mpdserver/mpdserver-config.ui:71
+msgid "Listening address:"
+msgstr "Назіранне за адрасам:"
+
+#: plugins/mpdserver/mpdserver-config.ui:80
+msgid "Local host only"
+msgstr "Толькі лакальны хост"
+
+#: plugins/mpdserver/mpdserver-config.ui:94
+msgid "All addresses"
+msgstr "Усе адрасы"
+
+#: plugins/mpdserver/mpdserver-config.ui:114
+msgid "Specific address:"
+msgstr "Пэўны адрас:"
+
+#: plugins/mpdserver/mpdserver-config.ui:149
+msgid ""
+"MPD is not a secure protocol and should only be used on trusted networks."
+msgstr ""
+"MPD — не абаронены пратакол, варта выкарыстоўваць яго толькі ў даверных "
+"сетках."
+
+#: plugins/mpdserver/mpdserver-config.ui:160
+msgid "Enable MDNS discovery"
+msgstr "Уключыць выяўленне MDNS"
+
+#: plugins/mpdserver/mpdserver-config.ui:175
+msgid ""
+"Find MPD clients on the <a href=\"https://musicpd.org/clients\">MPD website</"
+"a>"
+msgstr ""
+"Пошук кліентаў MPD на <a href=\"https://musicpd.org/clients\">сайце MPD</a>"
+
+#: plugins/mpdserver/mpdserver.plugin.desktop.in:6
+msgid "MPD Server"
+msgstr "Сервер MPD"
+
+#: plugins/mpdserver/mpdserver.plugin.desktop.in:7
+msgid "Provides access to Rhythmbox through the MPD protocol"
+msgstr "Дае доступ да Rhythmbox праз пратакол MPD"
+
 #: plugins/mpris/mpris.plugin.desktop.in:5
 msgid "MPRIS D-Bus interface"
 msgstr "Інтэрфейс MPRIS D-Bus"
@@ -2923,10 +2978,6 @@ msgstr "Даведацца больш пра ReplayGain"
 #: plugins/webremote/webremote-config.ui:18
 msgid "Web remote control preferences"
 msgstr "Параметры аддаленага кіравання праз інтэрнэт"
-
-#: plugins/webremote/webremote-config.ui:35
-msgid "Listening port:"
-msgstr "Назіранне за портам:"
 
 #: plugins/webremote/webremote-config.ui:46
 msgid "Passphrase:"
