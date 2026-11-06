@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/rhythmbox/issues/\n"
-"POT-Creation-Date: 2026-07-23 22:28+0000\n"
-"PO-Revision-Date: 2026-07-26 14:48+0500\n"
+"POT-Creation-Date: 2026-10-18 08:15+0000\n"
+"PO-Revision-Date: 2026-11-06 21:27+0500\n"
 "Last-Translator: Baurzhan Muftakhidinov <baurthefirst@gmail.com>\n"
 "Language-Team: Kazakh <kk_KZ@googlegroups.com>\n"
 "Language: kk\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.9\n"
+"X-Generator: Poedit 3.10\n"
 
 #: backends/gstreamer/rb-encoder-gst.c:653
 #, c-format
@@ -168,7 +168,7 @@ msgstr ""
 "мүмкіндіктерін Python немесе C тілінде жазылған плагиндер арқылы кеңейтуге "
 "болады."
 
-#: data/org.gnome.Rhythmbox3.metainfo.xml.in:35
+#: data/org.gnome.Rhythmbox3.metainfo.xml.in:34
 msgid "Main Window"
 msgstr "Негізгі терезе"
 
@@ -610,7 +610,7 @@ msgstr "Ойнату тізімін сақтау"
 msgid "_Cancel"
 msgstr "Бас _тарту"
 
-#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:297
+#: data/ui/playlist-save.ui:53 plugins/lyrics/lyrics.py:302
 #: widgets/rb-dialog.c:140
 msgid "_Save"
 msgstr "_Сақтау"
@@ -1748,8 +1748,8 @@ msgstr "Сілтемелер"
 msgid "No artist specified."
 msgstr "Орындаушы көрсетілмеген."
 
-#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:336
-#: plugins/lyrics/lyrics.py:421
+#: plugins/context/LyricsTab.py:54 plugins/lyrics/lyrics.py:341
+#: plugins/lyrics/lyrics.py:426
 msgid "Lyrics"
 msgstr "Сөздері"
 
@@ -2325,7 +2325,7 @@ msgstr ""
 msgid "Choose lyrics folder..."
 msgstr "Ән сөздері бумасын таңдау..."
 
-#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:444
+#: plugins/lyrics/lyrics.plugin.desktop.in:6 plugins/lyrics/lyrics.py:449
 msgid "Song Lyrics"
 msgstr "Ән сөздері"
 
@@ -2345,20 +2345,20 @@ msgstr "Шолу..."
 msgid "Lyrics Folder"
 msgstr "Ән сөздері бумасы"
 
-#: plugins/lyrics/lyrics.py:170 plugins/lyrics/lyrics.py:247
-#: plugins/lyrics/lyrics.py:257
+#: plugins/lyrics/lyrics.py:170 plugins/lyrics/lyrics.py:252
+#: plugins/lyrics/lyrics.py:262
 msgid "No lyrics found"
 msgstr "Ән сөздері табылмады"
 
-#: plugins/lyrics/lyrics.py:302 plugins/lyrics/lyrics.py:315
+#: plugins/lyrics/lyrics.py:307 plugins/lyrics/lyrics.py:320
 msgid "_Edit"
 msgstr "_Түзету"
 
-#: plugins/lyrics/lyrics.py:317
+#: plugins/lyrics/lyrics.py:322
 msgid "_Search again"
 msgstr "Қайта із_деу"
 
-#: plugins/lyrics/lyrics.py:376
+#: plugins/lyrics/lyrics.py:381
 msgid "Searching for lyrics..."
 msgstr "Ән сөздері ізделуде..."
 
@@ -2669,6 +2669,62 @@ msgstr ""
 msgid "Downloading from Magnatune"
 msgstr "Magnatune дүкенінен жүктелуде"
 
+#: plugins/mpdserver/mpdserver-config.ui:19
+msgid "MPD server preferences"
+msgstr "MPD серверінің баптаулары"
+
+#: plugins/mpdserver/mpdserver-config.ui:37
+#: plugins/webremote/webremote-config.ui:35
+msgid "Listening port:"
+msgstr "Тыңдау порты:"
+
+#: plugins/mpdserver/mpdserver-config.ui:49
+msgid "MPD client password:"
+msgstr "MPD клиентінің паролі:"
+
+#: plugins/mpdserver/mpdserver-config.ui:71
+msgid "Listening address:"
+msgstr "Тыңдайтын адрес:"
+
+#: plugins/mpdserver/mpdserver-config.ui:80
+msgid "Local host only"
+msgstr "Тек жергілікті хост"
+
+#: plugins/mpdserver/mpdserver-config.ui:94
+msgid "All addresses"
+msgstr "Барлық адрестер"
+
+#: plugins/mpdserver/mpdserver-config.ui:114
+msgid "Specific address:"
+msgstr "Нақты адрес:"
+
+#: plugins/mpdserver/mpdserver-config.ui:149
+msgid ""
+"MPD is not a secure protocol and should only be used on trusted networks."
+msgstr ""
+"MPD қауіпсіз хаттама емес және оны тек сенімді желілерде пайдалану керек."
+
+#: plugins/mpdserver/mpdserver-config.ui:160
+msgid "Enable MDNS discovery"
+msgstr "MDNS табуын іске қосу"
+
+#: plugins/mpdserver/mpdserver-config.ui:175
+msgid ""
+"Find MPD clients on the <a href=\"https://musicpd.org/clients\">MPD website</"
+"a>"
+msgstr ""
+"MPD клиенттерін <a href=\"https://musicpd.org/clients\">MPD веб-сайтынан</a> "
+"табу"
+
+#: plugins/mpdserver/mpdserver.plugin.desktop.in:6
+msgid "MPD Server"
+msgstr "MPD сервері"
+
+#: plugins/mpdserver/mpdserver.plugin.desktop.in:7
+msgid "Provides access to Rhythmbox through the MPD protocol"
+msgstr ""
+"Rhythmbox қолданбасына MPD хаттамасы арқылы қол жеткізуді қамтамасыз етеді"
+
 #: plugins/mpris/mpris.plugin.desktop.in:5
 msgid "MPRIS D-Bus interface"
 msgstr "MPRIS D-Bus интерфейсі"
@@ -2916,10 +2972,6 @@ msgstr "ReplayGain туралы көбірек білу"
 #: plugins/webremote/webremote-config.ui:18
 msgid "Web remote control preferences"
 msgstr "Веб арқылы қашықтан басқару қалаулары"
-
-#: plugins/webremote/webremote-config.ui:35
-msgid "Listening port:"
-msgstr "Тыңдау порты:"
 
 #: plugins/webremote/webremote-config.ui:46
 msgid "Passphrase:"
