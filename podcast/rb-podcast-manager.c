@@ -1499,6 +1499,8 @@ rb_podcast_manager_delete_download (RBPodcastManager *pd, RhythmDBEntry *entry)
 			g_clear_error (&error);
 		}
 		g_object_unref (feed_dir);
+
+		unset_download_location (pd->priv->db, entry);
 	}
 	g_object_unref (file);
 }
