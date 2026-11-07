@@ -29,15 +29,17 @@
 
 #include "config.h"
 
-#include <sys/stat.h>
-#include <stdlib.h>
+#include "rb-daap-container-record.h"
+
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+
 #include <gtk/gtk.h>
 
-#include "rhythmdb-query-model.h"
-#include "rb-daap-container-record.h"
 #include "rb-rhythmdb-query-model-dmap-db-adapter.h"
+#include "rhythmdb-query-model.h"
 
 enum {
         PROP_0,
@@ -45,7 +47,7 @@ enum {
 };
 
 struct RBDAAPContainerRecordPrivate {
-	char *name;
+	gchar *name;
 	RBPlaylistSource *source;
 };
 
@@ -182,7 +184,7 @@ rb_daap_container_record_finalize (GObject *object)
 }
 
 RBDAAPContainerRecord *
-rb_daap_container_record_new (char *name, RBPlaylistSource *source)
+rb_daap_container_record_new (gchar *name, RBPlaylistSource *source)
 {
 	RBDAAPContainerRecord *record;
 

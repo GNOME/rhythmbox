@@ -38,7 +38,7 @@ G_BEGIN_DECLS
 
 void 	rb_daap_sharing_init (RBShell *shell);
 void 	rb_daap_sharing_shutdown (RBShell *shell);
-char *	rb_daap_sharing_default_share_name (void);
+gchar *	rb_daap_sharing_default_share_name (void);
 
 G_END_DECLS
 

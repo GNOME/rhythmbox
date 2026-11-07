@@ -27,9 +27,10 @@
  *
  */
 
-#include "rhythmdb.h"
 #include "rb-daap-record-factory.h"
+
 #include "rb-daap-record.h"
+#include "rhythmdb.h"
 
 DmapRecord *
 rb_daap_record_factory_create  (DmapRecordFactory *factory,

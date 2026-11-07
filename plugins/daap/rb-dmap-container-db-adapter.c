@@ -29,12 +29,13 @@
 
 #include "config.h"
 
-#include "rb-playlist-manager.h"
-#include "rb-playlist-source.h"
 #include "rb-dmap-container-db-adapter.h"
-#include "rb-daap-container-record.h"
 
 #include <libdmapsharing/dmap.h>
+
+#include "rb-daap-container-record.h"
+#include "rb-playlist-manager.h"
+#include "rb-playlist-source.h"
 
 static guint next_playlist_id = 2;
 

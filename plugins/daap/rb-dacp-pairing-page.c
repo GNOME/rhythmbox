@@ -30,31 +30,31 @@
 
 #include "config.h"
 
-#include <string.h>
+#include "rb-dacp-pairing-page.h"
+
 #include <ctype.h>
 #include <math.h>
+#include <string.h>
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "rhythmdb.h"
-#include "rb-shell.h"
-#include "rb-display-page-group.h"
-#include "rb-debug.h"
-#include "rb-util.h"
-#include "rb-file-helpers.h"
 #include "rb-builder-helpers.h"
-#include "rb-dialog.h"
-#include "rb-playlist-manager.h"
-#include "rb-shell-player.h"
-#include "rb-display-page-model.h"
-#include "rb-rhythmdb-dmap-db-adapter.h"
-#include "rb-dmap-container-db-adapter.h"
-
-#include "rb-dacp-pairing-page.h"
 #include "rb-daap-plugin.h"
 #include "rb-daap-sharing.h"
 #include "rb-dacp-player.h"
+#include "rb-debug.h"
+#include "rb-dialog.h"
+#include "rb-display-page-group.h"
+#include "rb-display-page-model.h"
+#include "rb-dmap-container-db-adapter.h"
+#include "rb-file-helpers.h"
+#include "rb-playlist-manager.h"
+#include "rb-rhythmdb-dmap-db-adapter.h"
+#include "rb-shell-player.h"
+#include "rb-shell.h"
+#include "rb-util.h"
+#include "rhythmdb.h"
 
 static void impl_constructed (GObject *object);
 static void impl_dispose (GObject *object);
@@ -83,7 +83,7 @@ static void dacp_player_updated (RBDACPPlayer *player, DmapControlShare *share);
 
 struct RBDACPPairingPagePrivate
 {
-	char *service_name;
+	gchar *service_name;
 
 	gboolean done_pairing;
 
@@ -109,7 +109,7 @@ entry_insert_text_cb (GtkWidget *entry, gchar *text, gint len, gint *position, R
 	gchar new_char = text[*position];
 	gint entry_pos = 0;
 	gchar passcode[4];
-	int i;
+	gint i;
 
 	/* Find out which entry the user just entered text */
 	for (entry_pos = 0; entry_pos < 4; entry_pos++) {
@@ -118,7 +118,7 @@ entry_insert_text_cb (GtkWidget *entry, gchar *text, gint len, gint *position, R
 		}
 	}
 
-	if (!isdigit (new_char)) {
+	if (!g_ascii_isdigit (new_char)) {
 		/* is this a number? If not, don't let it in */
 		g_signal_stop_emission_by_name (entry, "insert-text");
 		return TRUE;
@@ -177,15 +177,8 @@ impl_dispose (GObject *object)
 {
 	RBDACPPairingPage *page = RB_DACP_PAIRING_PAGE (object);
 
-	if (page->priv->builder != NULL) {
-		g_object_unref (page->priv->builder);
-		page->priv->builder = NULL;
-	}
-
-	if (page->priv->dacp_share != NULL) {
-		g_object_unref (page->priv->dacp_share);
-		page->priv->dacp_share = NULL;
-	}
+	g_clear_object (&page->priv->builder);
+	g_clear_object (&page->priv->dacp_share);
 
 	G_OBJECT_CLASS (rb_dacp_pairing_page_parent_class)->dispose (object);
 }
@@ -243,7 +236,7 @@ impl_constructed (GObject *object)
 	GtkWidget *close_pairing_button;
 	PangoFontDescription *font;
 	GObject *plugin;
-	int i;
+	gint i;
 
 	g_object_get (page, "plugin", &plugin, NULL);
 
@@ -262,7 +255,7 @@ impl_constructed (GObject *object)
 	font = pango_font_description_from_string ("normal 28");
 
 	for (i = 0; i < 4; i++) {
-		char *entry_name;
+		gchar *entry_name;
 
 		entry_name = g_strdup_printf ("passcode_entry%d", i + 1);
 		page->priv->entries[i] = GTK_WIDGET (gtk_builder_get_object (page->priv->builder, entry_name));
@@ -327,8 +320,8 @@ RBDACPPairingPage *
 rb_dacp_pairing_page_new (GObject *plugin,
 			  RBShell *shell,
 			  DmapControlShare *dacp_share,
-			  const char *display_name,
-			  const char *service_name)
+			  const gchar *display_name,
+			  const gchar *service_name)
 {
 	RBDACPPairingPage *page;
 
@@ -352,7 +345,7 @@ rb_dacp_pairing_page_new (GObject *plugin,
 static void
 rb_dacp_pairing_page_reset_passcode (RBDACPPairingPage *page)
 {
-	int i;
+	gint i;
 
 	for (i = 0; i < 4; i++) {
 		gtk_entry_set_text (GTK_ENTRY (page->priv->entries[i]), "");
@@ -382,7 +375,7 @@ rb_dacp_pairing_page_remote_lost (RBDACPPairingPage *page)
 
 static void
 rb_dacp_pairing_page_connecting (RBDACPPairingPage *page, gboolean connecting) {
-	int i;
+	gint i;
 
 	if (connecting) {
 		gtk_widget_show (page->priv->pairing_status_widget);
@@ -507,7 +500,7 @@ dacp_add_guid (DmapControlShare *share,
 	GVariantBuilder *vb;
 	GVariantIter iter;
 	GVariant *v;
-	const char *g;
+	const gchar *g;
 
 	v = g_settings_get_value (settings, "known-remotes");
 
@@ -529,7 +522,7 @@ dacp_lookup_guid (DmapControlShare *share,
                   gchar *guid,
 		  GSettings *settings)
 {
-	char **guids;
+	gchar **guids;
 	gboolean found;
 
 	guids = g_settings_get_strv (settings, "known-remotes");
@@ -540,7 +533,7 @@ dacp_lookup_guid (DmapControlShare *share,
 }
 
 typedef struct {
-	const char *name;
+	const gchar *name;
 	RBDACPPairingPage *page;
 } FindPage;
 
@@ -558,7 +551,7 @@ find_dacp_page_foreach (GtkTreeModel *model,
 	                    -1);
 	if (page && RB_IS_DACP_PAIRING_PAGE (page)) {
 		g_object_get (page, "service-name", &name, NULL);
-		if (strcmp (name, fp->name) == 0) {
+		if (g_strcmp0 (name, fp->name) == 0) {
 			fp->page = RB_DACP_PAIRING_PAGE (page);
 		}
 		g_free (name);

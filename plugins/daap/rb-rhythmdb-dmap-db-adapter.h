@@ -32,6 +32,8 @@
 
 #include <libdmapsharing/dmap.h>
 
+#include "rhythmdb.h"
+
 G_BEGIN_DECLS
 
 #define RB_TYPE_DMAP_DB_ADAPTER         (rb_rhythmdb_dmap_db_adapter_get_type ())

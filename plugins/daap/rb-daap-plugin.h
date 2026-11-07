@@ -28,8 +28,8 @@
 #ifndef __RB_DAAP_PLUGIN_H
 #define __RB_DAAP_PLUGIN_H
 
-#include <libpeas/peas.h>
 #include <libdmapsharing/dmap.h>
+#include <libpeas/peas.h>
 
 #include "rb-daap-source.h"
 
@@ -45,7 +45,7 @@ GIcon *		rb_daap_plugin_get_icon 	(RBDaapPlugin *plugin,
 					 	 gboolean connected);
 
 RBDAAPSource *	rb_daap_plugin_find_source_for_uri (RBDaapPlugin *plugin,
-						 const char *uri);
+						 const gchar *uri);
 gboolean	rb_daap_plugin_shutdown		(RBDaapPlugin *plugin);
 
 G_END_DECLS

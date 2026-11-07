@@ -30,11 +30,13 @@
 
 #include "config.h"
 
-#include <gst/gst.h>
+#include "rb-daap-src.h"
+
 #include <string.h>
 
+#include <gst/gst.h>
+
 #include "rb-daap-plugin.h"
-#include "rb-daap-src.h"
 
 #define RB_TYPE_DAAP_SRC (rb_daap_src_get_type())
 #define RB_DAAP_SRC(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj),RB_TYPE_DAAP_SRC,RBDAAPSrc))
@@ -176,8 +178,7 @@ rb_daap_src_dispose (GObject *object)
 		src->souphttpsrc = NULL;
 	}
 
-	g_free (src->daap_uri);
-	src->daap_uri = NULL;
+	g_clear_pointer (&src->daap_uri, g_free);
 
 	G_OBJECT_CLASS (rb_daap_src_parent_class)->dispose (object);
 }
@@ -193,11 +194,7 @@ rb_daap_src_set_property (GObject *object,
 	switch (prop_id) {
 		case PROP_LOCATION:
 			/* XXX check stuff */
-			if (src->daap_uri) {
-				g_free (src->daap_uri);
-				src->daap_uri = NULL;
-			}
-			src->daap_uri = g_strdup (g_value_get_string (value));
+			g_set_str (&src->daap_uri, g_value_get_string (value));
 			break;
 		default:
 			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -224,7 +221,7 @@ rb_daap_src_get_property (GObject *object,
 }
 
 static void
-rb_daap_src_set_header (const char *name, const char *value, gpointer headers)
+rb_daap_src_set_header (const gchar *name, const gchar *value, gpointer headers)
 {
 	gst_structure_set (headers, name, G_TYPE_STRING, value, NULL);
 }
@@ -252,8 +249,8 @@ rb_daap_src_change_state (GstElement *element, GstStateChange transition)
 	switch (transition) {
 		case GST_STATE_CHANGE_NULL_TO_READY:
 		{
-			const char *http = "http";
-			char *httpuri;
+			const gchar *http = "http";
+			gchar *httpuri;
 			SoupMessageHeaders *headers;
 			GstStructure *gst_headers;
 			RBDAAPSource *source;

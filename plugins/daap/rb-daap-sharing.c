@@ -30,31 +30,31 @@
 
 #include "config.h"
 
+#include "rb-daap-sharing.h"
+
 #include <string.h>
 
 #include <gio/gio.h>
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
+#include <libdmapsharing/dmap.h>
 
-#include "rb-daap-sharing.h"
-#include "rb-rhythmdb-dmap-db-adapter.h"
-#include "rb-dmap-container-db-adapter.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
+#include "rb-dmap-container-db-adapter.h"
 #include "rb-playlist-manager.h"
-
-#include <libdmapsharing/dmap.h>
+#include "rb-rhythmdb-dmap-db-adapter.h"
 
 static DmapAvShare *share = NULL;
 static GSettings *settings = NULL;
 
-char *
+gchar *
 rb_daap_sharing_default_share_name (void)
 {
 	const gchar *real_name;
 
 	real_name = g_get_real_name ();
-	if (strcmp (real_name, "Unknown") == 0) {
+	if (g_strcmp0 (real_name, "Unknown") == 0) {
 		real_name = g_get_user_name ();
 	}
 
@@ -64,7 +64,7 @@ rb_daap_sharing_default_share_name (void)
 static gboolean
 share_name_get_mapping (GValue *value, GVariant *variant, gpointer data)
 {
-	const char *name;
+	const gchar *name;
 	name = g_variant_get_string (variant, NULL);
 
 	if (name != NULL || name[0] != '\0') {
@@ -82,8 +82,8 @@ create_share (RBShell *shell)
 	DmapDb *db;
 	DmapContainerDb *container_db;
 	RBPlaylistManager *playlist_manager;
-	char *name;
-	char *password;
+	gchar *name;
+	gchar *password;
 	gboolean require_password;
 	GError *error = NULL;
 
@@ -139,7 +139,7 @@ create_share (RBShell *shell)
 }
 
 static void
-sharing_settings_changed_cb (GSettings *settings, const char *key, RBShell *shell)
+sharing_settings_changed_cb (GSettings *settings, const gchar *key, RBShell *shell)
 {
 	if (g_strcmp0 (key, "enable-sharing") == 0) {
 		gboolean enabled;
@@ -152,8 +152,7 @@ sharing_settings_changed_cb (GSettings *settings, const char *key, RBShell *shel
 		} else {
 			if (share != NULL) {
 				rb_debug ("shutting down daap share");
-				g_object_unref (share);
-				share = NULL;
+				g_clear_object (&share);
 			}
 		}
 	} else if (g_strcmp0 (key, "require-password") == 0) {
@@ -189,14 +188,9 @@ rb_daap_sharing_shutdown (RBShell *shell)
 	if (share) {
 		rb_debug ("shutdown daap sharing");
 
-		g_object_unref (share);
-		share = NULL;
+		g_clear_object (&share);
 	}
 
-	if (settings) {
-		g_object_unref (settings);
-		settings = NULL;
-	}
-
+	g_clear_object (&settings);
 	g_object_unref (shell);
 }

@@ -29,35 +29,34 @@
 
 #include "config.h"
 
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
-#include "rhythmdb.h"
 #include "rb-daap-record.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
 
 struct RBDAAPRecordPrivate {
 	guint64 filesize;
-	char *location;
-	char *format;	 /* Format, possibly after transcoding. */
-	char *real_format;
-	char *title;
-	char *album;
-	char *artist;
-	char *genre;
+	gchar *location;
+	gchar *format;	 /* Format, possibly after transcoding. */
+	gchar *real_format;
+	gchar *title;
+	gchar *album;
+	gchar *artist;
+	gchar *genre;
 	gboolean has_video;
 	gint mediakind;
 	gint rating;
-	int duration;
-	int track;
-	int year;
-	int firstseen;
-	int mtime;
-	int disc;
-	int bitrate;
-	char *sort_artist;
-	char *sort_album;
+	gint duration;
+	gint track;
+	gint year;
+	gint firstseen;
+	gint mtime;
+	gint disc;
+	gint bitrate;
+	gchar *sort_artist;
+	gchar *sort_album;
 	gint64 albumid;
 };
 

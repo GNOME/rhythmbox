@@ -29,13 +29,13 @@
 
 #include "config.h"
 
-#include "rhythmdb-query-model.h"
 #include "rb-rhythmdb-query-model-dmap-db-adapter.h"
-#include "rb-daap-record.h"
 
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <gtk/gtk.h>
 #include <libdmapsharing/dmap.h>
+
+#include "rb-daap-record.h"
 
 struct RBRhythmDBQueryModelDMAPDbAdapterPrivate {
 	RhythmDBQueryModel *model;
