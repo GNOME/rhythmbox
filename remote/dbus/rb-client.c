@@ -256,7 +256,6 @@ parse_pattern (const char *pattern, GHashTable *properties, gint64 elapsed, gboo
 {
 	/* p is the pattern iterator, i is a general purpose iterator */
 	const char *p;
-	char *temp;
 	GString *s;
 
 	if (pattern == NULL || pattern[0] == 0)
@@ -489,9 +488,7 @@ parse_pattern (const char *pattern, GHashTable *properties, gint64 elapsed, gboo
 		++p;
 	}
 
-	temp = s->str;
-	g_string_free (s, FALSE);
-	return temp;
+	return g_string_free_and_steal (s);
 }
 
 static GHashTable *

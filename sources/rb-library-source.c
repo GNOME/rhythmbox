@@ -851,7 +851,6 @@ filepath_parse_pattern (RBLibrarySource *source,
 {
 	/* p is the pattern iterator, i is a general purpose iterator */
 	const char *p;
-	char *temp;
 	GString *s;
 	RBRefString *albumartist;
 	RBRefString *albumartist_sort;
@@ -985,10 +984,8 @@ filepath_parse_pattern (RBLibrarySource *source,
 		++p;
 	}
 
-	temp = s->str;
-	g_string_free (s, FALSE);
 	rb_refstring_unref (albumartist);
-	return temp;
+	return g_string_free_and_steal (s);
 }
 
 static void

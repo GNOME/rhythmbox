@@ -1158,7 +1158,6 @@ rb_entry_view_sync_sorting (RBEntryView *view)
 char *
 rb_entry_view_get_sorting_type (RBEntryView *view)
 {
-	char *sorttype;
 	GString *key = g_string_new (view->priv->sorting_column_name);
 
 	g_string_append_c (key, ',');
@@ -1175,10 +1174,7 @@ rb_entry_view_get_sorting_type (RBEntryView *view)
 		g_assert_not_reached ();
 	}
 
-	sorttype = key->str;
-	g_string_free (key, FALSE);
-
-	return sorttype;
+	return g_string_free_and_steal (key);
 }
 
 /**
