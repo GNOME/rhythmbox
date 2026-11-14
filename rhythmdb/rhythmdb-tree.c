@@ -45,7 +45,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <libxml/entities.h>
-#include <libxml/SAX.h>
 #include <libxml/parserInternals.h>
 
 #include "rhythmdb-private.h"
