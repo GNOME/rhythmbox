@@ -225,6 +225,10 @@ select_profile_for_entry (RBTrackTransferBatch *batch, RhythmDBEntry *entry, Gst
 			is_source = rb_gst_media_type_matches_profile (profile, source_media_type);
 		} else {
 			/* always transcode raw audio */
+			if (profile_media_type == NULL) {
+				rb_debug ("can't copy raw audio");
+				continue;
+			}
 			is_source = FALSE;
 		}
 
